@@ -11,6 +11,11 @@ class CustomPlanner : public r3::Planner
     count += x;
     return count;
   }
+  
+  // This is a part of the standard planner interface.
+  public r3::Trajectory plan() {
+    return r3::Trajectory::EmptyTrajectory;
+  }
 }
 
 // Expose this class to Boost::Python
