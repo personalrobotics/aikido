@@ -5,7 +5,19 @@ Let's put together a list of things we would want in a robot representation syst
 
 ## OpenRAVE quirks
 
+* build/packaging system
+* string parsing for plugins
+* unstable dynamics simulators
+* complicated trajectory representation / ConfigurationSpecification
+* inability to extend python objects for subclasses
+* inability to store metadata in an extensible way
+* private scope on certain interfaces
+* complicated extension for custom loaders
+* multiple joint types that don't seem to be useful
+
 ## Klampt quirks
+
+* No plugin system
 
 ## MoveIt quirks
 
