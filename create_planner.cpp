@@ -13,7 +13,8 @@ class CustomPlanner : public r3::Planner
   }
   
   // This is a part of the standard planner interface.
-  public r3::Trajectory plan() {
+  public r3::Trajectory plan(r3::Environment env, std::vector<int> dof_indices,
+                             std::vector<float> start_dofs, std::vector<float> goal_dofs) {
     return r3::Trajectory::EmptyTrajectory;
   }
 }
