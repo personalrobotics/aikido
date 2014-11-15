@@ -1,4 +1,5 @@
 #include <r3.h>
+#include <boost/python> // @TODO: what is the right include for this?
 
 class CustomPlanner : public r3::Planner 
 {
@@ -12,8 +13,9 @@ class CustomPlanner : public r3::Planner
   }
 }
 
+// Expose this class to Boost::Python
 class_<CustomPlanner>("CustomPlanner")
         .def("increment", &CustomPlanner::increment)
         ;
 
-// What else do we need to do?
+// @TODO: What else do we need to do?
