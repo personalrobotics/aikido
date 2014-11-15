@@ -1,6 +1,6 @@
 #include <r3.h>
 
-class Planner : public BasePlanner 
+class CustomPlanner : public r3::Planner 
 {
   // Do some boost::python things here
 
