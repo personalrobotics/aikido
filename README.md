@@ -18,6 +18,10 @@ Let's put together a list of things we would want in a robot representation syst
 ## Klampt quirks
 
 * No plugin system
+* API doesn't see to match our codebase(?)
 
 ## MoveIt quirks
+
+* Crashes all the time
+* Cannot handle multiple independent kinematics chains (robot + cabinet)
 
