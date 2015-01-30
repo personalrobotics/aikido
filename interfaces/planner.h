@@ -1,7 +1,6 @@
 #ifndef _R3_PLANNER_H_
 #define _R3_PLANNER_H_
 
-#include <r3.h>
 #include "trajectory.h"
 
 namespace r3 
