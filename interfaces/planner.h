@@ -2,6 +2,7 @@
 #define _R3_PLANNER_H_
 
 #include "trajectory.h"
+#include <future>
 
 namespace r3 
 {
@@ -10,7 +11,7 @@ namespace r3
    */
   class PathPlanner<T>
   {
-    Path Plan(const T *params);
+    std::future<Path> Plan(const T *params);
   }
   
   /**
@@ -18,7 +19,7 @@ namespace r3
    */
   class MotionPlanner<T>
   {
-    Trajectory Plan(const T *params);
+    std::future<Trajectory> Plan(const T *params);
   }
   
   /** 
@@ -27,7 +28,7 @@ namespace r3
    */
   class Optimizer<T>
   {
-    Trajectory Optimize(Trajectory t, const T &params);
+    std::future<Trajectory> Optimize(Trajectory t, const T &params);
   }
 }
 
