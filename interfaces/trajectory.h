@@ -5,6 +5,10 @@
 
 namespace r3 
 {
+  /**
+   * A state is a continuous, often-differentiable vector that represents a snapshot of some system.
+   * This might be a pose in 3D space, or the joint configuration of a set of links.
+   */
   class State
   {
     /** The dimension of the state space */
