@@ -1,8 +1,6 @@
 #ifndef _R3_TRAJECTORY_H_
 #define _R3_TRAJECTORY_H_
 
-#include <r3.h>
-
 namespace r3 
 {
   /**
