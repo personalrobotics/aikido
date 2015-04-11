@@ -8,9 +8,10 @@ Let's put together a list of things we would want in a robot representation syst
 * C++ and Python support
 * Revolute, Prismatic, and Affine DOFs
 * Fast queries for forward-/inverse-kinematics, Jacobians
-* Ability to do Copy-On-Write cloning of environments.
+* Ability to do Copy-On-Write cloning of environments
+* Collision-checking
 
-## OpenRAVE quirks
+## OpenRAVE quirks ##
 
 * build/packaging system
 * string parsing for plugins
@@ -22,13 +23,16 @@ Let's put together a list of things we would want in a robot representation syst
 * complicated extension for custom loaders
 * multiple joint types that don't seem to be useful
 
-## Klampt quirks
+## Klampt quirks ##
 
 * No plugin system
 * API doesn't see to match our codebase(?)
 
-## MoveIt quirks
+## MoveIt quirks ##
 
 * Crashes all the time
 * Cannot handle multiple independent kinematics chains (robot + cabinet)
 
+## DART quirks ##
+
+* ???
