@@ -2,7 +2,7 @@
 
 void python_Skeleton();
 
-BOOST_PYTHON_MODULE(r3)
+BOOST_PYTHON_MODULE(R3_MODULE_NAME)
 {
     python_Skeleton();
 }

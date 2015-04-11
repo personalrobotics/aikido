@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(r3)
 
-find_library(Boost REQUIRED COMPONENTS python)
-find_library(PythonLibs REQUIRED)
+set(R3_MODULE_NAME "${PROJECT_NAME}py")
+add_definitions(-DR3_MODULE_NAME=${R3_MODULE_NAME})
 
-message(STATUS ${PYTHONLIBS_FOUND})
-message(STATUS ${PYTHON_INCLUDE_DIRS})
-message(STATUS ${PYTHON_LIBRARIES})
+find_package(Boost REQUIRED COMPONENTS python)
+find_package(PythonLibs REQUIRED)
 
 include_directories(
   include
@@ -14,20 +13,20 @@ include_directories(
   ${PYTHON_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/Skeleton.cpp
 )
 
-add_library(${PROJECT_NAME}py
+add_library(${R3_MODULE_NAME} SHARED
   src/python/python.cpp
   src/python/python_Skeleton.cpp
 )
-target_link_libraries(${PROJECT_NAME}py
+target_link_libraries(${R3_MODULE_NAME}
   ${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${PYTHON_LIBRARIES}
 )
-set_target_properties(${PROJECT_NAME}py PROPERTIES
-  OUTPUT_PREFIX ""
-  OUTPUT_SUFFIX ".so"
+set_target_properties(${R3_MODULE_NAME} PROPERTIES
+  PREFIX ""
+  SUFFIX ".so"
 )

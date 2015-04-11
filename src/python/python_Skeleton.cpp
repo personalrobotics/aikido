@@ -3,9 +3,10 @@
 
 void python_Skeleton()
 {
-    using namespace ::boost::python;
+    using ::boost::python::class_;
     using ::r3::Skeleton;
 
     class_<Skeleton>("Skeleton")
+        .add_property("name", &Skeleton::name)
         ;
 }
