@@ -8,6 +8,7 @@ Let's put together a list of things we would want in a robot representation syst
 * C++ and Python support
 * Revolute, Prismatic, and Affine DOFs
 * Fast queries for forward-/inverse-kinematics, Jacobians
+* Ability to do Copy-On-Write cloning of environments.
 
 ## OpenRAVE quirks
 
