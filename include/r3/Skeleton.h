@@ -7,6 +7,9 @@ namespace r3 {
 
 class Skeleton {
 public:
+    Skeleton();
+    virtual ~Skeleton();
+
     std::string name() const;
 };
 
