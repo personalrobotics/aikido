@@ -13,13 +13,12 @@
 using ::dart::dynamics::DegreeOfFreedom;
 using ::ompl::base::StateSpacePtr;
 
+
 class DARTGeometricStateSpace;
 typedef boost::shared_ptr<DARTGeometricStateSpace> DARTGeometricStateSpacePtr;
 
-class DARTGeometricStateSpace : ::ompl::base::CompoundStateSpace {
+class DARTGeometricStateSpace : public ::ompl::base::CompoundStateSpace {
 public:
-    typedef ::ompl::base::CompoundStateSpace::StateType StateType;
-
     DARTGeometricStateSpace(
         ::std::vector<DegreeOfFreedom *> const &dofs,
         ::std::vector<double> const &weights,
@@ -106,6 +105,8 @@ void DARTGeometricStateSpace::ApplyState(StateType const *state)
 
 bool DARTGeometricStateSpace::IsInCollision()
 {
+    // TODO: We should only collision check the BodyNodes that are related to
+    // this state space.
     return collision_detector_->detectCollision(false, false);
 }
 
@@ -117,19 +118,14 @@ bool DARTGeometricStateSpace::IsDOFCircular(DegreeOfFreedom const *dof)
 
 // ---
 
-class DARTGeometricStateValidityChecker : ::ompl::base::StateValidityChecker {
+class DARTGeometricStateValidityChecker : public ::ompl::base::StateValidityChecker {
 public:
-    typedef ::ompl::base::State State;
-
     DARTGeometricStateValidityChecker(
         ::ompl::base::SpaceInformation *space_info);
     DARTGeometricStateValidityChecker(
         ::ompl::base::SpaceInformationPtr const &space_info);
 
-    virtual bool isValid(State const *state) const;
-    virtual double clearance(State const *state) const;
-    virtual double clearance(State const *state, State *validState,
-                             bool &validStateAvailable) const;
+    virtual bool isValid(::ompl::base::State const *state) const;
 
 private:
     DARTGeometricStateSpace *state_space_;
@@ -139,18 +135,19 @@ private:
 DARTGeometricStateValidityChecker::DARTGeometricStateValidityChecker(
         ::ompl::base::SpaceInformation *space_info)
     : ::ompl::base::StateValidityChecker(space_info)
-    //, state_space_(space_info->getStateSpace()->as<DARTGeometricStateSpace>())
+    , state_space_(space_info->getStateSpace()->as<DARTGeometricStateSpace>())
 {
 }
 
 DARTGeometricStateValidityChecker::DARTGeometricStateValidityChecker(
         ::ompl::base::SpaceInformationPtr const &space_info)
     : ::ompl::base::StateValidityChecker(space_info)
-    //, state_space_(space_info->getStateSpace()->as<DARTGeometricStateSpace>())
+    , state_space_(space_info->getStateSpace()->as<DARTGeometricStateSpace>())
 {
 }
 
-bool DARTGeometricStateValidityChecker::isValid(State const *state) const
+bool DARTGeometricStateValidityChecker::isValid(
+        ::ompl::base::State const *state) const
 {
     typedef DARTGeometricStateSpace::StateType DARTState;
 
