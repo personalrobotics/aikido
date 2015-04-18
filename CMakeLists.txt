@@ -8,6 +8,7 @@ add_definitions(-DR3_MODULE_NAME=${R3_MODULE_NAME})
 
 find_package(Boost REQUIRED COMPONENTS python)
 find_package(DART REQUIRED)
+find_package(OMPL REQUIRED)
 find_package(PythonLibs REQUIRED)
 
 include_directories(
@@ -18,7 +19,13 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} SHARED
-  src/Skeleton.cpp
+  src/ompl.cpp
+)
+target_link_libraries(${PROJECT_NAME}
+  ${PROJECT_NAME}
+  ${DART_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ${OMPL_LIBRARIES}
 )
 
 add_library(${R3_MODULE_NAME} SHARED
