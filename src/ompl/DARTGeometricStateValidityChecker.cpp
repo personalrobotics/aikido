@@ -23,6 +23,6 @@ bool DARTGeometricStateValidityChecker::isValid(
 {
     typedef DARTGeometricStateSpace::StateType DARTState;
 
-    state_space_->ApplyState(state->as<DARTState>());
+    state_space_->SetState(state->as<DARTState>());
     return !state_space_->IsInCollision();
 }

@@ -30,7 +30,9 @@ public:
         ::std::vector<double> const &weights,
         ::dart::collision::CollisionDetector *collision_detector);
 
-    void ApplyState(StateType const *state);
+    void SetState(StateType const *state);
+    void GetState(StateType *state) const;
+
     bool IsInCollision();
 
 private:

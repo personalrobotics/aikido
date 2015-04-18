@@ -1,4 +1,5 @@
 #include <boost/make_shared.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <dart/collision/collision.h>
 #include <dart/dynamics/dynamics.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
@@ -7,7 +8,11 @@
 
 using ::dart::collision::CollisionDetector;
 using ::dart::dynamics::DegreeOfFreedom;
+using ::dart::dynamics::Skeleton;
 using ::r3::ompl::DARTGeometricStateSpace;
+
+typedef ::ompl::base::SO2StateSpace::StateType SO2State;
+typedef ::ompl::base::RealVectorStateSpace::StateType RealVectorState;
 
 DARTGeometricStateSpace::DARTGeometricStateSpace(
         std::vector<DegreeOfFreedom *> const &dofs,
@@ -33,7 +38,9 @@ DARTGeometricStateSpace::DARTGeometricStateSpace(
         is_circular = IsDOFCircular(dof);
 
         if (is_circular) {
-            addSubspace(make_shared<SO2StateSpace>(), weight);
+            auto const state_space = make_shared<SO2StateSpace>();
+            state_space->setName(dof->getName());
+            addSubspace(state_space, weight);
         } else {
             auto const state_space = make_shared<RealVectorStateSpace>(1);
             state_space->setName(dof->getName());
@@ -49,13 +56,8 @@ DARTGeometricStateSpace::DARTGeometricStateSpace(
     }
 }
 
-void DARTGeometricStateSpace::ApplyState(StateType const *state)
+void DARTGeometricStateSpace::SetState(StateType const *state)
 {
-    using ::dart::dynamics::Skeleton;
-
-    typedef ::ompl::base::SO2StateSpace::StateType SO2State;
-    typedef ::ompl::base::RealVectorStateSpace::StateType RealVectorState;
-
     // Update joint values.
     for (size_t idof = 0; idof < dofs_.size(); ++idof) {
         double value;
@@ -75,6 +77,21 @@ void DARTGeometricStateSpace::ApplyState(StateType const *state)
     }
 }
 
+void DARTGeometricStateSpace::GetState(StateType *state) const
+{
+    for (size_t idof = 0; idof < dofs_.size(); ++idof) {
+        double *value;
+
+        if (is_circular_[idof]) {
+            value = &((*state)[idof]->as<SO2State>()->value);
+        } else {
+            value = &((*state)[idof]->as<RealVectorState>()->values[0]);
+        }
+
+        *value = dofs_[idof]->getPosition();
+    }
+}
+
 bool DARTGeometricStateSpace::IsInCollision()
 {
     // TODO: We should only collision check the BodyNodes that are related to
@@ -84,7 +101,11 @@ bool DARTGeometricStateSpace::IsInCollision()
 
 bool DARTGeometricStateSpace::IsDOFCircular(DegreeOfFreedom const *dof)
 {
-    // TODO: How do we tell if a DOF is circular?
-    return false;
+    bool const has_lower = ::std::isfinite(dof->getPositionLowerLimit());
+    bool const has_upper = ::std::isfinite(dof->getPositionUpperLimit());
+
+    // TODO: We also need to check whether this DOF is revolute.
+
+    return !has_lower && !has_upper;
 }
 

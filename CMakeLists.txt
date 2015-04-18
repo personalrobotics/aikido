@@ -19,6 +19,7 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} SHARED
+  src/ompl/test.cpp
   src/ompl/DARTGeometricStateSpace.cpp
   src/ompl/DARTGeometricStateValidityChecker.cpp
 )

@@ -17,10 +17,11 @@ robot = urdf_loader.parse_skeleton(URDF_PATH)
 
 world = r3py.World()
 robot_name = world.add_skeleton(robot)
+robot = world.get_skeleton_by_name(robot_name)
 
-"""
+r3py.OMPLPlan(world, robot)
+
 window = r3py.SimWindow()
 window.world = world
 window.init_window(1600, 1200, 'HERB')
 window.spin()
-"""
