@@ -106,6 +106,26 @@ void DARTGeometricStateSpace::GetState(StateType *state) const
     enforceBounds(state);
 }
 
+void DARTGeometricStateSpace::CreateState(Eigen::VectorXd const &dof_values,
+                                          StateType *state) const
+{
+    BOOST_ASSERT(dofs_.size() == dof_values.size());
+
+    for (size_t idof = 0; idof < dofs_.size(); ++idof) {
+        double const &value = dof_values[idof];
+
+        if (is_circular_[idof]) {
+            (*state)[idof]->as<SO2State>()->value = value;
+        } else {
+            (*state)[idof]->as<RealVectorState>()->values[0] = value;
+        }
+    }
+
+    // Project SO(2) joints into range.
+    enforceBounds(state);
+
+}
+
 bool DARTGeometricStateSpace::IsInCollision()
 {
     // TODO: We should only collision check the BodyNodes that are related to

@@ -35,6 +35,9 @@ public:
     void SetState(StateType const *state);
     void GetState(StateType *state) const;
 
+    void CreateState(Eigen::VectorXd const &dof_values,
+                     StateType *state) const;
+
     bool IsInCollision();
 
 private:

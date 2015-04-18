@@ -22,13 +22,13 @@ static void SetDOFValues(std::vector<DegreeOfFreedom *> const &dofs,
     }
 }
 
-void OMPLPlan(
+void Plan(
     World *world,
     std::vector<DegreeOfFreedom *> const &dofs,
     Eigen::VectorXd const &dof_weights,
     Eigen::VectorXd const &dof_resolutions,
     Eigen::MatrixXd const &start_configs,
-    Eigen::MatrixXd const &goal_configs)
+    Eigen::VectorXd const &goal_config)
 {
     using ::boost::dynamic_pointer_cast;
     using ::boost::make_shared;
@@ -40,7 +40,15 @@ void OMPLPlan(
     using ::r3::ompl::DARTGeometricStateSpace;
     using ::r3::ompl::DARTGeometricStateValidityChecker;
 
+    BOOST_ASSERT(world);
+    BOOST_ASSERT(dofs.size() == dof_weights.size());
+    BOOST_ASSERT(dofs.size() == dof_resolutions.size());
+    BOOST_ASSERT(dofs.size() == start_configs.cols());
+    BOOST_ASSERT(dofs.size() == goal_config.size());
+
     // Wrap the DOFs in an OMPL state space.
+    std::cout << "Creating StateSpace" << std::endl;
+
     CollisionDetector *collision_detector
         = world->getConstraintSolver()->getCollisionDetector();
     auto const state_space = make_shared<DARTGeometricStateSpace>(
@@ -48,33 +56,27 @@ void OMPLPlan(
     auto const space_info = make_shared<SpaceInformation>(state_space);
     auto const setup = make_shared<SimpleSetup>(space_info);
 
-    // Add start configurations.
-    for (size_t iconfig = 0; iconfig < start_configs.rows(); ++iconfig) {
-        ScopedState<DARTGeometricStateSpace> state(space_info);
-
-        SetDOFValues(dofs, start_configs.row(iconfig));
-        state_space->GetState(state.get());
-
-        setup->addStartState(state);
-    }
-
-#if 0
-    // Add goal configurations.
-    for (size_t iconfig = 0; iconfig < start_configs; ++iconfig) {
-        ScopedState<DARTGeometricStateSpace> state(space_info);
-
-        SetDOFValues(dofs, goal_configs.row(iconfig));
-        state_space->GetState(state_start.get());
-
-        addStartState(state)
-    }
-#endif
-
     // Register a StateValidityChecker that checks collision.
+    std::cout << "Creating StateValidityChecker" << std::endl;
     auto const validity_checker
         = make_shared<DARTGeometricStateValidityChecker>(space_info);
     setup->setStateValidityChecker(
         dynamic_pointer_cast<StateValidityChecker>(validity_checker));
+
+    // Add start configurations.
+    std::cout << "Adding start configurations" << std::endl;
+    for (size_t iconfig = 0; iconfig < start_configs.rows(); ++iconfig) {
+        ScopedState<DARTGeometricStateSpace> start_state(space_info);
+        state_space->CreateState(start_configs.row(iconfig), start_state.get());
+        setup->addStartState(start_state);
+    }
+
+    // Add the goal configuration.
+    // TODO: Why doesn't OMPL support multiple goal configurations?
+    std::cout << "Adding goal configuration" << std::endl;
+    ScopedState<DARTGeometricStateSpace> goal_state(space_info);
+    state_space->CreateState(goal_config, goal_state.get());
+    setup->setGoalState(goal_state);
 
     setup->print();
     setup->solve(5.);
@@ -82,15 +84,19 @@ void OMPLPlan(
 
 void OMPLPlan(World *world, Skeleton *skeleton)
 {
+    BOOST_ASSERT(world);
+    BOOST_ASSERT(skeleton);
+
     std::vector<DegreeOfFreedom *> dofs {
         skeleton->getDof("j1"), skeleton->getDof("j2"), skeleton->getDof("j3"),
         skeleton->getDof("j4"), skeleton->getDof("j5"), skeleton->getDof("j6")
     };
-    std::vector<double> const weights {
-        1., 1., 1., 1., 1., 1. };
-    std::vector<double> const q_start {
-        1.486,  -1.570,  0.000,  2.034,  4.818,  1.934 };
-    std::vector<double> const q_goal {
-        1.569,   3.664,  5.501,  1.487,  6.107,  1.400 };
 
+    Eigen::Vector6d weights, resolutions, q_start, q_goal;
+    weights << 1., 1., 1., 1., 1., 1.;
+    resolutions << 0.02, 0.02, 0.02, 0.02, 0.02, 0.02;
+    q_start << 1.486,  -1.570,  0.000,  2.034,  4.818,  1.934;
+    q_goal <<  1.569,   3.664,  5.501,  1.487,  6.107,  1.400;
+
+    Plan(world, dofs, weights, resolutions, q_start.transpose(), q_goal);
 }
