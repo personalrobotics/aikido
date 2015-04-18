@@ -1,46 +1,18 @@
-#include <vector>
 #include <boost/make_shared.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/container/vector.hpp>
 #include <dart/collision/collision.h>
 #include <dart/dynamics/dynamics.h>
-#include <ompl/base/StateSpace.h>
-#include <ompl/base/SpaceInformation.h>
-#include <ompl/base/StateValidityChecker.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/base/spaces/SO2StateSpace.h>
+#include <r3/ompl/DARTGeometricStateSpace.h>
 
+using ::dart::collision::CollisionDetector;
 using ::dart::dynamics::DegreeOfFreedom;
-using ::ompl::base::StateSpacePtr;
-
-
-class DARTGeometricStateSpace;
-typedef boost::shared_ptr<DARTGeometricStateSpace> DARTGeometricStateSpacePtr;
-
-class DARTGeometricStateSpace : public ::ompl::base::CompoundStateSpace {
-public:
-    DARTGeometricStateSpace(
-        ::std::vector<DegreeOfFreedom *> const &dofs,
-        ::std::vector<double> const &weights,
-        ::dart::collision::CollisionDetector *collision_detector);
-
-    void ApplyState(StateType const *state);
-    bool IsInCollision();
-
-private:
-    ::std::vector<DegreeOfFreedom *> dofs_;
-    ::boost::container::vector<bool> is_circular_;
-    ::boost::unordered_set<::dart::dynamics::Skeleton *> skeletons_;
-    ::dart::collision::CollisionDetector *collision_detector_;
-
-    static bool IsDOFCircular(DegreeOfFreedom const *dof);
-};
-
+using ::r3::ompl::DARTGeometricStateSpace;
 
 DARTGeometricStateSpace::DARTGeometricStateSpace(
         std::vector<DegreeOfFreedom *> const &dofs,
         std::vector<double> const &weights,
-        ::dart::collision::CollisionDetector *collision_detector)
+        CollisionDetector *collision_detector)
     : dofs_(dofs)
     , is_circular_(dofs.size())
     , collision_detector_(collision_detector)
@@ -115,45 +87,4 @@ bool DARTGeometricStateSpace::IsDOFCircular(DegreeOfFreedom const *dof)
     // TODO: How do we tell if a DOF is circular?
     return false;
 }
-
-// ---
-
-class DARTGeometricStateValidityChecker : public ::ompl::base::StateValidityChecker {
-public:
-    DARTGeometricStateValidityChecker(
-        ::ompl::base::SpaceInformation *space_info);
-    DARTGeometricStateValidityChecker(
-        ::ompl::base::SpaceInformationPtr const &space_info);
-
-    virtual bool isValid(::ompl::base::State const *state) const;
-
-private:
-    DARTGeometricStateSpace *state_space_;
-};
-
-
-DARTGeometricStateValidityChecker::DARTGeometricStateValidityChecker(
-        ::ompl::base::SpaceInformation *space_info)
-    : ::ompl::base::StateValidityChecker(space_info)
-    , state_space_(space_info->getStateSpace()->as<DARTGeometricStateSpace>())
-{
-}
-
-DARTGeometricStateValidityChecker::DARTGeometricStateValidityChecker(
-        ::ompl::base::SpaceInformationPtr const &space_info)
-    : ::ompl::base::StateValidityChecker(space_info)
-    , state_space_(space_info->getStateSpace()->as<DARTGeometricStateSpace>())
-{
-}
-
-bool DARTGeometricStateValidityChecker::isValid(
-        ::ompl::base::State const *state) const
-{
-    typedef DARTGeometricStateSpace::StateType DARTState;
-
-    state_space_->ApplyState(state->as<DARTState>());
-    return !state_space_->IsInCollision();
-}
-
-// ---
 
