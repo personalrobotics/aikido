@@ -16,7 +16,8 @@ typedef ::ompl::base::RealVectorStateSpace::StateType RealVectorState;
 
 DARTGeometricStateSpace::DARTGeometricStateSpace(
         std::vector<DegreeOfFreedom *> const &dofs,
-        std::vector<double> const &weights,
+        Eigen::VectorXd const &weights,
+        Eigen::VectorXd const &resolutions,
         CollisionDetector *collision_detector)
     : dofs_(dofs)
     , is_circular_(dofs.size())
@@ -25,33 +26,43 @@ DARTGeometricStateSpace::DARTGeometricStateSpace(
     using ::boost::make_shared;
     using ::ompl::base::RealVectorStateSpace;
     using ::ompl::base::SO2StateSpace;
+    using ::ompl::base::StateSpacePtr;
 
     BOOST_ASSERT(dofs.size() == weights.size());
+    BOOST_ASSERT(dofs.size() == resolutions.size());
+    BOOST_ASSERT(collision_detector);
 
     for (size_t idof = 0; idof < dofs.size(); ++idof) {
         DegreeOfFreedom *dof = dofs[idof];
-        double const &weight = weights[idof];
+
+        // Infer whether the joint is circular or not. Circular joints are
+        // mapped to SO2 state spaces, instead of real-valued state spaces.
+        is_circular_[idof] = IsDOFCircular(dof);
 
         // Construct a one-dimensional state space for each DOF. Add them, in
         // the same order as "dofs", to this CompoundStateSpace.
-        bool &is_circular = is_circular_[idof];
-        is_circular = IsDOFCircular(dof);
+        StateSpacePtr state_space;
 
-        if (is_circular) {
-            auto const state_space = make_shared<SO2StateSpace>();
-            state_space->setName(dof->getName());
-            addSubspace(state_space, weight);
+        if (is_circular_[idof]) {
+            state_space = make_shared<SO2StateSpace>();
         } else {
-            auto const state_space = make_shared<RealVectorStateSpace>(1);
-            state_space->setName(dof->getName());
-            state_space->setBounds(
+            auto const state_space_impl = make_shared<RealVectorStateSpace>(1);
+            state_space_impl->setBounds(
                 dof->getPositionLowerLimit(),
                 dof->getPositionUpperLimit()
             );
-            addSubspace(state_space, weight);
+            state_space = state_space_impl;
         }
 
-        // Build a list of all Skeleton's influenced by these joints.
+        // OMPL specifies the collision checking resolution as a ratio of the
+        // maximum extent. We do the necessary conversion here.
+        state_space->setLongestValidSegmentFraction(
+            resolutions[idof] / state_space->getMaximumExtent()
+        );
+
+        state_space->setName(dof->getName());
+        addSubspace(state_space, weights[idof]);
+
         skeletons_.insert(dof->getSkeleton());
     }
 }
@@ -90,6 +101,9 @@ void DARTGeometricStateSpace::GetState(StateType *state) const
 
         *value = dofs_[idof]->getPosition();
     }
+
+    // Project SO(2) joints into range.
+    enforceBounds(state);
 }
 
 bool DARTGeometricStateSpace::IsInCollision()

@@ -1,6 +1,7 @@
 #ifndef R3_OMPL_DARTGEOMETRICSTATESPACE_H_
 #define R3_OMPL_DARTGEOMETRICSTATESPACE_H_
 #include <vector>
+#include <Eigen/Dense>
 #include <boost/container/vector.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/shared_ptr.hpp>
@@ -27,7 +28,8 @@ class DARTGeometricStateSpace : public ::ompl::base::CompoundStateSpace {
 public:
     DARTGeometricStateSpace(
         ::std::vector<::dart::dynamics::DegreeOfFreedom *> const &dofs,
-        ::std::vector<double> const &weights,
+        ::Eigen::VectorXd const &weights,
+        ::Eigen::VectorXd const &resolutions,
         ::dart::collision::CollisionDetector *collision_detector);
 
     void SetState(StateType const *state);
