@@ -29,10 +29,12 @@ q_goal = numpy.array([ 0.43135194, -1.25267446,  0.70220488,  0.2222944 ,
                       -0.92543907, -1.33936598 ])
 path = r3py.ompl_plan(world, dofs, weights, resolutions, q_start, q_goal)
 
-
-"""
 window = r3py.SimWindow()
 window.world = world
 window.init_window(1600, 1200, 'HERB')
+
+r3py.SimWindow.draw_arrow_3d(numpy.zeros(3), numpy.array([1., 0., 0.]),
+                             1., 1., 1.)
+
+
 window.spin()
-"""

@@ -38,5 +38,9 @@ void python_SimWindow()
             make_function(&SimWindow_get_world,
                           return_value_policy<manage_new_object>()),
             &SimWindow::setWorld)
+        .def("draw_arrow_2d", &::dart::gui::drawArrow2D)
+        .staticmethod("draw_arrow_2d")
+        .def("draw_arrow_3d", &::dart::gui::drawArrow3D)
+        .staticmethod("draw_arrow_3d")
         ;
 }
