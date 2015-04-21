@@ -23,9 +23,7 @@ static void SimWindow_main(int width, int height, std::string const &name)
     char **argv = NULL;
     int argc = 0;
 
-    std::cout << "glutInit >>>" << std::endl;
     glutInit(&argc, argv);
-    std::cout << "glutInit <<<" << std::endl;
 
     // Notify SimWindow to return.
     {
@@ -38,10 +36,8 @@ static void SimWindow_main(int width, int height, std::string const &name)
     // We intentionally leave the mutex locked here.
 
     // Start the main loop. This will run until glutLeaveMainLoop is called.
-    std::cout << "glutMainLoop >>>" << std::endl;
     glutIdleFunc(&SimWindow_refresh);
     glutMainLoop();
-    std::cout << "glutMainLoop <<<" << std::endl;
 }
 
 static SimWindow *SimWindow_constructor(int width, int height,
@@ -52,15 +48,10 @@ static SimWindow *SimWindow_constructor(int width, int height,
     );
 
     // Wait for OpenGL to initialize.
-    std::cout << "waiting >>>" << std::endl;
-    {
-        boost::mutex::scoped_lock lock(gMutex);
-        while (!gWindow) {
-            gCondition.wait(lock);
-        }
+    boost::mutex::scoped_lock lock(gMutex);
+    while (!gWindow) {
+        gCondition.wait(lock);
     }
-    std::cout << "waiting <<<" << std::endl;
-
     return gWindow;
 }
 
