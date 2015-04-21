@@ -1,6 +1,6 @@
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
 #include <dart/dynamics/dynamics.h>
+#include "util.h"
 
 using ::dart::dynamics::DegreeOfFreedom;
 using ::boost::python::object;
@@ -25,66 +25,15 @@ object DegreeOfFreedom_GetLimits(DegreeOfFreedom *self)
     return make_tuple(limits.first, limits.second);
 }
 
-struct DegreeOfFreedomVector_from_python
-{
-    typedef std::vector<DegreeOfFreedom *> value_type;
-
-    DegreeOfFreedomVector_from_python()
-    {
-        ::boost::python::converter::registry::push_back(
-            &convertible,
-            &construct,
-            ::boost::python::type_id<value_type>()
-        );
-    }
- 
-    static void *convertible(PyObject *object_py_raw)
-    {
-        PyObject *iterator_py_raw = PyObject_GetIter(object_py_raw);
-        if (iterator_py_raw) {
-            Py_DECREF(iterator_py_raw);
-            return object_py_raw;
-        } else {
-            PyErr_Clear();
-            return NULL;
-        }
-    }
- 
-    static void construct(
-        PyObject *object_py_raw,
-        boost::python::converter::rvalue_from_python_stage1_data *data)
-    {
-        using ::boost::python::borrowed;
-        using ::boost::python::converter::rvalue_from_python_storage;
-        using ::boost::python::handle;
-        using ::boost::python::stl_input_iterator;
-        using ::std::make_pair;
-
-        // Wrap the PyObject in a Boost.Python class.
-        object object_py(handle<>(borrowed(object_py_raw)));
-
-        // Allocate storage for the output object using placement-new.
-        void *storage
-            = reinterpret_cast<rvalue_from_python_storage<value_type> *>(data)
-                ->storage.bytes;
-
-        new (storage) ::std::vector<DegreeOfFreedom *>(
-            stl_input_iterator<DegreeOfFreedom *>(object_py),
-            stl_input_iterator<DegreeOfFreedom *>()
-        );
-
-        data->convertible = storage;
-    }
-};
-
 void python_DegreeOfFreedom()
 {
     using namespace ::boost::python;
     using ::dart::dynamics::BodyNode;
     using ::dart::dynamics::Joint;
     using ::dart::dynamics::Skeleton;
+    using ::r3::python::util::collection_from_python;
     
-    DegreeOfFreedomVector_from_python();
+    collection_from_python<std::vector<DegreeOfFreedom *> >();
 
     class_<DegreeOfFreedom, DegreeOfFreedom *>("DegreeOfFreedom", no_init)
         .add_property("name",
