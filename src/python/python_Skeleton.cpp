@@ -1,11 +1,15 @@
 #include <boost/python.hpp>
 #include <dart/dynamics/dynamics.h>
+#include "util.h"
 
 void python_Skeleton()
 {
     using namespace ::boost::python;
     using ::dart::dynamics::DegreeOfFreedom;
     using ::dart::dynamics::Skeleton;
+    using ::r3::python::util::collection_from_python;
+
+    collection_from_python<std::vector<Skeleton *> >();
 
     class_<Skeleton, Skeleton *>("Skeleton")
         .add_property("name",

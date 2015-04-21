@@ -1,12 +1,16 @@
 #include <boost/python.hpp>
 #include <dart/dynamics/dynamics.h>
 #include <dart/simulation/World.h>
+#include "util.h"
 
 void python_World()
 {
     using namespace ::boost::python;
     using ::dart::dynamics::Skeleton;
     using ::dart::simulation::World;
+    using ::r3::python::util::collection_from_python;
+
+    collection_from_python<std::vector<World *> >();
 
     class_<World>("World")
         .def("add_skeleton", &World::addSkeleton)
