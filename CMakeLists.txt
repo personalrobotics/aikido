@@ -19,7 +19,7 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} SHARED
-  src/ompl/test.cpp
+  src/ompl/plan.cpp
   src/ompl/DARTGeometricStateSpace.cpp
   src/ompl/DARTGeometricStateValidityChecker.cpp
 )
@@ -34,6 +34,7 @@ add_library(${R3_MODULE_NAME} SHARED
   src/python/python.cpp
   src/python/python_DartLoader.cpp
   src/python/python_DegreeOfFreedom.cpp
+  src/python/python_OMPL.cpp
   src/python/python_SimWindow.cpp
   src/python/python_Skeleton.cpp
   src/python/python_World.cpp

@@ -2,9 +2,6 @@
 #include <dart/dynamics/dynamics.h>
 #include <dart/simulation/World.h>
 
-Eigen::MatrixXd OMPLPlan(::dart::simulation::World *world,
-                         ::dart::dynamics::Skeleton *skeleton);
-
 void python_World()
 {
     using namespace ::boost::python;
@@ -24,6 +21,4 @@ void python_World()
                     &World::getSkeleton),
                 return_value_policy<reference_existing_object>()))
         ;
-
-    def("OMPLPlan", &OMPLPlan);
 }
