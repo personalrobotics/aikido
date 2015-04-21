@@ -29,5 +29,6 @@ void python_Skeleton()
                 return_value_policy<reference_existing_object>()))
         .def("enable_self_collision", &Skeleton::enableSelfCollision)
         .def("disable_self_collision", &Skeleton::disableSelfCollision)
+        .def("compute_forward_kinematics", &Skeleton::computeForwardKinematics)
         ;
 }
