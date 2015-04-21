@@ -12,6 +12,11 @@ void python_Skeleton()
             make_function(&Skeleton::getName,
                           return_value_policy<copy_const_reference>()),
             &Skeleton::setName)
+        .add_property("is_enabled_self_collision_check",
+            &Skeleton::isEnabledSelfCollisionCheck)
+        .add_property("is_enabled_adjacent_body_check",
+            &Skeleton::isEnabledAdjacentBodyCheck)
+        .add_property("position", &Skeleton::setPosition, &Skeleton::getPosition)
         .def("get_dof",
             make_function(
                 static_cast<DegreeOfFreedom *(Skeleton::*)(size_t)>(
@@ -22,7 +27,7 @@ void python_Skeleton()
                 static_cast<DegreeOfFreedom *(Skeleton::*)(std::string const &)>(
                     &Skeleton::getDof),
                 return_value_policy<reference_existing_object>()))
-        .def("set_position", &Skeleton::setPosition)
-        .def("get_position", &Skeleton::getPosition)
+        .def("enable_self_collision", &Skeleton::enableSelfCollision)
+        .def("disable_self_collision", &Skeleton::disableSelfCollision)
         ;
 }

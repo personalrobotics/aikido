@@ -2,8 +2,8 @@
 #include <dart/dynamics/dynamics.h>
 #include <dart/simulation/World.h>
 
-void OMPLPlan(::dart::simulation::World *world,
-              ::dart::dynamics::Skeleton *skeleton);
+Eigen::MatrixXd OMPLPlan(::dart::simulation::World *world,
+                         ::dart::dynamics::Skeleton *skeleton);
 
 void python_World()
 {

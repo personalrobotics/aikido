@@ -69,17 +69,11 @@ DARTGeometricStateSpace::DARTGeometricStateSpace(
 
 void DARTGeometricStateSpace::SetState(StateType const *state)
 {
+    Eigen::VectorXd const values = ExtractState(state);
+
     // Update joint values.
     for (size_t idof = 0; idof < dofs_.size(); ++idof) {
-        double value;
-
-        if (is_circular_[idof]) {
-            value = (*state)[idof]->as<SO2State>()->value;
-        } else {
-            value = (*state)[idof]->as<RealVectorState>()->values[0];
-        }
-
-        dofs_[idof]->setPosition(value);
+        dofs_[idof]->setPosition(values[idof]);
     }
 
     // Compute forward kinematics.
@@ -90,20 +84,31 @@ void DARTGeometricStateSpace::SetState(StateType const *state)
 
 void DARTGeometricStateSpace::GetState(StateType *state) const
 {
+    Eigen::VectorXd dof_values(dofs_.size());
+
     for (size_t idof = 0; idof < dofs_.size(); ++idof) {
-        double *value;
-
-        if (is_circular_[idof]) {
-            value = &((*state)[idof]->as<SO2State>()->value);
-        } else {
-            value = &((*state)[idof]->as<RealVectorState>()->values[0]);
-        }
-
-        *value = dofs_[idof]->getPosition();
+        dof_values[idof] = dofs_[idof]->getPosition();
     }
 
-    // Project SO(2) joints into range.
-    enforceBounds(state);
+    CreateState(dof_values, state);
+}
+
+Eigen::VectorXd DARTGeometricStateSpace::ExtractState(StateType const *state) const
+{
+    Eigen::VectorXd dof_values(dofs_.size());
+
+    for (size_t idof = 0; idof < dofs_.size(); ++idof) {
+        double &value = dof_values[idof];
+
+        if (is_circular_[idof]) {
+
+            value = (*state)[idof]->as<SO2State>()->value;
+        } else {
+            value = (*state)[idof]->as<RealVectorState>()->values[0];
+        }
+    }
+
+    return dof_values;
 }
 
 void DARTGeometricStateSpace::CreateState(Eigen::VectorXd const &dof_values,
@@ -112,18 +117,16 @@ void DARTGeometricStateSpace::CreateState(Eigen::VectorXd const &dof_values,
     BOOST_ASSERT(dofs_.size() == dof_values.size());
 
     for (size_t idof = 0; idof < dofs_.size(); ++idof) {
-        double const &value = dof_values[idof];
+        double const &position = dof_values[idof];
 
         if (is_circular_[idof]) {
-            (*state)[idof]->as<SO2State>()->value = value;
+            auto *so2_state = (*state)[idof]->as<SO2State>();
+            so2_state->value = position;
+            getSubspace(idof)->enforceBounds(so2_state);
         } else {
-            (*state)[idof]->as<RealVectorState>()->values[0] = value;
+            (*state)[idof]->as<RealVectorState>()->values[0] = position;
         }
     }
-
-    // Project SO(2) joints into range.
-    enforceBounds(state);
-
 }
 
 bool DARTGeometricStateSpace::IsInCollision()
