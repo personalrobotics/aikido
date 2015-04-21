@@ -11,6 +11,13 @@ static SimWindow *gWindow = NULL;
 static boost::mutex gMutex;
 static boost::condition_variable gCondition;
 
+static void SimWindow_refresh()
+{
+    if (gWindow) {
+        gWindow->refresh();
+    }
+}
+
 static void SimWindow_main(int width, int height, std::string const &name)
 {
     char **argv = NULL;
@@ -32,6 +39,7 @@ static void SimWindow_main(int width, int height, std::string const &name)
 
     // Start the main loop. This will run until glutLeaveMainLoop is called.
     std::cout << "glutMainLoop >>>" << std::endl;
+    glutIdleFunc(&SimWindow_refresh);
     glutMainLoop();
     std::cout << "glutMainLoop <<<" << std::endl;
 }

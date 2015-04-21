@@ -1,5 +1,6 @@
 import r3py
 import numpy
+import time
 
 """
 PACKAGE_NAME = 'herb_description'
@@ -27,12 +28,19 @@ resolutions = numpy.array([ 0.02, 0.02, 0.02, 0.02, 0.02, 0.02 ])
 q_start = numpy.array([[ 1.486,  -1.570,  0.000,  2.034,  4.818,  1.934 ]])
 q_goal = numpy.array([ 0.43135194, -1.25267446,  0.70220488,  0.2222944 ,
                       -0.92543907, -1.33936598 ])
-path = r3py.ompl_plan(world, dofs, weights, resolutions, q_start, q_goal)
 
 window = r3py.SimWindow(1600, 1200, 'ADA')
 window.world = world
 
-"""
-r3py.SimWindow.draw_arrow_3d(numpy.zeros(3), numpy.array([1., 0., 0.]),
-                             1., 1., 1.)
-"""
+path = r3py.ompl_plan(world, dofs, weights, resolutions, q_start, q_goal)
+
+for waypoint1, waypoint2 in zip(path[:-1], path[1:]):
+    print 'Waypoint!'
+
+    for r in numpy.linspace(0., 1., 200):
+        values = (1 - r) * waypoint1 + (r) * waypoint2
+
+        for dof, value in zip(dofs, values):
+            dof.position = value
+
+        time.sleep(0.02)
