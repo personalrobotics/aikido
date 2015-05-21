@@ -18,7 +18,7 @@ namespace r3 {
 namespace ompl {
 
 ::Eigen::MatrixXd Plan(
-    ::std::shared_ptr<::dart::collision::CollisionDetector> const &collision_detector,
+    ::std::shared_ptr< ::dart::collision::CollisionDetector> const &collision_detector,
     ::std::vector<::dart::dynamics::DegreeOfFreedomPtr> const &dofs,
     ::Eigen::VectorXd const &dof_weights,
     ::Eigen::VectorXd const &dof_resolutions,
