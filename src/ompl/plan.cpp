@@ -41,6 +41,32 @@ Eigen::MatrixXd r3::ompl::Plan(
     using ::r3::ompl::DARTGeometricStateSpace;
     using ::r3::ompl::DARTGeometricStateValidityChecker;
 
+    size_t const num_dofs = dofs.size();
+    if (dof_weights.size() != num_dofs) {
+        throw std::runtime_error(str(
+            format("Weights have incorrect DOF; %d != %d.")
+                % dof_weights.size() % num_dofs));
+    }
+    if (dof_resolutions.size() != num_dofs) {
+        throw std::runtime_error(str(
+            format("Resolutions have incorrect DOF; %d != %d.")
+                % dof_resolutions.size() % num_dofs));
+    }
+    if (start_configs.rows() == 0) {
+        throw std::runtime_error(
+            "At least one start configuration must be specified.");
+    }
+    if (start_configs.cols() != num_dofs) {
+        throw std::runtime_error(str(
+            format("Start configurations have incorrect DOF; %d != %d.")
+                % start_configs.cols() % num_dofs));
+    }
+    if (goal_config.size() != num_dofs) {
+        throw std::runtime_error(str(
+            format("Goal configuration has incorrect DOF; %d != %d.")
+                % start_configs.size() % num_dofs));
+    }
+
     BOOST_ASSERT(collision_detector);
     BOOST_ASSERT(dofs.size() == dof_weights.size());
     BOOST_ASSERT(dofs.size() == dof_resolutions.size());
