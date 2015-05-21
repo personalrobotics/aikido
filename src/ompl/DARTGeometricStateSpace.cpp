@@ -135,7 +135,22 @@ bool DARTGeometricStateSpace::IsInCollision()
 {
     // TODO: We should only collision check the BodyNodes that are related to
     // this state space.
-    return collision_detector_->detectCollision(false, false);
+    bool const is_collision = collision_detector_->detectCollision(false, false);
+
+    if (is_collision) {
+        for (size_t i = 0; i < collision_detector_->getNumContacts(); ++i) {
+            ::dart::collision::Contact const &contact
+                = collision_detector_->getContact(i);
+            std::cout << "Collision <"
+                      << contact.bodyNode1->getName()
+                      << ", "
+                      << contact.bodyNode2->getName()
+                      << ">"
+                      << std::endl;
+        }
+    }
+
+    return is_collision;
 }
 
 bool DARTGeometricStateSpace::IsDOFCircular(DegreeOfFreedom const *dof)

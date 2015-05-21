@@ -42,6 +42,9 @@ Eigen::MatrixXd r3::ompl::Plan(
     using ::r3::ompl::DARTGeometricStateValidityChecker;
 
     size_t const num_dofs = dofs.size();
+    if (!collision_detector) {
+        throw std::runtime_error("Collision detector is required.");
+    }
     if (dof_weights.size() != num_dofs) {
         throw std::runtime_error(str(
             format("Weights have incorrect DOF; %d != %d.")
@@ -66,12 +69,6 @@ Eigen::MatrixXd r3::ompl::Plan(
             format("Goal configuration has incorrect DOF; %d != %d.")
                 % start_configs.size() % num_dofs));
     }
-
-    BOOST_ASSERT(collision_detector);
-    BOOST_ASSERT(dofs.size() == dof_weights.size());
-    BOOST_ASSERT(dofs.size() == dof_resolutions.size());
-    BOOST_ASSERT(dofs.size() == start_configs.cols());
-    BOOST_ASSERT(dofs.size() == goal_config.size());
 
     // Wrap the DOFs in an OMPL state space.
     std::cout << "Creating StateSpace" << std::endl;
