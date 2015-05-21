@@ -1,22 +1,18 @@
 #ifndef R3_OMPL_DARTGEOMETRICSTATESPACE_H_
 #define R3_OMPL_DARTGEOMETRICSTATESPACE_H_
 #include <vector>
+#include <unordered_set>
 #include <Eigen/Dense>
 #include <boost/container/vector.hpp>
-#include <boost/unordered_set.hpp>
 #include <boost/shared_ptr.hpp>
 #include <ompl/base/StateSpace.h>
+#include <dart/dynamics/dynamics.h>
 
 namespace dart {
 
 namespace collision {
     class CollisionDetector;
 } // namespace dart::collision
-
-namespace dynamics {
-    class DegreeOfFreedom;
-    class Skeleton;
-} // namespace dart::dynamics
 
 } // namespace dart
 
@@ -27,10 +23,11 @@ namespace ompl {
 class DARTGeometricStateSpace : public ::ompl::base::CompoundStateSpace {
 public:
     DARTGeometricStateSpace(
-        ::std::vector<::dart::dynamics::DegreeOfFreedom *> const &dofs,
+        ::std::vector<::dart::dynamics::DegreeOfFreedomPtr> const &dofs,
         ::Eigen::VectorXd const &weights,
         ::Eigen::VectorXd const &resolutions,
-        ::dart::collision::CollisionDetector *collision_detector);
+        ::std::shared_ptr<::dart::collision::CollisionDetector>
+            const &collision_detector);
 
     void SetState(StateType const *state);
     void GetState(StateType *state) const;
@@ -42,10 +39,10 @@ public:
     bool IsInCollision();
 
 private:
-    ::std::vector<::dart::dynamics::DegreeOfFreedom *> dofs_;
+    ::std::vector<::dart::dynamics::DegreeOfFreedomPtr> dofs_;
     ::boost::container::vector<bool> is_circular_;
-    ::boost::unordered_set<::dart::dynamics::Skeleton *> skeletons_;
-    ::dart::collision::CollisionDetector *collision_detector_;
+    ::std::unordered_set<::dart::dynamics::SkeletonPtr> skeletons_;
+    ::std::shared_ptr<::dart::collision::CollisionDetector> collision_detector_;
 
     static bool IsDOFCircular(::dart::dynamics::DegreeOfFreedom const *dof);
 };

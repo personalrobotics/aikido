@@ -32,13 +32,7 @@ target_link_libraries(${PROJECT_NAME}
 
 add_library(${R3_MODULE_NAME} SHARED
   src/python/python.cpp
-  src/python/python_DartLoader.cpp
-  src/python/python_DegreeOfFreedom.cpp
-  src/python/python_Joint.cpp
   src/python/python_OMPL.cpp
-  src/python/python_SimWindow.cpp
-  src/python/python_Skeleton.cpp
-  src/python/python_World.cpp
 )
 target_link_libraries(${R3_MODULE_NAME}
   ${PROJECT_NAME}

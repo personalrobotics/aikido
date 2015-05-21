@@ -8,17 +8,19 @@
 
 using ::dart::collision::CollisionDetector;
 using ::dart::dynamics::DegreeOfFreedom;
+using ::dart::dynamics::DegreeOfFreedomPtr;
 using ::dart::dynamics::Skeleton;
+using ::dart::dynamics::SkeletonPtr;
 using ::r3::ompl::DARTGeometricStateSpace;
 
 typedef ::ompl::base::SO2StateSpace::StateType SO2State;
 typedef ::ompl::base::RealVectorStateSpace::StateType RealVectorState;
 
 DARTGeometricStateSpace::DARTGeometricStateSpace(
-        std::vector<DegreeOfFreedom *> const &dofs,
+        std::vector<DegreeOfFreedomPtr> const &dofs,
         Eigen::VectorXd const &weights,
         Eigen::VectorXd const &resolutions,
-        CollisionDetector *collision_detector)
+        ::std::shared_ptr<CollisionDetector> const &collision_detector)
     : dofs_(dofs)
     , is_circular_(dofs.size())
     , collision_detector_(collision_detector)
@@ -77,7 +79,7 @@ void DARTGeometricStateSpace::SetState(StateType const *state)
     }
 
     // Compute forward kinematics.
-    for (Skeleton *skeleton : skeletons_) {
+    for (SkeletonPtr const &skeleton : skeletons_) {
         skeleton->computeForwardKinematics(true, false, false);
     }
 }

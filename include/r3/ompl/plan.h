@@ -1,7 +1,9 @@
 #ifndef R3_OMPL_PLAN_H_
 #define R3_OMPL_PLAN_H_
+#include <memory>
 #include <vector>
 #include <Eigen/Dense>
+#include <dart/collision/collision.h>
 #include <dart/dynamics/dynamics.h>
 
 namespace dart {
@@ -16,8 +18,8 @@ namespace r3 {
 namespace ompl {
 
 ::Eigen::MatrixXd Plan(
-    ::dart::simulation::World *world,
-    ::std::vector<::dart::dynamics::DegreeOfFreedom *> const &dofs,
+    ::std::shared_ptr<::dart::collision::CollisionDetector> const &collision_detector,
+    ::std::vector<::dart::dynamics::DegreeOfFreedomPtr> const &dofs,
     ::Eigen::VectorXd const &dof_weights,
     ::Eigen::VectorXd const &dof_resolutions,
     ::Eigen::MatrixXd const &start_configs,

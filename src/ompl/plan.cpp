@@ -11,13 +11,16 @@
 #include <r3/ompl/DARTGeometricStateSpace.h>
 #include <r3/ompl/DARTGeometricStateValidityChecker.h>
 
-using ::dart::dynamics::DegreeOfFreedom;
+using ::dart::collision::CollisionDetector;
+using ::dart::dynamics::DegreeOfFreedomPtr;
 using ::dart::dynamics::Skeleton;
 using ::dart::simulation::World;
 
+typedef ::std::shared_ptr<CollisionDetector> CollisionDetectorPtr;
+
 Eigen::MatrixXd r3::ompl::Plan(
-    World *world,
-    std::vector<DegreeOfFreedom *> const &dofs,
+    CollisionDetectorPtr const &collision_detector,
+    std::vector<DegreeOfFreedomPtr> const &dofs,
     Eigen::VectorXd const &dof_weights,
     Eigen::VectorXd const &dof_resolutions,
     Eigen::MatrixXd const &start_configs,
@@ -38,7 +41,7 @@ Eigen::MatrixXd r3::ompl::Plan(
     using ::r3::ompl::DARTGeometricStateSpace;
     using ::r3::ompl::DARTGeometricStateValidityChecker;
 
-    BOOST_ASSERT(world);
+    BOOST_ASSERT(collision_detector);
     BOOST_ASSERT(dofs.size() == dof_weights.size());
     BOOST_ASSERT(dofs.size() == dof_resolutions.size());
     BOOST_ASSERT(dofs.size() == start_configs.cols());
@@ -46,9 +49,6 @@ Eigen::MatrixXd r3::ompl::Plan(
 
     // Wrap the DOFs in an OMPL state space.
     std::cout << "Creating StateSpace" << std::endl;
-
-    CollisionDetector *collision_detector
-        = world->getConstraintSolver()->getCollisionDetector();
     auto const state_space = make_shared<DARTGeometricStateSpace>(
             dofs, dof_weights, dof_resolutions, collision_detector);
     auto const space_info = make_shared<SpaceInformation>(state_space);
