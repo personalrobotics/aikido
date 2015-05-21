@@ -141,12 +141,6 @@ bool DARTGeometricStateSpace::IsInCollision()
         for (size_t i = 0; i < collision_detector_->getNumContacts(); ++i) {
             ::dart::collision::Contact const &contact
                 = collision_detector_->getContact(i);
-            std::cout << "Collision <"
-                      << contact.bodyNode1->getName()
-                      << ", "
-                      << contact.bodyNode2->getName()
-                      << ">"
-                      << std::endl;
         }
     }
 
