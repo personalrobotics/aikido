@@ -71,21 +71,18 @@ Eigen::MatrixXd r3::ompl::Plan(
     }
 
     // Wrap the DOFs in an OMPL state space.
-    std::cout << "Creating StateSpace" << std::endl;
     auto const state_space = make_shared<DARTGeometricStateSpace>(
             dofs, dof_weights, dof_resolutions, collision_detector);
     auto const space_info = make_shared<SpaceInformation>(state_space);
     auto const setup = make_shared<SimpleSetup>(space_info);
 
     // Register a StateValidityChecker that checks collision.
-    std::cout << "Creating StateValidityChecker" << std::endl;
     auto const validity_checker
         = make_shared<DARTGeometricStateValidityChecker>(space_info);
     setup->setStateValidityChecker(
         dynamic_pointer_cast<StateValidityChecker>(validity_checker));
 
     // Add start configurations.
-    std::cout << "Adding start configurations" << std::endl;
     for (size_t iconfig = 0; iconfig < start_configs.rows(); ++iconfig) {
         ScopedState<DARTGeometricStateSpace> start_state(space_info);
         state_space->CreateState(start_configs.row(iconfig), start_state.get());
@@ -100,7 +97,6 @@ Eigen::MatrixXd r3::ompl::Plan(
 
     // Add the goal configuration.
     // TODO: Why doesn't OMPL support multiple goal configurations?
-    std::cout << "Adding goal configuration" << std::endl;
     ScopedState<DARTGeometricStateSpace> goal_state(space_info);
     state_space->CreateState(goal_config, goal_state.get());
 
@@ -109,8 +105,6 @@ Eigen::MatrixXd r3::ompl::Plan(
     }
 
     setup->setGoalState(goal_state);
-
-    setup->print();
     setup->solve(5.);
 
     // Convert the output path to an Eigen matrix.

@@ -7,6 +7,31 @@ def set_dof_values(dofs, values):
     for dof, value in zip(dofs, values):
         dof.position = value
 
+def load_urdf(skel, urdf_path, urdf_paths=None, pose=None):
+    from dartpy import JointType
+
+    # Setup the URDF loader.
+    urdf_loader = dartpy.DartLoader()
+    if urdf_paths is not None:
+        for package_name, package_path in urdf_paths.iteritems():
+            urdf_loader.add_package_directory(package_name, package_path)
+
+    # Load the URDF file.
+    urdf_skel = urdf_loader.parse_skeleton(urdf_path)
+    urdf_root = urdf_skel.get_root_body_node(0)
+
+    # Merge the loaded file into the existing Skeleton.
+    urdf_root.moveTo(JointType.FREE, skel, None)
+
+    # Optionally set the pose.
+    if pose is not None:
+        urdf_root.pose = pose
+
+    return urdf_root
+
+def grab(gripper, target):
+    target.moveTo(dartpy.JointType.WELD, gripper)
+
 # Create the environment.
 PACKAGE_NAME = 'herb_description'
 PACKAGE_PATH = '/home/parallels/ros-herb/src/herb_description'
@@ -136,25 +161,13 @@ OBJECT_PATH = '../urdf/fuze_bottle.urdf'
 OBJECT_POSE = numpy.eye(4)
 OBJECT_POSE[0:3, 3] = [ -1.46405,  0.4322 ,  0.735 ]
 
-urdf_loader = dartpy.DartLoader()
-urdf_loader.add_package_directory(PACKAGE_NAME, PACKAGE_PATH)
-
-"""
-right_hand = robot.get_body_node_by_name('/right/hand_base')
-bottle.pose = OBJECT_POSE
-bottle.get_root_body_node(0).moveTo(right_hand, dartpy.JointType.WELD)
-"""
+skel = dartpy.Skeleton('environment')
 
 # Load the robot.
-skel = urdf_loader.parse_skeleton(ROBOT_PATH)
-skel.pose = ROBOT_POSE
-
-robot = skel.get_root_body_node(0)
-
-# load the bottle.
-bottle_skel = urdf_loader.parse_skeleton(OBJECT_PATH)
-bottle_skel.get_root_body_node(0).moveTo(skel, None, dartpy.JointType.FREE)
-bottle = skel.get_root_body_node(1)
+bottle = load_urdf(skel, OBJECT_PATH, pose=OBJECT_POSE)
+robot = load_urdf(skel, ROBOT_PATH,
+    urdf_paths={'herb_description': '/home/parallels/ros-herb/src/herb_description'},
+    pose=ROBOT_POSE)
 
 # Setup the collision checker.
 # TODO: Does this work if we add BodyNode's to the Skeleton.
@@ -172,17 +185,25 @@ for node1_name, node2_name in ROBOT_DISABLE_PAIRS:
 world = dartpy.World()
 world.add_skeleton(skel)
 
-window = dartpy.SimWindow(1600, 1200, 'ADA')
+window = dartpy.SimWindow(1600, 1200, 'HERB')
 window.world = world
 
+grab(skel.get_body_node_by_name('/right/hand_base'), bottle)
+
 # call the planner
+print 'Planning to grasp.'
 dofs = [ skel.get_dof_by_name(name) for name in ROBOT_DOF_NAMES ]
 weights = numpy.ones(len(dofs))
 resolutions = 0.02 * numpy.ones(len(dofs))
 
 path = r3py.ompl_plan(collision_checker, dofs, weights, resolutions,
                       START_CONFIGS, GOAL_CONFIG)
-set_dof_values(dofs, START_CONFIGS[:, 0])
+
+print 'Snapping to end of grasp path.'
+set_dof_values(dofs, path[-1, :])
+
+print 'Grabbing glass.'
+#grab(skel.get_body_node_by_name('/right/hand_base'), bottle)
 
 """
 while True:
