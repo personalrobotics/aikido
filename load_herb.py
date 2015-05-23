@@ -30,7 +30,10 @@ def load_urdf(skel, urdf_path, urdf_paths=None, pose=None):
     return urdf_root
 
 def grab(gripper, target):
-    target.moveTo(dartpy.JointType.WELD, gripper)
+    joint_props = dartpy.WeldJoint.Properties()
+    joint_props.T_child_body_to_joint = target.pose
+
+    target.moveTo(dartpy.JointType.WELD, gripper, joint_props)
 
 # Create the environment.
 PACKAGE_NAME = 'herb_description'
