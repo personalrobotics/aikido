@@ -21,19 +21,28 @@ def load_urdf(skel, urdf_path, urdf_paths=None, pose=None):
     urdf_root = urdf_skel.get_root_body_node(0)
 
     # Merge the loaded file into the existing Skeleton.
-    urdf_root.moveTo(JointType.FREE, skel, None)
-
-    # Optionally set the pose.
+    props = dartpy.FreeJoint.Properties()
     if pose is not None:
-        urdf_root.pose = pose
+        props.T_child_body_to_joint = numpy.linalg.inv(pose)
+
+    urdf_root.moveTo(JointType.FREE, skel, None, props)
 
     return urdf_root
 
 def grab(gripper, target):
     joint_props = dartpy.WeldJoint.Properties()
-    joint_props.T_child_body_to_joint = target.pose
+    joint_props.T_parent_body_to_joint = numpy.dot(
+        numpy.linalg.inv(gripper.world_transform),
+        target.world_transform
+    )
 
     target.moveTo(dartpy.JointType.WELD, gripper, joint_props)
+
+def release(gripper, target):
+    joint_props = dartpy.FreeJoint.Properties()
+    joint_props.T_child_body_to_joint = numpy.linalg.inv(target.world_transform)
+
+    target.moveTo(dartpy.JointType.FREE, gripper.skeleton, None, joint_props)
 
 # Create the environment.
 PACKAGE_NAME = 'herb_description'
@@ -175,6 +184,7 @@ robot = load_urdf(skel, ROBOT_PATH,
 # Setup the collision checker.
 # TODO: Does this work if we add BodyNode's to the Skeleton.
 collision_checker = dartpy.FCLCollisionDetector()
+"""
 collision_checker.add_skeleton(skel)
 
 skel.enable_self_collision(False) # ignore adjacent links
@@ -183,6 +193,7 @@ for node1_name, node2_name in ROBOT_DISABLE_PAIRS:
         skel.get_body_node_by_name(node1_name),
         skel.get_body_node_by_name(node2_name)
     )
+"""
 
 # Render the trajectory
 world = dartpy.World()
@@ -190,8 +201,6 @@ world.add_skeleton(skel)
 
 window = dartpy.SimWindow(1600, 1200, 'HERB')
 window.world = world
-
-grab(skel.get_body_node_by_name('/right/hand_base'), bottle)
 
 # call the planner
 print 'Planning to grasp.'
@@ -206,7 +215,12 @@ print 'Snapping to end of grasp path.'
 set_dof_values(dofs, path[-1, :])
 
 print 'Grabbing glass.'
-#grab(skel.get_body_node_by_name('/right/hand_base'), bottle)
+grab(skel.get_body_node_by_name('/right/hand_base'), bottle)
+
+path = r3py.ompl_plan(collision_checker, dofs, weights, resolutions,
+        GOAL_CONFIG.reshape((1,7)), START_CONFIGS[0, :])
+
+release(skel.get_body_node_by_name('/right/hand_base'), bottle)
 
 """
 while True:
