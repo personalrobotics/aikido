@@ -13,6 +13,7 @@ find_package(PythonLibs REQUIRED)
 
 include_directories(
   include
+  src
   ${Boost_INCLUDE_DIRS}
   ${DART_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
@@ -22,6 +23,12 @@ add_library(${PROJECT_NAME} SHARED
   src/ompl/plan.cpp
   src/ompl/DARTGeometricStateSpace.cpp
   src/ompl/DARTGeometricStateValidityChecker.cpp
+  src/path/GeometricPath.cpp
+  src/path/HauserSmoother.cpp
+  src/path/SplineTrajectory.cpp
+  src/external/hauser_parabolic_smoother/DynamicPath.cpp
+  src/external/hauser_parabolic_smoother/Timer.cpp
+  src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}
