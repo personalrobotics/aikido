@@ -140,8 +140,9 @@ Eigen::MatrixXd SplineTrajectory::computeDerivativeMatrix(size_t num_coeffs)
   return coefficients;
 }
 
-auto SplineTrajectory::computeCoefficients(
-    std::vector<Knot> const &knots, size_t degree, size_t num_dofs) -> SplineFit
+auto SplineTrajectory::createProblem(
+  std::vector<Knot> const &knots, size_t degree, size_t num_dofs)
+    -> SplineProblem
 {
   using boost::format;
   using boost::str;
@@ -154,9 +155,9 @@ auto SplineTrajectory::computeCoefficients(
 
   Eigen::MatrixXd const coefficients = computeDerivativeMatrix(num_coeffs);
 
-  SplineFit splineFit;
-  splineFit.A.setZero(dim, dim);
-  splineFit.b.setZero(dim, num_dofs);
+  SplineProblem problem;
+  problem.A.setZero(dim, dim);
+  problem.b.setZero(dim, num_dofs);
 
   size_t irow = 0;
   size_t icol = 0;
@@ -179,20 +180,35 @@ auto SplineTrajectory::computeCoefficients(
 
     // For the spline that ends at knot.
     if (iknot > 0) {
-      splineFit.A.block(irow, icol, num_derivatives, num_coeffs) = A_block;
-      splineFit.b.block(irow, 0, num_derivatives, num_dofs) = knot.values;
+      problem.A.block(irow, icol, num_derivatives, num_coeffs) = A_block;
+      problem.b.block(irow, 0, num_derivatives, num_dofs) = knot.values;
       irow += num_derivatives;
       icol += num_coeffs;
     }
 
     // For the spline that starts at knot.
     if (iknot + 1 < num_knots) {
-      splineFit.A.block(irow, icol, num_derivatives, num_coeffs) = A_block;
-      splineFit.b.block(irow, 0, num_derivatives, num_dofs) = knot.values;
+      problem.A.block(irow, icol, num_derivatives, num_coeffs) = A_block;
+      problem.b.block(irow, 0, num_derivatives, num_dofs) = knot.values;
       irow += num_derivatives;
     }
   }
-
-  // Build the output matrices.
-  return splineFit;
+  return problem;
 }
+
+Eigen::MatrixXd SplineTrajectory::solveProblem(SplineProblem const &problem)
+{
+  size_t const num_coeffs = problem.b.rows();
+  size_t const num_dofs = problem.b.cols();
+
+  Eigen::MatrixXd output(num_coeffs, num_dofs);
+  auto solver = problem.A.householderQr();
+
+  for (size_t idof = 0; idof < num_dofs; ++idof) {
+    output.col(idof) = solver.solve(problem.b.col(idof));
+  }
+
+  return output;
+}
+
+

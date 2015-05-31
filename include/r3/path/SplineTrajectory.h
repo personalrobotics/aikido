@@ -14,7 +14,7 @@ public:
     Eigen::MatrixXd values;
   };
 
-  struct SplineFit {
+  struct SplineProblem {
     Eigen::MatrixXd A;
     Eigen::MatrixXd b;
   };
@@ -38,8 +38,9 @@ public:
 
   static Eigen::MatrixXd computeExponents(double t, size_t num_coeffs);
   static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
-  static SplineFit computeCoefficients(
+  static SplineProblem createProblem(
     std::vector<Knot> const &knots, size_t degree, size_t num_dofs);
+  static Eigen::MatrixXd solveProblem(SplineProblem const &problem);
 
 private:
   size_t order_;
