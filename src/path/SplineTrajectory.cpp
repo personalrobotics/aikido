@@ -5,8 +5,53 @@
 #include <r3/path/SplineTrajectory.h>
 
 using dart::dynamics::DegreeOfFreedomPtr;
+using r3::path::Spline;
 using r3::path::SplineTrajectory;
 
+/*
+ * Spline
+ */
+Spline::Spline(
+      std::vector<double> const &times,
+      Eigen::MatrixXd const &coefficients)
+  : times_(times)
+  , coefficients_(coefficients)
+{
+  BOOST_ASSERT(std::is_sorted(std::begin(times), std::end(times)));
+  BOOST_ASSERT(times_.size() == coefficients.rows() + 1);
+}
+
+double Spline::interpolate(double t, size_t order) const
+{
+  size_t const numCoeffs = coefficients_.cols();
+  size_t const splineIndex = getSplineIndex(t);
+
+  Eigen::VectorXd tExponents(numCoeffs);
+  tExponents[0] = 1;
+
+  for (size_t i = 1; i < numCoeffs; ++i) {
+    tExponents[i] = tExponents[i - 1] * t; 
+  }
+
+  return coefficients_.row(splineIndex).dot(tExponents);
+}
+
+size_t Spline::getSplineIndex(double t) const
+{
+  if (t <= times_.front()) {
+    return 0;
+  } else if (t >= times_.back()) {
+    return coefficients_.rows() - 1;
+  } else {
+    auto it = std::lower_bound(std::begin(times_), std::end(times_), t);
+    return it - std::begin(times_) - 1;
+  }
+}
+
+
+/*
+ * SplineTrajectory
+ */
 SplineTrajectory::SplineTrajectory(
     std::vector<DegreeOfFreedomPtr> const &dofs,
     std::vector<Knot> const &knots, size_t order)
@@ -158,12 +203,14 @@ auto SplineTrajectory::createProblem(
   SplineProblem problem;
   problem.A.setZero(dim, dim);
   problem.b.setZero(dim, num_dofs);
+  problem.times.resize(num_knots);
 
   size_t irow = 0;
   size_t icol = 0;
 
   for (size_t iknot = 0; iknot < num_knots; ++iknot) {
     Knot const &knot = knots[iknot];
+    problem.times[iknot] = knot.t;
 
     if (knot.values.rows() != num_derivatives) {
       throw std::runtime_error(str(
@@ -196,19 +243,30 @@ auto SplineTrajectory::createProblem(
   return problem;
 }
 
-Eigen::MatrixXd SplineTrajectory::solveProblem(SplineProblem const &problem)
+std::vector<Spline> SplineTrajectory::solveProblem(
+  SplineProblem const &problem)
 {
-  size_t const num_coeffs = problem.b.rows();
   size_t const num_dofs = problem.b.cols();
+  size_t const num_splines = problem.times.size() - 1;
+  size_t const num_coeffs = problem.b.rows() / num_splines;
 
-  Eigen::MatrixXd output(num_coeffs, num_dofs);
+  std::vector<Spline> splines;
+  splines.reserve(num_splines);
+
   auto solver = problem.A.householderQr();
 
   for (size_t idof = 0; idof < num_dofs; ++idof) {
-    output.col(idof) = solver.solve(problem.b.col(idof));
+    Eigen::VectorXd const coeffsVector = solver.solve(problem.b.col(idof));
+    Eigen::MatrixXd coeffs(num_splines, num_coeffs);
+
+    for (size_t i = 0; i < num_splines; ++i) {
+      coeffs.row(i) = coeffsVector.segment(i * num_coeffs, num_coeffs);
+    }
+
+    splines.push_back(Spline(problem.times, coeffs));
   }
 
-  return output;
+  return splines;
 }
 
 

@@ -7,6 +7,23 @@
 namespace r3 {
 namespace path {
 
+
+class Spline {
+public:
+  Spline(
+    std::vector<double> const &times,
+    Eigen::MatrixXd const &coefficients);
+
+  double interpolate(double t, size_t order = 0) const;
+
+private:
+  std::vector<double> times_;
+  Eigen::MatrixXd coefficients_;
+
+  size_t getSplineIndex(double t) const;
+};
+
+
 class SplineTrajectory : public Trajectory {
 public:
   struct Knot {
@@ -17,6 +34,7 @@ public:
   struct SplineProblem {
     Eigen::MatrixXd A;
     Eigen::MatrixXd b;
+    std::vector<double> times;
   };
 
   SplineTrajectory(
@@ -40,7 +58,7 @@ public:
   static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
   static SplineProblem createProblem(
     std::vector<Knot> const &knots, size_t degree, size_t num_dofs);
-  static Eigen::MatrixXd solveProblem(SplineProblem const &problem);
+  static std::vector<Spline> solveProblem(SplineProblem const &problem);
 
 private:
   size_t order_;
