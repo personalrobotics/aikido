@@ -37,6 +37,13 @@ target_link_libraries(${PROJECT_NAME}
   ${OMPL_LIBRARIES}
 )
 
+add_executable(test_SplineTrajectory
+  tests/test_SplineTrajectory.cpp
+)
+target_link_libraries(test_SplineTrajectory
+  ${PROJECT_NAME}
+)
+
 add_library(${R3_MODULE_NAME} SHARED
   src/python/python.cpp
   src/python/python_OMPL.cpp

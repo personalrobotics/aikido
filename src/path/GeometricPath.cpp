@@ -98,6 +98,16 @@ std::vector<DegreeOfFreedomPtr> const &GeometricPath::dofs() const
   return dofs_;
 }
 
+Eigen::MatrixXd &GeometricPath::matrix()
+{
+  return waypoints_;
+}
+
+Eigen::MatrixXd const &GeometricPath::matrix() const
+{
+  return waypoints_;
+}
+
 auto GeometricPath::getWaypoint(size_t i) const -> Waypoint
 {
   if (i < num_waypoints()) {

@@ -81,6 +81,7 @@ static ParabolicRamp::DynamicPath convertPathToHauserPath(
 static SplineTrajectory convertHauserPathToTrajectory(
   GeometricPath const &path)
 {
+  throw std::runtime_error("not implemented");
 }
 
 void HauserShortcut(GeometricPath const &path)

@@ -14,12 +14,18 @@ public:
     Eigen::MatrixXd values;
   };
 
+  struct SplineFit {
+    Eigen::MatrixXd A;
+    Eigen::MatrixXd b;
+  };
+
   SplineTrajectory(
     std::vector<dart::dynamics::DegreeOfFreedomPtr> const &dofs,
     std::vector<Knot> const &knots, size_t order);
 
   virtual ~SplineTrajectory();
 
+  virtual size_t const num_dof() const;
   virtual size_t order() const;
   virtual double start_time() const;
   virtual double end_time() const;
@@ -29,6 +35,11 @@ public:
   static std::string const &static_type();
 
   virtual double sample(double t, size_t order) const;
+
+  static Eigen::MatrixXd computeExponents(double t, size_t num_coeffs);
+  static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
+  static SplineFit computeCoefficients(
+    std::vector<Knot> const &knots, size_t degree, size_t num_dofs);
 
 private:
   size_t order_;
