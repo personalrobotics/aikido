@@ -10,36 +10,45 @@ namespace path {
 
 class Spline {
 public:
+  struct Knot {
+    double t;
+    Eigen::MatrixXd values;
+  };
+
   Spline(
     std::vector<double> const &times,
     Eigen::MatrixXd const &coefficients);
 
   double interpolate(double t, size_t order = 0) const;
 
-private:
-  std::vector<double> times_;
-  Eigen::MatrixXd coefficients_;
+  static std::vector<Spline> fit(std::vector<Knot> const &knots);
 
-  size_t getSplineIndex(double t) const;
-};
-
-
-class SplineTrajectory : public Trajectory {
-public:
-  struct Knot {
-    double t;
-    Eigen::MatrixXd values;
-  };
-
-  struct SplineProblem {
+  // TODO: Make this stuff private.
+  struct Problem {
     Eigen::MatrixXd A;
     Eigen::MatrixXd b;
     std::vector<double> times;
   };
 
+  static Eigen::MatrixXd computeExponents(double t, size_t num_coeffs);
+  static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
+  static Problem createProblem(std::vector<Knot> const &knots, size_t degree,
+                               size_t num_dofs);
+  static std::vector<Spline> solveProblem(Problem const &problem);
+
+  size_t getSplineIndex(double t) const;
+
+private:
+  std::vector<double> times_;
+  Eigen::MatrixXd coefficients_;
+};
+
+
+class SplineTrajectory : public Trajectory {
+public:
   SplineTrajectory(
     std::vector<dart::dynamics::DegreeOfFreedomPtr> const &dofs,
-    std::vector<Knot> const &knots, size_t order);
+    std::vector<Spline> const &splines);
 
   virtual ~SplineTrajectory();
 
@@ -54,16 +63,9 @@ public:
 
   virtual double sample(double t, size_t order) const;
 
-  static Eigen::MatrixXd computeExponents(double t, size_t num_coeffs);
-  static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
-  static SplineProblem createProblem(
-    std::vector<Knot> const &knots, size_t degree, size_t num_dofs);
-  static std::vector<Spline> solveProblem(SplineProblem const &problem);
-
 private:
-  size_t order_;
   std::vector<dart::dynamics::DegreeOfFreedomPtr> dofs_;
-  std::vector<Knot> knots_;
+  std::vector<Spline> splines_;
 };
 
 }

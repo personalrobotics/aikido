@@ -23,6 +23,10 @@ Spline::Spline(
 
 double Spline::interpolate(double t, size_t order) const
 {
+  if (order != 0) {
+    throw std::runtime_error("Derivatives are not yet implemented.");
+  }
+
   size_t const numCoeffs = coefficients_.cols();
   size_t const splineIndex = getSplineIndex(t);
 
@@ -48,112 +52,7 @@ size_t Spline::getSplineIndex(double t) const
   }
 }
 
-
-/*
- * SplineTrajectory
- */
-SplineTrajectory::SplineTrajectory(
-    std::vector<DegreeOfFreedomPtr> const &dofs,
-    std::vector<Knot> const &knots, size_t order)
-  : order_(order)
-  , dofs_(dofs)
-  , knots_(knots)
-{
-  using boost::format;
-  using boost::str;
-  using dart::dynamics::DegreeOfFreedom;
-
-  // Validate the DOFs.
-  std::unordered_set<DegreeOfFreedom const *> used_dofs;
-  for (DegreeOfFreedomPtr const &dof : dofs) {
-    DegreeOfFreedom const *dof_ptr = dof.get();
-
-    if (!dof_ptr) {
-      throw std::runtime_error("DegreeOfFreedom is NULL.");
-    } else if (used_dofs.count(dof_ptr)) {
-      throw std::runtime_error(str(
-        format("Duplicate DOF '%s'.") % dof_ptr->getName()));
-    }
-  }
-
-  // Validate the knots.
-  double t_prev = -std::numeric_limits<double>::max();
-
-  for (size_t iknot = 0; iknot < knots.size(); ++iknot) {
-    Knot const &knot = knots[iknot];
-
-    if (knot.t <= t_prev) {
-      throw std::runtime_error(str(
-        format("Time is not monotone: Knot %d has time %f <= %f.")
-          % (iknot + 1) % knot.t % t_prev));
-    } else if (knot.values.cols() != dofs.size()) {
-      throw std::runtime_error(str(
-        format("Knot %d has incorrect DOF: got %d, expected %d.")
-          % (iknot + 1) % knot.values.cols() % dofs.size()));
-    } else if (knot.values.rows() != order) {
-      throw std::runtime_error(str(
-        format("Knot %d has incorrect order; got %d, expected %d.")
-          % (iknot + 1) % knot.values.rows() % order_));
-    }
-
-    t_prev = knot.t;
-  }
-}
-
-SplineTrajectory::~SplineTrajectory()
-{
-}
-
-double SplineTrajectory::start_time() const
-{
-  if (!knots_.empty()) {
-    return knots_.front().t;
-  } else {
-    return 0;
-  }
-}
-
-double SplineTrajectory::end_time() const
-{
-  if (!knots_.empty()) {
-    return knots_.back().t;
-  } else {
-    return 0;
-  }
-}
-
-size_t const SplineTrajectory::num_dof() const
-{
-  return dofs_.size();
-}
-
-size_t SplineTrajectory::order() const
-{
-  return order_;
-}
-
-double SplineTrajectory::duration() const
-{
-  return end_time() - start_time();
-}
-
-std::string const &SplineTrajectory::type() const
-{
-  return static_type();
-}
-
-std::string const &SplineTrajectory::static_type()
-{
-  static std::string const type = "SplineTrajectory";
-  return type;
-}
-
-double SplineTrajectory::sample(double t, size_t order) const
-{
-  return 0;
-}
-
-Eigen::MatrixXd SplineTrajectory::computeExponents(double t, size_t num_coeffs)
+Eigen::MatrixXd Spline::computeExponents(double t, size_t num_coeffs)
 {
   Eigen::MatrixXd t_exponents(num_coeffs, num_coeffs);
 
@@ -171,7 +70,7 @@ Eigen::MatrixXd SplineTrajectory::computeExponents(double t, size_t num_coeffs)
   return t_exponents;
 }
 
-Eigen::MatrixXd SplineTrajectory::computeDerivativeMatrix(size_t num_coeffs)
+Eigen::MatrixXd Spline::computeDerivativeMatrix(size_t num_coeffs)
 {
   Eigen::MatrixXd coefficients(num_coeffs, num_coeffs);
   coefficients.setZero();
@@ -185,9 +84,8 @@ Eigen::MatrixXd SplineTrajectory::computeDerivativeMatrix(size_t num_coeffs)
   return coefficients;
 }
 
-auto SplineTrajectory::createProblem(
-  std::vector<Knot> const &knots, size_t degree, size_t num_dofs)
-    -> SplineProblem
+auto Spline::createProblem(std::vector<Knot> const &knots, size_t degree,
+                           size_t num_dofs) -> Problem
 {
   using boost::format;
   using boost::str;
@@ -200,7 +98,7 @@ auto SplineTrajectory::createProblem(
 
   Eigen::MatrixXd const coefficients = computeDerivativeMatrix(num_coeffs);
 
-  SplineProblem problem;
+  Problem problem;
   problem.A.setZero(dim, dim);
   problem.b.setZero(dim, num_dofs);
   problem.times.resize(num_knots);
@@ -243,8 +141,7 @@ auto SplineTrajectory::createProblem(
   return problem;
 }
 
-std::vector<Spline> SplineTrajectory::solveProblem(
-  SplineProblem const &problem)
+std::vector<Spline> Spline::solveProblem(Problem const &problem)
 {
   size_t const num_dofs = problem.b.cols();
   size_t const num_splines = problem.times.size() - 1;
@@ -270,3 +167,111 @@ std::vector<Spline> SplineTrajectory::solveProblem(
 }
 
 
+/*
+ * SplineTrajectory
+ */
+SplineTrajectory::SplineTrajectory(
+    std::vector<DegreeOfFreedomPtr> const &dofs,
+    std::vector<Spline> const &splines)
+  : dofs_(dofs)
+  , splines_(splines)
+{
+  using boost::format;
+  using boost::str;
+  using dart::dynamics::DegreeOfFreedom;
+
+  // Validate the DOFs.
+  std::unordered_set<DegreeOfFreedom const *> used_dofs;
+  for (DegreeOfFreedomPtr const &dof : dofs) {
+    DegreeOfFreedom const *dof_ptr = dof.get();
+
+    if (!dof_ptr) {
+      throw std::runtime_error("DegreeOfFreedom is NULL.");
+    } else if (used_dofs.count(dof_ptr)) {
+      throw std::runtime_error(str(
+        format("Duplicate DOF '%s'.") % dof_ptr->getName()));
+    }
+  }
+
+#if 0
+  // Validate the knots.
+  double t_prev = -std::numeric_limits<double>::max();
+
+  for (size_t iknot = 0; iknot < knots.size(); ++iknot) {
+    Knot const &knot = knots[iknot];
+
+    if (knot.t <= t_prev) {
+      throw std::runtime_error(str(
+        format("Time is not monotone: Knot %d has time %f <= %f.")
+          % (iknot + 1) % knot.t % t_prev));
+    } else if (knot.values.cols() != dofs.size()) {
+      throw std::runtime_error(str(
+        format("Knot %d has incorrect DOF: got %d, expected %d.")
+          % (iknot + 1) % knot.values.cols() % dofs.size()));
+    } else if (knot.values.rows() != order) {
+      throw std::runtime_error(str(
+        format("Knot %d has incorrect order; got %d, expected %d.")
+          % (iknot + 1) % knot.values.rows() % order_));
+    }
+
+    t_prev = knot.t;
+  }
+#endif
+}
+
+SplineTrajectory::~SplineTrajectory()
+{
+}
+
+double SplineTrajectory::start_time() const
+{
+#if 0
+  if (!knots_.empty()) {
+    return knots_.front().t;
+  } else {
+    return 0;
+  }
+#endif
+}
+
+double SplineTrajectory::end_time() const
+{
+#if 0
+  if (!knots_.empty()) {
+    return knots_.back().t;
+  } else {
+    return 0;
+  }
+#endif
+}
+
+size_t const SplineTrajectory::num_dof() const
+{
+  return dofs_.size();
+}
+
+size_t SplineTrajectory::order() const
+{
+  //return order_;
+}
+
+double SplineTrajectory::duration() const
+{
+  return end_time() - start_time();
+}
+
+std::string const &SplineTrajectory::type() const
+{
+  return static_type();
+}
+
+std::string const &SplineTrajectory::static_type()
+{
+  static std::string const type = "Spline";
+  return type;
+}
+
+double SplineTrajectory::sample(double t, size_t order) const
+{
+  return 0;
+}
