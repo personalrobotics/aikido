@@ -19,6 +19,10 @@ public:
     std::vector<double> const &times,
     Eigen::MatrixXd const &coefficients);
 
+  size_t order() const;
+  double start_time() const;
+  double end_time() const;
+
   double interpolate(double t, size_t order = 0) const;
 
   static std::vector<Spline> fit(std::vector<Knot> const &knots);
@@ -32,8 +36,7 @@ public:
 
   static Eigen::MatrixXd computeExponents(double t, size_t num_coeffs);
   static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
-  static Problem createProblem(std::vector<Knot> const &knots, size_t degree,
-                               size_t num_dofs);
+  static Problem createProblem(std::vector<Knot> const &knots);
   static std::vector<Spline> solveProblem(Problem const &problem);
 
   size_t getSplineIndex(double t) const;
@@ -61,7 +64,7 @@ public:
   virtual std::string const &type() const;
   static std::string const &static_type();
 
-  virtual double sample(double t, size_t order) const;
+  virtual Eigen::VectorXd sample(double t, size_t order) const;
 
 private:
   std::vector<dart::dynamics::DegreeOfFreedomPtr> dofs_;
