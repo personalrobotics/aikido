@@ -45,27 +45,27 @@ target_link_libraries(test_SplineTrajectory
   ${PROJECT_NAME}
 )
 
-add_library(${R3_MODULE_NAME} SHARED
-  src/python/python.cpp
-  src/python/python_OMPL.cpp
-)
-target_link_libraries(${R3_MODULE_NAME}
-  ${PROJECT_NAME}
-  ${DART_LIBRARIES}
-  ${Boost_python_LIBRARIES}
-  ${PYTHON_LIBRARIES}
-  boost_numpy
-  boost_numpy_eigen
-)
-set_target_properties(${R3_MODULE_NAME} PROPERTIES
-  PREFIX ""
-  SUFFIX ".so"
-)
+#add_library(${R3_MODULE_NAME} SHARED
+#  src/python/python.cpp
+#  src/python/python_OMPL.cpp
+#)
+#target_link_libraries(${R3_MODULE_NAME}
+#  ${PROJECT_NAME}
+#  ${DART_LIBRARIES}
+#  ${Boost_python_LIBRARIES}
+#  ${PYTHON_LIBRARIES}
+#  boost_numpy
+#  boost_numpy_eigen
+#)
+#set_target_properties(${R3_MODULE_NAME} PROPERTIES
+#  PREFIX ""
+#  SUFFIX ".so"
+#)
 
 # Installation
 # TODO: Also install the Python module.
-install(TARGETS ${PROJECT_NAME} DESTINATION lib/)
-install(DIRECTORY include DESTINATION include/)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+install(DIRECTORY include/ DESTINATION include)
 
 # This is required by REP-136.
-install(FILES package.xml DESTINATION share/${PROJECT_NAME}/)
+install(FILES package.xml DESTINATION share/${PROJECT_NAME})

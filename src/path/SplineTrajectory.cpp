@@ -104,7 +104,10 @@ Eigen::MatrixXd Spline::computeDerivativeMatrix(size_t num_coeffs)
 {
   Eigen::MatrixXd coefficients(num_coeffs, num_coeffs);
   coefficients.setZero();
-  coefficients.row(0).setOnes();
+
+  if (num_coeffs > 0) {
+    coefficients.row(0).setOnes();
+  }
 
   for (size_t i = 1; i < num_coeffs; ++i) {
     for (size_t j = i; j < num_coeffs; ++j) {

@@ -1,5 +1,6 @@
 #ifndef SPLINETRAJECTORY_H_
 #define SPLINETRAJECTORY_H_
+#include <memory>
 #include <Eigen/Dense>
 #include <dart/dynamics/dynamics.h>
 #include <r3/path/Trajectory.h>
@@ -70,6 +71,9 @@ private:
   std::vector<dart::dynamics::DegreeOfFreedomPtr> dofs_;
   std::vector<Spline> splines_;
 };
+
+typedef std::shared_ptr<SplineTrajectory> SplineTrajectoryPtr;
+typedef std::shared_ptr<SplineTrajectory const> SplineTrajectoryConstPtr;
 
 }
 }
