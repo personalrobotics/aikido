@@ -65,3 +65,6 @@ set_target_properties(${R3_MODULE_NAME} PROPERTIES
 # TODO: Also install the Python module.
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES include DESTINATION include)
+
+# This is required by REP-136.
+install(FILES package.xml DESTINATION share/${PROJECT_NAME})
