@@ -60,3 +60,8 @@ set_target_properties(${R3_MODULE_NAME} PROPERTIES
   PREFIX ""
   SUFFIX ".so"
 )
+
+# Installation
+# TODO: Also install the Python module.
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+install(FILES include DESTINATION include)
