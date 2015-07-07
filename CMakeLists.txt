@@ -14,6 +14,8 @@ find_package(PythonLibs REQUIRED)
 include_directories(
   include
   src
+)
+include_directories(SYSTEM
   ${Boost_INCLUDE_DIRS}
   ${DART_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
@@ -33,7 +35,6 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}
   ${DART_LIBRARIES}
-  ${Boost_LIBRARIES}
   ${OMPL_LIBRARIES}
 )
 
@@ -51,7 +52,7 @@ add_library(${R3_MODULE_NAME} SHARED
 target_link_libraries(${R3_MODULE_NAME}
   ${PROJECT_NAME}
   ${DART_LIBRARIES}
-  ${Boost_LIBRARIES}
+  ${Boost_python_LIBRARIES}
   ${PYTHON_LIBRARIES}
   boost_numpy
   boost_numpy_eigen
@@ -63,8 +64,8 @@ set_target_properties(${R3_MODULE_NAME} PROPERTIES
 
 # Installation
 # TODO: Also install the Python module.
-install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-install(FILES include DESTINATION include)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/)
+install(DIRECTORY include DESTINATION include/)
 
 # This is required by REP-136.
-install(FILES package.xml DESTINATION share/${PROJECT_NAME})
+install(FILES package.xml DESTINATION share/${PROJECT_NAME}/)
