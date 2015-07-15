@@ -65,6 +65,7 @@ target_link_libraries(test_SplineTrajectory
 # Installation
 # TODO: Also install the Python module.
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+install(TARGETS test_SplineTrajectory DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY include/ DESTINATION include)
 
 # This is required by REP-136.

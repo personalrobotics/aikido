@@ -36,38 +36,171 @@ double Spline::end_time() const
   return times_.back();
 }
 
+size_t Spline::num_knots() const
+{
+  return times_.size();
+}
+
+std::vector<double> const &Spline::knots() const
+{
+  return times_;
+}
+
 double Spline::interpolate(double t, size_t order) const
 {
-  if (order != 0) {
-    throw std::runtime_error("Derivatives are not yet implemented.");
-  }
-
   size_t const numCoeffs = coefficients_.cols();
+
+  Eigen::MatrixXd const derivativeMatrix = computeDerivativeMatrix(numCoeffs);
+  Eigen::MatrixXd const tMatrix = computeExponents(t, numCoeffs);
+  Eigen::MatrixXd const evalMatrix = derivativeMatrix.cwiseProduct(tMatrix);
+
   size_t const splineIndex = getSplineIndex(t);
+  Eigen::VectorXd const output
+    = evalMatrix * coefficients_.row(splineIndex).transpose();
 
-  Eigen::VectorXd tExponents(numCoeffs);
-  tExponents[0] = 1;
-
-  for (size_t i = 1; i < numCoeffs; ++i) {
-    tExponents[i] = tExponents[i - 1] * t; 
+  if (order < output.size()) {
+    return output[order];
+  } else {
+    return 0;
   }
-
-  return coefficients_.row(splineIndex).dot(tExponents);
 }
 
 std::vector<Spline> Spline::fit(std::vector<Knot> const &knots)
 {
-  bool const is_monotone = std::is_sorted(std::begin(knots), std::end(knots),
-    [](Knot const &x, Knot const &y) {
-      return x.t < y.t;
-    }
-  );
-
-  if (!is_monotone) {
+  if (!isMonotone(knots)) {
     throw std::runtime_error("Knot times are not monotonic.");
   }
 
   return solveProblem(createProblem(knots));
+}
+
+std::vector<Spline> Spline::fitCubic(std::vector<Knot> const &knots)
+{
+  if (!isMonotone(knots)) {
+    throw std::runtime_error("Knot times are not monotonic.");
+  }
+
+  return solveProblem(createCubicProblem(knots));
+}
+
+auto Spline::createCubicProblem(std::vector<Knot> const &knots) -> Problem
+{
+  using boost::format;
+  using boost::str;
+
+  constexpr size_t num_coeffs = 4;
+  static Eigen::MatrixXd const coefficients
+    = computeDerivativeMatrix(num_coeffs);
+
+  if (!isMonotone(knots)) {
+    throw std::runtime_error("Knot times are not monotonic.");
+  }
+  if (knots.size() < 2) {
+    throw std::runtime_error("Spline must have at least two knots.");
+  }
+
+  size_t const num_knots = knots.size();
+  size_t const num_segments = num_knots - 1;
+  size_t const num_dof = knots.front().values.cols();
+  size_t const dim = num_segments * num_coeffs;
+
+  Problem problem;
+  problem.A.resize(dim, dim);
+  problem.A.setZero();
+  problem.b.resize(dim, num_dof);
+  problem.times.resize(num_knots);
+
+  // Create constraints for intermediate points.
+  size_t irow = 0;
+  for (size_t iknot = 0; iknot < num_knots; ++iknot) {
+    Knot const &knot = knots[iknot];
+    Eigen::MatrixXd const curr_exponents
+      = computeExponents(knot.t, num_coeffs);
+    Eigen::MatrixXd const curr_coefficients
+      = coefficients.cwiseProduct(curr_exponents);
+
+    if (iknot == 0 || iknot == num_knots - 1) {
+      if (knot.values.rows() != 2) {
+        throw std::runtime_error(str(
+          format("Endpoints must contain position and velocities; got %d rows.")
+          % knot.values.rows()));
+      }
+    } else if (knot.values.rows() != 1) {
+      throw std::runtime_error(str(
+        format("Internal knots must only contain position; got %d rows.")
+        % knot.values.rows()));
+    }
+
+    if (knot.values.cols() != num_dof) {
+      throw std::runtime_error(str(
+        format("Knot has incorrect DOF: expected %d, got %d.")
+        % num_dof % knot.values.cols()));
+    }
+
+    size_t const prev_isegment = iknot - 1;
+    size_t const next_isegment = iknot;
+    bool const is_first = (iknot == 0);
+    bool const is_last = (iknot == num_knots - 1);
+
+    problem.times[iknot] = knot.t;
+
+    // Constrain the previous segment to pass through this point.
+    if (!is_first) {
+      assert(irow < dim);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * prev_isegment)
+        = curr_coefficients.row(0);
+      problem.b.row(irow) = knot.values.row(0);
+      irow++;
+    }
+
+    // Constrain the next segment to pass through this point.
+    if (!is_last) {
+      assert(irow < dim);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * next_isegment)
+        = curr_coefficients.row(0);
+      problem.b.row(irow) = knot.values.row(0);
+      irow++;
+    }
+
+    if (!is_first && !is_last) {
+      // Constrain velocities to be equal.
+      assert(irow < dim);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * prev_isegment)
+        = curr_coefficients.row(1);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * next_isegment)
+        = -curr_coefficients.row(1);
+      problem.b.row(irow).setZero();
+      irow++;
+
+      // Constrain accelerations to be equal.
+      assert(irow < dim);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * prev_isegment)
+        = curr_coefficients.row(2);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * next_isegment)
+        = -curr_coefficients.row(2);
+      problem.b.row(irow).setZero();
+      irow++;
+    }
+
+    // Endpoint velocity constraint
+    if (is_first) {
+      assert(irow < dim);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * next_isegment)
+        = curr_coefficients.row(1);
+      problem.b.row(irow) = knot.values.row(1);
+      irow++;
+    }
+    if (is_last) {
+      assert(irow < dim);
+      problem.A.block<1, num_coeffs>(irow, num_coeffs * prev_isegment)
+        = curr_coefficients.row(1);
+      problem.b.row(irow) = knot.values.row(1);
+      irow++;
+    }
+  }
+
+  assert(irow == dim);
+  return problem;
 }
 
 size_t Spline::getSplineIndex(double t) const
@@ -185,6 +318,15 @@ auto Spline::createProblem(std::vector<Knot> const &knots) -> Problem
   return problem;
 }
 
+bool Spline::isMonotone(std::vector<Knot> const &knots)
+{
+  return std::is_sorted(std::begin(knots), std::end(knots),
+    [](Knot const &x, Knot const &y) {
+      return x.t < y.t;
+    }
+  );
+}
+
 std::vector<Spline> Spline::solveProblem(Problem const &problem)
 {
   size_t const num_dofs = problem.b.cols();
@@ -192,7 +334,7 @@ std::vector<Spline> Spline::solveProblem(Problem const &problem)
   size_t const num_coeffs = problem.b.rows() / num_splines;
 
   std::vector<Spline> splines;
-  splines.reserve(num_splines);
+  splines.reserve(num_dofs);
 
   // TODO: We know that problem.A is block-diagonal. Invert it in-place.
   auto solver = problem.A.householderQr();
@@ -237,6 +379,12 @@ SplineTrajectory::SplineTrajectory(
         format("Duplicate DOF '%s'.") % dof_ptr->getName()));
     }
   }
+
+  if (splines.size() != dofs.size()) {
+    throw std::runtime_error(str(
+      format("Incorrect number of splines: expected %d, got %d.")
+      % dofs.size() % splines.size()));
+  }
 }
 
 SplineTrajectory::~SplineTrajectory()
@@ -263,7 +411,7 @@ double SplineTrajectory::end_time() const
   return it->end_time();
 }
 
-size_t const SplineTrajectory::num_dof() const
+size_t SplineTrajectory::num_dof() const
 {
   return dofs_.size();
 }
@@ -283,6 +431,43 @@ double SplineTrajectory::duration() const
   return end_time() - start_time();
 }
 
+std::vector<double> SplineTrajectory::knots() const
+{
+  static double const tolerance = 1e-6;
+
+  std::list<double> all_knots;
+
+  // Build a list of all knots in all splines.
+  for (Spline const &spline : splines_) {
+    std::vector<double> const &spline_knots = spline.knots();
+    all_knots.insert(
+      std::end(all_knots), std::begin(spline_knots), std::end(spline_knots));
+  }
+
+  all_knots.sort();
+
+  // Remove duplicates.
+  std::vector<double> unique_knots;
+  unique_knots.reserve(all_knots.size());
+
+  if (!all_knots.empty()) {
+    unique_knots.push_back(all_knots.front());
+    all_knots.pop_front();
+  }
+
+  for (double const t : all_knots) {
+    if (t - unique_knots.back() > tolerance) {
+      unique_knots.push_back(t);
+    }
+  }
+  return unique_knots;
+}
+
+std::vector<DegreeOfFreedomPtr> const &SplineTrajectory::dofs() const
+{
+  return dofs_;
+}
+
 std::string const &SplineTrajectory::type() const
 {
   return static_type();
@@ -297,6 +482,8 @@ std::string const &SplineTrajectory::static_type()
 Eigen::VectorXd SplineTrajectory::sample(double t, size_t order) const
 {
   Eigen::VectorXd x(dofs_.size());
+
+  assert(splines_.size() == dofs_.size());
 
   for (size_t i = 0; i < dofs_.size(); ++i) {
     x[i] = splines_[i].interpolate(t, order);

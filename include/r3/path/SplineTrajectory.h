@@ -24,9 +24,13 @@ public:
   double start_time() const;
   double end_time() const;
 
+  size_t num_knots() const;
+  std::vector<double> const &knots() const;
+
   double interpolate(double t, size_t order = 0) const;
 
   static std::vector<Spline> fit(std::vector<Knot> const &knots);
+  static std::vector<Spline> fitCubic(std::vector<Knot> const &knots);
 
   // TODO: Make this stuff private.
   struct Problem {
@@ -38,6 +42,7 @@ public:
   static Eigen::MatrixXd computeExponents(double t, size_t num_coeffs);
   static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
   static Problem createProblem(std::vector<Knot> const &knots);
+  static Problem createCubicProblem(std::vector<Knot> const &knots);
   static std::vector<Spline> solveProblem(Problem const &problem);
 
   size_t getSplineIndex(double t) const;
@@ -45,6 +50,8 @@ public:
 private:
   std::vector<double> times_;
   Eigen::MatrixXd coefficients_;
+
+  static bool isMonotone(std::vector<Knot> const &knots);
 };
 
 
@@ -56,11 +63,16 @@ public:
 
   virtual ~SplineTrajectory();
 
-  virtual size_t const num_dof() const;
+  virtual size_t num_dof() const;
+
   virtual size_t order() const;
   virtual double start_time() const;
   virtual double end_time() const;
   virtual double duration() const;
+
+  std::vector<double> knots() const;
+
+  std::vector<dart::dynamics::DegreeOfFreedomPtr> const &dofs() const;
 
   virtual std::string const &type() const;
   static std::string const &static_type();

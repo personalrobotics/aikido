@@ -106,12 +106,40 @@ void createProblem_order3_waypoints3()
 
 int main(int argc, char **argv)
 {
+#if 0
   computeDerivativeMatrix_order1();
   computeDerivativeMatrix_order2();
   computeDerivativeMatrix_order3();
   createProblem_order1_waypoints2();
   createProblem_order1_waypoints3();
   createProblem_order3_waypoints3();
+#endif
+
+#if 0
+  std::vector<Knot> knots(3);
+  knots[0].t = 0.;
+  knots[0].values.resize(2, 1);
+  knots[0].values << -1, 0;
+  knots[1].t = 1.;
+  knots[1].values.resize(1, 1);
+  knots[1].values << 1;
+  knots[2].t = 2.;
+  knots[2].values.resize(2, 1);
+  knots[2].values << 3, 0;
+#else
+  std::vector<Knot> knots(2);
+  knots[0].t = 0.;
+  knots[0].values.resize(2, 1);
+  knots[0].values << -1, 1;
+  knots[1].t = 2.;
+  knots[1].values.resize(2, 1);
+  knots[1].values << 3, -1;
+#endif
+
+  std::vector<Spline> splines = Spline::fitCubic(knots);
+  for (double t = 0; t <= 2 + 1e-3; t += 0.01) {
+    std::cout << t << "\t" << splines[0].interpolate(t) << std::endl;
+  }
 
   return 0;
 }
