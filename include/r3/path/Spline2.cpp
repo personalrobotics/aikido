@@ -27,6 +27,7 @@ public:
   using CoefficientVector = Eigen::Matrix<Scalar, _NumCoefficients, 1>;
   using CoefficientMatrix = Eigen::Matrix<Scalar, _NumCoefficients, _NumCoefficients>;
 
+  explicit SplineProblem(const TimeVector& _times);
   SplineProblem(const TimeVector& _times, Index _numCoefficients, Index _numOutputs);
 
   CoefficientVector createTimeVector(Scalar _t, Index _i) const;
@@ -60,6 +61,19 @@ public:
 };
 
 // ---
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::SplineProblem(const TimeVector& _times)
+    : SplineProblem(_times, _NumCoefficients, _NumOutputs)
+{
+  static_assert(_NumCoefficients != Eigen::Dynamic,
+    "_NumOutputs must be static to use this constructor.");
+  static_assert(_NumOutputs != Eigen::Dynamic,
+    "_NumOutputs must be static to use this constructor.");
+}
 
 template <
   class Scalar, class Index,
@@ -199,7 +213,7 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 
     // Split the coefficients by segment.
     for (Index isegment = 0; isegment < mNumSegments; ++isegment) {
-      OutputMatrix& solutionMatrix = mSolution[isegment];
+      SolutionMatrix& solutionMatrix = mSolution[isegment];
       solutionMatrix.row(ioutput) = solutionVector.segment(
         isegment * mNumCoefficients, mNumCoefficients);
     }
@@ -253,12 +267,12 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   const CoefficientVector derivativeVector = mCoefficientMatrix.row(_derivative);
   const CoefficientVector evaluationVector = derivativeVector.cwiseProduct(timeVector);
   const Index segmentIndex = getSegmentIndex(_t);
-  const OutputMatrix& outputMatrix = mSolution[segmentIndex];
+  const SolutionMatrix& solutionMatrix = mSolution[segmentIndex];
 
   OutputVector output(mNumOutputs);
 
   for (Index ioutput = 0; ioutput < mNumOutputs; ++ioutput) {
-    const CoefficientVector solutionVector = outputMatrix.row(ioutput);
+    const CoefficientVector solutionVector = solutionMatrix.row(ioutput);
     output[ioutput] = evaluationVector.dot(solutionVector);
   }
 
@@ -282,7 +296,8 @@ int main(int argc, char **argv)
   VectorXd times(3);
   times << 0, 1, 3;
 
-  SplineProblem<> problem(times, 4, 2);
+  //SplineProblem<double, ptrdiff_t, 4, 2, 3> problem(times, 4, 2);
+  SplineProblem<double, ptrdiff_t, 4, 2, 3> problem(times);
   problem.addConstantConstraint(0, 1, Value(0, 0));
   problem.addConstantConstraint(0, 0, Value(5, 7));
   problem.addConstantConstraint(1, 0, Value(6, 8));
