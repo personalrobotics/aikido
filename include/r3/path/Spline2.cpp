@@ -5,16 +5,19 @@
 #include <Eigen/Core>
 #include <Eigen/QR>
 
+template <
+  class Scalar = double,
+  class Index = ptrdiff_t,
+  Index _NumCoefficients = Eigen::Dynamic,
+  Index _NumOutputs = Eigen::Dynamic,
+  Index _NumKnots = Eigen::Dynamic>
 class SplineProblem {
 public:
-  using Index = ptrdiff_t;
-  using Scalar = double;
-
-  static constexpr Index _NumOutputs = Eigen::Dynamic;
-  static constexpr Index _NumKnots = Eigen::Dynamic;
-  static constexpr Index _NumSegments = Eigen::Dynamic;
-  static constexpr Index _NumCoefficients = Eigen::Dynamic;
-  static constexpr Index _Dimension = Eigen::Dynamic;
+  static constexpr Index _NumSegments
+    = (_NumKnots != Eigen::Dynamic) ? (_NumKnots - 1) : Eigen::Dynamic;
+  static constexpr Index _Dimension
+    = (_NumSegments != Eigen::Dynamic && _NumCoefficients != Eigen::Dynamic)
+      ? (_NumSegments * _NumCoefficients) : Eigen::Dynamic;
 
   using TimeVector = Eigen::Matrix<Scalar, _NumKnots, 1>;
   using OutputVector = Eigen::Matrix<Scalar, _NumOutputs, 1>;
@@ -56,18 +59,22 @@ public:
 
 // ---
 
-SplineProblem::SplineProblem(const TimeVector& _times, Index _numCoefficients, Index _numOutputs)
-  : mNumKnots(_times.size()),
-    mNumSegments(std::max<Index>(mNumKnots - 1, 0)),
-    mNumCoefficients(_numCoefficients),
-    mNumOutputs(_numOutputs),
-    mDimension(mNumSegments * _numCoefficients),
-    mCoefficientMatrix(createCoefficientMatrix()),
-    mRowIndex(0),
-    mTimes(_times),
-    mA(mDimension, mDimension),
-    mB(mDimension, _numOutputs),
-    mSolution(mNumSegments, SolutionMatrix(mNumSegments, _numCoefficients))
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::SplineProblem(const TimeVector& _times, Index _numCoefficients, Index _numOutputs)
+    : mNumKnots(_times.size()),
+      mNumSegments(std::max<Index>(mNumKnots - 1, 0)),
+      mNumCoefficients(_numCoefficients),
+      mNumOutputs(_numOutputs),
+      mDimension(mNumSegments * _numCoefficients),
+      mCoefficientMatrix(createCoefficientMatrix()),
+      mRowIndex(0),
+      mTimes(_times),
+      mA(mDimension, mDimension),
+      mB(mDimension, _numOutputs),
+      mSolution(mNumSegments, SolutionMatrix(mNumSegments, _numCoefficients))
 {
   mA.setZero();
   mB.setZero();
@@ -86,8 +93,12 @@ SplineProblem::SplineProblem(const TimeVector& _times, Index _numCoefficients, I
   }
 }
 
-void SplineProblem::addConstantConstraint(
-  Index _knot, Index _derivative, const OutputVector& _value)
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::addConstantConstraint(
+    Index _knot, Index _derivative, const OutputVector& _value)
 {
   assert(0 <= _knot && _knot < mNumKnots);
   assert(0 <= _derivative && _derivative < mNumCoefficients);
@@ -120,7 +131,11 @@ void SplineProblem::addConstantConstraint(
   }
 }
 
-void SplineProblem::addEqualityConstraint(Index _knot1, Index _knot2, Index _derivative)
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::addEqualityConstraint(Index _knot1, Index _knot2, Index _derivative)
 {
   assert(0 <= _knot1 && _knot1 < mNumKnots);
   assert(0 <= _knot2 && _knot2 < mNumKnots);
@@ -141,7 +156,11 @@ void SplineProblem::addEqualityConstraint(Index _knot1, Index _knot2, Index _der
   ++mRowIndex;
 }
 
-auto SplineProblem::createTimeVector(Scalar _t, Index _i) const -> CoefficientVector
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::createTimeVector(Scalar _t, Index _i) const -> CoefficientVector
 {
   CoefficientVector exponents(mNumCoefficients);
 
@@ -158,7 +177,11 @@ auto SplineProblem::createTimeVector(Scalar _t, Index _i) const -> CoefficientVe
   return exponents;
 }
 
-void SplineProblem::fit()
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::fit()
 {
   using MatrixType = Eigen::Matrix<Scalar, _Dimension, _Dimension>;
 
@@ -179,7 +202,11 @@ void SplineProblem::fit()
   }
 }
 
-auto SplineProblem::createCoefficientMatrix() const -> CoefficientMatrix
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::createCoefficientMatrix() const -> CoefficientMatrix
 {
   CoefficientMatrix coefficients(mNumCoefficients, mNumCoefficients);
   coefficients.setZero();
@@ -196,7 +223,11 @@ auto SplineProblem::createCoefficientMatrix() const -> CoefficientMatrix
   return coefficients;
 }
 
-auto SplineProblem::getSegmentIndex(Scalar _t) const -> Index
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::getSegmentIndex(Scalar _t) const -> Index
 {
   if (_t <= mTimes[0]) {
     return 0;
@@ -208,7 +239,11 @@ auto SplineProblem::getSegmentIndex(Scalar _t) const -> Index
   }
 }
 
-auto SplineProblem::interpolate(Scalar _t, Index _derivative) const -> OutputVector
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::interpolate(Scalar _t, Index _derivative) const -> OutputVector
 {
   const CoefficientVector timeVector = createTimeVector(_t, _derivative);
   const CoefficientVector derivativeVector = mCoefficientMatrix.row(_derivative);
@@ -242,7 +277,7 @@ int main(int argc, char **argv)
   VectorXd times(3);
   times << 0, 1, 3;
 
-  SplineProblem problem(times, 2, 1);
+  SplineProblem<> problem(times, 2, 1);
   problem.addConstantConstraint(0, 0, Value(5));
   problem.addConstantConstraint(1, 0, Value(6));
   problem.addConstantConstraint(2, 0, Value(0));
