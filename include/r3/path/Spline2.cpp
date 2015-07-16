@@ -273,23 +273,23 @@ int main(int argc, char **argv)
 
   using Vector1d = Eigen::Matrix<double, 1, 1>;
 
-  auto Value = [](double x) {
-    Eigen::Matrix<double, 1, 1> v;
-    v << x;
+  auto Value = [](double x, double y) {
+    Eigen::Matrix<double, 2, 1> v;
+    v << x, y;
     return v;
   };
 
   VectorXd times(3);
   times << 0, 1, 3;
 
-  SplineProblem<> problem(times, 4, 1);
-  problem.addConstantConstraint(0, 1, Value(0));
-  problem.addConstantConstraint(0, 0, Value(5));
-  problem.addConstantConstraint(1, 0, Value(6));
+  SplineProblem<> problem(times, 4, 2);
+  problem.addConstantConstraint(0, 1, Value(0, 0));
+  problem.addConstantConstraint(0, 0, Value(5, 7));
+  problem.addConstantConstraint(1, 0, Value(6, 8));
   problem.addContinuityConstraint(1, 1);
   problem.addContinuityConstraint(1, 2);
-  problem.addConstantConstraint(2, 0, Value(0));
-  problem.addConstantConstraint(2, 1, Value(0));
+  problem.addConstantConstraint(2, 0, Value(0, 2));
+  problem.addConstantConstraint(2, 1, Value(0, 0));
   problem.fit();
 
   std::cout << "A =\n" << problem.mA << "\n\n";
@@ -302,7 +302,7 @@ int main(int argc, char **argv)
   std::ofstream csv("/tmp/data.csv", std::ios::binary);
   std::cout << "\n\n";
   for (double t = times[0]; t <= times[times.size() - 1] + 1e-3; t += 0.05) {
-    csv << t << '\t' << problem.interpolate(t, 0) << '\t' << problem.getSegmentIndex(t) << '\n';
+    csv << t << '\t' << problem.interpolate(t, 0).transpose() << '\t' << problem.getSegmentIndex(t) << '\n';
   }
 
   return 0;
