@@ -1,9 +1,11 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
-#include <iostream>
 #include <Eigen/Core>
 #include <Eigen/QR>
+
+#include <iostream>
+#include <fstream>
 
 template <
   class Scalar = double,
@@ -32,14 +34,14 @@ public:
   CoefficientMatrix createCoefficientMatrix() const;
 
   void addConstantConstraint(Index _knot, Index _derivative, const OutputVector& _value);
-  void addEqualityConstraint(Index _knot1, Index _knot2, Index _derivative);
+  void addContinuityConstraint(Index _knot, Index _derivative);
 
   void fit();
   Index getSegmentIndex(Scalar _t) const;
   OutputVector interpolate(Scalar _t, Index _derivative) const;
 
 //private:
-  using SolutionMatrix = Eigen::Matrix<Scalar, _NumSegments, _NumCoefficients>;
+  using SolutionMatrix = Eigen::Matrix<Scalar, _NumOutputs, _NumCoefficients>;
 
   Index mNumKnots;
   Index mNumSegments;
@@ -54,7 +56,7 @@ public:
   Eigen::Matrix<Scalar, _Dimension, _Dimension> mA;
   Eigen::Matrix<Scalar, _Dimension, _NumOutputs> mB;
 
-  std::vector<SolutionMatrix> mSolution;
+  std::vector<SolutionMatrix> mSolution; // length _NumSegments
 };
 
 // ---
@@ -74,7 +76,7 @@ SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
       mTimes(_times),
       mA(mDimension, mDimension),
       mB(mDimension, _numOutputs),
-      mSolution(mNumSegments, SolutionMatrix(mNumSegments, _numCoefficients))
+      mSolution(mNumSegments, SolutionMatrix(_numOutputs, _numCoefficients))
 {
   mA.setZero();
   mB.setZero();
@@ -135,22 +137,21 @@ template <
   class Scalar, class Index,
   Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
 void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
-  ::addEqualityConstraint(Index _knot1, Index _knot2, Index _derivative)
+  ::addContinuityConstraint(Index _knot, Index _derivative)
 {
-  assert(0 <= _knot1 && _knot1 < mNumKnots);
-  assert(0 <= _knot2 && _knot2 < mNumKnots);
-  assert(_knot1 != _knot2);
+  assert(0 <= _knot && _knot < mNumKnots);
+  assert(_knot != 0 && _knot + 1 != mNumKnots);
   assert(0 <= _derivative && _derivative < mNumCoefficients);
   assert(mRowIndex < mDimension);
 
   const CoefficientVector derivativeVector = mCoefficientMatrix.row(_derivative);
-  const CoefficientVector timeVector1 = createTimeVector(mTimes[_knot1], _derivative);
-  const CoefficientVector timeVector2 = createTimeVector(mTimes[_knot2], _derivative);
+  const CoefficientVector timeVector = createTimeVector(mTimes[_knot], _derivative);
+  const CoefficientVector coeffVector = derivativeVector.cwiseProduct(timeVector);
   
-  mA.block(mRowIndex, _knot1 * mNumCoefficients, 1, mNumCoefficients)
-    = derivativeVector.cwiseProduct(timeVector1);
-  mA.block(mRowIndex, _knot2 * mNumCoefficients, 1, mNumCoefficients)
-    = -derivativeVector.cwiseProduct(timeVector2);
+  mA.block(mRowIndex, (_knot - 1) * mNumCoefficients, 1, mNumCoefficients)
+    = coeffVector.transpose();
+  mA.block(mRowIndex,  _knot      * mNumCoefficients, 1, mNumCoefficients)
+    = -coeffVector.transpose();
   mB.row(mRowIndex).setZero();
 
   ++mRowIndex;
@@ -183,6 +184,9 @@ template <
 void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   ::fit()
 {
+  std::cout << "!!! " << mRowIndex << " ?= " << mDimension << std::endl;
+  assert(mRowIndex == mDimension);
+
   using MatrixType = Eigen::Matrix<Scalar, _Dimension, _Dimension>;
 
   // Perform the QR decomposition once. 
@@ -194,9 +198,9 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
       = solver.solve(mB.col(ioutput));
 
     // Split the coefficients by segment.
-    OutputMatrix& solutionMatrix = mSolution[ioutput];
     for (Index isegment = 0; isegment < mNumSegments; ++isegment) {
-      solutionMatrix.row(isegment) = solutionVector.segment(
+      OutputMatrix& solutionMatrix = mSolution[isegment];
+      solutionMatrix.row(ioutput) = solutionVector.segment(
         isegment * mNumCoefficients, mNumCoefficients);
     }
   }
@@ -249,11 +253,12 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   const CoefficientVector derivativeVector = mCoefficientMatrix.row(_derivative);
   const CoefficientVector evaluationVector = derivativeVector.cwiseProduct(timeVector);
   const Index segmentIndex = getSegmentIndex(_t);
+  const OutputMatrix& outputMatrix = mSolution[segmentIndex];
 
   OutputVector output(mNumOutputs);
 
   for (Index ioutput = 0; ioutput < mNumOutputs; ++ioutput) {
-    const CoefficientVector solutionVector = mSolution[ioutput].row(segmentIndex);
+    const CoefficientVector solutionVector = outputMatrix.row(ioutput);
     output[ioutput] = evaluationVector.dot(solutionVector);
   }
 
@@ -277,15 +282,27 @@ int main(int argc, char **argv)
   VectorXd times(3);
   times << 0, 1, 3;
 
-  SplineProblem<> problem(times, 2, 1);
+  SplineProblem<> problem(times, 4, 1);
+  problem.addConstantConstraint(0, 1, Value(0));
   problem.addConstantConstraint(0, 0, Value(5));
   problem.addConstantConstraint(1, 0, Value(6));
+  problem.addContinuityConstraint(1, 1);
+  problem.addContinuityConstraint(1, 2);
   problem.addConstantConstraint(2, 0, Value(0));
-
+  problem.addConstantConstraint(2, 1, Value(0));
   problem.fit();
 
-  for (double t = 0; t <= 2; t += 0.05) {
-    std::cout << t << '\t' << problem.interpolate(t, 0) << '\n';
+  std::cout << "A =\n" << problem.mA << "\n\n";
+  std::cout << "b =\n" << problem.mB.transpose() << "\n\n";
+  for (int i = 0; i < problem.mSolution.size(); ++i) {
+    std::cout << "x =\n" << problem.mSolution[i] << "\n\n";
+  }
+
+
+  std::ofstream csv("/tmp/data.csv", std::ios::binary);
+  std::cout << "\n\n";
+  for (double t = times[0]; t <= times[times.size() - 1] + 1e-3; t += 0.05) {
+    csv << t << '\t' << problem.interpolate(t, 0) << '\t' << problem.getSegmentIndex(t) << '\n';
   }
 
   return 0;
