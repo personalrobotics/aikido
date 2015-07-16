@@ -8,24 +8,33 @@
 #include <fstream>
 
 template <
-  class Scalar = double,
-  class Index = ptrdiff_t,
-  Index _NumCoefficients = Eigen::Dynamic,
-  Index _NumOutputs = Eigen::Dynamic,
-  Index _NumKnots = Eigen::Dynamic>
+  class _Scalar = double,
+  class _Index = ptrdiff_t,
+  _Index _NumCoefficients = Eigen::Dynamic,
+  _Index _NumOutputs = Eigen::Dynamic,
+  _Index _NumKnots = Eigen::Dynamic>
 class SplineProblem {
 public:
-  static constexpr Index _NumSegments
-    = (_NumKnots != Eigen::Dynamic) ? (_NumKnots - 1) : Eigen::Dynamic;
-  static constexpr Index _Dimension
-    = (_NumSegments != Eigen::Dynamic && _NumCoefficients != Eigen::Dynamic)
-      ? (_NumSegments * _NumCoefficients) : Eigen::Dynamic;
+  using Scalar = _Scalar;
+  using Index = _Index;
 
-  using TimeVector = Eigen::Matrix<Scalar, _NumKnots, 1>;
-  using OutputVector = Eigen::Matrix<Scalar, _NumOutputs, 1>;
-  using OutputMatrix = Eigen::Matrix<Scalar, _NumCoefficients, _NumOutputs>;
-  using CoefficientVector = Eigen::Matrix<Scalar, _NumCoefficients, 1>;
-  using CoefficientMatrix = Eigen::Matrix<Scalar, _NumCoefficients, _NumCoefficients>;
+  static constexpr Index NumCoefficientsAtCompileTime = _NumCoefficients;
+  static constexpr Index NumOutputsAtCompileTime = _NumOutputs;
+  static constexpr Index NumKnotsAtCompileTime= _NumKnots;
+  static constexpr Index NumSegmentsAtCompileTime
+    = (_NumKnots != Eigen::Dynamic)
+      ? (NumKnotsAtCompileTime - 1)
+      : Eigen::Dynamic;
+  static constexpr Index DimensionAtCompileTime
+    = (NumSegmentsAtCompileTime != Eigen::Dynamic && _NumCoefficients != Eigen::Dynamic)
+      ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
+      : Eigen::Dynamic;
+
+  using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
+  using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
+  using OutputMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime>;
+  using CoefficientVector = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
+  using CoefficientMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
 
   explicit SplineProblem(const TimeVector& _times);
   SplineProblem(const TimeVector& _times, Index _numCoefficients, Index _numOutputs);
@@ -42,7 +51,7 @@ public:
   OutputVector interpolate(Scalar _t, Index _derivative) const;
 
 //private:
-  using SolutionMatrix = Eigen::Matrix<Scalar, _NumOutputs, _NumCoefficients>;
+  using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
 
   Index mNumKnots;
   Index mNumSegments;
@@ -54,8 +63,8 @@ public:
 
   Index mRowIndex;
   TimeVector mTimes;
-  Eigen::Matrix<Scalar, _Dimension, _Dimension> mA;
-  Eigen::Matrix<Scalar, _Dimension, _NumOutputs> mB;
+  Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime> mA;
+  Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime> mB;
 
   std::vector<SolutionMatrix> mSolution; // length _NumSegments
 };
@@ -67,12 +76,12 @@ template <
   Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
 SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   ::SplineProblem(const TimeVector& _times)
-    : SplineProblem(_times, _NumCoefficients, _NumOutputs)
+    : SplineProblem(_times, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime)
 {
-  static_assert(_NumCoefficients != Eigen::Dynamic,
-    "_NumOutputs must be static to use this constructor.");
-  static_assert(_NumOutputs != Eigen::Dynamic,
-    "_NumOutputs must be static to use this constructor.");
+  static_assert(NumCoefficientsAtCompileTime != Eigen::Dynamic,
+    "NumCoefficientsAtCompileTime must be static to use this constructor.");
+  static_assert(NumOutputsAtCompileTime != Eigen::Dynamic,
+    "NumOutputsAtCompileTime must be static to use this constructor.");
 }
 
 template <
@@ -201,14 +210,14 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   std::cout << "!!! " << mRowIndex << " ?= " << mDimension << std::endl;
   assert(mRowIndex == mDimension);
 
-  using MatrixType = Eigen::Matrix<Scalar, _Dimension, _Dimension>;
+  using MatrixType = Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime>;
 
   // Perform the QR decomposition once. 
   Eigen::HouseholderQR<MatrixType> solver = mA.householderQr();
 
   for (Index ioutput = 0; ioutput < mNumOutputs; ++ioutput) {
     // Solve for the spline coefficients for each output dimension.
-    Eigen::Matrix<Scalar, _Dimension, 1> solutionVector
+    Eigen::Matrix<Scalar, DimensionAtCompileTime, 1> solutionVector
       = solver.solve(mB.col(ioutput));
 
     // Split the coefficients by segment.
