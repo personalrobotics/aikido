@@ -3,9 +3,21 @@
 #include <algorithm>
 #include <Eigen/Core>
 #include <Eigen/QR>
+#include <Eigen/StdVector>
 
 #include <iostream>
 #include <fstream>
+
+template <class MatrixType>
+struct IsFixedSizeVectorizable
+{
+  static constexpr bool IsSizeKnownAtCompileTime
+    = (MatrixType::SizeAtCompileTime != Eigen::Dynamic);
+  static constexpr bool SizeInBytesAtCompileTime
+    = MatrixType::SizeAtCompileTime * sizeof(MatrixType::Scalar);
+  static constexpr bool Value
+    = (IsSizeKnownAtCompileTime && (SizeInBytesAtCompileTime % 4) == 0);
+};
 
 template <
   class _Scalar = double,
@@ -13,7 +25,8 @@ template <
   _Index _NumCoefficients = Eigen::Dynamic,
   _Index _NumOutputs = Eigen::Dynamic,
   _Index _NumKnots = Eigen::Dynamic>
-class SplineProblem {
+class SplineProblem
+{
 public:
   using Scalar = _Scalar;
   using Index = _Index;
@@ -35,6 +48,9 @@ public:
   using OutputMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime>;
   using CoefficientVector = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
   using CoefficientMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
+  using ProblemMatrix = Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime>;
+  using ProblemVector = Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime>;
+  using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
 
   explicit SplineProblem(const TimeVector& _times);
   SplineProblem(const TimeVector& _times, Index _numCoefficients, Index _numOutputs);
@@ -51,22 +67,29 @@ public:
   OutputVector interpolate(Scalar _t, Index _derivative) const;
 
 //private:
-  using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
-
   Index mNumKnots;
   Index mNumSegments;
   Index mNumCoefficients;
   Index mNumOutputs;
   Index mDimension;
 
-  Eigen::Matrix<Scalar, _NumCoefficients, _NumCoefficients> mCoefficientMatrix;
+  CoefficientMatrix mCoefficientMatrix;
 
   Index mRowIndex;
   TimeVector mTimes;
-  Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime> mA;
-  Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime> mB;
+  ProblemMatrix mA;
+  ProblemVector mB;
 
-  std::vector<SolutionMatrix> mSolution; // length _NumSegments
+  std::vector<SolutionMatrix,
+    Eigen::aligned_allocator<SolutionMatrix> > mSolution; // length _NumSegments
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(
+       IsFixedSizeVectorizable<CoefficientMatrix>::Value
+    || IsFixedSizeVectorizable<TimeVector>::Value
+    || IsFixedSizeVectorizable<ProblemMatrix>::Value
+    || IsFixedSizeVectorizable<ProblemVector>::Value
+  );
 };
 
 // ---
