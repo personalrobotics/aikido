@@ -1,128 +1,96 @@
-#include <limits>
+#ifndef R3_PATH_SPLINE_H_
+#define R3_PATH_SPLINE_H_
+
+#include <cstddef>
 #include <vector>
 #include <Eigen/Core>
+#include <Eigen/QR>
+#include <Eigen/StdVector>
 
-/*
- * Knot
- */
-template <int _Derivatives = Eigen::Dynamic,
-          int _Values = Eigen::Dynamic>
-class Knot {
+namespace r3 {
+namespace path {
+
+template <
+  class _Scalar = double,
+  class _Index = ptrdiff_t,
+  _Index _NumCoefficients = Eigen::Dynamic,
+  _Index _NumOutputs = Eigen::Dynamic,
+  _Index _NumKnots = Eigen::Dynamic>
+class SplineProblem
+{
 public:
-  using Value = Eigen::Matrix<double, _Values, 1>;
+  using Scalar = _Scalar;
+  using Index = _Index;
 
-  enum ConstraintType {
-    CONSTRAINT_NONE,
-    CONSTRAINT_VALUE,
-    CONSTRAINT_EQUAL
-  };
+  static constexpr Index NumCoefficientsAtCompileTime = _NumCoefficients;
+  static constexpr Index NumOutputsAtCompileTime = _NumOutputs;
+  static constexpr Index NumKnotsAtCompileTime= _NumKnots;
+  static constexpr Index NumSegmentsAtCompileTime
+    = (_NumKnots != Eigen::Dynamic)
+      ? (NumKnotsAtCompileTime - 1)
+      : Eigen::Dynamic;
+  static constexpr Index DimensionAtCompileTime
+    = (NumSegmentsAtCompileTime != Eigen::Dynamic && _NumCoefficients != Eigen::Dynamic)
+      ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
+      : Eigen::Dynamic;
 
-  Knot();
-  Knot(size_t _num_derivatives, size_t _num_values);
+  using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
+  using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
+  using OutputMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime>;
+  using CoefficientVector = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
+  using CoefficientMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
+  using ProblemMatrix = Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime>;
+  using ProblemVector = Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime>;
+  using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
 
-  int getNumValues() const;
-  int getNumDerivatives() const;
+  explicit SplineProblem(const TimeVector& _times);
+  SplineProblem(const TimeVector& _times, Index _numCoefficients, Index _numOutputs);
 
-  void setTime(double _time);
-  void setValue(int _derivative, const Value& _value);
-  void setEqual(int _derivative, int _target);
-  void removeConstraint(int _derivative);
+  CoefficientVector createTimeVector(Scalar _t, Index _i) const;
+  CoefficientMatrix createTimeMatrix(Scalar _t) const;
+  CoefficientMatrix createCoefficientMatrix() const;
+
+  void addConstantConstraint(Index _knot, Index _derivative, const OutputVector& _value);
+  void addContinuityConstraint(Index _knot, Index _derivative);
+
+  void fit();
+
+  // These belong on a "Spline" class.
+  Index getNumKnots() const;
+  Index getNumOutputs() const;
+  Scalar getDuration() const;
+  Index getSegmentIndex(Scalar _t) const;
+  OutputVector interpolate(Scalar _t, Index _derivative) const;
 
 private:
-  double mTime;
-  std::vector<ConstraintType> mConstraintTypes;
-  std::vector<int> mTargets;
-  Eigen::Matrix<double, _Derivatives, _Values> mValues;
-};
+  Index mNumKnots;
+  Index mNumSegments;
+  Index mNumCoefficients;
+  Index mNumOutputs;
+  Index mDimension;
 
-// ---
+  CoefficientMatrix mCoefficientMatrix;
 
-template <int _Derivatives, int _Values>
-void Knot<_Derivatives>::Knot()
-  : Knot(_Derivatives, _Values)
-{
-}
+  Index mRowIndex;
+  TimeVector mTimes;
+  ProblemMatrix mA;
+  ProblemVector mB;
 
-template <int _Derivatives, int _Values>
-int Knot<_Derivatives>::getNumValues() const
-{
-  return mValues.cols();
-}
+  std::vector<SolutionMatrix,
+    Eigen::aligned_allocator<SolutionMatrix> > mSolution; // length _NumSegments
 
-template <int _Derivatives, int _Values>
-int Knot<_Derivatives>::getNumDerivatives() const
-{
-  return mValues.rows();
-}
-
-template <int _Derivatives, int _Values>
-void Knot<_Derivatives, int _Values>::Knot(size_t _num_derivatives, size_t _num_values)
-  : mTime(0.),
-    mConstraintTypes(_num_derivatives, CONSTRAINT_NONE),
-    mTargets(_num_derivatives),
-    mValues(_num_derivatives)
-{
-}
-
-template <int _Derivatives, int _Values>
-void Knot<_Derivatives, int _Values>::setTime(double _time)
-{
-  mTime = _time;
-}
-
-template <int _Derivatives, int _Values>
-void Knot<_Derivatives, int _Values>::setValue(int _derivative, const Value& _value)
-{
-  mConstraintTypes[_derivative] = CONSTRAINT_VALUE;
-  mValues.row(_derivative) = _value;
-}
-
-template <int _Derivatives, int _Values>
-void Knot<_Derivatives, int _Values>::setValue(int _derivative, int _target)
-{
-  mConstraintTypes[_derivative] = CONSTRAINT_EQUAL;
-  mTargets[_derivative] = _target;
-}
-
-template <int _Derivatives, int _Values>
-void Knot<_Derivatives, int _Values>::removeConstraint(int _derivative)
-{
-  mConstraintType[_derivative] = CONSTRAINT_NONE;
-}
-
-/*
- * Problem
- */
-template <int _Derivatives = Eigen::Dynamic,
-          int _Values = Eigen::Dynamic>
-class Problem {
 public:
-  using KnotType = Knot<_Derivatives, _Values>;
-
-  template <class Iterator>
-  Problem(Iterator _begin, Iterator _end);
-
-  void solve();
-
-private:
-  std::vector<KnotType> mKnots;
-  Eigen::MatrixXd mA;
-  Eigen::Matrix<double, Eigen::Dynamic, _Values> mB;
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(
+       CoefficientMatrix::NeedsToAlign
+    || TimeVector::NeedsToAlign
+    || ProblemMatrix::NeedsToAlign
+    || ProblemVector::NeedsToAlign
+  );
 };
 
-// ---
+} // namespace path
+} // namespace r3
 
-template <int _Derivatives, int _Values, class Iterator>
-Problem<_Derivatives>::Problem(Iterator _begin, Iterator _end)
-  : mKnots(_begin, _end)
-{
-}
-template <int _Derivatives, int _Values>
-void Problem<_Derivatives>::solve()
-{
-  const size_t numValues = mKnots.
+#include "detail/Spline-impl.h"
 
-}
-
-
-
+#endif // ifndef R3_PATH_SPLINE_H_

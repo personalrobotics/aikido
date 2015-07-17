@@ -1,98 +1,9 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
-#include <Eigen/Core>
-#include <Eigen/QR>
-#include <Eigen/StdVector>
 
-#include <iostream>
-#include <fstream>
-
-template <class MatrixType>
-struct IsFixedSizeVectorizable
-{
-  static constexpr bool IsSizeKnownAtCompileTime
-    = (MatrixType::SizeAtCompileTime != Eigen::Dynamic);
-  static constexpr bool SizeInBytesAtCompileTime
-    = MatrixType::SizeAtCompileTime * sizeof(MatrixType::Scalar);
-  static constexpr bool Value
-    = (IsSizeKnownAtCompileTime && (SizeInBytesAtCompileTime % 4) == 0);
-};
-
-template <
-  class _Scalar = double,
-  class _Index = ptrdiff_t,
-  _Index _NumCoefficients = Eigen::Dynamic,
-  _Index _NumOutputs = Eigen::Dynamic,
-  _Index _NumKnots = Eigen::Dynamic>
-class SplineProblem
-{
-public:
-  using Scalar = _Scalar;
-  using Index = _Index;
-
-  static constexpr Index NumCoefficientsAtCompileTime = _NumCoefficients;
-  static constexpr Index NumOutputsAtCompileTime = _NumOutputs;
-  static constexpr Index NumKnotsAtCompileTime= _NumKnots;
-  static constexpr Index NumSegmentsAtCompileTime
-    = (_NumKnots != Eigen::Dynamic)
-      ? (NumKnotsAtCompileTime - 1)
-      : Eigen::Dynamic;
-  static constexpr Index DimensionAtCompileTime
-    = (NumSegmentsAtCompileTime != Eigen::Dynamic && _NumCoefficients != Eigen::Dynamic)
-      ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
-      : Eigen::Dynamic;
-
-  using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
-  using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
-  using OutputMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime>;
-  using CoefficientVector = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
-  using CoefficientMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
-  using ProblemMatrix = Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime>;
-  using ProblemVector = Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime>;
-  using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
-
-  explicit SplineProblem(const TimeVector& _times);
-  SplineProblem(const TimeVector& _times, Index _numCoefficients, Index _numOutputs);
-
-  CoefficientVector createTimeVector(Scalar _t, Index _i) const;
-  CoefficientMatrix createTimeMatrix(Scalar _t) const;
-  CoefficientMatrix createCoefficientMatrix() const;
-
-  void addConstantConstraint(Index _knot, Index _derivative, const OutputVector& _value);
-  void addContinuityConstraint(Index _knot, Index _derivative);
-
-  void fit();
-  Index getSegmentIndex(Scalar _t) const;
-  OutputVector interpolate(Scalar _t, Index _derivative) const;
-
-//private:
-  Index mNumKnots;
-  Index mNumSegments;
-  Index mNumCoefficients;
-  Index mNumOutputs;
-  Index mDimension;
-
-  CoefficientMatrix mCoefficientMatrix;
-
-  Index mRowIndex;
-  TimeVector mTimes;
-  ProblemMatrix mA;
-  ProblemVector mB;
-
-  std::vector<SolutionMatrix,
-    Eigen::aligned_allocator<SolutionMatrix> > mSolution; // length _NumSegments
-
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(
-       IsFixedSizeVectorizable<CoefficientMatrix>::Value
-    || IsFixedSizeVectorizable<TimeVector>::Value
-    || IsFixedSizeVectorizable<ProblemMatrix>::Value
-    || IsFixedSizeVectorizable<ProblemVector>::Value
-  );
-};
-
-// ---
+namespace r3 {
+namespace path {
 
 template <
   class Scalar, class Index,
@@ -126,15 +37,6 @@ SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 {
   mA.setZero();
   mB.setZero();
-
-  std::cout << "\n\n"
-            << "mNumKnots = " << mNumKnots << "\n"
-            << "mNumSegments = " << mNumSegments << "\n"
-            << "mNumCoefficients = " << mNumCoefficients << "\n"
-            << "mNumOutputs = " << mNumOutputs << "\n"
-            << "mDimension = " << mDimension << "\n"
-            << "\n\n"
-            << std::flush;
 
   if (!std::is_sorted(mTimes.data(), mTimes.data() + mTimes.size())) {
     throw std::runtime_error("Times are not monotonically increasing.");
@@ -230,7 +132,6 @@ template <
 void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   ::fit()
 {
-  std::cout << "!!! " << mRowIndex << " ?= " << mDimension << std::endl;
   assert(mRowIndex == mDimension);
 
   using MatrixType = Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime>;
@@ -292,6 +193,37 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 template <
   class Scalar, class Index,
   Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+Index SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::getNumKnots() const
+{
+  return mNumKnots;
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+Index SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::getNumOutputs() const
+{
+  return mNumOutputs;
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+Scalar SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::getDuration() const
+{
+  if (mTimes.size() > 0) {
+    return mTimes[mTimes.size() - 1];
+  } else {
+    return 0;
+  }
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
 auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   ::interpolate(Scalar _t, Index _derivative) const -> OutputVector
 {
@@ -311,46 +243,5 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   return output;
 }
 
-// ---
-
-int main(int argc, char **argv)
-{
-  using Eigen::VectorXd;
-
-  using Vector1d = Eigen::Matrix<double, 1, 1>;
-
-  auto Value = [](double x, double y) {
-    Eigen::Matrix<double, 2, 1> v;
-    v << x, y;
-    return v;
-  };
-
-  VectorXd times(3);
-  times << 0, 1, 3;
-
-  //SplineProblem<double, ptrdiff_t, 4, 2, 3> problem(times, 4, 2);
-  SplineProblem<double, ptrdiff_t, 4, 2, 3> problem(times);
-  problem.addConstantConstraint(0, 1, Value(0, 0));
-  problem.addConstantConstraint(0, 0, Value(5, 7));
-  problem.addConstantConstraint(1, 0, Value(6, 8));
-  problem.addContinuityConstraint(1, 1);
-  problem.addContinuityConstraint(1, 2);
-  problem.addConstantConstraint(2, 0, Value(0, 2));
-  problem.addConstantConstraint(2, 1, Value(0, 0));
-  problem.fit();
-
-  std::cout << "A =\n" << problem.mA << "\n\n";
-  std::cout << "b =\n" << problem.mB.transpose() << "\n\n";
-  for (int i = 0; i < problem.mSolution.size(); ++i) {
-    std::cout << "x =\n" << problem.mSolution[i] << "\n\n";
-  }
-
-
-  std::ofstream csv("/tmp/data.csv", std::ios::binary);
-  std::cout << "\n\n";
-  for (double t = times[0]; t <= times[times.size() - 1] + 1e-3; t += 0.05) {
-    csv << t << '\t' << problem.interpolate(t, 0).transpose() << '\t' << problem.getSegmentIndex(t) << '\n';
-  }
-
-  return 0;
-}
+} // namespace path
+} // namespace r3
