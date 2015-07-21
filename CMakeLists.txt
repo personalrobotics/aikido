@@ -28,6 +28,7 @@ add_library(${PROJECT_NAME} SHARED
   src/path/GeometricPath.cpp
   src/path/HauserSmoother.cpp
   src/path/SplineTrajectory.cpp
+  src/path/BlendTrajectory.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
