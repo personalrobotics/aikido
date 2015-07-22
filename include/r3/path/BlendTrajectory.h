@@ -19,6 +19,8 @@ public:
 
   Scalar getDuration() const override;
 
+  double getBlendDuration();
+
   Eigen::VectorXd evaluate(Scalar _t, Index _derivative) const override;
 
 private:

@@ -35,7 +35,12 @@ auto BlendTrajectory::getNumDerivatives() const -> Index
 
 auto BlendTrajectory::getDuration() const -> Scalar
 {
-  return mTrajectory1->getDuration();
+  return mTrajectory2->getDuration();
+}
+
+auto BlendTrajectory::getBlendDuration() -> Scalar
+{
+  return mTimeEnd - mTimeStart;
 }
 
 Eigen::VectorXd BlendTrajectory::evaluate(Scalar _t, Index _derivative) const

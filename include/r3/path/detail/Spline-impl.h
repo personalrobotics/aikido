@@ -88,7 +88,7 @@ auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   if (_t <= mTimes[0]) {
     return 0;
   } else if (_t >= mTimes[numKnots - 1]) {
-    return numKnots - 1;
+    return numKnots - 2;
   } else {
     auto it = std::lower_bound(mTimes.data(), mTimes.data() + mTimes.size(), _t);
     return it - mTimes.data() - 1;
