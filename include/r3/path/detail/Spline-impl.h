@@ -336,14 +336,12 @@ template <class _Spline>
 SplineTrajectory<_Spline>::SplineTrajectory(const Spline& _spline)
   : mSpline(_spline)
 {
-  std::cout << "copy<SplineTrajectory>" << std::endl;
 }
 
 template <class _Spline>
 SplineTrajectory<_Spline>::SplineTrajectory(Spline&& _spline)
   : mSpline(_spline)
 {
-  std::cout << "move<SplineTrajectory>" << std::endl;
 }
 
 template <class _Spline>
