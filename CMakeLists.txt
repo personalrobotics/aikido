@@ -40,12 +40,12 @@ target_link_libraries(${PROJECT_NAME}
   ${OMPL_LIBRARIES}
 )
 
-add_executable(test_SplineTrajectory
-  tests/test_SplineTrajectory.cpp
-)
-target_link_libraries(test_SplineTrajectory
-  ${PROJECT_NAME}
-)
+#add_executable(test_SplineTrajectory
+#  tests/test_SplineTrajectory.cpp
+#)
+#target_link_libraries(test_SplineTrajectory
+#  ${PROJECT_NAME}
+#)
 
 #add_library(${R3_MODULE_NAME} SHARED
 #  src/python/python.cpp
@@ -67,7 +67,6 @@ target_link_libraries(test_SplineTrajectory
 # Installation
 # TODO: Also install the Python module.
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-install(TARGETS test_SplineTrajectory DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY include/ DESTINATION include)
 
 # This is required by REP-136.
