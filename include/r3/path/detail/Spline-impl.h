@@ -185,9 +185,12 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   if (_knot > 0) {
     assert(mRowIndex < mDimension);
 
-    mA.block(mRowIndex, (_knot - 1) * mNumCoefficients, 1, mNumCoefficients)
-      = coeffVector.transpose();
-    mB.row(mRowIndex) = _value;
+    Index const colOffset = (_knot - 1) * mNumCoefficients;
+    for (Index i = 0; i < mNumCoefficients; ++i) {
+      mA.coeffRef(mRowIndex, colOffset + i) = coeffVector[i];
+    }
+
+    mB.row(mRowIndex) = _value.transpose();
 
     ++mRowIndex;
   }
@@ -196,9 +199,12 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   if (_knot + 1 < mNumKnots) {
     assert(mRowIndex < mDimension);
 
-    mA.block(mRowIndex, _knot * mNumCoefficients, 1, mNumCoefficients)
-      = coeffVector.transpose();
-    mB.row(mRowIndex) = _value;
+    Index const colOffset = _knot * mNumCoefficients;
+    for (Index i = 0; i < mNumCoefficients; ++i) {
+      mA.coeffRef(mRowIndex, colOffset + i) = coeffVector[i];
+    }
+
+    mB.row(mRowIndex) = _value.transpose();
 
     ++mRowIndex;
   }
@@ -218,11 +224,17 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   const CoefficientVector derivativeVector = mCoefficientMatrix.row(_derivative);
   const CoefficientVector timeVector = createTimeVector(mTimes[_knot], _derivative, mNumCoefficients);
   const CoefficientVector coeffVector = derivativeVector.cwiseProduct(timeVector);
-  
-  mA.block(mRowIndex, (_knot - 1) * mNumCoefficients, 1, mNumCoefficients)
-    = coeffVector.transpose();
-  mA.block(mRowIndex,  _knot      * mNumCoefficients, 1, mNumCoefficients)
-    = -coeffVector.transpose();
+
+  const Index colOffset1 = (_knot - 1) * mNumCoefficients;
+  for (Index i = 0; i < mNumCoefficients; ++i) {
+    mA.coeffRef(mRowIndex, colOffset1 + i) = coeffVector[i];
+  }
+
+  const Index colOffset2 = _knot * mNumCoefficients;
+  for (Index i = 0; i < mNumCoefficients; ++i) {
+    mA.coeffRef(mRowIndex, colOffset2 + i) = -coeffVector[i];
+  }
+
   mB.row(mRowIndex).setZero();
 
   ++mRowIndex;
@@ -257,10 +269,12 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 {
   assert(mRowIndex == mDimension);
 
-  using MatrixType = Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime>;
+  // SparseQR requires the matrix to be compressed.
+  mA.finalize();
+  mA.makeCompressed();
 
-  // Perform the QR decomposition once. 
-  Eigen::HouseholderQR<MatrixType> solver = mA.householderQr();
+  // Perform the QR decomposition once.
+  Eigen::SparseQR<ProblemMatrix, Eigen::COLAMDOrdering<Index> > solver(mA);
 
   for (Index ioutput = 0; ioutput < mNumOutputs; ++ioutput) {
     // Solve for the spline coefficients for each output dimension.

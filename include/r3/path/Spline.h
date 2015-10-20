@@ -6,6 +6,7 @@
 #include <memory>
 #include <Eigen/Core>
 #include <Eigen/QR>
+#include <Eigen/Sparse>
 #include <Eigen/StdVector>
 
 namespace r3 {
@@ -101,7 +102,7 @@ public:
   using OutputMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime>;
   using CoefficientVector = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
   using CoefficientMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
-  using ProblemMatrix = Eigen::Matrix<Scalar, DimensionAtCompileTime, DimensionAtCompileTime>;
+  using ProblemMatrix = Eigen::SparseMatrix<Scalar, 0, Index>;
   using ProblemVector = Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime>;
   using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
   using Spline = SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>;
