@@ -155,60 +155,12 @@ public:
   );
 };
 
-// ---
-
-class Trajectory
-{
-public:
-  using Scalar = double;
-  using Index = ptrdiff_t;
-
-  virtual ~Trajectory() = default;
-
-  virtual Index getNumOutputs() const = 0;
-
-  virtual Index getNumDerivatives() const = 0;
-
-  virtual Scalar getDuration() const = 0;
-
-  virtual Eigen::VectorXd evaluate(Scalar _t, Index _derivative) const = 0;
-};
-
-using TrajectoryPtr = std::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
-
-// ---
-
-template <class _Spline>
-class SplineTrajectory : public virtual Trajectory {
-public:
-  using Spline = _Spline;
-
-  explicit SplineTrajectory(const Spline& _spline);
-  explicit SplineTrajectory(Spline&& _spline);
-  virtual ~SplineTrajectory() = default;
-
-  // Default copy and move semantics.
-  SplineTrajectory(SplineTrajectory&& _other) = default;
-  SplineTrajectory(const SplineTrajectory& _other) = default;
-  SplineTrajectory& operator =(SplineTrajectory&& _other) = default;
-  SplineTrajectory& operator =(const SplineTrajectory& _other) = default;
-
-  Index getNumOutputs() const override;
-
-  Index getNumDerivatives() const override;
-
-  Scalar getDuration() const override;
-
-  Eigen::VectorXd evaluate(Scalar _t, Index _derivative) const override;
-
-private:
-  Spline mSpline;
-};
-
 } // namespace path
 } // namespace r3
 
 #include "detail/Spline-impl.h"
+
+#include <r3/path/Trajectory.h>
+#include <r3/path/SplineTrajectory.h>
 
 #endif // ifndef R3_PATH_SPLINE_H_

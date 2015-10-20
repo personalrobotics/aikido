@@ -1,23 +1,31 @@
-#ifndef TRAJECTORY_H_
-#define TRAJECTORY_H_
-#include <string>
-#include <Eigen/Dense>
+#ifndef R3_PATH_TRAJECTORY_H_
+#define R3_PATH_TRAJECTORY_H_
+#include <memory>
 
 namespace r3 {
 namespace path {
 
-class Trajectory {
+class Trajectory
+{
 public:
-  virtual ~Trajectory() {}
+  using Scalar = double;
+  using Index = ptrdiff_t;
 
-  virtual size_t order() const = 0;
-  virtual double duration() const = 0;
-  virtual std::string const &type() const = 0;
+  virtual ~Trajectory() = default;
 
-  virtual Eigen::VectorXd sample(double t, size_t order) const = 0;
+  virtual Index getNumOutputs() const = 0;
+
+  virtual Index getNumDerivatives() const = 0;
+
+  virtual Scalar getDuration() const = 0;
+
+  virtual Eigen::VectorXd evaluate(Scalar _t, Index _derivative) const = 0;
 };
 
-}
-}
+using TrajectoryPtr = std::shared_ptr<Trajectory>;
+using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
 
-#endif
+} // namespace path
+} // namespace r3
+
+#endif // ifndef R3_PATH_TRAJECTORY_H_

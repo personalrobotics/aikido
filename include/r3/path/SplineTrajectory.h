@@ -1,93 +1,40 @@
-#ifndef SPLINETRAJECTORY_H_
-#define SPLINETRAJECTORY_H_
-#include <memory>
-#include <Eigen/Dense>
-#include <dart/dynamics/dynamics.h>
+#ifndef R3_PATH_SPLINETRAJECTORY_H_
+#define R3_PATH_SPLINETRAJECTORY_H_
 #include <r3/path/Trajectory.h>
 
 namespace r3 {
 namespace path {
 
-
-class Spline {
+template <class _Spline>
+class SplineTrajectory : public virtual Trajectory {
 public:
-  struct Knot {
-    double t;
-    Eigen::MatrixXd values;
-  };
+  using Spline = _Spline;
 
-  Spline(
-    std::vector<double> const &times,
-    Eigen::MatrixXd const &coefficients);
+  explicit SplineTrajectory(const Spline& _spline);
+  explicit SplineTrajectory(Spline&& _spline);
+  virtual ~SplineTrajectory() = default;
 
-  size_t order() const;
-  double start_time() const;
-  double end_time() const;
+  // Default copy and move semantics.
+  SplineTrajectory(SplineTrajectory&& _other) = default;
+  SplineTrajectory(const SplineTrajectory& _other) = default;
+  SplineTrajectory& operator =(SplineTrajectory&& _other) = default;
+  SplineTrajectory& operator =(const SplineTrajectory& _other) = default;
 
-  size_t num_knots() const;
-  std::vector<double> const &knots() const;
+  Index getNumOutputs() const override;
 
-  double interpolate(double t, size_t order = 0) const;
+  Index getNumDerivatives() const override;
 
-  static std::vector<Spline> fit(std::vector<Knot> const &knots);
-  static std::vector<Spline> fitCubic(std::vector<Knot> const &knots);
+  Scalar getDuration() const override;
 
-  // TODO: Make this stuff private.
-  struct Problem {
-    Eigen::MatrixXd A;
-    Eigen::MatrixXd b;
-    std::vector<double> times;
-  };
-
-  static Eigen::MatrixXd computeExponents(double t, size_t num_coeffs);
-  static Eigen::MatrixXd computeDerivativeMatrix(size_t num_coeffs);
-  static Problem createProblem(std::vector<Knot> const &knots);
-  static Problem createCubicProblem(std::vector<Knot> const &knots);
-  static std::vector<Spline> solveProblem(Problem const &problem);
-
-  size_t getSplineIndex(double t) const;
+  Eigen::VectorXd evaluate(Scalar _t, Index _derivative) const override;
 
 private:
-  std::vector<double> times_;
-  Eigen::MatrixXd coefficients_;
-
-  static bool isMonotone(std::vector<Knot> const &knots);
+  Spline mSpline;
 };
 
+} // namespace path
+} // namespace r3
 
-class SplineTrajectory : public Trajectory {
-public:
-  SplineTrajectory(
-    std::vector<dart::dynamics::DegreeOfFreedomPtr> const &dofs,
-    std::vector<Spline> const &splines);
+#include "detail/SplineTrajectory-impl.h"
 
-  virtual ~SplineTrajectory();
-
-  virtual size_t num_dof() const;
-
-  virtual size_t order() const;
-  virtual double start_time() const;
-  virtual double end_time() const;
-  virtual double duration() const;
-
-  std::vector<double> knots() const;
-
-  std::vector<dart::dynamics::DegreeOfFreedomPtr> const &dofs() const;
-
-  virtual std::string const &type() const;
-  static std::string const &static_type();
-
-  virtual Eigen::VectorXd sample(double t, size_t order) const;
-
-private:
-  std::vector<dart::dynamics::DegreeOfFreedomPtr> dofs_;
-  std::vector<Spline> splines_;
-};
-
-typedef std::shared_ptr<SplineTrajectory> SplineTrajectoryPtr;
-typedef std::shared_ptr<SplineTrajectory const> SplineTrajectoryConstPtr;
-
-}
-}
-
-#endif
+#endif // ifndef R3_PATH_SPLINETRAJECTORY_H_
