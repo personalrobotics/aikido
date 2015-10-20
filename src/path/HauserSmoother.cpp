@@ -4,7 +4,7 @@
 #include "external/hauser_parabolic_smoother/DynamicPath.h"
 
 using r3::path::GeometricPath;
-using r3::path::SplineTrajectory;
+using r3::path::TrajectoryPtr;
 
 static ParabolicRamp::Vector toHauserVector(Eigen::VectorXd const &u)
 {
@@ -78,7 +78,7 @@ static ParabolicRamp::DynamicPath convertPathToHauserPath(
   return hauserPath;
 }
 
-static SplineTrajectory convertHauserPathToTrajectory(
+static TrajectoryPtr convertHauserPathToTrajectory(
   GeometricPath const &path)
 {
   throw std::runtime_error("not implemented");
