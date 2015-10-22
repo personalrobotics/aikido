@@ -25,8 +25,7 @@ add_library(${PROJECT_NAME} SHARED
   src/ompl/plan.cpp
   src/ompl/DARTGeometricStateSpace.cpp
   src/ompl/DARTGeometricStateValidityChecker.cpp
-  src/path/GeometricPath.cpp
-  src/path/HauserSmoother.cpp
+  #src/path/HauserSmoother.cpp
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
