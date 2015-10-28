@@ -28,7 +28,7 @@ CatkinResourceRetriever::CatkinResourceRetriever(
 {
 }
 
-bool CatkinResourceRetriever::exists(const Uri& _uri) const
+bool CatkinResourceRetriever::exists(const Uri& _uri)
 {
   const Uri resolvedUri = resolvePackageUri(_uri);
   if(resolvedUri.mPath)
@@ -37,8 +37,7 @@ bool CatkinResourceRetriever::exists(const Uri& _uri) const
     return false;
 }
 
-dart::common::ResourcePtr CatkinResourceRetriever::retrieve(
-  const Uri& _uri) const
+dart::common::ResourcePtr CatkinResourceRetriever::retrieve(const Uri& _uri)
 {
   const Uri resolvedUri = resolvePackageUri(_uri);
   if(resolvedUri.mPath)

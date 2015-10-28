@@ -15,10 +15,10 @@ public:
     const dart::common::ResourceRetrieverPtr& _delegate);
   virtual ~CatkinResourceRetriever() = default;
 
-  bool exists(const dart::common::Uri& _uri) const override;
+  bool exists(const dart::common::Uri& _uri) override;
 
   dart::common::ResourcePtr retrieve(
-    const dart::common::Uri& _uri) const override;
+    const dart::common::Uri& _uri) override;
 
 private:
   struct Workspace {
