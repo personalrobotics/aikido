@@ -1,6 +1,6 @@
 #ifndef R3_PATH_TRAJECTORY_H_
 #define R3_PATH_TRAJECTORY_H_
-#include <memory>
+#include <boost/shared_ptr.hpp>
 
 namespace r3 {
 namespace path {
@@ -22,8 +22,8 @@ public:
   virtual Eigen::VectorXd evaluate(Scalar _t, Index _derivative) const = 0;
 };
 
-using TrajectoryPtr = std::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
+using TrajectoryPtr = boost::shared_ptr<Trajectory>;
+using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
 
 } // namespace path
 } // namespace r3

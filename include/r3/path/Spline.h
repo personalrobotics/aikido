@@ -14,7 +14,7 @@ namespace path {
 
 template <
   class _Scalar = double,
-  class _Index = ptrdiff_t,
+  class _Index = int,
   _Index _NumCoefficients = Eigen::Dynamic,
   _Index _NumOutputs = Eigen::Dynamic,
   _Index _NumKnots = Eigen::Dynamic>
@@ -80,7 +80,7 @@ public:
 
 template <
   class _Scalar = double,
-  class _Index = ptrdiff_t,
+  class _Index = int,
   _Index _NumCoefficients = Eigen::Dynamic,
   _Index _NumOutputs = Eigen::Dynamic,
   _Index _NumKnots = Eigen::Dynamic>

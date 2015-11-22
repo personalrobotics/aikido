@@ -10,6 +10,7 @@ class SplineTrajectory : public virtual Trajectory {
 public:
   using Spline = _Spline;
 
+  SplineTrajectory() = default;
   explicit SplineTrajectory(const Spline& _spline);
   explicit SplineTrajectory(Spline&& _spline);
   virtual ~SplineTrajectory() = default;
@@ -19,6 +20,8 @@ public:
   SplineTrajectory(const SplineTrajectory& _other) = default;
   SplineTrajectory& operator =(SplineTrajectory&& _other) = default;
   SplineTrajectory& operator =(const SplineTrajectory& _other) = default;
+
+  const Spline &getSpline() const;
 
   Index getNumOutputs() const override;
 
