@@ -14,6 +14,12 @@ SplineTrajectory<_Spline>::SplineTrajectory(Spline&& _spline)
 }
 
 template <class _Spline>
+auto SplineTrajectory<_Spline>::getSpline() const -> const Spline &
+{
+  return mSpline;
+}
+
+template <class _Spline>
 auto SplineTrajectory<_Spline>::getNumOutputs() const -> Index
 {
   return mSpline.getNumOutputs();

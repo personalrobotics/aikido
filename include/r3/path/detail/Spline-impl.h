@@ -22,6 +22,24 @@ SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 template <
   class Scalar, class Index,
   Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::getTimes() const -> const TimeVector &
+{
+  return mTimes;
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::getCoefficients() const -> const SolutionMatrices &
+{
+  return mSolution;
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
 Index SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   ::getNumKnots() const
 {

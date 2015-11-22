@@ -39,7 +39,10 @@ public:
   using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
   using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
   using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
+  using SolutionMatrices = std::vector<SolutionMatrix,
+    Eigen::aligned_allocator<SolutionMatrix> >;
 
+  SplineND() = default;
   SplineND(
     const TimeVector& _times,
     const std::vector<SolutionMatrix,
@@ -50,6 +53,9 @@ public:
   SplineND(const SplineND& _other) = default;
   SplineND& operator =(SplineND&& _other) = default;
   SplineND& operator =(const SplineND& _other) = default;
+
+  const TimeVector &getTimes() const;
+  const SolutionMatrices &getCoefficients() const;
 
   Index getNumKnots() const;
   Index getNumOutputs() const;
@@ -66,8 +72,7 @@ private:
   using CoefficientMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
 
   TimeVector mTimes;
-  std::vector<SolutionMatrix,
-    Eigen::aligned_allocator<SolutionMatrix> > mSolution; // length _NumSegments
+  SolutionMatrices mSolution; // length _NumSegments
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign);
