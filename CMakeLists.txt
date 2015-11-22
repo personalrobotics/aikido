@@ -5,7 +5,7 @@ set(INCLUDE_INSTALL_DIR include)
 set(LIBRARY_INSTALL_DIR lib)
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
 
@@ -39,6 +39,7 @@ target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${OMPL_LIBRARIES}
+  ${Boost_LIBRARIES}
 )
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).
