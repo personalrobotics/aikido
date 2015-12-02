@@ -9,7 +9,7 @@ template <int _Dim>
 class CartesianTrajectory
 {
 public:
-  using Index = ptrdiff_t;
+  using Index = int;
   using Scalar = double;
   using Output = Eigen::Transform<Scalar, _Dim, Eigen::Isometry>;
 
