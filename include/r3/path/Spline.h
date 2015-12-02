@@ -54,7 +54,11 @@ public:
   SplineND& operator =(SplineND&& _other) = default;
   SplineND& operator =(const SplineND& _other) = default;
 
+  void setTime(Index _index, Scalar _t);
+  void setTimes(TimeVector &&_t);
+  void setTimes(const TimeVector &_t);
   const TimeVector &getTimes() const;
+
   const SolutionMatrices &getCoefficients() const;
 
   Index getNumKnots() const;

@@ -22,6 +22,33 @@ SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 template <
   class Scalar, class Index,
   Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+void SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::setTime(Index _index, Scalar _t)
+{
+  mTimes[_index] = _t;
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+void SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::setTimes(TimeVector &&_t)
+{
+  mTimes = _t;
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
+void SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
+  ::setTimes(const TimeVector &_t)
+{
+  mTimes = _t;
+}
+
+template <
+  class Scalar, class Index,
+  Index _NumCoefficients, Index _NumOutputs, Index _NumKnots>
 auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   ::getTimes() const -> const TimeVector &
 {
