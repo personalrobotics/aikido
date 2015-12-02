@@ -12,7 +12,7 @@ class SplineTrajectory : public virtual Trajectory {
 public:
   using Spline = SplineND<
     Scalar, Index, _NumCoefficients, Eigen::Dynamic, Eigen::Dynamic>;
-  using SplineProblem = SplineProblem<
+  using SplineProblem = r3::path::SplineProblem<
     Scalar, Index, _NumCoefficients, Eigen::Dynamic, Eigen::Dynamic>;
 
   SplineTrajectory() = default;
