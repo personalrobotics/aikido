@@ -1,11 +1,11 @@
-#ifndef R3_UTIL_RNG_H_
-#define R3_UTIL_RNG_H_
+#ifndef AIKIDO_UTIL_RNG_H_
+#define AIKIDO_UTIL_RNG_H_
 
 #include <ctime>
 #include <memory>
 #include <stdint.h>
 
-namespace r3 {
+namespace aikido {
 namespace util {
 
 class RNG
@@ -67,6 +67,6 @@ private:
 };
 
 } // util
-} // r3
+} // aikido
 
-#endif // R3_UTIL_RNG_H_
+#endif // AIKIDO_UTIL_RNG_H_

@@ -8,8 +8,8 @@
 #include <ompl/control/PathControl.h>
 #include <ompl/geometric/PathGeometric.h>
 #include <ompl/geometric/SimpleSetup.h>
-#include <r3/ompl/DARTGeometricStateSpace.h>
-#include <r3/ompl/DARTGeometricStateValidityChecker.h>
+#include <aikido/ompl/DARTGeometricStateSpace.h>
+#include <aikido/ompl/DARTGeometricStateValidityChecker.h>
 
 using ::dart::dynamics::DegreeOfFreedom;
 using ::dart::dynamics::Skeleton;
@@ -45,8 +45,8 @@ Eigen::MatrixXd Plan(
     using ::ompl::control::PathControl;
     using ::ompl::geometric::PathGeometric;
     using ::ompl::geometric::SimpleSetup;
-    using ::r3::ompl::DARTGeometricStateSpace;
-    using ::r3::ompl::DARTGeometricStateValidityChecker;
+    using ::aikido::ompl::DARTGeometricStateSpace;
+    using ::aikido::ompl::DARTGeometricStateValidityChecker;
 
     BOOST_ASSERT(world);
     BOOST_ASSERT(dofs.size() == dof_weights.size());

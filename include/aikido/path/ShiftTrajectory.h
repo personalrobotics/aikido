@@ -1,8 +1,8 @@
-#ifndef R3_PATH_SHIFTTRAJECTORY_H_
-#define R3_PATH_SHIFTTRAJECTORY_H_
-#include <r3/path/Spline.h>
+#ifndef AIKIDO_PATH_SHIFTTRAJECTORY_H_
+#define AIKIDO_PATH_SHIFTTRAJECTORY_H_
+#include "Spline.h"
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 class ShiftTrajectory : public virtual Trajectory {
@@ -23,6 +23,6 @@ private:
 };
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
 
-#endif // ifndef R3_PATH_SHIFTTRAJECTORY_H_
+#endif // AIKIDO_PATH_SHIFTTRAJECTORY_H_

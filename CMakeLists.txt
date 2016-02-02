@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.8)
-project(r3)
+project(aikido)
 
 set(INCLUDE_INSTALL_DIR include)
 set(LIBRARY_INSTALL_DIR lib)

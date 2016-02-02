@@ -1,4 +1,4 @@
-# R3 Style Guide #
+# AIKIDO Style Guide #
 
 The code in this library should generally follow the rules of the Google C++ and Python Style Guides:
 
@@ -16,6 +16,6 @@ Use streams.  They are OK.
 Use exceptions.  DART does not use exceptions though, so expect that this would need to be changed for any code that is moved upstream to DART.
 
 ### Boost ###
-While Boost is a great set of libraries, we would like R3 to be portable with minimal external dependencies.  As such, please only use supported C++11 features and the following Boost libraries:
+While Boost is a great set of libraries, we would like AIKIDO to be portable with minimal external dependencies.  As such, please only use supported C++11 features and the following Boost libraries:
 
 * `Boost.Python`

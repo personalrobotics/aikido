@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 template <
@@ -390,4 +390,4 @@ Scalar SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 }
 
 } // namespace path
-} // namespace r3
+} // namespace aikido

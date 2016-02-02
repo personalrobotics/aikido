@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>r3</name>
+  <name>aikido</name>
   <version>0.0.1</version>
   <description>description</description>
   <maintainer email="mkoval@cs.cmu.edu">Michael Koval</maintainer>

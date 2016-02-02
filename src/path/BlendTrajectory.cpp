@@ -1,6 +1,6 @@
-#include <r3/path/BlendTrajectory.h>
+#include <aikido/path/BlendTrajectory.h>
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 BlendTrajectory::BlendTrajectory(
@@ -58,4 +58,4 @@ Eigen::VectorXd BlendTrajectory::evaluate(Scalar _t, Index _derivative) const
 }
 
 } // namespace path
-} // namespace r3
+} // namespace aikido

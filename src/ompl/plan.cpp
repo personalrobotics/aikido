@@ -7,9 +7,9 @@
 #include <ompl/control/PathControl.h>
 #include <ompl/geometric/PathGeometric.h>
 #include <ompl/geometric/SimpleSetup.h>
-#include <r3/ompl/plan.h>
-#include <r3/ompl/DARTGeometricStateSpace.h>
-#include <r3/ompl/DARTGeometricStateValidityChecker.h>
+#include <aikido/ompl/plan.h>
+#include <aikido/ompl/DARTGeometricStateSpace.h>
+#include <aikido/ompl/DARTGeometricStateValidityChecker.h>
 
 using ::dart::collision::CollisionDetector;
 using ::dart::dynamics::DegreeOfFreedomPtr;
@@ -18,7 +18,7 @@ using ::dart::simulation::World;
 
 typedef ::std::shared_ptr<CollisionDetector> CollisionDetectorPtr;
 
-Eigen::MatrixXd r3::ompl::Plan(
+Eigen::MatrixXd aikido::ompl::Plan(
     CollisionDetectorPtr const &collision_detector,
     std::vector<DegreeOfFreedomPtr> const &dofs,
     Eigen::VectorXd const &dof_weights,
@@ -38,8 +38,8 @@ Eigen::MatrixXd r3::ompl::Plan(
     using ::ompl::control::PathControl;
     using ::ompl::geometric::PathGeometric;
     using ::ompl::geometric::SimpleSetup;
-    using ::r3::ompl::DARTGeometricStateSpace;
-    using ::r3::ompl::DARTGeometricStateValidityChecker;
+    using ::aikido::ompl::DARTGeometricStateSpace;
+    using ::aikido::ompl::DARTGeometricStateValidityChecker;
 
     size_t const num_dofs = dofs.size();
     if (!collision_detector) {

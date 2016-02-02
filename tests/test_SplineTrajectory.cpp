@@ -1,8 +1,8 @@
 #include <boost/assert.hpp>
-#include <r3/path/SplineTrajectory.h>
+#include <aikido/path/SplineTrajectory.h>
 
-using r3::path::Spline;
-using r3::path::SplineTrajectory;
+using aikido::path::Spline;
+using aikido::path::SplineTrajectory;
 using Knot = Spline::Knot;
 
 

@@ -1,12 +1,12 @@
-#ifndef R3_TSR_TSR_H_
-#define R3_TSR_TSR_H_
+#ifndef AIKIDO_TSR_TSR_H_
+#define AIKIDO_TSR_TSR_H_
 
 #include "../util/RNG.hpp"
 
 #include <Eigen/Dense>
 #include <random>
 
-namespace r3 {
+namespace aikido {
 namespace tsr {
 
 class TSR
@@ -32,7 +32,7 @@ public:
   ///
   /// \param[in] rng Random number generator from which to sample
   /// \return a transform within the bounds of this TSR.
-  const Eigen::Isometry3d sample(r3::util::RNG& rng);
+  const Eigen::Isometry3d sample(aikido::util::RNG& rng);
 
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;
@@ -45,6 +45,6 @@ public:
 };
 
 } // namespace tsr
-} // namespace r3
+} // namespace aikido
 
-#endif // R3_TSR_TSR_H_
+#endif // AIKIDO_TSR_TSR_H_

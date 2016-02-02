@@ -1,9 +1,9 @@
-#ifndef R3_PATH_SPLINETRAJECTORY_H_
-#define R3_PATH_SPLINETRAJECTORY_H_
-#include <r3/path/Spline.h>
-#include <r3/path/Trajectory.h>
+#ifndef AIKIDO_PATH_SPLINETRAJECTORY_H_
+#define AIKIDO_PATH_SPLINETRAJECTORY_H_
+#include "Spline.h"
+#include "Trajectory.h"
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 
@@ -12,7 +12,7 @@ class SplineTrajectory : public virtual Trajectory {
 public:
   using Spline = SplineND<
     Scalar, Index, _NumCoefficients, Eigen::Dynamic, Eigen::Dynamic>;
-  using SplineProblem = r3::path::SplineProblem<
+  using SplineProblem = aikido::path::SplineProblem<
     Scalar, Index, _NumCoefficients, Eigen::Dynamic, Eigen::Dynamic>;
 
   SplineTrajectory() = default;
@@ -65,8 +65,8 @@ using ConstQuinticSplineTrajectoryPtr
 
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
 
 #include "detail/SplineTrajectory-impl.h"
 
-#endif // ifndef R3_PATH_SPLINETRAJECTORY_H_
+#endif // ifndef AIKIDO_PATH_SPLINETRAJECTORY_H_

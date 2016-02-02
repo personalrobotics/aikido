@@ -1,8 +1,8 @@
-#ifndef R3_OMPL_DARTGEOMETRICSTATEVALIDITYCHECKER_H_
-#define R3_OMPL_DARTGEOMETRICSTATEVALIDITYCHECKER_H_
+#ifndef AIKIDO_OMPL_DARTGEOMETRICSTATEVALIDITYCHECKER_H_
+#define AIKIDO_OMPL_DARTGEOMETRICSTATEVALIDITYCHECKER_H_
 #include <ompl/base/StateValidityChecker.h>
 
-namespace r3 {
+namespace aikido {
 namespace ompl {
 
 class DARTGeometricStateSpace;
@@ -21,7 +21,7 @@ private:
     DARTGeometricStateSpace *state_space_;
 };
 
-} // namespace r3::ompl
-} // namespace r3
+} // namespace ompl
+} // namespace aikido
 
-#endif
+#endif // AIKIDO_OMPL_DARTGEOMETRICSTATEVALIDITYCHECKER_H_

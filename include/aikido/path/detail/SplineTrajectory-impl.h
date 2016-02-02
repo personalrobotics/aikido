@@ -1,4 +1,4 @@
-namespace r3 {
+namespace aikido {
 namespace path {
 
 template <Trajectory::Index _NumCoefficients>
@@ -51,4 +51,4 @@ auto SplineTrajectory<_NumCoefficients>
 }
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
