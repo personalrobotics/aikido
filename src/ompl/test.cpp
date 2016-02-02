@@ -8,8 +8,8 @@
 #include <ompl/control/PathControl.h>
 #include <ompl/geometric/PathGeometric.h>
 #include <ompl/geometric/SimpleSetup.h>
-#include <aikido/ompl/DARTGeometricStateSpace.h>
-#include <aikido/ompl/DARTGeometricStateValidityChecker.h>
+#include <aikido/ompl/DARTGeometricStateSpace.hpp>
+#include <aikido/ompl/DARTGeometricStateValidityChecker.hpp>
 
 using ::dart::dynamics::DegreeOfFreedom;
 using ::dart::dynamics::Skeleton;

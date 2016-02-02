@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PATH_TWISTTRAJECTORY_H_
 #define AIKIDO_PATH_TWISTTRAJECTORY_H_
 
-#include "Trajectory.h"
-#include "CartesianTrajectory.h"
+#include "Trajectory.hpp"
+#include "CartesianTrajectory.hpp"
 
 namespace aikido {
 namespace path {

@@ -1,5 +1,5 @@
 #include <boost/assert.hpp>
-#include <aikido/path/SplineTrajectory.h>
+#include <aikido/path/SplineTrajectory.hpp>
 
 using aikido::path::Spline;
 using aikido::path::SplineTrajectory;

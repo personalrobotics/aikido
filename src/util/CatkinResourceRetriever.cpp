@@ -6,7 +6,7 @@
 #include <dart/common/Console.h>
 #include <dart/common/Uri.h>
 #include <dart/common/LocalResourceRetriever.h>
-#include <aikido/util/CatkinResourceRetriever.h>
+#include <aikido/util/CatkinResourceRetriever.hpp>
 
 static const std::string CATKIN_MARKER(".catkin");
 

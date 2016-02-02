@@ -1,5 +1,5 @@
-#include <aikido/ompl/DARTGeometricStateSpace.h>
-#include <aikido/ompl/DARTGeometricStateValidityChecker.h>
+#include <aikido/ompl/DARTGeometricStateSpace.hpp>
+#include <aikido/ompl/DARTGeometricStateValidityChecker.hpp>
 #include <ompl/base/SpaceInformation.h>
 
 using aikido::ompl::DARTGeometricStateValidityChecker;
