@@ -1,12 +1,12 @@
-#include <r3/tsr/TSR.hpp>
+#include <aikido/tsr/TSR.hpp>
 
 #include <stdexcept>
 #include <math.h>
 #include <vector>
 
-using r3::util::RNG;
+using aikido::util::RNG;
 
-namespace r3 {
+namespace aikido {
 namespace tsr {
 
 //=============================================================================
@@ -73,4 +73,4 @@ const Eigen::Isometry3d TSR::sample(RNG& rng)
 }
 
 } // namespace tsr
-} // namespace r3
+} // namespace aikido

@@ -1,10 +1,10 @@
-#ifndef R3_PATH_TWISTTRAJECTORY_H_
-#define R3_PATH_TWISTTRAJECTORY_H_
+#ifndef AIKIDO_PATH_TWISTTRAJECTORY_H_
+#define AIKIDO_PATH_TWISTTRAJECTORY_H_
 
-#include <r3/path/Trajectory.h>
-#include <r3/path/CartesianTrajectory.h>
+#include "Trajectory.h"
+#include "CartesianTrajectory.h"
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 class SE3TwistTrajectory : public virtual SE3Trajectory
@@ -23,6 +23,6 @@ private:
 };
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
 
-#endif // ifndef R3_PATH_TWISTTRAJECTORY_H_
+#endif // AIKIDO_PATH_TWISTTRAJECTORY_H_

@@ -1,8 +1,8 @@
-#include <r3/ompl/DARTGeometricStateSpace.h>
-#include <r3/ompl/DARTGeometricStateValidityChecker.h>
+#include <aikido/ompl/DARTGeometricStateSpace.h>
+#include <aikido/ompl/DARTGeometricStateValidityChecker.h>
 #include <ompl/base/SpaceInformation.h>
 
-using r3::ompl::DARTGeometricStateValidityChecker;
+using aikido::ompl::DARTGeometricStateValidityChecker;
 
 DARTGeometricStateValidityChecker::DARTGeometricStateValidityChecker(
         ::ompl::base::SpaceInformation *space_info)

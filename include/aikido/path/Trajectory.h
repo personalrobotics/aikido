@@ -1,8 +1,8 @@
-#ifndef R3_PATH_TRAJECTORY_H_
-#define R3_PATH_TRAJECTORY_H_
+#ifndef AIKIDO_PATH_TRAJECTORY_H_
+#define AIKIDO_PATH_TRAJECTORY_H_
 #include <boost/shared_ptr.hpp>
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 
@@ -30,6 +30,6 @@ using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
 
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
 
-#endif // ifndef R3_PATH_TRAJECTORY_H_
+#endif // ifndef AIKIDO_PATH_TRAJECTORY_H_

@@ -3,7 +3,7 @@
 
 void python_OMPL();
 
-BOOST_PYTHON_MODULE(R3_MODULE_NAME)
+BOOST_PYTHON_MODULE(AIKIDO_MODULE_NAME)
 {
     SetupEigenConverters();
 

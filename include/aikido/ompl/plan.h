@@ -1,5 +1,5 @@
-#ifndef R3_OMPL_PLAN_H_
-#define R3_OMPL_PLAN_H_
+#ifndef AIKIDO_OMPL_PLAN_H_
+#define AIKIDO_OMPL_PLAN_H_
 #include <memory>
 #include <vector>
 #include <Eigen/Dense>
@@ -14,7 +14,7 @@ class World;
 } // namespace simulation
 } // namespace dart
 
-namespace r3 {
+namespace aikido {
 namespace ompl {
 
 ::Eigen::MatrixXd Plan(
@@ -27,6 +27,6 @@ namespace ompl {
 );
 
 } // namespace ompl
-} // namespace r3
+} // namespace aikido
 
-#endif
+#endif // AIKIDO_OMPL_PLAN_H_

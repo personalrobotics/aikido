@@ -1,11 +1,11 @@
-#ifndef R3_UTIL_CATKINRESOURCERETRIEVER_H_
-#define R3_UTIL_CATKINRESOURCERETRIEVER_H_
+#ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_H_
+#define AIKIDO_UTIL_CATKINRESOURCERETRIEVER_H_
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <dart/common/ResourceRetriever.h>
 
-namespace r3 {
+namespace aikido {
 namespace util {
 
 class CatkinResourceRetriever : public virtual dart::common::ResourceRetriever {
@@ -34,6 +34,6 @@ private:
 };
 
 } // namespace util
-} // namespace r3
+} // namespace aikido
 
-#endif // ifndef R3_UTIL_CATKINRESOURCERETRIEVER_H_
+#endif // ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_H_

@@ -1,8 +1,8 @@
-#ifndef R3_PATH_CARTESIANTRAJECTORY_H_
-#define R3_PATH_CARTESIANTRAJECTORY_H_
+#ifndef AIKIDO_PATH_CARTESIANTRAJECTORY_H_
+#define AIKIDO_PATH_CARTESIANTRAJECTORY_H_
 #include <memory>
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 template <int _Dim>
@@ -33,6 +33,6 @@ using SE3TrajectoryPtr = std::shared_ptr<SE3Trajectory>;
 using ConstSE3TrajectoryPtr = std::shared_ptr<const SE3Trajectory>;
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
 
-#endif // ifndef R3_PATH_TRAJECTORY_H_
+#endif // AIKIDO_PATH_TRAJECTORY_H_

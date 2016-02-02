@@ -1,10 +1,10 @@
 #include <boost/format.hpp>
-#include <r3/path/GeometricPath.h>
-#include <r3/path/SplineTrajectory.h>
+#include <aikido/path/GeometricPath.h>
+#include <aikido/path/SplineTrajectory.h>
 #include "external/hauser_parabolic_smoother/DynamicPath.h"
 
-using r3::path::GeometricPath;
-using r3::path::TrajectoryPtr;
+using aikido::path::GeometricPath;
+using aikido::path::TrajectoryPtr;
 
 static ParabolicRamp::Vector toHauserVector(Eigen::VectorXd const &u)
 {

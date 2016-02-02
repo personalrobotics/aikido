@@ -6,13 +6,13 @@
 #include <dart/common/Console.h>
 #include <dart/common/Uri.h>
 #include <dart/common/LocalResourceRetriever.h>
-#include <r3/util/CatkinResourceRetriever.h>
+#include <aikido/util/CatkinResourceRetriever.h>
 
 static const std::string CATKIN_MARKER(".catkin");
 
 using dart::common::Uri;
 
-namespace r3 {
+namespace aikido {
 namespace util {
 
 CatkinResourceRetriever::CatkinResourceRetriever()
@@ -195,4 +195,4 @@ Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
 }
 
 } // namespace util
-} // namespace r3
+} // namespace aikido

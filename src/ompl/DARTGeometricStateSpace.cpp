@@ -4,14 +4,14 @@
 #include <dart/dynamics/dynamics.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/base/spaces/SO2StateSpace.h>
-#include <r3/ompl/DARTGeometricStateSpace.h>
+#include <aikido/ompl/DARTGeometricStateSpace.h>
 
 using ::dart::collision::CollisionDetector;
 using ::dart::dynamics::DegreeOfFreedom;
 using ::dart::dynamics::DegreeOfFreedomPtr;
 using ::dart::dynamics::Skeleton;
 using ::dart::dynamics::SkeletonPtr;
-using ::r3::ompl::DARTGeometricStateSpace;
+using ::aikido::ompl::DARTGeometricStateSpace;
 
 typedef ::ompl::base::SO2StateSpace::StateType SO2State;
 typedef ::ompl::base::RealVectorStateSpace::StateType RealVectorState;

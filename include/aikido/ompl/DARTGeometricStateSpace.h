@@ -1,5 +1,5 @@
-#ifndef R3_OMPL_DARTGEOMETRICSTATESPACE_H_
-#define R3_OMPL_DARTGEOMETRICSTATESPACE_H_
+#ifndef AIKIDO_OMPL_DARTGEOMETRICSTATESPACE_H_
+#define AIKIDO_OMPL_DARTGEOMETRICSTATESPACE_H_
 #include <vector>
 #include <unordered_set>
 #include <Eigen/Dense>
@@ -12,12 +12,12 @@ namespace dart {
 
 namespace collision {
     class CollisionDetector;
-} // namespace dart::collision
+} // namespace collision
 
 } // namespace dart
 
 
-namespace r3 {
+namespace aikido {
 namespace ompl {
 
 class DARTGeometricStateSpace : public ::ompl::base::CompoundStateSpace {
@@ -49,7 +49,7 @@ private:
 
 typedef boost::shared_ptr<DARTGeometricStateSpace> DARTGeometricStateSpacePtr;
 
-} // namespace r3::ompl
-} // namespace r3
+} // namespace ompl
+} // namespace aikido
 
-#endif
+#endif // AIKIDO_OMPL_DARTGEOMETRICSTATESPACE_H_

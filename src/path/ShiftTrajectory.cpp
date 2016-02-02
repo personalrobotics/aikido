@@ -1,6 +1,6 @@
-#include <r3/path/ShiftTrajectory.h>
+#include <aikido/path/ShiftTrajectory.h>
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 ShiftTrajectory::ShiftTrajectory(const ConstTrajectoryPtr& _traj, Scalar _offset)
@@ -32,4 +32,4 @@ Eigen::VectorXd ShiftTrajectory::evaluate(Scalar _t, Index _derivative) const
 }
 
 } // namespace path
-} // namespace r3
+} // namespace aikido

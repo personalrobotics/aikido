@@ -1,5 +1,5 @@
-#ifndef R3_PATH_SPLINE_H_
-#define R3_PATH_SPLINE_H_
+#ifndef AIKIDO_PATH_SPLINE_H_
+#define AIKIDO_PATH_SPLINE_H_
 
 #include <cstddef>
 #include <vector>
@@ -9,7 +9,7 @@
 #include <Eigen/Sparse>
 #include <Eigen/StdVector>
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 template <
@@ -165,11 +165,11 @@ public:
 };
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
 
 #include "detail/Spline-impl.h"
 
-#include <r3/path/Trajectory.h>
-#include <r3/path/SplineTrajectory.h>
+#include "Trajectory.h"
+#include "SplineTrajectory.h"
 
-#endif // ifndef R3_PATH_SPLINE_H_
+#endif // AIKIDO_PATH_SPLINE_H_

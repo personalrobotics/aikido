@@ -1,7 +1,7 @@
 #include <dart/math/Geometry.h>
-#include <r3/path/CartesianTwistTrajectory.h>
+#include <aikido/path/CartesianTwistTrajectory.h>
 
-namespace r3 {
+namespace aikido {
 namespace path {
 
 SE3TwistTrajectory::SE3TwistTrajectory(const TrajectoryPtr& _twistTrajectory)
@@ -33,4 +33,4 @@ auto SE3TwistTrajectory::evaluate(Scalar _t) const -> Output
 }
 
 } // namespace path
-} // namespace r3
+} // namespace aikido
