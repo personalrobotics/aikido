@@ -37,7 +37,6 @@ add_library(${PROJECT_NAME} SHARED
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
 )
 target_link_libraries(${PROJECT_NAME}
-  ${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${OMPL_LIBRARIES}
   ${Boost_LIBRARIES}
@@ -74,3 +73,7 @@ configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   DESTINATION "${CONFIG_INSTALL_DIR}"
 )
+
+# Add unit tests using GTest.
+enable_testing()
+add_subdirectory(tests)

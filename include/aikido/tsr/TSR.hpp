@@ -14,9 +14,9 @@ class TSR
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  TSR(const Eigen::Isometry3d& T0_w,
-      const Eigen::Matrix<double, 6, 2>& Bw,
-      const Eigen::Isometry3d& Tw_e);
+  TSR(const Eigen::Isometry3d& T0_w = Eigen::Isometry3d::Identity(),
+      const Eigen::Matrix<double, 6, 2>& Bw = Eigen::Matrix<double, 6, 2>::Zero(),
+      const Eigen::Isometry3d& Tw_e = Eigen::Isometry3d::Identity());
 
   TSR(const TSR&) = default;
   TSR(TSR&& other) = default;
