@@ -1,4 +1,4 @@
-#include <aikido/path/ShiftTrajectory.h>
+#include <aikido/path/ShiftTrajectory.hpp>
 
 namespace aikido {
 namespace path {

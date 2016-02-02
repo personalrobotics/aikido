@@ -167,9 +167,9 @@ public:
 } // namespace path
 } // namespace aikido
 
-#include "detail/Spline-impl.h"
+#include "detail/Spline-impl.hpp"
 
-#include "Trajectory.h"
-#include "SplineTrajectory.h"
+#include "Trajectory.hpp"
+#include "SplineTrajectory.hpp"
 
 #endif // AIKIDO_PATH_SPLINE_H_

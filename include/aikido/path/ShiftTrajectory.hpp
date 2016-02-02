@@ -1,6 +1,6 @@
 #ifndef AIKIDO_PATH_SHIFTTRAJECTORY_H_
 #define AIKIDO_PATH_SHIFTTRAJECTORY_H_
-#include "Spline.h"
+#include "Spline.hpp"
 
 namespace aikido {
 namespace path {

@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PATH_SPLINETRAJECTORY_H_
 #define AIKIDO_PATH_SPLINETRAJECTORY_H_
-#include "Spline.h"
-#include "Trajectory.h"
+#include "Spline.hpp"
+#include "Trajectory.hpp"
 
 namespace aikido {
 namespace path {
@@ -67,6 +67,6 @@ using ConstQuinticSplineTrajectoryPtr
 } // namespace path
 } // namespace aikido
 
-#include "detail/SplineTrajectory-impl.h"
+#include "detail/SplineTrajectory-impl.hpp"
 
 #endif // ifndef AIKIDO_PATH_SPLINETRAJECTORY_H_

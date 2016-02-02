@@ -1,5 +1,5 @@
 #include <dart/math/Geometry.h>
-#include <aikido/path/CartesianTwistTrajectory.h>
+#include <aikido/path/CartesianTwistTrajectory.hpp>
 
 namespace aikido {
 namespace path {

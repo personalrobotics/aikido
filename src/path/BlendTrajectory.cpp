@@ -1,4 +1,4 @@
-#include <aikido/path/BlendTrajectory.h>
+#include <aikido/path/BlendTrajectory.hpp>
 
 namespace aikido {
 namespace path {

@@ -4,7 +4,7 @@
 #include <dart/dynamics/dynamics.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/base/spaces/SO2StateSpace.h>
-#include <aikido/ompl/DARTGeometricStateSpace.h>
+#include <aikido/ompl/DARTGeometricStateSpace.hpp>
 
 using ::dart::collision::CollisionDetector;
 using ::dart::dynamics::DegreeOfFreedom;
