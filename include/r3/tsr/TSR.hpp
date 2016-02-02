@@ -19,6 +19,9 @@ public:
       const Eigen::Isometry3d& Tw_e);
 
   TSR(const TSR&) = default;
+  TSR(TSR&& other) = default;
+  TSR& operator=(const TSR& other) = default;
+  TSR& operator=(TSR&& other) = default;
   virtual ~TSR() = default;
 
   /// Return a transform sampled from this TSR.
