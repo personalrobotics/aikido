@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>aikido_rviz</name>
+  <version>1.0.0</version>
+  <description>
+    KIDO viewer that publishes the environment as InteractiveMarkers that can
+    be visualized in RViz.
+  </description>
+  <maintainer email="mkoval@cs.cmu.edu">Michael Koval</maintainer>
+  <author email="mkoval@cs.cmu.edu">Michael Koval</author>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>eigen</build_depend>
+  <depend>dart</depend>
+  <depend>interactive_markers</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>visualization_msgs</depend>
+  <depend>libmicrohttpd</depend>
+</package>
