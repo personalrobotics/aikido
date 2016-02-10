@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.4.6)
-project(dart_rviz)
+project(aikido_rviz)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 find_package(catkin REQUIRED COMPONENTS
@@ -43,7 +43,8 @@ catkin_package(
     std_msgs
     visualization_msgs
   DEPENDS
-    eigen
+    Eigen
+    libmicrohttpd
 )
 
 add_definitions(-DPROJECT_NAME=${PROJECT_NAME})

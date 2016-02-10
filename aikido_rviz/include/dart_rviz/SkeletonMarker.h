@@ -1,5 +1,5 @@
-#ifndef DART_INTERACTIVEMARKER_SKELETONMARKER_H_
-#define DART_INTERACTIVEMARKER_SKELETONMARKER_H_
+#ifndef AIKIDO_RVIZ_SKELETONMARKER_H_
+#define AIKIDO_RVIZ_SKELETONMARKER_H_
 #include <unordered_map>
 #include <dart/dynamics/dynamics.h>
 #include <interactive_markers/interactive_marker_server.h>
@@ -8,7 +8,7 @@
 #include "ResourceServer.h"
 #include "SmartPointers.h"
 
-namespace dart {
+namespace aikido {
 namespace rviz {
 
 class SkeletonMarker {
@@ -41,6 +41,6 @@ private:
 };
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido
 
 #endif

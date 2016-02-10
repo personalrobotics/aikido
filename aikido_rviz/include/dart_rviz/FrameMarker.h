@@ -1,19 +1,18 @@
-#ifndef DART_INTERACTIVEMARKER_FRAMEMARKER_H_
-#define DART_INTERACTIVEMARKER_FRAMEMARKER_H_
+#ifndef AIKIDO_RVIZ_FRAMEMARKER_H_
+#define AIKIDO_RVIZ_FRAMEMARKER_H_
 #include <memory>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 
 namespace dart {
-
-
 namespace dynamics {
 
 class Frame;
 
 } // namespace dynamics
+} // namespace dart
 
-
+namespace aikido {
 namespace rviz {
 
 class FrameMarker {
@@ -36,6 +35,6 @@ private:
 };
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido
 
-#endif // ifndef DART_INTERACTIVEMARKER_FRAMEMARKER_H_
+#endif // ifndef AIKIDO_RVIZ_FRAMEMARKER_H_

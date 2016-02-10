@@ -1,5 +1,5 @@
-#ifndef DART_INTERACTIVEMARKER_SHAPE_CONVERSIONS_H_
-#define DART_INTERACTIVEMARKER_SHAPE_CONVERSIONS_H_
+#ifndef AIKIDO_RVIZ_SHAPE_CONVERSIONS_H_
+#define AIKIDO_RVIZ_SHAPE_CONVERSIONS_H_
 
 #include <Eigen/Dense>
 #include <geometry_msgs/Point.h>
@@ -11,7 +11,6 @@
 struct aiMesh;
 
 namespace dart {
-
 namespace dynamics {
 
 class Shape;
@@ -24,7 +23,9 @@ class PlaneShape;
 class SoftMeshShape;
 
 } // namespace dynamics
+} // namespace dart
 
+namespace aikido {
 namespace rviz {
 
 geometry_msgs::Point convertEigenToROSPoint(Eigen::Vector3d const &v);
@@ -63,6 +64,6 @@ bool convertShape(dart::dynamics::SoftMeshShape const &shape,
                   ResourceServer *resourceManager);
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido
 
 #endif

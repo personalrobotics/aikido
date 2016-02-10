@@ -15,7 +15,7 @@ using dart::dynamics::PlaneShape;
 using dart::dynamics::SoftMeshShape;
 using visualization_msgs::Marker;
 
-namespace dart {
+namespace aikido {
 namespace rviz {
 
 geometry_msgs::Point convertEigenToROSPoint(Eigen::Vector3d const &v)
@@ -267,4 +267,4 @@ bool convertShape(Shape const &shape, Marker *marker, ResourceServer *rm)
 }
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido

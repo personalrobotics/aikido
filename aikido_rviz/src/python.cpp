@@ -2,12 +2,14 @@
 #include <boost/python.hpp>
 #include <dart_rviz/InteractiveMarkerViewer.h>
 
-void init_node()
+namespace {
+
+void init_node(const std::string& node_name)
 {
   static int argc = 0;
   static char **argv = nullptr;
 
-  ros::init(argc, argv, "dart_rviz",
+  ros::init(argc, argv, node_name,
     ros::init_options::AnonymousName | ros::init_options::NoSigintHandler);
 }
 
@@ -16,16 +18,18 @@ void spin_once()
   ros::spinOnce();
 }
 
+} // namespace
+
 BOOST_PYTHON_MODULE(PROJECT_NAME)
 {
   using namespace boost::python;
 
   using boost::noncopyable;
-  using dart::rviz::InteractiveMarkerViewer;
+  using aikido::rviz::InteractiveMarkerViewer;
 
   class_<InteractiveMarkerViewer, noncopyable>("InteractiveMarkerViewer",
      init<std::string const &>())
-    .def("add_skeleton", &InteractiveMarkerViewer::addSkeleton)
+    .def("addSkeleton", &InteractiveMarkerViewer::addSkeleton)
     .def("update", &InteractiveMarkerViewer::update)
     ;
 

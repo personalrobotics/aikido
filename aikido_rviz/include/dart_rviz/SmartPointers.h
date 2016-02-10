@@ -1,8 +1,8 @@
-#ifndef DART_INTERACTIVEMARKER_SMARTPOINTERS_H_
-#define DART_INTERACTIVEMARKER_SMARTPOINTERS_H_
+#ifndef AIKIDO_RVIZ_SMARTPOINTERS_H_
+#define AIKIDO_RVIZ_SMARTPOINTERS_H_
 #include <memory>
 
-namespace dart {
+namespace aikido {
 namespace rviz {
 
 class FrameMarker;
@@ -18,6 +18,6 @@ typedef std::shared_ptr<SkeletonMarker> SkeletonMarkerPtr;
 typedef std::shared_ptr<SkeletonMarker const> SkeletonMarkerConstPtr;
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido
 
-#endif // ifndef DART_INTERACTIVEMARKER_SMARTPOINTERS_H_
+#endif // ifndef AIKIDO_RVIZ_SMARTPOINTERS_H_

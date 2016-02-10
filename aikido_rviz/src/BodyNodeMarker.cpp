@@ -6,7 +6,7 @@ using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::WeakBodyNodePtr;
 using dart::dynamics::ConstShapePtr;
-using dart::rviz::BodyNodeMarker;
+using aikido::rviz::BodyNodeMarker;
 using interactive_markers::InteractiveMarkerServer;
 
 BodyNodeMarker::BodyNodeMarker(ResourceServer *resourceServer,
@@ -119,7 +119,7 @@ void BodyNodeMarker::updateName(BodyNode const &bodyNode,
 
 void BodyNodeMarker::updateGeometry(BodyNode const &bodyNode)
 {
-  using dart::rviz::convertEigenToROSColorRGBA;
+  using aikido::rviz::convertEigenToROSColorRGBA;
   using visualization_msgs::Marker;
 
   mVisualControl->markers.clear();

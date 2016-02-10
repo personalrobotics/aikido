@@ -1,11 +1,11 @@
-#ifndef DART_INTERACTIVEMARKER_BODYNODEMARKER_H_
-#define DART_INTERACTIVEMARKER_BODYNODEMARKER_H_
+#ifndef AIKIDO_RVIZ_BODYNODEMARKER_H_
+#define AIKIDO_RVIZ_BODYNODEMARKER_H_
 #include <dart/dynamics/dynamics.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include "ResourceServer.h"
 
-namespace dart {
+namespace aikido {
 namespace rviz {
 
 class BodyNodeMarker {
@@ -58,6 +58,6 @@ private:
 };
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido
 
 #endif

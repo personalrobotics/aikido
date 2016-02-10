@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <dart_rviz/ResourceServer.h>
 
-using dart::rviz::ResourceServer;
+using aikido::rviz::ResourceServer;
 
 static void getTextures(aiScene const &scene, std::string const &scenePath,
                          std::vector<std::pair<std::string, std::string> > *textures)

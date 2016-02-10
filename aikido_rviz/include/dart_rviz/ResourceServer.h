@@ -1,11 +1,11 @@
-#ifndef DART_INTERACTIVEMARKER_RESOURCESERVER_H_
-#define DART_INTERACTIVEMARKER_RESOURCESERVER_H_
+#ifndef AIKIDO_RVIZ_RESOURCESERVER_H_
+#define AIKIDO_RVIZ_RESOURCESERVER_H_
 #include <mutex>
 #include <unordered_map>
 #include <microhttpd.h>
 #include <dart/dynamics/dynamics.h>
 
-namespace dart {
+namespace aikido {
 namespace rviz {
 
 struct BinaryResource {
@@ -92,6 +92,6 @@ private:
 };
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido
 
 #endif

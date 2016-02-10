@@ -1,5 +1,5 @@
-#ifndef DART_INTERACTIVEMARKER_INTERACTIVEMARKERVIEWER_H_
-#define DART_INTERACTIVEMARKER_INTERACTIVEMARKERVIEWER_H_
+#ifndef AIKIDO_RVIZ_INTERACTIVEMARKERVIEWER_H_
+#define AIKIDO_RVIZ_INTERACTIVEMARKERVIEWER_H_
 #include <atomic>
 #include <set>
 #include <thread>
@@ -9,7 +9,7 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include "SmartPointers.h"
 
-namespace dart {
+namespace aikido {
 namespace rviz {
 
 class InteractiveMarkerViewer {
@@ -50,6 +50,6 @@ private:
 };
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido
 
 #endif

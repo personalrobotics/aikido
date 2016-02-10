@@ -5,7 +5,7 @@
 using boost::format;
 using boost::str;
 
-namespace dart {
+namespace aikido {
 namespace rviz {
 
 static geometry_msgs::Point makePoint(double x, double y, double z)
@@ -95,4 +95,4 @@ void FrameMarker::update()
 }
 
 } // namespace rviz
-} // namespace dart
+} // namespace aikido

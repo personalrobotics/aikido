@@ -4,11 +4,11 @@
 
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
-using dart::rviz::FrameMarker;
-using dart::rviz::FrameMarkerPtr;
-using dart::rviz::SkeletonMarker;
-using dart::rviz::SkeletonMarkerPtr;
-using dart::rviz::InteractiveMarkerViewer;
+using aikido::rviz::FrameMarker;
+using aikido::rviz::FrameMarkerPtr;
+using aikido::rviz::SkeletonMarker;
+using aikido::rviz::SkeletonMarkerPtr;
+using aikido::rviz::InteractiveMarkerViewer;
 using interactive_markers::InteractiveMarkerServer;
 
 InteractiveMarkerViewer::InteractiveMarkerViewer(
