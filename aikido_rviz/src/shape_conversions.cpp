@@ -2,8 +2,8 @@
 #include <boost/filesystem.hpp>
 #include <Eigen/StdVector>
 #include <dart/dynamics/dynamics.h>
-#include <dart_rviz/shape_conversions.h>
-#include <dart_rviz/ResourceServer.h>
+#include <aikido/rviz/shape_conversions.h>
+#include <aikido/rviz/ResourceServer.h>
 
 using dart::dynamics::Shape;
 using dart::dynamics::BoxShape;

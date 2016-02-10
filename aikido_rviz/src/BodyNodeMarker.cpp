@@ -1,6 +1,6 @@
 #include <sstream>
-#include <dart_rviz/shape_conversions.h>
-#include <dart_rviz/BodyNodeMarker.h>
+#include <aikido/rviz/shape_conversions.h>
+#include <aikido/rviz/BodyNodeMarker.h>
 
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;

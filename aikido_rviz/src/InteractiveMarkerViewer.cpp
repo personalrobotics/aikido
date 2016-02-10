@@ -1,6 +1,6 @@
-#include <dart_rviz/FrameMarker.h>
-#include <dart_rviz/SkeletonMarker.h>
-#include <dart_rviz/InteractiveMarkerViewer.h>
+#include <aikido/rviz/FrameMarker.h>
+#include <aikido/rviz/SkeletonMarker.h>
+#include <aikido/rviz/InteractiveMarkerViewer.h>
 
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;

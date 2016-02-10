@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 #include <boost/python.hpp>
-#include <dart_rviz/InteractiveMarkerViewer.h>
+#include <aikido/rviz/InteractiveMarkerViewer.h>
 
 namespace {
 

@@ -1,6 +1,6 @@
 #include <boost/format.hpp>
-#include <dart_rviz/shape_conversions.h>
-#include <dart_rviz/FrameMarker.h>
+#include <aikido/rviz/shape_conversions.h>
+#include <aikido/rviz/FrameMarker.h>
 
 using boost::format;
 using boost::str;

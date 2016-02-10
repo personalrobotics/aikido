@@ -5,7 +5,7 @@
 #include <boost/filesystem.hpp>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <dart_rviz/ResourceServer.h>
+#include <aikido/rviz/ResourceServer.h>
 
 using aikido::rviz::ResourceServer;
 
