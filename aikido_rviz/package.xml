@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>dart_rviz</name>
+  <name>aikido_rviz</name>
   <version>1.0.0</version>
   <description>
-    DART viewer that publishes the environment as InteractiveMarkers that can
+    KIDO viewer that publishes the environment as InteractiveMarkers that can
     be visualized in RViz.
   </description>
   <maintainer email="mkoval@cs.cmu.edu">Michael Koval</maintainer>
