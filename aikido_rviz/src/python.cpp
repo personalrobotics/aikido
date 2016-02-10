@@ -1,6 +1,9 @@
 #include <ros/ros.h>
 #include <boost/python.hpp>
 #include <aikido/rviz/InteractiveMarkerViewer.h>
+#include <aikido/rviz/SkeletonMarker.h>
+
+using aikido::rviz::InteractiveMarkerViewer;
 
 namespace {
 
@@ -18,6 +21,12 @@ void spin_once()
   ros::spinOnce();
 }
 
+void InteractiveMarkerViewer_addSkeleton(
+  InteractiveMarkerViewer* viewer, const dart::dynamics::SkeletonPtr& skeleton)
+{
+  viewer->addSkeleton(skeleton);
+}
+
 } // namespace
 
 BOOST_PYTHON_MODULE(PROJECT_NAME)
@@ -25,11 +34,16 @@ BOOST_PYTHON_MODULE(PROJECT_NAME)
   using namespace boost::python;
 
   using boost::noncopyable;
-  using aikido::rviz::InteractiveMarkerViewer;
+
+  boost::python::import("dartpy");
 
   class_<InteractiveMarkerViewer, noncopyable>("InteractiveMarkerViewer",
      init<std::string const &>())
-    .def("addSkeleton", &InteractiveMarkerViewer::addSkeleton)
+    // TODO: This wrapper is necessary to strip the return value, which is a
+    // std::shared_ptr, from addSkeleton. Boost.Python on Ubuntu 14.04 does not
+    // have native support for std::shared_ptr. We have a workaround for this
+    // in dartpy, but it is not easily available here.
+    .def("addSkeleton", &InteractiveMarkerViewer_addSkeleton)
     .def("update", &InteractiveMarkerViewer::update)
     ;
 
