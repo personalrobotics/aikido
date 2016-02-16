@@ -1,6 +1,6 @@
 #include <boost/format.hpp>
-#include <aikido/rviz/shape_conversions.h>
-#include <aikido/rviz/FrameMarker.h>
+#include <aikido/rviz/shape_conversions.hpp>
+#include <aikido/rviz/FrameMarker.hpp>
 
 using boost::format;
 using boost::str;
