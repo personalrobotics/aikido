@@ -1,15 +1,15 @@
 #ifndef AIKIDO_TSR_TSR_H_
 #define AIKIDO_TSR_TSR_H_
 
-#include "../util/RNG.hpp"
-
+#include "SampleableRegion.hpp"
 #include <Eigen/Dense>
 #include <random>
+#include <memory>
 
 namespace aikido {
-namespace tsr {
+namespace sampleable{
 
-class TSR
+class TSR : public SampleableRegion<Eigen::Isometry3d>
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -32,7 +32,11 @@ public:
   ///
   /// \param[in] rng Random number generator from which to sample
   /// \return a transform within the bounds of this TSR.
-  const Eigen::Isometry3d sample(aikido::util::RNG& rng);
+  const Eigen::Isometry3d sample(aikido::util::RNG& rng) override;
+
+  bool isSatisfied(const Eigen::Isometry3d T0_s) const override;
+  bool canSample() const override;
+  int maxSampleCount() const override;
 
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;
@@ -42,9 +46,17 @@ public:
 
   /// Transformation from "wiggle" frame into end frame.
   Eigen::Isometry3d mTw_e;
+
+private:
+
+  /// True if TSR contains single point
+  bool singlePointTSR() const;
+
+  /// infinite if bounds have volume. 
+  int mMaxSampleCount;
 };
 
-} // namespace tsr
+} // namespace sampleableregion
 } // namespace aikido
 
 #endif // AIKIDO_TSR_TSR_H_

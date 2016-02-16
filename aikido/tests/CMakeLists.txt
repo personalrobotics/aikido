@@ -20,7 +20,7 @@ endfunction()
 # Unit test declarations
 ################################
 set(AIKIDO_TESTS
-  test_TSR.cpp
+  # test_TSR.cpp
   # test_SplineTrajectory.cpp
 )
 run_tests("${AIKIDO_TESTS}" aikido gtest gtest_main)

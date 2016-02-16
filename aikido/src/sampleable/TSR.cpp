@@ -1,4 +1,4 @@
-#include <aikido/tsr/TSR.hpp>
+#include <aikido/sampleable/TSR.hpp>
 
 #include <stdexcept>
 #include <math.h>
@@ -7,7 +7,7 @@
 using aikido::util::RNG;
 
 namespace aikido {
-namespace tsr {
+namespace sampleable{
 
 //=============================================================================
 TSR::TSR(const Eigen::Isometry3d& T0_w,
@@ -33,6 +33,14 @@ TSR::TSR(const Eigen::Isometry3d& T0_w,
     {
       mBw(i,j) = fmod(mBw(i, j) - lower, 2*M_PI) + lower;
     }
+  }
+
+  if (singlePointTSR())
+  {
+    mMaxSampleCount = 1;
+  }else
+  {
+    mMaxSampleCount = SampleableRegion::INFTY;
   }
 };
 
@@ -69,8 +77,69 @@ const Eigen::Isometry3d TSR::sample(RNG& rng)
   Tw_s.linear() = rotation;
 
   Eigen::Isometry3d T0_s(mT0_w * Tw_s * mTw_e);
+
+  // TODO: decrease sample count if TSR is single point
+  if (singlePointTSR())
+  {
+    mMaxSampleCount -= 1;
+  }
   return T0_s;
 }
 
-} // namespace tsr
+//=============================================================================
+bool TSR::isSatisfied(const Eigen::Isometry3d T0_s) const
+{
+  
+  Eigen::Isometry3d Tw_s = mT0_w.inverse()*T0_s*mTw_e.inverse();
+
+  // check if angles are within bounds
+  Eigen::Matrix3d rotation = Tw_s.rotation();
+  Eigen::Vector3d ea = rotation.eulerAngles(2, 1, 0); // ZYX
+
+  for(int i = 3; i < 6; i++)
+  {
+    if (mBw(i,0) > ea[i-3] || mBw(i,1) < ea[i-3])
+      return false;
+  }
+
+  // check if translation are within bounds
+  Eigen::Vector3d translation = Tw_s.translation();
+
+  for(int i = 0; i < 3; i++)
+  {
+    if (mBw(i,0) > translation[i] || mBw(i,1) < translation[i])
+      return false;
+  }
+
+  return true;
+}
+
+//=============================================================================
+bool TSR::canSample() const
+{
+  return mMaxSampleCount > 0;
+}
+
+//=============================================================================
+int TSR::maxSampleCount() const
+{
+  return mMaxSampleCount;
+}
+
+//=============================================================================
+bool TSR::singlePointTSR() const
+{
+  for(int i = 0; i < 6; i++)
+  {
+    if(mBw(i, 0) < mBw(i, 1))
+    {
+      return false;
+    }
+  }
+
+  return true;
+
+}
+
+} // namespace sampleable
 } // namespace aikido
