@@ -75,6 +75,28 @@ TEST_F(CatkinResourceRetrieverTests, ExistsInDevelAndSource)
   EXPECT_TRUE(CompareResourceContents(content, retriever.retrieve(uri)));
 }
 
+TEST_F(CatkinResourceRetrieverTests, CatkinIgnore)
+{
+  setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
+
+  const Uri uri = Uri::getUri("package://my_package3/ignored_file.txt");
+
+  CatkinResourceRetriever retriever;
+  EXPECT_FALSE(retriever.exists(uri));
+  EXPECT_EQ(nullptr, retriever.retrieve(uri));
+}
+
+TEST_F(CatkinResourceRetrieverTests, NestedPackage)
+{
+  setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
+
+  const Uri uri = Uri::getUri("package://nested_package/nested_file.txt");
+
+  CatkinResourceRetriever retriever;
+  EXPECT_FALSE(retriever.exists(uri));
+  EXPECT_EQ(nullptr, retriever.retrieve(uri));
+}
+
 TEST_F(CatkinResourceRetrieverTests, FileDoesNotExist)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
@@ -90,7 +112,7 @@ TEST_F(CatkinResourceRetrieverTests, PackageDoesNotExist)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
-  const Uri uri = Uri::getUri("package://my_package3/devel_only.txt");
+  const Uri uri = Uri::getUri("package://does_not_exist/devel_only.txt");
 
   CatkinResourceRetriever retriever;
   EXPECT_FALSE(retriever.exists(uri));
