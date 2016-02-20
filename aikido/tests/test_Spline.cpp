@@ -74,8 +74,8 @@ TEST_F(SplineNDTests, LinearSpline)
 
   LinearSpline::SolutionMatrices coefficients(2,
     LinearSpline::SolutionMatrix(1, 2));
-  coefficients[0] << 0., 0.;
-  coefficients[1] << 0., 0.;
+  coefficients[0] << 0.,  1.;
+  coefficients[1] << 3., -2.;
 
   LinearSpline spline(times, coefficients);
 
@@ -96,14 +96,13 @@ TEST_F(SplineNDTests, LinearSpline)
   EXPECT_EQ(1, spline.getSegmentIndex(1.5));
   EXPECT_EQ(1, spline.getSegmentIndex(2.01));
 
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(0.0, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(0.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(1.0, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(1.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(2.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_singleton( 0.0), spline.evaluate(0.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_singleton( 0.5), spline.evaluate(0.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_singleton( 0.0), spline.evaluate(1.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_singleton(-1.0), spline.evaluate(2.0, 0), EPSILON);
 
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(0.5, 1), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(1.5, 1), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_singleton( 1.), spline.evaluate(0.5, 1), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_singleton(-2.), spline.evaluate(1.5, 1), EPSILON);
 
   EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(0.5, 2), EPSILON);
   EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(1.5, 2), EPSILON);
