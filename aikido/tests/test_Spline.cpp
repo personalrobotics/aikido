@@ -60,49 +60,115 @@ Eigen::VectorXd make_singleton(double _value)
 
 class SplineNDTests : public testing::Test
 {
-  void SetUp() override
-  {
-  }
-};
-
-TEST_F(SplineNDTests, LinearSpline)
-{
+protected:
   using LinearSpline = SplineND<double, int, 2>;
 
-  LinearSpline::TimeVector times(3);
-  times << 0., 1., 2.;
+  void SetUp() override
+  {
+    mTimesA.resize(3);
+    mTimesA << 0., 1., 2.;
 
-  LinearSpline::SolutionMatrices coefficients(2,
-    LinearSpline::SolutionMatrix(1, 2));
-  coefficients[0] << 0.,  1.;
-  coefficients[1] << 3., -2.;
+    mCoefficientsA.resize(2, LinearSpline::SolutionMatrix(1, 2));
+    mCoefficientsA[0] << 0.,  1.;
+    mCoefficientsA[1] << 3., -2.;
 
-  LinearSpline spline(times, coefficients);
+    mSpline = LinearSpline(mTimesA, mCoefficientsA);
+  }
 
-  EXPECT_EIGEN_EQUAL(times, spline.getTimes(), EPSILON);
+  LinearSpline mSpline;
+  LinearSpline::TimeVector mTimesA;
+  LinearSpline::SolutionMatrices mCoefficientsA;
+};
+
+TEST_F(SplineNDTests, LinearSpline_getTimes)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
+  EXPECT_EIGEN_EQUAL(mTimesA, spline.getTimes(), EPSILON);
+}
+
+TEST_F(SplineNDTests, LinearSpline_getCoefficients)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
   ASSERT_EQ(2, spline.getCoefficients().size());
-  EXPECT_EIGEN_EQUAL(coefficients[0], spline.getCoefficients()[0], EPSILON);
-  EXPECT_EIGEN_EQUAL(coefficients[1], spline.getCoefficients()[1], EPSILON);
+  EXPECT_EIGEN_EQUAL(mCoefficientsA[0], spline.getCoefficients()[0], EPSILON);
+  EXPECT_EIGEN_EQUAL(mCoefficientsA[1], spline.getCoefficients()[1], EPSILON);
+}
+
+TEST_F(SplineNDTests, LinearSpline_getNumKnots)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
 
   EXPECT_EQ(3, spline.getNumKnots());
-  EXPECT_EQ(1, spline.getNumOutputs());
-  EXPECT_EQ(1, spline.getNumDerivatives());
-  EXPECT_EQ(2, spline.getNumCoefficients());
-  EXPECT_DOUBLE_EQ(2., spline.getDuration());
+}
 
-  EXPECT_EQ(0, spline.getSegmentIndex(-0.01));
+TEST_F(SplineNDTests, LinearSpline_getNumOutputs)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
+  EXPECT_EQ(1, spline.getNumOutputs());
+}
+
+TEST_F(SplineNDTests, LinearSpline_getNumDerivatives)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
+  EXPECT_EQ(1, spline.getNumDerivatives());
+}
+
+TEST_F(SplineNDTests, LinearSpline_getNumCoefficients)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
+  EXPECT_EQ(2, spline.getNumCoefficients());
+}
+
+TEST_F(SplineNDTests, LinearSpline_getDuration)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
+  EXPECT_DOUBLE_EQ(2., spline.getDuration());
+}
+
+TEST_F(SplineNDTests, LinearSpline_getSegmentIndex)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
   EXPECT_EQ(0, spline.getSegmentIndex(0.));
   EXPECT_EQ(0, spline.getSegmentIndex(0.5));
   EXPECT_EQ(1, spline.getSegmentIndex(1.5));
+}
+
+TEST_F(SplineNDTests, LinearSpline_getSegmentIndex_OutOfBounds)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
+
+  EXPECT_EQ(0, spline.getSegmentIndex(-0.01));
   EXPECT_EQ(1, spline.getSegmentIndex(2.01));
+}
+
+TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative0)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
 
   EXPECT_EIGEN_EQUAL(make_singleton( 0.0), spline.evaluate(0.0, 0), EPSILON);
   EXPECT_EIGEN_EQUAL(make_singleton( 0.5), spline.evaluate(0.5, 0), EPSILON);
   EXPECT_EIGEN_EQUAL(make_singleton( 0.0), spline.evaluate(1.5, 0), EPSILON);
   EXPECT_EIGEN_EQUAL(make_singleton(-1.0), spline.evaluate(2.0, 0), EPSILON);
+}
+
+TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative1)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
 
   EXPECT_EIGEN_EQUAL(make_singleton( 1.), spline.evaluate(0.5, 1), EPSILON);
   EXPECT_EIGEN_EQUAL(make_singleton(-2.), spline.evaluate(1.5, 1), EPSILON);
+}
+
+TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative2)
+{
+  LinearSpline spline(mTimesA, mCoefficientsA);
 
   EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(0.5, 2), EPSILON);
   EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(1.5, 2), EPSILON);

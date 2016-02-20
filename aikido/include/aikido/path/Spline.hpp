@@ -43,10 +43,7 @@ public:
     Eigen::aligned_allocator<SolutionMatrix> >;
 
   SplineND() = default;
-  SplineND(
-    const TimeVector& _times,
-    const std::vector<SolutionMatrix,
-      Eigen::aligned_allocator<SolutionMatrix> > &_solution);
+  SplineND(const TimeVector& _times, const SolutionMatrices& _solution);
 
   // Default copy and move semantics.
   SplineND(SplineND&& _other) = default;
