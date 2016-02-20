@@ -49,10 +49,17 @@ testing::AssertionResult CompareEigenMatrices(
   return testing::AssertionSuccess();
 }
 
-Eigen::VectorXd make_singleton(double _value)
+Eigen::VectorXd make_vector(double _value)
 {
   Eigen::Matrix<double, 1, 1> valueVector;
   valueVector << _value;
+  return valueVector;
+}
+
+Eigen::VectorXd make_vector(double _value1, double _value2)
+{
+  Eigen::Matrix<double, 2, 1> valueVector;
+  valueVector << _value1, _value2;
   return valueVector;
 }
 
@@ -68,9 +75,9 @@ protected:
     mTimesA.resize(3);
     mTimesA << 0., 1., 2.;
 
-    mCoefficientsA.resize(2, LinearSpline::SolutionMatrix(1, 2));
-    mCoefficientsA[0] << 0.,  1.;
-    mCoefficientsA[1] << 3., -2.;
+    mCoefficientsA.resize(2, LinearSpline::SolutionMatrix(2, 2));
+    mCoefficientsA[0] << 0.,  1., 1.,  1.;
+    mCoefficientsA[1] << 3., -2., 4., -2.;
 
     mSpline = LinearSpline(mTimesA, mCoefficientsA);
   }
@@ -79,6 +86,22 @@ protected:
   LinearSpline::TimeVector mTimesA;
   LinearSpline::SolutionMatrices mCoefficientsA;
 };
+
+TEST_F(SplineNDTests, LinearSpline_constructor_LengthMismatch)
+{
+  LinearSpline::TimeVector times(2);
+  times << 0., 2.;
+
+  EXPECT_THROW(LinearSpline(times, mCoefficientsA), std::runtime_error);
+}
+
+TEST_F(SplineNDTests, LinearSpline_constructor_TimesAreNotMonotone)
+{
+  LinearSpline::TimeVector times(3);
+  times << 0., 2., 1.;
+
+  EXPECT_THROW(LinearSpline(times, mCoefficientsA), std::runtime_error);
+}
 
 TEST_F(SplineNDTests, LinearSpline_getTimes)
 {
@@ -107,7 +130,7 @@ TEST_F(SplineNDTests, LinearSpline_getNumOutputs)
 {
   LinearSpline spline(mTimesA, mCoefficientsA);
 
-  EXPECT_EQ(1, spline.getNumOutputs());
+  EXPECT_EQ(2, spline.getNumOutputs());
 }
 
 TEST_F(SplineNDTests, LinearSpline_getNumDerivatives)
@@ -152,24 +175,24 @@ TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative0)
 {
   LinearSpline spline(mTimesA, mCoefficientsA);
 
-  EXPECT_EIGEN_EQUAL(make_singleton( 0.0), spline.evaluate(0.0, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton( 0.5), spline.evaluate(0.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton( 0.0), spline.evaluate(1.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(-1.0), spline.evaluate(2.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), spline.evaluate(0.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector( 0.5, 1.5), spline.evaluate(0.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), spline.evaluate(1.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(-1.0, 0.0), spline.evaluate(2.0, 0), EPSILON);
 }
 
 TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative1)
 {
   LinearSpline spline(mTimesA, mCoefficientsA);
 
-  EXPECT_EIGEN_EQUAL(make_singleton( 1.), spline.evaluate(0.5, 1), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(-2.), spline.evaluate(1.5, 1), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector( 1.,  1.), spline.evaluate(0.5, 1), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(-2., -2.), spline.evaluate(1.5, 1), EPSILON);
 }
 
 TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative2)
 {
   LinearSpline spline(mTimesA, mCoefficientsA);
 
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(0.5, 2), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_singleton(0.), spline.evaluate(1.5, 2), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(0., 0.), spline.evaluate(0.5, 2), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(0., 0.), spline.evaluate(1.5, 2), EPSILON);
 }
