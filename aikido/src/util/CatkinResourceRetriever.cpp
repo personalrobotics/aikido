@@ -16,6 +16,109 @@ using boost::filesystem::recursive_directory_iterator;
 
 namespace aikido {
 namespace util {
+namespace {
+
+std::string getPackageNameFromXML(const std::string& _path)
+{
+  using tinyxml2::XMLHandle;
+  using tinyxml2::XMLElement;
+
+  tinyxml2::XMLDocument document;
+  if (document.LoadFile(_path.c_str()))
+  {
+    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
+           << _path << "': " << document.GetErrorStr1() << "\n";
+    return "";
+  }
+
+  XMLHandle root_handle(document.RootElement());
+  XMLHandle name_handle = root_handle.FirstChildElement("name");
+  XMLElement* name_element = name_handle.ToElement();
+
+  if (!name_element)
+  {
+    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
+           << _path << "': File does not contain a <name> element.\n";
+    return "";
+  }
+
+  if (!name_element->GetText())
+  {
+    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
+           << _path << "': <name> element is empty.\n";
+    return "";
+  }
+
+  std::string package_name = name_element->GetText();
+  boost::algorithm::trim(package_name);
+
+  if (package_name.empty())
+  {
+    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
+           << _path << "': <name> element is empty.\n";
+    return "";
+  }
+
+  return package_name;
+}
+
+void searchForPackages(const boost::filesystem::path& _packagePath,
+  std::unordered_map<std::string, std::string>& _packageMap)
+{
+  using boost::filesystem::directory_iterator;
+  using boost::filesystem::path;
+  using boost::filesystem::file_status;
+  using boost::filesystem::exists;
+
+  // Ignore this directory if it contains a CATKIN_IGNORE file.
+  const path catkin_ignore_path = _packagePath / "CATKIN_IGNORE";
+  if (exists(catkin_ignore_path))
+    return;
+
+  // Try loading the package.xml file.
+  const path package_xml_path = _packagePath / "package.xml";
+  if (exists(package_xml_path))
+  {
+    const std::string package_name = getPackageNameFromXML(
+      package_xml_path.string());
+    if (!package_name.empty())
+    {
+      const auto result = _packageMap.insert(
+        std::make_pair(package_name, _packagePath.string()));
+      if (!result.second)
+      {
+        dtwarn << "[CatkinResourceRetriever] Found two package.xml"
+                  " files for package '" << package_name << "': '"
+               << result.first->second << "' and '"
+               << _packagePath << "'.\n";
+      }
+      return; // Don't search for packages inside packages.
+    }
+  }
+
+  // Recurse on subdirectories.
+  directory_iterator it(_packagePath);
+  directory_iterator end;
+
+  while (it != end)
+  {
+    boost::system::error_code status_error;
+    const file_status status = it->status(status_error);
+    if (status_error) 
+    {
+      dtwarn << "[CatkinResourceRetriever] Failed recursing into directory '"
+             << it->path() << "'.\n";
+      continue;
+    }
+
+    if (status.type() == boost::filesystem::directory_file)
+      searchForPackages(it->path().string(), _packageMap);
+
+    ++it;
+  }
+}
+
+} // namespace
 
 CatkinResourceRetriever::CatkinResourceRetriever()
   : CatkinResourceRetriever(
@@ -169,110 +272,6 @@ Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
   }
 
   return Uri();
-}
-
-void CatkinResourceRetriever::searchForPackages(
-  const std::string& _pathRaw,
-  std::unordered_map<std::string, std::string>& _packageMap)
-{
-  using boost::filesystem::directory_iterator;
-  using boost::filesystem::path;
-  using boost::filesystem::file_status;
-  using boost::filesystem::exists;
-
-  const path package_path(_pathRaw);
-
-  // Ignore this directory if it contains a CATKIN_IGNORE file.
-  const path catkin_ignore_path = package_path / "CATKIN_IGNORE";
-  if (exists(catkin_ignore_path))
-    return;
-
-  // Try loading the package.xml file.
-  const path package_xml_path = package_path / "package.xml";
-  if (exists(package_xml_path))
-  {
-    const std::string package_name = getPackageNameFromXML(
-      package_xml_path.string());
-    if (!package_name.empty())
-    {
-      const auto result = _packageMap.insert(
-        std::make_pair(package_name, package_path.string()));
-      if (!result.second)
-      {
-        dtwarn << "[CatkinResourceRetriever] Found two package.xml"
-                  " files for package '" << package_name << "': '"
-               << result.first->second << "' and '"
-               << package_path << "'.\n";
-      }
-      return; // Don't search for packages inside packages.
-    }
-  }
-
-  // Recurse on subdirectories.
-  directory_iterator it(package_path);
-  directory_iterator end;
-
-  while (it != end)
-  {
-    boost::system::error_code status_error;
-    const file_status status = it->status(status_error);
-    if (status_error) 
-    {
-      dtwarn << "[CatkinResourceRetriever] Failed recursing into directory '"
-             << it->path() << "'.\n";
-      continue;
-    }
-
-    if (status.type() == boost::filesystem::directory_file)
-      searchForPackages(it->path().string(), _packageMap);
-
-    ++it;
-  }
-}
-
-std::string CatkinResourceRetriever::getPackageNameFromXML(
-  const std::string& _path)
-{
-  using tinyxml2::XMLHandle;
-  using tinyxml2::XMLElement;
-
-  tinyxml2::XMLDocument document;
-  if (document.LoadFile(_path.c_str()))
-  {
-    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
-           << _path << "': " << document.GetErrorStr1() << "\n";
-    return "";
-  }
-
-  XMLHandle root_handle(document.RootElement());
-  XMLHandle name_handle = root_handle.FirstChildElement("name");
-  XMLElement* name_element = name_handle.ToElement();
-
-  if (!name_element)
-  {
-    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
-           << _path << "': File does not contain a <name> element.\n";
-    return "";
-  }
-
-  if (!name_element->GetText())
-  {
-    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
-           << _path << "': <name> element is empty.\n";
-    return "";
-  }
-
-  std::string package_name = name_element->GetText();
-  boost::algorithm::trim(package_name);
-
-  if (package_name.empty())
-  {
-    dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
-           << _path << "': <name> element is empty.\n";
-    return "";
-  }
-
-  return package_name;
 }
 
 } // namespace util

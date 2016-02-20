@@ -26,10 +26,6 @@ private:
     std::unordered_map<std::string, std::string> mSourceMap;
   };
 
-  static void searchForPackages(const std::string& _path,
-    std::unordered_map<std::string, std::string>& _packageMap);
-  static std::string getPackageNameFromXML(const std::string& _path);
-
   std::vector<Workspace> getWorkspaces() const;
   dart::common::Uri resolvePackageUri(const dart::common::Uri& _uri) const;
 
