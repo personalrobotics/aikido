@@ -31,7 +31,7 @@ add_executable(test_CatkinResourceRetriever_catkin_make
 target_link_libraries(test_CatkinResourceRetriever_catkin_make
   "${PROJECT_NAME}" gtest gtest_main)
 target_compile_definitions(test_CatkinResourceRetriever_catkin_make
-  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_MAKE_WORKSPACE}")
+  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_MAKE_WORKSPACE}/devel")
 add_test(test_CatkinResourceRetriever_catkin_make
   test_CatkinResourceRetriever_catkin_make)
 
@@ -48,16 +48,15 @@ add_executable(test_CatkinResourceRetriever_catkin_build
 target_link_libraries(test_CatkinResourceRetriever_catkin_build
   "${PROJECT_NAME}" gtest gtest_main)
 target_compile_definitions(test_CatkinResourceRetriever_catkin_build
-  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}")
+  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
 add_test(test_CatkinResourceRetriever_catkin_build
   test_CatkinResourceRetriever_catkin_build)
 
 ################################
 # Unit test declarations
 ################################
-set(AIKIDO_TESTS
-  test_CatkinResourceRetriever.cpp
-  test_TSR.cpp
-  # test_SplineTrajectory.cpp
-)
-run_tests("${AIKIDO_TESTS}" aikido gtest gtest_main)
+#set(AIKIDO_TESTS
+#  test_TSR.cpp
+#  # test_SplineTrajectory.cpp
+#)
+#run_tests("${AIKIDO_TESTS}" aikido gtest gtest_main)
