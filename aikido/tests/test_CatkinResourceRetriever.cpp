@@ -116,7 +116,7 @@ TEST_F(CatkinResourceRetrieverTests, UsesPackageName)
   const std::string content = "other_package\n";
 
   CatkinResourceRetriever retriever;
-  EXPECT_FALSE(retriever.exists(uri));
+  EXPECT_TRUE(retriever.exists(uri));
   EXPECT_TRUE(CompareResourceContents(content, retriever.retrieve(uri)));
 }
 
