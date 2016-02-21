@@ -79,10 +79,10 @@ protected:
     mCoefficientsA[0] << 0.,  1., 1.,  1.;
     mCoefficientsA[1] << 3., -2., 4., -2.;
 
-    mSpline = LinearSpline(mTimesA, mCoefficientsA);
+    mSplineA = LinearSpline(mTimesA, mCoefficientsA);
   }
 
-  LinearSpline mSpline;
+  LinearSpline mSplineA;
   LinearSpline::TimeVector mTimesA;
   LinearSpline::SolutionMatrices mCoefficientsA;
 };
@@ -105,80 +105,60 @@ TEST_F(SplineNDTests, LinearSpline_constructor_TimesAreNotMonotone)
 
 TEST_F(SplineNDTests, LinearSpline_getTimes)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EIGEN_EQUAL(mTimesA, spline.getTimes(), EPSILON);
+  EXPECT_EIGEN_EQUAL(mTimesA, mSplineA.getTimes(), EPSILON);
 }
 
 TEST_F(SplineNDTests, LinearSpline_getCoefficients)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  ASSERT_EQ(2, spline.getCoefficients().size());
-  EXPECT_EIGEN_EQUAL(mCoefficientsA[0], spline.getCoefficients()[0], EPSILON);
-  EXPECT_EIGEN_EQUAL(mCoefficientsA[1], spline.getCoefficients()[1], EPSILON);
+  ASSERT_EQ(2, mSplineA.getCoefficients().size());
+  EXPECT_EIGEN_EQUAL(mCoefficientsA[0], mSplineA.getCoefficients()[0], EPSILON);
+  EXPECT_EIGEN_EQUAL(mCoefficientsA[1], mSplineA.getCoefficients()[1], EPSILON);
 }
 
 TEST_F(SplineNDTests, LinearSpline_getNumKnots)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EQ(3, spline.getNumKnots());
+  EXPECT_EQ(3, mSplineA.getNumKnots());
 }
 
 TEST_F(SplineNDTests, LinearSpline_getNumOutputs)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EQ(2, spline.getNumOutputs());
+  EXPECT_EQ(2, mSplineA.getNumOutputs());
 }
 
 TEST_F(SplineNDTests, LinearSpline_getNumDerivatives)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EQ(1, spline.getNumDerivatives());
+  EXPECT_EQ(1, mSplineA.getNumDerivatives());
 }
 
 TEST_F(SplineNDTests, LinearSpline_getNumCoefficients)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EQ(2, spline.getNumCoefficients());
+  EXPECT_EQ(2, mSplineA.getNumCoefficients());
 }
 
 TEST_F(SplineNDTests, LinearSpline_getDuration)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_DOUBLE_EQ(2., spline.getDuration());
+  EXPECT_DOUBLE_EQ(2., mSplineA.getDuration());
 }
 
 TEST_F(SplineNDTests, LinearSpline_getSegmentIndex)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EQ(0, spline.getSegmentIndex(0.));
-  EXPECT_EQ(0, spline.getSegmentIndex(0.5));
-  EXPECT_EQ(1, spline.getSegmentIndex(1.5));
+  EXPECT_EQ(0, mSplineA.getSegmentIndex(0.));
+  EXPECT_EQ(0, mSplineA.getSegmentIndex(0.5));
+  EXPECT_EQ(1, mSplineA.getSegmentIndex(1.5));
 }
 
 TEST_F(SplineNDTests, LinearSpline_getSegmentIndex_OutOfBounds)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EQ(0, spline.getSegmentIndex(-0.01));
-  EXPECT_EQ(1, spline.getSegmentIndex(2.01));
+  EXPECT_EQ(0, mSplineA.getSegmentIndex(-0.01));
+  EXPECT_EQ(1, mSplineA.getSegmentIndex(2.01));
 }
 
 TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative0)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), spline.evaluate(0.0, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector( 0.5, 1.5), spline.evaluate(0.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), spline.evaluate(1.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector(-1.0, 0.0), spline.evaluate(2.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), mSplineA.evaluate(0.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector( 0.5, 1.5), mSplineA.evaluate(0.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), mSplineA.evaluate(1.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(-1.0, 0.0), mSplineA.evaluate(2.0, 0), EPSILON);
 }
 
 TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative1)
@@ -191,8 +171,6 @@ TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative1)
 
 TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative2)
 {
-  LinearSpline spline(mTimesA, mCoefficientsA);
-
-  EXPECT_EIGEN_EQUAL(make_vector(0., 0.), spline.evaluate(0.5, 2), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector(0., 0.), spline.evaluate(1.5, 2), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(0., 0.), mSplineA.evaluate(0.5, 2), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(0., 0.), mSplineA.evaluate(1.5, 2), EPSILON);
 }
