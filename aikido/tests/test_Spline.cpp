@@ -1,69 +1,13 @@
 #include <cstdlib>
 #include <gtest/gtest.h>
 #include <aikido/path/Spline.hpp>
+#include "eigen_tests.hpp"
 
-#define ASSERT_EIGEN_EQUAL(_expected_, _actual_, _epsilon_)\
-ASSERT_TRUE(CompareEigenMatrices(_expected_, _actual_, _epsilon_))
-
-#define EXPECT_EIGEN_EQUAL(_expected_, _actual_, _epsilon_)\
-EXPECT_TRUE(CompareEigenMatrices(_expected_, _actual_, _epsilon_))
+using namespace aikido::tests;
 
 using aikido::path::SplineND;
 
 static constexpr double EPSILON = 1e-6;
-
-namespace {
-
-template <class Derived>
-testing::AssertionResult CompareEigenMatrices(
-  const Eigen::MatrixBase<Derived>& _expected,
-  const Eigen::MatrixBase<Derived>& _actual,
-  double _epsilon)
-{
-  using Index = typename Eigen::ArrayBase<Derived>::Index;
-  using Scalar = typename Eigen::ArrayBase<Derived>::Scalar;
-
-  if (_actual.rows() != _expected.rows())
-    return testing::AssertionFailure()
-      << "Arrays have different sizes: expected " << _expected.rows()
-      << " rows, got " << _actual.rows() << ".";
-
-  if (_actual.cols() != _expected.cols())
-    return testing::AssertionFailure()
-      << "Arrays have different sizes: expected " << _expected.cols()
-      << " columns, got " << _actual.cols() << ".";
-
-  for (Index irow = 0; irow < _expected.rows(); ++irow)
-  for (Index icol = 0; icol < _expected.cols(); ++icol)
-  {
-    const Scalar actualValue = _actual(irow, icol);
-    const Scalar expectedValue = _expected(irow, icol);
-    const Scalar errorValue = std::abs(actualValue - expectedValue);
-
-    if (errorValue > _epsilon)
-      return testing::AssertionFailure()
-        << "Arrays differ in row " << irow << ", column " << icol << ": "
-        << std::setprecision(std::numeric_limits<Scalar>::max_digits10)
-        << expectedValue << " !=: " << actualValue << ".";
-  }
-  return testing::AssertionSuccess();
-}
-
-Eigen::VectorXd make_vector(double _value)
-{
-  Eigen::Matrix<double, 1, 1> valueVector;
-  valueVector << _value;
-  return valueVector;
-}
-
-Eigen::VectorXd make_vector(double _value1, double _value2)
-{
-  Eigen::Matrix<double, 2, 1> valueVector;
-  valueVector << _value1, _value2;
-  return valueVector;
-}
-
-} // namespace
 
 class SplineNDTests : public testing::Test
 {

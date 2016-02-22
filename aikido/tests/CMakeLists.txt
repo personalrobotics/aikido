@@ -56,3 +56,4 @@ add_test(test_CatkinResourceRetriever_catkin_build
 ################################
 add_aikido_test(test_TSR.cpp aikido gtest gtest_main)
 add_aikido_test(test_Spline.cpp aikido gtest gtest_main)
+add_aikido_test(test_SplineProblem.cpp aikido gtest gtest_main)
