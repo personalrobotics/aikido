@@ -1,7 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include <tinyxml2.h>
-#include <ros/package.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <dart/common/Console.h>
@@ -12,7 +11,6 @@
 static const std::string CATKIN_MARKER(".catkin");
 
 using dart::common::Uri;
-using boost::filesystem::recursive_directory_iterator;
 
 namespace aikido {
 namespace util {
