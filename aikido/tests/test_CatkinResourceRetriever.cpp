@@ -11,6 +11,10 @@ using dart::common::ResourcePtr;
 
 static constexpr auto WORKSPACE_PATH = STR(AIKIDO_TEST_WORKSPACE_PATH);
 
+/// gtest predicate for asserting that the content of a Resource equals a
+/// string value. This predicate assumes that the ResourcePtr has its position
+/// indicator at the beginning of the file. After calling this function, the
+/// final location of the position indicator is undefined.
 static testing::AssertionResult CompareResourceContents(
   const std::string& _expectedContent, const ResourcePtr& _resource)
 {
