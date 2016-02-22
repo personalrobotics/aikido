@@ -36,14 +36,7 @@ static testing::AssertionResult CompareResourceContents(
   return testing::AssertionSuccess();
 }
 
-class CatkinResourceRetrieverTests : public testing::Test
-{
-  void SetUp() override
-  {
-  }
-};
-
-TEST_F(CatkinResourceRetrieverTests, ExistsInDevelOnly)
+TEST(CatkinResourceRetrieverTests, ExistsInDevelOnly)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -55,7 +48,7 @@ TEST_F(CatkinResourceRetrieverTests, ExistsInDevelOnly)
   EXPECT_TRUE(CompareResourceContents(content, retriever.retrieve(uri)));
 }
 
-TEST_F(CatkinResourceRetrieverTests, ExistsInSourceOnly)
+TEST(CatkinResourceRetrieverTests, ExistsInSourceOnly)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -67,7 +60,7 @@ TEST_F(CatkinResourceRetrieverTests, ExistsInSourceOnly)
   EXPECT_TRUE(CompareResourceContents(content, retriever.retrieve(uri)));
 }
 
-TEST_F(CatkinResourceRetrieverTests, ExistsInDevelAndSource)
+TEST(CatkinResourceRetrieverTests, ExistsInDevelAndSource)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -79,7 +72,7 @@ TEST_F(CatkinResourceRetrieverTests, ExistsInDevelAndSource)
   EXPECT_TRUE(CompareResourceContents(content, retriever.retrieve(uri)));
 }
 
-TEST_F(CatkinResourceRetrieverTests, CatkinIgnore)
+TEST(CatkinResourceRetrieverTests, CatkinIgnore)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -90,7 +83,7 @@ TEST_F(CatkinResourceRetrieverTests, CatkinIgnore)
   EXPECT_EQ(nullptr, retriever.retrieve(uri));
 }
 
-TEST_F(CatkinResourceRetrieverTests, NestedPackage)
+TEST(CatkinResourceRetrieverTests, NestedPackage)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -101,7 +94,7 @@ TEST_F(CatkinResourceRetrieverTests, NestedPackage)
   EXPECT_EQ(nullptr, retriever.retrieve(uri));
 }
 
-TEST_F(CatkinResourceRetrieverTests, FileDoesNotExist)
+TEST(CatkinResourceRetrieverTests, FileDoesNotExist)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -112,7 +105,7 @@ TEST_F(CatkinResourceRetrieverTests, FileDoesNotExist)
   EXPECT_EQ(nullptr, retriever.retrieve(uri));
 }
 
-TEST_F(CatkinResourceRetrieverTests, PackageDoesNotExist)
+TEST(CatkinResourceRetrieverTests, PackageDoesNotExist)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -123,7 +116,7 @@ TEST_F(CatkinResourceRetrieverTests, PackageDoesNotExist)
   EXPECT_EQ(nullptr, retriever.retrieve(uri));
 }
 
-TEST_F(CatkinResourceRetrieverTests, DoesNotUseDirectoryName)
+TEST(CatkinResourceRetrieverTests, DoesNotUseDirectoryName)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -134,7 +127,7 @@ TEST_F(CatkinResourceRetrieverTests, DoesNotUseDirectoryName)
   EXPECT_EQ(nullptr, retriever.retrieve(uri));
 }
 
-TEST_F(CatkinResourceRetrieverTests, UsesPackageName)
+TEST(CatkinResourceRetrieverTests, UsesPackageName)
 {
   setenv("CMAKE_PREFIX_PATH", WORKSPACE_PATH, 1);
 
@@ -146,7 +139,7 @@ TEST_F(CatkinResourceRetrieverTests, UsesPackageName)
   EXPECT_TRUE(CompareResourceContents(content, retriever.retrieve(uri)));
 }
 
-TEST_F(CatkinResourceRetrieverTests, WorkspaceDoesNotExist)
+TEST(CatkinResourceRetrieverTests, WorkspaceDoesNotExist)
 {
   setenv("CMAKE_PREFIX_PATH", "", 1);
 
