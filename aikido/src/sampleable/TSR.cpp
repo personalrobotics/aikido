@@ -1,19 +1,22 @@
 #include <aikido/sampleable/TSR.hpp>
+#include <aikido/sampleable/TSRSampleGenerator.hpp>
 
 #include <stdexcept>
 #include <math.h>
 #include <vector>
 
-using aikido::util::RNG;
-
 namespace aikido {
 namespace sampleable{
 
 //=============================================================================
-TSR::TSR(const Eigen::Isometry3d& T0_w,
+TSR::TSR(std::unique_ptr<RNG> rng,
+         const Eigen::Isometry3d& T0_w,
          const Eigen::Matrix<double, 6, 2>& Bw,
          const Eigen::Isometry3d& Tw_e)
-  : mT0_w(T0_w), mTw_e(Tw_e), mBw(Bw)
+: mRng(std::move(rng))
+, mT0_w(T0_w)
+, mTw_e(Tw_e)
+, mBw(Bw)
 {
   // Assertion checks for min, max on bounds 
   for(int i = 0; i < 6; i++)
@@ -34,62 +37,21 @@ TSR::TSR(const Eigen::Isometry3d& T0_w,
       mBw(i,j) = fmod(mBw(i, j) - lower, 2*M_PI) + lower;
     }
   }
-
-  if (singlePointTSR())
-  {
-    mMaxSampleCount = 1;
-  }else
-  {
-    mMaxSampleCount = SampleableRegion::INFTY;
-  }
-};
-
-//=============================================================================
-const Eigen::Isometry3d TSR::sample(RNG& rng)
-{
-  std::vector<std::uniform_real_distribution<double> > distributions;
-  for(int i = 0; i < 6; i++)
-  {
-    distributions.push_back(
-      std::uniform_real_distribution<double>(mBw(i, 0), mBw(i, 1)));
-  }
-
-  Eigen::Vector3d translation;
-  for(int i = 0; i < 3; i++)
-  {
-    translation(i) = distributions.at(i)(rng);
-  }
-
-  Eigen::Vector3d angles;
-  for(int i = 0; i < 3; i++)
-  {
-    angles(i) = distributions.at(i+3)(rng);
-  }
-
-  Eigen::Matrix3d rotation;
-  rotation = Eigen::AngleAxisd(angles(2), Eigen::Vector3d::UnitZ()) *
-             Eigen::AngleAxisd(angles(1), Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(angles(0), Eigen::Vector3d::UnitX());
-
-  Eigen::Isometry3d Tw_s;
-  Tw_s.setIdentity();
-  Tw_s.translation() = translation;
-  Tw_s.linear() = rotation;
-
-  Eigen::Isometry3d T0_s(mT0_w * Tw_s * mTw_e);
-
-  // TODO: decrease sample count if TSR is single point
-  if (singlePointTSR())
-  {
-    mMaxSampleCount -= 1;
-  }
-  return T0_s;
 }
 
 //=============================================================================
+std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> TSR::sampler() const
+{
+  return std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>
+          (new TSRSampleGenerator(
+            mT0_w, mBw, mTw_e, mRng->clone(mRng.get())));
+}
+
+//=============================================================================
+  //TODO: 1) numerical precision
+  //      2) for TSRs that cross +/-pi? --> do we still need this?
 bool TSR::isSatisfied(const Eigen::Isometry3d T0_s) const
 {
-  
   Eigen::Isometry3d Tw_s = mT0_w.inverse()*T0_s*mTw_e.inverse();
 
   // check if angles are within bounds
@@ -112,33 +74,6 @@ bool TSR::isSatisfied(const Eigen::Isometry3d T0_s) const
   }
 
   return true;
-}
-
-//=============================================================================
-bool TSR::canSample() const
-{
-  return mMaxSampleCount > 0;
-}
-
-//=============================================================================
-int TSR::maxSampleCount() const
-{
-  return mMaxSampleCount;
-}
-
-//=============================================================================
-bool TSR::singlePointTSR() const
-{
-  for(int i = 0; i < 6; i++)
-  {
-    if(mBw(i, 0) < mBw(i, 1))
-    {
-      return false;
-    }
-  }
-
-  return true;
-
 }
 
 } // namespace sampleable

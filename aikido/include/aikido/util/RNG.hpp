@@ -14,10 +14,17 @@ public:
   typedef uint32_t result_type;
   typedef std::shared_ptr<RNG> Ptr;
   typedef std::shared_ptr<RNG const> ConstPtr;
+  typedef std::unique_ptr<RNG> UniquePtr;
+  typedef std::unique_ptr<RNG const> UniqueConstPtr;
 
   virtual result_type min() const = 0;
   virtual result_type max() const = 0;
   virtual result_type operator()() = 0;
+  virtual UniquePtr clone(RNG* rng) const = 0;
+
+protected:
+  virtual RNG* clone() const = 0;
+
 };
 
 template <class T>
@@ -60,6 +67,18 @@ public:
   virtual result_type operator()()
   {
     return mRng();
+  }
+  
+  virtual UniquePtr clone(RNG* rng) const override
+  {
+    return UniquePtr(this->clone());
+  }
+
+protected:
+
+  virtual RNGWrapper* clone() const
+  {
+    return new RNGWrapper(); //TODO
   }
 
 private:
