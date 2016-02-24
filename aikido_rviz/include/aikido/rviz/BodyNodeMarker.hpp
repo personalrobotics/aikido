@@ -3,7 +3,7 @@
 #include <dart/dynamics/dynamics.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
-#include "ResourceServer.h"
+#include "ResourceServer.hpp"
 
 namespace aikido {
 namespace rviz {
