@@ -9,6 +9,11 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
 
+if("${OMPL_VERSION}" VERSION_LESS "1.0.0")
+  message(SEND_ERROR
+    "Aikido requires OMPL 1.0.0 or greater; found ${OMPL_VERSION}.")
+endif()
+
 # Compilation setup
 include_directories(
   include
