@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.11)
 project(aikido)
 
 set(INCLUDE_INSTALL_DIR include)
