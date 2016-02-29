@@ -1,5 +1,4 @@
-#include <aikido/sampleable/TSRSampleGenerator.hpp>
-
+#include <aikido/sampleable/TSR.hpp>
 #include <stdexcept>
 #include <math.h>
 #include <vector>
@@ -7,9 +6,8 @@
 namespace aikido {
 namespace sampleable{
 
-
 //=============================================================================
-optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
+boost::optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
 {
 
   // Check if all samples are exhausted.
@@ -25,12 +23,12 @@ optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
 
   for(int i = 0; i < 3; i++)
   {
-    translation(i) = distributions.at(i)(*mRng.get());
+    translation(i) = distributions.at(i)(*mRng);
   }
 
   for(int i = 0; i < 3; i++)
   {
-    angles(i) = distributions.at(i+3)(*mRng.get());
+    angles(i) = distributions.at(i+3)(*mRng);
   }
 
 
@@ -51,16 +49,16 @@ optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
 
 
 //=============================================================================
-bool TSRSampleGenerator::canSample()
+bool TSRSampleGenerator::canSample() const
 {
   return true;
 }
 
 //=============================================================================
-int TSRSampleGenerator::numSamples()
+int TSRSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-}
-}
+} // sampleable
+} // aikido
