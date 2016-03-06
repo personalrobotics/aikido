@@ -10,6 +10,15 @@
 namespace aikido {
 namespace sampleable {
 
+template <class T> class SampleGenerator;
+template <class T> class SampleableConstraint;
+
+template <class T>
+class SampleableConstraint {
+public:
+  virtual std::unique_ptr<SampleGenerator<T>> createSampleGenerator() const = 0;
+};
+
 template <class T>
 class SampleGenerator {
 public:
@@ -20,12 +29,6 @@ public:
   static constexpr int NO_LIMIT = std::numeric_limits<int>::max();
 };
 
-
-template <class T>
-class SampleableConstraint {
-public:
-  virtual std::unique_ptr<SampleGenerator<T>> sampler() const = 0;
-};
 
 } // namespace sampleable
 } // namespace aikido

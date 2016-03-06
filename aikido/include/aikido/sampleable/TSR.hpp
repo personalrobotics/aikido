@@ -14,11 +14,14 @@ public:
 
   TSR(std::unique_ptr<util::RNG> _rng,
       const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
-      const Eigen::Matrix<double, 6, 2>& _Bw = Eigen::Matrix<double, 6, 2>::Zero(),
-      const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity());
+      const Eigen::Matrix<double, 6, 2>& _Bw 
+        = Eigen::Matrix<double, 6, 2>::Zero(),
+      const Eigen::Isometry3d& _Tw_e
+        = Eigen::Isometry3d::Identity());
 
   TSR(const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
-      const Eigen::Matrix<double, 6, 2>& _Bw = Eigen::Matrix<double, 6, 2>::Zero(),
+      const Eigen::Matrix<double, 6, 2>& _Bw
+       = Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity());
 
   TSR(const TSR& other);
@@ -27,13 +30,11 @@ public:
   TSR& operator=(TSR&& other);
   virtual ~TSR() = default;
 
-  std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> sampler() const override;
+  std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>
+    createSampleGenerator() const override;
 
-  /// Checks if current state is valid. Throws invalid argument exception if not.
-  void validate();
-  
-  /// Wraps mBw's angles.
-  void wrap();
+  /// Throws invalid argument exception if not.
+  void validate() const;
 
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;
@@ -44,7 +45,11 @@ public:
   /// Transformation from "wiggle" frame into end frame.
   Eigen::Isometry3d mTw_e;
 
+  /// Set rng seed.
+  void setRNG(std::unique_ptr<util::RNG> rng);
+
 private:
+
   std::unique_ptr<util::RNG> mRng;
 
 };
@@ -52,18 +57,9 @@ private:
 
 class TSRSampleGenerator : public SampleGenerator<Eigen::Isometry3d>
 {
-public:
+  friend class TSR;
 
-  TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
-                     const Eigen::Isometry3d& _T0_w,
-                     const Eigen::Matrix<double, 6, 2>& _Bw,
-                     const Eigen::Isometry3d& _Tw_e)
-  : mRng(std::move(_rng))
-  , mT0_w(_T0_w)
-  , mBw(_Bw)
-  , mTw_e(_Tw_e)
-  {
-  };
+public:
 
   TSRSampleGenerator(const TSRSampleGenerator&) = delete;
   TSRSampleGenerator(TSRSampleGenerator&& other) = delete;
@@ -84,6 +80,15 @@ public:
   bool canSample() const override;
   int getNumSamples() const override;
 
+private:
+
+  TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
+                     const Eigen::Isometry3d& _T0_w,
+                     const Eigen::Matrix<double, 6, 2>& _Bw,
+                     const Eigen::Isometry3d& _Tw_e);
+  
+  std::unique_ptr<util::RNG> mRng;
+
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;
 
@@ -92,9 +97,6 @@ public:
 
   /// Transformation from "wiggle" frame into end frame.
   Eigen::Isometry3d mTw_e;
-
-private:
-  std::unique_ptr<util::RNG> mRng;
 
 };
 

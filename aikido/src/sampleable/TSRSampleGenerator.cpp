@@ -7,6 +7,19 @@ namespace aikido {
 namespace sampleable{
 
 //=============================================================================
+TSRSampleGenerator::TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
+                     const Eigen::Isometry3d& _T0_w,
+                     const Eigen::Matrix<double, 6, 2>& _Bw,
+                     const Eigen::Isometry3d& _Tw_e)
+: mRng(std::move(_rng))
+, mT0_w(_T0_w)
+, mBw(_Bw)
+, mTw_e(_Tw_e)
+{
+}
+
+
+//=============================================================================
 boost::optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
 {
 
@@ -54,6 +67,7 @@ bool TSRSampleGenerator::canSample() const
   return true;
 }
 
+
 //=============================================================================
 int TSRSampleGenerator::getNumSamples() const
 {
@@ -62,3 +76,4 @@ int TSRSampleGenerator::getNumSamples() const
 
 } // sampleable
 } // aikido
+

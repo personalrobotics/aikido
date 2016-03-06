@@ -30,9 +30,13 @@ public:
   {
   }
 
+  RNGWrapper(T _rng)
+    : mRng(_rng)
+  {
+  }
+
   RNGWrapper(result_type _seed)
     : mRng(_seed)
-    , mSeed(_seed)
   {
   }
 
@@ -63,12 +67,11 @@ public:
   
   virtual std::unique_ptr<RNG> clone() const override
   {
-    return std::unique_ptr<RNG>(new RNGWrapper(mSeed));
+    return std::unique_ptr<RNG>(new RNGWrapper(mRng));
   }
 
 private:
   T mRng;
-  result_type mSeed;
 };
 
 } // util
