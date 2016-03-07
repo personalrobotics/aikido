@@ -27,13 +27,13 @@ AprilTagsModule::AprilTagsModule(ros::NodeHandlePtr _node,std::string _marker_to
 }
 
 
-void AprilTagsModule::Update(std::vector<dart::dynamics::Skeleton> skeleton_list,double timeout)
+void AprilTagsModule::DetectObject(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout)
 {
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list
 
-	boost::shared_ptr<const visualization_msgs::MarkerArray> marker_message
- 			= ros::topic::waitForMessage<const visualization_msgs::MarkerArray>(marker_topic,*node_,ros::Duration(timeout));
+	visualization_msgs::MarkerArrayConstPtr marker_message
+ 			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(marker_topic,*node_,ros::Duration(timeout));
 
 	for(size_t i=0; i < marker_message->markers.size(); i++)
 	{
@@ -98,7 +98,7 @@ void AprilTagsModule::Update(std::vector<dart::dynamics::Skeleton> skeleton_list
 
 			for(size_t j=0;j < skeleton_list.size(); j++)
 			{
-				dart::dynamics::SkeletonPtr this_skel = skeleton_list[j].getPtr();
+				dart::dynamics::SkeletonPtr this_skel = skeleton_list[j];
 				if(this_skel->getName() == skel_name){
 					//Exists - just update pose
 					is_new_skel = false;
@@ -124,7 +124,7 @@ void AprilTagsModule::Update(std::vector<dart::dynamics::Skeleton> skeleton_list
 				freejtptr->setTransform(skel_pose);
 
 				//Append to skeleton list
-				skeleton_list.push_back(*new_skel);
+				skeleton_list.push_back(new_skel);
 			}
 		}
 
@@ -141,6 +141,8 @@ void AprilTagsModule::GetTagNameOffset(std::string tag_name, std::string& body_n
 	body_name = name_offset["name"].as<std::string>();
 	body_offset = name_offset["offset"].as<Eigen::Matrix4d>();
 }
+
+
 
 } //namespace perception
 } //namespace aikido

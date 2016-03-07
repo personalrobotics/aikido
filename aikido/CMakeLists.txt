@@ -12,6 +12,10 @@ find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
 find_package(TINYXML2 REQUIRED)
 
+include(FindPkgConfig)
+pkg_check_modules(YamlCpp REQUIRED yaml-cpp)
+add_definitions(-DYAMLCPP_NEWAPI)
+
 # Compilation setup
 include_directories(
   include
@@ -21,7 +25,10 @@ include_directories(SYSTEM
   ${Boost_INCLUDE_DIRS}
   ${DART_INCLUDE_DIRS}
   ${TINYXML2_INCLUDE_DIRS}
+  ${YamlCpp_INCLUDE_DIRS}
 )
+
+add_definitions(${YAMLCPP_DEFINITIONS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -39,7 +46,6 @@ add_library(${PROJECT_NAME} SHARED
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
-  src/perception/PerceptionModule.cpp
   src/perception/AprilTagsModule.cpp
 )
 target_link_libraries(${PROJECT_NAME}
@@ -47,6 +53,7 @@ target_link_libraries(${PROJECT_NAME}
   ${OMPL_LIBRARIES}
   ${Boost_LIBRARIES}
   ${TINYXML2_LIBRARIES}
+  ${YamlCpp_LIBRARIES}
 )
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).

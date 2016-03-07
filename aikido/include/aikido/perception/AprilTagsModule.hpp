@@ -17,18 +17,17 @@
 namespace aikido{
 namespace perception{
 
-class AprilTagsModule : public PerceptionModule
+class AprilTagsModule : public virtual PerceptionModule
 {
 public:
 	AprilTagsModule(ros::NodeHandlePtr _node, std::string _marker_topic, std::string _marker_data_path,
 					std::string _urdf_path, std::string _detection_frame,
 					std::string _destination_frame, dart::dynamics::BodyNode* _reference_link);
-	virtual ~AprilTagsModule()
+	~AprilTagsModule()
 	{
 	}
 
-	virtual void DetectObject();
-	virtual void DetectObjects();
+	void DetectObject(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout=10.0);
 
 
 private:
@@ -45,7 +44,6 @@ private:
 	ros::NodeHandlePtr node_;
 	YAML::Node tag_data;
 
-	void Update(std::vector<dart::dynamics::Skeleton> skeleton_list,double timeout=10.0); //Update BodyNodes after re-detection
 	void GetTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset);
 
 };

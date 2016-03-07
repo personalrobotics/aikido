@@ -7,13 +7,10 @@ namespace perception{
 class PerceptionModule
 {
 public:
-  PerceptionModule();
-  virtual ~PerceptionModule()
-  {
-  }
 
-  virtual void DetectObject();
-  virtual void DetectObjects();
+  virtual ~PerceptionModule() = default;
+
+  virtual void DetectObject() const = 0;
 
 };
 }
