@@ -8,6 +8,9 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
+find_package(cmake_modules REQUIRED)
+find_package(TinyXML REQUIRED)
+
 
 if("${OMPL_VERSION}" VERSION_LESS "1.0.0")
   message(SEND_ERROR
@@ -22,6 +25,7 @@ include_directories(
 include_directories(SYSTEM
   ${Boost_INCLUDE_DIRS}
   ${DART_INCLUDE_DIRS}
+  ${TinyXML_INCLUDE_DIRS}
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -39,7 +43,7 @@ add_library(${PROJECT_NAME} SHARED
   src/sampleable/TSRSampleGenerator.cpp
   src/sampleable/IKSampleableConstraint.cpp
   src/sampleable/IKSampleGenerator.cpp
-  src/util/CatkinResourceRetriever.cpp
+#  src/util/CatkinResourceRetriever.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
@@ -48,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${OMPL_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${TinyXML_LIBRARIES}
 )
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).

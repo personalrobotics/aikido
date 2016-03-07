@@ -41,25 +41,25 @@ IKSampleableConstraint::IKSampleableConstraint(
       "MaxNumTrials is not positive.");
   }
 
-};
+}
 
 //=============================================================================
 IKSampleableConstraint::IKSampleableConstraint(
   const IKSampleableConstraint& other)
-: mIsometry3dConstraintPtr(other.mIsometry3dConstraintPtr)
-, mIKPtr(other.mIKPtr)
-, mRng(std::move(other.mRng->clone()))
-, mMaxNumTrials(other.mMaxNumTrials)
+: IKSampleableConstraint(other.mIsometry3dConstraintPtr,
+                         other.mIKPtr,
+                         other.mRng->clone(),
+                         other.mMaxNumTrials)
 {
 }
 
 //=============================================================================
 IKSampleableConstraint::IKSampleableConstraint(
   IKSampleableConstraint&& other)
-: mIsometry3dConstraintPtr(other.mIsometry3dConstraintPtr)
-, mIKPtr(other.mIKPtr)
-, mRng(std::move(other.mRng->clone()))
-, mMaxNumTrials(other.mMaxNumTrials)
+: IKSampleableConstraint(other.mIsometry3dConstraintPtr,
+                         other.mIKPtr,
+                         other.mRng->clone(),
+                         other.mMaxNumTrials)
 {
 }
 
