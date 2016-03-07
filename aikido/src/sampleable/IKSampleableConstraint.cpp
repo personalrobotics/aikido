@@ -8,9 +8,8 @@ namespace sampleable{
 
 //=============================================================================
 IKSampleableConstraint::IKSampleableConstraint(
-  const std::shared_ptr<SampleableConstraint<Eigen::Isometry3d>> 
-    _isometry3dConstraint,
-  const dart::dynamics::InverseKinematicsPtr _ikPtr,
+  const SampleablePoseConstraint& _isometry3dConstraint,
+  const dart::dynamics::InverseKinematicsPtr& _ikPtr,
   std::unique_ptr<util::RNG> _rng,
   int _maxNumTrials)
 : mIsometry3dConstraintPtr(_isometry3dConstraint)
@@ -22,6 +21,24 @@ IKSampleableConstraint::IKSampleableConstraint(
   {
     throw std::invalid_argument(
       "Random generator is empty.");
+  }
+
+  if (!_ikPtr)
+  {
+    throw std::invalid_argument(
+      "IKPtr is empty.");
+  }
+
+  if (!_isometry3dConstraint)
+  {
+    throw std::invalid_argument(
+      "IsometryConstraint is empty.");
+  }
+
+  if (_maxNumTrials <= 0)
+  {
+    throw std::invalid_argument(
+      "MaxNumTrials is not positive.");
   }
 
 };

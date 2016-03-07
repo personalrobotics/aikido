@@ -50,7 +50,12 @@ class IKConstraintTest : public ::testing::Test {
       bn3 = manipulator2->createJointAndBodyNodePair<FreeJoint>(
         nullptr, properties3, 
         BodyNode::Properties(std::string("root_body"))).second;
-
+      for(int i = 0; i < 6; i ++)
+      {
+        bn3->getParentJoint()->setPositionLowerLimit(i, -10);  
+        bn3->getParentJoint()->setPositionUpperLimit(i, 10);
+      }
+      
       // joint 2, body 2
       RevoluteJoint::Properties properties4;
       properties4.mAxis = Eigen::Vector3d::UnitY();
@@ -100,7 +105,7 @@ TEST_F(IKConstraintTest, SampleGeneratorPointConstraint)
   ASSERT_TRUE(generator->canSample());
   boost::optional<Eigen::VectorXd> sample = generator->sample();
   ASSERT_TRUE(sample);
-  EXPECT_TRUE(sample.get().isApprox(Eigen::Vector2d(0, 0)));
+  EXPECT_TRUE(sample.get().isZero(1e-5));
 }
 
 TEST_F(IKConstraintTest, SampleGeneratorJointLimitInfeasible)

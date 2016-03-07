@@ -1,5 +1,5 @@
-#ifndef AIKIDO_IK_SAMPLEABLE_H
-#define AIKIDO_IK_SAMPLEABLE_H
+#ifndef AIKIDO_SAMPLEABLE_IKSAMPLEABLE_H
+#define AIKIDO_SAMPLEABLE_IKSAMPLEABLE_H
 
 #include "Sampleable.hpp"
 #include <dart/dynamics/dynamics.h>
@@ -12,10 +12,13 @@ class IKSampleableConstraint : public SampleableConstraint<Eigen::VectorXd>
 {
 public:
 
+  using SampleablePoseConstraint =
+    std::shared_ptr<SampleableConstraint<Eigen::Isometry3d>>;
+
   IKSampleableConstraint(
-    const std::shared_ptr<SampleableConstraint<Eigen::Isometry3d>>
+    const SampleablePoseConstraint&
       _isometry3dConstraint,
-    const dart::dynamics::InverseKinematicsPtr _ikPtr,
+    const dart::dynamics::InverseKinematicsPtr& _ikPtr,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
@@ -27,6 +30,7 @@ public:
 
   virtual ~IKSampleableConstraint() = default;
 
+  /// Returns VectorXd sample generator.
   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> 
     createSampleGenerator() const override;
   
@@ -35,8 +39,7 @@ public:
   
 private:
   std::unique_ptr<util::RNG> mRng;
-  std::shared_ptr<SampleableConstraint<Eigen::Isometry3d>> 
-    mIsometry3dConstraintPtr;
+  SampleablePoseConstraint mIsometry3dConstraintPtr;
   dart::dynamics::InverseKinematicsPtr mIKPtr;
   int mMaxNumTrials;
 
@@ -63,7 +66,7 @@ private:
 
   IKSampleGenerator(
     std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> _isometrySampler,
-    const dart::dynamics::InverseKinematicsPtr _ikPtr,
+    const dart::dynamics::InverseKinematicsPtr& _ikPtr,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
@@ -74,7 +77,6 @@ private:
 
 };
 
-
 using IKSampleGeneratorPtr = std::shared_ptr<const IKSampleGenerator>;
 using IKSampleGeneratorUniquePtr = std::unique_ptr<IKSampleGenerator>;
 using IKSampleableConstraintPtr = std::shared_ptr<const IKSampleableConstraint>;
@@ -83,5 +85,5 @@ using IKSampleableConstraintUniquePtr = std::unique_ptr<IKSampleableConstraint>;
 } // namespace sampleable
 } // namespace aikido
 
-#endif // AIKIDO_IK_SAMPLEABLE_H
+#endif // AIKIDO_SAMPLEABLE_IKSAMPLEABLE_H
 

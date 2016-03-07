@@ -17,10 +17,27 @@ function(run_tests sources libraries)
 endfunction()
 
 ################################
+# Sampleable test declarations
+################################
+
+add_executable(test_TSR test_TSR.cpp)
+target_link_libraries(test_TSR "${PROJECT_NAME}" gtest gtest_main)
+target_compile_definitions(test_TSR
+  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
+add_test(test_TSR test_TSR)
+
+add_executable(test_IKSampleable test_IKSampleable.cpp)
+target_link_libraries(test_IKSampleable "${PROJECT_NAME}" gtest gtest_main)
+target_compile_definitions(test_IKSampleable
+  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
+add_test(test_IKSampleable test_IKSampleable)
+
+
+################################
 # Unit test declarations
 ################################
-set(AIKIDO_TESTS
-  test_TSR.cpp
-  # test_SplineTrajectory.cpp
-)
-run_tests("${AIKIDO_TESTS}" aikido gtest gtest_main)
+# set(AIKIDO_TESTS
+#   test_SplineTrajectory.cpp
+# )
+
+# run_tests("${AIKIDO_TESTS}" aikido gtest gtest_main)

@@ -16,6 +16,11 @@ TSRSampleGenerator::TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
 , mBw(_Bw)
 , mTw_e(_Tw_e)
 {
+  if (!mRng)
+  {
+    throw std::invalid_argument(
+      "Random generator is empty.");
+  }
 }
 
 

@@ -1,5 +1,5 @@
-#ifndef AIKIDO_TSR_TSR_H_
-#define AIKIDO_TSR_TSR_H_
+#ifndef AIKIDO_SAMPLEABLE_TSR_H_
+#define AIKIDO_SAMPLEABLE_TSR_H_
 
 #include "Sampleable.hpp"
 #include <Eigen/Dense>
@@ -30,6 +30,7 @@ public:
   TSR& operator=(TSR&& other);
   virtual ~TSR() = default;
 
+  /// Returns Isometry3D sample generator.
   std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>
     createSampleGenerator() const override;
 
@@ -109,4 +110,4 @@ using TSRSamplerUniquePtr = std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>;
 } // sampleable
 } // aikido
 
-#endif // AIKIDO_TSR_TSR_H_
+#endif // AIKIDO_SAMPLEABLE_TSR_H_

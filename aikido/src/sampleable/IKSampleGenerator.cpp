@@ -1,4 +1,5 @@
 #include <aikido/sampleable/IKSampleable.hpp>
+#include "dart/common/Console.h"
 #include <math.h>
 #include <vector>
 
@@ -11,7 +12,7 @@ namespace sampleable{
 //=============================================================================
 IKSampleGenerator::IKSampleGenerator(
   std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> _isometrySampler,
-  const dart::dynamics::InverseKinematicsPtr _ikPtr,
+  const dart::dynamics::InverseKinematicsPtr& _ikPtr,
   std::unique_ptr<util::RNG> _rng,
   int _maxNumTrials)
 : mIsometrySampler(std::move(_isometrySampler))
@@ -23,6 +24,24 @@ IKSampleGenerator::IKSampleGenerator(
   {
     throw std::invalid_argument(
       "Random generator is empty.");
+  }
+
+  if (!_ikPtr)
+  {
+    throw std::invalid_argument(
+      "IKPtr is empty.");
+  }
+
+  if (!mIsometrySampler)
+  {
+    throw std::invalid_argument(
+      "IsometrySampler is empty.");
+  }
+
+  if (_maxNumTrials <= 0)
+  {
+    throw std::invalid_argument(
+      "MaxNumTrials is not positive.");
   }
 
 };
@@ -40,9 +59,43 @@ boost::optional<Eigen::VectorXd> IKSampleGenerator::sample()
     return boost::optional<Eigen::VectorXd>{};
   }
 
+  // Get active joints' lower and upper limits.
+  const std::vector<size_t> activeDofIndices = mIKPtr->getDofs();
+  std::vector<double> jointLowerLimits;
+  std::vector<double> jointUpperLimits;
+  jointUpperLimits.reserve(activeDofIndices.size());
+  jointLowerLimits.reserve(activeDofIndices.size());
+  SkeletonPtr skeletonPtr = mIKPtr->getNode()->getSkeleton();
+  
+  for(int j = 0; j < activeDofIndices.size(); j++)
+  {
+    DegreeOfFreedom* dof = skeletonPtr->getDof(activeDofIndices.at(j));
+    double lower, upper;
+    if (dof->isCyclic())
+    {
+      lower = -M_PI;
+      upper = M_PI;
+    }
+    else
+    {
+      lower = dof->getPositionLowerLimit();
+      upper = dof->getPositionUpperLimit();
+
+      // Check for unbounded joint.
+      if (!std::isfinite(lower) || !std::isfinite(upper))
+      {
+        dterr << "Unbounded joint.\n";
+        boost::optional<Eigen::VectorXd>{};
+      }
+    }
+
+    jointLowerLimits.emplace_back(lower);
+    jointUpperLimits.emplace_back(upper);
+  }
+
+  // Sample random configuration and call IKSolver. 
   for(int i = 0; i < mMaxNumTrials; i++)
   {
-
     // Create an Isometry3d sample.
     boost::optional<Eigen::Isometry3d> isometry = mIsometrySampler->sample();
     if (!isometry)
@@ -51,42 +104,6 @@ boost::optional<Eigen::VectorXd> IKSampleGenerator::sample()
     }
     // Set the Isometry sample as IKPtr's target.
     mIKPtr->getTarget()->setTransform(isometry.get());
-
-    // Get active joints' lower and upper limits.
-    const std::vector<size_t> activeDofIndices = mIKPtr->getDofs();
-    std::vector<double> jointLowerLimits;
-    std::vector<double> jointUpperLimits;
-    jointUpperLimits.reserve(activeDofIndices.size());
-    jointLowerLimits.reserve(activeDofIndices.size());
-
-    SkeletonPtr skeletonPtr = mIKPtr->getNode()->getSkeleton();
-    for(int j = 0; j < activeDofIndices.size(); j++)
-    {
-      DegreeOfFreedom* dof = skeletonPtr->getDof(activeDofIndices.at(j));
-      double lower, upper;
-      if (dof->isCyclic())
-      {
-        lower = -M_PI;
-        upper = M_PI;
-      }
-      else
-      {
-        lower = dof->getPositionLowerLimit();
-        upper = dof->getPositionUpperLimit();
-
-        // Check for unbounded acyclic joint.
-        if (lower > upper)
-        {
-          std::cout << "Unbounded acyclic joint. Using [-PI,PI)." << std::endl;
-          lower = -M_PI; 
-          upper = M_PI;
-        }
-      }
-
-      jointLowerLimits.emplace_back(lower);
-      jointUpperLimits.emplace_back(upper);
-
-    }
 
     // Distributions to sample joint dof values.
     std::vector<std::uniform_real_distribution<double>> distributions;
@@ -99,23 +116,15 @@ boost::optional<Eigen::VectorXd> IKSampleGenerator::sample()
       distributions.emplace_back(distribution);
     }
 
-    // Generate random seed for each joint and solve IK. 
-    std::shared_ptr<::dart::optimizer::Problem> problem = mIKPtr->getProblem();
-    problem->clearAllSeeds();
-
-    for(int j = 0; j < mMaxNumTrials; j++)
+    // Generate random seed for each joint
+    Eigen::VectorXd seed(activeDofIndices.size());
+    for(int j = 0; j < activeDofIndices.size(); j++)
     {
-      Eigen::VectorXd seed(activeDofIndices.size());
-      for(int k = 0; k < activeDofIndices.size(); k++)
-      {
-        seed(k) = distributions.at(k)(*mRng);
-      }
-      problem->addSeed(seed);
+      seed(j) = distributions.at(j)(*mRng);
     }
+    mIKPtr->setPositions(seed);
 
-    // IKPtr will first try with current joint values and then use the seeds.    
-    mIKPtr->getSolver()->setNumMaxIterations(mMaxNumTrials);
-
+    // Solve IK.
     Eigen::VectorXd solution;
     bool success = mIKPtr->solve(solution, false);
     if (success)
