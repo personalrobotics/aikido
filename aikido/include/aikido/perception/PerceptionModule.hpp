@@ -12,9 +12,11 @@ public:
   {
   }
 
-  virtual void DetectObject(WHAT HERE?);
-  virtual void DetectObjects(WHAT HERE?);
+  virtual void DetectObject();
+  virtual void DetectObjects();
 
 };
 }
 }
+
+#endif //AIKIDO_PERCEPTION_PERCEPTIONMODULE_H
