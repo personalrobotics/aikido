@@ -69,9 +69,9 @@ TSR& TSR::operator=(const TSR& other)
 TSR& TSR::operator=(TSR&& other)
 {
   mRng = std::move(other.mRng);
-  mT0_w = other.mT0_w;
-  mTw_e = other.mTw_e;
-  mBw = other.mBw;
+  mT0_w = std::move(other.mT0_w);
+  mTw_e = std::move(other.mTw_e);
+  mBw = std::move(other.mBw);
 
   return *this;
 }
