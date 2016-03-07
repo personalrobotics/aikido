@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(aikido)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+
 set(INCLUDE_INSTALL_DIR include)
 set(LIBRARY_INSTALL_DIR lib)
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
@@ -8,6 +10,7 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
+find_package(TINYXML2 REQUIRED)
 
 # Compilation setup
 include_directories(
@@ -17,6 +20,7 @@ include_directories(
 include_directories(SYSTEM
   ${Boost_INCLUDE_DIRS}
   ${DART_INCLUDE_DIRS}
+  ${TINYXML2_INCLUDE_DIRS}
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -40,6 +44,7 @@ target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${OMPL_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${TINYXML2_LIBRARIES}
 )
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).
