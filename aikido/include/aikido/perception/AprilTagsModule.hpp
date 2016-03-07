@@ -11,6 +11,8 @@
 #include <dart/dart.h>
 #include <aikido/util/CatkinResourceRetriever.hpp>
 
+#include "PerceptionModule.hpp"
+
 
 namespace aikido{
 namespace perception{
@@ -43,7 +45,7 @@ private:
 	ros::NodeHandlePtr node_;
 	YAML::Node tag_data;
 
-	void Update(double timeout=10.0,vector<dart::dynamics::Skeleton> skel_list); //Update BodyNodes after re-detection
+	void Update(std::vector<dart::dynamics::Skeleton> skeleton_list,double timeout=10.0); //Update BodyNodes after re-detection
 	void GetTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset);
 
 };
@@ -51,4 +53,4 @@ private:
 } //namespace perception
 } //namespace aikido
 
-#endif AIKIDO_PERCEPTION_APRILTAGSMODULE_H
+#endif //AIKIDO_PERCEPTION_APRILTAGSMODULE_H

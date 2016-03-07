@@ -1,6 +1,9 @@
-#include "AprilTagsModule.hpp"
+#include <aikido/perception/AprilTagsModule.hpp>
+#include <aikido/perception/yaml_conversion.hpp>
 #include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <ros/topic.h>
+#include <ros/ros.h>
 #include <boost/make_shared.hpp>
 #include <Eigen/Geometry>
 #include <stdexcept>
@@ -24,13 +27,13 @@ AprilTagsModule::AprilTagsModule(ros::NodeHandlePtr _node,std::string _marker_to
 }
 
 
-AprilTagsModule::Update(double timeout,vector<dart::dynamics::Skeleton> skeleton_list)
+void AprilTagsModule::Update(std::vector<dart::dynamics::Skeleton> skeleton_list,double timeout)
 {
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list
 
-	boost_shared_ptr< visualization_msgs::MarkerArray const> marker_message
- 			= ros::topic::waitForMessage(marker_topic,node_,timeout);
+	boost::shared_ptr<const visualization_msgs::MarkerArray> marker_message
+ 			= ros::topic::waitForMessage<const visualization_msgs::MarkerArray>(marker_topic,*node_,ros::Duration(timeout));
 
 	for(size_t i=0; i < marker_message->markers.size(); i++)
 	{
@@ -62,7 +65,7 @@ AprilTagsModule::Update(double timeout,vector<dart::dynamics::Skeleton> skeleton
 
 			try{
 				listener.waitForTransform(destination_frame,detection_frame,
-					ros::Time(0),timeout);
+					ros::Time(0),ros::Duration(timeout));
 
 				listener.lookupTransform(destination_frame,detection_frame,
 					ros::Time(0), transform);
@@ -75,12 +78,14 @@ AprilTagsModule::Update(double timeout,vector<dart::dynamics::Skeleton> skeleton
 			Eigen::Quaterniond frame_quat(transform.getRotation());
 			Eigen::Vector3d frame_trans(transform.getOrigin());
 			Eigen::Matrix3d frame_rot(frame_quat.toRotationMatrix());
-			Eigen::Matrix 4d frame_pose;
-			frame_pose<<frame_quat,frame_rot,0,0,0,1;
+			Eigen::Matrix4d frame_pose;
+			frame_pose<<frame_trans,frame_rot,0,0,0,1;
 
 			//Compose to get actual skeleton pose
-			Eigen::Isometry3d temp_pose = frame_pose * marker_pose;
-			Eigen::Isometry3d skel_pose = temp_pose * skel_offset;
+			Eigen::Isometry3d temp_pose;
+			temp_pose.matrix() = frame_pose * marker_pose;
+			Eigen::Isometry3d skel_pose;
+			skel_pose.matrix() = temp_pose * skel_offset;
 			Eigen::Isometry3d link_offset = reference_link->getWorldTransform();
 			skel_pose = link_offset * skel_pose;
 
@@ -93,13 +98,13 @@ AprilTagsModule::Update(double timeout,vector<dart::dynamics::Skeleton> skeleton
 
 			for(size_t j=0;j < skeleton_list.size(); j++)
 			{
-				dart::dynamics::SkeletonPtr this_skel(skeleton_list[j]);
+				dart::dynamics::SkeletonPtr this_skel = skeleton_list[j].getPtr();
 				if(this_skel->getName() == skel_name){
 					//Exists - just update pose
 					is_new_skel = false;
 					//Assumes single joint body
 					dart::dynamics::Joint* jtptr = this_skel->getJoint(0);
-					dart::dynamics::FreeJoint* freejtptr = static_cast<dart::dynamics::FreeJoint*> jtptr;
+					dart::dynamics::FreeJoint* freejtptr = static_cast<dart::dynamics::FreeJoint*>(jtptr);
 					freejtptr->setTransform(skel_pose);
 					break;
 				}
@@ -108,16 +113,18 @@ AprilTagsModule::Update(double timeout,vector<dart::dynamics::Skeleton> skeleton
 			if(is_new_skel){
 				//Read Skeleton file corresp. to body_name
 				//TODO  - append path correctly
-				std::string body_path = body_name;
+				const std::string body_path(body_name);
+				const auto resourceRetriever = std::make_shared<aikido::util::CatkinResourceRetriever>();
+				dart::utils::DartLoader urdfLoader;
 				dart::dynamics::SkeletonPtr new_skel = 
-					dart::utils::DartLoader::parseSkeleton(dart::common::Uri(body_path));
-				new_skel.setName(skel_name);
+					urdfLoader.parseSkeleton(body_path,resourceRetriever);
+				new_skel->setName(skel_name);
 				dart::dynamics::Joint* jtptr = new_skel->getJoint(0);
-				dart::dynamics::FreeJoint* freejtptr = static_cast<dart::dynamics::FreeJoint*> jtptr;
+				dart::dynamics::FreeJoint* freejtptr = static_cast<dart::dynamics::FreeJoint*>(jtptr);
 				freejtptr->setTransform(skel_pose);
 
 				//Append to skeleton list
-				skel_list.push_back(new_skel);
+				skeleton_list.push_back(*new_skel);
 			}
 		}
 

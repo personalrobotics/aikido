@@ -39,6 +39,8 @@ add_library(${PROJECT_NAME} SHARED
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
+  src/perception/PerceptionModule.cpp
+  src/perception/AprilTagsModule.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}

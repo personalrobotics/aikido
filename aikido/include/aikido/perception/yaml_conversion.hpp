@@ -29,3 +29,5 @@ namespace YAML {
             }
         };
 }
+
+#endif 

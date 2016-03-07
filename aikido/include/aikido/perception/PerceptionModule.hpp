@@ -4,7 +4,7 @@
 namespace aikido {
 namespace perception{
 
-class PerceptionModule: 
+class PerceptionModule
 {
 public:
   PerceptionModule();
