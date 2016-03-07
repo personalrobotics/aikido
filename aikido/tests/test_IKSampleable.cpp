@@ -16,8 +16,7 @@ class IKConstraintTest : public ::testing::Test {
     virtual void SetUp() {
   
       tsr = std::shared_ptr<TSR>(new TSR());
-      rng = std::move(std::unique_ptr<RNG>(
-        new RNGWrapper<std::default_random_engine>(0)));    
+      rng.reset(new RNGWrapper<std::default_random_engine>(0)); 
 
       // Setup for constrained IKPtr 
       SkeletonPtr manipulator = Skeleton::create("manipulator");
