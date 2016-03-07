@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.11)
 project(aikido)
 
 set(INCLUDE_INSTALL_DIR include)
@@ -8,6 +8,11 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
+
+if("${OMPL_VERSION}" VERSION_LESS "1.0.0")
+  message(SEND_ERROR
+    "Aikido requires OMPL 1.0.0 or greater; found ${OMPL_VERSION}.")
+endif()
 
 # Compilation setup
 include_directories(

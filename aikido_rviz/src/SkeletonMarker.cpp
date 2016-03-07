@@ -1,4 +1,4 @@
-#include <aikido/rviz/SkeletonMarker.h>
+#include <aikido/rviz/SkeletonMarker.hpp>
 
 using dart::dynamics::BodyNode;
 using dart::dynamics::WeakBodyNodePtr;
