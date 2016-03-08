@@ -1,5 +1,5 @@
-#include <aikido/perception/AprilTagsModule.hpp>
-#include <aikido/perception/yaml_conversion.hpp>
+#include "AprilTagsModule.hpp"
+#include "yaml_conversion.hpp"
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <ros/topic.h>
