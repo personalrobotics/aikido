@@ -123,18 +123,23 @@ void BodyNodeMarker::updateGeometry(BodyNode const &bodyNode)
   using visualization_msgs::Marker;
 
   mVisualControl->markers.clear();
-  mVisualControl->markers.resize(bodyNode.getNumVisualizationShapes());
+  mVisualControl->markers.reserve(bodyNode.getNumVisualizationShapes());
 
   for (size_t i = 0; i < bodyNode.getNumVisualizationShapes(); ++i) {
     ConstShapePtr const shape = bodyNode.getVisualizationShape(i);
-    Marker *marker = &mVisualControl->markers[i];
-    convertShape(*shape, marker, mResourceServer);
+    if (shape->isHidden())
+      continue;
+
+    Marker marker;
+    convertShape(*shape, &marker, mResourceServer);
 
     // Override the color of this BodyNode.
     // TODO: This should be per-ShapeNode, pending the refactor.
     if (mHasColor) {
-      marker->color = convertEigenToROSColorRGBA(mColor);
+      marker.color = convertEigenToROSColorRGBA(mColor);
     }
+
+    mVisualControl->markers.push_back(marker);
   }
 }
 
