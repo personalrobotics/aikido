@@ -13,7 +13,7 @@ namespace constraint {
 /// into the Skeleton's configuration space. This class will retry a
 /// configurable number of times if sampling from the Isometry3d constaint or
 /// finding an inverse kinematic solution fails.
-class IKSampleableConstraint : public SampleableConstraint<Eigen::VectorXd>
+class IkSampleableConstraint : public SampleableConstraint<Eigen::VectorXd>
 {
 public:
   using SampleablePoseConstraint =
@@ -25,20 +25,20 @@ public:
   /// \param[in] _ikPtr inverse kinematics solver to use for lifting
   /// \param[in] _rng random number generator used by sample generators
   /// \param[in] _maxNumTrials number of retry attempts
-  IKSampleableConstraint(
+  IkSampleableConstraint(
     const SampleablePoseConstraint& _isometry3dConstraint,
     const dart::dynamics::InverseKinematicsPtr& _ikPtr,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
-  IKSampleableConstraint(const IKSampleableConstraint& other);
-  IKSampleableConstraint(IKSampleableConstraint&& other);
+  IkSampleableConstraint(const IkSampleableConstraint& other);
+  IkSampleableConstraint(IkSampleableConstraint&& other);
 
-  IKSampleableConstraint& operator=(
-    const IKSampleableConstraint& other);
-  IKSampleableConstraint& operator=(IKSampleableConstraint&& other);
+  IkSampleableConstraint& operator=(
+    const IkSampleableConstraint& other);
+  IkSampleableConstraint& operator=(IkSampleableConstraint&& other);
 
-  virtual ~IKSampleableConstraint() = default;
+  virtual ~IkSampleableConstraint() = default;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> 
@@ -54,8 +54,8 @@ private:
   int mMaxNumTrials;
 };
 
-using IKSampleableConstraintPtr = std::shared_ptr<const IKSampleableConstraint>;
-using IKSampleableConstraintUniquePtr = std::unique_ptr<IKSampleableConstraint>;
+using IkSampleableConstraintPtr = std::shared_ptr<const IkSampleableConstraint>;
+using IkSampleableConstraintUniquePtr = std::unique_ptr<IkSampleableConstraint>;
 
 } // namespace constraint 
 } // namespace aikido

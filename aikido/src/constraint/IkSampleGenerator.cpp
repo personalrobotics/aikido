@@ -10,7 +10,7 @@ namespace aikido {
 namespace constraint {
 
 //=============================================================================
-IKSampleGenerator::IKSampleGenerator(
+IkSampleGenerator::IkSampleGenerator(
   std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> _isometrySampler,
   const dart::dynamics::InverseKinematicsPtr& _ikPtr,
   std::unique_ptr<util::RNG> _rng,
@@ -47,7 +47,7 @@ IKSampleGenerator::IKSampleGenerator(
 };
 
 //=============================================================================
-boost::optional<Eigen::VectorXd> IKSampleGenerator::sample()
+boost::optional<Eigen::VectorXd> IkSampleGenerator::sample()
 {
 
   // Sample TSR using rng and set it as the target for IKSolver
@@ -138,13 +138,13 @@ boost::optional<Eigen::VectorXd> IKSampleGenerator::sample()
 
 
 //=============================================================================
-bool IKSampleGenerator::canSample() const
+bool IkSampleGenerator::canSample() const
 {
   return mIsometrySampler->canSample();
 }
 
 //=============================================================================
-int IKSampleGenerator::getNumSamples() const
+int IkSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }

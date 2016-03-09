@@ -8,16 +8,16 @@ namespace aikido {
 namespace constraint {
 
 // For internal use only.
-class IKSampleGenerator : public SampleGenerator<Eigen::VectorXd>
+class IkSampleGenerator : public SampleGenerator<Eigen::VectorXd>
 {
 public:
-  IKSampleGenerator(const IKSampleGenerator&) = delete;
-  IKSampleGenerator(IKSampleGenerator&& other) = delete;
+  IkSampleGenerator(const IkSampleGenerator&) = delete;
+  IkSampleGenerator(IkSampleGenerator&& other) = delete;
 
-  IKSampleGenerator& operator=(const IKSampleGenerator& other) = delete;
-  IKSampleGenerator& operator=(IKSampleGenerator&& other) = delete;
+  IkSampleGenerator& operator=(const IkSampleGenerator& other) = delete;
+  IkSampleGenerator& operator=(IkSampleGenerator&& other) = delete;
 
-  virtual ~IKSampleGenerator() = default; 
+  virtual ~IkSampleGenerator() = default; 
 
   // Documentation inherited.
   boost::optional<Eigen::VectorXd> sample() override;
@@ -30,7 +30,7 @@ public:
 
 private:  
   // For internal use only.
-  IKSampleGenerator(
+  IkSampleGenerator(
     std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> _isometrySampler,
     const dart::dynamics::InverseKinematicsPtr& _ikPtr,
     std::unique_ptr<util::RNG> _rng,
@@ -41,7 +41,7 @@ private:
   int mMaxNumTrials;
   std::unique_ptr<util::RNG> mRng;
 
-  friend class IKSampleableConstraint;
+  friend class IkSampleableConstraint;
 };
 
 } // namespace constraint 

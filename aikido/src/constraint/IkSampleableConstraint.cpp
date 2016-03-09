@@ -8,7 +8,7 @@ namespace constraint {
 
 
 //=============================================================================
-IKSampleableConstraint::IKSampleableConstraint(
+IkSampleableConstraint::IkSampleableConstraint(
   const SampleablePoseConstraint& _isometry3dConstraint,
   const dart::dynamics::InverseKinematicsPtr& _ikPtr,
   std::unique_ptr<util::RNG> _rng,
@@ -45,9 +45,9 @@ IKSampleableConstraint::IKSampleableConstraint(
 }
 
 //=============================================================================
-IKSampleableConstraint::IKSampleableConstraint(
-  const IKSampleableConstraint& other)
-: IKSampleableConstraint(other.mIsometry3dConstraintPtr,
+IkSampleableConstraint::IkSampleableConstraint(
+  const IkSampleableConstraint& other)
+: IkSampleableConstraint(other.mIsometry3dConstraintPtr,
                          other.mIKPtr,
                          other.mRng->clone(),
                          other.mMaxNumTrials)
@@ -55,9 +55,9 @@ IKSampleableConstraint::IKSampleableConstraint(
 }
 
 //=============================================================================
-IKSampleableConstraint::IKSampleableConstraint(
-  IKSampleableConstraint&& other)
-: IKSampleableConstraint(other.mIsometry3dConstraintPtr,
+IkSampleableConstraint::IkSampleableConstraint(
+  IkSampleableConstraint&& other)
+: IkSampleableConstraint(other.mIsometry3dConstraintPtr,
                          other.mIKPtr,
                          other.mRng->clone(),
                          other.mMaxNumTrials)
@@ -65,8 +65,8 @@ IKSampleableConstraint::IKSampleableConstraint(
 }
 
 //=============================================================================
-IKSampleableConstraint& IKSampleableConstraint::operator=(
-    const IKSampleableConstraint& other)
+IkSampleableConstraint& IkSampleableConstraint::operator=(
+    const IkSampleableConstraint& other)
 {
   mIsometry3dConstraintPtr = other.mIsometry3dConstraintPtr;
   mIKPtr = other.mIKPtr;
@@ -76,8 +76,8 @@ IKSampleableConstraint& IKSampleableConstraint::operator=(
 }
 
 //=============================================================================
-IKSampleableConstraint& IKSampleableConstraint::operator=(
-  IKSampleableConstraint&& other)
+IkSampleableConstraint& IkSampleableConstraint::operator=(
+  IkSampleableConstraint&& other)
 {
   mIsometry3dConstraintPtr = other.mIsometry3dConstraintPtr;
   mIKPtr = other.mIKPtr;
@@ -88,15 +88,15 @@ IKSampleableConstraint& IKSampleableConstraint::operator=(
 
 //=============================================================================
 std::unique_ptr<SampleGenerator<Eigen::VectorXd>> 
-IKSampleableConstraint::createSampleGenerator() const
+IkSampleableConstraint::createSampleGenerator() const
 {
-  return std::unique_ptr<IKSampleGenerator>(new IKSampleGenerator(
+  return std::unique_ptr<IkSampleGenerator>(new IkSampleGenerator(
     mIsometry3dConstraintPtr->createSampleGenerator(),
     mIKPtr, mRng->clone(), mMaxNumTrials));
 }
 
 //=============================================================================
-void IKSampleableConstraint::setRNG(std::unique_ptr<util::RNG> rng)
+void IkSampleableConstraint::setRNG(std::unique_ptr<util::RNG> rng)
 {
   mRng = std::move(rng);
 }

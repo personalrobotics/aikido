@@ -1,4 +1,4 @@
-#include <aikido/constraint/IKSampleable.hpp>
+#include <aikido/constraint/IkSampleableConstraint.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
@@ -76,19 +76,19 @@ class IKConstraintTest : public ::testing::Test {
 
 TEST_F(IKConstraintTest, Constructor)
 {
-  IKSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
+  IkSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
 }
 
 TEST_F(IKConstraintTest, CopyConstructor)
 {
-  IKSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
-  IKSampleableConstraint ikConstraint2(ikConstraint);
+  IkSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
+  IkSampleableConstraint ikConstraint2(ikConstraint);
 }
 
 TEST_F(IKConstraintTest, AssignmentOperator)
 {
-  IKSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
-  IKSampleableConstraint ikConstraint2 = ikConstraint;
+  IkSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
+  IkSampleableConstraint ikConstraint2 = ikConstraint;
 }
 
 TEST_F(IKConstraintTest, SampleGeneratorPointConstraint)
@@ -97,7 +97,7 @@ TEST_F(IKConstraintTest, SampleGeneratorPointConstraint)
   T0_w.translation() = Eigen::Vector3d(0, 0, 1);
   tsr->mT0_w = T0_w;
 
-  IKSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
+  IkSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> generator = 
     ikConstraint.createSampleGenerator();
 
@@ -116,7 +116,7 @@ TEST_F(IKConstraintTest, SampleGeneratorJointLimitInfeasible)
   bn1->getParentJoint()->setPositionLowerLimit(0, 0);
   bn1->getParentJoint()->setPositionUpperLimit(0, 0);
 
-  IKSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
+  IkSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> generator = 
     ikConstraint.createSampleGenerator();
 
@@ -133,7 +133,7 @@ TEST_F(IKConstraintTest, SampleSameSequence)
   Bw(2, 1) = 3;
   tsr->mBw = Bw;
 
-  IKSampleableConstraint ikConstraint(tsr, relaxed_ik, std::move(rng), 5);
+  IkSampleableConstraint ikConstraint(tsr, relaxed_ik, std::move(rng), 5);
   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> generator1 = 
     ikConstraint.createSampleGenerator();
   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> generator2 = 
