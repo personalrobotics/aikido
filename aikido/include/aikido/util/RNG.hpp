@@ -50,24 +50,24 @@ public:
     return mRng;
   }
 
-  virtual result_type min() const
+  result_type min() const override
   {
     return mRng.min();
   }
 
-  virtual result_type max() const
+  result_type max() const override
   {
     return mRng.max();
   }
 
-  virtual result_type operator()()
+  result_type operator()() override
   {
     return mRng();
   }
   
-  virtual std::unique_ptr<RNG> clone() const override
+  std::unique_ptr<RNG> clone() const override
   {
-    return std::unique_ptr<RNG>(new RNGWrapper(mRng));
+    return std::unique_ptr<RNGWrapper>(new RNGWrapper(mRng));
   }
 
 private:
