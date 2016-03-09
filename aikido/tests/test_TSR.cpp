@@ -1,10 +1,10 @@
-#include <aikido/sampleable/TSR.hpp>
+#include <aikido/constraint/TSR.hpp>
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::sampleable::TSR;
-using aikido::sampleable::TSRSampleGenerator;
+using aikido::constraint::TSR;
+using aikido::constraint::TSRSampleGenerator;
 
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
@@ -149,7 +149,7 @@ TEST(TSRSampleGenerator, SampleWithinBounds)
 
   tsr.mBw = Bw;
 
-  aikido::sampleable::TSRSamplerUniquePtr sampler(
+  aikido::constraint::TSRSamplerUniquePtr sampler(
     std::move(tsr.createSampleGenerator()));
   
   for (int i = 0; i < 10; i++)
@@ -176,10 +176,10 @@ TEST(TSRSampleGenerator, SampleSameSequence)
 
   tsr.mBw = Bw;
 
-  aikido::sampleable::TSRSamplerUniquePtr sampler1(
+  aikido::constraint::TSRSamplerUniquePtr sampler1(
     std::move(tsr.createSampleGenerator()));
 
-  aikido::sampleable::TSRSamplerUniquePtr sampler2(
+  aikido::constraint::TSRSamplerUniquePtr sampler2(
     std::move(tsr.createSampleGenerator()));
 
   for (int i = 0; i < 10; i++)

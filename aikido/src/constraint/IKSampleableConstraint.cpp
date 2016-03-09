@@ -1,9 +1,9 @@
-#include <aikido/sampleable/IKSampleable.hpp>
+#include <aikido/constraint/IKSampleable.hpp>
 
 using namespace dart::dynamics;
 
 namespace aikido {
-namespace sampleable{
+namespace constraint {
 
 
 //=============================================================================
@@ -102,6 +102,6 @@ void IKSampleableConstraint::setRNG(std::unique_ptr<util::RNG> rng)
   mRng = std::move(rng);
 }
 
-} // namespace sampleable
+} // namespace constraint
 } // namespace aikido
 

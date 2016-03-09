@@ -1,11 +1,11 @@
-#ifndef AIKIDO_SAMPLEABLE_TSR_H_
-#define AIKIDO_SAMPLEABLE_TSR_H_
+#ifndef AIKIDO_CONSTRAINT_TSR_H_
+#define AIKIDO_CONSTRAINT_TSR_H_
 
 #include "Sampleable.hpp"
 #include <Eigen/Dense>
 
 namespace aikido {
-namespace sampleable{
+namespace constraint {
 
 class TSR : public SampleableConstraint<Eigen::Isometry3d>
 {
@@ -107,7 +107,7 @@ using TSRSampleGeneratorPtr = std::shared_ptr<const TSRSampleGenerator>;
 using TSRSampleGeneratorUniquePtr = std::unique_ptr<TSRSampleGenerator>;
 using TSRSamplerUniquePtr = std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>;
 
-} // sampleable
-} // aikido
+} // namespace constraint
+} // namespace aikido
 
-#endif // AIKIDO_SAMPLEABLE_TSR_H_
+#endif // AIKIDO_CONSTRAINT_TSR_H_

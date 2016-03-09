@@ -1,10 +1,10 @@
-#include <aikido/sampleable/TSR.hpp>
+#include <aikido/constraint/TSR.hpp>
 #include <stdexcept>
 #include <math.h>
 #include <vector>
 
 namespace aikido {
-namespace sampleable{
+namespace constraint {
 
 //=============================================================================
 TSR::TSR(std::unique_ptr<util::RNG> _rng,
@@ -123,6 +123,5 @@ void TSR::setRNG(std::unique_ptr<util::RNG> rng)
   mRng = std::move(rng);
 }
 
-} // namespace sampleable
+} // namespace constraint
 } // namespace aikido
-

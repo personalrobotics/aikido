@@ -1,12 +1,12 @@
-#include <aikido/sampleable/IKSampleable.hpp>
-#include <aikido/sampleable/TSR.hpp>
+#include <aikido/constraint/IKSampleable.hpp>
+#include <aikido/constraint/TSR.hpp>
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
-using namespace aikido::sampleable;
+using namespace aikido::constraint;
 using namespace dart::dynamics;
 
 

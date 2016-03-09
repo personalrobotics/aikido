@@ -1,5 +1,5 @@
-#ifndef AIKIDO_SAMPLEABLE_SAMPLEABLE_H_
-#define AIKIDO_SAMPLEABLE_SAMPLEABLE_H_
+#ifndef AIKIDO_CONSTRAINT_SAMPLEABLE_H_
+#define AIKIDO_CONSTRAINT_SAMPLEABLE_H_
 
 #include <limits>
 #include <memory>
@@ -8,7 +8,7 @@
 #include "../util/RNG.hpp"
 
 namespace aikido {
-namespace sampleable {
+namespace constraint {
 
 template <class T> class SampleGenerator;
 template <class T> class SampleableConstraint;
@@ -29,8 +29,7 @@ public:
 };
 
 
-} // namespace sampleable
+} // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_SAMPLEABLE_SAMPLEABLE_H_
-
+#endif // AIKIDO_CONSTRAINT_SAMPLEABLE_H_

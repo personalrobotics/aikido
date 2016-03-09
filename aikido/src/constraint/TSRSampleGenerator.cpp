@@ -1,10 +1,10 @@
-#include <aikido/sampleable/TSR.hpp>
+#include <aikido/constraint/TSR.hpp>
 #include <stdexcept>
 #include <math.h>
 #include <vector>
 
 namespace aikido {
-namespace sampleable{
+namespace constraint {
 
 //=============================================================================
 TSRSampleGenerator::TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
@@ -79,6 +79,5 @@ int TSRSampleGenerator::getNumSamples() const
   return NO_LIMIT;
 }
 
-} // sampleable
-} // aikido
-
+} // namespace constraint
+} // namespace aikido

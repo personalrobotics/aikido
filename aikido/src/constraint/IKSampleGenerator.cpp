@@ -1,4 +1,4 @@
-#include <aikido/sampleable/IKSampleable.hpp>
+#include <aikido/constraint/IKSampleable.hpp>
 #include "dart/common/Console.h"
 #include <math.h>
 #include <vector>
@@ -7,7 +7,7 @@ using aikido::util::RNG;
 using namespace dart::dynamics;
 
 namespace aikido {
-namespace sampleable{
+namespace constraint {
 
 //=============================================================================
 IKSampleGenerator::IKSampleGenerator(
@@ -149,5 +149,5 @@ int IKSampleGenerator::getNumSamples() const
   return NO_LIMIT;
 }
 
-} // sampleable
-} // aikido
+} // namespace constraint
+} // namespace aikido

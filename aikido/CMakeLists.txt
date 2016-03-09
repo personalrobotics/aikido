@@ -39,10 +39,10 @@ add_library(${PROJECT_NAME} SHARED
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
-  src/sampleable/TSR.cpp
-  src/sampleable/TSRSampleGenerator.cpp
-  src/sampleable/IKSampleableConstraint.cpp
-  src/sampleable/IKSampleGenerator.cpp
+  src/constraint/TSR.cpp
+  src/constraint/TSRSampleGenerator.cpp
+  src/constraint/IKSampleableConstraint.cpp
+  src/constraint/IKSampleGenerator.cpp
 #  src/util/CatkinResourceRetriever.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp

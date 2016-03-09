@@ -1,11 +1,11 @@
-#ifndef AIKIDO_SAMPLEABLE_IKSAMPLEABLE_H
-#define AIKIDO_SAMPLEABLE_IKSAMPLEABLE_H
+#ifndef AIKIDO_CONSTRAINT_IKSAMPLEABLE_H
+#define AIKIDO_CONSTRAINT_IKSAMPLEABLE_H
 
 #include "Sampleable.hpp"
 #include <dart/dynamics/dynamics.h>
 
 namespace aikido {
-namespace sampleable{
+namespace constraint {
 
 // Transforms Isometry3d region to IK region
 class IKSampleableConstraint : public SampleableConstraint<Eigen::VectorXd>
@@ -82,8 +82,8 @@ using IKSampleGeneratorUniquePtr = std::unique_ptr<IKSampleGenerator>;
 using IKSampleableConstraintPtr = std::shared_ptr<const IKSampleableConstraint>;
 using IKSampleableConstraintUniquePtr = std::unique_ptr<IKSampleableConstraint>;
 
-} // namespace sampleable
+} // namespace constraint 
 } // namespace aikido
 
-#endif // AIKIDO_SAMPLEABLE_IKSAMPLEABLE_H
+#endif // AIKIDO_Constraint_IKSAMPLEABLE_H
 
