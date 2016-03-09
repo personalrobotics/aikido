@@ -7,30 +7,40 @@
 namespace aikido {
 namespace constraint {
 
-// Transforms Isometry3d region to IK region
+/// Transforms a Isometry3d SampleableConstraint into a VectorXd
+/// SampleableConstraint that represents the positions of a Skeleton by
+/// sampling an Isometry3d and using inverse kinematics to "lift" that pose
+/// into the Skeleton's configuration space. This class will retry a
+/// configurable number of times if sampling from the Isometry3d constaint or
+/// finding an inverse kinematic solution fails.
 class IKSampleableConstraint : public SampleableConstraint<Eigen::VectorXd>
 {
 public:
-
   using SampleablePoseConstraint =
     std::shared_ptr<SampleableConstraint<Eigen::Isometry3d>>;
 
+  /// Constructor.
+  ///
+  /// \param[in] _isometry3dConstraint pose constraint to lift
+  /// \param[in] _ikPtr inverse kinematics solver to use for lifting
+  /// \param[in] _rng random number generator used by sample generators
+  /// \param[in] _maxNumTrials number of retry attempts
   IKSampleableConstraint(
-    const SampleablePoseConstraint&
-      _isometry3dConstraint,
+    const SampleablePoseConstraint& _isometry3dConstraint,
     const dart::dynamics::InverseKinematicsPtr& _ikPtr,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
   IKSampleableConstraint(const IKSampleableConstraint& other);
   IKSampleableConstraint(IKSampleableConstraint&& other);
+
   IKSampleableConstraint& operator=(
     const IKSampleableConstraint& other);
   IKSampleableConstraint& operator=(IKSampleableConstraint&& other);
 
   virtual ~IKSampleableConstraint() = default;
 
-  /// Returns VectorXd sample generator.
+  // Documentation inherited.
   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> 
     createSampleGenerator() const override;
   
@@ -42,28 +52,31 @@ private:
   SampleablePoseConstraint mIsometry3dConstraintPtr;
   dart::dynamics::InverseKinematicsPtr mIKPtr;
   int mMaxNumTrials;
-
 };
 
-
+// For internal use only.
 class IKSampleGenerator : public SampleGenerator<Eigen::VectorXd>
 {
-  friend class IKSampleableConstraint;
-  
 public:
-
   IKSampleGenerator(const IKSampleGenerator&) = delete;
   IKSampleGenerator(IKSampleGenerator&& other) = delete;
+
   IKSampleGenerator& operator=(const IKSampleGenerator& other) = delete;
   IKSampleGenerator& operator=(IKSampleGenerator&& other) = delete;
+
   virtual ~IKSampleGenerator() = default; 
 
+  // Documentation inherited.
   boost::optional<Eigen::VectorXd> sample() override;
+
+  // Documentation inherited.
   bool canSample() const override;
+
+  // Documentation inherited.
   int getNumSamples() const override;
 
 private:  
-
+  // For internal use only.
   IKSampleGenerator(
     std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> _isometrySampler,
     const dart::dynamics::InverseKinematicsPtr& _ikPtr,
@@ -75,6 +88,7 @@ private:
   int mMaxNumTrials;
   std::unique_ptr<util::RNG> mRng;
 
+  friend class IKSampleableConstraint;
 };
 
 using IKSampleGeneratorPtr = std::shared_ptr<const IKSampleGenerator>;
