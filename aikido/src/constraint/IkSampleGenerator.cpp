@@ -85,7 +85,7 @@ boost::optional<Eigen::VectorXd> IkSampleGenerator::sample()
       if (!std::isfinite(lower) || !std::isfinite(upper))
       {
         dterr << "Unbounded joint.\n";
-        boost::optional<Eigen::VectorXd>{};
+        return boost::optional<Eigen::VectorXd>{};
       }
     }
 
