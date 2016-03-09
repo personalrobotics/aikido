@@ -1,4 +1,5 @@
-#include <aikido/constraint/IKSampleable.hpp>
+#include <aikido/constraint/IkSampleableConstraint.hpp>
+#include <aikido/constraint/IkSampleGenerator.hpp>
 
 using namespace dart::dynamics;
 
@@ -89,11 +90,9 @@ IKSampleableConstraint& IKSampleableConstraint::operator=(
 std::unique_ptr<SampleGenerator<Eigen::VectorXd>> 
 IKSampleableConstraint::createSampleGenerator() const
 {
-  return IKSampleGeneratorUniquePtr(
-    new IKSampleGenerator(mIsometry3dConstraintPtr->createSampleGenerator(),
-                          mIKPtr,
-                          mRng->clone(),
-                          mMaxNumTrials));
+  return std::unique_ptr<IKSampleGenerator>(new IKSampleGenerator(
+    mIsometry3dConstraintPtr->createSampleGenerator(),
+    mIKPtr, mRng->clone(), mMaxNumTrials));
 }
 
 //=============================================================================

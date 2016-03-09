@@ -1,5 +1,5 @@
-#include <aikido/constraint/IKSampleable.hpp>
-#include "dart/common/Console.h"
+#include <aikido/constraint/IkSampleGenerator.hpp>
+#include <dart/common/Console.h>
 #include <math.h>
 #include <vector>
 
