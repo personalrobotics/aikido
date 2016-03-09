@@ -83,7 +83,7 @@ TSR::createSampleGenerator() const
 {
   validate();
 
-  return TSRSampleGeneratorUniquePtr(new TSRSampleGenerator(
+  return std::unique_ptr<TSRSampleGenerator>(new TSRSampleGenerator(
     mRng->clone(), mT0_w, mBw, mTw_e));
 }
 

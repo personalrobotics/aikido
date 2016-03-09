@@ -104,6 +104,7 @@ private:
 
 using TSRPtr = std::shared_ptr<const TSR>;
 using TSRUniquePtr = std::unique_ptr<TSR>;
+using TSRSamplerUniquePtr = std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>;
 
 } // namespace constraint
 } // namespace aikido

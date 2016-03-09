@@ -146,7 +146,7 @@ bool IkSampleGenerator::canSample() const
 //=============================================================================
 int IkSampleGenerator::getNumSamples() const
 {
-  return NO_LIMIT;
+  return mIsometrySampler->getNumSamples();
 }
 
 } // namespace constraint
