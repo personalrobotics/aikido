@@ -26,16 +26,21 @@ public:
 
   TSR(const TSR& other);
   TSR(TSR&& other);
+
   TSR& operator=(const TSR& other);
   TSR& operator=(TSR&& other);
+
   virtual ~TSR() = default;
 
-  /// Returns Isometry3D sample generator.
+  // Documentation inherited.
   std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>
     createSampleGenerator() const override;
 
-  /// Throws invalid argument exception if not.
+  /// Throws an invalid_argument exception if this TSR is invalid.
   void validate() const;
+
+  /// Set rng seed.
+  void setRNG(std::unique_ptr<util::RNG> rng);
 
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;
@@ -46,22 +51,14 @@ public:
   /// Transformation from "wiggle" frame into end frame.
   Eigen::Isometry3d mTw_e;
 
-  /// Set rng seed.
-  void setRNG(std::unique_ptr<util::RNG> rng);
-
 private:
-
   std::unique_ptr<util::RNG> mRng;
-
 };
 
 
 class TSRSampleGenerator : public SampleGenerator<Eigen::Isometry3d>
 {
-  friend class TSR;
-
 public:
-
   TSRSampleGenerator(const TSRSampleGenerator&) = delete;
   TSRSampleGenerator(TSRSampleGenerator&& other) = delete;
   TSRSampleGenerator& operator=(const TSRSampleGenerator& other) = delete;
@@ -78,11 +75,14 @@ public:
   /// \return a transform within the bounds of this TSR.
   boost::optional<Eigen::Isometry3d> sample() override;
 
+  // Documentation inherited.
   bool canSample() const override;
+
+  // Documentation inherited.
   int getNumSamples() const override;
 
 private:
-
+  // For internal use only.
   TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
                      const Eigen::Isometry3d& _T0_w,
                      const Eigen::Matrix<double, 6, 2>& _Bw,
@@ -99,13 +99,11 @@ private:
   /// Transformation from "wiggle" frame into end frame.
   Eigen::Isometry3d mTw_e;
 
+  friend class TSR;
 };
 
 using TSRPtr = std::shared_ptr<const TSR>;
 using TSRUniquePtr = std::unique_ptr<TSR>;
-using TSRSampleGeneratorPtr = std::shared_ptr<const TSRSampleGenerator>;
-using TSRSampleGeneratorUniquePtr = std::unique_ptr<TSRSampleGenerator>;
-using TSRSamplerUniquePtr = std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>;
 
 } // namespace constraint
 } // namespace aikido
