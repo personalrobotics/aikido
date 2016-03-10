@@ -18,7 +18,8 @@ template <class T> class SampleGenerator;
 /// sample() method. SampleGenerator<T> is entirely deterministic and all
 /// generators constructed by this object will return the same sequence of
 /// samples. For that reason, you should be careful to use the same
-/// SampleGenerator<T> for as long as you would like unique samples.
+/// SampleGenerator<T> when obtaining a sequence of samples to avoid
+/// re-sampling the beginning of the same deterministic sequence repeatedly.
 template <class T>
 class SampleableConstraint {
 public:
