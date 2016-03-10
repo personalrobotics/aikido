@@ -1,4 +1,5 @@
 #include <aikido/constraint/TSR.hpp>
+#include <dart/common/Console.h>
 #include <boost/format.hpp>
 #include <stdexcept>
 #include <math.h>
@@ -95,6 +96,12 @@ TSR::createSampleGenerator() const
         format("Sampling requires finite bounds. Bw[%d, %d] is %f.")
           % i % j % mBw(i, j)));
   }
+
+  if (mBw.col(0) == mBw.col(1))
+    dtwarn << "[TSR::createSampleGenerator] This is a point TSR that represents"
+              " a zero measure set in SE(3). The SampleGenerator<Isometry3d>"
+              " returned by this function will sample the same pose infinitely"
+              " many times.\n";
 
   return std::unique_ptr<TSRSampleGenerator>(new TSRSampleGenerator(
     mRng->clone(), mT0_w, mBw, mTw_e));
