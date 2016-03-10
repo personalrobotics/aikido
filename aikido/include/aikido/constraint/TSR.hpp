@@ -39,7 +39,7 @@ public:
   /// Throws an invalid_argument exception if this TSR is invalid.
   void validate() const;
 
-  /// Set rng seed.
+  /// Set the random number generator used by SampleGenerators for this TSR.
   void setRNG(std::unique_ptr<util::RNG> rng);
 
   /// Transformation from origin frame into "wiggle" frame.
