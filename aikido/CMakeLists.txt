@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.11)
 project(aikido)
 
+list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
+list(APPEND CMAKE_CXX_FLAGS "-std=c++11")
+
 set(INCLUDE_INSTALL_DIR include)
 set(LIBRARY_INSTALL_DIR lib)
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
@@ -8,6 +11,7 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
+find_package(TinyXML2 REQUIRED)
 
 if("${OMPL_VERSION}" VERSION_LESS "1.0.0")
   message(SEND_ERROR
@@ -22,9 +26,8 @@ include_directories(
 include_directories(SYSTEM
   ${Boost_INCLUDE_DIRS}
   ${DART_INCLUDE_DIRS}
+  ${TinyXML2_INCLUDE_DIRS}
 )
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Build
 add_library(${PROJECT_NAME} SHARED
@@ -35,7 +38,11 @@ add_library(${PROJECT_NAME} SHARED
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
-  src/tsr/TSR.cpp
+  src/constraint/TSR.cpp
+  src/constraint/TSRSampleGenerator.cpp
+  src/constraint/IkSampleableConstraint.cpp
+  src/constraint/IkSampleGenerator.cpp
+  src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
@@ -45,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${OMPL_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${TinyXML2_LIBRARIES}
 )
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).

@@ -16,8 +16,25 @@ function(run_tests sources libraries)
   endforeach(source)
 endfunction()
 
+
+#############################
+# SampleableConstraint tests
+#############################
+add_executable(test_TSR test_TSR.cpp)
+target_link_libraries(test_TSR "${PROJECT_NAME}" gtest gtest_main)
+target_compile_definitions(test_TSR
+  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
+add_test(test_TSR test_TSR)
+
+add_executable(test_IKSampleable test_IKSampleable.cpp)
+target_link_libraries(test_IKSampleable "${PROJECT_NAME}" gtest gtest_main)
+target_compile_definitions(test_IKSampleable
+  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
+add_test(test_IKSampleable test_IKSampleable)
+
+
 ################################
-# CatkinResourceRetriever setup
+# CatkinResourceRetriever tests
 ################################
 set(CATKIN_MAKE_WORKSPACE
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_make_workspace")
@@ -51,12 +68,3 @@ target_compile_definitions(test_CatkinResourceRetriever_catkin_build
   PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
 add_test(test_CatkinResourceRetriever_catkin_build
   test_CatkinResourceRetriever_catkin_build)
-
-################################
-# Unit test declarations
-################################
-#set(AIKIDO_TESTS
-#  test_TSR.cpp
-#  # test_SplineTrajectory.cpp
-#)
-#run_tests("${AIKIDO_TESTS}" aikido gtest gtest_main)
