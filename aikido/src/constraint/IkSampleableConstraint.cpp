@@ -41,7 +41,6 @@ IkSampleableConstraint::IkSampleableConstraint(
     throw std::invalid_argument(
       "MaxNumTrials is not positive.");
   }
-
 }
 
 //=============================================================================

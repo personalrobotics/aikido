@@ -1,8 +1,11 @@
 #include <aikido/constraint/IkSampleGenerator.hpp>
+#include <boost/format.hpp>
 #include <dart/common/Console.h>
 #include <math.h>
 #include <vector>
 
+using boost::format;
+using boost::str;
 using aikido::util::RNG;
 using namespace dart::dynamics;
 
@@ -21,35 +24,30 @@ IkSampleGenerator::IkSampleGenerator(
 , mMaxNumTrials(_maxNumTrials)
 {
   if (!mRng)
-  {
-    throw std::invalid_argument(
-      "Random generator is empty.");
-  }
+    throw std::invalid_argument("_rng is nullptr.");
 
-  if (!_ikPtr)
-  {
-    throw std::invalid_argument(
-      "IKPtr is empty.");
-  }
+  if (!mIKPtr)
+    throw std::invalid_argument("_ikPtr is nullptr.");
 
   if (!mIsometrySampler)
-  {
-    throw std::invalid_argument(
-      "IsometrySampler is empty.");
-  }
+    throw std::invalid_argument("_isometrySampler is nullptr.");
 
-  if (_maxNumTrials <= 0)
-  {
-    throw std::invalid_argument(
-      "MaxNumTrials is not positive.");
-  }
+  if (mMaxNumTrials <= 0)
+    throw std::invalid_argument(str(
+      format("_maxNumTrials must be positive; got %d.") % mMaxNumTrials));
 
+  if (mIsometrySampler->getNumSamples() != NO_LIMIT)
+    dtwarn << "[IkSampleGenerator::constructor] IkSampleGenerator only tries"
+              " to find one IK solution per Isometry3d sample. The provided"
+              " SampleGenerator<Isometry3d> contains a finite set of "
+           << mIsometrySampler->getNumSamples()
+           << " samples. We advise against using this class on a finite"
+              " sets of poses because they may be quickly exhausted.\n";
 };
 
 //=============================================================================
 boost::optional<Eigen::VectorXd> IkSampleGenerator::sample()
 {
-
   // Sample TSR using rng and set it as the target for IKSolver
   bool success = false;
 
@@ -135,7 +133,6 @@ boost::optional<Eigen::VectorXd> IkSampleGenerator::sample()
   
   return boost::optional<Eigen::VectorXd>{};
 }
-
 
 //=============================================================================
 bool IkSampleGenerator::canSample() const
