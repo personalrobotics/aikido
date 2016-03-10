@@ -1,7 +1,11 @@
 #include <aikido/constraint/TSR.hpp>
+#include <boost/format.hpp>
 #include <stdexcept>
 #include <math.h>
 #include <vector>
+
+using boost::format;
+using boost::str;
 
 namespace aikido {
 namespace constraint {
@@ -42,7 +46,6 @@ TSR::TSR(const TSR& other)
   validate();
 }
 
-
 //=============================================================================
 TSR::TSR(TSR&& other)
 : mRng(std::move(other.mRng))
@@ -52,7 +55,6 @@ TSR::TSR(TSR&& other)
 {
   validate();
 }
-
 
 //=============================================================================
 TSR& TSR::operator=(const TSR& other)
@@ -76,12 +78,23 @@ TSR& TSR::operator=(TSR&& other)
   return *this;
 }
 
-
 //=============================================================================
 std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> 
 TSR::createSampleGenerator() const
 {
   validate();
+
+  if (!mRng)
+    throw std::invalid_argument("Random generator is nullptr.");
+
+  for (int i = 0; i < 6; ++i)
+  for (int j = 0; j < 2; ++j)
+  {
+    if (!std::isfinite(mBw(i, j)))
+      throw std::invalid_argument(str(
+        format("Sampling requires finite bounds. Bw[%d, %d] is %f.")
+          % i % j % mBw(i, j)));
+  }
 
   return std::unique_ptr<TSRSampleGenerator>(new TSRSampleGenerator(
     mRng->clone(), mT0_w, mBw, mTw_e));
@@ -90,30 +103,15 @@ TSR::createSampleGenerator() const
 //=============================================================================
 void TSR::validate() const
 {
-  if (!mRng)
-  {
-    throw std::invalid_argument(
-      "Random generator is empty.");
-  }
-
   // Assertion checks for min, max on bounds 
-  for(int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++)
   {
-    if(mBw(i, 0) > mBw(i, 1))
-    {
-      throw std::invalid_argument(
-        "Lower bound must be less than upper bound.");
-    }
-
-    if (!(std::isfinite(mBw(i, 0)) && std::isfinite(mBw(i, 1))))
-    {
-      throw std::invalid_argument("Bounds must be finite.");
-    }
-
+    if (mBw(i, 0) > mBw(i, 1))
+      throw std::invalid_argument(str(
+        format("Lower bound exceeds upper bound on dimension %d: %f > %f")
+          % i % mBw(i, 0) % mBw(i, 1)));
   }
-
 }
-
 
 //=============================================================================
 void TSR::setRNG(std::unique_ptr<util::RNG> rng)
