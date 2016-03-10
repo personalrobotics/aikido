@@ -11,8 +11,9 @@
   <depend>boost</depend>
   <depend>dart</depend>
   <depend>eigen</depend>
-  <depend>ompl</depend>
+  <depend version_gte="1.0.0">ompl</depend>
   <depend>python</depend>
+  <depend>tinyxml2</depend>
   <!-- This is required by REP-136. -->
   <exec_depend>catkin</exec_depend>
   <buildtool_depend>cmake</buildtool_depend>

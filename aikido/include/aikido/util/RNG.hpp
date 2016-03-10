@@ -12,28 +12,31 @@ class RNG
 {
 public:
   typedef uint32_t result_type;
-  typedef std::shared_ptr<RNG> Ptr;
-  typedef std::shared_ptr<RNG const> ConstPtr;
 
   virtual result_type min() const = 0;
   virtual result_type max() const = 0;
   virtual result_type operator()() = 0;
+  virtual std::unique_ptr<RNG> clone() const = 0;
+
 };
 
 template <class T>
 class RNGWrapper : virtual public RNG
 {
 public:
-  typedef std::shared_ptr<RNGWrapper> Ptr;
-  typedef std::shared_ptr<RNGWrapper const> ConstPtr;
 
   RNGWrapper()
     : mRng(std::time(0))
   {
   }
 
-  RNGWrapper(result_type seed)
-    : mRng(seed)
+  RNGWrapper(T _rng)
+    : mRng(_rng)
+  {
+  }
+
+  RNGWrapper(result_type _seed)
+    : mRng(_seed)
   {
   }
 
@@ -47,19 +50,24 @@ public:
     return mRng;
   }
 
-  virtual result_type min() const
+  result_type min() const override
   {
     return mRng.min();
   }
 
-  virtual result_type max() const
+  result_type max() const override
   {
     return mRng.max();
   }
 
-  virtual result_type operator()()
+  result_type operator()() override
   {
     return mRng();
+  }
+  
+  std::unique_ptr<RNG> clone() const override
+  {
+    return std::unique_ptr<RNGWrapper>(new RNGWrapper(mRng));
   }
 
 private:
