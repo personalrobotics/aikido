@@ -27,7 +27,7 @@ public:
 	{
 	}
 
-	void DetectObject(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout=10.0);
+	void DetectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout=10.0) override; 
 
 
 private:

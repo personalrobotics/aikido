@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>package4</name>
+  <version>0.0.1</version>
+  <description>my_package2</description>
+  <maintainer email="fake@example.com">Fake Maintainer</maintainer>
+  <license>test</license>
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

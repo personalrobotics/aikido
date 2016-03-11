@@ -27,7 +27,7 @@ AprilTagsModule::AprilTagsModule(ros::NodeHandlePtr _node,std::string _marker_to
 }
 
 
-void AprilTagsModule::DetectObject(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout)
+void AprilTagsModule::DetectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout)
 {
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list

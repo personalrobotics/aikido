@@ -1,6 +1,8 @@
 #ifndef AIKIDO_PERCEPTION_PERCEPTIONMODULE_H
 #define AIKIDO_PERCEPTION_PERCEPTIONMODULE_H
 
+//Abstract Class for perception modules.
+
 namespace aikido {
 namespace perception{
 
@@ -10,7 +12,9 @@ public:
 
   virtual ~PerceptionModule() = default;
 
-  virtual void DetectObject() const = 0;
+
+  //THE SIGNATURE MIGHT DIFFER FOR OTHER PERCEPTION METHODS - NEED TO ADDRESS
+  virtual void DetectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout) = 0;
 
 };
 }

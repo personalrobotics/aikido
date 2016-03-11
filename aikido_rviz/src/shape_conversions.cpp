@@ -2,8 +2,8 @@
 #include <boost/filesystem.hpp>
 #include <Eigen/StdVector>
 #include <dart/dynamics/dynamics.h>
-#include <aikido/rviz/shape_conversions.h>
-#include <aikido/rviz/ResourceServer.h>
+#include <aikido/rviz/shape_conversions.hpp>
+#include <aikido/rviz/ResourceServer.hpp>
 
 using dart::dynamics::Shape;
 using dart::dynamics::BoxShape;
@@ -108,8 +108,8 @@ bool convertShape(CylinderShape const &shape, Marker *marker,
 {
   marker->type = Marker::CYLINDER;
   marker->pose = convertEigenToROSPose(shape.getLocalTransform());
-  marker->scale.x = shape.getRadius();
-  marker->scale.y = shape.getRadius();
+  marker->scale.x = 2. * shape.getRadius();
+  marker->scale.y = 2. * shape.getRadius();
   marker->scale.z = shape.getHeight();
   marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
   return true;

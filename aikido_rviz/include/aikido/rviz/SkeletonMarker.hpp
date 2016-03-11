@@ -4,9 +4,9 @@
 #include <dart/dynamics/dynamics.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
-#include "BodyNodeMarker.h"
-#include "ResourceServer.h"
-#include "SmartPointers.h"
+#include "BodyNodeMarker.hpp"
+#include "ResourceServer.hpp"
+#include "SmartPointers.hpp"
 
 namespace aikido {
 namespace rviz {

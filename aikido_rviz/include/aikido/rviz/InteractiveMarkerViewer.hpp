@@ -7,7 +7,7 @@
 #include <dart/dynamics/Frame.h>
 #include <dart/dynamics/SmartPointer.h>
 #include <interactive_markers/interactive_marker_server.h>
-#include "SmartPointers.h"
+#include "SmartPointers.hpp"
 
 namespace aikido {
 namespace rviz {
