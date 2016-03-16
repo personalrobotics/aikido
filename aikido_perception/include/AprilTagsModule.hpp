@@ -27,7 +27,7 @@ public:
 	{
 	}
 
-	void DetectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout=10.0) override; 
+	void detectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout=10.0) override; 
 
 
 private:
@@ -44,7 +44,7 @@ private:
 	ros::NodeHandlePtr node_;
 	YAML::Node tag_data;
 
-	void GetTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset);
+	void getTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset);
 
 };
 

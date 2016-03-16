@@ -27,7 +27,7 @@ AprilTagsModule::AprilTagsModule(ros::NodeHandlePtr _node,std::string _marker_to
 }
 
 
-void AprilTagsModule::DetectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout)
+void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout)
 {
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list
@@ -132,7 +132,7 @@ void AprilTagsModule::DetectObjects(std::vector<dart::dynamics::SkeletonPtr> ske
 
 }
 
-void AprilTagsModule::GetTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset)
+void AprilTagsModule::getTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset)
 {
 	//For NEWER JSON file
 	//Assumes field in file
