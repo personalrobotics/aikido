@@ -1,9 +1,10 @@
-#include "AprilTagsModule.hpp"
-#include "yaml_conversion.hpp"
+#include <aikido/perception/AprilTagsModule.hpp>
+#include <aikido/perception/yaml_conversion.hpp>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <ros/topic.h>
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <boost/make_shared.hpp>
 #include <Eigen/Geometry>
 #include <stdexcept>
@@ -11,7 +12,7 @@
 namespace aikido{
 namespace perception{
 
-AprilTagsModule::AprilTagsModule(ros::NodeHandlePtr _node,std::string _marker_topic, std::string _marker_data_path,
+AprilTagsModule::AprilTagsModule(ros::NodeHandle _node,std::string _marker_topic, std::string _marker_data_path,
 					std::string _urdf_path, std::string _detection_frame,
 					std::string _destination_frame, dart::dynamics::BodyNode* _reference_link):
 		node_(_node),
@@ -27,13 +28,12 @@ AprilTagsModule::AprilTagsModule(ros::NodeHandlePtr _node,std::string _marker_to
 }
 
 
-void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout)
+void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double timeout)
 {
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list
-
 	visualization_msgs::MarkerArrayConstPtr marker_message
- 			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(marker_topic,*node_,ros::Duration(timeout));
+ 			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(marker_topic,node_,ros::Duration(timeout));
 
 	for(size_t i=0; i < marker_message->markers.size(); i++)
 	{
@@ -46,7 +46,9 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr> ske
 			//Get parsed tag file and offset info!
 			std::string body_name;
 			Eigen::Matrix4d skel_offset;
-			GetTagNameOffset(tag_name,body_name,skel_offset);
+			getTagNameOffset(tag_name,body_name,skel_offset);
+
+			std::cout<<skel_offset<<std::endl;
 
 			//Get orientation of marker
 			Eigen::Quaterniond orien(marker_transform.pose.orientation.x,
@@ -59,6 +61,8 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr> ske
 			Eigen::Matrix3d qrot(orien.toRotationMatrix());
 			Eigen::Matrix4d marker_pose;
 			marker_pose<< qrot,qpos,0,0,0,1;
+
+			std::cout<<marker_pose<<std::endl;
 
 			//For the frame-frame transform
 			tf::StampedTransform transform;
@@ -80,6 +84,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr> ske
 			Eigen::Matrix3d frame_rot(frame_quat.toRotationMatrix());
 			Eigen::Matrix4d frame_pose;
 			frame_pose<<frame_trans,frame_rot,0,0,0,1;
+			std::cout<<frame_pose<<std::endl;
 
 			//Compose to get actual skeleton pose
 			Eigen::Isometry3d temp_pose;
@@ -88,6 +93,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr> ske
 			skel_pose.matrix() = temp_pose * skel_offset;
 			Eigen::Isometry3d link_offset = reference_link->getWorldTransform();
 			skel_pose = link_offset * skel_pose;
+			std::cout<<skel_pose.matrix()<<std::endl;
 
 			//Check if skel in skel_list
 			//If there then update pose
@@ -113,7 +119,8 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr> ske
 			if(is_new_skel){
 				//Read Skeleton file corresp. to body_name
 				//TODO  - append path correctly
-				const std::string body_path(body_name);
+				std::string body_path(urdf_path);
+				body_path.append(body_name);
 				const auto resourceRetriever = std::make_shared<aikido::util::CatkinResourceRetriever>();
 				dart::utils::DartLoader urdfLoader;
 				dart::dynamics::SkeletonPtr new_skel = 

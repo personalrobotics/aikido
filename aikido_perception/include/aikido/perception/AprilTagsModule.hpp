@@ -20,14 +20,14 @@ namespace perception{
 class AprilTagsModule : public virtual PerceptionModule
 {
 public:
-	AprilTagsModule(ros::NodeHandlePtr _node, std::string _marker_topic, std::string _marker_data_path,
+	AprilTagsModule(ros::NodeHandle _node, std::string _marker_topic, std::string _marker_data_path,
 					std::string _urdf_path, std::string _detection_frame,
 					std::string _destination_frame, dart::dynamics::BodyNode* _reference_link);
 	~AprilTagsModule()
 	{
 	}
 
-	void detectObjects(std::vector<dart::dynamics::SkeletonPtr> skeleton_list,double timeout=10.0) override; 
+	void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double timeout=10.0) override; 
 
 
 private:
@@ -41,7 +41,7 @@ private:
 
 	tf::TransformListener listener;
 
-	ros::NodeHandlePtr node_;
+	ros::NodeHandle node_;
 	YAML::Node tag_data;
 
 	void getTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset);

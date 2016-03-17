@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(DART REQUIRED COMPONENTS core)
 find_package(Boost REQUIRED)
+find_package(aikido REQUIRED)
 
 include(FindPkgConfig)
 pkg_check_modules(YamlCpp REQUIRED yaml-cpp)
@@ -20,6 +21,7 @@ add_definitions(-DYAMLCPP_NEWAPI)
 include_directories(SYSTEM
   ${DART_INCLUDE_DIRS}
   ${Eigen_INCLUDE_DIRS}
+  ${aikido_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   ${YamlCpp_INCLUDE_DIRS}
 )
@@ -64,6 +66,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
+  ${aikido_LIBRARIES}
   ${Boost_LIBRARIES}
   ${YamlCpp_LIBRARIES}
 )
