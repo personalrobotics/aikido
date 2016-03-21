@@ -18,7 +18,7 @@ install:
 - mv "${TRAVIS_BUILD_DIR}" src
 - ./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}"
 script:
-- travis_wait ${TIMEOUT} ./scripts/internal-build.sh ${PACKAGE_NAMES}
-- travis_wait ${TIMEOUT} ./scripts/internal-test.sh ${PACKAGE_NAMES}
+- ./scripts/internal-build.sh ${PACKAGE_NAMES}
+- ./scripts/internal-test.sh ${PACKAGE_NAMES}
 after_script:
 - ./scripts/view-all-results.sh test_results
