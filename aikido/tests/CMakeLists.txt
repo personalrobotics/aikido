@@ -1,5 +1,5 @@
 # GTest setup
-add_subdirectory(gtest)
+add_subdirectory(gtest EXCLUDE_FROM_ALL)
 include_directories("${gtest_SOURCE_DIR}/include")
 
 function(add_aikido_test target_name)
