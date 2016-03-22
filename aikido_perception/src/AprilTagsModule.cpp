@@ -7,6 +7,8 @@
 #include <ros/console.h>
 #include <boost/make_shared.hpp>
 #include <Eigen/Geometry>
+#include <tf/LinearMath/Vector3.h>
+#include <tf/LinearMath/Quaternion.h>
 #include <stdexcept>
 
 namespace aikido{
@@ -48,21 +50,17 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			Eigen::Matrix4d skel_offset;
 			getTagNameOffset(tag_name,body_name,skel_offset);
 
-			std::cout<<skel_offset<<std::endl;
-
 			//Get orientation of marker
-			Eigen::Quaterniond orien(marker_transform.pose.orientation.x,
+			Eigen::Quaterniond orien(marker_transform.pose.orientation.w,
+									marker_transform.pose.orientation.x,
 									marker_transform.pose.orientation.y,
-									marker_transform.pose.orientation.z,
-									marker_transform.pose.orientation.w);
+									marker_transform.pose.orientation.z);
 
 			//Get in 4x4 pose form
 			Eigen::Vector3d qpos(marker_transform.pose.position.x,marker_transform.pose.position.y,marker_transform.pose.position.z);
 			Eigen::Matrix3d qrot(orien.toRotationMatrix());
 			Eigen::Matrix4d marker_pose;
 			marker_pose<< qrot,qpos,0,0,0,1;
-
-			std::cout<<marker_pose<<std::endl;
 
 			//For the frame-frame transform
 			tf::StampedTransform transform;
@@ -79,12 +77,13 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			}
 
 			//Get frame pose
-			Eigen::Quaterniond frame_quat(transform.getRotation());
+			tf::Quaternion tf_quat(transform.getRotation());
+
+			Eigen::Quaterniond frame_quat(tf_quat.getW(),tf_quat.getX(),tf_quat.getY(),tf_quat.getZ());
 			Eigen::Vector3d frame_trans(transform.getOrigin());
 			Eigen::Matrix3d frame_rot(frame_quat.toRotationMatrix());
 			Eigen::Matrix4d frame_pose;
-			frame_pose<<frame_trans,frame_rot,0,0,0,1;
-			std::cout<<frame_pose<<std::endl;
+			frame_pose<<frame_rot,frame_trans,0,0,0,1;
 
 			//Compose to get actual skeleton pose
 			Eigen::Isometry3d temp_pose;
@@ -93,7 +92,6 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			skel_pose.matrix() = temp_pose * skel_offset;
 			Eigen::Isometry3d link_offset = reference_link->getWorldTransform();
 			skel_pose = link_offset * skel_pose;
-			std::cout<<skel_pose.matrix()<<std::endl;
 
 			//Check if skel in skel_list
 			//If there then update pose

@@ -69,6 +69,7 @@ target_link_libraries(${PROJECT_NAME}
   ${aikido_LIBRARIES}
   ${Boost_LIBRARIES}
   ${YamlCpp_LIBRARIES}
+  ${tf_LIBRARIES}
 )
 
 install(TARGETS ${PROJECT_NAME}
