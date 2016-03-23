@@ -20,5 +20,7 @@ install:
 script:
 - ./scripts/internal-build.sh ${PACKAGE_NAMES}
 - ./scripts/internal-test.sh ${PACKAGE_NAMES}
+- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 --make-args tests -- aikido
+- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 --make-args test -- aikido
 after_script:
 - ./scripts/view-all-results.sh test_results
