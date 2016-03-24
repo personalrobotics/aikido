@@ -128,7 +128,6 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				//TODO  - append path correctly
 				std::string body_path(urdf_path);
 				body_path.append(body_name);
-				const auto resourceRetriever = std::make_shared<aikido::util::CatkinResourceRetriever>();
 				dart::utils::DartLoader urdfLoader;
 				dart::dynamics::SkeletonPtr new_skel = 
 					urdfLoader.parseSkeleton(body_path,delegate);
