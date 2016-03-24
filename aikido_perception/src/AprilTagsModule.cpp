@@ -14,14 +14,14 @@
 namespace aikido{
 namespace perception{
 
-AprilTagsModule::AprilTagsModule(ros::NodeHandle _node,std::string _marker_topic, std::string _marker_data_path,
-					std::string _urdf_path, std::string _detection_frame,
-					std::string _destination_frame, dart::dynamics::BodyNode* _reference_link):
+AprilTagsModule::AprilTagsModule(ros::NodeHandle _node,const std::string _marker_topic, const std::string _marker_data_path,
+								const dart::common::ResourceRetrieverPtr& _delegate, const std::string _urdf_path,	
+								const std::string _destination_frame, dart::dynamics::BodyNode* _reference_link):
 		node_(_node),
 		marker_topic(_marker_topic),
 		marker_data_path(_marker_data_path),
+		delegate(_delegate),
 		urdf_path(_urdf_path),
-		detection_frame(_detection_frame),
 		destination_frame(_destination_frame),
 		reference_link(_reference_link)
 {
@@ -39,9 +39,11 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 	for(size_t i=0; i < marker_message->markers.size(); i++)
 	{
-		//Get marker
+		//Get marker, tag ID, and detection transform name 
 		visualization_msgs::Marker marker_transform = marker_message->markers[i];
 		std::string tag_name = marker_transform.ns;
+		std::string detection_frame(marker_transform.header.frame_id);
+
 		//check if marker namespace in tag_file
 		if (tag_data[tag_name]){
 
@@ -108,7 +110,14 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 					is_new_skel = false;
 					//Assumes single joint body
 					dart::dynamics::Joint* jtptr = this_skel->getJoint(0);
-					dart::dynamics::FreeJoint* freejtptr = static_cast<dart::dynamics::FreeJoint*>(jtptr);
+
+					//Downcast Joint to FreeJoint
+					dart::dynamics::FreeJoint* freejtptr = dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
+
+					//Check if successful down-cast
+					if(freejtptr == NULL){
+						throw std::bad_cast();
+					}
 					freejtptr->setTransform(skel_pose);
 					break;
 				}
@@ -122,10 +131,14 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				const auto resourceRetriever = std::make_shared<aikido::util::CatkinResourceRetriever>();
 				dart::utils::DartLoader urdfLoader;
 				dart::dynamics::SkeletonPtr new_skel = 
-					urdfLoader.parseSkeleton(body_path,resourceRetriever);
+					urdfLoader.parseSkeleton(body_path,delegate);
 				new_skel->setName(skel_name);
 				dart::dynamics::Joint* jtptr = new_skel->getJoint(0);
-				dart::dynamics::FreeJoint* freejtptr = static_cast<dart::dynamics::FreeJoint*>(jtptr);
+				dart::dynamics::FreeJoint* freejtptr = dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
+
+				if(freejtptr == NULL){
+					throw std::bad_cast();
+				}
 				freejtptr->setTransform(skel_pose);
 
 				//Append to skeleton list

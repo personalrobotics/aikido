@@ -20,9 +20,9 @@ namespace perception{
 class AprilTagsModule : public virtual PerceptionModule
 {
 public:
-	AprilTagsModule(ros::NodeHandle _node, std::string _marker_topic, std::string _marker_data_path,
-					std::string _urdf_path, std::string _detection_frame,
-					std::string _destination_frame, dart::dynamics::BodyNode* _reference_link);
+	AprilTagsModule(ros::NodeHandle _node, const std::string _marker_topic, const std::string _marker_data_path,
+					const dart::common::ResourceRetrieverPtr& _delegate, const std::string _urdf_path, 
+					const std::string _destination_frame, dart::dynamics::BodyNode* _reference_link);
 	~AprilTagsModule()
 	{
 	}
@@ -35,8 +35,8 @@ private:
 	std::string marker_topic;
 	std::string marker_data_path;
 	std::string urdf_path;
-	std::string detection_frame;
 	std::string destination_frame;
+	dart::common::ResourceRetrieverPtr delegate;
 	dart::dynamics::BodyNode* reference_link;
 
 	tf::TransformListener listener;
