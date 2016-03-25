@@ -48,6 +48,6 @@ target_link_libraries(test_CatkinResourceRetriever_catkin_build
 target_compile_definitions(test_CatkinResourceRetriever_catkin_build
   PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
 
-# Targets to mimic a Catkin package
+# Targets to mimic a Catkin package. "tests" builds tests and "test" (or "run_tests") runs them.
 add_custom_target(tests DEPENDS ${AIKIDO_TESTS})
 add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
