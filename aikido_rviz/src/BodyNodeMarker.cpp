@@ -1,13 +1,19 @@
 #include <sstream>
+#include <unordered_set>
 #include <aikido/rviz/shape_conversions.hpp>
 #include <aikido/rviz/BodyNodeMarker.hpp>
 
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
+using dart::dynamics::ConstBodyNodePtr;
 using dart::dynamics::WeakBodyNodePtr;
-using dart::dynamics::ConstShapePtr;
+using dart::dynamics::ShapeFrame;
+using dart::dynamics::ShapeNode;
 using aikido::rviz::BodyNodeMarker;
 using interactive_markers::InteractiveMarkerServer;
+
+//const std::vector<const ShapeNode*> getShapeNodes() const;
+
 
 BodyNodeMarker::BodyNodeMarker(ResourceServer *resourceServer,
                                InteractiveMarkerServer *markerServer,
@@ -15,92 +21,80 @@ BodyNodeMarker::BodyNodeMarker(ResourceServer *resourceServer,
   : mBodyNode(bodyNodeWeak)
   , mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
-  , mExists(false)
-  , mGeometryDirty(true)
-  , mHasColor(false)
-  , mColor(0.5, 0.5, 0.5, 1.0)
 {
-  using std::placeholders::_1;
-  using std::placeholders::_2;
-  using visualization_msgs::InteractiveMarkerControl;
-
-  mInteractiveMarker.header.frame_id = "map";
-  mInteractiveMarker.scale = 1.;
-  mInteractiveMarker.controls.resize(1);
-  mVisualControl = &mInteractiveMarker.controls[0];
-  mVisualControl->orientation_mode = InteractiveMarkerControl::INHERIT;
-  mVisualControl->interaction_mode = InteractiveMarkerControl::BUTTON;
-  mVisualControl->always_visible = true;
-
   // Register callbacks on BodyNode changes.
   BodyNodePtr const bodyNode = mBodyNode.lock();
   if (bodyNode) {
     mName = getName(*bodyNode);
-
-    mOnColShapeAdded = bodyNode->onColShapeAdded.connect(
-      std::bind(&BodyNodeMarker::onColShapeAdded, this, _1, _2));
-    mOnColShapeRemoved = bodyNode->onColShapeRemoved.connect(
-      std::bind(&BodyNodeMarker::onColShapeRemoved, this, _1, _2));
+#if 0
     mOnStructuralChange = bodyNode->onStructuralChange.connect(
       std::bind(&BodyNodeMarker::onStructuralChange, this, _1));
-  }
-}
-
-BodyNodeMarker::~BodyNodeMarker()
-{
-  if (mExists) {
-    mMarkerServer->erase(mInteractiveMarker.name);
+#endif
   }
 }
 
 bool BodyNodeMarker::update()
 {
-  BodyNodePtr const bodyNode = mBodyNode.lock();
+  ConstBodyNodePtr const bodyNode = mBodyNode.lock();
   if (!bodyNode) {
     return false;
   }
 
-  // Update mInteractiveMarker.name.
-  if (mName != mInteractiveMarker.name) {
-    if (mExists) {
-      mMarkerServer->erase(mInteractiveMarker.name);
-      mExists = false;
+  // Match the ShapeNodes attached to the BodyNode against the list of
+  // ShapeFrameMarkers that already exist.
+  const std::vector<const ShapeNode *> currShapeNodes
+    = bodyNode->getShapeNodes();
+  std::set<const ShapeNode *> pendingShapeNodes(
+    std::begin(currShapeNodes), std::end(currShapeNodes));
+
+  auto mapIt = std::begin(mShapeFrameMarkers);
+  while (mapIt != std::end(mShapeFrameMarkers)) {
+    const auto setIt = pendingShapeNodes.find(mapIt->first);
+
+    // Shape node already exists. Don't try to create a new ShapeFrameMarker.
+    if (setIt != std::end(pendingShapeNodes)) {
+      ++mapIt;
+      pendingShapeNodes.erase(setIt);
     }
-
-    updateName(*bodyNode, mName);
+    // ShapeNode does not exist Delete our existing ShapeFrameMarker.
+    else {
+      mapIt = mShapeFrameMarkers.erase(mapIt);
+    }
   }
 
-  bool const do_create = !mExists || mGeometryDirty;
+  // Create any new ShapeFrameMarkers that are necessary.
+  for (const ShapeNode *shapeNode : currShapeNodes) {
+    // TODO: Placeholder for an actual name.
+    // TODO: Set the correct default color on this.
+    std::stringstream shapeNodeName;
+    shapeNodeName << "ShapeNode[" << shapeNode << "]";
 
-  // Update mVisualControl->markers.
-  if (mGeometryDirty) {
-    updateGeometry(*bodyNode);
-    mGeometryDirty = false;
+    mShapeFrameMarkers.emplace(shapeNode, std::unique_ptr<ShapeFrameMarker>(
+      new ShapeFrameMarker(mResourceServer, mMarkerServer, shapeNodeName.str(),
+        shapeNode)));
   }
 
-  // Update mInteractiveMarker.pose
-  updatePose(*bodyNode);
+  // Update all of the ShapeFrameMarkers.
+  bool does_exist = false;
 
-  if (do_create) {
-    mMarkerServer->insert(mInteractiveMarker);
-    mExists = true;
-  } else {
-    mMarkerServer->setPose(mInteractiveMarker.name, mInteractiveMarker.pose);
+  for (const auto &it : mShapeFrameMarkers) {
+    if (it.second->update())
+      does_exist = true;
   }
-  return true;
+
+  return does_exist;
 }
 
 void BodyNodeMarker::SetColor(Eigen::Vector4d const &color)
 {
-  mGeometryDirty = mGeometryDirty || mHasColor != true || mColor != color;
-  mHasColor = true;
-  mColor = color;
+  for (const auto &it : mShapeFrameMarkers)
+    it.second->SetColor(color);
 }
 
 void BodyNodeMarker::ResetColor()
 {
-  mGeometryDirty = mGeometryDirty || mHasColor != false;
-  mHasColor = false;
+  for (const auto &it : mShapeFrameMarkers)
+    it.second->ResetColor();
 }
 
 std::string BodyNodeMarker::getName(BodyNode const &bodyNode)
@@ -109,56 +103,6 @@ std::string BodyNodeMarker::getName(BodyNode const &bodyNode)
   ss << bodyNode.getSkeleton()->getName() << ":"
      << bodyNode.getName();
   return ss.str();
-}
-
-void BodyNodeMarker::updateName(BodyNode const &bodyNode,
-                                std::string const &newName)
-{
-  mInteractiveMarker.name = newName;
-}
-
-void BodyNodeMarker::updateGeometry(BodyNode const &bodyNode)
-{
-  using aikido::rviz::convertEigenToROSColorRGBA;
-  using visualization_msgs::Marker;
-
-  mVisualControl->markers.clear();
-  mVisualControl->markers.reserve(bodyNode.getNumVisualizationShapes());
-
-  for (size_t i = 0; i < bodyNode.getNumVisualizationShapes(); ++i) {
-    ConstShapePtr const shape = bodyNode.getVisualizationShape(i);
-    if (shape->isHidden())
-      continue;
-
-    Marker marker;
-    convertShape(*shape, &marker, mResourceServer);
-
-    // Override the color of this BodyNode.
-    // TODO: This should be per-ShapeNode, pending the refactor.
-    if (mHasColor) {
-      marker.color = convertEigenToROSColorRGBA(mColor);
-    }
-
-    mVisualControl->markers.push_back(marker);
-  }
-}
-
-void BodyNodeMarker::updatePose(BodyNode const &bodyNode)
-{
-  Eigen::Isometry3d const &Tworld_bodynode = bodyNode.getWorldTransform();
-  mInteractiveMarker.pose = convertEigenToROSPose(Tworld_bodynode);
-}
-
-void BodyNodeMarker::onColShapeAdded(BodyNode const *bodyNode,
-                                     ConstShapePtr shape)
-{
-  mGeometryDirty = true;
-}
-
-void BodyNodeMarker::onColShapeRemoved(BodyNode const *bodyNode,
-                                       ConstShapePtr shape)
-{
-  mGeometryDirty = true;
 }
 
 void BodyNodeMarker::onStructuralChange(BodyNode const *bodyNode)

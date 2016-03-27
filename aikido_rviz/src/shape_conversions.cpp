@@ -97,9 +97,8 @@ bool convertShape(BoxShape const &shape, Marker *marker,
                   ResourceServer *resourceManager)
 {
   marker->type = Marker::CUBE;
-  marker->pose = convertEigenToROSPose(shape.getLocalTransform());
+  marker->pose.orientation.w = 1.;
   marker->scale = convertEigenToROSVector3(shape.getSize());
-  marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
   return true;
 }
 
@@ -107,11 +106,10 @@ bool convertShape(CylinderShape const &shape, Marker *marker,
                   ResourceServer *resourceManager)
 {
   marker->type = Marker::CYLINDER;
-  marker->pose = convertEigenToROSPose(shape.getLocalTransform());
+  marker->pose.orientation.w = 1.;
   marker->scale.x = 2. * shape.getRadius();
   marker->scale.y = 2. * shape.getRadius();
   marker->scale.z = shape.getHeight();
-  marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
   return true;
 }
 
@@ -119,9 +117,8 @@ bool convertShape(EllipsoidShape const &shape, Marker *marker,
                   ResourceServer *resourceManager)
 {
   marker->type = Marker::SPHERE;
-  marker->pose = convertEigenToROSPose(shape.getLocalTransform());
+  marker->pose.orientation.w = 1.;
   marker->scale = convertEigenToROSVector3(shape.getSize());
-  marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
   return true;
 }
 
@@ -133,8 +130,7 @@ bool convertShape(LineSegmentShape const &shape, Marker *marker,
     const &connections = shape.getConnections();
 
   marker->type = Marker::LINE_STRIP;
-  marker->pose = convertEigenToROSPose(shape.getLocalTransform());
-  marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
+  marker->pose.orientation.w = 1.;
   marker->scale.x = shape.getThickness();
   marker->points.reserve(2 * connections.size());
 
@@ -157,7 +153,7 @@ bool convertShape(LineSegmentShape const &shape, Marker *marker,
 bool convertShape(MeshShape const &shape, Marker *marker,
                   ResourceServer *resourceManager)
 {
-  marker->pose = convertEigenToROSPose(shape.getLocalTransform());
+  marker->pose.orientation.w = 1.;
   marker->scale = convertEigenToROSVector3(shape.getScale());
 
   aiScene const *scene = shape.getMesh();
@@ -172,7 +168,6 @@ bool convertShape(MeshShape const &shape, Marker *marker,
   // Fall back on publishing the mesh as a TRIANGLE_LIST.
   if (scene) {
     marker->type = Marker::TRIANGLE_LIST;
-    marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
 
     for (unsigned int imesh = 0; imesh < scene->mNumMeshes; ++imesh) {
       if (!convertAssimpMeshToROSTriangleList(*scene->mMeshes[imesh],
@@ -200,7 +195,6 @@ bool convertShape(PlaneShape const &shape, Marker *marker,
   ).finished().transpose();
 
   marker->type = Marker::TRIANGLE_LIST;
-  marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
 
   Eigen::Vector3d const &normal = shape.getNormal();
   double const offset = shape.getOffset();
@@ -226,8 +220,7 @@ bool convertShape(SoftMeshShape const &shape, Marker *marker,
                   ResourceServer *resourceManager)
 {
   marker->type = Marker::TRIANGLE_LIST;
-  marker->pose = convertEigenToROSPose(shape.getLocalTransform());
-  marker->color = convertEigenToROSColorRGBA(shape.getRGBA());
+  marker->pose.orientation.w = 1.;
 
   aiMesh const *mesh = shape.getAssimpMesh();
   if (mesh) {
