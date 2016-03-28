@@ -1,25 +1,32 @@
-#ifndef AIKIDO_CONSTRAINT_PROJECTABLE_H
-#define AIKIDO_CONSTRAINT_PROJECTABLE_H
+#ifndef AIKIDO_CONSTRAINT_PROJECTABLEBYDIFFERENTIABLE_H
+#define AIKIDO_CONSTRAINT_PROJECTABLEBYDIFFERENTIABLE_H
 
 #include <Eigen/Dense>
 #include "../state/State.hpp"
+#include "Projectable.hpp"
+#include "Differentiable.hpp"
 
 namespace aikido {
 namespace constraint{
 
-/// Uses Newton's method to project state
+/// Uses Newton's method to project state.
+/// Supports only RealVectorState and SE3State.
 class ProjectableByDifferentiable : public Projectable
 {
 public:
 
-  ProjectableByDifferentiable(const DifferentiablePtr& _differentiable);
+  ProjectableByDifferentiable(
+  	const std::shared_ptr<const Differentiable>& _differentiable,
+  	int _maxIteration=1000);
 
-  bool contains(const state::State& _s) const override;
+  bool contains(const state::StatePtr& _s) const override;
 
-  boost::optional<state::State> project(const state::State& _s) const override;
+  boost::optional<state::StatePtr> project(
+  	const state::StatePtr& _s) override;
 
-private:
-  DifferentiablePtr mDifferentiable;
+protected:
+  const std::shared_ptr<const Differentiable> mDifferentiable;
+  int mMaxIteration;
 };
 
 

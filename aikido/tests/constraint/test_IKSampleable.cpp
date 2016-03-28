@@ -10,7 +10,6 @@ using namespace aikido::constraint;
 using namespace dart::dynamics;
 
 
-// Derives a fixture FooTest from BaseTest.
 class IKConstraintTest : public ::testing::Test {
   protected:
     virtual void SetUp() {

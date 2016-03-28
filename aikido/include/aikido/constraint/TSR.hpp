@@ -3,9 +3,22 @@
 
 #include "Sampleable.hpp"
 #include <Eigen/Dense>
+#include "Projectable.hpp"
+#include "Differentiable.hpp"
 
 namespace aikido {
 namespace constraint {
+
+class TSR;
+class TSRSampleGenerator;
+class TSRConstraint;
+
+
+using TSRPtr = std::shared_ptr<TSR>;
+using TSRConstPtr = std::shared_ptr<const TSR>;
+using TSRUniquePtr = std::unique_ptr<TSR>;
+using TSRSamplerUniquePtr = std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>;
+
 
 class TSR : public SampleableConstraint<Eigen::Isometry3d>
 {
@@ -102,9 +115,48 @@ private:
   friend class TSR;
 };
 
-using TSRPtr = std::shared_ptr<const TSR>;
-using TSRUniquePtr = std::unique_ptr<TSR>;
-using TSRSamplerUniquePtr = std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>;
+
+class TSRConstraint : public Differentiable, 
+                      public Projectable
+{
+
+public: 
+  TSRConstraint(const TSRPtr& _tsr, int _maxIteration=1000);
+  // :
+   
+  /// Size of constraints.
+  size_t getConstraintDimension() const override;
+
+  /// Value of constraints at _s.
+  /// _s should be SE3State or CompoundState containing single SE3State.
+  /// Returns 0-vector if _s is in TSR.
+  Eigen::VectorXd getValue(const state::StatePtr& _s) const;
+
+  /// Jacobian of constraints at _s.
+  /// _s should be SE3State or CompoundState containing single SE3State.
+  /// Returns SE3JacobianPtr for SE3State and CompoundJacobian for CompoundState.
+  state::JacobianPtr getJacobian(const state::StatePtr& _s) const override;
+
+  /// Returns a vector containing each constraint's type.
+  std::vector<ConstraintType> getConstraintTypes() const override;
+
+
+  /// True if this Projectable contains _s
+  bool contains(const state::StatePtr& _s) const override;
+
+  /// Returns projection of _q in this constraint.
+  boost::optional<state::StatePtr> project(const state::StatePtr& _s) override;
+
+
+private:
+
+  /// Takes SE3 or CompoundStatePtr and return SE3StatePtr.
+  state::SE3StatePtr convertToSE3(const state::StatePtr& _s) const;
+
+  TSRPtr mTsr;
+  int mMaxIteration;
+
+};
 
 } // namespace constraint
 } // namespace aikido

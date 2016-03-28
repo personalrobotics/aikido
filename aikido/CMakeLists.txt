@@ -38,12 +38,18 @@ add_library(${PROJECT_NAME} SHARED
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
+  src/constraint/ChainRuleAdaptor.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
+  src/constraint/TSRConstraint.cpp
   src/constraint/IkSampleableConstraint.cpp
   src/constraint/IkSampleGenerator.cpp
-  src/constraint/IkSampleGenerator.cpp
+  src/constraint/PolynomialConstraint.cpp
+  src/constraint/ProjectableByDifferentiable.cpp
+  src/state/State.cpp
+  src/state/Jacobian.cpp
   src/util/CatkinResourceRetriever.cpp
+  src/util/PseudoInverse.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp

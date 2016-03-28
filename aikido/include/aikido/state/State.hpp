@@ -1,66 +1,125 @@
 #ifndef AIKIDO_STATE_STATE_H
 #define AIKIDO_STATE_STATE_H
 
+#include <memory>
 #include <Eigen/Dense>
 
 namespace aikido {
 namespace state{
 
-class State{
+class State;
+class SO2State;
+class SO3State;
+class SE2State;
+class SE3State;
+class RealVectorState;
+class CompoundState;
 
+using StatePtr = std::shared_ptr<State>;
+using SO2StatePtr = std::shared_ptr<SO2State>;
+using SO3StatePtr = std::shared_ptr<SO3State>;
+using SE2StatePtr = std::shared_ptr<SE2State>;
+using SE3StatePtr = std::shared_ptr<SE3State>;
+using RealVectorStatePtr = std::shared_ptr<RealVectorState>;
+using CompoundStatePtr = std::shared_ptr<CompoundState>;
+
+
+class State{
+public:
+  /// Updates state. State type should match the actual state type.
+  virtual void update(const StatePtr& _ds) = 0;
+  virtual StatePtr clone() = 0;
 };
+
 
 class SO2State: public State
 {
 public:
-  SO2State(const double _angle=0);
+  SO2State(const Eigen::Rotation2D<double>& _rotation);
 
-  double mAngle;
+  /// this <- this*ds 
+  void update(const StatePtr& _ds) override;
+  StatePtr clone() override;
+
+  Eigen::Rotation2D<double> mRotation;
+
 };
+
 
 class SO3State: public State
 {
 public:
-  SO3State(const Eigen::Quaternion& _rotation=Eigen::Quaternion::Identity());
+  SO3State(const Eigen::Quaternion<double>& _rotation);
 
-  Eigen::Quaternion mRotation;
+  void update(const StatePtr& _ds) override;
+  StatePtr clone() override;
+  
+  Eigen::Quaternion<double> mRotation;
 };
 
 class SE2State: public State
 {
 public:
-  SE2State(const double _angle=0,
-           const Eigen::Vector2d& _translation=Eigen::Vector2d::Zero());
+  SE2State(Eigen::Isometry2d& _transform);
 
-  Eigen::Rotation2d mRotation;
-  Eigen::Vector2d mTranslation;
+  void update(const StatePtr& _ds) override;
+  StatePtr clone() override;
+  
+  Eigen::Isometry2d mTransform;
 
 };
 
 class SE3State: public State
 {
 public:
-  SE3State(const Eigen::Quaternion& _rotation=Eigen::Quaternion::Identity(),
-           const Eigen::Vector3d _translation=Eigen::Vector3d::Zero());
+  SE3State(const Eigen::Isometry3d& _transform);
 
-  Eigen::Quaternion mRotation;
-  Eigen::Vector3d mTranslation;
+  void update(const StatePtr& _ds) override;
+  StatePtr clone() override;
+  
+  Eigen::Isometry3d mTransform;
+
 };
+
 
 class RealVectorState: public State
 {
 public:
   RealVectorState(const Eigen::VectorXd& _q);
+  
+  /// single-value state
+  RealVectorState(double _val);
 
+  void update(const StatePtr& _ds) override;
+  StatePtr clone() override;
+  
   Eigen::VectorXd mQ;
 };
+
 
 class CompoundState: public State
 {
 public:
-  CompoundState(std::vector<const State&> _components);
+  CompoundState(std::vector<StatePtr> & _components);
+
+  // TODO
+  // CompoundState(const CompoundState& other);
+  // CompoundState(CompoundState&& other);
+  // CompoundState& operator=(const CompoundState& other);
+  // CompoundState& operator=(CompoundState&& other);
+
+
+  void update(const StatePtr& _ds) override;
+  StatePtr clone() override;
   
-  std::vector<const State&> mComponents;
+
+  /// Flattened. 
+  std::vector<StatePtr> mComponents;
+
+private:
+  /// flatten mComponents so that none of the elements are CompoundState.
+  std::vector<StatePtr> flatten(
+    std::vector<StatePtr>& _components);
 };
 
 } // state

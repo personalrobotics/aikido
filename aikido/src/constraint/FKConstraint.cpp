@@ -1,11 +1,11 @@
-#include <aikido/constraint/FKConstraintAdaptor.hpp>
+#include <aikido/constraint/FKConstraint.hpp>
 
 namespace aikido {
 namespace constraint {
 
 
 //=============================================================================
-FKConstraintAdaptor::FKConstraintAdaptor(
+FKConstraint::FKConstraint(
   const dart::dynamics::BodyNodePtr& _bodyNode,
   const DifferentiablePtr& _innerConstraint)
 : mBodyNode(_bodyNode)
@@ -21,14 +21,14 @@ FKConstraintAdaptor::FKConstraintAdaptor(
 
 
 //=============================================================================
-size_t FKConstraintAdaptor::getConstraintDimension() const
+size_t FKConstraint::getConstraintDimension() const
 {
   return mInnerConstraint->getConstraintDimension();
 }
 
 
 //=============================================================================
-Eigen::VectorXd FKConstraintAdaptor::getValue(
+Eigen::VectorXd FKConstraint::getValue(
   const state::StatePtr& _s) const
 {
   using state;
@@ -49,7 +49,7 @@ Eigen::VectorXd FKConstraintAdaptor::getValue(
 
 
 //=============================================================================
-state::JacobianPtr FKConstraintAdaptor::getJacobian(
+state::JacobianPtr FKConstraint::getJacobian(
   const state::StatePtr& _s) const
 {
   using state;
@@ -73,13 +73,13 @@ state::JacobianPtr FKConstraintAdaptor::getJacobian(
   /// Chain rule df/dee*dee/ds
   Eigen::MatrixXd jac((innerJac->mJacobian)*bodyJac);
 
-  return std::make_shared<RealVectorJacobian>(jac);
+  return std::make_shared<RealVectorJacobianPtr>(jac);
 
 }
 
 
 //=============================================================================
-std::vector<ConstraintType> FKConstraintAdaptor::getConstraintTypes() const
+std::vector<ConstraintType> FKConstraint::getConstraintTypes() const
 {
   return mInnerConstraint->getConstraintTypes();
 }
