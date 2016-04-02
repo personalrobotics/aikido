@@ -18,8 +18,6 @@ public:
 
   int getRepresentationDimension() const override;
 
-  using SO3Jacobian = UtilJacobian;
-
   class SO3State: public UtilState
   {
   public:
@@ -32,11 +30,17 @@ public:
     Eigen::Isometry3d getIsometry() const;
   };
 
-protected:
+  class SO3Jacobian: public UtilJacobian
+  {
+  public:
+    SO3Jacobian(Eigen::Matrix<double, Eigen::Dynamic, 3> _jac)
+    : UtilJacobian(_jac){};
+  };
 
 };
 
 using SO3State = SO3StateSpace::SO3State;
+using SO3Jacobian = SO3StateSpace::SO3Jacobian;
 
 
 }
