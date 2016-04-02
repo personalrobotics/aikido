@@ -1,0 +1,44 @@
+#ifndef AIKIDO_STATESPACE_SE3STATESPACE_H
+#define AIKIDO_STATESPACE_SE3STATESPACE_H
+
+#include "StateSpace.hpp"
+#include "State.hpp"
+#include "Jacobian.hpp"
+#include <dart/math/MathTypes.h>
+
+namespace aikido {
+namespace statespace {
+
+class SE3StateSpace : public StateSpace {
+
+public:
+  SE3StateSpace(){};
+
+  void compose(const State& _state1, const State& _state2,
+               State& _out) const override;
+
+  int getRepresentationDimension() const override;
+
+  using SE3Jacobian = UtilJacobian;
+
+  class SE3State: public UtilState
+  {
+  public:
+    // q = (w, v)
+    SE3State(Eigen::Vector6d _q): UtilState(_q){};
+
+    // default is identity
+    SE3State(): UtilState(Eigen::Vector6d::Zero()){};
+
+    Eigen::Isometry3d getIsometry() const;
+  };
+
+};
+
+using SE3State = SE3StateSpace::SE3State;
+
+
+}
+}
+
+#endif
