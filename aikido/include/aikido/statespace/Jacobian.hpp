@@ -7,6 +7,8 @@ namespace statespace {
 
 class Jacobian
 {
+public:
+  virtual ~Jacobian() = default;
 };
 
 class UtilJacobian
