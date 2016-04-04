@@ -34,12 +34,6 @@ RealVectorStateSpace::RealVectorStateSpace(int _dimension)
 }
 
 //=============================================================================
-int RealVectorStateSpace::getRepresentationDimension() const
-{
-  return mDimension;
-}
-
-//=============================================================================
 void RealVectorStateSpace::compose(
   const StateSpace::State& _state1, const StateSpace::State& _state2,
   StateSpace::State& _out) const

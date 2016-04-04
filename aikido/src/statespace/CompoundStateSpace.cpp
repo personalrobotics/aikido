@@ -61,17 +61,6 @@ CompoundStateSpace::CompoundStateSpace(
       const std::vector<StateSpacePtr>& _subspaces)
   : mSubspaces(_subspaces)
 {
-  mRepresentationDimension = 0;
-  for (auto supspace: mSubspaces)
-  {
-    mRepresentationDimension += supspace->getRepresentationDimension();
-  }
-}
-
-//=============================================================================
-int CompoundStateSpace::getRepresentationDimension() const
-{
-  return mRepresentationDimension;
 }
 
 //=============================================================================

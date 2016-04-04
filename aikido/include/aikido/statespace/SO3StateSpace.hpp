@@ -36,9 +36,6 @@ public:
   };
 
   SO3StateSpace() = default;
-
-  // Documentation inherited.
-  int getRepresentationDimension() const override;
   
   // Documentation inherited.
   void compose(

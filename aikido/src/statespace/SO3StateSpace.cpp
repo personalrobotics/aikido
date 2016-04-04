@@ -33,12 +33,6 @@ void SO3StateSpace::State::setQuaternion(const Eigen::Quaterniond& _quaternion)
 }
 
 //=============================================================================
-int SO3StateSpace::getRepresentationDimension() const
-{
-  return 3;
-}
-
-//=============================================================================
 void SO3StateSpace::compose(
   const StateSpace::State& _state1, const StateSpace::State& _state2,
   StateSpace::State& _out) const

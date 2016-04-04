@@ -40,12 +40,6 @@ void SO2StateSpace::State::setRotation(const Eigen::Rotation2Dd& _rotation)
 }
 
 //=============================================================================
-int SO2StateSpace::getRepresentationDimension() const
-{
-  return 1;
-}
-
-//=============================================================================
 void SO2StateSpace::compose(
   const StateSpace::State& _state1, const StateSpace::State& _state2,
 	StateSpace::State& _out) const

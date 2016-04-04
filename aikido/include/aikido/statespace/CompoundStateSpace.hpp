@@ -55,9 +55,6 @@ public:
     const StateSpace::State& _state1, const StateSpace::State& _state2,
     StateSpace::State& _out) const override;
 
-  // Documentation inherited.
-  int getRepresentationDimension() const override;
-
 private:
   std::vector<StateSpacePtr> mSubspaces;
   int mRepresentationDimension;
