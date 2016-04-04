@@ -47,18 +47,22 @@ TEST(SO2StateSpace, Compose)
 
 TEST(SO3StateSpace, Compose)
 {
-  SO3State identity;
-  EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry3d::Identity()));
+  SO3StateSpace::State identity;
+  EXPECT_TRUE(identity.getQuaternion().isApprox(
+    Eigen::Quaterniond::Identity()));
 
-  SO3State s2(Eigen::Vector3d(0, 0, M_PI/2));
-  SO3State s3(Eigen::Vector3d(0, 0, M_PI/2));
-  SO3State expected(Eigen::Vector3d(0, 0, M_PI));
+  SO3StateSpace::State s2(Eigen::Quaterniond(
+    Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitZ())));
+  SO3StateSpace::State s3(Eigen::Quaterniond(
+    Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitZ())));
+  SO3StateSpace::State expected(Eigen::Quaterniond(
+    Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ())));
 
-  SO3State out;
+  SO3StateSpace::State out;
   SO3StateSpace so3;
   so3.compose(s2, s3, out);
 
-  EXPECT_TRUE(expected.getIsometry().isApprox(out.getIsometry()));
+  EXPECT_TRUE(expected.getQuaternion().isApprox(out.getQuaternion()));
 }
 
 

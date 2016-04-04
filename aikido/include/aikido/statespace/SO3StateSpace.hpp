@@ -7,46 +7,45 @@
 namespace aikido {
 namespace statespace {
 
+/// Represents the space of spatial rotations.
 class SO3StateSpace : public StateSpace
 {
 public:
-  class SO3State : public UtilState
+  /// Point in SO(3), a spatial orientation.
+  class State : public StateSpace::State
   {
   public:
-    // q = (w1, w2, w3)
-    SO3State(Eigen::Vector3d _q)
-      : UtilState(_q)
-    {
-    }
+    /// Constructs the identity element.
+    State();
 
-    // default is identity rotation
-    SO3State()
-    : UtilState(Eigen::Vector3d::Zero())
-    {
-    }
+    /// Constructs a point in SO(3) from a quaternion.
+    explicit State(const Eigen::Quaterniond& _quaternion);
 
-    Eigen::Isometry3d getIsometry() const;
-  };
+    /// Gets value as a transform.
+    const Eigen::Quaterniond& getQuaternion() const;
 
-  class SO3Jacobian : public UtilJacobian
-  {
-  public:
-    SO3Jacobian(Eigen::Matrix<double, Eigen::Dynamic, 3> _jac)
-      : UtilJacobian(_jac)
-    {
-    }
+    /// Sets value to a transform.
+    void setQuaternion(const Eigen::Quaterniond& _quaternion);
+
+    // Required because Quaterniond is a fixed-size vectorizable type.
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+  private:
+    Eigen::Quaterniond mValue;
+
+    friend class SO3StateSpace;
   };
 
   SO3StateSpace() = default;
-  
-  void compose(const State& _state1, const State& _state2,
-               State& _out) const override;
 
+  // Documentation inherited.
   int getRepresentationDimension() const override;
+  
+  // Documentation inherited.
+  void compose(
+    const StateSpace::State& _state1, const StateSpace::State& _state2,
+    StateSpace::State& _out) const override;
 };
-
-using SO3State = SO3StateSpace::SO3State;
-using SO3Jacobian = SO3StateSpace::SO3Jacobian;
 
 } // namespace statespace
 } // namespace aikido

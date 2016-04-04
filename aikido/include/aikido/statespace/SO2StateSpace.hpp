@@ -7,10 +7,11 @@
 namespace aikido {
 namespace statespace {
 
+/// Represents the space of planar rotations.
 class SO2StateSpace : public StateSpace
 {
 public:
-  /// Point in SO(2), a planar orientation.
+  /// Point in SO(2), a planar rotation.
   class State : public StateSpace::State
   {
   public:

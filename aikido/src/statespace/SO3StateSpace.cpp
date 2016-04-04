@@ -5,38 +5,50 @@
 namespace aikido {
 namespace statespace {
 
+//=============================================================================
+SO3StateSpace::SO3StateSpace::State::State()
+  : mValue(1., 0., 0., 0.)
+{
+}
+
+//=============================================================================
+SO3StateSpace::SO3StateSpace::State::State(
+      const Eigen::Quaterniond& _quaternion)
+  : mValue(_quaternion)
+{
+  // TODO: Check if normalized.
+}
+
+//=============================================================================
+const Eigen::Quaterniond& SO3StateSpace::State::getQuaternion() const
+{
+  return mValue;
+}
+
+//=============================================================================
+void SO3StateSpace::State::setQuaternion(const Eigen::Quaterniond& _quaternion)
+{
+  // TODO: Check if normalized.
+  mValue = _quaternion;
+}
+
+//=============================================================================
 int SO3StateSpace::getRepresentationDimension() const
 {
   return 3;
 }
 
-void SO3StateSpace::compose(const State& _state1, const State& _state2,
-                            State& _out) const
+//=============================================================================
+void SO3StateSpace::compose(
+  const StateSpace::State& _state1, const StateSpace::State& _state2,
+  StateSpace::State& _out) const
 {
-  const SO3State& state1 = static_cast<const SO3State&>(_state1);
-  const SO3State& state2 = static_cast<const SO3State&>(_state2);
+  const auto& state1 = static_cast<const State&>(_state1);
+  const auto& state2 = static_cast<const State&>(_state2);
+  auto& out = static_cast<State&>(_out);
 
-  Eigen::Isometry3d isometry1 = state1.getIsometry();
-  Eigen::Isometry3d isometry2 = state2.getIsometry();
-
-  Eigen::Isometry3d isometry;  
-  isometry.matrix() = isometry1.matrix()*isometry2.matrix();
-
-  SO3State& out = static_cast<SO3State&>(_out);
-  out.mQ = ::dart::math::logMap(isometry).topRows(3);
-  
+  out.mValue = state1.mValue * state2.mValue;
 }
 
-
-Eigen::Isometry3d SO3StateSpace::SO3State::getIsometry() const
-{
-  Eigen::Vector6d s(Eigen::Vector6d::Zero());
-  s.topRows(3) = mQ;
-  Eigen::Isometry3d isometry = ::dart::math::expMap(s);
-
-  return ::dart::math::expMap(s);
-}
-
-
-}
-}
+} // namespace statespace
+} // namespace aikido
