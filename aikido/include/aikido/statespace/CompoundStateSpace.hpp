@@ -41,6 +41,8 @@ public:
     /// possible to clean up without knowing the type of the States.
     explicit State(const std::vector<StateSpace::State*>& _states);
 
+    ~State() = default;
+
   private:
     std::vector<StateSpace::State*> mValue;
 

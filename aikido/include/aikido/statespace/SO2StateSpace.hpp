@@ -18,6 +18,8 @@ public:
     /// Constructs the identity element.
     State();
 
+    ~State() = default;
+
     /// Constructs a point in SO(2) from an angle in radians.
     explicit State(double _angle);
 

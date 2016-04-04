@@ -17,6 +17,8 @@ public:
     /// Constructs the identity element.
     State();
 
+    ~State() = default;
+
     /// Constructs a point in SO(3) from a quaternion.
     explicit State(const Eigen::Quaterniond& _quaternion);
 

@@ -15,6 +15,7 @@ public:
   {
   public:
     explicit State(const Eigen::VectorXd& _x);
+    ~State() = default;
 
     /// Get value.
     const Eigen::VectorXd& getValue() const;

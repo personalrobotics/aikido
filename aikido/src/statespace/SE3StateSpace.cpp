@@ -56,5 +56,17 @@ SE3StateSpace::SE3StateSpace()
 {
 }
 
+//=============================================================================
+StateSpace::State* SE3StateSpace::allocateState() const
+{
+  return new State;
+}
+
+//=============================================================================
+void SE3StateSpace::freeState(StateSpace::State* _state) const
+{
+  delete static_cast<State *>(_state);
+}
+
 } // namespace statespace
 } // namespace aikido

@@ -15,6 +15,8 @@ public:
     /// Constructs the identity element.
     State();
 
+    ~State() = default;
+
     /// Constructs a point in SE(2) from a transformation.
     explicit State(const Eigen::Isometry2d& _transform);
 
@@ -26,6 +28,12 @@ public:
   };
 
   SE2StateSpace();
+
+  // Documentation inherited.
+  StateSpace::State* allocateState() const override;
+
+  // Documentation inherited.
+  void freeState(StateSpace::State* _state) const override;
 };
 
 } // namespace statespace
