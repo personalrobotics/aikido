@@ -57,6 +57,12 @@ CompoundStateSpace::CompoundStateSpace(
 }
 
 //=============================================================================
+size_t CompoundStateSpace::getStateSizeInBytes() const
+{
+  return sizeof(State);
+}
+
+//=============================================================================
 StateSpace::State* CompoundStateSpace::allocateState() const
 {
   std::vector<StateSpace::State*> substates;
@@ -69,6 +75,19 @@ StateSpace::State* CompoundStateSpace::allocateState() const
 }
 
 //=============================================================================
+StateSpace::State* CompoundStateSpace::allocateStateInBuffer(
+  void* _buffer) const
+{
+  std::vector<StateSpace::State*> substates;
+  substates.reserve(mSubspaces.size());
+
+  for (const StateSpacePtr& stateSpace : mSubspaces)
+    substates.push_back(stateSpace->allocateState());
+
+  return new (_buffer) State(substates);
+}
+
+//=============================================================================
 void CompoundStateSpace::freeState(StateSpace::State* _state) const
 {
   auto compound_state = static_cast<State *>(_state);
@@ -77,6 +96,12 @@ void CompoundStateSpace::freeState(StateSpace::State* _state) const
     mSubspaces[i]->freeState(&compound_state->getState(i));
 
   delete compound_state;
+}
+
+//=============================================================================
+void CompoundStateSpace::freeStateInBuffer(StateSpace::State* _state) const
+{
+  static_cast<State*>(_state)->~State();
 }
 
 //=============================================================================

@@ -34,15 +34,36 @@ RealVectorStateSpace::RealVectorStateSpace(int _dimension)
 }
 
 //=============================================================================
+size_t RealVectorStateSpace::getStateSizeInBytes() const
+{
+  return sizeof(State);
+}
+
+//=============================================================================
 StateSpace::State* RealVectorStateSpace::allocateState() const
 {
   return new State(Eigen::VectorXd::Zero(mDimension));
 }
 
 //=============================================================================
+StateSpace::State* RealVectorStateSpace::allocateStateInBuffer(
+  void* _buffer) const
+{
+  // TODO: Allocate this in contiguous memory.
+  return new (_buffer) State(Eigen::VectorXd::Zero(mDimension));
+}
+
+//=============================================================================
 void RealVectorStateSpace::freeState(StateSpace::State* _state) const
 {
+  // TODO: Allocate this in contiguous memory.
   delete static_cast<State *>(_state);
+}
+
+//=============================================================================
+void RealVectorStateSpace::freeStateInBuffer(StateSpace::State* _state) const
+{
+  static_cast<State*>(_state)->~State();
 }
 
 //=============================================================================

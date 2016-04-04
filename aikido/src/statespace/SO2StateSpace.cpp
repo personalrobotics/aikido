@@ -40,15 +40,21 @@ void SO2StateSpace::State::setRotation(const Eigen::Rotation2Dd& _rotation)
 }
 
 //=============================================================================
-StateSpace::State* SO2StateSpace::allocateState() const
+size_t SO2StateSpace::getStateSizeInBytes() const
 {
-  return new State;
+  return sizeof(State);
 }
 
 //=============================================================================
-void SO2StateSpace::freeState(StateSpace::State* _state) const
+StateSpace::State* SO2StateSpace::allocateStateInBuffer(void* _buffer) const
 {
-  delete static_cast<State *>(_state);
+  return new (_buffer) State;
+}
+
+//=============================================================================
+void SO2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
+{
+  static_cast<State*>(_state)->~State();
 }
 
 //=============================================================================

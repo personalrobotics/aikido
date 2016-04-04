@@ -53,11 +53,20 @@ public:
   explicit CompoundStateSpace(const std::vector<StateSpacePtr>& _subspaces);
 
   // Documentation inherited.
+  size_t getStateSizeInBytes() const override;
+
+  // Documentation inherited.
   StateSpace::State* allocateState() const override;
 
   // Documentation inherited.
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const;
+
+  // Documentation inherited.
   void freeState(StateSpace::State* _state) const override;
-   
+
+  // Documentation inherited.
+  void freeStateInBuffer(StateSpace::State* _state) const override;
+
   // Documentation inherited.
   void compose(
     const StateSpace::State& _state1, const StateSpace::State& _state2,

@@ -12,36 +12,41 @@ SO3StateSpace::SO3StateSpace::State::State()
 }
 
 //=============================================================================
-SO3StateSpace::SO3StateSpace::State::State(
-      const Eigen::Quaterniond& _quaternion)
+SO3StateSpace::SO3StateSpace::State::State(const Quaternion& _quaternion)
   : mValue(_quaternion)
 {
   // TODO: Check if normalized.
 }
 
 //=============================================================================
-const Eigen::Quaterniond& SO3StateSpace::State::getQuaternion() const
+auto SO3StateSpace::State::getQuaternion() const -> const Quaternion&
 {
   return mValue;
 }
 
 //=============================================================================
-void SO3StateSpace::State::setQuaternion(const Eigen::Quaterniond& _quaternion)
+void SO3StateSpace::State::setQuaternion(const Quaternion& _quaternion)
 {
   // TODO: Check if normalized.
   mValue = _quaternion;
 }
 
 //=============================================================================
-StateSpace::State* SO3StateSpace::allocateState() const
+size_t SO3StateSpace::getStateSizeInBytes() const
 {
-  return new State;
+  return sizeof(State);
 }
 
 //=============================================================================
-void SO3StateSpace::freeState(StateSpace::State* _state) const
+StateSpace::State* SO3StateSpace::allocateStateInBuffer(void* _buffer) const
 {
-  delete static_cast<State *>(_state);
+  return new (_buffer) State;
+}
+
+//=============================================================================
+void SO3StateSpace::freeStateInBuffer(StateSpace::State* _state) const
+{
+  static_cast<State*>(_state)->~State();
 }
 
 //=============================================================================

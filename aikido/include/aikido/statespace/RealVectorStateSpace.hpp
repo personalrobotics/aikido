@@ -33,10 +33,19 @@ public:
   explicit RealVectorStateSpace(int _dimension);
 
   // Documentation inherited.
+  size_t getStateSizeInBytes() const override;
+
+  // Documentation inherited.
   StateSpace::State* allocateState() const override;
 
   // Documentation inherited.
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const;
+
+  // Documentation inherited.
   void freeState(StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  void freeStateInBuffer(StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void compose(

@@ -14,25 +14,24 @@ public:
   class State : public StateSpace::State
   {
   public:
+    using Quaternion = Eigen::Quaternion<double, Eigen::DontAlign>;
+
     /// Constructs the identity element.
     State();
 
     ~State() = default;
 
     /// Constructs a point in SO(3) from a quaternion.
-    explicit State(const Eigen::Quaterniond& _quaternion);
+    explicit State(const Quaternion& _quaternion);
 
     /// Gets value as a transform.
-    const Eigen::Quaterniond& getQuaternion() const;
+    const Quaternion& getQuaternion() const;
 
     /// Sets value to a transform.
-    void setQuaternion(const Eigen::Quaterniond& _quaternion);
-
-    // Required because Quaterniond is a fixed-size vectorizable type.
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    void setQuaternion(const Quaternion& _quaternion);
 
   private:
-    Eigen::Quaterniond mValue;
+    Quaternion mValue;
 
     friend class SO3StateSpace;
   };
@@ -40,10 +39,13 @@ public:
   SO3StateSpace() = default;
 
   // Documentation inherited.
-  StateSpace::State* allocateState() const override;
+  size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
-  void freeState(StateSpace::State* _state) const override;
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const;
+
+  // Documentation inherited.
+  void freeStateInBuffer(StateSpace::State* _state) const override;
   
   // Documentation inherited.
   void compose(
