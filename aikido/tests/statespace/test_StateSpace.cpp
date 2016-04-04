@@ -79,7 +79,7 @@ TEST(SE2StateSpace, Compose)
   pose3.rotate(Eigen::Rotation2Dd(M_PI_4));
 
   Eigen::Isometry2d expected_pose = Eigen::Isometry2d::Identity();
-  pose3.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
+  expected_pose.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
 
   SE2StateSpace::State s2(pose2);
   SE2StateSpace::State s3(pose3);
@@ -104,7 +104,7 @@ TEST(SE3StateSpace, Compose)
   pose3.rotate(Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX()));
 
   Eigen::Isometry3d expected = Eigen::Isometry3d::Identity();
-  pose3.rotate(Eigen::AngleAxisd(3. * M_PI_4, Eigen::Vector3d::UnitX()));
+  expected.rotate(Eigen::AngleAxisd(3. * M_PI_4, Eigen::Vector3d::UnitX()));
 
   SE3StateSpace::State s2(pose2);
   SE3StateSpace::State s3(pose3);
