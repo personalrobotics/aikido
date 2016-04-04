@@ -5,103 +5,71 @@ namespace aikido {
 namespace statespace {
 
 //=============================================================================
-CompoundStateSpace::State::State(
-      const std::vector<StateSpace::State*>& _states)
-  : mValue(_states)
-{
-}
-
-//=============================================================================
-size_t CompoundStateSpace::State::getNumStates() const
-{
-  return mValue.size();
-}
-
-//=============================================================================
-StateSpace::State& CompoundStateSpace::State::getState(size_t _index)
-{
-  return *mValue[_index];
-}
-
-//=============================================================================
-const StateSpace::State& CompoundStateSpace::State::getState(
-  size_t _index) const
-{
-  return *mValue[_index];
-}
-
-//=============================================================================
-const std::vector<StateSpace::State*>& CompoundStateSpace::State::getStates()
-{
-  return mValue;
-}
-
-//=============================================================================
-std::vector<const StateSpace::State*>
-  CompoundStateSpace::State::getStates() const
-{
-  std::vector<const StateSpace::State*> output;
-  output.reserve(mValue.size());
-
-  for (StateSpace::State* state : mValue)
-    output.push_back(state);
-
-  return output;
-}
-
-//=============================================================================
 CompoundStateSpace::CompoundStateSpace(
       const std::vector<StateSpacePtr>& _subspaces)
   : mSubspaces(_subspaces)
+  , mOffsets(_subspaces.size(), 0u)
 {
+  mOffsets[0] = sizeof(State);
+
+  for (size_t i = 1; i < mSubspaces.size(); ++i)
+    mOffsets[i] = mOffsets[i - 1] + mSubspaces[i - 1]->getStateSizeInBytes();
+
+  if (!mSubspaces.empty())
+    mSizeInBytes = mOffsets.back() + mSubspaces.back()->getStateSizeInBytes();
+  else
+    mSizeInBytes = 0u;
+}
+
+//=============================================================================
+size_t CompoundStateSpace::getNumStates() const
+{
+  return mSubspaces.size();
+}
+
+//=============================================================================
+StateSpace::State& CompoundStateSpace::getSubState(
+  State& _state, size_t _index) const
+{
+  return reinterpret_cast<StateSpace::State&>(
+    *(reinterpret_cast<char*>(&_state) + mOffsets[_index]));
+}
+
+//=============================================================================
+const StateSpace::State& CompoundStateSpace::getSubState(
+  const State& _state, size_t _index) const
+{
+  return reinterpret_cast<const StateSpace::State&>(
+    *(reinterpret_cast<const char*>(&_state) + mOffsets[_index]));
 }
 
 //=============================================================================
 size_t CompoundStateSpace::getStateSizeInBytes() const
 {
-  return sizeof(State);
-}
-
-//=============================================================================
-StateSpace::State* CompoundStateSpace::allocateState() const
-{
-  std::vector<StateSpace::State*> substates;
-  substates.reserve(mSubspaces.size());
-
-  for (const StateSpacePtr& stateSpace : mSubspaces)
-    substates.push_back(stateSpace->allocateState());
-
-  return new State(substates);
+  return mSizeInBytes;
 }
 
 //=============================================================================
 StateSpace::State* CompoundStateSpace::allocateStateInBuffer(
   void* _buffer) const
 {
-  std::vector<StateSpace::State*> substates;
-  substates.reserve(mSubspaces.size());
-
-  for (const StateSpacePtr& stateSpace : mSubspaces)
-    substates.push_back(stateSpace->allocateState());
-
-  return new (_buffer) State(substates);
-}
-
-//=============================================================================
-void CompoundStateSpace::freeState(StateSpace::State* _state) const
-{
-  auto compound_state = static_cast<State *>(_state);
+  State* const state = new (_buffer) State;
 
   for (size_t i = 0; i < mSubspaces.size(); ++i)
-    mSubspaces[i]->freeState(&compound_state->getState(i));
+    mSubspaces[i]->allocateStateInBuffer(&getSubState(*state, i));
 
-  delete compound_state;
+  return state;
 }
 
 //=============================================================================
 void CompoundStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
-  static_cast<State*>(_state)->~State();
+  auto state = static_cast<State*>(_state);
+
+  for (size_t i = mSubspaces.size(); i > 0; --i)
+    mSubspaces[i - 1]->freeStateInBuffer(&getSubState(*state, i - 1));
+
+  reinterpret_cast<State*>(_state)->~State();
 }
 
 //=============================================================================
@@ -116,7 +84,7 @@ void CompoundStateSpace::compose(
   for (size_t i = 0; i < mSubspaces.size(); ++i)
   {
     mSubspaces[i]->compose(
-      *state1.mValue[i], *state2.mValue[i], *out.mValue[i]);
+      getSubState(state1, i), getSubState(state2, i), getSubState(out, i));
   }
 }
 

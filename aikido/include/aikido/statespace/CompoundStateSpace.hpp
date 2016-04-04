@@ -13,38 +13,9 @@ public:
   /// A tuple of states where the i-th state is from the i-th subspace.
   class State : public StateSpace::State
   {
-  public:
-    // Disable copying and assignment because this class manages memory.
-    State(const State& _other) = delete;
-    State(State&& _other) = delete;
-    State& operator =(const State& _other) = delete;
-    State& operator =(State&& _other) = delete;
-
-    /// Gets number of subspaces.
-    size_t getNumStates() const;
-
-    /// Gets state by subspace index.
-    StateSpace::State& getState(size_t _index);
-
-    /// Gets state by subspace index.
-    const StateSpace::State& getState(size_t _index) const;
-
-    /// Gets the vector of underlying states.
-    const std::vector<StateSpace::State*>& getStates();
-
-    /// Gets the vector of underlying states.
-    std::vector<const StateSpace::State*> getStates() const;
-
   protected:
-    /// Create a CompoundState from a vector of states. This takes ownership of
-    /// the the pointers in vector. This is protected because it is not
-    /// possible to clean up without knowing the type of the States.
-    explicit State(const std::vector<StateSpace::State*>& _states);
-
+    State() = default;
     ~State() = default;
-
-  private:
-    std::vector<StateSpace::State*> mValue;
 
     friend class CompoundStateSpace;
   };
@@ -52,17 +23,20 @@ public:
   /// Construct the Cartesian product of a vector of subspaces.
   explicit CompoundStateSpace(const std::vector<StateSpacePtr>& _subspaces);
 
+  /// Gets number of subspaces.
+  size_t getNumStates() const;
+
+  /// Gets state by subspace index.
+  StateSpace::State& getSubState(State& _state, size_t _index) const;
+
+  /// Gets state by subspace index.
+  const StateSpace::State& getSubState(const State& _state, size_t _index) const;
+
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
-  StateSpace::State* allocateState() const override;
-
-  // Documentation inherited.
-  StateSpace::State* allocateStateInBuffer(void* _buffer) const;
-
-  // Documentation inherited.
-  void freeState(StateSpace::State* _state) const override;
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;
@@ -74,6 +48,8 @@ public:
 
 private:
   std::vector<StateSpacePtr> mSubspaces;
+  std::vector<std::size_t> mOffsets;
+  size_t mSizeInBytes;
 };
 
 } // namespace statespace
