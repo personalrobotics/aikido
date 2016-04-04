@@ -9,6 +9,7 @@ namespace statespace {
 
 class StateSpace {
 public:
+  virtual ~StateSpace() = default;
 
   virtual void compose(const State& _state1, const State& _state2,
   									   State& _out) const = 0;
