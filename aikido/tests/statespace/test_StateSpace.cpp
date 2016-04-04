@@ -19,13 +19,13 @@ TEST(RealVectorStateSpace, Compose)
   RealVectorStateSpace rvss(3);
 
   Eigen::Vector3d v(1,2,3);
-  RealVectorState s1(Eigen::Vector3d(1, 2, 3));
-  RealVectorState s2(Eigen::Vector3d(2, 3, 4));
-  RealVectorState out(Eigen::Vector3d(Eigen::Vector3d::Zero()));
+  RealVectorStateSpace::State s1(Eigen::Vector3d(1, 2, 3));
+  RealVectorStateSpace::State s2(Eigen::Vector3d(2, 3, 4));
+  RealVectorStateSpace::State out(Eigen::Vector3d(Eigen::Vector3d::Zero()));
 
   rvss.compose(s1, s2, out);
 
-  EXPECT_TRUE(out.mQ.isApprox(Eigen::Vector3d(3,5,7)));
+  EXPECT_TRUE(out.mValue.isApprox(Eigen::Vector3d(3,5,7)));
 
 }
 

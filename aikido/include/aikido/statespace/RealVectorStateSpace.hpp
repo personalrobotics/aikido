@@ -11,21 +11,38 @@ namespace statespace {
 class RealVectorStateSpace : public StateSpace
 {
 public:
-  using RealVectorState = UtilState;
-  using RealVectorJacobian = UtilJacobian;
+  /// Point in a RealVectorStateSpace.
+  class State : public statespace::State
+  {
+  public:
+    explicit State(const Eigen::VectorXd& _x);
 
+    Eigen::VectorXd mValue;
+  };
+
+  /// Jacobian of a RealVectorStateSpace.
+  class Jacobian : public statespace::Jacobian
+  {
+  public:
+    explicit Jacobian(const Eigen::MatrixXd& _jacobian);
+
+    Eigen::MatrixXd mJacobian;
+  };
+
+  /// Constructs a RealVectorStateSpace with the given dimensionality.
   RealVectorStateSpace(int _dimension);
 
+  // Documentation inherited.
   int getRepresentationDimension() const override;
 
-  void compose(const State& _state1, const State& _state2,
-               State& _out) const override;
+  // Documentation inherited.
+  void compose(
+    const StateSpace::State& _state1, const StateSpace::State& _state2,
+    StateSpace::State& _out) const override;
 
 private:
   int mDimension;
 };
-
-using RealVectorState = RealVectorStateSpace::RealVectorState;
 
 } // namespace statespace
 } // namespace aikido
