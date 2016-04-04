@@ -1,6 +1,5 @@
 #ifndef AIKIDO_STATESPACE_STATE_H
 #define AIKIDO_STATESPACE_STATE_H
-
 #include <Eigen/Dense>
 #include <memory>
 
@@ -9,14 +8,21 @@ namespace statespace {
 
 class State{
 public:
-	virtual ~State() = default;
+  virtual ~State() = default;
 };
 
 class UtilState : public State
 {
 public:
-  UtilState(const Eigen::VectorXd& _q): mQ(_q){};
-  UtilState(int _dim): mQ(Eigen::VectorXd(_dim)){};
+  UtilState(const Eigen::VectorXd& _q)
+    : mQ(_q)
+  {
+  }
+
+  UtilState(int _dim)
+    : mQ(Eigen::VectorXd(_dim))
+  {
+  }
 
   UtilState(const UtilState& other) = default;
   UtilState(UtilState&& other) = default;
@@ -29,8 +35,7 @@ public:
   Eigen::VectorXd mQ;
 };
 
-}
-}
+} // namespace statespace
+} // namespace aikido
 
 #endif
-

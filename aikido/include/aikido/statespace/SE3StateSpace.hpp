@@ -9,17 +9,10 @@
 namespace aikido {
 namespace statespace {
 
-class SE3StateSpace : public StateSpace {
-
+class SE3StateSpace : public StateSpace
+{
 public:
-  SE3StateSpace(){};
-
-  void compose(const State& _state1, const State& _state2,
-               State& _out) const override;
-
-  int getRepresentationDimension() const override;
-
-  class SE3State: public UtilState
+  class SE3State : public UtilState
   {
   public:
     // q = (w, v)
@@ -31,20 +24,25 @@ public:
     Eigen::Isometry3d getIsometry() const;
   };
 
-  class SE3Jacobian: public UtilJacobian
+  class SE3Jacobian : public UtilJacobian
   {
   public:
     SE3Jacobian(Eigen::Matrix<double, Eigen::Dynamic, 6> _jac)
     : UtilJacobian(_jac){};
   };
 
+  SE3StateSpace() = default;
+
+  void compose(const State& _state1, const State& _state2,
+               State& _out) const override;
+
+  int getRepresentationDimension() const override;
 };
 
 using SE3State = SE3StateSpace::SE3State;
 using SE3Jacobian = SE3StateSpace::SE3Jacobian;
 
-
-}
-}
+} // namespace statespace
+} // namespace aikido
 
 #endif
