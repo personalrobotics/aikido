@@ -1,5 +1,6 @@
 #ifndef AIKIDO_STATESPACE_SE3STATESPACE_H
 #define AIKIDO_STATESPACE_SE3STATESPACE_H
+#include <Eigen/Geometry>
 #include "CompoundStateSpace.hpp"
 
 namespace aikido {

@@ -1,9 +1,7 @@
 #ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACE_H
 #define AIKIDO_STATESPACE_REALVECTORSTATESPACE_H
-
+#include <Eigen/Core>
 #include "StateSpace.hpp"
-#include "State.hpp"
-#include "Jacobian.hpp"
 
 namespace aikido {
 namespace statespace {

@@ -1,7 +1,5 @@
 #ifndef AIKIDO_STATESPACE_STATESPACE_H
 #define AIKIDO_STATESPACE_STATESPACE_H
-#include "State.hpp"
-#include "Jacobian.hpp"
 #include <memory>
 
 namespace aikido {
@@ -9,8 +7,10 @@ namespace statespace {
 
 class StateSpace {
 public:
-  typedef ::aikido::statespace::State State;
-  typedef ::aikido::statespace::Jacobian Jacobian;
+  class State {
+  public:
+    virtual ~State() = default;
+  };
 
   virtual ~StateSpace() = default;
 

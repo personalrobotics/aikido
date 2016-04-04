@@ -1,8 +1,7 @@
 #ifndef AIKIDO_STATESPACE_SO3STATESPACE_H
 #define AIKIDO_STATESPACE_SO3STATESPACE_H
+#include <Eigen/Geometry>
 #include "StateSpace.hpp"
-#include "State.hpp"
-#include "Jacobian.hpp"
 
 namespace aikido {
 namespace statespace {

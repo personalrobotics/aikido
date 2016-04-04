@@ -2,8 +2,6 @@
 #define AIKIDO_STATESPACE_COMPOUNDSTATESPACE_H
 #include <vector>
 #include "StateSpace.hpp"
-#include "State.hpp"
-#include "Jacobian.hpp"
 
 namespace aikido {
 namespace statespace {
