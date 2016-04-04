@@ -124,28 +124,29 @@ TEST(CompoundStateSpace, Compose)
     std::make_shared<RealVectorStateSpace>(2)
   });
 
-  Eigen::Vector3d expected_q(M_PI/2,4,6);
+  // TODO: This syntax is _really_ bad.
+  CompoundStateSpace::StateUniquePtr s1 = space.allocateManagedState();
+  auto& cs1 = static_cast<CompoundStateSpace::State&>(*s1);
+  static_cast<SO2StateSpace::State&>(cs1.getState(0)).setAngle(M_PI_2);
+  static_cast<RealVectorStateSpace::State&>(cs1.getState(1)).setValue(
+    Eigen::Vector2d(3., 4.));
 
-  CompoundStateSpace::State cs1({
-    new SO2StateSpace::State(M_PI_2),
-    new RealVectorStateSpace::State(Eigen::Vector2d(3., 4.))
-  });
-  CompoundStateSpace::State cs2({
-    new SO2StateSpace::State(M_PI_2),
-    new RealVectorStateSpace::State(Eigen::Vector2d(5., 10.))
-  });
-  CompoundStateSpace::State out({
-    new SO2StateSpace::State,
-    new RealVectorStateSpace::State(Eigen::Vector2d::Zero())
-  });
+  CompoundStateSpace::StateUniquePtr s2 = space.allocateManagedState();
+  auto& cs2 = static_cast<CompoundStateSpace::State&>(*s2);
+  static_cast<SO2StateSpace::State&>(cs2.getState(0)).setAngle(M_PI_2);
+  static_cast<RealVectorStateSpace::State&>(cs2.getState(1)).setValue(
+    Eigen::Vector2d(5., 10.));
+
+  CompoundStateSpace::StateUniquePtr sout = space.allocateManagedState();
+  auto& out = static_cast<CompoundStateSpace::State&>(*sout);
 
   space.compose(cs1, cs2, out);
 
-  const auto& out1 = dynamic_cast<const SO2StateSpace::State&>(
+  const auto& out1 = static_cast<const SO2StateSpace::State&>(
     out.getState(0));
   EXPECT_DOUBLE_EQ(M_PI, out1.getAngle());
 
-  const auto& out2 = dynamic_cast<const RealVectorStateSpace::State&>(
+  const auto& out2 = static_cast<const RealVectorStateSpace::State&>(
     out.getState(1));
   EXPECT_TRUE(out2.getValue().isApprox(Eigen::Vector2d(8., 14.)));
 }

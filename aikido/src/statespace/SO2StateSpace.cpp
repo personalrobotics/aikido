@@ -40,6 +40,18 @@ void SO2StateSpace::State::setRotation(const Eigen::Rotation2Dd& _rotation)
 }
 
 //=============================================================================
+StateSpace::State* SO2StateSpace::allocateState() const
+{
+  return new State;
+}
+
+//=============================================================================
+void SO2StateSpace::freeState(StateSpace::State* _state) const
+{
+  delete static_cast<State *>(_state);
+}
+
+//=============================================================================
 void SO2StateSpace::compose(
   const StateSpace::State& _state1, const StateSpace::State& _state2,
 	StateSpace::State& _out) const

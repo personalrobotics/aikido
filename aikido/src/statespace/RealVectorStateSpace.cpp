@@ -34,6 +34,18 @@ RealVectorStateSpace::RealVectorStateSpace(int _dimension)
 }
 
 //=============================================================================
+StateSpace::State* RealVectorStateSpace::allocateState() const
+{
+  return new State(Eigen::VectorXd::Zero(mDimension));
+}
+
+//=============================================================================
+void RealVectorStateSpace::freeState(StateSpace::State* _state) const
+{
+  delete static_cast<State *>(_state);
+}
+
+//=============================================================================
 void RealVectorStateSpace::compose(
   const StateSpace::State& _state1, const StateSpace::State& _state2,
   StateSpace::State& _out) const

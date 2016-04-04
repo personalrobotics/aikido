@@ -40,6 +40,12 @@ public:
   };
 
   SO2StateSpace() = default;
+
+  // Documentation inherited.
+  StateSpace::State* allocateState() const override;
+
+  // Documentation inherited.
+  void freeState(StateSpace::State* _state) const override;
   
   // Documentation inherited.
   void compose(

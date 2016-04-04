@@ -33,6 +33,18 @@ void SO3StateSpace::State::setQuaternion(const Eigen::Quaterniond& _quaternion)
 }
 
 //=============================================================================
+StateSpace::State* SO3StateSpace::allocateState() const
+{
+  return new State;
+}
+
+//=============================================================================
+void SO3StateSpace::freeState(StateSpace::State* _state) const
+{
+  delete static_cast<State *>(_state);
+}
+
+//=============================================================================
 void SO3StateSpace::compose(
   const StateSpace::State& _state1, const StateSpace::State& _state2,
   StateSpace::State& _out) const

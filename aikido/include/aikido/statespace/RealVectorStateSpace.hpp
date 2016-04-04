@@ -29,7 +29,13 @@ public:
   };
 
   /// Constructs a RealVectorStateSpace with the given dimensionality.
-  RealVectorStateSpace(int _dimension);
+  explicit RealVectorStateSpace(int _dimension);
+
+  // Documentation inherited.
+  StateSpace::State* allocateState() const override;
+
+  // Documentation inherited.
+  void freeState(StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void compose(

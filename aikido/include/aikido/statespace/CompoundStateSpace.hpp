@@ -14,12 +14,6 @@ public:
   class State : public StateSpace::State
   {
   public:
-    /// Create a CompoundState from a vector of states. This takes ownership of
-    /// the the pointers in vector.
-    explicit State(const std::vector<StateSpace::State*>& _states);
-
-    virtual ~State();
-
     // Disable copying and assignment because this class manages memory.
     State(const State& _other) = delete;
     State(State&& _other) = delete;
@@ -41,6 +35,12 @@ public:
     /// Gets the vector of underlying states.
     std::vector<const StateSpace::State*> getStates() const;
 
+  protected:
+    /// Create a CompoundState from a vector of states. This takes ownership of
+    /// the the pointers in vector. This is protected because it is not
+    /// possible to clean up without knowing the type of the States.
+    explicit State(const std::vector<StateSpace::State*>& _states);
+
   private:
     std::vector<StateSpace::State*> mValue;
 
@@ -49,6 +49,12 @@ public:
 
   /// Construct the Cartesian product of a vector of subspaces.
   explicit CompoundStateSpace(const std::vector<StateSpacePtr>& _subspaces);
+
+  // Documentation inherited.
+  StateSpace::State* allocateState() const override;
+
+  // Documentation inherited.
+  void freeState(StateSpace::State* _state) const override;
    
   // Documentation inherited.
   void compose(
@@ -57,7 +63,6 @@ public:
 
 private:
   std::vector<StateSpacePtr> mSubspaces;
-  int mRepresentationDimension;
 };
 
 } // namespace statespace
