@@ -25,16 +25,16 @@ size_t CompoundStateSpace::State::getNumStates() const
 }
 
 //=============================================================================
-StateSpace::State* CompoundStateSpace::State::getState(size_t _index)
+StateSpace::State& CompoundStateSpace::State::getState(size_t _index)
 {
-  return mValue[_index];
+  return *mValue[_index];
 }
 
 //=============================================================================
-const StateSpace::State* CompoundStateSpace::State::getState(
+const StateSpace::State& CompoundStateSpace::State::getState(
   size_t _index) const
 {
-  return mValue[_index];
+  return *mValue[_index];
 }
 
 //=============================================================================

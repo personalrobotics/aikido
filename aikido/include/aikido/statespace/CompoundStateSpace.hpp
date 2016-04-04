@@ -32,10 +32,10 @@ public:
     size_t getNumStates() const;
 
     /// Gets state by subspace index.
-    StateSpace::State* getState(size_t _index);
+    StateSpace::State& getState(size_t _index);
 
     /// Gets state by subspace index.
-    const StateSpace::State* getState(size_t _index) const;
+    const StateSpace::State& getState(size_t _index) const;
 
     /// Gets the vector of underlying states.
     const std::vector<StateSpace::State*>& getStates();

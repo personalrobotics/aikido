@@ -69,18 +69,25 @@ TEST(SO3StateSpace, Compose)
 
 TEST(SE2StateSpace, Compose)
 {
-  SE2State identity;
+  SE2StateSpace::State identity;
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry2d::Identity()));
 
-  SE2State s2(Eigen::Vector3d(M_PI/2, 0, 0));
-  SE2State s3(Eigen::Vector3d(M_PI/4, 0, 0));
-  SE2State expected(Eigen::Vector3d(3.0/4.0*M_PI, 0, 0));
+  Eigen::Isometry2d pose2 = Eigen::Isometry2d::Identity();
+  pose2.rotate(Eigen::Rotation2Dd(M_PI_2));
 
-  SE2State out;
+  Eigen::Isometry2d pose3 = Eigen::Isometry2d::Identity();
+  pose3.rotate(Eigen::Rotation2Dd(M_PI_4));
+
+  Eigen::Isometry2d expected_pose = Eigen::Isometry2d::Identity();
+  pose3.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
+
+  SE2StateSpace::State s2(pose2);
+  SE2StateSpace::State s3(pose3);
+  SE2StateSpace::State out;
   SE2StateSpace se2;
   se2.compose(s2, s3, out);
 
-  EXPECT_TRUE(expected.getIsometry().isApprox(out.getIsometry()));
+  EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
 }
 
 
@@ -142,10 +149,10 @@ TEST(CompoundStateSpace, Compose)
   space.compose(cs1, cs2, out);
 
   const auto& out1 = dynamic_cast<const SO2StateSpace::State&>(
-    *out.getState(0));
+    out.getState(0));
   EXPECT_DOUBLE_EQ(M_PI, out1.getAngle());
 
   const auto& out2 = dynamic_cast<const RealVectorStateSpace::State&>(
-    *out.getState(1));
+    out.getState(1));
   EXPECT_TRUE(out2.getValue().isApprox(Eigen::Vector2d(8., 14.)));
 }
