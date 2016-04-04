@@ -94,33 +94,26 @@ TEST(SE2StateSpace, Compose)
 
 TEST(SE3StateSpace, Compose)
 {
-  SE3State identity;
+  SE3StateSpace::State identity;
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry3d::Identity()));
 
-  SE3State s2, s3, expected;
-  s2.mQ(0) = M_PI/2;
-  s3.mQ(0) = M_PI/4;
-  expected.mQ(0) = 3.0/4.0*M_PI;
+  Eigen::Isometry3d pose2 = Eigen::Isometry3d::Identity();
+  pose2.rotate(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX()));
 
-  SE3State out;
+  Eigen::Isometry3d pose3 = Eigen::Isometry3d::Identity();
+  pose3.rotate(Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX()));
+
+  Eigen::Isometry3d expected = Eigen::Isometry3d::Identity();
+  pose3.rotate(Eigen::AngleAxisd(3. * M_PI_4, Eigen::Vector3d::UnitX()));
+
+  SE3StateSpace::State s2(pose2);
+  SE3StateSpace::State s3(pose3);
+  SE3StateSpace::State out;
   SE3StateSpace se3;
   se3.compose(s2, s3, out);
 
-  EXPECT_TRUE(expected.getIsometry().isApprox(out.getIsometry()));
-
-  SE3State s4, s5, expected2;
-  s4.mQ.bottomRows(3) = Eigen::Vector3d(1,2,3);
-  s5.mQ.bottomRows(3) = Eigen::Vector3d(4,5,6);
-  expected2.mQ.bottomRows(3) = Eigen::Vector3d(5,7,9);
-
-
-  SE3State out2;
-  se3.compose(s4, s5, out2);
-
-  EXPECT_TRUE(expected2.getIsometry().isApprox(out2.getIsometry()));
-
+  EXPECT_TRUE(expected.isApprox(out.getIsometry()));
 }
-
 
 
 TEST(CompoundStateSpace, Compose)

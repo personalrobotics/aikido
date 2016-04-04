@@ -33,8 +33,7 @@ Eigen::Isometry2d SE2StateSpace::State::getIsometry() const
 
   const auto& position = static_cast<const RealVectorStateSpace::State&>(
     getState(1));
-  //position.getValue()
-  out.pretranslate(Eigen::Vector2d::Zero());
+  out.pretranslate(position.getValue().head<2>());
 
   return out;
 }

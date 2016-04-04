@@ -1,37 +1,60 @@
+#include <aikido/statespace/SO3StateSpace.hpp>
+#include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/SE3StateSpace.hpp>
-#include <dart/math/Geometry.h>
 
 namespace aikido {
 namespace statespace {
 
-int SE3StateSpace::getRepresentationDimension() const
+//=============================================================================
+SE3StateSpace::State::State()
+  : CompoundStateSpace::State({
+      new SO3StateSpace::State,
+      new RealVectorStateSpace::State(Eigen::Vector3d::Zero())
+    })
 {
-  return 6;
 }
 
-
-void SE3StateSpace::compose(const State& _state1, const State& _state2,
-                            State& _out) const
+//=============================================================================
+SE3StateSpace::State::State(const Eigen::Isometry3d& _transform)
+  : State()
 {
-  const SE3State& state1 = static_cast<const SE3State&>(_state1);
-  const SE3State& state2 = static_cast<const SE3State&>(_state2);
-
-  Eigen::Isometry3d isometry1 = state1.getIsometry();
-  Eigen::Isometry3d isometry2 = state2.getIsometry();
-  
-  Eigen::Isometry3d isometry;
-  isometry.matrix() = isometry1.matrix()*isometry2.matrix();
-  
-  SE3State& out = static_cast<SE3State&>(_out);
-  out.mQ = ::dart::math::logMap(isometry);
+  setIsometry(_transform);
 }
 
-
-Eigen::Isometry3d SE3StateSpace::SE3State::getIsometry() const
+//=============================================================================
+Eigen::Isometry3d SE3StateSpace::State::getIsometry() const
 {
-  return ::dart::math::expMap(mQ);
+  Eigen::Isometry3d out = Eigen::Isometry3d::Identity();
+
+  const auto& orientation = static_cast<const SO3StateSpace::State&>(
+    getState(0));
+  out.rotate(orientation.getQuaternion());
+
+  const auto& position = static_cast<const RealVectorStateSpace::State&>(
+    getState(1));
+  out.pretranslate(position.getValue().head<3>());
+
+  return out;
 }
 
+//=============================================================================
+void SE3StateSpace::State::setIsometry(const Eigen::Isometry3d& _transform)
+{
+  auto& orientation = static_cast<SO3StateSpace::State&>(getState(0));
+  orientation.setQuaternion(Eigen::Quaterniond(_transform.rotation()));
 
+  auto& position = static_cast<RealVectorStateSpace::State&>(getState(1));
+  position.setValue(_transform.translation());
 }
+
+//=============================================================================
+SE3StateSpace::SE3StateSpace()
+  : CompoundStateSpace({
+      std::make_shared<SO3StateSpace>(),
+      std::make_shared<RealVectorStateSpace>(3)
+    })
+{
 }
+
+} // namespace statespace
+} // namespace aikido
