@@ -10,8 +10,7 @@ namespace statespace {
 class SE2StateSpace : public StateSpace
 {
 public:
-
-  class SE2State: public UtilState
+  class SE2State : public UtilState
   {
   public:
     // default is identity

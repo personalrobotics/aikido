@@ -22,7 +22,7 @@ void SE2StateSpace::compose(const State& _state1, const State& _state2,
   Eigen::Isometry2d isometry;
   isometry.matrix() = isometry1.matrix()*isometry2.matrix();
 
-  Eigen::Rotation2D<double> rotation;
+  Eigen::Rotation2D<double> rotation(0.);
   rotation = rotation.fromRotationMatrix(isometry.linear());
 
   SE2State& out = static_cast<SE2State&>(_out);
