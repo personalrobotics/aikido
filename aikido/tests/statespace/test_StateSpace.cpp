@@ -25,7 +25,7 @@ TEST(RealVectorStateSpace, Compose)
 
   rvss.compose(s1, s2, out);
 
-  EXPECT_TRUE(out.mValue.isApprox(Eigen::Vector3d(3,5,7)));
+  EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3,5,7)));
 
 }
 
@@ -147,5 +147,5 @@ TEST(CompoundStateSpace, Compose)
 
   const auto& out2 = dynamic_cast<const RealVectorStateSpace::State&>(
     *out.getState(1));
-  EXPECT_TRUE(out2.mValue.isApprox(Eigen::Vector2d(8., 14.)));
+  EXPECT_TRUE(out2.getValue().isApprox(Eigen::Vector2d(8., 14.)));
 }

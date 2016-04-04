@@ -14,6 +14,18 @@ RealVectorStateSpace::State::State(const Eigen::VectorXd& _x)
 }
 
 //=============================================================================
+const Eigen::VectorXd& RealVectorStateSpace::State::getValue() const
+{
+  return mValue;
+}
+
+//=============================================================================
+void RealVectorStateSpace::State::setValue(const Eigen::VectorXd& _x)
+{
+  mValue = _x;
+}
+
+//=============================================================================
 RealVectorStateSpace::RealVectorStateSpace(int _dimension)
   : mDimension(_dimension)
 {

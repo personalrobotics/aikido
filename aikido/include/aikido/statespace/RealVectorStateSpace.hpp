@@ -16,11 +16,18 @@ public:
   class State : public StateSpace::State
   {
   public:
-    State();
-
     explicit State(const Eigen::VectorXd& _x);
 
+    /// Get value.
+    const Eigen::VectorXd& getValue() const;
+
+    /// Set value.
+    void setValue(const Eigen::VectorXd& _x);
+
+  private:
     Eigen::VectorXd mValue;
+
+    friend class RealVectorStateSpace;
   };
 
   /// Constructs a RealVectorStateSpace with the given dimensionality.
