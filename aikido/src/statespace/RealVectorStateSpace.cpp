@@ -14,12 +14,6 @@ RealVectorStateSpace::State::State(const Eigen::VectorXd& _x)
 }
 
 //=============================================================================
-RealVectorStateSpace::Jacobian::Jacobian(const Eigen::MatrixXd& _jacobian)
-  : mJacobian(_jacobian)
-{
-}
-
-//=============================================================================
 RealVectorStateSpace::RealVectorStateSpace(int _dimension)
   : mDimension(_dimension)
 {
@@ -49,5 +43,5 @@ void RealVectorStateSpace::compose(
   out.mValue = state1.mValue + state2.mValue;
 }
 
-}
-}
+} // namespace statespace
+} // namespace aikido

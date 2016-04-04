@@ -8,25 +8,17 @@
 namespace aikido {
 namespace statespace {
 
+/// Represents a n-dimensional real vector space.
 class RealVectorStateSpace : public StateSpace
 {
 public:
   /// Point in a RealVectorStateSpace.
-  class State : public statespace::State
+  class State : public StateSpace::State
   {
   public:
     explicit State(const Eigen::VectorXd& _x);
 
     Eigen::VectorXd mValue;
-  };
-
-  /// Jacobian of a RealVectorStateSpace.
-  class Jacobian : public statespace::Jacobian
-  {
-  public:
-    explicit Jacobian(const Eigen::MatrixXd& _jacobian);
-
-    Eigen::MatrixXd mJacobian;
   };
 
   /// Constructs a RealVectorStateSpace with the given dimensionality.

@@ -32,15 +32,15 @@ TEST(RealVectorStateSpace, Compose)
 
 TEST(SO2StateSpace, Compose)
 {
-  SO2State s1(M_PI/4);
-  SO2State s2(M_PI/2);
-  SO2State out;
-  SO2State expected(3.0/4.0*M_PI);
+  SO2StateSpace::State s1(M_PI/4);
+  SO2StateSpace::State s2(M_PI/2);
+  SO2StateSpace::State out;
+  SO2StateSpace::State expected(3.0/4.0*M_PI);
 
   SO2StateSpace so2;
   so2.compose(s1, s2, out);
 
-  EXPECT_TRUE(out.getIsometry().isApprox(expected.getIsometry()));
+  EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
 
 }
 

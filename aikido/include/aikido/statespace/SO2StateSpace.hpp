@@ -10,48 +10,44 @@ namespace statespace {
 class SO2StateSpace : public StateSpace
 {
 public:
-  class SO2State : public UtilState
+  /// Point in SO(2), a planar orientation.
+  class State : public StateSpace::State
   {
   public:
-    // q: angle 
-    SO2State(Eigen::VectorXd _q)
-      : UtilState(_q)
-    {
-    }
+    /// Constructs the identity element.
+    State();
 
-    SO2State(double angle)
-      : UtilState(Eigen::VectorXd::Zero(1))
-    {
-      mQ(0) = angle;
-    }
+    /// Constructs a point in SO(2) from an angle in radians.
+    explicit State(double _angle);
 
-    SO2State()
-      : SO2State(0)
-    {
-    }
+    /// Gets the angle of the rotation encoded by this state.
+    double getAngle() const;
 
-    Eigen::Isometry2d getIsometry() const;
-  };
+    /// Sets this state to a rotation by the specified angle.
+    void setAngle(double _angle);
 
-  class SO2Jacobian : public UtilJacobian
-  {
-  public:
-    SO2Jacobian(Eigen::Matrix<double, Eigen::Dynamic, 1> _jac)
-      : UtilJacobian(_jac)
-    {
-    }
+    /// Gets value as a rigid body rotation.
+    Eigen::Rotation2Dd getRotation() const;
+
+    /// Sets this state to the given rotation.
+    void setRotation(const Eigen::Rotation2Dd& _rotation);
+
+  private:
+    double mAngle;
+
+    friend class SO2StateSpace;
   };
 
   SO2StateSpace() = default;
-  
-  void compose(const State& _state1, const State& _state2,
-               State& _out) const override;
 
+  // Documentation inherited.
   int getRepresentationDimension() const override;
+  
+  // Documentation inherited.
+  void compose(
+    const StateSpace::State& _state1, const StateSpace::State& _state2,
+    StateSpace::State& _out) const override;
 };
-
-using SO2State = SO2StateSpace::SO2State;
-using SO2Jacobian = SO2StateSpace::SO2Jacobian;
 
 } // namespace statespace
 } // namespace aikido
