@@ -119,22 +119,33 @@ TEST(SE3StateSpace, Compose)
 TEST(CompoundStateSpace, Compose)
 {
 
-  std::vector<StateSpacePtr> ssp;
-  ssp.push_back(std::make_shared<SO2StateSpace>());
-  ssp.push_back(std::make_shared<RealVectorStateSpace>(2));
-
-  CompoundStateSpace space(ssp);
+  CompoundStateSpace space({
+    std::make_shared<SO2StateSpace>(),
+    std::make_shared<RealVectorStateSpace>(2)
+  });
 
   Eigen::Vector3d expected_q(M_PI/2,4,6);
 
-  CompoundState cs1(Eigen::Vector3d(M_PI/4,1,2)),
-                cs2(Eigen::Vector3d(M_PI/4,3,4)),
-                out(3),
-                expected(expected_q);
+  CompoundStateSpace::State cs1({
+    new SO2StateSpace::State(M_PI_2),
+    new RealVectorStateSpace::State(Eigen::Vector2d(3., 4.))
+  });
+  CompoundStateSpace::State cs2({
+    new SO2StateSpace::State(M_PI_2),
+    new RealVectorStateSpace::State(Eigen::Vector2d(5., 10.))
+  });
+  CompoundStateSpace::State out({
+    new SO2StateSpace::State,
+    new RealVectorStateSpace::State(Eigen::Vector2d::Zero())
+  });
 
   space.compose(cs1, cs2, out);
 
-  EXPECT_TRUE(out.mQ.isApprox(expected.mQ));
+  const auto& out1 = dynamic_cast<const SO2StateSpace::State&>(
+    *out.getState(0));
+  EXPECT_DOUBLE_EQ(M_PI, out1.getAngle());
 
+  const auto& out2 = dynamic_cast<const RealVectorStateSpace::State&>(
+    *out.getState(1));
+  EXPECT_TRUE(out2.mValue.isApprox(Eigen::Vector2d(8., 14.)));
 }
-

@@ -16,6 +16,8 @@ public:
   class State : public StateSpace::State
   {
   public:
+    State();
+
     explicit State(const Eigen::VectorXd& _x);
 
     Eigen::VectorXd mValue;

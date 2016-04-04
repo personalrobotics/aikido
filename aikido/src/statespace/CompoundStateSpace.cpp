@@ -4,8 +4,62 @@
 namespace aikido {
 namespace statespace {
 
-CompoundStateSpace::CompoundStateSpace(std::vector<StateSpacePtr> _subspaces)
-: mSubspaces(_subspaces)
+//=============================================================================
+CompoundStateSpace::State::State(
+      const std::vector<StateSpace::State*>& _states)
+  : mValue(_states)
+{
+}
+
+//=============================================================================
+CompoundStateSpace::State::~State()
+{
+  for (StateSpace::State* state : mValue)
+    delete state;
+}
+
+//=============================================================================
+size_t CompoundStateSpace::State::getNumStates() const
+{
+  return mValue.size();
+}
+
+//=============================================================================
+StateSpace::State* CompoundStateSpace::State::getState(size_t _index)
+{
+  return mValue[_index];
+}
+
+//=============================================================================
+const StateSpace::State* CompoundStateSpace::State::getState(
+  size_t _index) const
+{
+  return mValue[_index];
+}
+
+//=============================================================================
+const std::vector<StateSpace::State*>& CompoundStateSpace::State::getStates()
+{
+  return mValue;
+}
+
+//=============================================================================
+std::vector<const StateSpace::State*>
+  CompoundStateSpace::State::getStates() const
+{
+  std::vector<const StateSpace::State*> output;
+  output.reserve(mValue.size());
+
+  for (StateSpace::State* state : mValue)
+    output.push_back(state);
+
+  return output;
+}
+
+//=============================================================================
+CompoundStateSpace::CompoundStateSpace(
+      const std::vector<StateSpacePtr>& _subspaces)
+  : mSubspaces(_subspaces)
 {
   mRepresentationDimension = 0;
   for (auto supspace: mSubspaces)
@@ -14,39 +68,27 @@ CompoundStateSpace::CompoundStateSpace(std::vector<StateSpacePtr> _subspaces)
   }
 }
 
-void CompoundStateSpace::compose(const State& _state1, const State& _state2,
-                                 State& _out) const
-{
-
-  CompoundState& out = static_cast<CompoundState&>(_out);
-
-  const UtilState& state1 = static_cast<const UtilState&>(_state1);
-  const UtilState& state2 = static_cast<const UtilState&>(_state2);
-  
-  int index = 0;
-  for(int i = 0; i < mSubspaces.size(); ++i)
-  {
-    int dim = mSubspaces[i]->getRepresentationDimension();
-    UtilState s1(dim), s2(dim), sOut(dim);
-    s1.mQ = state1.mQ.block(index, 0, dim, 1);
-    s2.mQ = state2.mQ.block(index, 0, dim, 1);
-
-    mSubspaces[i]->compose(s1, s2, sOut);
-
-    out.mQ.block(index, 0, dim, 1) = sOut.mQ;
-    index += dim;
-  
-
-  }
-
-}
-
-
+//=============================================================================
 int CompoundStateSpace::getRepresentationDimension() const
 {
   return mRepresentationDimension;
 }
 
+//=============================================================================
+void CompoundStateSpace::compose(
+  const StateSpace::State& _state1, const StateSpace::State& _state2,
+  StateSpace::State& _out) const
+{
+  const auto& state1 = static_cast<const State&>(_state1);
+  const auto& state2 = static_cast<const State&>(_state2);
+  auto& out = static_cast<State&>(_out);
+  
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
+    mSubspaces[i]->compose(
+      *state1.mValue[i], *state2.mValue[i], *out.mValue[i]);
+  }
+}
 
-}
-}
+} // namespace statespace
+} // namespace aikido
