@@ -37,26 +37,12 @@ public:
   /// Gets state of type by subspace index.
   template <class Space>
   typename Space::State& getSubStateOf(
-    StateSpace::State& _state, size_t _index)
-  {
-    if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
-      throw std::runtime_error("Invalid type.");
-
-    return static_cast<typename Space::State&>(
-      getSubState(_state, _index));
-  }
+    StateSpace::State& _state, size_t _index);
 
   /// Gets state of type by subspace index.
   template <class Space>
   const typename Space::State& getSubStateOf(
-    const StateSpace::State& _state, size_t _index)
-  {
-    if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
-      throw std::runtime_error("Invalid type.");
-
-    return static_cast<const typename Space::State&>(
-      getSubState(_state, _index));
-  }
+    const StateSpace::State& _state, size_t _index);
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
@@ -80,5 +66,7 @@ private:
 
 } // namespace statespace
 } // namespace aikido
+
+#include "detail/CompoundStateSpace.hpp"
 
 #endif
