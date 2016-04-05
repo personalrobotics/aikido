@@ -3,30 +3,39 @@ namespace statespace {
 
 //=============================================================================
 template <class Space>
-typename Space::State& CompoundStateSpace::getSubStateOf(
-  StateSpace::State& _state, size_t _index)
+const Space& CompoundStateSpace::getSubSpace(size_t _index) const
 {
-#ifndef NDEBUG
-  if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
+  auto space = dynamic_cast<const Space*>(mSubspaces[_index].get());
+  if (!space)
     throw std::runtime_error("Invalid type.");
-#endif
 
-  return static_cast<typename Space::State&>(
-    getSubState(_state, _index));
+  return *space;
 }
 
 //=============================================================================
 template <class Space>
-const typename Space::State& CompoundStateSpace::getSubStateOf(
-  const StateSpace::State& _state, size_t _index)
+typename Space::State& CompoundStateSpace::getSubState(
+  StateSpace::State& _state, size_t _index) const
 {
-#ifndef NDEBUG
+  // TODO: Only in debug mode.
   if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
     throw std::runtime_error("Invalid type.");
-#endif
 
-  return static_cast<const typename Space::State&>(
-    getSubState(_state, _index));
+  return reinterpret_cast<typename Space::State&>(
+    *(reinterpret_cast<char*>(&_state) + mOffsets[_index]));
+}
+
+//=============================================================================
+template <class Space>
+const typename Space::State& CompoundStateSpace::getSubState(
+  const StateSpace::State& _state, size_t _index) const
+{
+  // TODO: Only in debug mode.
+  if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
+    throw std::runtime_error("Invalid type.");
+
+  return reinterpret_cast<const typename Space::State&>(
+    *(reinterpret_cast<const char*>(&_state) + mOffsets[_index]));
 }
 
 } // namespace statespace

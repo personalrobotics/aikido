@@ -3,6 +3,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include "StateSpace.hpp"
+#include "ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -41,13 +42,15 @@ public:
     friend class SO2StateSpace;
   };
 
+  using ScopedState = statespace::ScopedState<SO2StateSpace>;
+
   SO2StateSpace() = default;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
-  StateSpace::State* allocateStateInBuffer(void* _buffer) const;
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;

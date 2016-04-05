@@ -2,6 +2,7 @@
 #define AIKIDO_STATESPACE_COMPOUNDSTATESPACE_H
 #include <vector>
 #include "StateSpace.hpp"
+#include "ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -20,29 +21,33 @@ public:
     friend class CompoundStateSpace;
   };
 
+  using ScopedState = statespace::ScopedState<CompoundStateSpace>;
+
   /// Construct the Cartesian product of a vector of subspaces.
   explicit CompoundStateSpace(const std::vector<StateSpacePtr>& _subspaces);
+
+  /// Helper function to create a ScopedState.
+  ScopedState createState()
+  {
+    return ScopedState(this);
+  }
 
   /// Gets number of subspaces.
   size_t getNumStates() const;
 
-  /// Gets state by subspace index.
-  StateSpace::State& getSubState(
+  /// Gets subspace by index.
+  template <class Space = StateSpace>
+  const Space& getSubSpace(size_t _index) const;
+
+  /// Gets state of type by subspace index.
+  template <class Space = StateSpace>
+  typename Space::State& getSubState(
     StateSpace::State& _state, size_t _index) const;
 
-  /// Gets state by subspace index.
-  const StateSpace::State& getSubState(
+  /// Gets state of type by subspace index.
+  template <class Space = StateSpace>
+  const typename Space::State& getSubState(
     const StateSpace::State& _state, size_t _index) const;
-
-  /// Gets state of type by subspace index.
-  template <class Space>
-  typename Space::State& getSubStateOf(
-    StateSpace::State& _state, size_t _index);
-
-  /// Gets state of type by subspace index.
-  template <class Space>
-  const typename Space::State& getSubStateOf(
-    const StateSpace::State& _state, size_t _index);
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;

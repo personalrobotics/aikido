@@ -2,6 +2,7 @@
 #define AIKIDO_STATESPACE_REALVECTORSTATESPACE_H
 #include <Eigen/Core>
 #include "StateSpace.hpp"
+#include "ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -13,36 +14,39 @@ public:
   /// Point in a RealVectorStateSpace.
   class State : public StateSpace::State
   {
-  public:
-    explicit State(const Eigen::VectorXd& _x);
+  protected:
+    State() = default;
     ~State() = default;
 
-    /// Get value.
-    const Eigen::VectorXd& getValue() const;
-
-    /// Set value.
-    void setValue(const Eigen::VectorXd& _x);
-
-  private:
-    Eigen::VectorXd mValue;
-
     friend class RealVectorStateSpace;
+  };
+
+  class ScopedState : public statespace::ScopedState<RealVectorStateSpace>
+  {
+  public:
+    explicit ScopedState(const RealVectorStateSpace* _space);
+
+    /// Gets the value stored in this State.
+    Eigen::Map<Eigen::VectorXd> getValue();
   };
 
   /// Constructs a RealVectorStateSpace with the given dimensionality.
   explicit RealVectorStateSpace(int _dimension);
 
+  /// Helper function to create a ScopedState.
+  ScopedState createState();
+
+  /// Gets the value stored in a RealVectorStateSpace::State.
+  Eigen::Map<Eigen::VectorXd> getValue(State& _state) const;
+
+  /// Gets the value stored in a RealVectorStateSpace::State.
+  Eigen::Map<const Eigen::VectorXd> getValue(const State& _state) const;
+
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
-  StateSpace::State* allocateState() const override;
-
-  // Documentation inherited.
-  StateSpace::State* allocateStateInBuffer(void* _buffer) const;
-
-  // Documentation inherited.
-  void freeState(StateSpace::State* _state) const override;
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;

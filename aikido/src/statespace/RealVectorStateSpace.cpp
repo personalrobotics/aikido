@@ -8,21 +8,16 @@ namespace aikido {
 namespace statespace {
 
 //=============================================================================
-RealVectorStateSpace::State::State(const Eigen::VectorXd& _x)
-  : mValue(_x)
+RealVectorStateSpace::ScopedState::ScopedState(
+      const RealVectorStateSpace* _space)
+  : statespace::ScopedState<RealVectorStateSpace>(_space)
 {
 }
 
 //=============================================================================
-const Eigen::VectorXd& RealVectorStateSpace::State::getValue() const
+Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::ScopedState::getValue() 
 {
-  return mValue;
-}
-
-//=============================================================================
-void RealVectorStateSpace::State::setValue(const Eigen::VectorXd& _x)
-{
-  mValue = _x;
+  return getStateSpace()->getValue(**this);
 }
 
 //=============================================================================
@@ -34,30 +29,43 @@ RealVectorStateSpace::RealVectorStateSpace(int _dimension)
 }
 
 //=============================================================================
-size_t RealVectorStateSpace::getStateSizeInBytes() const
+auto RealVectorStateSpace::createState() -> ScopedState
 {
-  return sizeof(State);
+  return ScopedState(this);
 }
 
 //=============================================================================
-StateSpace::State* RealVectorStateSpace::allocateState() const
+Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::getValue(State& _state) const
 {
-  return new State(Eigen::VectorXd::Zero(mDimension));
+  auto valueBuffer = reinterpret_cast<double*>(
+    reinterpret_cast<unsigned char*>(&_state) + sizeof(State));
+
+  return Eigen::Map<Eigen::VectorXd>(valueBuffer, mDimension);
+}
+
+//=============================================================================
+Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
+  const State& _state) const
+{
+  auto valueBuffer = reinterpret_cast<const double*>(
+    reinterpret_cast<const unsigned char*>(&_state) + sizeof(State));
+
+  return Eigen::Map<const Eigen::VectorXd>(valueBuffer, mDimension);
+}
+
+//=============================================================================
+size_t RealVectorStateSpace::getStateSizeInBytes() const
+{
+  return mDimension * sizeof(double);
 }
 
 //=============================================================================
 StateSpace::State* RealVectorStateSpace::allocateStateInBuffer(
   void* _buffer) const
 {
-  // TODO: Allocate this in contiguous memory.
-  return new (_buffer) State(Eigen::VectorXd::Zero(mDimension));
-}
-
-//=============================================================================
-void RealVectorStateSpace::freeState(StateSpace::State* _state) const
-{
-  // TODO: Allocate this in contiguous memory.
-  delete static_cast<State *>(_state);
+  auto state = new (_buffer) State;
+  getValue(*state).setZero();
+  return state;
 }
 
 //=============================================================================
@@ -73,13 +81,9 @@ void RealVectorStateSpace::compose(
 {
   const auto& state1 = static_cast<const State&>(_state1);
   const auto& state2 = static_cast<const State&>(_state2);
-  
-  if (state1.mValue.rows() != state2.mValue.rows())
-    throw std::invalid_argument(
-      "_state1 and state2 must have same dimension.");
-
   auto& out = static_cast<State&>(_out);
-  out.mValue = state1.mValue + state2.mValue;
+
+  getValue(out) = getValue(state1) + getValue(state2);
 }
 
 } // namespace statespace

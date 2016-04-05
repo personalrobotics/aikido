@@ -18,14 +18,16 @@ TEST(RealVectorStateSpace, Compose)
 {
   RealVectorStateSpace rvss(3);
 
-  Eigen::Vector3d v(1,2,3);
-  RealVectorStateSpace::State s1(Eigen::Vector3d(1, 2, 3));
-  RealVectorStateSpace::State s2(Eigen::Vector3d(2, 3, 4));
-  RealVectorStateSpace::State out(Eigen::Vector3d(Eigen::Vector3d::Zero()));
+  RealVectorStateSpace::ScopedState s1 = rvss.createState();
+  s1.getValue() = Eigen::Vector3d(1, 2, 3);
 
-  rvss.compose(s1, s2, out);
+  RealVectorStateSpace::ScopedState s2 = rvss.createState();
+  s2.getValue() = Eigen::Vector3d(2, 3, 4);
 
-  EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3,5,7)));
+  RealVectorStateSpace::ScopedState out = rvss.createState();
+  rvss.compose(*s1, *s2, *out);
+
+  EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
 
 }
 
@@ -124,19 +126,23 @@ TEST(CompoundStateSpace, Compose)
   });
 
   // TODO: This syntax is _really_ bad.
-  CompoundStateSpace::StateUniquePtr s1 = space.allocateManagedState();
-  space.getSubStateOf<SO2StateSpace>(*s1, 0).setAngle(M_PI_2);
-  space.getSubStateOf<RealVectorStateSpace>(*s1, 1).setValue(Vector2d(3., 4.));
+  CompoundStateSpace::ScopedState s1 = space.createState();
+  space.getSubState<SO2StateSpace>(*s1, 0).setAngle(M_PI_2);
 
-  CompoundStateSpace::StateUniquePtr s2 = space.allocateManagedState();
-  space.getSubStateOf<SO2StateSpace>(*s2, 0).setAngle(M_PI_2);
-  space.getSubStateOf<RealVectorStateSpace>(*s2, 1).setValue(Vector2d(5., 10.));
+  space.getSubSpace<RealVectorStateSpace>(1).getValue(
+    space.getSubState<RealVectorStateSpace>(*s1, 1)) = Vector2d(3., 4.);
 
-  CompoundStateSpace::StateUniquePtr out = space.allocateManagedState();
+  CompoundStateSpace::ScopedState s2 = space.createState();
+  space.getSubState<SO2StateSpace>(*s2, 0).setAngle(M_PI_2);
+  space.getSubSpace<RealVectorStateSpace>(1).getValue(
+    space.getSubState<RealVectorStateSpace>(*s2, 1)) = Vector2d(5., 10.);
+
+  CompoundStateSpace::ScopedState out = space.createState();
   space.compose(*s1, *s2, *out);
 
-  const double out1 = space.getSubStateOf<SO2StateSpace>(*out, 0).getAngle();
-  const Vector2d out2 = space.getSubStateOf<RealVectorStateSpace>(*out, 1).getValue();
+  const double out1 = space.getSubState<SO2StateSpace>(*out, 0).getAngle();
+  const Vector2d out2 = space.getSubSpace<RealVectorStateSpace>(1).getValue(
+    space.getSubState<RealVectorStateSpace>(*out, 1));
   EXPECT_DOUBLE_EQ(M_PI, out1);
   EXPECT_TRUE(out2.isApprox(Vector2d(8., 14.)));
 }

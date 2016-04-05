@@ -28,22 +28,6 @@ size_t CompoundStateSpace::getNumStates() const
 }
 
 //=============================================================================
-StateSpace::State& CompoundStateSpace::getSubState(
-  StateSpace::State& _state, size_t _index) const
-{
-  return reinterpret_cast<StateSpace::State&>(
-    *(reinterpret_cast<char*>(&_state) + mOffsets[_index]));
-}
-
-//=============================================================================
-const StateSpace::State& CompoundStateSpace::getSubState(
-  const StateSpace::State& _state, size_t _index) const
-{
-  return reinterpret_cast<const StateSpace::State&>(
-    *(reinterpret_cast<const char*>(&_state) + mOffsets[_index]));
-}
-
-//=============================================================================
 size_t CompoundStateSpace::getStateSizeInBytes() const
 {
   return mSizeInBytes;
@@ -56,7 +40,7 @@ StateSpace::State* CompoundStateSpace::allocateStateInBuffer(
   State* const state = new (_buffer) State;
 
   for (size_t i = 0; i < mSubspaces.size(); ++i)
-    mSubspaces[i]->allocateStateInBuffer(&getSubState(*state, i));
+    mSubspaces[i]->allocateStateInBuffer(&getSubState<>(*state, i));
 
   return state;
 }
@@ -67,7 +51,7 @@ void CompoundStateSpace::freeStateInBuffer(StateSpace::State* _state) const
   auto state = static_cast<State*>(_state);
 
   for (size_t i = mSubspaces.size(); i > 0; --i)
-    mSubspaces[i - 1]->freeStateInBuffer(&getSubState(*state, i - 1));
+    mSubspaces[i - 1]->freeStateInBuffer(&getSubState<>(*state, i - 1));
 
   reinterpret_cast<State*>(_state)->~State();
 }
@@ -83,8 +67,8 @@ void CompoundStateSpace::compose(
   
   for (size_t i = 0; i < mSubspaces.size(); ++i)
   {
-    mSubspaces[i]->compose(
-      getSubState(state1, i), getSubState(state2, i), getSubState(out, i));
+    mSubspaces[i]->compose(getSubState<>(state1, i), getSubState<>(state2, i),
+      getSubState<>(out, i));
   }
 }
 
