@@ -29,7 +29,7 @@ size_t CompoundStateSpace::getNumStates() const
 
 //=============================================================================
 StateSpace::State& CompoundStateSpace::getSubState(
-  State& _state, size_t _index) const
+  StateSpace::State& _state, size_t _index) const
 {
   return reinterpret_cast<StateSpace::State&>(
     *(reinterpret_cast<char*>(&_state) + mOffsets[_index]));
@@ -37,7 +37,7 @@ StateSpace::State& CompoundStateSpace::getSubState(
 
 //=============================================================================
 const StateSpace::State& CompoundStateSpace::getSubState(
-  const State& _state, size_t _index) const
+  const StateSpace::State& _state, size_t _index) const
 {
   return reinterpret_cast<const StateSpace::State&>(
     *(reinterpret_cast<const char*>(&_state) + mOffsets[_index]));

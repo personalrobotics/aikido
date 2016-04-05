@@ -27,10 +27,36 @@ public:
   size_t getNumStates() const;
 
   /// Gets state by subspace index.
-  StateSpace::State& getSubState(State& _state, size_t _index) const;
+  StateSpace::State& getSubState(
+    StateSpace::State& _state, size_t _index) const;
 
   /// Gets state by subspace index.
-  const StateSpace::State& getSubState(const State& _state, size_t _index) const;
+  const StateSpace::State& getSubState(
+    const StateSpace::State& _state, size_t _index) const;
+
+  /// Gets state of type by subspace index.
+  template <class Space>
+  typename Space::State& getSubStateOf(
+    StateSpace::State& _state, size_t _index)
+  {
+    if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
+      throw std::runtime_error("Invalid type.");
+
+    return static_cast<typename Space::State&>(
+      getSubState(_state, _index));
+  }
+
+  /// Gets state of type by subspace index.
+  template <class Space>
+  const typename Space::State& getSubStateOf(
+    const StateSpace::State& _state, size_t _index)
+  {
+    if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
+      throw std::runtime_error("Invalid type.");
+
+    return static_cast<const typename Space::State&>(
+      getSubState(_state, _index));
+  }
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
