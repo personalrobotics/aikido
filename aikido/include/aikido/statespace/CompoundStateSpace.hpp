@@ -21,6 +21,37 @@ public:
     friend class CompoundStateSpace;
   };
 
+  class StateHandle : public statespace::StateHandle<CompoundStateSpace>
+  {
+  public:
+    using typename statespace::StateHandle<CompoundStateSpace>::State;
+    using typename statespace::StateHandle<CompoundStateSpace>::StateSpace;
+
+    StateHandle()
+    {
+    }
+
+    StateHandle(const StateSpace* _space, State* _state)
+      : statespace::StateHandle<CompoundStateSpace>(_space, _state)
+    {
+    }
+
+    /// Gets state of type by subspace index.
+    template <class Space = StateSpace>
+    typename Space::State& getSubState(size_t _index) const
+    {
+      return getStateSpace()->getSubState(*getState(), _index);
+    }
+
+    /// Gets state of type by subspace index.
+    template <class Space = StateSpace>
+    statespace::StateHandle<typename Space::State> getSubStateHandle(
+      size_t _index) const
+    {
+      return getStateSpace()->getSubStateHandle(*getState(), _index);
+    }
+  };
+
   using ScopedState = statespace::ScopedState<CompoundStateSpace>;
 
   /// Construct the Cartesian product of a vector of subspaces.
@@ -51,8 +82,8 @@ public:
 
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
-  StateHandle<typename Space::State> getSubStateHandle(
-    const StateSpace::State& _state, size_t _index);
+  typename Space::StateHandle getSubStateHandle(
+    const StateSpace::State& _state, size_t _index) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;

@@ -40,11 +40,10 @@ const typename Space::State& CompoundStateSpace::getSubState(
 
 //=============================================================================
 template <class Space>
-StateHandle<typename Space::State> CompoundStateSpace::getSubStateHandle(
-  const StateSpace::State& _state, size_t _index)
+typename Space::StateHandle CompoundStateSpace::getSubStateHandle(
+  const StateSpace::State& _state, size_t _index) const
 {
-  return StateHandle<typename Space::State>(
-    this, getSubState<Space>(_state, _index));
+  return Space::StateHandle(this, getSubState<Space>(_state, _index));
 }
 
 } // namespace statespace
