@@ -36,10 +36,7 @@ auto state = static_cast<RealVectorStateSpace::State*>(space.allocateState());
 space.getValue(*state) = Eigen::Vector2d(1., 2.);
 ```
 
-We provide a `StateHandle` class to automate this operation by storing an
-internal pointer to the `StateSpace` class associated with the `State` that it
-wraps. This convenience comes at the cost of additional memory usage, so
-`StateHandle` is not recommended for performance-critical applications:
+We provide a `StateHandle` class to automate this operation:
 ```c++
 RealVectorStateSpace::StateHandle state_handle(&space, state);
 state_handle.getValue() = Eigen::Vector2d(3., 4.);
@@ -47,18 +44,18 @@ state_handle.getValue() = Eigen::Vector2d(3., 4.);
 
 In both cases, you must remember to call `space.deallocateState(state)` to
 avoid leaking memory. We provide a `ScopedState` class that combines the
-functionality of `StateHandle` with RAII memory management. Similar to
-`StateHandle`, this convenience comes at the cost of additional memory usage:
+functionality of `StateHandle` with RAII memory management:
 ```c++
 RealVectorStateSpace::ScopedState scoped_state(&space);
 state_handle.getValue() = Eigen::Vector2d(1., 2.);
 ```
 
-Our general advice is:
-
-- Avoid creating large numbers of `StateHandle` or `ScopedState`
-- Use `ScopedState` in all other situations to avoid manual resource management
-- Guarantee that `StateSpace` and `State` outlive all of their `StateHandle`s
+For typical use, we *strongly* recommend using `ScopedState` to avoid manual
+memory management. However, the convenience of `StateHandle` and `ScopedState`
+comes at the cost of memory overhead. We suggest avoiding these classes, by
+using the operations provided by `StateSpace`, in performance-critical code.
+This is especially important when creating a large number of states, e.g. when
+implementing a sample-based motion planner.
 
 
 ### Working with `CompoundStateSpace`
@@ -99,22 +96,19 @@ example, the following code is required to set the real vector component of
 `compound_state`:
 ```c++
 compound_space.getSubSpace<RealVectorStateSpace>(1).setValue(
-  compound_space.getSubState<RealVectorStateSpace>(compound_state, 1),
-  Eigen::Vector2d(3., 4.));
+  compound_space.getSubState<RealVectorStateSpace>(compound_state, 1), Eigen::Vector2d(3., 4.));
 ```
 
 It is significantly less verbose to use the `StateHandle` wrapper:
 ```c++
-compound_handle.getSubStateHandle<RealVectorStateSpace>(1).getValue()
-  = Eigen::Vector2d(3., 4.);
+compound_handle.getSubStateHandle<RealVectorStateSpace>(1).getValue() = Eigen::Vector2d(3., 4.);
 ```
 
 
-## `StateSpace` formal definition
+### Implementing your own `StateSpace`
 
-It is straightforward to implement your own `StateSpace`.
-
-The type `SS` satisfies the `StateSpace` concept iff:
+It is straightforward to implement your own `StateSpace`. The type `SS`
+satisfies the `StateSpace` concept iff:
 
 - The type `SS` inherits from `aikido::statespace::StateSpace`
 - The type `SS::State` has no virtual functions
