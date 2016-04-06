@@ -110,8 +110,7 @@ TEST(SE3StateSpace, Compose)
   SE3StateSpace::ScopedState s3(&space);
   s2.setIsometry(pose3);
 
-  Eigen::Isometry3d expected = Eigen::Isometry3d::Identity();
-  expected.rotate(Eigen::AngleAxisd(3. * M_PI_4, Eigen::Vector3d::UnitX()));
+  Eigen::Isometry3d expected = pose2 * pose3;
 
   SE3StateSpace::ScopedState out(&space);
   space.compose(*s2, *s3, *out);
