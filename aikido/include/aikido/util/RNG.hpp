@@ -38,6 +38,11 @@ public:
   {
   }
 
+  explicit RNGWrapper(result_type _seed)
+    : mRng(_seed)
+  {
+  }
+
   virtual ~RNGWrapper() = default;
 
   T& rng()
