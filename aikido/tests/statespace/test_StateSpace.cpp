@@ -93,30 +93,35 @@ TEST(SE2StateSpace, Compose)
   EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
 }
 
-#if 0
 TEST(SE3StateSpace, Compose)
 {
-  SE3StateSpace::State identity;
+  SE3StateSpace space;
+
+  SE3StateSpace::ScopedState identity(&space);
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry3d::Identity()));
 
   Eigen::Isometry3d pose2 = Eigen::Isometry3d::Identity();
   pose2.rotate(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX()));
+  SE3StateSpace::ScopedState s2(&space);
+  s2.setIsometry(pose2);
 
   Eigen::Isometry3d pose3 = Eigen::Isometry3d::Identity();
   pose3.rotate(Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX()));
+  SE3StateSpace::ScopedState s3(&space);
+  s2.setIsometry(pose3);
 
   Eigen::Isometry3d expected = Eigen::Isometry3d::Identity();
   expected.rotate(Eigen::AngleAxisd(3. * M_PI_4, Eigen::Vector3d::UnitX()));
 
-  SE3StateSpace::State s2(pose2);
-  SE3StateSpace::State s3(pose3);
-  SE3StateSpace::State out;
-  SE3StateSpace se3;
-  se3.compose(s2, s3, out);
+  SE3StateSpace::ScopedState out(&space);
+  space.compose(*s2, *s3, *out);
+
+  std::cout << "expected\n" << expected.matrix() << "\n"
+            << "actual\n" << out.getIsometry().matrix() << "\n"
+            << std::endl;
 
   EXPECT_TRUE(expected.isApprox(out.getIsometry()));
 }
-#endif
 
 
 TEST(CompoundStateSpace, Compose)
