@@ -15,6 +15,12 @@ SE3StateSpace::SE3StateSpace()
 }
 
 //=============================================================================
+auto SE3StateSpace::createState() const -> ScopedState
+{
+  return ScopedState(this);
+}
+
+//=============================================================================
 Eigen::Isometry3d SE3StateSpace::getIsometry(const State* _state) const
 {
   Eigen::Isometry3d out = Eigen::Isometry3d::Identity();

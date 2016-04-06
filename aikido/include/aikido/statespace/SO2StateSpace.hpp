@@ -52,6 +52,8 @@ public:
 
   SO2StateSpace() = default;
 
+  ScopedState createState() const;
+
   /// Gets the angle of the rotation encoded by this state.
   double getAngle(const State* _state) const;
 

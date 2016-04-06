@@ -49,6 +49,8 @@ public:
 
   SO3StateSpace() = default;
 
+  ScopedState createState() const;
+
   /// Gets value as a transform.
   const Quaternion& getQuaternion(const State* _state) const;
 

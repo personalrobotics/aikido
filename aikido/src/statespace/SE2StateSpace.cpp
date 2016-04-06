@@ -16,6 +16,12 @@ SE2StateSpace::SE2StateSpace()
 }
 
 //=============================================================================
+auto SE2StateSpace::createState() const -> ScopedState
+{
+  return ScopedState(this);
+}
+
+//=============================================================================
 Eigen::Isometry2d SE2StateSpace::getIsometry(const State* _state) const
 {
   Eigen::Isometry2d out = Eigen::Isometry2d::Identity();

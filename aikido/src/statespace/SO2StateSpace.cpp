@@ -41,6 +41,12 @@ void SO2StateSpace::State::setRotation(
 }
 
 //=============================================================================
+auto SO2StateSpace::createState() const -> ScopedState
+{
+  return ScopedState(this);
+}
+
+//=============================================================================
 double SO2StateSpace::getAngle(const State* _state) const
 {
   return _state->getAngle();

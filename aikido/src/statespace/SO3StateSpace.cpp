@@ -32,6 +32,12 @@ void SO3StateSpace::State::setQuaternion(const Quaternion& _quaternion)
 }
 
 //=============================================================================
+auto SO3StateSpace::createState() const -> ScopedState
+{
+  return ScopedState(this);
+}
+
+//=============================================================================
 auto SO3StateSpace::getQuaternion(const State* _state) const
   -> const Quaternion&
 {

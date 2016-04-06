@@ -26,6 +26,8 @@ public:
 
   SE3StateSpace();
 
+  ScopedState createState() const;
+
   /// Gets value as a transformation.
   Eigen::Isometry3d getIsometry(const State* _state) const;
 

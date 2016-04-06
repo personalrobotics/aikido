@@ -16,7 +16,7 @@ RealVectorStateSpace::RealVectorStateSpace(int _dimension)
 }
 
 //=============================================================================
-auto RealVectorStateSpace::createState() -> ScopedState
+auto RealVectorStateSpace::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
