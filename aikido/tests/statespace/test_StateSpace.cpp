@@ -67,30 +67,33 @@ TEST(SO3StateSpace, Compose)
   EXPECT_TRUE(expected.getQuaternion().isApprox(out.getQuaternion()));
 }
 
-#if 0
 TEST(SE2StateSpace, Compose)
 {
-  SE2StateSpace::State identity;
+  SE2StateSpace space;
+
+  SE2StateSpace::ScopedState identity(&space);
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry2d::Identity()));
 
   Eigen::Isometry2d pose2 = Eigen::Isometry2d::Identity();
   pose2.rotate(Eigen::Rotation2Dd(M_PI_2));
+  SE2StateSpace::ScopedState state2(&space);
+  state2.setIsometry(pose2);
 
   Eigen::Isometry2d pose3 = Eigen::Isometry2d::Identity();
   pose3.rotate(Eigen::Rotation2Dd(M_PI_4));
+  SE2StateSpace::ScopedState state3(&space);
+  state3.setIsometry(pose3);
 
   Eigen::Isometry2d expected_pose = Eigen::Isometry2d::Identity();
   expected_pose.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
 
-  SE2StateSpace::State s2(pose2);
-  SE2StateSpace::State s3(pose3);
-  SE2StateSpace::State out;
-  SE2StateSpace se2;
-  se2.compose(s2, s3, out);
+  SE2StateSpace::ScopedState out(&space);
+  space.compose(*state2, *state3, *out);
 
   EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
 }
 
+#if 0
 TEST(SE3StateSpace, Compose)
 {
   SE3StateSpace::State identity;

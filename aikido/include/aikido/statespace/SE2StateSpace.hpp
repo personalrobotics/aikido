@@ -6,20 +6,20 @@
 namespace aikido {
 namespace statespace {
 
+template <class> class SE2StateHandle;
+
 class SE2StateSpace : public CompoundStateSpace 
 {
 public:
   class State : public CompoundStateSpace::State
   {
-  public:
-    /// Constructs the identity element.
-    State();
-
+  protected:
+    State() = default;
     ~State() = default;
   };
 
-  using StateHandle = statespace::StateHandle<SE2StateSpace, State>;
-  using StateHandleConst = statespace::StateHandle<SE2StateSpace, const State>;
+  using StateHandle = SE2StateHandle<State>;
+  using StateHandleConst = SE2StateHandle<const State>;
 
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
@@ -35,5 +35,7 @@ public:
 
 } // namespace statespace
 } // namespace aikido
+
+#include "detail/SE2StateSpace.hpp"
 
 #endif
