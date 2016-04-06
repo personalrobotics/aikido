@@ -11,7 +11,6 @@
   <depend>boost</depend>
   <depend>dart</depend>
   <depend>eigen</depend>
-  <depend version_gte="1.0.0">ompl</depend>
   <depend>python</depend>
   <depend>tinyxml2</depend>
   <!-- This is required by REP-136. -->

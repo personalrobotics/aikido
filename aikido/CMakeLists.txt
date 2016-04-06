@@ -10,13 +10,7 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
-find_package(OMPL REQUIRED)
 find_package(TinyXML2 REQUIRED)
-
-if("${OMPL_VERSION}" VERSION_LESS "1.0.0")
-  message(SEND_ERROR
-    "Aikido requires OMPL 1.0.0 or greater; found ${OMPL_VERSION}.")
-endif()
 
 # Compilation setup
 include_directories(
@@ -31,9 +25,6 @@ include_directories(SYSTEM
 
 # Build
 add_library(${PROJECT_NAME} SHARED
-  src/ompl/plan.cpp
-  src/ompl/DARTGeometricStateSpace.cpp
-  src/ompl/DARTGeometricStateValidityChecker.cpp
   #src/path/HauserSmoother.cpp
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
@@ -51,7 +42,6 @@ add_library(${PROJECT_NAME} SHARED
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
-  ${OMPL_LIBRARIES}
   ${Boost_LIBRARIES}
   ${TinyXML2_LIBRARIES}
 )
