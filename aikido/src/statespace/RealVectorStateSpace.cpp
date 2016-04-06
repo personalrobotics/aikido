@@ -8,19 +8,6 @@ namespace aikido {
 namespace statespace {
 
 //=============================================================================
-RealVectorStateSpace::ScopedState::ScopedState(
-      const RealVectorStateSpace* _space)
-  : statespace::ScopedState<RealVectorStateSpace, State>(_space)
-{
-}
-
-//=============================================================================
-Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::ScopedState::getValue() 
-{
-  return getStateSpace()->getValue(**this);
-}
-
-//=============================================================================
 RealVectorStateSpace::RealVectorStateSpace(int _dimension)
   : mDimension(_dimension)
 {

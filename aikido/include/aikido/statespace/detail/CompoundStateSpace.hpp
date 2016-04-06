@@ -1,6 +1,47 @@
 namespace aikido {
 namespace statespace {
 
+template <class _QualifiedState>
+class CompoundStateHandle 
+  : public statespace::StateHandle<CompoundStateSpace, _QualifiedState>
+{
+public:
+  using typename statespace::StateHandle<
+    CompoundStateSpace, _QualifiedState>::State;
+  using typename statespace::StateHandle<
+    CompoundStateSpace, _QualifiedState>::StateSpace;
+  using typename statespace::StateHandle<
+    CompoundStateSpace, _QualifiedState>::QualifiedState;
+
+
+  CompoundStateHandle()
+  {
+  }
+
+  CompoundStateHandle(const StateSpace* _space, State* _state)
+    : statespace::StateHandle<CompoundStateSpace, QualifiedState>(
+        _space, _state)
+  {
+  }
+
+  /// Gets state of type by subspace index.
+  template <class Space = StateSpace>
+  typename Space::State& getSubState(size_t _index) const
+  {
+    return this->getStateSpace()->getSubState(
+      *this->getState(), _index);
+  }
+
+  /// Gets state of type by subspace index.
+  template <class Space = StateSpace>
+  statespace::StateHandle<typename Space::State, _QualifiedState>
+    getSubStateHandle(size_t _index) const
+  {
+    return this->getStateSpace()->getSubStateHandle(
+      *this->getState(), _index);
+  }
+};
+
 //=============================================================================
 template <class Space>
 const Space& CompoundStateSpace::getSubSpace(size_t _index) const

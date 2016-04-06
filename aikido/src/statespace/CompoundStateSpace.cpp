@@ -22,6 +22,12 @@ CompoundStateSpace::CompoundStateSpace(
 }
 
 //=============================================================================
+auto CompoundStateSpace::createState() const -> ScopedState
+{
+  return ScopedState(this);
+}
+
+//=============================================================================
 size_t CompoundStateSpace::getNumStates() const
 {
   return mSubspaces.size();

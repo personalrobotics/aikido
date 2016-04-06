@@ -7,6 +7,9 @@
 namespace aikido {
 namespace statespace {
 
+// Defined in detail/CompoundStateSpace.hpp
+template <class> class CompoundStateHandle;
+
 /// Represents the Cartesian product of other StateSpaces.
 class CompoundStateSpace : public StateSpace
 {
@@ -21,63 +24,17 @@ public:
     friend class CompoundStateSpace;
   };
 
-  template <class _QualifiedState>
-  class TemplateStateHandle
-    : public statespace::StateHandle<CompoundStateSpace, _QualifiedState>
-  {
-  public:
-    using typename statespace::StateHandle<
-      CompoundStateSpace, _QualifiedState>::State;
-    using typename statespace::StateHandle<
-      CompoundStateSpace, _QualifiedState>::StateSpace;
-    using typename statespace::StateHandle<
-      CompoundStateSpace, _QualifiedState>::QualifiedState;
+  using StateHandle = CompoundStateHandle<State>;
+  using StateHandleConst = CompoundStateHandle<const State>;
 
-
-    TemplateStateHandle()
-    {
-    }
-
-    TemplateStateHandle(const StateSpace* _space, State* _state)
-      : statespace::StateHandle<CompoundStateSpace, QualifiedState>(
-          _space, _state)
-    {
-    }
-
-    /// Gets state of type by subspace index.
-    template <class Space = StateSpace>
-    typename Space::State& getSubState(size_t _index) const
-    {
-      return this->getStateSpace()->getSubState(
-        *this->getState(), _index);
-    }
-
-    /// Gets state of type by subspace index.
-    template <class Space = StateSpace>
-    statespace::StateHandle<typename Space::State, _QualifiedState>
-      getSubStateHandle(size_t _index) const
-    {
-      return this->getStateSpace()->getSubStateHandle(
-        *this->getState(), _index);
-    }
-  };
-
-  using StateHandle = TemplateStateHandle<State>;
-  using StateHandleConst = TemplateStateHandle<const State>;
-
-  using ScopedState = statespace::ScopedState<
-    CompoundStateSpace, State>;
-  using ScopedStateConst = statespace::ScopedState<
-    CompoundStateSpace, const State>;
+  using ScopedState = statespace::ScopedState<StateHandle>;
+  using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   /// Construct the Cartesian product of a vector of subspaces.
   explicit CompoundStateSpace(const std::vector<StateSpacePtr>& _subspaces);
 
   /// Helper function to create a ScopedState.
-  ScopedState createState()
-  {
-    return ScopedState(this);
-  }
+  ScopedState createState() const;
 
   /// Gets number of subspaces.
   size_t getNumStates() const;

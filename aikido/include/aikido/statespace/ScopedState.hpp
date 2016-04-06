@@ -58,16 +58,16 @@ public:
   State* mState;
 };
 
-template <class _StateSpace, class _QualifiedState>
-class ScopedState : public StateHandle<_StateSpace, _QualifiedState>
+template <class _Handle>
+class ScopedState : public _Handle
 {
 public:
-  using typename StateHandle<_StateSpace, typename _StateSpace::State>::StateSpace;
-  using typename StateHandle<_StateSpace, typename _StateSpace::State>::State;
-  using typename StateHandle<_StateSpace, typename _StateSpace::State>::QualifiedState;
+  using Handle = _Handle;
+  using typename Handle::StateSpace;
+  using typename Handle::State;
+  using typename Handle::QualifiedState;
 
   explicit ScopedState(const StateSpace* _space)
-    : StateHandle<StateSpace, QualifiedState>()
   {
     this->mSpace = _space;
     mBuffer.reset(new char[_space->getStateSizeInBytes()]);

@@ -37,7 +37,11 @@ public:
     friend class SO3StateSpace;
   };
 
-  using ScopedState = statespace::ScopedState<SO3StateSpace, State>;
+  using StateHandle = statespace::StateHandle<SO3StateSpace, State>;
+  using StateHandleConst = statespace::StateHandle<SO3StateSpace, const State>;
+
+  using ScopedState = statespace::ScopedState<StateHandle>;
+  using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   SO3StateSpace() = default;
 

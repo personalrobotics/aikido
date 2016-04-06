@@ -7,6 +7,9 @@
 namespace aikido {
 namespace statespace {
 
+// Defined in detail/RealVectorStateSpace.hpp
+template <class> class RealVectorStateHandle;
+
 /// Represents a n-dimensional real vector space.
 class RealVectorStateSpace : public StateSpace
 {
@@ -21,14 +24,11 @@ public:
     friend class RealVectorStateSpace;
   };
 
-  class ScopedState : public statespace::ScopedState<RealVectorStateSpace, State>
-  {
-  public:
-    explicit ScopedState(const RealVectorStateSpace* _space);
+  using StateHandle = RealVectorStateHandle<State>;
+  using StateHandleConst = RealVectorStateHandle<const State>;
 
-    /// Gets the value stored in this State.
-    Eigen::Map<Eigen::VectorXd> getValue();
-  };
+  using ScopedState = statespace::ScopedState<StateHandle>;
+  using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   /// Constructs a RealVectorStateSpace with the given dimensionality.
   explicit RealVectorStateSpace(int _dimension);
@@ -62,5 +62,7 @@ private:
 
 } // namespace statespace
 } // namespace aikido
+
+#include "detail/RealVectorStateSpace.hpp"
 
 #endif
