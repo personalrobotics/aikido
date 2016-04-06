@@ -37,7 +37,7 @@ public:
     friend class SO3StateSpace;
   };
 
-  using ScopedState = statespace::ScopedState<SO3StateSpace>;
+  using ScopedState = statespace::ScopedState<SO3StateSpace, State>;
 
   SO3StateSpace() = default;
 

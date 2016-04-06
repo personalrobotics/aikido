@@ -21,8 +21,11 @@ public:
     ~State() = default;
   };
 
-  using StateHandle = statespace::StateHandle<StateSpace>;
-  using ScopedState = statespace::ScopedState<StateSpace>;
+  using StateHandle = statespace::StateHandle<StateSpace, State>;
+  using StateHandleConst = statespace::StateHandle<StateSpace, const State>;
+
+  using ScopedState = statespace::ScopedState<StateSpace, State>;
+  using ScopedStateConst = statespace::ScopedState<StateSpace, const State>;
 
   virtual ~StateSpace() = default;
 

@@ -10,7 +10,7 @@ namespace statespace {
 //=============================================================================
 RealVectorStateSpace::ScopedState::ScopedState(
       const RealVectorStateSpace* _space)
-  : statespace::ScopedState<RealVectorStateSpace>(_space)
+  : statespace::ScopedState<RealVectorStateSpace, State>(_space)
 {
 }
 

@@ -21,18 +21,26 @@ public:
     friend class CompoundStateSpace;
   };
 
-  class StateHandle : public statespace::StateHandle<CompoundStateSpace>
+  template <class _QualifiedState>
+  class TemplateStateHandle
+    : public statespace::StateHandle<CompoundStateSpace, _QualifiedState>
   {
   public:
-    using typename statespace::StateHandle<CompoundStateSpace>::State;
-    using typename statespace::StateHandle<CompoundStateSpace>::StateSpace;
+    using typename statespace::StateHandle<
+      CompoundStateSpace, _QualifiedState>::State;
+    using typename statespace::StateHandle<
+      CompoundStateSpace, _QualifiedState>::StateSpace;
+    using typename statespace::StateHandle<
+      CompoundStateSpace, _QualifiedState>::QualifiedState;
 
-    StateHandle()
+
+    TemplateStateHandle()
     {
     }
 
-    StateHandle(const StateSpace* _space, State* _state)
-      : statespace::StateHandle<CompoundStateSpace>(_space, _state)
+    TemplateStateHandle(const StateSpace* _space, State* _state)
+      : statespace::StateHandle<CompoundStateSpace, QualifiedState>(
+          _space, _state)
     {
     }
 
@@ -40,19 +48,27 @@ public:
     template <class Space = StateSpace>
     typename Space::State& getSubState(size_t _index) const
     {
-      return getStateSpace()->getSubState(*getState(), _index);
+      return this->getStateSpace()->getSubState(
+        *this->getState(), _index);
     }
 
     /// Gets state of type by subspace index.
     template <class Space = StateSpace>
-    statespace::StateHandle<typename Space::State> getSubStateHandle(
-      size_t _index) const
+    statespace::StateHandle<typename Space::State, _QualifiedState>
+      getSubStateHandle(size_t _index) const
     {
-      return getStateSpace()->getSubStateHandle(*getState(), _index);
+      return this->getStateSpace()->getSubStateHandle(
+        *this->getState(), _index);
     }
   };
 
-  using ScopedState = statespace::ScopedState<CompoundStateSpace>;
+  using StateHandle = TemplateStateHandle<State>;
+  using StateHandleConst = TemplateStateHandle<const State>;
+
+  using ScopedState = statespace::ScopedState<
+    CompoundStateSpace, State>;
+  using ScopedStateConst = statespace::ScopedState<
+    CompoundStateSpace, const State>;
 
   /// Construct the Cartesian product of a vector of subspaces.
   explicit CompoundStateSpace(const std::vector<StateSpacePtr>& _subspaces);
@@ -78,11 +94,6 @@ public:
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
   const typename Space::State& getSubState(
-    const StateSpace::State& _state, size_t _index) const;
-
-  /// Gets state of type by subspace index.
-  template <class Space = StateSpace>
-  typename Space::StateHandle getSubStateHandle(
     const StateSpace::State& _state, size_t _index) const;
 
   // Documentation inherited.

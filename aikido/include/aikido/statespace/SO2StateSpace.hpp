@@ -42,7 +42,7 @@ public:
     friend class SO2StateSpace;
   };
 
-  using ScopedState = statespace::ScopedState<SO2StateSpace>;
+  using ScopedState = statespace::ScopedState<SO2StateSpace, State>;
 
   SO2StateSpace() = default;
 

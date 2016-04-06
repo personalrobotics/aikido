@@ -6,12 +6,13 @@
 namespace aikido {
 namespace statespace {
 
-template <class _StateSpace>
+template <class _StateSpace, class _QualifiedState>
 class StateHandle
 {
 public:
   using StateSpace = _StateSpace;
   using State = typename StateSpace::State;
+  using QualifiedState = _QualifiedState;
 
   StateHandle()
     : mSpace(nullptr)
@@ -31,7 +32,7 @@ public:
   StateHandle& operator =(StateHandle&&) = default;
   StateHandle& operator =(const StateHandle&) = default;
 
-  State* getState() const
+  QualifiedState* getState() const
   {
     return mState;
   }
@@ -41,12 +42,12 @@ public:
     return mSpace;
   }
 
-  State& operator *()
+  QualifiedState& operator *()
   {
     return *mState;
   }
 
-  State* operator ->()
+  QualifiedState* operator ->()
   {
     return mState;
   }
@@ -57,15 +58,16 @@ public:
   State* mState;
 };
 
-template <class _StateSpace>
-class ScopedState : public StateHandle<_StateSpace>
+template <class _StateSpace, class _QualifiedState>
+class ScopedState : public StateHandle<_StateSpace, _QualifiedState>
 {
 public:
-  using typename StateHandle<_StateSpace>::StateSpace;
-  using typename StateHandle<_StateSpace>::State;
+  using typename StateHandle<_StateSpace, typename _StateSpace::State>::StateSpace;
+  using typename StateHandle<_StateSpace, typename _StateSpace::State>::State;
+  using typename StateHandle<_StateSpace, typename _StateSpace::State>::QualifiedState;
 
   explicit ScopedState(const StateSpace* _space)
-    : StateHandle<StateSpace>()
+    : StateHandle<StateSpace, QualifiedState>()
   {
     this->mSpace = _space;
     mBuffer.reset(new char[_space->getStateSizeInBytes()]);

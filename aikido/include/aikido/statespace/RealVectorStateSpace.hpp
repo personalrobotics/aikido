@@ -21,7 +21,7 @@ public:
     friend class RealVectorStateSpace;
   };
 
-  class ScopedState : public statespace::ScopedState<RealVectorStateSpace>
+  class ScopedState : public statespace::ScopedState<RealVectorStateSpace, State>
   {
   public:
     explicit ScopedState(const RealVectorStateSpace* _space);
