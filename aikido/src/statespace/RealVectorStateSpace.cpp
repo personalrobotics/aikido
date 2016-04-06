@@ -25,7 +25,7 @@ auto RealVectorStateSpace::createState() -> ScopedState
 Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::getValue(State* _state) const
 {
   auto valueBuffer = reinterpret_cast<double*>(
-    reinterpret_cast<unsigned char*>(_state) + sizeof(State));
+    reinterpret_cast<unsigned char*>(_state));
 
   return Eigen::Map<Eigen::VectorXd>(valueBuffer, mDimension);
 }
@@ -35,7 +35,7 @@ Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
   const State* _state) const
 {
   auto valueBuffer = reinterpret_cast<const double*>(
-    reinterpret_cast<const unsigned char*>(_state) + sizeof(State));
+    reinterpret_cast<const unsigned char*>(_state));
 
   return Eigen::Map<const Eigen::VectorXd>(valueBuffer, mDimension);
 }
@@ -57,7 +57,7 @@ size_t RealVectorStateSpace::getStateSizeInBytes() const
 StateSpace::State* RealVectorStateSpace::allocateStateInBuffer(
   void* _buffer) const
 {
-  auto state = new (_buffer) State;
+  auto state = reinterpret_cast<State*>(_buffer);
   getValue(state).setZero();
   return state;
 }
@@ -65,7 +65,6 @@ StateSpace::State* RealVectorStateSpace::allocateStateInBuffer(
 //=============================================================================
 void RealVectorStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
-  static_cast<State*>(_state)->~State();
 }
 
 //=============================================================================
