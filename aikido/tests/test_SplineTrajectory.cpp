@@ -1,3 +1,4 @@
+#include <random>
 #include <boost/assert.hpp>
 #include <aikido/path/SplineTrajectory.hpp>
 

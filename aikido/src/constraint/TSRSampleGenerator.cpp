@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <math.h>
 #include <vector>
+#include <random>
 
 namespace aikido {
 namespace constraint {
