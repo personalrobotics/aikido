@@ -127,10 +127,8 @@ TEST(CompoundStateSpace, Compose)
 
   // TODO: This syntax is _really_ bad.
   CompoundStateSpace::ScopedState s1 = space.createState();
-  space.getSubState<SO2StateSpace>(*s1, 0).setAngle(M_PI_2);
-
-  space.getSubSpace<RealVectorStateSpace>(1).getValue(
-    space.getSubState<RealVectorStateSpace>(*s1, 1)) = Vector2d(3., 4.);
+  s1.getSubState<SO2StateSpace>(0).setAngle(M_PI_2);
+  s1.getSubStateHandle<RealVectorStateSpace>(1).getValue() = Vector2d(3., 4.);
 
   CompoundStateSpace::ScopedState s2 = space.createState();
   space.getSubState<SO2StateSpace>(*s2, 0).setAngle(M_PI_2);
@@ -140,9 +138,9 @@ TEST(CompoundStateSpace, Compose)
   CompoundStateSpace::ScopedState out = space.createState();
   space.compose(*s1, *s2, *out);
 
-  const double out1 = space.getSubState<SO2StateSpace>(*out, 0).getAngle();
-  const Vector2d out2 = space.getSubSpace<RealVectorStateSpace>(1).getValue(
-    space.getSubState<RealVectorStateSpace>(*out, 1));
+  const double out1 = out.getSubState<SO2StateSpace>(0).getAngle();
   EXPECT_DOUBLE_EQ(M_PI, out1);
+
+  const Vector2d out2 = out.getSubStateHandle<RealVectorStateSpace>(1).getValue();
   EXPECT_TRUE(out2.isApprox(Vector2d(8., 14.)));
 }

@@ -25,20 +25,20 @@ public:
   }
 
   /// Gets state of type by subspace index.
-  template <class Space = StateSpace>
+  template <class Space = statespace::StateSpace>
   typename Space::State& getSubState(size_t _index) const
   {
-    return this->getStateSpace()->getSubState(
+    return this->getStateSpace()->template getSubState<Space>(
       *this->getState(), _index);
   }
 
   /// Gets state of type by subspace index.
-  template <class Space = StateSpace>
-  statespace::StateHandle<typename Space::State, _QualifiedState>
-    getSubStateHandle(size_t _index) const
+  template <class Space = statespace::StateSpace>
+  typename Space::StateHandle getSubStateHandle(size_t _index) const
   {
-    return this->getStateSpace()->getSubStateHandle(
-      *this->getState(), _index);
+    return typename Space::StateHandle(
+      &this->getStateSpace()->template getSubSpace<Space>(_index),
+      &getSubState<Space>(_index));
   }
 };
 
