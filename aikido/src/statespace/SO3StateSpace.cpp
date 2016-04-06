@@ -32,6 +32,19 @@ void SO3StateSpace::State::setQuaternion(const Quaternion& _quaternion)
 }
 
 //=============================================================================
+auto SO3StateSpace::getQuaternion(const State* _state) const
+  -> const Quaternion&
+{
+  return _state->mValue;
+}
+
+//=============================================================================
+void SO3StateSpace::setQuaternion(State* _state, const Quaternion& _quaternion)
+{
+  _state->mValue = _quaternion;
+}
+
+//=============================================================================
 size_t SO3StateSpace::getStateSizeInBytes() const
 {
   return sizeof(State);

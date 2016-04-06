@@ -7,6 +7,8 @@
 namespace aikido {
 namespace statespace {
 
+template <class T> class SO3StateHandle;
+
 /// Represents the space of spatial rotations.
 class SO3StateSpace : public StateSpace
 {
@@ -37,13 +39,21 @@ public:
     friend class SO3StateSpace;
   };
 
-  using StateHandle = statespace::StateHandle<SO3StateSpace, State>;
-  using StateHandleConst = statespace::StateHandle<SO3StateSpace, const State>;
+  using StateHandle = SO3StateHandle<State>;
+  using StateHandleConst = SO3StateHandle<const State>;
 
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using Quaternion = State::Quaternion;
+
   SO3StateSpace() = default;
+
+  /// Gets value as a transform.
+  const Quaternion& getQuaternion(const State* _state) const;
+
+  /// Sets value to a transform.
+  void setQuaternion(State* _state, const Quaternion& _quaternion);
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
@@ -62,5 +72,7 @@ public:
 
 } // namespace statespace
 } // namespace aikido
+
+#include "detail/SO3StateSpace.hpp"
 
 #endif
