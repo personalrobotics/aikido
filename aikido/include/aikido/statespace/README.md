@@ -33,13 +33,13 @@ own size! You must create *and* modify variable-length `State`s through their
 ```c++
 RealVectorStateSpace space(2);
 auto state = static_cast<RealVectorStateSpace::State*>(space.allocateState());
-space.getValue(*state) = Eigen::Vector2d(1., 2.);
+space.setValue(state, Eigen::Vector2d(1., 2.));
 ```
 
 We provide a `StateHandle` class to automate this operation:
 ```c++
 RealVectorStateSpace::StateHandle state_handle(&space, state);
-state_handle.getValue() = Eigen::Vector2d(3., 4.);
+state_handle.setValue(Eigen::Vector2d(3., 4.));
 ```
 
 In both cases, you must remember to call `space.deallocateState(state)` to
@@ -47,7 +47,7 @@ avoid leaking memory. We provide a `ScopedState` class that combines the
 functionality of `StateHandle` with RAII memory management:
 ```c++
 RealVectorStateSpace::ScopedState scoped_state(&space);
-state_handle.getValue() = Eigen::Vector2d(1., 2.);
+state_handle.setValue(Eigen::Vector2d(1., 2.));
 ```
 
 For typical use, we *strongly* recommend using `ScopedState` to avoid manual
@@ -101,7 +101,7 @@ compound_space.getSubSpace<RealVectorStateSpace>(1).setValue(
 
 It is significantly less verbose to use the `StateHandle` wrapper:
 ```c++
-compound_handle.getSubStateHandle<RealVectorStateSpace>(1).getValue() = Eigen::Vector2d(3., 4.);
+compound_handle.getSubStateHandle<RealVectorStateSpace>(1).setValue(Eigen::Vector2d(3., 4.));
 ```
 
 
@@ -140,5 +140,5 @@ pure-`virtual` methods:
 
 - `compose` applies the multiplication operator associated with the
   `StateSpace`'s Lie group to `_state1` and `_state2`, storing the result in
-  the output parameter `_out`. For a real vector space, this i multiplication
-  operator is vector addition.
+  the output parameter `_out`. For a real vector space, this operator
+  implements vector addition.
