@@ -3,6 +3,7 @@ namespace statespace {
 
 template <class _QualifiedState>
 class SE2StateHandle
+  // TODO: This should inherit from CompoundStateSpace::Handle.
   : public statespace::StateHandle<SE2StateSpace, _QualifiedState>
 {
 public:

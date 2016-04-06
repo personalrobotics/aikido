@@ -53,7 +53,7 @@ public:
   const Quaternion& getQuaternion(const State* _state) const;
 
   /// Sets value to a transform.
-  void setQuaternion(State* _state, const Quaternion& _quaternion);
+  void setQuaternion(State* _state, const Quaternion& _quaternion) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;

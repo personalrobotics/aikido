@@ -19,13 +19,13 @@ public:
   {
   }
 
-  SO3StateHandle(const StateSpace* _space, State* _state)
+  SO3StateHandle(const StateSpace* _space, QualifiedState* _state)
     : statespace::StateHandle<StateSpace, QualifiedState>(_space, _state)
   {
   }
 
   /// Gets value as a transform.
-  const Quaternion& getQuaternion() const
+  const Quaternion& getQuaternion()
   {
     return this->getStateSpace()->getQuaternion(this->getState());
   }

@@ -6,37 +6,36 @@
 namespace aikido {
 namespace statespace {
 
+template <class> class SE3StateHandle;
+
 class SE3StateSpace : public CompoundStateSpace 
 {
 public:
   class State : public CompoundStateSpace::State
   {
-  public:
-    /// Constructs the identity element.
-    State();
-
+  protected:
+    State() = default;
     ~State() = default;
-
-    /// Constructs a point in SE(3) from a transformation.
-    explicit State(const Eigen::Isometry3d& _transform);
-
-    /// Gets value as a transformation.
-    Eigen::Isometry3d getIsometry() const;
-
-    /// Sets value to a transformation.
-    void setIsometry(const Eigen::Isometry3d& _transform);
   };
+
+  using StateHandle = SE3StateHandle<State>;
+  using StateHandleConst = SE3StateHandle<const State>;
+
+  using ScopedState = statespace::ScopedState<StateHandle>;
+  using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   SE3StateSpace();
 
-  // Documentation inherited.
-  StateSpace::State* allocateState() const override;
+  /// Gets value as a transformation.
+  Eigen::Isometry3d getIsometry(const State* _state) const;
 
-  // Documentation inherited.
-  void freeState(StateSpace::State* _state) const override;
+  /// Sets value to a transformation.
+  void setIsometry(State* _state, const Eigen::Isometry3d& _transform) const;
 };
 
 } // namespace statespace
 } // namespace aikido
+
+#include "detail/SE3StateSpace.hpp"
 
 #endif

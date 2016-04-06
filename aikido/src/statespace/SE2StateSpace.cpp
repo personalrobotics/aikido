@@ -33,7 +33,7 @@ void SE2StateSpace::setIsometry(
   Eigen::Rotation2Dd rotation(0.);
   rotation.fromRotationMatrix(_transform.rotation());
   getSubStateHandle<SO2StateSpace>(*_state, 0).setRotation(rotation);
-  getSubStateHandle<RealVectorStateSpace>(*_state, 0).setValue(
+  getSubStateHandle<RealVectorStateSpace>(*_state, 1).setValue(
     _transform.translation());
 }
 

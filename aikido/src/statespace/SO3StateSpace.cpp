@@ -39,7 +39,8 @@ auto SO3StateSpace::getQuaternion(const State* _state) const
 }
 
 //=============================================================================
-void SO3StateSpace::setQuaternion(State* _state, const Quaternion& _quaternion)
+void SO3StateSpace::setQuaternion(
+  State* _state, const Quaternion& _quaternion) const
 {
   _state->mValue = _quaternion;
 }

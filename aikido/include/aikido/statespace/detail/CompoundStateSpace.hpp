@@ -1,3 +1,5 @@
+#include <sstream>
+
 namespace aikido {
 namespace statespace {
 
@@ -46,10 +48,17 @@ public:
 template <class Space>
 const Space& CompoundStateSpace::getSubSpace(size_t _index) const
 {
-  auto space = dynamic_cast<const Space*>(mSubspaces[_index].get());
+  // TODO: Repalce this with a static_cast in release mode.
+  const auto& raw_space = mSubspaces[_index].get();
+  auto space = dynamic_cast<const Space*>(raw_space);
   if (!space)
-    throw std::runtime_error("Invalid type.");
-
+  {
+    std::stringstream ss;
+    ss << "Requested StateSpace of type '" << typeid(Space).name()
+       << "', but the StateSpace at index " << _index
+       << " is of incompatible type '" << typeid(*raw_space).name() << "'.";
+    throw std::runtime_error(ss.str());
+  }
   return *space;
 }
 
@@ -58,9 +67,8 @@ template <class Space>
 typename Space::State& CompoundStateSpace::getSubState(
   StateSpace::State& _state, size_t _index) const
 {
-  // TODO: Only in debug mode.
-  if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
-    throw std::runtime_error("Invalid type.");
+  // Use getStateSpace() to perform a type-check on the StateSpace.
+  getSubSpace(_index);
 
   return reinterpret_cast<typename Space::State&>(
     *(reinterpret_cast<char*>(&_state) + mOffsets[_index]));
@@ -71,9 +79,8 @@ template <class Space>
 const typename Space::State& CompoundStateSpace::getSubState(
   const StateSpace::State& _state, size_t _index) const
 {
-  // TODO: Only in debug mode.
-  if (!dynamic_cast<Space*>(mSubspaces[_index].get()))
-    throw std::runtime_error("Invalid type.");
+  // Use getStateSpace() to perform a type-check on the StateSpace.
+  getSubSpace(_index);
 
   return reinterpret_cast<const typename Space::State&>(
     *(reinterpret_cast<const char*>(&_state) + mOffsets[_index]));
