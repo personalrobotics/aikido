@@ -34,9 +34,35 @@ Eigen::Rotation2Dd SO2StateSpace::State::getRotation() const
 }
 
 //=============================================================================
-void SO2StateSpace::State::setRotation(const Eigen::Rotation2Dd& _rotation)
+void SO2StateSpace::State::setRotation(
+  const Eigen::Rotation2Dd& _rotation)
 {
   mAngle = _rotation.angle();
+}
+
+//=============================================================================
+double SO2StateSpace::getAngle(const State* _state) const
+{
+  return _state->getAngle();
+}
+
+//=============================================================================
+void SO2StateSpace::setAngle(State* _state, double _angle) const
+{
+  _state->setAngle(_angle);
+}
+
+//=============================================================================
+Eigen::Rotation2Dd SO2StateSpace::getRotation(const State* _state) const
+{
+  return Eigen::Rotation2Dd(_state->mAngle);
+}
+
+//=============================================================================
+void SO2StateSpace::setRotation(
+  State* _state, const Eigen::Rotation2Dd& _rotation) const
+{
+  _state->mAngle = _rotation.angle();
 }
 
 //=============================================================================

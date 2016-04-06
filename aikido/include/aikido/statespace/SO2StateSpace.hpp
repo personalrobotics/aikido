@@ -8,6 +8,8 @@
 namespace aikido {
 namespace statespace {
 
+template <class> class SO2StateHandle;
+
 /// Represents the space of planar rotations.
 class SO2StateSpace : public StateSpace
 {
@@ -42,13 +44,25 @@ public:
     friend class SO2StateSpace;
   };
 
-  using StateHandle = statespace::StateHandle<SO2StateSpace, State>;
-  using StateHandleConst = statespace::StateHandle<SO2StateSpace, const State>;
+  using StateHandle = SO2StateHandle<State>;
+  using StateHandleConst = SO2StateHandle<const State>;
 
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   SO2StateSpace() = default;
+
+  /// Gets the angle of the rotation encoded by this state.
+  double getAngle(const State* _state) const;
+
+  /// Sets this state to a rotation by the specified angle.
+  void setAngle(State* _state, double _angle) const;
+
+  /// Gets value as a rigid body rotation.
+  Eigen::Rotation2Dd getRotation(const State* _state) const;
+
+  /// Sets this state to the given rotation.
+  void setRotation(State* _state, const Eigen::Rotation2Dd& _rotation) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
@@ -67,5 +81,7 @@ public:
 
 } // namespace statespace
 } // namespace aikido
+
+#include "detail/SO2StateSpace.hpp"
 
 #endif
