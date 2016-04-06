@@ -18,13 +18,13 @@ TEST(RealVectorStateSpace, Compose)
 {
   RealVectorStateSpace rvss(3);
 
-  RealVectorStateSpace::ScopedState s1 = rvss.createState();
+  auto s1 = rvss.createState();
   s1.getValue() = Eigen::Vector3d(1, 2, 3);
 
-  RealVectorStateSpace::ScopedState s2 = rvss.createState();
+  auto s2 = rvss.createState();
   s2.getValue() = Eigen::Vector3d(2, 3, 4);
 
-  RealVectorStateSpace::ScopedState out = rvss.createState();
+  auto out = rvss.createState();
   rvss.compose(s1, s2, out);
 
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
@@ -71,23 +71,23 @@ TEST(SE2StateSpace, Compose)
 {
   SE2StateSpace space;
 
-  SE2StateSpace::ScopedState identity(&space);
+  auto identity = space.createState();
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry2d::Identity()));
 
   Eigen::Isometry2d pose2 = Eigen::Isometry2d::Identity();
   pose2.rotate(Eigen::Rotation2Dd(M_PI_2));
-  SE2StateSpace::ScopedState state2(&space);
+  auto state2 = space.createState();
   state2.setIsometry(pose2);
 
   Eigen::Isometry2d pose3 = Eigen::Isometry2d::Identity();
   pose3.rotate(Eigen::Rotation2Dd(M_PI_4));
-  SE2StateSpace::ScopedState state3(&space);
+  auto state3 = space.createState();
   state3.setIsometry(pose3);
 
   Eigen::Isometry2d expected_pose = Eigen::Isometry2d::Identity();
   expected_pose.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
 
-  SE2StateSpace::ScopedState out(&space);
+  auto out = space.createState();
   space.compose(state2, state3, out);
 
   EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
@@ -97,17 +97,17 @@ TEST(SE3StateSpace, Compose)
 {
   SE3StateSpace space;
 
-  SE3StateSpace::ScopedState identity(&space);
+  auto identity = space.createState();
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry3d::Identity()));
 
   Eigen::Isometry3d pose2 = Eigen::Isometry3d::Identity();
   pose2.rotate(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX()));
-  SE3StateSpace::ScopedState s2(&space);
+  auto s2 = space.createState();
   s2.setIsometry(pose2);
 
   Eigen::Isometry3d pose3 = Eigen::Isometry3d::Identity();
   pose3.rotate(Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX()));
-  SE3StateSpace::ScopedState s3(&space);
+  auto s3 = space.createState();
   s2.setIsometry(pose3);
 
   Eigen::Isometry3d expected = pose2 * pose3;
