@@ -112,7 +112,7 @@ TEST(TSRSampleGenerator, SampleIdentity)
 
   boost::optional<Eigen::Isometry3d> sample = tsr.createSampleGenerator()->sample();
 
-  ASSERT_TRUE(sample);
+  ASSERT_TRUE(!!sample);
   ASSERT_TRUE(sample->isApprox(Eigen::Isometry3d::Identity()));
 }
 
@@ -133,7 +133,7 @@ TEST(TSRSampleGenerator, SamplePointTSR)
 
   boost::optional<Eigen::Isometry3d> sample = tsr.createSampleGenerator()->sample();
 
-  ASSERT_TRUE(sample);
+  ASSERT_TRUE(!!sample);
   EXPECT_TRUE(sample->isApprox(T0_w));
 }
 
@@ -155,7 +155,7 @@ TEST(TSRSampleGenerator, SampleWithinBounds)
   for (int i = 0; i < 10; i++)
   {
     boost::optional<Eigen::Isometry3d> sample = sampler->sample();
-    ASSERT_TRUE(sample);
+    ASSERT_TRUE(!!sample);
     Eigen::Vector3d translation = sample->translation();
     EXPECT_TRUE(translation(0) >= -1 && translation(1) <= 1);
     EXPECT_DOUBLE_EQ(translation(1), 0);
@@ -185,9 +185,9 @@ TEST(TSRSampleGenerator, SampleSameSequence)
   for (int i = 0; i < 10; i++)
   {
     boost::optional<Eigen::Isometry3d> sample1 = sampler1->sample();
-    ASSERT_TRUE(sample1);
+    ASSERT_TRUE(!!sample1);
     boost::optional<Eigen::Isometry3d> sample2 = sampler2->sample();
-    ASSERT_TRUE(sample2);
+    ASSERT_TRUE(!!sample2);
     EXPECT_TRUE(sample1.get().isApprox(sample2.get()));
   }
 
