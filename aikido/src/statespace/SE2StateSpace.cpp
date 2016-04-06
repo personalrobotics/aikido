@@ -20,9 +20,9 @@ Eigen::Isometry2d SE2StateSpace::getIsometry(const State* _state) const
 {
   Eigen::Isometry2d out = Eigen::Isometry2d::Identity();
   out.rotate(
-    getSubStateHandle<SO2StateSpace>(*_state, 0).getRotation());
+    getSubStateHandle<SO2StateSpace>(_state, 0).getRotation());
   out.pretranslate(
-    getSubStateHandle<RealVectorStateSpace>(*_state, 1).getValue().head<2>());
+    getSubStateHandle<RealVectorStateSpace>(_state, 1).getValue().head<2>());
   return out;
 }
 
@@ -32,8 +32,8 @@ void SE2StateSpace::setIsometry(
 {
   Eigen::Rotation2Dd rotation(0.);
   rotation.fromRotationMatrix(_transform.rotation());
-  getSubStateHandle<SO2StateSpace>(*_state, 0).setRotation(rotation);
-  getSubStateHandle<RealVectorStateSpace>(*_state, 1).setValue(
+  getSubStateHandle<SO2StateSpace>(_state, 0).setRotation(rotation);
+  getSubStateHandle<RealVectorStateSpace>(_state, 1).setValue(
     _transform.translation());
 }
 

@@ -53,7 +53,7 @@ public:
 
   /// TODO: Need a docstring for this.
   virtual void compose(
-    const State& _state1, const State& _state2, State& _out) const = 0;
+    const State* _state1, const State* _state2, State* _out) const = 0;
 };
 
 using StateSpacePtr = std::shared_ptr<StateSpace>;

@@ -66,8 +66,8 @@ public:
   
   // Documentation inherited.
   void compose(
-    const StateSpace::State& _state1, const StateSpace::State& _state2,
-    StateSpace::State& _out) const override;
+    const StateSpace::State* _state1, const StateSpace::State* _state2,
+    StateSpace::State* _out) const override;
 };
 
 } // namespace statespace

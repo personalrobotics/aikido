@@ -46,7 +46,7 @@ StateSpace::State* CompoundStateSpace::allocateStateInBuffer(
   State* const state = new (_buffer) State;
 
   for (size_t i = 0; i < mSubspaces.size(); ++i)
-    mSubspaces[i]->allocateStateInBuffer(&getSubState<>(*state, i));
+    mSubspaces[i]->allocateStateInBuffer(getSubState<>(state, i));
 
   return state;
 }
@@ -57,19 +57,19 @@ void CompoundStateSpace::freeStateInBuffer(StateSpace::State* _state) const
   auto state = static_cast<State*>(_state);
 
   for (size_t i = mSubspaces.size(); i > 0; --i)
-    mSubspaces[i - 1]->freeStateInBuffer(&getSubState<>(*state, i - 1));
+    mSubspaces[i - 1]->freeStateInBuffer(getSubState<>(state, i - 1));
 
   reinterpret_cast<State*>(_state)->~State();
 }
 
 //=============================================================================
 void CompoundStateSpace::compose(
-  const StateSpace::State& _state1, const StateSpace::State& _state2,
-  StateSpace::State& _out) const
+  const StateSpace::State* _state1, const StateSpace::State* _state2,
+  StateSpace::State* _out) const
 {
-  const auto& state1 = static_cast<const State&>(_state1);
-  const auto& state2 = static_cast<const State&>(_state2);
-  auto& out = static_cast<State&>(_out);
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto out = static_cast<State*>(_out);
   
   for (size_t i = 0; i < mSubspaces.size(); ++i)
   {

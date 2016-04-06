@@ -41,27 +41,27 @@ public:
 
   /// Gets subspace by index.
   template <class Space = StateSpace>
-  const Space& getSubSpace(size_t _index) const;
+  const Space* getSubSpace(size_t _index) const;
 
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
-  typename Space::State& getSubState(
-    StateSpace::State& _state, size_t _index) const;
+  typename Space::State* getSubState(
+    StateSpace::State* _state, size_t _index) const;
 
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
-  const typename Space::State& getSubState(
-    const StateSpace::State& _state, size_t _index) const;
+  const typename Space::State* getSubState(
+    const StateSpace::State* _state, size_t _index) const;
 
   /// Gets state handle of type by subspace index.
   template <class Space = StateSpace>
   typename Space::StateHandle getSubStateHandle(
-    StateSpace::State& _state, size_t _index) const;
+    StateSpace::State* _state, size_t _index) const;
 
   /// Gets state handle of type by subspace index.
   template <class Space = StateSpace>
   typename Space::StateHandleConst getSubStateHandle(
-    const StateSpace::State& _state, size_t _index) const;
+    const StateSpace::State* _state, size_t _index) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
@@ -74,8 +74,8 @@ public:
 
   // Documentation inherited.
   void compose(
-    const StateSpace::State& _state1, const StateSpace::State& _state2,
-    StateSpace::State& _out) const override;
+    const StateSpace::State* _state1, const StateSpace::State* _state2,
+    StateSpace::State* _out) const override;
 
 private:
   std::vector<StateSpacePtr> mSubspaces;

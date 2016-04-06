@@ -45,12 +45,12 @@ public:
 
   Eigen::Map<ValueType> getValue() 
   {
-    return this->getStateSpace()->getValue(*this->getState());
+    return this->getStateSpace()->getValue(this->getState());
   }
 
   void setValue(const Eigen::VectorXd& _value)
   {
-    return this->getStateSpace()->setValue(*this->getState(), _value);
+    return this->getStateSpace()->setValue(this->getState(), _value);
   }
 };
 

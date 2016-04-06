@@ -28,10 +28,10 @@ public:
 
   /// Gets state of type by subspace index.
   template <class Space = statespace::StateSpace>
-  typename Space::State& getSubState(size_t _index) const
+  typename Space::State* getSubState(size_t _index) const
   {
     return this->getStateSpace()->template getSubState<Space>(
-      *this->getState(), _index);
+      this->getState(), _index);
   }
 
   /// Gets state of type by subspace index.
@@ -39,17 +39,17 @@ public:
   typename Space::StateHandle getSubStateHandle(size_t _index) const
   {
     return typename Space::StateHandle(
-      &this->getStateSpace()->template getSubSpace<Space>(_index),
-      &getSubState<Space>(_index));
+      this->getStateSpace()->template getSubSpace<Space>(_index),
+      getSubState<Space>(_index));
   }
 };
 
 //=============================================================================
 template <class Space>
-const Space& CompoundStateSpace::getSubSpace(size_t _index) const
+const Space* CompoundStateSpace::getSubSpace(size_t _index) const
 {
   // TODO: Repalce this with a static_cast in release mode.
-  const auto& raw_space = mSubspaces[_index].get();
+  const auto raw_space = mSubspaces[_index].get();
   auto space = dynamic_cast<const Space*>(raw_space);
   if (!space)
   {
@@ -59,49 +59,49 @@ const Space& CompoundStateSpace::getSubSpace(size_t _index) const
        << " is of incompatible type '" << typeid(*raw_space).name() << "'.";
     throw std::runtime_error(ss.str());
   }
-  return *space;
+  return space;
 }
 
 //=============================================================================
 template <class Space>
-typename Space::State& CompoundStateSpace::getSubState(
-  StateSpace::State& _state, size_t _index) const
+typename Space::State* CompoundStateSpace::getSubState(
+  StateSpace::State* _state, size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubSpace(_index);
 
-  return reinterpret_cast<typename Space::State&>(
-    *(reinterpret_cast<char*>(&_state) + mOffsets[_index]));
+  return reinterpret_cast<typename Space::State*>(
+    reinterpret_cast<char*>(_state) + mOffsets[_index]);
 }
 
 //=============================================================================
 template <class Space>
-const typename Space::State& CompoundStateSpace::getSubState(
-  const StateSpace::State& _state, size_t _index) const
+const typename Space::State* CompoundStateSpace::getSubState(
+  const StateSpace::State* _state, size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubSpace(_index);
 
-  return reinterpret_cast<const typename Space::State&>(
-    *(reinterpret_cast<const char*>(&_state) + mOffsets[_index]));
+  return reinterpret_cast<const typename Space::State*>(
+    reinterpret_cast<const char*>(_state) + mOffsets[_index]);
 }
 
 //=============================================================================
 template <class Space>
 typename Space::StateHandle CompoundStateSpace::getSubStateHandle(
-  StateSpace::State& _state, size_t _index) const
+  StateSpace::State* _state, size_t _index) const
 {
   return typename Space::StateHandle(
-    &getSubSpace<Space>(_index), &getSubState<Space>(_state, _index));
+    getSubSpace<Space>(_index), getSubState<Space>(_state, _index));
 }
 
 //=============================================================================
 template <class Space>
 typename Space::StateHandleConst CompoundStateSpace::getSubStateHandle(
-  const StateSpace::State& _state, size_t _index) const
+  const StateSpace::State* _state, size_t _index) const
 {
   return typename Space::StateHandleConst(
-    &getSubSpace<Space>(_index), &getSubState<Space>(_state, _index));
+    getSubSpace<Space>(_index), getSubState<Space>(_state, _index));
 }
 
 } // namespace statespace

@@ -22,27 +22,27 @@ auto RealVectorStateSpace::createState() -> ScopedState
 }
 
 //=============================================================================
-Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::getValue(State& _state) const
+Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::getValue(State* _state) const
 {
   auto valueBuffer = reinterpret_cast<double*>(
-    reinterpret_cast<unsigned char*>(&_state) + sizeof(State));
+    reinterpret_cast<unsigned char*>(_state) + sizeof(State));
 
   return Eigen::Map<Eigen::VectorXd>(valueBuffer, mDimension);
 }
 
 //=============================================================================
 Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
-  const State& _state) const
+  const State* _state) const
 {
   auto valueBuffer = reinterpret_cast<const double*>(
-    reinterpret_cast<const unsigned char*>(&_state) + sizeof(State));
+    reinterpret_cast<const unsigned char*>(_state) + sizeof(State));
 
   return Eigen::Map<const Eigen::VectorXd>(valueBuffer, mDimension);
 }
 
 //=============================================================================
 void RealVectorStateSpace::setValue(
-  State& _state, const Eigen::VectorXd& _value) const
+  State* _state, const Eigen::VectorXd& _value) const
 {
   getValue(_state) = _value;
 }
@@ -58,7 +58,7 @@ StateSpace::State* RealVectorStateSpace::allocateStateInBuffer(
   void* _buffer) const
 {
   auto state = new (_buffer) State;
-  getValue(*state).setZero();
+  getValue(state).setZero();
   return state;
 }
 
@@ -70,12 +70,12 @@ void RealVectorStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 
 //=============================================================================
 void RealVectorStateSpace::compose(
-  const StateSpace::State& _state1, const StateSpace::State& _state2,
-  StateSpace::State& _out) const
+  const StateSpace::State* _state1, const StateSpace::State* _state2,
+  StateSpace::State* _out) const
 {
-  const auto& state1 = static_cast<const State&>(_state1);
-  const auto& state2 = static_cast<const State&>(_state2);
-  auto& out = static_cast<State&>(_out);
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto out = static_cast<State*>(_out);
 
   getValue(out) = getValue(state1) + getValue(state2);
 }

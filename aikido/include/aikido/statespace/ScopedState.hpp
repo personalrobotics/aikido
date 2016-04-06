@@ -32,6 +32,11 @@ public:
   StateHandle& operator =(StateHandle&&) = default;
   StateHandle& operator =(const StateHandle&) = default;
 
+  operator QualifiedState*()
+  {
+    return mState;
+  }
+
   QualifiedState* getState() const
   {
     return mState;

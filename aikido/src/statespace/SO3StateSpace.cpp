@@ -65,14 +65,14 @@ void SO3StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 
 //=============================================================================
 void SO3StateSpace::compose(
-  const StateSpace::State& _state1, const StateSpace::State& _state2,
-  StateSpace::State& _out) const
+  const StateSpace::State* _state1, const StateSpace::State* _state2,
+  StateSpace::State* _out) const
 {
-  const auto& state1 = static_cast<const State&>(_state1);
-  const auto& state2 = static_cast<const State&>(_state2);
-  auto& out = static_cast<State&>(_out);
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto out = static_cast<State*>(_out);
 
-  out.mValue = state1.mValue * state2.mValue;
+  out->mValue = state1->mValue * state2->mValue;
 }
 
 } // namespace statespace

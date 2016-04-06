@@ -25,7 +25,7 @@ TEST(RealVectorStateSpace, Compose)
   s2.getValue() = Eigen::Vector3d(2, 3, 4);
 
   RealVectorStateSpace::ScopedState out = rvss.createState();
-  rvss.compose(*s1, *s2, *out);
+  rvss.compose(s1, s2, out);
 
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
 
@@ -40,7 +40,7 @@ TEST(SO2StateSpace, Compose)
   SO2StateSpace::State expected(3.0/4.0*M_PI);
 
   SO2StateSpace so2;
-  so2.compose(s1, s2, out);
+  so2.compose(&s1, &s2, &out);
 
   EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
 
@@ -62,7 +62,7 @@ TEST(SO3StateSpace, Compose)
 
   SO3StateSpace::State out;
   SO3StateSpace so3;
-  so3.compose(s2, s3, out);
+  so3.compose(&s2, &s3, &out);
 
   EXPECT_TRUE(expected.getQuaternion().isApprox(out.getQuaternion()));
 }
@@ -88,7 +88,7 @@ TEST(SE2StateSpace, Compose)
   expected_pose.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
 
   SE2StateSpace::ScopedState out(&space);
-  space.compose(*state2, *state3, *out);
+  space.compose(state2, state3, out);
 
   EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
 }
@@ -113,7 +113,7 @@ TEST(SE3StateSpace, Compose)
   Eigen::Isometry3d expected = pose2 * pose3;
 
   SE3StateSpace::ScopedState out(&space);
-  space.compose(*s2, *s3, *out);
+  space.compose(s2, s3, out);
 
   std::cout << "expected\n" << expected.matrix() << "\n"
             << "actual\n" << out.getIsometry().matrix() << "\n"
@@ -134,18 +134,17 @@ TEST(CompoundStateSpace, Compose)
 
   // TODO: This syntax is _really_ bad.
   CompoundStateSpace::ScopedState s1 = space.createState();
-  s1.getSubState<SO2StateSpace>(0).setAngle(M_PI_2);
-  s1.getSubStateHandle<RealVectorStateSpace>(1).getValue() = Vector2d(3., 4.);
+  s1.getSubStateHandle<SO2StateSpace>(0).setAngle(M_PI_2);
+  s1.getSubStateHandle<RealVectorStateSpace>(1).setValue(Vector2d(3., 4.));
 
   CompoundStateSpace::ScopedState s2 = space.createState();
-  space.getSubState<SO2StateSpace>(*s2, 0).setAngle(M_PI_2);
-  space.getSubSpace<RealVectorStateSpace>(1).getValue(
-    space.getSubState<RealVectorStateSpace>(*s2, 1)) = Vector2d(5., 10.);
+  s2.getSubStateHandle<SO2StateSpace>(0).setAngle(M_PI_2);
+  s2.getSubStateHandle<RealVectorStateSpace>(1).setValue(Vector2d(5., 10.));
 
   CompoundStateSpace::ScopedState out = space.createState();
-  space.compose(*s1, *s2, *out);
+  space.compose(s1, s2, out);
 
-  const double out1 = out.getSubState<SO2StateSpace>(0).getAngle();
+  const double out1 = out.getSubStateHandle<SO2StateSpace>(0).getAngle();
   EXPECT_DOUBLE_EQ(M_PI, out1);
 
   const Vector2d out2 = out.getSubStateHandle<RealVectorStateSpace>(1).getValue();

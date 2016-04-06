@@ -37,13 +37,13 @@ public:
   ScopedState createState();
 
   /// Gets the value stored in a RealVectorStateSpace::State.
-  Eigen::Map<Eigen::VectorXd> getValue(State& _state) const;
+  Eigen::Map<Eigen::VectorXd> getValue(State* _state) const;
 
   /// Gets the value stored in a RealVectorStateSpace::State.
-  Eigen::Map<const Eigen::VectorXd> getValue(const State& _state) const;
+  Eigen::Map<const Eigen::VectorXd> getValue(const State* _state) const;
 
   /// Gets the value stored in a RealVectorStateSpace::State.
-  void setValue(State& _state, const Eigen::VectorXd& _value) const;
+  void setValue(State* _state, const Eigen::VectorXd& _value) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
@@ -56,8 +56,8 @@ public:
 
   // Documentation inherited.
   void compose(
-    const StateSpace::State& _state1, const StateSpace::State& _state2,
-    StateSpace::State& _out) const override;
+    const StateSpace::State* _state1, const StateSpace::State* _state2,
+    StateSpace::State* _out) const override;
 
 private:
   int mDimension;

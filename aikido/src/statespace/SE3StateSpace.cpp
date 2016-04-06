@@ -19,9 +19,9 @@ Eigen::Isometry3d SE3StateSpace::getIsometry(const State* _state) const
 {
   Eigen::Isometry3d out = Eigen::Isometry3d::Identity();
   out.rotate(
-    getSubStateHandle<SO3StateSpace>(*_state, 0).getQuaternion());
+    getSubStateHandle<SO3StateSpace>(_state, 0).getQuaternion());
   out.pretranslate(
-    getSubStateHandle<RealVectorStateSpace>(*_state, 1).getValue().head<3>());
+    getSubStateHandle<RealVectorStateSpace>(_state, 1).getValue().head<3>());
   return out;
 }
 
@@ -29,9 +29,9 @@ Eigen::Isometry3d SE3StateSpace::getIsometry(const State* _state) const
 void SE3StateSpace::setIsometry(
   State* _state, const Eigen::Isometry3d& _transform) const
 {
-  getSubStateHandle<SO3StateSpace>(*_state, 0).setQuaternion(
+  getSubStateHandle<SO3StateSpace>(_state, 0).setQuaternion(
     Eigen::Quaterniond(_transform.rotation()));
-  getSubStateHandle<RealVectorStateSpace>(*_state, 1).setValue(
+  getSubStateHandle<RealVectorStateSpace>(_state, 1).setValue(
     _transform.translation());
 }
 
