@@ -3,7 +3,8 @@
 
 #include <ctime>
 #include <memory>
-#include <stdint.h>
+#include <random>
+#include <cstdint>
 
 namespace aikido {
 namespace util {
@@ -11,10 +12,13 @@ namespace util {
 class RNG
 {
 public:
-  typedef uint32_t result_type;
+  using result_type = std::uint32_t;
 
-  virtual result_type min() const = 0;
-  virtual result_type max() const = 0;
+  virtual ~RNG() = default;
+
+  static constexpr result_type min() { return 0; }
+  static constexpr result_type max() { return 0xFFFFFFFF; }
+
   virtual result_type operator()() = 0;
   virtual std::unique_ptr<RNG> clone() const = 0;
 
@@ -24,40 +28,26 @@ template <class T>
 class RNGWrapper : virtual public RNG
 {
 public:
+  using RNG::result_type;
+  using engine_type = std::independent_bits_engine<T, 32, result_type>;
 
-  RNGWrapper()
-    : mRng(std::time(0))
-  {
-  }
+  RNGWrapper() = default;
 
-  RNGWrapper(T _rng)
+  explicit RNGWrapper(const T& _rng)
     : mRng(_rng)
   {
   }
 
-  RNGWrapper(result_type _seed)
-    : mRng(_seed)
+  virtual ~RNGWrapper() = default;
+
+  T& rng()
   {
+    return mRng.base();
   }
 
-  T &rng()
+  const T& rng() const
   {
-    return mRng;
-  }
-
-  T const &rng() const
-  {
-    return mRng;
-  }
-
-  result_type min() const override
-  {
-    return mRng.min();
-  }
-
-  result_type max() const override
-  {
-    return mRng.max();
+    return mRng.base();
   }
 
   result_type operator()() override
@@ -67,11 +57,11 @@ public:
   
   std::unique_ptr<RNG> clone() const override
   {
-    return std::unique_ptr<RNGWrapper>(new RNGWrapper(mRng));
+    return std::unique_ptr<RNGWrapper>(new RNGWrapper(mRng.base()));
   }
 
 private:
-  T mRng;
+  engine_type mRng;
 };
 
 } // util
