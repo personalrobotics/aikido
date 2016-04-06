@@ -1,68 +1,12 @@
 #ifndef AIKIDO_STATESPACE_SCOPEDSTATE_H
 #define AIKIDO_STATESPACE_SCOPEDSTATE_H
 #include <memory>
-#include "StateSpace.hpp"
+#include "StateHandle.hpp"
 
 namespace aikido {
 namespace statespace {
 
-template <class _StateSpace, class _QualifiedState>
-class StateHandle
-{
-public:
-  using StateSpace = _StateSpace;
-  using State = typename StateSpace::State;
-  using QualifiedState = _QualifiedState;
-
-  StateHandle()
-    : mSpace(nullptr)
-    , mState(nullptr)
-  {
-  }
-
-  StateHandle(const StateSpace* _space, QualifiedState* _state)
-    : mSpace(_space)
-    , mState(_state)
-  {
-  }
-
-  StateHandle(const StateHandle&) = default;
-  StateHandle(StateHandle&&) = default;
-
-  StateHandle& operator =(StateHandle&&) = default;
-  StateHandle& operator =(const StateHandle&) = default;
-
-  operator QualifiedState*()
-  {
-    return mState;
-  }
-
-  QualifiedState* getState() const
-  {
-    return mState;
-  }
-
-  const StateSpace* getStateSpace() const
-  {
-    return mSpace;
-  }
-
-  QualifiedState& operator *()
-  {
-    return *mState;
-  }
-
-  QualifiedState* operator ->()
-  {
-    return mState;
-  }
-
-protected:
-public:
-  const StateSpace* mSpace;
-  QualifiedState* mState;
-};
-
+/// RAII wrapper for StateHandle.
 template <class _Handle>
 class ScopedState : public _Handle
 {
@@ -72,6 +16,7 @@ public:
   using typename Handle::State;
   using typename Handle::QualifiedState;
 
+  /// Construct a ScopedState for a StateSpace.
   explicit ScopedState(const StateSpace* _space)
   {
     this->mSpace = _space;
