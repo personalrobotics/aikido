@@ -112,12 +112,39 @@ compound_handle.getSubStateHandle<RealVectorStateSpace>(1).getValue()
 
 ## `StateSpace` formal definition
 
+It is straightforward to implement your own `StateSpace`.
+
 The type `SS` satisfies the `StateSpace` concept iff:
 
 - The type `SS` inherits from `aikido::statespace::StateSpace`
-- The type `SS::State` inherits from `State`
-- The type `SS::StateHandle` inherits from `StateHandle<SS, SS::State>`
-- The type `SS::StateHandleConst` inherits from `StateHandle<SS, const SS::State>`
-- The type `SS::ScopedState` is `ScopedState<SS:StateHandle>`
-- The type `SS::ScopedStateConst` is `ScopedState<SSStateHandleConst>`
+- The type `SS::State` has no virtual functions
+- The type `SS::State` inherits from `aikido::statespace::StateSpace::State`
+- The type `SS::StateHandle` inherits from
+  `aikido::statespace::StateHandle<SS, SS::State>`
+- The type `SS::StateHandleConst` inherits from
+  `aikido::statespace::StateHandle<SS, const SS::State>`
+- The type `SS::ScopedState` is
+  `aikido::statespace::ScopedState<SS:StateHandle>`
+- The type `SS::ScopedStateConst` is
+  `aikido::statespace::ScopedState<SSStateHandleConst>`
 
+Inheriting from `aikido::statespace::StateSpace` requires implementing several
+pure-`virtual` methods:
+
+- `getStateSizeInBytes` returns the amount of memory required, in bytes, by
+  `allocateStateInBuffer`. For a fixed-size state, this is typically
+  `sizeof(MyState)`.
+
+- `allocateStateInBuffer` constructs a `State` object in the buffer passed
+  as an argument. For a fixed size state, this is typically implemented using
+  the placement`-new` operator: `new (_buffer) MyState`.
+
+- `freeStateInBuffer` frees memory associated with a `State` object previously
+  allocated by `allocateStateInBuffer`, but *not the buffer itself*. For a
+  fixed size state, this is typically implemented by explicitly calling the
+  destructor: `_state->~MyState()`.
+
+- `compose` applies the multiplication operator associated with the
+  `StateSpace`'s Lie group to `_state1` and `_state2`, storing the result in
+  the output parameter `_out`. For a real vector space, this i multiplication
+  operator is vector addition.
