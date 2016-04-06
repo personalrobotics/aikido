@@ -20,7 +20,7 @@ public:
   {
   }
 
-  StateHandle(const StateSpace* _space, State* _state)
+  StateHandle(const StateSpace* _space, QualifiedState* _state)
     : mSpace(_space)
     , mState(_state)
   {
@@ -55,7 +55,7 @@ public:
 protected:
 public:
   const StateSpace* mSpace;
-  State* mState;
+  QualifiedState* mState;
 };
 
 template <class _Handle>

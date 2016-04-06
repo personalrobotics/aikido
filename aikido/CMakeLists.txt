@@ -32,7 +32,7 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/RealVectorStateSpace.cpp
   src/statespace/SO2StateSpace.cpp
   src/statespace/SO3StateSpace.cpp
-  #src/statespace/SE2StateSpace.cpp
+  src/statespace/SE2StateSpace.cpp
   #src/statespace/SE3StateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
   src/constraint/TSR.cpp

@@ -79,5 +79,23 @@ const typename Space::State& CompoundStateSpace::getSubState(
     *(reinterpret_cast<const char*>(&_state) + mOffsets[_index]));
 }
 
+//=============================================================================
+template <class Space>
+typename Space::StateHandle CompoundStateSpace::getSubStateHandle(
+  StateSpace::State& _state, size_t _index) const
+{
+  return typename Space::StateHandle(
+    &getSubSpace<Space>(_index), &getSubState<Space>(_state, _index));
+}
+
+//=============================================================================
+template <class Space>
+typename Space::StateHandleConst CompoundStateSpace::getSubStateHandle(
+  const StateSpace::State& _state, size_t _index) const
+{
+  return typename Space::StateHandleConst(
+    &getSubSpace<Space>(_index), &getSubState<Space>(_state, _index));
+}
+
 } // namespace statespace
 } // namespace aikido

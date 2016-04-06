@@ -21,7 +21,7 @@ struct add_const_if<T, true>
 
 template <class _QualifiedState>
 class RealVectorStateHandle 
-  : public statespace::StateHandle<RealVectorStateSpace, RealVectorStateSpace::State>
+  : public statespace::StateHandle<RealVectorStateSpace, _QualifiedState>
 {
 public:
   using typename statespace::StateHandle<
@@ -38,14 +38,19 @@ public:
   {
   }
 
-  RealVectorStateHandle(const StateSpace* _space, State* _state)
+  RealVectorStateHandle(const StateSpace* _space, QualifiedState* _state)
     : statespace::StateHandle<StateSpace, QualifiedState>(_space, _state)
   {
   }
 
   Eigen::Map<ValueType> getValue() 
   {
-    return getStateSpace()->getValue(**this);
+    return this->getStateSpace()->getValue(*this->getState());
+  }
+
+  void setValue(const Eigen::VectorXd& _value)
+  {
+    return this->getStateSpace()->setValue(*this->getState(), _value);
   }
 };
 

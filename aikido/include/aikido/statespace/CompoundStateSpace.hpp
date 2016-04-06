@@ -53,6 +53,16 @@ public:
   const typename Space::State& getSubState(
     const StateSpace::State& _state, size_t _index) const;
 
+  /// Gets state handle of type by subspace index.
+  template <class Space = StateSpace>
+  typename Space::StateHandle getSubStateHandle(
+    StateSpace::State& _state, size_t _index) const;
+
+  /// Gets state handle of type by subspace index.
+  template <class Space = StateSpace>
+  typename Space::StateHandleConst getSubStateHandle(
+    const StateSpace::State& _state, size_t _index) const;
+
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 

@@ -7,51 +7,6 @@ namespace aikido {
 namespace statespace {
 
 //=============================================================================
-SE2StateSpace::State::State()
-  : CompoundStateSpace::State({
-      new SO2StateSpace::State,
-      new RealVectorStateSpace::State(Eigen::Vector2d::Zero())
-    })
-{
-}
-
-//=============================================================================
-SE2StateSpace::State::State(const Eigen::Isometry2d& _transform)
-  : State()
-{
-  setIsometry(_transform);
-}
-
-//=============================================================================
-Eigen::Isometry2d SE2StateSpace::State::getIsometry() const
-{
-  Eigen::Isometry2d out = Eigen::Isometry2d::Identity();
-
-  const auto& orientation = static_cast<const SO2StateSpace::State&>(
-    getState(0));
-  out.rotate(orientation.getRotation());
-
-  const auto& position = static_cast<const RealVectorStateSpace::State&>(
-    getState(1));
-  out.pretranslate(position.getValue().head<2>());
-
-  return out;
-}
-
-//=============================================================================
-void SE2StateSpace::State::setIsometry(const Eigen::Isometry2d& _transform)
-{
-  Eigen::Rotation2Dd rotation(0.);
-  rotation.fromRotationMatrix(_transform.rotation());
-
-  auto& orientation = static_cast<SO2StateSpace::State&>(getState(0));
-  orientation.setRotation(rotation);
-
-  auto& position = static_cast<RealVectorStateSpace::State&>(getState(1));
-  position.setValue(_transform.translation());
-}
-
-//=============================================================================
 SE2StateSpace::SE2StateSpace()
   : CompoundStateSpace({
       std::make_shared<SO2StateSpace>(),
@@ -61,15 +16,25 @@ SE2StateSpace::SE2StateSpace()
 }
 
 //=============================================================================
-StateSpace::State* SE2StateSpace::allocateState() const
+Eigen::Isometry2d SE2StateSpace::getIsometry(const State* _state) const
 {
-  return new State;
+  Eigen::Isometry2d out = Eigen::Isometry2d::Identity();
+  out.rotate(
+    getSubStateHandle<SO2StateSpace>(*_state, 0).getRotation());
+  out.pretranslate(
+    getSubStateHandle<RealVectorStateSpace>(*_state, 1).getValue().head<2>());
+  return out;
 }
 
 //=============================================================================
-void SE2StateSpace::freeState(StateSpace::State* _state) const
+void SE2StateSpace::setIsometry(
+  State* _state, const Eigen::Isometry2d& _transform) const
 {
-  delete static_cast<State *>(_state);
+  Eigen::Rotation2Dd rotation(0.);
+  rotation.fromRotationMatrix(_transform.rotation());
+  getSubStateHandle<SO2StateSpace>(*_state, 0).setRotation(rotation);
+  getSubStateHandle<RealVectorStateSpace>(*_state, 0).setValue(
+    _transform.translation());
 }
 
 } // namespace statespace

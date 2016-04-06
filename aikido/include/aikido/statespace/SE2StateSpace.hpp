@@ -16,24 +16,21 @@ public:
     State();
 
     ~State() = default;
-
-    /// Constructs a point in SE(2) from a transformation.
-    explicit State(const Eigen::Isometry2d& _transform);
-
-    /// Gets value as a transformation.
-    Eigen::Isometry2d getIsometry() const;
-
-    /// Sets value to a transformation.
-    void setIsometry(const Eigen::Isometry2d& _transform);
   };
+
+  using StateHandle = statespace::StateHandle<SE2StateSpace, State>;
+  using StateHandleConst = statespace::StateHandle<SE2StateSpace, const State>;
+
+  using ScopedState = statespace::ScopedState<StateHandle>;
+  using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   SE2StateSpace();
 
-  // Documentation inherited.
-  StateSpace::State* allocateState() const override;
+  /// Gets value as a transformation.
+  Eigen::Isometry2d getIsometry(const State* _state) const;
 
-  // Documentation inherited.
-  void freeState(StateSpace::State* _state) const override;
+  /// Sets value to a transformation.
+  void setIsometry(State* _state, const Eigen::Isometry2d& _transform) const;
 };
 
 } // namespace statespace

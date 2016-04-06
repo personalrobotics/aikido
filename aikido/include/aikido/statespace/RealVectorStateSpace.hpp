@@ -42,6 +42,9 @@ public:
   /// Gets the value stored in a RealVectorStateSpace::State.
   Eigen::Map<const Eigen::VectorXd> getValue(const State& _state) const;
 
+  /// Gets the value stored in a RealVectorStateSpace::State.
+  void setValue(State& _state, const Eigen::VectorXd& _value) const;
+
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 

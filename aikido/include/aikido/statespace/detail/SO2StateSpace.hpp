@@ -17,7 +17,7 @@ public:
   {
   }
 
-  SO2StateHandle(const StateSpace* _space, State* _state)
+  SO2StateHandle(const StateSpace* _space, QualifiedState* _state)
     : statespace::StateHandle<StateSpace, QualifiedState>(_space, _state)
   {
   }

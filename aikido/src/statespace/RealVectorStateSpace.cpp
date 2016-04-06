@@ -41,6 +41,13 @@ Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
 }
 
 //=============================================================================
+void RealVectorStateSpace::setValue(
+  State& _state, const Eigen::VectorXd& _value) const
+{
+  getValue(_state) = _value;
+}
+
+//=============================================================================
 size_t RealVectorStateSpace::getStateSizeInBytes() const
 {
   return mDimension * sizeof(double);
