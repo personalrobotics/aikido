@@ -39,7 +39,7 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/SE3JointStateSpace.cpp
   src/statespace/JointStateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
-  src/statespace/DartStateSpace.cpp
+  src/statespace/MetaSkeletonStateSpace.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
   src/constraint/IkSampleableConstraint.cpp

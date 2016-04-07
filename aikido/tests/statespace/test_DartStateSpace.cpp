@@ -4,10 +4,9 @@
 #include <aikido/statespace/SE2StateSpace.hpp>
 #include <aikido/statespace/SE3StateSpace.hpp>
 #include <aikido/statespace/CompoundStateSpace.hpp>
-#include <aikido/statespace/DartStateSpace.hpp>
+#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
 #include <gtest/gtest.h>
 #include <dart/dynamics/dynamics.h>
-#include <aikido/statespace/DartStateSpace.hpp>
 
 using Eigen::Isometry3d;
 using Eigen::Vector3d;
