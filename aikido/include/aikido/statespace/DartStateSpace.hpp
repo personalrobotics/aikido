@@ -15,14 +15,16 @@ public:
 
   virtual ~JointStateSpace() = default;
 
-  dart::dynamics::Joint* getJoint();
+  dart::dynamics::Joint* getJoint() const;
 
-  virtual void getState(StateSpace::State* _state) = 0;
-  virtual void setState(const StateSpace::State* _state) = 0;
+  virtual void getState(StateSpace::State* _state) const = 0;
+  virtual void setState(const StateSpace::State* _state) const = 0;
 
 protected:
   dart::dynamics::Joint* mJoint;
 };
+
+using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
 
 
 /// StateSpace that represents the configuration space of a MetaSkeleton.
@@ -53,13 +55,10 @@ public:
   void setStateOnMetaSkeleton(const State* _state);
 
 protected:
-  MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton,
-    std::vector<StateSpacePtr> _stateSpaces,
-    std::vector<std::shared_ptr<JointStateSpace>> _jointSpaces);
+  MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton);
 
 private:
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
-  std::vector<std::shared_ptr<JointStateSpace>> mJointSpaces;
 };
 
 } // namespace statespace

@@ -31,6 +31,19 @@ namespace statespace {
 namespace {
 
 //=============================================================================
+template <class Input, class Output>
+std::vector<Output> convertVectorType(const std::vector<Input>& _input)
+{
+  std::vector<Output> output;
+  output.reserve(_input.size());
+
+  for (const auto& x : _input)
+    output.emplace_back(x);
+
+  return std::move(output);
+}
+
+//=============================================================================
 template <class T>
 T* isJointOfType(dart::dynamics::Joint* _joint)
 {
@@ -56,12 +69,12 @@ public:
   {
   }
 
-  void getState(StateSpace::State* _state) override
+  void getState(StateSpace::State* _state) const override
   {
     setValue(static_cast<State*>(_state), mJoint->getPositions());
   }
 
-  void setState(const StateSpace::State* _state) override
+  void setState(const StateSpace::State* _state) const override
   {
     mJoint->setPositions(getValue(static_cast<const State*>(_state)));
   }
@@ -80,12 +93,12 @@ public:
     assert(_joint->getNumDofs() == 1);
   }
 
-  void getState(StateSpace::State* _state) override
+  void getState(StateSpace::State* _state) const override
   {
     setAngle(static_cast<State*>(_state), mJoint->getPosition(0));
   }
 
-  void setState(const StateSpace::State* _state) override
+  void setState(const StateSpace::State* _state) const override
   {
     mJoint->setPosition(0, getAngle(static_cast<const State*>(_state)));
   }
@@ -108,13 +121,13 @@ public:
   {
   }
 
-  void getState(StateSpace::State* _state) override
+  void getState(StateSpace::State* _state) const override
   {
     setIsometry(static_cast<State*>(_state),
       FreeJoint::convertToTransform(mJoint->getPositions()));
   }
 
-  void setState(const StateSpace::State* _state) override
+  void setState(const StateSpace::State* _state) const override
   {
     mJoint->setPositions(FreeJoint::convertToPositions(
       getIsometry(static_cast<const SE3StateSpace::State*>(_state))));
@@ -195,19 +208,17 @@ JointStateSpace::JointStateSpace(dart::dynamics::Joint* _joint)
 }
 
 //=============================================================================
-dart::dynamics::Joint* JointStateSpace::getJoint()
+dart::dynamics::Joint* JointStateSpace::getJoint() const
 {
   return mJoint;
 }
 
 //=============================================================================
-MetaSkeletonStateSpace::MetaSkeletonStateSpace(
-      MetaSkeletonPtr _metaskeleton,
-      std::vector<StateSpacePtr> _stateSpaces,
-      std::vector<std::shared_ptr<JointStateSpace>> _jointSpaces)
-  : CompoundStateSpace(_stateSpaces)
+MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
+  : CompoundStateSpace(
+      convertVectorType<JointStateSpacePtr, StateSpacePtr>(
+        createStateSpace(*_metaskeleton)))
   , mMetaSkeleton(std::move(_metaskeleton))
-  , mJointSpaces(std::move(_jointSpaces))
 {
 }
 
@@ -215,16 +226,8 @@ MetaSkeletonStateSpace::MetaSkeletonStateSpace(
 std::shared_ptr<MetaSkeletonStateSpace> MetaSkeletonStateSpace::create(
   MetaSkeletonPtr _metaskeleton)
 {
-  auto jointSpaces = createStateSpace(*_metaskeleton);
-
-  std::vector<StateSpacePtr> stateSpaces;
-  stateSpaces.reserve(jointSpaces.size());
-
-  for (const auto& jointSpace : jointSpaces)
-    stateSpaces.push_back(jointSpace);
-
   return std::shared_ptr<MetaSkeletonStateSpace>(new MetaSkeletonStateSpace(
-    std::move(_metaskeleton), std::move(stateSpaces), std::move(jointSpaces)));
+    std::move(_metaskeleton)));
 }
 
 //=============================================================================
@@ -236,8 +239,11 @@ MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 //=============================================================================
 void MetaSkeletonStateSpace::getStateFromMetaSkeleton(State* _state) const
 {
-  for (size_t ijoint = 0; ijoint < mJointSpaces.size(); ++ijoint)
-    mJointSpaces[ijoint]->getState(getSubState(_state, ijoint));
+  for (size_t ijoint = 0; ijoint < getNumStates(); ++ijoint)
+  {
+    auto jointSpace = getSubSpace<JointStateSpace>(ijoint);
+    jointSpace->getState(getSubState(_state, ijoint));
+  }
 }
 
 //=============================================================================
@@ -252,8 +258,11 @@ auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
 //=============================================================================
 void MetaSkeletonStateSpace::setStateOnMetaSkeleton(const State* _state)
 {
-  for (size_t ijoint = 0; ijoint < mJointSpaces.size(); ++ijoint)
-    mJointSpaces[ijoint]->setState(getSubState(_state, ijoint));
+  for (size_t ijoint = 0; ijoint < getNumStates(); ++ijoint)
+  {
+    auto jointSpace = getSubSpace<JointStateSpace>(ijoint);
+    jointSpace->setState(getSubState(_state, ijoint));
+  }
 }
 
 } // namespace statespace
