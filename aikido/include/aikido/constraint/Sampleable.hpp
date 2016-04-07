@@ -50,6 +50,8 @@ public:
   virtual bool canSample() const = 0;
 };
 
+using SampleableConstraintPtr = std::shared_ptr<SampleableConstraint>;
+
 
 } // namespace constraint
 } // namespace aikido

@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_IKSAMPLEABLECONSTRAINT_H
 
 #include "Sampleable.hpp"
+#include "../statespace/MetaSkeletonStateSpace.hpp"
 #include <dart/dynamics/dynamics.h>
 
 namespace aikido {
@@ -16,18 +17,16 @@ namespace constraint {
 class IkSampleableConstraint : public SampleableConstraint
 {
 public:
-  using SampleablePoseConstraint =
-    std::shared_ptr<SampleableConstraint<Eigen::Isometry3d>>;
-
   /// Constructor.
   ///
   /// \param[in] _isometry3dConstraint pose constraint to lift
-  /// \param[in] _ikPtr inverse kinematics solver to use for lifting
+  /// \param[in] _inverseKinematics inverse kinematics solver to use for lifting
   /// \param[in] _rng random number generator used by sample generators
   /// \param[in] _maxNumTrials number of retry attempts
   IkSampleableConstraint(
-    const SampleablePoseConstraint& _isometry3dConstraint,
-    const dart::dynamics::InverseKinematicsPtr& _ikPtr,
+    statespace::MetaSkeletonStateSpacePtr _stateSpace,
+    SampleableConstraintPtr _delegateConstraint,
+    dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
@@ -41,21 +40,19 @@ public:
   virtual ~IkSampleableConstraint() = default;
 
   // Documentation inherited.
-  std::unique_ptr<SampleGenerator<Eigen::VectorXd>> 
-    createSampleGenerator() const override;
+  std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
   
   /// Set rng seed.
   void setRNG(std::unique_ptr<util::RNG> rng);
   
 private:
+  statespace::MetaSkeletonStateSpacePtr mStateSpace;
+  SampleableConstraintPtr mConstraint;
+  dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<util::RNG> mRng;
-  SampleablePoseConstraint mIsometry3dConstraintPtr;
-  dart::dynamics::InverseKinematicsPtr mIKPtr;
+
   int mMaxNumTrials;
 };
-
-using IkSampleableConstraintPtr = std::shared_ptr<const IkSampleableConstraint>;
-using IkSampleableConstraintUniquePtr = std::unique_ptr<IkSampleableConstraint>;
 
 } // namespace constraint 
 } // namespace aikido

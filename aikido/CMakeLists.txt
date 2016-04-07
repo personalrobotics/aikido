@@ -42,7 +42,7 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/MetaSkeletonStateSpace.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
-  #src/constraint/IkSampleableConstraint.cpp
+  src/constraint/IkSampleableConstraint.cpp
   #src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
