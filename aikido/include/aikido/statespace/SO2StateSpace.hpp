@@ -5,6 +5,9 @@
 #include "StateSpace.hpp"
 #include "ScopedState.hpp"
 
+#include "../util/RNG.hpp"
+#include "../constraint/Sampleable.hpp"
+
 namespace aikido {
 namespace statespace {
 
@@ -53,6 +56,10 @@ public:
   SO2StateSpace() = default;
 
   ScopedState createState() const;
+
+  /// Sample uniformly at random from this state space.
+  constraint::SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const;
 
   /// Gets the angle of the rotation encoded by this state.
   double getAngle(const State* _state) const;

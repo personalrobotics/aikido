@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2StateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -44,6 +45,15 @@ void SO2StateSpace::State::setRotation(
 auto SO2StateSpace::createState() const -> ScopedState
 {
   return ScopedState(this);
+}
+
+//=============================================================================
+constraint::SampleableConstraintPtr SO2StateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const
+{
+  return std::make_shared<SO2StateSpaceSampleableConstraint>(
+    nullptr, // TODO: this should be enable_shared_from_this
+    std::move(_rng));
 }
 
 //=============================================================================

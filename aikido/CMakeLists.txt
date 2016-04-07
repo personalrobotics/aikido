@@ -33,7 +33,9 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/RealVectorJointStateSpace.cpp
   src/statespace/RealVectorStateSpaceSampleableConstraint.cpp
   src/statespace/SO2StateSpace.cpp
+  src/statespace/SO2StateSpace.cpp
   src/statespace/SO2JointStateSpace.cpp
+  src/statespace/SO2StateSpaceSampleableConstraint.cpp
   src/statespace/SO3StateSpace.cpp
   src/statespace/SE2StateSpace.cpp
   src/statespace/SE3StateSpace.cpp
