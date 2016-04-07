@@ -9,14 +9,17 @@
 #include <dart/dynamics/dynamics.h>
 #include <aikido/statespace/DartStateSpace.hpp>
 
+using Eigen::Isometry3d;
 using Eigen::Vector3d;
 using dart::dynamics::Skeleton;
 using dart::dynamics::RevoluteJoint;
 using dart::dynamics::PrismaticJoint;
 using dart::dynamics::TranslationalJoint;
+using dart::dynamics::FreeJoint;
 using aikido::statespace::MetaSkeletonStateSpace;
 using aikido::statespace::RealVectorStateSpace;
 using aikido::statespace::SO2StateSpace;
+using aikido::statespace::SE3StateSpace;
 
 TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds)
 {
@@ -111,4 +114,31 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint)
   EXPECT_TRUE(value2.isApprox(skeleton->getPositions()));
 }
 
-// TODO: Test for FreeJoint.
+TEST(MetaSkeletonStateSpace, FreeJoint)
+{
+  Isometry3d value1 = Isometry3d::Identity();
+  value1.rotate(Eigen::AngleAxisd(M_PI_2, Vector3d::UnitZ()));
+  value1.pretranslate(Vector3d(1., 2., 3.));
+
+  Isometry3d value2 = Isometry3d::Identity();
+  value2.rotate(Eigen::AngleAxisd(3 * M_PI_2, Vector3d::UnitZ()));
+  value2.pretranslate(Vector3d(4., 5., 6.));
+
+  auto skeleton = Skeleton::create();
+  skeleton->createJointAndBodyNodePair<FreeJoint>();
+
+  auto space = MetaSkeletonStateSpace::create(skeleton);
+  ASSERT_EQ(1, space->getNumStates());
+
+  auto state = space->createState();
+  auto substate = state.getSubStateHandle<SE3StateSpace>(0);
+
+  skeleton->setPositions(FreeJoint::convertToPositions(value1));
+  space->getStateFromMetaSkeleton(state);
+  EXPECT_TRUE(value1.isApprox(substate.getIsometry()));
+
+  substate.setIsometry(value2);
+  space->setStateOnMetaSkeleton(state);
+  EXPECT_TRUE(value2.isApprox(
+    FreeJoint::convertToTransform(skeleton->getPositions())));
+}

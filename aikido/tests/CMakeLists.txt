@@ -25,9 +25,6 @@ target_link_libraries(test_StateSpace "${PROJECT_NAME}")
 add_aikido_test(test_DartStateSpace statespace/test_DartStateSpace.cpp)
 target_link_libraries(test_DartStateSpace "${PROJECT_NAME}" ${DART_LIBRARIES})
 
-# StateSpace tests
-add_subdirectory(statespace)
-
 # CatkinResourceRetriever tests
 set(CATKIN_MAKE_WORKSPACE
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_make_workspace")
