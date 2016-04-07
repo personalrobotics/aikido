@@ -13,21 +13,11 @@ class RealVectorJointStateSpace
 public:
   using RealVectorStateSpace::State;
 
-  explicit RealVectorJointStateSpace(dart::dynamics::Joint* _joint)
-    : RealVectorStateSpace(_joint->getNumDofs())
-    , JointStateSpace(_joint)
-  {
-  }
+  explicit RealVectorJointStateSpace(dart::dynamics::Joint* _joint);
 
-  void getState(StateSpace::State* _state) const override
-  {
-    setValue(static_cast<State*>(_state), mJoint->getPositions());
-  }
+  void getState(StateSpace::State* _state) const;
 
-  void setState(const StateSpace::State* _state) const override
-  {
-    mJoint->setPositions(getValue(static_cast<const State*>(_state)));
-  }
+  void setState(const StateSpace::State* _state) const;
 };
 
 } // namespace statespace

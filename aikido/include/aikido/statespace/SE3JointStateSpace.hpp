@@ -1,6 +1,6 @@
 #ifndef AIKIDO_STATESPACE_SE3JOINTSTATESPACE_H_
 #define AIKIDO_STATESPACE_SE3JOINTSTATESPACE_H_
-#include "RealVectorStateSpace.hpp"
+#include "SE3StateSpace.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
@@ -11,30 +11,11 @@ class SE3JointStateSpace : public SE3StateSpace, public JointStateSpace
 public:
   using SE3StateSpace::State;
 
-  explicit SE3JointStateSpace(dart::dynamics::Joint* _joint)
-    : JointStateSpace(_joint)
-    , SE3StateSpace()
-    // This is necessary because of virtual inheritance.
-    , CompoundStateSpace({
-        std::make_shared<SO3StateSpace>(),
-        std::make_shared<RealVectorStateSpace>(3)
-      })
-  {
-  }
+  SE3JointStateSpace(dart::dynamics::Joint* _joint);
 
-  void getState(StateSpace::State* _state) const override
-  {
-    setIsometry(static_cast<State*>(_state),
-      dart::dynamics::FreeJoint::convertToTransform(
-        mJoint->getPositions()));
-  }
+  void getState(StateSpace::State* _state) const;
 
-  void setState(const StateSpace::State* _state) const override
-  {
-    mJoint->setPositions(
-      dart::dynamics::FreeJoint::convertToPositions(
-        getIsometry(static_cast<const SE3StateSpace::State*>(_state))));
-  }
+  void setState(const StateSpace::State* _state) const;
 };
 
 
