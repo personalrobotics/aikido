@@ -8,7 +8,7 @@ namespace aikido {
 namespace constraint {
 
 // For internal use only.
-class IkSampleGenerator : public SampleGenerator<Eigen::VectorXd>
+class IkSampleGenerator : public SampleGenerator
 {
 public:
   IkSampleGenerator(const IkSampleGenerator&) = delete;
@@ -20,7 +20,7 @@ public:
   virtual ~IkSampleGenerator() = default; 
 
   // Documentation inherited.
-  boost::optional<Eigen::VectorXd> sample() override;
+  bool sample(statespace::StateSpace::State* _state) override;
 
   // Documentation inherited.
   bool canSample() const override;
@@ -31,15 +31,17 @@ public:
 private:  
   // For internal use only.
   IkSampleGenerator(
-    std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> _isometrySampler,
-    const dart::dynamics::InverseKinematicsPtr& _ikPtr,
+    statespace::MetaSkeletonStateSpacePtr _stateSpace,
+    dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+    std::unique_ptr<SampleGenerator> _delegateSampler,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
-  dart::dynamics::InverseKinematicsPtr mIKPtr;
-  std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> mIsometrySampler;
-  int mMaxNumTrials;
+  statespace::MetaSkeletonStateSpacePtr mStateSpace,
+  dart::dynamics::InverseKinematicsPtr mInverseKinematics;
+  std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> mDelegateSampler;
   std::unique_ptr<util::RNG> mRng;
+  int mMaxNumTrials;
 
   friend class IkSampleableConstraint;
 };

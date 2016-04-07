@@ -19,18 +19,16 @@ TEST(RealVectorStateSpace, Compose)
   RealVectorStateSpace rvss(3);
 
   auto s1 = rvss.createState();
-  s1.getValue() = Eigen::Vector3d(1, 2, 3);
+  s1.setValue(Eigen::Vector3d(1, 2, 3));
 
   auto s2 = rvss.createState();
-  s2.getValue() = Eigen::Vector3d(2, 3, 4);
+  s2.setValue(Eigen::Vector3d(2, 3, 4));
 
   auto out = rvss.createState();
   rvss.compose(s1, s2, out);
 
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
-
 }
-
 
 TEST(SO2StateSpace, Compose)
 {
@@ -43,9 +41,7 @@ TEST(SO2StateSpace, Compose)
   so2.compose(&s1, &s2, &out);
 
   EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
-
 }
-
 
 TEST(SO3StateSpace, Compose)
 {

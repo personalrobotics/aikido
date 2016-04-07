@@ -29,6 +29,11 @@ TSRSampleGenerator::TSRSampleGenerator(
   }
 }
 
+//=============================================================================
+statespace::StateSpacePtr TSRSampleGenerator::getStateSpace() const
+{
+  return mStateSpace;
+}
 
 //=============================================================================
 bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
