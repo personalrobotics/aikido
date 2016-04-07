@@ -13,7 +13,7 @@ namespace constraint {
 /// into the Skeleton's configuration space. This class will retry a
 /// configurable number of times if sampling from the Isometry3d constaint or
 /// finding an inverse kinematic solution fails.
-class IkSampleableConstraint : public SampleableConstraint<Eigen::VectorXd>
+class IkSampleableConstraint : public SampleableConstraint
 {
 public:
   using SampleablePoseConstraint =
