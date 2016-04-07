@@ -77,5 +77,64 @@ void CompoundStateSpace::compose(
   }
 }
 
+//=============================================================================
+unsigned int CompoundStateSpace::getDimension() const 
+{
+    unsigned int dim = 0;
+    for( auto const &sspace: mSubspaces )
+    {
+        dim += sspace->getDimension();
+    }
+    return dim;            
+}
+
+//=============================================================================
+double CompoundStateSpace::getMaximumExtent() const 
+{
+    
+}
+
+//=============================================================================
+double CompoundStateSpace::getMeasure() const 
+{
+    
+}
+
+//=============================================================================
+bool CompoundStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+    
+}
+
+//=============================================================================
+void CompoundStateSpace::copyState(StateSpace::State* _destination,
+                              const StateSpace::State* _source) const
+{
+    
+}
+
+//=============================================================================
+double CompoundStateSpace::distance(const StateSpace::State* _state1,
+                               const StateSpace::State* _state2) const
+{
+
+}
+
+//=============================================================================
+bool CompoundStateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+    
+}
+
+//=============================================================================
+void CompoundStateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _State) const
+{
+
+}
+
 } // namespace statespace
 } // namespace aikido

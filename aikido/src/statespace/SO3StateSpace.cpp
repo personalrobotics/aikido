@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO3StateSpace.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <dart/math/Geometry.h>
 #include <iostream>
 
@@ -79,6 +80,61 @@ void SO3StateSpace::compose(
   auto out = static_cast<State*>(_out);
 
   out->mValue = state1->mValue * state2->mValue;
+}
+
+//=============================================================================
+unsigned int SO3StateSpace::getDimension() const 
+{
+    return 3; // copied from OMPL
+}
+
+//=============================================================================
+double SO3StateSpace::getMaximumExtent() const 
+{
+    return 0.5 * boost::math::constants::pi<double>(); // OMPL
+}
+
+//=============================================================================
+double SO3StateSpace::getMeasure() const 
+{
+    // half of the surface area of a unit 3-sphere
+    return boost::math::constants::pi<double>() * boost::math::constants::pi<double>();
+}
+
+//=============================================================================
+bool SO3StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+    return true;
+}
+
+//=============================================================================
+void SO3StateSpace::copyState(StateSpace::State* _destination,
+                              const StateSpace::State* _source) const
+{
+
+}
+
+//=============================================================================
+double SO3StateSpace::distance(const StateSpace::State* _state1,
+                               const StateSpace::State* _state2) const
+{
+
+}
+
+//=============================================================================
+bool SO3StateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+    
+}
+
+//=============================================================================
+void SO3StateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _State) const
+{
+
 }
 
 } // namespace statespace

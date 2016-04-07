@@ -36,9 +36,6 @@ public:
   /// Helper function to create a ScopedState.
   ScopedState createState() const;
 
-  /// Gets the dimension of this space.
-  int getDimension() const;
-
   /// Gets the value stored in a RealVectorStateSpace::State.
   Eigen::Map<Eigen::VectorXd> getValue(State* _state) const;
 
@@ -61,6 +58,36 @@ public:
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
+
+  // Documentation inherited
+  unsigned int getDimension() const override;
+
+  // Documentation inherited
+  double getMaximumExtent() const override;
+
+  // Documentation inherited
+  double getMeasure() const override;
+
+  // Documentation inherited
+  bool satisfiesBounds(const StateSpace::State* _state) const override;
+
+  // Documentation inherited
+  void copyState(StateSpace::State* _destination,
+                 const StateSpace::State* _source) const override;
+
+  // Documentation inherited
+  double distance(const StateSpace::State* _state1,
+                  const StateSpace::State* _state2) const override;
+
+  // Documentation inherited
+  bool equalStates(const StateSpace::State* _state1,
+                   const StateSpace::State* _state2) const override;
+
+  // Documentation inherited
+  void interpolate(const StateSpace::State* _from,
+                   const StateSpace::State* _to,
+                   const double _t,
+                   StateSpace::State* _State) const;
 
 private:
   int mDimension;

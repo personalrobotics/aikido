@@ -41,12 +41,6 @@ Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
 }
 
 //=============================================================================
-int RealVectorStateSpace::getDimension() const
-{
-  return mDimension;
-}
-
-//=============================================================================
 void RealVectorStateSpace::setValue(
   State* _state, const Eigen::VectorXd& _value) const
 {
@@ -84,6 +78,61 @@ void RealVectorStateSpace::compose(
 
   getValue(out) = getValue(state1) + getValue(state2);
 }
+
+//=============================================================================
+unsigned int RealVectorStateSpace::getDimension() const 
+{
+    return mDimension;
+}
+
+//=============================================================================
+double RealVectorStateSpace::getMaximumExtent() const 
+{
+    
+}
+
+//=============================================================================
+double RealVectorStateSpace::getMeasure() const 
+{
+    
+}
+
+//=============================================================================
+bool RealVectorStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+    
+}
+
+//=============================================================================
+void RealVectorStateSpace::copyState(StateSpace::State* _destination,
+                              const StateSpace::State* _source) const
+{
+    
+}
+
+//=============================================================================
+double RealVectorStateSpace::distance(const StateSpace::State* _state1,
+                               const StateSpace::State* _state2) const
+{
+
+}
+
+//=============================================================================
+bool RealVectorStateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+    
+}
+
+//=============================================================================
+void RealVectorStateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _State) const
+{
+
+}
+
 
 } // namespace statespace
 } // namespace aikido

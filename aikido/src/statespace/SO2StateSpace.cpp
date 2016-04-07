@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO2StateSpace.hpp>
+#include <boost/math/constants/constants.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -99,6 +100,60 @@ void SO2StateSpace::compose(
   auto out = static_cast<State*>(_out);
 
   out->mAngle = state1->mAngle + state2->mAngle;
+}
+
+//=============================================================================
+unsigned int SO2StateSpace::getDimension() const 
+{
+    return 1;
+}
+
+//=============================================================================
+double SO2StateSpace::getMaximumExtent() const 
+{
+    return boost::math::constants::pi<double>(); // OMPL
+}
+
+//=============================================================================
+double SO2StateSpace::getMeasure() const 
+{
+    return 2.0*boost::math::constants::pi<double>(); // OMPL
+}
+
+//=============================================================================
+bool SO2StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+    return true;
+}
+
+//=============================================================================
+void SO2StateSpace::copyState(StateSpace::State* _destination,
+                              const StateSpace::State* _source) const
+{
+ 
+}
+
+//=============================================================================
+double SO2StateSpace::distance(const StateSpace::State* _state1,
+                               const StateSpace::State* _state2) const
+{
+    
+}
+
+//=============================================================================
+bool SO2StateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+
+}
+
+//=============================================================================
+void SO2StateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _State) const
+{
+
 }
 
 } // namespace statespace
