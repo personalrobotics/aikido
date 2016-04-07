@@ -142,3 +142,32 @@ TEST(MetaSkeletonStateSpace, FreeJoint)
   EXPECT_TRUE(value2.isApprox(
     FreeJoint::convertToTransform(skeleton->getPositions())));
 }
+
+TEST(MetaSkeletonStateSpace, MultipleJoints)
+{
+  Vector3d value1(2., 3., 4.);
+  Vector3d value2(6., 7., 8.);
+
+  auto skeleton = Skeleton::create();
+  auto joint1 = skeleton->createJointAndBodyNodePair<RevoluteJoint>().first;
+  auto joint2 = skeleton->createJointAndBodyNodePair<TranslationalJoint>().first;
+
+  auto space = MetaSkeletonStateSpace::create(skeleton);
+  ASSERT_EQ(2, space->getNumStates());
+
+  auto state = space->createState();
+  auto substate1 = state.getSubStateHandle<SO2StateSpace>(0);
+  auto substate2 = state.getSubStateHandle<RealVectorStateSpace>(1);
+
+  joint1->setPosition(0, 1.);
+  joint2->setPositions(value1);
+  space->getStateFromMetaSkeleton(state);
+  EXPECT_EQ(1., substate1.getAngle());
+  EXPECT_TRUE(value1.isApprox(value1));
+
+  substate1.setAngle(5.);
+  substate2.setValue(value2);
+  space->setStateOnMetaSkeleton(state);
+  EXPECT_EQ(5., substate1.getAngle());
+  EXPECT_TRUE(value2.isApprox(substate2.getValue()));
+}

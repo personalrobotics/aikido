@@ -169,7 +169,7 @@ std::vector<std::unique_ptr<JointStateSpace>> createStateSpace(
 
     // Verify that the joint is not missing any DOFs. This could alter the
     // topology of the space that we create.
-    for (size_t idof = 0; idof < _metaskeleton.getNumDofs(); ++idof)
+    for (size_t idof = 0; idof < joint->getNumDofs(); ++idof)
     {
       const auto dof = joint->getDof(idof);
       if (_metaskeleton.getIndexOf(dof, false) == INVALID_INDEX)
