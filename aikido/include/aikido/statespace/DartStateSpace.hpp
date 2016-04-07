@@ -7,26 +7,6 @@
 namespace aikido {
 namespace statespace {
 
-
-class JointStateSpace : public virtual StateSpace
-{
-public:
-  explicit JointStateSpace(dart::dynamics::Joint* _joint);
-
-  virtual ~JointStateSpace() = default;
-
-  dart::dynamics::Joint* getJoint() const;
-
-  virtual void getState(StateSpace::State* _state) const = 0;
-  virtual void setState(const StateSpace::State* _state) const = 0;
-
-protected:
-  dart::dynamics::Joint* mJoint;
-};
-
-using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
-
-
 /// StateSpace that represents the configuration space of a MetaSkeleton.
 class MetaSkeletonStateSpace : public CompoundStateSpace
 {

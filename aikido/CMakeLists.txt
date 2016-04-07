@@ -34,6 +34,7 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/SO3StateSpace.cpp
   src/statespace/SE2StateSpace.cpp
   src/statespace/SE3StateSpace.cpp
+  src/statespace/JointStateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
   src/statespace/DartStateSpace.cpp
   src/constraint/TSR.cpp

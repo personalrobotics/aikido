@@ -2,10 +2,13 @@
 #include <sstream>
 #include <aikido/statespace/DartStateSpace.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/RealVectorJointStateSpace.hpp>
 #include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2JointStateSpace.hpp>
 #include <aikido/statespace/SO3StateSpace.hpp>
 #include <aikido/statespace/SE2StateSpace.hpp>
 #include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/SE3JointStateSpace.hpp>
 #include <aikido/statespace/CompoundStateSpace.hpp>
 #include <dart/common/StlHelpers.h>
 #include <dart/common/console.h>
@@ -24,10 +27,12 @@ using dart::dynamics::TranslationalJoint;
 using dart::dynamics::SingleDofJoint;
 using dart::dynamics::WeldJoint;
 using dart::dynamics::INVALID_INDEX;
-using dart::common::make_unique;
 
 namespace aikido {
 namespace statespace {
+
+using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
+
 namespace {
 
 //=============================================================================
@@ -54,85 +59,6 @@ T* isJointOfType(dart::dynamics::Joint* _joint)
   else
     return nullptr;
 }
-
-//=============================================================================
-class RealVectorJointStateSpace
-  : public RealVectorStateSpace
-  , public JointStateSpace
-{
-public:
-  using RealVectorStateSpace::State;
-
-  explicit RealVectorJointStateSpace(Joint* _joint)
-    : RealVectorStateSpace(_joint->getNumDofs())
-    , JointStateSpace(_joint)
-  {
-  }
-
-  void getState(StateSpace::State* _state) const override
-  {
-    setValue(static_cast<State*>(_state), mJoint->getPositions());
-  }
-
-  void setState(const StateSpace::State* _state) const override
-  {
-    mJoint->setPositions(getValue(static_cast<const State*>(_state)));
-  }
-};
-
-//=============================================================================
-class SO2JointStateSpace : public SO2StateSpace, public JointStateSpace
-{
-public:
-  using SO2StateSpace::State;
-
-  explicit SO2JointStateSpace(Joint* _joint)
-    : JointStateSpace(_joint)
-    , SO2StateSpace()
-  {
-    assert(_joint->getNumDofs() == 1);
-  }
-
-  void getState(StateSpace::State* _state) const override
-  {
-    setAngle(static_cast<State*>(_state), mJoint->getPosition(0));
-  }
-
-  void setState(const StateSpace::State* _state) const override
-  {
-    mJoint->setPosition(0, getAngle(static_cast<const State*>(_state)));
-  }
-};
-
-//=============================================================================
-class SE3JointStateSpace : public SE3StateSpace, public JointStateSpace
-{
-public:
-  using SE3StateSpace::State;
-
-  explicit SE3JointStateSpace(Joint* _joint)
-    : JointStateSpace(_joint)
-    , SE3StateSpace()
-    // This is necessary because of virtual inheritance.
-    , CompoundStateSpace({
-        std::make_shared<SO3StateSpace>(),
-        std::make_shared<RealVectorStateSpace>(3)
-      })
-  {
-  }
-
-  void getState(StateSpace::State* _state) const override
-  {
-    setIsometry(static_cast<State*>(_state),
-      FreeJoint::convertToTransform(mJoint->getPositions()));
-  }
-
-  void setState(const StateSpace::State* _state) const override
-  {
-    mJoint->setPositions(FreeJoint::convertToPositions(
-      getIsometry(static_cast<const SE3StateSpace::State*>(_state))));
-  }
-};
 
 //=============================================================================
 std::shared_ptr<JointStateSpace> createStateSpace(Joint* _joint)
@@ -199,19 +125,6 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
 }
 
 } // namespace
-
-//=============================================================================
-JointStateSpace::JointStateSpace(dart::dynamics::Joint* _joint)
-  : mJoint(_joint)
-{
-  assert(_joint);
-}
-
-//=============================================================================
-dart::dynamics::Joint* JointStateSpace::getJoint() const
-{
-  return mJoint;
-}
 
 //=============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
