@@ -1,21 +1,40 @@
 #ifndef AIKIDO_STATESPACE_SE3STATESPACE_H
 #define AIKIDO_STATESPACE_SE3STATESPACE_H
 #include <Eigen/Geometry>
-#include "CompoundStateSpace.hpp"
+#include "StateSpace.hpp"
+#include "ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
 
 template <class> class SE3StateHandle;
 
-class SE3StateSpace : public virtual CompoundStateSpace 
+class SE3StateSpace : public virtual StateSpace 
 {
 public:
-  class State : public CompoundStateSpace::State
+  class State : public StateSpace::State
   {
-  protected:
-    State() = default;
+  public:
+    using Isometry3d = Eigen::Transform<double, 3, 
+                                        Eigen::Isometry, Eigen::DontAlign>;
+
+    // Constructs Identity Element
+    State();
     ~State() = default;
+
+    /// Constructs a point in SE(3) from a transfomation.
+    explicit State(const Isometry3d& _transform);
+
+    /// Sets value to a transfomation.
+    void setIsometry(const Isometry3d& _transform);
+
+    /// Gets value to a transfomation.
+    const Isometry3d& getIsometry() const;
+
+  private:
+    Isometry3d mTransform;
+
+    friend class SE3StateSpace;
   };
 
   using StateHandle = SE3StateHandle<State>;
@@ -24,15 +43,31 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
-  SE3StateSpace();
+  using Isometry3d = State::Isometry3d;
+
+  SE3StateSpace() = default;
 
   ScopedState createState() const;
 
   /// Gets value as a transformation.
-  Eigen::Isometry3d getIsometry(const State* _state) const;
+  const Isometry3d& getIsometry(const State* _state) const;
 
   /// Sets value to a transformation.
-  void setIsometry(State* _state, const Eigen::Isometry3d& _transform) const;
+  void setIsometry(State* _state, const Isometry3d& _transform) const;
+
+  // Documentation inherited.
+  size_t getStateSizeInBytes() const override;
+
+  // Documentation inherited.
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
+
+  // Documentation inherited.
+  void freeStateInBuffer(StateSpace::State* _state) const override;
+  
+  // Documentation inherited.
+  void compose(
+    const StateSpace::State* _state1, const StateSpace::State* _state2,
+    StateSpace::State* _out) const override;
 };
 
 } // namespace statespace
