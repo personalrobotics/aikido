@@ -11,7 +11,7 @@ namespace statespace {
 template <class> class SO2StateHandle;
 
 /// Represents the space of planar rotations.
-class SO2StateSpace : public StateSpace
+class SO2StateSpace : virtual public StateSpace
 {
 public:
   /// Point in SO(2), a planar rotation.

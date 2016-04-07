@@ -1,12 +1,29 @@
 #ifndef AIKIDO_STATESPACE_DARTSTATESPACE_H_
 #define AIKIDO_STATESPACE_DARTSTATESPACE_H_
 #include <dart/dynamics/dynamics.h>
+#include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/CompoundStateSpace.hpp>
 
 namespace aikido {
 namespace statespace {
 
-class JointStateSpace;
+
+class JointStateSpace : public virtual StateSpace
+{
+public:
+  explicit JointStateSpace(dart::dynamics::Joint* _joint);
+
+  virtual ~JointStateSpace() = default;
+
+  dart::dynamics::Joint* getJoint();
+
+  virtual void getState(StateSpace::State* _state) = 0;
+  virtual void setState(const StateSpace::State* _state) = 0;
+
+protected:
+  dart::dynamics::Joint* mJoint;
+};
+
 
 /// StateSpace that represents the configuration space of a MetaSkeleton.
 class MetaSkeletonStateSpace : public CompoundStateSpace
@@ -38,11 +55,11 @@ public:
 protected:
   MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton,
     std::vector<StateSpacePtr> _stateSpaces,
-    std::vector<std::unique_ptr<JointStateSpace>> _jointSpaces);
+    std::vector<std::shared_ptr<JointStateSpace>> _jointSpaces);
 
 private:
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
-  std::vector<std::unique_ptr<JointStateSpace>> mJointSpaces;
+  std::vector<std::shared_ptr<JointStateSpace>> mJointSpaces;
 };
 
 } // namespace statespace

@@ -28,27 +28,6 @@ using dart::common::make_unique;
 
 namespace aikido {
 namespace statespace {
-
-//=============================================================================
-class JointStateSpace
-{
-public:
-  JointStateSpace(
-    std::shared_ptr<StateSpace> _space, dart::dynamics::Joint* _joint);
-
-  virtual ~JointStateSpace() = default;
-
-  const std::shared_ptr<StateSpace>& getStateSpace();
-  dart::dynamics::Joint* getJoint();
-
-  virtual void getState(StateSpace::State* _state) = 0;
-  virtual void setState(const StateSpace::State* _state) = 0;
-
-protected:
-  std::shared_ptr<StateSpace> mStateSpace;
-  dart::dynamics::Joint* mJoint;
-};
-
 namespace {
 
 //=============================================================================
@@ -64,108 +43,105 @@ T* isJointOfType(dart::dynamics::Joint* _joint)
 }
 
 //=============================================================================
-class RealVectorJointStateSpace : public JointStateSpace
+class RealVectorJointStateSpace
+  : public RealVectorStateSpace
+  , public JointStateSpace
 {
 public:
-  RealVectorJointStateSpace(
-        std::shared_ptr<RealVectorStateSpace> _space, Joint* _joint)
-    : JointStateSpace(_space, _joint)
+  using RealVectorStateSpace::State;
+
+  explicit RealVectorJointStateSpace(Joint* _joint)
+    : RealVectorStateSpace(_joint->getNumDofs())
+    , JointStateSpace(_joint)
   {
-    assert(_space->getDimension() == _joint->getNumDofs());
   }
 
   void getState(StateSpace::State* _state) override
   {
-    static_cast<RealVectorStateSpace*>(mStateSpace.get())->setValue(
-      static_cast<RealVectorStateSpace::State*>(_state),
-      mJoint->getPositions());
+    setValue(static_cast<State*>(_state), mJoint->getPositions());
   }
 
   void setState(const StateSpace::State* _state) override
   {
-    mJoint->setPositions(
-      static_cast<RealVectorStateSpace*>(mStateSpace.get())->getValue(
-        static_cast<const RealVectorStateSpace::State*>(_state)));
+    mJoint->setPositions(getValue(static_cast<const State*>(_state)));
   }
 };
 
 //=============================================================================
-class SO2JointStateSpace : public JointStateSpace
+class SO2JointStateSpace : public SO2StateSpace, public JointStateSpace
 {
 public:
-  SO2JointStateSpace(std::shared_ptr<SO2StateSpace> _space, Joint* _joint)
-    : JointStateSpace(_space, _joint)
+  using SO2StateSpace::State;
+
+  explicit SO2JointStateSpace(Joint* _joint)
+    : JointStateSpace(_joint)
+    , SO2StateSpace()
   {
     assert(_joint->getNumDofs() == 1);
   }
 
   void getState(StateSpace::State* _state) override
   {
-    static_cast<SO2StateSpace*>(mStateSpace.get())->setAngle(
-      static_cast<SO2StateSpace::State*>(_state),
-      mJoint->getPosition(0));
+    setAngle(static_cast<State*>(_state), mJoint->getPosition(0));
   }
 
   void setState(const StateSpace::State* _state) override
   {
-    mJoint->setPosition(0,
-      static_cast<SO2StateSpace*>(mStateSpace.get())->getAngle(
-        static_cast<const SO2StateSpace::State*>(_state)));
+    mJoint->setPosition(0, getAngle(static_cast<const State*>(_state)));
   }
 };
 
 //=============================================================================
-class SE3JointStateSpace : public JointStateSpace
+class SE3JointStateSpace : public SE3StateSpace, public JointStateSpace
 {
 public:
-  SE3JointStateSpace(std::shared_ptr<SE3StateSpace> _space, Joint* _joint)
-    : JointStateSpace(_space, _joint)
+  using SE3StateSpace::State;
+
+  explicit SE3JointStateSpace(Joint* _joint)
+    : JointStateSpace(_joint)
+    , SE3StateSpace()
+    // This is necessary because of virtual inheritance.
+    , CompoundStateSpace({
+        std::make_shared<SO3StateSpace>(),
+        std::make_shared<RealVectorStateSpace>(3)
+      })
   {
   }
 
   void getState(StateSpace::State* _state) override
   {
-    static_cast<SE3StateSpace*>(mStateSpace.get())->setIsometry(
-      static_cast<SE3StateSpace::State*>(_state),
-        FreeJoint::convertToTransform(mJoint->getPositions()));
+    setIsometry(static_cast<State*>(_state),
+      FreeJoint::convertToTransform(mJoint->getPositions()));
   }
 
   void setState(const StateSpace::State* _state) override
   {
     mJoint->setPositions(FreeJoint::convertToPositions(
-      static_cast<SE3StateSpace*>(mStateSpace.get())->getIsometry(
-        static_cast<const SE3StateSpace::State*>(_state))));
+      getIsometry(static_cast<const SE3StateSpace::State*>(_state))));
   }
 };
 
-
 //=============================================================================
-std::unique_ptr<JointStateSpace> createStateSpace(Joint* _joint)
+std::shared_ptr<JointStateSpace> createStateSpace(Joint* _joint)
 {
-  // Create a StateSpace for the Joint.
   if (isJointOfType<RevoluteJoint>(_joint))
   {
     if (_joint->isCyclic(0))
-      return make_unique<SO2JointStateSpace>(
-        std::make_shared<SO2StateSpace>(), _joint);
+      return std::make_shared<SO2JointStateSpace>(_joint);
     else
-      return make_unique<RealVectorJointStateSpace>(
-        std::make_shared<RealVectorStateSpace>(1), _joint);
+      return std::make_shared<RealVectorJointStateSpace>(_joint);
   }
   else if (isJointOfType<PrismaticJoint>(_joint))
   {
-    return make_unique<RealVectorJointStateSpace>(
-      std::make_shared<RealVectorStateSpace>(1), _joint);
+    return std::make_shared<RealVectorJointStateSpace>(_joint);
   }
   else if (isJointOfType<TranslationalJoint>(_joint))
   {
-    return make_unique<RealVectorJointStateSpace>(
-      std::make_shared<RealVectorStateSpace>(3), _joint);
+    return std::make_shared<RealVectorJointStateSpace>(_joint);
   }
   else if (isJointOfType<FreeJoint>(_joint))
   {
-    return make_unique<SE3JointStateSpace>(
-      std::make_shared<SE3StateSpace>(), _joint);
+    return std::make_shared<SE3JointStateSpace>(_joint);
   }
   // TODO: Handle PlanarJoint, BallJoint, WeldJoint, and EulerJoint.
   else
@@ -178,11 +154,11 @@ std::unique_ptr<JointStateSpace> createStateSpace(Joint* _joint)
 }
 
 //=============================================================================
-std::vector<std::unique_ptr<JointStateSpace>> createStateSpace(
+std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
   MetaSkeleton& _metaskeleton)
 {
-  std::vector<std::unique_ptr<JointStateSpace>> wrappers;
-  wrappers.reserve(_metaskeleton.getNumJoints());
+  std::vector<std::shared_ptr<JointStateSpace>> spaces;
+  spaces.reserve(_metaskeleton.getNumJoints());
 
   for (size_t ijoint = 0; ijoint < _metaskeleton.getNumJoints(); ++ijoint)
   {
@@ -203,26 +179,19 @@ std::vector<std::unique_ptr<JointStateSpace>> createStateSpace(
       }
     }
 
-    wrappers.emplace_back(createStateSpace(joint));
+    spaces.emplace_back(createStateSpace(joint));
   }
 
-  return std::move(wrappers);
+  return std::move(spaces);
 }
 
 } // namespace
 
 //=============================================================================
-JointStateSpace::JointStateSpace(
-      std::shared_ptr<StateSpace> _space, dart::dynamics::Joint* _joint)
-  : mStateSpace(std::move(_space))
-  , mJoint(_joint)
+JointStateSpace::JointStateSpace(dart::dynamics::Joint* _joint)
+  : mJoint(_joint)
 {
-}
-
-//=============================================================================
-const std::shared_ptr<StateSpace>& JointStateSpace::getStateSpace()
-{
-  return mStateSpace;
+  assert(_joint);
 }
 
 //=============================================================================
@@ -235,7 +204,7 @@ dart::dynamics::Joint* JointStateSpace::getJoint()
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(
       MetaSkeletonPtr _metaskeleton,
       std::vector<StateSpacePtr> _stateSpaces,
-      std::vector<std::unique_ptr<JointStateSpace>> _jointSpaces)
+      std::vector<std::shared_ptr<JointStateSpace>> _jointSpaces)
   : CompoundStateSpace(_stateSpaces)
   , mMetaSkeleton(std::move(_metaskeleton))
   , mJointSpaces(std::move(_jointSpaces))
@@ -246,14 +215,13 @@ MetaSkeletonStateSpace::MetaSkeletonStateSpace(
 std::shared_ptr<MetaSkeletonStateSpace> MetaSkeletonStateSpace::create(
   MetaSkeletonPtr _metaskeleton)
 {
-  std::vector<std::unique_ptr<JointStateSpace>> jointSpaces
-    = createStateSpace(*_metaskeleton);
+  auto jointSpaces = createStateSpace(*_metaskeleton);
 
   std::vector<StateSpacePtr> stateSpaces;
   stateSpaces.reserve(jointSpaces.size());
 
   for (const auto& jointSpace : jointSpaces)
-    stateSpaces.push_back(jointSpace->getStateSpace());
+    stateSpaces.push_back(jointSpace);
 
   return std::shared_ptr<MetaSkeletonStateSpace>(new MetaSkeletonStateSpace(
     std::move(_metaskeleton), std::move(stateSpaces), std::move(jointSpaces)));

@@ -11,7 +11,7 @@ namespace statespace {
 template <class> class RealVectorStateHandle;
 
 /// Represents a n-dimensional real vector space.
-class RealVectorStateSpace : public StateSpace
+class RealVectorStateSpace : public virtual StateSpace
 {
 public:
   /// Point in a RealVectorStateSpace.

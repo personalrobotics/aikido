@@ -8,7 +8,7 @@ namespace statespace {
 
 template <class> class SE3StateHandle;
 
-class SE3StateSpace : public CompoundStateSpace 
+class SE3StateSpace : public virtual CompoundStateSpace 
 {
 public:
   class State : public CompoundStateSpace::State
