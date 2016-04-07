@@ -28,6 +28,27 @@ using dart::common::make_unique;
 
 namespace aikido {
 namespace statespace {
+
+//=============================================================================
+class JointStateSpace
+{
+public:
+  JointStateSpace(
+    std::shared_ptr<StateSpace> _space, dart::dynamics::Joint* _joint);
+
+  virtual ~JointStateSpace() = default;
+
+  const std::shared_ptr<StateSpace>& getStateSpace();
+  dart::dynamics::Joint* getJoint();
+
+  virtual void getState(StateSpace::State* _state) = 0;
+  virtual void setState(const StateSpace::State* _state) = 0;
+
+protected:
+  std::shared_ptr<StateSpace> mStateSpace;
+  dart::dynamics::Joint* mJoint;
+};
+
 namespace {
 
 //=============================================================================

@@ -6,42 +6,29 @@
 namespace aikido {
 namespace statespace {
 
+class JointStateSpace;
 
-class JointStateSpace
-{
-public:
-  JointStateSpace(
-    std::shared_ptr<StateSpace> _space, dart::dynamics::Joint* _joint);
-
-  virtual ~JointStateSpace() = default;
-
-  const std::shared_ptr<StateSpace>& getStateSpace();
-  dart::dynamics::Joint* getJoint();
-
-  virtual void getState(StateSpace::State* _state) = 0;
-  virtual void setState(const StateSpace::State* _state) = 0;
-
-protected:
-  std::shared_ptr<StateSpace> mStateSpace;
-  dart::dynamics::Joint* mJoint;
-};
-
-
+/// StateSpace that represents the configuration space of a MetaSkeleton.
 class MetaSkeletonStateSpace : public CompoundStateSpace
 {
 public:
   using CompoundStateSpace::State;
   using CompoundStateSpace::ScopedState;
 
+  /// Create a new MetaSkeletonStateSpace.
   static std::shared_ptr<MetaSkeletonStateSpace> create(
     dart::dynamics::MetaSkeletonPtr _metaskeleton);
   
+  /// Get the MetaSkeleton associated with this StateSpace.
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
 
+  /// Gets the positions of getMetaSkeleton() and store them in _state.
   void getStateFromMetaSkeleton(State* _state) const;
 
+  /// Wrapper for getStateFromMetaSkeleton that returns a ScopedState.
   ScopedState getScopedStateFromMetaSkeleton() const;
 
+  /// Sets the MetaSkeleton's positions to the values stored in _state.
   void setStateOnMetaSkeleton(const State* _state);
 
 protected:
