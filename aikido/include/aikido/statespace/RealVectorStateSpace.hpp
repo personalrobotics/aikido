@@ -4,6 +4,9 @@
 #include "StateSpace.hpp"
 #include "ScopedState.hpp"
 
+#include "../util/RNG.hpp"
+#include "../constraint/Sampleable.hpp"
+
 namespace aikido {
 namespace statespace {
 
@@ -46,6 +49,10 @@ public:
 
   /// Gets the upper and lower bounds of this space.
   const Bounds& getBounds() const;
+
+  /// Generate samples uniformly at random from this state space.
+  constraint::SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const;
 
   /// Gets the value stored in a RealVectorStateSpace::State.
   Eigen::Map<const Eigen::VectorXd> getValue(const State* _state) const;

@@ -5,6 +5,7 @@ using namespace dart::dynamics;
 
 namespace aikido {
 namespace constraint {
+
 //=============================================================================
 IkSampleableConstraint::IkSampleableConstraint(
       statespace::MetaSkeletonStateSpacePtr _stateSpace,
