@@ -23,7 +23,7 @@ TEST(VanDerCorput, DefaultConstructorExcludesEndpoints)
   EXPECT_DOUBLE_EQ(0.5, vdc());
 }
 
-TEST(VanDerCorput, FirstThreeValuesWithoutEndpoints)
+TEST(VanDerCorput, FirstSevenValuesWithoutEndpoints)
 {
   VanDerCorput vdc{1, false};
   EXPECT_DOUBLE_EQ(1./2, vdc());
@@ -35,7 +35,7 @@ TEST(VanDerCorput, FirstThreeValuesWithoutEndpoints)
   EXPECT_DOUBLE_EQ(7./8, vdc());
 }
   
-TEST(VanDerCorput, FirstFiveValuesWithEndpoints)
+TEST(VanDerCorput, FirstNineValuesWithEndpoints)
 {
   VanDerCorput vdc{1, true};
   EXPECT_DOUBLE_EQ(0.0, vdc());
