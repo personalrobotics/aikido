@@ -43,7 +43,7 @@ public:
   {
   }
 
-  Eigen::Map<ValueType> getValue() 
+  Eigen::Map<const Eigen::VectorXd> getValue() 
   {
     return this->getStateSpace()->getValue(this->getState());
   }

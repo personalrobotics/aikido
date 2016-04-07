@@ -37,6 +37,8 @@ private:
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
+using MetaSkeletonStateSpacePtr = std::shared_ptr<MetaSkeletonStateSpace>;
+
 /// Create a JointStateSpace for a Joint whose type is known at compile time.
 template <class JointType>
 std::unique_ptr<JointStateSpace> createJointStateSpaceFor(JointType* _joint);

@@ -20,6 +20,13 @@ using aikido::statespace::RealVectorStateSpace;
 using aikido::statespace::SO2StateSpace;
 using aikido::statespace::SE3StateSpace;
 
+static Eigen::Matrix<double, 1, 1> make_scalar(double _value)
+{
+  Eigen::Matrix<double, 1, 1> matrix;
+  matrix(0, 0) = _value;
+  return matrix;
+}
+
 TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds)
 {
   auto skeleton = Skeleton::create();
@@ -59,7 +66,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds)
   space.getStateFromMetaSkeleton(state);
   EXPECT_DOUBLE_EQ(5., substate.getValue()[0]);
 
-  substate.getValue()[0] = 6.;
+  substate.setValue(make_scalar(6.));
   space.setStateOnMetaSkeleton(state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
@@ -82,7 +89,7 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint)
   space.getStateFromMetaSkeleton(state);
   EXPECT_DOUBLE_EQ(5., substate.getValue()[0]);
 
-  substate.getValue()[0] = 6.;
+  substate.setValue(make_scalar(6.));
   space.setStateOnMetaSkeleton(state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }

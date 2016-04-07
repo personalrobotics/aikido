@@ -19,18 +19,16 @@ TEST(RealVectorStateSpace, Compose)
   RealVectorStateSpace rvss(3);
 
   auto s1 = rvss.createState();
-  s1.getValue() = Eigen::Vector3d(1, 2, 3);
+  s1.setValue(Eigen::Vector3d(1, 2, 3));
 
   auto s2 = rvss.createState();
-  s2.getValue() = Eigen::Vector3d(2, 3, 4);
+  s2.setValue(Eigen::Vector3d(2, 3, 4));
 
   auto out = rvss.createState();
   rvss.compose(s1, s2, out);
 
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
-
 }
-
 
 TEST(SO2StateSpace, Compose)
 {
@@ -43,9 +41,7 @@ TEST(SO2StateSpace, Compose)
   so2.compose(&s1, &s2, &out);
 
   EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
-
 }
-
 
 TEST(SO3StateSpace, Compose)
 {
@@ -108,16 +104,12 @@ TEST(SE3StateSpace, Compose)
   Eigen::Isometry3d pose3 = Eigen::Isometry3d::Identity();
   pose3.rotate(Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX()));
   auto s3 = space.createState();
-  s2.setIsometry(pose3);
+  s3.setIsometry(pose3);
 
   Eigen::Isometry3d expected = pose2 * pose3;
 
   SE3StateSpace::ScopedState out(&space);
   space.compose(s2, s3, out);
-
-  std::cout << "expected\n" << expected.matrix() << "\n"
-            << "actual\n" << out.getIsometry().matrix() << "\n"
-            << std::endl;
 
   EXPECT_TRUE(expected.isApprox(out.getIsometry()));
 }

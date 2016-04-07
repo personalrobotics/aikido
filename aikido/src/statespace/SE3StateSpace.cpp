@@ -1,17 +1,33 @@
-#include <aikido/statespace/SO3StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/SE3StateSpace.hpp>
 
 namespace aikido {
 namespace statespace {
 
+
 //=============================================================================
-SE3StateSpace::SE3StateSpace()
-  : CompoundStateSpace({
-      std::make_shared<SO3StateSpace>(),
-      std::make_shared<RealVectorStateSpace>(3)
-    })
+SE3StateSpace::State::State()
+  : mTransform(Isometry3d::Identity())
 {
+}
+
+//=============================================================================
+SE3StateSpace::State::State(const Isometry3d& _transform)
+  : mTransform(_transform)
+{
+}
+
+//=============================================================================
+auto SE3StateSpace::State::getIsometry() const 
+  -> const Isometry3d&
+{
+  return mTransform;
+}
+
+//=============================================================================
+void SE3StateSpace::State::setIsometry(
+  const Isometry3d& _transform)
+{
+  mTransform = _transform;
 }
 
 //=============================================================================
@@ -21,24 +37,47 @@ auto SE3StateSpace::createState() const -> ScopedState
 }
 
 //=============================================================================
-Eigen::Isometry3d SE3StateSpace::getIsometry(const State* _state) const
+auto SE3StateSpace::getIsometry(const State* _state) const
+  -> const Isometry3d&
 {
-  Eigen::Isometry3d out = Eigen::Isometry3d::Identity();
-  out.rotate(
-    getSubStateHandle<SO3StateSpace>(_state, 0).getQuaternion());
-  out.pretranslate(
-    getSubStateHandle<RealVectorStateSpace>(_state, 1).getValue().head<3>());
-  return out;
+  return _state->getIsometry();
 }
 
 //=============================================================================
 void SE3StateSpace::setIsometry(
-  State* _state, const Eigen::Isometry3d& _transform) const
+  State* _state, const Isometry3d& _transform) const
 {
-  getSubStateHandle<SO3StateSpace>(_state, 0).setQuaternion(
-    Eigen::Quaterniond(_transform.rotation()));
-  getSubStateHandle<RealVectorStateSpace>(_state, 1).setValue(
-    _transform.translation());
+  _state->setIsometry(_transform);
+}
+
+//=============================================================================
+size_t SE3StateSpace::getStateSizeInBytes() const
+{
+  return sizeof(State);
+}
+
+//=============================================================================
+StateSpace::State* SE3StateSpace::allocateStateInBuffer(void* _buffer) const
+{
+  return new (_buffer) State;
+}
+
+//=============================================================================
+void SE3StateSpace::freeStateInBuffer(StateSpace::State* _state) const
+{
+  static_cast<State*>(_state)->~State();
+}
+
+//=============================================================================
+void SE3StateSpace::compose(
+  const StateSpace::State* _state1, const StateSpace::State* _state2,
+  StateSpace::State* _out) const
+{
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto out = static_cast<State*>(_out);
+
+  out->mTransform = state1->mTransform * state2->mTransform;
 }
 
 } // namespace statespace

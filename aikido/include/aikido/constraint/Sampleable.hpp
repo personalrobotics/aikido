@@ -23,7 +23,7 @@ class SampleGenerator;
 class SampleableConstraint {
 public:
   /// Gets the StateSpace that this constraint operates on.
-  virtual std::shared_ptr<statespace::StateSpace> getStateSpace() const = 0;
+  virtual statespace::StateSpacePtr getStateSpace() const = 0;
 
   /// Creates a SampleGenerator for sampling from this constraint.
   virtual std::unique_ptr<SampleGenerator> createSampleGenerator() const = 0;
@@ -40,6 +40,9 @@ public:
   /// Value used to represent a potentially infinite number of samples.
   static constexpr int NO_LIMIT = std::numeric_limits<int>::max();
 
+  /// Gets the StateSpace that this SampleGenerator samples from.
+  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+
   /// Returns one sample from this constraint; returns true if succeeded.
   virtual bool sample(statespace::StateSpace::State* _state) = 0;
 
@@ -49,6 +52,8 @@ public:
   /// Returns whether getNumSamples() > 0.
   virtual bool canSample() const = 0;
 };
+
+using SampleableConstraintPtr = std::shared_ptr<SampleableConstraint>;
 
 
 } // namespace constraint

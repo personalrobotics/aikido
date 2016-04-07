@@ -72,6 +72,9 @@ public:
   TSRSampleGenerator& operator=(TSRSampleGenerator&& other) = delete;
   virtual ~TSRSampleGenerator() = default; 
 
+  // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
+
   /// Return a transform sampled from this TSR.
   ///
   /// This function uses the provided RNG to create a sample `Tw_s` from the

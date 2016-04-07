@@ -1,18 +1,33 @@
 #include <aikido/statespace/SE2StateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <Eigen/Geometry>
 
 namespace aikido {
 namespace statespace {
 
 //=============================================================================
-SE2StateSpace::SE2StateSpace()
-  : CompoundStateSpace({
-      std::make_shared<SO2StateSpace>(),
-      std::make_shared<RealVectorStateSpace>(2)
-    })
+SE2StateSpace::State::State()
+  : mTransform(Isometry2d::Identity())
 {
+}
+
+//=============================================================================
+SE2StateSpace::State::State(const Isometry2d& _transform)
+  : mTransform(_transform)
+{
+}
+
+//=============================================================================
+auto SE2StateSpace::State::getIsometry() const 
+  -> const Isometry2d&
+{
+  return mTransform;
+}
+
+//=============================================================================
+void SE2StateSpace::State::setIsometry(
+  const Isometry2d& _transform)
+{
+  mTransform = _transform;
 }
 
 //=============================================================================
@@ -22,25 +37,48 @@ auto SE2StateSpace::createState() const -> ScopedState
 }
 
 //=============================================================================
-Eigen::Isometry2d SE2StateSpace::getIsometry(const State* _state) const
+auto SE2StateSpace::getIsometry(const State* _state) const
+  -> const Isometry2d&
 {
-  Eigen::Isometry2d out = Eigen::Isometry2d::Identity();
-  out.rotate(
-    getSubStateHandle<SO2StateSpace>(_state, 0).getRotation());
-  out.pretranslate(
-    getSubStateHandle<RealVectorStateSpace>(_state, 1).getValue().head<2>());
-  return out;
+  return _state->getIsometry();
 }
 
 //=============================================================================
 void SE2StateSpace::setIsometry(
-  State* _state, const Eigen::Isometry2d& _transform) const
+  State* _state, const Isometry2d& _transform) const
 {
-  Eigen::Rotation2Dd rotation(0.);
-  rotation.fromRotationMatrix(_transform.rotation());
-  getSubStateHandle<SO2StateSpace>(_state, 0).setRotation(rotation);
-  getSubStateHandle<RealVectorStateSpace>(_state, 1).setValue(
-    _transform.translation());
+  _state->setIsometry(_transform);
+}
+
+
+//=============================================================================
+size_t SE2StateSpace::getStateSizeInBytes() const
+{
+  return sizeof(State);
+}
+
+//=============================================================================
+StateSpace::State* SE2StateSpace::allocateStateInBuffer(void* _buffer) const
+{
+  return new (_buffer) State;
+}
+
+//=============================================================================
+void SE2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
+{
+  static_cast<State*>(_state)->~State();
+}
+
+//=============================================================================
+void SE2StateSpace::compose(
+  const StateSpace::State* _state1, const StateSpace::State* _state2,
+  StateSpace::State* _out) const
+{
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto out = static_cast<State*>(_out);
+
+  out->mTransform = state1->mTransform * state2->mTransform;
 }
 
 } // namespace statespace
