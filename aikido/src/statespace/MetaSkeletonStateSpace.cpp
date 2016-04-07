@@ -1,14 +1,5 @@
 #include <cassert>
 #include <sstream>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/RealVectorJointStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
-#include <aikido/statespace/SO2JointStateSpace.hpp>
-#include <aikido/statespace/SO3StateSpace.hpp>
-#include <aikido/statespace/SE2StateSpace.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
-#include <aikido/statespace/SE3JointStateSpace.hpp>
-#include <aikido/statespace/CompoundStateSpace.hpp>
 #include <aikido/statespace/MetaSkeletonStateSpace.hpp>
 #include <dart/common/StlHelpers.h>
 #include <dart/common/console.h>
