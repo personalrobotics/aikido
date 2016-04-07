@@ -2,7 +2,7 @@
 #include <sstream>
 #include <aikido/statespace/MetaSkeletonStateSpace.hpp>
 #include <dart/common/StlHelpers.h>
-#include <dart/common/console.h>
+#include <dart/common/Console.h>
 
 using dart::dynamics::MetaSkeleton;
 using dart::dynamics::MetaSkeletonPtr;
