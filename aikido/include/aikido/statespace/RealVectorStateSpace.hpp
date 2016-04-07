@@ -36,6 +36,9 @@ public:
   /// Helper function to create a ScopedState.
   ScopedState createState() const;
 
+  /// Gets the dimension of this space.
+  int getDimension() const;
+
   /// Gets the value stored in a RealVectorStateSpace::State.
   Eigen::Map<Eigen::VectorXd> getValue(State* _state) const;
 
