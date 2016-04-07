@@ -40,6 +40,10 @@ target_link_libraries(test_CatkinResourceRetriever_catkin_make
 target_compile_definitions(test_CatkinResourceRetriever_catkin_make
   PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_MAKE_WORKSPACE}/devel")
 
+# VanDerCorput tests
+add_aikido_test(test_VanDerCorput test_VanDerCorput.cpp)
+target_link_libraries(test_VanDerCorput "${PROJECT_NAME}")
+
 set(CATKIN_BUILD_WORKSPACE
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_build_workspace")
 file(COPY "../test_resources/catkin_workspace/"
