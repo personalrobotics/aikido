@@ -1,24 +1,29 @@
 #ifndef AIKIDO_VANDERCORPUT_HPP_
 #define AIKIDO_VANDERCORPUT_HPP_
 
+#include <tuple>
+
 namespace aikido {
 namespace util {
 
 class VanDerCorput
 {
 public:
-  VanDerCorput(const int span=1, const bool include_endpoints=false);
+  VanDerCorput(const double span=1, const bool include_endpoints=false);
 
   double operator()();
+  double current_resolution() const { return resolution; };
 
 private:
+  typedef std::pair<double, double> DTuple;
   constexpr static int BASE{2};
 
-  double compute_vandercorput(int n);
+  DTuple compute_vandercorput(int n) const;
 
-  const int span;
+  const double span;
   const bool include_endpoints;
   int n;
+  double resolution;
 };
 
 }  // util
