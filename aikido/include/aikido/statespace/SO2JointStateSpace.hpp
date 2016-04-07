@@ -6,6 +6,7 @@
 namespace aikido {
 namespace statespace {
 
+/// Wrap a single DOF joint in a SO2StateSpace.
 class SO2JointStateSpace : public SO2StateSpace, public JointStateSpace
 {
 public:
@@ -13,8 +14,10 @@ public:
 
   explicit SO2JointStateSpace(dart::dynamics::Joint* _joint);
 
+  // Documentation inherited.
   void getState(StateSpace::State* _state) const override;
 
+  // Documentation inherited.
   void setState(const StateSpace::State* _state) const override;
 };
 

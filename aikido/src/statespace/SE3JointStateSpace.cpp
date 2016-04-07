@@ -5,6 +5,7 @@
 namespace aikido {
 namespace statespace {
 
+//=============================================================================
 SE3JointStateSpace::SE3JointStateSpace(dart::dynamics::Joint* _joint)
   : JointStateSpace(_joint)
   , SE3StateSpace()
@@ -16,6 +17,7 @@ SE3JointStateSpace::SE3JointStateSpace(dart::dynamics::Joint* _joint)
 {
 }
 
+//=============================================================================
 void SE3JointStateSpace::getState(StateSpace::State* _state) const
 {
   setIsometry(static_cast<State*>(_state),
@@ -23,6 +25,7 @@ void SE3JointStateSpace::getState(StateSpace::State* _state) const
       mJoint->getPositions()));
 }
 
+//=============================================================================
 void SE3JointStateSpace::setState(const StateSpace::State* _state) const
 {
   mJoint->setPositions(
