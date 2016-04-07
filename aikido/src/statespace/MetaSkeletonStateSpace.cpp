@@ -1,6 +1,5 @@
 #include <cassert>
 #include <sstream>
-#include <aikido/statespace/DartStateSpace.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/RealVectorJointStateSpace.hpp>
 #include <aikido/statespace/SO2StateSpace.hpp>
@@ -10,6 +9,7 @@
 #include <aikido/statespace/SE3StateSpace.hpp>
 #include <aikido/statespace/SE3JointStateSpace.hpp>
 #include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
 #include <dart/common/StlHelpers.h>
 #include <dart/common/console.h>
 
@@ -61,38 +61,6 @@ T* isJointOfType(dart::dynamics::Joint* _joint)
 }
 
 //=============================================================================
-std::shared_ptr<JointStateSpace> createStateSpace(Joint* _joint)
-{
-  if (const auto revolute_joint = isJointOfType<RevoluteJoint>(_joint))
-  {
-    if (_joint->isCyclic(0))
-      return std::make_shared<SO2JointStateSpace>(revolute_joint);
-    else
-      return std::make_shared<RealVectorJointStateSpace>(revolute_joint);
-  }
-  else if (isJointOfType<PrismaticJoint>(_joint))
-  {
-    return std::make_shared<RealVectorJointStateSpace>(_joint);
-  }
-  else if (isJointOfType<TranslationalJoint>(_joint))
-  {
-    return std::make_shared<RealVectorJointStateSpace>(_joint);
-  }
-  else if (const auto free_joint = isJointOfType<FreeJoint>(_joint))
-  {
-    return std::make_shared<SE3JointStateSpace>(free_joint);
-  }
-  // TODO: Handle PlanarJoint, BallJoint, WeldJoint, and EulerJoint.
-  else
-  {
-    std::stringstream msg;
-    msg << "Joint '" << _joint->getName() << "' has unsupported type '"
-         << _joint->getType() << "'.";
-    throw std::runtime_error(msg.str());
-  }
-}
-
-//=============================================================================
 std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
   MetaSkeleton& _metaskeleton)
 {
@@ -118,7 +86,7 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
       }
     }
 
-    spaces.emplace_back(createStateSpace(joint));
+    spaces.emplace_back(createJointStateSpace(joint).release());
   }
 
   return std::move(spaces);
@@ -169,6 +137,28 @@ void MetaSkeletonStateSpace::setStateOnMetaSkeleton(const State* _state)
     jointSpace->setState(getSubState(_state, ijoint));
   }
 }
+
+//=============================================================================
+std::unique_ptr<JointStateSpace> createJointStateSpace(Joint* _joint)
+{
+  auto space = detail::ForOneOf<
+      RevoluteJoint,
+      PrismaticJoint,
+      TranslationalJoint,
+      FreeJoint
+    >::create(_joint);
+
+  if (!space)
+  {
+    std::stringstream msg;
+    msg << "Joint '" << _joint->getName() << "' has unsupported type '"
+         << _joint->getType() << "'.";
+    throw std::runtime_error(msg.str());
+  }
+
+  return std::move(space);
+}
+
 
 } // namespace statespace
 } // namespace aikido

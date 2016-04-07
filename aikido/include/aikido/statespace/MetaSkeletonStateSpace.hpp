@@ -1,8 +1,8 @@
-#ifndef AIKIDO_STATESPACE_DARTSTATESPACE_H_
-#define AIKIDO_STATESPACE_DARTSTATESPACE_H_
+#ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
+#define AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
 #include <dart/dynamics/dynamics.h>
-#include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/JointStateSpace.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -37,9 +37,19 @@ private:
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
+/// Create a JointStateSpace for a Joint whose type is known at compile time.
+template <class JointType>
+std::unique_ptr<JointStateSpace> createJointStateSpaceFor(JointType* _joint);
+
+/// Create a JointStateSpace for an aribtrary Joint. This is significantly
+/// slower than createJointStateSpaceFor(), so only use this function if the
+/// Joint's type is not known at compile time.
+std::unique_ptr<JointStateSpace> createJointStateSpace(
+  dart::dynamics::Joint* _joint);
+
 } // namespace statespace
 } // namespace aikido
 
 #include "detail/DartStateSpace.hpp"
 
-#endif // ifndef AIKIDO_STATESPACE_DARTSTATESPACE_H_
+#endif // ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
