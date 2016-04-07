@@ -108,16 +108,12 @@ TEST(SE3StateSpace, Compose)
   Eigen::Isometry3d pose3 = Eigen::Isometry3d::Identity();
   pose3.rotate(Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX()));
   auto s3 = space.createState();
-  s2.setIsometry(pose3);
+  s3.setIsometry(pose3);
 
   Eigen::Isometry3d expected = pose2 * pose3;
 
   SE3StateSpace::ScopedState out(&space);
   space.compose(s2, s3, out);
-
-  std::cout << "expected\n" << expected.matrix() << "\n"
-            << "actual\n" << out.getIsometry().matrix() << "\n"
-            << std::endl;
 
   EXPECT_TRUE(expected.isApprox(out.getIsometry()));
 }

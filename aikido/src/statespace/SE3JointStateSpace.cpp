@@ -9,11 +9,6 @@ namespace statespace {
 SE3JointStateSpace::SE3JointStateSpace(dart::dynamics::FreeJoint* _joint)
   : JointStateSpace(_joint)
   , SE3StateSpace()
-  // This is necessary because of virtual inheritance.
-  , CompoundStateSpace({
-      std::make_shared<SO3StateSpace>(),
-      std::make_shared<RealVectorStateSpace>(3)
-    })
 {
 }
 
