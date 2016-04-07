@@ -1,21 +1,13 @@
-#include <sstream>
 #include <aikido/statespace/SO2JointStateSpace.hpp>
 
 namespace aikido {
 namespace statespace {
 
 //=============================================================================
-SO2JointStateSpace::SO2JointStateSpace(dart::dynamics::Joint* _joint)
+SO2JointStateSpace::SO2JointStateSpace(dart::dynamics::SingleDofJoint* _joint)
   : JointStateSpace(_joint)
   , SO2StateSpace()
 {
-  if (_joint->getNumDofs() != 1)
-  {
-    std::stringstream msg;
-    msg << "Joint '" << _joint->getName() << "' has " << _joint->getNumDofs()
-        << ", but SO2JointStateSpace only supports one DOF.";
-    throw std::runtime_error(msg.str());
-  }
 }
 
 //=============================================================================

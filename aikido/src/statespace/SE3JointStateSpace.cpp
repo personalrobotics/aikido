@@ -6,7 +6,7 @@ namespace aikido {
 namespace statespace {
 
 //=============================================================================
-SE3JointStateSpace::SE3JointStateSpace(dart::dynamics::Joint* _joint)
+SE3JointStateSpace::SE3JointStateSpace(dart::dynamics::FreeJoint* _joint)
   : JointStateSpace(_joint)
   , SE3StateSpace()
   // This is necessary because of virtual inheritance.

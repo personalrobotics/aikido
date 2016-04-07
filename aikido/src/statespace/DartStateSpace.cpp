@@ -63,12 +63,12 @@ T* isJointOfType(dart::dynamics::Joint* _joint)
 //=============================================================================
 std::shared_ptr<JointStateSpace> createStateSpace(Joint* _joint)
 {
-  if (isJointOfType<RevoluteJoint>(_joint))
+  if (const auto revolute_joint = isJointOfType<RevoluteJoint>(_joint))
   {
     if (_joint->isCyclic(0))
-      return std::make_shared<SO2JointStateSpace>(_joint);
+      return std::make_shared<SO2JointStateSpace>(revolute_joint);
     else
-      return std::make_shared<RealVectorJointStateSpace>(_joint);
+      return std::make_shared<RealVectorJointStateSpace>(revolute_joint);
   }
   else if (isJointOfType<PrismaticJoint>(_joint))
   {
@@ -78,9 +78,9 @@ std::shared_ptr<JointStateSpace> createStateSpace(Joint* _joint)
   {
     return std::make_shared<RealVectorJointStateSpace>(_joint);
   }
-  else if (isJointOfType<FreeJoint>(_joint))
+  else if (const auto free_joint = isJointOfType<FreeJoint>(_joint))
   {
-    return std::make_shared<SE3JointStateSpace>(_joint);
+    return std::make_shared<SE3JointStateSpace>(free_joint);
   }
   // TODO: Handle PlanarJoint, BallJoint, WeldJoint, and EulerJoint.
   else

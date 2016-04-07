@@ -12,7 +12,7 @@ class SO2JointStateSpace : public SO2StateSpace, public JointStateSpace
 public:
   using SO2StateSpace::State;
 
-  explicit SO2JointStateSpace(dart::dynamics::Joint* _joint);
+  explicit SO2JointStateSpace(dart::dynamics::SingleDofJoint* _joint);
 
   // Documentation inherited.
   void getState(StateSpace::State* _state) const override;

@@ -12,7 +12,7 @@ class SE3JointStateSpace : public SE3StateSpace, public JointStateSpace
 public:
   using SE3StateSpace::State;
 
-  SE3JointStateSpace(dart::dynamics::Joint* _joint);
+  explicit SE3JointStateSpace(dart::dynamics::FreeJoint* _joint);
 
   // Documentation inherited.
   void getState(StateSpace::State* _state) const;
