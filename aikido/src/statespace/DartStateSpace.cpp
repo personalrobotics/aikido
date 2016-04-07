@@ -36,7 +36,7 @@ T* isJointOfType(dart::dynamics::Joint* _joint)
 {
   // It's safe to do a pointer comparison here, since getType is guaranteed to
   // return the same reference to the corresponding getTypeStatic method.
-  if (&_joint->getType() == &PrismaticJoint::getStaticType())
+  if (&_joint->getType() == &T::getStaticType())
     return static_cast<T*>(_joint);
   else
     return nullptr;
@@ -150,7 +150,7 @@ std::unique_ptr<JointStateSpace> createStateSpace(Joint* _joint)
   else
   {
     std::stringstream msg;
-    msg << "Joint '" << _joint->getName() << "') has unsupported type '"
+    msg << "Joint '" << _joint->getName() << "' has unsupported type '"
          << _joint->getType() << "'.";
     throw std::runtime_error(msg.str());
   }

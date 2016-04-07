@@ -2,6 +2,7 @@
 add_subdirectory(gtest EXCLUDE_FROM_ALL)
 include_directories("${gtest_SOURCE_DIR}/include")
 
+# Use set_property instead of set to make this work between directories.
 function(add_aikido_test target_name)
   add_executable("${target_name}" EXCLUDE_FROM_ALL ${ARGN})
   target_link_libraries("${target_name}" gtest gtest_main)
@@ -16,6 +17,13 @@ target_link_libraries(test_TSR "${PROJECT_NAME}")
 
 add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
 target_link_libraries(test_IKSampleable "${PROJECT_NAME}")
+
+# StateSpace tests
+add_aikido_test(test_StateSpace statespace/test_StateSpace.cpp)
+target_link_libraries(test_StateSpace "${PROJECT_NAME}")
+
+add_aikido_test(test_DartStateSpace statespace/test_DartStateSpace.cpp)
+target_link_libraries(test_DartStateSpace "${PROJECT_NAME}" ${DART_LIBRARIES})
 
 # StateSpace tests
 add_subdirectory(statespace)
