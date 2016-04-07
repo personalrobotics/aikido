@@ -4,18 +4,23 @@
 #include <vector>
 #include <random>
 
+using aikido::statespace::SE3StateSpace;
+
 namespace aikido {
 namespace constraint {
 
 //=============================================================================
-TSRSampleGenerator::TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
-                     const Eigen::Isometry3d& _T0_w,
-                     const Eigen::Matrix<double, 6, 2>& _Bw,
-                     const Eigen::Isometry3d& _Tw_e)
-: mRng(std::move(_rng))
-, mT0_w(_T0_w)
-, mBw(_Bw)
-, mTw_e(_Tw_e)
+TSRSampleGenerator::TSRSampleGenerator(
+      std::unique_ptr<util::RNG> _rng,
+      std::shared_ptr<SE3StateSpace> _stateSpace,
+      const Eigen::Isometry3d& _T0_w,
+      const Eigen::Matrix<double, 6, 2>& _Bw,
+      const Eigen::Isometry3d& _Tw_e)
+  : mRng(std::move(_rng))
+  , mStateSpace(std::move(_stateSpace))
+  , mT0_w(_T0_w)
+  , mBw(_Bw)
+  , mTw_e(_Tw_e)
 {
   if (!mRng)
   {
@@ -26,18 +31,17 @@ TSRSampleGenerator::TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
 
 
 //=============================================================================
-boost::optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
+bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
+  using statespace::SE3StateSpace;
 
-  // Check if all samples are exhausted.
   Eigen::Vector3d translation; 
   Eigen::Vector3d angles;
 
   std::vector<std::uniform_real_distribution<double> > distributions;
   for(int i = 0; i < 6; i++)
   {
-    distributions.push_back(
-      std::uniform_real_distribution<double>(mBw(i, 0), mBw(i, 1)));
+    distributions.emplace_back(mBw(i, 0), mBw(i, 1));
   }
 
   for(int i = 0; i < 3; i++)
@@ -50,7 +54,6 @@ boost::optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
     angles(i) = distributions.at(i+3)(*mRng);
   }
 
-
   Eigen::Matrix3d rotation;
   rotation = Eigen::AngleAxisd(angles(2), Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(angles(1), Eigen::Vector3d::UnitY()) *
@@ -62,8 +65,9 @@ boost::optional<Eigen::Isometry3d> TSRSampleGenerator::sample()
   Tw_s.linear() = rotation;
 
   Eigen::Isometry3d T0_s(mT0_w * Tw_s * mTw_e);
+  mStateSpace->setIsometry(static_cast<SE3StateSpace::State*>(_state), T0_s);
 
-  return T0_s;
+  return true;
 }
 
 

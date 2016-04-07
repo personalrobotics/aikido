@@ -15,8 +15,8 @@ endfunction()
 add_aikido_test(test_TSR test_TSR.cpp)
 target_link_libraries(test_TSR "${PROJECT_NAME}")
 
-add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
-target_link_libraries(test_IKSampleable "${PROJECT_NAME}")
+#add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
+#target_link_libraries(test_IKSampleable "${PROJECT_NAME}")
 
 # StateSpace tests
 add_aikido_test(test_StateSpace statespace/test_StateSpace.cpp)

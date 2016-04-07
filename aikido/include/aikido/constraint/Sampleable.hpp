@@ -5,13 +5,13 @@
 #include <memory>
 #include <boost/optional.hpp>
 
+#include "../statespace/StateSpace.hpp"
 #include "../util/RNG.hpp"
 
 namespace aikido {
 namespace constraint {
 
-template <class T> class SampleGenerator;
-
+class SampleGenerator;
 
 /// Constraint that may be sampled from. To draw a sample from this constraint,
 /// use createSampleGenerator() to create a SampleGenerator<T> and call its
@@ -20,13 +20,13 @@ template <class T> class SampleGenerator;
 /// samples. For that reason, you should be careful to use the same
 /// SampleGenerator<T> when obtaining a sequence of samples to avoid
 /// re-sampling the beginning of the same deterministic sequence repeatedly.
-template <class T>
 class SampleableConstraint {
 public:
-  using SampleGeneratorPtr = std::unique_ptr<SampleGenerator<T>>;
+  /// Gets the StateSpace that this constraint operates on.
+  virtual std::shared_ptr<statespace::StateSpace> getStateSpace() const = 0;
 
   /// Creates a SampleGenerator for sampling from this constraint.
-  virtual SampleGeneratorPtr createSampleGenerator() const = 0;
+  virtual std::unique_ptr<SampleGenerator> createSampleGenerator() const = 0;
 };
 
 
@@ -35,20 +35,19 @@ public:
 /// the return value of getNumSamples(). Note that this value provides only an
 /// upper bound on the number of samples available: sample() may transiently
 /// fail, i.e. return an empty optional<T>, at any point before then.
-template <class T>
 class SampleGenerator {
 public:
-  /// Returns one sample from this constraint or failure.
-  virtual boost::optional<T> sample() = 0;
+  /// Value used to represent a potentially infinite number of samples.
+  static constexpr int NO_LIMIT = std::numeric_limits<int>::max();
+
+  /// Returns one sample from this constraint; returns true if succeeded.
+  virtual bool sample(statespace::StateSpace::State* _state) = 0;
 
   /// Gets an upper bound on the number of samples remaining or NO_LIMIT.
   virtual int getNumSamples() const = 0;
 
   /// Returns whether getNumSamples() > 0.
   virtual bool canSample() const = 0;
-
-  /// Value used to represent a potentially infinite number of samples.
-  static constexpr int NO_LIMIT = std::numeric_limits<int>::max();
 };
 
 

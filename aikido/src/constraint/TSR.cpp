@@ -1,5 +1,6 @@
 #include <aikido/constraint/TSR.hpp>
 #include <dart/common/Console.h>
+#include <dart/common/StlHelpers.h>
 #include <boost/format.hpp>
 #include <stdexcept>
 #include <math.h>
@@ -7,6 +8,7 @@
 
 using boost::format;
 using boost::str;
+using aikido::statespace::SE3StateSpace;
 
 namespace aikido {
 namespace constraint {
@@ -17,6 +19,7 @@ TSR::TSR(std::unique_ptr<util::RNG> _rng,
          const Eigen::Matrix<double, 6, 2>& _Bw,
          const Eigen::Isometry3d& _Tw_e)
 : mRng(std::move(_rng))
+, mStateSpace(std::make_shared<SE3StateSpace>())
 , mT0_w(_T0_w)
 , mBw(_Bw)
 , mTw_e(_Tw_e)
@@ -30,6 +33,7 @@ TSR::TSR(const Eigen::Isometry3d& _T0_w,
          const Eigen::Isometry3d& _Tw_e)
 : mRng(std::unique_ptr<util::RNG>(
     new util::RNGWrapper<std::default_random_engine>(0)))
+, mStateSpace(std::make_shared<SE3StateSpace>())
 , mT0_w(_T0_w)
 , mBw(_Bw)
 , mTw_e(_Tw_e)
@@ -40,6 +44,7 @@ TSR::TSR(const Eigen::Isometry3d& _T0_w,
 //=============================================================================
 TSR::TSR(const TSR& other)
 : mRng(std::move(other.mRng->clone()))
+, mStateSpace(std::make_shared<SE3StateSpace>())
 , mT0_w(other.mT0_w)
 , mTw_e(other.mTw_e)
 , mBw(other.mBw)
@@ -50,6 +55,7 @@ TSR::TSR(const TSR& other)
 //=============================================================================
 TSR::TSR(TSR&& other)
 : mRng(std::move(other.mRng))
+, mStateSpace(std::make_shared<SE3StateSpace>())
 , mT0_w(other.mT0_w)
 , mTw_e(other.mTw_e)
 , mBw(other.mBw)
@@ -64,7 +70,9 @@ TSR& TSR::operator=(const TSR& other)
   mT0_w = other.mT0_w;
   mTw_e = other.mTw_e;
   mBw = other.mBw;
-  
+
+  // Intentionally don't assign StateSpace. 
+
   return *this;
 }
 
@@ -72,6 +80,7 @@ TSR& TSR::operator=(const TSR& other)
 TSR& TSR::operator=(TSR&& other)
 {
   mRng = std::move(other.mRng);
+  mStateSpace = std::move(other.mStateSpace);
   mT0_w = std::move(other.mT0_w);
   mTw_e = std::move(other.mTw_e);
   mBw = std::move(other.mBw);
@@ -80,8 +89,19 @@ TSR& TSR::operator=(TSR&& other)
 }
 
 //=============================================================================
-std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> 
-TSR::createSampleGenerator() const
+std::shared_ptr<statespace::StateSpace> TSR::getStateSpace() const
+{
+  return mStateSpace;
+}
+
+//=============================================================================
+std::shared_ptr<statespace::SE3StateSpace> TSR::getSE3StateSpace() const
+{
+  return mStateSpace;
+}
+
+//=============================================================================
+std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 {
   validate();
 
@@ -104,7 +124,7 @@ TSR::createSampleGenerator() const
               " many times.\n";
 
   return std::unique_ptr<TSRSampleGenerator>(new TSRSampleGenerator(
-    mRng->clone(), mT0_w, mBw, mTw_e));
+    mRng->clone(), mStateSpace, mT0_w, mBw, mTw_e));
 }
 
 //=============================================================================
