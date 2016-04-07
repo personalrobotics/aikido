@@ -34,10 +34,9 @@ public:
   using CompoundStateSpace::State;
   using CompoundStateSpace::ScopedState;
 
-  /// Create a new MetaSkeletonStateSpace.
-  static std::shared_ptr<MetaSkeletonStateSpace> create(
-    dart::dynamics::MetaSkeletonPtr _metaskeleton);
-  
+  /// Create a StateSpace for the Joints in the MetaSkeleton.
+  MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton);
+
   /// Get the MetaSkeleton associated with this StateSpace.
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
 
@@ -53,9 +52,6 @@ public:
 
   /// Sets the MetaSkeleton's positions to the values stored in _state.
   void setStateOnMetaSkeleton(const State* _state);
-
-protected:
-  MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton);
 
 private:
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;

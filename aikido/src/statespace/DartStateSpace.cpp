@@ -223,14 +223,6 @@ MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
 }
 
 //=============================================================================
-std::shared_ptr<MetaSkeletonStateSpace> MetaSkeletonStateSpace::create(
-  MetaSkeletonPtr _metaskeleton)
-{
-  return std::shared_ptr<MetaSkeletonStateSpace>(new MetaSkeletonStateSpace(
-    std::move(_metaskeleton)));
-}
-
-//=============================================================================
 MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 {
   return mMetaSkeleton;
