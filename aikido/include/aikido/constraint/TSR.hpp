@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_TSR_H_
 
 #include "Sampleable.hpp"
+#include "../statespace/SE3StateSpace.hpp"
 #include <Eigen/Dense>
 #include "Projectable.hpp"
 #include "Differentiable.hpp"
@@ -9,18 +10,7 @@
 namespace aikido {
 namespace constraint {
 
-class TSR;
-class TSRSampleGenerator;
-class TSRConstraint;
-
-
-using TSRPtr = std::shared_ptr<TSR>;
-using TSRConstPtr = std::shared_ptr<const TSR>;
-using TSRUniquePtr = std::unique_ptr<TSR>;
-using TSRSamplerUniquePtr = std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>;
-
-
-class TSR : public SampleableConstraint<Eigen::Isometry3d>
+class TSR : public SampleableConstraint
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -46,8 +36,13 @@ public:
   virtual ~TSR() = default;
 
   // Documentation inherited.
-  std::unique_ptr<SampleGenerator<Eigen::Isometry3d>>
-    createSampleGenerator() const override;
+  statespace::StateSpacePtr getStateSpace() const override;
+
+  // Documentation inherited.
+  std::shared_ptr<statespace::SE3StateSpace> getSE3StateSpace() const;
+
+  // Documentation inherited.
+  std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
   /// Throws an invalid_argument exception if this TSR is invalid.
   void validate() const;
@@ -66,10 +61,11 @@ public:
 
 private:
   std::unique_ptr<util::RNG> mRng;
+  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
 };
 
 
-class TSRSampleGenerator : public SampleGenerator<Eigen::Isometry3d>
+class TSRSampleGenerator : public SampleGenerator
 {
 public:
   TSRSampleGenerator(const TSRSampleGenerator&) = delete;
@@ -77,6 +73,9 @@ public:
   TSRSampleGenerator& operator=(const TSRSampleGenerator& other) = delete;
   TSRSampleGenerator& operator=(TSRSampleGenerator&& other) = delete;
   virtual ~TSRSampleGenerator() = default; 
+
+  // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
 
   /// Return a transform sampled from this TSR.
   ///
@@ -86,7 +85,7 @@ public:
   ///
   /// \param[in] rng Random number generator from which to sample
   /// \return a transform within the bounds of this TSR.
-  boost::optional<Eigen::Isometry3d> sample() override;
+  bool sample(statespace::StateSpace::State* _state) override;
 
   // Documentation inherited.
   bool canSample() const override;
@@ -97,11 +96,14 @@ public:
 private:
   // For internal use only.
   TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
+                     std::shared_ptr<statespace::SE3StateSpace> _stateSpace,
                      const Eigen::Isometry3d& _T0_w,
                      const Eigen::Matrix<double, 6, 2>& _Bw,
                      const Eigen::Isometry3d& _Tw_e);
   
   std::unique_ptr<util::RNG> mRng;
+
+  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
 
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;
@@ -115,48 +117,7 @@ private:
   friend class TSR;
 };
 
-
-class TSRConstraint : public Differentiable, 
-                      public Projectable
-{
-
-public: 
-  TSRConstraint(const TSRPtr& _tsr, int _maxIteration=1000);
-  // :
-   
-  /// Size of constraints.
-  size_t getConstraintDimension() const override;
-
-  /// Value of constraints at _s.
-  /// _s should be SE3State or CompoundState containing single SE3State.
-  /// Returns 0-vector if _s is in TSR.
-  Eigen::VectorXd getValue(const state::StatePtr& _s) const;
-
-  /// Jacobian of constraints at _s.
-  /// _s should be SE3State or CompoundState containing single SE3State.
-  /// Returns SE3JacobianPtr for SE3State and CompoundJacobian for CompoundState.
-  state::JacobianPtr getJacobian(const state::StatePtr& _s) const override;
-
-  /// Returns a vector containing each constraint's type.
-  std::vector<ConstraintType> getConstraintTypes() const override;
-
-
-  /// True if this Projectable contains _s
-  bool contains(const state::StatePtr& _s) const override;
-
-  /// Returns projection of _q in this constraint.
-  boost::optional<state::StatePtr> project(const state::StatePtr& _s) override;
-
-
-private:
-
-  /// Takes SE3 or CompoundStatePtr and return SE3StatePtr.
-  state::SE3StatePtr convertToSE3(const state::StatePtr& _s) const;
-
-  TSRPtr mTsr;
-  int mMaxIteration;
-
-};
+using TSRPtr = std::shared_ptr<TSR>;
 
 } // namespace constraint
 } // namespace aikido

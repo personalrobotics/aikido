@@ -1,0 +1,25 @@
+dist: trusty
+sudo: required
+language: generic
+env:
+  global:
+  - TIMEOUT=30
+cache:
+- apt
+# Install test fixture dependencies.
+before_install:
+- mkdir -p "${HOME}/workspace/src"
+- cd "${HOME}/workspace"
+- git clone https://github.com/personalrobotics/pr-cleanroom.git scripts
+- curl -sS "${DISTRIBUTION}" | ./scripts/internal-convert.py > distribution.yml
+- ./scripts/internal-setup.sh
+- export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
+install:
+- mv "${TRAVIS_BUILD_DIR}" src
+- ./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}"
+script:
+- ./scripts/internal-build.sh ${PACKAGE_NAMES}
+- ./scripts/internal-test.sh ${PACKAGE_NAMES}
+- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 --make-args tests test -- aikido
+after_script:
+- ./scripts/view-all-results.sh test_results
