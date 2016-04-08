@@ -83,7 +83,7 @@ aikido::path::TrajectoryPtr Plan(
   assert(q.size() == num_dof);
   
   aikido::statespace::MetaSkeletonStateSpace stateSpace(skeleton);
-
+  auto currentState=stateSpace.createState();
   // FIXME: Check if the constraint state space is compatible with the skeleton 
 
   do {
@@ -111,8 +111,11 @@ aikido::path::TrajectoryPtr Plan(
       try {
         CheckDofLimits(skeleton, q, qd);
         skeleton->setPositions(q);
-        
-        //if(!constraint->isSatisfied( //FIXME: Put constraint check here
+       
+        stateSpace.getStateFromMetaSkeleton(currentState); 
+        if(!constraint->isSatisfied(currentState)) {          
+         //FIXME: Put error here
+         }
         
         
       } catch (VectorFieldTerminated const &e) {
