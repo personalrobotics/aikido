@@ -65,6 +65,9 @@ public:
   /// Get a measure of the space (this can be thought of as a generalization of volume) 
   virtual double getMeasure() const = 0;
 
+  /// Bring the state within the bounds of the state space
+  virtual void enforceBounds(StateSpace::State* _state) const = 0;
+
   /// Check if a state is inside the bounding box. 
   /// For unbounded spaces this function can always return true.
   virtual bool satisfiesBounds(const StateSpace::State* _state) const = 0;

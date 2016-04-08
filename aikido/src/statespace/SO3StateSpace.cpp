@@ -102,6 +102,12 @@ double SO3StateSpace::getMeasure() const
 }
 
 //=============================================================================
+void SO3StateSpace::enforceBounds(StateSpace::State* _state) const 
+{
+    return;
+}
+
+//=============================================================================
 bool SO3StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
 {
     return true;

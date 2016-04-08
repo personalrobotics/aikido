@@ -83,7 +83,7 @@ void SE3StateSpace::compose(
 //=============================================================================
 unsigned int SE3StateSpace::getDimension() const 
 {
-
+    return 6;
 }
 
 //=============================================================================
@@ -96,6 +96,12 @@ double SE3StateSpace::getMaximumExtent() const
 double SE3StateSpace::getMeasure() const 
 {
 
+}
+
+//=============================================================================
+void SE3StateSpace::enforceBounds(StateSpace::State* _state) const 
+{
+ 
 }
 
 //=============================================================================

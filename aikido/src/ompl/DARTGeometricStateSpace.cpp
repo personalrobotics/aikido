@@ -26,15 +26,15 @@ namespace aikido {
         /// Bring the state within the bounds of the state space. 
         /// For unbounded spaces this function can be a no-op.
         void DARTGeometricStateSpace::enforceBounds(ompl::base::State* _state) const {
-//            auto st = static_cast<StateType*>(_state);
-//            mStateSpace->enforceBounds(st->mState);
+            auto st = static_cast<StateType*>(_state);
+            mStateSpace->enforceBounds(st->mState);
         }
 
         /// Check if a state is inside the bounding box. 
         /// For unbounded spaces this function can always return true.
         bool DARTGeometricStateSpace::satisfiesBounds(const ompl::base::State* _state) const {
-//            auto st = static_cast<const StateType*>(_state);
-//            return mStateSpace->satisfiesBounds(st->mState);
+            auto st = static_cast<const StateType*>(_state);
+            return mStateSpace->satisfiesBounds(st->mState);
         }
 
         /// Copy a state to another.

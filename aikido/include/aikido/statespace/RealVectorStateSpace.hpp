@@ -74,6 +74,9 @@ public:
   double getMeasure() const override;
 
   // Documentation inherited
+  void enforceBounds(StateSpace::State* _state) const override;
+
+  // Documentation inherited
   bool satisfiesBounds(const StateSpace::State* _state) const override;
 
   // Documentation inherited

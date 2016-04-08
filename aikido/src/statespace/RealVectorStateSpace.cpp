@@ -144,11 +144,30 @@ double RealVectorStateSpace::getMaximumExtent() const
 double RealVectorStateSpace::getMeasure() const 
 {
     double m = 1.0;
-    for (size_t i; i < mBounds.rows(); ++i)
+    for (size_t i = 0; i < mBounds.rows(); ++i)
     {
         m *= mBounds(i,1) - mBounds(i,0);
     }
     return m;
+}
+
+//=============================================================================
+void RealVectorStateSpace::enforceBounds(StateSpace::State* _state) const 
+{
+    auto state = static_cast<State*>(_state);
+    auto value = getMutableValue(state);
+    
+    for (size_t i = 0; i < mBounds.rows(); ++i)
+    {
+        if(value[i] > mBounds(i,1))
+        {
+            value[i] = mBounds(i,1);
+        }
+        else if(value[i] < mBounds(i,0))
+        {
+            value[i] = mBounds(i,0);
+        }
+    }
 }
 
 //=============================================================================
@@ -157,7 +176,7 @@ bool RealVectorStateSpace::satisfiesBounds(const StateSpace::State* _state) cons
     auto state = static_cast<const State*>(_state);
     auto value = getValue(state);
 
-    for (size_t i; i < mBounds.rows(); ++i)
+    for (size_t i = 0; i < mBounds.rows(); ++i)
     {
         if(value[i] - std::numeric_limits<double>::epsilon() > mBounds(i,1) ||
            value[i] + std::numeric_limits<double>::epsilon() < mBounds(i,0))
