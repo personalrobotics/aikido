@@ -46,19 +46,19 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/MetaSkeletonStateSpace.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
-  src/constraint/TSRConstraint.cpp
-  src/constraint/IkSampleableConstraint.cpp
-  src/constraint/IkSampleGenerator.cpp
+  # src/constraint/TSRConstraint.cpp
+  # src/constraint/IkSampleableConstraint.cpp
+  # src/constraint/IkSampleGenerator.cpp
   src/constraint/PolynomialConstraint.cpp
-  src/constraint/ProjectableByDifferentiable.cpp
+  # src/constraint/ProjectableByDifferentiable.cpp
   #src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/util/PseudoInverse.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
-  src/ompl/DARTGeometricStateSpace.cpp
-  src/ompl/DARTStateSampler.cpp
+  # src/ompl/DARTGeometricStateSpace.cpp
+  # src/ompl/DARTStateSampler.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}

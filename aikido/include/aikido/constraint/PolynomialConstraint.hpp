@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_POLYNOMIALCONSTRAINT_H
 
 #include "Differentiable.hpp"
+#include <aikido/statespace/RealVectorStateSpace.hpp>
 
 namespace aikido {
 namespace constraint{
@@ -13,16 +14,26 @@ public:
   /// Last element (aN) should be non-zero.
   PolynomialConstraint(Eigen::VectorXd _coeffs);
 
+  /// Documentation inherited.
   size_t getConstraintDimension() const override;
 
-  Eigen::VectorXd getValue(const state::StatePtr& _s) const override;
+  /// Documentation inherited.
+  Eigen::VectorXd getValue(
+    const statespace::StateSpace::State* _s) const override;
 
-  state::JacobianPtr getJacobian(const state::StatePtr& _s) const override;
+ 	/// Documentation inherited.
+  Eigen::MatrixXd getJacobian(
+    const statespace::StateSpace::State* _s) const override;
 
+  /// Returns a vector of constraints' types.
   std::vector<ConstraintType> getConstraintTypes() const override;
+
+  /// Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
 
 private:
   Eigen::VectorXd mCoeffs;
+  statespace::RealVectorStateSpace mStateSpace;
 
 };
 

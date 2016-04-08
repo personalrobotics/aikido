@@ -1,5 +1,6 @@
 #include <aikido/constraint/PolynomialConstraint.hpp>
-#include <limits>
+
+#include <memory>
 
 namespace aikido {
 namespace constraint{
@@ -7,6 +8,7 @@ namespace constraint{
 //=============================================================================
 PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs)
 : mCoeffs(_coeffs)
+, mStateSpace(statespace::RealVectorStateSpace(1))
 {
   if(abs(mCoeffs(mCoeffs.rows()-1)) < std::numeric_limits<double>::epsilon())
   {
@@ -22,46 +24,33 @@ size_t PolynomialConstraint::getConstraintDimension() const
 }
 
 //=============================================================================
-Eigen::VectorXd PolynomialConstraint::getValue(const state::StatePtr& _s) const
+Eigen::VectorXd PolynomialConstraint::getValue(
+  const statespace::StateSpace::State* _s) const
 {
-  using namespace state;
-  RealVectorStatePtr s = std::dynamic_pointer_cast<RealVectorState>(_s);
-  if (!s)
-  {
-    throw std::invalid_argument("_s is not RealVectorState.");
-  }else if (s->mQ.rows() != 1)
-  {
-    throw std::invalid_argument("_s's dimension must be 1.");
-  }
-  else
-  {
-    double val = 0; 
-    double x = s->mQ(0);
-    /*if (abs(x) > std::numeric_limits<double>::epsilon())
-    {*/
-      for(int i = 0; i < mCoeffs.rows(); i++)
-      {
-        val += mCoeffs(i)*pow(x, i);
-      }
-    //}
+  using State = statespace::RealVectorStateSpace::State;
+  auto s = static_cast<const State*>(_s);
 
-    Eigen::VectorXd value(1);
-    value(0) = val;
-
-    return value;
+  double x = mStateSpace.getValue(s)(0);
+  double val = 0; 
+  
+  for(int i = 0; i < mCoeffs.rows(); i++)
+  {
+    val += mCoeffs(i)*pow(x, i);
   }
 
+  Eigen::VectorXd value(1);
+  value(0) = val;
+
+  return value;
 }
 
 
 //=============================================================================
-state::JacobianPtr PolynomialConstraint::getJacobian(
-  const state::StatePtr& _s) const
+Eigen::MatrixXd PolynomialConstraint::getJacobian(
+  const statespace::StateSpace::State* _s) const
 {
-  using namespace state;
-  RealVectorStatePtr s = std::dynamic_pointer_cast<RealVectorState>(_s);
-  if (!s)
-    throw std::invalid_argument("_s is not RealVectorState.");
+  using State = statespace::RealVectorStateSpace::State;
+  auto s = static_cast<const State*>(_s);
 
   Eigen::VectorXd derivCoeffs(mCoeffs.rows()-1);
   for(int i = 0; i < derivCoeffs.rows(); i++)
@@ -71,10 +60,7 @@ state::JacobianPtr PolynomialConstraint::getJacobian(
 
   PolynomialConstraint derivPoly(derivCoeffs);
 
-
-  Eigen::VectorXd jac = derivPoly.getValue(_s);
-  return std::make_shared<RealVectorJacobian>(jac);
-
+  return derivPoly.getValue(_s);
 } 
 
 
@@ -84,6 +70,12 @@ std::vector<ConstraintType> PolynomialConstraint::getConstraintTypes() const
   std::vector<ConstraintType> ctypes;
   ctypes.push_back(ConstraintType::EQ);
   return ctypes;
+}
+
+//=============================================================================
+statespace::StateSpacePtr PolynomialConstraint::getStateSpace() const
+{
+  return std::make_shared<statespace::RealVectorStateSpace>(mStateSpace);
 }
 
 }

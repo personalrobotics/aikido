@@ -11,9 +11,14 @@ function(add_aikido_test target_name)
 endfunction()
 
 
-# SampleableConstraint tests
-add_aikido_test(test_TSR test_TSR.cpp)
-target_link_libraries(test_TSR "${PROJECT_NAME}")
+# Constraint tests
+# add_aikido_test(test_TSR constraint/test_TSR.cpp)
+# target_link_libraries(test_TSR "${PROJECT_NAME}")
+
+add_aikido_test(test_PolynomialConstraint
+ constraint/test_PolynomialConstraint.cpp)
+target_link_libraries(test_PolynomialConstraint "${PROJECT_NAME}")
+
 
 #add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
 #target_link_libraries(test_IKSampleable "${PROJECT_NAME}")
