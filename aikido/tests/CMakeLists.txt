@@ -30,8 +30,8 @@ add_aikido_test(test_VanDerCorput test_VanDerCorput.cpp)
 target_link_libraries(test_VanDerCorput "${PROJECT_NAME}")
 
 # SnapPlanner tests
-# add_aikido_test(test_SnapPlanner test_SnapPlanner.cpp)
-# target_link_libraries(test_SnapPlanner "${PROJECT_NAME}")
+add_aikido_test(test_SnapPlanner test_SnapPlanner.cpp)
+target_link_libraries(test_SnapPlanner "${PROJECT_NAME}")
 
 # CatkinResourceRetriever tests
 set(CATKIN_MAKE_WORKSPACE

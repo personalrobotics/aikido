@@ -5,7 +5,7 @@
 #include <exception>
 #include <stdexcept>
 #include <vector>
-#include "Result.hpp"
+#include "PlanningResult.hpp"
 #include "../constraint/TestableConstraint.hpp"
 #include "../statespace/StateSpace.hpp"
 #include "../util/VanDerCorput.hpp"
@@ -22,7 +22,7 @@ static std::unique_ptr<Trajectory> planSnap(
     const aikido::statespace::StateSpace::State *goalState,
     const std::shared_ptr<aikido::statespace::StateSpace> stateSpace,
     const std::shared_ptr<aikido::constraint::TestableConstraint> constraint,
-    aikido::planner::Result* planningResult)
+    aikido::planner::PlanningResult* planningResult)
 {
   if (stateSpace != constraint->getStateSpace()) {
     throw std::invalid_argument(
@@ -42,8 +42,8 @@ static std::unique_ptr<Trajectory> planSnap(
   std::unique_ptr<Trajectory> trajectory(new Trajectory());
   auto startCopy = stateSpace->createState();
   auto goalCopy = stateSpace->createState();
-  stateSpace->copyState(startState, startCopy);
-  stateSpace->copyState(goalState, goalCopy);
+  stateSpace->copyState(startCopy, startState);
+  stateSpace->copyState(goalCopy, goalState);
 
   trajectory->emplace_back(std::move(startCopy));
   trajectory->emplace_back(std::move(goalCopy));
