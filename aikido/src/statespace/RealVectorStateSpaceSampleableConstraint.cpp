@@ -13,7 +13,7 @@ RealVectorStateSpaceSampleGenerator::RealVectorStateSpaceSampleGenerator(
   mDistributions.reserve(_space->getDimension());
   const auto& bounds = _space->getBounds();
 
-  for (size_t i = 0; i < _space->getDimension(); ++i)
+  for (size_t i = 0; i < bounds.rows(); ++i)
   {
     mDistributions.emplace_back(bounds(i, 0), bounds(i, 1));
 

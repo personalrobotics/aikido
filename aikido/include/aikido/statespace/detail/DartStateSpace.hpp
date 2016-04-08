@@ -53,6 +53,7 @@ struct createJointStateSpaceFor_impl<dart::dynamics::FreeJoint>
 {
   static Ptr create(dart::dynamics::FreeJoint* _joint)
   {
+    // TODO: Set translational bounds.
     return make_unique<SE3JointStateSpace>(_joint);
   }
 };
