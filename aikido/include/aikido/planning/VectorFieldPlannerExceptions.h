@@ -1,11 +1,11 @@
-#ifndef MUUL_PROJECTION_VECTORFIELDPLANNEREXCEPTIONS_H_
-#define MUUL_PROJECTION_VECTORFIELDPLANNEREXCEPTIONS_H_
+#ifndef AIKIDO_PLANNING_VECTORFIELDPLANNEREXCEPTIONS_H_
+#define AIKIDO_PLANNING_VECTORFIELDPLANNEREXCEPTIONS_H_
 #include <string>
 #include <stdexcept>
 #include <dart/dynamics/SmartPointer.h>
 
-namespace muul {
-namespace projection {
+namespace aikido {
+namespace planning {
 
 class VectorFieldTerminated : public std::runtime_error {
 public:
@@ -23,7 +23,7 @@ private:
   dart::dynamics::DegreeOfFreedom *dof_;
 };
 
-} // namespace projection
-} // namespace muul
+} // namespace planning
+} // namespace aikido
 
-#endif // ifndef MUUL_PROJECTION_VECTORFIELDPLANNEREXCEPTIONS_H_
+#endif // ifndef AIKIDO_PLANNING_VECTORFIELDPLANNEREXCEPTIONS_H_

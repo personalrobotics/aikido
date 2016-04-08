@@ -1,7 +1,7 @@
-#include <muul/projection/VectorFieldPlannerExceptions.h>
+#include <aikido/planning/VectorFieldPlannerExceptions.h>
 
-namespace muul {
-namespace projection {
+namespace aikido {
+namespace planning {
 
 /*
  * VectorFieldTerminated
@@ -27,5 +27,5 @@ dart::dynamics::DegreeOfFreedom *DofLimitError::dof() const
   return dof_;
 }
 
-} // namespace projection
-} // namespace muul
+} // namespace planning
+} // namespace aikido

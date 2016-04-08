@@ -6,16 +6,16 @@
 #include <boost/format.hpp>
 #include <boost/make_shared.hpp>
 #include <Eigen/Dense>
-#include <muul/util/logging.h>
+//#include <muul/util/logging.h>
 #include <dart/optimizer/nlopt/NloptSolver.h>
 #include <dart/common/Console.h>
 #include <dart/dynamics/DegreeOfFreedom.h>
 #include <dart/dynamics/MetaSkeleton.h>
 #include <dart/collision/CollisionDetector.h>
-#include <muul/projection/VectorFieldPlanner.h>
+#include <aikido/planning/VectorFieldPlanner.h>
 
-namespace muul {
-namespace projection {
+namespace aikido {
+namespace planning {
 
 static void CheckDofLimits(
   dart::dynamics::MetaSkeletonPtr const &skeleton,
@@ -182,5 +182,5 @@ aikido::path::TrajectoryPtr Plan(
   }
 }
 
-} // namespace projection
-} // namespace muul
+} // namespace planning
+} // namespace aikido
