@@ -17,7 +17,7 @@ set(LIBRARY_INSTALL_DIR lib)
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
-find_package(DART REQUIRED COMPONENTS core)
+find_package(DART REQUIRED COMPONENTS core optimizer-nlopt)
 find_package(TinyXML2 REQUIRED)
 
 # Compilation setup
