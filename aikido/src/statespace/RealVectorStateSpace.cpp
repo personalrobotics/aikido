@@ -74,16 +74,6 @@ auto RealVectorStateSpace::getBounds() const -> const Bounds&
 }
 
 //=============================================================================
-constraint::SampleableConstraintPtr RealVectorStateSpace
-  ::createSampleableConstraint(std::unique_ptr<util::RNG> _rng) const
-{
-  return std::make_shared<RealVectorStateSpaceSampleableConstraint>(
-    // TODO: SampleableConstraint should operate on `const StateSpace`.
-    std::const_pointer_cast<RealVectorStateSpace>(shared_from_this()),
-    std::move(_rng));
-}
-
-//=============================================================================
 void RealVectorStateSpace::setValue(
   State* _state, const Eigen::VectorXd& _value) const
 {
@@ -129,6 +119,16 @@ StateSpace::State* RealVectorStateSpace::allocateStateInBuffer(
 void RealVectorStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
   // Do nothing.
+}
+
+//=============================================================================
+auto RealVectorStateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  return std::make_shared<RealVectorStateSpaceSampleableConstraint>(
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<RealVectorStateSpace>(shared_from_this()),
+    std::move(_rng));
 }
 
 //=============================================================================

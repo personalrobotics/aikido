@@ -64,6 +64,10 @@ public:
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
   
   // Documentation inherited.
   void compose(

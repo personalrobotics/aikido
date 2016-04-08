@@ -2,8 +2,15 @@
 #define AIKIDO_STATESPACE_STATESPACE_H
 #include <memory>
 #include "ScopedState.hpp"
+#include "../util/RNG.hpp"
 
 namespace aikido {
+namespace constraint {
+
+class SampleableConstraint;
+
+} // namespace constraint
+
 namespace statespace {
 
 /// Base class for all StateSpaces.
@@ -26,6 +33,9 @@ public:
 
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
+
+  using SampleableConstraintPtr
+    = std::shared_ptr<constraint::SampleableConstraint>;
 
   virtual ~StateSpace() = default;
 
@@ -51,7 +61,11 @@ public:
   /// Free a state previously created by allocateStateInBuffer.
   virtual void freeStateInBuffer(StateSpace::State* _state) const = 0;
 
-  /// TODO: Need a docstring for this.
+  /// Sample uniformly at random from this state space.
+  virtual SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const = 0;
+
+  /// Lie group operation for this StateSpace.
   virtual void compose(
     const State* _state1, const State* _state2, State* _out) const = 0;
 };
