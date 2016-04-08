@@ -1,22 +1,23 @@
 #include <aikido/constraint/IkSampleableConstraint.hpp>
-#include <aikido/constraint/IkSampleGenerator.hpp>
+//#include <aikido/constraint/IkSampleGenerator.hpp>
 
 using namespace dart::dynamics;
 
 namespace aikido {
 namespace constraint {
 
-
 //=============================================================================
 IkSampleableConstraint::IkSampleableConstraint(
-  const SampleablePoseConstraint& _isometry3dConstraint,
-  const dart::dynamics::InverseKinematicsPtr& _ikPtr,
-  std::unique_ptr<util::RNG> _rng,
-  int _maxNumTrials)
-: mIsometry3dConstraintPtr(_isometry3dConstraint)
-, mIKPtr(_ikPtr)
-, mRng(std::move(_rng))
-, mMaxNumTrials(_maxNumTrials)
+      statespace::MetaSkeletonStateSpacePtr _stateSpace,
+      SampleableConstraintPtr _delegateConstraint,
+      dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+      std::unique_ptr<util::RNG> _rng,
+      int _maxNumTrials)
+  : mStateSpace(std::move(_stateSpace))
+  , mConstraint(std::move(_delegateConstraint))
+  , mInverseKinematics(std::move(_inverseKinematics))
+  , mRng(std::move(_rng))
+  , mMaxNumTrials(_maxNumTrials)
 {
   if (!mRng)
   {
@@ -24,13 +25,13 @@ IkSampleableConstraint::IkSampleableConstraint(
       "Random generator is empty.");
   }
 
-  if (!_ikPtr)
+  if (!_inverseKinematics)
   {
     throw std::invalid_argument(
       "IKPtr is empty.");
   }
 
-  if (!_isometry3dConstraint)
+  if (!_delegateConstraint)
   {
     throw std::invalid_argument(
       "IsometryConstraint is empty.");
@@ -45,21 +46,27 @@ IkSampleableConstraint::IkSampleableConstraint(
 
 //=============================================================================
 IkSampleableConstraint::IkSampleableConstraint(
-  const IkSampleableConstraint& other)
-: IkSampleableConstraint(other.mIsometry3dConstraintPtr,
-                         other.mIKPtr,
-                         other.mRng->clone(),
-                         other.mMaxNumTrials)
+      const IkSampleableConstraint& other)
+  : IkSampleableConstraint(
+      other.mStateSpace,
+      other.mConstraint,
+      other.mInverseKinematics,
+      other.mRng->clone(),
+      other.mMaxNumTrials
+    )
 {
 }
 
 //=============================================================================
 IkSampleableConstraint::IkSampleableConstraint(
-  IkSampleableConstraint&& other)
-: IkSampleableConstraint(other.mIsometry3dConstraintPtr,
-                         other.mIKPtr,
-                         other.mRng->clone(),
-                         other.mMaxNumTrials)
+      IkSampleableConstraint&& other)
+  : IkSampleableConstraint(
+      std::move(other.mStateSpace),
+      std::move(other.mConstraint),
+      std::move(other.mInverseKinematics),
+      std::move(other.mRng),
+      other.mMaxNumTrials
+    )
 {
 }
 
@@ -67,10 +74,10 @@ IkSampleableConstraint::IkSampleableConstraint(
 IkSampleableConstraint& IkSampleableConstraint::operator=(
     const IkSampleableConstraint& other)
 {
-  mIsometry3dConstraintPtr = other.mIsometry3dConstraintPtr;
-  mIKPtr = other.mIKPtr;
-  mRng = std::move(other.mRng->clone());
-  mMaxNumTrials = other.mMaxNumTrials;
+  mStateSpace = other.mStateSpace;
+  mConstraint = other.mConstraint;
+  mInverseKinematics = other.mInverseKinematics;
+  mRng = mRng->clone();
   return *this;
 }
 
@@ -78,20 +85,23 @@ IkSampleableConstraint& IkSampleableConstraint::operator=(
 IkSampleableConstraint& IkSampleableConstraint::operator=(
   IkSampleableConstraint&& other)
 {
-  mIsometry3dConstraintPtr = other.mIsometry3dConstraintPtr;
-  mIKPtr = other.mIKPtr;
-  mRng = std::move(other.mRng->clone());
-  mMaxNumTrials = other.mMaxNumTrials;
+  mStateSpace = std::move(other.mStateSpace);
+  mConstraint = std::move(other.mConstraint);
+  mInverseKinematics = std::move(other.mInverseKinematics);
+  mRng = std::move(mRng);
   return *this;
 }
 
 //=============================================================================
-std::unique_ptr<SampleGenerator<Eigen::VectorXd>> 
-IkSampleableConstraint::createSampleGenerator() const
+std::unique_ptr<SampleGenerator>
+  IkSampleableConstraint::createSampleGenerator() const
 {
+#if 0
   return std::unique_ptr<IkSampleGenerator>(new IkSampleGenerator(
     mIsometry3dConstraintPtr->createSampleGenerator(),
-    mIKPtr, mRng->clone(), mMaxNumTrials));
+    mInverseKinematics, mRng->clone(), mMaxNumTrials));
+#endif
+  return nullptr;
 }
 
 //=============================================================================
