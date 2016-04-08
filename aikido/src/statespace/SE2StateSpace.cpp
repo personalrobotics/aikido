@@ -70,6 +70,14 @@ void SE2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
+auto SE2StateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  throw std::runtime_error(
+    "SE2StateSpace::createSampleableConstraint is not implemented.");
+}
+
+//=============================================================================
 void SE2StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
   StateSpace::State* _out) const
@@ -79,6 +87,37 @@ void SE2StateSpace::compose(
   auto out = static_cast<State*>(_out);
 
   out->mTransform = state1->mTransform * state2->mTransform;
+}
+
+//=============================================================================
+void SE2StateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+
+  if (_tangent.rows() != 3)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 3"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  double angle = _tangent(0);
+  Eigen::Vector2d translation = _tangent.bottomRows(2);
+
+  Isometry2d transform(Isometry2d::Identity());
+  transform.linear() = Eigen::Rotation2Dd(angle).matrix();
+  transform.translation() = translation;
+
+  out->mTransform = transform; 
+}
+
+
+//=============================================================================
+int SE2StateSpace::getDimension() const
+{
+  return 3;
 }
 
 } // namespace statespace

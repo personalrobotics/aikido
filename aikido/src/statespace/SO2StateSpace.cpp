@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2StateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -90,6 +91,16 @@ void SO2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
+constraint::SampleableConstraintPtr SO2StateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const
+{
+  return std::make_shared<SO2StateSpaceSampleableConstraint>(
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<SO2StateSpace>(shared_from_this()),
+    std::move(_rng));
+}
+
+//=============================================================================
 void SO2StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
 	StateSpace::State* _out) const
@@ -99,6 +110,31 @@ void SO2StateSpace::compose(
   auto out = static_cast<State*>(_out);
 
   out->mAngle = state1->mAngle + state2->mAngle;
+}
+
+//=============================================================================
+void SO2StateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 1)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 1"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  double angle = _tangent(0);
+  out->mAngle = angle;
+}
+
+//=============================================================================
+int SO2StateSpace::getDimension() const
+{
+  return 1;
 }
 
 } // namespace statespace

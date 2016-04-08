@@ -70,6 +70,14 @@ void SO3StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
+auto SO3StateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  throw std::runtime_error(
+    "SO3StateSpace::createSampleableConstraint is not implemented.");
+}
+
+//=============================================================================
 void SO3StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
   StateSpace::State* _out) const
@@ -79,6 +87,34 @@ void SO3StateSpace::compose(
   auto out = static_cast<State*>(_out);
 
   out->mValue = state1->mValue * state2->mValue;
+}
+
+//=============================================================================
+void SO3StateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 3)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 3"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  Eigen::Vector6d tangent(Eigen::Vector6d::Zero());
+  tangent.topRows(3) = _tangent;
+
+  Eigen::Isometry3d transform = dart::math::expMap(tangent);
+  out->setQuaternion(Quaternion(transform.rotation()));
+}
+
+//=============================================================================
+int SO3StateSpace::getDimension() const
+{
+  return 3;
 }
 
 } // namespace statespace

@@ -1,5 +1,10 @@
 #include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/RealVectorStateSpaceSampleableConstraint.hpp>
 #include <dart/common/Console.h>
+
+#include <vector>
+#include <random>
+#include <aikido/constraint/Sampleable.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -113,6 +118,17 @@ StateSpace::State* RealVectorStateSpace::allocateStateInBuffer(
 //=============================================================================
 void RealVectorStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
+  // Do nothing.
+}
+
+//=============================================================================
+auto RealVectorStateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  return std::make_shared<RealVectorStateSpaceSampleableConstraint>(
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<RealVectorStateSpace>(shared_from_this()),
+    std::move(_rng));
 }
 
 //=============================================================================
@@ -126,6 +142,16 @@ void RealVectorStateSpace::compose(
 
   getMutableValue(out) = getValue(state1) + getValue(state2);
 }
+
+//=============================================================================
+void RealVectorStateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+
+  setValue(out, _tangent);
+}
+
 
 } // namespace statespace
 } // namespace aikido

@@ -7,11 +7,12 @@
 namespace aikido {
 namespace statespace {
 
-// Defined in detail/RealVectorStateSpace.hpp
 template <class> class RealVectorStateHandle;
 
 /// Represents a n-dimensional real vector space.
-class RealVectorStateSpace : public virtual StateSpace
+class RealVectorStateSpace
+  : public std::enable_shared_from_this<RealVectorStateSpace>
+  , public virtual StateSpace
 {
 public:
   /// Point in a RealVectorStateSpace.
@@ -63,9 +64,16 @@ public:
   void freeStateInBuffer(StateSpace::State* _state) const override;
 
   // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
+
+  // Documentation inherited.
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
+
+  // Documentation inherited.
+  void expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
 private:
   /// Gets the value stored in a RealVectorStateSpace::State.
