@@ -11,7 +11,9 @@ namespace statespace {
 template <class> class CompoundStateHandle;
 
 /// Represents the Cartesian product of other StateSpaces.
-class CompoundStateSpace : public virtual StateSpace
+class CompoundStateSpace
+  : std::enable_shared_from_this<CompoundStateSpace>
+  , public virtual StateSpace
 {
 public:
   /// A tuple of states where the i-th state is from the i-th subspace.
@@ -73,9 +75,50 @@ public:
   void freeStateInBuffer(StateSpace::State* _state) const override;
 
   // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
+
+  // Documentation inherited.
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
+    
+  // Documentation inherited
+  unsigned int getDimension() const override;
+
+  // Documentation inherited
+  double getMaximumExtent() const override;
+
+  // Documentation inherited
+  double getMeasure() const override;
+
+  // Documentation inherited
+  void enforceBounds(StateSpace::State* _state) const override;
+
+  // Documentation inherited
+  bool satisfiesBounds(const StateSpace::State* _state) const override;
+
+  // Documentation inherited
+  void copyState(StateSpace::State* _destination,
+                 const StateSpace::State* _source) const override;
+
+  // Documentation inherited
+  double distance(const StateSpace::State* _state1,
+                  const StateSpace::State* _state2) const override;
+
+  // Documentation inherited
+  bool equalStates(const StateSpace::State* _state1,
+                   const StateSpace::State* _state2) const override;
+
+  // Documentation inherited
+  void interpolate(const StateSpace::State* _from,
+                   const StateSpace::State* _to,
+                   const double _t,
+                   StateSpace::State* _State) const;
+
+  // Documentation inherited. _tangent should be 3d twist.
+  void expMap(
+    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
 private:
   std::vector<StateSpacePtr> mSubspaces;
