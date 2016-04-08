@@ -130,51 +130,90 @@ unsigned int RealVectorStateSpace::getDimension() const
 //=============================================================================
 double RealVectorStateSpace::getMaximumExtent() const 
 {
-    
+
+    double d = 0.0;
+    for (size_t i; i < mBounds.rows(); ++i)
+    {
+        double e = mBounds(i,1) - mBounds(i,0);
+        d += e*e;
+    }
+    return std::sqrt(d);
 }
 
 //=============================================================================
 double RealVectorStateSpace::getMeasure() const 
 {
-    
+    double m = 1.0;
+    for (size_t i; i < mBounds.rows(); ++i)
+    {
+        m *= mBounds(i,1) - mBounds(i,0);
+    }
+    return m;
 }
 
 //=============================================================================
 bool RealVectorStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
 {
-    
+    auto state = static_cast<const State*>(_state);
+    auto value = getValue(state);
+
+    for (size_t i; i < mBounds.rows(); ++i)
+    {
+        if(value[i] - std::numeric_limits<double>::epsilon() > mBounds(i,1) ||
+           value[i] + std::numeric_limits<double>::epsilon() < mBounds(i,0))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 //=============================================================================
 void RealVectorStateSpace::copyState(StateSpace::State* _destination,
-                              const StateSpace::State* _source) const
+                                     const StateSpace::State* _source) const
 {
-    
+    auto destination = static_cast<State*>(_destination);
+    auto source = static_cast<const State*>(_source);
+    setValue(destination, getValue(source));
 }
 
 //=============================================================================
 double RealVectorStateSpace::distance(const StateSpace::State* _state1,
-                               const StateSpace::State* _state2) const
+                                      const StateSpace::State* _state2) const
 {
+    auto v1 = getValue(static_cast<const State*>(_state1));
+    auto v2 = getValue(static_cast<const State*>(_state2));
 
+    double dist = 0.0;
+    for (size_t i = 0; i < v1.size(); ++i)
+    {
+        double diff = v1[i] - v2[i];
+        dist += diff * diff;
+    }
+    return std::sqrt(dist);
 }
 
 //=============================================================================
 bool RealVectorStateSpace::equalStates(const StateSpace::State* _state1,
                                 const StateSpace::State* _state2) const
 {
-    
+    return distance(_state1, _state2) < std::numeric_limits<double>::epsilon();
 }
 
 //=============================================================================
 void RealVectorStateSpace::interpolate(const StateSpace::State* _from,
-                                const StateSpace::State* _to,
-                                const double _t,
-                                StateSpace::State* _State) const
+                                       const StateSpace::State* _to,
+                                       const double _t,
+                                       StateSpace::State* _state) const
 {
-
+    auto vfrom = getValue(static_cast<const State*>(_from));
+    auto vto = getValue(static_cast<const State*>(_to));
+    auto vstate = getMutableValue(static_cast<State*>(_state));
+    for (size_t i = 0; i < vfrom.size(); ++i)
+    {
+        vstate[i] = vfrom[i] + (vto[i] - vfrom[i]) * _t;
+    }
 }
-
 
 } // namespace statespace
 } // namespace aikido

@@ -130,8 +130,8 @@ bool SO2StateSpace::satisfiesBounds(const StateSpace::State* _state) const
 void SO2StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {
-    const State* source = static_cast<const State*>(_source);
-    State* destination = static_cast<State*>(_destination);
+    auto source = static_cast<const State*>(_source);
+    auto destination = static_cast<State*>(_destination);
     setAngle(destination, getAngle(source));
 }
 
@@ -162,7 +162,7 @@ void SO2StateSpace::interpolate(const StateSpace::State* _from,
                                 const double _t,
                                 StateSpace::State* _state) const
 {
-    State* st = static_cast<State*>(_state);
+    auto st = static_cast<State*>(_state);
     double dist = distance(_from, _to);
     double a = getAngle(st) + _t*dist;
 
