@@ -80,5 +80,59 @@ void SE3StateSpace::compose(
   out->mTransform = state1->mTransform * state2->mTransform;
 }
 
+//=============================================================================
+unsigned int SE3StateSpace::getDimension() const 
+{
+
+}
+
+//=============================================================================
+double SE3StateSpace::getMaximumExtent() const 
+{
+
+}
+
+//=============================================================================
+double SE3StateSpace::getMeasure() const 
+{
+
+}
+
+//=============================================================================
+bool SE3StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+
+}
+
+//=============================================================================
+void SE3StateSpace::copyState(StateSpace::State* _destination,
+                              const StateSpace::State* _source) const
+{
+
+}
+
+//=============================================================================
+double SE3StateSpace::distance(const StateSpace::State* _state1,
+                               const StateSpace::State* _state2) const
+{
+
+}
+
+//=============================================================================
+bool SE3StateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+    
+}
+
+//=============================================================================
+void SE3StateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _State) const
+{
+
+}
+
 } // namespace statespace
 } // namespace aikido

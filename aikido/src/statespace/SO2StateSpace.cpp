@@ -111,7 +111,7 @@ unsigned int SO2StateSpace::getDimension() const
 //=============================================================================
 double SO2StateSpace::getMaximumExtent() const 
 {
-    return boost::math::constants::pi<double>(); // OMPL
+    return boost::math::constants::pi<double>();
 }
 
 //=============================================================================
@@ -130,30 +130,44 @@ bool SO2StateSpace::satisfiesBounds(const StateSpace::State* _state) const
 void SO2StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {
- 
+    const State* source = static_cast<const State*>(_source);
+    State* destination = static_cast<State*>(_destination);
+    setAngle(destination, getAngle(source));
 }
 
 //=============================================================================
 double SO2StateSpace::distance(const StateSpace::State* _state1,
                                const StateSpace::State* _state2) const
 {
-    
+    // Difference between angles
+    double diff = getAngle(static_cast<const State*>(_state1)) - 
+        getAngle(static_cast<const State*>(_state2));
+    diff = fmod(fabs(diff), 2.0*boost::math::constants::pi<double>());
+    if(diff > boost::math::constants::pi<double>())
+        diff -= 2.0*boost::math::constants::pi<double>();
+    return diff;
 }
 
 //=============================================================================
 bool SO2StateSpace::equalStates(const StateSpace::State* _state1,
                                 const StateSpace::State* _state2) const
 {
-
+    double dist = distance(_state1, _state2);
+    return dist < std::numeric_limits<double>::epsilon();
 }
 
 //=============================================================================
 void SO2StateSpace::interpolate(const StateSpace::State* _from,
                                 const StateSpace::State* _to,
                                 const double _t,
-                                StateSpace::State* _State) const
+                                StateSpace::State* _state) const
 {
+    State* st = static_cast<State*>(_state);
+    double dist = distance(_from, _to);
+    double a = getAngle(st) + _t*dist;
 
+    // TODO: Wrap?
+    setAngle(st, a);
 }
 
 } // namespace statespace
