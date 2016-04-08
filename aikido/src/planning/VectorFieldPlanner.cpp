@@ -13,6 +13,7 @@
 #include <dart/dynamics/MetaSkeleton.h>
 #include <dart/collision/CollisionDetector.h>
 #include <aikido/planning/VectorFieldPlanner.h>
+#include <aikido/constraint/TestableConstraint.hpp>
 
 namespace aikido {
 namespace planning {
@@ -48,14 +49,12 @@ static void CheckDofLimits(
   }
 }
 
-static void CheckCollision(
-  dart::dynamics::MetaSkeletonPtr const &skeleton)
-{
-}
-
 aikido::path::TrajectoryPtr Plan(
-  dart::dynamics::MetaSkeletonPtr const &skeleton, double dt,
-  VectorFieldCallback const &vector_field_cb, StatusCallback const &status_cb)
+  dart::dynamics::MetaSkeletonPtr const &skeleton, 
+  double dt,
+  VectorFieldCallback const &vector_field_cb, 
+  const std::shared_ptr<aikido::constraint::TestableConstraint> constraint,
+  StatusCallback const &status_cb)
 {
   using boost::format;
   using boost::str;
@@ -81,7 +80,11 @@ aikido::path::TrajectoryPtr Plan(
   Eigen::VectorXd q = skeleton->getPositions();
   Eigen::VectorXd qd(num_dof);
   assert(q.size() == num_dof);
+  
+  std::shared_ptr<aikido::statespace::StateSpace> stateSpace;
+  stateSpace=aikido::statespace::MetaSkeletonStateSpace(skeleton);
 
+  // FIXME: Check if the constraint state space is compatible with the skeleton 
 
   do {
     // Evaluate the vector field.
@@ -108,7 +111,10 @@ aikido::path::TrajectoryPtr Plan(
       try {
         CheckDofLimits(skeleton, q, qd);
         skeleton->setPositions(q);
-        CheckCollision(skeleton);
+        
+        //if(!constraint->isSatisfied( //FIXME: Put constraint check here
+        
+        
       } catch (VectorFieldTerminated const &e) {
         termination_status = Status::TERMINATE;
         termination_error = std::current_exception();
