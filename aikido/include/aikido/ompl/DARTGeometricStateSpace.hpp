@@ -7,9 +7,6 @@
 namespace aikido {
     namespace ompl_bindings {
 
-        // Basic idea: Wrap the state space and associated state
-        //  into a state space recognizable by OMPL
-
         /// Wraps an aikido StateSpace into a space recognized by OMPL
         class DARTGeometricStateSpace : public ompl::base::StateSpace {
 
