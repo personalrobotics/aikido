@@ -1,5 +1,6 @@
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <dart/common/Console.h>
+#include <cassert>
 
 namespace aikido {
 namespace statespace {
@@ -35,6 +36,15 @@ RealVectorStateSpace::RealVectorStateSpace(const Bounds& _bounds)
 auto RealVectorStateSpace::createState() const -> ScopedState
 {
   return ScopedState(this);
+}
+
+//=============================================================================
+void RealVectorStateSpace::copyState(const StateSpace::State* _state,
+                                     StateSpace::State* _stateCopy) const
+{
+  auto state = static_cast<const State*>(_state);
+  auto stateCopy = static_cast<State*>(_stateCopy);
+  getMutableValue(stateCopy) = getValue(state);
 }
 
 //=============================================================================
@@ -127,5 +137,30 @@ void RealVectorStateSpace::compose(
   getMutableValue(out) = getValue(state1) + getValue(state2);
 }
 
-} // namespace statespace
+//=============================================================================
+double RealVectorStateSpace::distance(const StateSpace::State* _state1,
+                                      const StateSpace::State* _state2) const
+{
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto diff_vec = getValue(state2) - getValue(state1);
+  return diff_vec.norm();
+}
+
+//=============================================================================
+void RealVectorStateSpace::interpolate(const StateSpace::State* _state1,
+                                       const StateSpace::State* _state2,
+                                       const double alpha,
+                                       StateSpace::State* _out) const
+{
+  // TODO wrap checks in ndebug
+  assert(alpha >= 0.0 && "alpha must be >= 0.0");
+  assert(alpha <= 1.0 && "alpha must be <= 1.0");
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto out = static_cast<State*>(_out);
+  getMutableValue(out) = ((1 - alpha) * getValue(state1)) + (alpha * getValue(state2));
+}
+
+}  // namespace statespace
 } // namespace aikido

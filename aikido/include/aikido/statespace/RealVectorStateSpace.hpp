@@ -41,6 +41,10 @@ public:
   /// Helper function to create a ScopedState.
   ScopedState createState() const;
 
+  void copyState(const StateSpace::State* state,
+            StateSpace::State* stateCopy) const override;
+
+
   /// Gets the dimension of this space.
   int getDimension() const;
 
@@ -66,6 +70,15 @@ public:
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
+
+  // Documentation inherited.
+  double distance(const StateSpace::State* state1,
+                  const StateSpace::State* state2) const override;
+
+  // Documentation inherited.
+  void interpolate(const StateSpace::State* state1,
+                   const StateSpace::State* state2, const double alpha,
+                   StateSpace::State* out) const override;
 
 private:
   /// Gets the value stored in a RealVectorStateSpace::State.

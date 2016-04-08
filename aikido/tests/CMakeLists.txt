@@ -25,6 +25,14 @@ target_link_libraries(test_StateSpace "${PROJECT_NAME}")
 add_aikido_test(test_DartStateSpace statespace/test_DartStateSpace.cpp)
 target_link_libraries(test_DartStateSpace "${PROJECT_NAME}" ${DART_LIBRARIES})
 
+# VanDerCorput tests
+add_aikido_test(test_VanDerCorput test_VanDerCorput.cpp)
+target_link_libraries(test_VanDerCorput "${PROJECT_NAME}")
+
+# SnapPlanner tests
+# add_aikido_test(test_SnapPlanner test_SnapPlanner.cpp)
+# target_link_libraries(test_SnapPlanner "${PROJECT_NAME}")
+
 # CatkinResourceRetriever tests
 set(CATKIN_MAKE_WORKSPACE
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_make_workspace")
@@ -39,10 +47,6 @@ target_link_libraries(test_CatkinResourceRetriever_catkin_make
   "${PROJECT_NAME}")
 target_compile_definitions(test_CatkinResourceRetriever_catkin_make
   PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_MAKE_WORKSPACE}/devel")
-
-# VanDerCorput tests
-add_aikido_test(test_VanDerCorput test_VanDerCorput.cpp)
-target_link_libraries(test_VanDerCorput "${PROJECT_NAME}")
 
 set(CATKIN_BUILD_WORKSPACE
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_build_workspace")

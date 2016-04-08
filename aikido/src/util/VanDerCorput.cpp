@@ -6,13 +6,13 @@ using namespace aikido::util;
 using std::pair;
 
 VanDerCorput::VanDerCorput(const double span, const bool include_endpoints,
-                           const double min_resolution)
+                           const double min_resolution_)
     : span(span)
     , include_endpoints(include_endpoints)
-    , min_resolution(min_resolution)
+    , min_resolution(min_resolution_)
 {
   if (min_resolution == 0.0) {
-    min_resolution == std::numeric_limits<double>::epsilon();
+    min_resolution = std::numeric_limits<double>::epsilon();
   }
 }
 

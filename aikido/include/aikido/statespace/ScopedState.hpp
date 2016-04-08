@@ -30,6 +30,7 @@ public:
     this->mSpace->freeStateInBuffer(this->mState);
   }
 
+  // ScopedState is uncopyable, must use std::move
   ScopedState(const ScopedState&) = delete;
   ScopedState& operator =(const ScopedState&) = delete;
 

@@ -29,6 +29,11 @@ public:
 
   virtual ~StateSpace() = default;
 
+  auto createState() const -> ScopedState
+  {
+    return ScopedState(this);
+  }
+
   /// Gets the size of a State, in bytes.
   virtual size_t getStateSizeInBytes() const = 0;
 
@@ -54,6 +59,19 @@ public:
   /// TODO: Need a docstring for this.
   virtual void compose(
     const State* _state1, const State* _state2, State* _out) const = 0;
+
+  // TODO add '= 0' below to force all statespaces to implement
+  /// Calculae the metric distance between two States
+  virtual double distance(const State* state1, const State* state2) const;
+
+  // TODO add '= 0' below to force all statespaces to implement
+  /// Return a state alpha distance between this and other
+  virtual void interpolate(const State* state1, const State* state2,
+                           const double alpha, State* out) const;
+
+  // TODO add '= 0' below to force all statespaces to implement
+  /// Copy a State
+  virtual void copyState(const State* state, State* stateCopy) const;
 };
 
 using StateSpacePtr = std::shared_ptr<StateSpace>;

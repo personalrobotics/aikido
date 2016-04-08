@@ -43,6 +43,7 @@ add_library(${PROJECT_NAME} SHARED
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
   src/constraint/IkSampleableConstraint.cpp
+  src/constraint/TestableCollisionConstraint.cpp
   #src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/util/VanDerCorput.cpp
@@ -55,6 +56,8 @@ target_link_libraries(${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${TinyXML2_LIBRARIES}
 )
+
+MESSAGE(WARN "${DART_LIBRARIES}")
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).
 install(FILES package.xml
