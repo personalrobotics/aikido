@@ -1,4 +1,5 @@
 #include <aikido/statespace/SE3StateSpace.hpp>
+#include <dart/math/Geometry.h>
 
 namespace aikido {
 namespace statespace {
@@ -66,6 +67,14 @@ StateSpace::State* SE3StateSpace::allocateStateInBuffer(void* _buffer) const
 void SE3StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
   static_cast<State*>(_state)->~State();
+}
+
+//=============================================================================
+auto SE3StateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  throw std::runtime_error(
+    "SE3StateSpace::createSampleableConstraint is not implemented.");
 }
 
 //=============================================================================
@@ -138,6 +147,25 @@ void SE3StateSpace::interpolate(const StateSpace::State* _from,
                                 StateSpace::State* _State) const
 {
 
+}
+
+//=============================================================================
+void SE3StateSpace::expMap(
+  const Eigen::VectorXd& _tangent,  StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+  
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 6)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 6"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  Eigen::Isometry3d transform = dart::math::expMap(_tangent);
+  out->mTransform = transform;
 }
 
 } // namespace statespace

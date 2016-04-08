@@ -67,6 +67,10 @@ public:
   void freeStateInBuffer(StateSpace::State* _state) const override;
   
   // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
+  
+  // Documentation inherited.
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
@@ -103,6 +107,9 @@ public:
                    const StateSpace::State* _to,
                    const double _t,
                    StateSpace::State* _State) const;
+
+  // Documentation inherited. _tangent should be 3d twist.
+  void expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
 };
 

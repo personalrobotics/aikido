@@ -11,7 +11,9 @@ namespace statespace {
 template <class> class SO2StateHandle;
 
 /// Represents the space of planar rotations.
-class SO2StateSpace : virtual public StateSpace
+class SO2StateSpace
+  : public std::enable_shared_from_this<SO2StateSpace>
+  , virtual public StateSpace
 {
 public:
   /// Point in SO(2), a planar rotation.
@@ -74,6 +76,10 @@ public:
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
   
   // Documentation inherited.
   void compose(
@@ -112,6 +118,10 @@ public:
                    const StateSpace::State* _to,
                    const double _t,
                    StateSpace::State* _State) const;
+
+  // Documentation inherited.
+  void expMap(
+    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
 };
 
