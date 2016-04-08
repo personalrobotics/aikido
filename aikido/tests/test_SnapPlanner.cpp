@@ -7,10 +7,9 @@ class SnapPlannerTest: ::testing::Test
 {
 public:
   using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
-  using StatePtr = RealVectorStateSpace::ScopedState;
+  using ScopedState = RealVectorStateSpace::ScopedState;
 
   SnapPlannerTest()
   {
-    // RealVectorStateSpace stateSpace{1};
   }
 };

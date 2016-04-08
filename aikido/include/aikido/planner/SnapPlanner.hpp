@@ -10,7 +10,6 @@
 #include "../statespace/StateSpace.hpp"
 #include "../util/VanDerCorput.hpp"
 
-
 namespace aikido
 {
 namespace planner
@@ -21,7 +20,7 @@ using Trajectory = std::vector<aikido::statespace::StateSpace::ScopedState>;
 static std::unique_ptr<Trajectory> planSnap(
     const aikido::statespace::StateSpace::State *startState,
     const aikido::statespace::StateSpace::State *goalState,
-    const std::shared_ptr<StateSpace> stateSpace,
+    const std::shared_ptr<aikido::statespace::StateSpace> stateSpace,
     const std::shared_ptr<aikido::constraint::TestableConstraint> constraint,
     aikido::planner::Result* planningResult)
 {
@@ -30,8 +29,7 @@ static std::unique_ptr<Trajectory> planSnap(
         "StateSpace of constraint not equal to StateSpace of planning space");
   }
   aikido::util::VanDerCorput vdc{1, true, 0.02};  // TODO junk resolution
-  aikido::statespace::StateSpace::ScopedState testState =
-      stateSpace->createState();
+  auto testState = stateSpace->createState();
   
   for (double alpha : vdc) {
     stateSpace->interpolate(startState, goalState, alpha, testState);

@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_TESTABLE_COLLISION_CONSTRAINT_HPP_
-#define AIKIDO_CONSTRAINT_TESTABLE_COLLISION_CONSTRAINT_HPP_
+#ifndef AIKIDO_CONSTRAINT_COLLISION_CONSTRAINT_HPP_
+#define AIKIDO_CONSTRAINT_COLLISION_CONSTRAINT_HPP_
 
 #include "TestableConstraint.hpp"
 #include <vector>
@@ -15,10 +15,10 @@ namespace aikido
 {
 namespace constraint
 {
-class TestableCollisionConstraint : public TestableConstraint
+class CollisionConstraint : public TestableConstraint
 {
 public:
-  TestableCollisionConstraint(
+  CollisionConstraint(
       std::shared_ptr<aikido::statespace::MetaSkeletonStateSpace> statespace,
       std::shared_ptr<dart::collision::CollisionDetector> collisionDetector)
       : statespace{statespace}
@@ -27,7 +27,7 @@ public:
   {
   }
 
-  const std::shared_ptr<StateSpace> getStateSpace() const override
+  const shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
   {
     return statespace;
   }
@@ -56,4 +56,4 @@ private:
 
 }  // constraint
 }  // aikido
-#endif  // AIKIDO_CONSTRAINT_TESTABLE_COLLISION_CONSTRAINT_HPP_
+#endif  // AIKIDO_CONSTRAINT_COLLISION_CONSTRAINT_HPP_

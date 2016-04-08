@@ -43,7 +43,7 @@ add_library(${PROJECT_NAME} SHARED
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
   src/constraint/IkSampleableConstraint.cpp
-  src/constraint/TestableCollisionConstraint.cpp
+  src/constraint/CollisionConstraint.cpp
   #src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/util/VanDerCorput.cpp

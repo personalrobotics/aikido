@@ -1,9 +1,9 @@
-#include <aikido/constraint/TestableCollisionConstraint.hpp>
+#include <aikido/constraint/CollisionConstraint.hpp>
 #include <dart/collision/Result.h>
 
 using namespace aikido::constraint;
 
-bool TestableCollisionConstraint::isSatisfied(
+bool CollisionConstraint::isSatisfied(
     const aikido::statespace::StateSpace::State* state) const
 {
   auto skelStatePtr =
@@ -28,14 +28,14 @@ bool TestableCollisionConstraint::isSatisfied(
   return true;
 }
 
-void TestableCollisionConstraint::addPairwiseCheck(
+void CollisionConstraint::addPairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> group1,
     std::shared_ptr<dart::collision::CollisionGroup> group2)
 {
   groupsToPairwiseCheck.push_back(std::make_pair(group1, group2));
 }
 
-void TestableCollisionConstraint::addSelfCheck(
+void CollisionConstraint::addSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> group)
 {
   groupsToSelfCheck.push_back(group);
