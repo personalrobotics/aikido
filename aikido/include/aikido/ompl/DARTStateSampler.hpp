@@ -13,10 +13,10 @@ namespace aikido {
         public:
 
             DARTStateSampler(const ompl::base::StateSpace* _space,
-                             const aikido::constraint::SampleableConstraintPtr &_constraint);
+                             std::unique_ptr<aikido::constraint::SampleGenerator> _generator);
 
             /// Sample a state uniformly from the space
-            virtual void sampleUniform(ompl::base::State* _state) = 0;
+            virtual void sampleUniform(ompl::base::State* _state);
 
             /// Sample a state near another, within specified distance
             virtual void sampleUniformNear(ompl::base::State* _state, 
@@ -29,7 +29,7 @@ namespace aikido {
                                         const double stdDev);
 
         private:
-            aikido::constraint::SampleableConstraintPtr mConstraint;
+            std::unique_ptr<aikido::constraint::SampleGenerator> mGenerator;
 
         };
     }

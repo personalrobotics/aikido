@@ -1,11 +1,31 @@
 #include <aikido/ompl/DARTGeometricStateSpace.hpp>
+#include <aikido/ompl/DARTStateSampler.hpp>
+#include <aikido/constraint/Sampleable.hpp>
+#include <dart/common/StlHelpers.h>
+#include <boost/make_shared.hpp>
+
+using dart::common::make_unique;
 
 namespace aikido {
     namespace ompl_bindings {
 
-        DARTGeometricStateSpace::DARTGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace)
-                : mStateSpace(_sspace) {
-            }
+        DARTGeometricStateSpace::DARTGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
+                                                         std::unique_ptr<util::RNG> _rng)
+            : mStateSpace(std::move(_sspace)), 
+              mRng(std::move(_rng))
+        {
+
+            // Use our RNG to generate an initial set of (badly correlated) seeds.
+            std::vector<util::RNG::result_type> initialSeeds;
+            unsigned int numSeeds = 10; // TODO: arbitrary
+            initialSeeds.reserve(numSeeds);
+
+            for (size_t i = 0; i < numSeeds; ++i)
+                initialSeeds.emplace_back((*mRng)());
+
+            // Use seed_seq to improve the quality of our seeds.
+            mSeedSeq = make_unique<std::seed_seq>(initialSeeds.begin(), initialSeeds.end());
+        }
 
         /// Get the dimension of the space (not the dimension of the surrounding ambient space)
         unsigned int DARTGeometricStateSpace::getDimension() const {
@@ -85,7 +105,17 @@ namespace aikido {
         /// was previously specified by setStateSamplerAllocator() or, 
         /// if no sampler allocator was specified, allocDefaultStateSampler() is called.
         ompl::base::StateSamplerPtr DARTGeometricStateSpace::allocDefaultStateSampler() const {
-            // TODO
+
+            std::vector<util::RNG::result_type> improvedSeed(1);
+            mSeedSeq->generate(improvedSeed.begin(), improvedSeed.end());
+
+            auto constraint = mStateSpace->createSampleableConstraint(
+                make_unique<util::RNGWrapper<std::default_random_engine> >(improvedSeed[0]));
+            auto generator = constraint->createSampleGenerator();
+            auto stateSampler =
+                boost::make_shared<DARTStateSampler>(this, std::move(generator));
+
+            return stateSampler;
         }
         
         /// Allocate a state that can store a point in the described space

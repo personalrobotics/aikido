@@ -19,7 +19,10 @@ namespace aikido {
                 aikido::statespace::StateSpace::State* mState;
             };
             
-            DARTGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace);
+            /// Construct a state space with a random number generator used for allocating
+            ///  state samplers.
+            DARTGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
+                                    std::unique_ptr<util::RNG> _rng);
 
             /// Get the dimension of the space (not the dimension of the surrounding ambient space)
             virtual unsigned int getDimension() const;
@@ -75,7 +78,8 @@ namespace aikido {
 
         private:
             aikido::statespace::StateSpacePtr mStateSpace;
-
+            std::unique_ptr<util::RNG> mRng;
+            std::unique_ptr<std::seed_seq> mSeedSeq;
         };
     }
 }
