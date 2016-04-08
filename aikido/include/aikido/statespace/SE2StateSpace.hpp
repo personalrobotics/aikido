@@ -55,6 +55,9 @@ public:
 
   ScopedState createState() const;
 
+  /// Gets translational bounds on the StateSpace.
+  Bounds getTranslationalBounds() const;
+
   /// Gets value as a transformation.
   const Isometry2d& getIsometry(const State* _state) const;
 
