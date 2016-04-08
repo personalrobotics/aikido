@@ -1,41 +1,24 @@
-################################
 # GTest setup
-################################
-add_subdirectory(gtest)
-include_directories(${gtest_SOURCE_DIR}/include)
+add_subdirectory(gtest EXCLUDE_FROM_ALL)
+include_directories("${gtest_SOURCE_DIR}/include")
 
-# For each source file in the list provided in the first argument, generate
-# a unit-test that links against the specified libraries.
-function(run_tests sources libraries)
-  list(REMOVE_AT ARGV 0)
-  foreach(source IN LISTS sources)
-    get_filename_component(testname ${source} NAME_WE)
-    add_executable("${testname}" "${source}")
-    target_link_libraries("${testname}" ${ARGV})
-    add_test("${testname}" "${testname}")
-  endforeach(source)
+function(add_aikido_test target_name)
+  add_executable("${target_name}" EXCLUDE_FROM_ALL ${ARGN})
+  target_link_libraries("${target_name}" gtest gtest_main)
+  add_test("${target_name}" "${target_name}")
+  set(AIKIDO_TESTS "${target_name}" ${AIKIDO_TESTS} PARENT_SCOPE)
 endfunction()
 
 
-#############################
 # SampleableConstraint tests
-#############################
-add_executable(test_TSR test_TSR.cpp)
-target_link_libraries(test_TSR "${PROJECT_NAME}" gtest gtest_main)
-target_compile_definitions(test_TSR
-  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
-add_test(test_TSR test_TSR)
+add_aikido_test(test_TSR test_TSR.cpp)
+target_link_libraries(test_TSR "${PROJECT_NAME}")
 
-add_executable(test_IKSampleable test_IKSampleable.cpp)
-target_link_libraries(test_IKSampleable "${PROJECT_NAME}" gtest gtest_main)
-target_compile_definitions(test_IKSampleable
-  PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
-add_test(test_IKSampleable test_IKSampleable)
+add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
+target_link_libraries(test_IKSampleable "${PROJECT_NAME}")
 
 
-################################
 # CatkinResourceRetriever tests
-################################
 set(CATKIN_MAKE_WORKSPACE
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_make_workspace")
 file(COPY "../test_resources/catkin_workspace/"
@@ -43,14 +26,12 @@ file(COPY "../test_resources/catkin_workspace/"
 file(WRITE "${CATKIN_MAKE_WORKSPACE}/devel/.catkin"
   "${CATKIN_MAKE_WORKSPACE}/src")
 
-add_executable(test_CatkinResourceRetriever_catkin_make
+add_aikido_test(test_CatkinResourceRetriever_catkin_make
   test_CatkinResourceRetriever.cpp)
 target_link_libraries(test_CatkinResourceRetriever_catkin_make
-  "${PROJECT_NAME}" gtest gtest_main)
+  "${PROJECT_NAME}")
 target_compile_definitions(test_CatkinResourceRetriever_catkin_make
   PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_MAKE_WORKSPACE}/devel")
-add_test(test_CatkinResourceRetriever_catkin_make
-  test_CatkinResourceRetriever_catkin_make)
 
 set(CATKIN_BUILD_WORKSPACE
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_build_workspace")
@@ -60,11 +41,13 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/catkin_build_workspace/devel/.catkin"
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_build_workspace/src/my_package1;"
   "${CMAKE_CURRENT_BINARY_DIR}/catkin_build_workspace/src/my_package2")
 
-add_executable(test_CatkinResourceRetriever_catkin_build
+add_aikido_test(test_CatkinResourceRetriever_catkin_build
   test_CatkinResourceRetriever.cpp)
 target_link_libraries(test_CatkinResourceRetriever_catkin_build
-  "${PROJECT_NAME}" gtest gtest_main)
+  "${PROJECT_NAME}")
 target_compile_definitions(test_CatkinResourceRetriever_catkin_build
   PRIVATE "-DAIKIDO_TEST_WORKSPACE_PATH=${CATKIN_BUILD_WORKSPACE}/devel")
-add_test(test_CatkinResourceRetriever_catkin_build
-  test_CatkinResourceRetriever_catkin_build)
+
+# Targets to mimic a Catkin package. "tests" builds tests and "test" (or "run_tests") runs them.
+add_custom_target(tests DEPENDS ${AIKIDO_TESTS})
+add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
