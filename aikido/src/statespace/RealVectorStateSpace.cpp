@@ -1,6 +1,7 @@
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/RealVectorStateSpaceSampleableConstraint.hpp>
 #include <dart/common/Console.h>
+#include <cassert>
 
 #include <vector>
 #include <random>
@@ -59,12 +60,6 @@ Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
     reinterpret_cast<const unsigned char*>(_state));
 
   return Eigen::Map<const Eigen::VectorXd>(valueBuffer, mBounds.rows());
-}
-
-//=============================================================================
-int RealVectorStateSpace::getDimension() const
-{
-  return mBounds.rows();
 }
 
 //=============================================================================
@@ -144,6 +139,112 @@ void RealVectorStateSpace::compose(
 }
 
 //=============================================================================
+unsigned int RealVectorStateSpace::getDimension() const 
+{
+    return mBounds.rows();
+}
+
+//=============================================================================
+double RealVectorStateSpace::getMaximumExtent() const 
+{
+
+    double d = 0.0;
+    for (size_t i; i < mBounds.rows(); ++i)
+    {
+        double e = mBounds(i,1) - mBounds(i,0);
+        d += e*e;
+    }
+    return std::sqrt(d);
+}
+
+//=============================================================================
+double RealVectorStateSpace::getMeasure() const 
+{
+    double m = 1.0;
+    for (size_t i = 0; i < mBounds.rows(); ++i)
+    {
+        m *= mBounds(i,1) - mBounds(i,0);
+    }
+    return m;
+}
+
+//=============================================================================
+void RealVectorStateSpace::enforceBounds(StateSpace::State* _state) const 
+{
+    auto state = static_cast<State*>(_state);
+    auto value = getMutableValue(state);
+    
+    for (size_t i = 0; i < mBounds.rows(); ++i)
+    {
+        if(value[i] > mBounds(i,1))
+        {
+            value[i] = mBounds(i,1);
+        }
+        else if(value[i] < mBounds(i,0))
+        {
+            value[i] = mBounds(i,0);
+        }
+    }
+}
+
+//=============================================================================
+bool RealVectorStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+    auto state = static_cast<const State*>(_state);
+    auto value = getValue(state);
+
+    for (size_t i = 0; i < mBounds.rows(); ++i)
+    {
+        if(value[i] - std::numeric_limits<double>::epsilon() > mBounds(i,1) ||
+           value[i] + std::numeric_limits<double>::epsilon() < mBounds(i,0))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+//=============================================================================
+void RealVectorStateSpace::copyState(StateSpace::State* _destination,
+                                     const StateSpace::State* _source) const
+{
+    auto destination = static_cast<State*>(_destination);
+    auto source = static_cast<const State*>(_source);
+    setValue(destination, getValue(source));
+}
+
+//=============================================================================
+double RealVectorStateSpace::distance(const StateSpace::State* _state1,
+                                      const StateSpace::State* _state2) const
+{
+    auto v1 = getValue(static_cast<const State*>(_state1));
+    auto v2 = getValue(static_cast<const State*>(_state2));
+    auto diff_v = v2 - v1;
+    return diff_v.norm();
+}
+
+//=============================================================================
+bool RealVectorStateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+    return distance(_state1, _state2) < std::numeric_limits<double>::epsilon();
+}
+
+//=============================================================================
+void RealVectorStateSpace::interpolate(const StateSpace::State* _from,
+                                       const StateSpace::State* _to,
+                                       const double _alpha,
+                                       StateSpace::State* _state) const
+{
+    // TODO wrap checks in ndebug
+    assert(_alpha >= 0.0 && "alpha must be >= 0.0");
+    assert(_alpha <= 1.0 && "alpha must be <= 1.0");
+    auto vfrom = getValue(static_cast<const State*>(_from));
+    auto vto = getValue(static_cast<const State*>(_to));
+    getMutableValue(static_cast<State*>(_state)) = ((1 - _alpha) * vfrom + (_alpha * vto));
+}
+
+//=============================================================================
 void RealVectorStateSpace::expMap(
   const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
@@ -151,7 +252,6 @@ void RealVectorStateSpace::expMap(
 
   setValue(out, _tangent);
 }
-
 
 } // namespace statespace
 } // namespace aikido

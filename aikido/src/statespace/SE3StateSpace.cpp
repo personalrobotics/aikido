@@ -90,6 +90,66 @@ void SE3StateSpace::compose(
 }
 
 //=============================================================================
+unsigned int SE3StateSpace::getDimension() const 
+{
+    return 6;
+}
+
+//=============================================================================
+double SE3StateSpace::getMaximumExtent() const 
+{
+
+}
+
+//=============================================================================
+double SE3StateSpace::getMeasure() const 
+{
+
+}
+
+//=============================================================================
+void SE3StateSpace::enforceBounds(StateSpace::State* _state) const 
+{
+ 
+}
+
+//=============================================================================
+bool SE3StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+
+}
+
+//=============================================================================
+void SE3StateSpace::copyState(StateSpace::State* _destination,
+                              const StateSpace::State* _source) const
+{
+
+}
+
+//=============================================================================
+double SE3StateSpace::distance(const StateSpace::State* _state1,
+                               const StateSpace::State* _state2) const
+{
+
+}
+
+//=============================================================================
+bool SE3StateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+    
+}
+
+//=============================================================================
+void SE3StateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _State) const
+{
+
+}
+
+//=============================================================================
 void SE3StateSpace::expMap(
   const Eigen::VectorXd& _tangent,  StateSpace::State* _out) const
 {
@@ -106,12 +166,6 @@ void SE3StateSpace::expMap(
 
   Eigen::Isometry3d transform = dart::math::expMap(_tangent);
   out->mTransform = transform;
-}
-
-//=============================================================================
-int SE3StateSpace::getDimension() const
-{
-  return 6;
 }
 
 } // namespace statespace

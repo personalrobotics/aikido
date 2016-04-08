@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO2StateSpace.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <aikido/statespace/SO2StateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
@@ -113,6 +114,80 @@ void SO2StateSpace::compose(
 }
 
 //=============================================================================
+unsigned int SO2StateSpace::getDimension() const 
+{
+    return 1;
+}
+
+//=============================================================================
+double SO2StateSpace::getMaximumExtent() const 
+{
+    return boost::math::constants::pi<double>();
+}
+
+//=============================================================================
+double SO2StateSpace::getMeasure() const 
+{
+    return 2.0*boost::math::constants::pi<double>(); // OMPL
+}
+
+//=============================================================================
+void SO2StateSpace::enforceBounds(StateSpace::State* _state) const 
+{
+    return;
+}
+
+//=============================================================================
+bool SO2StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+    return true;
+}
+
+//=============================================================================
+void SO2StateSpace::copyState(StateSpace::State* _destination,
+                              const StateSpace::State* _source) const
+{
+    auto source = static_cast<const State*>(_source);
+    auto destination = static_cast<State*>(_destination);
+    setAngle(destination, getAngle(source));
+}
+
+//=============================================================================
+double SO2StateSpace::distance(const StateSpace::State* _state1,
+                               const StateSpace::State* _state2) const
+{
+    // Difference between angles
+    double diff = getAngle(static_cast<const State*>(_state1)) - 
+        getAngle(static_cast<const State*>(_state2));
+    diff = fmod(fabs(diff), 2.0*boost::math::constants::pi<double>());
+    if(diff > boost::math::constants::pi<double>())
+        diff -= 2.0*boost::math::constants::pi<double>();
+    return diff;
+}
+
+//=============================================================================
+bool SO2StateSpace::equalStates(const StateSpace::State* _state1,
+                                const StateSpace::State* _state2) const
+{
+    double dist = distance(_state1, _state2);
+    return dist < std::numeric_limits<double>::epsilon();
+}
+
+//=============================================================================
+void SO2StateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _state) const
+{
+    auto st = static_cast<State*>(_state);
+    double dist = distance(_from, _to);
+    double a = getAngle(st) + _t*dist;
+
+    // TODO: Wrap?
+    setAngle(st, a);
+}
+
+//=============================================================================
 void SO2StateSpace::expMap(
   const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
@@ -129,12 +204,6 @@ void SO2StateSpace::expMap(
 
   double angle = _tangent(0);
   out->mAngle = angle;
-}
-
-//=============================================================================
-int SO2StateSpace::getDimension() const
-{
-  return 1;
 }
 
 } // namespace statespace
