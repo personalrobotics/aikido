@@ -2,6 +2,7 @@
 #define AIKIDO_STATESPACE_STATESPACE_H
 #include <memory>
 #include "ScopedState.hpp"
+#include <Eigen/Dense>
 
 namespace aikido {
 namespace statespace {
@@ -54,6 +55,13 @@ public:
   /// TODO: Need a docstring for this.
   virtual void compose(
     const State* _state1, const State* _state2, State* _out) const = 0;
+
+  /// Exponential mapping of Lie algebra element to a Lie group element.  
+  virtual void expMap(
+    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const = 0;
+
+  /// Gets the dimension of this space.
+  virtual int getDimension() const = 0;
 };
 
 using StateSpacePtr = std::shared_ptr<StateSpace>;

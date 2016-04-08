@@ -1,4 +1,5 @@
 #include <aikido/statespace/SE3StateSpace.hpp>
+#include <dart/math/Geometry.h>
 
 namespace aikido {
 namespace statespace {
@@ -78,6 +79,31 @@ void SE3StateSpace::compose(
   auto out = static_cast<State*>(_out);
 
   out->mTransform = state1->mTransform * state2->mTransform;
+}
+
+//=============================================================================
+void SE3StateSpace::expMap(
+  const Eigen::VectorXd& _tangent,  StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+  
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 6)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 6"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  Eigen::Isometry3d transform = dart::math::expMap(_tangent);
+  out->mTransform = transform;
+}
+
+//=============================================================================
+int SE3StateSpace::getDimension() const
+{
+  return 6;
 }
 
 } // namespace statespace

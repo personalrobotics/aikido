@@ -77,5 +77,46 @@ void CompoundStateSpace::compose(
   }
 }
 
+//=============================================================================
+void CompoundStateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+  
+  int dimension = getDimension();
+
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != dimension)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected " << dimension
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  int index = 0;
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
+    int dim = mSubspaces[i]->getDimension();
+    mSubspaces[i]->expMap(
+      _tangent.block(index, 0, dim, 1),
+      getSubState<>(out, i));
+    index += dim;
+  }
+}
+
+//=============================================================================
+int CompoundStateSpace::getDimension() const
+{
+  int dim = 0; 
+
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
+    dim += mSubspaces[i]->getDimension();
+  }
+
+  return dim;
+}
+
 } // namespace statespace
 } // namespace aikido

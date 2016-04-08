@@ -70,6 +70,12 @@ public:
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
+
+  // Documentation inherited. _tangent should be 3d twist.
+  void expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
+
+  /// Documentation inherited.
+  int getDimension() const override;
 };
 
 } // namespace statespace

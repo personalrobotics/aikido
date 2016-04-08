@@ -81,5 +81,36 @@ void SE2StateSpace::compose(
   out->mTransform = state1->mTransform * state2->mTransform;
 }
 
+//=============================================================================
+void SE2StateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+
+  if (_tangent.rows() != 3)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 3"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  double angle = _tangent(0);
+  Eigen::Vector2d translation = _tangent.bottomRows(2);
+
+  Isometry2d transform(Isometry2d::Identity());
+  transform.linear() = Eigen::Rotation2Dd(angle).matrix();
+  transform.translation() = translation;
+
+  out->mTransform = transform; 
+}
+
+
+//=============================================================================
+int SE2StateSpace::getDimension() const
+{
+  return 3;
+}
+
 } // namespace statespace
 } // namespace aikido

@@ -127,5 +127,15 @@ void RealVectorStateSpace::compose(
   getMutableValue(out) = getValue(state1) + getValue(state2);
 }
 
+//=============================================================================
+void RealVectorStateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+
+  setValue(out, _tangent);
+}
+
+
 } // namespace statespace
 } // namespace aikido

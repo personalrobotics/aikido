@@ -101,5 +101,30 @@ void SO2StateSpace::compose(
   out->mAngle = state1->mAngle + state2->mAngle;
 }
 
+//=============================================================================
+void SO2StateSpace::expMap(
+  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+{
+  auto out = static_cast<State*>(_out);
+
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 1)
+  {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 1"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  double angle = _tangent(0);
+  out->mAngle = angle;
+}
+
+//=============================================================================
+int SO2StateSpace::getDimension() const
+{
+  return 1;
+}
+
 } // namespace statespace
 } // namespace aikido
