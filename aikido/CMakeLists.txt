@@ -50,7 +50,7 @@ add_library(${PROJECT_NAME} SHARED
   # src/constraint/IkSampleableConstraint.cpp
   # src/constraint/IkSampleGenerator.cpp
   src/constraint/PolynomialConstraint.cpp
-  # src/constraint/ProjectableByDifferentiable.cpp
+  src/constraint/DifferentiableProjector.cpp
   #src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/util/PseudoInverse.cpp

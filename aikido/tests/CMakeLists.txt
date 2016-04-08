@@ -19,6 +19,10 @@ add_aikido_test(test_PolynomialConstraint
  constraint/test_PolynomialConstraint.cpp)
 target_link_libraries(test_PolynomialConstraint "${PROJECT_NAME}")
 
+add_aikido_test(test_DifferentiableProjector
+ constraint/test_DifferentiableProjector.cpp)
+target_link_libraries(test_DifferentiableProjector "${PROJECT_NAME}")
+
 
 #add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
 #target_link_libraries(test_IKSampleable "${PROJECT_NAME}")

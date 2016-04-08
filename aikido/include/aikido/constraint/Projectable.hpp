@@ -2,7 +2,7 @@
 #define AIKIDO_CONSTRAINT_PROJECTABLE_H
 
 #include <Eigen/Dense>
-
+#include "../statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace constraint{
@@ -15,7 +15,7 @@ public:
   /// Projection _s to _out. Returns false if projection cannot be done. 
   virtual bool project(
     const statespace::StateSpace::State* _s,
-    const statespace::StateSpace::State* _out) const = 0;
+    statespace::StateSpace::State* _out) const = 0;
 
   /// Gets the StateSpace that this constraint operates on.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
