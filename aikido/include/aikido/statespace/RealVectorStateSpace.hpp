@@ -43,7 +43,7 @@ public:
   ScopedState createState() const;
 
   /// Gets the dimension of this space.
-  int getDimension() const;
+  int getDimension() const override;
 
   /// Gets the upper and lower bounds of this space.
   const Bounds& getBounds() const;

@@ -10,7 +10,9 @@ namespace statespace {
 template <class T> class SO3StateHandle;
 
 /// Represents the space of spatial rotations.
-class SO3StateSpace : virtual public StateSpace
+class SO3StateSpace
+  : public std::enable_shared_from_this<SO3StateSpace>
+  , virtual public StateSpace
 {
 public:
   /// Point in SO(3), a spatial orientation.
