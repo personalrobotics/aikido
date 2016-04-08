@@ -12,7 +12,7 @@ template <class> class CompoundStateHandle;
 
 /// Represents the Cartesian product of other StateSpaces.
 class CompoundStateSpace
-  : std::enable_shared_from_this<CompoundStateSpace>
+  : public std::enable_shared_from_this<CompoundStateSpace>
   , public virtual StateSpace
 {
 public:
