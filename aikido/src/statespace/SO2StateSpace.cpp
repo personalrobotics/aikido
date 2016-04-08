@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2StateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -87,6 +88,16 @@ StateSpace::State* SO2StateSpace::allocateStateInBuffer(void* _buffer) const
 void SO2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
   static_cast<State*>(_state)->~State();
+}
+
+//=============================================================================
+constraint::SampleableConstraintPtr SO2StateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const
+{
+  return std::make_shared<SO2StateSpaceSampleableConstraint>(
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<SO2StateSpace>(shared_from_this()),
+    std::move(_rng));
 }
 
 //=============================================================================

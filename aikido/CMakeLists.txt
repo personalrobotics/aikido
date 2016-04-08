@@ -31,14 +31,18 @@ add_library(${PROJECT_NAME} SHARED
   src/path/CartesianTwistTrajectory.cpp
   src/statespace/RealVectorStateSpace.cpp
   src/statespace/RealVectorJointStateSpace.cpp
+  src/statespace/RealVectorStateSpaceSampleableConstraint.cpp
+  src/statespace/SO2StateSpace.cpp
   src/statespace/SO2StateSpace.cpp
   src/statespace/SO2JointStateSpace.cpp
+  src/statespace/SO2StateSpaceSampleableConstraint.cpp
   src/statespace/SO3StateSpace.cpp
   src/statespace/SE2StateSpace.cpp
   src/statespace/SE3StateSpace.cpp
   src/statespace/SE3JointStateSpace.cpp
   src/statespace/JointStateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
+  src/statespace/CompoundStateSpaceSampleableConstraint.cpp
   src/statespace/MetaSkeletonStateSpace.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp

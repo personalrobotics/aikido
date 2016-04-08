@@ -70,6 +70,14 @@ void SE2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
+auto SE2StateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  throw std::runtime_error(
+    "SE2StateSpace::createSampleableConstraint is not implemented.");
+}
+
+//=============================================================================
 void SE2StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
   StateSpace::State* _out) const

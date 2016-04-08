@@ -1,4 +1,5 @@
 #include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/CompoundStateSpaceSampleableConstraint.hpp>
 #include <iostream>
 
 namespace aikido {
@@ -59,6 +60,16 @@ void CompoundStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 
   for (size_t i = mSubspaces.size(); i > 0; --i)
     mSubspaces[i - 1]->freeStateInBuffer(getSubState<>(state, i - 1));
+}
+
+//=============================================================================
+auto CompoundStateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  return std::make_shared<CompoundStateSpaceSampleableConstraint>(
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<CompoundStateSpace>(shared_from_this()),
+    std::move(_rng));
 }
 
 //=============================================================================
