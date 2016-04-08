@@ -14,6 +14,7 @@
 #include <dart/collision/CollisionDetector.h>
 #include <aikido/planning/VectorFieldPlanner.h>
 #include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
 
 namespace aikido {
 namespace planning {
@@ -81,8 +82,7 @@ aikido::path::TrajectoryPtr Plan(
   Eigen::VectorXd qd(num_dof);
   assert(q.size() == num_dof);
   
-  std::shared_ptr<aikido::statespace::StateSpace> stateSpace;
-  stateSpace=aikido::statespace::MetaSkeletonStateSpace(skeleton);
+  aikido::statespace::MetaSkeletonStateSpace stateSpace(skeleton);
 
   // FIXME: Check if the constraint state space is compatible with the skeleton 
 
