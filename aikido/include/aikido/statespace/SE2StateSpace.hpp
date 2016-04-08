@@ -9,7 +9,9 @@ namespace statespace {
 
 template <class> class SE2StateHandle;
 
-class SE2StateSpace : public virtual StateSpace  
+class SE2StateSpace
+  : public std::enable_shared_from_this<SE2StateSpace>
+  , public virtual StateSpace  
 {
 public:
   class State : public StateSpace::State
@@ -45,8 +47,11 @@ public:
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   using Isometry2d = State::Isometry2d;
+  using Bounds = Eigen::Matrix2d;
 
-  SE2StateSpace()=default;
+  SE2StateSpace();
+
+  SE2StateSpace(const Bounds& _translationBounds);
 
   ScopedState createState() const;
 
@@ -80,6 +85,11 @@ public:
 
   /// Documentation inherited.
   int getDimension() const override;
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+private:
+  Bounds mBounds;
 };
 
 } // namespace statespace
