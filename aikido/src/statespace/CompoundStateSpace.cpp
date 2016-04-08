@@ -89,6 +89,129 @@ void CompoundStateSpace::compose(
 }
 
 //=============================================================================
+unsigned int CompoundStateSpace::getDimension() const 
+{
+    unsigned int dim = 0;
+    for (auto const &sspace: mSubspaces)
+    {
+        dim += sspace->getDimension();
+    }
+    return dim;            
+}
+
+//=============================================================================
+double CompoundStateSpace::getMaximumExtent() const 
+{
+    double maxExtent = 0.0;
+    for (auto const &sspace: mSubspaces)
+    {
+        maxExtent += sspace->getMaximumExtent();
+    }
+    return maxExtent;
+}
+
+//=============================================================================
+double CompoundStateSpace::getMeasure() const 
+{
+    double measure = 1.0;
+    for (auto const &sspace: mSubspaces)
+    {
+        measure *= sspace->getMeasure();
+    }
+    return measure;
+}
+
+//=============================================================================
+void CompoundStateSpace::enforceBounds(StateSpace::State* _state) const 
+{
+    auto state = static_cast<State*>(_state);
+
+    for (size_t i = 0; i < mSubspaces.size(); ++i)
+    {
+        mSubspaces[i]->enforceBounds(getSubState<>(state, i));
+    }
+}
+
+//=============================================================================
+bool CompoundStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
+{
+    auto state = static_cast<const State*>(_state);
+
+    for (size_t i = 0; i < mSubspaces.size(); ++i)
+    {
+        if(!mSubspaces[i]->satisfiesBounds(getSubState<>(state, i))){
+            return false;
+        }
+    }
+    return true;
+}
+
+//=============================================================================
+void CompoundStateSpace::copyState(StateSpace::State* _destination,
+                                   const StateSpace::State* _source) const
+{
+    auto destination = static_cast<State*>(_destination);
+    auto source = static_cast<const State*>(_source);
+    for (size_t i = 0; i < mSubspaces.size(); ++i)
+    {
+        mSubspaces[i]->copyState(getSubState<>(destination, i),
+                                 getSubState<>(source, i));
+    }
+    
+}
+
+//=============================================================================
+double CompoundStateSpace::distance(const StateSpace::State* _state1,
+                                    const StateSpace::State* _state2) const
+{
+    auto state1 = static_cast<const State*>(_state1);
+    auto state2 = static_cast<const State*>(_state2);
+
+    double dist = 0.0;
+    for (size_t i = 0; i < mSubspaces.size(); ++i)
+    {
+        dist += mSubspaces[i]->distance(getSubState<>(state1, i),
+                                        getSubState<>(state2, i));
+    }
+    return dist;
+}
+
+//=============================================================================
+bool CompoundStateSpace::equalStates(const StateSpace::State* _state1,
+                                     const StateSpace::State* _state2) const
+{
+    auto state1 = static_cast<const State*>(_state1);
+    auto state2 = static_cast<const State*>(_state2);
+
+    for (size_t i = 0; i < mSubspaces.size(); ++i)
+    {
+        if(!mSubspaces[i]->equalStates(getSubState<>(state1, i),
+                                       getSubState<>(state2, i))){
+            return false;
+        }
+    }
+    return true;
+}
+
+//=============================================================================
+void CompoundStateSpace::interpolate(const StateSpace::State* _from,
+                                const StateSpace::State* _to,
+                                const double _t,
+                                StateSpace::State* _state) const
+{
+    auto from = static_cast<const State*>(_from);
+    auto to = static_cast<const State*>(_to);
+    auto state = static_cast<State*>(_state);
+    
+    for (size_t i = 0; i < mSubspaces.size(); ++i)
+    {
+        mSubspaces[i]->interpolate(getSubState<>(from, i),
+                                   getSubState<>(to, i),
+                                   _t, getSubState<>(state, i));
+    }
+}
+
+//=============================================================================
 void CompoundStateSpace::expMap(
   const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
@@ -114,19 +237,6 @@ void CompoundStateSpace::expMap(
       getSubState<>(out, i));
     index += dim;
   }
-}
-
-//=============================================================================
-int CompoundStateSpace::getDimension() const
-{
-  int dim = 0; 
-
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
-  {
-    dim += mSubspaces[i]->getDimension();
-  }
-
-  return dim;
 }
 
 } // namespace statespace

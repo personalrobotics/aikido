@@ -57,6 +57,8 @@ add_library(${PROJECT_NAME} SHARED
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
+  src/ompl/DARTGeometricStateSpace.cpp
+  src/ompl/DARTStateSampler.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
