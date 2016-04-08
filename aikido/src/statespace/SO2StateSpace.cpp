@@ -52,7 +52,8 @@ constraint::SampleableConstraintPtr SO2StateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const
 {
   return std::make_shared<SO2StateSpaceSampleableConstraint>(
-    nullptr, // TODO: this should be enable_shared_from_this
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<SO2StateSpace>(shared_from_this()),
     std::move(_rng));
 }
 

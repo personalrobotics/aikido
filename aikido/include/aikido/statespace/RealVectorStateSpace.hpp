@@ -10,11 +10,12 @@
 namespace aikido {
 namespace statespace {
 
-// Defined in detail/RealVectorStateSpace.hpp
 template <class> class RealVectorStateHandle;
 
 /// Represents a n-dimensional real vector space.
-class RealVectorStateSpace : public virtual StateSpace
+class RealVectorStateSpace
+  : public std::enable_shared_from_this<RealVectorStateSpace>
+  , public virtual StateSpace
 {
 public:
   /// Point in a RealVectorStateSpace.
