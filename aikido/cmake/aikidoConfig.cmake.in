@@ -10,7 +10,6 @@ set(aikido_LIBRARY aikido)
 # Transitive dependencies.
 find_package(Boost REQUIRED)
 find_package(DART REQUIRED COMPONENTS core)
-find_package(OMPL REQUIRED)
 
 # Both direct and transitive dependencies.
 set(aikido_INCLUDE_DIRS
