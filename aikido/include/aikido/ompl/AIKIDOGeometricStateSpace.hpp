@@ -1,5 +1,5 @@
-#ifndef DART_GEOMETRIC_STATE_SPACE_H
-#define DART_GEOMETRIC_STATE_SPACE_H
+#ifndef AIKIDO_GEOMETRIC_STATE_SPACE_H
+#define AIKIDO_GEOMETRIC_STATE_SPACE_H
 
 #include <ompl/base/StateSpace.h>
 #include <aikido/statespace/StateSpace.hpp>
@@ -8,7 +8,7 @@ namespace aikido {
     namespace ompl_bindings {
 
         /// Wraps an aikido StateSpace into a space recognized by OMPL
-        class DARTGeometricStateSpace : public ompl::base::StateSpace {
+        class AIKIDOGeometricStateSpace : public ompl::base::StateSpace {
 
         public:
 
@@ -21,7 +21,7 @@ namespace aikido {
             
             /// Construct a state space with a random number generator used for allocating
             ///  state samplers.
-            DARTGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
+            AIKIDOGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
                                     std::unique_ptr<util::RNG> _rng);
 
             /// Get the dimension of the space (not the dimension of the surrounding ambient space)
