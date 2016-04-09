@@ -296,7 +296,20 @@ TEST(SO3StateSpace, CopyState)
 
 TEST(SO3StateSpace, Distance)
 {
-    // TODO
+    SO3StateSpace so3;
+    auto state1 = so3.createState();
+    auto state2 = so3.createState();
+    
+    auto quat = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY()));
+    state1.setQuaternion(quat);
+    state2.setQuaternion(quat);
+    EXPECT_NEAR(so3.distance(state1, state2), 0.0, 1e-6);
+
+    auto quat2 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(0.5+M_PI, Eigen::Vector3d::UnitY()));
+    state2.setQuaternion(quat2);
+    EXPECT_NEAR(so3.distance(state1, state2), 0.5, 1e-6);
 }
 
 TEST(SO3StateSpace, EqualStates)
@@ -321,6 +334,33 @@ TEST(SO3StateSpace, EqualStates)
 
     state2.setQuaternion(q3);
     EXPECT_TRUE(so3.equalStates(state1, state2));
+}
+
+TEST(SO3StateSpace, Interpolate)
+{
+    SO3StateSpace so3;
+    auto state1 = so3.createState();
+    auto state2 = so3.createState();
+    auto istate = so3.createState();
+    
+    auto quat1 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY()));
+    auto quat2 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(1.0+M_PI, Eigen::Vector3d::UnitY()));
+    auto quat3 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(0.5+M_PI, Eigen::Vector3d::UnitY()));
+
+    state1.setQuaternion(quat1);
+    state2.setQuaternion(quat2);
+    
+    so3.interpolate(state1, state2, 0, istate);
+    EXPECT_TRUE(istate.getQuaternion().isApprox(quat1));
+
+    so3.interpolate(state1, state2, 1, istate);
+    EXPECT_TRUE(istate.getQuaternion().isApprox(quat2));
+
+    so3.interpolate(state1, state2, 0.5, istate);
+    EXPECT_TRUE(istate.getQuaternion().isApprox(quat3));
 }
 
 TEST(SE2StateSpace, Compose)
