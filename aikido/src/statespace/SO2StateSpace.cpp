@@ -182,7 +182,7 @@ void SO2StateSpace::interpolate(const StateSpace::State* _from,
     auto from = static_cast<const State*>(_from);
     auto to = static_cast<const State*>(_to);
     auto state = static_cast<State*>(_state);
-    double a = getAngle(from) + _t*getAngle(to);
+    double a = (1-_t)*getAngle(from) + _t*getAngle(to);
 
     // TODO: Wrap?
     setAngle(state, a);

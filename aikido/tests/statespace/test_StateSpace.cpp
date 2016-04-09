@@ -84,7 +84,7 @@ TEST(RealVectorStateSpace, Distance)
 
     state1.setValue(Eigen::Vector4d(0, 1, 2, 3));
     state2.setValue(Eigen::Vector4d(-1, -2, -3, -4));
-    EXPECT_EQ(rvss.distance(state1, state2), std::sqrt(84));
+    EXPECT_DOUBLE_EQ(std::sqrt(84), rvss.distance(state1, state2));
 }
 
 TEST(RealVectorStateSpace, EqualStates)
@@ -157,7 +157,7 @@ TEST(SO2StateSpace, EnforceBounds)
     double expected = 5.3;
     state.setAngle(expected);
     so2.enforceBounds(state);
-    EXPECT_NEAR(state.getAngle(), expected, 1e-6);
+    EXPECT_DOUBLE_EQ(expected, state.getAngle());
 }
 
 TEST(SO2StateSpace, SatisfiesBounds)
@@ -175,7 +175,7 @@ TEST(SO2StateSpace, CopyState)
     auto source = so2.createState();
     source.setAngle(3.14159);
     so2.copyState(dest, source);
-    EXPECT_NEAR(dest.getAngle(), source.getAngle(), 1e-6);
+    EXPECT_DOUBLE_EQ(source.getAngle(), dest.getAngle());
 }
 
 TEST(SO2StateSpace, Distance)
@@ -185,12 +185,12 @@ TEST(SO2StateSpace, Distance)
     auto state2 = so2.createState();
     state1.setAngle(1.3);
     state2.setAngle(1.5);
-    EXPECT_NEAR(so2.distance(state1, state2), 0.2, 1e-6);
+    EXPECT_DOUBLE_EQ(0.2, so2.distance(state1, state2));
 
     state2.setAngle(6.0);
-    EXPECT_NEAR(so2.distance(state1, state2), 
-                2.*M_PI-state2.getAngle()+state1.getAngle(),
-                1e-6);
+    EXPECT_DOUBLE_EQ(2.*M_PI-state2.getAngle()+state1.getAngle(),
+                     so2.distance(state1, state2));
+                     
 }
 
 TEST(SO2StateSpace, EqualStates)
@@ -218,13 +218,13 @@ TEST(SO2StateSpace, Interpolate)
     state1.setAngle(0.);
     state2.setAngle(2.*M_PI);
     so2.interpolate(state1, state2, 0, out);
-    EXPECT_NEAR(out.getAngle(), state1.getAngle(), 1e-6);
+    EXPECT_DOUBLE_EQ(state1.getAngle(), out.getAngle());
 
     so2.interpolate(state1, state2, 1, out);
-    EXPECT_NEAR(out.getAngle(), state2.getAngle(), 1e-6);
+    EXPECT_DOUBLE_EQ(state2.getAngle(), out.getAngle());
 
     so2.interpolate(state1, state2, 0.25, out);
-    EXPECT_NEAR(out.getAngle(), M_PI_2, 1e-6);
+    EXPECT_DOUBLE_EQ(M_PI_2, out.getAngle());
 }
 
 TEST(SO3StateSpace, Compose)
@@ -304,12 +304,13 @@ TEST(SO3StateSpace, Distance)
         Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY()));
     state1.setQuaternion(quat);
     state2.setQuaternion(quat);
-    EXPECT_NEAR(so3.distance(state1, state2), 0.0, 1e-6);
+    EXPECT_DOUBLE_EQ(0.0, so3.distance(state1, state2));
 
     auto quat2 = Eigen::Quaterniond(
         Eigen::AngleAxisd(0.5+M_PI, Eigen::Vector3d::UnitY()));
     state2.setQuaternion(quat2);
-    EXPECT_NEAR(so3.distance(state1, state2), 0.5, 1e-6);
+//    EXPECT_DOUBLE_EQ(0.5, so3.distance(state1, state2));
+    EXPECT_NEAR(0.5, so3.distance(state1, state2), 1e-6);
 }
 
 TEST(SO3StateSpace, EqualStates)
@@ -489,4 +490,163 @@ TEST(CompoundStateSpace, ExpMap)
 
   const Vector2d out2 = out.getSubStateHandle<RealVectorStateSpace>(1).getValue();
   EXPECT_TRUE(out2.isApprox(Vector2d(1, 2)));
+}
+
+TEST(CompoundStateSpace, CopyState)
+{
+    CompoundStateSpace space({
+            std::make_shared<SO2StateSpace>(),
+                std::make_shared<RealVectorStateSpace>(3),
+                std::make_shared<SO3StateSpace>(),
+                });
+    
+    auto source = space.createState();
+    auto dest = space.createState();
+
+    double angle = M_PI;
+    auto rv = Eigen::Vector3d(3, 4, 5);
+    auto quat = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
+
+    source.getSubStateHandle<SO2StateSpace>(0).setAngle(angle);
+    source.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv);
+    source.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat);
+
+    space.copyState(dest, source);
+    
+    const double out1 = dest.getSubStateHandle<SO2StateSpace>(0).getAngle();
+    EXPECT_DOUBLE_EQ(angle, out1);
+
+    auto out2 = dest.getSubStateHandle<RealVectorStateSpace>(1).getValue();
+    EXPECT_TRUE(out2.isApprox(rv));
+
+    auto out3 = dest.getSubStateHandle<SO3StateSpace>(2).getQuaternion();
+    EXPECT_TRUE(out3.isApprox(quat));
+}
+
+TEST(CompoundStateSpace, Distance)
+{
+    CompoundStateSpace space({
+            std::make_shared<SO2StateSpace>(),
+                std::make_shared<RealVectorStateSpace>(3),
+                std::make_shared<SO3StateSpace>(),
+                });
+    
+    auto state1 = space.createState();
+    auto state2 = space.createState();
+
+    double angle1 = M_PI;
+    double angle2 = 0.5 + M_PI;
+    auto rv1 = Eigen::Vector3d(3, 4, 5);
+    auto rv2 = Eigen::Vector3d(1, 2, 3);
+    auto quat1 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
+    auto quat2 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI-0.5, Eigen::Vector3d::UnitZ()));
+
+    state1.getSubStateHandle<SO2StateSpace>(0).setAngle(angle1);
+    state1.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv1);
+    state1.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat1);
+
+    state2.getSubStateHandle<SO2StateSpace>(0).setAngle(angle2);
+    state2.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv2);
+    state2.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat2);
+
+    auto vdiff = Eigen::Vector3d(2, 2, 2);
+    EXPECT_DOUBLE_EQ(0.5 + 0.5 + vdiff.norm(), space.distance(state1, state2));
+}
+
+TEST(CompoundStateSpace, EqualStates)
+{
+    CompoundStateSpace space({
+            std::make_shared<SO2StateSpace>(),
+                std::make_shared<RealVectorStateSpace>(3),
+                std::make_shared<SO3StateSpace>(),
+                });
+    
+    auto state1 = space.createState();
+    auto state2 = space.createState();
+
+    double angle = M_PI;
+    auto rv = Eigen::Vector3d(3, 4, 5);
+    auto quat = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
+
+    state1.getSubStateHandle<SO2StateSpace>(0).setAngle(angle);
+    state1.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv);
+    state1.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat);
+
+    state2.getSubStateHandle<SO2StateSpace>(0).setAngle(angle);
+    state2.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv);
+    state2.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat);
+
+    EXPECT_TRUE(space.equalStates(state1, state2));
+
+    state2.getSubStateHandle<SO2StateSpace>(0).setAngle(angle*0.5);
+    EXPECT_FALSE(space.equalStates(state1, state2));
+}
+
+TEST(CompoundStateSpace, Interpolate)
+{
+    CompoundStateSpace space({
+            std::make_shared<SO2StateSpace>(),
+                std::make_shared<RealVectorStateSpace>(3),
+                std::make_shared<SO3StateSpace>(),
+                });
+    
+    auto state1 = space.createState();
+    auto state2 = space.createState();
+
+    double angle1 = M_PI;
+    double angle2 = 0.5 + M_PI;
+    auto rv1 = Eigen::Vector3d(3, 4, 5);
+    auto rv2 = Eigen::Vector3d(1, 2, 3);
+    auto quat1 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
+    auto quat2 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI-0.5, Eigen::Vector3d::UnitZ()));
+
+    auto state1_handle0 = state1.getSubStateHandle<SO2StateSpace>(0);
+    auto state1_handle1 = state1.getSubStateHandle<RealVectorStateSpace>(1);
+    auto state1_handle2 = state1.getSubStateHandle<SO3StateSpace>(2);
+
+    auto state2_handle0 = state2.getSubStateHandle<SO2StateSpace>(0);
+    auto state2_handle1 = state2.getSubStateHandle<RealVectorStateSpace>(1);
+    auto state2_handle2 = state2.getSubStateHandle<SO3StateSpace>(2);
+
+    state1_handle0.setAngle(angle1);
+    state1_handle1.setValue(rv1);
+    state1_handle2.setQuaternion(quat1);
+    state2_handle0.setAngle(angle2);
+    state2_handle1.setValue(rv2);
+    state2_handle2.setQuaternion(quat2);
+    
+    auto istate = space.createState();
+    auto istate_handle0 = istate.getSubStateHandle<SO2StateSpace>(0);
+    auto istate_handle1 = istate.getSubStateHandle<RealVectorStateSpace>(1);
+    auto istate_handle2 = istate.getSubStateHandle<SO3StateSpace>(2);
+
+    space.interpolate(state1, state2, 0, istate);
+    EXPECT_DOUBLE_EQ(state1_handle0.getAngle(),
+                     istate_handle0.getAngle());
+    EXPECT_TRUE(state1_handle1.getValue().isApprox(istate_handle1.getValue()));
+    EXPECT_TRUE(state1_handle2.getQuaternion().isApprox(istate_handle2.getQuaternion()));
+    EXPECT_TRUE(space.equalStates(state1, istate));
+
+    space.interpolate(state1, state2, 1, istate);
+    EXPECT_DOUBLE_EQ(state2_handle0.getAngle(),
+                     istate_handle0.getAngle());
+    EXPECT_TRUE(state2_handle1.getValue().isApprox(istate_handle1.getValue()));
+    EXPECT_TRUE(state2_handle2.getQuaternion().isApprox(istate_handle2.getQuaternion()));
+    EXPECT_TRUE(space.equalStates(state2, istate));
+
+    space.interpolate(state1, state2, 0.5, istate);
+    EXPECT_DOUBLE_EQ(0.25 + M_PI,
+                     istate_handle0.getAngle());
+    auto rv3 = Eigen::Vector3d(2, 3, 4);
+    EXPECT_TRUE(rv3.isApprox(istate_handle1.getValue()));
+
+    auto quat3 = Eigen::Quaterniond(
+        Eigen::AngleAxisd(M_PI-0.25, Eigen::Vector3d::UnitZ()));
+    EXPECT_TRUE(quat3.isApprox(istate_handle2.getQuaternion()));
 }

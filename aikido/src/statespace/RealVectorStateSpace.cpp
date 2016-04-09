@@ -205,14 +205,7 @@ double RealVectorStateSpace::distance(const StateSpace::State* _state1,
 {
     auto v1 = getValue(static_cast<const State*>(_state1));
     auto v2 = getValue(static_cast<const State*>(_state2));
-
-    double dist = 0.0;
-    for (size_t i = 0; i < v1.size(); ++i)
-    {
-        double diff = v1[i] - v2[i];
-        dist += diff * diff;
-    }
-    return std::sqrt(dist);
+    return (v2 - v1).norm();
 }
 
 //=============================================================================
@@ -235,10 +228,7 @@ void RealVectorStateSpace::interpolate(const StateSpace::State* _from,
     auto vfrom = getValue(static_cast<const State*>(_from));
     auto vto = getValue(static_cast<const State*>(_to));
     auto vstate = getMutableValue(static_cast<State*>(_state));
-    for (size_t i = 0; i < vfrom.size(); ++i)
-    {
-        vstate[i] = vfrom[i] + (vto[i] - vfrom[i]) * _t;
-    }
+    vstate = (1 - _t) * vfrom + _t * vto;
 }
 
 //=============================================================================
