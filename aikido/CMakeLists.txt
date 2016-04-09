@@ -66,6 +66,7 @@ add_library(${PROJECT_NAME} SHARED
   src/ompl/AIKIDOGeometricStateSpace.cpp
   src/ompl/AIKIDOStateSampler.cpp
   src/ompl/AIKIDOStateValidityChecker.cpp
+  src/ompl/OMPLPlanner.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
