@@ -170,20 +170,7 @@ double RealVectorStateSpace::getMeasure() const
 //=============================================================================
 void RealVectorStateSpace::enforceBounds(StateSpace::State* _state) const 
 {
-    auto state = static_cast<State*>(_state);
-    auto value = getMutableValue(state);
-    
-    for (size_t i = 0; i < mBounds.rows(); ++i)
-    {
-        if(value[i] > mBounds(i,1))
-        {
-            value[i] = mBounds(i,1);
-        }
-        else if(value[i] < mBounds(i,0))
-        {
-            value[i] = mBounds(i,0);
-        }
-    }
+    throw std::runtime_error("enforceBounds is not implemented. setValue enforces bounds.");
 }
 
 //=============================================================================
@@ -241,6 +228,10 @@ void RealVectorStateSpace::interpolate(const StateSpace::State* _from,
                                        const double _t,
                                        StateSpace::State* _state) const
 {
+    if(_t < 0.0 || _t > 1.0){
+        throw std::invalid_argument("_t must be between 0 and 1");
+    }
+
     auto vfrom = getValue(static_cast<const State*>(_from));
     auto vto = getValue(static_cast<const State*>(_to));
     auto vstate = getMutableValue(static_cast<State*>(_state));

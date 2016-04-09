@@ -141,7 +141,7 @@ double SO3StateSpace::distance(const StateSpace::State* _state1,
     if(r < -1.0 || r > 1.0)
         return 0.0;
     r = acos(r);
-    if(r <= 2.*boost::math::constants::pi<double>())
+    if(r <= boost::math::constants::pi<double>())
     {
         return r;
     }

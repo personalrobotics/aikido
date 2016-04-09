@@ -162,7 +162,7 @@ double SO2StateSpace::distance(const StateSpace::State* _state1,
     diff = fmod(fabs(diff), 2.0*boost::math::constants::pi<double>());
     if(diff > boost::math::constants::pi<double>())
         diff -= 2.0*boost::math::constants::pi<double>();
-    return diff;
+    return fabs(diff);
 }
 
 //=============================================================================
@@ -179,12 +179,13 @@ void SO2StateSpace::interpolate(const StateSpace::State* _from,
                                 const double _t,
                                 StateSpace::State* _state) const
 {
-    auto st = static_cast<State*>(_state);
-    double dist = distance(_from, _to);
-    double a = getAngle(st) + _t*dist;
+    auto from = static_cast<const State*>(_from);
+    auto to = static_cast<const State*>(_to);
+    auto state = static_cast<State*>(_state);
+    double a = getAngle(from) + _t*getAngle(to);
 
     // TODO: Wrap?
-    setAngle(st, a);
+    setAngle(state, a);
 }
 
 //=============================================================================
