@@ -63,7 +63,8 @@ add_library(${PROJECT_NAME} SHARED
   src/BodyNodeMarker.cpp
   src/FrameMarker.cpp
   src/SkeletonMarker.cpp
-  #src/ResourceServer.cpp
+  src/ShapeFrameMarker.cpp
+  src/ResourceServer.cpp
   src/InteractiveMarkerViewer.cpp
 )
 target_link_libraries(${PROJECT_NAME}

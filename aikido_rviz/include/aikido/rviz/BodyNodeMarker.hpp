@@ -1,9 +1,11 @@
 #ifndef AIKIDO_RVIZ_BODYNODEMARKER_H_
 #define AIKIDO_RVIZ_BODYNODEMARKER_H_
+#include <unordered_map>
 #include <dart/dynamics/dynamics.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include "ResourceServer.hpp"
+#include "ShapeFrameMarker.hpp"
 
 namespace aikido {
 namespace rviz {
@@ -18,7 +20,7 @@ public:
   BodyNodeMarker(BodyNodeMarker const &) = delete;
   BodyNodeMarker &operator=(BodyNodeMarker const &) = delete;
 
-  virtual ~BodyNodeMarker();
+  virtual ~BodyNodeMarker() = default;
 
   bool update();
 
@@ -26,9 +28,10 @@ public:
   void ResetColor();
 
 private:
+  using ShapeFrameMarkerMap = std::map<
+    const dart::dynamics::ShapeNode *, std::unique_ptr<ShapeFrameMarker>>;
+
   dart::dynamics::WeakBodyNodePtr mBodyNode;
-  dart::common::Connection mOnColShapeAdded;
-  dart::common::Connection mOnColShapeRemoved;
   dart::common::Connection mOnStructuralChange;
 
   ResourceServer *mResourceServer;
@@ -36,25 +39,10 @@ private:
   visualization_msgs::InteractiveMarker mInteractiveMarker;
   visualization_msgs::InteractiveMarkerControl *mVisualControl;
 
-  bool mExists;
-  bool mGeometryDirty;
   std::string mName;
-
-  bool mHasColor;
-  Eigen::Vector4d mColor;
+  ShapeFrameMarkerMap mShapeFrameMarkers;
 
   std::string getName(dart::dynamics::BodyNode const &bodyNode);
-
-  void updateName(dart::dynamics::BodyNode const &bodyNode,
-                  std::string const &newName);
-  void updateGeometry(dart::dynamics::BodyNode const &bodyNode);
-  void updatePose(dart::dynamics::BodyNode const &bodyNode);
-
-  void onColShapeAdded(dart::dynamics::BodyNode const *bodyNode,
-                       dart::dynamics::ConstShapePtr shape);
-  void onColShapeRemoved(dart::dynamics::BodyNode const *bodyNode,
-                         dart::dynamics::ConstShapePtr shape);
-  void onStructuralChange(dart::dynamics::BodyNode const *bodyNode);
 };
 
 } // namespace rviz
