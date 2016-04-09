@@ -18,7 +18,9 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
+find_package(OMPL REQUIRED)
 find_package(TinyXML2 REQUIRED)
+
 
 # Compilation setup
 include_directories(
@@ -28,6 +30,7 @@ include_directories(
 include_directories(SYSTEM
   ${Boost_INCLUDE_DIRS}
   ${DART_INCLUDE_DIRS}
+  ${OMPL_INCLUDE_DIRS}
   ${TinyXML2_INCLUDE_DIRS}
 )
 
@@ -60,12 +63,14 @@ add_library(${PROJECT_NAME} SHARED
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
-#  src/ompl/DARTGeometricStateSpace.cpp
-#  src/ompl/DARTStateSampler.cpp
+  src/ompl/AIKIDOGeometricStateSpace.cpp
+  src/ompl/AIKIDOStateSampler.cpp
+  src/ompl/AIKIDOStateValidityChecker.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${OMPL_LIBRARIES}
   ${TinyXML2_LIBRARIES}
 )
 
