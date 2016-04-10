@@ -3,27 +3,11 @@
 
 namespace aikido {
 namespace statespace {
-namespace {
-
-RealVectorStateSpace::Bounds getJointBounds(dart::dynamics::Joint* _joint)
-{
-  RealVectorStateSpace::Bounds bounds(_joint->getNumDofs(), 2);
-
-  for (size_t idof = 0; idof < bounds.rows(); ++idof)
-  {
-    bounds(idof, 0) = _joint->getPositionLowerLimit(idof);
-    bounds(idof, 1) = _joint->getPositionUpperLimit(idof);
-  }
-
-  return bounds;
-}
-
-} // namespace
 
 //=============================================================================
 RealVectorJointStateSpace::RealVectorJointStateSpace(
       dart::dynamics::Joint* _joint)
-  : RealVectorStateSpace(getJointBounds(_joint))
+  : RealVectorStateSpace(_joint->getNumDofs())
   , JointStateSpace(_joint)
 {
 }

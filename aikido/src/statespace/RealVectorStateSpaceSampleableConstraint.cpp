@@ -12,10 +12,11 @@ RealVectorStateSpaceSampleGenerator::RealVectorStateSpaceSampleGenerator(
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
 {
-  mDistributions.reserve(_space->getDimension());
-  const auto& bounds = _space->getBounds();
+  const auto dimension = _space->getDimension();
 
-  if (_lowerLimits.size() != _space->getDimension())
+  mDistributions.reserve(dimension);
+
+  if (_lowerLimits.size() != dimension)
   {
     std::stringstream msg;
     msg << "Lower limits have incorrect dimension: expected "
@@ -23,7 +24,7 @@ RealVectorStateSpaceSampleGenerator::RealVectorStateSpaceSampleGenerator(
     throw std::runtime_error(msg.str());
   }
 
-  if (_upperLimits.size() != _space->getDimension())
+  if (_upperLimits.size() != dimension)
   {
     std::stringstream msg;
     msg << "Upper limits have incorrect dimension: expected "
@@ -31,7 +32,7 @@ RealVectorStateSpaceSampleGenerator::RealVectorStateSpaceSampleGenerator(
     throw std::runtime_error(msg.str());
   }
 
-  for (size_t i = 0; i < bounds.rows(); ++i)
+  for (size_t i = 0; i < dimension; ++i)
   {
     if (!std::isfinite(_lowerLimits[i]) || !std::isfinite(_upperLimits[i]))
     {
