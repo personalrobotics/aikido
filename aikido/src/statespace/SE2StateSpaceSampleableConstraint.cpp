@@ -7,24 +7,32 @@ namespace statespace {
 //=============================================================================
 SE2StateSpaceSampleGenerator::SE2StateSpaceSampleGenerator(
       std::shared_ptr<statespace::SE2StateSpace> _space,
-      std::unique_ptr<util::RNG> _rng)
+      std::unique_ptr<util::RNG> _rng,
+      const Eigen::Vector2d& _lowerTranslationLimits,
+      const Eigen::Vector2d& _upperTranslationLimits)
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
-  , mDistributionX(_space->getTranslationalBounds()(0, 0),
-                   _space->getTranslationalBounds()(0, 1))
-  , mDistributionY(_space->getTranslationalBounds()(1, 0),
-                   _space->getTranslationalBounds()(1, 1))
+  , mDistributionX(_lowerTranslationLimits[0], _upperTranslationLimits[0])
+  , mDistributionY(_lowerTranslationLimits[1], _upperTranslationLimits[1])
   , mDistributionAngle(-M_PI, M_PI)
 {
-  const auto bounds = _space->getTranslationalBounds();
-
-  for (size_t i = 0; i < bounds.rows(); ++i)
+  for (size_t i = 0; i < 2; ++i)
   {
-    if (!std::isfinite(bounds(i, 0)) || !std::isfinite(bounds(i, 1)))
+    if (!std::isfinite(_lowerTranslationLimits[i])
+     || !std::isfinite(_upperTranslationLimits[i]))
     {
       std::stringstream msg;
       msg << "Unable to sample from StateSpace because dimension "
           << i << " is unbounded.";
+      throw std::runtime_error(msg.str());
+    }
+
+    if (_lowerTranslationLimits[i] > _upperTranslationLimits[i])
+    {
+      std::stringstream msg;
+      msg << "Lower limit exceeds upper limit for dimension " << i << ": "
+          << _lowerTranslationLimits[i] << " > "
+          << _upperTranslationLimits[i] << ".";
       throw std::runtime_error(msg.str());
     }
   }
@@ -70,9 +78,13 @@ bool SE2StateSpaceSampleGenerator::canSample() const
 SE2StateSpaceSampleableConstraint
   ::SE2StateSpaceSampleableConstraint(
       std::shared_ptr<statespace::SE2StateSpace> _space,
-      std::unique_ptr<util::RNG> _rng)
+      std::unique_ptr<util::RNG> _rng,
+      const Eigen::Vector2d& _lowerTranslationLimits,
+      const Eigen::Vector2d& _upperTranslationLimits)
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
+  , mLowerLimits(_lowerTranslationLimits)
+  , mUpperLimits(_upperTranslationLimits)
 {
 }
 
@@ -89,7 +101,7 @@ std::unique_ptr<constraint::SampleGenerator>
 {
   return std::unique_ptr<SE2StateSpaceSampleGenerator>(
     new SE2StateSpaceSampleGenerator(
-      mSpace, mRng->clone()));
+      mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
 }
 
 } // namespace statespace

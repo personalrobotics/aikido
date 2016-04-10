@@ -47,16 +47,10 @@ public:
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   using Isometry2d = State::Isometry2d;
-  using Bounds = Eigen::Matrix2d;
 
-  SE2StateSpace();
-
-  SE2StateSpace(const Bounds& _translationBounds);
+  SE2StateSpace() = default;
 
   ScopedState createState() const;
-
-  /// Gets translational bounds on the StateSpace.
-  Bounds getTranslationalBounds() const;
 
   /// Gets value as a transformation.
   const Isometry2d& getIsometry(const State* _state) const;
@@ -84,11 +78,6 @@ public:
 
   /// Documentation inherited.
   int getDimension() const override;
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-private:
-  Bounds mBounds;
 };
 
 } // namespace statespace

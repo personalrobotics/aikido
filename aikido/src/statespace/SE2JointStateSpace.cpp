@@ -39,11 +39,19 @@ void SE2JointStateSpace::setState(const StateSpace::State* _state) const
 auto SE2JointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
 {
+  Eigen::Vector2d lowerLimits;
+  lowerLimits[0] = mJoint->getPositionLowerLimit(0);
+  lowerLimits[1] = mJoint->getPositionLowerLimit(1);
+
+  Eigen::Vector2d upperLimits;
+  upperLimits[0] = mJoint->getPositionUpperLimit(0);
+  upperLimits[1] = mJoint->getPositionUpperLimit(1);
+
   return std::make_shared<SE2StateSpaceSampleableConstraint>(
     // TODO: SampleableConstraint should operate on `const StateSpace`.
     //std::const_pointer_cast<SE2StateSpace>(shared_from_this()),
     nullptr,
-    std::move(_rng));
+    std::move(_rng), lowerLimits, upperLimits);
 }
 
 } // namespace statespace

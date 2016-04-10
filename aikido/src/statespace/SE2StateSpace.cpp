@@ -31,39 +31,9 @@ void SE2StateSpace::State::setIsometry(const Isometry2d& _transform)
 }
 
 //=============================================================================
-SE2StateSpace::SE2StateSpace()
-  : mBounds()
-{
-  mBounds.col(0).setConstant(-std::numeric_limits<double>::infinity());
-  mBounds.col(1).setConstant(+std::numeric_limits<double>::infinity());
-}
-
-//=============================================================================
-SE2StateSpace::SE2StateSpace(const Bounds& _translationBounds)
-  : mBounds(_translationBounds)
-{
-  for (size_t i = 0; i < mBounds.rows(); ++i)
-  {
-    if (mBounds(i, 0) > mBounds(i, 1))
-    {
-      std::stringstream msg;
-      msg << "Lower bound exceeds upper bound for translation dimension "
-          << i << ": " << mBounds(i, 0) << " > " << mBounds(i, 1) << ".";
-      throw std::runtime_error(msg.str());
-    }
-  }
-}
-
-//=============================================================================
 auto SE2StateSpace::createState() const -> ScopedState
 {
   return ScopedState(this);
-}
-
-//=============================================================================
-auto SE2StateSpace::getTranslationalBounds() const -> Bounds
-{
-  return mBounds;
 }
 
 //=============================================================================
