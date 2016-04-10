@@ -46,7 +46,8 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/MetaSkeletonStateSpace.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
-  # src/constraint/TSRConstraint.cpp
+  src/constraint/FrameConstraintAdaptor.cpp
+  src/constraint/FramePairConstraintAdaptor.cpp
   # src/constraint/IkSampleableConstraint.cpp
   # src/constraint/IkSampleGenerator.cpp
   src/constraint/PolynomialConstraint.cpp
@@ -65,6 +66,7 @@ target_link_libraries(${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${TinyXML2_LIBRARIES}
 )
+
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).
 install(FILES package.xml
