@@ -1,6 +1,7 @@
 #include <dart/common/StlHelpers.h>
 #include <aikido/statespace/RealVectorJointStateSpace.hpp>
 #include <aikido/statespace/SO2JointStateSpace.hpp>
+#include <aikido/statespace/SO3JointStateSpace.hpp>
 #include <aikido/statespace/SE2JointStateSpace.hpp>
 #include <aikido/statespace/SE3JointStateSpace.hpp>
 
@@ -50,6 +51,16 @@ struct createJointStateSpaceFor_impl<dart::dynamics::TranslationalJoint>
 
 //=============================================================================
 template <>
+struct createJointStateSpaceFor_impl<dart::dynamics::BallJoint>
+{
+  static Ptr create(dart::dynamics::BallJoint* _joint)
+  {
+    return make_unique<SO3JointStateSpace>(_joint);
+  }
+};
+
+//=============================================================================
+template <>
 struct createJointStateSpaceFor_impl<dart::dynamics::PlanarJoint>
 {
   static Ptr create(dart::dynamics::PlanarJoint* _joint)
@@ -64,7 +75,6 @@ struct createJointStateSpaceFor_impl<dart::dynamics::FreeJoint>
 {
   static Ptr create(dart::dynamics::FreeJoint* _joint)
   {
-    // TODO: Set translational bounds.
     return make_unique<SE3JointStateSpace>(_joint);
   }
 };
