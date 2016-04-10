@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME} SHARED
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
+  src/statespace/StateSpace.cpp
   src/statespace/RealVectorStateSpace.cpp
   src/statespace/RealVectorJointStateSpace.cpp
   src/statespace/RealVectorStateSpaceSampleableConstraint.cpp

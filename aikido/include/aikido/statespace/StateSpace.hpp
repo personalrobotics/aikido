@@ -40,27 +40,21 @@ public:
 
   virtual ~StateSpace() = default;
 
+  /// Allocate a new state. This must be deleted with freeState.
+  virtual State* allocateState() const;
+
+  /// Free a state previously created by allocateState.
+  virtual void freeState(State* _state) const;
+
   /// Gets the size of a State, in bytes.
   virtual size_t getStateSizeInBytes() const = 0;
 
-  /// Allocate a new state. This must be deleted with freeState.
-  virtual StateSpace::State* allocateState() const
-  {
-    return allocateStateInBuffer(new char[getStateSizeInBytes()]);
-  }
-
   /// Create a new state in a pre-allocated buffer. The input argument must
   /// contain at least getStateSizeInBytes() bytes of memory.
-  virtual StateSpace::State* allocateStateInBuffer(void* _buffer) const = 0;
-
-  /// Free a state previously created by allocateState.
-  virtual void freeState(StateSpace::State* _state) const
-  {
-    delete[] reinterpret_cast<char*>(_state);
-  }
+  virtual State* allocateStateInBuffer(void* _buffer) const = 0;
 
   /// Free a state previously created by allocateStateInBuffer.
-  virtual void freeStateInBuffer(StateSpace::State* _state) const = 0;
+  virtual void freeStateInBuffer(State* _state) const = 0;
 
   /// Sample uniformly at random from this state space.
   virtual SampleableConstraintPtr createSampleableConstraint(
@@ -72,7 +66,7 @@ public:
 
   /// Exponential mapping of Lie algebra element to a Lie group element.  
   virtual void expMap(
-    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const = 0;
+    const Eigen::VectorXd& _tangent, State* _out) const = 0;
 
   /// Gets the dimension of this space.
   virtual int getDimension() const = 0;
