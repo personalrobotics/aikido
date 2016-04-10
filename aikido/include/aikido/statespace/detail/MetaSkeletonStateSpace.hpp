@@ -109,6 +109,19 @@ struct ForOneOf<Arg, Args...>
   }
 };
 
+//=============================================================================
+using createJointStateSpaceFor_wrapper = ForOneOf<
+  dart::dynamics::BallJoint,
+  dart::dynamics::FreeJoint,
+  dart::dynamics::PlanarJoint,
+  dart::dynamics::PrismaticJoint,
+  dart::dynamics::RevoluteJoint,
+  dart::dynamics::TranslationalJoint
+  // TODO: Support ScrewJoint.
+  // TODO: Support WeldJoint.
+  // TODO: Support UniversalJoint.
+  // TODO: Support EulerJoint.
+>;
 
 } // namespace detail
 

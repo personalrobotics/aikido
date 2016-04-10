@@ -144,19 +144,7 @@ auto CompoundStateSpace::createSampleableConstraint(
 //=============================================================================
 std::unique_ptr<JointStateSpace> createJointStateSpace(Joint* _joint)
 {
-  auto space = detail::ForOneOf<
-      RevoluteJoint,
-      PrismaticJoint,
-      PlanarJoint,
-      TranslationalJoint,
-      FreeJoint
-    >::create(_joint);
-
-  // TODO: Support ScrewJoint.
-  // TODO: Support WeldJoint.
-  // TODO: Support UniversalJoint.
-  // TODO: Support BallJoint.
-  // TODO: Support EulerJoint.
+  auto space = detail::createJointStateSpaceFor_wrapper::create(_joint);
 
   if (!space)
   {
