@@ -135,9 +135,16 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(Joint* _joint)
   auto space = detail::ForOneOf<
       RevoluteJoint,
       PrismaticJoint,
+      PlanarJoint,
       TranslationalJoint,
       FreeJoint
     >::create(_joint);
+
+  // TODO: Support ScrewJoint.
+  // TODO: Support WeldJoint.
+  // TODO: Support UniversalJoint.
+  // TODO: Support BallJoint.
+  // TODO: Support EulerJoint.
 
   if (!space)
   {
