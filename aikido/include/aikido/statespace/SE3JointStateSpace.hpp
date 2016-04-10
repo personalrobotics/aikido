@@ -7,7 +7,10 @@ namespace aikido {
 namespace statespace {
 
 /// Wrap a 6-DOF joint in a SE3StateSpace.
-class SE3JointStateSpace : public SE3StateSpace, public JointStateSpace
+class SE3JointStateSpace
+  : public SE3StateSpace
+  , public JointStateSpace
+  , public std::enable_shared_from_this<SE3JointStateSpace>
 {
 public:
   using SE3StateSpace::State;

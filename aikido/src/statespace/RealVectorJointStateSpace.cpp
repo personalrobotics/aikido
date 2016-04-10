@@ -39,8 +39,7 @@ auto RealVectorJointStateSpace::createSampleableConstraint(
 
   return std::make_shared<RealVectorStateSpaceSampleableConstraint>(
     // TODO: SampleableConstraint should operate on `const StateSpace`.
-    //std::const_pointer_cast<RealVectorStateSpace>(shared_from_this()),
-    nullptr, // TODO: enable_shared_from_this
+    std::const_pointer_cast<RealVectorJointStateSpace>(shared_from_this()),
     std::move(_rng), lowerLimits, upperLimits);
 }
 

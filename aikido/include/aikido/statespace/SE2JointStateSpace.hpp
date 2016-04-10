@@ -10,6 +10,7 @@ namespace statespace {
 class SE2JointStateSpace
   : public SE2StateSpace
   , public JointStateSpace
+  , public std::enable_shared_from_this<SE2JointStateSpace>
 {
 public:
   using SE2StateSpace::State;

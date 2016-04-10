@@ -10,6 +10,7 @@ namespace statespace {
 class RealVectorJointStateSpace
   : public RealVectorStateSpace
   , public JointStateSpace
+  , public std::enable_shared_from_this<RealVectorJointStateSpace>
 {
 public:
   using RealVectorStateSpace::State;

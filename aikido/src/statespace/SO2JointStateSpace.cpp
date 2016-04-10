@@ -29,8 +29,7 @@ auto SO2JointStateSpace::createSampleableConstraint(
 {
   return std::make_shared<SO2StateSpaceSampleableConstraint>(
     // TODO: SampleableConstraint should operate on `const StateSpace`.
-    // std::const_pointer_cast<SO2StateSpace>(shared_from_this()),
-    nullptr,
+    std::const_pointer_cast<SO2JointStateSpace>(shared_from_this()),
     std::move(_rng));
 }
 

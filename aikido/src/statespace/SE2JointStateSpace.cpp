@@ -49,8 +49,7 @@ auto SE2JointStateSpace::createSampleableConstraint(
 
   return std::make_shared<SE2StateSpaceSampleableConstraint>(
     // TODO: SampleableConstraint should operate on `const StateSpace`.
-    //std::const_pointer_cast<SE2StateSpace>(shared_from_this()),
-    nullptr,
+    std::const_pointer_cast<SE2JointStateSpace>(shared_from_this()),
     std::move(_rng), lowerLimits, upperLimits);
 }
 

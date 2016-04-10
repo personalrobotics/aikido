@@ -9,9 +9,7 @@ namespace statespace {
 
 template <class> class SE2StateHandle;
 
-class SE2StateSpace
-  : public std::enable_shared_from_this<SE2StateSpace>
-  , public virtual StateSpace  
+class SE2StateSpace : public virtual StateSpace  
 {
 public:
   class State : public StateSpace::State

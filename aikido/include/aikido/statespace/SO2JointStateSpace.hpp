@@ -7,7 +7,10 @@ namespace aikido {
 namespace statespace {
 
 /// Wrap a single DOF joint in a SO2StateSpace.
-class SO2JointStateSpace : public SO2StateSpace, public JointStateSpace
+class SO2JointStateSpace
+  : public SO2StateSpace
+  , public JointStateSpace
+  , public std::enable_shared_from_this<SO2JointStateSpace>
 {
 public:
   using SO2StateSpace::State;
