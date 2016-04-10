@@ -25,18 +25,12 @@ statespace::StateSpacePtr
 bool SO3StateSpaceSampleGenerator::sample(
   statespace::StateSpace::State* _state)
 {
-  const double u1 = mDistribution(*mRng);
-  const double u2 = mDistribution(*mRng);
-  const double u3 = mDistribution(*mRng);
-
   mSpace->setQuaternion(
-    static_cast<statespace::SO3StateSpace::State*>(_state),
-    statespace::SO3StateSpace::Quaternion(
-      std::sqrt(1. - u1) * std::sin(2 * M_PI * u2),
-      std::sqrt(1. - u1) * std::cos(2 * M_PI * u2),
-      std::sqrt(u1) * std::sin(2 * M_PI * u3),
-      std::sqrt(u1) * std::cos(2 * M_PI * u3)
-  ));
+    static_cast<SO3StateSpace::State*>(_state),
+    util::sampleQuaternion<util::RNG, double, SO3StateSpace::Quaternion>(
+      *mRng, mDistribution)
+  );
+
   return true;
 }
 

@@ -52,6 +52,7 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/SE2StateSpaceSampleableConstraint.cpp
   src/statespace/SE3StateSpace.cpp
   src/statespace/SE3JointStateSpace.cpp
+  src/statespace/SE3StateSpaceSampleableConstraint.cpp
   src/statespace/JointStateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
   src/statespace/CompoundStateSpaceSampleableConstraint.cpp

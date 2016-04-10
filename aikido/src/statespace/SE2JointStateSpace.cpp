@@ -39,13 +39,20 @@ void SE2JointStateSpace::setState(const StateSpace::State* _state) const
 auto SE2JointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
 {
-  Eigen::Vector2d lowerLimits;
-  lowerLimits[0] = mJoint->getPositionLowerLimit(0);
-  lowerLimits[1] = mJoint->getPositionLowerLimit(1);
+  Eigen::Vector2d lowerLimits, upperLimits;
 
-  Eigen::Vector2d upperLimits;
-  upperLimits[0] = mJoint->getPositionUpperLimit(0);
-  upperLimits[1] = mJoint->getPositionUpperLimit(1);
+  for (size_t i = 0; i < 2; ++i)
+  {
+    lowerLimits[i] = mJoint->getPositionLowerLimit(i);
+    upperLimits[i] = mJoint->getPositionUpperLimit(i);
+  }
+
+  if (mJoint->hasPositionLimit(2))
+  {
+    throw std::runtime_error(
+      "Position limits are unsupported on the rotation component of joints"
+      " with SE(2) topology.");
+  }
 
   return std::make_shared<SE2StateSpaceSampleableConstraint>(
     // TODO: SampleableConstraint should operate on `const StateSpace`.

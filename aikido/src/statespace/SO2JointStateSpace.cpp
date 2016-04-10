@@ -27,11 +27,9 @@ void SO2JointStateSpace::setState(const StateSpace::State* _state) const
 auto SO2JointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
 {
-  if (mJoint->isPositionLimited(0))
-  {
+  if (mJoint->hasPositionLimit(0))
     throw std::runtime_error(
       "Position limits are unsupported on joints with SO(2) topology.");
-  }
 
   return std::make_shared<SO2StateSpaceSampleableConstraint>(
     // TODO: SampleableConstraint should operate on `const StateSpace`.
