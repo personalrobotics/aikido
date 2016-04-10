@@ -1,5 +1,3 @@
-#include <aikido/statespace/SO3StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/SE3JointStateSpace.hpp>
 
 namespace aikido {
@@ -26,6 +24,14 @@ void SE3JointStateSpace::setState(const StateSpace::State* _state) const
   mJoint->setPositions(
     dart::dynamics::FreeJoint::convertToPositions(
       getIsometry(static_cast<const SE3StateSpace::State*>(_state))));
+}
+
+//=============================================================================
+auto SE3JointStateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  throw std::runtime_error(
+    "SE3StateSpace::createSampleableConstraint is not implemented.");
 }
 
 } // namespace statespace

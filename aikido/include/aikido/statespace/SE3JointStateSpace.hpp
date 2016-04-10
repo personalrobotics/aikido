@@ -11,14 +11,19 @@ class SE3JointStateSpace : public SE3StateSpace, public JointStateSpace
 {
 public:
   using SE3StateSpace::State;
+  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SE3JointStateSpace(dart::dynamics::FreeJoint* _joint);
 
   // Documentation inherited.
-  void getState(StateSpace::State* _state) const;
+  void getState(StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void setState(const StateSpace::State* _state) const;
+  void setState(const StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
 };
 
 

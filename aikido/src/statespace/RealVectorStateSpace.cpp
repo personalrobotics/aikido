@@ -122,16 +122,6 @@ void RealVectorStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
-auto RealVectorStateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  return std::make_shared<RealVectorStateSpaceSampleableConstraint>(
-    // TODO: SampleableConstraint should operate on `const StateSpace`.
-    std::const_pointer_cast<RealVectorStateSpace>(shared_from_this()),
-    std::move(_rng));
-}
-
-//=============================================================================
 void RealVectorStateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
   StateSpace::State* _out) const

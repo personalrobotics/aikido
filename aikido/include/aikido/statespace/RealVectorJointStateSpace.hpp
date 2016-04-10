@@ -13,14 +13,19 @@ class RealVectorJointStateSpace
 {
 public:
   using RealVectorStateSpace::State;
+  using JointStateSpace::SampleableConstraintPtr;
 
   explicit RealVectorJointStateSpace(dart::dynamics::Joint* _joint);
 
   // Documentation inherited.
-  void getState(StateSpace::State* _state) const;
+  void getState(StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void setState(const StateSpace::State* _state) const;
+  void setState(const StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
 };
 
 } // namespace statespace

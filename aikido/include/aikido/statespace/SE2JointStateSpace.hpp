@@ -14,14 +14,19 @@ class SE2JointStateSpace
 public:
   using SE2StateSpace::State;
   using SE2StateSpace::Isometry2d;
+  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SE2JointStateSpace(dart::dynamics::PlanarJoint* _joint);
 
   // Documentation inherited.
-  void getState(StateSpace::State* _state) const;
+  void getState(StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void setState(const StateSpace::State* _state) const;
+  void setState(const StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
 };
 
 

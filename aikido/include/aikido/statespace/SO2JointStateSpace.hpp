@@ -11,6 +11,7 @@ class SO2JointStateSpace : public SO2StateSpace, public JointStateSpace
 {
 public:
   using SO2StateSpace::State;
+  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SO2JointStateSpace(dart::dynamics::SingleDofJoint* _joint);
 
@@ -19,6 +20,10 @@ public:
 
   // Documentation inherited.
   void setState(const StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
 };
 
 } // namespace statespace
