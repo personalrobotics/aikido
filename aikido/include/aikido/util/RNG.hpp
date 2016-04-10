@@ -1,10 +1,12 @@
 #ifndef AIKIDO_UTIL_RNG_H_
 #define AIKIDO_UTIL_RNG_H_
 
-#include <ctime>
+#include <cassert>
+#include <cmath>
 #include <memory>
 #include <random>
 #include <cstdint>
+#include <Eigen/Geometry>
 
 namespace aikido {
 namespace util {
@@ -113,6 +115,28 @@ public:
 private:
   engine_type mRng;
 };
+
+/// Sample a unit quaternion uniformly at random. This function requires that
+/// the provided std::uniform_real_distribution has bounds of [ 0, 1 ].
+template <
+  class Engine, class Scalar, class Quaternion = Eigen::Quaternion<Scalar>>
+Quaternion sampleQuaternion(
+  Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution)
+{
+  assert(_distribution.a() == 0.);
+  assert(_distribution.b() == 1.);
+
+  const double u1 = _distribution(_engine);
+  const double u2 = _distribution(_engine);
+  const double u3 = _distribution(_engine);
+
+  return Quaternion(
+    std::sqrt(1. - u1) * std::sin(2 * M_PI * u2),
+    std::sqrt(1. - u1) * std::cos(2 * M_PI * u2),
+    std::sqrt(u1) * std::sin(2 * M_PI * u3),
+    std::sqrt(u1) * std::cos(2 * M_PI * u3)
+  );
+}
 
 } // util
 } // aikido
