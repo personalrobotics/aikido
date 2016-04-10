@@ -1,9 +1,11 @@
 #include <aikido/constraint/TSR.hpp>
-#include <aikido/state/State.hpp>
+// #include <aikido/statesoace/SE3StateSpace.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/common/StlHelpers.h>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
+#include <Eigen/Geometry>
+#include <dart/math/Geometry.h>
 
 using aikido::constraint::TSR;
 using aikido::constraint::TSRSampleGenerator;
@@ -13,6 +15,15 @@ using aikido::util::RNG;
 using dart::common::make_unique;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
+
+
+static Eigen::Vector6d getPose(Eigen::Isometry3d isometry)
+{
+  Eigen::Vector6d pose;
+  pose.topRows(3) = isometry.translation(); 
+  pose.bottomRows(3) = dart::math::matrixToEulerZYX(isometry.linear());
+  return pose; 
+}
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
@@ -89,8 +100,6 @@ TEST(TSR, AssignmentOperator)
   EXPECT_NO_THROW(tsr.validate());
 
 }
-
-
 
 TEST(TSR, Validate)
 {
@@ -184,4 +193,81 @@ TEST(TSRSampleGenerator, SampleSameSequence)
     ASSERT_TRUE(sampler2->sample(state2));
     EXPECT_TRUE(state1.getIsometry().isApprox(state2.getIsometry()));
   }
+}
+
+TEST(TSR, GetValue)
+{
+  TSR tsr;
+
+  Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(0,0) = 0;
+  Bw(0,1) = 2;
+
+  tsr.mBw = Bw;
+
+  auto state = tsr.getSE3StateSpace()->createState();  
+
+  // strictly inside TSR
+  Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
+  isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
+  state.setIsometry(isometry);
+  Eigen::VectorXd value = tsr.getValue(state);
+  EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
+
+
+  // strictly inside TSR
+  isometry.translation() = Eigen::Vector3d(1, 0, 0);
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  EXPECT_TRUE(value.isApproxToConstant(0));
+
+
+  // boundary of TSR
+  isometry.translation() = Eigen::Vector3d(2, 0, 0);
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  EXPECT_TRUE(value.isApproxToConstant(0));
+
+
+  // outside TSR
+  isometry.translation() = Eigen::Vector3d(3, 0, 0);
+  state.setIsometry(isometry);
+
+  Eigen::Vector6d expected(Eigen::Vector6d::Zero());
+  expected(0) = 1; 
+  value = tsr.getValue(state);
+  EXPECT_TRUE(tsr.getValue(state).isApprox(expected));
+
+}
+
+TEST(TSR, GetJacobian)
+{
+  TSR tsr;
+
+  Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(0,0) = 0;
+  Bw(0,1) = 2;
+
+  tsr.mBw = Bw;
+
+  auto state = tsr.getSE3StateSpace()->createState();  
+
+  // strictly inside TSR
+  Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
+  isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
+  state.setIsometry(isometry);
+
+  Eigen::MatrixXd jacobian = tsr.getJacobian(state);
+  EXPECT_TRUE(jacobian.isApproxToConstant(0));
+
+  
+  // outside TSR
+  isometry.translation() = Eigen::Vector3d(3, 0, 0);
+  state.setIsometry(isometry);
+  jacobian = tsr.getJacobian(state);
+
+  Eigen::Matrix6d expected(Eigen::Matrix6d::Zero());
+  expected(0, 3) = 1; 
+  EXPECT_TRUE(jacobian.isApprox(expected, 1e-3));
+
 }
