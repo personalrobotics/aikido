@@ -6,24 +6,51 @@ namespace statespace {
 //=============================================================================
 RealVectorStateSpaceSampleGenerator::RealVectorStateSpaceSampleGenerator(
       std::shared_ptr<statespace::RealVectorStateSpace> _space,
-      std::unique_ptr<util::RNG> _rng)
+      std::unique_ptr<util::RNG> _rng,
+      const Eigen::VectorXd& _lowerLimits,
+      const Eigen::VectorXd& _upperLimits)
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
 {
   mDistributions.reserve(_space->getDimension());
   const auto& bounds = _space->getBounds();
 
+  if (_lowerLimits.size() != _space->getDimension())
+  {
+    std::stringstream msg;
+    msg << "Lower limits have incorrect dimension: expected "
+        << _space->getDimension() << ", got " << _lowerLimits.size() << ".";
+    throw std::runtime_error(msg.str());
+  }
+
+  if (_upperLimits.size() != _space->getDimension())
+  {
+    std::stringstream msg;
+    msg << "Upper limits have incorrect dimension: expected "
+        << _space->getDimension() << ", got " << _upperLimits.size() << ".";
+    throw std::runtime_error(msg.str());
+  }
+
   for (size_t i = 0; i < bounds.rows(); ++i)
   {
-    mDistributions.emplace_back(bounds(i, 0), bounds(i, 1));
-
-    if (!std::isfinite(bounds(i, 0)) || !std::isfinite(bounds(i, 1)))
+    if (!std::isfinite(_lowerLimits[i]) || !std::isfinite(_upperLimits[i]))
     {
       std::stringstream msg;
       msg << "Unable to sample from StateSpace because dimension "
           << i << " is unbounded.";
       throw std::runtime_error(msg.str());
     }
+
+    if (_lowerLimits[i] > _upperLimits[i])
+    {
+      std::stringstream msg;
+      msg << "Unable to sample from StateSpace because lower limit exeeds"
+             " upper limit on dimension " << i << ": "
+          << _lowerLimits[i] << " > " << _upperLimits[i] << ".";
+      throw std::runtime_error(msg.str());
+    }
+
+    mDistributions.emplace_back(_lowerLimits[i], _upperLimits[i]);
   }
 }
 
@@ -64,9 +91,13 @@ bool RealVectorStateSpaceSampleGenerator::canSample() const
 RealVectorStateSpaceSampleableConstraint
   ::RealVectorStateSpaceSampleableConstraint(
       std::shared_ptr<statespace::RealVectorStateSpace> _space,
-      std::unique_ptr<util::RNG> _rng)
+      std::unique_ptr<util::RNG> _rng,
+      const Eigen::VectorXd& _lowerLimits,
+      const Eigen::VectorXd& _upperLimits)
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
+  , mLowerLimits(_lowerLimits)
+  , mUpperLimits(_upperLimits)
 {
 }
 
@@ -83,7 +114,7 @@ std::unique_ptr<constraint::SampleGenerator>
 {
   return std::unique_ptr<RealVectorStateSpaceSampleGenerator>(
     new RealVectorStateSpaceSampleGenerator(
-      mSpace, mRng->clone()));
+      mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
 }
 
 } // namespace statespace

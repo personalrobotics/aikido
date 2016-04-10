@@ -44,11 +44,20 @@ void RealVectorJointStateSpace::setState(const StateSpace::State* _state) const
 auto RealVectorJointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
 {
+  Eigen::VectorXd lowerLimits(getDimension());
+  Eigen::VectorXd upperLimits(getDimension());
+
+  for (size_t i = 0; i < getDimension(); ++i)
+  {
+    lowerLimits[i] = mJoint->getPositionLowerLimit(i);
+    upperLimits[i] = mJoint->getPositionUpperLimit(i);
+  }
+
   return std::make_shared<RealVectorStateSpaceSampleableConstraint>(
     // TODO: SampleableConstraint should operate on `const StateSpace`.
     //std::const_pointer_cast<RealVectorStateSpace>(shared_from_this()),
     nullptr, // TODO: enable_shared_from_this
-    std::move(_rng));
+    std::move(_rng), lowerLimits, upperLimits);
 }
 
 } // namespace statespace
