@@ -1,6 +1,7 @@
 #include <dart/common/StlHelpers.h>
 #include <aikido/statespace/RealVectorJointStateSpace.hpp>
 #include <aikido/statespace/SO2JointStateSpace.hpp>
+#include <aikido/statespace/SE2JointStateSpace.hpp>
 #include <aikido/statespace/SE3JointStateSpace.hpp>
 
 namespace aikido {
@@ -44,6 +45,16 @@ struct createJointStateSpaceFor_impl<dart::dynamics::TranslationalJoint>
   static Ptr create(dart::dynamics::TranslationalJoint* _joint)
   {
     return make_unique<RealVectorJointStateSpace>(_joint);
+  }
+};
+
+//=============================================================================
+template <>
+struct createJointStateSpaceFor_impl<dart::dynamics::PlanarJoint>
+{
+  static Ptr create(dart::dynamics::PlanarJoint* _joint)
+  {
+    return make_unique<SE2JointStateSpace>(_joint);
   }
 };
 
