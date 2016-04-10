@@ -44,6 +44,8 @@ public:
   /// Create a copy of this RNG, including its internal state.
   virtual std::unique_ptr<RNG> clone() const = 0;
 
+  /// Create a new RNG of this type with the specified seed.
+  virtual std::unique_ptr<RNG> clone(result_type _seed) const = 0;
 };
 
 
@@ -101,6 +103,11 @@ public:
   std::unique_ptr<RNG> clone() const override
   {
     return std::unique_ptr<RNGWrapper>(new RNGWrapper(mRng.base()));
+  }
+
+  std::unique_ptr<RNG> clone(result_type _seed) const override
+  {
+    return std::unique_ptr<RNGWrapper>(new RNGWrapper(_seed));
   }
 
 private:

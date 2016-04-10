@@ -1,4 +1,5 @@
 #include <aikido/constraint/IkSampleGenerator.hpp>
+#include <aikido/statespace/SE3StateSpace.hpp>
 #include <boost/format.hpp>
 #include <dart/common/Console.h>
 #include <math.h>
@@ -14,48 +15,58 @@ namespace constraint {
 
 //=============================================================================
 IkSampleGenerator::IkSampleGenerator(
-  std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> _isometrySampler,
-  const dart::dynamics::InverseKinematicsPtr& _ikPtr,
-  std::unique_ptr<util::RNG> _rng,
-  int _maxNumTrials)
-: mIsometrySampler(std::move(_isometrySampler))
-, mIKPtr(_ikPtr)
-, mRng(std::move(_rng))
-, mMaxNumTrials(_maxNumTrials)
+      statespace::MetaSkeletonStateSpacePtr _stateSpace,
+      dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+      std::unique_ptr<SampleGenerator> _delegateSampler,
+      std::unique_ptr<util::RNG> _rng,
+      int _maxNumTrials)
+  : mStateSpace(std::move(_stateSpace))
+  , mInverseKinematics(std::move(_inverseKinematics))
+  , mDelegateSampler(std::move(_delegateSampler))
+  , mRng(std::move(_rng))
+  , mMaxNumTrials(_maxNumTrials)
 {
-  if (!mRng)
-    throw std::invalid_argument("_rng is nullptr.");
+  if (!mStateSpace)
+    throw std::invalid_argument("StateSpace is nullptr.");
 
-  if (!mIKPtr)
-    throw std::invalid_argument("_ikPtr is nullptr.");
+  if (!mInverseKinematics)
+    throw std::invalid_argument("InverseKinematics is nullptr.");
+
+  if (!mRng)
+    throw std::invalid_argument("RNG is nullptr.");
 
   if (!mIsometrySampler)
-    throw std::invalid_argument("_isometrySampler is nullptr.");
+    throw std::invalid_argument("SampleGenerator nullptr.");
 
   if (mMaxNumTrials <= 0)
     throw std::invalid_argument(str(
-      format("_maxNumTrials must be positive; got %d.") % mMaxNumTrials));
+      format("maximum number of trials must be positive; got %d.")
+      % mMaxNumTrials));
 
   if (mIsometrySampler->getNumSamples() != NO_LIMIT)
     dtwarn << "[IkSampleGenerator::constructor] IkSampleGenerator only tries"
               " to find one IK solution per Isometry3d sample. The provided"
-              " SampleGenerator<Isometry3d> contains a finite set of "
+              " SampleGenerator contains a finite set of "
            << mIsometrySampler->getNumSamples()
            << " samples. We advise against using this class on a finite"
               " sets of poses because they may be quickly exhausted.\n";
 };
 
 //=============================================================================
-boost::optional<Eigen::VectorXd> IkSampleGenerator::sample()
+statespace::StateSpacePtr IkSampleGenerator::getStateSpace() const
+{
+  return mStateSpace;
+}
+
+//=============================================================================
+bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   // Sample TSR using rng and set it as the target for IKSolver
   bool success = false;
 
   // Check if Isometry3d can be sampled.
   if (!mIsometrySampler->canSample())
-  {
-    return boost::optional<Eigen::VectorXd>{};
-  }
+    return false;
 
   // Get active joints' lower and upper limits.
   const std::vector<size_t> activeDofIndices = mIKPtr->getDofs();

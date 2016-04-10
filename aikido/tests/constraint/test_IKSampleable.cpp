@@ -11,7 +11,6 @@ using namespace aikido::constraint;
 using namespace dart::dynamics;
 
 
-// Derives a fixture FooTest from BaseTest.
 class IKConstraintTest : public ::testing::Test {
   protected:
     virtual void SetUp() {
@@ -104,7 +103,7 @@ TEST_F(IKConstraintTest, SampleGeneratorPointConstraint)
 
   ASSERT_TRUE(generator->canSample());
   boost::optional<Eigen::VectorXd> sample = generator->sample();
-  ASSERT_TRUE(sample);
+  ASSERT_TRUE(!!sample);
   EXPECT_TRUE(sample.get().isZero(1e-5));
 }
 
@@ -146,9 +145,9 @@ TEST_F(IKConstraintTest, SampleSameSequence)
   for(int i = 0; i < 10; i++)
   {
     boost::optional<Eigen::VectorXd> sample1 = generator1->sample();
-    ASSERT_TRUE(sample1);
+    ASSERT_TRUE(!!sample1);
     boost::optional<Eigen::VectorXd> sample2 = generator2->sample();
-    ASSERT_TRUE(sample2);
+    ASSERT_TRUE(!!sample2);
     EXPECT_EQ(sample1.get(), sample2.get());
   }
 }

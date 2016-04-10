@@ -37,21 +37,44 @@ add_library(${PROJECT_NAME} SHARED
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
+  src/statespace/RealVectorStateSpace.cpp
+  src/statespace/RealVectorJointStateSpace.cpp
+  src/statespace/RealVectorStateSpaceSampleableConstraint.cpp
+  src/statespace/SO2StateSpace.cpp
+  src/statespace/SO2StateSpace.cpp
+  src/statespace/SO2JointStateSpace.cpp
+  src/statespace/SO2StateSpaceSampleableConstraint.cpp
+  src/statespace/SO3StateSpace.cpp
+  src/statespace/SE2StateSpace.cpp
+  src/statespace/SE3StateSpace.cpp
+  src/statespace/SE3JointStateSpace.cpp
+  src/statespace/JointStateSpace.cpp
+  src/statespace/CompoundStateSpace.cpp
+  src/statespace/CompoundStateSpaceSampleableConstraint.cpp
+  src/statespace/MetaSkeletonStateSpace.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
-  src/constraint/IkSampleableConstraint.cpp
-  src/constraint/IkSampleGenerator.cpp
-  src/constraint/IkSampleGenerator.cpp
+  src/constraint/FrameConstraintAdaptor.cpp
+  src/constraint/FramePairConstraintAdaptor.cpp
+  # src/constraint/IkSampleableConstraint.cpp
+  # src/constraint/IkSampleGenerator.cpp
+  src/constraint/PolynomialConstraint.cpp
+  src/constraint/DifferentiableProjector.cpp
+  #src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
+  src/util/PseudoInverse.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
+  # src/ompl/DARTGeometricStateSpace.cpp
+  # src/ompl/DARTStateSampler.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${Boost_LIBRARIES}
   ${TinyXML2_LIBRARIES}
 )
+
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).
 install(FILES package.xml
