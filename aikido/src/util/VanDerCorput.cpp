@@ -4,11 +4,13 @@
 using namespace aikido::util;
 using std::pair;
 
-VanDerCorput::VanDerCorput(const double span, const bool include_endpoints,
-                           const double min_resolution)
+VanDerCorput::VanDerCorput(const double span, const bool includeStartpoint,
+                           const bool includeEndpoint,
+                           const double minResolution)
     : mSpan(span)
-    , mIncludeEndpoints(include_endpoints)
-    , mMinResolution(min_resolution)
+    , mIncludeStartpoint(includeStartpoint)
+    , mIncludeEndpoint(includeEndpoint)
+    , mMinResolution(minResolution)
 {
   if (mMinResolution == 0.0) {
     mMinResolution = std::numeric_limits<double>::epsilon();
@@ -23,24 +25,39 @@ pair<double, double> VanDerCorput::operator[](int n) const
     throw std::out_of_range("Indexed maximum integer.");
   }
 
-  if (mIncludeEndpoints) {
+  if (mIncludeStartpoint && mIncludeEndpoint) {
     if (n == 0) {
       val_res.first = 0.0;
       val_res.second = mSpan;
-    } else if (n == 1) {
+    }
+    else if (n == 1) {
       val_res.first = 1.0;
       val_res.second = mSpan;
-    } else {
+    }
+    else {
       val_res = computeVanDerCorput(n - 1);
     }
-  } else {
-    val_res = computeVanDerCorput(n + 1);
+  }
+  else if (mIncludeStartpoint && n == 0) {
+    val_res.first = 0.0;
+    val_res.second = mSpan;
+  }
+  else if (mIncludeEndpoint && n == 0) {
+    val_res.first = 1.0;
+    val_res.second = mSpan;
+  }
+  else {
+    if (mIncludeStartpoint || mIncludeEndpoint) {
+      val_res = computeVanDerCorput(n);
+    }
+    else {
+      val_res = computeVanDerCorput(n + 1);
+    }
   }
 
   val_res.first *= mSpan;
   return val_res;
 }
-
 
 pair<double, double> VanDerCorput::computeVanDerCorput(int n) const
 {
@@ -59,7 +76,8 @@ pair<double, double> VanDerCorput::computeVanDerCorput(int n) const
       std::ceil(std::log2(n + 2)) - 1;  // and height after next node is added.
   if (power == next_power) {            // If next node does not start new level
     resolution = 1. / (std::pow(2, power));  // not yet perfect tree
-  } else {  // if next node does start new level
+  }
+  else {  // if next node does start new level
     resolution = 1. / (std::pow(2, power + 1));  // shrink resolution
   }
 
@@ -94,16 +112,14 @@ VanDerCorput::const_iterator::const_iterator(const VanDerCorput *seq)
   increment();
 }
 
-double VanDerCorput::const_iterator::dereference() const
-{
-  return mCurr.first;
-}
+double VanDerCorput::const_iterator::dereference() const { return mCurr.first; }
 
 void VanDerCorput::const_iterator::increment()
 {
   if (mFinalIter) {
     mN = VanDerCorput::MAX;
-  } else {
+  }
+  else {
     ++mN;
     mCurr = (*mSeq)[mN];
     if (mCurr.second <= mSeq->mMinResolution) {

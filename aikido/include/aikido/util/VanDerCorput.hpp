@@ -12,15 +12,13 @@ namespace aikido
 {
 namespace util
 {
-
-
 class VanDerCorput
 {
 public:
   class const_iterator;
 
-  VanDerCorput(double span = 1, bool include_endpoints = false,
-               double min_resolution = 0.0);
+  VanDerCorput(double span = 1, bool includeStartpoint = false,
+               bool includeEndpoint = false, double minResolution = 0.0);
 
   const_iterator begin() const;
   const_iterator end() const;
@@ -34,7 +32,8 @@ private:
   pair<double, double> computeVanDerCorput(int n) const;
 
   const double mSpan;
-  const bool mIncludeEndpoints;
+  const bool mIncludeStartpoint;
+  const bool mIncludeEndpoint;
   double mMinResolution;
 };
 
