@@ -71,14 +71,6 @@ void SO3StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
-auto SO3StateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  throw std::runtime_error(
-    "SO3StateSpace::createSampleableConstraint is not implemented.");
-}
-
-//=============================================================================
 void SO3StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
   StateSpace::State* _out) const
@@ -110,18 +102,6 @@ double SO3StateSpace::getMeasure() const
 }
 
 //=============================================================================
-void SO3StateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-    return;
-}
-
-//=============================================================================
-bool SO3StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-    return true;
-}
-
-//=============================================================================
 void SO3StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {
@@ -137,25 +117,15 @@ double SO3StateSpace::distance(const StateSpace::State* _state1,
 {
     auto state1 = static_cast<const State*>(_state1);
     auto state2 = static_cast<const State*>(_state2);
-    double r = getQuaternion(state1).dot(getQuaternion(state2));
-    if(r < -1.0 || r > 1.0)
-        return 0.0;
-    r = acos(r);
-    if(r <= 2.*boost::math::constants::pi<double>())
-    {
-        return r;
-    }
-    else
-    {
-        return boost::math::constants::pi<double>() - r;
-    }
+    return getQuaternion(state1).angularDistance(getQuaternion(state2));
 }
 
 //=============================================================================
 bool SO3StateSpace::equalStates(const StateSpace::State* _state1,
                                 const StateSpace::State* _state2) const
 {
-    return distance(_state1, _state2) < std::numeric_limits<double>::epsilon();
+    // TODO: Make this a parameter.
+    return distance(_state1, _state2) < 1e-7;
 }
 
 //=============================================================================
@@ -165,34 +135,11 @@ void SO3StateSpace::interpolate(const StateSpace::State* _from,
                                 StateSpace::State* _state) const
 {
 
-    double dist = distance(_from, _to);
-    if(dist > std::numeric_limits<double>::epsilon())
-    {
-        double d = 1.0 / dist;
-        double s0 = sin( (1.0 - _t) * dist);
-        double s1 = sin(_t * dist);
+    auto from = static_cast<const State*>(_from);
+    auto to = static_cast<const State*>(_to);
+    auto state = static_cast<State*>(_state);
 
-        auto from = static_cast<const State*>(_from);
-        auto to = static_cast<const State*>(_to);
-        
-        Quaternion f = getQuaternion(from);
-        Quaternion t = getQuaternion(to);
-        double dq = f.dot(t);
-        if(dq < 0.0)
-            s1 *= -1.0;
-        Quaternion iq;
-        iq.x() = d * ( f.x() * s0 + t.x() * s1 );
-        iq.y() = d * ( f.y() * s0 + t.y() * s1 );
-        iq.z() = d * ( f.z() * s0 + t.z() * s1 );
-        iq.w() = d * ( f.w() * s0 + t.w() * s1 );
-
-        auto state = static_cast<State*>(_state);
-        setQuaternion(state, iq);
-    }
-    else
-    {
-        copyState(_state, _from);
-    }
+    setQuaternion(state, getQuaternion(from).slerp(_t, getQuaternion(to)));
 }
 
 //=============================================================================

@@ -75,10 +75,6 @@ public:
   void freeStateInBuffer(StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  SampleableConstraintPtr createSampleableConstraint(
-    std::unique_ptr<util::RNG> _rng) const override;
-
-  // Documentation inherited.
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
@@ -91,12 +87,6 @@ public:
 
   // Documentation inherited
   double getMeasure() const override;
-
-  // Documentation inherited
-  void enforceBounds(StateSpace::State* _state) const override;
-
-  // Documentation inherited
-  bool satisfiesBounds(const StateSpace::State* _state) const override;
 
   // Documentation inherited
   void copyState(StateSpace::State* _destination,

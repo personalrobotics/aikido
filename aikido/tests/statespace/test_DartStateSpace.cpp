@@ -4,7 +4,7 @@
 #include <aikido/statespace/SE2StateSpace.hpp>
 #include <aikido/statespace/SE3StateSpace.hpp>
 #include <aikido/statespace/CompoundStateSpace.hpp>
-#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <gtest/gtest.h>
 #include <dart/dynamics/dynamics.h>
 

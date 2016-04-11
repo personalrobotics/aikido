@@ -24,8 +24,7 @@ auto SE2StateSpace::State::getIsometry() const
 }
 
 //=============================================================================
-void SE2StateSpace::State::setIsometry(
-  const Isometry2d& _transform)
+void SE2StateSpace::State::setIsometry(const Isometry2d& _transform)
 {
   mTransform = _transform;
 }
@@ -70,14 +69,6 @@ void SE2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
-auto SE2StateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  throw std::runtime_error(
-    "SE2StateSpace::createSampleableConstraint is not implemented.");
-}
-
-//=============================================================================
 void SE2StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
   StateSpace::State* _out) const
@@ -103,18 +94,6 @@ double SE2StateSpace::getMaximumExtent() const
 
 //=============================================================================
 double SE2StateSpace::getMeasure() const 
-{
-
-}
-
-//=============================================================================
-void SE2StateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-
-}
-
-//=============================================================================
-bool SE2StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
 {
 
 }

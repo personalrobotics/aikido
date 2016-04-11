@@ -67,10 +67,6 @@ public:
   void freeStateInBuffer(StateSpace::State* _state) const override;
   
   // Documentation inherited.
-  SampleableConstraintPtr createSampleableConstraint(
-    std::unique_ptr<util::RNG> _rng) const override;
-  
-  // Documentation inherited.
   void compose(
     const StateSpace::State* _state1, const StateSpace::State* _state2,
     StateSpace::State* _out) const override;
@@ -83,12 +79,6 @@ public:
 
   // Documentation inherited
   double getMeasure() const override;
-
-  // Documentation inherited
-  void enforceBounds(StateSpace::State* _state) const override;
-
-  // Documentation inherited
-  bool satisfiesBounds(const StateSpace::State* _state) const override;
 
   // Documentation inherited
   void copyState(StateSpace::State* _destination,
@@ -106,7 +96,7 @@ public:
   void interpolate(const StateSpace::State* _from,
                    const StateSpace::State* _to,
                    const double _t,
-                   StateSpace::State* _State) const;
+                   StateSpace::State* _state) const;
 
   // Documentation inherited. _tangent should be 3d twist.
   void expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;

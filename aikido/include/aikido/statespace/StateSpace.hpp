@@ -6,11 +6,6 @@
 #include "../util/RNG.hpp"
 
 namespace aikido {
-namespace constraint {
-
-class SampleableConstraint;
-
-} // namespace constraint
 
 namespace statespace {
 
@@ -35,9 +30,6 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
-  using SampleableConstraintPtr
-    = std::shared_ptr<constraint::SampleableConstraint>;
-
   virtual ~StateSpace() = default;
 
   auto createState() const -> ScopedState
@@ -45,31 +37,21 @@ public:
     return ScopedState(this);
   }
 
+  /// Allocate a new state. This must be deleted with freeState.
+  virtual State* allocateState() const;
+
+  /// Free a state previously created by allocateState.
+  virtual void freeState(State* _state) const;
+
   /// Gets the size of a State, in bytes.
   virtual size_t getStateSizeInBytes() const = 0;
 
-  /// Allocate a new state. This must be deleted with freeState.
-  virtual StateSpace::State* allocateState() const
-  {
-    return allocateStateInBuffer(new char[getStateSizeInBytes()]);
-  }
-
   /// Create a new state in a pre-allocated buffer. The input argument must
   /// contain at least getStateSizeInBytes() bytes of memory.
-  virtual StateSpace::State* allocateStateInBuffer(void* _buffer) const = 0;
-
-  /// Free a state previously created by allocateState.
-  virtual void freeState(StateSpace::State* _state) const
-  {
-    delete[] reinterpret_cast<char*>(_state);
-  }
+  virtual State* allocateStateInBuffer(void* _buffer) const = 0;
 
   /// Free a state previously created by allocateStateInBuffer.
-  virtual void freeStateInBuffer(StateSpace::State* _state) const = 0;
-
-  /// Sample uniformly at random from this state space.
-  virtual SampleableConstraintPtr createSampleableConstraint(
-    std::unique_ptr<util::RNG> _rng) const = 0;
+  virtual void freeStateInBuffer(State* _state) const = 0;
 
   /// Lie group operation for this StateSpace.
   virtual void compose(
@@ -84,13 +66,6 @@ public:
 
   /// Get a measure of the space (this can be thought of as a generalization of volume) 
   virtual double getMeasure() const = 0;
-
-  /// Bring the state within the bounds of the state space
-  virtual void enforceBounds(StateSpace::State* _state) const = 0;
-
-  /// Check if a state is inside the bounding box. 
-  /// For unbounded spaces this function can always return true.
-  virtual bool satisfiesBounds(const StateSpace::State* _state) const = 0;
 
   /// Copy a state to another.
   virtual void copyState(StateSpace::State* _destination, 
@@ -116,7 +91,7 @@ public:
 
   /// Exponential mapping of Lie algebra element to a Lie group element.  
   virtual void expMap(
-    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const = 0;
+    const Eigen::VectorXd& _tangent, State* _out) const = 0;
 
 };
 

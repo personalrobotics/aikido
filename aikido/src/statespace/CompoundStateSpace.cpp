@@ -1,5 +1,4 @@
 #include <aikido/statespace/CompoundStateSpace.hpp>
-#include <aikido/statespace/CompoundStateSpaceSampleableConstraint.hpp>
 #include <iostream>
 
 namespace aikido {
@@ -63,16 +62,6 @@ void CompoundStateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
-auto CompoundStateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  return std::make_shared<CompoundStateSpaceSampleableConstraint>(
-    // TODO: SampleableConstraint should operate on `const StateSpace`.
-    std::const_pointer_cast<CompoundStateSpace>(shared_from_this()),
-    std::move(_rng));
-}
-
-//=============================================================================
 void CompoundStateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
   StateSpace::State* _out) const
@@ -119,31 +108,6 @@ double CompoundStateSpace::getMeasure() const
         measure *= sspace->getMeasure();
     }
     return measure;
-}
-
-//=============================================================================
-void CompoundStateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-    auto state = static_cast<State*>(_state);
-
-    for (size_t i = 0; i < mSubspaces.size(); ++i)
-    {
-        mSubspaces[i]->enforceBounds(getSubState<>(state, i));
-    }
-}
-
-//=============================================================================
-bool CompoundStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-    auto state = static_cast<const State*>(_state);
-
-    for (size_t i = 0; i < mSubspaces.size(); ++i)
-    {
-        if(!mSubspaces[i]->satisfiesBounds(getSubState<>(state, i))){
-            return false;
-        }
-    }
-    return true;
 }
 
 //=============================================================================
