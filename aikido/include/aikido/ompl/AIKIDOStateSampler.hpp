@@ -1,5 +1,5 @@
-#ifndef DART_STATE_SAMPLER_H
-#define DART_STATE_SAMPLER_H
+#ifndef AIKIDO_STATE_SAMPLER_H
+#define AIKIDO_STATE_SAMPLER_H
 
 #include <ompl/base/StateSampler.h>
 #include <aikido/constraint/Sampleable.hpp>
@@ -8,15 +8,15 @@ namespace aikido {
     namespace ompl_bindings {
 
         /// Wraps an aikido::constraint::SampleableConstraint in a ompl::base::StateSampler
-        class DARTStateSampler : public ompl::base::StateSampler {
+        class AIKIDOStateSampler : public ompl::base::StateSampler {
 
         public:
 
-            DARTStateSampler(const ompl::base::StateSpace* _space,
-                             const aikido::constraint::SampleableConstraintPtr &_constraint);
+            AIKIDOStateSampler(const ompl::base::StateSpace* _space,
+                             std::unique_ptr<aikido::constraint::SampleGenerator> _generator);
 
             /// Sample a state uniformly from the space
-            virtual void sampleUniform(ompl::base::State* _state) = 0;
+            virtual void sampleUniform(ompl::base::State* _state);
 
             /// Sample a state near another, within specified distance
             virtual void sampleUniformNear(ompl::base::State* _state, 
@@ -29,7 +29,7 @@ namespace aikido {
                                         const double stdDev);
 
         private:
-            aikido::constraint::SampleableConstraintPtr mConstraint;
+            std::unique_ptr<aikido::constraint::SampleGenerator> mGenerator;
 
         };
     }

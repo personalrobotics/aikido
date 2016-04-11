@@ -1,4 +1,12 @@
 cmake_minimum_required(VERSION 2.8.11)
+
+# Use MACOSX_RPATH by default on OS X. This was added in CMake 2.8.12 and
+# became default in CMake 3.0. Explicitly setting this policy is necessary to
+# suppress a warning in CMake 3.0 and above.
+if(POLICY CMP0042)
+  cmake_policy(SET CMP0042 NEW)
+endif()
+
 project(aikido)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
@@ -12,6 +20,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(DART REQUIRED COMPONENTS core)
 find_package(OMPL REQUIRED)
 find_package(TinyXML2 REQUIRED)
+
 
 # Compilation setup
 include_directories(
@@ -31,6 +40,7 @@ add_library(${PROJECT_NAME} SHARED
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
+  src/statespace/StateSpace.cpp
   src/statespace/RealVectorStateSpace.cpp
   src/statespace/RealVectorJointStateSpace.cpp
   src/statespace/RealVectorStateSpaceSampleableConstraint.cpp
@@ -39,25 +49,33 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/SO2JointStateSpace.cpp
   src/statespace/SO2StateSpaceSampleableConstraint.cpp
   src/statespace/SO3StateSpace.cpp
+  src/statespace/SO3JointStateSpace.cpp
+  src/statespace/SO3StateSpaceSampleableConstraint.cpp
   src/statespace/SE2StateSpace.cpp
+  src/statespace/SE2JointStateSpace.cpp
+  src/statespace/SE2StateSpaceSampleableConstraint.cpp
   src/statespace/SE3StateSpace.cpp
   src/statespace/SE3JointStateSpace.cpp
+  src/statespace/SE3StateSpaceSampleableConstraint.cpp
   src/statespace/JointStateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
   src/statespace/CompoundStateSpaceSampleableConstraint.cpp
   src/statespace/MetaSkeletonStateSpace.cpp
+  src/constraint/CollisionConstraint.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
   src/constraint/IkSampleableConstraint.cpp
   src/constraint/CollisionConstraint.cpp
   #src/constraint/IkSampleGenerator.cpp
+  src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/util/VanDerCorput.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp
   src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
-  src/ompl/DARTGeometricStateSpace.cpp
-  src/ompl/DARTStateSampler.cpp
+  src/ompl/AIKIDOGeometricStateSpace.cpp
+  src/ompl/AIKIDOStateSampler.cpp
+  src/ompl/AIKIDOStateValidityChecker.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}

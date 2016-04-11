@@ -7,10 +7,14 @@ namespace aikido {
 namespace statespace {
 
 /// Wrap a single DOF joint in a SO2StateSpace.
-class SO2JointStateSpace : public SO2StateSpace, public JointStateSpace
+class SO2JointStateSpace
+  : public SO2StateSpace
+  , public JointStateSpace
+  , public std::enable_shared_from_this<SO2JointStateSpace>
 {
 public:
   using SO2StateSpace::State;
+  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SO2JointStateSpace(dart::dynamics::SingleDofJoint* _joint);
 
@@ -19,6 +23,10 @@ public:
 
   // Documentation inherited.
   void setState(const StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const override;
 };
 
 } // namespace statespace

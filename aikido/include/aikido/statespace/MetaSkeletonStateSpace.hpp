@@ -1,8 +1,9 @@
 #ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
 #define AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
 #include <dart/dynamics/dynamics.h>
-#include <aikido/statespace/CompoundStateSpace.hpp>
-#include <aikido/statespace/JointStateSpace.hpp>
+#include "CompoundStateSpace.hpp"
+#include "JointStateSpace.hpp"
+#include "../constraint/Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -13,6 +14,7 @@ class MetaSkeletonStateSpace : public CompoundStateSpace
 public:
   using CompoundStateSpace::State;
   using CompoundStateSpace::ScopedState;
+  using SampleableConstraintPtr = constraint::SampleableConstraintPtr;
 
   /// Create a StateSpace for the Joints in the MetaSkeleton.
   MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton);
@@ -33,6 +35,10 @@ public:
   /// Sets the MetaSkeleton's positions to the values stored in _state.
   void setStateOnMetaSkeleton(const State* _state);
 
+  /// Sample uniformly at random from this state space.
+  SampleableConstraintPtr createSampleableConstraint(
+    std::unique_ptr<util::RNG> _rng) const;
+
 private:
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
@@ -52,6 +58,6 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(
 } // namespace statespace
 } // namespace aikido
 
-#include "detail/DartStateSpace.hpp"
+#include "detail/MetaSkeletonStateSpace.hpp"
 
 #endif // ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_

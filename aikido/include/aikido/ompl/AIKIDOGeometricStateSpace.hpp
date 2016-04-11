@@ -1,5 +1,5 @@
-#ifndef DART_GEOMETRIC_STATE_SPACE_H
-#define DART_GEOMETRIC_STATE_SPACE_H
+#ifndef AIKIDO_GEOMETRIC_STATE_SPACE_H
+#define AIKIDO_GEOMETRIC_STATE_SPACE_H
 
 #include <ompl/base/StateSpace.h>
 #include <aikido/statespace/StateSpace.hpp>
@@ -8,7 +8,7 @@ namespace aikido {
     namespace ompl_bindings {
 
         /// Wraps an aikido StateSpace into a space recognized by OMPL
-        class DARTGeometricStateSpace : public ompl::base::StateSpace {
+        class AIKIDOGeometricStateSpace : public ompl::base::StateSpace {
 
         public:
 
@@ -19,7 +19,10 @@ namespace aikido {
                 aikido::statespace::StateSpace::State* mState;
             };
             
-            DARTGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace);
+            /// Construct a state space with a random number generator used for allocating
+            ///  state samplers.
+            AIKIDOGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
+                                      std::unique_ptr<util::RNG> _rng);
 
             /// Get the dimension of the space (not the dimension of the surrounding ambient space)
             virtual unsigned int getDimension() const;
@@ -69,13 +72,18 @@ namespace aikido {
                 
             /// Allocate a state that can store a point in the described space
             virtual ompl::base::State* allocState() const;
+
+            /// Allocate a state constaining a copy of the aikido state
+            ompl::base::State* allocState(
+                const aikido::statespace::StateSpace::State* _state) const;
             
             /// Free the memory of the allocated state
             virtual void freeState(ompl::base::State* _state) const;
 
         private:
             aikido::statespace::StateSpacePtr mStateSpace;
-
+            std::unique_ptr<util::RNG> mRng;
+            std::unique_ptr<std::seed_seq> mSeedSeq;
         };
     }
 }

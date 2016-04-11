@@ -92,16 +92,6 @@ void SO2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
-constraint::SampleableConstraintPtr SO2StateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const
-{
-  return std::make_shared<SO2StateSpaceSampleableConstraint>(
-    // TODO: SampleableConstraint should operate on `const StateSpace`.
-    std::const_pointer_cast<SO2StateSpace>(shared_from_this()),
-    std::move(_rng));
-}
-
-//=============================================================================
 void SO2StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
 	StateSpace::State* _out) const
@@ -132,18 +122,6 @@ double SO2StateSpace::getMeasure() const
 }
 
 //=============================================================================
-void SO2StateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-    return;
-}
-
-//=============================================================================
-bool SO2StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-    return true;
-}
-
-//=============================================================================
 void SO2StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {
@@ -162,7 +140,7 @@ double SO2StateSpace::distance(const StateSpace::State* _state1,
     diff = fmod(fabs(diff), 2.0*boost::math::constants::pi<double>());
     if(diff > boost::math::constants::pi<double>())
         diff -= 2.0*boost::math::constants::pi<double>();
-    return diff;
+    return fabs(diff);
 }
 
 //=============================================================================
@@ -179,12 +157,13 @@ void SO2StateSpace::interpolate(const StateSpace::State* _from,
                                 const double _t,
                                 StateSpace::State* _state) const
 {
-    auto st = static_cast<State*>(_state);
-    double dist = distance(_from, _to);
-    double a = getAngle(st) + _t*dist;
+    auto from = static_cast<const State*>(_from);
+    auto to = static_cast<const State*>(_to);
+    auto state = static_cast<State*>(_state);
+    double a = (1-_t)*getAngle(from) + _t*getAngle(to);
 
     // TODO: Wrap?
-    setAngle(st, a);
+    setAngle(state, a);
 }
 
 //=============================================================================

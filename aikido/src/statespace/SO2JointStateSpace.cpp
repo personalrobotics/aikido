@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO2JointStateSpace.hpp>
+#include <aikido/statespace/SO2StateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -21,6 +22,21 @@ void SO2JointStateSpace::setState(const StateSpace::State* _state) const
 {
   mJoint->setPosition(0, getAngle(static_cast<const State*>(_state)));
 }
+
+//=============================================================================
+auto SO2JointStateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  if (mJoint->hasPositionLimit(0))
+    throw std::runtime_error(
+      "Position limits are unsupported on joints with SO(2) topology.");
+
+  return std::make_shared<SO2StateSpaceSampleableConstraint>(
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<SO2JointStateSpace>(shared_from_this()),
+    std::move(_rng));
+}
+
 
 } // namespace statespace
 } // namespace aikido
