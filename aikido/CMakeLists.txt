@@ -61,7 +61,7 @@ add_library(${PROJECT_NAME} SHARED
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
   src/constraint/IkSampleableConstraint.cpp
-  #src/constraint/IkSampleGenerator.cpp
+  src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp

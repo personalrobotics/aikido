@@ -1,6 +1,6 @@
 #include <aikido/constraint/IkSampleableConstraint.hpp>
 #include <aikido/statespace/SE3StateSpace.hpp>
-//#include <aikido/constraint/IkSampleGenerator.hpp>
+#include <aikido/constraint/IkSampleGenerator.hpp>
 
 using namespace dart::dynamics;
 
@@ -25,25 +25,25 @@ IkSampleableConstraint::IkSampleableConstraint(
   if (!mRng)
     throw std::invalid_argument("RNG is nullptr.");
 
-  if (!_inverseKinematics)
+  if (!mInverseKinematics)
     throw std::invalid_argument("InverseKinematics is nullptr.");
 
-  if (!_poseConstraint)
+  if (!mPoseConstraint)
     throw std::invalid_argument("Pose SampleableConstraint is nullptr.");
 
   if (!dynamic_cast<const statespace::SE3StateSpace*>(
-        _poseConstraint->getStateSpace().get()))
+        mPoseConstraint->getStateSpace().get()))
     throw std::invalid_argument(
       "Pose SampleableConstraint does not operate on an SE3StateSpace.");
 
-  if (!_seedConstraint)
+  if (!mSeedConstraint)
     throw std::invalid_argument("Seed SampleableConstraint is nullptr.");
 
-  if (_seedConstraint->getStateSpace() != _stateSpace)
+  if (mSeedConstraint->getStateSpace() != _stateSpace)
     throw std::invalid_argument(
       "Seed SampleableConstraint does not operate on this StateSpace.");
 
-  if (_maxNumTrials <= 0)
+  if (mMaxNumTrials <= 0)
     throw std::invalid_argument("Maximum number of trials is not positive.");
 }
 
@@ -57,12 +57,14 @@ statespace::StateSpacePtr IkSampleableConstraint::getStateSpace() const
 std::unique_ptr<SampleGenerator>
   IkSampleableConstraint::createSampleGenerator() const
 {
-#if 0
   return std::unique_ptr<IkSampleGenerator>(new IkSampleGenerator(
-    mIsometry3dConstraintPtr->createSampleGenerator(),
-    mInverseKinematics, mRng->clone(), mMaxNumTrials));
-#endif
-  return nullptr;
+    mStateSpace,
+    mInverseKinematics,
+    mPoseConstraint->createSampleGenerator(),
+    mSeedConstraint->createSampleGenerator(),
+    mRng->clone(),
+    mMaxNumTrials
+  ));
 }
 
 //=============================================================================

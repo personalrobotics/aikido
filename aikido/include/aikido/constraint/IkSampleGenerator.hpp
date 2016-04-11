@@ -3,6 +3,7 @@
 
 #include "IkSampleableConstraint.hpp"
 #include "Sampleable.hpp"
+#include "../statespace/SE3StateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -20,6 +21,9 @@ public:
   virtual ~IkSampleGenerator() = default; 
 
   // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
+
+  // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
 
   // Documentation inherited.
@@ -33,13 +37,16 @@ private:
   IkSampleGenerator(
     statespace::MetaSkeletonStateSpacePtr _stateSpace,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
-    std::unique_ptr<SampleGenerator> _delegateSampler,
+    std::unique_ptr<SampleGenerator> _poseSampler,
+    std::unique_ptr<SampleGenerator> _seedSampler,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
-  statespace::MetaSkeletonStateSpacePtr mStateSpace,
+  statespace::MetaSkeletonStateSpacePtr mStateSpace;
+  std::shared_ptr<statespace::SE3StateSpace> mPoseStateSpace;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;
-  std::unique_ptr<SampleGenerator<Eigen::Isometry3d>> mDelegateSampler;
+  std::unique_ptr<SampleGenerator> mPoseSampler;
+  std::unique_ptr<SampleGenerator> mSeedSampler;
   std::unique_ptr<util::RNG> mRng;
   int mMaxNumTrials;
 
