@@ -17,12 +17,6 @@ namespace constraint {
 class IkSampleableConstraint : public SampleableConstraint
 {
 public:
-  /// Constructor.
-  ///
-  /// \param[in] _isometry3dConstraint pose constraint to lift
-  /// \param[in] _inverseKinematics inverse kinematics solver to use for lifting
-  /// \param[in] _rng random number generator used by sample generators
-  /// \param[in] _maxNumTrials number of retry attempts
   IkSampleableConstraint(
     statespace::MetaSkeletonStateSpacePtr _stateSpace,
     SampleableConstraintPtr _poseConstraint,

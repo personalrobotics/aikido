@@ -7,9 +7,12 @@ using namespace dart::dynamics;
 namespace aikido {
 namespace constraint {
 
+using statespace::SE3StateSpace;
+using statespace::MetaSkeletonStateSpacePtr;
+
 //=============================================================================
 IkSampleableConstraint::IkSampleableConstraint(
-      statespace::MetaSkeletonStateSpacePtr _stateSpace,
+      MetaSkeletonStateSpacePtr _stateSpace,
       SampleableConstraintPtr _poseConstraint,
       SampleableConstraintPtr _seedConstraint,
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
@@ -22,29 +25,46 @@ IkSampleableConstraint::IkSampleableConstraint(
   , mRng(std::move(_rng))
   , mMaxNumTrials(_maxNumTrials)
 {
-  if (!mRng)
-    throw std::invalid_argument("RNG is nullptr.");
+  if (!mStateSpace)
+    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
 
   if (!mInverseKinematics)
     throw std::invalid_argument("InverseKinematics is nullptr.");
 
-  if (!mPoseConstraint)
-    throw std::invalid_argument("Pose SampleableConstraint is nullptr.");
+  const auto stateMetaSkeleton = mStateSpace->getMetaSkeleton();
+  const auto ikSkeleton = mInverseKinematics->getNode()->getSkeleton();
+  for (const size_t dofIndex : mInverseKinematics->getDofs())
+  {
+    const auto dof = ikSkeleton->getDof(dofIndex);
+    if (stateMetaSkeleton->getIndexOf(dof, false) == INVALID_INDEX)
+    {
+      std::stringstream msg;
+      msg << "DegreeOfFreedom '" << dof->getName() << "' is used by the"
+             " InverseKinematics solver, but is absent from the"
+             " MetaSkeletonStateSpace this constraint is defined over.";
+      throw std::invalid_argument(msg.str());
+    }
+  }
 
-  if (!dynamic_cast<const statespace::SE3StateSpace*>(
-        mPoseConstraint->getStateSpace().get()))
+  if (!mPoseConstraint)
+    throw std::invalid_argument("Pose SampleGenerator is nullptr.");
+
+  if (!dynamic_cast<SE3StateSpace*>(_poseConstraint->getStateSpace().get()))
     throw std::invalid_argument(
-      "Pose SampleableConstraint does not operate on an SE3StateSpace.");
+      "Pose SampleableConstraint does not operate on a SE3StateSpace.");
 
   if (!mSeedConstraint)
     throw std::invalid_argument("Seed SampleableConstraint is nullptr.");
 
-  if (mSeedConstraint->getStateSpace() != _stateSpace)
+  if (mSeedConstraint->getStateSpace() != mStateSpace)
     throw std::invalid_argument(
-      "Seed SampleableConstraint does not operate on this StateSpace.");
+      "Seed SampleGenerator is not for this StateSpace.");
+
+  if (!mRng)
+    throw std::invalid_argument("RNG is nullptr.");
 
   if (mMaxNumTrials <= 0)
-    throw std::invalid_argument("Maximum number of trials is not positive.");
+    throw std::invalid_argument("Maximum number of trials must be positive.");
 }
 
 //=============================================================================

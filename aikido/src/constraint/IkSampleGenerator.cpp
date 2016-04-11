@@ -10,6 +10,7 @@ namespace constraint {
 using util::RNG;
 using statespace::MetaSkeletonStateSpace;
 using statespace::SE3StateSpace;
+using dart::dynamics::INVALID_INDEX;
 
 //=============================================================================
 IkSampleGenerator::IkSampleGenerator(
@@ -20,40 +21,22 @@ IkSampleGenerator::IkSampleGenerator(
       std::unique_ptr<util::RNG> _rng,
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
-  , mPoseStateSpace()
+  , mPoseStateSpace(
+      std::dynamic_pointer_cast<SE3StateSpace>(_poseSampler->getStateSpace()))
   , mInverseKinematics(std::move(_inverseKinematics))
   , mPoseSampler(std::move(_poseSampler))
   , mSeedSampler(std::move(_seedSampler))
   , mRng(std::move(_rng))
   , mMaxNumTrials(_maxNumTrials)
 {
-  if (!mStateSpace)
-    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
-
-  if (!mInverseKinematics)
-    throw std::invalid_argument("mInverseKinematics is nullptr.");
-
-  if (!mPoseSampler)
-    throw std::invalid_argument("Pose SampleGenerator is nullptr.");
-
-  mPoseStateSpace = std::dynamic_pointer_cast<SE3StateSpace>(
-    mPoseSampler->getStateSpace());
-  if (!mPoseStateSpace)
-    throw std::invalid_argument(
-      "Pose SampleableConstraint does not operate on a SE3StateSpace.");
-
-  if (!mSeedSampler)
-    throw std::invalid_argument("Seed SampleGenerator is nullptr.");
-
-  if (mSeedSampler->getStateSpace() != mStateSpace)
-    throw std::invalid_argument(
-      "Seed SampleGenerator is not for this StateSpace.");
-
-  if (!mRng)
-    throw std::invalid_argument("RNG is nullptr.");
-
-  if (mMaxNumTrials <= 0)
-    throw std::invalid_argument("Maximum number of trials must be positive.");
+  assert(mStateSpace);
+  assert(mPoseStateSpace);
+  assert(mInverseKinematics);
+  assert(mPoseSampler);
+  assert(mSeedSampler);
+  assert(mSeedSampler->getStateSpace() == mStateSpace);
+  assert(mRng);
+  assert(mMaxNumTrials > 0);
 
   if (mPoseSampler->getNumSamples() != NO_LIMIT)
     dtwarn << "[IkSampleGenerator::constructor] IkSampleGenerator only tries"
@@ -81,9 +64,7 @@ statespace::StateSpacePtr IkSampleGenerator::getStateSpace() const
 //=============================================================================
 bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
-  if (!mSeedSampler->canSample())
-    return false;
-  if (!mPoseSampler->canSample())
+  if (!mSeedSampler->canSample() || !mPoseSampler->canSample())
     return false;
 
   auto seedState = mStateSpace->createState();
@@ -119,15 +100,14 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 //=============================================================================
 bool IkSampleGenerator::canSample() const
 {
-  return mSeedSampler->canSample()
-      && mPoseSampler->canSample();
+  return mSeedSampler->canSample() && mPoseSampler->canSample();
 }
 
 //=============================================================================
 int IkSampleGenerator::getNumSamples() const
 {
-  return std::min(mSeedSampler->getNumSamples(),
-                  mPoseSampler->getNumSamples());
+  return std::min(
+    mSeedSampler->getNumSamples(), mPoseSampler->getNumSamples());
 }
 
 } // namespace constraint
