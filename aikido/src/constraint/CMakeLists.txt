@@ -1,0 +1,22 @@
+aikido_add_library("${PROJECT_NAME}_constraint"
+  uniform/CompoundStateSpaceSampleableConstraint.cpp
+  uniform/RealVectorStateSpaceSampleableConstraint.cpp
+  uniform/SE2StateSpaceSampleableConstraint.cpp
+  uniform/SE3StateSpaceSampleableConstraint.cpp
+  uniform/SO2StateSpaceSampleableConstraint.cpp
+  uniform/SO3StateSpaceSampleableConstraint.cpp
+  CollisionConstraint.cpp
+  TSR.cpp
+  TSRSampleGenerator.cpp
+  FrameConstraintAdaptor.cpp
+  FramePairConstraintAdaptor.cpp
+  PolynomialConstraint.cpp
+  DifferentiableProjector.cpp
+  IkSampleableConstraint.cpp
+  IkSampleGenerator.cpp
+)
+target_link_libraries("${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_statespace"
+  "${PROJECT_NAME}_util"
+  ${DART_LIBRARIES}
+)

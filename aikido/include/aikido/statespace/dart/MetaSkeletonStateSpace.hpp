@@ -2,7 +2,6 @@
 #define AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
 #include <dart/dynamics/dynamics.h>
 #include "../CompoundStateSpace.hpp"
-#include "../../constraint/Sampleable.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
@@ -14,7 +13,6 @@ class MetaSkeletonStateSpace : public CompoundStateSpace
 public:
   using CompoundStateSpace::State;
   using CompoundStateSpace::ScopedState;
-  using SampleableConstraintPtr = constraint::SampleableConstraintPtr;
 
   /// Create a StateSpace for the Joints in the MetaSkeleton.
   MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton);
