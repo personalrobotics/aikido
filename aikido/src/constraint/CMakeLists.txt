@@ -1,6 +1,6 @@
 aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/CompoundStateSpaceSampleableConstraint.cpp
-  uniform/RealVectorStateSpaceSampleableConstraint.cpp
+  uniform/RealVectorBoxConstraint.cpp
   uniform/SE2StateSpaceSampleableConstraint.cpp
   uniform/SE3StateSpaceSampleableConstraint.cpp
   uniform/SO2StateSpaceSampleableConstraint.cpp

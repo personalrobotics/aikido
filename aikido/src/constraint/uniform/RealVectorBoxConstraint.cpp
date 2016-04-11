@@ -1,10 +1,37 @@
-#include <aikido/constraint/uniform/RealVectorStateSpaceSampleableConstraint.hpp>
+#include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
 
 namespace aikido {
 namespace statespace {
 
 //=============================================================================
-RealVectorStateSpaceSampleGenerator::RealVectorStateSpaceSampleGenerator(
+class RealVectorBoxConstraintSampleGenerator
+  : public constraint::SampleGenerator
+{
+public:
+  statespace::StateSpacePtr getStateSpace() const override;
+
+  bool sample(statespace::StateSpace::State* _state) override;
+
+  int getNumSamples() const override;
+
+  bool canSample() const override;
+
+private:
+  RealVectorBoxConstraintSampleGenerator(
+    std::shared_ptr<statespace::RealVectorStateSpace> _space,
+    std::unique_ptr<util::RNG> _rng,
+    const Eigen::VectorXd& _lowerLimits,
+    const Eigen::VectorXd& _upperLimits);
+
+  std::shared_ptr<statespace::RealVectorStateSpace> mSpace;
+  std::unique_ptr<util::RNG> mRng;
+  std::vector<std::uniform_real_distribution<double>> mDistributions;
+
+  friend class RealVectorBoxConstraint;
+};
+
+//=============================================================================
+RealVectorBoxConstraintSampleGenerator::RealVectorBoxConstraintSampleGenerator(
       std::shared_ptr<statespace::RealVectorStateSpace> _space,
       std::unique_ptr<util::RNG> _rng,
       const Eigen::VectorXd& _lowerLimits,
@@ -57,13 +84,13 @@ RealVectorStateSpaceSampleGenerator::RealVectorStateSpaceSampleGenerator(
 
 //=============================================================================
 statespace::StateSpacePtr
-  RealVectorStateSpaceSampleGenerator::getStateSpace() const
+  RealVectorBoxConstraintSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
 //=============================================================================
-bool RealVectorStateSpaceSampleGenerator::sample(
+bool RealVectorBoxConstraintSampleGenerator::sample(
   statespace::StateSpace::State* _state)
 {
   Eigen::VectorXd value(mDistributions.size());
@@ -77,20 +104,20 @@ bool RealVectorStateSpaceSampleGenerator::sample(
 }
 
 //=============================================================================
-int RealVectorStateSpaceSampleGenerator::getNumSamples() const
+int RealVectorBoxConstraintSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
 //=============================================================================
-bool RealVectorStateSpaceSampleGenerator::canSample() const
+bool RealVectorBoxConstraintSampleGenerator::canSample() const
 {
   return true;
 }
 
 //=============================================================================
-RealVectorStateSpaceSampleableConstraint
-  ::RealVectorStateSpaceSampleableConstraint(
+RealVectorBoxConstraint
+  ::RealVectorBoxConstraint(
       std::shared_ptr<statespace::RealVectorStateSpace> _space,
       std::unique_ptr<util::RNG> _rng,
       const Eigen::VectorXd& _lowerLimits,
@@ -103,7 +130,7 @@ RealVectorStateSpaceSampleableConstraint
 }
 
 //=============================================================================
-statespace::StateSpacePtr RealVectorStateSpaceSampleableConstraint
+statespace::StateSpacePtr RealVectorBoxConstraint
   ::getStateSpace() const
 {
   return mSpace;
@@ -111,10 +138,10 @@ statespace::StateSpacePtr RealVectorStateSpaceSampleableConstraint
 
 //=============================================================================
 std::unique_ptr<constraint::SampleGenerator>
-  RealVectorStateSpaceSampleableConstraint::createSampleGenerator() const
+  RealVectorBoxConstraint::createSampleGenerator() const
 {
-  return std::unique_ptr<RealVectorStateSpaceSampleGenerator>(
-    new RealVectorStateSpaceSampleGenerator(
+  return std::unique_ptr<RealVectorBoxConstraintSampleGenerator>(
+    new RealVectorBoxConstraintSampleGenerator(
       mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
 }
 

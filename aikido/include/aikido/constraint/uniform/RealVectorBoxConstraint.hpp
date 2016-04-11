@@ -6,42 +6,11 @@
 namespace aikido {
 namespace statespace {
 
-class RealVectorStateSpaceSampleGenerator
-  : public constraint::SampleGenerator
-{
-public:
-  // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
-
-  // Documentation inherited.
-  bool sample(statespace::StateSpace::State* _state) override;
-
-  // Documentation inherited.
-  int getNumSamples() const override;
-
-  // Documentation inherited.
-  bool canSample() const override;
-
-private:
-  RealVectorStateSpaceSampleGenerator(
-    std::shared_ptr<statespace::RealVectorStateSpace> _space,
-    std::unique_ptr<util::RNG> _rng,
-    const Eigen::VectorXd& _lowerLimits,
-    const Eigen::VectorXd& _upperLimits);
-
-  std::shared_ptr<statespace::RealVectorStateSpace> mSpace;
-  std::unique_ptr<util::RNG> mRng;
-  std::vector<std::uniform_real_distribution<double>> mDistributions;
-
-  friend class RealVectorStateSpaceSampleableConstraint;
-};
-
-
-class RealVectorStateSpaceSampleableConstraint
+class RealVectorBoxConstraint
   : public constraint::SampleableConstraint
 {
 public:
-  RealVectorStateSpaceSampleableConstraint(
+  RealVectorBoxConstraint(
     std::shared_ptr<statespace::RealVectorStateSpace> _space,
     std::unique_ptr<util::RNG> _rng,
     const Eigen::VectorXd& _lowerLimits,
