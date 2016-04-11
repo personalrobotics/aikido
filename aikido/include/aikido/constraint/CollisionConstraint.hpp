@@ -48,7 +48,7 @@ private:
 
   shared_ptr<aikido::statespace::MetaSkeletonStateSpace> statespace;
   shared_ptr<dart::collision::CollisionDetector> collisionDetector;
-  dart::collision::Option collisionOptions;
+  dart::collision::CollisionOption collisionOptions;
   std::vector<std::pair<shared_ptr<CollisionGroup>, shared_ptr<CollisionGroup>>>
       groupsToPairwiseCheck;
   std::vector<shared_ptr<CollisionGroup>> groupsToSelfCheck;

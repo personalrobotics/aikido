@@ -12,7 +12,7 @@ bool CollisionConstraint::isSatisfied(
   statespace->setStateOnMetaSkeleton(skelStatePtr);
 
   bool collision = false;
-  dart::collision::Result collisionResult;
+  dart::collision::CollisionResult collisionResult;
   for (auto groups : groupsToPairwiseCheck) {
     collision =
         collisionDetector->collide(groups.first.get(), groups.second.get(),
