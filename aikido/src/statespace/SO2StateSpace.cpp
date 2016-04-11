@@ -122,18 +122,6 @@ double SO2StateSpace::getMeasure() const
 }
 
 //=============================================================================
-void SO2StateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-    return;
-}
-
-//=============================================================================
-bool SO2StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-    return true;
-}
-
-//=============================================================================
 void SO2StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {

@@ -103,18 +103,6 @@ double SO3StateSpace::getMeasure() const
 }
 
 //=============================================================================
-void SO3StateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-    return;
-}
-
-//=============================================================================
-bool SO3StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-    return true;
-}
-
-//=============================================================================
 void SO3StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {

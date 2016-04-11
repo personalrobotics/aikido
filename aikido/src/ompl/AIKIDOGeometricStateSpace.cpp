@@ -46,15 +46,13 @@ namespace aikido {
         /// Bring the state within the bounds of the state space. 
         /// For unbounded spaces this function can be a no-op.
         void AIKIDOGeometricStateSpace::enforceBounds(ompl::base::State* _state) const {
-            auto st = static_cast<StateType*>(_state);
-            mStateSpace->enforceBounds(st->mState);
+            throw std::runtime_error("enforceBounds not implemented.");
         }
 
         /// Check if a state is inside the bounding box. 
         /// For unbounded spaces this function can always return true.
         bool AIKIDOGeometricStateSpace::satisfiesBounds(const ompl::base::State* _state) const {
-            auto st = static_cast<const StateType*>(_state);
-            return mStateSpace->satisfiesBounds(st->mState);
+            return true;
         }
 
         /// Copy a state to another.

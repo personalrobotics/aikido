@@ -112,31 +112,6 @@ double CompoundStateSpace::getMeasure() const
 }
 
 //=============================================================================
-void CompoundStateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-    auto state = static_cast<State*>(_state);
-
-    for (size_t i = 0; i < mSubspaces.size(); ++i)
-    {
-        mSubspaces[i]->enforceBounds(getSubState<>(state, i));
-    }
-}
-
-//=============================================================================
-bool CompoundStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-    auto state = static_cast<const State*>(_state);
-
-    for (size_t i = 0; i < mSubspaces.size(); ++i)
-    {
-        if(!mSubspaces[i]->satisfiesBounds(getSubState<>(state, i))){
-            return false;
-        }
-    }
-    return true;
-}
-
-//=============================================================================
 void CompoundStateSpace::copyState(StateSpace::State* _destination,
                                    const StateSpace::State* _source) const
 {

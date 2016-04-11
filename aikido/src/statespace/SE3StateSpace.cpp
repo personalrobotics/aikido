@@ -100,18 +100,6 @@ double SE3StateSpace::getMeasure() const
 }
 
 //=============================================================================
-void SE3StateSpace::enforceBounds(StateSpace::State* _state) const 
-{
- 
-}
-
-//=============================================================================
-bool SE3StateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-
-}
-
-//=============================================================================
 void SE3StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {

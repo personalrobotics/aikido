@@ -123,25 +123,6 @@ TEST(SO2StateSpace, ExpMap)
   EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
 }
 
-TEST(SO2StateSpace, EnforceBounds)
-{
-    SO2StateSpace so2;
-    auto state = so2.createState();
-
-    double expected = 5.3;
-    state.setAngle(expected);
-    so2.enforceBounds(state);
-    EXPECT_DOUBLE_EQ(expected, state.getAngle());
-}
-
-TEST(SO2StateSpace, SatisfiesBounds)
-{
-    SO2StateSpace so2;
-    auto state = so2.createState();
-    state.setAngle(-100.8);
-    EXPECT_TRUE(so2.satisfiesBounds(state));
-}
-
 TEST(SO2StateSpace, CopyState)
 {
     SO2StateSpace so2;
@@ -231,28 +212,6 @@ TEST(SO3StateSpace, ExpMap)
   so3.expMap(Eigen::Vector3d(0, 0, M_PI_2), &out);
 
   EXPECT_TRUE(out.getQuaternion().isApprox(expected.getQuaternion()));
-}
-
-TEST(SO3StateSpace, EnforceBounds)
-{
-    SO3StateSpace so3;
-    auto state = so3.createState();
-
-    auto quat = Eigen::Quaterniond(
-        Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitZ()));
-    state.setQuaternion(quat);
-
-    so3.enforceBounds(state);
-    EXPECT_TRUE(state.getQuaternion().isApprox(quat));
-}
-
-TEST(SO3StateSpace, SatisfiesBounds)
-{
-    SO3StateSpace so3;
-    auto state = so3.createState();
-
-    // This shoudl always return true
-    EXPECT_TRUE(so3.satisfiesBounds(state));
 }
 
 TEST(SO3StateSpace, CopyState)

@@ -103,18 +103,6 @@ double RealVectorStateSpace::getMeasure() const
 }
 
 //=============================================================================
-void RealVectorStateSpace::enforceBounds(StateSpace::State* _state) const 
-{
-    throw std::runtime_error("enforceBounds is not implemented. setValue enforces bounds.");
-}
-
-//=============================================================================
-bool RealVectorStateSpace::satisfiesBounds(const StateSpace::State* _state) const 
-{
-    return true;
-}
-
-//=============================================================================
 void RealVectorStateSpace::copyState(StateSpace::State* _destination,
                                      const StateSpace::State* _source) const
 {
