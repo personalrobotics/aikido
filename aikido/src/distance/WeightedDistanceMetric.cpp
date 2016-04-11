@@ -7,7 +7,7 @@ namespace distance
 WeightedDistanceMetric::WeightedDistanceMetric(
     std::shared_ptr<statespace::CompoundStateSpace> _space,
     std::vector<DistanceMetricPtr> _metrics)
-    : mStateSpace(_space)
+    : mStateSpace(std::move(_space))
     , mMetrics(std::move(_metrics))
     , mWeights(_metrics.size(), 1.0)
 {

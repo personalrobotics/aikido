@@ -6,7 +6,7 @@ namespace distance
 {
 GeodesicDistanceMetric::GeodesicDistanceMetric(
     std::shared_ptr<statespace::SO3StateSpace> _space)
-    : mStateSpace(_space)
+    : mStateSpace(std::move(_space))
 {
 }
 

@@ -7,7 +7,7 @@ namespace distance
 {
 AngularDistanceMetric::AngularDistanceMetric(
     std::shared_ptr<statespace::SO2StateSpace> _space)
-    : mStateSpace(_space)
+    : mStateSpace(std::move(_space))
 {
 }
 

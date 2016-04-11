@@ -6,7 +6,7 @@ namespace distance
 {
 EuclideanDistanceMetric::EuclideanDistanceMetric(
     std::shared_ptr<statespace::RealVectorStateSpace> _space)
-    : mStateSpace(_space)
+    : mStateSpace(std::move(_space))
 {
 }
 
