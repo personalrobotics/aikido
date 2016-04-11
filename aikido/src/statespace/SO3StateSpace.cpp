@@ -125,7 +125,8 @@ double SO3StateSpace::distance(const StateSpace::State* _state1,
 bool SO3StateSpace::equalStates(const StateSpace::State* _state1,
                                 const StateSpace::State* _state2) const
 {
-    return distance(_state1, _state2) < std::numeric_limits<double>::epsilon();
+    // TODO: Make this a parameter.
+    return distance(_state1, _state2) < 1e-7;
 }
 
 //=============================================================================
