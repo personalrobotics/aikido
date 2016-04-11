@@ -12,6 +12,7 @@ namespace aikido
 {
 namespace util
 {
+/// An access-based generator for Van Der Corput sequences
 class VanDerCorput
 {
 public:
@@ -20,9 +21,14 @@ public:
   VanDerCorput(double span = 1, bool includeStartpoint = false,
                bool includeEndpoint = false, double minResolution = 0.0);
 
+  /// Get VanDerCorput::const_iterator at first element
   const_iterator begin() const;
+
+  /// Get VanDerCorput::const_iterator at element
+  /// that satisfies minResolution
   const_iterator end() const;
 
+  /// Get nth Van Der Corput sequence value
   pair<double, double> operator[](int n) const;
 
 private:
@@ -42,13 +48,18 @@ class VanDerCorput::const_iterator
                                     boost::forward_traversal_tag, const double>
 {
 public:
+  /// dereference implementation for boost::iterator_facade
   double dereference() const;
+  /// increment implementation for boost::iterator_facade
   void increment();
+  /// equal implementation for boost::iterator_facade
   bool equal(const VanDerCorput::const_iterator &other) const;
 
 private:
   friend VanDerCorput;
 
+  /// Private constructor
+  /// should always be constructed from VanDerCorput::begin()
   explicit const_iterator(const VanDerCorput *seq);
 
   const VanDerCorput *mSeq;
