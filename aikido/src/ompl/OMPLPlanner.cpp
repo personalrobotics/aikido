@@ -1,7 +1,8 @@
 #include <aikido/ompl/OMPLPlanner.hpp>
 #include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/ompl/AIKIDOStateValidityChecker.hpp>
+#include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/SpaceInformation.h>
-#include <boost/make_shared.hpp>
 
 namespace aikido
 {
@@ -11,8 +12,9 @@ namespace aikido
         void planOMPL(
             const aikido::statespace::StateSpace::State *_start,
             const aikido::statespace::StateSpace::State *_goal,
-            const std::shared_ptr<aikido::statespace::StateSpace> _stateSpace,
-            const std::shared_ptr<aikido::constraint::TestableConstraint> _constraint,
+            const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
+            const std::shared_ptr<aikido::constraint::TestableConstraint> &_constraint,
+            const double &_maxPlanTime,
             std::unique_ptr<util::RNG> _rng
             )
         {
@@ -25,11 +27,33 @@ namespace aikido
             }
 
             // AIKIDO State space
-            auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(_stateSpace, std::move(_rng));
+            auto sspace = std::make_shared<AIKIDOGeometricStateSpace>(_stateSpace, std::move(_rng));
 
-            // Space information
-            auto si = boost::make_shared<ompl::base::SpaceInformation>(sspace);
+            // Space Information
+            auto si = std::make_shared<ompl::base::SpaceInformation>(sspace);
+
+            // Validity checker
+            std::vector<std::shared_ptr<aikido::constraint::TestableConstraint> > constraints;
+            constraints.push_back(_constraint);
+            ompl::base::StateValidityCheckerPtr vchecker = 
+                std::make_shared<AIKIDOStateValidityChecker>(si, constraints);
+            si->setStateValidityChecker(vchecker);
+
+            // Start and states
+            auto pdef = std::make_shared<ompl::base::ProblemDefinition>(si);
+            auto start = sspace->allocState(_start);
+            auto goal = sspace->allocState(_goal);
+            pdef->setStartAndGoalStates(start, goal);
             
+            // Planner
+            auto planner = std::make_shared<PlannerType>(si);
+            planner->setProblemDefinition(pdef);
+            planner->setup();
+            auto solved = planner->solve(_maxPlanTime);
+            
+            if(solved){
+                // TODO: Extract trajectory
+            }
         }
     }
 }

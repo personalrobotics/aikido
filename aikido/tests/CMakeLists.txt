@@ -15,6 +15,10 @@ endfunction()
 add_aikido_test(test_TSR test_TSR.cpp)
 target_link_libraries(test_TSR "${PROJECT_NAME}")
 
+# OMPL Planner test
+add_aikido_test(test_OMPLPlanner test_OMPLPlanner.cpp)
+target_link_libraries(test_OMPLPlanner "${PROJECT_NAME}")
+
 #add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
 #target_link_libraries(test_IKSampleable "${PROJECT_NAME}")
 

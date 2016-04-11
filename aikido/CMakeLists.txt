@@ -55,6 +55,7 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/CompoundStateSpace.cpp
   src/statespace/CompoundStateSpaceSampleableConstraint.cpp
   src/statespace/MetaSkeletonStateSpace.cpp
+  src/constraint/CollisionConstraint.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
   src/constraint/IkSampleableConstraint.cpp

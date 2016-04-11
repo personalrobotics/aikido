@@ -13,8 +13,9 @@ namespace ompl_bindings
     static void planOMPL(
         const aikido::statespace::StateSpace::State *_start,
         const aikido::statespace::StateSpace::State *_goal,
-        const std::shared_ptr<aikido::statespace::StateSpace> _stateSpace,
-        const std::shared_ptr<aikido::constraint::TestableConstraint> _constraint,
+        const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
+        const std::shared_ptr<aikido::constraint::TestableConstraint> &_constraint,
+        const double &_maxPlanTime,
         std::unique_ptr<util::RNG> _rng
         );
 

@@ -119,8 +119,18 @@ namespace aikido {
         }
         
         /// Allocate a state that can store a point in the described space
-        ompl::base::State* AIKIDOGeometricStateSpace::allocState() const {
+        ompl::base::State* AIKIDOGeometricStateSpace::allocState() const 
+        {
             auto ast = mStateSpace->allocateState();
+            return new StateType(ast);
+        }
+
+        /// Allocate a state constaining a copy of the aikido state
+        ompl::base::State* AIKIDOGeometricStateSpace::allocState(
+            const aikido::statespace::StateSpace::State* _state) const 
+        {
+            auto ast = mStateSpace->allocateState();
+            mStateSpace->copyState(ast, _state);
             return new StateType(ast);
         }
         

@@ -72,6 +72,10 @@ namespace aikido {
                 
             /// Allocate a state that can store a point in the described space
             virtual ompl::base::State* allocState() const;
+
+            /// Allocate a state constaining a copy of the aikido state
+            ompl::base::State* allocState(
+                const aikido::statespace::StateSpace::State* _state) const;
             
             /// Free the memory of the allocated state
             virtual void freeState(ompl::base::State* _state) const;
