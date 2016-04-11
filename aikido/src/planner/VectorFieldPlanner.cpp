@@ -14,7 +14,7 @@
 #include <dart/collision/CollisionDetector.h>
 #include <aikido/planner/VectorFieldPlanner.h>
 #include <aikido/constraint/TestableConstraint.hpp>
-#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 namespace aikido {
 namespace planner {
