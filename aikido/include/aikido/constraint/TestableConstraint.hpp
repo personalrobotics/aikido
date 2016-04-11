@@ -13,7 +13,7 @@ class TestableConstraint
 public:
   virtual ~TestableConstraint() = default;
   virtual bool isSatisfied(const aikido::statespace::StateSpace::State* state) const = 0;
-  virtual const std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const = 0;
+  virtual std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const = 0;
 };
 
 }  // constraint

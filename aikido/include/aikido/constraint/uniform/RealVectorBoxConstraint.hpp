@@ -1,13 +1,19 @@
 #ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
 #define AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
 #include "../../statespace/RealVectorStateSpace.hpp"
+#include "../Differentiable.hpp"
+#include "../Projectable.hpp"
 #include "../Sampleable.hpp"
+#include "../TestableConstraint.hpp"
 
 namespace aikido {
 namespace statespace {
 
 class RealVectorBoxConstraint
-  : public constraint::SampleableConstraint
+  : public constraint::Differentiable
+  , public constraint::Projectable
+  , public constraint::SampleableConstraint
+  , public constraint::TestableConstraint
 {
 public:
   RealVectorBoxConstraint(
@@ -18,6 +24,28 @@ public:
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
+
+  // Documentation inherited.
+  size_t getConstraintDimension() const override;
+
+  // Documentation inherited.
+  std::vector<constraint::ConstraintType> getConstraintTypes() const override;
+
+  // Documentation inherited.
+  bool isSatisfied(const StateSpace::State* state) const override;
+
+  // Documentation inherited.
+  bool project(
+    const statespace::StateSpace::State* _s,
+    statespace::StateSpace::State* _out) const override;
+
+  // Documentation inherited.
+  Eigen::VectorXd getValue(
+    const statespace::StateSpace::State* _s) const override;
+
+  // Documentation inherited.
+  Eigen::MatrixXd getJacobian(
+    const statespace::StateSpace::State* _s) const override;
 
   // Documentation inherited.
   std::unique_ptr<constraint::SampleGenerator>
