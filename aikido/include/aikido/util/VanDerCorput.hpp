@@ -18,6 +18,13 @@ class VanDerCorput
 public:
   class const_iterator;
 
+  /// Construct a VanDerCorput sequence with specific properties
+  ///
+  /// \param span the endpoint of the sequence
+  /// \param includeStartpoint return 0.0 in sequence
+  /// \param includeEndpoint return span in sequence
+  /// \param minResolution the maximum distance between any
+  ///        two points in the sequence before completion
   VanDerCorput(double span = 1, bool includeStartpoint = false,
                bool includeEndpoint = false, double minResolution = 0.0);
 
