@@ -10,7 +10,7 @@ PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs)
 : mCoeffs(_coeffs)
 , mStateSpace(statespace::RealVectorStateSpace(1))
 {
-  if(abs(mCoeffs(mCoeffs.rows()-1)) < std::numeric_limits<double>::epsilon())
+  if(std::abs(mCoeffs(mCoeffs.rows()-1)) < std::numeric_limits<double>::epsilon())
   {
     throw std::invalid_argument("_coeffs last element is zero.");
   }

@@ -1,6 +1,5 @@
 #include <aikido/statespace/SO2StateSpace.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <aikido/statespace/SO2StateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
 namespace statespace {

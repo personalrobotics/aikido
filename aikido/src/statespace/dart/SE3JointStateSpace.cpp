@@ -1,5 +1,4 @@
-#include <aikido/statespace/SE3JointStateSpace.hpp>
-#include <aikido/statespace/SE3StateSpaceSampleableConstraint.hpp>
+#include <aikido/statespace/dart/SE3JointStateSpace.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -27,6 +26,7 @@ void SE3JointStateSpace::setState(const StateSpace::State* _state) const
       getIsometry(static_cast<const SE3StateSpace::State*>(_state))));
 }
 
+#if 0
 //=============================================================================
 auto SE3JointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
@@ -51,6 +51,7 @@ auto SE3JointStateSpace::createSampleableConstraint(
     std::const_pointer_cast<SE3JointStateSpace>(shared_from_this()),
     std::move(_rng), lowerLimits, upperLimits);
 }
+#endif
 
 } // namespace statespace
 } // namespace aikido

@@ -1,6 +1,6 @@
 #include <cassert>
 #include <sstream>
-#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <dart/common/StlHelpers.h>
 #include <dart/common/Console.h>
 
@@ -127,19 +127,6 @@ void MetaSkeletonStateSpace::setStateOnMetaSkeleton(const State* _state)
     auto jointSpace = getSubSpace<JointStateSpace>(ijoint);
     jointSpace->setState(getSubState(_state, ijoint));
   }
-}
-
-//=============================================================================
-auto MetaSkeletonStateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  throw std::runtime_error("not implemented");
-#if 0
-  return std::make_shared<CompoundStateSpaceSampleableConstraint>(
-    // TODO: SampleableConstraint should operate on `const StateSpace`.
-    std::const_pointer_cast<CompoundStateSpace>(shared_from_this()),
-    std::move(_rng));
-#endif
 }
 
 //=============================================================================

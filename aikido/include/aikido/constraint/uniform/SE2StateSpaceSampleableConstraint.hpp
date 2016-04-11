@@ -1,8 +1,8 @@
 #ifndef AIKIDO_STATESPACE_SE2STATESPACESAMPLEABLECONSTRAINT_H_
 #define AIKIDO_STATESPACE_SE2STATESPACESAMPLEABLECONSTRAINT_H_
 #include <array>
-#include "SE2StateSpace.hpp"
-#include "../constraint/Sampleable.hpp"
+#include "../../statespace/SE2StateSpace.hpp"
+#include "../Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {

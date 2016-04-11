@@ -1,5 +1,4 @@
 #include <aikido/statespace/SE2StateSpace.hpp>
-#include <aikido/statespace/SE2StateSpaceSampleableConstraint.hpp>
 #include <Eigen/Geometry>
 
 namespace aikido {

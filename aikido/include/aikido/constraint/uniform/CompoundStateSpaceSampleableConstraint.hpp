@@ -1,8 +1,8 @@
 #ifndef AIKIDO_STATESPACE_COMPOUNDSTATESPACESAMPLEABLECONSTRAINT_H_
 #define AIKIDO_STATESPACE_COMPOUNDSTATESPACESAMPLEABLECONSTRAINT_H_
 #include <vector>
-#include "CompoundStateSpace.hpp"
-#include "../constraint/Sampleable.hpp"
+#include "../../statespace/CompoundStateSpace.hpp"
+#include "../Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {

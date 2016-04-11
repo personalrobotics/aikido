@@ -41,25 +41,25 @@ add_library(${PROJECT_NAME} SHARED
   src/path/CartesianTwistTrajectory.cpp
   src/statespace/StateSpace.cpp
   src/statespace/RealVectorStateSpace.cpp
-  src/statespace/RealVectorJointStateSpace.cpp
-  src/statespace/RealVectorStateSpaceSampleableConstraint.cpp
-  src/statespace/SO2StateSpace.cpp
-  src/statespace/SO2StateSpace.cpp
-  src/statespace/SO2JointStateSpace.cpp
-  src/statespace/SO2StateSpaceSampleableConstraint.cpp
-  src/statespace/SO3StateSpace.cpp
-  src/statespace/SO3JointStateSpace.cpp
-  src/statespace/SO3StateSpaceSampleableConstraint.cpp
-  src/statespace/SE2StateSpace.cpp
-  src/statespace/SE2JointStateSpace.cpp
-  src/statespace/SE2StateSpaceSampleableConstraint.cpp
-  src/statespace/SE3StateSpace.cpp
-  src/statespace/SE3JointStateSpace.cpp
-  src/statespace/SE3StateSpaceSampleableConstraint.cpp
-  src/statespace/JointStateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
-  src/statespace/CompoundStateSpaceSampleableConstraint.cpp
-  src/statespace/MetaSkeletonStateSpace.cpp
+  src/statespace/SE2StateSpace.cpp
+  src/statespace/SE3StateSpace.cpp
+  src/statespace/SO2StateSpace.cpp
+  src/statespace/SO2StateSpace.cpp
+  src/statespace/SO3StateSpace.cpp
+  src/statespace/dart/JointStateSpace.cpp
+  src/statespace/dart/MetaSkeletonStateSpace.cpp
+  src/statespace/dart/SE2JointStateSpace.cpp
+  src/statespace/dart/SE3JointStateSpace.cpp
+  src/statespace/dart/SO2JointStateSpace.cpp
+  src/statespace/dart/SO3JointStateSpace.cpp
+  src/statespace/dart/RealVectorJointStateSpace.cpp
+  src/constraint/uniform/CompoundStateSpaceSampleableConstraint.cpp
+  src/constraint/uniform/RealVectorStateSpaceSampleableConstraint.cpp
+  src/constraint/uniform/SE2StateSpaceSampleableConstraint.cpp
+  src/constraint/uniform/SE3StateSpaceSampleableConstraint.cpp
+  src/constraint/uniform/SO2StateSpaceSampleableConstraint.cpp
+  src/constraint/uniform/SO3StateSpaceSampleableConstraint.cpp
   src/constraint/CollisionConstraint.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp

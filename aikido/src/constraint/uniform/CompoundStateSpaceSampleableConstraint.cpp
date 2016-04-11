@@ -1,5 +1,5 @@
 #include <cmath>
-#include <aikido/statespace/CompoundStateSpaceSampleableConstraint.hpp>
+#include <aikido/constraint/uniform/CompoundStateSpaceSampleableConstraint.hpp>
 #include <dart/common/StlHelpers.h>
 
 using dart::common::make_unique;

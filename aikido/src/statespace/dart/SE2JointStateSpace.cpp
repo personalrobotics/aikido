@@ -1,5 +1,4 @@
-#include <aikido/statespace/SE2JointStateSpace.hpp>
-#include <aikido/statespace/SE2StateSpaceSampleableConstraint.hpp>
+#include <aikido/statespace/dart/SE2JointStateSpace.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -35,6 +34,7 @@ void SE2JointStateSpace::setState(const StateSpace::State* _state) const
   mJoint->setPosition(2, rotation.angle());
 }
 
+#if 0
 //=============================================================================
 auto SE2JointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
@@ -59,6 +59,7 @@ auto SE2JointStateSpace::createSampleableConstraint(
     std::const_pointer_cast<SE2JointStateSpace>(shared_from_this()),
     std::move(_rng), lowerLimits, upperLimits);
 }
+#endif
 
 } // namespace statespace
 } // namespace aikido

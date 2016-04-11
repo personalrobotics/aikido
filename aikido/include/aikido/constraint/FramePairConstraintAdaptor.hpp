@@ -4,7 +4,7 @@
 #include <dart/dynamics/dynamics.h>
 #include "Differentiable.hpp"
 #include <Eigen/Dense>
-#include "../statespace/MetaSkeletonStateSpace.hpp"
+#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "TSR.hpp"
 
 namespace aikido {

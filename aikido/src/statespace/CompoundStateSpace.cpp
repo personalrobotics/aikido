@@ -1,5 +1,4 @@
 #include <aikido/statespace/CompoundStateSpace.hpp>
-#include <aikido/statespace/CompoundStateSpaceSampleableConstraint.hpp>
 #include <iostream>
 
 namespace aikido {

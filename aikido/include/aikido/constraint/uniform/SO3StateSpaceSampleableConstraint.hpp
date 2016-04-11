@@ -1,11 +1,10 @@
 #ifndef AIKIDO_STATESPACE_SO3STATESPACESAMPLEABLECONSTRAINT_H_
 #define AIKIDO_STATESPACE_SO3STATESPACESAMPLEABLECONSTRAINT_H_
-#include "SO3StateSpace.hpp"
-#include "../constraint/Sampleable.hpp"
+#include "../../statespace/SO3StateSpace.hpp"
+#include "../Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {
-
 
 class SO3StateSpaceSampleGenerator
   : public constraint::SampleGenerator
@@ -55,7 +54,6 @@ private:
   std::shared_ptr<statespace::SO3StateSpace> mSpace;
   std::unique_ptr<util::RNG> mRng;
 };
-
 
 } // namespace statespace
 } // namespace aikido

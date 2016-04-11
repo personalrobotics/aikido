@@ -1,5 +1,4 @@
-#include <aikido/statespace/SO3JointStateSpace.hpp>
-#include <aikido/statespace/SO3StateSpaceSampleableConstraint.hpp>
+#include <aikido/statespace/dart/SO3JointStateSpace.hpp>
 
 // TODO: This will not be necessary once we switch to using
 // BallJoint::convertToRotation instead of calling dart::math::logMap directly.
@@ -35,6 +34,7 @@ void SO3JointStateSpace::setState(const StateSpace::State* _state) const
       getQuaternion(static_cast<const State*>(_state)).toRotationMatrix()));
 }
 
+#if 0
 //=============================================================================
 auto SO3JointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
@@ -51,6 +51,7 @@ auto SO3JointStateSpace::createSampleableConstraint(
     std::const_pointer_cast<SO3JointStateSpace>(shared_from_this()),
     std::move(_rng));
 }
+#endif
 
 
 } // namespace statespace

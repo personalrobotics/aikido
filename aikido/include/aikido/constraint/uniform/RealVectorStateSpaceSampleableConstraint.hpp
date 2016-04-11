@@ -1,11 +1,10 @@
 #ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
 #define AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
-#include "RealVectorStateSpace.hpp"
-#include "../constraint/Sampleable.hpp"
+#include "../../statespace/RealVectorStateSpace.hpp"
+#include "../Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {
-
 
 class RealVectorStateSpaceSampleGenerator
   : public constraint::SampleGenerator

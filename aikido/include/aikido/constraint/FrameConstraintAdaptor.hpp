@@ -1,9 +1,9 @@
 #ifndef AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_H
-#define AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_h
+#define AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_H
 
 #include <dart/dynamics/dynamics.h>
 #include "Differentiable.hpp"
-#include "../statespace/MetaSkeletonStateSpace.hpp"
+#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "TSR.hpp"
 
 #include <Eigen/Dense>

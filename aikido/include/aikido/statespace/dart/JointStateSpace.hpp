@@ -1,8 +1,8 @@
 #ifndef AIKIDO_STATESPACE_JOINTSTATESPACE_H_
 #define AIKIDO_STATESPACE_JOINTSTATESPACE_H_
 #include <dart/dynamics/dynamics.h>
-#include "StateSpace.hpp"
-#include "../constraint/Sampleable.hpp"
+#include "../StateSpace.hpp"
+#include "../../constraint/Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -25,10 +25,6 @@ public:
 
   /// Sets the Joints's positions to the values stored in _state.
   virtual void setState(const StateSpace::State* _state) const = 0;
-
-  /// Sample uniformly at random from this state space.
-  virtual SampleableConstraintPtr createSampleableConstraint(
-    std::unique_ptr<util::RNG> _rng) const = 0;
 
 protected:
   dart::dynamics::Joint* mJoint;

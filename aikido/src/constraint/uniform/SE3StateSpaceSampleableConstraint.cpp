@@ -1,5 +1,5 @@
 #include <cmath>
-#include <aikido/statespace/SE3StateSpaceSampleableConstraint.hpp>
+#include <aikido/constraint/uniform/SE3StateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
 namespace statespace {

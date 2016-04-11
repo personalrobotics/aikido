@@ -2,7 +2,7 @@
 #define AIKIDO_CONSTRAINT_IKSAMPLEABLECONSTRAINT_H
 
 #include "Sampleable.hpp"
-#include "../statespace/MetaSkeletonStateSpace.hpp"
+#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include <dart/dynamics/dynamics.h>
 
 namespace aikido {

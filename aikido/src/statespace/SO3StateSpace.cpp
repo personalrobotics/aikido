@@ -1,5 +1,4 @@
 #include <aikido/statespace/SO3StateSpace.hpp>
-#include <aikido/statespace/SO3StateSpaceSampleableConstraint.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <dart/math/Geometry.h>
 #include <iostream>

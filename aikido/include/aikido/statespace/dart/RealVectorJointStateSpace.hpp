@@ -1,6 +1,6 @@
 #ifndef AIKIDO_STATESPACE_REALVECTORJOINTSTATESPACE_H_
 #define AIKIDO_STATESPACE_REALVECTORJOINTSTATESPACE_H_
-#include "RealVectorStateSpace.hpp"
+#include "../RealVectorStateSpace.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
@@ -23,10 +23,6 @@ public:
 
   // Documentation inherited.
   void setState(const StateSpace::State* _state) const override;
-
-  // Documentation inherited.
-  SampleableConstraintPtr createSampleableConstraint(
-    std::unique_ptr<util::RNG> _rng) const override;
 };
 
 } // namespace statespace

@@ -4,7 +4,7 @@
 #include "TestableConstraint.hpp"
 #include <vector>
 #include <tuple>
-#include "../statespace/MetaSkeletonStateSpace.hpp"
+#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include <dart/collision/CollisionDetector.h>
 #include <dart/collision/Option.h>
 #include <dart/collision/CollisionGroup.h>

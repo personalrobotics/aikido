@@ -1,5 +1,4 @@
 #include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpaceSampleableConstraint.hpp>
 
 namespace aikido {
 namespace statespace {

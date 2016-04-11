@@ -1,5 +1,4 @@
-#include <aikido/statespace/RealVectorJointStateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpaceSampleableConstraint.hpp>
+#include <aikido/statespace/dart/RealVectorJointStateSpace.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -24,6 +23,7 @@ void RealVectorJointStateSpace::setState(const StateSpace::State* _state) const
   mJoint->setPositions(getValue(static_cast<const State*>(_state)));
 }
 
+#if 0
 //=============================================================================
 auto RealVectorJointStateSpace::createSampleableConstraint(
   std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
@@ -42,6 +42,7 @@ auto RealVectorJointStateSpace::createSampleableConstraint(
     std::const_pointer_cast<RealVectorJointStateSpace>(shared_from_this()),
     std::move(_rng), lowerLimits, upperLimits);
 }
+#endif
 
 } // namespace statespace
 } // namespace aikido

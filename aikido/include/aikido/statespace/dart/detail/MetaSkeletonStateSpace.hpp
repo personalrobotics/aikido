@@ -1,9 +1,9 @@
 #include <dart/common/StlHelpers.h>
-#include <aikido/statespace/RealVectorJointStateSpace.hpp>
-#include <aikido/statespace/SO2JointStateSpace.hpp>
-#include <aikido/statespace/SO3JointStateSpace.hpp>
-#include <aikido/statespace/SE2JointStateSpace.hpp>
-#include <aikido/statespace/SE3JointStateSpace.hpp>
+#include "../RealVectorJointStateSpace.hpp"
+#include "../SO2JointStateSpace.hpp"
+#include "../SO3JointStateSpace.hpp"
+#include "../SE2JointStateSpace.hpp"
+#include "../SE3JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {

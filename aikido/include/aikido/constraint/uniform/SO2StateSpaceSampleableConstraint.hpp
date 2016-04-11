@@ -1,11 +1,10 @@
 #ifndef AIKIDO_STATESPACE_SO2STATESPACESAMPLEABLECONSTRAINT_H_
 #define AIKIDO_STATESPACE_SO2STATESPACESAMPLEABLECONSTRAINT_H_
-#include "SO2StateSpace.hpp"
-#include "../constraint/Sampleable.hpp"
+#include "../../statespace/SO2StateSpace.hpp"
+#include "../Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {
-
 
 class SO2StateSpaceSampleGenerator
   : public constraint::SampleGenerator
