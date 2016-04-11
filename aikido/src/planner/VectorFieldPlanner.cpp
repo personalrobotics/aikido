@@ -19,41 +19,14 @@
 namespace aikido {
 namespace planner {
 
-static void CheckDofLimits(
-  dart::dynamics::MetaSkeletonPtr const &skeleton,
-  Eigen::VectorXd const &q, Eigen::VectorXd const &qd)
-{
-  using boost::format;
-  using boost::str;
-  using dart::dynamics::DegreeOfFreedom;
+using Trajectory = std::vector<aikido::statespace::StateSpace::ScopedState>;
 
-  for (size_t i = 0; i < skeleton->getNumDofs(); ++i) {
-    DegreeOfFreedom *const dof = skeleton->getDof(i);
-
-    if (q[i] < dof->getPositionLowerLimit()) {
-      throw DofLimitError(dof, str(
-        format("DOF '%s' exceeds lower position limit: %f < %f")
-        % dof->getName() % q[i] % dof->getPositionLowerLimit()));
-    } else if (q[i] > dof->getPositionUpperLimit()) {
-      throw DofLimitError(dof, str(
-        format("DOF '%s' exceeds upper position limit: %f > %f")
-        % dof->getName() % q[i] % dof->getPositionUpperLimit()));
-    } else if (qd[i] < dof->getVelocityLowerLimit()) {
-      throw DofLimitError(dof, str(
-        format("DOF '%s' exceeds lower velocity limit: %f < %f")
-        % dof->getName() % qd[i] % dof->getVelocityLowerLimit()));
-    } else if (qd[i] > dof->getVelocityUpperLimit()) {
-      throw DofLimitError(dof, str(
-        format("DOF '%s' exceeds upper velocity limit: %f > %f")
-        % dof->getName() % qd[i] % dof->getVelocityUpperLimit()));
-    }
-  }
-}
-
-aikido::path::TrajectoryPtr Plan(
+// FIXME: Probably dont need skeleton, stateSpace, and constraint
+static std::unique_ptr<Trajectory> Plan(
   dart::dynamics::MetaSkeletonPtr const &skeleton, 
   double dt,
   VectorFieldCallback const &vector_field_cb, 
+  const std::shared_ptr<aikido::statespace::MetaSkeletonStateSpace> stateSpace,
   const std::shared_ptr<aikido::constraint::TestableConstraint> constraint,
   StatusCallback const &status_cb)
 {
@@ -64,32 +37,46 @@ aikido::path::TrajectoryPtr Plan(
   using aikido::path::CubicSplineTrajectory;
   using CubicSplineProblem = CubicSplineTrajectory::SplineProblem;
 
+/*
   struct Knot {
     double t;
-    Eigen::Matrix<double, 2, Eigen::Dynamic> values;
+    aikido::statespace::StateSpace::State qvalues;
+    Eigen::VectorXd dqvalues;
   };
+*/
 
-  size_t const num_dof = skeleton->getNumDofs();
-
-  std::vector<Knot> knots;
+  std::unique_ptr<Trajectory> qvalues(new Trajectory());
+  std::vector<Eigen::VectorXd> dqvalues;
+  std::vector<double> tvalues;
   Status::Enum termination_status = Status::CONTINUE;
   std::exception_ptr termination_error;
 
   ptrdiff_t cache_index = -1;
   ptrdiff_t index = 0;
   double t = 0;
-  Eigen::VectorXd q = skeleton->getPositions();
-  Eigen::VectorXd qd(num_dof);
-  assert(q.size() == num_dof);
   
-  aikido::statespace::MetaSkeletonStateSpace stateSpace(skeleton);
-  auto currentState=stateSpace.createState();
-  // FIXME: Check if the constraint state space is compatible with the skeleton 
+  if (stateSpace != constraint->getStateSpace()) {
+    throw std::invalid_argument(
+        "StateSpace of constraint not equal to StateSpace of planning space");
+  }
+  
+  
+  size_t const num_dof = skeleton->getNumDofs();
+  auto currentState=stateSpace->createState();
+  auto q=stateSpace->createState();
+  Eigen::VectorXd dq(num_dof);
+  auto qstep=stateSpace->createState();
+  
+  stateSpace->getStateFromMetaSkeleton(q);
+  
+  // FIXME: Not sure why this doesnt work: 
+  // assert(q.getDimension() == num_dof);
+
 
   do {
     // Evaluate the vector field.
     try {
-      if (!vector_field_cb(skeleton, t, &qd)) {
+      if (!vector_field_cb(skeleton, t, &dq)) {
         throw VectorFieldTerminated("Failed evaluating VectorField.");
       }
     } catch (VectorFieldTerminated const &e) {
@@ -98,7 +85,7 @@ aikido::path::TrajectoryPtr Plan(
       break;
     }
 
-    if (qd.size() != num_dof) {
+    if (dq.size() != num_dof) {
       throw std::length_error(
         "Vector field returned an incorrect number of DOF velocities.");
     }
@@ -109,15 +96,10 @@ aikido::path::TrajectoryPtr Plan(
     // Compute the number of collision checks we need.
     for (int istep = 0; istep < num_steps; ++istep) {
       try {
-        CheckDofLimits(skeleton, q, qd);
-        skeleton->setPositions(q);
-       
-        stateSpace.getStateFromMetaSkeleton(currentState); 
+        stateSpace->copyState(currentState,q);
         if(!constraint->isSatisfied(currentState)) {          
-         //FIXME: Put error here
-         }
-        
-        
+          throw VectorFieldTerminated("Collision Check Failed.");
+        }
       } catch (VectorFieldTerminated const &e) {
         termination_status = Status::TERMINATE;
         termination_error = std::current_exception();
@@ -125,18 +107,26 @@ aikido::path::TrajectoryPtr Plan(
       }
       
       // Insert the waypoint.
-      assert(q.size() == num_dof);
-      assert(qd.size() == num_dof);
+      //FIXME: Not sure why this doesnt work
+      //assert(q.getDimension() == num_dof);
+      assert(dq.size() == num_dof);
 
+      /*
       Knot knot;
       knot.t = t;
-      knot.values.resize(2, num_dof);
-      knot.values.row(0) = q;
-      knot.values.row(1) = qd;
+      knot.dqvalues.resize(num_dof);
+      knot.qvalues = q;
+      knot.dqvalues = dq;
       knots.push_back(knot);
+      */
+      
+      qvalues->emplace_back(std::move(q));
+      dqvalues.push_back(dq);
+      tvalues.push_back(t);
 
       // Take a step.
-      q += dt * qd;
+      stateSpace->expMap(dt*dq,qstep);
+      stateSpace->compose(q,qstep,q);
       t += dt;
       index++;
       
@@ -161,6 +151,7 @@ aikido::path::TrajectoryPtr Plan(
       }
     }
 
+/*
     // Construct the output spline.
     Eigen::VectorXd times(cache_index);
     std::transform(knots.begin(), knots.begin() + cache_index, times.data(),
@@ -168,7 +159,7 @@ aikido::path::TrajectoryPtr Plan(
 
     CubicSplineProblem problem(times, 4, num_dof);
     for (size_t iknot = 0; iknot < cache_index; ++iknot) {
-      problem.addConstantConstraint(iknot, 0, knots[iknot].values.row(0));
+      problem.addConstantConstraint(iknot, 0, knots[iknot].qvalues);
 
       if (iknot != 0 && iknot != cache_index - 1) {
         problem.addContinuityConstraint(iknot, 1);
@@ -176,11 +167,14 @@ aikido::path::TrajectoryPtr Plan(
       }
     }
 
-    problem.addConstantConstraint(0, 1, knots.front().values.row(1));
+    problem.addConstantConstraint(0, 1, knots.front().dqvalues);
     problem.addConstantConstraint(cache_index - 1, 1,
-      knots[cache_index - 1].values.row(1));
+      knots[cache_index - 1].dqvalues);
 
     return boost::make_shared<aikido::path::CubicSplineTrajectory>(problem.fit());
+    */
+    
+    return qvalues;
   }
   // Re-throw whatever error caused planner to fail.
   else if (termination_error) {
