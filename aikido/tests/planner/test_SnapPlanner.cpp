@@ -16,6 +16,7 @@ public:
   using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
   using ScopedState = StateSpace::ScopedState;
   using CollisionConstraint = aikido::constraint::CollisionConstraint;
+  using DistanceMetric = aikido::distance::DistanceMetric;
 
   using BodyNodePtr = dart::dynamics::BodyNodePtr;
   using JointPtr = dart::dynamics::JointPtr;
@@ -42,6 +43,7 @@ public:
   shared_ptr<ScopedState> goalState;
   shared_ptr<FCLCollisionDetector> cd;
   shared_ptr<CollisionConstraint> collConstraint;
+  shared_ptr<DistanceMetric> distMetric;
   aikido::planner::PlanningResult planningResult;
 };
 
@@ -50,7 +52,7 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
   SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
   auto differentStateSpace = make_shared<StateSpace>(empty_skel);
   EXPECT_THROW(
-    planSnap(*startState, *goalState, differentStateSpace, collConstraint, &planningResult),
+    planSnap(*startState, *goalState, differentStateSpace, collConstraint, distMetric, &planningResult),
     std::invalid_argument
   );
 }

@@ -7,6 +7,7 @@
 #include <vector>
 #include "PlanningResult.hpp"
 #include "../constraint/TestableConstraint.hpp"
+#include "../distance/DistanceMetric.hpp"
 #include "../statespace/StateSpace.hpp"
 #include "../util/VanDerCorput.hpp"
 
@@ -22,6 +23,7 @@ static std::unique_ptr<Trajectory> planSnap(
     const aikido::statespace::StateSpace::State *goalState,
     const std::shared_ptr<aikido::statespace::StateSpace> stateSpace,
     const std::shared_ptr<aikido::constraint::TestableConstraint> constraint,
+    const std::shared_ptr<aikido::distance::DistanceMetric> dmetric,
     aikido::planner::PlanningResult* planningResult)
 {
   if (stateSpace != constraint->getStateSpace()) {
@@ -32,7 +34,7 @@ static std::unique_ptr<Trajectory> planSnap(
   auto testState = stateSpace->createState();
   
   for (double alpha : vdc) {
-    stateSpace->interpolate(startState, goalState, alpha, testState);
+    dmetric->interpolate(startState, goalState, alpha, testState);
     if (!constraint->isSatisfied(testState)) {
       planningResult->message = "Collision detected";
       return nullptr;  // TODO return optional?
