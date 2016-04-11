@@ -1,11 +1,11 @@
-#ifndef AIKIDO_PLANNING_VECTORFIELDPLANNEREXCEPTIONS_H_
-#define AIKIDO_PLANNING_VECTORFIELDPLANNEREXCEPTIONS_H_
+#ifndef AIKIDO_PLANNER_VECTORFIELDPLANNEREXCEPTIONS_H_
+#define AIKIDO_PLANNER_VECTORFIELDPLANNEREXCEPTIONS_H_
 #include <string>
 #include <stdexcept>
 #include <dart/dynamics/SmartPointer.h>
 
 namespace aikido {
-namespace planning {
+namespace planner {
 
 class VectorFieldTerminated : public std::runtime_error {
 public:
@@ -23,7 +23,7 @@ private:
   dart::dynamics::DegreeOfFreedom *dof_;
 };
 
-} // namespace planning
+} // namespace planner
 } // namespace aikido
 
-#endif // ifndef AIKIDO_PLANNING_VECTORFIELDPLANNEREXCEPTIONS_H_
+#endif // ifndef AIKIDO_PLANNER_VECTORFIELDPLANNEREXCEPTIONS_H_

@@ -12,12 +12,12 @@
 #include <dart/dynamics/DegreeOfFreedom.h>
 #include <dart/dynamics/MetaSkeleton.h>
 #include <dart/collision/CollisionDetector.h>
-#include <aikido/planning/VectorFieldPlanner.h>
+#include <aikido/planner/VectorFieldPlanner.h>
 #include <aikido/constraint/TestableConstraint.hpp>
 #include <aikido/statespace/MetaSkeletonStateSpace.hpp>
 
 namespace aikido {
-namespace planning {
+namespace planner {
 
 static void CheckDofLimits(
   dart::dynamics::MetaSkeletonPtr const &skeleton,
@@ -182,7 +182,7 @@ aikido::path::TrajectoryPtr Plan(
 
     return boost::make_shared<aikido::path::CubicSplineTrajectory>(problem.fit());
   }
-  // Re-throw whatever error caused planning to fail.
+  // Re-throw whatever error caused planner to fail.
   else if (termination_error) {
     std::rethrow_exception(termination_error);
   } else {
@@ -191,5 +191,5 @@ aikido::path::TrajectoryPtr Plan(
   }
 }
 
-} // namespace planning
+} // namespace planner
 } // namespace aikido

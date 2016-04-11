@@ -1,13 +1,13 @@
-#ifndef AIKIDO_PLANNING_VECTORFIELDPLANNER_H_
-#define AIKIDO_PLANNING_VECTORFIELDPLANNER_H_
+#ifndef AIKIDO_PLANNER_VECTORFIELDPLANNER_H_
+#define AIKIDO_PLANNER_VECTORFIELDPLANNER_H_
 #include <Eigen/Core>
 #include <boost/function.hpp>
 #include <dart/dynamics/SmartPointer.h>
 #include <aikido/path/Spline.hpp>
-#include <aikido/planning/VectorFieldPlannerExceptions.h>
+#include <aikido/planner/VectorFieldPlannerExceptions.h>
 
 namespace aikido {
-namespace planning {
+namespace planner {
 
 struct Status {
   enum Enum {
@@ -30,7 +30,7 @@ aikido::path::TrajectoryPtr Plan(
   VectorFieldCallback const &vector_field_cb,
   StatusCallback const &status_cb);
 
-} // namespace planning
+} // namespace planner
 } // namespace aikido
 
-#endif // ifndef AIKIDO_PLANNING_VECTORFIELDPLANNER_H_
+#endif // ifndef AIKIDO_PLANNER_VECTORFIELDPLANNER_H_
