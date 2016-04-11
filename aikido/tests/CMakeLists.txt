@@ -15,9 +15,9 @@ endfunction()
 add_aikido_test(test_TSR constraint/test_TSR.cpp)
 target_link_libraries(test_TSR "${PROJECT_NAME}")
 
-# OMPL Planner test
-add_aikido_test(test_OMPLPlanner test_OMPLPlanner.cpp)
-target_link_libraries(test_OMPLPlanner "${PROJECT_NAME}")
+## OMPL Planner test
+#add_aikido_test(test_OMPLPlanner test_OMPLPlanner.cpp)
+#target_link_libraries(test_OMPLPlanner "${PROJECT_NAME}")
 
 add_aikido_test(test_PolynomialConstraint
  constraint/test_PolynomialConstraint.cpp)
