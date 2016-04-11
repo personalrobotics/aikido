@@ -1,10 +1,5 @@
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/RealVectorStateSpaceSampleableConstraint.hpp>
-#include <dart/common/Console.h>
-
-#include <vector>
-#include <random>
-#include <aikido/constraint/Sampleable.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -50,16 +45,16 @@ int RealVectorStateSpace::getDimension() const
 void RealVectorStateSpace::setValue(
   State* _state, const Eigen::VectorXd& _value) const
 {
-  auto value = getMutableValue(_state);
-
-  // TODO: Skip these checks in release mode.
+  // TODO: Skip this check in release mode.
   if (_value.size() != mDimension)
   {
     std::stringstream msg;
     msg << "Value has incorrect size: expected " << mDimension  << ", got "
-        << _value.rows() << ".\n";
-    throw std::runtime_error(msg.str());
+        << _value.size() << ".";
+    throw std::invalid_argument(msg.str());
   }
+
+  getMutableValue(_state) = _value;
 }
 
 //=============================================================================
@@ -92,15 +87,23 @@ void RealVectorStateSpace::compose(
   auto state2 = static_cast<const State*>(_state2);
   auto out = static_cast<State*>(_out);
 
-  getMutableValue(out) = getValue(state1) + getValue(state2);
+  setValue(out, getValue(state1) + getValue(state2));
 }
 
 //=============================================================================
 void RealVectorStateSpace::expMap(
   const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
-  auto out = static_cast<State*>(_out);
+  // TODO: Skip this check in release mode.
+  if (_tangent.size() != mDimension)
+  {
+    std::stringstream msg;
+    msg << "Tangent vector has incorrect size: expected " << mDimension
+        << ", got " << _tangent.size() << ".";
+    throw std::invalid_argument(msg.str());
+  }
 
+  auto out = static_cast<State*>(_out);
   setValue(out, _tangent);
 }
 
