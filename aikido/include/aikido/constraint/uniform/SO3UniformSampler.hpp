@@ -6,40 +6,11 @@
 namespace aikido {
 namespace statespace {
 
-class SO3StateSpaceSampleGenerator
-  : public constraint::SampleGenerator
-{
-public:
-  // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
-
-  // Documentation inherited.
-  bool sample(statespace::StateSpace::State* _state) override;
-
-  // Documentation inherited.
-  int getNumSamples() const override;
-
-  // Documentation inherited.
-  bool canSample() const override;
-
-private:
-  SO3StateSpaceSampleGenerator(
-    std::shared_ptr<statespace::SO3StateSpace> _space,
-    std::unique_ptr<util::RNG> _rng);
-
-  std::shared_ptr<statespace::SO3StateSpace> mSpace;
-  std::unique_ptr<util::RNG> mRng;
-  std::uniform_real_distribution<double> mDistribution; 
-
-  friend class SO3StateSpaceSampleableConstraint;
-};
-
-
-class SO3StateSpaceSampleableConstraint
+class SO3UniformSampler
   : public constraint::SampleableConstraint
 {
 public:
-  SO3StateSpaceSampleableConstraint(
+  SO3UniformSampler(
     std::shared_ptr<statespace::SO3StateSpace> _space,
     std::unique_ptr<util::RNG> _rng);
 
