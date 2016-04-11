@@ -1,22 +1,21 @@
 #include <aikido/util/VanDerCorput.hpp>
 #include <cmath>
-#include <iostream>
 
 using namespace aikido::util;
 using std::pair;
 
 VanDerCorput::VanDerCorput(const double span, const bool include_endpoints,
                            const double min_resolution)
-    : span(span)
-    , include_endpoints(include_endpoints)
-    , min_resolution(min_resolution)
+    : mSpan(span)
+    , mIncludeEndpoints(include_endpoints)
+    , mMinResolution(min_resolution)
 {
-  if (min_resolution == 0.0) {
-    min_resolution == std::numeric_limits<double>::epsilon();
+  if (mMinResolution == 0.0) {
+    mMinResolution = std::numeric_limits<double>::epsilon();
   }
 }
 
-pair<double, double> VanDerCorput::operator[](int n)
+pair<double, double> VanDerCorput::operator[](int n) const
 {
   pair<double, double> val_res;
 
@@ -24,25 +23,26 @@ pair<double, double> VanDerCorput::operator[](int n)
     throw std::out_of_range("Indexed maximum integer.");
   }
 
-  if (include_endpoints) {
+  if (mIncludeEndpoints) {
     if (n == 0) {
       val_res.first = 0.0;
-      val_res.second = span;
+      val_res.second = mSpan;
     } else if (n == 1) {
       val_res.first = 1.0;
-      val_res.second = span;
+      val_res.second = mSpan;
     } else {
-      val_res = compute_vandercorput(n - 1);
+      val_res = computeVanDerCorput(n - 1);
     }
   } else {
-    val_res = compute_vandercorput(n + 1);
+    val_res = computeVanDerCorput(n + 1);
   }
 
-  val_res.first *= span;
+  val_res.first *= mSpan;
   return val_res;
 }
 
-pair<double, double> VanDerCorput::compute_vandercorput(int n) const
+
+pair<double, double> VanDerCorput::computeVanDerCorput(int n) const
 {
   // range: [1,int_max]
   double denom = 1;
@@ -72,28 +72,42 @@ pair<double, double> VanDerCorput::compute_vandercorput(int n) const
   return std::make_pair(ret, resolution);
 }
 
-VanDerCorput::const_iterator VanDerCorput::begin()
+VanDerCorput::const_iterator VanDerCorput::begin() const
 {
   VanDerCorput::const_iterator itr{this};
   return itr;
 }
 
-VanDerCorput::const_iterator VanDerCorput::end()
+VanDerCorput::const_iterator VanDerCorput::end() const
 {
   VanDerCorput::const_iterator itr{this};
-  itr.n = VanDerCorput::MAX;
+  itr.mN = VanDerCorput::MAX;
   return itr;
+}
+
+VanDerCorput::const_iterator::const_iterator(const VanDerCorput *seq)
+    : mSeq(seq)
+    , mN(-1)
+    , mFinalIter(false)
+{
+  assert(mSeq);
+  increment();
+}
+
+double VanDerCorput::const_iterator::dereference() const
+{
+  return mCurr.first;
 }
 
 void VanDerCorput::const_iterator::increment()
 {
-  if (final_iter) {
-    n = VanDerCorput::MAX;
+  if (mFinalIter) {
+    mN = VanDerCorput::MAX;
   } else {
-    ++n;
-    curr = (*seq)[n];
-    if (curr.second <= seq->min_resolution) {
-      final_iter = true;
+    ++mN;
+    mCurr = (*mSeq)[mN];
+    if (mCurr.second <= mSeq->mMinResolution) {
+      mFinalIter = true;
     }
   }
 }
@@ -101,5 +115,5 @@ void VanDerCorput::const_iterator::increment()
 bool VanDerCorput::const_iterator::equal(
     const VanDerCorput::const_iterator &other) const
 {
-  return other.n == n && other.seq == seq;
+  return other.mN == mN && other.mSeq == mSeq;
 }

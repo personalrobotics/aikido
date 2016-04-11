@@ -6,63 +6,56 @@
 #include <limits>
 #include <tuple>
 
+using std::pair;
+
 namespace aikido
 {
 namespace util
 {
-using std::pair;
+
 
 class VanDerCorput
 {
 public:
   class const_iterator;
 
-  VanDerCorput(const double span = 1, const bool include_endpoints = false,
-               const double min_resolution = 0.0);
+  VanDerCorput(double span = 1, bool include_endpoints = false,
+               double min_resolution = 0.0);
 
-  const_iterator begin();
-  const_iterator end();
+  const_iterator begin() const;
+  const_iterator end() const;
 
-  pair<double, double> operator[](int n);
+  pair<double, double> operator[](int n) const;
 
 private:
   constexpr static int BASE{2};
   constexpr static int MAX = std::numeric_limits<int>::max();
 
-  pair<double, double> compute_vandercorput(int n) const;
+  pair<double, double> computeVanDerCorput(int n) const;
 
-  const double span;
-  const bool include_endpoints;
-  double min_resolution;
+  const double mSpan;
+  const bool mIncludeEndpoints;
+  double mMinResolution;
 };
 
 class VanDerCorput::const_iterator
     : public boost::iterator_facade<VanDerCorput::const_iterator, const double,
                                     boost::forward_traversal_tag, const double>
 {
-
 public:
-  double dereference() const { return curr.first; }
-
+  double dereference() const;
   void increment();
   bool equal(const VanDerCorput::const_iterator &other) const;
 
 private:
   friend VanDerCorput;
 
-  const_iterator(VanDerCorput *seq)
-      : seq(seq)
-      , n(-1)
-      , final_iter(false)
-  {
-    assert(seq);
-    increment();
-  }
+  explicit const_iterator(const VanDerCorput *seq);
 
-  VanDerCorput *seq;
-  int n;
-  bool final_iter;
-  pair<double, double> curr;
+  const VanDerCorput *mSeq;
+  int mN;
+  bool mFinalIter;
+  pair<double, double> mCurr;
 };
 
 }  // util
