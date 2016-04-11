@@ -50,17 +50,6 @@ TEST(RealVectorStateSpace, CopyState)
     EXPECT_TRUE(dest.getValue().isApprox(source.getValue()));
 }
 
-TEST(RealVectorStateSpace, Distance)
-{
-    RealVectorStateSpace rvss(4);
-    auto state1 = rvss.createState();
-    auto state2 = rvss.createState();
-
-    state1.setValue(Eigen::Vector4d(0, 1, 2, 3));
-    state2.setValue(Eigen::Vector4d(-1, -2, -3, -4));
-    EXPECT_DOUBLE_EQ(std::sqrt(84), rvss.distance(state1, state2));
-}
-
 TEST(RealVectorStateSpace, EqualStates)
 {
     RealVectorStateSpace rvss(4);
@@ -73,30 +62,6 @@ TEST(RealVectorStateSpace, EqualStates)
 
     state2.setValue(state1.getValue());
     EXPECT_TRUE(rvss.equalStates(state1, state2));
-}
-
-TEST(RealVectorStateSpace, Interpolate)
-{
-    RealVectorStateSpace rvss(4);
-    auto state1 = rvss.createState();
-    auto state2 = rvss.createState();
-    auto out = rvss.createState();
-
-    state1.setValue(Eigen::Vector4d(0, 1, 2, 3));
-    state2.setValue(Eigen::Vector4d(-1, -2, -3, -4));
-
-    rvss.interpolate(state1, state2, 0, out);
-    EXPECT_TRUE(out.getValue().isApprox(state1.getValue()));
-
-    rvss.interpolate(state1, state2, 1, out);
-    EXPECT_TRUE(out.getValue().isApprox(state2.getValue()));
-
-    rvss.interpolate(state1, state2, 0.5, out);
-    EXPECT_TRUE(out.getValue().isApprox(
-                    Eigen::Vector4d(-0.5, -0.5, -0.5, -0.5)));
-
-    EXPECT_ANY_THROW(rvss.interpolate(state1, state2, -0.5, out));
-    EXPECT_ANY_THROW(rvss.interpolate(state1, state2, 1.1, out));
 }
 
 TEST(SO2StateSpace, Compose)
@@ -131,21 +96,6 @@ TEST(SO2StateSpace, CopyState)
     source.setAngle(3.14159);
     so2.copyState(dest, source);
     EXPECT_DOUBLE_EQ(source.getAngle(), dest.getAngle());
-}
-
-TEST(SO2StateSpace, Distance)
-{
-    SO2StateSpace so2;
-    auto state1 = so2.createState();
-    auto state2 = so2.createState();
-    state1.setAngle(1.3);
-    state2.setAngle(1.5);
-    EXPECT_DOUBLE_EQ(0.2, so2.distance(state1, state2));
-
-    state2.setAngle(6.0);
-    EXPECT_DOUBLE_EQ(2.*M_PI-state2.getAngle()+state1.getAngle(),
-                     so2.distance(state1, state2));
-                     
 }
 
 TEST(SO2StateSpace, EqualStates)
