@@ -25,19 +25,16 @@ public:
   /// \param[in] _maxNumTrials number of retry attempts
   IkSampleableConstraint(
     statespace::MetaSkeletonStateSpacePtr _stateSpace,
-    SampleableConstraintPtr _delegateConstraint,
+    SampleableConstraintPtr _poseConstraint,
+    SampleableConstraintPtr _seedConstraint,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
-  IkSampleableConstraint(const IkSampleableConstraint& other);
-  IkSampleableConstraint(IkSampleableConstraint&& other);
-
-  IkSampleableConstraint& operator=(
-    const IkSampleableConstraint& other);
-  IkSampleableConstraint& operator=(IkSampleableConstraint&& other);
-
   virtual ~IkSampleableConstraint() = default;
+
+  // Documentation inherited.
+  virtual statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
@@ -47,7 +44,8 @@ public:
   
 private:
   statespace::MetaSkeletonStateSpacePtr mStateSpace;
-  SampleableConstraintPtr mConstraint;
+  SampleableConstraintPtr mPoseConstraint;
+  SampleableConstraintPtr mSeedConstraint;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<util::RNG> mRng;
 

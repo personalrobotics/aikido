@@ -1,4 +1,5 @@
 #include <aikido/constraint/IkSampleableConstraint.hpp>
+#include <aikido/statespace/SE3StateSpace.hpp>
 //#include <aikido/constraint/IkSampleGenerator.hpp>
 
 using namespace dart::dynamics;
@@ -9,87 +10,47 @@ namespace constraint {
 //=============================================================================
 IkSampleableConstraint::IkSampleableConstraint(
       statespace::MetaSkeletonStateSpacePtr _stateSpace,
-      SampleableConstraintPtr _delegateConstraint,
+      SampleableConstraintPtr _poseConstraint,
+      SampleableConstraintPtr _seedConstraint,
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       std::unique_ptr<util::RNG> _rng,
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
-  , mConstraint(std::move(_delegateConstraint))
+  , mPoseConstraint(std::move(_poseConstraint))
+  , mSeedConstraint(std::move(_seedConstraint))
   , mInverseKinematics(std::move(_inverseKinematics))
   , mRng(std::move(_rng))
   , mMaxNumTrials(_maxNumTrials)
 {
   if (!mRng)
-  {
-    throw std::invalid_argument(
-      "Random generator is empty.");
-  }
+    throw std::invalid_argument("RNG is nullptr.");
 
   if (!_inverseKinematics)
-  {
-    throw std::invalid_argument(
-      "IKPtr is empty.");
-  }
+    throw std::invalid_argument("InverseKinematics is nullptr.");
 
-  if (!_delegateConstraint)
-  {
+  if (!_poseConstraint)
+    throw std::invalid_argument("Pose SampleableConstraint is nullptr.");
+
+  if (!dynamic_cast<const statespace::SE3StateSpace*>(
+        _poseConstraint->getStateSpace().get()))
     throw std::invalid_argument(
-      "IsometryConstraint is empty.");
-  }
+      "Pose SampleableConstraint does not operate on an SE3StateSpace.");
+
+  if (!_seedConstraint)
+    throw std::invalid_argument("Seed SampleableConstraint is nullptr.");
+
+  if (_seedConstraint->getStateSpace() != _stateSpace)
+    throw std::invalid_argument(
+      "Seed SampleableConstraint does not operate on this StateSpace.");
 
   if (_maxNumTrials <= 0)
-  {
-    throw std::invalid_argument(
-      "MaxNumTrials is not positive.");
-  }
+    throw std::invalid_argument("Maximum number of trials is not positive.");
 }
 
 //=============================================================================
-IkSampleableConstraint::IkSampleableConstraint(
-      const IkSampleableConstraint& other)
-  : IkSampleableConstraint(
-      other.mStateSpace,
-      other.mConstraint,
-      other.mInverseKinematics,
-      other.mRng->clone(),
-      other.mMaxNumTrials
-    )
+statespace::StateSpacePtr IkSampleableConstraint::getStateSpace() const
 {
-}
-
-//=============================================================================
-IkSampleableConstraint::IkSampleableConstraint(
-      IkSampleableConstraint&& other)
-  : IkSampleableConstraint(
-      std::move(other.mStateSpace),
-      std::move(other.mConstraint),
-      std::move(other.mInverseKinematics),
-      std::move(other.mRng),
-      other.mMaxNumTrials
-    )
-{
-}
-
-//=============================================================================
-IkSampleableConstraint& IkSampleableConstraint::operator=(
-    const IkSampleableConstraint& other)
-{
-  mStateSpace = other.mStateSpace;
-  mConstraint = other.mConstraint;
-  mInverseKinematics = other.mInverseKinematics;
-  mRng = mRng->clone();
-  return *this;
-}
-
-//=============================================================================
-IkSampleableConstraint& IkSampleableConstraint::operator=(
-  IkSampleableConstraint&& other)
-{
-  mStateSpace = std::move(other.mStateSpace);
-  mConstraint = std::move(other.mConstraint);
-  mInverseKinematics = std::move(other.mInverseKinematics);
-  mRng = std::move(mRng);
-  return *this;
+  return mStateSpace;
 }
 
 //=============================================================================

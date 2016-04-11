@@ -6,11 +6,6 @@
 #include "../util/RNG.hpp"
 
 namespace aikido {
-namespace constraint {
-
-class SampleableConstraint;
-
-} // namespace constraint
 
 namespace statespace {
 
@@ -34,9 +29,6 @@ public:
 
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
-
-  using SampleableConstraintPtr
-    = std::shared_ptr<constraint::SampleableConstraint>;
 
   virtual ~StateSpace() = default;
 
