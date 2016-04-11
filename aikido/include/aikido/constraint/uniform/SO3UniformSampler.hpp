@@ -6,8 +6,7 @@
 namespace aikido {
 namespace statespace {
 
-class SO3UniformSampler
-  : public constraint::SampleableConstraint
+class SO3UniformSampler : public constraint::SampleableConstraint
 {
 public:
   SO3UniformSampler(
