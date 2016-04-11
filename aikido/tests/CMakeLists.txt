@@ -11,13 +11,29 @@ function(add_aikido_test target_name)
 endfunction()
 
 
-# SampleableConstraint tests
-add_aikido_test(test_TSR test_TSR.cpp)
+# Constraint tests
+add_aikido_test(test_TSR constraint/test_TSR.cpp)
 target_link_libraries(test_TSR "${PROJECT_NAME}")
 
 # OMPL Planner test
 add_aikido_test(test_OMPLPlanner test_OMPLPlanner.cpp)
 target_link_libraries(test_OMPLPlanner "${PROJECT_NAME}")
+
+add_aikido_test(test_PolynomialConstraint
+ constraint/test_PolynomialConstraint.cpp)
+target_link_libraries(test_PolynomialConstraint "${PROJECT_NAME}")
+
+add_aikido_test(test_DifferentiableProjector
+ constraint/test_DifferentiableProjector.cpp)
+target_link_libraries(test_DifferentiableProjector "${PROJECT_NAME}")
+
+add_aikido_test(test_FrameConstraintAdaptor
+ constraint/test_FrameConstraintAdaptor.cpp)
+target_link_libraries(test_FrameConstraintAdaptor "${PROJECT_NAME}")
+
+add_aikido_test(test_FramePairConstraintAdaptor
+ constraint/test_FramePairConstraintAdaptor.cpp)
+target_link_libraries(test_FramePairConstraintAdaptor "${PROJECT_NAME}")
 
 #add_aikido_test(test_IKSampleable test_IKSampleable.cpp)
 #target_link_libraries(test_IKSampleable "${PROJECT_NAME}")

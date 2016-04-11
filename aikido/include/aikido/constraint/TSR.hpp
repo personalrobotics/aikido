@@ -4,11 +4,14 @@
 #include "Sampleable.hpp"
 #include "../statespace/SE3StateSpace.hpp"
 #include <Eigen/Dense>
+#include "Projectable.hpp"
+#include "Differentiable.hpp"
+#include <dart/math/MathTypes.h>
 
 namespace aikido {
 namespace constraint {
 
-class TSR : public SampleableConstraint
+class TSR : public SampleableConstraint, public Differentiable
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -47,6 +50,21 @@ public:
 
   /// Set the random number generator used by SampleGenerators for this TSR.
   void setRNG(std::unique_ptr<util::RNG> rng);
+
+  // Documentation inherited.
+  size_t getConstraintDimension() const override;
+
+  // Documentation inherited.
+  Eigen::VectorXd getValue(
+    const statespace::StateSpace::State* _s) const override;
+
+  // Documentation inherited.
+  Eigen::MatrixXd getJacobian(
+    const statespace::StateSpace::State* _s) const override;
+
+  // Documentation inherited.
+  std::vector<ConstraintType> getConstraintTypes() const override;
+
 
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;

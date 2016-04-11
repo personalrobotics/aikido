@@ -36,7 +36,6 @@ include_directories(SYSTEM
 
 # Build
 add_library(${PROJECT_NAME} SHARED
-  #src/path/HauserSmoother.cpp
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
@@ -64,18 +63,18 @@ add_library(${PROJECT_NAME} SHARED
   src/constraint/CollisionConstraint.cpp
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
+  src/constraint/FrameConstraintAdaptor.cpp
+  src/constraint/FramePairConstraintAdaptor.cpp
+  src/constraint/PolynomialConstraint.cpp
+  src/constraint/DifferentiableProjector.cpp
   src/constraint/IkSampleableConstraint.cpp
-  src/constraint/CollisionConstraint.cpp
-  #src/constraint/IkSampleGenerator.cpp
   src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/util/VanDerCorput.cpp
-  src/external/hauser_parabolic_smoother/DynamicPath.cpp
-  src/external/hauser_parabolic_smoother/Timer.cpp
-  src/external/hauser_parabolic_smoother/ParabolicRamp.cpp
   src/ompl/AIKIDOGeometricStateSpace.cpp
   src/ompl/AIKIDOStateSampler.cpp
   src/ompl/AIKIDOStateValidityChecker.cpp
+  src/util/PseudoInverse.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
@@ -83,6 +82,7 @@ target_link_libraries(${PROJECT_NAME}
   ${OMPL_LIBRARIES}
   ${TinyXML2_LIBRARIES}
 )
+
 
 # Install targets, headers, and a package.xml file (to satisfy REP-136).
 install(FILES package.xml

@@ -11,7 +11,9 @@ namespace statespace {
 template <class> class CompoundStateHandle;
 
 /// Represents the Cartesian product of other StateSpaces.
-class CompoundStateSpace : public virtual StateSpace
+class CompoundStateSpace
+  : public std::enable_shared_from_this<CompoundStateSpace>
+  , public virtual StateSpace
 {
 public:
   /// A tuple of states where the i-th state is from the i-th subspace.

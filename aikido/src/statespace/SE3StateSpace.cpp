@@ -110,7 +110,17 @@ void SE3StateSpace::copyState(StateSpace::State* _destination,
 double SE3StateSpace::distance(const StateSpace::State* _state1,
                                const StateSpace::State* _state2) const
 {
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
 
+  Eigen::Isometry3d isometry1 = state1->getIsometry();
+  Eigen::Isometry3d isometry2 = state2->getIsometry();
+
+  Eigen::Isometry3d relative(isometry1.matrix().inverse()*isometry2.matrix());
+
+  Eigen::Vector6d distance = dart::math::logMap(relative);
+
+  return distance.norm();
 }
 
 //=============================================================================
