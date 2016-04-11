@@ -15,16 +15,13 @@ public:
   /// Constructor.
   GeodesicDistanceMetric(std::shared_ptr<statespace::SO3StateSpace> _space);
 
-  /// Computes distance between two states. This function satisfies
-  /// the properties of a metric and its
-  /// return value will always be between 0 and getMaximumExtent()
+  /// Computes distance between two states as the angle between the 
+  /// two quaternions represented by the states.
   virtual double distance(
       const aikido::statespace::StateSpace::State* _state1,
       const aikido::statespace::StateSpace::State* _state2) const override;
 
-  /// Computes the state that lies at time t in [0, 1] on the segment
-  /// that connects from state to to state. The memory location of state
-  /// is not required to be different from the memory of either from or to.
+  /// Computes the slerp that interpolates between the quaternions represented in the states
   virtual void interpolate(
       const aikido::statespace::StateSpace::State* _from,
       const aikido::statespace::StateSpace::State* _to, const double _t,

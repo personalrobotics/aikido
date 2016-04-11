@@ -20,9 +20,7 @@ public:
       const aikido::statespace::StateSpace::State* _state1,
       const aikido::statespace::StateSpace::State* _state2) const override;
 
-  /// Computes the state that lies at time t in [0, 1] on the segment
-  /// that connects from state to to state. The memory location of state
-  /// is not required to be different from the memory of either from or to.
+  /// Computes an interpolated angle as (1-_t)*from + _t*to. 
   virtual void interpolate(
       const aikido::statespace::StateSpace::State* _from,
       const aikido::statespace::StateSpace::State* _to, const double _t,

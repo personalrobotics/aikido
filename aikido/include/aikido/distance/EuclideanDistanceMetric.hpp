@@ -17,9 +17,7 @@ public:
   EuclideanDistanceMetric(
       std::shared_ptr<statespace::RealVectorStateSpace> _space);
 
-  /// Computes distance between two states. This function satisfies
-  /// the properties of a metric and its
-  /// return value will always be between 0 and getMaximumExtent()
+  /// Computes euclidean distance between two states. 
   virtual double distance(
       const aikido::statespace::StateSpace::State* _state1,
       const aikido::statespace::StateSpace::State* _state2) const override;
