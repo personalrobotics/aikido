@@ -23,7 +23,7 @@ public:
   /// is not required to be different from the memory of either from or to.
   virtual void interpolate(
       const aikido::statespace::StateSpace::State* _from,
-      const aikido::statespace::StateSpace::State* _to, const double _t,
+      const aikido::statespace::StateSpace::State* _to, double _t,
       aikido::statespace::StateSpace::State* _state) const = 0;
 };
 

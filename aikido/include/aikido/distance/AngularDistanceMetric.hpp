@@ -13,17 +13,17 @@ class AngularDistanceMetric : public DistanceMetric
 {
 public:
   /// Constructor.
-  AngularDistanceMetric(std::shared_ptr<statespace::SO2StateSpace> _space);
+  explicit AngularDistanceMetric(std::shared_ptr<statespace::SO2StateSpace> _space);
 
   /// Computes distance between two angles. (return value between 0 and pi)
-  virtual double distance(
+  double distance(
       const aikido::statespace::StateSpace::State* _state1,
       const aikido::statespace::StateSpace::State* _state2) const override;
 
   /// Computes an interpolated angle as (1-_t)*from + _t*to. 
-  virtual void interpolate(
+  void interpolate(
       const aikido::statespace::StateSpace::State* _from,
-      const aikido::statespace::StateSpace::State* _to, const double _t,
+      const aikido::statespace::StateSpace::State* _to, double _t,
       aikido::statespace::StateSpace::State* _state) const override;
 
 private:

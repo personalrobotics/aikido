@@ -22,16 +22,16 @@ public:
 
   /// Computes distance between two states as the weighted sum
   ///  of distances between their matching subcomponents.
-  virtual double distance(
+  double distance(
       const aikido::statespace::StateSpace::State* _state1,
       const aikido::statespace::StateSpace::State* _state2) const override;
 
   /// Computes the state that lies at time t in [0, 1] on the segment
   /// that connects from state to to state. This state is computed
   /// by interpolating each subcomponent individually.
-  virtual void interpolate(
+  void interpolate(
       const aikido::statespace::StateSpace::State* _from,
-      const aikido::statespace::StateSpace::State* _to, const double _t,
+      const aikido::statespace::StateSpace::State* _to, double _t,
       aikido::statespace::StateSpace::State* _state) const override;
 
 private:
