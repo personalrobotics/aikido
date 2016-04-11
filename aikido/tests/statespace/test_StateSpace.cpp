@@ -40,32 +40,6 @@ TEST(RealVectorStateSpace, ExpMap)
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(1, 2, 3)));
 }
 
-TEST(RealVectorStateSpace, EnforceBounds)
-{
-    Eigen::Matrix<double, 3, 2> bounds;
-    bounds << -1, 1, -2, 2, -3, 3;
-
-    RealVectorStateSpace rvss(bounds);
-    auto state = rvss.createState();
-    state.setValue(Eigen::Vector3d(-0.5, 0.0, 0.5));
-    EXPECT_ANY_THROW(rvss.enforceBounds(state));
-
-    // Ensure we can't set to bad values
-    state.setValue(Eigen::Vector3d(2, 3, 4));
-    EXPECT_TRUE(state.getValue().isApprox(Eigen::Vector3d(-0.5, 0., 0.5)));
-}
-
-TEST(RealVectorStateSpace, SatisfiesBounds)
-{
-    Eigen::Matrix<double, 3, 2> bounds;
-    bounds << -1, 1, -2, 2, -3, 3;
-
-    RealVectorStateSpace rvss(bounds);
-    auto state = rvss.createState();
-    state.setValue(Eigen::Vector3d(-0.5, 0.0, 0.5));
-    EXPECT_TRUE(rvss.satisfiesBounds(state));
-}
-
 TEST(RealVectorStateSpace, CopyState)
 {
     RealVectorStateSpace rvss(4);

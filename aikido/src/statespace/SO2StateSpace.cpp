@@ -92,16 +92,6 @@ void SO2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 }
 
 //=============================================================================
-constraint::SampleableConstraintPtr SO2StateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const
-{
-  return std::make_shared<SO2StateSpaceSampleableConstraint>(
-    // TODO: SampleableConstraint should operate on `const StateSpace`.
-    std::const_pointer_cast<SO2StateSpace>(shared_from_this()),
-    std::move(_rng));
-}
-
-//=============================================================================
 void SO2StateSpace::compose(
   const StateSpace::State* _state1, const StateSpace::State* _state2,
 	StateSpace::State* _out) const

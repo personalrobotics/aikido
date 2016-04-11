@@ -10,9 +10,7 @@ namespace statespace {
 template <class> class RealVectorStateHandle;
 
 /// Represents a n-dimensional real vector space.
-class RealVectorStateSpace
-  : public std::enable_shared_from_this<RealVectorStateSpace>
-  , public virtual StateSpace
+class RealVectorStateSpace : public virtual StateSpace
 {
 public:
   /// Point in a RealVectorStateSpace.
@@ -31,19 +29,11 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
-  using Bounds = Eigen::Matrix<double, Eigen::Dynamic, 2>;
-
   /// Constructs an unbounded RealVectorStateSpace.
   explicit RealVectorStateSpace(int _dimension);
 
-  /// Constructs a RealVectorStateSpace with the given bounds.
-  explicit RealVectorStateSpace(const Bounds& _bounds);
-
   /// Helper function to create a ScopedState.
   ScopedState createState() const;
-
-  /// Gets the upper and lower bounds of this space.
-  const Bounds& getBounds() const;
 
   /// Gets the value stored in a RealVectorStateSpace::State.
   Eigen::Map<const Eigen::VectorXd> getValue(const State* _state) const;
@@ -59,10 +49,6 @@ public:
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;
-
-  // Documentation inherited.
-  SampleableConstraintPtr createSampleableConstraint(
-    std::unique_ptr<util::RNG> _rng) const override;
 
   // Documentation inherited.
   void compose(
@@ -109,7 +95,7 @@ private:
   /// Gets the value stored in a RealVectorStateSpace::State.
   Eigen::Map<Eigen::VectorXd> getMutableValue(State* _state) const;
 
-  Bounds mBounds;
+  int mDimension;
 };
 
 } // namespace statespace

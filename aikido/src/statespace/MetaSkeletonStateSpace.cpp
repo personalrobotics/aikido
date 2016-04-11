@@ -130,14 +130,22 @@ void MetaSkeletonStateSpace::setStateOnMetaSkeleton(const State* _state)
 }
 
 //=============================================================================
+auto MetaSkeletonStateSpace::createSampleableConstraint(
+  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
+{
+  throw std::runtime_error("not implemented");
+#if 0
+  return std::make_shared<CompoundStateSpaceSampleableConstraint>(
+    // TODO: SampleableConstraint should operate on `const StateSpace`.
+    std::const_pointer_cast<CompoundStateSpace>(shared_from_this()),
+    std::move(_rng));
+#endif
+}
+
+//=============================================================================
 std::unique_ptr<JointStateSpace> createJointStateSpace(Joint* _joint)
 {
-  auto space = detail::ForOneOf<
-      RevoluteJoint,
-      PrismaticJoint,
-      TranslationalJoint,
-      FreeJoint
-    >::create(_joint);
+  auto space = detail::createJointStateSpaceFor_wrapper::create(_joint);
 
   if (!space)
   {

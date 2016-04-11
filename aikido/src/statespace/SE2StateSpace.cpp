@@ -1,4 +1,5 @@
 #include <aikido/statespace/SE2StateSpace.hpp>
+#include <aikido/statespace/SE2StateSpaceSampleableConstraint.hpp>
 #include <Eigen/Geometry>
 
 namespace aikido {
@@ -24,8 +25,7 @@ auto SE2StateSpace::State::getIsometry() const
 }
 
 //=============================================================================
-void SE2StateSpace::State::setIsometry(
-  const Isometry2d& _transform)
+void SE2StateSpace::State::setIsometry(const Isometry2d& _transform)
 {
   mTransform = _transform;
 }
@@ -67,14 +67,6 @@ StateSpace::State* SE2StateSpace::allocateStateInBuffer(void* _buffer) const
 void SE2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
   static_cast<State*>(_state)->~State();
-}
-
-//=============================================================================
-auto SE2StateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  throw std::runtime_error(
-    "SE2StateSpace::createSampleableConstraint is not implemented.");
 }
 
 //=============================================================================

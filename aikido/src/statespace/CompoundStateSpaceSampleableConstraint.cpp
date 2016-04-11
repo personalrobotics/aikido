@@ -71,6 +71,9 @@ CompoundStateSpaceSampleableConstraint
   std::vector<util::RNG::result_type> improvedSeeds(mSpace->getNumStates());
   seqSeeds.generate(improvedSeeds.begin(), improvedSeeds.end());
 
+  throw std::runtime_error(
+    "CompoundStateSpaceSampleableConstraint is not implemented.");
+#if 0
   // Create a new RNG for each delegate SampleableConstraint.
   mDelegates.reserve(mSpace->getNumStates());
   for (size_t i = 0; i < mSpace->getNumStates(); ++i)
@@ -79,6 +82,7 @@ CompoundStateSpaceSampleableConstraint
     mDelegates.emplace_back(subspace->createSampleableConstraint(
       mRng->clone(improvedSeeds[i])));
   }
+#endif
 }
 
 //=============================================================================

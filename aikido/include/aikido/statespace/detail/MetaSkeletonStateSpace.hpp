@@ -1,6 +1,8 @@
 #include <dart/common/StlHelpers.h>
 #include <aikido/statespace/RealVectorJointStateSpace.hpp>
 #include <aikido/statespace/SO2JointStateSpace.hpp>
+#include <aikido/statespace/SO3JointStateSpace.hpp>
+#include <aikido/statespace/SE2JointStateSpace.hpp>
 #include <aikido/statespace/SE3JointStateSpace.hpp>
 
 namespace aikido {
@@ -49,6 +51,26 @@ struct createJointStateSpaceFor_impl<dart::dynamics::TranslationalJoint>
 
 //=============================================================================
 template <>
+struct createJointStateSpaceFor_impl<dart::dynamics::BallJoint>
+{
+  static Ptr create(dart::dynamics::BallJoint* _joint)
+  {
+    return make_unique<SO3JointStateSpace>(_joint);
+  }
+};
+
+//=============================================================================
+template <>
+struct createJointStateSpaceFor_impl<dart::dynamics::PlanarJoint>
+{
+  static Ptr create(dart::dynamics::PlanarJoint* _joint)
+  {
+    return make_unique<SE2JointStateSpace>(_joint);
+  }
+};
+
+//=============================================================================
+template <>
 struct createJointStateSpaceFor_impl<dart::dynamics::FreeJoint>
 {
   static Ptr create(dart::dynamics::FreeJoint* _joint)
@@ -87,6 +109,19 @@ struct ForOneOf<Arg, Args...>
   }
 };
 
+//=============================================================================
+using createJointStateSpaceFor_wrapper = ForOneOf<
+  dart::dynamics::BallJoint,
+  dart::dynamics::FreeJoint,
+  dart::dynamics::PlanarJoint,
+  dart::dynamics::PrismaticJoint,
+  dart::dynamics::RevoluteJoint,
+  dart::dynamics::TranslationalJoint
+  // TODO: Support ScrewJoint.
+  // TODO: Support WeldJoint.
+  // TODO: Support UniversalJoint.
+  // TODO: Support EulerJoint.
+>;
 
 } // namespace detail
 

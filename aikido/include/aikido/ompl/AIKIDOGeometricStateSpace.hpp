@@ -22,7 +22,7 @@ namespace aikido {
             /// Construct a state space with a random number generator used for allocating
             ///  state samplers.
             AIKIDOGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
-                                    std::unique_ptr<util::RNG> _rng);
+                                      std::unique_ptr<util::RNG> _rng);
 
             /// Get the dimension of the space (not the dimension of the surrounding ambient space)
             virtual unsigned int getDimension() const;

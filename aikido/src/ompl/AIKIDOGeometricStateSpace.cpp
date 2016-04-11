@@ -10,7 +10,7 @@ namespace aikido {
     namespace ompl_bindings {
 
         AIKIDOGeometricStateSpace::AIKIDOGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
-                                                         std::unique_ptr<util::RNG> _rng)
+                                                             std::unique_ptr<util::RNG> _rng)
             : mStateSpace(std::move(_sspace)), 
               mRng(std::move(_rng))
         {
@@ -106,16 +106,12 @@ namespace aikido {
         /// if no sampler allocator was specified, allocDefaultStateSampler() is called.
         ompl::base::StateSamplerPtr AIKIDOGeometricStateSpace::allocDefaultStateSampler() const {
 
-            std::vector<util::RNG::result_type> improvedSeed(1);
-            mSeedSeq->generate(improvedSeed.begin(), improvedSeed.end());
+            // auto generator = mSampler->createSampleGenerator();
+            // auto stateSampler =
+            //     boost::make_shared<AIKIDOStateSampler>(this, std::move(generator));
 
-            auto constraint = mStateSpace->createSampleableConstraint(
-                make_unique<util::RNGWrapper<std::default_random_engine> >(improvedSeed[0]));
-            auto generator = constraint->createSampleGenerator();
-            auto stateSampler =
-                boost::make_shared<AIKIDOStateSampler>(this, std::move(generator));
-
-            return stateSampler;
+            // return stateSampler;
+            throw std::runtime_error("allocDefaultStateSampler not implemented.");
         }
         
         /// Allocate a state that can store a point in the described space

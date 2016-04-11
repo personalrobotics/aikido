@@ -46,7 +46,7 @@ public:
 
   using Isometry2d = State::Isometry2d;
 
-  SE2StateSpace()=default;
+  SE2StateSpace() = default;
 
   ScopedState createState() const;
 
@@ -64,10 +64,6 @@ public:
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;
-
-  // Documentation inherited.
-  SampleableConstraintPtr createSampleableConstraint(
-    std::unique_ptr<util::RNG> _rng) const override;
   
   // Documentation inherited.
   void compose(

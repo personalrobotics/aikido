@@ -26,7 +26,9 @@ public:
 private:
   RealVectorStateSpaceSampleGenerator(
     std::shared_ptr<statespace::RealVectorStateSpace> _space,
-    std::unique_ptr<util::RNG> _rng);
+    std::unique_ptr<util::RNG> _rng,
+    const Eigen::VectorXd& _lowerLimits,
+    const Eigen::VectorXd& _upperLimits);
 
   std::shared_ptr<statespace::RealVectorStateSpace> mSpace;
   std::unique_ptr<util::RNG> mRng;
@@ -42,7 +44,9 @@ class RealVectorStateSpaceSampleableConstraint
 public:
   RealVectorStateSpaceSampleableConstraint(
     std::shared_ptr<statespace::RealVectorStateSpace> _space,
-    std::unique_ptr<util::RNG> _rng);
+    std::unique_ptr<util::RNG> _rng,
+    const Eigen::VectorXd& _lowerLimits,
+    const Eigen::VectorXd& _upperLimits);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -54,6 +58,8 @@ public:
 private:
   std::shared_ptr<statespace::RealVectorStateSpace> mSpace;
   std::unique_ptr<util::RNG> mRng;
+  Eigen::VectorXd mLowerLimits;
+  Eigen::VectorXd mUpperLimits;
 };
 
 

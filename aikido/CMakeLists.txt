@@ -40,6 +40,7 @@ add_library(${PROJECT_NAME} SHARED
   src/path/BlendTrajectory.cpp
   src/path/ShiftTrajectory.cpp
   src/path/CartesianTwistTrajectory.cpp
+  src/statespace/StateSpace.cpp
   src/statespace/RealVectorStateSpace.cpp
   src/statespace/RealVectorJointStateSpace.cpp
   src/statespace/RealVectorStateSpaceSampleableConstraint.cpp
@@ -48,9 +49,14 @@ add_library(${PROJECT_NAME} SHARED
   src/statespace/SO2JointStateSpace.cpp
   src/statespace/SO2StateSpaceSampleableConstraint.cpp
   src/statespace/SO3StateSpace.cpp
+  src/statespace/SO3JointStateSpace.cpp
+  src/statespace/SO3StateSpaceSampleableConstraint.cpp
   src/statespace/SE2StateSpace.cpp
+  src/statespace/SE2JointStateSpace.cpp
+  src/statespace/SE2StateSpaceSampleableConstraint.cpp
   src/statespace/SE3StateSpace.cpp
   src/statespace/SE3JointStateSpace.cpp
+  src/statespace/SE3StateSpaceSampleableConstraint.cpp
   src/statespace/JointStateSpace.cpp
   src/statespace/CompoundStateSpace.cpp
   src/statespace/CompoundStateSpaceSampleableConstraint.cpp
@@ -59,7 +65,7 @@ add_library(${PROJECT_NAME} SHARED
   src/constraint/TSR.cpp
   src/constraint/TSRSampleGenerator.cpp
   src/constraint/IkSampleableConstraint.cpp
-  #src/constraint/IkSampleGenerator.cpp
+  src/constraint/IkSampleGenerator.cpp
   src/util/CatkinResourceRetriever.cpp
   src/external/hauser_parabolic_smoother/DynamicPath.cpp
   src/external/hauser_parabolic_smoother/Timer.cpp

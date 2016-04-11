@@ -1,4 +1,5 @@
 #include <aikido/statespace/SO3StateSpace.hpp>
+#include <aikido/statespace/SO3StateSpaceSampleableConstraint.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <dart/math/Geometry.h>
 #include <iostream>
@@ -68,14 +69,6 @@ StateSpace::State* SO3StateSpace::allocateStateInBuffer(void* _buffer) const
 void SO3StateSpace::freeStateInBuffer(StateSpace::State* _state) const
 {
   static_cast<State*>(_state)->~State();
-}
-
-//=============================================================================
-auto SO3StateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  throw std::runtime_error(
-    "SO3StateSpace::createSampleableConstraint is not implemented.");
 }
 
 //=============================================================================
