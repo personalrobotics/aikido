@@ -198,6 +198,15 @@ Eigen::VectorXd TSR::getValue(
     // Map eulerZYX(i-3) to [2*n*pi, 2*(n+1)*pi)
     double angle = M_PI*2*n + eulerZYX(i - 3);
 
+    // check if angle is within bound
+    if ( (angle >= mBw(i, 0) && angle <= mBw(i, 1))
+      || (angle + M_PI*2 >= mBw(i, 0) && angle + M_PI*2 <= mBw(i, 1))
+      || (angle - M_PI*2 >= mBw(i, 0) && angle - M_PI*2 <= mBw(i, 1)))
+    {
+      distance(i) = 0; 
+      continue;
+    }
+
     // Take min-distance between angle and either side of bound
     if (angle < mBw(i, 0))
       distance(i) = std::min(mBw(i, 0) - angle, angle - (mBw(i, 1) - 2*M_PI));
@@ -205,13 +214,9 @@ Eigen::VectorXd TSR::getValue(
     else if (mBw(i, 1) < angle)
       distance(i) = std::min(angle - mBw(i, 1), mBw(i, 0) + 2*M_PI - angle); 
     
-    else
-      distance(i) = 0;
-
   }
 
   return distance;
-
 }
 
 //=============================================================================

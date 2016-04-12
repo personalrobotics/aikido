@@ -259,6 +259,34 @@ TEST(TSR, GetValue)
   value = tsr.getValue(state);
   EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
 
+  // [PI/2, PI/2+2PI-0.1]
+  Bw(3,0) = M_PI_2;
+  Bw(3,1) = M_PI_2+M_PI*2 - 0.1;
+  tsr.mBw = Bw;
+
+  rotation = Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+  isometry.linear() = rotation;
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  expected = Eigen::Vector6d::Zero();
+  EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
+
+  /* cyclic bound */
+  Bw(3,0) = M_PI_2;
+  Bw(3,1) = M_PI_2+M_PI*2;
+  tsr.mBw = Bw;
+
+  rotation = Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+  isometry.linear() = rotation;
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  expected = Eigen::Vector6d::Zero();
+  EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
+
 
   // boundary of TSR
   rotation = Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()) *
@@ -303,6 +331,21 @@ TEST(TSR, GetValue)
   expected = Eigen::Vector6d::Zero();
   expected(3) = 0.1; 
   EXPECT_TRUE(value.isApprox(expected));
+
+  // [PI/2, 2*PI]
+  Bw(3,0) = M_PI_2;
+  Bw(3,1) = M_PI*2;
+  tsr.mBw = Bw;
+
+  rotation = Eigen::AngleAxisd(M_PI_4 - 0.1, Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+  isometry.linear() = rotation;
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  expected = Eigen::Vector6d::Zero();
+  expected(3) = M_PI_4-0.1;
+  EXPECT_TRUE(value.isApprox(expected, 1e-3));
 
 }
 
