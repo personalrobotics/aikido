@@ -1,11 +1,39 @@
 #include <cmath>
-#include <aikido/constraint/uniform/SO3StateSpaceSampleableConstraint.hpp>
+#include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 
 namespace aikido {
 namespace statespace {
 
 //=============================================================================
-SO3StateSpaceSampleGenerator::SO3StateSpaceSampleGenerator(
+class SO3UniformSampleGenerator : public constraint::SampleGenerator
+{
+public:
+  // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
+
+  // Documentation inherited.
+  bool sample(statespace::StateSpace::State* _state) override;
+
+  // Documentation inherited.
+  int getNumSamples() const override;
+
+  // Documentation inherited.
+  bool canSample() const override;
+
+private:
+  SO3UniformSampleGenerator(
+    std::shared_ptr<statespace::SO3StateSpace> _space,
+    std::unique_ptr<util::RNG> _rng);
+
+  std::shared_ptr<statespace::SO3StateSpace> mSpace;
+  std::unique_ptr<util::RNG> mRng;
+  std::uniform_real_distribution<double> mDistribution; 
+
+  friend class SO3UniformSampler;
+};
+
+//=============================================================================
+SO3UniformSampleGenerator::SO3UniformSampleGenerator(
       std::shared_ptr<statespace::SO3StateSpace> _space,
       std::unique_ptr<util::RNG> _rng)
   : mSpace(std::move(_space))
@@ -16,13 +44,13 @@ SO3StateSpaceSampleGenerator::SO3StateSpaceSampleGenerator(
 
 //=============================================================================
 statespace::StateSpacePtr
-  SO3StateSpaceSampleGenerator::getStateSpace() const
+  SO3UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
 //=============================================================================
-bool SO3StateSpaceSampleGenerator::sample(
+bool SO3UniformSampleGenerator::sample(
   statespace::StateSpace::State* _state)
 {
   mSpace->setQuaternion(
@@ -35,20 +63,20 @@ bool SO3StateSpaceSampleGenerator::sample(
 }
 
 //=============================================================================
-int SO3StateSpaceSampleGenerator::getNumSamples() const
+int SO3UniformSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
 //=============================================================================
-bool SO3StateSpaceSampleGenerator::canSample() const
+bool SO3UniformSampleGenerator::canSample() const
 {
   return true;
 }
 
 //=============================================================================
-SO3StateSpaceSampleableConstraint
-  ::SO3StateSpaceSampleableConstraint(
+SO3UniformSampler
+  ::SO3UniformSampler(
       std::shared_ptr<statespace::SO3StateSpace> _space,
       std::unique_ptr<util::RNG> _rng)
   : mSpace(std::move(_space))
@@ -57,7 +85,7 @@ SO3StateSpaceSampleableConstraint
 }
 
 //=============================================================================
-statespace::StateSpacePtr SO3StateSpaceSampleableConstraint
+statespace::StateSpacePtr SO3UniformSampler
   ::getStateSpace() const
 {
   return mSpace;
@@ -65,10 +93,10 @@ statespace::StateSpacePtr SO3StateSpaceSampleableConstraint
 
 //=============================================================================
 std::unique_ptr<constraint::SampleGenerator>
-  SO3StateSpaceSampleableConstraint::createSampleGenerator() const
+  SO3UniformSampler::createSampleGenerator() const
 {
-  return std::unique_ptr<SO3StateSpaceSampleGenerator>(
-    new SO3StateSpaceSampleGenerator(
+  return std::unique_ptr<SO3UniformSampleGenerator>(
+    new SO3UniformSampleGenerator(
       mSpace, mRng->clone()));
 }
 
