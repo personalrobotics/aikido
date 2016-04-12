@@ -124,7 +124,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				dart::utils::DartLoader urdfLoader;
 				
 				skel_to_update = 
-					urdfLoader.parseSkeleton(body_path,mResourceRetrieverPtr);
+					urdfLoader.parseSkeleton(body_path);
 				
 				if(!skel_to_update)
 					std::cout<<"Empty skel ptr!"<<std::endl;
