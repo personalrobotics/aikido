@@ -10,13 +10,8 @@ std::unique_ptr<Differentiable> GenericJointBoundConstraint
   return detail::ForOneOf<
       detail::createDifferentiableFor_impl,
       statespace::JointStateSpace,
-      // List of derived types:
-      statespace::RealVectorJointStateSpace,
-      statespace::SO2JointStateSpace,
-      statespace::SO3JointStateSpace,
-      statespace::SE2JointStateSpace,
-      statespace::SE3JointStateSpace>
-    ::create(std::move(_stateSpace));
+      detail::JointStateSpaceTypeList
+    >::create(std::move(_stateSpace));
 }
 
 //=============================================================================
@@ -38,7 +33,11 @@ std::unique_ptr<SampleableConstraint> GenericJointBoundConstraint
 std::unique_ptr<TestableConstraint> GenericJointBoundConstraint
   ::createTestable(StateSpacePtr _stateSpace)
 {
-  return nullptr;
+  return detail::ForOneOf<
+      detail::createTestableFor_impl,
+      statespace::JointStateSpace,
+      detail::JointStateSpaceTypeList
+    >::create(std::move(_stateSpace));
 }
 
 } // namespace constraint
