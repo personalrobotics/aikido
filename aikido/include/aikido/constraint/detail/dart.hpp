@@ -42,16 +42,12 @@ struct ForOneOf<Factory, BaseParameter, util::type_list<Arg, Args...>>
          std::forward<Parameters>(_params)...))
   {
     if (auto arg = std::dynamic_pointer_cast<Arg>(_delegate))
-    {
       return Factory<Arg>::create(
         std::move(arg), std::forward<Parameters>(_params)...);
-    }
     else
-    {
       return ForOneOf<
         Factory, BaseParameter, util::type_list<Args...>>::create(
           std::move(_delegate), std::forward<Parameters>(_params)...);
-    }
   }
 };
 
