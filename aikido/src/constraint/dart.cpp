@@ -21,6 +21,9 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 std::unique_ptr<Differentiable> createDifferentiableBounds(
   statespace::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
+  if (!_metaSkeleton)
+    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
+
   const auto n = _metaSkeleton->getNumStates();
 
   std::vector<std::shared_ptr<Differentiable>> constraints;
