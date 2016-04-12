@@ -9,14 +9,11 @@
 namespace aikido {
 namespace constraint{
 
-enum class ConstraintType {EQ, INEQ};
-
 /// A differentiable constraint.
 /// Contains n constraints that can be evaluated in real-value. 
 class StackedConstraint : public Differentiable
 {
 public:
-
   StackedConstraint(const std::vector<DifferentiablePtr>& _constraints);
 
   // Documentation inherited.

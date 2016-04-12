@@ -12,9 +12,11 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   FramePairConstraintAdaptor.cpp
   PolynomialConstraint.cpp
   DifferentiableProjector.cpp
+  DifferentiableSubSpace.cpp
   IkSampleableConstraint.cpp
   IkSampleGenerator.cpp
   SatisfiedConstraint.cpp
+  #StackedConstraint.cpp
   dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"

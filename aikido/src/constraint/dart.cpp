@@ -1,4 +1,7 @@
 #include <aikido/constraint/dart.hpp>
+#include <aikido/constraint/DifferentiableSubSpace.hpp>
+#include <aikido/constraint/StackedConstraint.hpp>
+#include <dart/common/StlHelpers.h>
 
 namespace aikido {
 namespace constraint {
@@ -26,13 +29,15 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   for (size_t i = 0; i < n; ++i)
   {
     auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
-    auto constraint = createDifferentiableBounds(std::move(subspace));
-    constraints.emplace_back(constraint.release());
+    auto subSpaceConstraint = createDifferentiableBounds(std::move(subspace));
+    auto constraint = std::make_shared<DifferentiableSubSpace>(
+      _metaSkeleton, std::move(subSpaceConstraint), i);
+    constraints.emplace_back(std::move(constraint));
   }
 
-  // TODO: Apply a separate constraint to each dimension.
-
-  throw std::runtime_error("not implemented");
+  // TODO: We should std::move constraints here, but we can't because
+  // StackedConstraint does not take by value.
+  return dart::common::make_unique<StackedConstraint>(constraints);
 }
 
 //=============================================================================
