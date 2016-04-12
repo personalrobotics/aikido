@@ -45,6 +45,10 @@ public:
   template <class Space = StateSpace>
   const Space* getSubSpace(size_t _index) const;
 
+  /// Gets subspace shared ptr by index.
+  template <class Space = StateSpace>
+  const StateSpacePtr getSubSpacePtr(size_t _index) const;
+
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
   typename Space::State* getSubState(
