@@ -18,7 +18,11 @@ std::unique_ptr<Differentiable> GenericJointBoundConstraint
 std::unique_ptr<Projectable> GenericJointBoundConstraint
   ::createProjectable(StateSpacePtr _stateSpace)
 {
-  return nullptr;
+  return detail::ForOneOf<
+      detail::createProjectableFor_impl,
+      statespace::JointStateSpace,
+      detail::JointStateSpaceTypeList
+    >::create(std::move(_stateSpace));
 }
 
 //=============================================================================
