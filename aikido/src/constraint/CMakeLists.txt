@@ -6,6 +6,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/SO2StateSpaceSampleableConstraint.cpp
   uniform/SO3StateSpaceSampleableConstraint.cpp
   CollisionConstraint.cpp
+  ConjunctionConstraint.cpp
   TSR.cpp
   TSRSampleGenerator.cpp
   FrameConstraintAdaptor.cpp
