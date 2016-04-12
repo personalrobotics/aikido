@@ -3,6 +3,7 @@
 #include <aikido/planner/SnapPlanner.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/distance/DistanceMetricDefaults.hpp>
 #include <dart/dart.h>
 #include <tuple>
 
@@ -32,6 +33,8 @@ public:
     , cd{FCLCollisionDetector::create()}
     , collConstraint{make_shared<CollisionConstraint>(stateSpace, cd)}
   {
+      shared_ptr<aikido::statespace::CompoundStateSpace> cspace = stateSpace;
+      distMetric = aikido::distance::createDistanceMetricFor(cspace);
   };
   // DART setup
   SkeletonPtr skel;
