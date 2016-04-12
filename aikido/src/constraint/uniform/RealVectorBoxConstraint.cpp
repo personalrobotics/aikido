@@ -227,6 +227,14 @@ Eigen::MatrixXd RealVectorBoxConstraint::getJacobian(
 }
 
 //=============================================================================
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> RealVectorBoxConstraint
+  ::getValueAndJacobian(const statespace::StateSpace::State* _s) const
+{
+  // TODO: Avoid calling getValue twice here.
+  return std::make_pair(getValue(_s), getJacobian(_s));
+}
+
+//=============================================================================
 std::unique_ptr<constraint::SampleGenerator>
   RealVectorBoxConstraint::createSampleGenerator() const
 {

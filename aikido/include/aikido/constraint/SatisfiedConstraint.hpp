@@ -41,6 +41,10 @@ public:
   Eigen::MatrixXd getJacobian(
     const statespace::StateSpace::State* _s) const override;
 
+  // Documentation inherited.
+  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
+    const statespace::StateSpace::State* _s) const override;
+
 private:
   statespace::StateSpacePtr mStateSpace;
 };
