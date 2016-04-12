@@ -14,7 +14,6 @@ class SO3JointStateSpace
 {
 public:
   using SO3StateSpace::State;
-  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SO3JointStateSpace(dart::dynamics::BallJoint* _joint);
 

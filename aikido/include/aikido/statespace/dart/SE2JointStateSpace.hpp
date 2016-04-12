@@ -15,7 +15,6 @@ class SE2JointStateSpace
 public:
   using SE2StateSpace::State;
   using SE2StateSpace::Isometry2d;
-  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SE2JointStateSpace(dart::dynamics::PlanarJoint* _joint);
 

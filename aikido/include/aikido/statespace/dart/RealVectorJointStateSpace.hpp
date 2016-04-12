@@ -14,7 +14,6 @@ class RealVectorJointStateSpace
 {
 public:
   using RealVectorStateSpace::State;
-  using JointStateSpace::SampleableConstraintPtr;
 
   explicit RealVectorJointStateSpace(dart::dynamics::Joint* _joint);
 

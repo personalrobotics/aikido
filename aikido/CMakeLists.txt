@@ -10,94 +10,91 @@ endif()
 project(aikido)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
-list(APPEND CMAKE_CXX_FLAGS "-std=c++11")
 
-set(INCLUDE_INSTALL_DIR include)
-set(LIBRARY_INSTALL_DIR lib)
+set(INCLUDE_INSTALL_DIR "include")
+set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
+#==============================================================================
+# Required Dependencies
+#
 find_package(Boost REQUIRED COMPONENTS filesystem)
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 find_package(DART REQUIRED COMPONENTS core)
+include_directories(SYSTEM ${DART_INCLUDE_DIRS})
+
 find_package(OMPL REQUIRED)
+include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
+
 find_package(TinyXML2 REQUIRED)
+include_directories(SYSTEM ${TinyXML2_INCLUDE_DIRS})
 
+#==============================================================================
+# Register an Aikido library.
+#
+set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
 
-# Compilation setup
+function(aikido_add_library target_name)
+  add_library("${target_name}" SHARED ${ARGN})
+
+  install(TARGETS "${target_name}"
+    EXPORT "${PROJECT_NAME}Targets"
+    LIBRARY DESTINATION "${LIBRARY_INSTALL_DIR}"
+  )
+
+  set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
+endfunction()
+
+#==============================================================================
+# Register an Aikido test.
+#
+set_property(GLOBAL PROPERTY AIKIDO_TESTS)
+
+function(aikido_add_test target_name)
+  add_executable("${target_name}" ${ARGN})
+  add_test("${target_name}" "${target_name}")
+
+  target_link_libraries("${target_name}" gtest gtest_main)
+
+  set_property(GLOBAL APPEND PROPERTY AIKIDO_TESTS "${target_name}")
+endfunction()
+
+#==============================================================================
+# Building libraries and unit tests.
+#
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 include_directories(
-  include
-  src
-)
-include_directories(SYSTEM
-  ${Boost_INCLUDE_DIRS}
-  ${DART_INCLUDE_DIRS}
-  ${OMPL_INCLUDE_DIRS}
-  ${TinyXML2_INCLUDE_DIRS}
+  "include"
+  "src"
 )
 
-# Build
-add_library(${PROJECT_NAME} SHARED
-  src/path/BlendTrajectory.cpp
-  src/path/ShiftTrajectory.cpp
-  src/path/CartesianTwistTrajectory.cpp
-  src/statespace/StateSpace.cpp
-  src/statespace/RealVectorStateSpace.cpp
-  src/statespace/CompoundStateSpace.cpp
-  src/statespace/SE2StateSpace.cpp
-  src/statespace/SE3StateSpace.cpp
-  src/statespace/SO2StateSpace.cpp
-  src/statespace/SO2StateSpace.cpp
-  src/statespace/SO3StateSpace.cpp
-  src/statespace/dart/JointStateSpace.cpp
-  src/statespace/dart/MetaSkeletonStateSpace.cpp
-  src/statespace/dart/SE2JointStateSpace.cpp
-  src/statespace/dart/SE3JointStateSpace.cpp
-  src/statespace/dart/SO2JointStateSpace.cpp
-  src/statespace/dart/SO3JointStateSpace.cpp
-  src/statespace/dart/RealVectorJointStateSpace.cpp
-  src/constraint/uniform/CompoundStateSpaceSampleableConstraint.cpp
-  src/constraint/uniform/RealVectorStateSpaceSampleableConstraint.cpp
-  src/constraint/uniform/SE2StateSpaceSampleableConstraint.cpp
-  src/constraint/uniform/SE3StateSpaceSampleableConstraint.cpp
-  src/constraint/uniform/SO2StateSpaceSampleableConstraint.cpp
-  src/constraint/uniform/SO3StateSpaceSampleableConstraint.cpp
-  src/constraint/CollisionConstraint.cpp
-  src/constraint/TSR.cpp
-  src/constraint/TSRSampleGenerator.cpp
-  src/constraint/FrameConstraintAdaptor.cpp
-  src/constraint/FramePairConstraintAdaptor.cpp
-  src/constraint/PolynomialConstraint.cpp
-  src/constraint/DifferentiableProjector.cpp
-  src/constraint/IkSampleableConstraint.cpp
-  src/constraint/IkSampleGenerator.cpp
-  src/util/CatkinResourceRetriever.cpp
-  src/util/VanDerCorput.cpp
-  src/ompl/AIKIDOGeometricStateSpace.cpp
-  src/ompl/AIKIDOStateSampler.cpp
-  src/ompl/AIKIDOStateValidityChecker.cpp
-  src/util/PseudoInverse.cpp
-)
-target_link_libraries(${PROJECT_NAME}
-  ${DART_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${OMPL_LIBRARIES}
-  ${TinyXML2_LIBRARIES}
-)
+add_subdirectory("src")
 
+enable_testing()
+add_subdirectory("tests" EXCLUDE_FROM_ALL)
 
-# Install targets, headers, and a package.xml file (to satisfy REP-136).
-install(FILES package.xml
-  DESTINATION "share/${PROJECT_NAME}"
-)
-install(DIRECTORY include/
+# Targets to mimic a Catkin package. "tests" builds tests and "test" (or
+# "run_tests") runs them.
+get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
+add_custom_target(tests DEPENDS ${all_tests})
+add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+
+#==============================================================================
+# Installation.
+#
+install(DIRECTORY "include/"
   DESTINATION "${INCLUDE_INSTALL_DIR}"
 )
-install(TARGETS ${PROJECT_NAME}
-  EXPORT "${PROJECT_NAME}Targets"
-  LIBRARY DESTINATION "${LIBRARY_INSTALL_DIR}"
+
+# Install the package.xml file (to satisfy REP-136).
+install(FILES "package.xml"
+  DESTINATION "share/${PROJECT_NAME}"
 )
 
 # Generate and install a Targets.cmake file that contains EXPORTED targets, to
-# be included() in the Config.cmake file. The target set "r3Targets" is
+# be included() in the Config.cmake file. The target set "aikidoTargets" is
 # generated by the install(TARGETS) directive above.
 install(EXPORT "${PROJECT_NAME}Targets"
   FILE "${PROJECT_NAME}Targets.cmake"
@@ -105,7 +102,6 @@ install(EXPORT "${PROJECT_NAME}Targets"
 )
 
 # Generate and install a Config.cmake file.
-# TODO: We should also generate a _VERSION file.
 include(CMakePackageConfigHelpers)
 configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
@@ -116,6 +112,4 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   DESTINATION "${CONFIG_INSTALL_DIR}"
 )
 
-# Add unit tests using GTest.
-enable_testing()
-add_subdirectory(tests)
+# TODO: We should also generate and install a _VERSION file.

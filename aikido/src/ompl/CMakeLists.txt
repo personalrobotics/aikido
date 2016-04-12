@@ -1,0 +1,12 @@
+aikido_add_library("${PROJECT_NAME}_ompl"
+  AIKIDOGeometricStateSpace.cpp
+  AIKIDOStateSampler.cpp
+  AIKIDOStateValidityChecker.cpp
+)
+target_link_libraries("${PROJECT_NAME}_ompl"
+  "${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_statespace"
+  ${Boost_LIBRARIES}
+  ${DART_LIBRARIES}
+  ${OMPL_LIBRARIES}
+)

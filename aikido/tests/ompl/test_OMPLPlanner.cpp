@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
 #include <aikido/ompl/OMPLPlanner.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>

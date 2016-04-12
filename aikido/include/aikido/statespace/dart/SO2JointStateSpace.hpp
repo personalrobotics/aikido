@@ -14,7 +14,6 @@ class SO2JointStateSpace
 {
 public:
   using SO2StateSpace::State;
-  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SO2JointStateSpace(dart::dynamics::SingleDofJoint* _joint);
 

@@ -2,7 +2,6 @@
 #define AIKIDO_STATESPACE_JOINTSTATESPACE_H_
 #include <dart/dynamics/dynamics.h>
 #include "../StateSpace.hpp"
-#include "../../constraint/Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -11,8 +10,6 @@ namespace statespace {
 class JointStateSpace : public virtual StateSpace
 {
 public:
-  using SampleableConstraintPtr = constraint::SampleableConstraintPtr;
-
   explicit JointStateSpace(dart::dynamics::Joint* _joint);
 
   virtual ~JointStateSpace() = default;

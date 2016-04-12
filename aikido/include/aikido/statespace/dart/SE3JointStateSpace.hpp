@@ -14,7 +14,6 @@ class SE3JointStateSpace
 {
 public:
   using SE3StateSpace::State;
-  using JointStateSpace::SampleableConstraintPtr;
 
   explicit SE3JointStateSpace(dart::dynamics::FreeJoint* _joint);
 
