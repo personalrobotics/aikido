@@ -14,8 +14,8 @@ namespace constraint{
 class StackedConstraint : public Differentiable
 {
 public:
-
-  StackedConstraint(const std::vector<DifferentiablePtr>& _constraints,
+  StackedConstraint(
+    const std::vector<DifferentiablePtr>& _constraints,
     const std::shared_ptr<aikido::statespace::StateSpace> _stateSpace);
 
   // Documentation inherited.

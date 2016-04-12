@@ -15,6 +15,11 @@ enum class ConstraintType {EQ, INEQ};
 class Differentiable
 {
 public:
+  /// Gets the StateSpace that this constraint operates on.
+  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+
+  /// Returns a vector of constraints' types.
+  virtual std::vector<ConstraintType> getConstraintTypes() const = 0;
 
   /// Size of constraints
   virtual size_t getConstraintDimension() const = 0;
@@ -39,13 +44,6 @@ public:
   /// Returns (Value, Jacobian).
   virtual std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
     const statespace::StateSpace::State* _s) const = 0;
-
-  /// Returns a vector of constraints' types.
-  virtual std::vector<ConstraintType> getConstraintTypes() const = 0;
-
-  /// Gets the StateSpace that this constraint operates on.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
-  
 };
 
 using DifferentiablePtr = std::shared_ptr<Differentiable>;

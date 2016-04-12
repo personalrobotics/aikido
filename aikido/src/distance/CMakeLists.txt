@@ -1,0 +1,10 @@
+aikido_add_library("${PROJECT_NAME}_distance"
+  AngularDistanceMetric.cpp
+  EuclideanDistanceMetric.cpp
+  GeodesicDistanceMetric.cpp
+  WeightedDistanceMetric.cpp
+)
+target_link_libraries("${PROJECT_NAME}_distance"
+  "${PROJECT_NAME}_statespace"
+  ${DART_LIBRARIES}
+)

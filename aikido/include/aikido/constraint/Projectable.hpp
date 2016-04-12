@@ -11,7 +11,6 @@ namespace constraint{
 class Projectable
 {
 public:
-
   /// Projection _s to _out. Returns false if projection cannot be done. 
   virtual bool project(
     const statespace::StateSpace::State* _s,

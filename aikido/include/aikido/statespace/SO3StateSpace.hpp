@@ -96,7 +96,7 @@ public:
   void interpolate(const StateSpace::State* _from,
                    const StateSpace::State* _to,
                    const double _t,
-                   StateSpace::State* _state) const;
+                   StateSpace::State* _state) const override;
 
   // Documentation inherited. _tangent should be 3d twist.
   void expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;

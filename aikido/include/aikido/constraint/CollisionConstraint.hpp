@@ -9,8 +9,6 @@
 #include <dart/collision/Option.h>
 #include <dart/collision/CollisionGroup.h>
 
-using std::shared_ptr;
-
 namespace aikido
 {
 namespace constraint
@@ -27,7 +25,7 @@ public:
   {
   }
 
-  const shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
+  std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
   {
     return statespace;
   }
@@ -46,12 +44,12 @@ public:
 private:
   using CollisionGroup = dart::collision::CollisionGroup;
 
-  shared_ptr<aikido::statespace::MetaSkeletonStateSpace> statespace;
-  shared_ptr<dart::collision::CollisionDetector> collisionDetector;
+  std::shared_ptr<aikido::statespace::MetaSkeletonStateSpace> statespace;
+  std::shared_ptr<dart::collision::CollisionDetector> collisionDetector;
   dart::collision::Option collisionOptions;
-  std::vector<std::pair<shared_ptr<CollisionGroup>, shared_ptr<CollisionGroup>>>
+  std::vector<std::pair<std::shared_ptr<CollisionGroup>, std::shared_ptr<CollisionGroup>>>
       groupsToPairwiseCheck;
-  std::vector<shared_ptr<CollisionGroup>> groupsToSelfCheck;
+  std::vector<std::shared_ptr<CollisionGroup>> groupsToSelfCheck;
 };
 
 }  // constraint
