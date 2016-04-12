@@ -90,9 +90,10 @@ struct createDistanceMetricFor_impl<aikido::statespace::CompoundStateSpace> {
       std::shared_ptr<aikido::statespace::CompoundStateSpace> _sspace)
   {
     std::vector<std::shared_ptr<DistanceMetric> > metrics;
+    metrics.resize(_sspace->getNumStates());
     for (size_t i = 0; i < _sspace->getNumStates(); ++i) {
-      metrics.push_back(
-          createDistanceMetricFor_wrapper::create(_sspace->getSubSpacePtr<>(i)));
+      metrics[i] = 
+          createDistanceMetricFor_wrapper::create(_sspace->getSubSpacePtr<>(i));
     }
     return make_shared<WeightedDistanceMetric>(_sspace, metrics);
   }
