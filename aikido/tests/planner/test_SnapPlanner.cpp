@@ -1,6 +1,7 @@
-#include <gtest/gtest.h>
-#include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
+#include <gtest/gtest.h>
+#include "../constraint/MockConstraints.hpp"
+#include <aikido/planner/PlanningResult.hpp>
 #include <aikido/statespace/SO2StateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
@@ -10,54 +11,6 @@
 
 using std::shared_ptr;
 using std::make_shared;
-
-class FailingConstraint : public aikido::constraint::TestableConstraint
-{
-public:
-  FailingConstraint(shared_ptr<aikido::statespace::StateSpace> stateSpace)
-      : stateSpace{stateSpace}
-  {
-  }
-
-  bool isSatisfied(
-      const aikido::statespace::StateSpace::State* state) const override
-  {
-    return false;
-  }
-
-  const std::shared_ptr<aikido::statespace::StateSpace> getStateSpace()
-      const override
-  {
-    return stateSpace;
-  }
-
-private:
-  shared_ptr<aikido::statespace::StateSpace> stateSpace;
-};
-
-class PassingConstraint : public aikido::constraint::TestableConstraint
-{
-public:
-  PassingConstraint(shared_ptr<aikido::statespace::StateSpace> stateSpace)
-      : stateSpace{stateSpace}
-  {
-  }
-
-  bool isSatisfied(
-      const aikido::statespace::StateSpace::State* state) const override
-  {
-    return true;
-  }
-
-  const std::shared_ptr<aikido::statespace::StateSpace> getStateSpace()
-      const override
-  {
-    return stateSpace;
-  }
-
-private:
-  shared_ptr<aikido::statespace::StateSpace> stateSpace;
-};
 
 class SnapPlannerTest : public ::testing::Test
 {
