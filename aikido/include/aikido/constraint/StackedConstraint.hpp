@@ -10,7 +10,7 @@ namespace aikido {
 namespace constraint{
 
 /// Contains n constraints that take the same statespace. 
-/// getValue and getJacobian returns 
+/// getValue and getJacobian returns stacked vector and matrix.
 class StackedConstraint : public Differentiable
 {
 public:
