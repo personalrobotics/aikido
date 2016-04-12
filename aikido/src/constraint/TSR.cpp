@@ -190,21 +190,25 @@ Eigen::VectorXd TSR::getValue(
       distance(i) = 0; 
   }
 
-  /// TODO: TSR doesn't itself wrap, so what's the right way to compare? 
   for(int i = 3; i < 6; ++i)
   {
-    if (eulerZYX(i - 3) <  mBw(i, 0))
-      distance(i) = std::abs(eulerZYX(i - 3) - mBw(i, 0)); 
+    // Find n such that: 2*n*pi <= mBw(i, 0) < 2*(n+1)*pi 
+    int n = mBw(i, 0) / (2*M_PI);
 
-    else if (eulerZYX(i - 3) >  mBw(i, 1))
-      distance(i) = std::abs(eulerZYX(i - 3) - mBw(i, 1));
+    // Map eulerZYX(i-3) to [2*n*pi, 2*(n+1)*pi)
+    double angle = M_PI*2*n + eulerZYX(i - 3);
 
+    // Take min-distance between angle and either side of bound
+    if (angle < mBw(i, 0))
+      distance(i) = std::min(mBw(i, 0) - angle, angle - (mBw(i, 1) - 2*M_PI));
+
+    else if (mBw(i, 1) < angle)
+      distance(i) = std::min(angle - mBw(i, 1), mBw(i, 0) + 2*M_PI - angle); 
+    
     else
-      distance(i) = 0; 
+      distance(i) = 0;
 
   }
-
-  // TODO: Compare 8 equivalent representations
 
   return distance;
 
@@ -214,7 +218,6 @@ Eigen::VectorXd TSR::getValue(
 Eigen::MatrixXd TSR::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
-  // I'm just doing finite difference here.
   using SE3StateSpace = statespace::SE3StateSpace;
   using SE3State = SE3StateSpace::State;
 
@@ -232,6 +235,7 @@ Eigen::MatrixXd TSR::getJacobian(
   auto se3posit = mStateSpace->createState();
   auto se3negat = mStateSpace->createState();
 
+  // Finite Differencing.
   for(int i = 0; i < 6; ++i)
   {
     posit(i) = twist(i) + eps;
@@ -248,6 +252,16 @@ Eigen::MatrixXd TSR::getJacobian(
   }
 
   return jacobian;
+}
+
+//=============================================================================
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> TSR::getValueAndJacobian(
+  const statespace::StateSpace::State* _s) const
+{
+  Eigen::VectorXd value = getValue(_s);
+  Eigen::MatrixXd jacobian = getJacobian(_s);
+
+  return std::make_pair(value, jacobian);
 }
 
 //=============================================================================

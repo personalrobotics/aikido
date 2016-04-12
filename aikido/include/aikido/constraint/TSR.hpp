@@ -58,8 +58,14 @@ public:
   Eigen::VectorXd getValue(
     const statespace::StateSpace::State* _s) const override;
 
-  // Documentation inherited.
+  // Returns 6 x 6 matrix. 
+  // Jacobian of TSR w.r.t. se3 tangent vector in World Frame 
+  // -- the frame SE3 was written w.r.t. 
   Eigen::MatrixXd getJacobian(
+    const statespace::StateSpace::State* _s) const override;
+
+  // Documentation inherited.
+  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
     const statespace::StateSpace::State* _s) const override;
 
   // Documentation inherited.

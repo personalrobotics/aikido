@@ -27,3 +27,8 @@ aikido_add_test(test_TSR
   test_TSR.cpp)
 target_link_libraries(test_TSR
   "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_StackedConstraint
+  test_StackedConstraint.cpp)
+target_link_libraries(test_StackedConstraint
+  "${PROJECT_NAME}_constraint")

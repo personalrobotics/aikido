@@ -199,6 +199,7 @@ TEST(TSR, GetValue)
 {
   TSR tsr;
 
+  // non-trivial translation bounds 
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
   Bw(0,0) = 0;
   Bw(0,1) = 2;
@@ -237,6 +238,71 @@ TEST(TSR, GetValue)
   expected(0) = 1; 
   value = tsr.getValue(state);
   EXPECT_TRUE(tsr.getValue(state).isApprox(expected));
+
+
+  // TSR non-trivial angle bounds
+  Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(3,0) = 0;
+  Bw(3,1) = M_PI;
+
+  tsr.mBw = Bw;
+  
+  // strictly inside TSR
+  Eigen::Matrix3d rotation;
+  rotation = Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+
+  isometry = Eigen::Isometry3d::Identity();
+  isometry.linear() = rotation;
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
+
+
+  // boundary of TSR
+  rotation = Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+
+  isometry.linear() = rotation;
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  EXPECT_TRUE(value.isApproxToConstant(0));
+
+
+  /* outside TSR */
+  // [PI/2, PI] bound
+  Bw(3,0) = M_PI_2;
+  Bw(3,1) = M_PI;
+  tsr.mBw = Bw;
+
+  rotation = Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+  isometry.linear() = rotation;
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  expected = Eigen::Vector6d::Zero();
+  expected(3) = 0.1; 
+  EXPECT_TRUE(value.isApprox(expected));
+
+
+  // Same bound, but with 5*2*pi added to each end.  
+  Bw(3,0) = M_PI_2 + 5*(M_PI*2);
+  Bw(3,1) = M_PI + 5*(M_PI*2);
+
+  tsr.mBw = Bw;
+
+  rotation = Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+  isometry.linear() = rotation;
+  state.setIsometry(isometry);
+  value = tsr.getValue(state);
+  expected = Eigen::Vector6d::Zero();
+  expected(3) = 0.1; 
+  EXPECT_TRUE(value.isApprox(expected));
 
 }
 

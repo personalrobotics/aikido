@@ -12,6 +12,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   FramePairConstraintAdaptor.cpp
   PolynomialConstraint.cpp
   DifferentiableProjector.cpp
+  StackedConstraint.cpp
   IkSampleableConstraint.cpp
   IkSampleGenerator.cpp
 )

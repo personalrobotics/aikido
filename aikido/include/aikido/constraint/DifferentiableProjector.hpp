@@ -14,8 +14,9 @@ class DifferentiableProjector : public Projectable
 public:
 
   DifferentiableProjector(
-  	const DifferentiablePtr& _differentiable,
-  	int _maxIteration=1000);
+  	DifferentiablePtr _differentiable,
+  	int _maxIteration=1000, 
+    double _tolerance=1e-7);
 
   // Documentation inherited.
   bool project(
@@ -28,6 +29,7 @@ public:
 private:
   DifferentiablePtr mDifferentiable;
   int mMaxIteration;
+  int mTolerance;
 
   bool contains(const statespace::StateSpace::State* _s) const;
 };
