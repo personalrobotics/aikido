@@ -14,6 +14,8 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   DifferentiableProjector.cpp
   IkSampleableConstraint.cpp
   IkSampleGenerator.cpp
+  SatisfiedConstraint.cpp
+  dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_statespace"
