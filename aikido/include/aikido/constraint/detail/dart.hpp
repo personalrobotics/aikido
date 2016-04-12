@@ -25,11 +25,13 @@ struct ForOneOf<Factory, BaseParameter>
   }
 };
 
-template <template <class> class Factory, class BaseParameter, class Arg, class... Args>
+template <template <class> class Factory, class BaseParameter,
+          class Arg, class... Args>
 struct ForOneOf<Factory, BaseParameter, Arg, Args...>
 {
   static auto create(std::shared_ptr<BaseParameter> _delegate)
-    -> decltype(Factory<Arg>::create(std::dynamic_pointer_cast<Arg>(_delegate)))
+    -> decltype(Factory<Arg>::create(
+          std::dynamic_pointer_cast<Arg>(_delegate)))
   {
     if (auto arg = std::dynamic_pointer_cast<Arg>(_delegate))
     {
@@ -37,7 +39,8 @@ struct ForOneOf<Factory, BaseParameter, Arg, Args...>
     }
     else
     {
-      return ForOneOf<Factory, BaseParameter, Args...>::create(std::move(_delegate));
+      return ForOneOf<Factory, BaseParameter, Args...>::create(
+        std::move(_delegate));
     }
   }
 };
