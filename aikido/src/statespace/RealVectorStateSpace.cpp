@@ -92,6 +92,16 @@ void RealVectorStateSpace::getIdentity(StateSpace::State *_out) const
 }
 
 //=============================================================================
+void RealVectorStateSpace::getInverse(const StateSpace::State *_in,
+                                      StateSpace::State *_out) const
+{
+  auto in = static_cast<const State *>(_in);
+  auto out = static_cast<State *>(_out);
+
+  setValue(out, -getValue(in));
+}
+
+//=============================================================================
 unsigned int RealVectorStateSpace::getDimension() const { return mDimension; }
 
 //=============================================================================

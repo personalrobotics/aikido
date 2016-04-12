@@ -88,6 +88,16 @@ void SO3StateSpace::getIdentity(StateSpace::State *_out) const
 }
 
 //=============================================================================
+void SO3StateSpace::getInverse(const StateSpace::State *_in,
+                               StateSpace::State *_out) const
+{
+    auto in = static_cast<const State*>(_in);
+    auto out = static_cast<State*>(_out);
+    
+    setQuaternion(out, getQuaternion(in).inverse());
+}
+
+//=============================================================================
 unsigned int SO3StateSpace::getDimension() const { return 3; }
 
 //=============================================================================

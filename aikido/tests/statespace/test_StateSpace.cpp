@@ -46,6 +46,24 @@ TEST(RealVectorStateSpace, Identity)
   EXPECT_TRUE(out.getValue().isApprox(s1.getValue()));
 }
 
+TEST(RealVectorStateSpace, Inverse)
+{
+  RealVectorStateSpace rvss(3);
+
+  auto s1 = rvss.createState();
+  s1.setValue(Eigen::Vector3d(1, 2, 3));
+  auto ident = rvss.createState();
+  rvss.getIdentity(ident);
+
+  auto inv = rvss.createState();
+  rvss.getInverse(s1, inv);
+
+  auto out = rvss.createState();
+  rvss.compose(s1, inv, out);
+
+  EXPECT_TRUE(out.getValue().isApprox(ident.getValue()));
+}
+
 TEST(RealVectorStateSpace, ExpMap)
 {
   RealVectorStateSpace rvss(3);
@@ -105,6 +123,24 @@ TEST(SO2StateSpace, Identity)
   auto out = so2.createState();
   so2.compose(s1, ident, out);
   EXPECT_DOUBLE_EQ(s1.getAngle(), out.getAngle());
+}
+
+TEST(SO2StateSpace, Inverse)
+{
+  SO2StateSpace so2;
+  auto s1 = so2.createState();
+  s1.setAngle(M_PI / 5);
+
+  auto ident = so2.createState();
+  so2.getIdentity(ident);
+
+  auto inv = so2.createState();
+  so2.getInverse(s1, inv);
+
+  auto out = so2.createState();
+  so2.compose(s1, inv, out);
+
+  EXPECT_DOUBLE_EQ(ident.getAngle(), out.getAngle());
 }
 
 TEST(SO2StateSpace, ExpMap)
@@ -194,6 +230,22 @@ TEST(SO3StateSpace, Identity)
   so3.compose(&s1, &ident, &out);
 
   EXPECT_TRUE(s1.getQuaternion().isApprox(out.getQuaternion()));
+}
+
+TEST(SO3StateSpace, Inverse)
+{
+  SO3StateSpace so3;
+  SO3StateSpace::State s1(
+      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitZ())));
+  SO3StateSpace::State ident;
+  so3.getIdentity(&ident);
+  SO3StateSpace::State inv;
+  so3.getInverse(&s1, &inv);
+
+  SO3StateSpace::State out;
+  so3.compose(&s1, &inv, &out);
+
+  EXPECT_TRUE(ident.getQuaternion().isApprox(out.getQuaternion()));
 }
 
 TEST(SO3StateSpace, ExpMap)
@@ -333,6 +385,26 @@ TEST(SE2StateSpace, Identity)
   EXPECT_TRUE(state1.getIsometry().isApprox(out.getIsometry()));
 }
 
+TEST(SE2StateSpace, Inverse)
+{
+  SE2StateSpace space;
+  Eigen::Isometry2d pose1 = Eigen::Isometry2d::Identity();
+  pose1.rotate(Eigen::Rotation2Dd(M_PI_2));
+  auto state1 = space.createState();
+  state1.setIsometry(pose1);
+
+  auto ident = space.createState();
+  space.getIdentity(ident);
+
+  auto inv = space.createState();
+  space.getInverse(state1, inv);
+
+  auto out = space.createState();
+  space.compose(state1, inv, out);
+
+  EXPECT_TRUE(ident.getIsometry().isApprox(out.getIsometry()));
+}
+
 TEST(SE2StateSpace, ExpMap)
 {
   SE2StateSpace::State out;
@@ -386,6 +458,26 @@ TEST(SE3StateSpace, Identity)
   auto out = space.createState();
   space.compose(s1, ident, out);
   EXPECT_TRUE(s1.getIsometry().isApprox(out.getIsometry()));
+}
+
+TEST(SE3StateSpace, Inverse)
+{
+  SE3StateSpace space;
+
+  Eigen::Isometry3d pose1 = Eigen::Isometry3d::Identity();
+  pose1.rotate(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX()));
+  auto s1 = space.createState();
+  s1.setIsometry(pose1);
+
+  auto ident = space.createState();
+  space.getIdentity(ident);
+
+  auto inv = space.createState();
+  space.getInverse(s1, inv);
+
+  auto out = space.createState();
+  space.compose(s1, inv, out);
+  EXPECT_TRUE(ident.getIsometry().isApprox(out.getIsometry()));
 }
 
 TEST(SE3StateSpace, ExpMap)
@@ -454,6 +546,37 @@ TEST(CompoundStateSpace, Identity)
   const Vector2d out2 =
       out.getSubStateHandle<RealVectorStateSpace>(1).getValue();
   EXPECT_TRUE(out2.isApprox(Vector2d(3., 4.)));
+}
+
+TEST(CompoundStateSpace, Inverse)
+{
+  using Eigen::Vector2d;
+
+  CompoundStateSpace space({std::make_shared<SO2StateSpace>(),
+                            std::make_shared<RealVectorStateSpace>(2)});
+
+  CompoundStateSpace::ScopedState s1 = space.createState();
+  s1.getSubStateHandle<SO2StateSpace>(0).setAngle(M_PI_2);
+  s1.getSubStateHandle<RealVectorStateSpace>(1).setValue(Vector2d(3., 4.));
+
+  CompoundStateSpace::ScopedState ident = space.createState();
+  space.getIdentity(ident);
+
+  CompoundStateSpace::ScopedState inv = space.createState();
+  space.getInverse(s1, inv);
+
+  CompoundStateSpace::ScopedState out = space.createState();
+  space.compose(s1, inv, out);
+
+  const double out1 = out.getSubStateHandle<SO2StateSpace>(0).getAngle();
+  const double iout1 = ident.getSubStateHandle<SO2StateSpace>(0).getAngle();
+  EXPECT_DOUBLE_EQ(iout1, out1);
+
+  const Vector2d out2 =
+      out.getSubStateHandle<RealVectorStateSpace>(1).getValue();
+  const Vector2d iout2 =
+      ident.getSubStateHandle<RealVectorStateSpace>(1).getValue();
+  EXPECT_TRUE(out2.isApprox(iout2));
 }
 
 TEST(CompoundStateSpace, ExpMap)

@@ -77,6 +77,10 @@ public:
   void getIdentity(StateSpace::State *_out) const override;
 
   // Documentation inherited
+  void getInverse(const StateSpace::State *_in,
+                  StateSpace::State *_out) const override;
+
+  // Documentation inherited
   unsigned int getDimension() const override;
 
   // Documentation inherited

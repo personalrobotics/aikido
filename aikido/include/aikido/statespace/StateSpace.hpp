@@ -5,15 +5,17 @@
 #include <Eigen/Dense>
 #include "../util/RNG.hpp"
 
-namespace aikido {
-
-namespace statespace {
-
+namespace aikido
+{
+namespace statespace
+{
 /// Base class for all StateSpaces.
-class StateSpace {
+class StateSpace
+{
 public:
   /// Base class for all States.
-  class State {
+  class State
+  {
   protected:
     State() = default;
 
@@ -57,6 +59,10 @@ public:
   ///  compose(s, _out) = s
   virtual void getIdentity(State *_out) const = 0;
 
+  /// Inverse element for the group
+  /// compose(_in, _out) = getIdentity()
+  virtual void getInverse(const State *_in, State *_out) const = 0;
+
   /// Get the dimension of the state space
   virtual unsigned int getDimension() const = 0;
 
@@ -91,12 +97,11 @@ public:
 
   /// Exponential mapping of Lie algebra element to a Lie group element.
   virtual void expMap(const Eigen::VectorXd &_tangent, State *_out) const = 0;
-
 };
 
 using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-} // namespace statespace
-} // namespace aikido
+}  // namespace statespace
+}  // namespace aikido
 
 #endif

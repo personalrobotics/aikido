@@ -83,6 +83,15 @@ void SE3StateSpace::getIdentity(StateSpace::State *_out) const
 }
 
 //=============================================================================
+void SE3StateSpace::getInverse(const StateSpace::State *_in,
+                               StateSpace::State *_out) const
+{
+  auto in = static_cast<const State *>(_in);
+  auto out = static_cast<State *>(_out);
+  setIsometry(out, getIsometry(in).inverse());
+}
+
+//=============================================================================
 unsigned int SE3StateSpace::getDimension() const { return 6; }
 
 //=============================================================================

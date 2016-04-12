@@ -101,6 +101,16 @@ void SO2StateSpace::getIdentity(StateSpace::State *_out) const
 }
 
 //=============================================================================
+void SO2StateSpace::getInverse(const StateSpace::State *_in,
+                               StateSpace::State *_out) const
+{
+  auto in = static_cast<const State *>(_in);
+  auto out = static_cast<State *>(_out);
+  
+  setAngle(out, -getAngle(in));
+}
+
+//=============================================================================
 unsigned int SO2StateSpace::getDimension() const { return 1; }
 
 //=============================================================================
