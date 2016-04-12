@@ -1,8 +1,41 @@
 #include <cmath>
-#include <aikido/constraint/uniform/SE3StateSpaceSampleableConstraint.hpp>
+#include <aikido/constraint/uniform/SE3TranslationalConstraint.hpp>
 
 namespace aikido {
 namespace statespace {
+
+//=============================================================================
+class SE3StateSpaceSampleGenerator
+  : public constraint::SampleGenerator
+{
+public:
+  // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
+
+  // Documentation inherited.
+  bool sample(statespace::StateSpace::State* _state) override;
+
+  // Documentation inherited.
+  int getNumSamples() const override;
+
+  // Documentation inherited.
+  bool canSample() const override;
+
+private:
+  SE3StateSpaceSampleGenerator(
+    std::shared_ptr<statespace::SE3StateSpace> _space,
+    std::unique_ptr<util::RNG> _rng,
+    const Eigen::Vector3d& _lowerTranslationLimits,
+    const Eigen::Vector3d& _upperTranslationLimits);
+
+  std::shared_ptr<statespace::SE3StateSpace> mSpace;
+  std::unique_ptr<util::RNG> mRng;
+  std::array<
+    std::uniform_real_distribution<double>, 3> mTranslationDistributions;
+  std::uniform_real_distribution<double> mOrientationDistribution;
+
+  friend class SE3StateSpaceSampleableConstraint;
+};
 
 //=============================================================================
 SE3StateSpaceSampleGenerator::SE3StateSpaceSampleGenerator(
