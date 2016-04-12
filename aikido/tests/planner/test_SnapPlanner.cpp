@@ -110,14 +110,14 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
                        &planningResult);
 
   auto subSpace = stateSpace->getSubSpace<SO2StateSpace>(0);
-  EXPECT_EQ(2, traj->size());
+  EXPECT_EQ(2, traj.size());
 
   auto startValue =
       startState->getSubStateHandle<SO2StateSpace>(0).getRotation();
 
   auto traj0 = stateSpace->getSubStateHandle<SO2StateSpace>(
                                static_cast<MetaSkeletonStateSpace::State*>(
-                                   traj->at(0).getState()),
+                                   traj.at(0).getState()),
                                0).getRotation();
 
   EXPECT_TRUE(startValue.isApprox(traj0));
@@ -126,7 +126,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
   auto traj1 = stateSpace->getSubStateHandle<SO2StateSpace>(
                                static_cast<MetaSkeletonStateSpace::State*>(
-                                   traj->at(traj->size() - 1).getState()),
+                                   traj.at(traj.size() - 1).getState()),
                                0).getRotation();
 
   EXPECT_TRUE(goalValue.isApprox(traj1))
@@ -137,5 +137,5 @@ TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
   auto traj = planSnap(*startState, *goalState, stateSpace, failingConstraint,
                        &planningResult);
-  EXPECT_EQ(nullptr, traj) << "Failed plan should return `nullptr`";
+  EXPECT_EQ(0, traj.size());  // TODO boost::optional
 }
