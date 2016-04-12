@@ -37,7 +37,6 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 	for(size_t i=0; i < marker_message->markers.size(); i++)
 	{
-		std::cout<<"Iteration "<<i<<std::endl;
 		//Get marker, tag ID, and detection transform name 
 		visualization_msgs::Marker marker_transform = marker_message->markers[i];
 		ros::Time marker_stamp = marker_transform.header.stamp;
@@ -123,13 +122,10 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				std::string body_path(mUrdfPath);
 				body_path.append(body_name);
 				dart::utils::DartLoader urdfLoader;
-
-				std::cout<<"Body path is "<<body_path<<std::endl;
 				
 				skel_to_update = 
 					urdfLoader.parseSkeleton(body_path,mResourceRetrieverPtr);
 				
-				std::cout<<"Skeleton loaded"<<std::endl;
 				if(!skel_to_update)
 					std::cout<<"Empty skel ptr!"<<std::endl;
 				skel_to_update->setName(skel_name);
@@ -141,7 +137,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				skel_to_update = *it;
 			}
 
-			std::cout<<"Checking skel joints"<<std::endl;
+
 			//Common stuff for old or new nodes
 			//Ignore if body has > 1 joint - NEED TO GENERALIZE
 			if(skel_to_update->getNumJoints() != 1){
@@ -160,12 +156,12 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				std::cerr << "Could not cast the joint of the body to a Free Joint " << std::endl;
 				throw std::bad_cast();
 			}
-			std::cout<<"Skel pose";
+
 			freejtptr->setTransform(skel_pose);
 
 			if(is_new_skel){
 				//Append to list
-				std::cout<<"Append to list"<<std::endl;
+				std::cout<<"Added "<<skel_to_update->getName()<<" to detections!"<<std::endl;
 				skeleton_list.push_back(skel_to_update);
 			}
 
