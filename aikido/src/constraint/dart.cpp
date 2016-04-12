@@ -37,7 +37,11 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
   std::shared_ptr<statespace::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
-  return nullptr; // TODO: Implement this.
+  return detail::ForOneOf<
+      detail::createSampleableFor_impl,
+      statespace::JointStateSpace,
+      detail::JointStateSpaceTypeList
+    >::create(std::move(_stateSpace), std::move(_rng));
 }
 
 } // namespace constraint
