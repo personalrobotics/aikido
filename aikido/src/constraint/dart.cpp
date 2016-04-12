@@ -21,11 +21,15 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 std::unique_ptr<Differentiable> createDifferentiableBounds(
   statespace::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
+  if (!_metaSkeleton)
+    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
+
   const auto n = _metaSkeleton->getNumStates();
 
   std::vector<std::shared_ptr<Differentiable>> constraints;
   constraints.reserve(n);
 
+  // TODO: Filter out trivial constraints for efficiency.
   for (size_t i = 0; i < n; ++i)
   {
     auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
@@ -37,7 +41,8 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
   // TODO: We should std::move constraints here, but we can't because
   // StackedConstraint does not take by value.
-  return dart::common::make_unique<StackedConstraint>(constraints);
+  return dart::common::make_unique<StackedConstraint>(
+    constraints, _metaSkeleton);
 }
 
 //=============================================================================

@@ -55,7 +55,15 @@ Eigen::VectorXd SatisfiedConstraint::getValue(
 Eigen::MatrixXd SatisfiedConstraint::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
-  return Eigen::Matrix<double, 0, 1>();
+  return Eigen::Matrix<double, 0, 0>();
+}
+
+//=============================================================================
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> SatisfiedConstraint
+  ::getValueAndJacobian(const statespace::StateSpace::State* _s) const
+{
+  return std::pair<Eigen::VectorXd, Eigen::MatrixXd>(
+    Eigen::Matrix<double, 0, 1>(), Eigen::Matrix<double, 0, 0>());
 }
 
 } // namespace constraint

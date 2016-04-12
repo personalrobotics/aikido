@@ -2,8 +2,9 @@
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
 
 namespace aikido {
-namespace constraint{
+namespace constraint {
 
+//=============================================================================
 DifferentiableSubSpace::DifferentiableSubSpace(
       std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
       DifferentiablePtr _constraint, size_t _index)
@@ -30,21 +31,25 @@ DifferentiableSubSpace::DifferentiableSubSpace(
       "Constraint does not apply to the specified SubSpace.");
 }
 
+//=============================================================================
 statespace::StateSpacePtr DifferentiableSubSpace::getStateSpace() const
 {
   return mStateSpace;
 }
 
+//=============================================================================
 std::vector<ConstraintType> DifferentiableSubSpace::getConstraintTypes() const
 {
   return mConstraint->getConstraintTypes();
 }
 
+//=============================================================================
 size_t DifferentiableSubSpace::getConstraintDimension() const
 {
   return mConstraint->getConstraintDimension();
 }
 
+//=============================================================================
 Eigen::VectorXd DifferentiableSubSpace::getValue(
   const statespace::StateSpace::State* _s) const
 {
@@ -53,12 +58,23 @@ Eigen::VectorXd DifferentiableSubSpace::getValue(
   return mConstraint->getValue(substate);
 }
 
-Eigen::MatrixXd DifferentiableSubSpace:: getJacobian(
+//=============================================================================
+Eigen::MatrixXd DifferentiableSubSpace::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   auto state = static_cast<const statespace::CompoundStateSpace::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
   return mConstraint->getJacobian(substate);
+}
+
+//=============================================================================
+std::pair<Eigen::VectorXd, Eigen::MatrixXd>
+  DifferentiableSubSpace::getValueAndJacobian(
+    const statespace::StateSpace::State* _s) const
+{
+  auto state = static_cast<const statespace::CompoundStateSpace::State*>(_s);
+  auto substate = mStateSpace->getSubState<>(state, mIndex);
+  return mConstraint->getValueAndJacobian(substate);
 }
 
 } // constraint
