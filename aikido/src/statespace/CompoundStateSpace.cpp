@@ -205,5 +205,34 @@ void CompoundStateSpace::expMap(const Eigen::VectorXd &_tangent,
   }
 }
 
+//=============================================================================
+void CompoundStateSpace::logMap(const StateSpace::State *_in,
+                                Eigen::VectorXd &_tangent) const
+{
+  int dimension = getDimension();
+
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != dimension) {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected " << dimension << ", got "
+        << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  auto in = static_cast<const State *>(_in);
+
+  int index = 0;
+  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+    int dim = mSubspaces[i]->getDimension();
+    Eigen::VectorXd segment(dim);
+    mSubspaces[i]->logMap(getSubState<>(in, i), segment);
+
+    // Eigen function for this?
+    for (size_t j = 0; j < dim; ++j)
+        _tangent[index+j] = segment[j];
+    index += dim;
+  }
+}
+
 }  // namespace statespace
 }  // namespace aikido

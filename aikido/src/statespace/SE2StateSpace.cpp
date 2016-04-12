@@ -83,11 +83,11 @@ void SE2StateSpace::getIdentity(StateSpace::State* _out) const
 }
 
 //=============================================================================
-void SE2StateSpace::getInverse(const StateSpace::State *_in,
-                               StateSpace::State *_out) const
+void SE2StateSpace::getInverse(const StateSpace::State* _in,
+                               StateSpace::State* _out) const
 {
-  auto in = static_cast<const State *>(_in);
-  auto out = static_cast<State *>(_out);
+  auto in = static_cast<const State*>(_in);
+  auto out = static_cast<State*>(_out);
   setIsometry(out, getIsometry(in).inverse());
 }
 
@@ -146,6 +146,26 @@ void SE2StateSpace::expMap(const Eigen::VectorXd& _tangent,
   transform.translation() = translation;
 
   out->mTransform = transform;
+}
+
+//=============================================================================
+void SE2StateSpace::logMap(const StateSpace::State* _in,
+                           Eigen::VectorXd& _tangent) const
+{
+  if (_tangent.rows() != 3) {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 3"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  auto in = static_cast<const State*>(_in);
+
+  Isometry2d transform = getIsometry(in);
+  _tangent.bottomRows(2) = transform.translation();
+  Eigen::Rotation2Dd rotation = Eigen::Rotation2Dd::Identity();
+  rotation.fromRotationMatrix(transform.rotation());
+  _tangent(0) = rotation.angle();
 }
 
 }  // namespace statespace

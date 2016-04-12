@@ -154,5 +154,24 @@ void SE3StateSpace::expMap(const Eigen::VectorXd &_tangent,
   out->mTransform = transform;
 }
 
+//=============================================================================
+void SE3StateSpace::logMap(const StateSpace::State *_in,
+                           Eigen::VectorXd &_tangent) const
+{
+
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 6) {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 6"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  auto in = static_cast<const State *>(_in);
+  Eigen::Isometry3d transform = getIsometry(in);
+
+  _tangent = dart::math::logMap(transform);
+}
+
 }  // namespace statespace
 }  // namespace aikido

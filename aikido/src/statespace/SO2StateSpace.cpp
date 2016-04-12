@@ -106,7 +106,7 @@ void SO2StateSpace::getInverse(const StateSpace::State *_in,
 {
   auto in = static_cast<const State *>(_in);
   auto out = static_cast<State *>(_out);
-  
+
   setAngle(out, -getAngle(in));
 }
 
@@ -185,6 +185,23 @@ void SO2StateSpace::expMap(const Eigen::VectorXd &_tangent,
 
   double angle = _tangent(0);
   out->mAngle = angle;
+}
+
+//=============================================================================
+void SO2StateSpace::logMap(const StateSpace::State *_in,
+                           Eigen::VectorXd &_tangent) const
+{
+
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 1) {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 1"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+
+  auto in = static_cast<const State *>(_in);
+  _tangent(0) = getAngle(in);
 }
 
 }  // namespace statespace

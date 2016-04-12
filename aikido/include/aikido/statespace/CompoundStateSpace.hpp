@@ -113,9 +113,13 @@ public:
   void interpolate(const StateSpace::State *_from, const StateSpace::State *_to,
                    const double _t, StateSpace::State *_State) const override;
 
-  // Documentation inherited. _tangent should be 3d twist.
+  // Documentation inherited.
   void expMap(const Eigen::VectorXd &_tangent,
               StateSpace::State *_out) const override;
+
+  // Documentation inherited
+  void logMap(const StateSpace::State *_in,
+              Eigen::VectorXd &_tangent) const override;
 
 private:
   std::vector<StateSpacePtr> mSubspaces;

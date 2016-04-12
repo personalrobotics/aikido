@@ -91,10 +91,10 @@ void SO3StateSpace::getIdentity(StateSpace::State *_out) const
 void SO3StateSpace::getInverse(const StateSpace::State *_in,
                                StateSpace::State *_out) const
 {
-    auto in = static_cast<const State*>(_in);
-    auto out = static_cast<State*>(_out);
-    
-    setQuaternion(out, getQuaternion(in).inverse());
+  auto in = static_cast<const State *>(_in);
+  auto out = static_cast<State *>(_out);
+
+  setQuaternion(out, getQuaternion(in).inverse());
 }
 
 //=============================================================================
@@ -172,6 +172,25 @@ void SO3StateSpace::expMap(const Eigen::VectorXd &_tangent,
 
   Eigen::Isometry3d transform = dart::math::expMap(tangent);
   out->setQuaternion(Quaternion(transform.rotation()));
+}
+
+//=============================================================================
+void SO3StateSpace::logMap(const StateSpace::State *_in,
+                           Eigen::VectorXd &_tangent) const
+{
+  // TODO: Skip these checks in release mode.
+  if (_tangent.rows() != 3) {
+    std::stringstream msg;
+    msg << "_tangent has incorrect size: expected 3"
+        << ", got " << _tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
+  auto in = static_cast<const State *>(_in);
+
+  // Compute rotation matrix from quaternion
+  Eigen::Matrix3d rotMat = getQuaternion(in).toRotationMatrix();
+  _tangent = dart::math::logMap(rotMat);
+
 }
 
 }  // namespace statespace

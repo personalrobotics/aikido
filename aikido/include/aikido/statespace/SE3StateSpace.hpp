@@ -107,6 +107,10 @@ public:
   // Documentation inherited. _tangent should be 6d twist (w, v).
   void expMap(const Eigen::VectorXd &_tangent,
               StateSpace::State *_out) const override;
+
+  // Documentation inherited
+  void logMap(const StateSpace::State *_in,
+              Eigen::VectorXd &_tangent) const override;
 };
 
 }  // namespace statespace

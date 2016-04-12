@@ -97,6 +97,9 @@ public:
 
   /// Exponential mapping of Lie algebra element to a Lie group element.
   virtual void expMap(const Eigen::VectorXd &_tangent, State *_out) const = 0;
+
+  /// Log mapping of Lie group element to a Lie algebra element
+  virtual void logMap(const State *_in, Eigen::VectorXd &_tangent) const = 0;
 };
 
 using StateSpacePtr = std::shared_ptr<StateSpace>;

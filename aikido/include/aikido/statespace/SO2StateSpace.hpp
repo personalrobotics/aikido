@@ -117,6 +117,11 @@ public:
   // Documentation inherited.
   void expMap(const Eigen::VectorXd& _tangent,
               StateSpace::State* _out) const override;
+
+  // Documentation inherited
+  void logMap(const StateSpace::State *_in,
+              Eigen::VectorXd &_tangent) const override;
+
 };
 
 }  // namespace statespace

@@ -93,6 +93,10 @@ public:
   void expMap(const Eigen::VectorXd &_tangent,
               StateSpace::State *_out) const override;
 
+  // Documentation inherited
+  void logMap(const StateSpace::State *_in,
+              Eigen::VectorXd &_tangent) const override;
+
 private:
   /// Gets the value stored in a RealVectorStateSpace::State.
   Eigen::Map<Eigen::VectorXd> getMutableValue(State *_state) const;
