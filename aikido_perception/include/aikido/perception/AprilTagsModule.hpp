@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <ros/forwards.h>
 #include <ros/single_subscriber_publisher.h>
+#include <aikido/perception/ConfigDataLoader.hpp>
 #include <tf/transform_listener.h>
 #include "yaml-cpp/yaml.h"
 
@@ -20,31 +21,28 @@ namespace perception{
 class AprilTagsModule : public virtual PerceptionModule
 {
 public:
-	AprilTagsModule(ros::NodeHandle _node, const std::string _marker_topic, const std::string _marker_data_path,
-					const dart::common::ResourceRetrieverPtr& _delegate, const std::string _urdf_path, 
-					const std::string _destination_frame, dart::dynamics::BodyNode* _reference_link);
-	~AprilTagsModule()
-	{
-	}
+	AprilTagsModule(const ros::NodeHandle node, const std::string markerTopic, ConfigDataLoader* configData,
+					const dart::common::ResourceRetrieverPtr& resourceRetriever, const std::string urdfPath, 
+					const std::string destinationFrame, dart::dynamics::Frame* referenceLink);
+	virtual ~AprilTagsModule() = default;
 
-	void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double timeout=10.0) override; 
+
+	void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout=10.0, ros::Time timestamp=ros::Time::now()) override; 
 
 
 private:
 	//Member variables
-	std::string marker_topic;
-	std::string marker_data_path;
-	std::string urdf_path;
-	std::string destination_frame;
-	dart::common::ResourceRetrieverPtr delegate;
-	dart::dynamics::BodyNode* reference_link;
+	std::string mMarkerTopic;
+	std::string mUrdfPath;
+	std::string mDestinationFrame;
+	dart::common::ResourceRetrieverPtr mResourceRetrieverPtr;
+	dart::dynamics::Frame* mReferenceLink;
 
-	tf::TransformListener listener;
+	ConfigDataLoader *mConfigData;
+	tf::TransformListener mListener;
 
-	ros::NodeHandle node_;
-	YAML::Node tag_data;
-
-	void getTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset);
+	ros::NodeHandle mNode;
+	YAML::Node mTagData;
 
 };
 

@@ -1,5 +1,5 @@
 #include <aikido/perception/AprilTagsModule.hpp>
-#include <aikido/perception/yaml_conversion.hpp>
+#include "dart/common/Console.h"
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <ros/topic.h>
@@ -14,44 +14,49 @@
 namespace aikido{
 namespace perception{
 
-AprilTagsModule::AprilTagsModule(ros::NodeHandle _node,const std::string _marker_topic, const std::string _marker_data_path,
-								const dart::common::ResourceRetrieverPtr& _delegate, const std::string _urdf_path,	
-								const std::string _destination_frame, dart::dynamics::BodyNode* _reference_link):
-		node_(_node),
-		marker_topic(_marker_topic),
-		marker_data_path(_marker_data_path),
-		delegate(_delegate),
-		urdf_path(_urdf_path),
-		destination_frame(_destination_frame),
-		reference_link(_reference_link)
+AprilTagsModule::AprilTagsModule(const ros::NodeHandle node,const std::string markerTopic, ConfigDataLoader* configData,
+								const dart::common::ResourceRetrieverPtr& resourceRetriever, const std::string urdfPath,	
+								const std::string destinationFrame, dart::dynamics::Frame* referenceLink):
+		mNode(node),
+		mMarkerTopic(markerTopic),
+		mConfigData(configData),
+		mResourceRetrieverPtr(resourceRetriever),
+		mUrdfPath(urdfPath),
+		mDestinationFrame(destinationFrame),
+		mReferenceLink(referenceLink)
 {
-	//Load JSON file
-	tag_data = YAML::LoadFile(marker_data_path.c_str());
 }
 
 
-void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double timeout)
+void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout, ros::Time timestamp)
 {
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list
 	visualization_msgs::MarkerArrayConstPtr marker_message
- 			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(marker_topic,node_,ros::Duration(timeout));
+ 			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(mMarkerTopic,mNode,ros::Duration(_timeout));
 
 	for(size_t i=0; i < marker_message->markers.size(); i++)
 	{
+		std::cout<<"Iteration "<<i<<std::endl;
 		//Get marker, tag ID, and detection transform name 
 		visualization_msgs::Marker marker_transform = marker_message->markers[i];
+		ros::Time marker_stamp = marker_transform.header.stamp;
 		std::string tag_name = marker_transform.ns;
 		std::string detection_frame(marker_transform.header.frame_id);
 
-		//check if marker namespace in tag_file
-		if (tag_data[tag_name]){
+		if(marker_stamp < timestamp){
+			dtwarn << "Marker stamp " << marker_stamp<< " for " << tag_name 
+			<< "is behind timestamp parameter: " <<timestamp <<"\n";
 
-			//Get parsed tag file and offset info!
-			std::string body_name;
-			Eigen::Matrix4d skel_offset;
-			getTagNameOffset(tag_name,body_name,skel_offset);
+			continue;
+		}
 
+		std::string body_name;
+		Eigen::Matrix4d skel_offset;
+
+		//check if tag name is in database
+		if (mConfigData->getTagNameOffset(tag_name,body_name,skel_offset))
+		{
 			//Get orientation of marker
 			Eigen::Quaterniond orien(marker_transform.pose.orientation.w,
 									marker_transform.pose.orientation.x,
@@ -68,10 +73,10 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			tf::StampedTransform transform;
 
 			try{
-				listener.waitForTransform(destination_frame,detection_frame,
-					ros::Time(0),ros::Duration(timeout));
+				mListener.waitForTransform(mDestinationFrame,detection_frame,
+					ros::Time(0),ros::Duration(_timeout));
 
-				listener.lookupTransform(destination_frame,detection_frame,
+				mListener.lookupTransform(mDestinationFrame,detection_frame,
 					ros::Time(0), transform);
 			}
 			catch(tf::TransformException ex){
@@ -92,7 +97,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			temp_pose.matrix() = frame_pose * marker_pose;
 			Eigen::Isometry3d skel_pose;
 			skel_pose.matrix() = temp_pose * skel_offset;
-			Eigen::Isometry3d link_offset = reference_link->getWorldTransform();
+			Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
 			skel_pose = link_offset * skel_pose;
 
 			//Check if skel in skel_list
@@ -100,65 +105,75 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			//If not then append skeleton
 			std::string skel_name = body_name.substr(0,body_name.find('.'));
 			skel_name.append(std::to_string(marker_transform.id));
-			bool is_new_skel = true; 
+			bool is_new_skel;
 
-			for(size_t j=0;j < skeleton_list.size(); j++)
-			{
-				dart::dynamics::SkeletonPtr this_skel = skeleton_list[j];
-				if(this_skel->getName() == skel_name){
-					//Exists - just update pose
-					is_new_skel = false;
-					//Assumes single joint body
-					dart::dynamics::Joint* jtptr = this_skel->getJoint(0);
+			//Search skeleton_list for skeleton
+			const auto it = std::find_if(std::begin(skeleton_list), std::end(skeleton_list),
+				[&](const dart::dynamics::SkeletonPtr& skeleton)
+			  	{
+					return skeleton->getName() == skel_name;
+			  	}
+			);
 
-					//Downcast Joint to FreeJoint
-					dart::dynamics::FreeJoint* freejtptr = dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
+			dart::dynamics::SkeletonPtr skel_to_update;
 
-					//Check if successful down-cast
-					if(freejtptr == NULL){
-						throw std::bad_cast();
-					}
-					freejtptr->setTransform(skel_pose);
-					break;
-				}
-			}
-
-			if(is_new_skel){
-				//Read Skeleton file corresp. to body_name
-				//TODO  - append path correctly
-				std::string body_path(urdf_path);
+			if (it == std::end(skeleton_list)){
+				//New skeleton
+				is_new_skel = true;
+				std::string body_path(mUrdfPath);
 				body_path.append(body_name);
 				dart::utils::DartLoader urdfLoader;
-				dart::dynamics::SkeletonPtr new_skel = 
-					urdfLoader.parseSkeleton(body_path,delegate);
-				new_skel->setName(skel_name);
-				dart::dynamics::Joint* jtptr = new_skel->getJoint(0);
-				dart::dynamics::FreeJoint* freejtptr = dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
 
-				if(freejtptr == NULL){
-					throw std::bad_cast();
-				}
-				freejtptr->setTransform(skel_pose);
+				std::cout<<"Body path is "<<body_path<<std::endl;
+				
+				skel_to_update = 
+					urdfLoader.parseSkeleton(body_path,mResourceRetrieverPtr);
+				
+				std::cout<<"Skeleton loaded"<<std::endl;
+				if(!skel_to_update)
+					std::cout<<"Empty skel ptr!"<<std::endl;
+				skel_to_update->setName(skel_name);
 
-				//Append to skeleton list
-				skeleton_list.push_back(new_skel);
 			}
+			else{
+				//Get existing skeletonPtr
+				is_new_skel = false;
+				skel_to_update = *it;
+			}
+
+			std::cout<<"Checking skel joints"<<std::endl;
+			//Common stuff for old or new nodes
+			//Ignore if body has > 1 joint - NEED TO GENERALIZE
+			if(skel_to_update->getNumJoints() != 1){
+				dtwarn << "Ignoring skeleton " << skel_to_update->getName()
+					<< "because it does not have 1 joint \n";
+				continue;
+			}
+
+			dart::dynamics::Joint* jtptr = skel_to_update->getJoint(0);
+
+			//Downcast Joint to FreeJoint
+			dart::dynamics::FreeJoint* freejtptr = dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
+
+			//Check if successful down-cast
+			if(freejtptr == NULL){
+				std::cerr << "Could not cast the joint of the body to a Free Joint " << std::endl;
+				throw std::bad_cast();
+			}
+			std::cout<<"Skel pose";
+			freejtptr->setTransform(skel_pose);
+
+			if(is_new_skel){
+				//Append to list
+				std::cout<<"Append to list"<<std::endl;
+				skeleton_list.push_back(skel_to_update);
+			}
+
 		}
 
 	}
 
 }
-
-void AprilTagsModule::getTagNameOffset(std::string tag_name, std::string& body_name, Eigen::Matrix4d& body_offset)
-{
-	//For NEWER JSON file
-	//Assumes field in file
-		
-	YAML::Node name_offset = tag_data[tag_name];
-	body_name = name_offset["name"].as<std::string>();
-	body_offset = name_offset["offset"].as<Eigen::Matrix4d>();
-}
-
 
 
 } //namespace perception

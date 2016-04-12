@@ -17,4 +17,5 @@
   <depend>std_msgs</depend>
   <depend>roscpp</depend>
   <depend>visualization_msgs</depend>
+  <depend>yaml-cpp</depend>
 </package>

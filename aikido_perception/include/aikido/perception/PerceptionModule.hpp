@@ -14,7 +14,7 @@ public:
 
 
   //THE SIGNATURE MIGHT DIFFER FOR OTHER PERCEPTION METHODS - NEED TO ADDRESS
-  virtual void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double timeout) = 0;
+  virtual void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double timeout, ros::Time timestamp) = 0;
 
 };
 }
