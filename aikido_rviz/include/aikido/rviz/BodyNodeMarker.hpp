@@ -43,8 +43,6 @@ private:
   ShapeFrameMarkerMap mShapeFrameMarkers;
 
   std::string getName(dart::dynamics::BodyNode const &bodyNode);
-
-  void onStructuralChange(dart::dynamics::BodyNode const *bodyNode);
 };
 
 } // namespace rviz

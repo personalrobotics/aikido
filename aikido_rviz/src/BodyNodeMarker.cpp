@@ -12,9 +12,6 @@ using dart::dynamics::ShapeNode;
 using aikido::rviz::BodyNodeMarker;
 using interactive_markers::InteractiveMarkerServer;
 
-//const std::vector<const ShapeNode*> getShapeNodes() const;
-
-
 BodyNodeMarker::BodyNodeMarker(ResourceServer *resourceServer,
                                InteractiveMarkerServer *markerServer,
                                WeakBodyNodePtr const &bodyNodeWeak)
@@ -26,11 +23,9 @@ BodyNodeMarker::BodyNodeMarker(ResourceServer *resourceServer,
   BodyNodePtr const bodyNode = mBodyNode.lock();
   if (bodyNode) {
     mName = getName(*bodyNode);
-#if 0
-    mOnStructuralChange = bodyNode->onStructuralChange.connect(
-      std::bind(&BodyNodeMarker::onStructuralChange, this, _1));
-#endif
   }
+
+  // TODO: Rename the marker if the BodyNode changes name.
 }
 
 bool BodyNodeMarker::update()
@@ -103,9 +98,4 @@ std::string BodyNodeMarker::getName(BodyNode const &bodyNode)
   ss << bodyNode.getSkeleton()->getName() << ":"
      << bodyNode.getName();
   return ss.str();
-}
-
-void BodyNodeMarker::onStructuralChange(BodyNode const *bodyNode)
-{
-  mName = getName(*bodyNode);
 }
