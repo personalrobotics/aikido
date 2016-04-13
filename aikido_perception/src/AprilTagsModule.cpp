@@ -1,3 +1,11 @@
+/** 
+ * @file AprilTagsModule.cpp
+ * @author Shushman Choudhury
+ * @date Apr 14, 2016
+ * @brief The implementation of the April Tags detector. The function detectObjects
+ * waits for the next ROS message on the specified topic.
+ */
+
 #include <aikido/perception/AprilTagsModule.hpp>
 #include "dart/common/Console.h"
 #include <visualization_msgs/Marker.h>
@@ -14,6 +22,8 @@
 namespace aikido{
 namespace perception{
 
+//================================================================================================================================
+
 AprilTagsModule::AprilTagsModule(const ros::NodeHandle node,const std::string markerTopic, ConfigDataLoader* configData,
 								const dart::common::ResourceRetrieverPtr& resourceRetriever, const std::string urdfPath,	
 								const std::string destinationFrame, dart::dynamics::Frame* referenceLink):
@@ -27,7 +37,7 @@ AprilTagsModule::AprilTagsModule(const ros::NodeHandle node,const std::string ma
 {
 }
 
-
+//================================================================================================================================
 void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout, ros::Time timestamp)
 {
 	//Looks at all detected tags, looks up config file 
@@ -70,12 +80,13 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 			//For the frame-frame transform
 			tf::StampedTransform transform;
+			tf::TransformListener listener;
 
 			try{
-				mListener.waitForTransform(mDestinationFrame,detection_frame,
+				listener.waitForTransform(mDestinationFrame,detection_frame,
 					ros::Time(0),ros::Duration(_timeout));
 
-				mListener.lookupTransform(mDestinationFrame,detection_frame,
+				listener.lookupTransform(mDestinationFrame,detection_frame,
 					ros::Time(0), transform);
 			}
 			catch(tf::TransformException ex){
@@ -139,7 +150,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 
 			//Common stuff for old or new nodes
-			//Ignore if body has > 1 joint - NEED TO GENERALIZE
+			//Ignore if body has > 1 joint
 			if(skel_to_update->getNumJoints() != 1){
 				dtwarn << "Ignoring skeleton " << skel_to_update->getName()
 					<< "because it does not have 1 joint \n";

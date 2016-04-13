@@ -1,3 +1,11 @@
+/** 
+ * @file AprilTagsModule.hpp
+ * @author Shushman Choudhury
+ * @date Apr 14, 2016
+ * @brief The header for the April Tags detector. The function detectObjects
+ * waits for the next ROS message on the specified topic.
+ */
+
 #ifndef AIKIDO_PERCEPTION_APRILTAGSMODULE_H
 #define AIKIDO_PERCEPTION_APRILTAGSMODULE_H
 
@@ -18,6 +26,7 @@
 namespace aikido{
 namespace perception{
 
+/// The April Tag detector 
 class AprilTagsModule : public virtual PerceptionModule
 {
 public:
@@ -31,18 +40,26 @@ public:
 
 
 private:
-	//Member variables
-	std::string mMarkerTopic;
+	///The name of the ROS topic to read marker info from
+	std::string mMarkerTopic;	
+
+	///The path to the folder of URDF files
 	std::string mUrdfPath;
+
+	///The desired reference frame for the object pose	
 	std::string mDestinationFrame;
+
+	///To retrieve resources from disk and from packages
 	dart::common::ResourceRetrieverPtr mResourceRetrieverPtr;
+	
+	///The reference frame of HERB to transform with respect to
 	dart::dynamics::Frame* mReferenceLink;
 
+	///The pointer to the loader of configuration data
 	ConfigDataLoader *mConfigData;
-	tf::TransformListener mListener;
 
+	///For the ROS node that will work with the April Tags module
 	ros::NodeHandle mNode;
-	YAML::Node mTagData;
 
 };
 
