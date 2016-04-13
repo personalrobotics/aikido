@@ -78,6 +78,11 @@ SO2StateSpaceSampleableConstraint
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
 {
+  if (!mSpace)
+    throw std::invalid_argument("StateSpace is null.");
+
+  if (!mRng)
+    throw std::invalid_argument("RNG is null.");
 }
 
 //=============================================================================
