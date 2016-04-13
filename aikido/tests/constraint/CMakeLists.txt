@@ -37,3 +37,8 @@ aikido_add_test(test_StackedConstraint
   test_StackedConstraint.cpp)
 target_link_libraries(test_StackedConstraint
   "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_RealVectorBoxConstraint
+  test_RealVectorBoxConstraint.cpp)
+target_link_libraries(test_RealVectorBoxConstraint
+  "${PROJECT_NAME}_constraint")

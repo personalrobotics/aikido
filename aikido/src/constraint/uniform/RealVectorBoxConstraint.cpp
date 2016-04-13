@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
 
 namespace aikido {
@@ -93,6 +94,9 @@ RealVectorBoxConstraint
   , mLowerLimits(_lowerLimits)
   , mUpperLimits(_upperLimits)
 {
+  if (!mSpace)
+    throw std::invalid_argument("StateSpace is null.");
+
   const auto dimension = mSpace->getDimension();
 
   if (mLowerLimits.size() != dimension)
@@ -100,7 +104,7 @@ RealVectorBoxConstraint
     std::stringstream msg;
     msg << "Lower limits have incorrect dimension: expected "
         << mSpace->getDimension() << ", got " << mLowerLimits.size() << ".";
-    throw std::runtime_error(msg.str());
+    throw std::invalid_argument(msg.str());
   }
 
   if (mUpperLimits.size() != dimension)
@@ -108,7 +112,7 @@ RealVectorBoxConstraint
     std::stringstream msg;
     msg << "Upper limits have incorrect dimension: expected "
         << mSpace->getDimension() << ", got " << mUpperLimits.size() << ".";
-    throw std::runtime_error(msg.str());
+    throw std::invalid_argument(msg.str());
   }
 
   for (size_t i = 0; i < dimension; ++i)
@@ -119,7 +123,7 @@ RealVectorBoxConstraint
       msg << "Unable to sample from StateSpace because lower limit exeeds"
              " upper limit on dimension " << i << ": "
           << mLowerLimits[i] << " > " << mUpperLimits[i] << ".";
-      throw std::runtime_error(msg.str());
+      throw std::invalid_argument(msg.str());
     }
   }
 }
@@ -238,6 +242,9 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> RealVectorBoxConstraint
 std::unique_ptr<constraint::SampleGenerator>
   RealVectorBoxConstraint::createSampleGenerator() const
 {
+  if (!mRng)
+    throw std::runtime_error("RNG is nullptr.");
+  
   for (size_t i = 0; i < mSpace->getDimension(); ++i)
   {
     if (!std::isfinite(mLowerLimits[i]) || !std::isfinite(mUpperLimits[i]))
