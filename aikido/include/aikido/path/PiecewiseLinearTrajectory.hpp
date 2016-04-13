@@ -65,6 +65,12 @@ private:
     bool operator<(const double &rhs) const { return t < rhs; }
   };
 
+  /// Get the index of the first waypoint whose
+  ///  time value is larger than _t.
+  /// Throws std::domain_error if _t is larger
+  /// than last waypoint in the trajectory
+  int getWaypointIndexAfterTime(double _t) const;
+
   aikido::statespace::StateSpacePtr mStateSpace;
   aikido::distance::DistanceMetricPtr mDistanceMetric;
   std::vector<Waypoint> mWaypoints;
