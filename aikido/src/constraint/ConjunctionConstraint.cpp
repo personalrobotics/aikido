@@ -25,8 +25,8 @@ bool ConjunctionConstraint::isSatisfied(
   return true;
 }
 
-const std::shared_ptr<aikido::statespace::StateSpace>
-ConjunctionConstraint::getStateSpace() const
+std::shared_ptr<aikido::statespace::StateSpace> ConjunctionConstraint
+  ::getStateSpace() const
 {
   return mStateSpace;
 }

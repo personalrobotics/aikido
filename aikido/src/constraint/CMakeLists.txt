@@ -1,10 +1,10 @@
 aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/CompoundStateSpaceSampleableConstraint.cpp
-  uniform/RealVectorStateSpaceSampleableConstraint.cpp
-  uniform/SE2StateSpaceSampleableConstraint.cpp
-  uniform/SE3StateSpaceSampleableConstraint.cpp
-  uniform/SO2StateSpaceSampleableConstraint.cpp
-  uniform/SO3StateSpaceSampleableConstraint.cpp
+  uniform/RealVectorBoxConstraint.cpp
+  uniform/SO2UniformSampler.cpp
+  uniform/SO3UniformSampler.cpp
+  uniform/SE2TranslationalConstraint.cpp
+  uniform/SE3TranslationalConstraint.cpp
   CollisionConstraint.cpp
   ConjunctionConstraint.cpp
   TSR.cpp
@@ -13,8 +13,13 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   FramePairConstraintAdaptor.cpp
   PolynomialConstraint.cpp
   DifferentiableProjector.cpp
+  ProjectableSubSpace.cpp
+  StackedConstraint.cpp
+  DifferentiableSubSpace.cpp
   IkSampleableConstraint.cpp
   IkSampleGenerator.cpp
+  SatisfiedConstraint.cpp
+  dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_statespace"

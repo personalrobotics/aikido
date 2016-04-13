@@ -43,7 +43,7 @@ public:
 
   /// Gets subspace by index.
   template <class Space = StateSpace>
-  const Space* getSubSpace(size_t _index) const;
+  std::shared_ptr<Space> getSubSpace(size_t _index) const;
 
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
@@ -104,7 +104,7 @@ public:
   void interpolate(const StateSpace::State* _from,
                    const StateSpace::State* _to,
                    const double _t,
-                   StateSpace::State* _State) const;
+                   StateSpace::State* _State) const override;
 
   // Documentation inherited. _tangent should be 3d twist.
   void expMap(

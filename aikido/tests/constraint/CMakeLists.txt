@@ -13,10 +13,10 @@ aikido_add_test(test_FramePairConstraintAdaptor
 target_link_libraries(test_FramePairConstraintAdaptor
   "${PROJECT_NAME}_constraint")
 
-#aikido_add_test(test_IKSampleable
-#  test_IKSampleable.cpp)
-#target_link_libraries(test_IKSampleable
-#  "${PROJECT_NAME}_constraint")
+aikido_add_test(test_IKSampleable
+  test_IKSampleable.cpp)
+target_link_libraries(test_IKSampleable
+  "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_PolynomialConstraint
   test_PolynomialConstraint.cpp)
@@ -31,4 +31,9 @@ target_link_libraries(test_TSR
 aikido_add_test(test_ConjunctionConstraint
   test_ConjunctionConstraint.cpp)
 target_link_libraries(test_ConjunctionConstraint
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_StackedConstraint
+  test_StackedConstraint.cpp)
+target_link_libraries(test_StackedConstraint
   "${PROJECT_NAME}_constraint")

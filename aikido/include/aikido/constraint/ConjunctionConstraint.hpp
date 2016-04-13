@@ -19,10 +19,10 @@ public:
           std::vector<std::shared_ptr<TestableConstraint>>());
 
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* state) const override;
+    const aikido::statespace::StateSpace::State* state) const override;
 
-  const std::shared_ptr<aikido::statespace::StateSpace> getStateSpace()
-      const override;
+  std::shared_ptr<aikido::statespace::StateSpace>
+    getStateSpace() const override;
 
   /// Add a TestableConstraint to the conjunction
   /// \param constraint a constraint in the same StateSpace as the

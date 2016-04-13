@@ -25,11 +25,15 @@ public:
   Eigen::MatrixXd getJacobian(
     const statespace::StateSpace::State* _s) const override;
 
-  /// Returns a vector of constraints' types.
+  /// Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;
 
   /// Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
+
+  // Documentation inherited.
+  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
+    const statespace::StateSpace::State* _s) const override;
 
 private:
   Eigen::VectorXd mCoeffs;

@@ -11,14 +11,13 @@ namespace constraint{
 class Projectable
 {
 public:
+  /// Gets the StateSpace that this constraint operates on.
+  virtual statespace::StateSpacePtr getStateSpace() const = 0;
 
   /// Projection _s to _out. Returns false if projection cannot be done. 
   virtual bool project(
     const statespace::StateSpace::State* _s,
     statespace::StateSpace::State* _out) const = 0;
-
-  /// Gets the StateSpace that this constraint operates on.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
 };
 
 using ProjectablePtr = std::shared_ptr<const Projectable>;
