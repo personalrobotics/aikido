@@ -76,6 +76,9 @@ void SE2StateSpace::compose(const StateSpace::State* _state1,
 }
 
 //=============================================================================
+unsigned int SE2StateSpace::getDimension() const { return 3; }
+
+//=============================================================================
 void SE2StateSpace::getIdentity(StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
@@ -92,37 +95,12 @@ void SE2StateSpace::getInverse(const StateSpace::State* _in,
 }
 
 //=============================================================================
-unsigned int SE2StateSpace::getDimension() const { return 3; }
-
-//=============================================================================
-double SE2StateSpace::getMaximumExtent() const {}
-
-//=============================================================================
-double SE2StateSpace::getMeasure() const {}
-
-//=============================================================================
 void SE2StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {
-}
-
-//=============================================================================
-double SE2StateSpace::distance(const StateSpace::State* _state1,
-                               const StateSpace::State* _state2) const
-{
-}
-
-//=============================================================================
-bool SE2StateSpace::equalStates(const StateSpace::State* _state1,
-                                const StateSpace::State* _state2) const
-{
-}
-
-//=============================================================================
-void SE2StateSpace::interpolate(const StateSpace::State* _from,
-                                const StateSpace::State* _to, const double _t,
-                                StateSpace::State* _State) const
-{
+  auto source = static_cast<const State*>(_source);
+  auto dest = static_cast<State*>(_destination);
+  setIsometry(dest, getIsometry(source));
 }
 
 //=============================================================================

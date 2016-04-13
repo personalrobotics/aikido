@@ -114,59 +114,12 @@ void SO2StateSpace::getInverse(const StateSpace::State *_in,
 unsigned int SO2StateSpace::getDimension() const { return 1; }
 
 //=============================================================================
-double SO2StateSpace::getMaximumExtent() const
-{
-  return boost::math::constants::pi<double>();
-}
-
-//=============================================================================
-double SO2StateSpace::getMeasure() const
-{
-  return 2.0 * boost::math::constants::pi<double>();  // OMPL
-}
-
-//=============================================================================
 void SO2StateSpace::copyState(StateSpace::State *_destination,
                               const StateSpace::State *_source) const
 {
   auto source = static_cast<const State *>(_source);
   auto destination = static_cast<State *>(_destination);
   setAngle(destination, getAngle(source));
-}
-
-//=============================================================================
-double SO2StateSpace::distance(const StateSpace::State *_state1,
-                               const StateSpace::State *_state2) const
-{
-  // Difference between angles
-  double diff = getAngle(static_cast<const State *>(_state1))
-                - getAngle(static_cast<const State *>(_state2));
-  diff = fmod(fabs(diff), 2.0 * boost::math::constants::pi<double>());
-  if (diff > boost::math::constants::pi<double>())
-    diff -= 2.0 * boost::math::constants::pi<double>();
-  return fabs(diff);
-}
-
-//=============================================================================
-bool SO2StateSpace::equalStates(const StateSpace::State *_state1,
-                                const StateSpace::State *_state2) const
-{
-  double dist = distance(_state1, _state2);
-  return dist < std::numeric_limits<double>::epsilon();
-}
-
-//=============================================================================
-void SO2StateSpace::interpolate(const StateSpace::State *_from,
-                                const StateSpace::State *_to, const double _t,
-                                StateSpace::State *_state) const
-{
-  auto from = static_cast<const State *>(_from);
-  auto to = static_cast<const State *>(_to);
-  auto state = static_cast<State *>(_state);
-  double a = (1 - _t) * getAngle(from) + _t * getAngle(to);
-
-  // TODO: Wrap?
-  setAngle(state, a);
 }
 
 //=============================================================================
@@ -191,7 +144,6 @@ void SO2StateSpace::expMap(const Eigen::VectorXd &_tangent,
 void SO2StateSpace::logMap(const StateSpace::State *_in,
                            Eigen::VectorXd &_tangent) const
 {
-
   // TODO: Skip these checks in release mode.
   if (_tangent.rows() != 1) {
     std::stringstream msg;

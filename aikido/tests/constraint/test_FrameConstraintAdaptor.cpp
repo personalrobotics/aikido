@@ -57,7 +57,7 @@ class FrameConstraintAdaptorTest : public ::testing::Test {
 
 TEST_F(FrameConstraintAdaptorTest, Constructor)
 {
-  FrameConstraintAdaptor adaptor(spacePtr, bn2, tsr);         
+  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);         
   EXPECT_EQ(tsr->getConstraintDimension(),
             adaptor.getConstraintDimension());
 }
@@ -65,7 +65,7 @@ TEST_F(FrameConstraintAdaptorTest, Constructor)
 
 TEST_F(FrameConstraintAdaptorTest, Value)
 {
-  FrameConstraintAdaptor adaptor(spacePtr, bn2, tsr);
+  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
   state.getSubStateHandle<SE3StateSpace>(0).setIsometry(Eigen::Isometry3d::Identity());
   state.getSubStateHandle<SO2StateSpace>(1).setAngle(0);
@@ -107,7 +107,7 @@ TEST_F(FrameConstraintAdaptorTest, Jacobian)
 
   tsr->mBw = Bw;
 
-  FrameConstraintAdaptor adaptor(spacePtr, bn1, tsr);
+  FrameConstraintAdaptor adaptor(spacePtr, bn1.get(), tsr);
 
   // state strictly inside tsr
   auto state = spacePtr->getScopedStateFromMetaSkeleton();

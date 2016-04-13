@@ -16,7 +16,14 @@ target_link_libraries(test_GeodesicDistance
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace")
 
-# aikido_add_test(test_WeightedDistance
-#   test_WeightedDistance.cpp)
-# target_link_libraries(test_WeightedDistance
-#   "${PROJECT_NAME}_distance")
+aikido_add_test(test_WeightedDistance
+  test_WeightedDistance.cpp)
+target_link_libraries(test_WeightedDistance
+  "${PROJECT_NAME}_distance"
+  "${PROJECT_NAME}_statespace")
+
+aikido_add_test(test_DistanceMetricDefaults
+  test_DistanceMetricDefaults.cpp)
+target_link_libraries(test_DistanceMetricDefaults
+  "${PROJECT_NAME}_distance"
+  "${PROJECT_NAME}_statespace")

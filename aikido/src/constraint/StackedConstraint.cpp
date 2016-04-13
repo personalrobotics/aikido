@@ -5,8 +5,10 @@ namespace constraint {
 
 //=============================================================================
 StackedConstraint::StackedConstraint(
-  const std::vector<DifferentiablePtr>& _constraints)
+  const std::vector<DifferentiablePtr>& _constraints,
+  const std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
 : mConstraints(_constraints)
+, mStateSpace(_stateSpace)
 {
   if (mConstraints.size() == 0)
   {
@@ -26,6 +28,8 @@ size_t StackedConstraint::getConstraintDimension() const
   {
     dim += constraint->getConstraintDimension();
   }
+
+  return dim;
 }
 
 
@@ -54,7 +58,7 @@ Eigen::MatrixXd StackedConstraint::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   int constraintsDim = getConstraintDimension();
-  int statesDim = _s->getDimension();
+  int statesDim = mStateSpace->getDimension();
 
   Eigen::MatrixXd jacobian(constraintsDim, statesDim);
 
@@ -62,11 +66,38 @@ Eigen::MatrixXd StackedConstraint::getJacobian(
   for (auto constraint: mConstraints)
   {
     Eigen::MatrixXd jac = constraint->getJacobian(_s);
-    jacobian(index, 0, jac.rows(), statesDim) = jac;
+    jacobian.block(index, 0, jac.rows(), statesDim) = jac;
     index += jac.rows();
   }
 
   return jacobian;
+}
+
+//=============================================================================
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> StackedConstraint::getValueAndJacobian(
+  const statespace::StateSpace::State* _s) const
+{
+  int constraintsDim = getConstraintDimension();
+  int statesDim = mStateSpace->getDimension();
+
+  Eigen::VectorXd value(constraintsDim);
+  Eigen::MatrixXd jacobian(constraintsDim, statesDim);
+
+  int index = 0;
+  for (auto constraint: mConstraints)
+  {
+    int constraintDim = constraint->getConstraintDimension();
+
+    // Get (Eigen::VectorXd value, Eigen::MatrixXd jacobian) pair.
+    auto pair = constraint->getValueAndJacobian(_s);
+
+    value.block(index, 0, constraintDim, 1) = pair.first;
+    jacobian.block(index, 0, constraintDim, statesDim) = pair.second;
+
+    index += pair.second.rows();
+  }
+
+  return std::make_pair(value, jacobian);
 }
 
 

@@ -9,7 +9,7 @@ WeightedDistanceMetric::WeightedDistanceMetric(
     std::vector<DistanceMetricPtr> _metrics)
     : mStateSpace(std::move(_space))
     , mMetrics(std::move(_metrics))
-    , mWeights(_metrics.size(), 1.0)
+    , mWeights(mMetrics.size(), 1.0)
 {
   if (mStateSpace->getNumStates() != mMetrics.size()) {
     throw std::invalid_argument(

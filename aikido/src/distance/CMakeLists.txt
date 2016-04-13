@@ -5,5 +5,6 @@ aikido_add_library("${PROJECT_NAME}_distance"
   WeightedDistanceMetric.cpp
 )
 target_link_libraries("${PROJECT_NAME}_distance"
+  "${PROJECT_NAME}_statespace"
   ${DART_LIBRARIES}
 )

@@ -95,45 +95,12 @@ void SE3StateSpace::getInverse(const StateSpace::State *_in,
 unsigned int SE3StateSpace::getDimension() const { return 6; }
 
 //=============================================================================
-double SE3StateSpace::getMaximumExtent() const {}
-
-//=============================================================================
-double SE3StateSpace::getMeasure() const {}
-
-//=============================================================================
 void SE3StateSpace::copyState(StateSpace::State *_destination,
                               const StateSpace::State *_source) const
 {
-}
-
-//=============================================================================
-double SE3StateSpace::distance(const StateSpace::State *_state1,
-                               const StateSpace::State *_state2) const
-{
-  auto state1 = static_cast<const State *>(_state1);
-  auto state2 = static_cast<const State *>(_state2);
-
-  Eigen::Isometry3d isometry1 = state1->getIsometry();
-  Eigen::Isometry3d isometry2 = state2->getIsometry();
-
-  Eigen::Isometry3d relative(isometry1.matrix().inverse() * isometry2.matrix());
-
-  Eigen::Vector6d distance = dart::math::logMap(relative);
-
-  return distance.norm();
-}
-
-//=============================================================================
-bool SE3StateSpace::equalStates(const StateSpace::State *_state1,
-                                const StateSpace::State *_state2) const
-{
-}
-
-//=============================================================================
-void SE3StateSpace::interpolate(const StateSpace::State *_from,
-                                const StateSpace::State *_to, const double _t,
-                                StateSpace::State *_State) const
-{
+  auto source = static_cast<const State *>(_source);
+  auto dest = static_cast<State *>(_destination);
+  setIsometry(dest, getIsometry(source));
 }
 
 //=============================================================================
@@ -158,7 +125,6 @@ void SE3StateSpace::expMap(const Eigen::VectorXd &_tangent,
 void SE3StateSpace::logMap(const StateSpace::State *_in,
                            Eigen::VectorXd &_tangent) const
 {
-
   // TODO: Skip these checks in release mode.
   if (_tangent.rows() != 6) {
     std::stringstream msg;

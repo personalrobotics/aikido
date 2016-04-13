@@ -134,7 +134,7 @@ std::unique_ptr<JointStateSpace> createJointStateSpaceFor(JointType* _joint)
 
 //=============================================================================
 template <class Space>
-const StateSpace* MetaSkeletonStateSpace::getJointSpace(
+std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
   const dart::dynamics::Joint* _joint) const
 {
   const auto index = mMetaSkeleton->getIndexOf(_joint, true);

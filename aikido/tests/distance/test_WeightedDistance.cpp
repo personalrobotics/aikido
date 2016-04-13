@@ -14,8 +14,9 @@ TEST(WeightedDistance, Distance)
   auto so2 = std::make_shared<SO2StateSpace>();
   auto rv3 = std::make_shared<RealVectorStateSpace>(3);
   auto so3 = std::make_shared<SO3StateSpace>();
+  std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>({so2, rv3, so3});
+  auto space = std::make_shared<CompoundStateSpace>(spaces);
 
   WeightedDistanceMetric dmetric(
       space, {std::make_shared<AngularDistanceMetric>(so2),
@@ -52,7 +53,8 @@ TEST(CompoundStateSpace, Interpolate)
   auto rv3 = std::make_shared<RealVectorStateSpace>(3);
   auto so3 = std::make_shared<SO3StateSpace>();
 
-  auto space = std::make_shared<CompoundStateSpace>({so2, rv3, so3});
+  std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
+  auto space = std::make_shared<CompoundStateSpace>(spaces);
 
   WeightedDistanceMetric dmetric(
       space, {std::make_shared<AngularDistanceMetric>(so2),
@@ -96,19 +98,17 @@ TEST(CompoundStateSpace, Interpolate)
   EXPECT_TRUE(state1_handle1.getValue().isApprox(istate_handle1.getValue()));
   EXPECT_TRUE(
       state1_handle2.getQuaternion().isApprox(istate_handle2.getQuaternion()));
-  EXPECT_TRUE(space.equalStates(state1, istate));
 
   dmetric.interpolate(state1, state2, 1, istate);
   EXPECT_DOUBLE_EQ(state2_handle0.getAngle(), istate_handle0.getAngle());
   EXPECT_TRUE(state2_handle1.getValue().isApprox(istate_handle1.getValue()));
   EXPECT_TRUE(
       state2_handle2.getQuaternion().isApprox(istate_handle2.getQuaternion()));
-  EXPECT_TRUE(space.equalStates(state2, istate));
 
   dmetric.interpolate(state1, state2, 0.5, istate);
   EXPECT_DOUBLE_EQ(0.25 + M_PI, istate_handle0.getAngle());
-  auto rv3 = Eigen::Vector3d(2, 3, 4);
-  EXPECT_TRUE(rv3.isApprox(istate_handle1.getValue()));
+  auto vec3 = Eigen::Vector3d(2, 3, 4);
+  EXPECT_TRUE(vec3.isApprox(istate_handle1.getValue()));
 
   auto quat3 = Eigen::Quaterniond(
       Eigen::AngleAxisd(M_PI - 0.25, Eigen::Vector3d::UnitZ()));

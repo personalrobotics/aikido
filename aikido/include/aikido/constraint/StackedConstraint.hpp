@@ -9,15 +9,14 @@
 namespace aikido {
 namespace constraint{
 
-enum class ConstraintType {EQ, INEQ};
-
-/// A differentiable constraint.
-/// Contains n constraints that can be evaluated in real-value. 
+/// Contains n constraints that take the same statespace. 
+/// getValue and getJacobian returns stacked vector and matrix.
 class StackedConstraint : public Differentiable
 {
 public:
-
-  StackedConstraint(const std::vector<DifferentiablePtr>& _constraints);
+  StackedConstraint(
+    const std::vector<DifferentiablePtr>& _constraints,
+    const std::shared_ptr<aikido::statespace::StateSpace> _stateSpace);
 
   // Documentation inherited.
   size_t getConstraintDimension() const override;
@@ -36,8 +35,13 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
+  // Documentation inherited. 
+  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
+    const statespace::StateSpace::State* _s) const override;
+
 private:
   std::vector<DifferentiablePtr> mConstraints;
+  std::shared_ptr<aikido::statespace::StateSpace> mStateSpace;
 
 };
 

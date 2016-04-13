@@ -22,7 +22,8 @@ public:
 
   /// Get the subspace associated with a joint.
   template <class Space = StateSpace>
-  const StateSpace* getJointSpace(const dart::dynamics::Joint* _joint) const;
+  std::shared_ptr<Space> getJointSpace(
+    const dart::dynamics::Joint* _joint) const;
 
   /// Gets the positions of getMetaSkeleton() and store them in _state.
   void getStateFromMetaSkeleton(State* _state) const;
