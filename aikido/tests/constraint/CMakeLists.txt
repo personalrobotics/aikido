@@ -47,3 +47,8 @@ aikido_add_test(test_SO2UniformSampler
   test_SO2UniformSampler.cpp)
 target_link_libraries(test_SO2UniformSampler
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
+
+aikido_add_test(test_SO3UniformSampler
+  test_SO3UniformSampler.cpp)
+target_link_libraries(test_SO3UniformSampler
+  "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
