@@ -96,7 +96,7 @@ typename Space::StateHandle CompoundStateSpace::getSubStateHandle(
   StateSpace::State* _state, size_t _index) const
 {
   return typename Space::StateHandle(
-    getSubSpace<Space>(_index), getSubState<Space>(_state, _index));
+    getSubSpace<Space>(_index).get(), getSubState<Space>(_state, _index));
 }
 
 //=============================================================================
@@ -105,7 +105,7 @@ typename Space::StateHandleConst CompoundStateSpace::getSubStateHandle(
   const StateSpace::State* _state, size_t _index) const
 {
   return typename Space::StateHandleConst(
-    getSubSpace<Space>(_index), getSubState<Space>(_state, _index));
+    getSubSpace<Space>(_index).get(), getSubState<Space>(_state, _index));
 }
 
 } // namespace statespace
