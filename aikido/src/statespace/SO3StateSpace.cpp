@@ -183,7 +183,7 @@ void SO3StateSpace::logMap(const StateSpace::State *_in,
     std::stringstream msg;
     msg << "_tangent has incorrect size: expected 3"
         << ", got " << _tangent.rows() << ".\n";
-    throw std::runtime_error(msg.str());
+    throw std::invalid_argument(msg.str());
   }
   auto in = static_cast<const State *>(_in);
 

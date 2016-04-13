@@ -74,6 +74,25 @@ TEST(RealVectorStateSpace, ExpMap)
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(1, 2, 3)));
 }
 
+TEST(RealVectorStateSpace, LogMap)
+{
+  RealVectorStateSpace rvss(3);
+
+  auto state = rvss.createState();
+  rvss.setValue(state, Eigen::Vector3d(1, 2, 3));
+
+  Eigen::VectorXd out(3);
+  rvss.logMap(state, out);
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(1, 2, 3)));
+
+  Eigen::VectorXd outBad(2);
+  EXPECT_THROW(rvss.logMap(state, outBad), std::invalid_argument);
+
+  rvss.expMap(Eigen::Vector3d(4, 5, 7), state);
+  rvss.logMap(state, out);
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(4, 5, 7)));
+}
+
 TEST(RealVectorStateSpace, CopyState)
 {
   RealVectorStateSpace rvss(4);
@@ -152,6 +171,26 @@ TEST(SO2StateSpace, ExpMap)
   so2.expMap(Eigen::VectorXd(Eigen::VectorXd::Zero(1)), &out);
 
   EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
+}
+
+TEST(SO2StateSpace, LogMap)
+{
+  SO2StateSpace::State state;
+  SO2StateSpace so2;
+  so2.setAngle(&state, M_PI / 5);
+
+  Eigen::VectorXd out(1);
+  so2.logMap(&state, out);
+  EXPECT_DOUBLE_EQ(so2.getAngle(&state), out[0]);
+
+  Eigen::VectorXd outBad(2);
+  EXPECT_THROW(so2.logMap(&state, outBad), std::invalid_argument);
+
+  Eigen::VectorXd in(1);
+  in[0] = M_PI / 4;
+  so2.expMap(in, &state);
+  so2.logMap(&state, out);
+  EXPECT_TRUE(out.isApprox(in));
 }
 
 TEST(SO2StateSpace, CopyState)
@@ -258,6 +297,25 @@ TEST(SO3StateSpace, ExpMap)
   so3.expMap(Eigen::Vector3d(0, 0, M_PI_2), &out);
 
   EXPECT_TRUE(out.getQuaternion().isApprox(expected.getQuaternion()));
+}
+
+TEST(SO3StateSpace, LogMap)
+{
+  SO3StateSpace so3;
+  auto state = so3.createState();
+  so3.setQuaternion(state, Eigen::Quaterniond(Eigen::AngleAxisd(
+                               M_PI_2, Eigen::Vector3d::UnitZ())));
+
+  Eigen::VectorXd out(3);
+  so3.logMap(state, out);
+  EXPECT_TRUE(Eigen::Vector3d(0, 0, M_PI_2).isApprox(out));
+
+  Eigen::VectorXd outBad(5);
+  EXPECT_THROW(so3.logMap(state, outBad), std::invalid_argument);
+
+  so3.expMap(Eigen::Vector3d(M_PI, M_PI_2, M_PI / 5), state);
+  so3.logMap(state, out);
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI, M_PI_2, M_PI / 5)));
 }
 
 TEST(SO3StateSpace, CopyState)
@@ -418,6 +476,27 @@ TEST(SE2StateSpace, ExpMap)
   EXPECT_TRUE(out.getIsometry().isApprox(expected_pose));
 }
 
+TEST(SE2StateSpace, LogMap)
+{
+  SE2StateSpace se2;
+  auto state = se2.createState();
+  Eigen::Isometry2d pose1 = Eigen::Isometry2d::Identity();
+  pose1.rotate(Eigen::Rotation2Dd(M_PI_2));
+  pose1.translation() = Eigen::Vector2d(3, 4);
+  se2.setIsometry(state, pose1);
+
+  Eigen::VectorXd out(3);
+  se2.logMap(state, out);
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI_2, 3, 4)));
+
+  Eigen::VectorXd outBad(2);
+  EXPECT_THROW(se2.logMap(state, outBad), std::invalid_argument);
+
+  se2.expMap(Eigen::Vector3d(M_PI / 6, 4, 6), state);
+  se2.logMap(state, out);
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI / 6, 4, 6)));
+}
+
 TEST(SE3StateSpace, Compose)
 {
   SE3StateSpace space;
@@ -487,13 +566,30 @@ TEST(SE3StateSpace, ExpMap)
   Eigen::Isometry3d expected_pose = Eigen::Isometry3d::Identity();
   expected_pose.translation() = Eigen::Vector3d(1, 2, 3);
 
-  SE3StateSpace se2;
+  SE3StateSpace se3;
   Eigen::Vector6d twist(Eigen::Vector6d::Zero());
   twist.bottomRows(3) = Eigen::Vector3d(1, 2, 3);
 
-  se2.expMap(twist, &out);
+  se3.expMap(twist, &out);
 
   EXPECT_TRUE(out.getIsometry().isApprox(expected_pose));
+}
+
+TEST(SE3StateSpace, LogMap)
+{
+  SE3StateSpace se3;
+  Eigen::Vector6d twist;
+  twist << M_PI / 5, 0, 0, 1, 2, 3;
+
+  auto state = se3.createState();
+  Eigen::VectorXd outBad(5);
+  EXPECT_THROW(se3.logMap(state, outBad), std::invalid_argument);
+
+
+  Eigen::VectorXd out(6);
+  se3.expMap(twist, state);
+  se3.logMap(state, out);
+  EXPECT_TRUE(out.isApprox(twist));
 }
 
 TEST(CompoundStateSpace, Compose)
@@ -596,6 +692,22 @@ TEST(CompoundStateSpace, ExpMap)
   const Vector2d out2 =
       out.getSubStateHandle<RealVectorStateSpace>(1).getValue();
   EXPECT_TRUE(out2.isApprox(Vector2d(1, 2)));
+}
+
+TEST(CompoundStateSpace, LogMap)
+{
+  CompoundStateSpace space({std::make_shared<SO2StateSpace>(),
+                            std::make_shared<RealVectorStateSpace>(2)});
+
+  CompoundStateSpace::ScopedState state = space.createState();
+  Eigen::VectorXd outBad(4);
+  EXPECT_THROW(space.logMap(state, outBad), std::invalid_argument);
+
+  Eigen::VectorXd out(3);
+  space.expMap(Eigen::Vector3d(M_PI_2, 1, 2), state);
+  space.logMap(state, out);
+
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI_2, 1, 2)));
 }
 
 TEST(CompoundStateSpace, CopyState)
