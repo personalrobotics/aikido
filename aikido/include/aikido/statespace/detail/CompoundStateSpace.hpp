@@ -71,14 +71,18 @@ template <class Space>
 const StateSpacePtr CompoundStateSpace::getSubSpacePtr(size_t _index) const
 {
   // TODO: Repalce this with a static_cast in release mode.
-  const auto raw_space = mSubspaces[_index];
-  auto space = std::dynamic_pointer_cast<Space>(raw_space);
+  const auto rawSpace = mSubspaces[_index];
+  auto space = std::dynamic_pointer_cast<Space>(rawSpace);
   if (!space)
   {
+    // Create a reference to *rawSpace so we can use it in typeid below. Doing
+    // this inline trips -Wpotentially-evaluated-expression in Clang.
+    const auto& rawSpaceValue = *rawSpace;
+
     std::stringstream ss;
     ss << "Requested StateSpace of type '" << typeid(Space).name()
        << "', but the StateSpace at index " << _index
-       << " is of incompatible type '" << typeid(*raw_space).name() << "'.";
+       << " is of incompatible type '" << typeid(rawSpace).name() << "'.";
     throw std::runtime_error(ss.str());
   }
   return space;

@@ -95,7 +95,7 @@ SampleableSubSpace::SampleableSubSpace(
     {
       std::stringstream msg;
       msg << "Constraint " << i << " is not defined over this StateSpace.";
-      throw std::invalid_arugment(msg.str());
+      throw std::invalid_argument(msg.str());
     }
   }
 }

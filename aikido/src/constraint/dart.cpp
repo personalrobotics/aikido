@@ -130,14 +130,17 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
 {
   const auto n = _metaSkeleton->getNumStates();
 
+  // Create a new RNG for each subspace.
+  auto engines = splitEngine(*_rng, n, util::NUM_DEFAULT_SEEDS);
+
   std::vector<std::shared_ptr<SampleableConstraint>> constraints;
   constraints.reserve(n);
 
   for (size_t i = 0; i < n; ++i)
   {
     auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
-    // TODO: Create a new RNG for this.
-    auto constraint = createSampleableBounds(std::move(subspace), nullptr);
+    auto constraint = createSampleableBounds(
+      std::move(subspace), std::move(engines[i]));
     constraints.emplace_back(constraint.release());
   }
 
