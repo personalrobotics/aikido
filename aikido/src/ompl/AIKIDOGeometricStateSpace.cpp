@@ -35,12 +35,12 @@ namespace aikido {
         /// Get the maximum value a call to distance() can return (or an upper bound). 
         /// For unbounded state spaces, this function can return infinity.
         double AIKIDOGeometricStateSpace::getMaximumExtent() const {
-            return mStateSpace->getMaximumExtent();
+            throw std::runtime_error("getMaximumExtent not implemented.");
         }
 
         /// Get a measure of the space (this can be thought of as a generalization of volume) 
         double AIKIDOGeometricStateSpace::getMeasure() const {
-            return mStateSpace->getMeasure();
+            throw std::runtime_error("getMeasure not implemented.");
         }
 
         /// Bring the state within the bounds of the state space. 
@@ -52,7 +52,7 @@ namespace aikido {
         /// Check if a state is inside the bounding box. 
         /// For unbounded spaces this function can always return true.
         bool AIKIDOGeometricStateSpace::satisfiesBounds(const ompl::base::State* _state) const {
-            return true;
+            throw std::runtime_error("satisfiesBounds not implemented");
         }
 
         /// Copy a state to another.
@@ -68,18 +68,15 @@ namespace aikido {
         /// the properties of a metric if isMetricSpace() is true, and its 
         /// return value will always be between 0 and getMaximumExtent()
         double AIKIDOGeometricStateSpace::distance(const ompl::base::State* _state1,
-                                                 const ompl::base::State* _state2) const {
-            auto st1 = static_cast<const StateType*>(_state1);
-            auto st2 = static_cast<const StateType*>(_state2);
-            return mStateSpace->distance(st1->mState, st2->mState);
+                                                   const ompl::base::State* _state2) const {
+            throw std::runtime_error("distance not implemented");
         }
             
         /// Check state equality
         bool AIKIDOGeometricStateSpace::equalStates(const ompl::base::State* _state1,
                                                   const ompl::base::State* _state2) const {
-            auto st1 = static_cast<const StateType*>(_state1);
-            auto st2 = static_cast<const StateType*>(_state2);
-            return mStateSpace->equalStates(st1->mState, st2->mState);
+            double dist = distance(_state1, _state2);
+            return dist < 1e-7;
         }
 
         /// Computes the state that lies at time t in [0, 1] on the segment 
@@ -89,13 +86,7 @@ namespace aikido {
                                                   const ompl::base::State* _to,
                                                   const double _t,
                                                   ompl::base::State* _state) const {
-            auto fromState = static_cast<const StateType*>(_from);
-            auto toState = static_cast<const StateType*>(_to);
-            auto iState = static_cast<StateType*>(_state);
-            
-            return mStateSpace->interpolate(fromState->mState,
-                                            toState->mState,
-                                            _t, iState->mState);
+            throw std::runtime_error("interpolate not implemented");
         }
 
         /// Allocate an instance of the state sampler for this space. 

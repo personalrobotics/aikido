@@ -5,6 +5,7 @@
 #include <aikido/statespace/SO2StateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/distance/DistanceMetricDefaults.hpp>
 #include <aikido/constraint/TestableConstraint.hpp>
 #include <dart/dart.h>
 #include <tuple>
@@ -15,6 +16,10 @@ using std::make_shared;
 class SnapPlannerTest : public ::testing::Test
 {
 public:
+  using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
+  using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
+  using CollisionConstraint = aikido::constraint::CollisionConstraint;
+  using DistanceMetric = aikido::distance::DistanceMetric;
   using MetaSkeletonStateSpace = aikido::statespace::MetaSkeletonStateSpace;
   using SO2StateSpace = aikido::statespace::SO2StateSpace;
   using ScopedState = MetaSkeletonStateSpace::ScopedState;
@@ -30,7 +35,12 @@ public:
       , startState{make_shared<ScopedState>(stateSpace->createState())}
       , goalState{make_shared<ScopedState>(stateSpace->createState())}
       , passingConstraint{make_shared<PassingConstraint>(stateSpace)}
-      , failingConstraint{make_shared<FailingConstraint>(stateSpace)} {};
+      , failingConstraint{make_shared<FailingConstraint>(stateSpace)}
+  {
+      shared_ptr<aikido::statespace::CompoundStateSpace> cspace = stateSpace;
+      distMetric = aikido::distance::createDistanceMetricFor(cspace);
+  }
+
   // DART setup
   SkeletonPtr skel;
   std::pair<JointPtr, BodyNodePtr> jn_bn;
@@ -41,6 +51,7 @@ public:
   shared_ptr<ScopedState> goalState;
   shared_ptr<PassingConstraint> passingConstraint;
   shared_ptr<FailingConstraint> failingConstraint;
+  shared_ptr<DistanceMetric> distMetric;
   aikido::planner::PlanningResult planningResult;
 };
 
@@ -49,7 +60,7 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
   SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
   auto differentStateSpace = make_shared<MetaSkeletonStateSpace>(empty_skel);
   EXPECT_THROW(planSnap(*startState, *goalState, differentStateSpace,
-                        passingConstraint, &planningResult),
+                        passingConstraint, distMetric, &planningResult),
                std::invalid_argument);
 }
 
@@ -60,7 +71,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   stateSpace->getStateFromMetaSkeleton(*goalState);
 
   auto traj = planSnap(*startState, *goalState, stateSpace, passingConstraint,
-                       &planningResult);
+                       distMetric, &planningResult);
 
   auto subSpace = stateSpace->getSubSpace<SO2StateSpace>(0);
   EXPECT_EQ(2, traj.size());
@@ -89,6 +100,6 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
   auto traj = planSnap(*startState, *goalState, stateSpace, failingConstraint,
-                       &planningResult);
+                       distMetric, &planningResult);
   EXPECT_EQ(0, traj.size());  // TODO boost::optional
 }

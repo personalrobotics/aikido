@@ -89,19 +89,6 @@ unsigned int SO3StateSpace::getDimension() const
 }
 
 //=============================================================================
-double SO3StateSpace::getMaximumExtent() const 
-{
-    return 0.5 * boost::math::constants::pi<double>(); // OMPL
-}
-
-//=============================================================================
-double SO3StateSpace::getMeasure() const 
-{
-    // half of the surface area of a unit 3-sphere
-    return boost::math::constants::pi<double>() * boost::math::constants::pi<double>(); //OMPL
-}
-
-//=============================================================================
 void SO3StateSpace::copyState(StateSpace::State* _destination,
                               const StateSpace::State* _source) const
 {
@@ -109,37 +96,6 @@ void SO3StateSpace::copyState(StateSpace::State* _destination,
     auto source = static_cast<const State*>(_source);
     
     setQuaternion(destination, getQuaternion(source));
-}
-
-//=============================================================================
-double SO3StateSpace::distance(const StateSpace::State* _state1,
-                               const StateSpace::State* _state2) const
-{
-    auto state1 = static_cast<const State*>(_state1);
-    auto state2 = static_cast<const State*>(_state2);
-    return getQuaternion(state1).angularDistance(getQuaternion(state2));
-}
-
-//=============================================================================
-bool SO3StateSpace::equalStates(const StateSpace::State* _state1,
-                                const StateSpace::State* _state2) const
-{
-    // TODO: Make this a parameter.
-    return distance(_state1, _state2) < 1e-7;
-}
-
-//=============================================================================
-void SO3StateSpace::interpolate(const StateSpace::State* _from,
-                                const StateSpace::State* _to,
-                                const double _t,
-                                StateSpace::State* _state) const
-{
-
-    auto from = static_cast<const State*>(_from);
-    auto to = static_cast<const State*>(_to);
-    auto state = static_cast<State*>(_state);
-
-    setQuaternion(state, getQuaternion(from).slerp(_t, getQuaternion(to)));
 }
 
 //=============================================================================

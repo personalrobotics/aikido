@@ -45,6 +45,10 @@ public:
   template <class Space = StateSpace>
   std::shared_ptr<Space> getSubSpace(size_t _index) const;
 
+  /// Gets subspace shared ptr by index.
+  template <class Space = StateSpace>
+  const StateSpacePtr getSubSpacePtr(size_t _index) const;
+
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
   typename Space::State* getSubState(
@@ -83,28 +87,8 @@ public:
   unsigned int getDimension() const override;
 
   // Documentation inherited
-  double getMaximumExtent() const override;
-
-  // Documentation inherited
-  double getMeasure() const override;
-
-  // Documentation inherited
   void copyState(StateSpace::State* _destination,
                  const StateSpace::State* _source) const override;
-
-  // Documentation inherited
-  double distance(const StateSpace::State* _state1,
-                  const StateSpace::State* _state2) const override;
-
-  // Documentation inherited
-  bool equalStates(const StateSpace::State* _state1,
-                   const StateSpace::State* _state2) const override;
-
-  // Documentation inherited
-  void interpolate(const StateSpace::State* _from,
-                   const StateSpace::State* _to,
-                   const double _t,
-                   StateSpace::State* _State) const override;
 
   // Documentation inherited. _tangent should be 3d twist.
   void expMap(
