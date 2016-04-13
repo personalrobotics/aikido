@@ -3,6 +3,7 @@
 #include <aikido/constraint/StackedConstraint.hpp>
 #include <aikido/constraint/ConjunctionConstraint.hpp>
 #include <aikido/constraint/ProjectableSubSpace.hpp>
+#include <aikido/constraint/SampleableSubSpace.h>
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
@@ -127,8 +128,21 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
   statespace::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng)
 {
-  // TODO: Create N random number generators.
-  throw std::runtime_error("not implemented");
+  const auto n = _metaSkeleton->getNumStates();
+
+  std::vector<std::shared_ptr<SampleableConstraint>> constraints;
+  constraints.reserve(n);
+
+  for (size_t i = 0; i < n; ++i)
+  {
+    auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
+    // TODO: Create a new RNG for this.
+    auto constraint = createSampleableBounds(std::move(subspace), nullptr);
+    constraints.emplace_back(constraint.release());
+  }
+
+  return make_unique<SampleableSubSpace>(
+    std::move(_metaSkeleton), std::move(constraints));
 }
 
 } // namespace constraint
