@@ -68,6 +68,7 @@ TEST_F(SO2UniformSamplerTests, createSampleGenerator)
   ASSERT_TRUE(!!generator);
   EXPECT_EQ(mStateSpace, generator->getStateSpace());
 
+  // Verify that there are samples "near" each target point.
   auto state = mStateSpace->createState();
   std::vector<int> targetCounts(NUM_TARGETS, 0);
 
@@ -83,4 +84,7 @@ TEST_F(SO2UniformSamplerTests, createSampleGenerator)
         targetCounts[itarget]++;
     }
   }
+
+  for (auto count : targetCounts)
+    ASSERT_GT(count, 0);
 }
