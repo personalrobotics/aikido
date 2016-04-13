@@ -93,7 +93,7 @@ RealVectorBoxConstraint
   , mLowerLimits(_lowerLimits)
   , mUpperLimits(_upperLimits)
 {
-  const auto dimension = _space->getDimension();
+  const auto dimension = mSpace->getDimension();
 
   if (mLowerLimits.size() != dimension)
   {
