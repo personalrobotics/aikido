@@ -4,14 +4,29 @@
 #include "Trajectory.hpp"
 #include "../distance/DistanceMetric.hpp"
 
-namespace aikido {
-namespace path {
-
+namespace aikido
+{
+namespace path
+{
 /// Implements a piecewise linear trajectory
-class PiecewiseLinearTrajectory : public Trajectory {
+class PiecewiseLinearTrajectory : public Trajectory
+{
 public:
   // Pair defining a waypint in the trajectory
-  typedef std::pair<double, aikido::statespace::StateSpace::State *> Waypoint;
+  struct Waypoint {
+    Waypoint(double _t,
+             aikido::statespace::StateSpace::State *_state)
+        : t(_t)
+        , state(_state)
+    {
+    }
+
+    // The time associated with this waypoint
+    double t;
+
+    // The state associated with this waypoint
+    aikido::statespace::StateSpace::State *state;
+  };
 
   PiecewiseLinearTrajectory(
       const aikido::statespace::StateSpacePtr &_sspace,
@@ -42,11 +57,6 @@ public:
   /// The State is copied into the trajectory
   void addWaypoint(double _t,
                    const aikido::statespace::StateSpace::State *_state);
-
-  /// Remove and return the State at the given Waypoint
-  ///  This removes the waypoint from the trajectory.
-  ///  The timing on the remaining waypoints remainds unaffected.
-  // aikido::statespace::ScopedState removeWaypoint(Scalar _t);
 
 private:
   aikido::statespace::StateSpacePtr mStateSpace;

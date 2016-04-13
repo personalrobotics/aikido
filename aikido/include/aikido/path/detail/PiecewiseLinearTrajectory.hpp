@@ -4,7 +4,7 @@ namespace path {
 /// Custom comparator for Waypoint pairs
 struct CompareWaypoints {
   double asTime(const PiecewiseLinearTrajectory::Waypoint &_wpt) const {
-    return _wpt.first;
+    return _wpt.t;
   }
 
   double asTime(const double &_t) const { return _t; }
