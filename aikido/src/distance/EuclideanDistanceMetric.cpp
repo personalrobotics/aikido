@@ -34,7 +34,6 @@ void EuclideanDistanceMetric::interpolate(const statespace::StateSpace::State* _
       static_cast<const statespace::RealVectorStateSpace::State*>(_from));
   auto vto = mStateSpace->getValue(
       static_cast<const statespace::RealVectorStateSpace::State*>(_to));
-
   mStateSpace->setValue(static_cast<statespace::RealVectorStateSpace::State*>(_state),
                         (1 - _t) * vfrom + _t * vto);
 }

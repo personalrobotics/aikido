@@ -4,10 +4,12 @@
 #include "StateSpace.hpp"
 #include "ScopedState.hpp"
 
-namespace aikido {
-namespace statespace {
-
-template <class> class RealVectorStateHandle;
+namespace aikido
+{
+namespace statespace
+{
+template <class>
+class RealVectorStateHandle;
 
 /// Represents a n-dimensional real vector space.
 class RealVectorStateSpace : public virtual StateSpace
@@ -36,24 +38,31 @@ public:
   ScopedState createState() const;
 
   /// Gets the value stored in a RealVectorStateSpace::State.
-  Eigen::Map<const Eigen::VectorXd> getValue(const State* _state) const;
+  Eigen::Map<const Eigen::VectorXd> getValue(const State *_state) const;
 
   /// Gets the value stored in a RealVectorStateSpace::State.
-  void setValue(State* _state, const Eigen::VectorXd& _value) const;
+  void setValue(State *_state, const Eigen::VectorXd &_value) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
-  StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
+  StateSpace::State *allocateStateInBuffer(void *_buffer) const override;
 
   // Documentation inherited.
-  void freeStateInBuffer(StateSpace::State* _state) const override;
+  void freeStateInBuffer(StateSpace::State *_state) const override;
 
   // Documentation inherited.
-  void compose(
-    const StateSpace::State* _state1, const StateSpace::State* _state2,
-    StateSpace::State* _out) const override;
+  void compose(const StateSpace::State *_state1,
+               const StateSpace::State *_state2,
+               StateSpace::State *_out) const override;
+
+  // Documentation inherited
+  void getIdentity(StateSpace::State *_out) const override;
+
+  // Documentation inherited
+  void getInverse(const StateSpace::State *_in,
+                  StateSpace::State *_out) const override;
 
   // Documentation inherited
   unsigned int getDimension() const override;
@@ -63,17 +72,22 @@ public:
                  const StateSpace::State* _source) const override;
 
   // Documentation inherited.
-  void expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
+  void expMap(const Eigen::VectorXd &_tangent,
+              StateSpace::State *_out) const override;
+
+  // Documentation inherited
+  void logMap(const StateSpace::State *_in,
+              Eigen::VectorXd &_tangent) const override;
 
 private:
   /// Gets the value stored in a RealVectorStateSpace::State.
-  Eigen::Map<Eigen::VectorXd> getMutableValue(State* _state) const;
+  Eigen::Map<Eigen::VectorXd> getMutableValue(State *_state) const;
 
   int mDimension;
 };
 
-} // namespace statespace
-} // namespace aikido
+}  // namespace statespace
+}  // namespace aikido
 
 #include "detail/RealVectorStateSpace.hpp"
 
