@@ -4,10 +4,12 @@
 #include <Eigen/Core>
 #include "../statespace/StateSpace.hpp"
 
-namespace aikido {
-namespace path {
-
-class Trajectory {
+namespace aikido
+{
+namespace path
+{
+class Trajectory
+{
 public:
   virtual ~Trajectory() = default;
 
@@ -21,8 +23,9 @@ public:
   virtual double getDuration() const = 0;
 
   /// Compute the state that should be achieved at time t when following
-  ///  the trajectory. 
-  virtual aikido::statespace::StateSpace::State *evaluate(double _t) const = 0;
+  ///  the trajectory.
+  virtual void evaluate(
+      double _t, aikido::statespace::StateSpace::State *_state) const = 0;
 
   /// Compute the derivative of the trajectory at time t.
   virtual Eigen::VectorXd evaluate(double _t, int _derivative) const = 0;
@@ -31,7 +34,7 @@ public:
 using TrajectoryPtr = boost::shared_ptr<Trajectory>;
 using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
 
-} // namespace path
-} // namespace aikido
+}  // namespace path
+}  // namespace aikido
 
-#endif // ifndef AIKIDO_PATH_TRAJECTORY_H_
+#endif  // ifndef AIKIDO_PATH_TRAJECTORY_H_

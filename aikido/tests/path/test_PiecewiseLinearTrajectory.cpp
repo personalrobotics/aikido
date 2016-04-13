@@ -46,22 +46,28 @@ TEST_F(PiecewiseLinearTrajectoryTest, AddWaypoint)
 TEST_F(PiecewiseLinearTrajectoryTest, EvaluatePt)
 {
   using StateType = RealVectorStateSpace::State;
+  auto istate = rvss->createState();
+  
+  // Point before first time on traj
+  traj->evaluate(-0.001, istate);
+  EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(0, 0)));
 
-  EXPECT_THROW(traj->evaluate(-0.001), std::invalid_argument);
-  EXPECT_THROW(traj->evaluate(9), std::invalid_argument);
+  // Point after last time on traj
+  traj->evaluate(8, istate);
+  EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(8, 1)));
+  
+  traj->evaluate(1.5, istate);
+  EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(.75, .75)));
 
-  auto i1 = static_cast<StateType*>(traj->evaluate(1.5));
-  EXPECT_TRUE(rvss->getValue(i1).isApprox(Eigen::Vector2d(.75, .75)));
-
-  auto i2 = static_cast<StateType*>(traj->evaluate(6));
+  traj->evaluate(6, istate);
   EXPECT_TRUE(
-      rvss->getValue(i2).isApprox(Eigen::Vector2d(3 + 5 * 0.75, 3 - 2 * .75)));
+      rvss->getValue(istate).isApprox(Eigen::Vector2d(3 + 5 * 0.75, 3 - 2 * .75)));
 
-  auto i3 = static_cast<StateType*>(traj->evaluate(7));
-  EXPECT_TRUE(rvss->getValue(i3).isApprox(Eigen::Vector2d(8, 1)));
+  traj->evaluate(7, istate);
+  EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(8, 1)));
 
-  auto i4 = static_cast<StateType*>(traj->evaluate(3));
-  EXPECT_TRUE(rvss->getValue(i4).isApprox(Eigen::Vector2d(3, 3)));
+  traj->evaluate(3, istate);
+  EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(3, 3)));
 }
 
 TEST_F(PiecewiseLinearTrajectoryTest, EvaluateDerivative)

@@ -115,8 +115,8 @@ void CompoundStateSpace::copyState(StateSpace::State *_destination,
 }
 
 //=============================================================================
-void CompoundStateSpace::expMap(
-  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+void CompoundStateSpace::expMap(const Eigen::VectorXd &_tangent,
+                                StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
 
@@ -145,12 +145,8 @@ void CompoundStateSpace::logMap(const StateSpace::State *_in,
 {
   int dimension = getDimension();
 
-  // TODO: Skip these checks in release mode.
   if (_tangent.rows() != dimension) {
-    std::stringstream msg;
-    msg << "_tangent has incorrect size: expected " << dimension << ", got "
-        << _tangent.rows() << ".\n";
-    throw std::invalid_argument(msg.str());
+    _tangent.resize(dimension);
   }
 
   auto in = static_cast<const State *>(_in);
@@ -161,9 +157,8 @@ void CompoundStateSpace::logMap(const StateSpace::State *_in,
     Eigen::VectorXd segment(dim);
     mSubspaces[i]->logMap(getSubState<>(in, i), segment);
 
-    // Eigen function for this?
-    for (size_t j = 0; j < dim; ++j)
-        _tangent[index+j] = segment[j];
+    _tangent.segment(index, dim) = segment;
+
     index += dim;
   }
 }

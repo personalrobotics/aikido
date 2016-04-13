@@ -133,12 +133,8 @@ void RealVectorStateSpace::expMap(const Eigen::VectorXd &_tangent,
 void RealVectorStateSpace::logMap(const StateSpace::State *_in,
                                   Eigen::VectorXd &_tangent) const
 {
-  // TODO: Skip this check in release mode.
   if (_tangent.size() != mDimension) {
-    std::stringstream msg;
-    msg << "Tangent vector has incorrect size: expected " << mDimension
-        << ", got " << _tangent.size() << ".";
-    throw std::invalid_argument(msg.str());
+    _tangent.resize(mDimension);
   }
 
   auto in = static_cast<const State *>(_in);

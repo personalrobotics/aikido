@@ -127,10 +127,7 @@ void SE3StateSpace::logMap(const StateSpace::State *_in,
 {
   // TODO: Skip these checks in release mode.
   if (_tangent.rows() != 6) {
-    std::stringstream msg;
-    msg << "_tangent has incorrect size: expected 6"
-        << ", got " << _tangent.rows() << ".\n";
-    throw std::invalid_argument(msg.str());
+    _tangent.resize(6);
   }
 
   auto in = static_cast<const State *>(_in);

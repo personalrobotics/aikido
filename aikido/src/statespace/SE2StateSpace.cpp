@@ -131,10 +131,7 @@ void SE2StateSpace::logMap(const StateSpace::State* _in,
                            Eigen::VectorXd& _tangent) const
 {
   if (_tangent.rows() != 3) {
-    std::stringstream msg;
-    msg << "_tangent has incorrect size: expected 3"
-        << ", got " << _tangent.rows() << ".\n";
-    throw std::invalid_argument(msg.str());
+    _tangent.resize(3);
   }
 
   auto in = static_cast<const State*>(_in);

@@ -12,22 +12,6 @@ namespace path
 class PiecewiseLinearTrajectory : public Trajectory
 {
 public:
-  // Pair defining a waypint in the trajectory
-  struct Waypoint {
-    Waypoint(double _t,
-             aikido::statespace::StateSpace::State *_state)
-        : t(_t)
-        , state(_state)
-    {
-    }
-
-    // The time associated with this waypoint
-    double t;
-
-    // The state associated with this waypoint
-    aikido::statespace::StateSpace::State *state;
-  };
-
   PiecewiseLinearTrajectory(
       const aikido::statespace::StateSpacePtr &_sspace,
       const aikido::distance::DistanceMetricPtr &_dmetric);
@@ -48,7 +32,8 @@ public:
   double getDuration() const override;
 
   // Documentation inherited
-  aikido::statespace::StateSpace::State *evaluate(double _t) const override;
+  void evaluate(double _t,
+                aikido::statespace::StateSpace::State *_state) const override;
 
   // Documentation inherited
   Eigen::VectorXd evaluate(double _t, int _derivative) const override;
@@ -59,13 +44,32 @@ public:
                    const aikido::statespace::StateSpace::State *_state);
 
 private:
+  // Pair defining a waypint in the trajectory
+  struct Waypoint {
+    Waypoint(double _t, aikido::statespace::StateSpace::State *_state)
+        : t(_t)
+        , state(_state)
+    {
+    }
+
+    // The time associated with this waypoint
+    double t;
+
+    // The state associated with this waypoint
+    aikido::statespace::StateSpace::State *state;
+
+    /// Comparator to allow sorting waypoints based on time
+    bool operator<(const Waypoint &rhs) const { return t < rhs.t; }
+
+    /// Comparator to allow sorting waypoints based on time
+    bool operator<(const double &rhs) const { return t < rhs; }
+  };
+
   aikido::statespace::StateSpacePtr mStateSpace;
   aikido::distance::DistanceMetricPtr mDistanceMetric;
   std::vector<Waypoint> mWaypoints;
 };
 }
 }
-
-#include "detail/PiecewiseLinearTrajectory.hpp"
 
 #endif

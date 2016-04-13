@@ -111,8 +111,8 @@ void SO3StateSpace::copyState(StateSpace::State *_destination,
 }
 
 //=============================================================================
-void SO3StateSpace::expMap(
-  const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
+void SO3StateSpace::expMap(const Eigen::VectorXd &_tangent,
+                           StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
 
@@ -135,19 +135,14 @@ void SO3StateSpace::expMap(
 void SO3StateSpace::logMap(const StateSpace::State *_in,
                            Eigen::VectorXd &_tangent) const
 {
-  // TODO: Skip these checks in release mode.
   if (_tangent.rows() != 3) {
-    std::stringstream msg;
-    msg << "_tangent has incorrect size: expected 3"
-        << ", got " << _tangent.rows() << ".\n";
-    throw std::invalid_argument(msg.str());
+    _tangent.resize(3);
   }
   auto in = static_cast<const State *>(_in);
 
   // Compute rotation matrix from quaternion
   Eigen::Matrix3d rotMat = getQuaternion(in).toRotationMatrix();
   _tangent = dart::math::logMap(rotMat);
-
 }
 
 }  // namespace statespace
