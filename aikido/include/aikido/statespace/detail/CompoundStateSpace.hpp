@@ -39,7 +39,7 @@ public:
   typename Space::StateHandle getSubStateHandle(size_t _index) const
   {
     return typename Space::StateHandle(
-      this->getStateSpace()->template getSubSpace<Space>(_index),
+      this->getStateSpace()->template getSubSpace<Space>(_index).get(),
       getSubState<Space>(_index));
   }
 };
