@@ -1,10 +1,13 @@
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
 #include <aikido/constraint/StackedConstraint.hpp>
+#include <aikido/constraint/ProjectableSubSpace.hpp>
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
 namespace constraint {
+
+using dart::common::make_unique;
 
 //=============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
@@ -41,8 +44,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
   // TODO: We should std::move constraints here, but we can't because
   // StackedConstraint does not take by value.
-  return dart::common::make_unique<StackedConstraint>(
-    constraints, _metaSkeleton);
+  return make_unique<StackedConstraint>(constraints, _metaSkeleton);
 }
 
 //=============================================================================
@@ -62,7 +64,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
 {
   const auto n = _metaSkeleton->getNumStates();
 
-  std::vector<std::shared_ptr<Projectable>> constraints;
+  std::vector<ProjectablePtr> constraints;
   constraints.reserve(n);
 
   for (size_t i = 0; i < n; ++i)
@@ -72,9 +74,13 @@ std::unique_ptr<Projectable> createProjectableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  // TODO: Apply a separate constraint to each dimension.
-
-  throw std::runtime_error("not implemented");
+#if 0
+  return make_unique<ProjectableSubSpace>(
+    std::move(_metaSkeleton), std::move(constraints));
+#else
+  return make_unique<ProjectableSubSpace>(
+    _metaSkeleton, constraints);
+#endif
 }
 
 //=============================================================================
