@@ -21,11 +21,10 @@ public:
   virtual double getDuration() const = 0;
 
   /// Compute the state that should be achieved at time t when following
-  ///  the trajectory. t should be a value between 0 and getDuration()
+  ///  the trajectory. 
   virtual aikido::statespace::StateSpace::State *evaluate(double _t) const = 0;
 
   /// Compute the derivative of the trajectory at time t.
-  /// t should be a value between 0 and getDuration()
   virtual Eigen::VectorXd evaluate(double _t, int _derivative) const = 0;
 };
 
