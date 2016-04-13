@@ -41,7 +41,7 @@ target_link_libraries(test_StackedConstraint
 aikido_add_test(test_RealVectorBoxConstraint
   test_RealVectorBoxConstraint.cpp)
 target_link_libraries(test_RealVectorBoxConstraint
-  "${PROJECT_NAME}_constraint")
+  "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
 aikido_add_test(test_SO2UniformSampler
   test_SO2UniformSampler.cpp)

@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
+#include <aikido/distance/EuclideanDistanceMetric.hpp>
 #include <dart/common/StlHelpers.h>
 
 using aikido::statespace::RealVectorStateSpace;
 using aikido::statespace::RealVectorBoxConstraint;
 using aikido::constraint::ConstraintType;
 using aikido::constraint::SampleGenerator;
+using aikido::distance::EuclideanDistanceMetric;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
 using dart::common::make_unique;
@@ -15,9 +17,15 @@ using Eigen::Matrix2d;
 class RealVectorBoxConstraintTests : public ::testing::Test
 {
 protected:
+  static constexpr size_t NUM_X_TARGETS { 10 };
+  static constexpr size_t NUM_Y_TARGETS { 10 };
+  static constexpr size_t NUM_SAMPLES { 10000 };
+  static constexpr double DISTANCE_THRESHOLD { 0.15 };
+
   void SetUp() override
   {
     mStateSpace = std::make_shared<RealVectorStateSpace>(2);
+    mDistance = std::make_shared<EuclideanDistanceMetric>(mStateSpace);
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mLowerLimits = Vector2d(-1., 1.);
@@ -38,10 +46,32 @@ protected:
       Vector2d( 1.1, 0.9),
       Vector2d( 1.1, 2.1)
     };
+
+    mTargets.clear();
+    mTargets.reserve(NUM_X_TARGETS * NUM_Y_TARGETS);
+
+    for (size_t ix = 0; ix < NUM_X_TARGETS; ++ix)
+    {
+      auto xRatio = static_cast<double>(ix) / (NUM_X_TARGETS - 1);
+      auto x = (1 - xRatio) * mLowerLimits[0] + xRatio * mUpperLimits[0];
+
+      for (size_t iy = 0; iy < NUM_Y_TARGETS; ++iy)
+      {
+        auto yRatio = static_cast<double>(iy) / (NUM_Y_TARGETS - 1);
+        auto y = (1 - yRatio) * mLowerLimits[1] + yRatio * mUpperLimits[1];
+
+        auto state = mStateSpace->createState();
+        state.setValue(Vector2d(x, y));
+
+        mTargets.emplace_back(std::move(state));
+      }
+    }
   }
 
   std::unique_ptr<RNG> mRng;
   std::shared_ptr<RealVectorStateSpace> mStateSpace;
+  std::shared_ptr<EuclideanDistanceMetric> mDistance;
+
   Eigen::Vector2d mLowerLimits;
   Eigen::Vector2d mUpperLimits;
 
@@ -49,6 +79,8 @@ protected:
     Eigen::aligned_allocator<Eigen::Vector2d>> mGoodValues;
   std::vector<Eigen::Vector2d,
     Eigen::aligned_allocator<Eigen::Vector2d>> mBadValues;
+
+  std::vector<RealVectorStateSpace::ScopedState> mTargets;
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
@@ -300,19 +332,29 @@ TEST_F(RealVectorBoxConstraintTests, createSampleGenerator)
 
   auto generator = constraint->createSampleGenerator();
   EXPECT_EQ(mStateSpace, generator->getStateSpace());
-  EXPECT_EQ(SampleGenerator::NO_LIMIT, generator->getNumSamples());
-  EXPECT_TRUE(generator->canSample());
 
   // TODO: Check that the samples cover the whole region.
   // TODO: Check that the samples are uniformly distributed.
 
   auto state = mStateSpace->createState();
+  std::vector<int> targetCounts(mTargets.size(), 0);
 
-  for (size_t i = 0; i < 1000; ++i)
+  for (size_t isample = 0; isample < NUM_SAMPLES; ++isample)
   {
+    ASSERT_EQ(SampleGenerator::NO_LIMIT, generator->getNumSamples());
+    ASSERT_TRUE(generator->canSample());
     ASSERT_TRUE(generator->sample(state));
     ASSERT_TRUE(constraint->isSatisfied(state));
+
+    for (size_t itarget = 0; itarget < mTargets.size(); ++itarget)
+    {
+      if (mDistance->distance(state, mTargets[itarget]) < DISTANCE_THRESHOLD)
+        targetCounts[itarget]++;
+    }
   }
+
+  for (auto count : targetCounts)
+    ASSERT_GT(count, 0);
 }
 
 TEST_F(RealVectorBoxConstraintTests, createSampleGenerator_RNGIsNull_Throws)
