@@ -1,6 +1,7 @@
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
 #include <aikido/constraint/StackedConstraint.hpp>
+#include <aikido/constraint/ConjunctionConstraint.hpp>
 #include <aikido/constraint/ProjectableSubSpace.hpp>
 #include <dart/common/StlHelpers.h>
 
@@ -105,9 +106,8 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  // TODO: Apply a separate constraint to each dimension.
-
-  throw std::runtime_error("not implemented");
+  return make_unique<ConjunctionConstraint>(
+    std::move(_metaSkeleton), std::move(constraints));
 }
 
 //=============================================================================
