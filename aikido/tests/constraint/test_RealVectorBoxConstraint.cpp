@@ -2,6 +2,7 @@
 #include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
 #include <aikido/distance/EuclideanDistanceMetric.hpp>
 #include <dart/common/StlHelpers.h>
+#include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::RealVectorStateSpace;
 using aikido::statespace::RealVectorBoxConstraint;
@@ -333,28 +334,9 @@ TEST_F(RealVectorBoxConstraintTests, createSampleGenerator)
   auto generator = constraint->createSampleGenerator();
   EXPECT_EQ(mStateSpace, generator->getStateSpace());
 
-  // TODO: Check that the samples cover the whole region.
-  // TODO: Check that the samples are uniformly distributed.
-
-  auto state = mStateSpace->createState();
-  std::vector<int> targetCounts(mTargets.size(), 0);
-
-  for (size_t isample = 0; isample < NUM_SAMPLES; ++isample)
-  {
-    ASSERT_EQ(SampleGenerator::NO_LIMIT, generator->getNumSamples());
-    ASSERT_TRUE(generator->canSample());
-    ASSERT_TRUE(generator->sample(state));
-    ASSERT_TRUE(constraint->isSatisfied(state));
-
-    for (size_t itarget = 0; itarget < mTargets.size(); ++itarget)
-    {
-      if (mDistance->distance(state, mTargets[itarget]) < DISTANCE_THRESHOLD)
-        targetCounts[itarget]++;
-    }
-  }
-
-  for (auto count : targetCounts)
-    ASSERT_GT(count, 0);
+  auto result = SampleGeneratorCoverage(*generator, *mDistance,
+    std::begin(mTargets), std::end(mTargets), DISTANCE_THRESHOLD, NUM_SAMPLES);
+  ASSERT_TRUE(result);
 }
 
 TEST_F(RealVectorBoxConstraintTests, createSampleGenerator_RNGIsNull_Throws)
