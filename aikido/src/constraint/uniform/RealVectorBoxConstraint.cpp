@@ -41,7 +41,7 @@ RealVectorBoxConstraintSampleGenerator::RealVectorBoxConstraintSampleGenerator(
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
 {
-  const auto dimension = _space->getDimension();
+  const auto dimension = mSpace->getDimension();
   mDistributions.reserve(dimension);
 
   for (size_t i = 0; i < dimension; ++i)
