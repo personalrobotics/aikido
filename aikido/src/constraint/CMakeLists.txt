@@ -7,6 +7,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/SE3TranslationalConstraint.cpp
   CollisionConstraint.cpp
   ConjunctionConstraint.cpp
+  SampleableSubSpace.cpp
   TSR.cpp
   TSRSampleGenerator.cpp
   FrameConstraintAdaptor.cpp
