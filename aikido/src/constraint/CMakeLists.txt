@@ -21,6 +21,9 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   IkSampleGenerator.cpp
   SatisfiedConstraint.cpp
   Sampleable.cpp
+  FiniteSampleConstraint.cpp
+  FiniteSampleGenerator.cpp
+  FiniteCyclicSampleGenerator.cpp
   dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"
