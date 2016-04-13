@@ -74,13 +74,8 @@ std::unique_ptr<Projectable> createProjectableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-#if 0
   return make_unique<ProjectableSubSpace>(
     std::move(_metaSkeleton), std::move(constraints));
-#else
-  return make_unique<ProjectableSubSpace>(
-    _metaSkeleton, constraints);
-#endif
 }
 
 //=============================================================================
