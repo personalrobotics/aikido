@@ -10,10 +10,12 @@ namespace constraint{
 
 //=============================================================================
 DifferentiableProjector::DifferentiableProjector(
-  const DifferentiablePtr& _differentiable,
-  int _maxIteration) 
-: mDifferentiable(_differentiable)
+  DifferentiablePtr _differentiable,
+  int _maxIteration,
+  double _tolerance) 
+: mDifferentiable(std::move(_differentiable))
 , mMaxIteration(_maxIteration)
+, mTolerance(_tolerance)
 {
 }
 
@@ -28,12 +30,12 @@ bool DifferentiableProjector::contains(
   {
     if (types.at(i) == ConstraintType::EQ)
     {
-      // TODO: better way to check value == 0?
-      if (std::abs(values(i)) > std::numeric_limits<double>::epsilon())
+      if (std::abs(values(i)) > mTolerance)
         return false;
     }
     else
     {
+      // Inequality constraints are satisfied when value <= 0.
       if (values(i) > 0)
         return false;
     }
@@ -64,12 +66,14 @@ bool DifferentiableProjector::project(
     Eigen::VectorXd value = mDifferentiable->getValue(_out);
     Eigen::MatrixXd jac = mDifferentiable->getJacobian(_out);
     
-    Eigen::VectorXd tangent = -1*util::pseudoinverse(jac);
+    // Minimization step in tangent space.
+    Eigen::VectorXd tangentStep = -1*util::pseudoinverse(jac)*value;
 
-    StateSpace::ScopedState update(space.get());
+    StateSpace::ScopedState step(space.get());
 
-    space->expMap(tangent*value, update);
-    space->compose(_out, update, _out);
+    // Minimization step in state space.
+    space->expMap(tangentStep, step);
+    space->compose(_out, step, _out);
   }
 
   if (!contains(_out))

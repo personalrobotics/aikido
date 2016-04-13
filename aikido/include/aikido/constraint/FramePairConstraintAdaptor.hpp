@@ -5,22 +5,25 @@
 #include "Differentiable.hpp"
 #include <Eigen/Dense>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "TSR.hpp"
 
 namespace aikido {
 namespace constraint{
 
-/// A differentiable constraint.
-/// Constrains relative transform of bodynode1 w.r.t. bodynode2.
+/// A differentiable constraint which constrains relative transform 
+/// of jacobianNode1 w.r.t. jacobianNode2.
+/// _relPoseConstraint is 
+///     1) Differentiable
+///     2) in SE3StateSpace.
+///     2) constrains _jacobianNode1's pose in jacobianNode2's frame.
 class FramePairConstraintAdaptor: public Differentiable
 {
 public:
 
   FramePairConstraintAdaptor(
-    statespace::MetaSkeletonStateSpacePtr& _metaSkeletonStateSpace,
-    dart::dynamics::BodyNodePtr& _bodyNode1,
-    dart::dynamics::BodyNodePtr& _bodyNode2,
-    TSRPtr& _poseConstraint);
+    statespace::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::JacobianNodePtr _jacobianNode1,
+    dart::dynamics::JacobianNodePtr _jacobianNode2,
+    DifferentiablePtr _relPoseConstraint);
 
   // Documentation inherited.
   size_t getConstraintDimension() const override;
@@ -29,8 +32,13 @@ public:
   Eigen::VectorXd getValue(
     const statespace::StateSpace::State* _s) const override; 
 
-  // Documentation inherited.
+  //  m x numDofs, where m is the number of constraints. 
+  //  Jacobian of poseConstraint w.r.t. generalized coordinates.
   Eigen::MatrixXd getJacobian(
+    const statespace::StateSpace::State* _s) const override;
+
+  // Documentation inherited.
+  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
     const statespace::StateSpace::State* _s) const override;
 
   // Documentation inherited.
@@ -40,9 +48,9 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
 private:
-  dart::dynamics::BodyNodePtr mBodyNode1;
-  dart::dynamics::BodyNodePtr mBodyNode2;
-  TSRPtr mPoseConstraint;
+  dart::dynamics::JacobianNodePtr mJacobianNode1;
+  dart::dynamics::JacobianNodePtr mJacobianNode2;
+  DifferentiablePtr mRelPoseConstraint;
   statespace::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   
 };
