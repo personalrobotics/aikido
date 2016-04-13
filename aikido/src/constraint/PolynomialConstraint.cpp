@@ -63,6 +63,20 @@ Eigen::MatrixXd PolynomialConstraint::getJacobian(
   return derivPoly.getValue(_s);
 } 
 
+//=============================================================================
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> PolynomialConstraint::getValueAndJacobian(
+    const statespace::StateSpace::State* _s) const
+{
+  using State = statespace::RealVectorStateSpace::State;
+  auto s = static_cast<const State*>(_s);
+
+  Eigen::VectorXd value = getValue(s);
+  Eigen::MatrixXd jacobian = getJacobian(s); 
+
+  return std::make_pair(value, jacobian);
+
+}
+
 
 //=============================================================================
 std::vector<ConstraintType> PolynomialConstraint::getConstraintTypes() const

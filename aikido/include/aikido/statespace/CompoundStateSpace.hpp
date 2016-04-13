@@ -43,7 +43,7 @@ public:
 
   /// Gets subspace by index.
   template <class Space = StateSpace>
-  const Space* getSubSpace(size_t _index) const;
+  std::shared_ptr<Space> getSubSpace(size_t _index) const;
 
   /// Gets subspace shared ptr by index.
   template <class Space = StateSpace>

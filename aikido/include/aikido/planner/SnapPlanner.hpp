@@ -15,10 +15,9 @@ namespace aikido
 {
 namespace planner
 {
-
 using Trajectory = std::vector<aikido::statespace::StateSpace::ScopedState>;
 
-static std::unique_ptr<Trajectory> planSnap(
+static Trajectory planSnap(
     const aikido::statespace::StateSpace::State *startState,
     const aikido::statespace::StateSpace::State *goalState,
     const std::shared_ptr<aikido::statespace::StateSpace> stateSpace,
@@ -31,24 +30,24 @@ static std::unique_ptr<Trajectory> planSnap(
         "StateSpace of constraint not equal to StateSpace of planning space");
   }
   aikido::util::VanDerCorput vdc{1, true, 0.02};  // TODO junk resolution
+  Trajectory trajectory;
   auto testState = stateSpace->createState();
-  
+
   for (double alpha : vdc) {
     dmetric->interpolate(startState, goalState, alpha, testState);
     if (!constraint->isSatisfied(testState)) {
       planningResult->message = "Collision detected";
-      return nullptr;  // TODO return optional?
+      return trajectory;
     }
   }
 
-  std::unique_ptr<Trajectory> trajectory(new Trajectory());
   auto startCopy = stateSpace->createState();
   auto goalCopy = stateSpace->createState();
   stateSpace->copyState(startCopy, startState);
   stateSpace->copyState(goalCopy, goalState);
 
-  trajectory->emplace_back(std::move(startCopy));
-  trajectory->emplace_back(std::move(goalCopy));
+  trajectory.emplace_back(std::move(startCopy));
+  trajectory.emplace_back(std::move(goalCopy));
   return trajectory;
 }
 
