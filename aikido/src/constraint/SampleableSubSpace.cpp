@@ -80,7 +80,24 @@ SampleableSubSpace::SampleableSubSpace(
   : mStateSpace(std::move(_stateSpace))
   , mConstraints(std::move(_constraints))
 {
-  throw std::runtime_error("not implemented");
+  if (mConstraints.size() != mStateSpace->getNumStates())
+  {
+    std::stringstream msg;
+    msg << "Mismatch between size of CompoundStateSpace and the number of"
+        << " constraints: " << mStateSpace->getNumStates() << " != "
+        << mConstraints.size() << ".";
+    throw std::invalid_argument(msg.str());
+  }
+
+  for (size_t i = 0; i < mStateSpace->getNumStates(); ++i)
+  {
+    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubSpace<>(i))
+    {
+      std::stringstream msg;
+      msg << "Constraint " << i << " is not defined over this StateSpace.";
+      throw std::invalid_arugment(msg.str());
+    }
+  }
 }
 
 //=============================================================================
