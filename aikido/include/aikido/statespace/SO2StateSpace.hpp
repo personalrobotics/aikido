@@ -5,10 +5,12 @@
 #include "StateSpace.hpp"
 #include "ScopedState.hpp"
 
-namespace aikido {
-namespace statespace {
-
-template <class> class SO2StateHandle;
+namespace aikido
+{
+namespace statespace
+{
+template <class>
+class SO2StateHandle;
 
 /// Represents the space of planar rotations.
 class SO2StateSpace : virtual public StateSpace
@@ -74,11 +76,18 @@ public:
 
   // Documentation inherited.
   void freeStateInBuffer(StateSpace::State* _state) const override;
-  
+
   // Documentation inherited.
-  void compose(
-    const StateSpace::State* _state1, const StateSpace::State* _state2,
-    StateSpace::State* _out) const override;
+  void compose(const StateSpace::State* _state1,
+               const StateSpace::State* _state2,
+               StateSpace::State* _out) const override;
+
+  // Documentation inherited
+  void getIdentity(StateSpace::State* _out) const override;
+
+  // Documentation inherited
+  void getInverse(const StateSpace::State *_in,
+                  StateSpace::State *_out) const override;
 
   // Documentation inherited
   unsigned int getDimension() const override;
@@ -88,13 +97,17 @@ public:
                  const StateSpace::State* _source) const override;
 
   // Documentation inherited.
-  void expMap(
-    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
+  void expMap(const Eigen::VectorXd& _tangent,
+              StateSpace::State* _out) const override;
+
+  // Documentation inherited
+  void logMap(const StateSpace::State *_in,
+              Eigen::VectorXd &_tangent) const override;
 
 };
 
-} // namespace statespace
-} // namespace aikido
+}  // namespace statespace
+}  // namespace aikido
 
 #include "detail/SO2StateSpace.hpp"
 
