@@ -1,22 +1,30 @@
 #include "../AIKIDOGeometricStateSpace.hpp"
 #include "../AIKIDOStateValidityChecker.hpp"
 
-namespace aikido {
-namespace ompl {
-
+namespace aikido
+{
+namespace ompl
+{
 template <class PlannerType>
 void planOMPL(
     const aikido::statespace::StateSpace::State *_start,
     const aikido::statespace::StateSpace::State *_goal,
     const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
     const std::shared_ptr<aikido::constraint::TestableConstraint> &_constraint,
-    const std::shared_ptr<aikido::distance::DistanceMetric> &_dmetric,
-    const double &_maxPlanTime, std::unique_ptr<util::RNG> _rng) {
-
+    const aikido::distance::DistanceMetricPtr &_dmetric,
+    std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
+    const double &_maxPlanTime, std::unique_ptr<util::RNG> _rng)
+{
   // Ensure the constraint and state space match
   if (_stateSpace != _constraint->getStateSpace()) {
     throw std::invalid_argument(
         "StateSpace of constraint not equal to planning StateSpace");
+  }
+
+  // Ensure sampleable constraint and state space match
+  if (_stateSpace != _sampler->getStateSpace()) {
+    throw std::invalid_argument(
+        "StateSpace of sampler not equal to planning StateSpace");
   }
 
   // TODO: Ensure distance metric and state space match?
@@ -24,6 +32,7 @@ void planOMPL(
   // AIKIDO State space
   auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(std::move(_stateSpace),
                                                               std::move(_dmetric),
+                                                              std::move(_sampler),
                                                               std::move(_rng));
 
   // Space Information
@@ -55,4 +64,3 @@ void planOMPL(
 }
 }
 }
-

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/constraint/dart.hpp>
 #include <aikido/distance/DistanceMetricDefaults.hpp>
 #include <aikido/ompl/OMPLPlanner.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
@@ -15,21 +16,29 @@ using dart::common::make_unique;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
-static std::unique_ptr<DefaultRNG> make_rng() {
+static std::unique_ptr<DefaultRNG> make_rng()
+{
   return make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
-TEST(OMPLPlannerTest, Plan) {
+TEST(OMPLPlannerTest, Plan)
+{
   auto skel = dart::dynamics::Skeleton::create("robot");
 
   auto jn_bn =
       skel->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
+  
+  // TODO: Set bounds on the skeleton
+  skel->setPositionLowerLimit(0, -5);
+  skel->setPositionUpperLimit(0, 5);
+  skel->setPositionLowerLimit(1, -5);
+  skel->setPositionUpperLimit(1, 5);
+  skel->setPositionLowerLimit(2, -5);
+  skel->setPositionUpperLimit(2, 5);
 
   // State space for this robot
   using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
   auto stateSpace = make_shared<StateSpace>(skel);
-
-  // Set bounds on the state space
 
   // Start state - 3 dof real vector
   using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
@@ -55,8 +64,12 @@ TEST(OMPLPlannerTest, Plan) {
   std::shared_ptr<aikido::statespace::CompoundStateSpace> cspace = stateSpace;
   auto dmetric = aikido::distance::createDistanceMetricFor(cspace);
 
+  // Sampler
+  std::unique_ptr<aikido::constraint::SampleableConstraint> sampler =
+      aikido::constraint::createSampleableBounds(stateSpace, make_rng());
+
   // Plan
   aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-      startState, goalState, stateSpace, collConstraint, dmetric, 5.0,
-      make_rng());
+      startState, goalState, stateSpace, collConstraint, dmetric,
+      std::move(sampler), 5.0, make_rng());
 }

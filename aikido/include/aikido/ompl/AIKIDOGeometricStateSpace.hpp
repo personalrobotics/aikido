@@ -2,28 +2,36 @@
 #define AIKIDO_GEOMETRIC_STATE_SPACE_H
 
 #include <ompl/base/StateSpace.h>
+#include <aikido/constraint/Sampleable.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
-namespace aikido {
-namespace ompl {
-
+namespace aikido
+{
+namespace ompl
+{
 /// Wraps an aikido StateSpace into a space recognized by OMPL
-class AIKIDOGeometricStateSpace : public ::ompl::base::StateSpace {
-
+class AIKIDOGeometricStateSpace : public ::ompl::base::StateSpace
+{
 public:
-  class StateType : public ::ompl::base::State {
+  class StateType : public ::ompl::base::State
+  {
   public:
-    StateType(aikido::statespace::StateSpace::State *_st) : mState(_st) {}
+    StateType(aikido::statespace::StateSpace::State *_st)
+        : mState(_st)
+    {
+    }
 
     aikido::statespace::StateSpace::State *mState;
   };
 
   /// Construct a state space with a random number generator used for allocating
   ///  state samplers.
-  AIKIDOGeometricStateSpace(const aikido::statespace::StateSpacePtr &_sspace,
-                            const aikido::distance::DistanceMetricPtr &_dmetric,
-                            std::unique_ptr<util::RNG> _rng);
+  AIKIDOGeometricStateSpace(
+      const aikido::statespace::StateSpacePtr &_sspace,
+      const aikido::distance::DistanceMetricPtr &_dmetric,
+      std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
+      std::unique_ptr<util::RNG> _rng);
 
   /// Get the dimension of the space (not the dimension of the surrounding
   /// ambient space)
@@ -77,8 +85,8 @@ public:
   virtual ::ompl::base::State *allocState() const;
 
   /// Allocate a state constaining a copy of the aikido state
-  ::ompl::base::State *
-  allocState(const aikido::statespace::StateSpace::State *_state) const;
+  ::ompl::base::State *allocState(
+      const aikido::statespace::StateSpace::State *_state) const;
 
   /// Free the memory of the allocated state
   virtual void freeState(::ompl::base::State *_state) const;
@@ -86,6 +94,7 @@ public:
 private:
   aikido::statespace::StateSpacePtr mStateSpace;
   aikido::distance::DistanceMetricPtr mDistance;
+  std::unique_ptr<aikido::constraint::SampleableConstraint> mSampler;
   std::unique_ptr<util::RNG> mRng;
   std::unique_ptr<std::seed_seq> mSeedSeq;
 };

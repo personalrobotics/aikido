@@ -4,6 +4,7 @@
 #include "../distance/DistanceMetric.hpp"
 #include "../statespace/StateSpace.hpp"
 #include "../constraint/TestableConstraint.hpp"
+#include "../constraint/Sampleable.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -19,7 +20,8 @@ void planOMPL(
     const aikido::statespace::StateSpace::State *_goal,
     const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
     const std::shared_ptr<aikido::constraint::TestableConstraint> &_constraint,
-    const std::shared_ptr<aikido::distance::DistanceMetric> &_dmetric,
+    const aikido::distance::DistanceMetricPtr &_dmetric,
+    std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
     const double &_maxPlanTime, std::unique_ptr<util::RNG> _rng);
 }
 }
