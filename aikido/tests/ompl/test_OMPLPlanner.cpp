@@ -15,6 +15,7 @@ using aikido::util::RNG;
 using dart::common::make_unique;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
+using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
@@ -24,38 +25,22 @@ static std::unique_ptr<DefaultRNG> make_rng()
 class OMPLPlannerTest : public ::testing::Test
 {
 public:
-  using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
 
-  OMPLPlannerTest()
-      : skel{dart::dynamics::Skeleton::create("robot")}
-      , stateSpace{make_shared<StateSpace>(skel)}
-      , startState{stateSpace->createState()}
-      , goalState{stateSpace->createState()}
-      , startPose{Eigen::Vector3d(-5, -5, 0)}
-      , goalPose{Eigen::Vector3d(5, 5, 0)}
+  virtual void SetUp()
   {
     skel = dart::dynamics::Skeleton::create("robot");
 
     auto jn_bn =
         skel->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
+    stateSpace = make_shared<StateSpace>(skel);
 
-    // TODO: Set bounds on the skeleton
+    // Set bounds on the skeleton
     skel->setPositionLowerLimit(0, -5);
     skel->setPositionUpperLimit(0, 5);
     skel->setPositionLowerLimit(1, -5);
     skel->setPositionUpperLimit(1, 5);
     skel->setPositionLowerLimit(2, 0);
     skel->setPositionUpperLimit(2, 0);
-
-    // Start state - 3 dof real vector
-    auto subState = startState.getSubStateHandle<RealVectorStateSpace>(0);
-    subState.setValue(startPose);
-
-    stateSpace->setStateOnMetaSkeleton(startState);
-
-    // Goal state
-    subState = goalState.getSubStateHandle<RealVectorStateSpace>(0);
-    subState.setValue(goalPose);
 
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();
@@ -76,21 +61,45 @@ public:
     jlimit = aikido::constraint::createTestableBounds(stateSpace);
   }
 
+  StateSpace::ScopedState getStartState(const Eigen::Vector3d &startPose) const
+  {
+    // Start state - 3 dof real vector
+    StateSpace::ScopedState startState = stateSpace->createState();
+    auto subState = startState.getSubStateHandle<RealVectorStateSpace>(0);
+    subState.setValue(startPose);
+
+    return startState;
+  }
+
+  StateSpace::ScopedState getGoalState(const Eigen::Vector3d &goalPose) const
+  {
+    // Goal state
+    StateSpace::ScopedState goalState = stateSpace->createState();
+    auto subState = goalState.getSubStateHandle<RealVectorStateSpace>(0);
+    subState.setValue(goalPose);
+
+    return goalState;
+  }
+
   dart::dynamics::SkeletonPtr skel;
   aikido::statespace::MetaSkeletonStateSpacePtr stateSpace;
-  StateSpace::ScopedState startState;
-  StateSpace::ScopedState goalState;
   aikido::distance::DistanceMetricPtr dmetric;
   aikido::constraint::SampleableConstraintPtr sampler;
   aikido::constraint::ProjectablePtr projConstraint;
   aikido::constraint::TestableConstraintPtr jlimit;
   aikido::constraint::TestableConstraintPtr collConstraint;
-  Eigen::Vector3d startPose;
-  Eigen::Vector3d goalPose;
 };
 
 TEST_F(OMPLPlannerTest, Plan)
 {
+  Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d goalPose(5, 5, 0);
+
+  StateSpace::ScopedState startState = getStartState(startPose);
+  stateSpace->setStateOnMetaSkeleton(startState);
+
+  StateSpace::ScopedState goalState = getGoalState(goalPose);
+
   // Plan
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
       startState, goalState, stateSpace, std::move(collConstraint),
