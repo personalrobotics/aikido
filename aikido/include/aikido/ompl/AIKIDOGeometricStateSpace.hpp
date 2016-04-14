@@ -100,6 +100,8 @@ private:
   constraint::TestableConstraintPtr mBoundsConstraint;
   constraint::ProjectablePtr mBoundsProjection;
 };
+
+using AIKIDOGeometricStateSpacePtr = std::shared_ptr<AIKIDOGeometricStateSpace>;
 }
 }
 #endif
