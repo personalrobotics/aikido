@@ -61,22 +61,21 @@ TEST(OMPLPlannerTest, Plan)
       std::make_shared<aikido::constraint::CollisionConstraint>(stateSpace, cd);
 
   // Distance metric
-  std::shared_ptr<aikido::statespace::CompoundStateSpace> cspace = stateSpace;
-  auto dmetric = aikido::distance::createDistanceMetricFor(cspace);
+  auto dmetric = aikido::distance::createDistanceMetricFor(stateSpace);
 
   // Sampler
-  std::unique_ptr<aikido::constraint::SampleableConstraint> sampler =
+  auto sampler =
       aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
   // Joint limits
-  std::unique_ptr<aikido::constraint::TestableConstraint> jlimit =
+  auto jlimit =
       aikido::constraint::createTestableBounds(stateSpace);
 
   // Plan
-  aikido::path::TrajectoryPtr traj =
+  auto traj =
       aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-          startState, goalState, stateSpace, collConstraint, std::move(jlimit),
-          dmetric, std::move(sampler), 5.0);
+          startState, goalState, stateSpace, std::move(collConstraint), std::move(jlimit),
+          std::move(dmetric), std::move(sampler), 5.0);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
@@ -88,7 +87,4 @@ TEST(OMPLPlannerTest, Plan)
   traj->evaluate(traj->getDuration(), s0);
   r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
   ASSERT_TRUE(r0.getValue().isApprox(goal_pose));
-
-
-  
 }

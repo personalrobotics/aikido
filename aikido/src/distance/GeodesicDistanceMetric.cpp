@@ -10,6 +10,11 @@ GeodesicDistanceMetric::GeodesicDistanceMetric(
 {
 }
 
+statespace::StateSpacePtr GeodesicDistanceMetric::getStateSpace() const
+{
+  return mStateSpace;
+}
+
 double GeodesicDistanceMetric::distance(
     const aikido::statespace::StateSpace::State* _state1,
     const aikido::statespace::StateSpace::State* _state2) const

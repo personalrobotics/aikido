@@ -6,6 +6,13 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
+TEST(GeodesicDistance, StateSpaceEquality)
+{
+  auto so3 = std::make_shared<SO3StateSpace>();
+  GeodesicDistanceMetric dmetric(so3);
+  EXPECT_EQ(so3, dmetric.getStateSpace());
+}
+
 TEST(GeodesicDistance, Distance)
 {
   auto so3 = std::make_shared<SO3StateSpace>();

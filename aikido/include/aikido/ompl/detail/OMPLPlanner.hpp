@@ -12,7 +12,8 @@ aikido::path::TrajectoryPtr planOMPL(
     const aikido::statespace::StateSpace::State *_start,
     const aikido::statespace::StateSpace::State *_goal,
     const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
-    const std::shared_ptr<aikido::constraint::TestableConstraint> &_collConstraint,
+    const std::shared_ptr<aikido::constraint::TestableConstraint> &
+        _collConstraint,
     std::unique_ptr<aikido::constraint::TestableConstraint> _boundsConstraint,
     const aikido::distance::DistanceMetricPtr &_dmetric,
     std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
@@ -30,7 +31,11 @@ aikido::path::TrajectoryPtr planOMPL(
         "StateSpace of sampler not equal to planning StateSpace");
   }
 
-  // TODO: Ensure distance metric and state space match?
+  // Ensure distance metric and state space match
+  if (_stateSpace != _dmetric->getStateSpace()) {
+    throw std::invalid_argument(
+        "StateSpace of DistanceMetric not equal to planning StateSpace");
+  }
 
   // AIKIDO State space
   auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(
@@ -59,22 +64,23 @@ aikido::path::TrajectoryPtr planOMPL(
   planner->setProblemDefinition(pdef);
   planner->setup();
   auto solved = planner->solve(_maxPlanTime);
-  
   boost::shared_ptr<aikido::path::PiecewiseLinearTrajectory> returnTraj =
       boost::make_shared<aikido::path::PiecewiseLinearTrajectory>(_stateSpace,
-                                                                _dmetric);
+                                                                  _dmetric);
 
   if (solved) {
-      // Get the path
-      boost::shared_ptr<::ompl::geometric::PathGeometric> path = 
-          boost::static_pointer_cast<::ompl::geometric::PathGeometric>(pdef->getSolutionPath());
+    // Get the path
+    boost::shared_ptr<::ompl::geometric::PathGeometric> path =
+        boost::static_pointer_cast<::ompl::geometric::PathGeometric>(
+            pdef->getSolutionPath());
 
-      for (size_t idx = 0; idx < path->getStateCount(); ++idx) {
-          const aikido::ompl::AIKIDOGeometricStateSpace::StateType* st = 
-              static_cast<aikido::ompl::AIKIDOGeometricStateSpace::StateType*>(path->getState(idx));
-          // Arbitrary timing
-          returnTraj->addWaypoint(idx, st->mState);
-      }
+    for (size_t idx = 0; idx < path->getStateCount(); ++idx) {
+      const aikido::ompl::AIKIDOGeometricStateSpace::StateType *st =
+          static_cast<aikido::ompl::AIKIDOGeometricStateSpace::StateType *>(
+              path->getState(idx));
+      // Arbitrary timing
+      returnTraj->addWaypoint(idx, st->mState);
+    }
   }
 
   return returnTraj;

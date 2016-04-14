@@ -13,26 +13,27 @@ class WeightedDistanceMetric : public DistanceMetric
 public:
   /// Constructor. Default the weights applied to each subspace to 1.
   WeightedDistanceMetric(std::shared_ptr<statespace::CompoundStateSpace> _space,
-                   std::vector<DistanceMetricPtr> _metrics);
+                         std::vector<DistanceMetricPtr> _metrics);
 
   /// Constructor.
   WeightedDistanceMetric(std::shared_ptr<statespace::CompoundStateSpace> _space,
-                   std::vector<DistanceMetricPtr> _metrics,
-                   std::vector<double> _weights);
+                         std::vector<DistanceMetricPtr> _metrics,
+                         std::vector<double> _weights);
+
+  // Documentation inherited
+  statespace::StateSpacePtr getStateSpace() const override;
 
   /// Computes distance between two states as the weighted sum
   ///  of distances between their matching subcomponents.
-  double distance(
-      const aikido::statespace::StateSpace::State* _state1,
-      const aikido::statespace::StateSpace::State* _state2) const override;
+  double distance(const statespace::StateSpace::State* _state1,
+                  const statespace::StateSpace::State* _state2) const override;
 
   /// Computes the state that lies at time t in [0, 1] on the segment
   /// that connects from state to to state. This state is computed
   /// by interpolating each subcomponent individually.
-  void interpolate(
-      const aikido::statespace::StateSpace::State* _from,
-      const aikido::statespace::StateSpace::State* _to, double _t,
-      aikido::statespace::StateSpace::State* _state) const override;
+  void interpolate(const statespace::StateSpace::State* _from,
+                   const statespace::StateSpace::State* _to, double _t,
+                   statespace::StateSpace::State* _state) const override;
 
 private:
   std::shared_ptr<statespace::CompoundStateSpace> mStateSpace;
