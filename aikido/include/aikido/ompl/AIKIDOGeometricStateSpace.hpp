@@ -4,6 +4,7 @@
 #include <ompl/base/StateSpace.h>
 #include <aikido/constraint/Sampleable.hpp>
 #include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/constraint/Projectable.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
@@ -28,11 +29,11 @@ public:
 
   /// Construct a state space with a random number generator used for allocating
   ///  state samplers.
-  AIKIDOGeometricStateSpace(
-      const aikido::statespace::StateSpacePtr &_sspace,
-      const aikido::distance::DistanceMetricPtr &_dmetric,
-      std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
-      std::unique_ptr<aikido::constraint::TestableConstraint> _boundsConstraint);
+  AIKIDOGeometricStateSpace(statespace::StateSpacePtr _sspace,
+                            distance::DistanceMetricPtr _dmetric,
+                            constraint::SampleableConstraintPtr _sampler,
+                            constraint::TestableConstraintPtr _boundsConstraint,
+                            constraint::ProjectablePtr _boundsProjection);
 
   /// Get the dimension of the space (not the dimension of the surrounding
   /// ambient space)
@@ -93,10 +94,11 @@ public:
   virtual void freeState(::ompl::base::State *_state) const;
 
 private:
-  aikido::statespace::StateSpacePtr mStateSpace;
-  aikido::distance::DistanceMetricPtr mDistance;
-  std::unique_ptr<aikido::constraint::SampleableConstraint> mSampler;
-  std::unique_ptr<aikido::constraint::TestableConstraint> mBoundsConstraint;
+  statespace::StateSpacePtr mStateSpace;
+  distance::DistanceMetricPtr mDistance;
+  constraint::SampleableConstraintPtr mSampler;
+  constraint::TestableConstraintPtr mBoundsConstraint;
+  constraint::ProjectablePtr mBoundsProjection;
 };
 }
 }

@@ -11,16 +11,16 @@ namespace aikido
 namespace ompl
 {
 AIKIDOGeometricStateSpace::AIKIDOGeometricStateSpace(
-    const aikido::statespace::StateSpacePtr &_sspace,
-    const aikido::distance::DistanceMetricPtr &_dmetric,
-    std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
-    std::unique_ptr<aikido::constraint::TestableConstraint> _boundsConstraint)
+    statespace::StateSpacePtr _sspace, distance::DistanceMetricPtr _dmetric,
+    constraint::SampleableConstraintPtr _sampler,
+    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjection)
     : mStateSpace(std::move(_sspace))
     , mDistance(std::move(_dmetric))
     , mSampler(std::move(_sampler))
     , mBoundsConstraint(std::move(_boundsConstraint))
+    , mBoundsProjection(std::move(_boundsProjection))
 {
-
 }
 
 /// Get the dimension of the space (not the dimension of the surrounding ambient
@@ -48,7 +48,10 @@ double AIKIDOGeometricStateSpace::getMeasure() const
 /// For unbounded spaces this function can be a no-op.
 void AIKIDOGeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
 {
-  throw std::runtime_error("enforceBounds not implemented.");
+  auto state = static_cast<const StateType *>(_state);
+  auto out = mStateSpace->createState();
+  mBoundsProjection->project(state->mState, out);
+  mStateSpace->copyState(state->mState, out);
 }
 
 /// Check if a state is inside the bounding box.
@@ -56,8 +59,8 @@ void AIKIDOGeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
 bool AIKIDOGeometricStateSpace::satisfiesBounds(
     const ::ompl::base::State *_state) const
 {
-    auto state = static_cast<const StateType*>(_state);
-    return mBoundsConstraint->isSatisfied(state->mState);
+  auto state = static_cast<const StateType *>(_state);
+  return mBoundsConstraint->isSatisfied(state->mState);
 }
 
 /// Copy a state to another.

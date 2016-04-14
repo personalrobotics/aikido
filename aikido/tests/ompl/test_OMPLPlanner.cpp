@@ -67,6 +67,10 @@ TEST(OMPLPlannerTest, Plan)
   auto sampler =
       aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
+  // Projectable constraint
+  auto projConstraint = 
+      aikido::constraint::createProjectableBounds(stateSpace);
+
   // Joint limits
   auto jlimit =
       aikido::constraint::createTestableBounds(stateSpace);
@@ -75,7 +79,7 @@ TEST(OMPLPlannerTest, Plan)
   auto traj =
       aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
           startState, goalState, stateSpace, std::move(collConstraint), std::move(jlimit),
-          std::move(dmetric), std::move(sampler), 5.0);
+          std::move(dmetric), std::move(sampler), std::move(projConstraint), 5.0);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();

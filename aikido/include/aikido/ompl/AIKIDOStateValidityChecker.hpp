@@ -14,7 +14,7 @@ class AIKIDOStateValidityChecker : public ::ompl::base::StateValidityChecker {
 public:
   AIKIDOStateValidityChecker(
       const ::ompl::base::SpaceInformationPtr &_si,
-      std::vector<std::shared_ptr<aikido::constraint::TestableConstraint>>
+      std::vector<constraint::TestableConstraintPtr>
           _constraints);
 
   /// Return true if the state state is valid. Usually, this means at
@@ -22,7 +22,7 @@ public:
   virtual bool isValid(const ::ompl::base::State *_state) const;
 
 private:
-  std::vector<std::shared_ptr<aikido::constraint::TestableConstraint>>
+  std::vector<constraint::TestableConstraintPtr>
       mConstraints;
 };
 }

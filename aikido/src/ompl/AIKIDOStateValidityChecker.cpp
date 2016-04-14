@@ -6,7 +6,7 @@ namespace ompl {
 
 AIKIDOStateValidityChecker::AIKIDOStateValidityChecker(
     const ::ompl::base::SpaceInformationPtr &_si,
-    std::vector<std::shared_ptr<aikido::constraint::TestableConstraint>>
+    std::vector<constraint::TestableConstraintPtr>
         _constraints)
     : ::ompl::base::StateValidityChecker(_si),
       mConstraints(std::move(_constraints)) {}

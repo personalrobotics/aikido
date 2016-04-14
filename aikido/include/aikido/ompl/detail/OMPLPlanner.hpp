@@ -8,15 +8,16 @@ namespace aikido
 namespace ompl
 {
 template <class PlannerType>
-aikido::path::TrajectoryPtr planOMPL(
-    const aikido::statespace::StateSpace::State *_start,
-    const aikido::statespace::StateSpace::State *_goal,
-    const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
-    const std::shared_ptr<aikido::constraint::TestableConstraint> &
+path::TrajectoryPtr planOMPL(
+    const statespace::StateSpace::State *_start,
+    const statespace::StateSpace::State *_goal,
+    const statespace::StateSpacePtr &_stateSpace,
+    const constraint::TestableConstraintPtr &
         _collConstraint,
-    std::unique_ptr<aikido::constraint::TestableConstraint> _boundsConstraint,
-    const aikido::distance::DistanceMetricPtr &_dmetric,
-    std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
+    const constraint::TestableConstraintPtr &_boundsConstraint,
+    const distance::DistanceMetricPtr &_dmetric,
+    const constraint::SampleableConstraintPtr &_sampler,
+    const constraint::ProjectablePtr &_boundsProjector,
     const double &_maxPlanTime)
 {
   // Ensure the constraint and state space match
@@ -37,18 +38,24 @@ aikido::path::TrajectoryPtr planOMPL(
         "StateSpace of DistanceMetric not equal to planning StateSpace");
   }
 
+  // Ensure the projector state space and state space match
+  if(_stateSpace != _boundsProjector->getStateSpace()){
+      throw std::invalid_argument(
+          "StateSpace of BoundsProjector not equal to planning StateSpace");
+  }
+
   // AIKIDO State space
   auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(
-      std::move(_stateSpace), std::move(_dmetric), std::move(_sampler),
-      std::move(_boundsConstraint));
+      _stateSpace, _dmetric, std::move(_sampler),
+      _boundsConstraint, std::move(_boundsProjector));
 
   // Space Information
   auto si = boost::make_shared<::ompl::base::SpaceInformation>(sspace);
 
   // Validity checker
-  std::vector<std::shared_ptr<aikido::constraint::TestableConstraint>>
-      constraints;
-  constraints.push_back(std::move(_collConstraint));
+  std::vector<constraint::TestableConstraintPtr> constraints;
+  constraints.push_back(_collConstraint);
+  constraints.push_back(_boundsConstraint);
   ::ompl::base::StateValidityCheckerPtr vchecker =
       boost::make_shared<AIKIDOStateValidityChecker>(si, constraints);
   si->setStateValidityChecker(vchecker);
