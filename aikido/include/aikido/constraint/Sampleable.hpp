@@ -22,6 +22,8 @@ class SampleGenerator;
 /// re-sampling the beginning of the same deterministic sequence repeatedly.
 class SampleableConstraint {
 public:
+  virtual ~SampleableConstraint() = default;
+
   /// Gets the StateSpace that this constraint operates on.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
 
@@ -37,6 +39,8 @@ public:
 /// fail, i.e. return an empty optional<T>, at any point before then.
 class SampleGenerator {
 public:
+  virtual ~SampleGenerator() = default;
+
   /// Value used to represent a potentially infinite number of samples.
   static constexpr int NO_LIMIT = std::numeric_limits<int>::max();
 

@@ -15,6 +15,8 @@ enum class ConstraintType {EQ, INEQ};
 class Differentiable
 {
 public:
+  virtual ~Differentiable() = default;
+
   /// Gets the StateSpace that this constraint operates on.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
 
