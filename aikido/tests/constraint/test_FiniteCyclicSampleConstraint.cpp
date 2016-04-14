@@ -1,43 +1,43 @@
-#include <aikido/constraint/FiniteSampleConstraint.hpp>
+#include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
 #include <gtest/gtest.h>
 
 using aikido::statespace::RealVectorStateSpace;
-using aikido::constraint::FiniteSampleConstraint;
+using aikido::constraint::FiniteCyclicSampleConstraint;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
 
-TEST(SingleSampleConstraint, SingleSampleGenerator)
+
+TEST(FiniteCyclicSampleConstraint, SingleState)
 {
   Eigen::VectorXd v(1);
-	v(0) = -2;
+  v(0) = -2;
 
   RealVectorStateSpace rvss(1);
   auto s1 = rvss.createState();
   s1.setValue(v);
 
-  FiniteSampleConstraint constraint(
-  	std::make_shared<RealVectorStateSpace>(rvss), s1);
+  FiniteCyclicSampleConstraint constraint(
+    std::make_shared<RealVectorStateSpace>(rvss), s1);
 
   std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
-  EXPECT_TRUE(generator->canSample());
-  EXPECT_EQ(generator->getNumSamples(), 1);
+  for(int i = 0; i < 10; ++i)
+  {
+    EXPECT_TRUE(generator->canSample());
+    EXPECT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
 
-  generator->sample(state);
-  EXPECT_TRUE(state.getValue().isApprox(v));
-
-  EXPECT_FALSE(generator->canSample());
-  EXPECT_EQ(generator->getNumSamples(), 0);
-  
+    generator->sample(state);
+    EXPECT_TRUE(state.getValue().isApprox(v));
+  }
 }
 
 
-TEST(SingleSampleConstraint, FiniteSampleGenerator)
+TEST(FiniteCyclicSampleConstraint, MultipleStates)
 {
   Eigen::Vector2d v1(0, 1);
   Eigen::Vector2d v2(2, 3);
@@ -57,26 +57,24 @@ TEST(SingleSampleConstraint, FiniteSampleGenerator)
   states.push_back(s1);
   states.push_back(s2);
 
-  FiniteSampleConstraint constraint(
+  FiniteCyclicSampleConstraint constraint(
     std::make_shared<RealVectorStateSpace>(rvss), states);
 
   std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
-  for (int i = 0; i < 2; ++i)
+  for (int i = 0; i < 10; ++i)
   {
     EXPECT_TRUE(generator->canSample());
-    EXPECT_EQ(generator->getNumSamples(), 2-i);
+    EXPECT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
 
     generator->sample(state);
 
     EXPECT_TRUE(state.getValue().isApprox(expected[i%2]));
   }
 
-  EXPECT_FALSE(generator->canSample());
-  EXPECT_EQ(generator->getNumSamples(), 0);
+  EXPECT_TRUE(generator->canSample());
+  EXPECT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
 
 }
-
-

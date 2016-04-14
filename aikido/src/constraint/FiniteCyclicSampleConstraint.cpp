@@ -1,22 +1,23 @@
-#include <aikido/constraint/FiniteSampleConstraint.hpp>
+#include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
 
 namespace aikido {
 namespace constraint {
 
+
 // For internal use only.
-class FiniteSampleGenerator : public SampleGenerator
+class FiniteCyclicSampleGenerator : public SampleGenerator
 {
 public:
 
-  FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
-  FiniteSampleGenerator(FiniteSampleGenerator&& other) = delete;
+  FiniteCyclicSampleGenerator(const FiniteCyclicSampleGenerator&) = delete;
+  FiniteCyclicSampleGenerator(FiniteCyclicSampleGenerator&& other) = delete;
 
-  FiniteSampleGenerator& operator=(
-    const FiniteSampleGenerator& other) = delete;
-  FiniteSampleGenerator& operator=(
-    FiniteSampleGenerator&& other) = delete;
+  FiniteCyclicSampleGenerator& operator=(
+    const FiniteCyclicSampleGenerator& other) = delete;
+  FiniteCyclicSampleGenerator& operator=(
+    FiniteCyclicSampleGenerator&& other) = delete;
 
-  virtual ~FiniteSampleGenerator() = default; 
+  virtual ~FiniteCyclicSampleGenerator() = default; 
 
   /// Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -33,7 +34,7 @@ public:
 private:
 
   // For internal use only.
-  FiniteSampleGenerator(
+  FiniteCyclicSampleGenerator(
     statespace::StateSpacePtr _stateSpace,
     std::vector<statespace::StateSpace::State*> _states);
 
@@ -41,11 +42,11 @@ private:
   std::vector<statespace::StateSpace::State*> mStates;
   int mIndex;
 
-  friend class FiniteSampleConstraint;
+  friend class FiniteCyclicSampleConstraint;
 };
 
 //=============================================================================
- FiniteSampleGenerator::FiniteSampleGenerator(
+ FiniteCyclicSampleGenerator::FiniteCyclicSampleGenerator(
   statespace::StateSpacePtr _stateSpace,
   std::vector<statespace::StateSpace::State*> _states)
 : mStateSpace(_stateSpace)
@@ -61,16 +62,16 @@ private:
 
 
 //=============================================================================
-statespace::StateSpacePtr FiniteSampleGenerator::getStateSpace() const
+statespace::StateSpacePtr FiniteCyclicSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
+bool FiniteCyclicSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   if (mStates.size() <= mIndex)
-    return false;
+    mIndex = 0;
 
   mStateSpace->copyState(_state, mStates[mIndex]);
   ++mIndex;
@@ -79,19 +80,19 @@ bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
 }
 
 //=============================================================================
-int FiniteSampleGenerator::getNumSamples() const
+int FiniteCyclicSampleGenerator::getNumSamples() const
 {
-  return mStates.size() - mIndex;
+  return NO_LIMIT;
 }
 
 //=============================================================================
-bool FiniteSampleGenerator::canSample() const
+bool FiniteCyclicSampleGenerator::canSample() const
 {
-  return mStates.size() > mIndex;
+  return true;
 }
 
 //=============================================================================
-FiniteSampleConstraint::FiniteSampleConstraint(
+FiniteCyclicSampleConstraint::FiniteCyclicSampleConstraint(
   statespace::StateSpacePtr _stateSpace,
   statespace::StateSpace::State* _state)
 : mStateSpace(_stateSpace)
@@ -104,9 +105,8 @@ FiniteSampleConstraint::FiniteSampleConstraint(
   mStates.push_back(state);
 }
 
-
 //=============================================================================
-FiniteSampleConstraint::FiniteSampleConstraint(
+FiniteCyclicSampleConstraint::FiniteCyclicSampleConstraint(
   statespace::StateSpacePtr _stateSpace,
   std::vector<const statespace::StateSpace::State*> _states)
 : mStateSpace(_stateSpace)
@@ -125,7 +125,7 @@ FiniteSampleConstraint::FiniteSampleConstraint(
 }
 
 //=============================================================================
-FiniteSampleConstraint::~FiniteSampleConstraint()
+FiniteCyclicSampleConstraint::~FiniteCyclicSampleConstraint()
 {
   for (auto state: mStates)
   {
@@ -134,15 +134,16 @@ FiniteSampleConstraint::~FiniteSampleConstraint()
 }
 
 //=============================================================================
-statespace::StateSpacePtr FiniteSampleConstraint::getStateSpace() const
+statespace::StateSpacePtr FiniteCyclicSampleConstraint::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-std::unique_ptr<SampleGenerator> FiniteSampleConstraint::createSampleGenerator() const
+std::unique_ptr<SampleGenerator> FiniteCyclicSampleConstraint::createSampleGenerator() const
 {
-  return std::unique_ptr<FiniteSampleGenerator>(new FiniteSampleGenerator(
+  return std::unique_ptr<FiniteCyclicSampleGenerator>(
+    new FiniteCyclicSampleGenerator(
     mStateSpace,
     mStates));
 }

@@ -19,7 +19,7 @@ IkSampleableConstraint::IkSampleableConstraint(
       std::unique_ptr<util::RNG> _rng,
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
-  , mPoseConstraint(_poseConstraint)  // std::move crashes.
+  , mPoseConstraint(std::move(_poseConstraint))  // std::move crashes.
   , mSeedConstraint(std::move(_seedConstraint))
   , mInverseKinematics(std::move(_inverseKinematics))
   , mRng(std::move(_rng))
@@ -49,7 +49,7 @@ IkSampleableConstraint::IkSampleableConstraint(
   if (!mPoseConstraint)
     throw std::invalid_argument("Pose SampleGenerator is nullptr.");
 
-  if (!dynamic_cast<SE3StateSpace*>(_poseConstraint->getStateSpace().get()))
+  if (!dynamic_cast<SE3StateSpace*>(mPoseConstraint->getStateSpace().get()))
     throw std::invalid_argument(
       "Pose SampleableConstraint does not operate on a SE3StateSpace.");
 

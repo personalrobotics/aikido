@@ -1,9 +1,8 @@
 #include <random>
 #include <aikido/constraint/IkSampleableConstraint.hpp>
 #include <aikido/constraint/FiniteSampleConstraint.hpp>
-
+#include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
@@ -25,7 +24,7 @@ protected:
     mTsr.reset(new TSR);
     mRng.reset(new RNGWrapper<std::default_random_engine>());
 
-    // Setup for constrained IKPtr 
+    // Manipulator with 2 revolute joints. 
     mManipulator1 = Skeleton::create("Manipulator1");
 
     // Root joint
@@ -48,32 +47,28 @@ protected:
     mInverseKinematics1 = InverseKinematics::create(bn2);
     mStateSpace1 = std::make_shared<MetaSkeletonStateSpace>(mManipulator1);
 
-    // // Setup for relaxed IKPtr 
-    // mManipulator2 = Skeleton::create("Manipulator2");
-
-    // // Root joint
-    // FreeJoint::Properties properties3;
-    // properties3.mName = "Joint1";
-    // bn3 = mManipulator2->createJointAndBodyNodePair<FreeJoint>(
-    //   nullptr, properties3, 
-    //   BodyNode::Properties(std::string("root_body"))).second;
-    // for(int i = 0; i < 6; i ++)
-    // {
-    //   bn3->getParentJoint()->setPositionLowerLimit(i, -10);  
-    //   bn3->getParentJoint()->setPositionUpperLimit(i, 10);
-    // }
     
-    // // joint 2, body 2
-    // RevoluteJoint::Properties properties4;
-    // properties4.mAxis = Eigen::Vector3d::UnitY();
-    // properties4.mName = "Joint2";
-    // properties4.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
-    // bn4 = mManipulator2->createJointAndBodyNodePair<RevoluteJoint>(
-    //   bn3, properties4, 
-    //   BodyNode::Properties(std::string("second_body"))).second;
+    // Manipulator with 1 free joint and 1 revolute joint. 
+    mManipulator2 = Skeleton::create("Manipulator2");
 
-    // mInverseKinematics2 = InverseKinematics::create(bn4);
-    // mStateSpace2 = std::make_shared<MetaSkeletonStateSpace>(mManipulator2);
+    // Root joint
+    FreeJoint::Properties properties3;
+    properties3.mName = "Joint1";
+    bn3 = mManipulator2->createJointAndBodyNodePair<FreeJoint>(
+      nullptr, properties3, 
+      BodyNode::Properties(std::string("root_body"))).second;
+    
+    // Joint 2, body 2
+    RevoluteJoint::Properties properties4;
+    properties4.mAxis = Eigen::Vector3d::UnitY();
+    properties4.mName = "Joint2";
+    properties4.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
+    bn4 = mManipulator2->createJointAndBodyNodePair<RevoluteJoint>(
+      bn3, properties4, 
+      BodyNode::Properties(std::string("second_body"))).second;
+
+    mInverseKinematics2 = InverseKinematics::create(bn4);
+    mStateSpace2 = std::make_shared<MetaSkeletonStateSpace>(mManipulator2);
 
   }
 
@@ -94,7 +89,6 @@ protected:
 
 TEST_F(IkSampleableConstraintTest, Constructor)
 {
-
   // Invalid statespace for seed constraint.
   Eigen::Vector2d v(1,0);
   RealVectorStateSpace rvss(2);
@@ -117,101 +111,155 @@ TEST_F(IkSampleableConstraintTest, Constructor)
 
   IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
     valid_seed_constraint, mInverseKinematics1, mRng->clone(), 1);
-
 }
 
 
+TEST_F(IkSampleableConstraintTest, SingleSampleGenerator)
+{
+  // Set mTSR to be a pointTSR that generates
+  //  the only feasible solution for mInverseKinematics1.
+  Eigen::Isometry3d T0_w(Eigen::Isometry3d::Identity());
+  T0_w.translation() = Eigen::Vector3d(0, 0, 1);
+  mTsr->mT0_w = T0_w;
 
-// TEST_F(IkSampleableConstraintTest, SampleGenerator)
-// {
-//   auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
-//   seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0);
-//   seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0);
+  // Set FiniteSampleConstraint to generate pose close to the actual solution.
+  auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+  seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0.1);
+  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
 
-//   std::shared_ptr<FiniteSampleConstraint> seedConstraint( 
-//     new FiniteSampleConstraint(mStateSpace1, seedState));
+  std::shared_ptr<FiniteSampleConstraint> seedConstraint( 
+    new FiniteSampleConstraint(mStateSpace1, seedState));
 
-//   // Construct IkSampleableConstraint
-//   IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
-//     seedConstraint, mInverseKinematics1, mRng->clone(), 1);
+  // Construct IkSampleableConstraint
+  IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
+    seedConstraint, mInverseKinematics1, mRng->clone(), 1);
 
-//   // Get IkSampleGenerator
-//   auto sampleGenerator = ikConstraint->createSampleGenerator();
+  // Get IkSampleGenerator
+  auto generator = ikConstraint.createSampleGenerator();
 
-//   ASSERT_TRUE(generator->canSample());
-//   auto sampleState = mStateSpace1->createState();
+  ASSERT_TRUE(generator->canSample());
+  ASSERT_EQ(generator->getNumSamples(), 1);
+  auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
 
-//   ASSERT_TRUE(generator->sample(sampleState));
-//   EXPECT_DOUBLE_EQ(state.getSubStateHandle<SO2StateSpace>(0).getAngle(), 0);
-//   EXPECT_DOUBLE_EQ(state.getSubStateHandle<SO2StateSpace>(1).getAngle(), 0);
+  ASSERT_TRUE(generator->sample(state));
+  ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(0).getAngle(), 0, 1e-5);
+  ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(1).getAngle(), 0, 1e-5);
 
-
-
-// }
-
-
+  // Cannot sample anymore.
+  ASSERT_FALSE(generator->canSample());
+}
 
 
-// TEST_F(IkSampleableConstraintTest, PointConstraint)
-// {
-//   Eigen::Isometry3d T0_w(Eigen::Isometry3d::Identity());
-//   T0_w.translation() = Eigen::Vector3d(0, 0, 1);
-//   mTsr->mT0_w = T0_w;
+TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
+{
+  // Set mTSR to be a pointTSR that generates
+  //  the only feasible solution for mInverseKinematics1.
+  Eigen::Isometry3d T0_w(Eigen::Isometry3d::Identity());
+  T0_w.translation() = Eigen::Vector3d(0, 0, 1);
+  mTsr->mT0_w = T0_w;
 
-//   IkSampleableConstraint constraint(mStateSpace1, mTsr, nullptr,
-//     mInverseKinematics1, mRng->clone(), 1);
-//   std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
+  // Set FiniteCyclicSampleConstraint to generate
+  // pose close to the actual solution.
+  auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+  seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0.1);
+  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
 
-//   ASSERT_TRUE(generator->canSample());
-//   auto state = mStateSpace1->createState();
+  std::shared_ptr<FiniteCyclicSampleConstraint> seedConstraint( 
+    new FiniteCyclicSampleConstraint(mStateSpace1, seedState));
 
-//   ASSERT_TRUE(generator->sample(state));
-//   EXPECT_DOUBLE_EQ(state.getSubStateHandle<SO2StateSpace>(0).getAngle(), 0);
-//   EXPECT_DOUBLE_EQ(state.getSubStateHandle<SO2StateSpace>(1).getAngle(), 0);
-// }
+  // Construct IkSampleableConstraint
+  IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
+    seedConstraint, mInverseKinematics1, mRng->clone(), 1);
 
-// TEST_F(IkSampleableConstraintTest, SampleGeneratorJointLimitInfeasible)
-// {
-//   bn1->getParentJoint()->setPosition(0, M_PI/4);
-//   tsr->mT0_w = bn2->getTransform();
+  // Get IkSampleGenerator
+  auto generator = ikConstraint.createSampleGenerator();
 
-//   /// Set first joint to be a fixed joint.
-//   bn1->getParentJoint()->setPositionLowerLimit(0, 0);
-//   bn1->getParentJoint()->setPositionUpperLimit(0, 0);
+  for(int i = 1; i < 10; ++i)
+  {
+    ASSERT_TRUE(generator->canSample());
+    ASSERT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
+    auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
 
-//   IkSampleableConstraint ikConstraint(tsr, constrained_ik, std::move(rng), 5);
-//   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> generator = 
-//     ikConstraint.createSampleGenerator();
+    ASSERT_TRUE(generator->sample(state));
+    ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(0).getAngle(), 0, 1e-5);
+    ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(1).getAngle(), 0, 1e-5);
+  }
+}
 
-//   ASSERT_TRUE(generator->canSample());
-//   boost::optional<Eigen::VectorXd> sample = generator->sample();
-//   ASSERT_FALSE(sample);  
-// }
 
-// TEST_F(IkSampleableConstraintTest, SampleSameSequence)
-// {
+TEST_F(IkSampleableConstraintTest, MultipleGeneratorsSampleSameSequence)
+{
+  // TSR constraint will generate sequence of different points.
+  Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(2, 0) = 1;
+  Bw(2, 1) = 3;
+  mTsr->mBw = Bw;
 
-//   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
-//   Bw(2, 0) = 1;
-//   Bw(2, 1) = 3;
-//   tsr->mBw = Bw;
+  // Set FiniteCyclicSampleConstraint to generate
+  // pose close to the actual solution.
+  auto seedState = mStateSpace2->getScopedStateFromMetaSkeleton();
+  Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
+  isometry.translation() = Eigen::Vector3d(0.1, 0.1, 0.1);
+  seedState.getSubStateHandle<SE3StateSpace>(0).setIsometry(isometry);
+  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
 
-//   IkSampleableConstraint ikConstraint(tsr, relaxed_ik, std::move(rng), 5);
-//   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> generator1 = 
-//     ikConstraint.createSampleGenerator();
-//   std::unique_ptr<SampleGenerator<Eigen::VectorXd>> generator2 = 
-//     ikConstraint.createSampleGenerator();
+  std::shared_ptr<FiniteCyclicSampleConstraint> seedConstraint( 
+    new FiniteCyclicSampleConstraint(mStateSpace2, seedState));
 
-//   ASSERT_TRUE(generator1->canSample());
-//   ASSERT_TRUE(generator2->canSample());
+  IkSampleableConstraint ikConstraint(mStateSpace2, mTsr, 
+    seedConstraint, mInverseKinematics2, mRng->clone(), 1);
 
-//   for(int i = 0; i < 10; i++)
-//   {
-//     boost::optional<Eigen::VectorXd> sample1 = generator1->sample();
-//     ASSERT_TRUE(!!sample1);
-//     boost::optional<Eigen::VectorXd> sample2 = generator2->sample();
-//     ASSERT_TRUE(!!sample2);
-//     EXPECT_EQ(sample1.get(), sample2.get());
-//   }
-// }
+  // Get 2 IkSampleGenerator
+  auto generator1 = ikConstraint.createSampleGenerator();
+  auto generator2 = ikConstraint.createSampleGenerator();
 
+  // Test the two generators' samples for equality.
+  for(int i = 0; i < 10; i++)
+  {
+    ASSERT_TRUE(generator1->canSample());
+    ASSERT_TRUE(generator2->canSample());
+
+    auto state1 = mStateSpace2->getScopedStateFromMetaSkeleton();
+    auto state2 = mStateSpace2->getScopedStateFromMetaSkeleton();
+
+    ASSERT_TRUE(generator1->sample(state1));
+    ASSERT_TRUE(generator2->sample(state2));
+
+    EXPECT_TRUE(state1.getSubStateHandle<SE3StateSpace>(0).getIsometry().isApprox
+      (state2.getSubStateHandle<SE3StateSpace>(0).getIsometry()));
+
+    EXPECT_DOUBLE_EQ(state1.getSubStateHandle<SO2StateSpace>(1).getAngle(),
+      state2.getSubStateHandle<SO2StateSpace>(1).getAngle());
+  }
+}
+
+
+TEST_F(IkSampleableConstraintTest, SampleGeneratorIkInfeasible)
+{
+  // Tests that generator returns false when IK is infeasible.
+
+  bn1->getParentJoint()->setPosition(0, M_PI/4);
+  mTsr->mT0_w = bn2->getTransform();
+
+  /// Set first joint to be a fixed joint.
+  bn1->getParentJoint()->setPositionLowerLimit(0, 0);
+  bn1->getParentJoint()->setPositionUpperLimit(0, 0);
+
+  // Set FiniteCyclicSampleConstraint.
+  auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+  seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0);
+  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
+
+  std::shared_ptr<FiniteCyclicSampleConstraint> seedConstraint( 
+    new FiniteCyclicSampleConstraint(mStateSpace1, seedState));
+
+  IkSampleableConstraint ikConstraint(mStateSpace1,
+    mTsr, seedConstraint, mInverseKinematics1, mRng->clone(), 1);
+
+  auto generator = ikConstraint.createSampleGenerator();
+
+  ASSERT_TRUE(generator->canSample());
+
+  auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
+  ASSERT_FALSE(generator->sample(state));
+}

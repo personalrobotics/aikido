@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_FINITESAMPLECONSTRAINT_H
-#define AIKIDO_CONSTRAINT_FINITESAMPLECONSTRAINT_H
+#ifndef AIKIDO_CONSTRAINT_FINITECYCLICSAMPLECONSTRAINT_H
+#define AIKIDO_CONSTRAINT_FINITECYCLICSAMPLECONSTRAINT_H
 
 #include "Sampleable.hpp"
 
@@ -9,18 +9,18 @@ namespace constraint {
 // Constraint that always returns a finite set of samples.
 // Its SampleGenerator will generate sample in the order of _states
 // until all samples are exhausted.
-class FiniteSampleConstraint : public SampleableConstraint
+class FiniteCyclicSampleConstraint : public SampleableConstraint
 {
 public:
-  FiniteSampleConstraint(
+  FiniteCyclicSampleConstraint(
     statespace::StateSpacePtr _stateSpace,
     statespace::StateSpace::State* _state);
 
-  FiniteSampleConstraint(
+  FiniteCyclicSampleConstraint(
     statespace::StateSpacePtr _stateSpace,
     std::vector<const statespace::StateSpace::State*> _states);
 
-  virtual ~FiniteSampleConstraint();
+  virtual ~FiniteCyclicSampleConstraint();
 
   /// Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
