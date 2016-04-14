@@ -7,6 +7,8 @@ namespace constraint {
 SatisfiedConstraint::SatisfiedConstraint(statespace::StateSpacePtr _space)
   : mStateSpace(std::move(_space))
 {
+  if (!mStateSpace)
+    throw std::invalid_argument("StateSpace is null.");
 }
 
 //=============================================================================
