@@ -164,8 +164,11 @@ TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
   seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0.1);
   seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
 
+  std::shared_ptr<FiniteSampleConstraint> finiteSampleConstraint = 
+    std::make_shared<FiniteSampleConstraint>(mStateSpace1, seedState);
+
   std::shared_ptr<FiniteCyclicSampleConstraint> seedConstraint( 
-    new FiniteCyclicSampleConstraint(mStateSpace1, seedState));
+    new FiniteCyclicSampleConstraint(finiteSampleConstraint));
 
   // Construct IkSampleableConstraint
   IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
@@ -203,8 +206,11 @@ TEST_F(IkSampleableConstraintTest, MultipleGeneratorsSampleSameSequence)
   seedState.getSubStateHandle<SE3StateSpace>(0).setIsometry(isometry);
   seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
 
+  std::shared_ptr<FiniteSampleConstraint> finiteSampleConstraint = 
+    std::make_shared<FiniteSampleConstraint>(mStateSpace2, seedState);
+
   std::shared_ptr<FiniteCyclicSampleConstraint> seedConstraint( 
-    new FiniteCyclicSampleConstraint(mStateSpace2, seedState));
+    new FiniteCyclicSampleConstraint(finiteSampleConstraint));
 
   IkSampleableConstraint ikConstraint(mStateSpace2, mTsr, 
     seedConstraint, mInverseKinematics2, mRng->clone(), 1);
@@ -250,8 +256,11 @@ TEST_F(IkSampleableConstraintTest, SampleGeneratorIkInfeasible)
   seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0);
   seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
 
+  std::shared_ptr<FiniteSampleConstraint> finiteSampleConstraint = 
+    std::make_shared<FiniteSampleConstraint>(mStateSpace1, seedState);
+
   std::shared_ptr<FiniteCyclicSampleConstraint> seedConstraint( 
-    new FiniteCyclicSampleConstraint(mStateSpace1, seedState));
+    new FiniteCyclicSampleConstraint(finiteSampleConstraint));
 
   IkSampleableConstraint ikConstraint(mStateSpace1,
     mTsr, seedConstraint, mInverseKinematics1, mRng->clone(), 1);
