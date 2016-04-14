@@ -424,6 +424,8 @@ struct createSampleableFor_impl<statespace::SE3JointStateSpace>
   }
 };
 
+} // namespace detail
+
 //=============================================================================
 template <class Space>
 std::unique_ptr<Differentiable> createDifferentiableBoundsFor(
@@ -453,13 +455,12 @@ std::unique_ptr<TestableConstraint> createTestableBoundsFor(
 
 //=============================================================================
 template <class Space>
-std::unique_ptr<SampleableConstraint> createSampleableFor(
+std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
   std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng)
 {
   return detail::createSampleableFor_impl<Space>::create(
     std::move(_stateSpace), std::move(_rng));
 }
 
-} // namespace detail
 } // namespace constraint
 } // namespace aikido

@@ -1,10 +1,7 @@
 aikido_add_library("${PROJECT_NAME}_constraint"
-  uniform/CompoundStateSpaceSampleableConstraint.cpp
   uniform/RealVectorBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
-  uniform/SE2TranslationalConstraint.cpp
-  uniform/SE3TranslationalConstraint.cpp
   CollisionConstraint.cpp
   ConjunctionConstraint.cpp
   SampleableSubSpace.cpp
@@ -21,6 +18,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   IkSampleGenerator.cpp
   SatisfiedConstraint.cpp
   TestableSubSpace.cpp
+  Sampleable.cpp
   dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"

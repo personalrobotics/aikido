@@ -11,6 +11,8 @@ namespace constraint{
 class Projectable
 {
 public:
+  virtual ~Projectable() = default;
+
   /// Gets the StateSpace that this constraint operates on.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
 
