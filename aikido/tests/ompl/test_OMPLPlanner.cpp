@@ -27,14 +27,14 @@ TEST(OMPLPlannerTest, Plan)
 
   auto jn_bn =
       skel->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
-  
+
   // TODO: Set bounds on the skeleton
   skel->setPositionLowerLimit(0, -5);
   skel->setPositionUpperLimit(0, 5);
   skel->setPositionLowerLimit(1, -5);
   skel->setPositionUpperLimit(1, 5);
-  skel->setPositionLowerLimit(2, -5);
-  skel->setPositionUpperLimit(2, 5);
+  skel->setPositionLowerLimit(2, 0);
+  skel->setPositionUpperLimit(2, 0);
 
   // State space for this robot
   using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
@@ -69,7 +69,22 @@ TEST(OMPLPlannerTest, Plan)
       aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
   // Plan
-  aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-      startState, goalState, stateSpace, collConstraint, dmetric,
-      std::move(sampler), 5.0, make_rng());
+  aikido::path::TrajectoryPtr traj =
+      aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+          startState, goalState, stateSpace, collConstraint, dmetric,
+          std::move(sampler), 5.0, make_rng());
+
+  // Check the first waypoint
+  auto s0 = stateSpace->createState();
+  traj->evaluate(0, s0);
+  auto r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  ASSERT_TRUE(r0.getValue().isApprox(start_pose));
+
+  // Check the last waypoint
+  traj->evaluate(traj->getDuration(), s0);
+  r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  ASSERT_TRUE(r0.getValue().isApprox(goal_pose));
+
+
+  
 }

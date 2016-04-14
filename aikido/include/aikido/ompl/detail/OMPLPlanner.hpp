@@ -1,12 +1,14 @@
 #include "../AIKIDOGeometricStateSpace.hpp"
 #include "../AIKIDOStateValidityChecker.hpp"
+#include "../../path/PiecewiseLinearTrajectory.hpp"
+#include <ompl/geometric/PathGeometric.h>
 
 namespace aikido
 {
 namespace ompl
 {
 template <class PlannerType>
-void planOMPL(
+aikido::path::TrajectoryPtr planOMPL(
     const aikido::statespace::StateSpace::State *_start,
     const aikido::statespace::StateSpace::State *_goal,
     const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
@@ -30,10 +32,9 @@ void planOMPL(
   // TODO: Ensure distance metric and state space match?
 
   // AIKIDO State space
-  auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(std::move(_stateSpace),
-                                                              std::move(_dmetric),
-                                                              std::move(_sampler),
-                                                              std::move(_rng));
+  auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(
+      std::move(_stateSpace), std::move(_dmetric), std::move(_sampler),
+      std::move(_rng));
 
   // Space Information
   auto si = boost::make_shared<::ompl::base::SpaceInformation>(sspace);
@@ -57,10 +58,25 @@ void planOMPL(
   planner->setProblemDefinition(pdef);
   planner->setup();
   auto solved = planner->solve(_maxPlanTime);
+  
+  boost::shared_ptr<aikido::path::PiecewiseLinearTrajectory> returnTraj =
+      boost::make_shared<aikido::path::PiecewiseLinearTrajectory>(_stateSpace,
+                                                                _dmetric);
 
   if (solved) {
-    // TODO: Extract trajectory
+      // Get the path
+      boost::shared_ptr<::ompl::geometric::PathGeometric> path = 
+          boost::static_pointer_cast<::ompl::geometric::PathGeometric>(pdef->getSolutionPath());
+
+      for (size_t idx = 0; idx < path->getStateCount(); ++idx) {
+          const aikido::ompl::AIKIDOGeometricStateSpace::StateType* st = 
+              static_cast<aikido::ompl::AIKIDOGeometricStateSpace::StateType*>(path->getState(idx));
+          // Arbitrary timing
+          returnTraj->addWaypoint(idx, st->mState);
+      }
   }
+
+  return returnTraj;
 }
 }
 }

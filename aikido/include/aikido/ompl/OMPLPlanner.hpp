@@ -5,6 +5,7 @@
 #include "../statespace/StateSpace.hpp"
 #include "../constraint/TestableConstraint.hpp"
 #include "../constraint/Sampleable.hpp"
+#include "../path/Trajectory.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -15,7 +16,7 @@ namespace aikido {
 namespace ompl {
 
 template <class PlannerType>
-void planOMPL(
+aikido::path::TrajectoryPtr planOMPL(
     const aikido::statespace::StateSpace::State *_start,
     const aikido::statespace::StateSpace::State *_goal,
     const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
