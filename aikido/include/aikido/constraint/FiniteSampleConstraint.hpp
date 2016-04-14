@@ -14,11 +14,11 @@ class FiniteSampleConstraint : public SampleableConstraint
 public:
   FiniteSampleConstraint(
     statespace::StateSpacePtr _stateSpace,
-    statespace::StateSpace::State* _state);
+    const statespace::StateSpace::State* _state);
 
   FiniteSampleConstraint(
     statespace::StateSpacePtr _stateSpace,
-    std::vector<const statespace::StateSpace::State*> _states);
+    const std::vector<const statespace::StateSpace::State*>& _states);
 
   virtual ~FiniteSampleConstraint();
 

@@ -16,7 +16,7 @@ public:
   FiniteSampleGenerator& operator=(
     FiniteSampleGenerator&& other) = delete;
 
-  virtual ~FiniteSampleGenerator() = default; 
+  virtual ~FiniteSampleGenerator(); 
 
   /// Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -35,7 +35,7 @@ private:
   // For internal use only.
   FiniteSampleGenerator(
     statespace::StateSpacePtr _stateSpace,
-    std::vector<statespace::StateSpace::State*> _states);
+    const std::vector<statespace::StateSpace::State*>& _states);
 
   statespace::StateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
@@ -47,18 +47,43 @@ private:
 //=============================================================================
  FiniteSampleGenerator::FiniteSampleGenerator(
   statespace::StateSpacePtr _stateSpace,
-  std::vector<statespace::StateSpace::State*> _states)
-: mStateSpace(_stateSpace)
-, mStates(_states)
+  const std::vector<statespace::StateSpace::State*>& _states)
+: mStateSpace(std::move(_stateSpace))
 , mIndex(0)
 {
-  assert(mStateSpace);
-  for(auto state: mStates)
+  if (!mStateSpace)
+    throw std::invalid_argument("StateSpacePtr is nullptr.");
+
+  if (_states.empty())
+    throw std::invalid_argument("_states is empty.");
+
+  mStates.reserve(_states.size());
+
+  for (auto state: _states)
   {
-    assert(state);
+    if (!state){
+      // Free all states already saved in mStates.
+      for (auto saved: mStates)
+        mStateSpace->freeState(saved);
+
+      throw std::invalid_argument("One of the states in _states is nullptr.");
+    }
+
+    statespace::StateSpace::State* newState = mStateSpace->allocateState();
+    mStateSpace->copyState(newState, state);
+
+    mStates.emplace_back(newState);
   }
 }
 
+//=============================================================================
+FiniteSampleGenerator::~FiniteSampleGenerator()
+{
+  for (auto state: mStates)
+  {
+    mStateSpace->freeState(state);
+  }
+}
 
 //=============================================================================
 statespace::StateSpacePtr FiniteSampleGenerator::getStateSpace() const
@@ -93,10 +118,14 @@ bool FiniteSampleGenerator::canSample() const
 //=============================================================================
 FiniteSampleConstraint::FiniteSampleConstraint(
   statespace::StateSpacePtr _stateSpace,
-  statespace::StateSpace::State* _state)
-: mStateSpace(_stateSpace)
+  const statespace::StateSpace::State* _state)
+: mStateSpace(std::move(_stateSpace))
 {
-  assert(mStateSpace);
+  if (!mStateSpace)
+    throw std::invalid_argument("StateSpacePtr is nullptr.");
+
+  if (!_state)
+    throw std::invalid_argument("State is nullptr.");
 
   statespace::StateSpace::State* state = mStateSpace->allocateState();
   mStateSpace->copyState(state, _state);
@@ -108,14 +137,27 @@ FiniteSampleConstraint::FiniteSampleConstraint(
 //=============================================================================
 FiniteSampleConstraint::FiniteSampleConstraint(
   statespace::StateSpacePtr _stateSpace,
-  std::vector<const statespace::StateSpace::State*> _states)
-: mStateSpace(_stateSpace)
+    const std::vector<const statespace::StateSpace::State*>& _states)
+: mStateSpace(std::move(_stateSpace))
 {
-  assert(mStateSpace);
+  if (!mStateSpace)
+    throw std::invalid_argument("StateSpacePtr is nullptr.");
+
+  if (_states.empty())
+    throw std::invalid_argument("_states is empty.");
+
   mStates.reserve(_states.size());
 
   for (auto state: _states)
   {
+    if (!state){
+      // Free all states already saved in mStates.
+      for (auto saved: mStates)
+        mStateSpace->freeState(saved);
+
+      throw std::invalid_argument("One of the states in _states is nullptr.");
+    }
+
     statespace::StateSpace::State* newState = mStateSpace->allocateState();
     mStateSpace->copyState(newState, state);
 

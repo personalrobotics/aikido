@@ -17,7 +17,7 @@ public:
   FiniteCyclicSampleGenerator& operator=(
     FiniteCyclicSampleGenerator&& other) = delete;
 
-  virtual ~FiniteCyclicSampleGenerator() = default; 
+  virtual ~FiniteCyclicSampleGenerator(); 
 
   /// Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -35,46 +35,81 @@ private:
 
   // For internal use only.
   FiniteCyclicSampleGenerator(
-    statespace::StateSpacePtr _stateSpace,
-    std::vector<statespace::StateSpace::State*> _states);
+    std::unique_ptr<SampleGenerator> _generator);
 
-  statespace::StateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
+  std::unique_ptr<SampleGenerator> mGenerator;
   int mIndex;
+  int mNumSamples;
 
   friend class FiniteCyclicSampleConstraint;
 };
 
 //=============================================================================
  FiniteCyclicSampleGenerator::FiniteCyclicSampleGenerator(
-  statespace::StateSpacePtr _stateSpace,
-  std::vector<statespace::StateSpace::State*> _states)
-: mStateSpace(_stateSpace)
-, mStates(_states)
+  std::unique_ptr<SampleGenerator> _generator)
+: mGenerator(std::move(_generator))
 , mIndex(0)
 {
-  assert(mStateSpace);
-  for(auto state: mStates)
-  {
-    assert(state);
-  }
+  if (!mGenerator)
+    throw std::invalid_argument("SampleGenerator is nullptr.");
+
+  mNumSamples = mGenerator->getNumSamples();
+
+  if(mNumSamples == SampleGenerator::NO_LIMIT)
+    throw std::invalid_argument("SampleGenerator is not finite.");
+
+  if(mNumSamples == 0)
+    throw std::invalid_argument("SampleGenerator has 0 samples.");
+
+  mStates.reserve(mNumSamples);
 }
 
+//=============================================================================
+FiniteCyclicSampleGenerator::~FiniteCyclicSampleGenerator()
+{
+  auto space = mGenerator->getStateSpace();
+
+  for (auto state: mStates)
+  {
+    space->freeState(state);
+  }
+}
 
 //=============================================================================
 statespace::StateSpacePtr FiniteCyclicSampleGenerator::getStateSpace() const
 {
-  return mStateSpace;
+  return mGenerator->getStateSpace();
 }
 
 //=============================================================================
 bool FiniteCyclicSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
-  if (mStates.size() <= mIndex)
-    mIndex = 0;
+  if (mGenerator->canSample()){
+    // Generate a sample.
+    bool success = mGenerator->sample(_state);
+    
+    if (!success || !_state)
+      return false;
 
-  mStateSpace->copyState(_state, mStates[mIndex]);
+    // Copy the sample into mStates.
+    auto space = mGenerator->getStateSpace();
+    statespace::StateSpace::State* state = space->allocateState();
+
+    space->copyState(state, _state);
+    mStates.emplace_back(state);
+
+    return true;
+  }
+
+  // Return the sample at mIndex.
+  auto space = mGenerator->getStateSpace();
+  space->copyState(_state, mStates[mIndex]);
+
+  // Set mIndex to 0 if it copied the last element of mStates.
   ++mIndex;
+  if (mIndex == mNumSamples)
+    mIndex = 0;
 
   return true;
 }
@@ -93,60 +128,35 @@ bool FiniteCyclicSampleGenerator::canSample() const
 
 //=============================================================================
 FiniteCyclicSampleConstraint::FiniteCyclicSampleConstraint(
-  statespace::StateSpacePtr _stateSpace,
-  statespace::StateSpace::State* _state)
-: mStateSpace(_stateSpace)
+  SampleableConstraintPtr _sampleable)
+: mSampleable(std::move(_sampleable))
 {
-  assert(mStateSpace);
+  if (!mSampleable)
+    throw std::invalid_argument("SampleableConstraint is nullptr.");
 
-  statespace::StateSpace::State* state = mStateSpace->allocateState();
-  mStateSpace->copyState(state, _state);
+  int numSamples = mSampleable->createSampleGenerator()->getNumSamples();
 
-  mStates.push_back(state);
-}
+  if (numSamples == SampleGenerator::NO_LIMIT)
+    throw std::invalid_argument("SampleableConstraint is not finite.");
 
-//=============================================================================
-FiniteCyclicSampleConstraint::FiniteCyclicSampleConstraint(
-  statespace::StateSpacePtr _stateSpace,
-  std::vector<const statespace::StateSpace::State*> _states)
-: mStateSpace(_stateSpace)
-{
-  assert(mStateSpace);
-  mStates.reserve(_states.size());
-
-  for (auto state: _states)
-  {
-    statespace::StateSpace::State* newState = mStateSpace->allocateState();
-    mStateSpace->copyState(newState, state);
-
-    mStates.emplace_back(newState);
-  }
-
-}
-
-//=============================================================================
-FiniteCyclicSampleConstraint::~FiniteCyclicSampleConstraint()
-{
-  for (auto state: mStates)
-  {
-    mStateSpace->freeState(state);
-  }
+  if (numSamples == 0)
+    throw std::invalid_argument(
+      "SampleableConstraint's SampleGenerator produces 0 sample.");
 }
 
 //=============================================================================
 statespace::StateSpacePtr FiniteCyclicSampleConstraint::getStateSpace() const
 {
-  return mStateSpace;
+  return mSampleable->getStateSpace();
 }
 
 //=============================================================================
 std::unique_ptr<SampleGenerator> FiniteCyclicSampleConstraint::createSampleGenerator() const
 {
   return std::unique_ptr<FiniteCyclicSampleGenerator>(
-    new FiniteCyclicSampleGenerator(
-    mStateSpace,
-    mStates));
+    new FiniteCyclicSampleGenerator(mSampleable->createSampleGenerator()));
 }
 
 }
 }
+

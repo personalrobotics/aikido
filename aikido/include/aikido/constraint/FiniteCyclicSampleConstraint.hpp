@@ -6,21 +6,17 @@
 namespace aikido {
 namespace constraint {
 
-// Constraint that always returns a finite set of samples.
-// Its SampleGenerator will generate sample in the order of _states
-// until all samples are exhausted.
+// Constraint that turns a finite sampleable constraint into
+// a cyclic sampleable constriant.
+// It's generator  will generate samples in the same order as 
+// the original sampleable constraint, but once the samples are exhausted,
+// it will cycle through the samples, starting from the initial sample. 
+// The original sampleable should be finite. 
 class FiniteCyclicSampleConstraint : public SampleableConstraint
 {
 public:
   FiniteCyclicSampleConstraint(
-    statespace::StateSpacePtr _stateSpace,
-    statespace::StateSpace::State* _state);
-
-  FiniteCyclicSampleConstraint(
-    statespace::StateSpacePtr _stateSpace,
-    std::vector<const statespace::StateSpace::State*> _states);
-
-  virtual ~FiniteCyclicSampleConstraint();
+    SampleableConstraintPtr _sampleable);
 
   /// Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -29,8 +25,7 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
-  std::vector<statespace::StateSpace::State*> mStates;
+  SampleableConstraintPtr mSampleable;
 
 };
 

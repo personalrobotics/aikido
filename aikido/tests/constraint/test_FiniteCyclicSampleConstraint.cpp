@@ -1,4 +1,5 @@
 #include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
+#include <aikido/constraint/FiniteSampleConstraint.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
@@ -6,6 +7,7 @@
 
 using aikido::statespace::RealVectorStateSpace;
 using aikido::constraint::FiniteCyclicSampleConstraint;
+using aikido::constraint::FiniteSampleConstraint;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
 
@@ -19,10 +21,12 @@ TEST(FiniteCyclicSampleConstraint, SingleState)
   auto s1 = rvss.createState();
   s1.setValue(v);
 
-  FiniteCyclicSampleConstraint constraint(
+  std::shared_ptr<FiniteSampleConstraint> constraint = std::make_shared<FiniteSampleConstraint>(
     std::make_shared<RealVectorStateSpace>(rvss), s1);
 
-  std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
+  FiniteCyclicSampleConstraint cyclicConstraint(constraint);
+
+  auto generator = cyclicConstraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
@@ -35,7 +39,6 @@ TEST(FiniteCyclicSampleConstraint, SingleState)
     EXPECT_TRUE(state.getValue().isApprox(v));
   }
 }
-
 
 TEST(FiniteCyclicSampleConstraint, MultipleStates)
 {
@@ -57,20 +60,22 @@ TEST(FiniteCyclicSampleConstraint, MultipleStates)
   states.push_back(s1);
   states.push_back(s2);
 
-  FiniteCyclicSampleConstraint constraint(
+  std::shared_ptr<FiniteSampleConstraint> constraint = std::make_shared<FiniteSampleConstraint>(
     std::make_shared<RealVectorStateSpace>(rvss), states);
 
-  std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
+  FiniteCyclicSampleConstraint cyclicConstraint(constraint);
+
+  auto generator = cyclicConstraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
+  // Iterate 10 times and compare the sample value with expected.
   for (int i = 0; i < 10; ++i)
   {
     EXPECT_TRUE(generator->canSample());
     EXPECT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
 
-    generator->sample(state);
-
+    EXPECT_TRUE(generator->sample(state));
     EXPECT_TRUE(state.getValue().isApprox(expected[i%2]));
   }
 

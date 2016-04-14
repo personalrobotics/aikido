@@ -13,10 +13,10 @@ aikido_add_test(test_FramePairConstraintAdaptor
 target_link_libraries(test_FramePairConstraintAdaptor
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_IkSampleableConstraint
-  test_IkSampleableConstraint.cpp)
-target_link_libraries(test_IkSampleableConstraint
-  "${PROJECT_NAME}_constraint")
+# aikido_add_test(test_IkSampleableConstraint
+#   test_IkSampleableConstraint.cpp)
+# target_link_libraries(test_IkSampleableConstraint
+#   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_PolynomialConstraint
   test_PolynomialConstraint.cpp)
