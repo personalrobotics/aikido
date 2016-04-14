@@ -75,16 +75,14 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
   {
     // Sample a seed for the IK solver.
     // TODO: What should the retry logic look like if sampling a seed fails?
-    if (!mSeedSampler->sample(seedState)){
+    if (!mSeedSampler->sample(seedState))
       continue;
-    }
 
     mStateSpace->setStateOnMetaSkeleton(seedState);
 
     // Sample a goal for the IK solver.
-    if (!mPoseSampler->sample(poseState)){
+    if (!mPoseSampler->sample(poseState))
       continue;
-    }
 
     mInverseKinematics->getTarget()->setTransform(poseState.getIsometry());
 

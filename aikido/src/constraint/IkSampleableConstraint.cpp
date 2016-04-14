@@ -19,7 +19,7 @@ IkSampleableConstraint::IkSampleableConstraint(
       std::unique_ptr<util::RNG> _rng,
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
-  , mPoseConstraint(std::move(_poseConstraint))  // std::move crashes.
+  , mPoseConstraint(std::move(_poseConstraint))
   , mSeedConstraint(std::move(_seedConstraint))
   , mInverseKinematics(std::move(_inverseKinematics))
   , mRng(std::move(_rng))
