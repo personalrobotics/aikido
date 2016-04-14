@@ -20,6 +20,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   IkSampleableConstraint.cpp
   IkSampleGenerator.cpp
   SatisfiedConstraint.cpp
+  TestableSubSpace.cpp
   dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"

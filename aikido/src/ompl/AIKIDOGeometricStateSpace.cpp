@@ -14,22 +14,13 @@ AIKIDOGeometricStateSpace::AIKIDOGeometricStateSpace(
     const aikido::statespace::StateSpacePtr &_sspace,
     const aikido::distance::DistanceMetricPtr &_dmetric,
     std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
-    std::unique_ptr<util::RNG> _rng)
+    std::unique_ptr<aikido::constraint::TestableConstraint> _boundsConstraint)
     : mStateSpace(std::move(_sspace))
     , mDistance(std::move(_dmetric))
     , mSampler(std::move(_sampler))
-    , mRng(std::move(_rng))
+    , mBoundsConstraint(std::move(_boundsConstraint))
 {
-  // Use our RNG to generate an initial set of (badly correlated) seeds.
-  std::vector<util::RNG::result_type> initialSeeds;
-  unsigned int numSeeds = 10;  // TODO: arbitrary
-  initialSeeds.reserve(numSeeds);
 
-  for (size_t i = 0; i < numSeeds; ++i) initialSeeds.emplace_back((*mRng)());
-
-  // Use seed_seq to improve the quality of our seeds.
-  mSeedSeq =
-      make_unique<std::seed_seq>(initialSeeds.begin(), initialSeeds.end());
 }
 
 /// Get the dimension of the space (not the dimension of the surrounding ambient
@@ -65,7 +56,8 @@ void AIKIDOGeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
 bool AIKIDOGeometricStateSpace::satisfiesBounds(
     const ::ompl::base::State *_state) const
 {
-  return true;
+    auto state = static_cast<const StateType*>(_state);
+    return mBoundsConstraint->isSatisfied(state->mState);
 }
 
 /// Copy a state to another.

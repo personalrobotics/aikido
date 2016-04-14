@@ -3,6 +3,7 @@
 
 #include <ompl/base/StateSpace.h>
 #include <aikido/constraint/Sampleable.hpp>
+#include <aikido/constraint/TestableConstraint.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
@@ -31,7 +32,7 @@ public:
       const aikido::statespace::StateSpacePtr &_sspace,
       const aikido::distance::DistanceMetricPtr &_dmetric,
       std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
-      std::unique_ptr<util::RNG> _rng);
+      std::unique_ptr<aikido::constraint::TestableConstraint> _boundsConstraint);
 
   /// Get the dimension of the space (not the dimension of the surrounding
   /// ambient space)
@@ -95,8 +96,7 @@ private:
   aikido::statespace::StateSpacePtr mStateSpace;
   aikido::distance::DistanceMetricPtr mDistance;
   std::unique_ptr<aikido::constraint::SampleableConstraint> mSampler;
-  std::unique_ptr<util::RNG> mRng;
-  std::unique_ptr<std::seed_seq> mSeedSeq;
+  std::unique_ptr<aikido::constraint::TestableConstraint> mBoundsConstraint;
 };
 }
 }

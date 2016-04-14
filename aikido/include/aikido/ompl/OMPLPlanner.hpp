@@ -20,7 +20,8 @@ aikido::path::TrajectoryPtr planOMPL(
     const aikido::statespace::StateSpace::State *_start,
     const aikido::statespace::StateSpace::State *_goal,
     const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
-    const std::shared_ptr<aikido::constraint::TestableConstraint> &_constraint,
+    const std::shared_ptr<aikido::constraint::TestableConstraint> &_collConstraint,
+    std::unique_ptr<aikido::constraint::TestableConstraint> _boundsConstraint,
     const aikido::distance::DistanceMetricPtr &_dmetric,
     std::unique_ptr<aikido::constraint::SampleableConstraint> _sampler,
     const double &_maxPlanTime, std::unique_ptr<util::RNG> _rng);

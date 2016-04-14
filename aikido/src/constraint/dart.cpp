@@ -4,6 +4,7 @@
 #include <aikido/constraint/ConjunctionConstraint.hpp>
 #include <aikido/constraint/ProjectableSubSpace.hpp>
 #include <aikido/constraint/SampleableSubSpace.h>
+#include <aikido/constraint/TestableSubSpace.hpp>
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
@@ -107,7 +108,7 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<ConjunctionConstraint>(
+  return make_unique<TestableSubSpace>(
     std::move(_metaSkeleton), std::move(constraints));
 }
 
