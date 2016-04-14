@@ -2,6 +2,7 @@
 #include <dart/dynamics/dynamics.h>
 #include <dart/common/StlHelpers.h>
 #include <aikido/constraint/dart.hpp>
+#include <aikido/constraint/SatisfiedConstraint.hpp>
 #include <aikido/statespace/dart/RealVectorJointStateSpace.hpp>
 #include <aikido/statespace/dart/SO2JointStateSpace.hpp>
 
@@ -15,6 +16,7 @@ using dart::dynamics::RevoluteJoint;
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
 using aikido::constraint::SampleGenerator;
+using aikido::constraint::SatisfiedConstraint;
 using aikido::statespace::RealVectorJointStateSpace;
 using aikido::statespace::SO2JointStateSpace;
 using aikido::util::RNGWrapper;
@@ -199,60 +201,37 @@ protected:
 //=============================================================================
 TEST_F(SO2JointStateSpaceHelpersTests, createTestableBoundsFor)
 {
-  auto constraint = createTestableBoundsFor<SO2JointStateSpace>(
-    mStateSpace);
-  auto state = mStateSpace->createState();
-
+  const auto constraint
+    = createTestableBoundsFor<SO2JointStateSpace>(mStateSpace);
+  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
-
-  mJoint->setPosition(0, -0.9);
-  mStateSpace->getState(state);
-  EXPECT_TRUE(constraint->isSatisfied(state));
 }
 
 //=============================================================================
 TEST_F(SO2JointStateSpaceHelpersTests, createProjectableBounds)
 {
-  auto testableConstraint
-    = createTestableBoundsFor<SO2JointStateSpace>(mStateSpace);
-  auto projectableConstraint
+  const auto constraint
     = createProjectableBoundsFor<SO2JointStateSpace>(mStateSpace);
-
-  auto inState = mStateSpace->createState();
-  auto outState = mStateSpace->createState();
-
-  EXPECT_EQ(mStateSpace, projectableConstraint->getStateSpace());
-
-  // Doesn't change the value if the constraint is satisfied.
-  mJoint->setPosition(0, -0.9);
-  mStateSpace->getState(inState);
-  EXPECT_TRUE(projectableConstraint->project(inState, outState));
-  EXPECT_DOUBLE_EQ(inState.getAngle(), outState.getAngle());
+  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
 TEST_F(SO2JointStateSpaceHelpersTests, createDifferentiableBounds)
 {
-  const auto differentiableConstraint
+  const auto constraint
     = createDifferentiableBoundsFor<SO2JointStateSpace>(mStateSpace);
-
-  EXPECT_EQ(mStateSpace, differentiableConstraint->getStateSpace());
-
-  auto state = mStateSpace->createState();
-
-  mJoint->setPosition(0, -0.9);
-  mStateSpace->getState(state);
-  auto constraintValue = differentiableConstraint->getValue(state);
-  EXPECT_TRUE(Vector0d::Zero().isApprox(constraintValue));
+  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
 TEST_F(SO2JointStateSpaceHelpersTests, createSampleableBounds)
 {
-  auto rng = make_unique<RNGWrapper<std::default_random_engine>>(0);
   const auto sampleableConstraint
-    = createSampleableBoundsFor<SO2JointStateSpace>(
-        mStateSpace, std::move(rng));
+    = createSampleableBoundsFor<SO2JointStateSpace>(mStateSpace,
+        make_unique<RNGWrapper<std::default_random_engine>>(0));
+
   ASSERT_TRUE(!!sampleableConstraint);
   EXPECT_EQ(mStateSpace, sampleableConstraint->getStateSpace());
 
