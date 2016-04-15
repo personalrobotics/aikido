@@ -255,14 +255,15 @@ TEST(TSR, GetValue)
   
   // strictly inside TSR
   Eigen::Matrix3d rotation;
-  rotation = Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX());
 
   isometry = Eigen::Isometry3d::Identity();
   isometry.linear() = rotation;
   state.setIsometry(isometry);
   value = tsr.getValue(state);
+
   EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
 
   // [PI/2, PI/2+2PI-0.1]
@@ -270,9 +271,9 @@ TEST(TSR, GetValue)
   Bw(3,1) = M_PI_2+M_PI*2 - 0.1;
   tsr.mBw = Bw;
 
-  rotation = Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
   value = tsr.getValue(state);
@@ -284,9 +285,9 @@ TEST(TSR, GetValue)
   Bw(3,1) = M_PI_2+M_PI*2;
   tsr.mBw = Bw;
 
-  rotation = Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
   value = tsr.getValue(state);
@@ -295,9 +296,9 @@ TEST(TSR, GetValue)
 
 
   // boundary of TSR
-  rotation = Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitX());
 
   isometry.linear() = rotation;
   state.setIsometry(isometry);
@@ -311,9 +312,9 @@ TEST(TSR, GetValue)
   Bw(3,1) = M_PI;
   tsr.mBw = Bw;
 
-  rotation = Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
   value = tsr.getValue(state);
@@ -328,9 +329,9 @@ TEST(TSR, GetValue)
 
   tsr.mBw = Bw;
 
-  rotation = Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
   value = tsr.getValue(state);
@@ -343,9 +344,9 @@ TEST(TSR, GetValue)
   Bw(3,1) = M_PI*2;
   tsr.mBw = Bw;
 
-  rotation = Eigen::AngleAxisd(M_PI_4 - 0.1, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI_4 - 0.1, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
   value = tsr.getValue(state);

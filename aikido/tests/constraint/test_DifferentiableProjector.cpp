@@ -149,9 +149,9 @@ TEST(DifferentiableProjector, ProjectTSRRotation)
   Eigen::Isometry3d expected = Eigen::Isometry3d::Identity();
 
   Eigen::Matrix3d rotation;
-  rotation = Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ()) *
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
+             Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX());
   expected.linear() = rotation;
 
   EXPECT_TRUE(expected.isApprox(projected, 5e-4));
