@@ -11,6 +11,7 @@ using State = aikido::statespace::StateSpace::State;
 
 TEST(SingleSampleConstraint, SingleSampleGenerator)
 {
+  // Single-sample.
   Eigen::VectorXd v(1);
 	v(0) = -2;
 
@@ -18,13 +19,16 @@ TEST(SingleSampleConstraint, SingleSampleGenerator)
   auto s1 = rvss.createState();
   s1.setValue(v);
 
+  // Single-sample constraint.
   FiniteSampleConstraint constraint(
   	std::make_shared<RealVectorStateSpace>(rvss), s1);
 
+  // Single-sample-generator.
   std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
+  // Test the generor's behavior.
   EXPECT_TRUE(generator->canSample());
   EXPECT_EQ(generator->getNumSamples(), 1);
 
@@ -39,6 +43,8 @@ TEST(SingleSampleConstraint, SingleSampleGenerator)
 
 TEST(SingleSampleConstraint, FiniteSampleGenerator)
 {
+
+  // Finite-samples
   Eigen::Vector2d v1(0, 1);
   Eigen::Vector2d v2(2, 3);
   
@@ -57,13 +63,16 @@ TEST(SingleSampleConstraint, FiniteSampleGenerator)
   states.push_back(s1);
   states.push_back(s2);
 
+  // Finite-sample-constraint.
   FiniteSampleConstraint constraint(
     std::make_shared<RealVectorStateSpace>(rvss), states);
 
+  // Finite-sample generator.
   std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
+  // Test generator's behavior.
   for (int i = 0; i < 2; ++i)
   {
     EXPECT_TRUE(generator->canSample());

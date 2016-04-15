@@ -14,6 +14,7 @@ using State = aikido::statespace::StateSpace::State;
 
 TEST(FiniteCyclicSampleConstraint, SingleState)
 {
+  // Single-sample-state.
   Eigen::VectorXd v(1);
   v(0) = -2;
 
@@ -21,15 +22,18 @@ TEST(FiniteCyclicSampleConstraint, SingleState)
   auto s1 = rvss.createState();
   s1.setValue(v);
 
+  // Single-sample-constraint.
   std::shared_ptr<FiniteSampleConstraint> constraint = std::make_shared<FiniteSampleConstraint>(
     std::make_shared<RealVectorStateSpace>(rvss), s1);
 
+  // Single-sample-cyclic-constraint.
   FiniteCyclicSampleConstraint cyclicConstraint(constraint);
 
   auto generator = cyclicConstraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
+  // Test consistency of the generator's behavior. 
   for(int i = 0; i < 10; ++i)
   {
     EXPECT_TRUE(generator->canSample());
@@ -42,6 +46,7 @@ TEST(FiniteCyclicSampleConstraint, SingleState)
 
 TEST(FiniteCyclicSampleConstraint, MultipleStates)
 {
+  // Finite samples.
   Eigen::Vector2d v1(0, 1);
   Eigen::Vector2d v2(2, 3);
   
@@ -60,9 +65,12 @@ TEST(FiniteCyclicSampleConstraint, MultipleStates)
   states.push_back(s1);
   states.push_back(s2);
 
-  std::shared_ptr<FiniteSampleConstraint> constraint = std::make_shared<FiniteSampleConstraint>(
+  // Finite-sample constraint
+  std::shared_ptr<FiniteSampleConstraint> constraint = 
+    std::make_shared<FiniteSampleConstraint>(
     std::make_shared<RealVectorStateSpace>(rvss), states);
 
+  // Finite-sample cyclic constraint
   FiniteCyclicSampleConstraint cyclicConstraint(constraint);
 
   auto generator = cyclicConstraint.createSampleGenerator();
