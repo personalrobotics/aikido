@@ -2,6 +2,8 @@ aikido_add_library("${PROJECT_NAME}_ompl"
   AIKIDOGeometricStateSpace.cpp
   AIKIDOStateSampler.cpp
   AIKIDOStateValidityChecker.cpp
+  OMPLPlanner.cpp
+  GoalRegion.cpp
 )
 target_link_libraries("${PROJECT_NAME}_ompl"
   "${PROJECT_NAME}_constraint"

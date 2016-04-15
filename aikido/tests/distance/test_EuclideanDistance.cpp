@@ -6,6 +6,13 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
+TEST(EuclideanDistanceMetric, StateSpaceEquality)
+{
+  auto rvss = std::make_shared<RealVectorStateSpace>(4);
+  EuclideanDistanceMetric dmetric(rvss);
+  EXPECT_EQ(rvss, dmetric.getStateSpace());
+}
+
 TEST(EuclideanDistanceMetric, Distance)
 {
   auto rvss = std::make_shared<RealVectorStateSpace>(4);

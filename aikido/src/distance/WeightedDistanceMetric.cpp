@@ -20,7 +20,7 @@ WeightedDistanceMetric::WeightedDistanceMetric(
 WeightedDistanceMetric::WeightedDistanceMetric(
     std::shared_ptr<statespace::CompoundStateSpace> _space,
     std::vector<DistanceMetricPtr> _metrics, std::vector<double> _weights)
-    : mStateSpace(_space)
+    : mStateSpace(std::move(_space))
     , mMetrics(std::move(_metrics))
     , mWeights(std::move(_weights))
 {
@@ -32,6 +32,11 @@ WeightedDistanceMetric::WeightedDistanceMetric(
   if (mWeights.size() != mMetrics.size()) {
     throw std::invalid_argument("Must provide a weight for every metric.");
   }
+}
+
+statespace::StateSpacePtr WeightedDistanceMetric::getStateSpace() const
+{
+  return mStateSpace;
 }
 
 double WeightedDistanceMetric::distance(

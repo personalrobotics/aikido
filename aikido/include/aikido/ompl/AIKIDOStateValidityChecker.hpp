@@ -7,24 +7,24 @@
 #include <aikido/constraint/TestableConstraint.hpp>
 
 namespace aikido {
-    namespace ompl_bindings {
+namespace ompl {
 
-        class AIKIDOStateValidityChecker : public ompl::base::StateValidityChecker {
+class AIKIDOStateValidityChecker : public ::ompl::base::StateValidityChecker {
 
-        public:
-            
-            AIKIDOStateValidityChecker(const ompl::base::SpaceInformationPtr &_si,
-                                     std::vector<std::shared_ptr<
-                                     aikido::constraint::TestableConstraint> > _constraints);
-            
-            /// Return true if the state state is valid. Usually, this means at 
-            /// least collision checking and bounds checking
-            virtual bool isValid(const ompl::base::State* _state) const;
+public:
+  AIKIDOStateValidityChecker(
+      const ::ompl::base::SpaceInformationPtr &_si,
+      std::vector<constraint::TestableConstraintPtr>
+          _constraints);
 
-        private:
-            std::vector<std::shared_ptr<aikido::constraint::TestableConstraint> > mConstraints;
+  /// Return true if the state state is valid. Usually, this means at
+  /// least collision checking and bounds checking
+  virtual bool isValid(const ::ompl::base::State *_state) const;
 
-        };
-    }
+private:
+  std::vector<constraint::TestableConstraintPtr>
+      mConstraints;
+};
+}
 }
 #endif

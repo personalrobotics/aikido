@@ -9,6 +9,22 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
+TEST(WeightedDistance, StateSpaceEquality)
+{
+  auto so2 = std::make_shared<SO2StateSpace>();
+  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
+  auto so3 = std::make_shared<SO3StateSpace>();
+  std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
+
+  auto space = std::make_shared<CompoundStateSpace>(spaces);
+
+  WeightedDistanceMetric dmetric(
+      space, {std::make_shared<AngularDistanceMetric>(so2),
+              std::make_shared<EuclideanDistanceMetric>(rv3),
+              std::make_shared<GeodesicDistanceMetric>(so3)});
+  EXPECT_EQ(space, dmetric.getStateSpace());
+}
+
 TEST(WeightedDistance, Distance)
 {
   auto so2 = std::make_shared<SO2StateSpace>();

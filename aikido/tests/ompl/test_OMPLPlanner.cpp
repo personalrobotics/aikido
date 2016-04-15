@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/constraint/dart.hpp>
+#include <aikido/distance/DistanceMetricDefaults.hpp>
+#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
 #include <aikido/ompl/OMPLPlanner.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <dart/dart.h>
@@ -11,50 +14,284 @@ using std::make_shared;
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
 using dart::common::make_unique;
-
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
+using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
+using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
+using AIKIDOStateSpace = aikido::ompl::AIKIDOGeometricStateSpace;
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
   return make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
-TEST(OMPLPlannerTest, Plan)
+class OMPLPlannerTest : public ::testing::Test
 {
-    auto skel = dart::dynamics::Skeleton::create("robot");
+public:
+  virtual void SetUp()
+  {
+    // Create robot
+    auto robot = dart::dynamics::Skeleton::create("robot");
+    auto jn_bn =
+        robot->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
 
-    auto jn_bn = 
-        skel->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
+    stateSpace = make_shared<StateSpace>(robot);
 
-    // State space for this robot
-    using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
-    auto stateSpace = make_shared<StateSpace>(skel);
+    // Set bounds on the skeleton
+    robot->setPositionLowerLimit(0, -5);
+    robot->setPositionUpperLimit(0, 5);
+    robot->setPositionLowerLimit(1, -5);
+    robot->setPositionUpperLimit(1, 5);
+    robot->setPositionLowerLimit(2, 0);
+    robot->setPositionUpperLimit(2, 0);
 
-    // Set bounds on the state space
-    
-
-    // Start state - 3 dof real vector
-    using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
-    StateSpace::ScopedState startState = stateSpace->createState();
-    auto subState = startState.getSubStateHandle<RealVectorStateSpace>(0);
-    Eigen::Vector3d start_pose(-5, -5, 0);
-    subState.setValue(start_pose);
-    
-    stateSpace->setStateOnMetaSkeleton(startState);
-
-    // Goal state
-    StateSpace::ScopedState goalState = stateSpace->createState();
-    Eigen::Vector3d goal_pose(5, 5, 0);
-    subState = goalState.getSubStateHandle<RealVectorStateSpace>(0);
-    subState.setValue(goal_pose);
-    
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();
-    auto collConstraint = std::make_shared<aikido::constraint::CollisionConstraint>
-        (stateSpace, cd);
+    collConstraint = std::make_shared<aikido::constraint::CollisionConstraint>(
+        stateSpace, cd);
 
-    // Plan
-    aikido::ompl_bindings::planOMPL<ompl::geometric::RRTConnect>(
-        startState, goalState, stateSpace, collConstraint, 5.0, make_rng());
+    // Distance metric
+    dmetric = aikido::distance::createDistanceMetricFor(stateSpace);
+
+    // Sampler
+    sampler =
+        aikido::constraint::createSampleableBounds(stateSpace, make_rng());
+
+    // Projectable constraint
+    boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
+
+    // Joint limits
+    boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
+  }
+
+  StateSpace::ScopedState getStartState(const Eigen::Vector3d &startPose) const
+  {
+    // Start state - 3 dof real vector
+    StateSpace::ScopedState startState = stateSpace->createState();
+    auto subState = startState.getSubStateHandle<RealVectorStateSpace>(0);
+    subState.setValue(startPose);
+
+    return startState;
+  }
+
+  StateSpace::ScopedState getGoalState(const Eigen::Vector3d &goalPose) const
+  {
+    // Goal state
+    StateSpace::ScopedState goalState = stateSpace->createState();
+    auto subState = goalState.getSubStateHandle<RealVectorStateSpace>(0);
+    subState.setValue(goalPose);
+
+    return goalState;
+  }
+
+  void setStateValue(const Eigen::Vector3d &value,
+                     aikido::statespace::StateSpace::State *state) const
+  {
+    auto subState =
+        stateSpace->getSubStateHandle<RealVectorStateSpace>(state, 0);
+    subState.setValue(value);
+  }
+
+  Eigen::Vector3d getStateValue(
+      aikido::statespace::StateSpace::State *state) const
+  {
+    auto subState =
+        stateSpace->getSubStateHandle<RealVectorStateSpace>(state, 0);
+    return subState.getValue();
+  }
+
+  aikido::statespace::MetaSkeletonStateSpacePtr stateSpace;
+  aikido::distance::DistanceMetricPtr dmetric;
+  aikido::constraint::SampleableConstraintPtr sampler;
+  aikido::constraint::ProjectablePtr boundsProjection;
+  aikido::constraint::TestableConstraintPtr boundsConstraint;
+  aikido::constraint::TestableConstraintPtr collConstraint;
+};
+
+class AIKIDOGeometricStateSpaceTest : public OMPLPlannerTest
+{
+public:
+  virtual void SetUp()
+  {
+    OMPLPlannerTest::SetUp();
+    gSpace = make_shared<AIKIDOStateSpace>(stateSpace, dmetric, sampler,
+                                           boundsConstraint, boundsProjection);
+  }
+  std::shared_ptr<AIKIDOStateSpace> gSpace;
+};
+
+TEST_F(OMPLPlannerTest, Plan)
+{
+  Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d goalPose(5, 5, 0);
+
+  StateSpace::ScopedState startState = getStartState(startPose);
+  stateSpace->setStateOnMetaSkeleton(startState);
+
+  StateSpace::ScopedState goalState = getGoalState(goalPose);
+
+  // Plan
+  auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+      startState, goalState, stateSpace, std::move(collConstraint),
+      std::move(boundsConstraint), std::move(dmetric), std::move(sampler),
+      std::move(boundsProjection), 5.0);
+
+  // Check the first waypoint
+  auto s0 = stateSpace->createState();
+  traj->evaluate(0, s0);
+  auto r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  EXPECT_TRUE(r0.getValue().isApprox(startPose));
+
+  // Check the last waypoint
+  traj->evaluate(traj->getDuration(), s0);
+  r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 }
 
+TEST_F(AIKIDOGeometricStateSpaceTest, Dimension)
+{
+  EXPECT_EQ(3, gSpace->getDimension());
+}
+
+// TODO: Maximum Extent
+
+// TODO: Measure
+
+TEST_F(AIKIDOGeometricStateSpaceTest, EnforceBounds)
+{
+  auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d badValue(-6, 16, 10);
+  setStateValue(badValue, state->mState);
+
+  gSpace->enforceBounds(state);
+  EXPECT_TRUE(getStateValue(state->mState).isApprox(Eigen::Vector3d(-5, 5, 0)));
+
+  Eigen::Vector3d goodValue(2, -3, 0);
+  setStateValue(goodValue, state->mState);
+  gSpace->enforceBounds(state);
+  EXPECT_TRUE(getStateValue(state->mState).isApprox(goodValue));
+
+  gSpace->freeState(state);
+}
+
+TEST_F(AIKIDOGeometricStateSpaceTest, SatisfiesBounds)
+{
+  auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d badValue(-6, 16, 10);
+  setStateValue(badValue, state->mState);
+  EXPECT_FALSE(gSpace->satisfiesBounds(state));
+
+  Eigen::Vector3d goodValue(2, -3, 0);
+  setStateValue(goodValue, state->mState);
+  EXPECT_TRUE(gSpace->satisfiesBounds(state));
+
+  gSpace->freeState(state);
+}
+
+TEST_F(AIKIDOGeometricStateSpaceTest, CopyState)
+{
+  auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d value(-2, 3, 0);
+  setStateValue(value, state->mState);
+
+  auto copyState = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  gSpace->copyState(copyState, state);
+  EXPECT_TRUE(
+      getStateValue(copyState->mState).isApprox(getStateValue(state->mState)));
+
+  gSpace->freeState(state);
+  gSpace->freeState(copyState);
+}
+
+TEST_F(AIKIDOGeometricStateSpaceTest, Distance)
+{
+  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d v1(-2, 3, 0);
+  setStateValue(v1, s1->mState);
+
+  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d v2(3, 4, 0);
+  setStateValue(v2, s2->mState);
+
+  EXPECT_DOUBLE_EQ((v1 - v2).norm(), gSpace->distance(s1, s2));
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+}
+
+TEST_F(AIKIDOGeometricStateSpaceTest, EqualStates)
+{
+  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d v1(-2, 3, 0);
+  setStateValue(v1, s1->mState);
+
+  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d v2(3, 4, 0);
+  setStateValue(v2, s2->mState);
+
+  auto s3 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  setStateValue(v1, s3->mState);
+
+  EXPECT_TRUE(gSpace->equalStates(s1, s3));
+  EXPECT_FALSE(gSpace->equalStates(s1, s2));
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+  gSpace->freeState(s3);
+}
+
+TEST_F(AIKIDOGeometricStateSpaceTest, Interpolate)
+{
+  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d v1(-2, 3, 0);
+  setStateValue(v1, s1->mState);
+
+  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d v2(3, 4, 0);
+  setStateValue(v2, s2->mState);
+
+  auto s3 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+
+  gSpace->interpolate(s1, s2, 0, s3);
+  EXPECT_TRUE(getStateValue(s3->mState).isApprox(getStateValue(s1->mState)));
+
+  gSpace->interpolate(s1, s2, 1, s3);
+  EXPECT_TRUE(getStateValue(s3->mState).isApprox(getStateValue(s2->mState)));
+
+  gSpace->interpolate(s1, s2, 0.5, s3);
+  EXPECT_TRUE(getStateValue(s3->mState).isApprox(Eigen::Vector3d(0.5, 3.5, 0)));
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+  gSpace->freeState(s3);
+}
+
+TEST_F(AIKIDOGeometricStateSpaceTest, AllocStateSampler)
+{
+  ompl::base::StateSamplerPtr ssampler = gSpace->allocDefaultStateSampler();
+  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+
+  // Ensure we get two different states if we sample twice
+  ssampler->sampleUniform(s1);
+  ssampler->sampleUniform(s2);
+  EXPECT_FALSE(getStateValue(s1->mState).isApprox(getStateValue(s2->mState)));
+
+  EXPECT_THROW(ssampler->sampleUniformNear(s1, s2, 0.05), std::runtime_error);
+  EXPECT_THROW(ssampler->sampleGaussian(s1, s2, 0.05), std::runtime_error);
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+}
+
+TEST_F(AIKIDOGeometricStateSpaceTest, CopyAlloc)
+{
+  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  Eigen::Vector3d value(-2, 3, 0);
+  setStateValue(value, s1->mState);
+
+  auto s2 = gSpace->allocState(s1->mState)->as<AIKIDOStateSpace::StateType>();
+  EXPECT_TRUE(getStateValue(s1->mState).isApprox(getStateValue(s2->mState)));
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+}

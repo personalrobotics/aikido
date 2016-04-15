@@ -14,7 +14,9 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   StackedConstraint.cpp
   DifferentiableSubSpace.cpp
   IkSampleableConstraint.cpp
+  FkTestable.cpp
   SatisfiedConstraint.cpp
+  TestableSubSpace.cpp
   Sampleable.cpp
   FiniteSampleConstraint.cpp
   FiniteCyclicSampleConstraint.cpp
