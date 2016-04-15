@@ -8,7 +8,6 @@
 #include <dart/math/Geometry.h>
 
 using aikido::constraint::TSR;
-using aikido::constraint::TSRSampleGenerator;
 using aikido::statespace::SE3StateSpace;
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;

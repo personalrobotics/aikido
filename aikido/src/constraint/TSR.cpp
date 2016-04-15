@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <math.h>
 #include <vector>
+#include <random>
 
 using boost::format;
 using boost::str;
@@ -13,6 +14,65 @@ using aikido::statespace::SE3StateSpace;
 
 namespace aikido {
 namespace constraint {
+
+class TSRSampleGenerator : public SampleGenerator
+{
+public:
+  TSRSampleGenerator(const TSRSampleGenerator&) = delete;
+  TSRSampleGenerator(TSRSampleGenerator&& other) = delete;
+  TSRSampleGenerator& operator=(const TSRSampleGenerator& other) = delete;
+  TSRSampleGenerator& operator=(TSRSampleGenerator&& other) = delete;
+  virtual ~TSRSampleGenerator() = default; 
+
+  // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
+
+  /// Return a transform sampled from this TSR.
+  ///
+  /// This function uses the provided RNG to create a sample `Tw_s` from the
+  /// `Bw` bounds matrix of this TSR, and returns the result:
+  /// `T0_w * Tw_s * Tw_e`.
+  ///
+  /// \param[in] rng Random number generator from which to sample
+  /// \return a transform within the bounds of this TSR.
+  bool sample(statespace::StateSpace::State* _state) override;
+
+  // Documentation inherited.
+  bool canSample() const override;
+
+  // Documentation inherited.
+  int getNumSamples() const override;
+
+private:
+  // For internal use only.
+  TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
+                     std::shared_ptr<statespace::SE3StateSpace> _stateSpace,
+                     const Eigen::Isometry3d& _T0_w,
+                     const Eigen::Matrix<double, 6, 2>& _Bw,
+                     const Eigen::Isometry3d& _Tw_e);
+  
+  std::unique_ptr<util::RNG> mRng;
+
+  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
+
+  /// Transformation from origin frame into "wiggle" frame.
+  Eigen::Isometry3d mT0_w;
+
+  /// Bounds on "wiggling" in `x, y, z, roll, pitch, yaw`.
+  Eigen::Matrix<double, 6, 2> mBw;
+
+  /// Transformation from "wiggle" frame into end frame.
+  Eigen::Isometry3d mTw_e;
+
+  // True for point TSR.
+  bool mPointTSR;
+
+  // True if point TSR and has already been sampled.
+  bool mPointTSRSampled;
+
+
+  friend class TSR;
+};
 
 //=============================================================================
 TSR::TSR(std::unique_ptr<util::RNG> _rng,
@@ -276,5 +336,114 @@ std::vector<ConstraintType> TSR::getConstraintTypes() const
 
 }
 
+
+//=============================================================================
+TSRSampleGenerator::TSRSampleGenerator(
+      std::unique_ptr<util::RNG> _rng,
+      std::shared_ptr<SE3StateSpace> _stateSpace,
+      const Eigen::Isometry3d& _T0_w,
+      const Eigen::Matrix<double, 6, 2>& _Bw,
+      const Eigen::Isometry3d& _Tw_e)
+  : mRng(std::move(_rng))
+  , mStateSpace(std::move(_stateSpace))
+  , mT0_w(_T0_w)
+  , mBw(_Bw)
+  , mTw_e(_Tw_e)
+{
+  if (!mRng)
+  {
+    throw std::invalid_argument(
+      "Random generator is empty.");
+  }
+
+  if (mBw.col(0) == mBw.col(1))
+    mPointTSR = true;
+  else
+    mPointTSR = false;
+
+  mPointTSRSampled = false;
+}
+
+//=============================================================================
+statespace::StateSpacePtr TSRSampleGenerator::getStateSpace() const
+{
+  return mStateSpace;
+}
+
+//=============================================================================
+bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
+{
+  if ( mPointTSR && mPointTSRSampled )
+    return false;
+
+  using statespace::SE3StateSpace;
+
+  Eigen::Vector3d translation; 
+  Eigen::Vector3d angles;
+
+  if (mPointTSR)
+  {
+    translation = mBw.block(0, 0, 3, 1);
+    angles = mBw.block(3, 0, 3, 1);
+    
+    mPointTSRSampled = true;
+  }
+  else
+  {
+    std::vector<std::uniform_real_distribution<double> > distributions;
+    for(int i = 0; i < 6; i++)
+    {
+      distributions.emplace_back(mBw(i, 0), mBw(i, 1));
+    }
+
+    for(int i = 0; i < 3; i++)
+    {
+      translation(i) = distributions.at(i)(*mRng);
+    }
+
+    for(int i = 0; i < 3; i++)
+    {
+      angles(i) = distributions.at(i+3)(*mRng);
+    }
+  }
+
+  Eigen::Matrix3d rotation;
+  rotation = Eigen::AngleAxisd(angles(2), Eigen::Vector3d::UnitZ()) *
+             Eigen::AngleAxisd(angles(1), Eigen::Vector3d::UnitY()) *
+             Eigen::AngleAxisd(angles(0), Eigen::Vector3d::UnitX());
+
+  Eigen::Isometry3d Tw_s;
+  Tw_s.setIdentity();
+  Tw_s.translation() = translation;
+  Tw_s.linear() = rotation;
+
+  Eigen::Isometry3d T0_s(mT0_w * Tw_s * mTw_e);
+  mStateSpace->setIsometry(static_cast<SE3StateSpace::State*>(_state), T0_s);
+
+  return true;
+}
+
+
+//=============================================================================
+bool TSRSampleGenerator::canSample() const
+{
+  if (mPointTSR && mPointTSRSampled)
+    return false;
+
+  return true;
+}
+
+
+//=============================================================================
+int TSRSampleGenerator::getNumSamples() const
+{
+  if (mPointTSR && !mPointTSRSampled)
+    return 1;
+
+  if (mPointTSR && mPointTSRSampled)
+    return 0;
+
+  return NO_LIMIT;
+}
 } // namespace constraint
 } // namespace aikido

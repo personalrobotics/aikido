@@ -6,7 +6,6 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   ConjunctionConstraint.cpp
   SampleableSubSpace.cpp
   TSR.cpp
-  TSRSampleGenerator.cpp
   FrameConstraintAdaptor.cpp
   FramePairConstraintAdaptor.cpp
   PolynomialConstraint.cpp
@@ -15,7 +14,6 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   StackedConstraint.cpp
   DifferentiableSubSpace.cpp
   IkSampleableConstraint.cpp
-  IkSampleGenerator.cpp
   SatisfiedConstraint.cpp
   Sampleable.cpp
   FiniteSampleConstraint.cpp
