@@ -27,6 +27,13 @@ TSRSampleGenerator::TSRSampleGenerator(
     throw std::invalid_argument(
       "Random generator is empty.");
   }
+
+  if (mBw.col(0) == mBw.col(1))
+    mPointTSR = true;
+  else
+    mPointTSR = false;
+
+  mPointTSRSampled = false;
 }
 
 //=============================================================================
@@ -38,25 +45,38 @@ statespace::StateSpacePtr TSRSampleGenerator::getStateSpace() const
 //=============================================================================
 bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
+  if ( mPointTSR && mPointTSRSampled )
+    return false;
+
   using statespace::SE3StateSpace;
 
   Eigen::Vector3d translation; 
   Eigen::Vector3d angles;
 
-  std::vector<std::uniform_real_distribution<double> > distributions;
-  for(int i = 0; i < 6; i++)
+  if (mPointTSR)
   {
-    distributions.emplace_back(mBw(i, 0), mBw(i, 1));
+    translation = mBw.block(0, 0, 3, 1);
+    angles = mBw.block(3, 0, 3, 1);
+    
+    mPointTSRSampled = true;
   }
-
-  for(int i = 0; i < 3; i++)
+  else
   {
-    translation(i) = distributions.at(i)(*mRng);
-  }
+    std::vector<std::uniform_real_distribution<double> > distributions;
+    for(int i = 0; i < 6; i++)
+    {
+      distributions.emplace_back(mBw(i, 0), mBw(i, 1));
+    }
 
-  for(int i = 0; i < 3; i++)
-  {
-    angles(i) = distributions.at(i+3)(*mRng);
+    for(int i = 0; i < 3; i++)
+    {
+      translation(i) = distributions.at(i)(*mRng);
+    }
+
+    for(int i = 0; i < 3; i++)
+    {
+      angles(i) = distributions.at(i+3)(*mRng);
+    }
   }
 
   Eigen::Matrix3d rotation;
@@ -79,6 +99,9 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
 //=============================================================================
 bool TSRSampleGenerator::canSample() const
 {
+  if (mPointTSR && mPointTSRSampled)
+    return false;
+
   return true;
 }
 
@@ -86,6 +109,12 @@ bool TSRSampleGenerator::canSample() const
 //=============================================================================
 int TSRSampleGenerator::getNumSamples() const
 {
+  if (mPointTSR && !mPointTSRSampled)
+    return 1;
+
+  if (mPointTSR && mPointTSRSampled)
+    return 0;
+
   return NO_LIMIT;
 }
 

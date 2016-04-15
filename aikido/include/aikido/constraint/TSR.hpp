@@ -136,6 +136,13 @@ private:
   /// Transformation from "wiggle" frame into end frame.
   Eigen::Isometry3d mTw_e;
 
+  // True for point TSR.
+  bool mPointTSR;
+
+  // True if point TSR and has already been sampled.
+  bool mPointTSRSampled;
+
+
   friend class TSR;
 };
 
