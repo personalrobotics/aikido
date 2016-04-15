@@ -8,7 +8,7 @@
 namespace aikido {
 namespace constraint {
 
-/// Transforms a Isometry3d SampleableConstraint into a VectorXd
+/// Transforms a Isometry3d SampleableConstraint into a StateSpace
 /// SampleableConstraint that represents the positions of a Skeleton by
 /// sampling an Isometry3d and using inverse kinematics to "lift" that pose
 /// into the Skeleton's configuration space. This class will retry a

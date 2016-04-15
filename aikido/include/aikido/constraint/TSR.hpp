@@ -91,58 +91,6 @@ private:
   std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
 };
 
-class TSRSampleGenerator : public SampleGenerator
-{
-public:
-  TSRSampleGenerator(const TSRSampleGenerator&) = delete;
-  TSRSampleGenerator(TSRSampleGenerator&& other) = delete;
-  TSRSampleGenerator& operator=(const TSRSampleGenerator& other) = delete;
-  TSRSampleGenerator& operator=(TSRSampleGenerator&& other) = delete;
-  virtual ~TSRSampleGenerator() = default;
-
-  // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
-
-  /// Return a transform sampled from this TSR.
-  ///
-  /// This function uses the provided RNG to create a sample `Tw_s` from the
-  /// `Bw` bounds matrix of this TSR, and returns the result:
-  /// `T0_w * Tw_s * Tw_e`.
-  ///
-  /// \param[in] rng Random number generator from which to sample
-  /// \return a transform within the bounds of this TSR.
-  bool sample(statespace::StateSpace::State* _state) override;
-
-  // Documentation inherited.
-  bool canSample() const override;
-
-  // Documentation inherited.
-  int getNumSamples() const override;
-
-private:
-  // For internal use only.
-  TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
-                     std::shared_ptr<statespace::SE3StateSpace> _stateSpace,
-                     const Eigen::Isometry3d& _T0_w,
-                     const Eigen::Matrix<double, 6, 2>& _Bw,
-                     const Eigen::Isometry3d& _Tw_e);
-
-  std::unique_ptr<util::RNG> mRng;
-
-  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
-
-  /// Transformation from origin frame into "wiggle" frame.
-  Eigen::Isometry3d mT0_w;
-
-  /// Bounds on "wiggling" in `x, y, z, roll, pitch, yaw`.
-  Eigen::Matrix<double, 6, 2> mBw;
-
-  /// Transformation from "wiggle" frame into end frame.
-  Eigen::Isometry3d mTw_e;
-
-  friend class TSR;
-};
-
 using TSRPtr = std::shared_ptr<TSR>;
 
 }  // namespace constraint

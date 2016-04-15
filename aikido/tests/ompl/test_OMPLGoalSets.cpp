@@ -8,7 +8,7 @@
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/distance/DistanceMetricDefaults.hpp>
-#include <aikido/statespace/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/ompl/OMPLPlanner.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/dart.h>
