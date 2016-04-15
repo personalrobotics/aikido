@@ -20,6 +20,12 @@ statespace::StateSpacePtr GeodesicInterpolator::getStateSpace() const
 }
 
 //=============================================================================
+size_t GeodesicInterpolator::getNumDerivatives() const
+{
+  return 1;
+}
+
+//=============================================================================
 Eigen::VectorXd GeodesicInterpolator::getTangentVector(
   const statespace::StateSpace::State* _from,
   const statespace::StateSpace::State* _to) const
@@ -48,6 +54,20 @@ void GeodesicInterpolator::interpolate(
   mStateSpace->expMap(_alpha * tangentVector, relativeState);
 
   mStateSpace->compose(_from, relativeState, _out);
+}
+
+//=============================================================================
+Eigen::VectorXd GeodesicInterpolator::getDerivative(
+  const statespace::StateSpace::State* _from,
+  const statespace::StateSpace::State* _to,
+  size_t _derivative, double _alpha) const
+{
+  if (_derivative == 0)
+    throw std::invalid_argument("Derivative must be greater than zero.");
+  else if (_derivative == 1)
+    return getTangentVector(_from, _to);
+  else
+    return Eigen::VectorXd::Zero(mStateSpace->getDimension());
 }
 
 } // namespace statespace

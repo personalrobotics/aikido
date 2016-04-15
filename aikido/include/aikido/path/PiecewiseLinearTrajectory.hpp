@@ -13,7 +13,8 @@ namespace path
 class PiecewiseLinearTrajectory : public Trajectory
 {
 public:
-  explicit PiecewiseLinearTrajectory(aikido::statespace::StateSpacePtr _sspace);
+  PiecewiseLinearTrajectory(
+    aikido::statespace::StateSpacePtr _sspace);
 
   // Documentation inherited
   aikido::statespace::StateSpacePtr getStateSpace() const override;
@@ -71,7 +72,7 @@ private:
   int getWaypointIndexAfterTime(double _t) const;
 
   aikido::statespace::StateSpacePtr mStateSpace;
-  std::shared_ptr<aikido::statespace::GeodesicInterpolator> mInterpolator;
+  aikido::statespace::InterpolatorPtr mInterpolator;
   std::vector<Waypoint> mWaypoints;
 };
 }

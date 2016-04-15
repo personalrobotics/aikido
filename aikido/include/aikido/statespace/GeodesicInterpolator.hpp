@@ -16,6 +16,9 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
+  // Documentation inherited.
+  size_t getNumDerivatives() const override;
+
   /// Gets the tangent vector that defines the geodesic, scaled such that:
   ///   _to = _from * expMap(tangentVector)
   Eigen::VectorXd getTangentVector(
@@ -27,6 +30,12 @@ public:
     const statespace::StateSpace::State* _from,
     const statespace::StateSpace::State* _to, double _alpha,
     statespace::StateSpace::State* _state) const override;
+
+  // Documentation inherited.
+  Eigen::VectorXd getDerivative(
+    const statespace::StateSpace::State* _from,
+    const statespace::StateSpace::State* _to,
+    size_t _derivative, double _alpha) const override;
 
 private:
   statespace::StateSpacePtr mStateSpace;

@@ -26,7 +26,7 @@ statespace::StateSpacePtr PiecewiseLinearTrajectory::getStateSpace() const
 //=============================================================================
 int PiecewiseLinearTrajectory::getNumDerivatives() const
 {
-  return 1;
+  return mInterpolator->getNumDerivatives();
 }
 
 //=============================================================================
@@ -89,7 +89,7 @@ Eigen::VectorXd PiecewiseLinearTrajectory::evaluate(double _t,
     throw std::invalid_argument(
         "0th derivative not available. Use evaluate(t, state).");
 
-  if (_derivative > 1)
+  if (_derivative > mInterpolator->getNumDerivatives())
     return Eigen::VectorXd::Zero(mStateSpace->getDimension());
 
   // Compute the interpolated state at time t
@@ -105,9 +105,11 @@ Eigen::VectorXd PiecewiseLinearTrajectory::evaluate(double _t,
     if (idx == 0)
       return Eigen::VectorXd::Zero(mStateSpace->getDimension());
 
-    const auto tangentVector = mInterpolator->getTangentVector(
-      mWaypoints[idx].state, mWaypoints[idx - 1].state);
     const auto segmentTime = mWaypoints[idx].t - mWaypoints[idx - 1].t;
+    const auto alpha = (_t - mWaypoints[idx - 1].t) / segmentTime;
+    const auto tangentVector = mInterpolator->getDerivative(
+      mWaypoints[idx].state, mWaypoints[idx - 1].state, _derivative, alpha);
+
     return tangentVector / segmentTime;
   }
   catch (const std::domain_error& e)
