@@ -29,19 +29,20 @@ class OMPLPlannerTest : public ::testing::Test
 public:
   virtual void SetUp()
   {
-    skel = dart::dynamics::Skeleton::create("robot");
-
+    // Create robot
+    auto robot = dart::dynamics::Skeleton::create("robot");
     auto jn_bn =
-        skel->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
-    stateSpace = make_shared<StateSpace>(skel);
+        robot->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
+
+    stateSpace = make_shared<StateSpace>(robot);
 
     // Set bounds on the skeleton
-    skel->setPositionLowerLimit(0, -5);
-    skel->setPositionUpperLimit(0, 5);
-    skel->setPositionLowerLimit(1, -5);
-    skel->setPositionUpperLimit(1, 5);
-    skel->setPositionLowerLimit(2, 0);
-    skel->setPositionUpperLimit(2, 0);
+    robot->setPositionLowerLimit(0, -5);
+    robot->setPositionUpperLimit(0, 5);
+    robot->setPositionLowerLimit(1, -5);
+    robot->setPositionUpperLimit(1, 5);
+    robot->setPositionLowerLimit(2, 0);
+    robot->setPositionUpperLimit(2, 0);
 
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();
@@ -98,7 +99,6 @@ public:
     return subState.getValue();
   }
 
-  dart::dynamics::SkeletonPtr skel;
   aikido::statespace::MetaSkeletonStateSpacePtr stateSpace;
   aikido::distance::DistanceMetricPtr dmetric;
   aikido::constraint::SampleableConstraintPtr sampler;
@@ -291,7 +291,7 @@ TEST_F(AIKIDOGeometricStateSpaceTest, CopyAlloc)
 
   auto s2 = gSpace->allocState(s1->mState)->as<AIKIDOStateSpace::StateType>();
   EXPECT_TRUE(getStateValue(s1->mState).isApprox(getStateValue(s2->mState)));
-  
+
   gSpace->freeState(s1);
   gSpace->freeState(s2);
 }
