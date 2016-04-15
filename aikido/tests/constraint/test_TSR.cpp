@@ -143,8 +143,15 @@ TEST(TSRSampleGenerator, SamplePointTSR)
   tsr.validate();
 
   auto state = tsr.getSE3StateSpace()->createState();
-  ASSERT_TRUE(tsr.createSampleGenerator()->sample(state));
+  auto generator = tsr.createSampleGenerator();
+
+  ASSERT_TRUE(generator->canSample());
+  ASSERT_EQ(1, generator->getNumSamples());
+  ASSERT_TRUE(generator->sample(state));
   EXPECT_TRUE(state.getIsometry().isApprox(T0_w));
+
+  ASSERT_FALSE(generator->canSample());
+  ASSERT_EQ(0, generator->getNumSamples());
 }
 
 TEST(TSRSampleGenerator, SampleWithinBounds)

@@ -170,8 +170,11 @@ TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
   std::shared_ptr<FiniteCyclicSampleConstraint> seedConstraint( 
     new FiniteCyclicSampleConstraint(finiteSampleConstraint));
 
+  std::shared_ptr<FiniteCyclicSampleConstraint> tsrConstraint(
+    new FiniteCyclicSampleConstraint(mTsr));
+
   // Construct IkSampleableConstraint
-  IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
+  IkSampleableConstraint ikConstraint(mStateSpace1, tsrConstraint,
     seedConstraint, mInverseKinematics1, mRng->clone(), 1);
 
   // Get IkSampleGenerator
