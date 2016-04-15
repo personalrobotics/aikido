@@ -26,21 +26,5 @@ double EuclideanDistanceMetric::distance(
   return (v2 - v1).norm();
 }
 
-void EuclideanDistanceMetric::interpolate(const statespace::StateSpace::State* _from,
-                                    const statespace::StateSpace::State* _to,
-                                    const double _t,
-                                    statespace::StateSpace::State* _state) const
-{
-  if (_t < 0. || _t > 1.) {
-    throw std::invalid_argument("_alpha must be between 0 and 1");
-  }
-
-  auto vfrom = mStateSpace->getValue(
-      static_cast<const statespace::RealVectorStateSpace::State*>(_from));
-  auto vto = mStateSpace->getValue(
-      static_cast<const statespace::RealVectorStateSpace::State*>(_to));
-  mStateSpace->setValue(static_cast<statespace::RealVectorStateSpace::State*>(_state),
-                        (1 - _t) * vfrom + _t * vto);
-}
 }
 }

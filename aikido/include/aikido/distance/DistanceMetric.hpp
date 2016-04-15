@@ -20,14 +20,6 @@ public:
   virtual double distance(
       const statespace::StateSpace::State* _state1,
       const statespace::StateSpace::State* _state2) const = 0;
-
-  /// Computes the state that lies at time t in [0, 1] on the segment
-  /// that connects from state to to state. The memory location of state
-  /// is not required to be different from the memory of either from or to.
-  virtual void interpolate(
-      const statespace::StateSpace::State* _from,
-      const statespace::StateSpace::State* _to, double _t,
-      statespace::StateSpace::State* _state) const = 0;
 };
 
 using DistanceMetricPtr = std::shared_ptr<DistanceMetric>;

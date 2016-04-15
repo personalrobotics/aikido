@@ -23,22 +23,20 @@ public:
     auto s3 = rvss->createState();
     rvss->setValue(s3, Eigen::Vector2d(8, 1));
 
-    dmetric = createDistanceMetricFor(rvss);
-    traj = make_shared<PiecewiseLinearTrajectory>(rvss, dmetric);
+    traj = make_shared<PiecewiseLinearTrajectory>(rvss);
     traj->addWaypoint(1, s1);
     traj->addWaypoint(3, s2);
     traj->addWaypoint(7, s3);
   }
 
   shared_ptr<RealVectorStateSpace> rvss;
-  shared_ptr<DistanceMetric> dmetric;
   shared_ptr<PiecewiseLinearTrajectory> traj;
 };
 
 TEST_F(PiecewiseLinearTrajectoryTest, AddWaypoint)
 {
-  EXPECT_DOUBLE_EQ(1, traj->getFirstWaypointTime());
-  EXPECT_DOUBLE_EQ(7, traj->getLastWaypointTime());
+  EXPECT_DOUBLE_EQ(1, traj->getStartTime());
+  EXPECT_DOUBLE_EQ(7, traj->getEndTime());
   EXPECT_DOUBLE_EQ(6, traj->getDuration());
   EXPECT_EQ(1, traj->getNumDerivatives());
 }

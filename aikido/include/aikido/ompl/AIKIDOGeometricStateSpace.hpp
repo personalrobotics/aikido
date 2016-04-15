@@ -7,6 +7,7 @@
 #include <aikido/constraint/Projectable.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+#include <aikido/statespace/GeodesicInterpolator.hpp>
 
 namespace aikido
 {
@@ -30,6 +31,7 @@ public:
   /// Construct a state space with a random number generator used for allocating
   ///  state samplers.
   AIKIDOGeometricStateSpace(statespace::StateSpacePtr _sspace,
+                            statespace::InterpolatorPtr _interpolator,
                             distance::DistanceMetricPtr _dmetric,
                             constraint::SampleableConstraintPtr _sampler,
                             constraint::TestableConstraintPtr _boundsConstraint,
@@ -95,6 +97,7 @@ public:
 
 private:
   statespace::StateSpacePtr mStateSpace;
+  statespace::InterpolatorPtr mInterpolator;
   distance::DistanceMetricPtr mDistance;
   constraint::SampleableConstraintPtr mSampler;
   constraint::TestableConstraintPtr mBoundsConstraint;

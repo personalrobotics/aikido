@@ -11,11 +11,14 @@ namespace aikido
 namespace ompl
 {
 AIKIDOGeometricStateSpace::AIKIDOGeometricStateSpace(
-    statespace::StateSpacePtr _sspace, distance::DistanceMetricPtr _dmetric,
+    statespace::StateSpacePtr _sspace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
     constraint::SampleableConstraintPtr _sampler,
     constraint::TestableConstraintPtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjection)
     : mStateSpace(std::move(_sspace))
+    , mInterpolator(std::move(_interpolator))
     , mDistance(std::move(_dmetric))
     , mSampler(std::move(_sampler))
     , mBoundsConstraint(std::move(_boundsConstraint))
@@ -105,7 +108,7 @@ void AIKIDOGeometricStateSpace::interpolate(const ::ompl::base::State *_from,
   auto from = static_cast<const StateType *>(_from);
   auto to = static_cast<const StateType *>(_to);
   auto state = static_cast<StateType *>(_state);
-  mDistance->interpolate(from->mState, to->mState, _t, state->mState);
+  mInterpolator->interpolate(from->mState, to->mState, _t, state->mState);
 }
 
 /// Allocate an instance of the state sampler for this space.

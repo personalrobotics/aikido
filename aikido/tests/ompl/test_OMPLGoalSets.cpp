@@ -9,6 +9,7 @@
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/distance/DistanceMetricDefaults.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/ompl/OMPLPlanner.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/dart.h>
@@ -66,6 +67,7 @@ protected:
 
     // Statespace
     stateSpace = std::make_shared<MetaSkeletonStateSpace>(robot);
+    interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
 
     // Goal region
     auto T0_w = Eigen::Isometry3d::Identity();
@@ -123,6 +125,7 @@ protected:
   BodyNodePtr endEffector;
   TSRPtr goalTSR;
   MetaSkeletonStateSpacePtr stateSpace;
+  InterpolatorPtr interpolator;
   DistanceMetricPtr dmetric;
   SampleableConstraintPtr sampler;
   ProjectablePtr boundsProjection;
@@ -142,7 +145,7 @@ TEST_F(OMPLGoalSetTest, Plan)
 
   // Plan
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-      startState, goalTestable, goalSampleable, stateSpace,
+      startState, goalTestable, goalSampleable, stateSpace, interpolator,
       std::move(collConstraint), std::move(boundsConstraint),
       std::move(dmetric), std::move(sampler), std::move(boundsProjection),
       5.0);

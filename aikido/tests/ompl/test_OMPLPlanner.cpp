@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <aikido/distance/DistanceMetricDefaults.hpp>
@@ -12,6 +13,7 @@
 using std::shared_ptr;
 using std::make_shared;
 using aikido::util::RNGWrapper;
+using aikido::statespace::GeodesicInterpolator;
 using aikido::util::RNG;
 using dart::common::make_unique;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
@@ -35,6 +37,7 @@ public:
         robot->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
 
     stateSpace = make_shared<StateSpace>(robot);
+    interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
 
     // Set bounds on the skeleton
     robot->setPositionLowerLimit(0, -5);
@@ -100,6 +103,7 @@ public:
   }
 
   aikido::statespace::MetaSkeletonStateSpacePtr stateSpace;
+  aikido::statespace::InterpolatorPtr interpolator;
   aikido::distance::DistanceMetricPtr dmetric;
   aikido::constraint::SampleableConstraintPtr sampler;
   aikido::constraint::ProjectablePtr boundsProjection;
@@ -113,8 +117,8 @@ public:
   virtual void SetUp()
   {
     OMPLPlannerTest::SetUp();
-    gSpace = make_shared<AIKIDOStateSpace>(stateSpace, dmetric, sampler,
-                                           boundsConstraint, boundsProjection);
+    gSpace = make_shared<AIKIDOStateSpace>(stateSpace, interpolator, dmetric,
+      sampler, boundsConstraint, boundsProjection);
   }
   std::shared_ptr<AIKIDOStateSpace> gSpace;
 };
@@ -131,9 +135,9 @@ TEST_F(OMPLPlannerTest, Plan)
 
   // Plan
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-      startState, goalState, stateSpace, std::move(collConstraint),
-      std::move(boundsConstraint), std::move(dmetric), std::move(sampler),
-      std::move(boundsProjection), 5.0);
+    startState, goalState, stateSpace, interpolator, std::move(collConstraint),
+    std::move(boundsConstraint), std::move(dmetric), std::move(sampler),
+    std::move(boundsProjection), 5.0);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();

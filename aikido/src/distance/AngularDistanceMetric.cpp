@@ -32,19 +32,5 @@ double AngularDistanceMetric::distance(
   return fabs(diff);
 }
 
-void AngularDistanceMetric::interpolate(
-    const aikido::statespace::StateSpace::State* _from,
-    const aikido::statespace::StateSpace::State* _to, const double _t,
-    aikido::statespace::StateSpace::State* _state) const
-{
-  auto from = static_cast<const statespace::SO2StateSpace::State*>(_from);
-  auto to = static_cast<const statespace::SO2StateSpace::State*>(_to);
-  auto state = static_cast<statespace::SO2StateSpace::State*>(_state);
-  double a =
-      (1 - _t) * mStateSpace->getAngle(from) + _t * mStateSpace->getAngle(to);
-
-  // TODO: Wrap?
-  mStateSpace->setAngle(state, a);
-}
 }
 }

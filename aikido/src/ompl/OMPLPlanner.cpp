@@ -7,6 +7,7 @@ namespace ompl
 {
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     const statespace::StateSpacePtr &_stateSpace,
+    const statespace::InterpolatorPtr &_interpolator,
     const distance::DistanceMetricPtr &_dmetric,
     const constraint::SampleableConstraintPtr &_sampler,
     const constraint::TestableConstraintPtr &_boundsConstraint,
@@ -16,6 +17,11 @@ namespace ompl
   if (_stateSpace != _sampler->getStateSpace()) {
     throw std::invalid_argument(
         "StateSpace of sampler not equal to planning StateSpace");
+  }
+
+  if (_stateSpace != _interpolator->getStateSpace()) {
+    throw std::invalid_argument(
+        "StateSpace of interpolator not equal to planning StateSpace");
   }
 
   // Ensure distance metric and state space match
@@ -44,8 +50,9 @@ namespace ompl
 
   // AIKIDO State space
   auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(
-      std::move(_stateSpace), std::move(_dmetric), std::move(_sampler),
-      std::move(_boundsConstraint), std::move(_boundsProjector));
+    std::move(_stateSpace), std::move(_interpolator), std::move(_dmetric),
+    std::move(_sampler), std::move(_boundsConstraint),
+    std::move(_boundsProjector));
 
   // Space Information
   auto si = boost::make_shared<::ompl::base::SpaceInformation>(sspace);

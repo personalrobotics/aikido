@@ -1,3 +1,5 @@
+#ifndef AIKIDO_STATESPACE_GEODESICINTERPOLATOR_HPP_
+#define AIKIDO_STATESPACE_GEODESICINTERPOLATOR_HPP_
 #include "StateSpace.hpp"
 #include "Interpolator.hpp"
 
@@ -32,3 +34,5 @@ private:
 
 } // namespace statespace
 } // namespace aikido
+
+#endif // ifndef AIKIDO_STATESPACE_GEODESICINTERPOLATOR_HPP_

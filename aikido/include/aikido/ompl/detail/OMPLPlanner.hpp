@@ -21,8 +21,7 @@ path::TrajectoryPtr planOMPL(const ::ompl::base::SpaceInformationPtr &_si,
   planner->setup();
   auto solved = planner->solve(_maxPlanTime);
   boost::shared_ptr<aikido::path::PiecewiseLinearTrajectory> returnTraj =
-      boost::make_shared<aikido::path::PiecewiseLinearTrajectory>(_stateSpace,
-                                                                  _dmetric);
+      boost::make_shared<aikido::path::PiecewiseLinearTrajectory>(_stateSpace);
 
   if (solved) {
     // Get the path
@@ -46,6 +45,7 @@ path::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
     const statespace::StateSpacePtr &_stateSpace,
+    const statespace::InterpolatorPtr &_interpolator,
     const constraint::TestableConstraintPtr &_collConstraint,
     const constraint::TestableConstraintPtr &_boundsConstraint,
     const distance::DistanceMetricPtr &_dmetric,
@@ -59,7 +59,7 @@ path::TrajectoryPtr planOMPL(
         "StateSpace of constraint not equal to planning StateSpace");
   }
 
-  auto si = getSpaceInformation(_stateSpace, _dmetric, _sampler,
+  auto si = getSpaceInformation(_stateSpace, _interpolator, _dmetric, _sampler,
                                 _boundsConstraint, _boundsProjector);
 
   // Validity
@@ -82,6 +82,7 @@ path::TrajectoryPtr planOMPL(
     const constraint::TestableConstraintPtr &_goalTestable,
     const constraint::SampleableConstraintPtr &_goalSampler,
     const statespace::StateSpacePtr &_stateSpace,
+    const statespace::InterpolatorPtr &_interpolator,
     const constraint::TestableConstraintPtr &_collConstraint,
     const constraint::TestableConstraintPtr &_boundsConstraint,
     const distance::DistanceMetricPtr &_dmetric,
@@ -95,7 +96,7 @@ path::TrajectoryPtr planOMPL(
         "StateSpace of constraint not equal to planning StateSpace");
   }
 
-  auto si = getSpaceInformation(_stateSpace, _dmetric, _sampler,
+  auto si = getSpaceInformation(_stateSpace, _interpolator, _dmetric, _sampler,
                                 _boundsConstraint, _boundsProjector);
 
   // Validity

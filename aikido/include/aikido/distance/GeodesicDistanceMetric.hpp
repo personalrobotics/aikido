@@ -24,12 +24,6 @@ public:
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 
-  /// Computes the slerp that interpolates between the quaternions represented
-  /// in the states
-  void interpolate(const statespace::StateSpace::State* _from,
-                   const statespace::StateSpace::State* _to, double _t,
-                   statespace::StateSpace::State* _state) const override;
-
 private:
   std::shared_ptr<statespace::SO3StateSpace> mStateSpace;
 };

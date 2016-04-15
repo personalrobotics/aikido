@@ -29,24 +29,3 @@ TEST(AngularDistanceMetric, Distance)
   EXPECT_DOUBLE_EQ(2. * M_PI - state2.getAngle() + state1.getAngle(),
                    dmetric.distance(state1, state2));
 }
-
-TEST(AngularDistanceMetric, Interpolate)
-{
-  auto so2 = std::make_shared<SO2StateSpace>();
-  AngularDistanceMetric dmetric(so2);
-
-  auto state1 = so2->createState();
-  auto state2 = so2->createState();
-  auto out = so2->createState();
-
-  state1.setAngle(0.);
-  state2.setAngle(2. * M_PI);
-  dmetric.interpolate(state1, state2, 0, out);
-  EXPECT_DOUBLE_EQ(state1.getAngle(), out.getAngle());
-
-  dmetric.interpolate(state1, state2, 1, out);
-  EXPECT_DOUBLE_EQ(state2.getAngle(), out.getAngle());
-
-  dmetric.interpolate(state1, state2, 0.25, out);
-  EXPECT_DOUBLE_EQ(M_PI_2, out.getAngle());
-}

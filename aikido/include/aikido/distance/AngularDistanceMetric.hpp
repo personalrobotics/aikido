@@ -23,11 +23,6 @@ public:
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 
-  /// Computes an interpolated angle as (1-_t)*from + _t*to.
-  void interpolate(const statespace::StateSpace::State* _from,
-                   const statespace::StateSpace::State* _to, double _t,
-                   statespace::StateSpace::State* _state) const override;
-
 private:
   std::shared_ptr<statespace::SO2StateSpace> mStateSpace;
 };

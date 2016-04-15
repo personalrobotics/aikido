@@ -3,6 +3,7 @@
 
 #include "Trajectory.hpp"
 #include "../distance/DistanceMetric.hpp"
+#include "../statespace/GeodesicInterpolator.hpp"
 
 namespace aikido
 {
@@ -12,9 +13,7 @@ namespace path
 class PiecewiseLinearTrajectory : public Trajectory
 {
 public:
-  PiecewiseLinearTrajectory(
-      const aikido::statespace::StateSpacePtr &_sspace,
-      const aikido::distance::DistanceMetricPtr &_dmetric);
+  explicit PiecewiseLinearTrajectory(aikido::statespace::StateSpacePtr _sspace);
 
   // Documentation inherited
   aikido::statespace::StateSpacePtr getStateSpace() const override;
@@ -23,10 +22,10 @@ public:
   int getNumDerivatives() const override;
 
   /// The time on the first waypoint of the trajectory
-  double getFirstWaypointTime() const;
+  double getStartTime() const;
 
   /// The time on the last waypoint of the trajectory
-  double getLastWaypointTime() const;
+  double getEndTime() const;
 
   // Documentation inherited
   double getDuration() const override;
@@ -72,7 +71,7 @@ private:
   int getWaypointIndexAfterTime(double _t) const;
 
   aikido::statespace::StateSpacePtr mStateSpace;
-  aikido::distance::DistanceMetricPtr mDistanceMetric;
+  std::shared_ptr<aikido::statespace::GeodesicInterpolator> mInterpolator;
   std::vector<Waypoint> mWaypoints;
 };
 }

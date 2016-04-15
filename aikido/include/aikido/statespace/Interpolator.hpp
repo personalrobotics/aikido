@@ -1,3 +1,6 @@
+#ifndef AIKIDO_STATESPACE_INTERPOLATOR_HPP_
+#define AIKIDO_STATESPACE_INTERPOLATOR_HPP_
+#include <memory>
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -19,5 +22,9 @@ public:
       statespace::StateSpace::State* _state) const = 0;
 };
 
+using InterpolatorPtr = std::shared_ptr<Interpolator>;
+
 } // namespace statespace
 } // namespace aikido
+
+#endif // ifndef AIKIDO_STATESPACE_INTERPOLATOR_HPP_

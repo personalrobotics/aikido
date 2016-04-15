@@ -28,13 +28,6 @@ public:
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 
-  /// Computes the state that lies at time t in [0, 1] on the segment
-  /// that connects from state to to state. This state is computed
-  /// by interpolating each subcomponent individually.
-  void interpolate(const statespace::StateSpace::State* _from,
-                   const statespace::StateSpace::State* _to, double _t,
-                   statespace::StateSpace::State* _state) const override;
-
 private:
   std::shared_ptr<statespace::CompoundStateSpace> mStateSpace;
   std::vector<DistanceMetricPtr> mMetrics;

@@ -3,6 +3,7 @@
 
 #include "../distance/DistanceMetric.hpp"
 #include "../statespace/StateSpace.hpp"
+#include "../statespace/Interpolator.hpp"
 #include "../constraint/TestableConstraint.hpp"
 #include "../constraint/Sampleable.hpp"
 #include "../constraint/Projectable.hpp"
@@ -22,6 +23,7 @@ path::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
     const statespace::StateSpacePtr &_stateSpace,
+    const statespace::InterpolatorPtr &_interpolator,
     const constraint::TestableConstraintPtr &_collConstraint,
     const constraint::TestableConstraintPtr &_boundsConstraint,
     const distance::DistanceMetricPtr &_dmetric,
@@ -32,6 +34,7 @@ path::TrajectoryPtr planOMPL(
 template <class PlannerType>
 path::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
+    const statespace::InterpolatorPtr &_interpolator,
     const constraint::TestableConstraintPtr &_goalTestable,
     const constraint::SampleableConstraintPtr &_goalSampler,
     const statespace::StateSpacePtr &_stateSpace,
@@ -44,6 +47,7 @@ path::TrajectoryPtr planOMPL(
 
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     const statespace::StateSpacePtr &_stateSpace,
+    const statespace::InterpolatorPtr &_interpolator,
     const distance::DistanceMetricPtr &_dmetric,
     const constraint::SampleableConstraintPtr &_sampler,
     const constraint::TestableConstraintPtr &_boundsConstraint,
