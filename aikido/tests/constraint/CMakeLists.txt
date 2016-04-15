@@ -13,9 +13,9 @@ aikido_add_test(test_FramePairConstraintAdaptor
 target_link_libraries(test_FramePairConstraintAdaptor
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_IKSampleable
-  test_IKSampleable.cpp)
-target_link_libraries(test_IKSampleable
+aikido_add_test(test_IkSampleableConstraint
+  test_IkSampleableConstraint.cpp)
+target_link_libraries(test_IkSampleableConstraint
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_PolynomialConstraint
@@ -47,6 +47,16 @@ aikido_add_test(test_SO2UniformSampler
   test_SO2UniformSampler.cpp)
 target_link_libraries(test_SO2UniformSampler
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
+
+aikido_add_test(test_FiniteSampleConstraint
+  test_FiniteSampleConstraint.cpp)
+target_link_libraries(test_FiniteSampleConstraint
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_FiniteCyclicSampleConstraint
+  test_FiniteCyclicSampleConstraint.cpp)
+target_link_libraries(test_FiniteCyclicSampleConstraint
+  "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_SO3UniformSampler
   test_SO3UniformSampler.cpp)

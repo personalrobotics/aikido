@@ -2,8 +2,8 @@
 #include <limits>
 #include <aikido/util/PseudoInverse.hpp>
 #include <math.h>
-
 #include <dart/math/Geometry.h>
+#include <iostream>
 
 namespace aikido{
 namespace constraint{
@@ -12,10 +12,12 @@ namespace constraint{
 DifferentiableProjector::DifferentiableProjector(
   DifferentiablePtr _differentiable,
   int _maxIteration,
-  double _tolerance) 
+  double _tolerance,
+  double _minStepSize) 
 : mDifferentiable(std::move(_differentiable))
 , mMaxIteration(_maxIteration)
 , mTolerance(_tolerance)
+, mMinStepSize(_minStepSize)
 {
 }
 
@@ -36,7 +38,7 @@ bool DifferentiableProjector::contains(
     else
     {
       // Inequality constraints are satisfied when value <= 0.
-      if (values(i) > 0)
+      if (values(i) > mTolerance)
         return false;
     }
   }
@@ -68,6 +70,11 @@ bool DifferentiableProjector::project(
     
     // Minimization step in tangent space.
     Eigen::VectorXd tangentStep = -1*util::pseudoinverse(jac)*value;
+
+    // Break if tangent step is too small. 
+    if (tangentStep.maxCoeff() < mMinStepSize &&
+        (-1*tangentStep).maxCoeff() < mMinStepSize)
+      break;
 
     StateSpace::ScopedState step(space.get());
 
