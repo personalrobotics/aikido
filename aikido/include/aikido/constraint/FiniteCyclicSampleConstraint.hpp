@@ -15,7 +15,7 @@ namespace constraint {
 class FiniteCyclicSampleConstraint : public SampleableConstraint
 {
 public:
-  FiniteCyclicSampleConstraint(
+  explicit FiniteCyclicSampleConstraint(
     SampleableConstraintPtr _sampleable);
 
   /// Documentation inherited.

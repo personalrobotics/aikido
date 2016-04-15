@@ -20,6 +20,14 @@ public:
     statespace::StateSpacePtr _stateSpace,
     const std::vector<const statespace::StateSpace::State*>& _states);
 
+  FiniteSampleConstraint(const FiniteSampleConstraint& other) = delete;
+  FiniteSampleConstraint(FiniteSampleConstraint&& other) = delete;
+
+  FiniteSampleConstraint& operator=(
+    const FiniteSampleConstraint& other) = delete;
+  FiniteSampleConstraint& operator=(
+    FiniteSampleConstraint&& other) = delete;
+
   virtual ~FiniteSampleConstraint();
 
   /// Documentation inherited.
