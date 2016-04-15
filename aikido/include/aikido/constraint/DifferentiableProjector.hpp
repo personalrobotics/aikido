@@ -16,7 +16,8 @@ public:
   DifferentiableProjector(
     DifferentiablePtr _differentiable,
     int _maxIteration=1000, 
-    double _tolerance=1e-7);
+    double _tolerance=1e-4,  // These numbers seem to work for Eigen::MatrixXd.
+    double _minStepSize=1e-5);
 
   // Documentation inherited.
   bool project(
@@ -29,7 +30,8 @@ public:
 private:
   DifferentiablePtr mDifferentiable;
   int mMaxIteration;
-  int mTolerance;
+  double mTolerance;
+  double mMinStepSize;
 
   bool contains(const statespace::StateSpace::State* _s) const;
 };
