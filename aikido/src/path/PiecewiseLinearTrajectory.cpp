@@ -11,9 +11,10 @@ using State = aikido::statespace::StateSpace::State;
 
 //=============================================================================
 PiecewiseLinearTrajectory::PiecewiseLinearTrajectory(
-      aikido::statespace::StateSpacePtr _sspace)
+      aikido::statespace::StateSpacePtr _sspace,
+      aikido::statespace::InterpolatorPtr _interpolator)
   : mStateSpace(std::move(_sspace))
-  , mInterpolator(std::make_shared<GeodesicInterpolator>(mStateSpace))
+  , mInterpolator(std::move(_interpolator))
 {
 }
 

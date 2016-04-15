@@ -12,6 +12,7 @@ template <class PlannerType>
 path::TrajectoryPtr planOMPL(const ::ompl::base::SpaceInformationPtr &_si,
                              const ::ompl::base::ProblemDefinitionPtr &_pdef,
                              const statespace::StateSpacePtr &_stateSpace,
+                             const statespace::InterpolatorPtr &_interpolator,
                              const distance::DistanceMetricPtr &_dmetric,
                              const double &_maxPlanTime)
 {
@@ -20,8 +21,8 @@ path::TrajectoryPtr planOMPL(const ::ompl::base::SpaceInformationPtr &_si,
   planner->setProblemDefinition(_pdef);
   planner->setup();
   auto solved = planner->solve(_maxPlanTime);
-  boost::shared_ptr<aikido::path::PiecewiseLinearTrajectory> returnTraj =
-      boost::make_shared<aikido::path::PiecewiseLinearTrajectory>(_stateSpace);
+  auto returnTraj = boost::make_shared<aikido::path::PiecewiseLinearTrajectory>(
+    _stateSpace, _interpolator);
 
   if (solved) {
     // Get the path
@@ -73,7 +74,7 @@ path::TrajectoryPtr planOMPL(
   auto goal = sspace->allocState(_goal);
   pdef->setStartAndGoalStates(start, goal);
 
-  return planOMPL<PlannerType>(si, pdef, _stateSpace, _dmetric, _maxPlanTime);
+  return planOMPL<PlannerType>(si, pdef, _stateSpace, _interpolator, _dmetric, _maxPlanTime);
 }
 
 template <class PlannerType>
@@ -113,7 +114,7 @@ path::TrajectoryPtr planOMPL(
       si, std::move(_goalTestable), _goalSampler->createSampleGenerator());
   pdef->setGoal(goalRegion);
 
-  return planOMPL<PlannerType>(si, pdef, _stateSpace, _dmetric, _maxPlanTime);
+  return planOMPL<PlannerType>(si, pdef, _stateSpace, _interpolator, _dmetric, _maxPlanTime);
 }
 }
 }

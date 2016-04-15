@@ -14,7 +14,8 @@ class PiecewiseLinearTrajectory : public Trajectory
 {
 public:
   PiecewiseLinearTrajectory(
-    aikido::statespace::StateSpacePtr _sspace);
+    aikido::statespace::StateSpacePtr _sspace,
+    aikido::statespace::InterpolatorPtr _interpolator);
 
   // Documentation inherited
   aikido::statespace::StateSpacePtr getStateSpace() const override;

@@ -15,6 +15,7 @@ public:
   void SetUp()
   {
     rvss = make_shared<RealVectorStateSpace>(2);
+    interpolator = make_shared<GeodesicInterpolator>(rvss);
 
     auto s1 = rvss->createState();
     rvss->setValue(s1, Eigen::Vector2d(0, 0));
@@ -23,13 +24,14 @@ public:
     auto s3 = rvss->createState();
     rvss->setValue(s3, Eigen::Vector2d(8, 1));
 
-    traj = make_shared<PiecewiseLinearTrajectory>(rvss);
+    traj = make_shared<PiecewiseLinearTrajectory>(rvss, interpolator);
     traj->addWaypoint(1, s1);
     traj->addWaypoint(3, s2);
     traj->addWaypoint(7, s3);
   }
 
   shared_ptr<RealVectorStateSpace> rvss;
+  shared_ptr<Interpolator> interpolator;
   shared_ptr<PiecewiseLinearTrajectory> traj;
 };
 
