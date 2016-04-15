@@ -6,7 +6,15 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
-TEST(SO2StateSpace, Distance)
+TEST(AngularDistanceMetric, StateSpaceEquality)
+{
+  auto so2 = std::make_shared<SO2StateSpace>();
+  AngularDistanceMetric dmetric(so2);
+
+  EXPECT_EQ(so2, dmetric.getStateSpace());
+}
+
+TEST(AngularDistanceMetric, Distance)
 {
   auto so2 = std::make_shared<SO2StateSpace>();
   AngularDistanceMetric dmetric(so2);
@@ -22,7 +30,7 @@ TEST(SO2StateSpace, Distance)
                    dmetric.distance(state1, state2));
 }
 
-TEST(SO2StateSpace, Interpolate)
+TEST(AngularDistanceMetric, Interpolate)
 {
   auto so2 = std::make_shared<SO2StateSpace>();
   AngularDistanceMetric dmetric(so2);

@@ -3,6 +3,7 @@
 #include <math.h>
 #include <vector>
 #include <random>
+#include <dart/math/Geometry.h>
 
 using aikido::statespace::SE3StateSpace;
 
@@ -59,15 +60,10 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
     angles(i) = distributions.at(i+3)(*mRng);
   }
 
-  Eigen::Matrix3d rotation;
-  rotation = Eigen::AngleAxisd(angles(2), Eigen::Vector3d::UnitZ()) *
-             Eigen::AngleAxisd(angles(1), Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(angles(0), Eigen::Vector3d::UnitX());
-
   Eigen::Isometry3d Tw_s;
   Tw_s.setIdentity();
   Tw_s.translation() = translation;
-  Tw_s.linear() = rotation;
+  Tw_s.linear() = dart::math::eulerZYXToMatrix(angles.reverse());
 
   Eigen::Isometry3d T0_s(mT0_w * Tw_s * mTw_e);
   mStateSpace->setIsometry(static_cast<SE3StateSpace::State*>(_state), T0_s);

@@ -10,6 +10,11 @@ EuclideanDistanceMetric::EuclideanDistanceMetric(
 {
 }
 
+statespace::StateSpacePtr EuclideanDistanceMetric::getStateSpace() const
+{
+  return mStateSpace;
+}
+
 double EuclideanDistanceMetric::distance(
     const statespace::StateSpace::State* _state1,
     const statespace::StateSpace::State* _state2) const

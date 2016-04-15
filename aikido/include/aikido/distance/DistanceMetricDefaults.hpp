@@ -1,5 +1,5 @@
-#ifndef AIKIDO_DISTANCE_METASKELETONDISTANCE_H_
-#define AIKIDO_DISTANCE_METASKELETONDISTANCE_H_
+#ifndef AIKIDO_DISTANCE_DISTANCEDEFAULTS_H_
+#define AIKIDO_DISTANCE_DISTANCEDEFAULTS_H_
 
 #include "DistanceMetric.hpp"
 
@@ -7,9 +7,10 @@ namespace aikido
 {
 namespace distance
 {
-template <class StateSpaceType>
-std::shared_ptr<DistanceMetric> createDistanceMetricFor(
-    std::shared_ptr<StateSpaceType> _sspace);
+template <class Space>
+std::unique_ptr<DistanceMetric> createDistanceMetricFor(
+    std::shared_ptr<Space> _sspace);
+
 }
 }
 

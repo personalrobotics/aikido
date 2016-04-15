@@ -6,6 +6,7 @@
 #include "../../statespace/SO3StateSpace.hpp"
 #include "../../statespace/RealVectorStateSpace.hpp"
 #include "../../statespace/CompoundStateSpace.hpp"
+#include <dart/common/StlHelpers.h>
 
 namespace aikido
 {
@@ -13,39 +14,38 @@ namespace distance
 {
 namespace detail
 {
-using std::make_shared;
-using Ptr = std::shared_ptr<DistanceMetric>;
+using dart::common::make_unique;
+using Ptr = std::unique_ptr<DistanceMetric>;
 
 //=============================================================================
-template <class StateSpaceType>
+template <class Space>
 struct createDistanceMetricFor_impl {
 };
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<aikido::statespace::RealVectorStateSpace> {
-  static Ptr create(
-      std::shared_ptr<aikido::statespace::RealVectorStateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::RealVectorStateSpace> {
+  static Ptr create(std::shared_ptr<statespace::RealVectorStateSpace> _sspace)
   {
-    return make_shared<EuclideanDistanceMetric>(_sspace);
+    return make_unique<EuclideanDistanceMetric>(std::move(_sspace));
   }
 };
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<aikido::statespace::SO2StateSpace> {
-  static Ptr create(std::shared_ptr<aikido::statespace::SO2StateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::SO2StateSpace> {
+  static Ptr create(std::shared_ptr<statespace::SO2StateSpace> _sspace)
   {
-    return make_shared<AngularDistanceMetric>(_sspace);
+    return make_unique<AngularDistanceMetric>(std::move(_sspace));
   }
 };
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<aikido::statespace::SO3StateSpace> {
-  static Ptr create(std::shared_ptr<aikido::statespace::SO3StateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::SO3StateSpace> {
+  static Ptr create(std::shared_ptr<statespace::SO3StateSpace> _sspace)
   {
-    return make_shared<GeodesicDistanceMetric>(_sspace);
+    return make_unique<GeodesicDistanceMetric>(std::move(_sspace));
   }
 };
 
@@ -56,7 +56,7 @@ struct ForOneOf {
 
 template <>
 struct ForOneOf<> {
-  static Ptr create(std::shared_ptr<aikido::statespace::StateSpace> _sspace)
+  static Ptr create(std::shared_ptr<statespace::StateSpace> _sspace)
   {
     return nullptr;
   }
@@ -64,12 +64,12 @@ struct ForOneOf<> {
 
 template <class Arg, class... Args>
 struct ForOneOf<Arg, Args...> {
-  static Ptr create(std::shared_ptr<aikido::statespace::StateSpace> _sspace)
+  static Ptr create(std::shared_ptr<statespace::StateSpace> _sspace)
   {
-      auto sspace = std::dynamic_pointer_cast<Arg>(_sspace);
+    auto sspace = std::dynamic_pointer_cast<Arg>(_sspace);
 
-      if (sspace) {
-          return createDistanceMetricFor_impl<Arg>::create(sspace);
+    if (sspace) {
+      return createDistanceMetricFor_impl<Arg>::create(std::move(sspace));
     } else {
       return ForOneOf<Args...>::create(_sspace);
     }
@@ -78,35 +78,35 @@ struct ForOneOf<Arg, Args...> {
 
 //=============================================================================
 using createDistanceMetricFor_wrapper =
-    ForOneOf<aikido::statespace::SO2StateSpace,
-             aikido::statespace::SO3StateSpace,
-             aikido::statespace::RealVectorStateSpace,
-             aikido::statespace::CompoundStateSpace>;
+    ForOneOf<statespace::SO2StateSpace, statespace::SO3StateSpace,
+             statespace::RealVectorStateSpace, statespace::CompoundStateSpace>;
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<aikido::statespace::CompoundStateSpace> {
-  static Ptr create(
-      std::shared_ptr<aikido::statespace::CompoundStateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::CompoundStateSpace> {
+  static Ptr create(std::shared_ptr<statespace::CompoundStateSpace> _sspace)
   {
     std::vector<std::shared_ptr<DistanceMetric> > metrics;
-    metrics.resize(_sspace->getNumStates());
+    metrics.reserve(_sspace->getNumStates());
     for (size_t i = 0; i < _sspace->getNumStates(); ++i) {
-      metrics[i] = 
-          createDistanceMetricFor_wrapper::create(_sspace->getSubSpacePtr<>(i));
+      auto subspace = _sspace->getSubSpacePtr<>(i);
+      auto metric =
+          createDistanceMetricFor_wrapper::create(std::move(subspace));
+      metrics.emplace_back(metric.release());
     }
-    return make_shared<WeightedDistanceMetric>(_sspace, metrics);
+    return make_unique<WeightedDistanceMetric>(std::move(_sspace),
+                                               std::move(metrics));
   }
 };
 
 }  // detail
 
 //=============================================================================
-template <class StateSpaceType>
-std::shared_ptr<DistanceMetric> createDistanceMetricFor(
-    std::shared_ptr<StateSpaceType> _sspace)
+template <class Space>
+std::unique_ptr<DistanceMetric> createDistanceMetricFor(
+    std::shared_ptr<Space> _sspace)
 {
-  return detail::createDistanceMetricFor_impl<StateSpaceType>::create(_sspace);
+  return detail::createDistanceMetricFor_wrapper::create(std::move(_sspace));
 }
 }
 }

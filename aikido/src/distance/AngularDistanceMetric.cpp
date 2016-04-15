@@ -11,6 +11,11 @@ AngularDistanceMetric::AngularDistanceMetric(
 {
 }
 
+statespace::StateSpacePtr AngularDistanceMetric::getStateSpace() const
+{
+  return mStateSpace;
+}
+
 double AngularDistanceMetric::distance(
     const aikido::statespace::StateSpace::State* _state1,
     const aikido::statespace::StateSpace::State* _state2) const

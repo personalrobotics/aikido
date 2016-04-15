@@ -1,11 +1,13 @@
 #ifndef AIKIDO_OMPL_PLANNER_H_
 #define AIKIDO_OMPL_PLANNER_H_
 
-#include <aikido/statespace/StateSpace.hpp>
-#include <aikido/constraint/TestableConstraint.hpp>
-#include <aikido/ompl/OMPLPlanner.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
-#include <aikido/ompl/AIKIDOStateValidityChecker.hpp>
+#include "../distance/DistanceMetric.hpp"
+#include "../statespace/StateSpace.hpp"
+#include "../constraint/TestableConstraint.hpp"
+#include "../constraint/Sampleable.hpp"
+#include "../constraint/Projectable.hpp"
+#include "../path/Trajectory.hpp"
+
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/SpaceInformation.h>
@@ -13,57 +15,54 @@
 
 namespace aikido
 {
-namespace ompl_bindings
+namespace ompl
 {
+template <class PlannerType>
+path::TrajectoryPtr planOMPL(
+    const statespace::StateSpace::State *_start,
+    const statespace::StateSpace::State *_goal,
+    const statespace::StateSpacePtr &_stateSpace,
+    const constraint::TestableConstraintPtr &_collConstraint,
+    const constraint::TestableConstraintPtr &_boundsConstraint,
+    const distance::DistanceMetricPtr &_dmetric,
+    const constraint::SampleableConstraintPtr &_sampler,
+    const constraint::ProjectablePtr &_boundsProjector,
+    const double &_maxPlanTime);
 
-    template <class PlannerType>
-    void planOMPL(
-        const aikido::statespace::StateSpace::State *_start,
-        const aikido::statespace::StateSpace::State *_goal,
-        const std::shared_ptr<aikido::statespace::StateSpace> &_stateSpace,
-        const std::shared_ptr<aikido::constraint::TestableConstraint> &_constraint,
-        const double &_maxPlanTime,
-        std::unique_ptr<util::RNG> _rng
-        ){
-        
-        // Ensure the constraint and state space match
-        if (_stateSpace != _constraint->getStateSpace()) {
-            throw std::invalid_argument(
-                "StateSpace of constraint not equal to planning StateSpace"
-                );
-        }
+template <class PlannerType>
+path::TrajectoryPtr planOMPL(
+    const statespace::StateSpace::State *_start,
+    const constraint::TestableConstraintPtr &_goalTestable,
+    const constraint::SampleableConstraintPtr &_goalSampler,
+    const statespace::StateSpacePtr &_stateSpace,
+    const constraint::TestableConstraintPtr &_collConstraint,
+    const constraint::TestableConstraintPtr &_boundsConstraint,
+    const distance::DistanceMetricPtr &_dmetric,
+    const constraint::SampleableConstraintPtr &_sampler,
+    const constraint::ProjectablePtr &_boundsProjector,
+    const double &_maxPlanTime);
 
-        // AIKIDO State space
-        auto sspace = boost::make_shared<AIKIDOGeometricStateSpace>(_stateSpace, std::move(_rng));
-        
-        // Space Information
-        auto si = boost::make_shared<ompl::base::SpaceInformation>(sspace);
+::ompl::base::SpaceInformationPtr getSpaceInformation(
+    const statespace::StateSpacePtr &_stateSpace,
+    const distance::DistanceMetricPtr &_dmetric,
+    const constraint::SampleableConstraintPtr &_sampler,
+    const constraint::TestableConstraintPtr &_boundsConstraint,
+    const constraint::ProjectablePtr &_boundsProjector);
 
-        // Validity checker
-        std::vector<std::shared_ptr<aikido::constraint::TestableConstraint> > constraints;
-        constraints.push_back(_constraint);
-        ompl::base::StateValidityCheckerPtr vchecker = 
-            boost::make_shared<AIKIDOStateValidityChecker>(si, constraints);
-        si->setStateValidityChecker(vchecker);
+void setValidityConstraints(
+    const ::ompl::base::SpaceInformationPtr &_si,
+    const constraint::TestableConstraintPtr &_collConstraint,
+    const constraint::TestableConstraintPtr &_boundsConstraint);
 
-        // Start and states
-        auto pdef = boost::make_shared<ompl::base::ProblemDefinition>(si);
-        auto start = sspace->allocState(_start);
-        auto goal = sspace->allocState(_goal);
-        pdef->setStartAndGoalStates(start, goal);
-            
-        // Planner
-        ompl::base::PlannerPtr planner = boost::make_shared<PlannerType>(si);
-        planner->setProblemDefinition(pdef);
-        planner->setup();
-        auto solved = planner->solve(_maxPlanTime);
-            
-        if(solved){
-            // TODO: Extract trajectory
-        }
-    }
-
+template <class PlannerType>
+path::TrajectoryPtr planOMPL(const ::ompl::base::SpaceInformationPtr &_si,
+                             const ::ompl::base::ProblemDefinitionPtr &_pdef,
+                             const statespace::StateSpacePtr &_stateSpace,
+                             const distance::DistanceMetricPtr &_dmetric,
+                             const double &_maxPlanTime);
 }
 }
+
+#include "detail/OMPLPlanner.hpp"
 
 #endif
