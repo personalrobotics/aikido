@@ -2,19 +2,22 @@
 #define AIKIDO_TSR_GOAL_REGION_H_
 
 #include <ompl/base/goals/GoalSampleableRegion.h>
-#include "../constraint/TSR.hpp"
+#include "../constraint/TestableConstraint.hpp"
+#include "../constraint/Sampleable.hpp"
 
 namespace aikido
 {
 namespace ompl
 {
-/// Exposes a TSR as a goal to OMPL planners
-class TSRGoalRegion : public ::ompl::base::GoalSampleableRegion
+/// Exposes a Testable/Sampleable constraint pair as a goal to OMPL planners
+class GoalRegion : public ::ompl::base::GoalSampleableRegion
 {
 public:
-  /// Constructor. Generate a goal region from a TSR
-  TSRGoalRegion(const ::ompl::base::SpaceInformationPtr& _si,
-                std::unique_ptr<constraint::TSR> _tsr);
+  /// Constructor. Generate a goal region from a Testable and Sampleable
+  /// constraint
+  GoalRegion(const ::ompl::base::SpaceInformationPtr& _si,
+             const constraint::TestableConstraintPtr& _goalTestable,
+             std::unique_ptr<constraint::SampleGenerator> _generator);
 
   /// Sample a state in the goal region
   virtual void sampleGoal(::ompl::base::State* _state) const;
@@ -26,17 +29,16 @@ public:
   /// Return true of maxSampleCount() > 0
   virtual bool canSample() const;
 
-  /// Compute the distance to the goal (heuristic)
+  /// Return 0 if the goal is satisfied or inf otherwise
   virtual double distanceGoal(const ::ompl::base::State* _state) const;
 
   /// Return true if the state satisfies the goal constraints
   virtual bool isSatisfied(const ::ompl::base::State* _state) const;
 
 private:
-  std::unique_ptr<constraint::TSR> mTSR;
+  constraint::TestableConstraintPtr mTestable;
   std::unique_ptr<constraint::SampleGenerator> mSampleGenerator;
 };
-
 }
 }
 #endif

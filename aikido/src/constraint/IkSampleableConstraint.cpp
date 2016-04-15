@@ -49,7 +49,7 @@ IkSampleableConstraint::IkSampleableConstraint(
   if (!mPoseConstraint)
     throw std::invalid_argument("Pose SampleGenerator is nullptr.");
 
-  if (!dynamic_cast<SE3StateSpace*>(_poseConstraint->getStateSpace().get()))
+  if (!dynamic_cast<SE3StateSpace*>(mPoseConstraint->getStateSpace().get()))
     throw std::invalid_argument(
       "Pose SampleableConstraint does not operate on a SE3StateSpace.");
 

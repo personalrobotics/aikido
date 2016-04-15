@@ -168,7 +168,8 @@ Eigen::VectorXd TSR::getValue(const statespace::StateSpace::State* _s) const
   Tw_s.matrix() = Tw_s_m;
 
   Eigen::Vector3d translation = Tw_s.translation();
-  Eigen::Vector3d eulerZYX = dart::math::matrixToEulerZYX(Tw_s.linear());
+  Eigen::Vector3d eulerOrig = dart::math::matrixToEulerZYX(Tw_s.linear());
+  Eigen::Vector3d eulerZYX = eulerOrig.reverse();
 
   Eigen::Vector6d distance;
 

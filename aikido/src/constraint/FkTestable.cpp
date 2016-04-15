@@ -22,9 +22,6 @@ bool FkTestable::isSatisfied(const statespace::StateSpace::State* _state) const
   auto state = static_cast<const statespace::MetaSkeletonStateSpace::State*>(_state);
   mStateSpace->setStateOnMetaSkeleton(state);
 
-  // Perform FK
-  Eigen::Isometry3d pose = mFrame->getTransform();
-
   // Check the pose constraint
   auto st = mPoseStateSpace->createState();
   mPoseStateSpace->setIsometry(st, mFrame->getTransform());

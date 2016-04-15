@@ -13,9 +13,10 @@
 #include <ompl/base/SpaceInformation.h>
 #include <boost/make_shared.hpp>
 
-namespace aikido {
-namespace ompl {
-
+namespace aikido
+{
+namespace ompl
+{
 template <class PlannerType>
 path::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
@@ -27,6 +28,38 @@ path::TrajectoryPtr planOMPL(
     const constraint::SampleableConstraintPtr &_sampler,
     const constraint::ProjectablePtr &_boundsProjector,
     const double &_maxPlanTime);
+
+template <class PlannerType>
+path::TrajectoryPtr planOMPL(
+    const statespace::StateSpace::State *_start,
+    const constraint::TestableConstraintPtr &_goalTestable,
+    const constraint::SampleableConstraintPtr &_goalSampler,
+    const statespace::StateSpacePtr &_stateSpace,
+    const constraint::TestableConstraintPtr &_collConstraint,
+    const constraint::TestableConstraintPtr &_boundsConstraint,
+    const distance::DistanceMetricPtr &_dmetric,
+    const constraint::SampleableConstraintPtr &_sampler,
+    const constraint::ProjectablePtr &_boundsProjector,
+    const double &_maxPlanTime);
+
+::ompl::base::SpaceInformationPtr getSpaceInformation(
+    const statespace::StateSpacePtr &_stateSpace,
+    const distance::DistanceMetricPtr &_dmetric,
+    const constraint::SampleableConstraintPtr &_sampler,
+    const constraint::TestableConstraintPtr &_boundsConstraint,
+    const constraint::ProjectablePtr &_boundsProjector);
+
+void setValidityConstraints(
+    const ::ompl::base::SpaceInformationPtr &_si,
+    const constraint::TestableConstraintPtr &_collConstraint,
+    const constraint::TestableConstraintPtr &_boundsConstraint);
+
+template <class PlannerType>
+path::TrajectoryPtr planOMPL(const ::ompl::base::SpaceInformationPtr &_si,
+                             const ::ompl::base::ProblemDefinitionPtr &_pdef,
+                             const statespace::StateSpacePtr &_stateSpace,
+                             const distance::DistanceMetricPtr &_dmetric,
+                             const double &_maxPlanTime);
 }
 }
 
