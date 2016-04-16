@@ -20,6 +20,9 @@ public:
   // Documentation inherited
   aikido::statespace::StateSpacePtr getStateSpace() const override;
 
+  /// Gets the interpolator used to interpolate between waypoints.
+  aikido::statespace::InterpolatorPtr getInterpolator() const;
+
   // Documentation inherited
   int getNumDerivatives() const override;
 

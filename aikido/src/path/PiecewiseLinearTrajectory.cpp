@@ -25,6 +25,12 @@ statespace::StateSpacePtr PiecewiseLinearTrajectory::getStateSpace() const
 }
 
 //=============================================================================
+statespace::InterpolatorPtr PiecewiseLinearTrajectory::getInterpolator() const
+{
+  return mInterpolator;
+}
+
+//=============================================================================
 int PiecewiseLinearTrajectory::getNumDerivatives() const
 {
   return mInterpolator->getNumDerivatives();
