@@ -109,7 +109,7 @@ Eigen::VectorXd PiecewiseLinearTrajectory::evaluate(double _t,
     const auto segmentTime = mWaypoints[idx].t - mWaypoints[idx - 1].t;
     const auto alpha = (_t - mWaypoints[idx - 1].t) / segmentTime;
     const auto tangentVector = mInterpolator->getDerivative(
-      mWaypoints[idx].state, mWaypoints[idx - 1].state, _derivative, alpha);
+      mWaypoints[idx - 1].state, mWaypoints[idx].state, _derivative, alpha);
 
     return tangentVector / segmentTime;
   }
