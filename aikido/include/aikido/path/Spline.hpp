@@ -169,7 +169,4 @@ public:
 
 #include "detail/Spline-impl.hpp"
 
-#include "Trajectory.hpp"
-#include "SplineTrajectory.hpp"
-
 #endif // AIKIDO_PATH_SPLINE_H_

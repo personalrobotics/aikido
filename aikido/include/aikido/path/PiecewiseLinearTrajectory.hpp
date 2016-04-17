@@ -5,10 +5,9 @@
 #include "../distance/DistanceMetric.hpp"
 #include "../statespace/GeodesicInterpolator.hpp"
 
-namespace aikido
-{
-namespace path
-{
+namespace aikido {
+namespace path {
+
 /// Implements a piecewise linear trajectory
 class PiecewiseLinearTrajectory : public Trajectory
 {
@@ -26,11 +25,11 @@ public:
   // Documentation inherited
   int getNumDerivatives() const override;
 
-  /// The time on the first waypoint of the trajectory
-  double getStartTime() const;
+  // Documentation inherited
+  double getStartTime() const override;
 
-  /// The time on the last waypoint of the trajectory
-  double getEndTime() const;
+  // Documentation inherited
+  double getEndTime() const override;
 
   // Documentation inherited
   double getDuration() const override;
@@ -79,7 +78,8 @@ private:
   aikido::statespace::InterpolatorPtr mInterpolator;
   std::vector<Waypoint> mWaypoints;
 };
-}
-}
+
+} // namespace path
+} // namespace aikido
 
 #endif

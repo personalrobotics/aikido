@@ -22,6 +22,12 @@ public:
   /// The duration of the trajectory
   virtual double getDuration() const = 0;
 
+  /// The time on the first waypoint of the trajectory
+  virtual double getStartTime() const = 0;
+
+  /// The time on the last waypoint of the trajectory
+  virtual double getEndTime() const = 0;
+
   /// Compute the state that should be achieved at time t when following
   ///  the trajectory.
   virtual void evaluate(
