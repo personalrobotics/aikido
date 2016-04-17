@@ -48,6 +48,11 @@ private:
   static Eigen::VectorXd evaluatePolynomial(
     const Eigen::MatrixXd& _coefficients, double _t, int _derivative);
 
+  std::pair<size_t, double> getSegmentForTime(double _t) const;
+
+  void getSegmentStartState(
+    size_t _index, statespace::StateSpace::State* _out) const;
+
   statespace::StateSpacePtr mStateSpace;
   statespace::StateSpace::State* mStartState;
   double mStartTime;

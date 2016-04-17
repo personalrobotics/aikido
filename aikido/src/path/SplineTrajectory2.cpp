@@ -15,6 +15,12 @@ SplineTrajectory2::SplineTrajectory2(
   , mStartTime(_startTime)
   , mSegments(std::move(_segments))
 {
+  if (mStateSpace == nullptr)
+    throw std::invalid_argument("StateSpace is null.");
+
+  if (_startState == nullptr)
+    throw std::invalid_argument("Start state is null.");
+
   if (mSegments.empty())
     throw std::invalid_argument("At least one segment is required.");
 
@@ -46,6 +52,7 @@ SplineTrajectory2::SplineTrajectory2(
     }
   }
 
+  // Do this last, since we have to clean up this memory in the destructor.
   mStartState = mStateSpace->allocateState();
   mStateSpace->copyState(mStartState, _startState);
 }
@@ -101,53 +108,92 @@ double SplineTrajectory2::getDuration() const
 
 //=============================================================================
 void SplineTrajectory2::evaluate(
-  double _t, statespace::StateSpace::State *_state) const
+  double _t, statespace::StateSpace::State *_out) const
 {
-  if (_t < mStartTime)
-    throw std::domain_error("Time is before start time.");
+  const auto targetSegmentInfo = getSegmentForTime(_t);
+  const auto& targetSegment = mSegments[targetSegmentInfo.first];
 
-  auto timeFromStart = mStartTime;
-  auto previousState = mStateSpace->createState();
-  auto relativeState = mStateSpace->createState();
-  auto nextState = mStateSpace->createState();
+  mStateSpace->copyState(_out, mStartState);
 
-  mStateSpace->copyState(previousState, mStartState);
+  const auto relativeState = mStateSpace->createState();
+  const auto nextState = mStateSpace->createState();
 
-  for (const auto& segment : mSegments)
+  for (size_t isegment = 0; isegment <= targetSegmentInfo.first; ++isegment)
   {
-    const auto nextTimeFromStart = timeFromStart + segment.mDuration;
+    const auto& segment = mSegments[isegment];
 
-    if (nextTimeFromStart < _t)
-    {
-      const auto tangentVector = evaluatePolynomial(
-        segment.mCoefficients, nextTimeFromStart, 0);
-      mStateSpace->expMap(tangentVector, relativeState);
-      mStateSpace->compose(previousState, relativeState, nextState);
-
-      // TODO: This could be done efficiently through pointer-swapping.
-      mStateSpace->copyState(previousState, nextState);
-    }
+    double evaluationTime;
+    if (isegment < targetSegmentInfo.first)
+      evaluationTime = segment.mDuration; // end of the segment
     else
-    {
-      const auto tangentVector = evaluatePolynomial(
-        segment.mCoefficients, _t, 0);
-      mStateSpace->expMap(tangentVector, relativeState);
-      mStateSpace->compose(previousState, relativeState, _state);
-      return;
-    }
+      evaluationTime = _t - targetSegmentInfo.second; // target time
 
-    // TODO: Forward-integrate previousState.
-    timeFromStart = nextTimeFromStart;
+    // TODO: Should we be using relative or absolute time here?
+    const auto tangentVector = evaluatePolynomial(
+      segment.mCoefficients, evaluationTime, 0);
+    mStateSpace->expMap(tangentVector, relativeState);
+    mStateSpace->compose(_out, relativeState, nextState);
+    mStateSpace->copyState(_out, nextState);
   }
-
-  // Output the last waypoint of the trajectory.
-  mStateSpace->copyState(_state, nextState);
 }
 
 //=============================================================================
 Eigen::VectorXd SplineTrajectory2::evaluate(double _t, int _derivative) const
 {
-  throw std::runtime_error("not implemented");
+  const auto targetSegmentInfo = getSegmentForTime(_t);
+  const auto& targetSegment = mSegments[targetSegmentInfo.first];
+  const auto evaluationTime = _t - targetSegmentInfo.second;
+
+  return evaluatePolynomial(targetSegment.mCoefficients, evaluationTime,
+    _derivative);
+}
+
+//=============================================================================
+std::pair<size_t, double> SplineTrajectory2::getSegmentForTime(double _t) const
+{
+  auto segmentStartTime = mStartTime;
+
+  for (size_t isegment = 0; isegment < mSegments.size(); ++isegment)
+  {
+    const auto& segment = mSegments[isegment];
+    const auto nextSegmentStartTime = segmentStartTime + segment.mDuration;
+
+    if (_t <= nextSegmentStartTime)
+      return std::make_pair(isegment, segmentStartTime);
+
+    segmentStartTime = nextSegmentStartTime;
+  }
+
+  // After the end of the last segment.
+  return std::make_pair(
+    mSegments.size() - 1, segmentStartTime - mSegments.back().mDuration);
+}
+
+//=============================================================================
+void SplineTrajectory2::getSegmentStartState(
+  size_t _index, statespace::StateSpace::State* _out) const
+{
+  assert(_index < mSegments.size());
+  assert(_out != nullptr);
+
+  mStateSpace->copyState(_out, mStartState);
+
+  const auto relativeState = mStateSpace->createState();
+  const auto nextState = mStateSpace->createState();
+
+  // Forward-integrate all previous segments.
+  for (size_t isegment = 0; isegment < _index; ++isegment)
+  {
+    const auto& segment = mSegments[isegment];
+    // TODO: Should we be using relative or absolute time here?
+    const auto tangentVector = evaluatePolynomial(
+      segment.mCoefficients, segment.mDuration, 0);
+
+    // Compute the relative state offset caused by this segment.
+    mStateSpace->expMap(tangentVector, relativeState);
+    mStateSpace->compose(_out, relativeState, nextState);
+    mStateSpace->copyState(_out, nextState);
+  }
 }
 
 //=============================================================================
