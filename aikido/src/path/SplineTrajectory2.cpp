@@ -103,32 +103,45 @@ double SplineTrajectory2::getDuration() const
 void SplineTrajectory2::evaluate(
   double _t, statespace::StateSpace::State *_state) const
 {
-  // Find the segment that contains this time.
   if (_t < mStartTime)
     throw std::domain_error("Time is before start time.");
 
   auto timeFromStart = mStartTime;
-  size_t isegment = 0;
+  auto previousState = mStateSpace->createState();
+  auto relativeState = mStateSpace->createState();
+  auto nextState = mStateSpace->createState();
 
-  for (; isegment < mSegments.size(); ++isegment)
+  mStateSpace->copyState(previousState, mStartState);
+
+  for (const auto& segment : mSegments)
   {
-    const auto& segment = mSegments[isegment];
     const auto nextTimeFromStart = timeFromStart + segment.mDuration;
 
-    if (nextTimeFromStart > _t)
-      break;
+    if (nextTimeFromStart < _t)
+    {
+      const auto tangentVector = evaluatePolynomial(
+        segment.mCoefficients, nextTimeFromStart, 0);
+      mStateSpace->expMap(tangentVector, relativeState);
+      mStateSpace->compose(previousState, relativeState, nextState);
 
+      // TODO: This could be done efficiently through pointer-swapping.
+      mStateSpace->copyState(previousState, nextState);
+    }
+    else
+    {
+      const auto tangentVector = evaluatePolynomial(
+        segment.mCoefficients, _t, 0);
+      mStateSpace->expMap(tangentVector, relativeState);
+      mStateSpace->compose(previousState, relativeState, _state);
+      return;
+    }
+
+    // TODO: Forward-integrate previousState.
     timeFromStart = nextTimeFromStart;
   }
 
-  if (isegment >= mSegments.size())
-    throw std::domain_error("Time is after end time.");
-
-  //
-  auto state = mStateSpace->createState();
-  mStateSpace->copyState(state, mStartState);
-
-  throw std::runtime_error("not implemented");
+  // Output the last waypoint of the trajectory.
+  mStateSpace->copyState(_state, nextState);
 }
 
 //=============================================================================
