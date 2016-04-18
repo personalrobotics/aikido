@@ -18,6 +18,9 @@ public:
   void addSegment(
     const Eigen::MatrixXd& _coefficients, double _duration);
 
+  /// Gets the number of segments.
+  size_t getNumSegments() const;
+
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 

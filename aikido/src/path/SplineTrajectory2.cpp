@@ -51,6 +51,12 @@ void SplineTrajectory2::addSegment(
 }
 
 //=============================================================================
+size_t SplineTrajectory2::getNumSegments() const
+{
+  return mSegments.size();
+}
+
+//=============================================================================
 statespace::StateSpacePtr SplineTrajectory2::getStateSpace() const
 {
   return mStateSpace;
