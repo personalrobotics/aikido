@@ -8,49 +8,16 @@ namespace path {
 SplineTrajectory2::SplineTrajectory2(
       statespace::StateSpacePtr _stateSpace,
       const statespace::StateSpace::State* _startState,
-      double _startTime,
-      std::vector<PolynomialSegment> _segments)
+      double _startTime)
   : mStateSpace(std::move(_stateSpace))
   , mStartState() // Initialized below.
   , mStartTime(_startTime)
-  , mSegments(std::move(_segments))
 {
   if (mStateSpace == nullptr)
     throw std::invalid_argument("StateSpace is null.");
 
   if (_startState == nullptr)
     throw std::invalid_argument("Start state is null.");
-
-  if (mSegments.empty())
-    throw std::invalid_argument("At least one segment is required.");
-
-  const auto numDimensions = _stateSpace->getDimension();
-
-  for (size_t isegment = 0; isegment < mSegments.size(); ++isegment)
-  {
-    auto& segment = mSegments[isegment];
-
-    if (segment.mDuration <= 0.)
-    {
-      std::stringstream msg;
-      msg << "Segment " << isegment << " does not have a positive duration: "
-          << segment.mDuration << ".";
-      throw std::invalid_argument(msg.str());
-    }
-    if (segment.mCoefficients.cols() != numDimensions)
-    {
-      std::stringstream msg;
-      msg << "Segment " << isegment << " has incorrect number of dimensions: "
-          << segment.mCoefficients.cols() << " != " << numDimensions << ".";
-      throw std::invalid_argument(msg.str());
-    }
-    if (segment.mCoefficients.rows() == 0)
-    {
-      std::stringstream msg;
-      msg << "Segment " << isegment << " has zero coefficients.";
-      throw std::invalid_argument(msg.str());
-    }
-  }
 
   // Do this last, since we have to clean up this memory in the destructor.
   mStartState = mStateSpace->allocateState();
@@ -61,6 +28,26 @@ SplineTrajectory2::SplineTrajectory2(
 SplineTrajectory2::~SplineTrajectory2()
 {
   mStateSpace->freeState(mStartState);
+}
+
+//=============================================================================
+void SplineTrajectory2::addSegment(
+  const Eigen::MatrixXd& _coefficients, double _duration)
+{
+  if (_duration <= 0.)
+    throw std::invalid_argument("Duration must be positive.");
+
+  if (_coefficients.rows() != mStateSpace->getDimension())
+    throw std::invalid_argument("Incorrect number of dimensions.");
+
+  if (_coefficients.cols() < 1)
+    throw std::invalid_argument("At least one coefficient is required.");
+
+  PolynomialSegment segment;
+  segment.mCoefficients = _coefficients;
+  segment.mDuration = _duration;
+
+  mSegments.emplace_back(std::move(segment));
 }
 
 //=============================================================================
@@ -110,6 +97,12 @@ double SplineTrajectory2::getDuration() const
 void SplineTrajectory2::evaluate(
   double _t, statespace::StateSpace::State *_out) const
 {
+  if (mSegments.empty())
+  {
+    mStateSpace->copyState(_out, mStartState);
+    return;
+  }
+
   const auto targetSegmentInfo = getSegmentForTime(_t);
   const auto& targetSegment = mSegments[targetSegmentInfo.first];
 
@@ -128,9 +121,9 @@ void SplineTrajectory2::evaluate(
     else
       evaluationTime = _t - targetSegmentInfo.second; // target time
 
-    // TODO: Should we be using relative or absolute time here?
     const auto tangentVector = evaluatePolynomial(
       segment.mCoefficients, evaluationTime, 0);
+
     mStateSpace->expMap(tangentVector, relativeState);
     mStateSpace->compose(_out, relativeState, nextState);
     mStateSpace->copyState(_out, nextState);
@@ -140,12 +133,20 @@ void SplineTrajectory2::evaluate(
 //=============================================================================
 Eigen::VectorXd SplineTrajectory2::evaluate(double _t, int _derivative) const
 {
+  // Returns zero for an empty trajectory.
+  if (mSegments.empty())
+    return Eigen::VectorXd::Zero(mStateSpace->getDimension());
+
   const auto targetSegmentInfo = getSegmentForTime(_t);
   const auto& targetSegment = mSegments[targetSegmentInfo.first];
   const auto evaluationTime = _t - targetSegmentInfo.second;
 
-  return evaluatePolynomial(targetSegment.mCoefficients, evaluationTime,
-    _derivative);
+  // Return zero for higher-order derivatives.
+  if (_derivative < targetSegment.mCoefficients.cols())
+    return evaluatePolynomial(targetSegment.mCoefficients, evaluationTime,
+      _derivative);
+  else
+    return Eigen::VectorXd::Zero(mStateSpace->getDimension());
 }
 
 //=============================================================================
@@ -208,7 +209,7 @@ Eigen::VectorXd SplineTrajectory2::evaluatePolynomial(
   const auto derivativeMatrix = SplineProblem<>::createCoefficientMatrix(
     numCoeffs);
   const auto derivativeVector = derivativeMatrix.row(_derivative);
-  const auto evaluationVector = derivativeVector.cwiseProduct(timeVector);
+  const auto evaluationVector = derivativeVector.cwiseProduct(timeVector.transpose());
 
   Eigen::VectorXd outputVector(numOutputs);
 

@@ -8,19 +8,15 @@ namespace path {
 class SplineTrajectory2  : public Trajectory
 {
 public:
-  struct PolynomialSegment
-  {
-    Eigen::MatrixXd mCoefficients;
-    double mDuration;
-  };
-
   SplineTrajectory2(
     statespace::StateSpacePtr _stateSpace,
     const statespace::StateSpace::State* _startState,
-    double _startTime,
-    std::vector<PolynomialSegment> _segments);
+    double _startTime);
 
   virtual ~SplineTrajectory2();
+  
+  void addSegment(
+    const Eigen::MatrixXd& _coefficients, double _duration);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -45,6 +41,12 @@ public:
   Eigen::VectorXd evaluate(double _t, int _derivative) const override;
 
 private:
+  struct PolynomialSegment
+  {
+    Eigen::MatrixXd mCoefficients;
+    double mDuration;
+  };
+
   static Eigen::VectorXd evaluatePolynomial(
     const Eigen::MatrixXd& _coefficients, double _t, int _derivative);
 
