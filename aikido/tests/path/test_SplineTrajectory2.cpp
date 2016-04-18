@@ -31,6 +31,55 @@ protected:
   std::shared_ptr<SplineTrajectory2> mTrajectory;
 };
 
+TEST_F(SplineTrajectory2Test, addSegment_NegativeDurationThrows)
+{
+  Eigen::Matrix2d coefficients;
+  coefficients << 0., 1.,
+                  0., 2.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, -1.);
+  }, std::invalid_argument);
+}
+
+TEST_F(SplineTrajectory2Test, addSegment_ZeroDurationThrows)
+{
+  Eigen::Matrix2d coefficients;
+  coefficients << 0., 1.,
+                  0., 2.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, 0.);
+  }, std::invalid_argument);
+}
+
+TEST_F(SplineTrajectory2Test, addSegment_IncorrectDimension_Throws)
+{
+  Eigen::Matrix<double, 1, 2> coefficients;
+  coefficients << 0., 1.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, 1.);
+  }, std::invalid_argument);
+}
+
+TEST_F(SplineTrajectory2Test, addSegment_EmptyCoefficients_Throws)
+{
+  Eigen::Matrix<double, 2, 0> coefficients;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, 1.);
+  }, std::invalid_argument);
+}
+
 TEST_F(SplineTrajectory2Test, getStateSpace)
 {
   SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
