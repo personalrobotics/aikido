@@ -98,10 +98,10 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
   // The optimal timing of this trajectory should be a triangle centered at t =
   // 1that accelerates at 1 rad/s^2 for 1 s, then deaccelerates at -1 rad/s^2
   // for 1 s. This corresponds to moving each axis through 2 rad.
-  state.setValue(Vector2d(0., 0.));
+  state.setValue(Vector2d(1., 2.));
   inputTrajectory.addWaypoint(0., state);
 
-  state.setValue(Vector2d(1., 1.));
+  state.setValue(Vector2d(2., 3.));
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeParabolicTiming(
@@ -113,14 +113,13 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
 
   // Position.
   timedTrajectory->evaluate(0., state);
-  // TODO: isApprox does not work when comparing against zero.
-  //EXPECT_TRUE(Vector2d(0., 0.).isApprox(state.getValue(), ));
+  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(state.getValue()));
+  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_TRUE(Vector2d(1., 1.).isApprox(state.getValue()));
+  EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
 
   // Velocity
   tangentVector = timedTrajectory->evaluate(0.5, 1);
@@ -151,10 +150,10 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
   // - accelerates at 1 rad/s^2 for 1 s
   // - coasts at 1 m/s for 1 s
   // - deaccelerates at -1 rad/s^2 for 1 s
-  state.setValue(Vector2d(0., 0.));
+  state.setValue(Vector2d(1., 2.));
   inputTrajectory.addWaypoint(0., state);
 
-  state.setValue(Vector2d(2., 2.));
+  state.setValue(Vector2d(3., 4.));
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeParabolicTiming(
@@ -166,17 +165,16 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
 
   // Position.
   timedTrajectory->evaluate(0., state);
-  // TODO: isApprox does not work when comparing against zero.
-  //EXPECT_TRUE(Vector2d(0., 0.).isApprox(state.getValue(), ));
+  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(state.getValue()));
+  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_TRUE(Vector2d(1.5, 1.5).isApprox(state.getValue()));
+  EXPECT_TRUE(Vector2d(2.5, 3.5).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(3., state);
-  EXPECT_TRUE(Vector2d(2.0, 2.0).isApprox(state.getValue()));
+  EXPECT_TRUE(Vector2d(3.0, 4.0).isApprox(state.getValue()));
 
   // Velocity
   tangentVector = timedTrajectory->evaluate(0.5, 1);
