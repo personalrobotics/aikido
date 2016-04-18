@@ -138,6 +138,22 @@ void PiecewiseLinearTrajectory::addWaypoint(double _t, const State *_state)
 }
 
 //=============================================================================
+const statespace::StateSpace::State* PiecewiseLinearTrajectory::getWaypoint(
+  size_t _index) const
+{
+  if (_index < mWaypoints.size())
+    return mWaypoints[_index].state;
+  else
+    throw std::domain_error("Waypoint index is out of bounds.");
+}
+
+//=============================================================================
+size_t PiecewiseLinearTrajectory::getNumWaypoints() const
+{
+  return mWaypoints.size();
+}
+
+//=============================================================================
 int PiecewiseLinearTrajectory::getWaypointIndexAfterTime(double _t) const
 {
   auto it = std::lower_bound(mWaypoints.begin(), mWaypoints.end(), _t);

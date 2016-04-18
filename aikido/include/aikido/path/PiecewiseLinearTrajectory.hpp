@@ -46,6 +46,9 @@ public:
   void addWaypoint(double _t,
                    const aikido::statespace::StateSpace::State *_state);
 
+  /// Gets the i-th waypoint.
+  const statespace::StateSpace::State* getWaypoint(size_t _index) const;
+
   /// Gets the number of waypoints.
   size_t getNumWaypoints() const;
 
