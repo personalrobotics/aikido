@@ -1,3 +1,4 @@
+#include "MockTranslationalRobot.hpp"
 #include <gtest/gtest.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -32,25 +33,15 @@ public:
   virtual void SetUp()
   {
     // Create robot
-    auto robot = dart::dynamics::Skeleton::create("robot");
-    auto jn_bn =
-        robot->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
+    auto robot = createTranslationalRobot();
 
     stateSpace = make_shared<StateSpace>(robot);
     interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
 
-    // Set bounds on the skeleton
-    robot->setPositionLowerLimit(0, -5);
-    robot->setPositionUpperLimit(0, 5);
-    robot->setPositionLowerLimit(1, -5);
-    robot->setPositionUpperLimit(1, 5);
-    robot->setPositionLowerLimit(2, 0);
-    robot->setPositionUpperLimit(2, 0);
-
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();
-    collConstraint = std::make_shared<aikido::constraint::CollisionConstraint>(
-        stateSpace, cd);
+    collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
+        stateSpace, Eigen::Vector3d(-1, -1, -1), Eigen::Vector3d(1, 1, 1));
 
     // Distance metric
     dmetric = aikido::distance::createDistanceMetricFor(stateSpace);
@@ -118,7 +109,8 @@ public:
   {
     OMPLPlannerTest::SetUp();
     gSpace = make_shared<AIKIDOStateSpace>(stateSpace, interpolator, dmetric,
-      sampler, boundsConstraint, boundsProjection);
+                                           sampler, boundsConstraint,
+                                           boundsProjection);
   }
   std::shared_ptr<AIKIDOStateSpace> gSpace;
 };
@@ -135,9 +127,9 @@ TEST_F(OMPLPlannerTest, Plan)
 
   // Plan
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-    startState, goalState, stateSpace, interpolator, std::move(collConstraint),
-    std::move(boundsConstraint), std::move(dmetric), std::move(sampler),
-    std::move(boundsProjection), 5.0);
+      startState, goalState, stateSpace, interpolator,
+      std::move(collConstraint), std::move(boundsConstraint),
+      std::move(dmetric), std::move(sampler), std::move(boundsProjection), 5.0);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
@@ -149,6 +141,15 @@ TEST_F(OMPLPlannerTest, Plan)
   traj->evaluate(traj->getDuration(), s0);
   r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
+
+  // Now walk through the trajectory and ensure every point is valid
+  auto tmp = stateSpace->createState();
+  for (double t = 0; t <= traj->getDuration(); t += 0.01) {
+    traj->evaluate(t, tmp);
+    EXPECT_TRUE(collConstraint->isSatisfied(tmp));
+    auto val = getStateValue(tmp);
+    std::cout << val[0] << " " << val[1] << " " << val[2] << std::endl;
+  }
 }
 
 TEST_F(AIKIDOGeometricStateSpaceTest, Dimension)

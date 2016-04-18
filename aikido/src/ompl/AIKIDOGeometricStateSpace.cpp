@@ -37,7 +37,9 @@ unsigned int AIKIDOGeometricStateSpace::getDimension() const
 /// For unbounded state spaces, this function can return infinity.
 double AIKIDOGeometricStateSpace::getMaximumExtent() const
 {
-  return std::numeric_limits<double>::infinity();
+    // SampleableSubSpace
+
+    return std::numeric_limits<double>::infinity();
 }
 
 /// Get a measure of the space (this can be thought of as a generalization of
