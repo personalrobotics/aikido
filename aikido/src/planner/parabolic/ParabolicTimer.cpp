@@ -103,8 +103,6 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
     stateSpace->compose(startStateInverse, currentState, relativeState);
     stateSpace->logMap(relativeState, tangentVector);
     milestones.emplace_back(toVector(tangentVector));
-
-    std::cout << "IN  | " << tangentVector.transpose() << std::endl;
   }
 
   // Compute the timing of the path.
@@ -156,17 +154,6 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
     problem.addConstantConstraint(1, 0, positionCurr - positionPrev);
     problem.addConstantConstraint(1, 1, velocityCurr);
     const auto spline = problem.fit();
-
-
-    std::cout
-      << "OUT | (t = " << timePrev
-      << ", q = " << positionPrev.transpose()
-      << ", qd = " << velocityPrev.transpose()
-      << ") -> (t = " << timeCurr
-      << ", q = " << positionCurr.transpose()
-      << ", qd = " << velocityCurr.transpose()
-      << ")"
-      << std::endl;
 
     // Add the ramp to the output trajectory.
     const auto& coefficients = spline.getCoefficients().front();
