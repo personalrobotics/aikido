@@ -6,25 +6,27 @@
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/constraint/TestableConstraint.hpp>
 
-namespace aikido {
-namespace ompl {
-
-class AIKIDOStateValidityChecker : public ::ompl::base::StateValidityChecker {
-
+namespace aikido
+{
+namespace ompl
+{
+class AIKIDOStateValidityChecker : public ::ompl::base::StateValidityChecker
+{
 public:
   AIKIDOStateValidityChecker(
       const ::ompl::base::SpaceInformationPtr &_si,
-      std::vector<constraint::TestableConstraintPtr>
-          _constraints);
+      std::vector<constraint::TestableConstraintPtr> _constraints);
 
   /// Return true if the state state is valid. Usually, this means at
   /// least collision checking and bounds checking
   virtual bool isValid(const ::ompl::base::State *_state) const;
 
 private:
-  std::vector<constraint::TestableConstraintPtr>
-      mConstraints;
+  std::vector<constraint::TestableConstraintPtr> mConstraints;
 };
+
+using AIKIDOStateValidityCheckerPtr =
+    std::shared_ptr<AIKIDOStateValidityChecker>;
 }
 }
 #endif

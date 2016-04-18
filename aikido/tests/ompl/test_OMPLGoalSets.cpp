@@ -1,3 +1,4 @@
+#include "OMPLTestHelpers.hpp"
 #include <random>
 #include <aikido/constraint/FkTestable.hpp>
 #include <aikido/constraint/TSR.hpp>
@@ -24,13 +25,6 @@ using namespace aikido::constraint;
 using namespace aikido::distance;
 using namespace aikido::statespace;
 using namespace dart::dynamics;
-
-using DefaultRNG = RNGWrapper<std::default_random_engine>;
-
-static std::unique_ptr<DefaultRNG> make_rng()
-{
-  return make_unique<RNGWrapper<std::default_random_engine>>(0);
-}
 
 class OMPLGoalSetTest : public ::testing::Test
 {

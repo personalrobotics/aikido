@@ -1,3 +1,4 @@
+#include "OMPLTestHelpers.hpp"
 #include <gtest/gtest.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -12,40 +13,20 @@
 
 using std::shared_ptr;
 using std::make_shared;
-using aikido::util::RNGWrapper;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::util::RNG;
-using dart::common::make_unique;
-using DefaultRNG = RNGWrapper<std::default_random_engine>;
 using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
 using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
 using AIKIDOStateSpace = aikido::ompl::AIKIDOGeometricStateSpace;
-
-static std::unique_ptr<DefaultRNG> make_rng()
-{
-  return make_unique<RNGWrapper<std::default_random_engine>>(0);
-}
 
 class OMPLPlannerTest : public ::testing::Test
 {
 public:
   virtual void SetUp()
   {
-    // Create robot
-    auto robot = dart::dynamics::Skeleton::create("robot");
-    auto jn_bn =
-        robot->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
+    auto robot = createTranslationalRobot();
 
     stateSpace = make_shared<StateSpace>(robot);
     interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
-
-    // Set bounds on the skeleton
-    robot->setPositionLowerLimit(0, -5);
-    robot->setPositionUpperLimit(0, 5);
-    robot->setPositionLowerLimit(1, -5);
-    robot->setPositionUpperLimit(1, 5);
-    robot->setPositionLowerLimit(2, 0);
-    robot->setPositionUpperLimit(2, 0);
 
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();
@@ -118,7 +99,8 @@ public:
   {
     OMPLPlannerTest::SetUp();
     gSpace = make_shared<AIKIDOStateSpace>(stateSpace, interpolator, dmetric,
-      sampler, boundsConstraint, boundsProjection);
+                                           sampler, boundsConstraint,
+                                           boundsProjection);
   }
   std::shared_ptr<AIKIDOStateSpace> gSpace;
 };
@@ -135,9 +117,9 @@ TEST_F(OMPLPlannerTest, Plan)
 
   // Plan
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-    startState, goalState, stateSpace, interpolator, std::move(collConstraint),
-    std::move(boundsConstraint), std::move(dmetric), std::move(sampler),
-    std::move(boundsProjection), 5.0);
+      startState, goalState, stateSpace, interpolator,
+      std::move(collConstraint), std::move(boundsConstraint),
+      std::move(dmetric), std::move(sampler), std::move(boundsProjection), 5.0);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();

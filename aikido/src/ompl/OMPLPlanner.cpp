@@ -69,7 +69,7 @@ void setValidityConstraints(
   constraints.push_back(_collConstraint);
   constraints.push_back(_boundsConstraint);
   ::ompl::base::StateValidityCheckerPtr vchecker =
-      boost::make_shared<AIKIDOStateValidityChecker>(_si, constraints);
+       boost::make_shared<AIKIDOStateValidityChecker>(_si, constraints);
   _si->setStateValidityChecker(vchecker);
 }
 }
