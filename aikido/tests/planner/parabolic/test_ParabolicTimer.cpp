@@ -139,6 +139,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   EXPECT_EQ(2, timedTrajectory->getNumSegments());
+  EXPECT_DOUBLE_EQ(2., timedTrajectory->getDuration());
 
   // Position.
   timedTrajectory->evaluate(0., state);
@@ -191,6 +192,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   EXPECT_EQ(3, timedTrajectory->getNumSegments());
+  EXPECT_DOUBLE_EQ(3., timedTrajectory->getDuration());
 
   // Position.
   timedTrajectory->evaluate(0., state);
@@ -236,3 +238,35 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
   tangentVector = timedTrajectory->evaluate(2.5, 2);
   EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector));
 }
+
+TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
+{
+  PiecewiseLinearTrajectory inputTrajectory(mStateSpace, mInterpolator);
+
+  auto state = mStateSpace->createState();
+  Eigen::VectorXd tangentVector;
+
+  // The optimal timing of this trajectory should be a trapezoid that:
+  // - accelerates at 1 rad/s^2 for 1 s
+  // - coasts at 1 m/s for 1 s
+  // - deaccelerates at -1 rad/s^2 for 1 s
+  //
+  // Note that the second dimension of the state space could result in a faster
+  // timing by executing a triangular velocity profile. This is not possible
+  // because the first dimension has a lower acceleration limit.
+  state.setValue(Vector2d(1., 2.));
+  inputTrajectory.addWaypoint(0., state);
+
+  state.setValue(Vector2d(3., 4.));
+  inputTrajectory.addWaypoint(2., state);
+
+  auto timedTrajectory = computeParabolicTiming(
+    inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
+
+  EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
+  EXPECT_EQ(3, timedTrajectory->getNumSegments());
+  EXPECT_DOUBLE_EQ(3., timedTrajectory->getDuration());
+}
+
+// TODO: Add a test for different velocity limits.
+// TODO: Add a test where DOFs have different ramp transition points.
