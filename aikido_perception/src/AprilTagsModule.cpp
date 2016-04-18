@@ -7,6 +7,7 @@
  */
 
 #include <aikido/perception/AprilTagsModule.hpp>
+#include <aikido/perception/shape_conversions.hpp>
 #include "dart/common/Console.h"
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
@@ -26,13 +27,13 @@ namespace perception{
 
 AprilTagsModule::AprilTagsModule(const ros::NodeHandle node,const std::string markerTopic, ConfigDataLoader* configData,
 								const dart::common::ResourceRetrieverPtr& resourceRetriever, const std::string urdfPath,	
-								const std::string destinationFrame, dart::dynamics::Frame* referenceLink):
+								const std::string referenceFrameId, dart::dynamics::Frame* referenceLink):
 		mNode(node),
 		mMarkerTopic(markerTopic),
 		mConfigData(configData),
 		mResourceRetrieverPtr(resourceRetriever),
 		mUrdfPath(urdfPath),
-		mDestinationFrame(destinationFrame),
+		mReferenceFrameId(referenceFrameId),
 		mReferenceLink(referenceLink)
 {
 }
@@ -61,52 +62,60 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 		}
 
 		std::string body_name;
-		Eigen::Matrix4d skel_offset;
+		Eigen::Isometry3d skel_offset;
 
 		//check if tag name is in database
 		if (mConfigData->getTagNameOffset(tag_name,body_name,skel_offset))
 		{
+
 			//Get orientation of marker
-			Eigen::Quaterniond orien(marker_transform.pose.orientation.w,
+			/*
+			Eigen::Quaterniond marker_orien(marker_transform.pose.orientation.w,
 									marker_transform.pose.orientation.x,
 									marker_transform.pose.orientation.y,
 									marker_transform.pose.orientation.z);
+			Eigen::Vector3d marker_pos(marker_transform.pose.position.x,marker_transform.pose.position.y,marker_transform.pose.position.z);
 
-			//Get in 4x4 pose form
-			Eigen::Vector3d qpos(marker_transform.pose.position.x,marker_transform.pose.position.y,marker_transform.pose.position.z);
-			Eigen::Matrix3d qrot(orien.toRotationMatrix());
-			Eigen::Matrix4d marker_pose;
-			marker_pose<< qrot,qpos,0,0,0,1;
+			//Get marker_pose from above data
+			Eigen::Isometry3d marker_pose = Eigen::Isometry3d::Identity();
+			marker_pose.rotate(marker_orien);
+			marker_pose.translation() = marker_pos;
+			*/
+			Eigen::Isometry3d marker_pose = aikido::perception::convertROSPoseToEigen(marker_transform.pose);
+
 
 			//For the frame-frame transform
 			tf::StampedTransform transform;
 			tf::TransformListener listener;
 
 			try{
-				listener.waitForTransform(mDestinationFrame,detection_frame,
+				listener.waitForTransform(mReferenceFrameId,detection_frame,
 					ros::Time(0),ros::Duration(_timeout));
 
-				listener.lookupTransform(mDestinationFrame,detection_frame,
+				listener.lookupTransform(mReferenceFrameId,detection_frame,
 					ros::Time(0), transform);
 			}
 			catch(tf::TransformException ex){
 				ROS_ERROR("%s",ex.what());
+				throw std::runtime_error("No transform!");
 			}
 
 			//Get frame pose
+			/*
 			tf::Quaternion tf_quat(transform.getRotation());
-
 			Eigen::Quaterniond frame_quat(tf_quat.getW(),tf_quat.getX(),tf_quat.getY(),tf_quat.getZ());
 			Eigen::Vector3d frame_trans(transform.getOrigin());
-			Eigen::Matrix3d frame_rot(frame_quat.toRotationMatrix());
-			Eigen::Matrix4d frame_pose;
-			frame_pose<<frame_rot,frame_trans,0,0,0,1;
+			
+			Eigen::Isometry3d frame_pose = Eigen::Isometry3d::Identity();
+			frame_pose.rotate(frame_quat);
+			frame_pose.translation() = frame_trans;
+			*/
+			Eigen::Isometry3d frame_pose = aikido::perception::convertStampedTransformToEigen(transform);
 
 			//Compose to get actual skeleton pose
-			Eigen::Isometry3d temp_pose;
-			temp_pose.matrix() = frame_pose * marker_pose;
-			Eigen::Isometry3d skel_pose;
-			skel_pose.matrix() = temp_pose * skel_offset;
+			Eigen::Isometry3d temp_pose = frame_pose * marker_pose;
+			Eigen::Isometry3d skel_pose = temp_pose * skel_offset;
+
 			Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
 			skel_pose = link_offset * skel_pose;
 
@@ -164,15 +173,14 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 			//Check if successful down-cast
 			if(freejtptr == NULL){
-				std::cerr << "Could not cast the joint of the body to a Free Joint " << std::endl;
-				throw std::bad_cast();
+				dtwarn << "Could not cast the joint of the body to a Free Joint so ignoring marker "<<tag_name << std::endl;
+				continue;
 			}
 
 			freejtptr->setTransform(skel_pose);
 
 			if(is_new_skel){
 				//Append to list
-				std::cout<<"Added "<<skel_to_update->getName()<<" to detections!"<<std::endl;
 				skeleton_list.push_back(skel_to_update);
 			}
 

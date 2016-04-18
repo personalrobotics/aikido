@@ -47,7 +47,7 @@ private:
 	std::string mUrdfPath;
 
 	///The desired reference frame for the object pose	
-	std::string mDestinationFrame;
+	std::string mReferenceFrameId;
 
 	///To retrieve resources from disk and from packages
 	dart::common::ResourceRetrieverPtr mResourceRetrieverPtr;

@@ -1,0 +1,22 @@
+#ifndef AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_
+#define AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_
+
+#include <Eigen/Dense>
+#include <geometry_msgs/Pose.h>
+#include <tf/LinearMath/Vector3.h>
+#include <tf/LinearMath/Quaternion.h>
+#include <tf/transform_listener.h>
+
+namespace aikido {
+
+namespace perception {
+
+Eigen::Isometry3d convertROSPoseToEigen(geometry_msgs::Pose const &p);
+Eigen::Isometry3d convertStampedTransformToEigen(tf::StampedTransform const &t);
+
+
+} //namespace perception
+
+} //namespace aikido
+
+#endif //AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_

@@ -62,11 +62,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_library(${PROJECT_NAME} SHARED
 	src/AprilTagsModule.cpp
+  src/shape_conversions.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
   ${DART_LIBRARIES}
   ${aikido_LIBRARIES}
+  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
   ${YamlCpp_LIBRARIES}
   ${tf_LIBRARIES}
@@ -77,3 +79,6 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+install(DIRECTORY include/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})

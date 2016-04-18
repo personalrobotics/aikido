@@ -52,12 +52,13 @@ public:
     }
 
     //Get name of object and pose for a given tag ID
-    bool getTagNameOffset(const std::string _tagName, std::string& body_name, Eigen::Matrix4d& body_offset)
+    bool getTagNameOffset(const std::string _tagName, std::string& body_name, Eigen::Isometry3d& body_offset)
     {
         YAML::Node name_offset = mTagData[_tagName];
         if(name_offset){
             body_name = name_offset["name"].as<std::string>();
-            body_offset = name_offset["offset"].as<Eigen::Matrix4d>();
+            Eigen::Matrix4d body_offset_mat = name_offset["offset"].as<Eigen::Matrix4d>();
+            body_offset.matrix() = body_offset_mat;
             return true;
         }
         else{
