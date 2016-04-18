@@ -88,6 +88,35 @@ TEST_F(ParabolicTimerTests, MaxAccelerationIsNegative_Throws)
   }, std::invalid_argument);
 }
 
+TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
+{
+  PiecewiseLinearTrajectory inputTrajectory(mStateSpace, mInterpolator);
+
+  auto state = mStateSpace->createState();
+  Eigen::VectorXd tangentVector;
+
+  // This is the same test as StraightLine_TriangularProfile, except that the
+  // trajectory starts at a non-zero time.
+  state.setValue(Vector2d(1., 2.));
+  inputTrajectory.addWaypoint(1., state);
+
+  state.setValue(Vector2d(2., 3.));
+  inputTrajectory.addWaypoint(3., state);
+
+  auto timedTrajectory = computeParabolicTiming(
+    inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
+
+  timedTrajectory->evaluate(1., state);
+  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
+
+  timedTrajectory->evaluate(2., state);
+  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
+
+  timedTrajectory->evaluate(3., state);
+  EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
+
+}
+
 TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
 {
   PiecewiseLinearTrajectory inputTrajectory(mStateSpace, mInterpolator);

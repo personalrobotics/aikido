@@ -140,7 +140,7 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
   evaluateAtTime(dynamicPath, timePrev, positionPrev, velocityPrev);
 
   auto outputTrajectory = make_unique<path::SplineTrajectory2>(
-    stateSpace, startState, timePrev);
+    stateSpace, startState, timePrev + _inputTrajectory.getStartTime());
 
   for (const auto timeCurr : transitionTimes)
   {
