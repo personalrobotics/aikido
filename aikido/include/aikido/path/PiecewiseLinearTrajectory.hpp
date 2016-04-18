@@ -46,6 +46,9 @@ public:
   void addWaypoint(double _t,
                    const aikido::statespace::StateSpace::State *_state);
 
+  /// Gets the number of waypoints.
+  size_t getNumWaypoints() const;
+
 private:
   // Pair defining a waypint in the trajectory
   struct Waypoint {
