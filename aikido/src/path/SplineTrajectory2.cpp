@@ -64,7 +64,7 @@ int SplineTrajectory2::getNumDerivatives() const
   for (const auto& segment : mSegments)
   {
     numDerivatives = std::max<int>(
-      numDerivatives, segment.mCoefficients.rows() - 1);
+      numDerivatives, segment.mCoefficients.cols() - 1);
   }
 
   return numDerivatives;

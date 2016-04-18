@@ -34,13 +34,90 @@ protected:
 TEST_F(SplineTrajectory2Test, getStateSpace)
 {
   SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+
   EXPECT_EQ(mStateSpace, trajectory.getStateSpace());
 }
 
 TEST_F(SplineTrajectory2Test, getNumDerivatives_IsEmpty_ReturnsZero)
 {
   SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+
   EXPECT_EQ(0, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTrajectory2Test, getNumDerivatives_IsConstant_ReturnsZero)
+{
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+  trajectory.addSegment(Vector2d(4., 5.), 1.);
+
+  EXPECT_EQ(0, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTrajectory2Test, getNumDerivatives_IsLinear_ReturnsOne)
+{
+  Matrix2d coefficients;
+  coefficients << 0., 1.,
+                  0., 2.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+  trajectory.addSegment(coefficients, 1.);
+
+  EXPECT_EQ(1, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTrajectory2Test, getNumDerivatives_IsQuadratic_ReturnsTwo)
+{
+  Eigen::Matrix<double, 2, 3> coefficients;
+  coefficients << 0., 0., 1.,
+                  0., 0., 2.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+  trajectory.addSegment(coefficients, 1.);
+
+  EXPECT_EQ(2, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTrajectory2Test, getNumDerivatives_IsCubic_ReturnsThree)
+{
+  Eigen::Matrix<double, 2, 4> coefficients;
+  coefficients << 0., 0., 0., 1.,
+                  0., 0., 0., 2.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+  trajectory.addSegment(coefficients, 1.);
+
+  EXPECT_EQ(3, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTrajectory2Test, getNumDerivatives_IsHomogeneous_ReturnsZero)
+{
+  Eigen::Matrix2d coefficients1, coefficients2;
+  coefficients1 << 0., 1.,
+                   0., 2.;
+  coefficients2 << 0., 3.,
+                   0., 4.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+  trajectory.addSegment(coefficients1, 1.);
+  trajectory.addSegment(coefficients2, 1.);
+
+  EXPECT_EQ(1, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTrajectory2Test, getNumDerivatives_IsHeterogeneous_ReturnsMax)
+{
+  Eigen::Matrix2d coefficients1;
+  Eigen::Matrix<double, 2, 3> coefficients2;
+  coefficients1 << 0., 1.,
+                   0., 2.;
+  coefficients2 << 0., 0., 3.,
+                   0., 0., 4.;
+
+  SplineTrajectory2 trajectory(mStateSpace, mStartState, 0.);
+  trajectory.addSegment(coefficients1, 2.);
+  trajectory.addSegment(coefficients2, 3.);
+
+  EXPECT_EQ(2, trajectory.getNumDerivatives());
 }
 
 TEST_F(SplineTrajectory2Test, getStartTime)
