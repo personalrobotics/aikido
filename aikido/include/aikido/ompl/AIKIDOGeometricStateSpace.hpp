@@ -105,6 +105,13 @@ private:
 };
 
 using AIKIDOGeometricStateSpacePtr = std::shared_ptr<AIKIDOGeometricStateSpace>;
+
+template <class Space>
+double getMaximumExtentFor(std::shared_ptr<Space> _stateSpace,
+                           std::shared_ptr<distance::DistanceMetric> _distanceMetric);
 }
 }
+
+#include "detail/AIKIDOGeometricStateSpace.hpp"
+
 #endif
