@@ -268,5 +268,6 @@ TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
   EXPECT_DOUBLE_EQ(3., timedTrajectory->getDuration());
 }
 
+// TODO: Add tests for unsupported StateSpace types.
 // TODO: Add a test for different velocity limits.
 // TODO: Add a test where DOFs have different ramp transition points.
