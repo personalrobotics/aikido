@@ -17,6 +17,11 @@ SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   : mTimes(_times),
     mSolution(_solution)
 {
+  if (mTimes.size() != mSolution.size() + 1)
+    throw std::invalid_argument("Mismatch in argument length.");
+
+  if (!std::is_sorted(mTimes.data(), mTimes.data() + mTimes.size()))
+    throw std::invalid_argument("Times are not monotonically increasing.");
 }
 
 template <
@@ -214,7 +219,7 @@ SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   mB.setZero();
 
   if (!std::is_sorted(mTimes.data(), mTimes.data() + mTimes.size())) {
-    throw std::runtime_error("Times are not monotonically increasing.");
+    throw std::invalid_argument("Times are not monotonically increasing.");
   }
 }
 

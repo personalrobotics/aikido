@@ -49,7 +49,7 @@ TEST_F(SplineNDTests, LinearSpline_constructor_LengthMismatch)
   LinearSpline::TimeVector times(2);
   times << 0., 2.;
 
-  EXPECT_THROW(LinearSpline(times, mCoefficientsA), std::runtime_error);
+  EXPECT_THROW(LinearSpline(times, mCoefficientsA), std::invalid_argument);
 }
 
 TEST_F(SplineNDTests, LinearSpline_constructor_TimesAreNotMonotone)
@@ -57,7 +57,7 @@ TEST_F(SplineNDTests, LinearSpline_constructor_TimesAreNotMonotone)
   LinearSpline::TimeVector times(3);
   times << 0., 2., 1.;
 
-  EXPECT_THROW(LinearSpline(times, mCoefficientsA), std::runtime_error);
+  EXPECT_THROW(LinearSpline(times, mCoefficientsA), std::invalid_argument);
 }
 
 TEST_F(SplineNDTests, LinearSpline_getTimes)
@@ -137,7 +137,7 @@ TEST_F(SplineNDTests, CubicSpline_constructor_LengthMismatch)
   CubicSpline::TimeVector times(3);
   times << 0., 2., 3.;
 
-  EXPECT_THROW(CubicSpline(times, mCoefficientsB), std::runtime_error);
+  EXPECT_THROW(CubicSpline(times, mCoefficientsB), std::invalid_argument);
 }
 
 TEST_F(SplineNDTests, CubicSpline_constructor_TimesAreNotMonotone)
@@ -145,7 +145,7 @@ TEST_F(SplineNDTests, CubicSpline_constructor_TimesAreNotMonotone)
   CubicSpline::TimeVector times(2);
   times << 1., 0.;
 
-  EXPECT_THROW(CubicSpline(times, mCoefficientsB), std::runtime_error);
+  EXPECT_THROW(CubicSpline(times, mCoefficientsB), std::invalid_argument);
 }
 
 TEST_F(SplineNDTests, CubicSpline_getTimes)
