@@ -1,13 +1,21 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
+#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO3StateSpace.hpp>
+#include <aikido/statespace/CompoundStateSpace.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 
 using Eigen::Vector2d;
+using Eigen::Vector3d;
 using aikido::path::PiecewiseLinearTrajectory;
 using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::CompoundStateSpace;
+using aikido::statespace::SO2StateSpace;
+using aikido::statespace::SO3StateSpace;
+using aikido::statespace::StateSpacePtr;
 
 class ParabolicTimerTests : public ::testing::Test
 {
@@ -268,6 +276,74 @@ TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
   EXPECT_DOUBLE_EQ(3., timedTrajectory->getDuration());
 }
 
-// TODO: Add tests for unsupported StateSpace types.
+TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
+{
+  auto stateSpace = std::make_shared<SO3StateSpace>();
+  auto state = stateSpace->createState();
+
+  PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
+
+  state.setQuaternion(Eigen::Quaterniond::Identity());
+  inputTrajectory.addWaypoint(0., state);
+
+  state.setQuaternion(Eigen::Quaterniond(
+    Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
+  inputTrajectory.addWaypoint(1., state);
+
+  EXPECT_THROW({
+    computeParabolicTiming(
+      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
+  }, std::invalid_argument);
+}
+
+TEST_F(ParabolicTimerTests, UnsupportedCompoundStateSpace_Throws)
+{
+  auto stateSpace = std::make_shared<CompoundStateSpace>(
+    std::vector<StateSpacePtr> { std::make_shared<SO3StateSpace>() });
+  auto state = stateSpace->createState();
+
+  PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
+
+  state.getSubStateHandle<SO3StateSpace>(0).setQuaternion(
+    Eigen::Quaterniond::Identity());
+  inputTrajectory.addWaypoint(0., state);
+
+  state.getSubStateHandle<SO3StateSpace>(0).setQuaternion(Eigen::Quaterniond(
+    Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
+  inputTrajectory.addWaypoint(1., state);
+
+  EXPECT_THROW({
+    computeParabolicTiming(
+      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
+  }, std::invalid_argument);
+}
+
+TEST_F(ParabolicTimerTests, SupportedCompoundStateSpace_DoesNotThrow)
+{
+  auto stateSpace = std::make_shared<CompoundStateSpace>(
+    std::vector<StateSpacePtr> {
+      std::make_shared<RealVectorStateSpace>(2),
+      std::make_shared<SO2StateSpace>(),
+    });
+  auto state = stateSpace->createState();
+
+  PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
+
+  state.getSubStateHandle<RealVectorStateSpace>(0).setValue(Vector2d::Zero());
+  state.getSubStateHandle<SO2StateSpace>(1).setAngle(0.);
+  inputTrajectory.addWaypoint(0., state);
+
+  state.getSubStateHandle<RealVectorStateSpace>(0).setValue(Vector2d::Zero());
+  state.getSubStateHandle<SO2StateSpace>(1).setAngle(M_PI_2);
+  inputTrajectory.addWaypoint(1., state);
+
+  EXPECT_NO_THROW({
+    computeParabolicTiming(
+      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
+  });
+
+}
+
+// TODO: Test what happens when two waypoints are coincident.
 // TODO: Add a test for different velocity limits.
 // TODO: Add a test where DOFs have different ramp transition points.
