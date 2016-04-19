@@ -36,3 +36,6 @@ target_link_libraries(test_PseudoInverse "${PROJECT_NAME}_util")
 
 aikido_add_test(test_VanDerCorput test_VanDerCorput.cpp)
 target_link_libraries(test_VanDerCorput "${PROJECT_NAME}_util")
+
+aikido_add_test(test_StepSequence test_StepSequence.cpp)
+target_link_libraries(test_StepSequence "${PROJECT_NAME}_util")

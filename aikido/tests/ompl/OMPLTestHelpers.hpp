@@ -2,11 +2,13 @@
 #define OMPL_TEST_HELPERS_H_
 
 #include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/dart.h>
+#include <ompl/base/State.h>
 
 using dart::common::make_unique;
 using aikido::util::RNGWrapper;
@@ -39,14 +41,26 @@ dart::dynamics::SkeletonPtr createTranslationalRobot()
 void setTranslationalState(
     const Eigen::Vector3d &_value,
     const aikido::statespace::MetaSkeletonStateSpacePtr &_stateSpace,
-    aikido::statespace::StateSpace::State *_state)
+    ::ompl::base::State *_state)
 {
+  auto st = _state->as<aikido::ompl::AIKIDOGeometricStateSpace::StateType>();
   auto subState =
       _stateSpace->getSubStateHandle<aikido::statespace::RealVectorStateSpace>(
-          _state, 0);
+          st->mState, 0);
   subState.setValue(_value);
 }
 
+Eigen::Vector3d getTranslationalState(
+    const aikido::statespace::MetaSkeletonStateSpacePtr &_stateSpace,
+    ::ompl::base::State *_state)
+{
+  auto st = _state->as<aikido::ompl::AIKIDOGeometricStateSpace::StateType>();
+  auto subState =
+      _stateSpace->getSubStateHandle<aikido::statespace::RealVectorStateSpace>(
+          st->mState, 0);
+  return subState.getValue();
+
+}
 class MockTranslationalRobotConstraint
     : public aikido::constraint::TestableConstraint
 {
@@ -70,7 +84,6 @@ public:
             ->getSubStateHandle<aikido::statespace::RealVectorStateSpace>(
                 _state, 0);
     auto val = subState.getValue();
-    std::cout << "Checking state: " << val[0] << " " << val[1] << " " << val[2] << std::endl;
 
     for (size_t i = 0; i < 3; ++i) {
       if (val[i] < mLowerBounds[i] || val[i] > mUpperBounds[i]) {
