@@ -18,7 +18,7 @@ using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
 using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
 using AIKIDOStateSpace = aikido::ompl::AIKIDOGeometricStateSpace;
 
-// Test planning for a translational robot in a world with a 1m x 1m x 1m
+// Test planning for a translational robot in a world with a 5m x 5m x 5m
 // box obstacle at origin
 class OMPLPlannerTest : public ::testing::Test
 {
@@ -32,8 +32,8 @@ public:
 
     // Collision constraint
     collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
-        stateSpace, Eigen::Vector3d(-0.5, -0.5, -0.5),
-        Eigen::Vector3d(0.5, 0.5, 0.5));
+        stateSpace, Eigen::Vector3d(-2.5, -2.5, -2.5),
+        Eigen::Vector3d(2.5, 2.5, 2.5));
 
     // Distance metric
     dmetric = aikido::distance::createDistanceMetricFor(stateSpace);
@@ -118,6 +118,14 @@ TEST_F(OMPLPlannerTest, SimplePlan)
   traj->evaluate(traj->getDuration(), s0);
   r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
+
+  // Now collision check the full trajectory
+  auto tmp = stateSpace->createState();
+  for(double t = 0; t <= traj->getDuration(); t+= 0.01){
+      traj->evaluate(t, tmp);
+      auto subState = tmp.getSubStateHandle<RealVectorStateSpace>(0);
+      EXPECT_TRUE(collConstraint->isSatisfied(tmp));
+  }
 }
 
 TEST_F(AIKIDOGeometricStateSpaceTest, Dimension)
