@@ -11,9 +11,16 @@ project(aikido)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
 
+#==============================================================================
+# Configuration Options
+#
+
 set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
+
+option(AIKIDO_COVERALLS "Enagle coveralls support" OFF)
+option(AIKIDO_COVERALLS_UPLOAD "Upload coveralls JSON output" OFF)
 
 #==============================================================================
 # Required Dependencies
@@ -34,16 +41,27 @@ include_directories(SYSTEM ${TinyXML2_INCLUDE_DIRS})
 # Register an Aikido library.
 #
 set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
+set_property(GLOBAL PROPERTY AIKIDO_SOURCES)
 
 function(aikido_add_library target_name)
   add_library("${target_name}" SHARED ${ARGN})
+  set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
 
   install(TARGETS "${target_name}"
     EXPORT "${PROJECT_NAME}Targets"
     LIBRARY DESTINATION "${LIBRARY_INSTALL_DIR}"
   )
 
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
+  # Compile a list of all source files to pass to coveralls. This function may
+  # be called from a subdirctory, so we first convert to absolute paths.
+  set(sources)
+  foreach(relative_source ${ARGN})
+    get_filename_component(absolute_source
+      "${CMAKE_CURRENT_SOURCE_DIR}/${relative_source}" ABSOLUTE)
+    list(APPEND sources "${absolute_source}")
+  endforeach()
+
+  set_property(GLOBAL APPEND PROPERTY AIKIDO_SOURCES ${sources})
 endfunction()
 
 #==============================================================================
@@ -80,6 +98,18 @@ add_subdirectory("tests" EXCLUDE_FROM_ALL)
 get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
 add_custom_target(tests DEPENDS ${all_tests})
 add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+
+#==============================================================================
+# Coveralls Support
+#
+if(AIKIDO_COVERALLS)
+  include(Coveralls)
+
+  coveralls_turn_on_coverage()
+
+  get_property(all_sources GLOBAL PROPERTY AIKIDO_SOURCES)
+  coveralls_setup("${all_sources}" ${AIKIDO_COVERALLS_UPLOAD})
+endif()
 
 #==============================================================================
 # Installation.
