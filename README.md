@@ -1,4 +1,4 @@
-# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.com/personalrobotics/aikido.svg?token=1MmAniN9fkMcwpRUTdFq&branch=master)](https://travis-ci.com/personalrobotics/aikido)
+# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.com/personalrobotics/aikido.svg?token=1MmAniN9fkMcwpRUTdFq&branch=master)](https://travis-ci.com/personalrobotics/aikido) [![Coverage Status](https://coveralls.io/repos/github/personalrobotics/aikido/badge.svg?branch=master)](https://coveralls.io/github/personalrobotics/aikido?branch=master)
 
 > :warning: **Warning:** AIKIDO is under heavy development. These instructions are
 > primarily for reference by the developers.
