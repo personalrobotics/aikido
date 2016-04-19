@@ -133,15 +133,15 @@ TEST_F(AIKIDOGeometricStateSpaceTest, EnforceBounds)
 {
   auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d badValue(-6, 16, 10);
-  setStateValue(badValue, state->mState);
+  setTranslationalState(badValue, stateSpace, state);
 
   gSpace->enforceBounds(state);
-  EXPECT_TRUE(getStateValue(state->mState).isApprox(Eigen::Vector3d(-5, 5, 0)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, state).isApprox(Eigen::Vector3d(-5, 5, 0)));
 
   Eigen::Vector3d goodValue(2, -3, 0);
-  setStateValue(goodValue, state->mState);
+  setTranslationalState(goodValue, stateSpace, state);
   gSpace->enforceBounds(state);
-  EXPECT_TRUE(getStateValue(state->mState).isApprox(goodValue));
+  EXPECT_TRUE(getTranslationalState(stateSpace, state).isApprox(goodValue));
 
   gSpace->freeState(state);
 }
@@ -150,11 +150,11 @@ TEST_F(AIKIDOGeometricStateSpaceTest, SatisfiesBounds)
 {
   auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d badValue(-6, 16, 10);
-  setStateValue(badValue, state->mState);
+  setTranslationalState(badValue, stateSpace, state);
   EXPECT_FALSE(gSpace->satisfiesBounds(state));
 
   Eigen::Vector3d goodValue(2, -3, 0);
-  setStateValue(goodValue, state->mState);
+  setTranslationalState(goodValue, stateSpace, state);
   EXPECT_TRUE(gSpace->satisfiesBounds(state));
 
   gSpace->freeState(state);
@@ -164,12 +164,12 @@ TEST_F(AIKIDOGeometricStateSpaceTest, CopyState)
 {
   auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d value(-2, 3, 0);
-  setStateValue(value, state->mState);
+  setTranslationalState(value, stateSpace, state);
 
   auto copyState = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   gSpace->copyState(copyState, state);
   EXPECT_TRUE(
-      getStateValue(copyState->mState).isApprox(getStateValue(state->mState)));
+      getTranslationalState(stateSpace, copyState).isApprox(getTranslationalState(stateSpace, state)));
 
   gSpace->freeState(state);
   gSpace->freeState(copyState);
@@ -179,11 +179,11 @@ TEST_F(AIKIDOGeometricStateSpaceTest, Distance)
 {
   auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d v1(-2, 3, 0);
-  setStateValue(v1, s1->mState);
+  setTranslationalState(v1, stateSpace, s1);
 
   auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d v2(3, 4, 0);
-  setStateValue(v2, s2->mState);
+  setTranslationalState(v2, stateSpace, s2);
 
   EXPECT_DOUBLE_EQ((v1 - v2).norm(), gSpace->distance(s1, s2));
 
@@ -195,14 +195,14 @@ TEST_F(AIKIDOGeometricStateSpaceTest, EqualStates)
 {
   auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d v1(-2, 3, 0);
-  setStateValue(v1, s1->mState);
+  setTranslationalState(v1, stateSpace, s1);
 
   auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d v2(3, 4, 0);
-  setStateValue(v2, s2->mState);
+  setTranslationalState(v2, stateSpace, s2);
 
   auto s3 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  setStateValue(v1, s3->mState);
+  setTranslationalState(v1, stateSpace, s3);
 
   EXPECT_TRUE(gSpace->equalStates(s1, s3));
   EXPECT_FALSE(gSpace->equalStates(s1, s2));
@@ -216,22 +216,22 @@ TEST_F(AIKIDOGeometricStateSpaceTest, Interpolate)
 {
   auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d v1(-2, 3, 0);
-  setStateValue(v1, s1->mState);
+  setTranslationalState(v1, stateSpace, s1);
 
   auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d v2(3, 4, 0);
-  setStateValue(v2, s2->mState);
+  setTranslationalState(v2, stateSpace, s2);
 
   auto s3 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
 
   gSpace->interpolate(s1, s2, 0, s3);
-  EXPECT_TRUE(getStateValue(s3->mState).isApprox(getStateValue(s1->mState)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s3).isApprox(getTranslationalState(stateSpace, s1)));
 
   gSpace->interpolate(s1, s2, 1, s3);
-  EXPECT_TRUE(getStateValue(s3->mState).isApprox(getStateValue(s2->mState)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s3).isApprox(getTranslationalState(stateSpace, s2)));
 
   gSpace->interpolate(s1, s2, 0.5, s3);
-  EXPECT_TRUE(getStateValue(s3->mState).isApprox(Eigen::Vector3d(0.5, 3.5, 0)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s3).isApprox(Eigen::Vector3d(0.5, 3.5, 0)));
 
   gSpace->freeState(s1);
   gSpace->freeState(s2);
@@ -247,7 +247,7 @@ TEST_F(AIKIDOGeometricStateSpaceTest, AllocStateSampler)
   // Ensure we get two different states if we sample twice
   ssampler->sampleUniform(s1);
   ssampler->sampleUniform(s2);
-  EXPECT_FALSE(getStateValue(s1->mState).isApprox(getStateValue(s2->mState)));
+  EXPECT_FALSE(getTranslationalState(stateSpace, s1).isApprox(getTranslationalState(stateSpace, s2)));
 
   EXPECT_THROW(ssampler->sampleUniformNear(s1, s2, 0.05), std::runtime_error);
   EXPECT_THROW(ssampler->sampleGaussian(s1, s2, 0.05), std::runtime_error);
@@ -260,10 +260,10 @@ TEST_F(AIKIDOGeometricStateSpaceTest, CopyAlloc)
 {
   auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
   Eigen::Vector3d value(-2, 3, 0);
-  setStateValue(value, s1->mState);
+  setTranslationalState(value, stateSpace, s1);
 
   auto s2 = gSpace->allocState(s1->mState)->as<AIKIDOStateSpace::StateType>();
-  EXPECT_TRUE(getStateValue(s1->mState).isApprox(getStateValue(s2->mState)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s1).isApprox(getTranslationalState(stateSpace, s2)));
 
   gSpace->freeState(s1);
   gSpace->freeState(s2);
