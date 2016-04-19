@@ -151,8 +151,15 @@ auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
 
   const Index numOutputs = getNumOutputs();
   const Index numCoeffs = getNumCoefficients();
+
+  // All higher-order derivatives are zero.
+  if (_derivative >= numCoeffs) {
+    return OutputVector::Zero(numOutputs);
+  }
+
   const CoefficientMatrix coefficientMatrix
     = SplineProblem::createCoefficientMatrix(numCoeffs);
+
 
   const CoefficientVector timeVector
     = SplineProblem::createTimeVector(_t, _derivative, numCoeffs);

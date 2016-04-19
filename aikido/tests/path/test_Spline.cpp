@@ -142,7 +142,7 @@ TEST_F(SplineNDTests, CubicSpline_constructor_LengthMismatch)
 
 TEST_F(SplineNDTests, CubicSpline_constructor_TimesAreNotMonotone)
 {
-  CubicSpline::TimeVector times(3);
+  CubicSpline::TimeVector times(2);
   times << 1., 0.;
 
   EXPECT_THROW(CubicSpline(times, mCoefficientsB), std::runtime_error);
