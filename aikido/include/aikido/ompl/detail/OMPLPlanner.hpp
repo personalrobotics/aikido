@@ -1,6 +1,7 @@
 #include "../AIKIDOGeometricStateSpace.hpp"
 #include "../AIKIDOStateValidityChecker.hpp"
 #include "../GoalRegion.hpp"
+#include "../OMPLMotionValidator.hpp"
 #include "../../path/PiecewiseLinearTrajectory.hpp"
 #include <ompl/geometric/PathGeometric.h>
 
@@ -52,7 +53,8 @@ path::TrajectoryPtr planOMPL(
     const distance::DistanceMetricPtr &_dmetric,
     const constraint::SampleableConstraintPtr &_sampler,
     const constraint::ProjectablePtr &_boundsProjector,
-    const double &_maxPlanTime)
+    const double &_maxPlanTime,
+    const double &_maxDistanceBtwValidityChecks)
 {
   // Ensure the constraint and state space match
   if (_stateSpace != _collConstraint->getStateSpace()) {
@@ -65,6 +67,10 @@ path::TrajectoryPtr planOMPL(
 
   // Validity
   setValidityConstraints(si, _collConstraint, _boundsConstraint);
+
+  // Motion validation
+  auto validator = boost::make_shared<OMPLMotionValidator>(si, _maxDistanceBtwValidityChecks);
+  si->setMotionValidator(validator);
 
   // Start and states
   auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
@@ -89,7 +95,8 @@ path::TrajectoryPtr planOMPL(
     const distance::DistanceMetricPtr &_dmetric,
     const constraint::SampleableConstraintPtr &_sampler,
     const constraint::ProjectablePtr &_boundsProjector,
-    const double &_maxPlanTime)
+    const double &_maxPlanTime,
+    const double &_maxDistanceBtwValidityChecks)
 {
   // Ensure the constraint and state space match
   if (_stateSpace != _collConstraint->getStateSpace()) {
@@ -102,6 +109,10 @@ path::TrajectoryPtr planOMPL(
 
   // Validity
   setValidityConstraints(si, _collConstraint, _boundsConstraint);
+
+  // Motion validator
+  auto validator = boost::make_shared<OMPLMotionValidator>(si, _maxDistanceBtwValidityChecks);
+  si->setMotionValidator(validator);
 
   // Start and states
   auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);

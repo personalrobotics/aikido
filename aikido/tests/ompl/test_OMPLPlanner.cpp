@@ -18,6 +18,8 @@ using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
 using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
 using AIKIDOStateSpace = aikido::ompl::AIKIDOGeometricStateSpace;
 
+// Test planning for a translational robot in a world with a 1m x 1m x 1m
+// box obstacle at origin
 class OMPLPlannerTest : public ::testing::Test
 {
 public:
@@ -29,9 +31,9 @@ public:
     interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
 
     // Collision constraint
-    auto cd = dart::collision::FCLCollisionDetector::create();
-    collConstraint = std::make_shared<aikido::constraint::CollisionConstraint>(
-        stateSpace, cd);
+    collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
+        stateSpace, Eigen::Vector3d(-0.5, -0.5, -0.5),
+        Eigen::Vector3d(0.5, 0.5, 0.5));
 
     // Distance metric
     dmetric = aikido::distance::createDistanceMetricFor(stateSpace);
@@ -67,22 +69,6 @@ public:
     return goalState;
   }
 
-  void setStateValue(const Eigen::Vector3d &value,
-                     aikido::statespace::StateSpace::State *state) const
-  {
-    auto subState =
-        stateSpace->getSubStateHandle<RealVectorStateSpace>(state, 0);
-    subState.setValue(value);
-  }
-
-  Eigen::Vector3d getStateValue(
-      aikido::statespace::StateSpace::State *state) const
-  {
-    auto subState =
-        stateSpace->getSubStateHandle<RealVectorStateSpace>(state, 0);
-    return subState.getValue();
-  }
-
   aikido::statespace::MetaSkeletonStateSpacePtr stateSpace;
   aikido::statespace::InterpolatorPtr interpolator;
   aikido::distance::DistanceMetricPtr dmetric;
@@ -105,7 +91,7 @@ public:
   std::shared_ptr<AIKIDOStateSpace> gSpace;
 };
 
-TEST_F(OMPLPlannerTest, Plan)
+TEST_F(OMPLPlannerTest, SimplePlan)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
@@ -119,7 +105,8 @@ TEST_F(OMPLPlannerTest, Plan)
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
       startState, goalState, stateSpace, interpolator,
       std::move(collConstraint), std::move(boundsConstraint),
-      std::move(dmetric), std::move(sampler), std::move(boundsProjection), 5.0);
+      std::move(dmetric), std::move(sampler), std::move(boundsProjection), 5.0,
+      0.1);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();

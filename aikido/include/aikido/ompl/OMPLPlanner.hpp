@@ -29,7 +29,8 @@ path::TrajectoryPtr planOMPL(
     const distance::DistanceMetricPtr &_dmetric,
     const constraint::SampleableConstraintPtr &_sampler,
     const constraint::ProjectablePtr &_boundsProjector,
-    const double &_maxPlanTime);
+    const double &_maxPlanTime,
+    const double &_maxDistanceBtwValidityChecks);
 
 template <class PlannerType>
 path::TrajectoryPtr planOMPL(
@@ -43,7 +44,8 @@ path::TrajectoryPtr planOMPL(
     const distance::DistanceMetricPtr &_dmetric,
     const constraint::SampleableConstraintPtr &_sampler,
     const constraint::ProjectablePtr &_boundsProjector,
-    const double &_maxPlanTime);
+    const double &_maxPlanTime,
+    const double &_maxDistanceBtwValidityChecks);
 
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     const statespace::StateSpacePtr &_stateSpace,

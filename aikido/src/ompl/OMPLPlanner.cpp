@@ -56,6 +56,7 @@ namespace ompl
 
   // Space Information
   auto si = boost::make_shared<::ompl::base::SpaceInformation>(sspace);
+
   return si;
 }
 
