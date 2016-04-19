@@ -14,10 +14,12 @@ list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 #==============================================================================
 # Configuration Options
 #
-
-set(INCLUDE_INSTALL_DIR "include")
-set(LIBRARY_INSTALL_DIR "lib")
-set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
+set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include"
+  CACHE PATH "header installation directory")
+set(LIBRARY_INSTALL_DIR "${CMAKE_INSTALL_PATH}/lib"
+  CACHE PATH "library installation directory")
+set(CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PATH}/lib/${PROJECT_NAME}/cmake"
+  CACHE PATH "CMake config installation directory")
 
 option(AIKIDO_COVERALLS "Enagle coveralls support" OFF)
 option(AIKIDO_COVERALLS_UPLOAD "Upload coveralls JSON output" OFF)
