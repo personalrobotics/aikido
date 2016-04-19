@@ -142,7 +142,7 @@ TEST_F(OMPLGoalSetTest, Plan)
       startState, goalTestable, goalSampleable, stateSpace, interpolator,
       std::move(collConstraint), std::move(boundsConstraint),
       std::move(dmetric), std::move(sampler), std::move(boundsProjection),
-      5.0);
+      5.0, 0.1);
 
 
   // Check the first waypoint
