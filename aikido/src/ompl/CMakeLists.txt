@@ -2,6 +2,7 @@ aikido_add_library("${PROJECT_NAME}_ompl"
   AIKIDOGeometricStateSpace.cpp
   AIKIDOStateSampler.cpp
   AIKIDOStateValidityChecker.cpp
+  CRRT.cpp
   OMPLPlanner.cpp
   GoalRegion.cpp
 )

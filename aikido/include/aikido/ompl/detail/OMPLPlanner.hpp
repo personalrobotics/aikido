@@ -13,16 +13,19 @@ path::TrajectoryPtr planOMPL(const ::ompl::base::SpaceInformationPtr &_si,
                              const ::ompl::base::ProblemDefinitionPtr &_pdef,
                              const statespace::StateSpacePtr &_stateSpace,
                              const statespace::InterpolatorPtr &_interpolator,
-                             const distance::DistanceMetricPtr &_dmetric,
+                             const constraint::ProjectablePtr &_trajConstraint,
                              const double &_maxPlanTime)
 {
   // Planner
-  ::ompl::base::PlannerPtr planner = boost::make_shared<PlannerType>(_si);
+  boost::shared_ptr<PlannerType> planner = boost::make_shared<PlannerType>(_si);
+  if (_trajConstraint) {
+    planner->setTrajectoryWideConstraint(std::move(_trajConstraint));
+  }
   planner->setProblemDefinition(_pdef);
   planner->setup();
   auto solved = planner->solve(_maxPlanTime);
   auto returnTraj = boost::make_shared<aikido::path::PiecewiseLinearTrajectory>(
-    _stateSpace, _interpolator);
+      _stateSpace, _interpolator);
 
   if (solved) {
     // Get the path
@@ -74,7 +77,8 @@ path::TrajectoryPtr planOMPL(
   auto goal = sspace->allocState(_goal);
   pdef->setStartAndGoalStates(start, goal);
 
-  return planOMPL<PlannerType>(si, pdef, _stateSpace, _interpolator, _dmetric, _maxPlanTime);
+  return planOMPL<PlannerType>(si, pdef, _stateSpace, _interpolator, _dmetric,
+                               _maxPlanTime);
 }
 
 template <class PlannerType>
@@ -114,7 +118,55 @@ path::TrajectoryPtr planOMPL(
       si, std::move(_goalTestable), _goalSampler->createSampleGenerator());
   pdef->setGoal(goalRegion);
 
-  return planOMPL<PlannerType>(si, pdef, _stateSpace, _interpolator, _dmetric, _maxPlanTime);
+  return planOMPL<PlannerType>(si, pdef, _stateSpace, _interpolator,
+                               constraint::ProjectablePtr(), _maxPlanTime);
+}
+template <class PlannerType>
+path::TrajectoryPtr planOMPLConstrained(
+    const statespace::StateSpace::State *_start,
+    const constraint::TestableConstraintPtr &_goalTestable,
+    const constraint::SampleableConstraintPtr &_goalSampler,
+    const statespace::StateSpacePtr &_stateSpace,
+    const statespace::InterpolatorPtr &_interpolator,
+    const constraint::TestableConstraintPtr &_collConstraint,
+    const constraint::TestableConstraintPtr &_boundsConstraint,
+    const distance::DistanceMetricPtr &_dmetric,
+    const constraint::SampleableConstraintPtr &_sampler,
+    const constraint::ProjectablePtr &_boundsProjector,
+    const constraint::ProjectablePtr &_trajConstraint,
+    const double &_maxPlanTime)
+{
+  // Ensure the constraint and state space match
+  if (_stateSpace != _collConstraint->getStateSpace()) {
+    throw std::invalid_argument(
+        "StateSpace of constraint not equal to planning StateSpace");
+  }
+
+  // Ensure the projection constraint and state space match
+  if (_stateSpace != _trajConstraint->getStateSpace()) {
+    throw std::invalid_argument(
+        "StateSpace of projection not equal to planning StateSpace");
+  }
+
+  auto si = getSpaceInformation(_stateSpace, _interpolator, _dmetric, _sampler,
+                                _boundsConstraint, _boundsProjector);
+
+  // Validity
+  setValidityConstraints(si, _collConstraint, _boundsConstraint);
+
+  // Start and states
+  auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace = boost::static_pointer_cast<AIKIDOGeometricStateSpace>(
+      si->getStateSpace());
+  auto start = sspace->allocState(_start);
+  pdef->addStartState(start);
+
+  auto goalRegion = boost::make_shared<GoalRegion>(
+      si, std::move(_goalTestable), _goalSampler->createSampleGenerator());
+  pdef->setGoal(goalRegion);
+
+  return planOMPL<PlannerType>(si, pdef, _stateSpace, _interpolator,
+                               _trajConstraint, _maxPlanTime);
 }
 }
 }
