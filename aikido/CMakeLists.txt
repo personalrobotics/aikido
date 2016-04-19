@@ -19,11 +19,11 @@ set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
-option(AIKIDO_COVERALLS "Enagle coveralls support" OFF)
-option(AIKIDO_COVERALLS_UPLOAD "Upload coveralls JSON output" OFF)
+option(COVERALLS "Enagle coveralls support" OFF)
+option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 
 # Enable coveralls. This must appear before any targets are created.
-if(AIKIDO_COVERALLS)
+if(COVERALLS)
   include(Coveralls)
   coveralls_turn_on_coverage()
 endif()
@@ -108,10 +108,10 @@ add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
 #==============================================================================
 # Coveralls.
 #
-if(AIKIDO_COVERALLS)
+if(COVERALLS)
   get_property(all_sources GLOBAL PROPERTY AIKIDO_SOURCES)
   coveralls_setup("${all_sources}"
-    ${AIKIDO_COVERALLS_UPLOAD}
+    ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake")
 endif()
 
