@@ -30,9 +30,9 @@ namespace perception{
 class AprilTagsModule : public virtual PerceptionModule
 {
 public:
-	AprilTagsModule(const ros::NodeHandle node, const std::string markerTopic, ConfigDataLoader* configData,
-					const dart::common::ResourceRetrieverPtr& resourceRetriever, const std::string urdfPath, 
-					const std::string destinationFrame, dart::dynamics::Frame* referenceLink);
+	AprilTagsModule(ros::NodeHandle node, std::string markerTopic, std::shared_ptr<ConfigDataLoader> configData,
+					dart::common::ResourceRetrieverPtr& resourceRetriever, std::string urdfPath, 
+					std::string destinationFrame, dart::dynamics::Frame* referenceLink);
 	virtual ~AprilTagsModule() = default;
 
 
@@ -56,7 +56,7 @@ private:
 	dart::dynamics::Frame* mReferenceLink;
 
 	///The pointer to the loader of configuration data
-	ConfigDataLoader *mConfigData;
+	std::shared_ptr<ConfigDataLoader> mConfigData;
 
 	///For the ROS node that will work with the April Tags module
 	ros::NodeHandle mNode;

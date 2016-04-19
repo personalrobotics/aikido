@@ -3,6 +3,7 @@
 
 #include <yaml-cpp/yaml.h>
 #include <Eigen/Dense>
+#include <ros/ros.h>
 
 namespace YAML {
 

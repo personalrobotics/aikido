@@ -12,6 +12,7 @@
   <depend>eigen</depend>
   <depend>dart</depend>
   <depend>boost</depend>
+  <depend>aikido</depend>
   <depend>tf</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>

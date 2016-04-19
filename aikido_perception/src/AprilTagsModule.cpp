@@ -25,9 +25,9 @@ namespace perception{
 
 //================================================================================================================================
 
-AprilTagsModule::AprilTagsModule(const ros::NodeHandle node,const std::string markerTopic, ConfigDataLoader* configData,
-								const dart::common::ResourceRetrieverPtr& resourceRetriever, const std::string urdfPath,	
-								const std::string referenceFrameId, dart::dynamics::Frame* referenceLink):
+AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic, std::shared_ptr<ConfigDataLoader> configData,
+								  dart::common::ResourceRetrieverPtr& resourceRetriever,  std::string urdfPath,	
+								  std::string referenceFrameId, dart::dynamics::Frame* referenceLink):
 		mNode(node),
 		mMarkerTopic(markerTopic),
 		mConfigData(configData),
@@ -158,14 +158,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			}
 
 
-			//Common stuff for old or new nodes
-			//Ignore if body has > 1 joint
-			if(skel_to_update->getNumJoints() != 1){
-				dtwarn << "Ignoring skeleton " << skel_to_update->getName()
-					<< "because it does not have 1 joint \n";
-				continue;
-			}
-
+			//Get root joint of skeleton
 			dart::dynamics::Joint* jtptr = skel_to_update->getJoint(0);
 
 			//Downcast Joint to FreeJoint
