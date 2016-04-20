@@ -1,15 +1,14 @@
-#ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACE_H
-#define AIKIDO_STATESPACE_REALVECTORSTATESPACE_H
+#ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_REALVECTORSTATESPACE_HPP_
 #include <Eigen/Core>
 #include "StateSpace.hpp"
 #include "ScopedState.hpp"
 
-namespace aikido
-{
-namespace statespace
-{
+namespace aikido {
+namespace statespace {
 
-// Defined in detail/RealVectorStateSpace-impl.hpp
+/// Defined in detail/RealVectorStateSpace-impl.hpp
+///
 template <class>
 class RealVectorStateHandle;
 
@@ -103,4 +102,4 @@ private:
 
 #include "detail/RealVectorStateSpace-impl.hpp"
 
-#endif
+#endif // ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACE_HPP_
