@@ -2,6 +2,7 @@
 #ifndef PR_CONSTRAINT_OMPL_PLANNERS_GEOMETRIC_PLANNERS_RRT_CRRT_
 #define PR_CONSTRAINT_OMPL_PLANNERS_GEOMETRIC_PLANNERS_RRT_CRRT_
 
+#include <ompl/base/Planner.h>
 #include <ompl/geometric/planners/PlannerIncludes.h>
 #include <ompl/datastructures/NearestNeighbors.h>
 
@@ -39,6 +40,9 @@ public:
   ::ompl::base::PlannerStatus solve(
       const ::ompl::base::PlannerTerminationCondition &ptc) override;
 
+  /// Solve the motion planning problem in the given time
+  ::ompl::base::PlannerStatus solve(double solveTime);
+
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
   void clear(void) override;
@@ -64,7 +68,7 @@ public:
 
   /// Set a projectable constraint to be applied throughout the trajectory
   void setTrajectoryWideConstraint(
-      const std::shared_ptr<constraint::Projectable> &_projectable);
+      const constraint::ProjectablePtr &_projectable);
 
   /// Set a nearest neighbors data structure
   template <template <typename T> class NN>
@@ -137,7 +141,7 @@ protected:
   Motion *lastGoalMotion_;
 
   /** \brief The trajectory-wide PR holonomic constraint to be followed */
-  std::shared_ptr<constraint::Projectable> cons_;
+  constraint::ProjectablePtr cons_;
 };
 }
 }

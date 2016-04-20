@@ -79,7 +79,7 @@ double CRRT::getRange() const { return maxDistance_; }
 
 //=============================================================================
 void CRRT::setTrajectoryWideConstraint(
-    const std::shared_ptr<constraint::Projectable> &_projectable)
+    const constraint::ProjectablePtr &_projectable)
 {
   cons_ = std::move(_projectable);
 }
@@ -144,7 +144,7 @@ void CRRT::freeMemory(void)
   ::ompl::base::State *pstate = si_->allocState(); /* projected state */
 
   while (ptc == false) {
-    /* sample random state (with goal biasing) */
+     /* sample random state (with goal biasing) */
     if (goal_s && rng_.uniform01() < goalBias_ && goal_s->canSample())
       goal_s->sampleGoal(rstate);
     else
@@ -222,8 +222,12 @@ void CRRT::freeMemory(void)
   delete rmotion;
 
   // OMPL_INFORM("%s: Created %u states", getName().c_str(), nn_->size());
-
   return ::ompl::base::PlannerStatus(solved, approximate);
+}
+
+//=============================================================================
+::ompl::base::PlannerStatus CRRT::solve(double solveTime) {
+    return solve(::ompl::base::timedPlannerTerminationCondition(solveTime));//, std::min(solveTime/100., 0.1)));
 }
 }
 }
