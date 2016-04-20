@@ -1,13 +1,12 @@
-#ifndef AIKIDO_STATESPACE_COMPOUNDSTATESPACE_H
-#define AIKIDO_STATESPACE_COMPOUNDSTATESPACE_H
+#ifndef AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
 #include <vector>
 #include "StateSpace.hpp"
 #include "ScopedState.hpp"
 
-namespace aikido
-{
-namespace statespace
-{
+namespace aikido {
+namespace statespace {
+
 // Defined in detail/CompoundStateSpace.hpp
 template <class>
 class CompoundStateHandle;
@@ -118,4 +117,4 @@ private:
 
 #include "detail/CompoundStateSpace.hpp"
 
-#endif
+#endif // AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
