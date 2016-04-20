@@ -39,8 +39,11 @@ statespace::StateSpacePtr TestableSubSpace::getStateSpace() const
 
 //=============================================================================
 bool TestableSubSpace::isSatisfied(
-    const aikido::statespace::StateSpace::State* state) const
+    const aikido::statespace::StateSpace::State* _state) const
 {
+  const auto state
+    = static_cast<const statespace::CompoundStateSpace::State*>(_state);
+
   for (size_t i = 0; i < mStateSpace->getNumStates(); ++i) {
     auto subState = mStateSpace->getSubState<>(state, i);
     if (!mConstraints[i]->isSatisfied(subState)) {

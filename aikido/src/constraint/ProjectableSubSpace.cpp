@@ -52,7 +52,7 @@ bool ProjectableSubSpace::project(const statespace::StateSpace::State* _s,
 
   for (size_t i = 0; i < mConstraints.size(); ++i)
   {
-    auto outSubState = mStateSpace->getSubState<>(_out, i);
+    auto outSubState = mStateSpace->getSubState<>(out, i);
     if (!mConstraints[i]->project(_s, outSubState))
       return false;
   }

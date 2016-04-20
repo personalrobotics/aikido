@@ -82,7 +82,7 @@ std::shared_ptr<Space> CompoundStateSpace::getSubSpace(size_t _index) const
 //=============================================================================
 template <class Space>
 typename Space::State* CompoundStateSpace::getSubState(
-  StateSpace::State* _state, size_t _index) const
+  State* _state, size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubSpace(_index);
@@ -94,7 +94,7 @@ typename Space::State* CompoundStateSpace::getSubState(
 //=============================================================================
 template <class Space>
 const typename Space::State* CompoundStateSpace::getSubState(
-  const StateSpace::State* _state, size_t _index) const
+  const State* _state, size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubSpace(_index);
@@ -106,7 +106,7 @@ const typename Space::State* CompoundStateSpace::getSubState(
 //=============================================================================
 template <class Space>
 typename Space::StateHandle CompoundStateSpace::getSubStateHandle(
-  StateSpace::State* _state, size_t _index) const
+  State* _state, size_t _index) const
 {
   return typename Space::StateHandle(
     getSubSpace<Space>(_index).get(), getSubState<Space>(_state, _index));
@@ -115,7 +115,7 @@ typename Space::StateHandle CompoundStateSpace::getSubStateHandle(
 //=============================================================================
 template <class Space>
 typename Space::StateHandleConst CompoundStateSpace::getSubStateHandle(
-  const StateSpace::State* _state, size_t _index) const
+  const State* _state, size_t _index) const
 {
   return typename Space::StateHandleConst(
     getSubSpace<Space>(_index).get(), getSubState<Space>(_state, _index));

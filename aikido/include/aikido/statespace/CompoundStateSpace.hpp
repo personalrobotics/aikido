@@ -62,8 +62,7 @@ public:
   /// \param _index in the range [ 0, \c getNumStates() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
-  typename Space::State *getSubState(StateSpace::State *_state,
-                                     size_t _index) const;
+  typename Space::State *getSubState(State *_state, size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index. This
   /// is an overload for when \c _state is \c const.
@@ -73,8 +72,8 @@ public:
   /// \param _index in the range [ 0, \c getNumStates() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
-  const typename Space::State *getSubState(const StateSpace::State *_state,
-                                           size_t _index) const;
+  const typename Space::State *getSubState(
+    const State *_state, size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index and
   /// wraps it in a \c Space::StateHandle helper class.
@@ -84,8 +83,8 @@ public:
   /// \param _index in the range [ 0, \c getNumStates() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
-  typename Space::StateHandle getSubStateHandle(StateSpace::State *_state,
-                                                size_t _index) const;
+  typename Space::StateHandle getSubStateHandle(
+    State *_state, size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index and
   /// wraps it in a \c Space::ConstStateHandle helper class. This is an
@@ -97,7 +96,7 @@ public:
   /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::StateHandleConst getSubStateHandle(
-      const StateSpace::State *_state, size_t _index) const;
+      const State *_state, size_t _index) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
