@@ -45,10 +45,11 @@ public:
     statespace::StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  Eigen::VectorXd getDerivative(
-    const statespace::StateSpace::State* _from,
-    const statespace::StateSpace::State* _to,
-    size_t _derivative, double _alpha) const override;
+  void getDerivative(
+      const statespace::StateSpace::State* _from,
+      const statespace::StateSpace::State* _to,
+      size_t _derivative, double _alpha,
+      Eigen::VectorXd& _tangentVector) const override;
 
 private:
   statespace::StateSpacePtr mStateSpace;

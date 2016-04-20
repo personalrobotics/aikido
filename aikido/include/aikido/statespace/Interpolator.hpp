@@ -40,10 +40,12 @@ public:
   /// \param _to end state in \c getStateSpace()
   /// \param _derivative order of the derivative to compute
   /// \param _alpha path parameter in the range [0, 1]
-  virtual Eigen::VectorXd getDerivative(
+  /// \param[out] _tangentVector output element of the tangent space
+  virtual void getDerivative(
       const statespace::StateSpace::State* _from,
       const statespace::StateSpace::State* _to,
-      size_t _derivative, double _alpha) const = 0;
+      size_t _derivative, double _alpha,
+      Eigen::VectorXd& _tangentVector) const = 0;
 };
 
 using InterpolatorPtr = std::shared_ptr<Interpolator>;
