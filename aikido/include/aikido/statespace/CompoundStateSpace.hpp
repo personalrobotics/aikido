@@ -126,11 +126,15 @@ public:
   void copyState(StateSpace::State* _destination,
                  const StateSpace::State* _source) const override;
 
-  // Documentation inherited.
+  /// Exponential mapping of Lie algebra element to a Lie group element. The
+  /// tangent space is parameterized by stacking the tangent vector of each
+  /// subspace in the order the subspaces are listed in.
   void expMap(
     const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
-  // Documentation inherited
+  /// Log mapping of Lie group element to a Lie algebra element. The tangent
+  /// space is parameterized by stacking the tangent vector of each subspace
+  /// in the order the subspaces are listed in.
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
 
