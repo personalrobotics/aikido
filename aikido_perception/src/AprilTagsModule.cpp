@@ -82,7 +82,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				listener.lookupTransform(mReferenceFrameId,detection_frame,
 					ros::Time(0), transform);
 			}
-			catch(tf::TransformException ex){
+			catch(const tf::TransformException& ex){
 				ROS_ERROR("%s",ex.what());
 				throw std::runtime_error("No transform!");
 			}
