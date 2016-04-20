@@ -85,6 +85,8 @@ private:
   std::vector<Waypoint> mWaypoints;
 };
 
+using PiecewiseLinearTrajectoryPtr = std::shared_ptr<PiecewiseLinearTrajectory>;
+
 } // namespace path
 } // namespace aikido
 

@@ -75,24 +75,22 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
                        interpolator, &planningResult);
 
   auto subSpace = stateSpace->getSubSpace<SO2StateSpace>(0);
-  EXPECT_EQ(2, traj.size());
+  EXPECT_EQ(2, traj->getNumWaypoints());
 
   auto startValue =
       startState->getSubStateHandle<SO2StateSpace>(0).getRotation();
 
-  auto traj0 = stateSpace->getSubStateHandle<SO2StateSpace>(
-                               static_cast<MetaSkeletonStateSpace::State*>(
-                                   traj.at(0).getState()),
-                               0).getRotation();
+  auto tmpState = stateSpace->createState();
+  traj->evaluate(0, tmpState);
+  auto traj0 =
+      stateSpace->getSubStateHandle<SO2StateSpace>(tmpState, 0).getRotation();
 
   EXPECT_TRUE(startValue.isApprox(traj0));
 
   auto goalValue = goalState->getSubStateHandle<SO2StateSpace>(0).getRotation();
 
-  auto traj1 = stateSpace->getSubStateHandle<SO2StateSpace>(
-                               static_cast<MetaSkeletonStateSpace::State*>(
-                                   traj.at(traj.size() - 1).getState()),
-                               0).getRotation();
+  traj->evaluate(traj->getDuration(), tmpState);
+  auto traj1 = stateSpace->getSubStateHandle<SO2StateSpace>(tmpState,0).getRotation();
 
   EXPECT_TRUE(goalValue.isApprox(traj1))
       << "on success final element of trajectory should be goal state.";
@@ -102,5 +100,5 @@ TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
   auto traj = planSnap(*startState, *goalState, stateSpace, failingConstraint,
                        interpolator, &planningResult);
-  EXPECT_EQ(0, traj.size());  // TODO boost::optional
+  EXPECT_EQ(0, traj->getNumWaypoints());  // TODO boost::optional
 }
