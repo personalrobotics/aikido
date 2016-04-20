@@ -26,13 +26,12 @@ namespace perception{
 //================================================================================================================================
 
 AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic, std::shared_ptr<ConfigDataLoader> configData,
-								  dart::common::ResourceRetrieverPtr& resourceRetriever,  std::string urdfPath,	
+								  const dart::common::ResourceRetrieverPtr& resourceRetriever,	
 								  std::string referenceFrameId, dart::dynamics::Frame* referenceLink):
 		mNode(node),
 		mMarkerTopic(markerTopic),
 		mConfigData(configData),
-		mResourceRetrieverPtr(resourceRetriever),
-		mUrdfPath(urdfPath),
+		mResourceRetriever(resourceRetriever),
 		mReferenceFrameId(referenceFrameId),
 		mReferenceLink(referenceLink)
 {
@@ -46,13 +45,12 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 	visualization_msgs::MarkerArrayConstPtr marker_message
  			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(mMarkerTopic,mNode,ros::Duration(_timeout));
 
-	for(size_t i=0; i < marker_message->markers.size(); i++)
+	for (const auto& marker_transform : marker_message->markers)
 	{
 		//Get marker, tag ID, and detection transform name 
-		visualization_msgs::Marker marker_transform = marker_message->markers[i];
-		ros::Time marker_stamp = marker_transform.header.stamp;
-		std::string tag_name = marker_transform.ns;
-		std::string detection_frame(marker_transform.header.frame_id);
+		const auto& marker_stamp = marker_transform.header.stamp;
+		const auto& tag_name = marker_transform.ns;
+		const auto& detection_frame = marker_transform.header.frame_id;
 
 		if(marker_stamp < timestamp){
 			dtwarn << "Marker stamp " << marker_stamp<< " for " << tag_name 
@@ -61,26 +59,15 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			continue;
 		}
 
-		std::string body_name;
+		std::string skel_name;
 		Eigen::Isometry3d skel_offset;
+		dart::common::Uri skel_resource;
 
 		//check if tag name is in database
-		if (mConfigData->getTagNameOffset(tag_name,body_name,skel_offset))
+		if (mConfigData->getTagNameOffset(tag_name,skel_name,skel_resource,skel_offset))
 		{
 
 			//Get orientation of marker
-			/*
-			Eigen::Quaterniond marker_orien(marker_transform.pose.orientation.w,
-									marker_transform.pose.orientation.x,
-									marker_transform.pose.orientation.y,
-									marker_transform.pose.orientation.z);
-			Eigen::Vector3d marker_pos(marker_transform.pose.position.x,marker_transform.pose.position.y,marker_transform.pose.position.z);
-
-			//Get marker_pose from above data
-			Eigen::Isometry3d marker_pose = Eigen::Isometry3d::Identity();
-			marker_pose.rotate(marker_orien);
-			marker_pose.translation() = marker_pos;
-			*/
 			Eigen::Isometry3d marker_pose = aikido::perception::convertROSPoseToEigen(marker_transform.pose);
 
 
@@ -100,16 +87,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				throw std::runtime_error("No transform!");
 			}
 
-			//Get frame pose
-			/*
-			tf::Quaternion tf_quat(transform.getRotation());
-			Eigen::Quaterniond frame_quat(tf_quat.getW(),tf_quat.getX(),tf_quat.getY(),tf_quat.getZ());
-			Eigen::Vector3d frame_trans(transform.getOrigin());
-			
-			Eigen::Isometry3d frame_pose = Eigen::Isometry3d::Identity();
-			frame_pose.rotate(frame_quat);
-			frame_pose.translation() = frame_trans;
-			*/
+			//Get the transform as a pose matrix
 			Eigen::Isometry3d frame_pose = aikido::perception::convertStampedTransformToEigen(transform);
 
 			//Compose to get actual skeleton pose
@@ -122,7 +100,6 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			//Check if skel in skel_list
 			//If there then update pose
 			//If not then append skeleton
-			std::string skel_name = body_name.substr(0,body_name.find('.'));
 			skel_name.append(std::to_string(marker_transform.id));
 			bool is_new_skel;
 
@@ -139,15 +116,12 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			if (it == std::end(skeleton_list)){
 				//New skeleton
 				is_new_skel = true;
-				std::string body_path(mUrdfPath);
-				body_path.append(body_name);
 				dart::utils::DartLoader urdfLoader;
-				
 				skel_to_update = 
-					urdfLoader.parseSkeleton(body_path,mResourceRetrieverPtr);
+					urdfLoader.parseSkeleton(skel_resource,mResourceRetriever);
 				
 				if(!skel_to_update)
-					std::cout<<"Empty skel ptr!"<<std::endl;
+					dtwarn<<"Empty SkeletonPtr for "<<skel_name<<std::endl;
 				skel_to_update->setName(skel_name);
 
 			}

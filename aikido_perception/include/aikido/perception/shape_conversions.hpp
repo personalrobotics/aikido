@@ -1,3 +1,11 @@
+/** 
+ * @file shape_conversions.hpp
+ * @author Shushman Choudhury
+ * @date Apr 20, 2016
+ * @brief The header for the utility file that has methods to convert
+ * between ROS and Eigen Pose.
+ */
+
 #ifndef AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_
 #define AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_
 

@@ -31,7 +31,7 @@ class AprilTagsModule : public virtual PerceptionModule
 {
 public:
 	AprilTagsModule(ros::NodeHandle node, std::string markerTopic, std::shared_ptr<ConfigDataLoader> configData,
-					dart::common::ResourceRetrieverPtr& resourceRetriever, std::string urdfPath, 
+					const dart::common::ResourceRetrieverPtr& resourceRetriever,
 					std::string destinationFrame, dart::dynamics::Frame* referenceLink);
 	virtual ~AprilTagsModule() = default;
 
@@ -43,14 +43,11 @@ private:
 	///The name of the ROS topic to read marker info from
 	std::string mMarkerTopic;	
 
-	///The path to the folder of URDF files
-	std::string mUrdfPath;
-
 	///The desired reference frame for the object pose	
 	std::string mReferenceFrameId;
 
 	///To retrieve resources from disk and from packages
-	dart::common::ResourceRetrieverPtr mResourceRetrieverPtr;
+	dart::common::ResourceRetrieverPtr mResourceRetriever;
 	
 	///The reference frame of HERB to transform with respect to
 	dart::dynamics::Frame* mReferenceLink;
