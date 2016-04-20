@@ -89,7 +89,7 @@ struct createDistanceMetricFor_impl<statespace::CompoundStateSpace> {
     std::vector<std::shared_ptr<DistanceMetric> > metrics;
     metrics.reserve(_sspace->getNumStates());
     for (size_t i = 0; i < _sspace->getNumStates(); ++i) {
-      auto subspace = _sspace->getSubSpacePtr<>(i);
+      auto subspace = _sspace->getSubSpace<>(i);
       auto metric =
           createDistanceMetricFor_wrapper::create(std::move(subspace));
       metrics.emplace_back(metric.release());

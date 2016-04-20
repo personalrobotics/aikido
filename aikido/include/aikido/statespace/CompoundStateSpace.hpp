@@ -34,7 +34,8 @@ public:
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   /// Construct the Cartesian product of a vector of subspaces.
-  explicit CompoundStateSpace(const std::vector<StateSpacePtr> &_subspaces);
+  /// \param subspaces vector of subspaces
+  explicit CompoundStateSpace(std::vector<StateSpacePtr> _subspaces);
 
   /// Helper function to create a ScopedState.
   ScopedState createState() const;
@@ -43,12 +44,9 @@ public:
   size_t getNumStates() const;
 
   /// Gets subspace by index.
+  /// \param index in the range [0, getNumStates()].
   template <class Space = StateSpace>
   std::shared_ptr<Space> getSubSpace(size_t _index) const;
-
-  /// Gets subspace shared ptr by index.
-  template <class Space = StateSpace>
-  const StateSpacePtr getSubSpacePtr(size_t _index) const;
 
   /// Gets state of type by subspace index.
   template <class Space = StateSpace>
