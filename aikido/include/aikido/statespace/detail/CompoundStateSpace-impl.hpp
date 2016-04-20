@@ -3,6 +3,8 @@
 namespace aikido {
 namespace statespace {
 
+/// \c StateHandle for a \c CompoundStateSpace. The template parameter is
+/// necessary to support both \c const and non-<tt>const</tt> states.
 template <class _QualifiedState>
 class CompoundStateHandle 
   : public statespace::StateHandle<CompoundStateSpace, _QualifiedState>
@@ -15,14 +17,14 @@ public:
   using typename statespace::StateHandle<
     CompoundStateSpace, _QualifiedState>::QualifiedState;
 
-  /// Construct a \c CompoundStateHandle initialized to \c nullptr.
+  /// Construct and initialize to \c nullptr.
   CompoundStateHandle()
   {
   }
 
-  /// Construct a \c CompoundStateHandle for \c _state in \c _space.
+  /// Construct a handle for \c _state in \c _space.
   ///
-  /// \param _space \c CompoundStateSpace that created \c _state
+  /// \param _space state space that created \c _state
   /// \param _state state created by \c _space
   CompoundStateHandle(const StateSpace* _space, State* _state)
     : statespace::StateHandle<CompoundStateSpace, QualifiedState>(

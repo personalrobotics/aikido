@@ -8,6 +8,8 @@ namespace aikido
 {
 namespace statespace
 {
+
+// Defined in detail/RealVectorStateSpace-impl.hpp
 template <class>
 class RealVectorStateHandle;
 
@@ -15,7 +17,7 @@ class RealVectorStateHandle;
 class RealVectorStateSpace : public virtual StateSpace
 {
 public:
-  /// Point in a RealVectorStateSpace.
+  /// Point in a \c RealVectorStateSpace.
   class State : public StateSpace::State
   {
   protected:
@@ -31,16 +33,26 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
-  /// Constructs an unbounded RealVectorStateSpace.
+  /// Constructs a \c _dimension dimensional real vector space.
+  ///
+  /// \param _dimension dimension of the space
   explicit RealVectorStateSpace(int _dimension);
 
-  /// Helper function to create a ScopedState.
+  /// Helper function to create a \c ScopedState.
+  ///
+  /// \return new \c ScopedState
   ScopedState createState() const;
 
-  /// Gets the value stored in a RealVectorStateSpace::State.
+  /// Gets the real vector stored in a \c State.
+  ///
+  /// \param _state a \c State in this state space
+  /// \return real vector represented by \c _state
   Eigen::Map<const Eigen::VectorXd> getValue(const State *_state) const;
 
-  /// Gets the value stored in a RealVectorStateSpace::State.
+  /// Sets the real vector stored in a \c State.
+  ///
+  /// \param _state a \c State in this state space
+  /// \param _value real vector to store in \c _state
   void setValue(State *_state, const Eigen::VectorXd &_value) const;
 
   // Documentation inherited.
@@ -86,9 +98,9 @@ private:
   int mDimension;
 };
 
-}  // namespace statespace
-}  // namespace aikido
+} // namespace statespace
+} // namespace aikido
 
-#include "detail/RealVectorStateSpace.hpp"
+#include "detail/RealVectorStateSpace-impl.hpp"
 
 #endif

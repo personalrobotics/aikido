@@ -39,7 +39,7 @@ public:
 
   /// Helper function to create a \c ScopedState.
   ///
-  /// \return new \c CompoundStateSpace::ScopedState
+  /// \return new \c ScopedState
   ScopedState createState() const;
 
   /// Gets number of subspaces.
