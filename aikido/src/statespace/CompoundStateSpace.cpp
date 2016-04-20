@@ -6,15 +6,12 @@ namespace aikido
 namespace statespace
 {
 //=============================================================================
-CompoundStateSpace::CompoundStateSpace(
-    const std::vector<StateSpacePtr> &_subspaces)
-    : mSubspaces(_subspaces)
-    , mOffsets(_subspaces.size(), 0u)
-    , mSizeInBytes(0u)
+CompoundStateSpace::CompoundStateSpace(std::vector<StateSpacePtr> _subspaces)
+  : mSubspaces(std::move(_subspaces))
+  , mOffsets(mSubspaces.size(), 0u)
+  , mSizeInBytes(0u)
 {
   if (!mSubspaces.empty()) {
-    mOffsets[0] = 0;
-
     for (size_t i = 1; i < mSubspaces.size(); ++i)
       mOffsets[i] = mOffsets[i - 1] + mSubspaces[i - 1]->getStateSizeInBytes();
 
