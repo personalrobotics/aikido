@@ -104,7 +104,7 @@ protected:
   }
 
   void setStateValue(const Eigen::Vector2d &value,
-                     aikido::statespace::StateSpace::State *state) const
+                     MetaSkeletonStateSpace::State *state) const
   {
     auto j1Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 0);
     auto j2Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 1);
@@ -112,8 +112,7 @@ protected:
     j2Joint->setAngle(value[1]);
   }
 
-  Eigen::Vector2d getStateValue(
-      aikido::statespace::StateSpace::State *state) const
+  Eigen::Vector2d getStateValue(MetaSkeletonStateSpace::State *state) const
   {
     auto j1Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 0);
     auto j2Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 1);

@@ -89,16 +89,16 @@ public:
   void setStateValue(const Eigen::Vector3d &value,
                      aikido::statespace::StateSpace::State *state) const
   {
-    auto subState =
-        stateSpace->getSubStateHandle<RealVectorStateSpace>(state, 0);
+    auto subState = stateSpace->getSubStateHandle<RealVectorStateSpace>(
+      static_cast<StateSpace::State*>(state), 0);
     subState.setValue(value);
   }
 
   Eigen::Vector3d getStateValue(
       aikido::statespace::StateSpace::State *state) const
   {
-    auto subState =
-        stateSpace->getSubStateHandle<RealVectorStateSpace>(state, 0);
+    auto subState = stateSpace->getSubStateHandle<RealVectorStateSpace>(
+      static_cast<StateSpace::State*>(state), 0);
     return subState.getValue();
   }
 
