@@ -15,18 +15,26 @@ public:
   using typename statespace::StateHandle<
     CompoundStateSpace, _QualifiedState>::QualifiedState;
 
-
+  /// Construct a \c CompoundStateHandle initialized to \c nullptr.
   CompoundStateHandle()
   {
   }
 
+  /// Construct a \c CompoundStateHandle for \c _state in \c _space.
+  ///
+  /// \param _space \c CompoundStateSpace that created \c _state
+  /// \param _state state created by \c _space
   CompoundStateHandle(const StateSpace* _space, State* _state)
     : statespace::StateHandle<CompoundStateSpace, QualifiedState>(
         _space, _state)
   {
   }
 
-  /// Gets state of type by subspace index.
+  /// Gets state by subspace index.
+  ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
+  /// \param _index in the range [ 0, \c getNumStates() ]
+  /// \return state at \c _index
   template <class Space = statespace::StateSpace>
   typename Space::State* getSubState(size_t _index) const
   {
@@ -34,7 +42,12 @@ public:
       this->getState(), _index);
   }
 
-  /// Gets state of type by subspace index.
+  /// Gets state by subspace indexa and wraps it in a \c Space::StateHandle
+  /// helper class.
+  ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
+  /// \param _index in the range [ 0, \c getNumStates() ]
+  /// \return state at \c _index
   template <class Space = statespace::StateSpace>
   typename Space::StateHandle getSubStateHandle(size_t _index) const
   {

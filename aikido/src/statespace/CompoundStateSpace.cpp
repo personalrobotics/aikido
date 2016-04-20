@@ -11,6 +11,12 @@ CompoundStateSpace::CompoundStateSpace(std::vector<StateSpacePtr> _subspaces)
   , mOffsets(mSubspaces.size(), 0u)
   , mSizeInBytes(0u)
 {
+  for (const auto& subspace : mSubspaces)
+  {
+    if (subspace == nullptr)
+      throw std::invalid_argument("Subspace is null.");
+  }
+
   if (!mSubspaces.empty()) {
     for (size_t i = 1; i < mSubspaces.size(); ++i)
       mOffsets[i] = mOffsets[i - 1] + mSubspaces[i - 1]->getStateSizeInBytes();

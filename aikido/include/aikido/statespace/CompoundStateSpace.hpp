@@ -49,16 +49,18 @@ public:
 
   /// Gets subspace of type \c Space by at \c _index.
   ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
   /// \param _index in the range [ 0, \c getNumStates() ]
-  /// \return \c StateSpace at \c _index
+  /// \return subspace at \c _index
   template <class Space = StateSpace>
   std::shared_ptr<Space> getSubSpace(size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index.
   ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
   /// \param _state state in this \c CompoundStateSpace
-  /// \param _index in the range [ 0, \ getNumStates() ]
-  /// \return \c State at \c _index
+  /// \param _index in the range [ 0, \c getNumStates() ]
+  /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::State *getSubState(StateSpace::State *_state,
                                      size_t _index) const;
@@ -66,8 +68,10 @@ public:
   /// Gets substate of type \c Space::State from a CompoundState by index. This
   /// is an overload for when \c _state is \c const.
   ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
   /// \param _state state in this \c CompoundStateSpace
-  /// \param _index in the range [ 0, \ getNumStates() ]
+  /// \param _index in the range [ 0, \c getNumStates() ]
+  /// \return state at \c _index
   template <class Space = StateSpace>
   const typename Space::State *getSubState(const StateSpace::State *_state,
                                            size_t _index) const;
@@ -75,8 +79,10 @@ public:
   /// Gets substate of type \c Space::State from a CompoundState by index and
   /// wraps it in a \c Space::StateHandle helper class.
   ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
   /// \param _state state in this \c CompoundStateSpace
-  /// \param _index in the range [ 0, \ getNumStates() ]
+  /// \param _index in the range [ 0, \c getNumStates() ]
+  /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::StateHandle getSubStateHandle(StateSpace::State *_state,
                                                 size_t _index) const;
@@ -85,8 +91,10 @@ public:
   /// wraps it in a \c Space::ConstStateHandle helper class. This is an
   /// overload for when \c _state is \c const.
   ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
   /// \param _state state in this \c CompoundStateSpace
   /// \param _index in the range [ 0, \ getNumStates() ]
+  /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::StateHandleConst getSubStateHandle(
       const StateSpace::State *_state, size_t _index) const;
@@ -136,6 +144,6 @@ private:
 }  // namespace statespace
 }  // namespace aikido
 
-#include "detail/CompoundStateSpace.hpp"
+#include "detail/CompoundStateSpace-impl.hpp"
 
 #endif // AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
