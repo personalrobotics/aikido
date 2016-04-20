@@ -34,7 +34,7 @@ public:
 
   /// Computes the <tt>_derivative</tt>-th derivative of the path at path
   /// parameter \c _alpha between \c _from and \c _to. The output is an element
-  /// of the tangent space in the body frame.
+  /// of the tangent space in the local (i.e. "body") frame.
   ///
   /// \param _from start state in \c getStateSpace()
   /// \param _to end state in \c getStateSpace()
