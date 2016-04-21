@@ -142,7 +142,15 @@ std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
   if (index == ::dart::dynamics::INVALID_INDEX)
     return nullptr;
 
-  return getSubSpace(index);
+  return getSubSpace<Space>(index);
+}
+
+//=============================================================================
+template <class Space>
+std::shared_ptr<Space>
+  MetaSkeletonStateSpace::getJointSpace(size_t _index) const
+{
+  return getSubSpace<Space>(_index);
 }
 
 } // namespace dart

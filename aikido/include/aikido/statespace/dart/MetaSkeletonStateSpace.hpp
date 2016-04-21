@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
-#define AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
+#ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_METASKELETONSTATESPACE_HPP_
 #include <dart/dynamics/dynamics.h>
 #include "../CompoundStateSpace.hpp"
 #include "JointStateSpace.hpp"
@@ -21,10 +21,12 @@ public:
   /// Get the MetaSkeleton associated with this StateSpace.
   ::dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
 
-  /// Get the subspace associated with a joint.
-  template <class Space = StateSpace>
+  template <class Space = JointStateSpace>
   std::shared_ptr<Space> getJointSpace(
     const ::dart::dynamics::Joint* _joint) const;
+
+  template <class Space = JointStateSpace>
+  std::shared_ptr<Space> getJointSpace(size_t _index) const;
 
   void convertPositionsToState(
     const Eigen::VectorXd& _positions, State* _state) const;
@@ -63,4 +65,4 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(
 
 #include "detail/MetaSkeletonStateSpace.hpp"
 
-#endif // ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_H_
+#endif // ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_HPP_
