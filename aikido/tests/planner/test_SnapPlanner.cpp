@@ -67,9 +67,9 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 
 TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
-  stateSpace->getStateFromMetaSkeleton(*startState);
+  stateSpace->getState(*startState);
   stateSpace->getMetaSkeleton()->setPosition(0, 2.0);
-  stateSpace->getStateFromMetaSkeleton(*goalState);
+  stateSpace->setState(*goalState);
 
   auto traj = planSnap(*startState, *goalState, stateSpace, passingConstraint,
                        interpolator, &planningResult);

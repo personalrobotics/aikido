@@ -155,7 +155,7 @@ TEST_F(OMPLGoalSetTest, Plan)
   Eigen::Vector2d startPose(0, 0);
   setStateValue(startPose, startState);
 
-  stateSpace->setStateOnMetaSkeleton(startState);
+  stateSpace->setState(startState);
 
   // Plan
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(

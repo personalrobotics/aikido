@@ -33,13 +33,13 @@ public:
     const State* _state, Eigen::VectorXd& _positions) const;
 
   /// Gets the positions of getMetaSkeleton() and store them in _state.
-  void getStateFromMetaSkeleton(State* _state) const;
+  void getState(State* _state) const;
 
   /// Wrapper for getStateFromMetaSkeleton that returns a ScopedState.
   ScopedState getScopedStateFromMetaSkeleton() const;
 
   /// Sets the MetaSkeleton's positions to the values stored in _state.
-  void setStateOnMetaSkeleton(const State* _state);
+  void setState(const State* _state);
 
 private:
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;

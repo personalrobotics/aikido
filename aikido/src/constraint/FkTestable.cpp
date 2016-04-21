@@ -21,7 +21,7 @@ bool FkTestable::isSatisfied(const statespace::StateSpace::State* _state) const
   // Set the state
   auto state 
     = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(_state);
-  mStateSpace->setStateOnMetaSkeleton(state);
+  mStateSpace->setState(state);
 
   // Check the pose constraint
   auto st = mPoseStateSpace->createState();

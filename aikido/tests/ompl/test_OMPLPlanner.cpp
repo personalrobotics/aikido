@@ -129,7 +129,7 @@ TEST_F(OMPLPlannerTest, Plan)
   Eigen::Vector3d goalPose(5, 5, 0);
 
   StateSpace::ScopedState startState = getStartState(startPose);
-  stateSpace->setStateOnMetaSkeleton(startState);
+  stateSpace->setState(startState);
 
   StateSpace::ScopedState goalState = getGoalState(goalPose);
 

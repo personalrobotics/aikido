@@ -39,11 +39,11 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds)
   auto substate = state.getSubStateHandle<SO2StateSpace>(0);
 
   skeleton->setPosition(0, 5.);
-  space.getStateFromMetaSkeleton(state);
+  space.getState(state);
   EXPECT_DOUBLE_EQ(5., substate.getAngle());
 
   substate.setAngle(6.);
-  space.setStateOnMetaSkeleton(state);
+  space.setState(state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
@@ -63,11 +63,11 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds)
   auto substate = state.getSubStateHandle<RealVectorStateSpace>(0);
 
   skeleton->setPosition(0, 5.);
-  space.getStateFromMetaSkeleton(state);
+  space.getState(state);
   EXPECT_DOUBLE_EQ(5., substate.getValue()[0]);
 
   substate.setValue(make_scalar(6.));
-  space.setStateOnMetaSkeleton(state);
+  space.setState(state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
@@ -86,11 +86,11 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint)
   auto substate = state.getSubStateHandle<RealVectorStateSpace>(0);
 
   skeleton->setPosition(0, 5.);
-  space.getStateFromMetaSkeleton(state);
+  space.getState(state);
   EXPECT_DOUBLE_EQ(5., substate.getValue()[0]);
 
   substate.setValue(make_scalar(6.));
-  space.setStateOnMetaSkeleton(state);
+  space.setState(state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
@@ -112,11 +112,11 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint)
   auto substate = state.getSubStateHandle<RealVectorStateSpace>(0);
 
   skeleton->setPositions(value1);
-  space.getStateFromMetaSkeleton(state);
+  space.getState(state);
   EXPECT_TRUE(value1.isApprox(substate.getValue()));
 
   substate.setValue(value2);
-  space.setStateOnMetaSkeleton(state);
+  space.setState(state);
   EXPECT_TRUE(value2.isApprox(skeleton->getPositions()));
 }
 
@@ -140,11 +140,11 @@ TEST(MetaSkeletonStateSpace, FreeJoint)
   auto substate = state.getSubStateHandle<SE3StateSpace>(0);
 
   skeleton->setPositions(FreeJoint::convertToPositions(value1));
-  space.getStateFromMetaSkeleton(state);
+  space.getState(state);
   EXPECT_TRUE(value1.isApprox(substate.getIsometry()));
 
   substate.setIsometry(value2);
-  space.setStateOnMetaSkeleton(state);
+  space.setState(state);
   EXPECT_TRUE(value2.isApprox(
     FreeJoint::convertToTransform(skeleton->getPositions())));
 }
@@ -167,13 +167,13 @@ TEST(MetaSkeletonStateSpace, MultipleJoints)
 
   joint1->setPosition(0, 1.);
   joint2->setPositions(value1);
-  space.getStateFromMetaSkeleton(state);
+  space.getState(state);
   EXPECT_EQ(1., substate1.getAngle());
   EXPECT_TRUE(value1.isApprox(value1));
 
   substate1.setAngle(5.);
   substate2.setValue(value2);
-  space.setStateOnMetaSkeleton(state);
+  space.setState(state);
   EXPECT_EQ(5., substate1.getAngle());
   EXPECT_TRUE(value2.isApprox(substate2.getValue()));
 }

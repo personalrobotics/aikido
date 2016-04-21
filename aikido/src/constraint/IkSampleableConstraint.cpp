@@ -210,7 +210,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
     if (!mSeedSampler->sample(seedState))
       continue;
 
-    mStateSpace->setStateOnMetaSkeleton(seedState);
+    mStateSpace->setState(seedState);
 
     // Sample a goal for the IK solver.
     if (!mPoseSampler->sample(poseState))
@@ -221,7 +221,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
     // Run the IK solver. If it succeeds, return the solution.
     if (mInverseKinematics->solve(true))
     {
-      mStateSpace->getStateFromMetaSkeleton(outputState);
+      mStateSpace->getState(outputState);
       return true;
     }
   }

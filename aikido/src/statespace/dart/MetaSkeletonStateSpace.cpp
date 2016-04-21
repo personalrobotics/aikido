@@ -163,7 +163,7 @@ void MetaSkeletonStateSpace::convertStateToPositions(
 }
 
 //=============================================================================
-void MetaSkeletonStateSpace::getStateFromMetaSkeleton(State* _state) const
+void MetaSkeletonStateSpace::getState(State* _state) const
 {
   convertPositionsToState(mMetaSkeleton->getPositions(), _state);
 }
@@ -173,12 +173,12 @@ auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
   -> ScopedState
 {
   auto scopedState = createState();
-  getStateFromMetaSkeleton(scopedState.getState());
+  getState(scopedState.getState());
   return std::move(scopedState);
 }
 
 //=============================================================================
-void MetaSkeletonStateSpace::setStateOnMetaSkeleton(const State* _state)
+void MetaSkeletonStateSpace::setState(const State* _state)
 {
   Eigen::VectorXd positions;
   convertStateToPositions(_state, positions);

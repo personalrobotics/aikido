@@ -51,7 +51,7 @@ Eigen::VectorXd FrameConstraintAdaptor::getValue(
 
   auto state = static_cast<const State*>(_s);
   
-  mMetaSkeletonStateSpace->setStateOnMetaSkeleton(state);
+  mMetaSkeletonStateSpace->setState(state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
 
@@ -70,7 +70,7 @@ Eigen::MatrixXd FrameConstraintAdaptor::getJacobian(
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setStateOnMetaSkeleton(state);
+  mMetaSkeletonStateSpace->setState(state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
  
@@ -98,7 +98,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> FrameConstraintAdaptor::getValueAndJ
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setStateOnMetaSkeleton(state);
+  mMetaSkeletonStateSpace->setState(state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
 

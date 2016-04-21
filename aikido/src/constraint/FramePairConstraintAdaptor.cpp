@@ -56,7 +56,7 @@ Eigen::VectorXd FramePairConstraintAdaptor::getValue(
 
   auto state = static_cast<const State*>(_s);
   
-  mMetaSkeletonStateSpace->setStateOnMetaSkeleton(state);
+  mMetaSkeletonStateSpace->setState(state);
 
   // Relative transform of mJacobianNode1 w.r.t. mJacobianNode2,
   // expressed in mJacobianNode2 frame.
@@ -77,7 +77,7 @@ Eigen::MatrixXd FramePairConstraintAdaptor::getJacobian(
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setStateOnMetaSkeleton(state);
+  mMetaSkeletonStateSpace->setState(state);
 
   // Relative transform of mJacobianNode1 w.r.t. mJacobianNode2,
   // expressed in mJacobianNode2's frame.
@@ -112,7 +112,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> FramePairConstraintAdaptor::getValue
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setStateOnMetaSkeleton(state);
+  mMetaSkeletonStateSpace->setState(state);
 
   // Relative transform of mJacobianNode1 w.r.t. mJacobianNode2,
   // expressed in mJacobianNode2's frame.
