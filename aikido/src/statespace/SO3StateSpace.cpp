@@ -73,6 +73,10 @@ void SO3StateSpace::compose(const StateSpace::State *_state1,
                             const StateSpace::State *_state2,
                             StateSpace::State *_out) const
 {
+  // TODO: Disable this in release mode.
+  if (_state1 == _out || _state2 == _out)
+    throw std::invalid_argument("Output aliases input.");
+
   auto state1 = static_cast<const State *>(_state1);
   auto state2 = static_cast<const State *>(_state2);
   auto out = static_cast<State *>(_out);
@@ -91,6 +95,10 @@ void SO3StateSpace::getIdentity(StateSpace::State *_out) const
 void SO3StateSpace::getInverse(const StateSpace::State *_in,
                                StateSpace::State *_out) const
 {
+  // TODO: Disable this in release mode.
+  if (_out == _in)
+    throw std::invalid_argument("Output aliases input.");
+
   auto in = static_cast<const State *>(_in);
   auto out = static_cast<State *>(_out);
 
