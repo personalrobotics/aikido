@@ -18,7 +18,7 @@ class FkTestable : public TestableConstraint
 {
 public:
   /// Creat a TestableConstraint for the MetaSkeleton
-  FkTestable(statespace::MetaSkeletonStateSpacePtr _stateSpace,
+  FkTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
              dart::dynamics::Frame* _frame,
              TestableConstraintPtr _poseConstraint);
 
@@ -31,7 +31,7 @@ public:
       const override;
 
 private:
-    statespace::MetaSkeletonStateSpacePtr mStateSpace;
+    statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
     dart::dynamics::Frame* mFrame;
     TestableConstraintPtr mPoseConstraint;
     std::shared_ptr<statespace::SE3StateSpace> mPoseStateSpace;

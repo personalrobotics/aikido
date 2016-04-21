@@ -5,6 +5,7 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 /// Wrap a joint with an arbitrary number of DOFs in a RealVectorStateSpace.
 class RealVectorJointStateSpace
@@ -15,7 +16,7 @@ class RealVectorJointStateSpace
 public:
   using RealVectorStateSpace::State;
 
-  explicit RealVectorJointStateSpace(dart::dynamics::Joint* _joint);
+  explicit RealVectorJointStateSpace(::dart::dynamics::Joint* _joint);
 
   // Documentation inherited.
   void getState(StateSpace::State* _state) const override;
@@ -24,6 +25,7 @@ public:
   void setState(const StateSpace::State* _state) const override;
 };
 
+} // namespace dart
 } // namespace statespace
 } // namespace aikido
 

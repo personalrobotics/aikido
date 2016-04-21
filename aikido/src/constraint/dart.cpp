@@ -14,18 +14,18 @@ using dart::common::make_unique;
 
 //=============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace)
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
   return detail::ForOneOf<
       detail::createDifferentiableFor_impl,
-      statespace::JointStateSpace,
+      statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace));
 }
 
 //=============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton)
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
   if (!_metaSkeleton)
     throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
@@ -38,7 +38,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   // TODO: Filter out trivial constraints for efficiency.
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
     auto subSpaceConstraint = createDifferentiableBounds(std::move(subspace));
     auto constraint = std::make_shared<DifferentiableSubSpace>(
       _metaSkeleton, std::move(subSpaceConstraint), i);
@@ -52,18 +52,18 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
 //=============================================================================
 std::unique_ptr<Projectable> createProjectableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace)
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
   return detail::ForOneOf<
       detail::createProjectableFor_impl,
-      statespace::JointStateSpace,
+      statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace));
 }
 
 //=============================================================================
 std::unique_ptr<Projectable> createProjectableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton)
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
   const auto n = _metaSkeleton->getNumStates();
 
@@ -72,7 +72,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
 
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
     auto constraint = createProjectableBounds(std::move(subspace));
     constraints.emplace_back(constraint.release());
   }
@@ -83,18 +83,18 @@ std::unique_ptr<Projectable> createProjectableBounds(
 
 //=============================================================================
 std::unique_ptr<TestableConstraint> createTestableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace)
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
   return detail::ForOneOf<
       detail::createTestableFor_impl,
-      statespace::JointStateSpace,
+      statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace));
 }
 
 //=============================================================================
 std::unique_ptr<TestableConstraint> createTestableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton)
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
   const auto n = _metaSkeleton->getNumStates();
 
@@ -103,7 +103,7 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
 
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
     auto constraint = createTestableBounds(std::move(subspace));
     constraints.emplace_back(constraint.release());
   }
@@ -114,19 +114,19 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
 
 //=============================================================================
 std::unique_ptr<SampleableConstraint> createSampleableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace,
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
   return detail::ForOneOf<
       detail::createSampleableFor_impl,
-      statespace::JointStateSpace,
+      statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace), std::move(_rng));
 }
 
 //=============================================================================
 std::unique_ptr<SampleableConstraint> createSampleableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton,
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng)
 {
   const auto n = _metaSkeleton->getNumStates();
@@ -139,7 +139,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
 
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
     auto constraint = createSampleableBounds(
       std::move(subspace), std::move(engines[i]));
     constraints.emplace_back(constraint.release());

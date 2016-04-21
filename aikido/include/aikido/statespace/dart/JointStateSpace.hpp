@@ -5,17 +5,18 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 /// StateSpace representing the position of a joint.
 class JointStateSpace : public virtual StateSpace
 {
 public:
-  explicit JointStateSpace(dart::dynamics::Joint* _joint);
+  explicit JointStateSpace(::dart::dynamics::Joint* _joint);
 
   virtual ~JointStateSpace() = default;
 
   /// The Joint whose StateSpace this class represents.
-  dart::dynamics::Joint* getJoint() const;
+  ::dart::dynamics::Joint* getJoint() const;
 
   /// Gets the positions of the Joint and store them in _state.
   virtual void getState(StateSpace::State* _state) const = 0;
@@ -24,9 +25,10 @@ public:
   virtual void setState(const StateSpace::State* _state) const = 0;
 
 protected:
-  dart::dynamics::Joint* mJoint;
+  ::dart::dynamics::Joint* mJoint;
 };
 
+} // namespace dart
 } // namespace statespace
 } // namespace aikido
 

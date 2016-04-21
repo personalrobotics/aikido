@@ -7,9 +7,10 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 namespace detail {
 
-using dart::common::make_unique;
+using ::dart::common::make_unique;
 using Ptr = std::unique_ptr<JointStateSpace>;
 
 //=============================================================================
@@ -18,9 +19,9 @@ struct createJointStateSpaceFor_impl {};
 
 //=============================================================================
 template <>
-struct createJointStateSpaceFor_impl<dart::dynamics::RevoluteJoint>
+struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
 {
-  static Ptr create(dart::dynamics::RevoluteJoint* _joint)
+  static Ptr create(::dart::dynamics::RevoluteJoint* _joint)
   {
     if (_joint->isCyclic(0))
        return make_unique<SO2JointStateSpace>(_joint);
@@ -31,9 +32,9 @@ struct createJointStateSpaceFor_impl<dart::dynamics::RevoluteJoint>
 
 //=============================================================================
 template <>
-struct createJointStateSpaceFor_impl<dart::dynamics::PrismaticJoint>
+struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
 {
-  static Ptr create(dart::dynamics::PrismaticJoint* _joint)
+  static Ptr create(::dart::dynamics::PrismaticJoint* _joint)
   {
     return make_unique<RealVectorJointStateSpace>(_joint);
   }
@@ -41,9 +42,9 @@ struct createJointStateSpaceFor_impl<dart::dynamics::PrismaticJoint>
 
 //=============================================================================
 template <>
-struct createJointStateSpaceFor_impl<dart::dynamics::TranslationalJoint>
+struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
 {
-  static Ptr create(dart::dynamics::TranslationalJoint* _joint)
+  static Ptr create(::dart::dynamics::TranslationalJoint* _joint)
   {
     return make_unique<RealVectorJointStateSpace>(_joint);
   }
@@ -51,9 +52,9 @@ struct createJointStateSpaceFor_impl<dart::dynamics::TranslationalJoint>
 
 //=============================================================================
 template <>
-struct createJointStateSpaceFor_impl<dart::dynamics::BallJoint>
+struct createJointStateSpaceFor_impl<::dart::dynamics::BallJoint>
 {
-  static Ptr create(dart::dynamics::BallJoint* _joint)
+  static Ptr create(::dart::dynamics::BallJoint* _joint)
   {
     return make_unique<SO3JointStateSpace>(_joint);
   }
@@ -61,9 +62,9 @@ struct createJointStateSpaceFor_impl<dart::dynamics::BallJoint>
 
 //=============================================================================
 template <>
-struct createJointStateSpaceFor_impl<dart::dynamics::PlanarJoint>
+struct createJointStateSpaceFor_impl<::dart::dynamics::PlanarJoint>
 {
-  static Ptr create(dart::dynamics::PlanarJoint* _joint)
+  static Ptr create(::dart::dynamics::PlanarJoint* _joint)
   {
     return make_unique<SE2JointStateSpace>(_joint);
   }
@@ -71,9 +72,9 @@ struct createJointStateSpaceFor_impl<dart::dynamics::PlanarJoint>
 
 //=============================================================================
 template <>
-struct createJointStateSpaceFor_impl<dart::dynamics::FreeJoint>
+struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
 {
-  static Ptr create(dart::dynamics::FreeJoint* _joint)
+  static Ptr create(::dart::dynamics::FreeJoint* _joint)
   {
     return make_unique<SE3JointStateSpace>(_joint);
   }
@@ -86,7 +87,7 @@ struct ForOneOf {};
 template <>
 struct ForOneOf<>
 {
-  static Ptr create(dart::dynamics::Joint* _joint)
+  static Ptr create(::dart::dynamics::Joint* _joint)
   {
     return nullptr;
   }
@@ -95,7 +96,7 @@ struct ForOneOf<>
 template <class Arg, class... Args>
 struct ForOneOf<Arg, Args...>
 {
-  static Ptr create(dart::dynamics::Joint* _joint)
+  static Ptr create(::dart::dynamics::Joint* _joint)
   {
     if (&_joint->getType() == &Arg::getStaticType())
     {
@@ -111,12 +112,12 @@ struct ForOneOf<Arg, Args...>
 
 //=============================================================================
 using createJointStateSpaceFor_wrapper = ForOneOf<
-  dart::dynamics::BallJoint,
-  dart::dynamics::FreeJoint,
-  dart::dynamics::PlanarJoint,
-  dart::dynamics::PrismaticJoint,
-  dart::dynamics::RevoluteJoint,
-  dart::dynamics::TranslationalJoint
+  ::dart::dynamics::BallJoint,
+  ::dart::dynamics::FreeJoint,
+  ::dart::dynamics::PlanarJoint,
+  ::dart::dynamics::PrismaticJoint,
+  ::dart::dynamics::RevoluteJoint,
+  ::dart::dynamics::TranslationalJoint
   // TODO: Support ScrewJoint.
   // TODO: Support WeldJoint.
   // TODO: Support UniversalJoint.
@@ -135,14 +136,15 @@ std::unique_ptr<JointStateSpace> createJointStateSpaceFor(JointType* _joint)
 //=============================================================================
 template <class Space>
 std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
-  const dart::dynamics::Joint* _joint) const
+  const ::dart::dynamics::Joint* _joint) const
 {
   const auto index = mMetaSkeleton->getIndexOf(_joint, true);
-  if (index == dart::dynamics::INVALID_INDEX)
+  if (index == ::dart::dynamics::INVALID_INDEX)
     return nullptr;
 
   return getSubSpace(index);
 }
 
+} // namespace dart
 } // namespace statespace
 } // namespace aikido

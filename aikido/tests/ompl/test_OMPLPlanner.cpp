@@ -18,7 +18,7 @@ using aikido::util::RNG;
 using dart::common::make_unique;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
-using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
+using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using AIKIDOStateSpace = aikido::ompl::AIKIDOGeometricStateSpace;
 
 static std::unique_ptr<DefaultRNG> make_rng()
@@ -102,7 +102,7 @@ public:
     return subState.getValue();
   }
 
-  aikido::statespace::MetaSkeletonStateSpacePtr stateSpace;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace;
   aikido::statespace::InterpolatorPtr interpolator;
   aikido::distance::DistanceMetricPtr dmetric;
   aikido::constraint::SampleableConstraintPtr sampler;

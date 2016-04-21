@@ -15,7 +15,7 @@ using dart::dynamics::RevoluteJoint;
 using dart::dynamics::PrismaticJoint;
 using dart::dynamics::TranslationalJoint;
 using dart::dynamics::FreeJoint;
-using aikido::statespace::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::RealVectorStateSpace;
 using aikido::statespace::SO2StateSpace;
 using aikido::statespace::SE3StateSpace;

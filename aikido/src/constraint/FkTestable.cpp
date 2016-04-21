@@ -4,7 +4,7 @@ namespace aikido
 {
 namespace constraint
 {
-FkTestable::FkTestable(statespace::MetaSkeletonStateSpacePtr _stateSpace,
+FkTestable::FkTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
                        dart::dynamics::Frame* _frame,
                        TestableConstraintPtr _poseConstraint)
     : mStateSpace(std::move(_stateSpace))
@@ -19,7 +19,8 @@ FkTestable::FkTestable(statespace::MetaSkeletonStateSpacePtr _stateSpace,
 bool FkTestable::isSatisfied(const statespace::StateSpace::State* _state) const
 {
   // Set the state
-  auto state = static_cast<const statespace::MetaSkeletonStateSpace::State*>(_state);
+  auto state 
+    = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(_state);
   mStateSpace->setStateOnMetaSkeleton(state);
 
   // Check the pose constraint

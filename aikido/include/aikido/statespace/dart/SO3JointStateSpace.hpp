@@ -5,6 +5,7 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 /// Wrap a single DOF joint in a SO3StateSpace.
 class SO3JointStateSpace
@@ -15,7 +16,7 @@ class SO3JointStateSpace
 public:
   using SO3StateSpace::State;
 
-  explicit SO3JointStateSpace(dart::dynamics::BallJoint* _joint);
+  explicit SO3JointStateSpace(::dart::dynamics::BallJoint* _joint);
 
   // Documentation inherited.
   void getState(StateSpace::State* _state) const override;
@@ -24,6 +25,7 @@ public:
   void setState(const StateSpace::State* _state) const override;
 };
 
+} // namespace dart
 } // namespace statespace
 } // namespace aikido
 

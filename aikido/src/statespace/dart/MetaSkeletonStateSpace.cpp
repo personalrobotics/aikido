@@ -4,23 +4,24 @@
 #include <dart/common/StlHelpers.h>
 #include <dart/common/Console.h>
 
-using dart::dynamics::MetaSkeleton;
-using dart::dynamics::MetaSkeletonPtr;
-using dart::dynamics::BallJoint;
-using dart::dynamics::FreeJoint;
-using dart::dynamics::EulerJoint;
-using dart::dynamics::PlanarJoint;
-using dart::dynamics::PrismaticJoint;
-using dart::dynamics::RevoluteJoint;
-using dart::dynamics::Joint;
-using dart::dynamics::ScrewJoint;
-using dart::dynamics::TranslationalJoint;
-using dart::dynamics::SingleDofJoint;
-using dart::dynamics::WeldJoint;
-using dart::dynamics::INVALID_INDEX;
+using ::dart::dynamics::MetaSkeleton;
+using ::dart::dynamics::MetaSkeletonPtr;
+using ::dart::dynamics::BallJoint;
+using ::dart::dynamics::FreeJoint;
+using ::dart::dynamics::EulerJoint;
+using ::dart::dynamics::PlanarJoint;
+using ::dart::dynamics::PrismaticJoint;
+using ::dart::dynamics::RevoluteJoint;
+using ::dart::dynamics::Joint;
+using ::dart::dynamics::ScrewJoint;
+using ::dart::dynamics::TranslationalJoint;
+using ::dart::dynamics::SingleDofJoint;
+using ::dart::dynamics::WeldJoint;
+using ::dart::dynamics::INVALID_INDEX;
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
 
@@ -41,7 +42,7 @@ std::vector<Output> convertVectorType(const std::vector<Input>& _input)
 
 //=============================================================================
 template <class T>
-T* isJointOfType(dart::dynamics::Joint* _joint)
+T* isJointOfType(::dart::dynamics::Joint* _joint)
 {
   // It's safe to do a pointer comparison here, since getType is guaranteed to
   // return the same reference to the corresponding getTypeStatic method.
@@ -146,5 +147,6 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(Joint* _joint)
 }
 
 
+} // namespace dart
 } // namespace statespace
 } // namespace aikido

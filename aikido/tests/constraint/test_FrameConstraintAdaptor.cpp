@@ -8,10 +8,18 @@
 
 using aikido::constraint::FrameConstraintAdaptor;
 using aikido::constraint::TSR;
-
-using namespace aikido::util;
-using namespace dart::dynamics;
-using namespace aikido::statespace;
+using aikido::statespace::SE3StateSpace;
+using aikido::statespace::SO2StateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using aikido::util::RNG;
+using aikido::util::RNGWrapper;
+using dart::dynamics::BodyNode;
+using dart::dynamics::BodyNodePtr;
+using dart::dynamics::FreeJoint;
+using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 
 class FrameConstraintAdaptorTest : public ::testing::Test {
   protected:

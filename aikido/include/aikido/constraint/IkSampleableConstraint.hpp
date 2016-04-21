@@ -18,7 +18,7 @@ class IkSampleableConstraint : public SampleableConstraint
 {
 public:
   IkSampleableConstraint(
-    statespace::MetaSkeletonStateSpacePtr _stateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     SampleableConstraintPtr _poseConstraint,
     SampleableConstraintPtr _seedConstraint,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
@@ -37,7 +37,7 @@ public:
   void setRNG(std::unique_ptr<util::RNG> rng);
   
 private:
-  statespace::MetaSkeletonStateSpacePtr mStateSpace;
+  statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
   SampleableConstraintPtr mPoseConstraint;
   SampleableConstraintPtr mSeedConstraint;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;

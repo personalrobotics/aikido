@@ -7,7 +7,7 @@ namespace constraint {
 
 //=============================================================================
 FramePairConstraintAdaptor::FramePairConstraintAdaptor(
-    statespace::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     dart::dynamics::JacobianNodePtr _jacobianNode1,
     dart::dynamics::JacobianNodePtr _jacobianNode2,
     DifferentiablePtr _relPoseConstraint)

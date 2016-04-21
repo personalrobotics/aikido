@@ -18,10 +18,10 @@ class SnapPlannerTest : public ::testing::Test
 {
 public:
   using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
-  using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
+  using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
   using CollisionConstraint = aikido::constraint::CollisionConstraint;
   using DistanceMetric = aikido::distance::DistanceMetric;
-  using MetaSkeletonStateSpace = aikido::statespace::MetaSkeletonStateSpace;
+  using MetaSkeletonStateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
   using SO2StateSpace = aikido::statespace::SO2StateSpace;
   using GeodesicInterpolator = aikido::statespace::GeodesicInterpolator;
   using ScopedState = MetaSkeletonStateSpace::ScopedState;

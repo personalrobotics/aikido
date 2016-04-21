@@ -5,11 +5,19 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::util::RNGWrapper;
+using aikido::constraint::FkTestable;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::TSR;
+using aikido::statespace::SO2StateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::util::RNG;
-using namespace aikido::constraint;
-using namespace aikido::statespace;
-using namespace dart::dynamics;
+using aikido::util::RNGWrapper;
+using dart::dynamics::BodyNode;
+using dart::dynamics::BodyNodePtr;
+using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 
 class FkTestableTest : public ::testing::Test
 {

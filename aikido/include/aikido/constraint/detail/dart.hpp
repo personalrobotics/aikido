@@ -88,11 +88,11 @@ inline Eigen::VectorXd getPositionUpperLimits(
 
 //=============================================================================
 using JointStateSpaceTypeList = util::type_list<
-  statespace::RealVectorJointStateSpace,
-  statespace::SO2JointStateSpace,
-  statespace::SO3JointStateSpace,
-  statespace::SE2JointStateSpace,
-  statespace::SE3JointStateSpace
+  statespace::dart::RealVectorJointStateSpace,
+  statespace::dart::SO2JointStateSpace,
+  statespace::dart::SO3JointStateSpace,
+  statespace::dart::SE2JointStateSpace,
+  statespace::dart::SE3JointStateSpace
 >;
 
 template <class T>
@@ -110,7 +110,7 @@ struct createSampleableFor_impl { };
 //=============================================================================
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
-  std::shared_ptr<statespace::RealVectorJointStateSpace> _stateSpace,
+  std::shared_ptr<statespace::dart::RealVectorJointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
   const auto joint = _stateSpace->getJoint();
@@ -125,9 +125,9 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 }
 
 template <>
-struct createDifferentiableFor_impl<statespace::RealVectorJointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::RealVectorJointStateSpace>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RealVectorJointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -137,9 +137,9 @@ struct createDifferentiableFor_impl<statespace::RealVectorJointStateSpace>
 };
 
 template <>
-struct createTestableFor_impl<statespace::RealVectorJointStateSpace>
+struct createTestableFor_impl<statespace::dart::RealVectorJointStateSpace>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RealVectorJointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
@@ -150,9 +150,9 @@ struct createTestableFor_impl<statespace::RealVectorJointStateSpace>
 };
 
 template <>
-struct createProjectableFor_impl<statespace::RealVectorJointStateSpace>
+struct createProjectableFor_impl<statespace::dart::RealVectorJointStateSpace>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RealVectorJointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -163,9 +163,9 @@ struct createProjectableFor_impl<statespace::RealVectorJointStateSpace>
 };
 
 template <>
-struct createSampleableFor_impl<statespace::RealVectorJointStateSpace>
+struct createSampleableFor_impl<statespace::dart::RealVectorJointStateSpace>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RealVectorJointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<SampleableConstraint> create(
@@ -185,9 +185,9 @@ struct createSampleableFor_impl<statespace::RealVectorJointStateSpace>
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SO2JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SO2JointStateSpace>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -201,9 +201,9 @@ struct createDifferentiableFor_impl<statespace::SO2JointStateSpace>
 };
 
 template <>
-struct createTestableFor_impl<statespace::SO2JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SO2JointStateSpace>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
@@ -217,9 +217,9 @@ struct createTestableFor_impl<statespace::SO2JointStateSpace>
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SO2JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SO2JointStateSpace>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -233,9 +233,9 @@ struct createProjectableFor_impl<statespace::SO2JointStateSpace>
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SO2JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SO2JointStateSpace>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<SampleableConstraint> create(
@@ -252,9 +252,9 @@ struct createSampleableFor_impl<statespace::SO2JointStateSpace>
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SO3JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SO3JointStateSpace>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -268,9 +268,9 @@ struct createDifferentiableFor_impl<statespace::SO3JointStateSpace>
 };
 
 template <>
-struct createTestableFor_impl<statespace::SO3JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SO3JointStateSpace>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
@@ -284,9 +284,9 @@ struct createTestableFor_impl<statespace::SO3JointStateSpace>
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SO3JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SO3JointStateSpace>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -300,9 +300,9 @@ struct createProjectableFor_impl<statespace::SO3JointStateSpace>
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SO3JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SO3JointStateSpace>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<SampleableConstraint> create(
@@ -318,9 +318,9 @@ struct createSampleableFor_impl<statespace::SO3JointStateSpace>
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SE2JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SE2JointStateSpace>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -331,9 +331,9 @@ struct createDifferentiableFor_impl<statespace::SE2JointStateSpace>
 };
 
 template <>
-struct createTestableFor_impl<statespace::SE2JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SE2JointStateSpace>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
@@ -344,9 +344,9 @@ struct createTestableFor_impl<statespace::SE2JointStateSpace>
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SE2JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SE2JointStateSpace>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -357,9 +357,9 @@ struct createProjectableFor_impl<statespace::SE2JointStateSpace>
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SE2JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SE2JointStateSpace>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<SampleableConstraint> create(
@@ -372,9 +372,9 @@ struct createSampleableFor_impl<statespace::SE2JointStateSpace>
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SE3JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SE3JointStateSpace>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -385,9 +385,9 @@ struct createDifferentiableFor_impl<statespace::SE3JointStateSpace>
 };
 
 template <>
-struct createTestableFor_impl<statespace::SE3JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SE3JointStateSpace>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
@@ -398,9 +398,9 @@ struct createTestableFor_impl<statespace::SE3JointStateSpace>
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SE3JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SE3JointStateSpace>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -411,9 +411,9 @@ struct createProjectableFor_impl<statespace::SE3JointStateSpace>
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SE3JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SE3JointStateSpace>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3JointStateSpace;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<SampleableConstraint> create(

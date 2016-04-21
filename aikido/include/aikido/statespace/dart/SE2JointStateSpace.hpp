@@ -5,6 +5,7 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 /// Wrap a PlanarJoint in a SE2StateSpace.
 class SE2JointStateSpace
@@ -16,7 +17,7 @@ public:
   using SE2StateSpace::State;
   using SE2StateSpace::Isometry2d;
 
-  explicit SE2JointStateSpace(dart::dynamics::PlanarJoint* _joint);
+  explicit SE2JointStateSpace(::dart::dynamics::PlanarJoint* _joint);
 
   // Documentation inherited.
   void getState(StateSpace::State* _state) const override;
@@ -25,7 +26,7 @@ public:
   void setState(const StateSpace::State* _state) const override;
 };
 
-
+} // namespace dart
 } // namespace statespace
 } // namespace aikido
 

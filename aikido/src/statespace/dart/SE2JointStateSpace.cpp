@@ -2,9 +2,10 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 //=============================================================================
-SE2JointStateSpace::SE2JointStateSpace(dart::dynamics::PlanarJoint* _joint)
+SE2JointStateSpace::SE2JointStateSpace(::dart::dynamics::PlanarJoint* _joint)
   : JointStateSpace(_joint)
   , SE2StateSpace()
 {
@@ -34,32 +35,6 @@ void SE2JointStateSpace::setState(const StateSpace::State* _state) const
   mJoint->setPosition(2, rotation.angle());
 }
 
-#if 0
-//=============================================================================
-auto SE2JointStateSpace::createSampleableConstraint(
-  std::unique_ptr<util::RNG> _rng) const -> SampleableConstraintPtr
-{
-  Eigen::Vector2d lowerLimits, upperLimits;
-
-  for (size_t i = 0; i < 2; ++i)
-  {
-    lowerLimits[i] = mJoint->getPositionLowerLimit(i);
-    upperLimits[i] = mJoint->getPositionUpperLimit(i);
-  }
-
-  if (mJoint->hasPositionLimit(2))
-  {
-    throw std::runtime_error(
-      "Position limits are unsupported on the rotation component of joints"
-      " with SE(2) topology.");
-  }
-
-  return std::make_shared<SE2StateSpaceSampleableConstraint>(
-    // TODO: SampleableConstraint should operate on `const StateSpace`.
-    std::const_pointer_cast<SE2JointStateSpace>(shared_from_this()),
-    std::move(_rng), lowerLimits, upperLimits);
-}
-#endif
-
+} // namespace dart
 } // namespace statespace
 } // namespace aikido

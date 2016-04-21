@@ -6,6 +6,7 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 /// StateSpace that represents the configuration space of a MetaSkeleton.
 class MetaSkeletonStateSpace : public CompoundStateSpace
@@ -15,15 +16,15 @@ public:
   using CompoundStateSpace::ScopedState;
 
   /// Create a StateSpace for the Joints in the MetaSkeleton.
-  MetaSkeletonStateSpace(dart::dynamics::MetaSkeletonPtr _metaskeleton);
+  MetaSkeletonStateSpace(::dart::dynamics::MetaSkeletonPtr _metaskeleton);
 
   /// Get the MetaSkeleton associated with this StateSpace.
-  dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
+  ::dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
 
   /// Get the subspace associated with a joint.
   template <class Space = StateSpace>
   std::shared_ptr<Space> getJointSpace(
-    const dart::dynamics::Joint* _joint) const;
+    const ::dart::dynamics::Joint* _joint) const;
 
   /// Gets the positions of getMetaSkeleton() and store them in _state.
   void getStateFromMetaSkeleton(State* _state) const;
@@ -35,7 +36,7 @@ public:
   void setStateOnMetaSkeleton(const State* _state);
 
 private:
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
 using MetaSkeletonStateSpacePtr = std::shared_ptr<MetaSkeletonStateSpace>;
@@ -48,8 +49,9 @@ std::unique_ptr<JointStateSpace> createJointStateSpaceFor(JointType* _joint);
 /// slower than createJointStateSpaceFor(), so only use this function if the
 /// Joint's type is not known at compile time.
 std::unique_ptr<JointStateSpace> createJointStateSpace(
-  dart::dynamics::Joint* _joint);
+  ::dart::dynamics::Joint* _joint);
 
+} // namespace dart
 } // namespace statespace
 } // namespace aikido
 

@@ -16,41 +16,41 @@ std::unique_ptr<Differentiable> createDifferentiableBoundsFor(
   std::shared_ptr<Space> _stateSpace);
 
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace);
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace);
 
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton);
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
 
 template <class Space>
 std::unique_ptr<Projectable> createProjectableBoundsFor(
   std::shared_ptr<Space> _stateSpace);
 
 std::unique_ptr<Projectable> createProjectableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace);
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace);
 
 std::unique_ptr<Projectable> createProjectableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton);
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
 
 template <class Space>
 std::unique_ptr<TestableConstraint> createTestableBoundsFor(
   std::shared_ptr<Space> _stateSpace);
 
 std::unique_ptr<TestableConstraint> createTestableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace);
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace);
 
 std::unique_ptr<TestableConstraint> createTestableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton);
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
 
 template <class Space>
 std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
   std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng);
 
 std::unique_ptr<SampleableConstraint> createSampleableBounds(
-  std::shared_ptr<statespace::JointStateSpace> _stateSpace,
+  std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng);
 
 std::unique_ptr<SampleableConstraint> createSampleableBounds(
-  statespace::MetaSkeletonStateSpacePtr _metaSkeleton,
+  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng);
 
 } // namespace constraint

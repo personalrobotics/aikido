@@ -17,7 +17,7 @@ class CollisionConstraint : public TestableConstraint
 {
 public:
   CollisionConstraint(
-      std::shared_ptr<aikido::statespace::MetaSkeletonStateSpace> statespace,
+      std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> statespace,
       std::shared_ptr<dart::collision::CollisionDetector> collisionDetector)
       : statespace{statespace}
       , collisionDetector{collisionDetector}
@@ -44,7 +44,7 @@ public:
 private:
   using CollisionGroup = dart::collision::CollisionGroup;
 
-  std::shared_ptr<aikido::statespace::MetaSkeletonStateSpace> statespace;
+  std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> statespace;
   std::shared_ptr<dart::collision::CollisionDetector> collisionDetector;
   dart::collision::Option collisionOptions;
   std::vector<std::pair<std::shared_ptr<CollisionGroup>, std::shared_ptr<CollisionGroup>>>

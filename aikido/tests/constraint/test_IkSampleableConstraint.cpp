@@ -8,13 +8,26 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
+using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::SO2StateSpace;
+using aikido::constraint::FiniteSampleConstraint;
+using aikido::constraint::IkSampleableConstraint;
+using aikido::constraint::FiniteCyclicSampleConstraint;
+using aikido::statespace::SE3StateSpace;
+using dart::dynamics::FreeJoint;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::TSR;
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
-
-using namespace aikido::constraint;
-using namespace aikido::statespace;
-using namespace dart::dynamics;
-
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
+using dart::dynamics::BodyNode;
+using dart::dynamics::BodyNodePtr;
+using dart::dynamics::RevoluteJoint;
+using dart::dynamics::InverseKinematics;
+using dart::dynamics::InverseKinematicsPtr;
 
 class IkSampleableConstraintTest : public ::testing::Test
 {

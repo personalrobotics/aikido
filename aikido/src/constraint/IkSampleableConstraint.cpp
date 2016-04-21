@@ -7,9 +7,9 @@ namespace aikido {
 namespace constraint {
 
 using statespace::SE3StateSpace;
-using statespace::MetaSkeletonStateSpacePtr;
+using statespace::dart::MetaSkeletonStateSpacePtr;
 using util::RNG;
-using statespace::MetaSkeletonStateSpace;
+using statespace::dart::MetaSkeletonStateSpace;
 using statespace::SE3StateSpace;
 using dart::dynamics::INVALID_INDEX;
 
@@ -41,14 +41,14 @@ public:
 private:  
   // For internal use only.
   IkSampleGenerator(
-    statespace::MetaSkeletonStateSpacePtr _stateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<SampleGenerator> _poseSampler,
     std::unique_ptr<SampleGenerator> _seedSampler,
     std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
-  statespace::MetaSkeletonStateSpacePtr mStateSpace;
+  statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
   std::shared_ptr<statespace::SE3StateSpace> mPoseStateSpace;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<SampleGenerator> mPoseSampler;
@@ -146,7 +146,7 @@ void IkSampleableConstraint::setRNG(std::unique_ptr<util::RNG> rng)
 
 //=============================================================================
 IkSampleGenerator::IkSampleGenerator(
-      statespace::MetaSkeletonStateSpacePtr _stateSpace,
+      statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       std::unique_ptr<SampleGenerator> _poseSampler,
       std::unique_ptr<SampleGenerator> _seedSampler,

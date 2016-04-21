@@ -7,8 +7,8 @@ bool CollisionConstraint::isSatisfied(
     const aikido::statespace::StateSpace::State* state) const
 {
   auto skelStatePtr =
-      static_cast<const aikido::statespace::MetaSkeletonStateSpace::State*>(
-          state);
+    static_cast<const aikido::statespace::dart::MetaSkeletonStateSpace::State*>(
+      state);
   statespace->setStateOnMetaSkeleton(skelStatePtr);
 
   bool collision = false;

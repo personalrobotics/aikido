@@ -19,9 +19,9 @@ using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::SatisfiedConstraint;
-using aikido::statespace::RealVectorJointStateSpace;
-using aikido::statespace::SO2JointStateSpace;
-using aikido::statespace::SO3JointStateSpace;
+using aikido::statespace::dart::RealVectorJointStateSpace;
+using aikido::statespace::dart::SO2JointStateSpace;
+using aikido::statespace::dart::SO3JointStateSpace;
 using aikido::util::RNGWrapper;
 
 using aikido::constraint::createDifferentiableBoundsFor;

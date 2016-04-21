@@ -17,13 +17,28 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <Eigen/Dense>
 
-using dart::common::make_unique;
-using aikido::util::RNGWrapper;
+using aikido::constraint::FkTestable;
+using aikido::constraint::IkSampleableConstraint;
+using aikido::constraint::ProjectablePtr;
+using aikido::constraint::SampleableConstraintPtr;
+using aikido::constraint::TSR;
+using aikido::constraint::TSRPtr;
+using aikido::constraint::TestableConstraintPtr;
+using aikido::distance::DistanceMetricPtr;
+using aikido::statespace::GeodesicInterpolator;
+using aikido::statespace::InterpolatorPtr;
+using aikido::statespace::SO2StateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::util::RNG;
-using namespace aikido::constraint;
-using namespace aikido::distance;
-using namespace aikido::statespace;
-using namespace dart::dynamics;
+using aikido::util::RNGWrapper;
+using dart::common::make_unique;
+using dart::dynamics::BodyNode;
+using dart::dynamics::BodyNodePtr;
+using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
+
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 

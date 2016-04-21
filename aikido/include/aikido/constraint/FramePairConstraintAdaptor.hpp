@@ -20,7 +20,7 @@ class FramePairConstraintAdaptor: public Differentiable
 public:
 
   FramePairConstraintAdaptor(
-    statespace::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     dart::dynamics::JacobianNodePtr _jacobianNode1,
     dart::dynamics::JacobianNodePtr _jacobianNode2,
     DifferentiablePtr _relPoseConstraint);
@@ -51,7 +51,7 @@ private:
   dart::dynamics::JacobianNodePtr mJacobianNode1;
   dart::dynamics::JacobianNodePtr mJacobianNode2;
   DifferentiablePtr mRelPoseConstraint;
-  statespace::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   
 };
 

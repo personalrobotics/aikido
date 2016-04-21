@@ -5,6 +5,7 @@
 
 namespace aikido {
 namespace statespace {
+namespace dart {
 
 /// Wrap a 6-DOF joint in a SE3StateSpace.
 class SE3JointStateSpace
@@ -15,7 +16,7 @@ class SE3JointStateSpace
 public:
   using SE3StateSpace::State;
 
-  explicit SE3JointStateSpace(dart::dynamics::FreeJoint* _joint);
+  explicit SE3JointStateSpace(::dart::dynamics::FreeJoint* _joint);
 
   // Documentation inherited.
   void getState(StateSpace::State* _state) const override;
@@ -24,7 +25,7 @@ public:
   void setState(const StateSpace::State* _state) const override;
 };
 
-
+} // namespace dart
 } // namespace statespace
 } // namespace aikido
 
