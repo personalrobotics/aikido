@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PATH_TRAJECTORY_H_
-#define AIKIDO_PATH_TRAJECTORY_H_
+#ifndef AIKIDO_PATH_TRAJECTORY_HPP_
+#define AIKIDO_PATH_TRAJECTORY_HPP_
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 #include "../statespace/StateSpace.hpp"
@@ -72,4 +72,4 @@ using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
 }  // namespace path
 }  // namespace aikido
 
-#endif  // ifndef AIKIDO_PATH_TRAJECTORY_H_
+#endif  // ifndef AIKIDO_PATH_TRAJECTORY_HPP_
