@@ -11,38 +11,74 @@ template <class... Types>
 class type_list {};
 
 //=============================================================================
-template <template <class> class Factory, class BaseParameter, class TypeList>
+template <class Pointee>
+struct ForOneOf_shared_ptr
+{
+  using type = std::shared_ptr<Pointee>;
+
+  template <class Derived>
+  static std::shared_ptr<Derived> cast(std::shared_ptr<Pointee> _pointer)
+  {
+    return std::dynamic_pointer_cast<Derived>(std::move(_pointer));
+  }
+};
+
+template <class Pointee>
+struct ForOneOf_raw_ptr
+{
+  using type = Pointee*;
+
+  template <class Derived>
+  static Derived* cast(Pointee* _pointer)
+  {
+    return dynamic_cast<Pointee*>(_pointer);
+  }
+};
+
+template <
+  template <class> class Factory,
+  template <class> class Pointer,
+  class BaseParameter,
+  class TypeList>
 struct ForOneOf {};
 
-template <template <class> class Factory, class BaseParameter>
-struct ForOneOf<Factory, BaseParameter, util::type_list<>>
+template <
+  template <class> class Factory,
+  template <class> class Pointer,
+  class BaseParameter>
+struct ForOneOf<Factory, Pointer, BaseParameter, util::type_list<>>
 {
   template <class... Parameters>
-  static std::nullptr_t create(std::shared_ptr<BaseParameter> /* unused */,
-                               Parameters&&... /* unused */)
+  static std::nullptr_t create(
+    typename Pointer<BaseParameter>::type /* unused */,
+    Parameters&&... /* unused */)
   {
     return nullptr;
   }
 };
 
-template <template <class> class Factory, class BaseParameter,
-          class Arg, class... Args>
-struct ForOneOf<Factory, BaseParameter, util::type_list<Arg, Args...>>
+template <
+  template <class> class Factory,
+  template <class> class Pointer,
+  class BaseParameter,
+  class Arg,
+  class... Args>
+struct ForOneOf<Factory, Pointer, BaseParameter, util::type_list<Arg, Args...>>
 {
   template <class... Parameters>
-  static auto create(std::shared_ptr<BaseParameter> _delegate,
+  static auto create(typename Pointer<BaseParameter>::type _base,
                      Parameters&&... _params)
     -> decltype(Factory<Arg>::create(
-         std::dynamic_pointer_cast<Arg>(_delegate),
+         Pointer<BaseParameter>::template cast<Arg>(_base),
          std::forward<Parameters>(_params)...))
   {
-    if (auto arg = std::dynamic_pointer_cast<Arg>(_delegate))
+    if (auto derived = Pointer<BaseParameter>::template cast<Arg>(_base))
       return Factory<Arg>::create(
-        std::move(arg), std::forward<Parameters>(_params)...);
+        std::move(derived), std::forward<Parameters>(_params)...);
     else
       return ForOneOf<
-        Factory, BaseParameter, util::type_list<Args...>>::create(
-          std::move(_delegate), std::forward<Parameters>(_params)...);
+        Factory, Pointer, BaseParameter, util::type_list<Args...>>::create(
+          std::move(_base), std::forward<Parameters>(_params)...);
   }
 };
 

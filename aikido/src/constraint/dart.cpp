@@ -16,8 +16,9 @@ using dart::common::make_unique;
 std::unique_ptr<Differentiable> createDifferentiableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
-  return detail::ForOneOf<
+  return util::ForOneOf<
       detail::createDifferentiableFor_impl,
+      util::ForOneOf_shared_ptr,
       statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace));
@@ -54,8 +55,9 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 std::unique_ptr<Projectable> createProjectableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
-  return detail::ForOneOf<
+  return util::ForOneOf<
       detail::createProjectableFor_impl,
+      util::ForOneOf_shared_ptr,
       statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace));
@@ -85,8 +87,9 @@ std::unique_ptr<Projectable> createProjectableBounds(
 std::unique_ptr<TestableConstraint> createTestableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
-  return detail::ForOneOf<
+  return util::ForOneOf<
       detail::createTestableFor_impl,
+      util::ForOneOf_shared_ptr,
       statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace));
@@ -117,8 +120,9 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
-  return detail::ForOneOf<
+  return util::ForOneOf<
       detail::createSampleableFor_impl,
+      util::ForOneOf_shared_ptr,
       statespace::dart::JointStateSpace,
       detail::JointStateSpaceTypeList
     >::create(std::move(_stateSpace), std::move(_rng));
