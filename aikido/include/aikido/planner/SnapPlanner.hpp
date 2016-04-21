@@ -24,10 +24,10 @@ namespace planner {
 path::PiecewiseLinearTrajectoryPtr planSnap(
   const statespace::StateSpace::State *startState,
   const statespace::StateSpace::State *goalState,
-  const std::shared_ptr<statespace::StateSpace> stateSpace,
-  const std::shared_ptr<constraint::TestableConstraint> constraint,
-  const std::shared_ptr<statespace::Interpolator> interpolator,
-  planner::PlanningResult *planningResult);
+  const std::shared_ptr<statespace::StateSpace>& stateSpace,
+  const std::shared_ptr<constraint::TestableConstraint>& constraint,
+  const std::shared_ptr<statespace::Interpolator>& interpolator,
+  planner::PlanningResult& planningResult);
 
 } // namespace planner
 } // namespace aikido
