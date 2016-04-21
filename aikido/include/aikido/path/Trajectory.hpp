@@ -39,7 +39,8 @@ public:
   /// \return time at which the trajectory starts
   virtual double getStartTime() const = 0;
 
-  /// Time at which the trajectory ends. This may not be zero.
+  /// Time at which the trajectory ends. This may not be \c getDuration() if
+  /// \c getStartTime() is not zero.
   ///
   /// \return time at which the trajectory ends
   virtual double getEndTime() const = 0;
