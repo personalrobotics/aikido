@@ -51,7 +51,7 @@ public:
   /// Helper function to create a \c ScopedState.
   ///
   /// \return new \c ScopedState
-  ScopedState createState() const { return ScopedState(this); }
+  ScopedState createState() const;
 
   /// Allocate a new state. This must be deleted with \c freeState. This is a
   /// helper function that allocates memory, uses \c allocateStateInBuffer to
@@ -94,6 +94,17 @@ public:
   virtual void compose(const State *_state1, const State *_state2,
                        State *_out) const = 0;
 
+  /// Lie group operation for this StateSpace. This is an in-place version of
+  /// the three argument \c compose member function that computes:
+  ///
+  /// \code
+  /// _state1 = _state1 * _state2.
+  /// \endcode
+  ///
+  /// \param[in,out] _state1 left input state, overwritten by output
+  /// \param _state2 right input state
+  virtual void compose(State *_state1, const State *_state2);
+
   /// Gets the identity element for this Lie group, such that:
   /// \code
   /// compose(state, identity) = state
@@ -111,6 +122,12 @@ public:
   /// \param _state input state
   /// \param[out] _out output state
   virtual void getInverse(const State *_state, State *_out) const = 0;
+
+  /// Gets the inverse of \c _in in this Lie group. This is an in-place
+  /// version of the two-argument \c getInverse member function.
+  ///
+  /// \param[in,out] _state input state, to be overwritten by output
+  virtual void getInverse(State *_state) const;
 
   /// Get the dimension of this Lie group. This is also the dimension of the
   /// tangent space, i.e. the Lie algebra, associated with this group.
