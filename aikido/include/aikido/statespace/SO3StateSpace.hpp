@@ -1,21 +1,22 @@
-#ifndef AIKIDO_STATESPACE_SO3STATESPACE_H
-#define AIKIDO_STATESPACE_SO3STATESPACE_H
+#ifndef AIKIDO_STATESPACE_SO3STATESPACE_HPP_
+#define AIKIDO_STATESPACE_SO3STATESPACE_HPP_
 #include <Eigen/Geometry>
 #include "StateSpace.hpp"
 #include "ScopedState.hpp"
 
-namespace aikido
-{
-namespace statespace
-{
-template <class T>
+namespace aikido {
+namespace statespace {
+
+// Defined in detail/SO3StateSpace-impl.hpp
+template <class>
 class SO3StateHandle;
 
-/// Represents the space of spatial rotations.
+/// The two-dimensional special orthogonal group SO(3), i.e. the space of
+/// spatial rigid body rotations.
 class SO3StateSpace : virtual public StateSpace
 {
 public:
-  /// Point in SO(3), a spatial orientation.
+  /// State in SO(3), a spatial rotation.
   class State : public StateSpace::State
   {
   public:
@@ -26,13 +27,19 @@ public:
 
     ~State() = default;
 
-    /// Constructs a point in SO(3) from a quaternion.
+    /// Constructs a state in SO(3) from a unit quaternion.
+    ///
+    /// \param _quaternion unit quaternion representing orientation
     explicit State(const Quaternion &_quaternion);
 
-    /// Gets value as a transform.
+    /// Gets a state as a unit quaternion.
+    ///
+    /// \return unit quaternion representing orientation
     const Quaternion &getQuaternion() const;
 
-    /// Sets value to a transform.
+    /// Sets a state to a unit quaternion.
+    ///
+    /// \param _quaternion unit quaternion representing orientation
     void setQuaternion(const Quaternion &_quaternion);
 
   private:
@@ -49,14 +56,24 @@ public:
 
   using Quaternion = State::Quaternion;
 
+  /// Constructs a state space representing SO(3).
   SO3StateSpace() = default;
 
+  /// Helper function to create a \c ScopedState.
+  ///
+  /// \return new \c ScopedState
   ScopedState createState() const;
 
-  /// Gets value as a transform.
+  /// Gets a state as a unit quaternion.
+  ///
+  /// \param _state input state
+  /// \return unit quaternion representing orientation
   const Quaternion &getQuaternion(const State *_state) const;
 
-  /// Sets value to a transform.
+  /// Sets a state to a unit quaternion.
+  ///
+  /// \param _state input state
+  /// \param _quaternion unit quaternion representing orientation
   void setQuaternion(State *_state, const Quaternion &_quaternion) const;
 
   // Documentation inherited.
@@ -87,19 +104,26 @@ public:
   void copyState(StateSpace::State* _destination,
                  const StateSpace::State* _source) const override;
 
-  // Documentation inherited. _tangent should be 3d twist.
+  /// Exponential mapping of Lie algebra element to a Lie group element. The
+  /// tangent space is parameterized as a spatial rotation velocity.
+  ///
+  /// \param _tangent element of the tangent space
+  /// \param[out] _out corresponding element of the Lie group
   void expMap(const Eigen::VectorXd &_tangent,
               StateSpace::State *_out) const override;
 
-  // Documentation inherited
+  /// Log mapping of Lie group element to a Lie algebra element. The tangent
+  /// space is parameterized as a spatial rotational velocity.
+  ///
+  /// \param _state element of this Lie group
+  /// \param[out] _tangent corresponding element of the tangent space
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
-
 };
 
-}  // namespace statespace
-}  // namespace aikido
+} // namespace statespace
+} // namespace aikido
 
-#include "detail/SO3StateSpace.hpp"
+#include "detail/SO3StateSpace-impl.hpp"
 
-#endif
+#endif // ifndef AIKIDO_STATESPACE_SO3STATESPACE_HPP_

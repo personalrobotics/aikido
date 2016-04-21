@@ -13,11 +13,11 @@ template <class>
 class SO2StateHandle;
 
 /// The two-dimensional special orthogonal group SO(2), i.e. the space of
-/// spatial rigid body rotations.
+/// planar rigid body rotations.
 class SO2StateSpace : virtual public StateSpace
 {
 public:
-  /// Point in SO(2), a planar rotation.
+  /// State in SO(2), a planar rotation.
   class State : public StateSpace::State
   {
   public:
