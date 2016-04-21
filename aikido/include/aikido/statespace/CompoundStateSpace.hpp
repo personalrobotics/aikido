@@ -113,7 +113,7 @@ public:
                StateSpace::State *_out) const override;
 
   // Documentation inherited
-  void getIdentity(StateSpace::State *_out) const override;
+  void getIdentity(StateSpace::State *_state) const override;
 
   // Documentation inherited
   void getInverse(const StateSpace::State *_in,
@@ -129,12 +129,18 @@ public:
   /// Exponential mapping of Lie algebra element to a Lie group element. The
   /// tangent space is parameterized by stacking the tangent vector of each
   /// subspace in the order the subspaces are listed in.
+  ///
+  /// \param _tangent element of the tangent space
+  /// \param[out] _out corresponding element of the Lie group
   void expMap(
     const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
   /// Log mapping of Lie group element to a Lie algebra element. The tangent
   /// space is parameterized by stacking the tangent vector of each subspace
   /// in the order the subspaces are listed in.
+  ///
+  /// \param _state element of this Lie group
+  /// \param[out] _tangent corresponding element of the tangent space
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
 

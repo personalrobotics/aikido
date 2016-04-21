@@ -7,12 +7,12 @@
 namespace aikido {
 namespace statespace {
 
-/// Defined in detail/RealVectorStateSpace-impl.hpp
-///
+// Defined in detail/RealVectorStateSpace-impl.hpp
 template <class>
 class RealVectorStateHandle;
 
-/// Represents a n-dimensional real vector space.
+/// Represents a n-dimensional real vector space with vector addition as the
+/// group operation.
 class RealVectorStateSpace : public virtual StateSpace
 {
 public:
@@ -82,16 +82,28 @@ public:
   void copyState(StateSpace::State* _destination,
                  const StateSpace::State* _source) const override;
 
-  // Documentation inherited.
+  /// Exponential mapping of Lie algebra element to a Lie group element. This
+  /// is simply the identity transformation on a real vector space.
+  ///
+  /// \param _tangent element of the tangent space
+  /// \param[out] _out corresponding element of the Lie group
   void expMap(const Eigen::VectorXd &_tangent,
               StateSpace::State *_out) const override;
 
-  // Documentation inherited
+  /// Log mapping of Lie group element to a Lie algebra element. This is simply
+  /// an identity transformation on a real vector space.
+  ///
+  /// \param _state element of this Lie group
+  /// \param[out] _tangent corresponding element of the tangent space
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
 
 private:
-  /// Gets the value stored in a RealVectorStateSpace::State.
+  /// Gets the mutable value stored in a RealVectorStateSpace::State. This is
+  /// used internally to implement the public \c getValue member functions.
+  ///
+  /// \param _state element of this state space
+  /// \return mutable reference to real vector stored in \c _state
   Eigen::Map<Eigen::VectorXd> getMutableValue(State *_state) const;
 
   int mDimension;
