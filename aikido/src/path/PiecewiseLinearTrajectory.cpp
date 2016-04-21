@@ -167,5 +167,26 @@ int PiecewiseLinearTrajectory::getWaypointIndexAfterTime(double _t) const
 
   return std::distance(mWaypoints.begin(), it);
 }
+
+//=============================================================================
+PiecewiseLinearTrajectory::Waypoint::Waypoint(
+      double _t, aikido::statespace::StateSpace::State *_state)
+  : t(_t)
+  , state(_state)
+{
+}
+
+//=============================================================================
+bool PiecewiseLinearTrajectory::Waypoint::operator <(const Waypoint &rhs) const
+{
+  return t < rhs.t;
+}
+
+//=============================================================================
+bool PiecewiseLinearTrajectory::Waypoint::operator <(const double &rhs) const
+{
+  return t < rhs;
+}
+
 }
 }
