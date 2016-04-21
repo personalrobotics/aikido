@@ -10,11 +10,11 @@ namespace aikido {
 namespace planner {
 
 path::PiecewiseLinearTrajectoryPtr planSnap(
+  const std::shared_ptr<aikido::statespace::StateSpace>& stateSpace,
   const aikido::statespace::StateSpace::State *startState,
   const aikido::statespace::StateSpace::State *goalState,
-  const std::shared_ptr<aikido::statespace::StateSpace>& stateSpace,
-  const std::shared_ptr<aikido::constraint::TestableConstraint>& constraint,
   const std::shared_ptr<aikido::statespace::Interpolator>& interpolator,
+  const std::shared_ptr<aikido::constraint::TestableConstraint>& constraint,
   aikido::planner::PlanningResult& planningResult)
 {
   if (stateSpace != constraint->getStateSpace()) {

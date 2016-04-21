@@ -60,9 +60,10 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 {
   SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
   auto differentStateSpace = make_shared<MetaSkeletonStateSpace>(empty_skel);
-  EXPECT_THROW(planSnap(*startState, *goalState, differentStateSpace,
-                        passingConstraint, interpolator, &planningResult),
-               std::invalid_argument);
+  EXPECT_THROW({
+    planSnap(differentStateSpace, *startState, *goalState,
+      interpolator, passingConstraint, planningResult);
+  }, std::invalid_argument);
 }
 
 TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
@@ -71,8 +72,8 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   stateSpace->getMetaSkeleton()->setPosition(0, 2.0);
   stateSpace->setState(*goalState);
 
-  auto traj = planSnap(*startState, *goalState, stateSpace, passingConstraint,
-                       interpolator, &planningResult);
+  auto traj = planSnap(stateSpace, *startState, *goalState, interpolator,
+    passingConstraint, planningResult);
 
   auto subSpace = stateSpace->getSubSpace<SO2StateSpace>(0);
   EXPECT_EQ(2, traj->getNumWaypoints());
@@ -98,7 +99,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
-  auto traj = planSnap(*startState, *goalState, stateSpace, failingConstraint,
-                       interpolator, &planningResult);
+  auto traj = planSnap(stateSpace, *startState, *goalState, interpolator,
+    failingConstraint, planningResult);
   EXPECT_EQ(0, traj->getNumWaypoints());  // TODO boost::optional
 }
