@@ -108,8 +108,8 @@ void RealVectorStateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-void RealVectorStateSpace::copyState(StateSpace::State *_destination,
-                                     const StateSpace::State *_source) const
+void RealVectorStateSpace::copyState(
+  const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto destination = static_cast<State *>(_destination);
   auto source = static_cast<const State *>(_source);

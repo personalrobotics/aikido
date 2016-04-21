@@ -52,9 +52,9 @@ double AIKIDOGeometricStateSpace::getMeasure() const
 void AIKIDOGeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
 {
   auto state = static_cast<const StateType *>(_state);
-  auto out = mStateSpace->createState();
-  mBoundsProjection->project(state->mState, out);
-  mStateSpace->copyState(state->mState, out);
+  auto temporaryState = mStateSpace->createState();
+  mBoundsProjection->project(state->mState, temporaryState);
+  mStateSpace->copyState(temporaryState, state->mState);
 }
 
 /// Check if a state is inside the bounding box.
@@ -72,7 +72,7 @@ void AIKIDOGeometricStateSpace::copyState(
 {
   auto dst = static_cast<StateType *>(_destination);
   auto sst = static_cast<const StateType *>(_source);
-  mStateSpace->copyState(dst->mState, sst->mState);
+  mStateSpace->copyState(sst->mState, dst->mState);
 }
 
 /// Computes distance between two states. This function satisfies
@@ -136,9 +136,9 @@ AIKIDOGeometricStateSpace::allocDefaultStateSampler() const
 ::ompl::base::State *AIKIDOGeometricStateSpace::allocState(
     const aikido::statespace::StateSpace::State *_state) const
 {
-  auto ast = mStateSpace->allocateState();
-  mStateSpace->copyState(ast, _state);
-  return new StateType(ast);
+  auto newState = mStateSpace->allocateState();
+  mStateSpace->copyState(_state, newState);
+  return new StateType(newState);
 }
 
 /// Free the memory of the allocated state

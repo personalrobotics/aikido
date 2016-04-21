@@ -42,7 +42,7 @@ bool SatisfiedConstraint::project(
   const statespace::StateSpace::State* _s,
   statespace::StateSpace::State* _out) const
 {
-  mStateSpace->copyState(_out, _s);
+  mStateSpace->copyState(_s, _out);
   return true;
 }
 

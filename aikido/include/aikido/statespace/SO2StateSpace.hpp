@@ -120,8 +120,9 @@ public:
   size_t getDimension() const override;
 
   // Documentation inherited.
-  void copyState(StateSpace::State* _destination,
-                 const StateSpace::State* _source) const override;
+  void copyState(
+    const StateSpace::State *_source,
+    StateSpace::State *_destination) const override;
 
   /// Exponential mapping of Lie algebra element to a Lie group element. The
   /// tangent space is parameterized a rotation angle.

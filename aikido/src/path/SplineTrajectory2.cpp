@@ -21,7 +21,7 @@ SplineTrajectory2::SplineTrajectory2(
 
   // Do this last, since we have to clean up this memory in the destructor.
   mStartState = mStateSpace->allocateState();
-  mStateSpace->copyState(mStartState, _startState);
+  mStateSpace->copyState(_startState, mStartState);
 }
 
 //=============================================================================
@@ -105,14 +105,14 @@ void SplineTrajectory2::evaluate(
 {
   if (mSegments.empty())
   {
-    mStateSpace->copyState(_out, mStartState);
+    mStateSpace->copyState(mStartState, _out);
     return;
   }
 
   const auto targetSegmentInfo = getSegmentForTime(_t);
   const auto& targetSegment = mSegments[targetSegmentInfo.first];
 
-  mStateSpace->copyState(_out, mStartState);
+  mStateSpace->copyState(mStartState, _out);
 
   const auto relativeState = mStateSpace->createState();
   const auto nextState = mStateSpace->createState();
@@ -132,7 +132,7 @@ void SplineTrajectory2::evaluate(
 
     mStateSpace->expMap(tangentVector, relativeState);
     mStateSpace->compose(_out, relativeState, nextState);
-    mStateSpace->copyState(_out, nextState);
+    mStateSpace->copyState(nextState, _out);
   }
 }
 
@@ -183,7 +183,7 @@ void SplineTrajectory2::getSegmentStartState(
   assert(_index < mSegments.size());
   assert(_out != nullptr);
 
-  mStateSpace->copyState(_out, mStartState);
+  mStateSpace->copyState(mStartState, _out);
 
   const auto relativeState = mStateSpace->createState();
   const auto nextState = mStateSpace->createState();
@@ -199,7 +199,7 @@ void SplineTrajectory2::getSegmentStartState(
     // Compute the relative state offset caused by this segment.
     mStateSpace->expMap(tangentVector, relativeState);
     mStateSpace->compose(_out, relativeState, nextState);
-    mStateSpace->copyState(_out, nextState);
+    mStateSpace->copyState(nextState, _out);
   }
 }
 

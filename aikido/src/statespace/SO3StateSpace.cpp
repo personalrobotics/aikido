@@ -104,8 +104,8 @@ size_t SO3StateSpace::getDimension() const
 }
 
 //=============================================================================
-void SO3StateSpace::copyState(StateSpace::State *_destination,
-                              const StateSpace::State *_source) const
+void SO3StateSpace::copyState(
+  const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto destination = static_cast<State *>(_destination);
   auto source = static_cast<const State *>(_source);

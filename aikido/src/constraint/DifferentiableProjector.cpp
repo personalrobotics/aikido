@@ -58,7 +58,7 @@ bool DifferentiableProjector::project(
 
   statespace::StateSpacePtr space = mDifferentiable->getStateSpace(); 
 
-  space->copyState(_out, _s);
+  space->copyState(_s, _out );
 
   /// Newton's method on mDifferentiable
   while(!contains(_out) && iteration < mMaxIteration)

@@ -96,7 +96,7 @@ bool FiniteCyclicSampleGenerator::sample(statespace::StateSpace::State* _state)
     auto space = mGenerator->getStateSpace();
     statespace::StateSpace::State* state = space->allocateState();
 
-    space->copyState(state, _state);
+    space->copyState(_state, state);
     mStates.emplace_back(state);
 
     return true;
@@ -104,7 +104,7 @@ bool FiniteCyclicSampleGenerator::sample(statespace::StateSpace::State* _state)
 
   // Return the sample at mIndex.
   auto space = mGenerator->getStateSpace();
-  space->copyState(_state, mStates[mIndex]);
+  space->copyState(mStates[mIndex], _state);
 
   // Set mIndex to 0 if it copied the last element of mStates.
   ++mIndex;

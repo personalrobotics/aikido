@@ -106,14 +106,14 @@ size_t CompoundStateSpace::getDimension() const
 }
 
 //=============================================================================
-void CompoundStateSpace::copyState(StateSpace::State *_destination,
-                                   const StateSpace::State *_source) const
+void CompoundStateSpace::copyState(
+  const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto destination = static_cast<State *>(_destination);
   auto source = static_cast<const State *>(_source);
   for (size_t i = 0; i < mSubspaces.size(); ++i) {
-    mSubspaces[i]->copyState(getSubState<>(destination, i),
-                             getSubState<>(source, i));
+    mSubspaces[i]->copyState(
+      getSubState<>(source, i), getSubState<>(destination, i));
   }
 }
 

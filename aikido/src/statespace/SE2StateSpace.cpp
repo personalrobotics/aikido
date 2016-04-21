@@ -98,8 +98,8 @@ void SE2StateSpace::getInverse(const StateSpace::State* _in,
 }
 
 //=============================================================================
-void SE2StateSpace::copyState(StateSpace::State* _destination,
-                              const StateSpace::State* _source) const
+void SE2StateSpace::copyState(
+  const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto source = static_cast<const State*>(_source);
   auto dest = static_cast<State*>(_destination);

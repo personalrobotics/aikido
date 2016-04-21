@@ -74,7 +74,7 @@ void PiecewiseLinearTrajectory::evaluate(double _t, State *_state) const
     int idx = getWaypointIndexAfterTime(_t);
     if (idx == 0) {
       // Time before beginning of trajectory - return first waypoint
-      mStateSpace->copyState(_state, mWaypoints[0].state);
+      mStateSpace->copyState(mWaypoints[0].state, _state);
     } else {
       Waypoint currentWpt = mWaypoints[idx];
       Waypoint prevWpt = mWaypoints[idx - 1];
@@ -84,7 +84,7 @@ void PiecewiseLinearTrajectory::evaluate(double _t, State *_state) const
     }
   } catch (std::domain_error e) {
     // Time past end of trajectory - return last waypoint
-    mStateSpace->copyState(_state, mWaypoints.back().state);
+    mStateSpace->copyState(mWaypoints.back().state, _state);
   }
 }
 
@@ -133,7 +133,7 @@ Eigen::VectorXd PiecewiseLinearTrajectory::evaluate(double _t,
 void PiecewiseLinearTrajectory::addWaypoint(double _t, const State *_state)
 {
   State *state = mStateSpace->allocateState();
-  mStateSpace->copyState(state, _state);
+  mStateSpace->copyState(_state, state);
 
   // Maintain a sorted list of waypoints
   auto it = std::lower_bound(mWaypoints.begin(), mWaypoints.end(), _t);

@@ -96,7 +96,7 @@ TEST(RealVectorStateSpace, CopyState)
   auto source = rvss.createState();
   auto dest = rvss.createState();
   source.setValue(Eigen::Vector4d(0, 1, 2, 3));
-  rvss.copyState(dest, source);
+  rvss.copyState(source, dest);
   EXPECT_TRUE(dest.getValue().isApprox(source.getValue()));
 }
 
@@ -179,7 +179,7 @@ TEST(SO2StateSpace, CopyState)
   auto dest = so2.createState();
   auto source = so2.createState();
   source.setAngle(3.14159);
-  so2.copyState(dest, source);
+  so2.copyState(source, dest);
   EXPECT_DOUBLE_EQ(source.getAngle(), dest.getAngle());
 }
 
@@ -270,7 +270,7 @@ TEST(SO3StateSpace, CopyState)
   auto quat = Eigen::Quaterniond(
       Eigen::AngleAxisd(1.8 * M_PI, Eigen::Vector3d::UnitX()));
 
-  so3.copyState(dest, source);
+  so3.copyState(source, dest);
   EXPECT_TRUE(source.getQuaternion().isApprox(dest.getQuaternion()));
 }
 
@@ -595,7 +595,7 @@ TEST(CompoundStateSpace, CopyState)
   source.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv);
   source.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat);
 
-  space.copyState(dest, source);
+  space.copyState(source, dest);
 
   const double out1 = dest.getSubStateHandle<SO2StateSpace>(0).getAngle();
   EXPECT_DOUBLE_EQ(angle, out1);

@@ -117,8 +117,8 @@ size_t SO2StateSpace::getDimension() const
 }
 
 //=============================================================================
-void SO2StateSpace::copyState(StateSpace::State *_destination,
-                              const StateSpace::State *_source) const
+void SO2StateSpace::copyState(
+  const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto source = static_cast<const State *>(_source);
   auto destination = static_cast<State *>(_destination);

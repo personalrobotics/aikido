@@ -70,7 +70,7 @@ private:
     }
 
     statespace::StateSpace::State* newState = mStateSpace->allocateState();
-    mStateSpace->copyState(newState, state);
+    mStateSpace->copyState(state, newState);
 
     mStates.emplace_back(newState);
   }
@@ -97,7 +97,7 @@ bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
   if (mStates.size() <= mIndex)
     return false;
 
-  mStateSpace->copyState(_state, mStates[mIndex]);
+  mStateSpace->copyState(mStates[mIndex], _state);
   ++mIndex;
 
   return true;
@@ -128,7 +128,7 @@ FiniteSampleConstraint::FiniteSampleConstraint(
     throw std::invalid_argument("State is nullptr.");
 
   statespace::StateSpace::State* state = mStateSpace->allocateState();
-  mStateSpace->copyState(state, _state);
+  mStateSpace->copyState(_state, state);
 
   mStates.push_back(state);
 }
@@ -159,7 +159,7 @@ FiniteSampleConstraint::FiniteSampleConstraint(
     }
 
     statespace::StateSpace::State* newState = mStateSpace->allocateState();
-    mStateSpace->copyState(newState, state);
+    mStateSpace->copyState(state, newState);
 
     mStates.emplace_back(newState);
   }

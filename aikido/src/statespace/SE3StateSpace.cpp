@@ -98,8 +98,8 @@ size_t SE3StateSpace::getDimension() const
 }
 
 //=============================================================================
-void SE3StateSpace::copyState(StateSpace::State *_destination,
-                              const StateSpace::State *_source) const
+void SE3StateSpace::copyState(
+  const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto source = static_cast<const State *>(_source);
   auto dest = static_cast<State *>(_destination);

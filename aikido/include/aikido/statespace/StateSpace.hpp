@@ -137,10 +137,11 @@ public:
 
   /// Copy a state.
   ///
-  /// \param[out] _destination output state
   /// \param _source input state
-  virtual void copyState(StateSpace::State *_destination,
-                         const StateSpace::State *_source) const = 0;
+  /// \param[out] _destination output state
+  virtual void copyState(
+    const StateSpace::State *_source,
+    StateSpace::State *_destination) const = 0;
 
   /// Exponential mapping of Lie algebra element to a Lie group element. The
   /// parameterization of the tangent space is defined by the concrete
