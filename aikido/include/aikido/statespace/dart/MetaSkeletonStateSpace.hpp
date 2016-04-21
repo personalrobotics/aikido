@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_HPP_
-#define AIKIDO_STATESPACE_METASKELETONSTATESPACE_HPP_
+#ifndef AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
 #include <dart/dynamics/dynamics.h>
 #include "../CompoundStateSpace.hpp"
 #include "JointStateSpace.hpp"
@@ -108,4 +108,4 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(
 
 #include "detail/MetaSkeletonStateSpace-impl.hpp"
 
-#endif // ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_HPP_
+#endif // ifndef AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_

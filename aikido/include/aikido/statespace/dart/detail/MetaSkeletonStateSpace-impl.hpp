@@ -140,7 +140,7 @@ std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
 {
   const auto index = mMetaSkeleton->getIndexOf(_joint, true);
   if (index == ::dart::dynamics::INVALID_INDEX)
-    return nullptr;
+    throw std::invalid_argument("Joint is not in MetaSkeleton.");
 
   return getSubSpace<Space>(index);
 }
