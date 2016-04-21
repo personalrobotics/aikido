@@ -2,6 +2,9 @@
 #include <aikido/constraint/IkSampleableConstraint.hpp>
 #include <aikido/constraint/FiniteSampleConstraint.hpp>
 #include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
+#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/SO2StateSpace.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/util/RNG.hpp>

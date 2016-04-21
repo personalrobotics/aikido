@@ -1,6 +1,9 @@
 #include <aikido/constraint/FrameConstraintAdaptor.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/SO2StateSpace.hpp>
 #include <aikido/util/RNG.hpp>
 
 #include <gtest/gtest.h>

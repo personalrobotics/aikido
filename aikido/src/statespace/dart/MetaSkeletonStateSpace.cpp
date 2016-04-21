@@ -1,6 +1,7 @@
 #include <cassert>
 #include <sstream>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/statespace/dart/JointStateSpaceHelpers.hpp>
 #include <dart/common/StlHelpers.h>
 #include <dart/common/Console.h>
 
@@ -200,7 +201,6 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(Joint* _joint)
 
   return std::move(space);
 }
-
 
 } // namespace dart
 } // namespace statespace

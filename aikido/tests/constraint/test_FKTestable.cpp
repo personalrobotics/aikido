@@ -1,6 +1,8 @@
 #include <random>
 #include <aikido/constraint/FkTestable.hpp>
 #include <aikido/constraint/TSR.hpp>
+#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/SO2StateSpace.hpp>
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
