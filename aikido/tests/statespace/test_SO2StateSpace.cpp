@@ -1,7 +1,12 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/SO2StateSpace.hpp>
+#include "eigen_tests.hpp"
 
 using aikido::statespace::SO2StateSpace;
+using aikido::tests::make_vector;
+using Eigen::Rotation2Dd;
+
+static constexpr double TOLERANCE { 1e-6 };
 
 TEST(SO2StateSpace, Compose)
 {
@@ -54,9 +59,18 @@ TEST(SO2StateSpace, ExpMap)
   SO2StateSpace::State expected;
 
   SO2StateSpace so2;
-  so2.expMap(Eigen::VectorXd(Eigen::VectorXd::Zero(1)), &out);
 
-  EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
+  so2.expMap(make_vector(0.), &out);
+  EXPECT_EIGEN_EQUAL(
+    Rotation2Dd(0.).matrix(), expected.getRotation().matrix(), TOLERANCE);
+
+  so2.expMap(make_vector(2 * M_PI), &out);
+  EXPECT_EIGEN_EQUAL(
+    Rotation2Dd(0.).matrix(), out.getRotation().matrix(), TOLERANCE);
+
+  so2.expMap(make_vector(-3 * M_PI), &out);
+  EXPECT_EIGEN_EQUAL(
+    Rotation2Dd(M_PI).matrix(), out.getRotation().matrix(), TOLERANCE);
 }
 
 TEST(SO2StateSpace, LogMap)
