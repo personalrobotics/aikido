@@ -102,25 +102,70 @@ MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 }
 
 //=============================================================================
-void MetaSkeletonStateSpace::getState(
+void MetaSkeletonStateSpace::convertPositionsToState(
   const Eigen::VectorXd& _positions, State* _state) const
 {
+  if (_positions.size() != mMetaSkeleton->getNumDofs())
+    throw std::invalid_argument("Incorrect number of positions.");
+
+  for (size_t isubspace = 0; isubspace < getNumStates(); ++isubspace)
+  {
+    const auto subspace = getSubSpace<JointStateSpace>(isubspace);
+    const auto joint = subspace->getJoint();
+
+    // TODO: Find a more efficient way to do this mapping.
+    const auto numJointDofs = joint->getNumDofs();
+    Eigen::VectorXd jointPositions(numJointDofs);
+
+    for (size_t idof = 0; idof < numJointDofs; ++idof)
+    {
+      const auto dof = joint->getDof(idof);
+      const auto dofIndex = mMetaSkeleton->getIndexOf(dof, false);
+      if (dofIndex == INVALID_INDEX)
+        throw std::logic_error(
+          "DegreeOfFreedom is not in MetaSkeleton. This should never happen.");
+
+      jointPositions[idof] = _positions[dofIndex];
+    }
+
+    const auto substate = getSubState<>(_state, isubspace);
+    subspace->convertPositionsToState(jointPositions, substate);
+  }
 }
 
 //=============================================================================
-void MetaSkeletonStateSpace::setState(
+void MetaSkeletonStateSpace::convertStateToPositions(
   const State* _state, Eigen::VectorXd& _positions) const
 {
+  _positions.resize(mMetaSkeleton->getNumDofs());
+
+  for (size_t isubspace = 0; isubspace < getNumStates(); ++isubspace)
+  {
+    const auto subspace = getSubSpace<JointStateSpace>(isubspace);
+    const auto joint = subspace->getJoint();
+    const auto substate = getSubState<>(_state, isubspace);
+
+    Eigen::VectorXd jointPositions;
+    subspace->convertStateToPositions(substate, jointPositions);
+
+    // TODO: Find a more efficient way to do this mapping.
+    for (size_t idof = 0; idof < jointPositions.size(); ++idof)
+    {
+      const auto dof = joint->getDof(idof);
+      const auto dofIndex = mMetaSkeleton->getIndexOf(dof, false);
+      if (dofIndex == INVALID_INDEX)
+        throw std::logic_error(
+          "DegreeOfFreedom is not in MetaSkeleton. This should never happen.");
+
+      _positions[dofIndex] = jointPositions[idof];
+    }
+  }
 }
 
 //=============================================================================
 void MetaSkeletonStateSpace::getStateFromMetaSkeleton(State* _state) const
 {
-  for (size_t ijoint = 0; ijoint < getNumStates(); ++ijoint)
-  {
-    auto jointSpace = getSubSpace<JointStateSpace>(ijoint);
-    jointSpace->getState(getSubState(_state, ijoint));
-  }
+  convertPositionsToState(mMetaSkeleton->getPositions(), _state);
 }
 
 //=============================================================================
@@ -135,11 +180,9 @@ auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
 //=============================================================================
 void MetaSkeletonStateSpace::setStateOnMetaSkeleton(const State* _state)
 {
-  for (size_t ijoint = 0; ijoint < getNumStates(); ++ijoint)
-  {
-    auto jointSpace = getSubSpace<JointStateSpace>(ijoint);
-    jointSpace->setState(getSubState(_state, ijoint));
-  }
+  Eigen::VectorXd positions;
+  convertStateToPositions(_state, positions);
+  mMetaSkeleton->setPositions(positions);
 }
 
 //=============================================================================

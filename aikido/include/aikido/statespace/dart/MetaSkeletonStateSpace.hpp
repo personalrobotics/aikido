@@ -26,9 +26,11 @@ public:
   std::shared_ptr<Space> getJointSpace(
     const ::dart::dynamics::Joint* _joint) const;
 
-  void getState(const Eigen::VectorXd& _positions, State* _state) const;
+  void convertPositionsToState(
+    const Eigen::VectorXd& _positions, State* _state) const;
 
-  void setState(const State* _state, Eigen::VectorXd& _positions) const;
+  void convertStateToPositions(
+    const State* _state, Eigen::VectorXd& _positions) const;
 
   /// Gets the positions of getMetaSkeleton() and store them in _state.
   void getStateFromMetaSkeleton(State* _state) const;
