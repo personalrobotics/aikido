@@ -63,6 +63,6 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(
 } // namespace statespace
 } // namespace aikido
 
-#include "detail/MetaSkeletonStateSpace.hpp"
+#include "detail/MetaSkeletonStateSpace-impl.hpp"
 
 #endif // ifndef AIKIDO_STATESPACE_METASKELETONSTATESPACE_HPP_
