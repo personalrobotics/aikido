@@ -16,7 +16,7 @@ public:
   virtual std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const = 0;
 };
 
-using TestableConstraintPtr = std::shared_ptr<const TestableConstraint>;
+using TestableConstraintPtr = std::shared_ptr<TestableConstraint>;
 
 }  // constraint
 }  // aikido
