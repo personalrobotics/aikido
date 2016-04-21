@@ -4,6 +4,18 @@ namespace aikido {
 namespace util {
 
 //=============================================================================
+constexpr auto RNG::min() -> result_type
+{
+  return 0u;
+}
+
+//=============================================================================
+constexpr auto RNG::max() -> result_type
+{
+  return (static_cast<std::uint64_t>(1) << NUM_BITS) - 1;
+}
+
+//=============================================================================
 template <class Engine, class Scalar, class Quaternion>
 Quaternion sampleQuaternion(
   Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution)

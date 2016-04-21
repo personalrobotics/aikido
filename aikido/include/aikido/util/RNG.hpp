@@ -29,16 +29,10 @@ public:
   virtual ~RNG() = default;
 
   /// Gets the smallest possible value in the output range, always zero.
-  static constexpr result_type min()
-  {
-    return 0u;
-  }
+  static constexpr result_type min();
 
   /// Gets the largest possible value in the output range, 2^NUM_BITS - 1.
-  static constexpr result_type max()
-  {
-    return (static_cast<std::uint64_t>(1) << NUM_BITS) - 1;
-  }
+  static constexpr result_type max();
 
   /// Advances the state of the engine and returns the generated value.
   virtual result_type operator()() = 0;

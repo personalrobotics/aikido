@@ -4,6 +4,10 @@ namespace aikido {
 namespace util {
 
 //=============================================================================
+// This namespace-scoped definition is required to enable odr-use.
+constexpr std::size_t RNG::NUM_BITS;
+
+//=============================================================================
 std::vector<std::unique_ptr<util::RNG>> splitEngine(
   RNG& _engine, size_t _numOutputs, size_t _numSeeds)
 {
