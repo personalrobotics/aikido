@@ -14,7 +14,7 @@ void StateSpace::compose(State *_state1, const State *_state2)
 {
   auto tempState = createState();
   compose(_state1, _state2, tempState);
-  copyState(_state1, tempState);
+  copyState(tempState, _state1);
 }
 
 //=============================================================================
@@ -22,7 +22,7 @@ void StateSpace::getInverse(State *_state) const
 {
   auto tempState = createState();
   getInverse(_state, tempState);
-  copyState(_state, tempState);
+  copyState(tempState, _state);
 }
 
 //=============================================================================

@@ -80,7 +80,7 @@ bool DifferentiableProjector::project(
 
     // Minimization step in state space.
     space->expMap(tangentStep, step);
-    space->compose(_out, step, _out);
+    space->compose(_out, step);
   }
 
   if (!contains(_out))
