@@ -2,6 +2,7 @@ aikido_add_library("${PROJECT_NAME}_util"
   CatkinResourceRetriever.cpp
   PseudoInverse.cpp
   VanDerCorput.cpp
+  RNG.cpp
 )
 target_link_libraries("${PROJECT_NAME}_util"
   ${Boost_FILESYSTEM_LIBRARY}
