@@ -55,8 +55,7 @@ bool YamlFileLoader::getTagNameOffset(const std::string& _tagName, std::string& 
     if(name_offset){
         body_resource.fromString(name_offset["resource"].as<std::string>());
         body_name = name_offset["name"].as<std::string>();
-        Eigen::Matrix4d body_offset_mat = name_offset["offset"].as<Eigen::Matrix4d>();
-        body_offset.matrix() = body_offset_mat;
+        body_offset = name_offset["offset"].as<Eigen::Isometry3d>();
         return true;
     }
     else{

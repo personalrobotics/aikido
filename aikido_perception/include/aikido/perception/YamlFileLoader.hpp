@@ -10,7 +10,7 @@
 #define AIKIDO_PERCEPTION_YAML_FILE_LOADER_H
 
 #include "yaml-cpp/yaml.h"
-#include <aikido/perception/yaml_conversion.hpp>
+#include <aikido/perception/eigen_yaml.hpp>
 #include <aikido/util/CatkinResourceRetriever.hpp>
 #include <dart/common/LocalResourceRetriever.h>
 #include <dart/dart.h>
