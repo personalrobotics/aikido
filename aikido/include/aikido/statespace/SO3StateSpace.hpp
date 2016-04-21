@@ -98,7 +98,7 @@ public:
                   StateSpace::State *_out) const override;
 
   // Documentation inherited
-  unsigned int getDimension() const override;
+  size_t getDimension() const override;
 
   // Documentation inherited
   void copyState(StateSpace::State* _destination,

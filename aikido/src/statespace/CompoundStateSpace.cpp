@@ -96,9 +96,9 @@ void CompoundStateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-unsigned int CompoundStateSpace::getDimension() const
+size_t CompoundStateSpace::getDimension() const
 {
-  unsigned int dim = 0;
+  size_t dim = 0;
   for (auto const &sspace : mSubspaces) {
     dim += sspace->getDimension();
   }
@@ -122,8 +122,7 @@ void CompoundStateSpace::expMap(const Eigen::VectorXd &_tangent,
                                 StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
-
-  int dimension = getDimension();
+  auto dimension = getDimension();
 
   // TODO: Skip these checks in release mode.
   if (_tangent.rows() != dimension) {
@@ -135,7 +134,7 @@ void CompoundStateSpace::expMap(const Eigen::VectorXd &_tangent,
 
   int index = 0;
   for (size_t i = 0; i < mSubspaces.size(); ++i) {
-    int dim = mSubspaces[i]->getDimension();
+    auto dim = mSubspaces[i]->getDimension();
     mSubspaces[i]->expMap(_tangent.block(index, 0, dim, 1),
                           getSubState<>(out, i));
     index += dim;
@@ -146,7 +145,7 @@ void CompoundStateSpace::expMap(const Eigen::VectorXd &_tangent,
 void CompoundStateSpace::logMap(const StateSpace::State *_in,
                                 Eigen::VectorXd &_tangent) const
 {
-  int dimension = getDimension();
+  auto dimension = getDimension();
 
   if (_tangent.rows() != dimension) {
     _tangent.resize(dimension);
@@ -156,7 +155,7 @@ void CompoundStateSpace::logMap(const StateSpace::State *_in,
 
   int index = 0;
   for (size_t i = 0; i < mSubspaces.size(); ++i) {
-    int dim = mSubspaces[i]->getDimension();
+    auto dim = mSubspaces[i]->getDimension();
     Eigen::VectorXd segment(dim);
     mSubspaces[i]->logMap(getSubState<>(in, i), segment);
 

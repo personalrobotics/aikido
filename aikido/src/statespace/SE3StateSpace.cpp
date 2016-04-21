@@ -92,7 +92,10 @@ void SE3StateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-unsigned int SE3StateSpace::getDimension() const { return 6; }
+size_t SE3StateSpace::getDimension() const
+{
+  return 6;
+}
 
 //=============================================================================
 void SE3StateSpace::copyState(StateSpace::State *_destination,

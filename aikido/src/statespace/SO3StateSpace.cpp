@@ -98,7 +98,10 @@ void SO3StateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-unsigned int SO3StateSpace::getDimension() const { return 3; }
+size_t SO3StateSpace::getDimension() const
+{
+  return 3;
+}
 
 //=============================================================================
 void SO3StateSpace::copyState(StateSpace::State *_destination,

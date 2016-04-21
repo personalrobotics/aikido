@@ -111,7 +111,10 @@ void SO2StateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-unsigned int SO2StateSpace::getDimension() const { return 1; }
+size_t SO2StateSpace::getDimension() const
+{
+  return 1;
+}
 
 //=============================================================================
 void SO2StateSpace::copyState(StateSpace::State *_destination,

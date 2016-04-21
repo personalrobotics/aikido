@@ -85,7 +85,10 @@ void RealVectorStateSpace::compose(const StateSpace::State *_state1,
 }
 
 //=============================================================================
-unsigned int RealVectorStateSpace::getDimension() const { return mDimension; }
+size_t RealVectorStateSpace::getDimension() const
+{
+  return mDimension;
+}
 
 //=============================================================================
 void RealVectorStateSpace::getIdentity(StateSpace::State *_out) const

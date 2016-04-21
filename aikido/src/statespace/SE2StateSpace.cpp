@@ -76,7 +76,10 @@ void SE2StateSpace::compose(const StateSpace::State* _state1,
 }
 
 //=============================================================================
-unsigned int SE2StateSpace::getDimension() const { return 3; }
+size_t SE2StateSpace::getDimension() const
+{
+  return 3;
+}
 
 //=============================================================================
 void SE2StateSpace::getIdentity(StateSpace::State* _out) const

@@ -133,7 +133,7 @@ public:
   /// tangent space, i.e. the Lie algebra, associated with this group.
   ///
   /// \return dimension of this state space
-  virtual unsigned int getDimension() const = 0;
+  virtual size_t getDimension() const = 0;
 
   /// Copy a state.
   ///
