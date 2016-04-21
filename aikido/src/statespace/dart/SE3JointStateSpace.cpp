@@ -12,7 +12,7 @@ SE3JointStateSpace::SE3JointStateSpace(::dart::dynamics::FreeJoint* _joint)
 }
 
 //=============================================================================
-void SE3JointStateSpace::getState(
+void SE3JointStateSpace::convertPositionsToState(
   const Eigen::VectorXd& _positions,
   StateSpace::State* _state) const
 {
@@ -21,7 +21,7 @@ void SE3JointStateSpace::getState(
 }
 
 //=============================================================================
-void SE3JointStateSpace::setState(
+void SE3JointStateSpace::convertStateToPositions(
   const StateSpace::State* _state,
   Eigen::VectorXd& _positions) const
 {

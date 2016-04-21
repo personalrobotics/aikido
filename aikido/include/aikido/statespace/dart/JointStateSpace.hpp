@@ -18,10 +18,10 @@ public:
   /// The Joint whose StateSpace this class represents.
   ::dart::dynamics::Joint* getJoint() const;
 
-  virtual void getState(
+  virtual void convertPositionsToState(
     const Eigen::VectorXd& _positions, StateSpace::State* _state) const = 0;
 
-  virtual void setState(
+  virtual void convertStateToPositions(
     const StateSpace::State* _state, Eigen::VectorXd& _positions) const = 0;
 
   /// Gets the positions of the Joint and store them in _state.

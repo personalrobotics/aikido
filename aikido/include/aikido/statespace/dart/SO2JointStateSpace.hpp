@@ -16,18 +16,15 @@ class SO2JointStateSpace
 public:
   using SO2StateSpace::State;
 
-  using JointStateSpace::getState;
-  using JointStateSpace::setState;
-
   explicit SO2JointStateSpace(::dart::dynamics::SingleDofJoint* _joint);
 
   // Documentation inherited.
-  void getState(
+  void convertPositionsToState(
     const Eigen::VectorXd& _positions,
     StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void setState(
+  void convertStateToPositions(
     const StateSpace::State* _state,
     Eigen::VectorXd& _positions) const override;
 };

@@ -13,14 +13,14 @@ SO2JointStateSpace::SO2JointStateSpace(
 }
 
 //=============================================================================
-void SO2JointStateSpace::getState(
+void SO2JointStateSpace::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   setAngle(static_cast<State*>(_state), _positions[0]);
 }
 
 //=============================================================================
-void SO2JointStateSpace::setState(
+void SO2JointStateSpace::convertStateToPositions(
   const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   _positions.resize(1);

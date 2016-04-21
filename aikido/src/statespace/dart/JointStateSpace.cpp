@@ -20,14 +20,14 @@ JointStateSpace::JointStateSpace(::dart::dynamics::Joint* _joint)
 //=============================================================================
 void JointStateSpace::getState(StateSpace::State* _state) const
 {
-  getState(mJoint->getPositions(), _state);
+  convertPositionsToState(mJoint->getPositions(), _state);
 }
 
 //=============================================================================
 void JointStateSpace::setState(const StateSpace::State* _state) const
 {
   Eigen::VectorXd positions;
-  setState(_state, positions);
+  convertStateToPositions(_state, positions);
   mJoint->setPositions(positions);
 }
 

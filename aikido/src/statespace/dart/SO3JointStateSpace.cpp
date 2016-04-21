@@ -19,7 +19,7 @@ SO3JointStateSpace::SO3JointStateSpace(::dart::dynamics::BallJoint* _joint)
 }
 
 //=============================================================================
-void SO3JointStateSpace::getState(
+void SO3JointStateSpace::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   setQuaternion(static_cast<State*>(_state), SO3StateSpace::Quaternion(
@@ -27,7 +27,7 @@ void SO3JointStateSpace::getState(
 }
 
 //=============================================================================
-void SO3JointStateSpace::setState(
+void SO3JointStateSpace::convertStateToPositions(
   const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   // TODO: We should call BallJoint::convertToRotation instead of logMap once

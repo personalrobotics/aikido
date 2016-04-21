@@ -13,14 +13,14 @@ RealVectorJointStateSpace::RealVectorJointStateSpace(
 }
 
 //=============================================================================
-void RealVectorJointStateSpace::getState(
+void RealVectorJointStateSpace::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   setValue(static_cast<State*>(_state), _positions);
 }
 
 //=============================================================================
-void RealVectorJointStateSpace::setState(
+void RealVectorJointStateSpace::convertStateToPositions(
   const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   _positions = getValue(static_cast<const State*>(_state));

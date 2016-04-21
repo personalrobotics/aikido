@@ -12,7 +12,7 @@ SE2JointStateSpace::SE2JointStateSpace(::dart::dynamics::PlanarJoint* _joint)
 }
 
 //=============================================================================
-void SE2JointStateSpace::getState(
+void SE2JointStateSpace::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   Isometry2d pose = Isometry2d::Identity();
@@ -23,7 +23,7 @@ void SE2JointStateSpace::getState(
 }
 
 //=============================================================================
-void SE2JointStateSpace::setState(
+void SE2JointStateSpace::convertStateToPositions(
   const StateSpace::State* _state,
   Eigen::VectorXd& _positions) const
 {
