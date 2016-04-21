@@ -9,16 +9,15 @@ class SplineTrajectory2  : public Trajectory
 {
 public:
   SplineTrajectory2(
-    statespace::StateSpacePtr _stateSpace,
-    const statespace::StateSpace::State* _startState,
-    double _startTime);
+    statespace::StateSpacePtr _stateSpace, double _startTime = 0.);
 
   virtual ~SplineTrajectory2();
   
-  void addSegment(
-    const Eigen::MatrixXd& _coefficients, double _duration);
+  void addSegment(const Eigen::MatrixXd& _coefficients, double _duration,
+    const statespace::StateSpace::State* _startState);
 
-  /// Gets the number of segments.
+  void addSegment(const Eigen::MatrixXd& _coefficients, double _duration);
+
   size_t getNumSegments() const;
 
   // Documentation inherited.
@@ -46,6 +45,7 @@ public:
 private:
   struct PolynomialSegment
   {
+    statespace::StateSpace::State* mStartState; 
     Eigen::MatrixXd mCoefficients;
     double mDuration;
   };
@@ -59,7 +59,6 @@ private:
     size_t _index, statespace::StateSpace::State* _out) const;
 
   statespace::StateSpacePtr mStateSpace;
-  statespace::StateSpace::State* mStartState;
   double mStartTime;
   std::vector<PolynomialSegment> mSegments;
 };

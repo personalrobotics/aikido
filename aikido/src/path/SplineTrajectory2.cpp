@@ -6,33 +6,24 @@ namespace path {
 
 //=============================================================================
 SplineTrajectory2::SplineTrajectory2(
-      statespace::StateSpacePtr _stateSpace,
-      const statespace::StateSpace::State* _startState,
-      double _startTime)
+      statespace::StateSpacePtr _stateSpace, double _startTime)
   : mStateSpace(std::move(_stateSpace))
-  , mStartState() // Initialized below.
   , mStartTime(_startTime)
 {
   if (mStateSpace == nullptr)
     throw std::invalid_argument("StateSpace is null.");
-
-  if (_startState == nullptr)
-    throw std::invalid_argument("Start state is null.");
-
-  // Do this last, since we have to clean up this memory in the destructor.
-  mStartState = mStateSpace->allocateState();
-  mStateSpace->copyState(_startState, mStartState);
 }
 
 //=============================================================================
 SplineTrajectory2::~SplineTrajectory2()
 {
-  mStateSpace->freeState(mStartState);
+  for (const auto& segment : mSegments)
+    mStateSpace->freeState(segment.mStartState);
 }
 
 //=============================================================================
-void SplineTrajectory2::addSegment(
-  const Eigen::MatrixXd& _coefficients, double _duration)
+void SplineTrajectory2::addSegment(const Eigen::MatrixXd& _coefficients,
+  double _duration, const statespace::StateSpace::State* _startState)
 {
   if (_duration <= 0.)
     throw std::invalid_argument("Duration must be positive.");
@@ -46,8 +37,24 @@ void SplineTrajectory2::addSegment(
   PolynomialSegment segment;
   segment.mCoefficients = _coefficients;
   segment.mDuration = _duration;
+  segment.mStartState = mStateSpace->allocateState();
+  mStateSpace->copyState(_startState, segment.mStartState);
 
   mSegments.emplace_back(std::move(segment));
+}
+
+//=============================================================================
+void SplineTrajectory2::addSegment(
+  const Eigen::MatrixXd& _coefficients, double _duration)
+{
+  if (mSegments.empty())
+    throw std::logic_error(
+      "An explicit start state is required because this trajectory is empty.");
+
+  auto startState = mStateSpace->createState();
+  evaluate(getEndTime(), startState);
+
+  addSegment(_coefficients, _duration, startState);
 }
 
 //=============================================================================
@@ -104,15 +111,12 @@ void SplineTrajectory2::evaluate(
   double _t, statespace::StateSpace::State *_out) const
 {
   if (mSegments.empty())
-  {
-    mStateSpace->copyState(mStartState, _out);
-    return;
-  }
+    throw std::logic_error("Unable to evaluate empty trajectory.");
 
   const auto targetSegmentInfo = getSegmentForTime(_t);
   const auto& targetSegment = mSegments[targetSegmentInfo.first];
 
-  mStateSpace->copyState(mStartState, _out);
+  mStateSpace->copyState(mSegments.front().mStartState, _out);
 
   const auto relativeState = mStateSpace->createState();
   const auto nextState = mStateSpace->createState();
@@ -139,9 +143,8 @@ void SplineTrajectory2::evaluate(
 //=============================================================================
 Eigen::VectorXd SplineTrajectory2::evaluate(double _t, int _derivative) const
 {
-  // Returns zero for an empty trajectory.
   if (mSegments.empty())
-    return Eigen::VectorXd::Zero(mStateSpace->getDimension());
+    throw std::logic_error("Unable to evaluate empty trajectory.");
 
   const auto targetSegmentInfo = getSegmentForTime(_t);
   const auto& targetSegment = mSegments[targetSegmentInfo.first];
@@ -183,7 +186,7 @@ void SplineTrajectory2::getSegmentStartState(
   assert(_index < mSegments.size());
   assert(_out != nullptr);
 
-  mStateSpace->copyState(mStartState, _out);
+  mStateSpace->copyState(mSegments.front().mStartState, _out);
 
   const auto relativeState = mStateSpace->createState();
   const auto nextState = mStateSpace->createState();
