@@ -16,6 +16,62 @@ constexpr auto RNG::max() -> result_type
 }
 
 //=============================================================================
+template <class T>
+RNGWrapper<T>::RNGWrapper(const T& _rng)
+  : mRng(_rng)
+{
+}
+
+//=============================================================================
+template <class T>
+RNGWrapper<T>::RNGWrapper(result_type _seed)
+  : mRng(_seed)
+{
+}
+
+//=============================================================================
+template <class T>
+auto RNGWrapper<T>::rng() -> T&
+{
+  return mRng.base();
+}
+
+//=============================================================================
+template <class T>
+auto RNGWrapper<T>::rng() const -> const T&
+{
+  return mRng.base();
+}
+
+//=============================================================================
+template <class T>
+auto RNGWrapper<T>::operator()() -> result_type
+{
+  return mRng();
+}
+
+//=============================================================================
+template <class T>
+void RNGWrapper<T>::discard(unsigned long long _z)
+{
+  mRng.discard(_z);
+}
+
+//=============================================================================
+template <class T>
+std::unique_ptr<RNG> RNGWrapper<T>::clone() const
+{
+  return std::unique_ptr<RNGWrapper>(new RNGWrapper(mRng.base()));
+}
+
+//=============================================================================
+template <class T>
+std::unique_ptr<RNG> RNGWrapper<T>::clone(result_type _seed) const
+{
+  return std::unique_ptr<RNGWrapper>(new RNGWrapper(_seed));
+}
+
+//=============================================================================
 template <class Engine, class Scalar, class Quaternion>
 Quaternion sampleQuaternion(
   Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution)
