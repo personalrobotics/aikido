@@ -31,7 +31,7 @@ statespace::InterpolatorPtr PiecewiseLinearTrajectory::getInterpolator() const
 }
 
 //=============================================================================
-int PiecewiseLinearTrajectory::getNumDerivatives() const
+size_t PiecewiseLinearTrajectory::getNumDerivatives() const
 {
   return mInterpolator->getNumDerivatives();
 }

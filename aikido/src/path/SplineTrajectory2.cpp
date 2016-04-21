@@ -70,13 +70,13 @@ statespace::StateSpacePtr SplineTrajectory2::getStateSpace() const
 }
 
 //=============================================================================
-int SplineTrajectory2::getNumDerivatives() const
+size_t SplineTrajectory2::getNumDerivatives() const
 {
-  int numDerivatives = 0;
+  size_t numDerivatives = 0;
 
   for (const auto& segment : mSegments)
   {
-    numDerivatives = std::max<int>(
+    numDerivatives = std::max<size_t>(
       numDerivatives, segment.mCoefficients.cols() - 1);
   }
 

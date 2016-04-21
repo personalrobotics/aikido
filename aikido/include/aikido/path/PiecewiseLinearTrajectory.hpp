@@ -22,7 +22,7 @@ public:
   aikido::statespace::InterpolatorPtr getInterpolator() const;
 
   // Documentation inherited
-  int getNumDerivatives() const override;
+  size_t getNumDerivatives() const override;
 
   // Documentation inherited
   double getStartTime() const override;
