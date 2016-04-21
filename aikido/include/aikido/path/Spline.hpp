@@ -12,6 +12,22 @@
 namespace aikido {
 namespace path {
 
+/// An arbitrary dimensional polynomial spline. The number of coefficients,
+/// outputs, and knot points may be specified either at compile time (via
+/// template parameters) or at runtime (if the template parameters are
+/// \c Eigen::Dynamic). We suggest setting as many of these parameters at
+/// compile time as possible for best performance.
+///
+/// Note that this spline is not guaranteed to be continuous at knot points;
+/// this is the responsbility of the user who constructs the splines
+/// coefficients. See \c SplineProblem for a helper class that constructs a
+/// continuous spline from a set of constraints.
+///
+/// \tparam _Scalar floating type used to represent a scalar value
+/// \tparam _Index integral type used to represent an index
+/// \tparam _NumCoefficients number of polynomial coefficients, or \c Dynamic
+/// \tparam _NumOutputs number of outputs, or \c Dynamic
+/// \tparam _NumKnots number of knots, or \c Dynamic
 template <
   class _Scalar = double,
   class _Index = int,
@@ -32,17 +48,30 @@ public:
       ? (NumKnotsAtCompileTime - 1)
       : Eigen::Dynamic;
   static constexpr Index DimensionAtCompileTime
-    = (NumSegmentsAtCompileTime != Eigen::Dynamic && _NumCoefficients != Eigen::Dynamic)
+    = (NumSegmentsAtCompileTime != Eigen::Dynamic
+        && _NumCoefficients != Eigen::Dynamic)
       ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
       : Eigen::Dynamic;
 
   using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
-  using SolutionMatrix = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
+  using SolutionMatrix = Eigen::Matrix<
+    Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
   using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
   using SolutionMatrices = std::vector<SolutionMatrix,
     Eigen::aligned_allocator<SolutionMatrix> >;
 
+  /// Constructs an empty spline.
   SplineND() = default;
+
+  /// Constructs a spline with the specified coefficients. The \c _solution
+  /// is a vector of \c _times.size() - 1 spline coefficients, where the
+  /// i-th matrix defines the polynomial coefficients for the segment between
+  /// knot points (i) and (i + 1). Each coefficient matrix of size
+  /// (num outputs) x (num coefficients), where element (i, j) is the
+  /// coefficient on the \c x^j term for output \c i.
+  ///
+  /// \param _times times of knot points, must be monotone increasing
+  /// \param _solution list of polynomial coefficients for each segment
   SplineND(
     const TimeVector& _times,
     const std::vector<SolutionMatrix,
@@ -54,29 +83,84 @@ public:
   SplineND& operator =(SplineND&& _other) = default;
   SplineND& operator =(const SplineND& _other) = default;
 
+  /// Sets the time of the \c _index-th knot point. Times must remain monotone
+  /// after performing this operation.
+  ///
+  /// \param _index index of a knot point
+  /// \param _t new time for that knot point
   void setTime(Index _index, Scalar _t);
+
+  /// Sets the times of all knot points.
+  ///
+  /// \param _index index of a knot point.
+  /// \param _t new times, must be monotone increasing
   void setTimes(TimeVector &&_t);
+
+  /// Sets the times of all knot points.
+  ///
+  /// \param _index index of a knot point.
+  /// \param _t new times, must be monotone increasing
   void setTimes(const TimeVector &_t);
+
+  /// Gets times of all knot points.
+  ///
+  /// \return times of knot points
   const TimeVector &getTimes() const;
 
+  /// Gets polynomial coefficients for all segments.
+  ///
+  /// \return polynomial coefficients
   const SolutionMatrices &getCoefficients() const;
 
+  /// Gets the number of knot points.
+  ///
+  /// \return number of knot points
   Index getNumKnots() const;
+
+  /// Gets the number of outputs points.
+  ///
+  /// \return number of outputs points
   Index getNumOutputs() const;
+
+  /// Gets an upperbound on the number of non-zero derivatives.
+  ///
+  /// \return upper bound on the number of non-zero derivatives
   Index getNumDerivatives() const;
+
+  /// Gets the number of polynomial coefficients in each segment.
+  ///
+  /// \return number of polynomial coefficients
   Index getNumCoefficients() const;
 
+  /// Gets the duration of the spline. This is the difference between the time
+  /// of the first and last knot points.
+  ///
+  /// \return duration of the spline
   Scalar getDuration() const;
 
+  /// Gets the index of the segment that contains time \c _t.
+  ///
+  /// \param _t time parameter
+  /// \return index of the segment that contains this time
   Index getSegmentIndex(Scalar _t) const;
+
+  /// Evaluate the \c _derivative-th order of the spline at time \c _t. The
+  /// zero-th order derivative is function value. All derivatives greater than
+  /// \c getNumDerivatives() are guaranteed to be zero.
+  ///
+  /// \param _t time parameter
+  /// \param _derivative order of derivative to evaluate
+  /// \return value of the specified derivative at time \c _t
   OutputVector evaluate(Scalar _t, Index _derivative = 0) const;
 
 private:
-  using CoefficientVector = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
-  using CoefficientMatrix = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
+  using CoefficientVector = Eigen::Matrix<
+    Scalar, NumCoefficientsAtCompileTime, 1>;
+  using CoefficientMatrix = Eigen::Matrix<
+    Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
 
   TimeVector mTimes;
-  SolutionMatrices mSolution; // length _NumSegments
+  SolutionMatrices mSolution;
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign);
