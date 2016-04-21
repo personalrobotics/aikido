@@ -117,7 +117,7 @@ public:
 
   /// Log mapping of Lie group element to a Lie algebra element. The tangent
   /// space is parameterized as a planar twist of the form (rotation,
-  /// translation, rotation).
+  /// translation, translation).
   ///
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
