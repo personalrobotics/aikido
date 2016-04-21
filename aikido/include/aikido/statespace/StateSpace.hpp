@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_STATESPACE_H
-#define AIKIDO_STATESPACE_STATESPACE_H
+#ifndef AIKIDO_STATESPACE_STATESPACE_HPP_
+#define AIKIDO_STATESPACE_STATESPACE_HPP_
 #include <memory>
 #include "ScopedState.hpp"
 #include <Eigen/Dense>
@@ -31,6 +31,7 @@ public:
   class State
   {
   protected:
+    /// This is a base class that should only only be used in derived classes.
     State() = default;
 
     /// It is unsafe to call this, since it is a non-virtual destructor.  Having
@@ -147,4 +148,4 @@ using StateSpacePtr = std::shared_ptr<StateSpace>;
 }  // namespace statespace
 }  // namespace aikido
 
-#endif
+#endif // ifndef AIKIDO_STATESPACE_STATESPACE_HPP_
