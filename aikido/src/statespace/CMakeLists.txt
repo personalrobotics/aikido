@@ -9,6 +9,7 @@ aikido_add_library("${PROJECT_NAME}_statespace"
   SO3StateSpace.cpp
   GeodesicInterpolator.cpp
   dart/JointStateSpace.cpp
+  dart/JointStateSpaceHelpers.cpp
   dart/MetaSkeletonStateSpace.cpp
   dart/SE2JointStateSpace.cpp
   dart/SE3JointStateSpace.cpp

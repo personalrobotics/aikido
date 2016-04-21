@@ -1,9 +1,11 @@
+#include <memory>
 #include <dart/common/StlHelpers.h>
 #include "../RealVectorJointStateSpace.hpp"
 #include "../SO2JointStateSpace.hpp"
 #include "../SO3JointStateSpace.hpp"
 #include "../SE2JointStateSpace.hpp"
 #include "../SE3JointStateSpace.hpp"
+#include "../../../util/metaprogramming.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -81,37 +83,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
 };
 
 //=============================================================================
-template <class... Args>
-struct ForOneOf {};
-
-template <>
-struct ForOneOf<>
-{
-  static Ptr create(::dart::dynamics::Joint* _joint)
-  {
-    return nullptr;
-  }
-};
-
-template <class Arg, class... Args>
-struct ForOneOf<Arg, Args...>
-{
-  static Ptr create(::dart::dynamics::Joint* _joint)
-  {
-    if (&_joint->getType() == &Arg::getStaticType())
-    {
-      return createJointStateSpaceFor_impl<Arg>::create(
-        static_cast<Arg*>(_joint));
-    }
-    else
-    {
-      return ForOneOf<Args...>::create(_joint);
-    }
-  }
-};
-
-//=============================================================================
-using createJointStateSpaceFor_wrapper = ForOneOf<
+using SupportedJoints = util::type_list<
   ::dart::dynamics::BallJoint,
   ::dart::dynamics::FreeJoint,
   ::dart::dynamics::PlanarJoint,

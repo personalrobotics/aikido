@@ -186,22 +186,6 @@ void MetaSkeletonStateSpace::setState(const State* _state)
   mMetaSkeleton->setPositions(positions);
 }
 
-//=============================================================================
-std::unique_ptr<JointStateSpace> createJointStateSpace(Joint* _joint)
-{
-  auto space = detail::createJointStateSpaceFor_wrapper::create(_joint);
-
-  if (!space)
-  {
-    std::stringstream msg;
-    msg << "Joint '" << _joint->getName() << "' has unsupported type '"
-         << _joint->getType() << "'.";
-    throw std::runtime_error(msg.str());
-  }
-
-  return std::move(space);
-}
-
 } // namespace dart
 } // namespace statespace
 } // namespace aikido

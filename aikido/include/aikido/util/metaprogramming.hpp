@@ -31,7 +31,7 @@ struct ForOneOf_raw_ptr
   template <class Derived>
   static Derived* cast(Pointee* _pointer)
   {
-    return dynamic_cast<Pointee*>(_pointer);
+    return dynamic_cast<Derived*>(_pointer);
   }
 };
 
