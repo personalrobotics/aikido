@@ -8,6 +8,9 @@ EuclideanDistanceMetric::EuclideanDistanceMetric(
     std::shared_ptr<statespace::RealVectorStateSpace> _space)
     : mStateSpace(std::move(_space))
 {
+  if (mStateSpace == nullptr) {
+    throw std::invalid_argument("RealVectorStateSpace is nullptr.");
+  }
 }
 
 statespace::StateSpacePtr EuclideanDistanceMetric::getStateSpace() const

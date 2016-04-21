@@ -1,16 +1,22 @@
-#ifndef AIKIDO_DISTANCE_DISTANCEDEFAULTS_H_
-#define AIKIDO_DISTANCE_DISTANCEDEFAULTS_H_
+#ifndef AIKIDO_DISTANCE_DISTANCEMETRICDEFAULTS_HPP_
+#define AIKIDO_DISTANCE_DISTANCEMETRICDEFAULTS_HPP_
 
 #include "DistanceMetric.hpp"
+#include "../statespace/StateSpace.hpp"
 
 namespace aikido
 {
 namespace distance
 {
+/// Creates a DistanceMetric that is appropriate for the statespace of type
+/// Space
 template <class Space>
 std::unique_ptr<DistanceMetric> createDistanceMetricFor(
     std::shared_ptr<Space> _sspace);
 
+/// Creates a DistanceMetric that is appropriate for the statespace. 
+std::unique_ptr<DistanceMetric> createDistanceMetric(
+    statespace::StateSpacePtr _sspace);
 }
 }
 

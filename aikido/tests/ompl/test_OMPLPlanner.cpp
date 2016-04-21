@@ -53,7 +53,7 @@ public:
         stateSpace, cd);
 
     // Distance metric
-    dmetric = aikido::distance::createDistanceMetricFor(stateSpace);
+    dmetric = aikido::distance::createDistanceMetric(stateSpace);
 
     // Sampler
     sampler =

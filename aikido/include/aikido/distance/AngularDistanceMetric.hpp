@@ -1,8 +1,8 @@
-#ifndef AIKIDO_ANGULAR_DISTANCE_H_
-#define AIKIDO_ANGULAR_DISTANCE_H_
+#ifndef AIKIDO_DISTANCE_ANGULARDISTANCEMETRIC_HPP_
+#define AIKIDO_DISTANCE_ANGULARDISTANCEMETRIC_HPP_
 
-#include <aikido/distance/DistanceMetric.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include "DistanceMetric.hpp"
+#include "../statespace/SO2StateSpace.hpp"
 
 namespace aikido
 {

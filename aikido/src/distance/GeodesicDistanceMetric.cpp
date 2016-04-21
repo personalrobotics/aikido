@@ -10,6 +10,9 @@ GeodesicDistanceMetric::GeodesicDistanceMetric(
     std::shared_ptr<statespace::SO3StateSpace> _space)
     : mStateSpace(std::move(_space))
 {
+  if (mStateSpace == nullptr) {
+    throw std::invalid_argument("SO3StateSpace is nullptr.");
+  }
 }
 
 //=============================================================================

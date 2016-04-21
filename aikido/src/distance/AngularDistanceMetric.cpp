@@ -9,6 +9,9 @@ AngularDistanceMetric::AngularDistanceMetric(
     std::shared_ptr<statespace::SO2StateSpace> _space)
     : mStateSpace(std::move(_space))
 {
+  if (mStateSpace == nullptr) {
+    throw std::invalid_argument("SO2StateSpace is nullptr.");
+  }
 }
 
 statespace::StateSpacePtr AngularDistanceMetric::getStateSpace() const
@@ -26,10 +29,10 @@ double AngularDistanceMetric::distance(
           static_cast<const statespace::SO2StateSpace::State*>(_state1))
       - mStateSpace->getAngle(
             static_cast<const statespace::SO2StateSpace::State*>(_state2));
-  diff = fmod(fabs(diff), 2.0 * boost::math::constants::pi<double>());
-  if (diff > boost::math::constants::pi<double>())
-    diff -= 2.0 * boost::math::constants::pi<double>();
-  return fabs(diff);
+  diff = std::fmod(std::fabs(diff), 2.0 * M_PI);
+  if (diff > M_PI)
+      diff -= 2.0 * M_PI;
+  return std::fabs(diff);
 }
 
 }

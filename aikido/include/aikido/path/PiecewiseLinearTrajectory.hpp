@@ -2,7 +2,6 @@
 #define AIKIDO_PATH_PIECEWISELINEAR_TRAJECTORY_H_
 
 #include "Trajectory.hpp"
-#include "../distance/DistanceMetric.hpp"
 #include "../statespace/GeodesicInterpolator.hpp"
 
 namespace aikido {

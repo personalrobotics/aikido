@@ -6,6 +6,11 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
+TEST(AngularDistanceMetric, ThrowsOnNullStateSpace)
+{
+  EXPECT_THROW(AngularDistanceMetric(nullptr), std::invalid_argument);
+}
+
 TEST(AngularDistanceMetric, StateSpaceEquality)
 {
   auto so2 = std::make_shared<SO2StateSpace>();
