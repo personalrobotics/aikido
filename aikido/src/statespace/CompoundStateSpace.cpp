@@ -5,6 +5,7 @@ namespace aikido
 {
 namespace statespace
 {
+
 //=============================================================================
 CompoundStateSpace::CompoundStateSpace(std::vector<StateSpacePtr> _subspaces)
   : mSubspaces(std::move(_subspaces))
