@@ -7,7 +7,7 @@
 namespace aikido {
 namespace path {
 
-/// Implements a piecewise linear trajectory
+/// Trajectory that uses an \c Interpolator to interpolate between waypoints.
 class PiecewiseLinearTrajectory : public Trajectory
 {
 public:
