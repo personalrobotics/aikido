@@ -16,13 +16,20 @@ class SO3JointStateSpace
 public:
   using SO3StateSpace::State;
 
+  using JointStateSpace::getState;
+  using JointStateSpace::setState;
+
   explicit SO3JointStateSpace(::dart::dynamics::BallJoint* _joint);
 
   // Documentation inherited.
-  void getState(StateSpace::State* _state) const override;
+  void getState(
+    const Eigen::VectorXd& _positions,
+    StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void setState(const StateSpace::State* _state) const override;
+  void setState(
+    const StateSpace::State* _state,
+    Eigen::VectorXd& _positions) const override;
 };
 
 } // namespace dart

@@ -12,19 +12,21 @@ SE3JointStateSpace::SE3JointStateSpace(::dart::dynamics::FreeJoint* _joint)
 }
 
 //=============================================================================
-void SE3JointStateSpace::getState(StateSpace::State* _state) const
+void SE3JointStateSpace::getState(
+  const Eigen::VectorXd& _positions,
+  StateSpace::State* _state) const
 {
   setIsometry(static_cast<State*>(_state),
-    ::dart::dynamics::FreeJoint::convertToTransform(
-      mJoint->getPositions()));
+    ::dart::dynamics::FreeJoint::convertToTransform(_positions));
 }
 
 //=============================================================================
-void SE3JointStateSpace::setState(const StateSpace::State* _state) const
+void SE3JointStateSpace::setState(
+  const StateSpace::State* _state,
+  Eigen::VectorXd& _positions) const
 {
-  mJoint->setPositions(
-    ::dart::dynamics::FreeJoint::convertToPositions(
-      getIsometry(static_cast<const SE3StateSpace::State*>(_state))));
+  _positions = ::dart::dynamics::FreeJoint::convertToPositions(
+      getIsometry(static_cast<const SE3StateSpace::State*>(_state)));
 }
 
 } // namespace dart

@@ -13,15 +13,18 @@ SO2JointStateSpace::SO2JointStateSpace(
 }
 
 //=============================================================================
-void SO2JointStateSpace::getState(StateSpace::State* _state) const
+void SO2JointStateSpace::getState(
+  const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
-  setAngle(static_cast<State*>(_state), mJoint->getPosition(0));
+  setAngle(static_cast<State*>(_state), _positions[0]);
 }
 
 //=============================================================================
-void SO2JointStateSpace::setState(const StateSpace::State* _state) const
+void SO2JointStateSpace::setState(
+  const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
-  mJoint->setPosition(0, getAngle(static_cast<const State*>(_state)));
+  _positions.resize(1);
+  _positions[0] = getAngle(static_cast<const State*>(_state));
 }
 
 } // namespace dart

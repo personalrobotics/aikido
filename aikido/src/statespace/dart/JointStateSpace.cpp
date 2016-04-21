@@ -17,6 +17,20 @@ JointStateSpace::JointStateSpace(::dart::dynamics::Joint* _joint)
   return mJoint;
 }
 
+//=============================================================================
+void JointStateSpace::getState(StateSpace::State* _state) const
+{
+  getState(mJoint->getPositions(), _state);
+}
+
+//=============================================================================
+void JointStateSpace::setState(const StateSpace::State* _state) const
+{
+  Eigen::VectorXd positions;
+  setState(_state, positions);
+  mJoint->setPositions(positions);
+}
+
 } // namespace dart
 } // namespace statespace
 } // namespace aikido

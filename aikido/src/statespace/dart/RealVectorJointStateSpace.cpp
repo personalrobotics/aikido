@@ -13,15 +13,17 @@ RealVectorJointStateSpace::RealVectorJointStateSpace(
 }
 
 //=============================================================================
-void RealVectorJointStateSpace::getState(StateSpace::State* _state) const
+void RealVectorJointStateSpace::getState(
+  const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
-  setValue(static_cast<State*>(_state), mJoint->getPositions());
+  setValue(static_cast<State*>(_state), _positions);
 }
 
 //=============================================================================
-void RealVectorJointStateSpace::setState(const StateSpace::State* _state) const
+void RealVectorJointStateSpace::setState(
+  const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
-  mJoint->setPositions(getValue(static_cast<const State*>(_state)));
+  _positions = getValue(static_cast<const State*>(_state));
 }
 
 } // namespace dart

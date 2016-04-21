@@ -102,6 +102,18 @@ MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 }
 
 //=============================================================================
+void MetaSkeletonStateSpace::getState(
+  const Eigen::VectorXd& _positions, State* _state) const
+{
+}
+
+//=============================================================================
+void MetaSkeletonStateSpace::setState(
+  const State* _state, Eigen::VectorXd& _positions) const
+{
+}
+
+//=============================================================================
 void MetaSkeletonStateSpace::getStateFromMetaSkeleton(State* _state) const
 {
   for (size_t ijoint = 0; ijoint < getNumStates(); ++ijoint)

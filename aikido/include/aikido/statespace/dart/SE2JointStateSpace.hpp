@@ -17,13 +17,20 @@ public:
   using SE2StateSpace::State;
   using SE2StateSpace::Isometry2d;
 
+  using JointStateSpace::getState;
+  using JointStateSpace::setState;
+
   explicit SE2JointStateSpace(::dart::dynamics::PlanarJoint* _joint);
 
   // Documentation inherited.
-  void getState(StateSpace::State* _state) const override;
+  void getState(
+    const Eigen::VectorXd& _positions,
+    StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void setState(const StateSpace::State* _state) const override;
+  void setState(
+    const StateSpace::State* _state,
+    Eigen::VectorXd& _positions) const override;
 };
 
 } // namespace dart

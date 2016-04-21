@@ -16,13 +16,20 @@ class RealVectorJointStateSpace
 public:
   using RealVectorStateSpace::State;
 
+  using JointStateSpace::getState;
+  using JointStateSpace::setState;
+
   explicit RealVectorJointStateSpace(::dart::dynamics::Joint* _joint);
 
   // Documentation inherited.
-  void getState(StateSpace::State* _state) const override;
+  void getState(
+    const Eigen::VectorXd& _positions,
+    StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void setState(const StateSpace::State* _state) const override;
+  void setState(
+    const StateSpace::State* _state,
+    Eigen::VectorXd& _positions) const override;
 };
 
 } // namespace dart
