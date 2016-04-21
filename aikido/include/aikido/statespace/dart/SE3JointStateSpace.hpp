@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_SE3JOINTSTATESPACE_H_
-#define AIKIDO_STATESPACE_SE3JOINTSTATESPACE_H_
+#ifndef AIKIDO_STATESPACE_SE3JOINTSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_SE3JOINTSTATESPACE_HPP_
 #include "../SE3StateSpace.hpp"
 #include "JointStateSpace.hpp"
 
@@ -7,7 +7,8 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// Wrap a 6-DOF joint in a SE3StateSpace.
+/// \c SE3StateSpace for a DART \c FreeJoint. This class does not support
+/// position limits on the three rotational <tt>DegreeOfFreedom</tt>s.
 class SE3JointStateSpace
   : public SE3StateSpace
   , public JointStateSpace
@@ -16,6 +17,10 @@ class SE3JointStateSpace
 public:
   using SE3StateSpace::State;
 
+  /// Creates a state space for a \c FreeJoint. This class does not support
+  /// position limits on the rotational <tt>DegreeOfFreedom</tt>s.
+  ///
+  /// \param _joint joint to create a state space for
   explicit SE3JointStateSpace(::dart::dynamics::FreeJoint* _joint);
 
   // Documentation inherited.
@@ -33,4 +38,4 @@ public:
 } // namespace statespace
 } // namespace aikido
 
-#endif // ifndef AIKIDO_STATESPACE_SE3JOINTSTATESPACE_H_
+#endif // ifndef AIKIDO_STATESPACE_SE3JOINTSTATESPACE_HPP_

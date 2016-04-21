@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_SO2JOINTSTATESPACE_H_
-#define AIKIDO_STATESPACE_SO2JOINTSTATESPACE_H_
+#ifndef AIKIDO_STATESPACE_SO2JOINTSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_SO2JOINTSTATESPACE_HPP_
 #include "../SO2StateSpace.hpp"
 #include "JointStateSpace.hpp"
 
@@ -7,7 +7,8 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// Wrap a single DOF joint in a SO2StateSpace.
+/// \c SO2StateSpace for a DART \c SingleDofJoint. This class does not support
+/// position limits.
 class SO2JointStateSpace
   : public SO2StateSpace
   , public JointStateSpace
@@ -16,6 +17,10 @@ class SO2JointStateSpace
 public:
   using SO2StateSpace::State;
 
+  /// Creates a state space for a \c FreeJoint. This class does not support
+  /// position limits.
+  ///
+  /// \param _joint joint to create a state space for
   explicit SO2JointStateSpace(::dart::dynamics::SingleDofJoint* _joint);
 
   // Documentation inherited.
@@ -33,4 +38,4 @@ public:
 } // namespace statespace
 } // namespace aikido
 
-#endif // ifndef AIKIDO_STATESPACE_SO2JOINTSTATESPACE_H_
+#endif // ifndef AIKIDO_STATESPACE_SO2JOINTSTATESPACE_HPP_

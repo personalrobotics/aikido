@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_SO3JOINTSTATESPACE_H_
-#define AIKIDO_STATESPACE_SO3JOINTSTATESPACE_H_
+#ifndef AIKIDO_STATESPACE_SO3JOINTSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_SO3JOINTSTATESPACE_HPP_
 #include "../SO3StateSpace.hpp"
 #include "JointStateSpace.hpp"
 
@@ -7,7 +7,8 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// Wrap a single DOF joint in a SO3StateSpace.
+/// \c SO3StateSpace for a DART \c BallJoint. This class does not support
+/// position limits.
 class SO3JointStateSpace
   : public SO3StateSpace
   , public JointStateSpace
@@ -16,6 +17,10 @@ class SO3JointStateSpace
 public:
   using SO3StateSpace::State;
 
+  /// Creates a state space for a \c BallJoint. This class does not support
+  /// position limits.
+  ///
+  /// \param _joint joint to create a state space for
   explicit SO3JointStateSpace(::dart::dynamics::BallJoint* _joint);
 
   // Documentation inherited.
@@ -33,4 +38,4 @@ public:
 } // namespace statespace
 } // namespace aikido
 
-#endif // ifndef AIKIDO_STATESPACE_SO3JOINTSTATESPACE_H_
+#endif // ifndef AIKIDO_STATESPACE_SO3JOINTSTATESPACE_HPP_

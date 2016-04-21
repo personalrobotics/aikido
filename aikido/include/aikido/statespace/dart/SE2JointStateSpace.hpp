@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_SE2JOINTSTATESPACE_H_
-#define AIKIDO_STATESPACE_SE2JOINTSTATESPACE_H_
+#ifndef AIKIDO_STATESPACE_SE2JOINTSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_SE2JOINTSTATESPACE_HPP_
 #include "../SE2StateSpace.hpp"
 #include "JointStateSpace.hpp"
 
@@ -7,7 +7,8 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// Wrap a PlanarJoint in a SE2StateSpace.
+/// \c SEStateSpace for a DART \c PlanarJoint This class does not support
+/// position limits on the rotational \c DegreeOfFreedom.
 class SE2JointStateSpace
   : public SE2StateSpace
   , public JointStateSpace
@@ -17,6 +18,10 @@ public:
   using SE2StateSpace::State;
   using SE2StateSpace::Isometry2d;
 
+  /// Creates a state space for a \c PlanarJoint. This class does not support
+  /// position limits on the rotational \c DegreeOfFreedom.
+  ///
+  /// \param _joint joint to create a state space for
   explicit SE2JointStateSpace(::dart::dynamics::PlanarJoint* _joint);
 
   // Documentation inherited.
@@ -34,4 +39,4 @@ public:
 } // namespace statespace
 } // namespace aikido
 
-#endif // ifndef AIKIDO_STATESPACE_SE2JOINTSTATESPACE_H_
+#endif // ifndef AIKIDO_STATESPACE_SE2JOINTSTATESPACE_HPP_
