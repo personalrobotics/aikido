@@ -116,28 +116,15 @@ void SplineTrajectory2::evaluate(
   const auto targetSegmentInfo = getSegmentForTime(_t);
   const auto& targetSegment = mSegments[targetSegmentInfo.first];
 
-  mStateSpace->copyState(mSegments.front().mStartState, _out);
+  mStateSpace->copyState(targetSegment.mStartState, _out);
+
+  const auto evaluationTime = _t - targetSegmentInfo.second;
+  const auto tangentVector = evaluatePolynomial(
+    targetSegment.mCoefficients, evaluationTime, 0);
 
   const auto relativeState = mStateSpace->createState();
-  const auto nextState = mStateSpace->createState();
-
-  for (size_t isegment = 0; isegment <= targetSegmentInfo.first; ++isegment)
-  {
-    const auto& segment = mSegments[isegment];
-
-    double evaluationTime;
-    if (isegment < targetSegmentInfo.first)
-      evaluationTime = segment.mDuration; // end of the segment
-    else
-      evaluationTime = _t - targetSegmentInfo.second; // target time
-
-    const auto tangentVector = evaluatePolynomial(
-      segment.mCoefficients, evaluationTime, 0);
-
-    mStateSpace->expMap(tangentVector, relativeState);
-    mStateSpace->compose(_out, relativeState, nextState);
-    mStateSpace->copyState(nextState, _out);
-  }
+  mStateSpace->expMap(tangentVector, relativeState);
+  mStateSpace->compose(_out, relativeState);
 }
 
 //=============================================================================
@@ -145,6 +132,8 @@ Eigen::VectorXd SplineTrajectory2::evaluate(double _t, int _derivative) const
 {
   if (mSegments.empty())
     throw std::logic_error("Unable to evaluate empty trajectory.");
+  if (_derivative < 1)
+    throw std::logic_error("Derivative must be positive.");
 
   const auto targetSegmentInfo = getSegmentForTime(_t);
   const auto& targetSegment = mSegments[targetSegmentInfo.first];
@@ -152,6 +141,8 @@ Eigen::VectorXd SplineTrajectory2::evaluate(double _t, int _derivative) const
 
   // Return zero for higher-order derivatives.
   if (_derivative < targetSegment.mCoefficients.cols())
+    // TODO: We should transform this into the body frame using the adjoint
+    // transformation.
     return evaluatePolynomial(targetSegment.mCoefficients, evaluationTime,
       _derivative);
   else
@@ -177,33 +168,6 @@ std::pair<size_t, double> SplineTrajectory2::getSegmentForTime(double _t) const
   // After the end of the last segment.
   return std::make_pair(
     mSegments.size() - 1, segmentStartTime - mSegments.back().mDuration);
-}
-
-//=============================================================================
-void SplineTrajectory2::getSegmentStartState(
-  size_t _index, statespace::StateSpace::State* _out) const
-{
-  assert(_index < mSegments.size());
-  assert(_out != nullptr);
-
-  mStateSpace->copyState(mSegments.front().mStartState, _out);
-
-  const auto relativeState = mStateSpace->createState();
-  const auto nextState = mStateSpace->createState();
-
-  // Forward-integrate all previous segments.
-  for (size_t isegment = 0; isegment < _index; ++isegment)
-  {
-    const auto& segment = mSegments[isegment];
-    // TODO: Should we be using relative or absolute time here?
-    const auto tangentVector = evaluatePolynomial(
-      segment.mCoefficients, segment.mDuration, 0);
-
-    // Compute the relative state offset caused by this segment.
-    mStateSpace->expMap(tangentVector, relativeState);
-    mStateSpace->compose(_out, relativeState, nextState);
-    mStateSpace->copyState(nextState, _out);
-  }
 }
 
 //=============================================================================

@@ -55,9 +55,6 @@ private:
 
   std::pair<size_t, double> getSegmentForTime(double _t) const;
 
-  void getSegmentStartState(
-    size_t _index, statespace::StateSpace::State* _out) const;
-
   statespace::StateSpacePtr mStateSpace;
   double mStartTime;
   std::vector<PolynomialSegment> mSegments;
