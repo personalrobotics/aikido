@@ -5,10 +5,10 @@
 #include "../../constraint/TestableConstraint.hpp"
 #include "../../constraint/Sampleable.hpp"
 
-namespace aikido
-{
-namespace ompl
-{
+namespace aikido {
+namespace planner {
+namespace ompl {
+
 /// Exposes a Testable/Sampleable constraint pair as a goal to OMPL planners
 class GoalRegion : public ::ompl::base::GoalSampleableRegion
 {
@@ -47,6 +47,9 @@ private:
   constraint::TestableConstraintPtr mTestable;
   std::unique_ptr<constraint::SampleGenerator> mSampleGenerator;
 };
+
 }
 }
+}
+
 #endif

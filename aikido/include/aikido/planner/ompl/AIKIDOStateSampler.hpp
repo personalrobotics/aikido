@@ -5,6 +5,7 @@
 #include "../../constraint/Sampleable.hpp"
 
 namespace aikido {
+namespace planner {
 namespace ompl {
 
 /// Wraps an aikido::constraint::SampleGenerator in a
@@ -38,6 +39,9 @@ public:
 private:
   std::unique_ptr<aikido::constraint::SampleGenerator> mGenerator;
 };
+
 }
 }
+}
+
 #endif

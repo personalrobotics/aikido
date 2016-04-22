@@ -47,7 +47,7 @@ void setTranslationalState(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_stateSpace,
     ::ompl::base::State *_state)
 {
-  auto st = _state->as<aikido::ompl::GeometricStateSpace::StateType>();
+  auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
   auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
   auto subState =
       _stateSpace->getSubStateHandle<aikido::statespace::Rn>(
@@ -59,7 +59,7 @@ Eigen::Vector3d getTranslationalState(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_stateSpace,
     ::ompl::base::State *_state)
 {
-  auto st = _state->as<aikido::ompl::GeometricStateSpace::StateType>();
+  auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
   auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
   auto subState =
       _stateSpace->getSubStateHandle<aikido::statespace::Rn>(

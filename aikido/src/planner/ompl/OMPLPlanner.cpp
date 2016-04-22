@@ -3,6 +3,7 @@
 #include <aikido/constraint/ConjunctionConstraint.hpp>
 
 namespace aikido {
+namespace planner {
 namespace ompl {
 
 //=============================================================================
@@ -135,6 +136,8 @@ trajectory::TrajectoryPtr planOMPL(
     }
   }
   return returnTraj;
+}
+
 }
 }
 }

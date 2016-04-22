@@ -10,7 +10,9 @@
 #include "../../statespace/GeodesicInterpolator.hpp"
 
 namespace aikido {
+namespace planner {
 namespace ompl {
+
 /// The maximum distance between two states for them to still be considered
 /// equal
 constexpr double EQUALITY_EPSILON = 1e-7;
@@ -123,6 +125,8 @@ private:
 };
 
 using GeometricStateSpacePtr = std::shared_ptr<GeometricStateSpace>;
+
+}
 }
 }
 #endif

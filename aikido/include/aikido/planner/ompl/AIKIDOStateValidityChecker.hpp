@@ -7,7 +7,9 @@
 #include "../../constraint/TestableConstraint.hpp"
 
 namespace aikido {
+namespace planner {
 namespace ompl {
+
 /// Expose a set of aikido::conststraint::TestableConstraint class as a
 /// StateValidityChecker to the OMPL framework.  This checker will mark a state
 /// valid if all constraints defined within the class are valid for the state.
@@ -31,6 +33,9 @@ private:
   constraint::TestableConstraintPtr mConstraint;
 
 };
+
 }
 }
+}
+
 #endif

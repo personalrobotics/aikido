@@ -15,7 +15,9 @@
 #include <boost/make_shared.hpp>
 
 namespace aikido {
+namespace planner {
 namespace ompl {
+
 /// Use the template OMPL Planner type to plan a trajectory that moves from the
 /// start to the goal point.
 /// \param _start The start state
@@ -128,6 +130,7 @@ trajectory::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
                              double _maxPlanTime);
 
 } // namespace ompl
+} // namespace planner
 } // namespace aikido
 
 #include "detail/OMPLPlanner.hpp"
