@@ -57,20 +57,32 @@ public:
   virtual ~ExampleClass() = default; 
 
   // Documentation inherited.  <-- Use this comment to indicate that the docstring of the interface method applies
-  int exampleInterfaceFunction() const override;
+  int exampleInterfaceFunction() const override;  // <-- Always explictly `override` interface functions
 
   /// This is a docstring for a method, it is required.
-  void exampleMethod() const;
+  /// - If a method has output parameters, they should be the last arguments.
+  /// - Argument names are prefixes with a leading "_".
+  ///
+  /// \param[in] _A a description of _A
+  /// \param[in] _B a description of _B
+  /// \param[out] _out a description of _out
+  int exampleMethod(int _A, int _B, int *_out) const;
 
 private:
   std::unique_ptr<util::RNG> mExampleMember; // Member variables are prefixed with "m"
 };
 
-// Use "using" directives to declare pointer helper types
+// Use "using" directive to declare a shared pointer helper type.  It should not be `const`.
 using ExamplePtr = std::shared_ptr<Example>; 
 
 } // namespace example
 } // namespace aikido
+
+// In certain cases, such as heavily templated code, implementation must be included
+// in a header. In this case, a "detail" header should be created in the "./detail"
+// subdirectory with the same name as this class file, but an "_impl" suffix.
+// Private declarations in this header can use a "detail" sub-namespace.
+#include "./detail/example_class_impl.hpp"
 
 #endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```
@@ -79,6 +91,7 @@ using ExamplePtr = std::shared_ptr<Example>;
 
 ```c++
 // Includes should be at the top of the file.
+// The first include in a class source file should be the matching `.hpp` header file.
 #include <aikido/example/ExampleClass.hpp>
 #include <boost/format.hpp>
 #include <stdexcept>
@@ -103,9 +116,10 @@ int ExampleClass::exampleInterfaceFunction() const
 }
 
 //=============================================================================
-void ExampleClass::exampleMethod() const
+int ExampleClass::exampleMethod(int _A, int _B, int *_out) const
 {
-  mExampleMember.reset(nullptr);
+  int result = A + B:
+  
 }
 
 } // namespace example
