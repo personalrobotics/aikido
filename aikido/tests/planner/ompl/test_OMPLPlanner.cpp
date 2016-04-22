@@ -1,6 +1,6 @@
 #include "OMPLTestHelpers.hpp"
-#include "../constraint/MockConstraints.hpp"
-#include <aikido/ompl/OMPLPlanner.hpp>
+#include "../../constraint/MockConstraints.hpp"
+#include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
 #include <aikido/constraint/SampleableSubSpace.h>
 #include <aikido/constraint/TestableSubSpace.hpp>
@@ -9,9 +9,9 @@
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using Rn = aikido::statespace::Rn;
-using aikido::ompl::getSpaceInformation;
+using aikido::planner::ompl::getSpaceInformation;
 
-TEST_F(OMPLPlannerTest, PlanToConfiguration)
+TEST_F(PlannerTest, PlanToConfiguration)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
@@ -27,7 +27,7 @@ TEST_F(OMPLPlannerTest, PlanToConfiguration)
   subState2.setValue(goalPose);
 
   // Plan
-  auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+  auto traj = aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
       startState, goalState, stateSpace, interpolator, std::move(dmetric),
       std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 5.0);
@@ -44,7 +44,7 @@ TEST_F(OMPLPlannerTest, PlanToConfiguration)
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 }
 
-TEST_F(OMPLPlannerTest, PlanToGoalRegion)
+TEST_F(PlannerTest, PlanToGoalRegion)
 {
   auto startState = stateSpace->createState();
   Eigen::Vector3d startPose(-5, -5, 0);
@@ -71,7 +71,7 @@ TEST_F(OMPLPlannerTest, PlanToGoalRegion)
                                                              tConstraints);
 
   // Plan
-  auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+  auto traj = aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
       startState, goalTestable, goalSampleable, stateSpace, interpolator,
       std::move(dmetric), std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 5.0);
@@ -87,7 +87,7 @@ TEST_F(OMPLPlannerTest, PlanToGoalRegion)
   EXPECT_TRUE(goalTestable->isSatisfied(s0));
 }
 
-TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalTestable)
+TEST_F(PlannerTest, PlanThrowsOnNullGoalTestable)
 {
   auto startState = stateSpace->createState();
   Eigen::Vector3d startPose(-5, -5, 0);
@@ -101,7 +101,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalTestable)
       aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
   // Plan
-  EXPECT_THROW(aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+  EXPECT_THROW(aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
                    startState, nullptr, std::move(goalSampleable), stateSpace,
                    interpolator, std::move(dmetric), std::move(sampler),
                    std::move(collConstraint), std::move(boundsConstraint),
@@ -109,7 +109,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalTestable)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, PlanThrowsOnGoalTestableMismatch)
+TEST_F(PlannerTest, PlanThrowsOnGoalTestableMismatch)
 {
   auto startState = stateSpace->createState();
   Eigen::Vector3d startPose(-5, -5, 0);
@@ -128,7 +128,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnGoalTestableMismatch)
 
   // Plan
   EXPECT_THROW(
-      aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+      aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
           startState, goalTestable, std::move(goalSampleable), stateSpace,
           interpolator, std::move(dmetric), std::move(sampler),
           std::move(collConstraint), std::move(boundsConstraint),
@@ -136,7 +136,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnGoalTestableMismatch)
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalSampler)
+TEST_F(PlannerTest, PlanThrowsOnNullGoalSampler)
 {
   auto startState = stateSpace->createState();
   Eigen::Vector3d startPose(-5, -5, 0);
@@ -150,14 +150,14 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalSampler)
 
   // Plan
   EXPECT_THROW(
-      aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+      aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
           startState, goalTestable, nullptr, stateSpace, interpolator,
           std::move(dmetric), std::move(sampler), std::move(collConstraint),
           std::move(boundsConstraint), std::move(boundsProjection), 5.0),
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, PlanThrowsOnGoalSamplerMismatch)
+TEST_F(PlannerTest, PlanThrowsOnGoalSamplerMismatch)
 {
   auto startState = stateSpace->createState();
   Eigen::Vector3d startPose(-5, -5, 0);
@@ -176,7 +176,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnGoalSamplerMismatch)
 
   // Plan
   EXPECT_THROW(
-      aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+      aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
           startState, goalTestable, std::move(goalSampleable), stateSpace,
           interpolator, std::move(dmetric), std::move(sampler),
           std::move(collConstraint), std::move(boundsConstraint),
@@ -184,7 +184,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnGoalSamplerMismatch)
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullStateSpace)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullStateSpace)
 {
   EXPECT_THROW(getSpaceInformation(
                    nullptr, std::move(interpolator), std::move(dmetric),
@@ -193,7 +193,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullStateSpace)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullInterpolator)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullInterpolator)
 {
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), nullptr, std::move(dmetric),
@@ -202,7 +202,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullInterpolator)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnInterpolatorMismatch)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnInterpolatorMismatch)
 {
   auto ss = std::make_shared<aikido::statespace::SO2>();
   auto binterpolator =
@@ -216,7 +216,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnInterpolatorMismatch)
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullDistanceMetric)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullDistanceMetric)
 {
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator), nullptr,
@@ -225,7 +225,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullDistanceMetric)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnDistanceMetricMismatch)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnDistanceMetricMismatch)
 {
   auto ss = std::make_shared<StateSpace>(robot);
   auto dm = aikido::distance::createDistanceMetric(ss);
@@ -237,7 +237,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnDistanceMetricMismatch)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullSampler)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullSampler)
 {
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator),
@@ -246,7 +246,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullSampler)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnSamplerMismatch)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnSamplerMismatch)
 {
   auto ss = std::make_shared<StateSpace>(robot);
   auto ds = aikido::constraint::createSampleableBounds(ss, make_rng());
@@ -258,7 +258,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnSamplerMismatch)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullValidityConstraint)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullValidityConstraint)
 {
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator),
@@ -267,7 +267,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullValidityConstraint)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnValidityConstraintMismatch)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnValidityConstraintMismatch)
 {
   auto ss = std::make_shared<StateSpace>(robot);
   auto dv = std::make_shared<MockTranslationalRobotConstraint>(
@@ -279,7 +279,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnValidityConstraintMismatch)
                std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullBoundsConstraint)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullBoundsConstraint)
 {
   EXPECT_THROW(
       getSpaceInformation(std::move(stateSpace), std::move(interpolator),
@@ -289,7 +289,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullBoundsConstraint)
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnBoundsConstraintMismatch)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnBoundsConstraintMismatch)
 {
   auto ss = std::make_shared<StateSpace>(robot);
   auto ds = aikido::constraint::createTestableBounds(ss);
@@ -302,7 +302,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnBoundsConstraintMismatch)
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullBoundsProjector)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullBoundsProjector)
 {
   EXPECT_THROW(
       getSpaceInformation(std::move(stateSpace), std::move(interpolator),
@@ -312,7 +312,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullBoundsProjector)
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnBoundsProjectorMismatch)
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnBoundsProjectorMismatch)
 {
   auto ss = std::make_shared<StateSpace>(robot);
   auto ds = aikido::constraint::createProjectableBounds(ss);
@@ -325,7 +325,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnBoundsProjectorMismatch)
       std::invalid_argument);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationNotNull)
+TEST_F(PlannerTest, GetSpaceInformationNotNull)
 {
   auto si = getSpaceInformation(
       std::move(stateSpace), std::move(interpolator), std::move(dmetric),
@@ -334,26 +334,26 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationNotNull)
   EXPECT_FALSE(si == nullptr);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationCreatesGeometricStateSpace)
+TEST_F(PlannerTest, GetSpaceInformationCreatesGeometricStateSpace)
 {
   auto si = getSpaceInformation(
       std::move(stateSpace), std::move(interpolator), std::move(dmetric),
       std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection));
 
-  auto ss = boost::dynamic_pointer_cast<aikido::ompl::GeometricStateSpace>(
+  auto ss = boost::dynamic_pointer_cast<aikido::planner::ompl::GeometricStateSpace>(
       si->getStateSpace());
   EXPECT_FALSE(ss == nullptr);
 }
 
-TEST_F(OMPLPlannerTest, GetSpaceInformationCreatesValidityChecker)
+TEST_F(PlannerTest, GetSpaceInformationCreatesValidityChecker)
 {
   auto si = getSpaceInformation(
       std::move(stateSpace), std::move(interpolator), std::move(dmetric),
       std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection));
 
-  auto vc = boost::dynamic_pointer_cast<aikido::ompl::StateValidityChecker>(
+  auto vc = boost::dynamic_pointer_cast<aikido::planner::ompl::StateValidityChecker>(
       si->getStateValidityChecker());
   EXPECT_FALSE(vc == nullptr);
 }

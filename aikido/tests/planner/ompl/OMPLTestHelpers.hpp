@@ -5,7 +5,7 @@
 #include <aikido/constraint/TestableConstraint.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/Rn.hpp>
@@ -47,7 +47,7 @@ void setTranslationalState(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_stateSpace,
     ::ompl::base::State *_state)
 {
-  auto st = _state->as<aikido::ompl::GeometricStateSpace::StateType>();
+  auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
   auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
   auto subState =
       _stateSpace->getSubStateHandle<aikido::statespace::Rn>(
@@ -59,7 +59,7 @@ Eigen::Vector3d getTranslationalState(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_stateSpace,
     ::ompl::base::State *_state)
 {
-  auto st = _state->as<aikido::ompl::GeometricStateSpace::StateType>();
+  auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
   auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
   auto subState =
       _stateSpace->getSubStateHandle<aikido::statespace::Rn>(
@@ -163,7 +163,7 @@ private:
   aikido::statespace::StateSpacePtr mStateSpace;
 };
 
-class OMPLPlannerTest : public ::testing::Test
+class PlannerTest : public ::testing::Test
 {
 public:
   virtual void SetUp()

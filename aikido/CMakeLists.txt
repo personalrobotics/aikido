@@ -37,11 +37,21 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 find_package(DART REQUIRED COMPONENTS core)
 include_directories(SYSTEM ${DART_INCLUDE_DIRS})
 
-find_package(OMPL REQUIRED)
-include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
-
 find_package(TinyXML2 REQUIRED)
 include_directories(SYSTEM ${TinyXML2_INCLUDE_DIRS})
+
+#==============================================================================
+# Optional Dependencies
+#
+find_package(OMPL QUIET)
+if (${OMPL_FOUND})
+  message(STATUS "Looking for OMPL - found version ${OMPL_VERSION}")
+
+  include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
+else()
+  message(STATUS "Looking for OMPL - NOT found, to use planning::ompl, please"
+                 " install OMPL.")
+endif()
 
 #==============================================================================
 # Register an Aikido library.

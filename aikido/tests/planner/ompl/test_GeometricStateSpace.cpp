@@ -1,10 +1,10 @@
 #include "OMPLTestHelpers.hpp"
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 
-using aikido::ompl::GeometricStateSpace;
+using aikido::planner::ompl::GeometricStateSpace;
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 
-class GeometricStateSpaceTest : public OMPLPlannerTest
+class GeometricStateSpaceTest : public PlannerTest
 {
 public:
   void constructStateSpace()

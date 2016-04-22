@@ -1,18 +1,18 @@
 #include "OMPLTestHelpers.hpp"
-#include "../constraint/MockConstraints.hpp"
-#include <aikido/ompl/AIKIDOStateValidityChecker.hpp>
-#include <aikido/ompl/OMPLPlanner.hpp>
+#include "../../constraint/MockConstraints.hpp"
+#include <aikido/planner/ompl/StateValidityChecker.hpp>
+#include <aikido/planner/ompl/Planner.hpp>
 
-using aikido::ompl::GeometricStateSpace;
-using aikido::ompl::StateValidityChecker;
+using aikido::planner::ompl::GeometricStateSpace;
+using aikido::planner::ompl::StateValidityChecker;
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 
-class StateValidityCheckerTest : public OMPLPlannerTest
+class StateValidityCheckerTest : public PlannerTest
 {
 public:
   virtual void SetUp()
   {
-    OMPLPlannerTest::SetUp();
+    PlannerTest::SetUp();
     gSpace = std::make_shared<GeometricStateSpace>(
         stateSpace, interpolator, dmetric, sampler, boundsConstraint,
         boundsProjection);
@@ -30,7 +30,7 @@ TEST_F(StateValidityCheckerTest, ThrowsOnNullSpaceInformation)
 
 TEST_F(StateValidityCheckerTest, ThrowsOnNullConstraint)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   EXPECT_THROW(StateValidityChecker(si, nullptr), std::invalid_argument);
@@ -38,7 +38,7 @@ TEST_F(StateValidityCheckerTest, ThrowsOnNullConstraint)
 
 TEST_F(StateValidityCheckerTest, ValidState)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto constraint = std::make_shared<PassingConstraint>(stateSpace);
@@ -50,7 +50,7 @@ TEST_F(StateValidityCheckerTest, ValidState)
 
 TEST_F(StateValidityCheckerTest, InvalidState)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto constraint = std::make_shared<FailingConstraint>(stateSpace);

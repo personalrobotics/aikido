@@ -1,8 +1,10 @@
-#include <aikido/ompl/AIKIDOStateSampler.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/StateSampler.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 
 namespace aikido {
+namespace planner {
 namespace ompl {
+
 //=============================================================================
 StateSampler::StateSampler(
     const ::ompl::base::StateSpace *_space,
@@ -47,6 +49,8 @@ void StateSampler::sampleGaussian(::ompl::base::State *_state,
                                   const double _stdDev)
 {
   throw std::runtime_error("sampleGaussian not implemented");
+}
+
 }
 }
 }

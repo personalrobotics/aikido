@@ -1,7 +1,8 @@
-#include <aikido/ompl/GoalRegion.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/GoalRegion.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 
 namespace aikido {
+namespace planner {
 namespace ompl {
 
 //=============================================================================
@@ -66,6 +67,8 @@ bool GoalRegion::isSatisfied(const ::ompl::base::State* _state) const
 {
   auto state = static_cast<const GeometricStateSpace::StateType*>(_state);
   return mTestable->isSatisfied(state->mState);
+}
+
 }
 }
 }
