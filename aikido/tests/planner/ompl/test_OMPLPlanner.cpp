@@ -2,7 +2,7 @@
 #include "../../constraint/MockConstraints.hpp"
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
-#include <aikido/constraint/SampleableSubSpace.h>
+#include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/TestableSubSpace.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
@@ -61,7 +61,7 @@ TEST_F(PlannerTest, PlanToGoalRegion)
       sConstraints;
   sConstraints.push_back(boxConstraint);
   aikido::constraint::SampleablePtr goalSampleable =
-      std::make_shared<aikido::constraint::SampleableSubSpace>(stateSpace,
+      std::make_shared<aikido::constraint::CartesianProductSampleable>(stateSpace,
                                                                sConstraints);
   std::vector<std::shared_ptr<aikido::constraint::Testable>>
       tConstraints;

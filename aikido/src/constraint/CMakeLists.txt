@@ -15,9 +15,9 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   Projectable.cpp
   CartesianProductProjectable.cpp
   Sampleable.cpp
-  SampleableSubSpace.cpp
-  SatisfiedConstraint.cpp
-  StackedConstraint.cpp
+  CartesianProductSampleable.cpp
+  Satisfied.cpp
+  DifferentiableIntersection.cpp
   TSR.cpp
   TestableIntersection.cpp
   TestableSubSpace.cpp

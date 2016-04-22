@@ -1,9 +1,9 @@
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
-#include <aikido/constraint/StackedConstraint.hpp>
+#include <aikido/constraint/DifferentiableIntersection.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/constraint/CartesianProductProjectable.hpp>
-#include <aikido/constraint/SampleableSubSpace.h>
+#include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/TestableSubSpace.hpp>
 #include <dart/common/StlHelpers.h>
 
@@ -47,8 +47,8 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   }
 
   // TODO: We should std::move constraints here, but we can't because
-  // StackedConstraint does not take by value.
-  return make_unique<StackedConstraint>(constraints, _metaSkeleton);
+  // DifferentiableIntersection does not take by value.
+  return make_unique<DifferentiableIntersection>(constraints, _metaSkeleton);
 }
 
 //=============================================================================
@@ -149,7 +149,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<SampleableSubSpace>(
+  return make_unique<CartesianProductSampleable>(
     std::move(_metaSkeleton), std::move(constraints));
 }
 

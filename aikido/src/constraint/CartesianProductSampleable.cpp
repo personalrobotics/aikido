@@ -1,5 +1,5 @@
 #include <dart/common/StlHelpers.h>
-#include <aikido/constraint/SampleableSubSpace.h>
+#include <aikido/constraint/CartesianProductSampleable.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -74,7 +74,7 @@ private:
 };
 
 //=============================================================================
-SampleableSubSpace::SampleableSubSpace(
+CartesianProductSampleable::CartesianProductSampleable(
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<std::shared_ptr<Sampleable>> _constraints)
   : mStateSpace(std::move(_stateSpace))
@@ -101,13 +101,13 @@ SampleableSubSpace::SampleableSubSpace(
 }
 
 //=============================================================================
-statespace::StateSpacePtr SampleableSubSpace::getStateSpace() const
+statespace::StateSpacePtr CartesianProductSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-std::unique_ptr<SampleGenerator> SampleableSubSpace
+std::unique_ptr<SampleGenerator> CartesianProductSampleable
   ::createSampleGenerator() const
 {
   std::vector<std::unique_ptr<SampleGenerator>> generators;

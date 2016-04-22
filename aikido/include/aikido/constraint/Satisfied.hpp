@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_SATISFIEDCONSTRAINT_HPP_
-#define AIKIDO_CONSTRAINT_SATISFIEDCONSTRAINT_HPP_
+#ifndef AIKIDO_CONSTRAINT_SATISFIED_HPP_
+#define AIKIDO_CONSTRAINT_SATISFIED_HPP_
 #include "Differentiable.hpp"
 #include "Projectable.hpp"
 #include "Sampleable.hpp"
@@ -11,7 +11,7 @@ namespace constraint {
 /// A constraint which is always satisfied.
 /// This class is often used in CartesianProduct constraints 
 /// to represent that some subspace doesn't have any constraint.
-class SatisfiedConstraint 
+class Satisfied 
   : public constraint::Differentiable
   , public constraint::Projectable
   , public constraint::Testable
@@ -19,7 +19,7 @@ class SatisfiedConstraint
 public:
   /// Constructor.
   /// \param _space StateSpace in which this constraint operates.
-  explicit SatisfiedConstraint(statespace::StateSpacePtr _space);
+  explicit Satisfied(statespace::StateSpacePtr _space);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -57,4 +57,4 @@ private:
 } // namespace constraint
 } // namespace aikido
 
-#endif // ifndef AIKIDO_CONSTRAINT_SATISFIEDCONSTRAINT_H_
+#endif // ifndef AIKIDO_CONSTRAINT_SATISFIED_H_

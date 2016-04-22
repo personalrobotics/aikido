@@ -1,5 +1,5 @@
 #include <aikido/constraint/FramePairConstraintAdaptor.hpp>
-#include <aikido/constraint/SatisfiedConstraint.hpp>
+#include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/SE3.hpp>
@@ -88,7 +88,7 @@ TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullPoseConstraint)
 TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnInvalidPoseConstraint)
 {
   auto so2 = std::make_shared<SO2>();
-  auto pconstraint = std::make_shared<aikido::constraint::SatisfiedConstraint>(so2);
+  auto pconstraint = std::make_shared<aikido::constraint::Satisfied>(so2);
   EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, bn1.get(), bn2.get(), pconstraint),
                std::invalid_argument);
 }

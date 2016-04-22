@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/Rn.hpp>
-#include <aikido/constraint/SatisfiedConstraint.hpp>
+#include <aikido/constraint/Satisfied.hpp>
 
 using aikido::statespace::Rn;
-using aikido::constraint::SatisfiedConstraint;
+using aikido::constraint::Satisfied;
 using Eigen::Vector2d;
 using Eigen::Matrix2d;
 
-class SatisfiedConstraintTests : public ::testing::Test
+class SatisfiedTests : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -18,38 +18,38 @@ protected:
   std::shared_ptr<Rn> mStateSpace;
 };
 
-TEST_F(SatisfiedConstraintTests, constructor_StateSpaceIsNull_Throws)
+TEST_F(SatisfiedTests, constructor_StateSpaceIsNull_Throws)
 {
   EXPECT_THROW({
-    SatisfiedConstraint(nullptr);
+    Satisfied(nullptr);
   }, std::invalid_argument);
 }
 
-TEST_F(SatisfiedConstraintTests, getStateSpace)
+TEST_F(SatisfiedTests, getStateSpace)
 {
-  SatisfiedConstraint constraint(mStateSpace);
+  Satisfied constraint(mStateSpace);
 
   EXPECT_EQ(mStateSpace, constraint.getStateSpace());
 }
 
-TEST_F(SatisfiedConstraintTests, getConstraintTypes)
+TEST_F(SatisfiedTests, getConstraintTypes)
 {
-  SatisfiedConstraint constraint(mStateSpace);
+  Satisfied constraint(mStateSpace);
 
   EXPECT_TRUE(constraint.getConstraintTypes().empty());
 }
 
-TEST_F(SatisfiedConstraintTests, isSatisfied_ReturnTrue)
+TEST_F(SatisfiedTests, isSatisfied_ReturnTrue)
 {
-  SatisfiedConstraint constraint(mStateSpace);
+  Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
   EXPECT_TRUE(constraint.isSatisfied(state));
 }
 
-TEST_F(SatisfiedConstraintTests, project_DoesNothing)
+TEST_F(SatisfiedTests, project_DoesNothing)
 {
-  SatisfiedConstraint constraint(mStateSpace);
+  Satisfied constraint(mStateSpace);
   auto inState = mStateSpace->createState();
   inState.setValue(Vector2d(1., 2.));
 
@@ -58,34 +58,34 @@ TEST_F(SatisfiedConstraintTests, project_DoesNothing)
   EXPECT_TRUE(inState.getValue().isApprox(outState.getValue()));
 }
 
-TEST_F(SatisfiedConstraintTests, getValue_ReturnsZero)
+TEST_F(SatisfiedTests, getValue_ReturnsZero)
 {
   Eigen::Matrix<double, 0, 1> expectedValue;
 
-  SatisfiedConstraint constraint(mStateSpace);
+  Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
   auto constraintValue = constraint.getValue(state);
   EXPECT_TRUE(expectedValue.isApprox(constraintValue));
 }
 
-TEST_F(SatisfiedConstraintTests, getJacobian_ReturnsZero)
+TEST_F(SatisfiedTests, getJacobian_ReturnsZero)
 {
   Eigen::Matrix<double, 0, 0> expectedJacobian;
 
-  SatisfiedConstraint constraint(mStateSpace);
+  Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
   auto constraintJacobian = constraint.getJacobian(state);
   EXPECT_TRUE(expectedJacobian.isApprox(constraintJacobian));
 }
 
-TEST_F(SatisfiedConstraintTests, getValueAndJacobian_ReturnsZero)
+TEST_F(SatisfiedTests, getValueAndJacobian_ReturnsZero)
 {
   Eigen::Matrix<double, 0, 1> expectedValue;
   Eigen::Matrix<double, 0, 0> expectedJacobian;
 
-  SatisfiedConstraint constraint(mStateSpace);
+  Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
   auto valueAndJacobian = constraint.getValueAndJacobian(state);

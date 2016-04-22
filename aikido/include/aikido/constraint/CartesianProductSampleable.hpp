@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_SAMPLEABLESUBSPACE_HPP_
-#define AIKIDO_CONSTRAINT_SAMPLEABLESUBSPACE_HPP_
+#ifndef AIKIDO_CONSTRAINT_CARTESIANPRODUCTSAMPLEABLE_HPP_
+#define AIKIDO_CONSTRAINT_CARTESIANPRODUCTSAMPLEABLE_HPP_
 #include <vector>
 #include "Sampleable.hpp"
 #include "../statespace/CartesianProduct.hpp"
@@ -10,7 +10,7 @@ namespace constraint {
 /// Sampleable for CompoundStates. 
 /// It takes in a set of Sampleables and its SampleGenerators
 /// sample i-th substate from the i-th Sampleable.
-class SampleableSubSpace : public Sampleable
+class CartesianProductSampleable : public Sampleable
 {
 public:
 
@@ -19,7 +19,7 @@ public:
   /// \param _constraints Set of sampleables. The size of _constraints
   ///        should match the number of subspaces in _stateSpace.
   ///        i-th constraint applies to i-th subspace.
-  SampleableSubSpace(
+  CartesianProductSampleable(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     std::vector<std::shared_ptr<Sampleable>> _constraints);
 
@@ -37,4 +37,4 @@ private:
 } // namespace constraint
 } // namespace aikido
 
-#endif // define AIKIDO_CONSTRAINT_SAMPLEABLESUBSPACE_HPP_
+#endif // define AIKIDO_CONSTRAINT_CARTESIANPRODUCTSAMPLEABLE_HPP_

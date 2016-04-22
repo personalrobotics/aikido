@@ -9,7 +9,7 @@
 #include "../uniform/RealVectorBoxConstraint.hpp"
 #include "../uniform/SO2UniformSampler.hpp"
 #include "../uniform/SO3UniformSampler.hpp"
-#include "../SatisfiedConstraint.hpp"
+#include "../Satisfied.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -84,7 +84,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
   else
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
 }
 
@@ -159,7 +159,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO2Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
@@ -175,7 +175,7 @@ struct createTestableFor_impl<statespace::dart::SO2Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
@@ -191,7 +191,7 @@ struct createProjectableFor_impl<statespace::dart::SO2Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
@@ -226,7 +226,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO3Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
@@ -242,7 +242,7 @@ struct createTestableFor_impl<statespace::dart::SO3Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
@@ -258,7 +258,7 @@ struct createProjectableFor_impl<statespace::dart::SO3Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };

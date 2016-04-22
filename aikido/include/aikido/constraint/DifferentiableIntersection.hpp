@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_STACKEDCONSTRAINT_HPP_
-#define AIKIDO_CONSTRAINT_STACKEDCONSTRAINT_HPP_
+#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLEINTERSECTION_HPP_
+#define AIKIDO_CONSTRAINT_DIFFERENTIABLEINTERSECTION_HPP_
 
 #include "../statespace/StateSpace.hpp"
 #include "Differentiable.hpp"
@@ -11,10 +11,10 @@ namespace constraint{
 
 /// Contains n constraints that take the same statespace. 
 /// getValue and getJacobian returns stacked vector and matrix.
-class StackedConstraint : public Differentiable
+class DifferentiableIntersection : public Differentiable
 {
 public:
-  StackedConstraint(
+  DifferentiableIntersection(
     std::vector<DifferentiablePtr> _constraints,
     statespace::StateSpacePtr _stateSpace);
 

@@ -40,9 +40,9 @@ aikido_add_test(test_TestableIntersection
 target_link_libraries(test_TestableIntersection
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_StackedConstraint
-#   test_StackedConstraint.cpp)
-# target_link_libraries(test_StackedConstraint
+# aikido_add_test(test_DifferentiableIntersection
+#   test_DifferentiableIntersection.cpp)
+# target_link_libraries(test_DifferentiableIntersection
 #   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_RealVectorBoxConstraint
@@ -75,9 +75,9 @@ aikido_add_test(test_SO3UniformSampler
 target_link_libraries(test_SO3UniformSampler
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
-# aikido_add_test(test_SatisfiedConstraint
-#   test_SatisfiedConstraint.cpp)
-# target_link_libraries(test_SatisfiedConstraint
+# aikido_add_test(test_Satisfied
+#   test_Satisfied.cpp)
+# target_link_libraries(test_Satisfied
 #   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_DartConstraintHelpers

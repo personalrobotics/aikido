@@ -1,10 +1,10 @@
-#include <aikido/constraint/StackedConstraint.hpp>
+#include <aikido/constraint/DifferentiableIntersection.hpp>
 namespace aikido {
 namespace constraint {
 
 
 //=============================================================================
-StackedConstraint::StackedConstraint(
+DifferentiableIntersection::DifferentiableIntersection(
   std::vector<DifferentiablePtr> _constraints,
   std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
 : mConstraints(std::move(_constraints))
@@ -33,7 +33,7 @@ StackedConstraint::StackedConstraint(
 
 
 //=============================================================================
-size_t StackedConstraint::getConstraintDimension() const
+size_t DifferentiableIntersection::getConstraintDimension() const
 {
   int dim = 0;
 
@@ -47,7 +47,7 @@ size_t StackedConstraint::getConstraintDimension() const
 
 
 //=============================================================================
-Eigen::VectorXd StackedConstraint::getValue(
+Eigen::VectorXd DifferentiableIntersection::getValue(
   const statespace::StateSpace::State* _s) const
 {
   int dimension = getConstraintDimension();
@@ -67,7 +67,7 @@ Eigen::VectorXd StackedConstraint::getValue(
 
 
 //=============================================================================
-Eigen::MatrixXd StackedConstraint::getJacobian(
+Eigen::MatrixXd DifferentiableIntersection::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   int constraintsDim = getConstraintDimension();
@@ -87,7 +87,7 @@ Eigen::MatrixXd StackedConstraint::getJacobian(
 }
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> StackedConstraint::getValueAndJacobian(
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> DifferentiableIntersection::getValueAndJacobian(
   const statespace::StateSpace::State* _s) const
 {
   int constraintsDim = getConstraintDimension();
@@ -115,7 +115,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> StackedConstraint::getValueAndJacobi
 
 
 //=============================================================================
-std::vector<ConstraintType> StackedConstraint::getConstraintTypes() const
+std::vector<ConstraintType> DifferentiableIntersection::getConstraintTypes() const
 {
   std::vector<ConstraintType> constraintTypes;
   constraintTypes.reserve(mConstraints.size());
@@ -133,7 +133,7 @@ std::vector<ConstraintType> StackedConstraint::getConstraintTypes() const
 
 
 //=============================================================================
-statespace::StateSpacePtr StackedConstraint::getStateSpace() const
+statespace::StateSpacePtr DifferentiableIntersection::getStateSpace() const
 {
   return mStateSpace;
 }

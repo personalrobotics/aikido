@@ -1,6 +1,6 @@
 #include "PolynomialConstraint.hpp"
 #include <aikido/constraint/DifferentiableProjector.hpp>
-#include <aikido/constraint/SatisfiedConstraint.hpp>
+#include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/TSR.hpp>
 
 #include <aikido/statespace/Rn.hpp>
@@ -9,7 +9,7 @@
 #include <Eigen/Dense>
 
 using aikido::constraint::DifferentiableProjector;
-using aikido::constraint::SatisfiedConstraint;
+using aikido::constraint::Satisfied;
 using aikido::constraint::TSR;
 using aikido::statespace::Rn;
 
@@ -22,7 +22,7 @@ TEST(DifferentiableProjectorTest, ConstructorThrowsOnNullDifferentiable)
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnBadToleranceDimension)
 {
   auto ss = std::make_shared<Rn>(3);
-  auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
+  auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
       DifferentiableProjector(constraint, std::vector<double>({0.1}), 1, 1e-4),
       std::invalid_argument);
@@ -41,7 +41,7 @@ TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeTolerance)
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeIteration)
 {
   auto ss = std::make_shared<Rn>(3);
-  auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
+  auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
       DifferentiableProjector(constraint, std::vector<double>(), 0, 1e-4),
       std::invalid_argument);
@@ -54,7 +54,7 @@ TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeIteration)
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeStepsize)
 {
   auto ss = std::make_shared<Rn>(3);
-  auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
+  auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
       DifferentiableProjector(constraint, std::vector<double>(), 1, 0),
       std::invalid_argument);

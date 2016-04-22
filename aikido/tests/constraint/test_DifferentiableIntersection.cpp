@@ -1,5 +1,5 @@
 #include "PolynomialConstraint.hpp"
-#include <aikido/constraint/StackedConstraint.hpp>
+#include <aikido/constraint/DifferentiableIntersection.hpp>
 #include <aikido/constraint/TSR.hpp>
 
 #include <aikido/statespace/Rn.hpp>
@@ -8,7 +8,7 @@
 #include <Eigen/Dense>
 #include <memory>
 
-using aikido::constraint::StackedConstraint;
+using aikido::constraint::DifferentiableIntersection;
 using aikido::constraint::TSR;
 using aikido::constraint::DifferentiablePtr;
 
@@ -17,28 +17,28 @@ using aikido::statespace::StateSpace;
 using aikido::statespace::StateSpacePtr;
 
 
-TEST(StackedConstraint, InvalidConstructor)
+TEST(DifferentiableIntersection, InvalidConstructor)
 {
   std::vector<DifferentiablePtr> constraints;
   std::shared_ptr<Rn> rvss(new Rn(1));
 
   // empty constraints
-  EXPECT_THROW(StackedConstraint(constraints, rvss), std::invalid_argument);
+  EXPECT_THROW(DifferentiableIntersection(constraints, rvss), std::invalid_argument);
 
   // null statespace
   StateSpacePtr space;
   constraints.push_back(std::make_shared<PolynomialConstraint>(
     Eigen::Vector3d(1, 2, 3), rvss));
-  EXPECT_THROW(StackedConstraint(constraints, space), std::invalid_argument);
+  EXPECT_THROW(DifferentiableIntersection(constraints, space), std::invalid_argument);
 
   // constraints have different space
   constraints.push_back(std::make_shared<PolynomialConstraint>(
     Eigen::Vector3d(1, 2, 3), rvss));
   constraints.push_back(std::make_shared<TSR>());
-  EXPECT_THROW(StackedConstraint(constraints, rvss), std::invalid_argument);
+  EXPECT_THROW(DifferentiableIntersection(constraints, rvss), std::invalid_argument);
 }
 
-TEST(StackedConstraint, getValue)
+TEST(DifferentiableIntersection, getValue)
 {
   std::vector<DifferentiablePtr> constraints;
   std::shared_ptr<Rn> rvss(new Rn(1));
@@ -57,14 +57,14 @@ TEST(StackedConstraint, getValue)
   auto s1 = rvss->createState();
   s1.setValue(v);
 
-  StackedConstraint stacked(constraints, rvss);
+  DifferentiableIntersection stacked(constraints, rvss);
 
   Eigen::Vector2d expected(9, -6);
   EXPECT_TRUE(stacked.getValue(s1).isApprox(expected));
 }
 
 
-TEST(StackedConstraint, getJacobian)
+TEST(DifferentiableIntersection, getJacobian)
 {
   std::vector<DifferentiablePtr> constraints;
   std::shared_ptr<Rn> rvss(new Rn(1));
@@ -83,7 +83,7 @@ TEST(StackedConstraint, getJacobian)
   auto s1 = rvss->createState();
   s1.setValue(v);
 
-  StackedConstraint stacked(constraints, rvss);
+  DifferentiableIntersection stacked(constraints, rvss);
   Eigen::MatrixXd expected(2, 1);
   expected(0, 0) = -10;
   expected(1, 0) = 5;
