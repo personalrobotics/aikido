@@ -54,4 +54,5 @@ private:
   std::shared_ptr<aikido::statespace::StateSpace> stateSpace;
 };
 
+
 #endif  // AIKIDO_TESTS_CONSTRAINT_MOCK_CONSTRAINTS_HPP_

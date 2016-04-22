@@ -1,6 +1,6 @@
 #include <aikido/constraint/ConjunctionConstraint.hpp>
 #include <gtest/gtest.h>
-#include "../constraint/MockConstraints.hpp"
+#include "MockConstraints.hpp"
 #include <stdexcept>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <aikido/statespace/SO2StateSpace.hpp>
@@ -8,6 +8,25 @@
 using aikido::constraint::ConjunctionConstraint;
 using aikido::constraint::TestableConstraint;
 using aikido::statespace::RealVectorStateSpace;
+
+TEST(ConjuntionConstraintTest, ThrowOnNullStateSpace)
+{
+  auto ss = std::make_shared<RealVectorStateSpace>(0);
+  auto pc = std::make_shared<PassingConstraint>(ss);
+  EXPECT_THROW(
+      ConjunctionConstraint(
+          nullptr, std::vector<std::shared_ptr<TestableConstraint>>({pc})),
+      std::invalid_argument);
+}
+
+TEST(ConjunctionConstraintTest, ReturnCorrectStateSpace)
+{
+  auto ss = std::make_shared<RealVectorStateSpace>(0);
+  auto pc = std::make_shared<PassingConstraint>(ss);
+  ConjunctionConstraint satisfiedConstraint{
+      ss, std::vector<std::shared_ptr<TestableConstraint>>({pc, pc})};
+  EXPECT_EQ(ss, satisfiedConstraint.getStateSpace());
+}
 
 TEST(ConjunctionConstraintTest, IsSatisfiedReturnsConjuctionOfAllConstraints)
 {
@@ -46,6 +65,7 @@ TEST(ConjunctionConstraintTest, AddConstraintAppendsInitialConstraints)
   auto fc = std::make_shared<FailingConstraint>(ss);
   ConjunctionConstraint originallyPassingC{
       ss, std::vector<std::shared_ptr<TestableConstraint>>({pc})};
+  EXPECT_TRUE(originallyPassingC.isSatisfied(nullptr));
 
   originallyPassingC.addConstraint(fc);
   EXPECT_FALSE(originallyPassingC.isSatisfied(nullptr));

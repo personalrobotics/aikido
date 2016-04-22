@@ -8,7 +8,7 @@
 namespace aikido {
 namespace constraint {
 
-/// A testable constraint gruping a set of testable constraint.
+/// A testable constraint grouping a set of testable constraint.
 /// This constriant is satisfied only if all constraints in the set
 /// are satisfied.
 class ConjunctionConstraint : public TestableConstraint
