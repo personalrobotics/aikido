@@ -18,17 +18,17 @@ namespace path {
 /// This trajectory does \b not guarantee any continuity (not even C0). It is
 /// the responsibility of the user to pass in continuous spline coefficients
 /// if continuity is desired.
-class SplineTrajectory2 : public Trajectory
+class Spline : public Trajectory
 {
 public:
   /// Constructs an empty trajectory.
   ///
   /// \param _stateSpace state space this trajectory is defined in
   /// \param _startTime start time of the trajectory
-  SplineTrajectory2(
+  Spline(
     statespace::StateSpacePtr _stateSpace, double _startTime = 0.);
 
-  virtual ~SplineTrajectory2();
+  virtual ~Spline();
   
   /// Add a segment to the end of this trajectory that starts at
   /// \c _startState, lasts for \c _duration, and is defined by a polynomial in

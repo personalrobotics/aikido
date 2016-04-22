@@ -2,7 +2,7 @@
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICTIMER_HPP_
 #include <Eigen/Dense>
 #include "../../path/Interpolated.hpp"
-#include "../../path/SplineTrajectory2.hpp"
+#include "../../path/Spline.hpp"
 
 namespace aikido {
 namespace planner {
@@ -28,7 +28,7 @@ namespace parabolic {
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \return time optimal trajectory that satisfies acceleration constraints
-std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
+std::unique_ptr<path::Spline> computeParabolicTiming(
   const path::Interpolated& _inputTrajectory,
   const Eigen::VectorXd& _maxVelocity,
   const Eigen::VectorXd& _maxAcceleration);

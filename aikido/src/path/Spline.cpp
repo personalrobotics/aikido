@@ -1,11 +1,11 @@
 #include <aikido/util/Spline.hpp>
-#include <aikido/path/SplineTrajectory2.hpp>
+#include <aikido/path/Spline.hpp>
 
 namespace aikido {
 namespace path {
 
 //=============================================================================
-SplineTrajectory2::SplineTrajectory2(
+Spline::Spline(
       statespace::StateSpacePtr _stateSpace, double _startTime)
   : mStateSpace(std::move(_stateSpace))
   , mStartTime(_startTime)
@@ -15,14 +15,14 @@ SplineTrajectory2::SplineTrajectory2(
 }
 
 //=============================================================================
-SplineTrajectory2::~SplineTrajectory2()
+Spline::~Spline()
 {
   for (const auto& segment : mSegments)
     mStateSpace->freeState(segment.mStartState);
 }
 
 //=============================================================================
-void SplineTrajectory2::addSegment(const Eigen::MatrixXd& _coefficients,
+void Spline::addSegment(const Eigen::MatrixXd& _coefficients,
   double _duration, const statespace::StateSpace::State* _startState)
 {
   if (_duration <= 0.)
@@ -44,7 +44,7 @@ void SplineTrajectory2::addSegment(const Eigen::MatrixXd& _coefficients,
 }
 
 //=============================================================================
-void SplineTrajectory2::addSegment(
+void Spline::addSegment(
   const Eigen::MatrixXd& _coefficients, double _duration)
 {
   if (mSegments.empty())
@@ -58,19 +58,19 @@ void SplineTrajectory2::addSegment(
 }
 
 //=============================================================================
-size_t SplineTrajectory2::getNumSegments() const
+size_t Spline::getNumSegments() const
 {
   return mSegments.size();
 }
 
 //=============================================================================
-statespace::StateSpacePtr SplineTrajectory2::getStateSpace() const
+statespace::StateSpacePtr Spline::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-size_t SplineTrajectory2::getNumDerivatives() const
+size_t Spline::getNumDerivatives() const
 {
   size_t numDerivatives = 0;
 
@@ -84,19 +84,19 @@ size_t SplineTrajectory2::getNumDerivatives() const
 }
 
 //=============================================================================
-double SplineTrajectory2::getStartTime() const
+double Spline::getStartTime() const
 {
   return mStartTime;
 }
 
 //=============================================================================
-double SplineTrajectory2::getEndTime() const
+double Spline::getEndTime() const
 {
   return mStartTime + getDuration();
 }
 
 //=============================================================================
-double SplineTrajectory2::getDuration() const
+double Spline::getDuration() const
 {
   double duration = 0.;
 
@@ -107,7 +107,7 @@ double SplineTrajectory2::getDuration() const
 }
 
 //=============================================================================
-void SplineTrajectory2::evaluate(
+void Spline::evaluate(
   double _t, statespace::StateSpace::State *_out) const
 {
   if (mSegments.empty())
@@ -128,7 +128,7 @@ void SplineTrajectory2::evaluate(
 }
 
 //=============================================================================
-Eigen::VectorXd SplineTrajectory2::evaluate(double _t, int _derivative) const
+Eigen::VectorXd Spline::evaluate(double _t, int _derivative) const
 {
   if (mSegments.empty())
     throw std::logic_error("Unable to evaluate empty trajectory.");
@@ -150,7 +150,7 @@ Eigen::VectorXd SplineTrajectory2::evaluate(double _t, int _derivative) const
 }
 
 //=============================================================================
-std::pair<size_t, double> SplineTrajectory2::getSegmentForTime(double _t) const
+std::pair<size_t, double> Spline::getSegmentForTime(double _t) const
 {
   auto segmentStartTime = mStartTime;
 
@@ -171,7 +171,7 @@ std::pair<size_t, double> SplineTrajectory2::getSegmentForTime(double _t) const
 }
 
 //=============================================================================
-Eigen::VectorXd SplineTrajectory2::evaluatePolynomial(
+Eigen::VectorXd Spline::evaluatePolynomial(
   const Eigen::MatrixXd& _coefficients, double _t, int _derivative)
 {
   const auto numOutputs = _coefficients.rows();

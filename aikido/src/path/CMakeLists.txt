@@ -1,6 +1,6 @@
 aikido_add_library("${PROJECT_NAME}_path"
   Interpolated.cpp
-  SplineTrajectory2.cpp
+  Spline.cpp
 )
 target_link_libraries("${PROJECT_NAME}_path"
   "${PROJECT_NAME}_statespace"

@@ -1,146 +1,382 @@
-#include <random>
-#include <boost/assert.hpp>
-#include <aikido/path/SplineTrajectory.hpp>
+#include <aikido/path/Spline.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <gtest/gtest.h>
 
-using aikido::path::Spline;
-using aikido::path::SplineTrajectory;
-using Knot = Spline::Knot;
+using namespace aikido::path;
+using namespace aikido::statespace;
+using Eigen::Matrix2d;
+using Eigen::Vector2d;
 
+static const Vector2d START_VALUE(1., 2.);
 
-void computeDerivativeMatrix_order1()
+class SplineTest : public ::testing::Test
 {
-  std::cout << "order1: " << std::flush;
+protected:
+  void SetUp() override
+  {
+    mStateSpace = std::make_shared<Rn>(2);
 
-  Eigen::MatrixXd actual = Spline::computeDerivativeMatrix(2);
-
-  Eigen::MatrixXd expected(2, 2);
-  expected << 1, 1,
-              0, 1;
-
-  BOOST_ASSERT(actual.isApprox(expected));
-  std::cout << "ok" << std::endl;
-}
-
-void computeDerivativeMatrix_order2()
-{
-  std::cout << "order2: " << std::flush;
-
-  Eigen::MatrixXd actual = Spline::computeDerivativeMatrix(3);
-
-  Eigen::MatrixXd expected(3, 3);
-  expected << 1, 1, 1,
-              0, 1, 2,
-              0, 0, 2;
-
-  BOOST_ASSERT(actual.isApprox(expected));
-  std::cout << "ok" << std::endl;
-}
-
-void computeDerivativeMatrix_order3()
-{
-  std::cout << "order3: " << std::flush;
-
-  Eigen::MatrixXd actual = Spline::computeDerivativeMatrix(4);
-
-  Eigen::MatrixXd expected(4, 4);
-  expected << 1, 1, 1, 1,
-              0, 1, 2, 3,
-              0, 0, 2, 6,
-              0, 0, 0, 6;
-
-  BOOST_ASSERT(actual.isApprox(expected));
-  std::cout << "ok" << std::endl;
-}
-
-void createProblem_order1_waypoints2()
-{
-  std::vector<Knot> knots(2);
-  knots[0].t = 0.;
-  knots[0].values.resize(1, 1);
-  knots[0].values << -1;
-  knots[1].t = 1.;
-  knots[1].values.resize(1, 1);
-  knots[1].values << 1;
-
-  Spline::Problem actual = Spline::createProblem(knots);
-
-  std::cout << actual.A << std::endl;
-}
-
-void createProblem_order1_waypoints3()
-{
-  std::vector<Knot> knots(3);
-  knots[0].t = 0.;
-  knots[0].values.resize(1, 1);
-  knots[0].values << -1;
-  knots[1].t = 1.;
-  knots[1].values.resize(1, 1);
-  knots[1].values << 1;
-  knots[2].t = 2.;
-  knots[2].values.resize(1, 1);
-  knots[2].values << 3;
-
-  Spline::Problem actual = Spline::createProblem(knots);
-
-  std::cout << actual.A << std::endl;
-}
-
-void createProblem_order3_waypoints3()
-{
-  std::vector<Knot> knots(3);
-  knots[0].t = 0.;
-  knots[0].values.resize(2, 1);
-  knots[0].values << -1, 0;
-  knots[1].t = 1.;
-  knots[1].values.resize(2, 1);
-  knots[1].values << 1, -1;
-  knots[2].t = 2.;
-  knots[2].values.resize(2, 1);
-  knots[2].values << 3, 0;
-
-  std::vector<Spline> splines = Spline::fit(knots);
-
-  for (double t = 0; t <= 2 + 1e-3; t += 0.01) {
-    std::cout << t << "\t" << splines[0].interpolate(t) << std::endl;
-  }
-}
-
-int main(int argc, char **argv)
-{
-#if 0
-  computeDerivativeMatrix_order1();
-  computeDerivativeMatrix_order2();
-  computeDerivativeMatrix_order3();
-  createProblem_order1_waypoints2();
-  createProblem_order1_waypoints3();
-  createProblem_order3_waypoints3();
-#endif
-
-#if 0
-  std::vector<Knot> knots(3);
-  knots[0].t = 0.;
-  knots[0].values.resize(2, 1);
-  knots[0].values << -1, 0;
-  knots[1].t = 1.;
-  knots[1].values.resize(1, 1);
-  knots[1].values << 1;
-  knots[2].t = 2.;
-  knots[2].values.resize(2, 1);
-  knots[2].values << 3, 0;
-#else
-  std::vector<Knot> knots(2);
-  knots[0].t = 0.;
-  knots[0].values.resize(2, 1);
-  knots[0].values << -1, 1;
-  knots[1].t = 2.;
-  knots[1].values.resize(2, 1);
-  knots[1].values << 3, -1;
-#endif
-
-  std::vector<Spline> splines = Spline::fitCubic(knots);
-  for (double t = 0; t <= 2 + 1e-3; t += 0.01) {
-    std::cout << t << "\t" << splines[0].interpolate(t) << std::endl;
+    mStartState = static_cast<Rn::State*>(
+      mStateSpace->allocateState());
+    mStateSpace->setValue(mStartState, START_VALUE);
   }
 
-  return 0;
+  void TearDown() override
+  {
+    mStateSpace->freeState(mStartState);
+  }
+
+  std::shared_ptr<Rn> mStateSpace;
+  Rn::State* mStartState;
+  std::shared_ptr<Spline> mTrajectory;
+};
+
+TEST_F(SplineTest, addSegment_NegativeDurationThrows)
+{
+  Eigen::Matrix2d coefficients;
+  coefficients << 0., 1.,
+                  0., 2.;
+
+  Spline trajectory(mStateSpace, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, -1., mStartState);
+  }, std::invalid_argument);
+}
+
+TEST_F(SplineTest, addSegment_ZeroDurationThrows)
+{
+  Eigen::Matrix2d coefficients;
+  coefficients << 0., 1.,
+                  0., 2.;
+
+  Spline trajectory(mStateSpace, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, 0., mStartState);
+  }, std::invalid_argument);
+}
+
+TEST_F(SplineTest, addSegment_IncorrectDimension_Throws)
+{
+  Eigen::Matrix<double, 1, 2> coefficients;
+  coefficients << 0., 1.;
+
+  Spline trajectory(mStateSpace, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, 1., mStartState);
+  }, std::invalid_argument);
+}
+
+TEST_F(SplineTest, addSegment_EmptyCoefficients_Throws)
+{
+  Eigen::Matrix<double, 2, 0> coefficients;
+
+  Spline trajectory(mStateSpace, 0.);
+
+  EXPECT_THROW({
+    trajectory.addSegment(coefficients, 1., mStartState);
+  }, std::invalid_argument);
+}
+
+TEST_F(SplineTest, getStateSpace)
+{
+  Spline trajectory(mStateSpace, 0.);
+
+  EXPECT_EQ(mStateSpace, trajectory.getStateSpace());
+}
+
+TEST_F(SplineTest, getNumDerivatives_IsEmpty_ReturnsZero)
+{
+  Spline trajectory(mStateSpace, 0.);
+
+  EXPECT_EQ(0, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTest, getNumDerivatives_IsConstant_ReturnsZero)
+{
+  Spline trajectory(mStateSpace, 0.);
+  trajectory.addSegment(Vector2d(4., 5.), 1., mStartState);
+
+  EXPECT_EQ(0, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTest, getNumDerivatives_IsLinear_ReturnsOne)
+{
+  Matrix2d coefficients;
+  coefficients << 0., 1.,
+                  0., 2.;
+
+  Spline trajectory(mStateSpace, 0.);
+  trajectory.addSegment(coefficients, 1., mStartState);
+
+  EXPECT_EQ(1, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTest, getNumDerivatives_IsQuadratic_ReturnsTwo)
+{
+  Eigen::Matrix<double, 2, 3> coefficients;
+  coefficients << 0., 0., 1.,
+                  0., 0., 2.;
+
+  Spline trajectory(mStateSpace, 0.);
+  trajectory.addSegment(coefficients, 1., mStartState);
+
+  EXPECT_EQ(2, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTest, getNumDerivatives_IsCubic_ReturnsThree)
+{
+  Eigen::Matrix<double, 2, 4> coefficients;
+  coefficients << 0., 0., 0., 1.,
+                  0., 0., 0., 2.;
+
+  Spline trajectory(mStateSpace, 0.);
+  trajectory.addSegment(coefficients, 1., mStartState);
+
+  EXPECT_EQ(3, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTest, getNumDerivatives_IsHomogeneous_ReturnsZero)
+{
+  Eigen::Matrix2d coefficients1, coefficients2;
+  coefficients1 << 0., 1.,
+                   0., 2.;
+  coefficients2 << 0., 3.,
+                   0., 4.;
+
+  Spline trajectory(mStateSpace, 0.);
+  trajectory.addSegment(coefficients1, 1., mStartState);
+  trajectory.addSegment(coefficients2, 1.);
+
+  EXPECT_EQ(1, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTest, getNumDerivatives_IsHeterogeneous_ReturnsMax)
+{
+  Eigen::Matrix2d coefficients1;
+  Eigen::Matrix<double, 2, 3> coefficients2;
+  coefficients1 << 0., 1.,
+                   0., 2.;
+  coefficients2 << 0., 0., 3.,
+                   0., 0., 4.;
+
+  Spline trajectory(mStateSpace, 0.);
+  trajectory.addSegment(coefficients1, 2., mStartState);
+  trajectory.addSegment(coefficients2, 3.);
+
+  EXPECT_EQ(2, trajectory.getNumDerivatives());
+}
+
+TEST_F(SplineTest, getStartTime)
+{
+  Spline trajectory(mStateSpace, 3.);
+  EXPECT_DOUBLE_EQ(3., trajectory.getStartTime());
+}
+
+TEST_F(SplineTest, getEndTime_IsEmpty_ReturnsStartTime)
+{
+  Spline trajectory(mStateSpace, 3.);
+  EXPECT_DOUBLE_EQ(3., trajectory.getEndTime());
+}
+
+TEST_F(SplineTest, getEndTime_IsNotEmpty_ReturnsEndTime)
+{
+  Spline trajectory(mStateSpace, 3.);
+
+  trajectory.addSegment(Vector2d(4., 5.), 11., mStartState);
+  EXPECT_DOUBLE_EQ(14., trajectory.getEndTime());
+
+  trajectory.addSegment(Vector2d(6., 7.), 13.);
+  EXPECT_DOUBLE_EQ(27., trajectory.getEndTime());
+}
+
+TEST_F(SplineTest, getDuration_IsEmpty_ReturnsZero)
+{
+  Spline trajectory(mStateSpace, 3.);
+  EXPECT_DOUBLE_EQ(0., trajectory.getDuration());
+}
+  
+TEST_F(SplineTest, getDuration_IsNotEmpty_ReturnsDuration)
+{
+  Spline trajectory(mStateSpace, 3.);
+
+  trajectory.addSegment(Vector2d(4., 5.), 11., mStartState);
+  EXPECT_DOUBLE_EQ(11., trajectory.getDuration());
+
+  trajectory.addSegment(Vector2d(6., 7.), 13.);
+  EXPECT_DOUBLE_EQ(24., trajectory.getDuration());
+}
+
+TEST_F(SplineTest, evaluate_IsEmpty_Throws)
+{
+  Spline trajectory(mStateSpace, 3.);
+
+  auto state = mStateSpace->createState();
+
+  EXPECT_THROW({
+    trajectory.evaluate(3., state);
+  }, std::logic_error);
+}
+
+TEST_F(SplineTest, evaluate_EvaluateStart_ReturnsStart)
+{
+  Matrix2d coefficients;
+  coefficients << 0., 1.,
+                  0., 2.;
+
+  Spline trajectory(mStateSpace, 3.);
+  trajectory.addSegment(coefficients, 1., mStartState);
+
+  auto state = mStateSpace->createState();
+
+  trajectory.evaluate(3., state);
+  EXPECT_TRUE(START_VALUE.isApprox(state.getValue()));
+}
+
+TEST_F(SplineTest, evaluate_EvaluateEnd_ReturnsEnd)
+{
+  Matrix2d coefficients1, coefficients2;
+  coefficients1 << 0., 1.,
+                   0., 2.;
+  coefficients2 << 0., 3.,
+                   0., 4.;
+
+  Spline trajectory(mStateSpace, 3.);
+  auto state = mStateSpace->createState();
+
+  trajectory.addSegment(coefficients1, 1., mStartState);
+  trajectory.evaluate(4., state);
+  EXPECT_TRUE(Vector2d(2., 4.).isApprox(state.getValue()));
+
+  trajectory.addSegment(coefficients2, 2.);
+  trajectory.evaluate(6., state);
+  EXPECT_TRUE(Vector2d(8., 12.).isApprox(state.getValue()));
+}
+
+TEST_F(SplineTest, evaluate_Middle_ReturnsInterpolation)
+{
+  Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
+  coefficients1 << 0., 0., 1.,
+                   0., 1., 1.;
+  coefficients2 << 0., 1., 2.,
+                   0., 2., 2.;
+  coefficients3 << 0., 2., 3.,
+                   0., 3., 3.;
+
+  Spline trajectory(mStateSpace, 3.);
+  trajectory.addSegment(coefficients1, 1., mStartState);
+  trajectory.addSegment(coefficients2, 2.);
+  trajectory.addSegment(coefficients3, 3.);
+
+  auto state = mStateSpace->createState();
+
+  trajectory.evaluate(3.5, state);
+  EXPECT_TRUE(Vector2d(1.25, 2.75).isApprox(state.getValue()));
+
+  trajectory.evaluate(4.0, state);
+  EXPECT_TRUE(Vector2d(2.00, 4.00).isApprox(state.getValue()));
+
+  trajectory.evaluate(5.0, state);
+  EXPECT_TRUE(Vector2d(5.00, 8.00).isApprox(state.getValue()));
+
+  trajectory.evaluate(6.0, state);
+  EXPECT_TRUE(Vector2d(12., 16.).isApprox(state.getValue()));
+
+  trajectory.evaluate(7.5, state);
+  EXPECT_TRUE(Vector2d(21.75, 27.25).isApprox(state.getValue()));
+
+  trajectory.evaluate(9.0, state);
+  EXPECT_TRUE(Vector2d(45.00, 52.00).isApprox(state.getValue()));
+}
+
+TEST_F(SplineTest, evaluateDerivative_IsEmpty_Throws)
+{
+  Spline trajectory(mStateSpace, 3.);
+
+  EXPECT_THROW({
+    trajectory.evaluate(3., 1);
+  }, std::logic_error);
+}
+
+TEST_F(SplineTest, evaluateDerivative_FirstDerivative)
+{
+  Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
+  coefficients1 << 0., 0., 1.,
+                   0., 1., 1.;
+  coefficients2 << 0., 1., 2.,
+                   0., 2., 2.;
+  coefficients3 << 0., 2., 3.,
+                   0., 3., 3.;
+
+  Spline trajectory(mStateSpace, 3.);
+  trajectory.addSegment(coefficients1, 1., mStartState);
+  trajectory.addSegment(coefficients2, 2.);
+  trajectory.addSegment(coefficients3, 3.);
+ 
+  Eigen::VectorXd tangentVector;
+
+  tangentVector = trajectory.evaluate(3.5, 1);
+  EXPECT_TRUE(Vector2d(1.00, 2.00).isApprox(tangentVector));
+
+  tangentVector = trajectory.evaluate(5.0, 1);
+  EXPECT_TRUE(Vector2d(5.00, 6.00).isApprox(tangentVector));
+
+  tangentVector = trajectory.evaluate(7.5, 1);
+  EXPECT_TRUE(Vector2d(11., 12.).isApprox(tangentVector));
+}
+
+TEST_F(SplineTest, EvaluateDerivative_SecondDerivative)
+{
+  Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
+  coefficients1 << 0., 0., 1.,
+                   0., 1., 1.;
+  coefficients2 << 0., 1., 2.,
+                   0., 2., 2.;
+  coefficients3 << 0., 2., 3.,
+                   0., 3., 3.;
+
+  Spline trajectory(mStateSpace, 3.);
+  trajectory.addSegment(coefficients1, 1., mStartState);
+  trajectory.addSegment(coefficients2, 2.);
+  trajectory.addSegment(coefficients3, 3.);
+ 
+  Eigen::VectorXd tangentVector;
+
+  tangentVector = trajectory.evaluate(3.5, 2);
+  EXPECT_TRUE(Vector2d(2., 2.).isApprox(tangentVector));
+
+  tangentVector = trajectory.evaluate(5.0, 2);
+  EXPECT_TRUE(Vector2d(4., 4.).isApprox(tangentVector));
+
+  tangentVector = trajectory.evaluate(7.5, 2);
+  EXPECT_TRUE(Vector2d(6., 6.).isApprox(tangentVector));
+}
+
+TEST_F(SplineTest, EvaluateDerivative_HigherOrder_ReturnsZero)
+{
+  Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
+  coefficients1 << 0., 0., 1.,
+                   0., 1., 1.;
+  coefficients2 << 0., 1., 2.,
+                   0., 2., 2.;
+  coefficients3 << 0., 2., 3.,
+                   0., 3., 3.;
+
+  Spline trajectory(mStateSpace, 3.);
+  trajectory.addSegment(coefficients1, 1., mStartState);
+  trajectory.addSegment(coefficients2, 2.);
+  trajectory.addSegment(coefficients3, 3.);
+ 
+  Eigen::VectorXd tangentVector;
+
+  tangentVector = trajectory.evaluate(3.5, 3);
+  EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
+
+  tangentVector = trajectory.evaluate(5.0, 3);
+  EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
+
+  tangentVector = trajectory.evaluate(7.5, 3);
+  EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
 }
