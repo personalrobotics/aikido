@@ -1,7 +1,7 @@
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
 #include <aikido/constraint/StackedConstraint.hpp>
-#include <aikido/constraint/ConjunctionConstraint.hpp>
+#include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/constraint/ProjectableSubSpace.hpp>
 #include <aikido/constraint/SampleableSubSpace.h>
 #include <aikido/constraint/TestableSubSpace.hpp>

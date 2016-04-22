@@ -2,8 +2,6 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/RealVectorBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
-  NonColliding.cpp
-  ConjunctionConstraint.cpp
   Differentiable.cpp
   DifferentiableProjector.cpp
   DifferentiableSubSpace.cpp
@@ -13,6 +11,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   FrameConstraintAdaptor.cpp
   FramePairConstraintAdaptor.cpp
   IkSampleableConstraint.cpp
+  NonColliding.cpp
   Projectable.cpp
   ProjectableSubSpace.cpp
   Sampleable.cpp
@@ -20,6 +19,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   SatisfiedConstraint.cpp
   StackedConstraint.cpp
   TSR.cpp
+  TestableIntersection.cpp
   TestableSubSpace.cpp
   dart.cpp
 )

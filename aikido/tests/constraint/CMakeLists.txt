@@ -35,9 +35,9 @@ target_link_libraries(test_IkSampleableConstraint
 # target_link_libraries(test_TSR
 #   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_ConjunctionConstraint
-  test_ConjunctionConstraint.cpp)
-target_link_libraries(test_ConjunctionConstraint
+aikido_add_test(test_TestableIntersection
+  test_TestableIntersection.cpp)
+target_link_libraries(test_TestableIntersection
   "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_StackedConstraint

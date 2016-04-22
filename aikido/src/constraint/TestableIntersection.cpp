@@ -1,11 +1,11 @@
-#include <aikido/constraint/ConjunctionConstraint.hpp>
+#include <aikido/constraint/TestableIntersection.hpp>
 #include <stdexcept>
 
 namespace aikido {
 namespace constraint {
 
 //=============================================================================
-ConjunctionConstraint::ConjunctionConstraint(
+TestableIntersection::TestableIntersection(
     statespace::StateSpacePtr _stateSpace,
     std::vector<std::shared_ptr<Testable>> _constraints)
 : mStateSpace(std::move(_stateSpace))
@@ -20,7 +20,7 @@ ConjunctionConstraint::ConjunctionConstraint(
 }
 
 //=============================================================================
-bool ConjunctionConstraint::isSatisfied(
+bool TestableIntersection::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {
   for (auto c : mConstraints) {
@@ -32,13 +32,13 @@ bool ConjunctionConstraint::isSatisfied(
 }
 
 //=============================================================================
-statespace::StateSpacePtr ConjunctionConstraint::getStateSpace() const
+statespace::StateSpacePtr TestableIntersection::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-void ConjunctionConstraint::addConstraint(TestablePtr _constraint)
+void TestableIntersection::addConstraint(TestablePtr _constraint)
 {
   if (_constraint->getStateSpace() == mStateSpace) {
     mConstraints.emplace_back(std::move(_constraint));
@@ -49,7 +49,7 @@ void ConjunctionConstraint::addConstraint(TestablePtr _constraint)
 }
 
 //=============================================================================
-void ConjunctionConstraint::testConstraintStateSpaceOrThrow(
+void TestableIntersection::testConstraintStateSpaceOrThrow(
   const TestablePtr& constraint)
 {
   if (constraint->getStateSpace() != mStateSpace) {

@@ -1,6 +1,6 @@
 #include <aikido/ompl/OMPLPlanner.hpp>
 #include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
-#include <aikido/constraint/ConjunctionConstraint.hpp>
+#include <aikido/constraint/TestableIntersection.hpp>
 
 namespace aikido {
 namespace ompl {
@@ -91,7 +91,7 @@ namespace ompl {
   std::vector<constraint::TestablePtr> constraints{
       std::move(_validityConstraint), std::move(_boundsConstraint)};
   auto conjunctionConstraint =
-      std::make_shared<constraint::ConjunctionConstraint>(std::move(_stateSpace),
+      std::make_shared<constraint::TestableIntersection>(std::move(_stateSpace),
                                                           std::move(constraints));
   ::ompl::base::StateValidityCheckerPtr vchecker =
       boost::make_shared<StateValidityChecker>(si, conjunctionConstraint);
