@@ -20,10 +20,10 @@ aikido_add_test(test_FramePairConstraintAdaptor
 target_link_libraries(test_FramePairConstraintAdaptor
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_IkSampleableConstraint
-#   test_IkSampleableConstraint.cpp)
-# target_link_libraries(test_IkSampleableConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_IkSampleableConstraint
+  test_IkSampleableConstraint.cpp)
+target_link_libraries(test_IkSampleableConstraint
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_PolynomialConstraint
 #   test_PolynomialConstraint.cpp)
@@ -45,15 +45,15 @@ target_link_libraries(test_ConjunctionConstraint
 # target_link_libraries(test_StackedConstraint
 #   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_RealVectorBoxConstraint
-#   test_RealVectorBoxConstraint.cpp)
-# target_link_libraries(test_RealVectorBoxConstraint
-#   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
+aikido_add_test(test_RealVectorBoxConstraint
+  test_RealVectorBoxConstraint.cpp)
+target_link_libraries(test_RealVectorBoxConstraint
+  "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
-# aikido_add_test(test_SO2UniformSampler
-#   test_SO2UniformSampler.cpp)
-# target_link_libraries(test_SO2UniformSampler
-#   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
+aikido_add_test(test_SO2UniformSampler
+  test_SO2UniformSampler.cpp)
+target_link_libraries(test_SO2UniformSampler
+  "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
 aikido_add_test(test_FiniteSampleConstraint
   test_FiniteSampleConstraint.cpp)
@@ -70,20 +70,20 @@ aikido_add_test(test_FkTestable
 target_link_libraries(test_FkTestable
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_SO3UniformSampler
-#   test_SO3UniformSampler.cpp)
-# target_link_libraries(test_SO3UniformSampler
-#   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
+aikido_add_test(test_SO3UniformSampler
+  test_SO3UniformSampler.cpp)
+target_link_libraries(test_SO3UniformSampler
+  "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
 # aikido_add_test(test_SatisfiedConstraint
 #   test_SatisfiedConstraint.cpp)
 # target_link_libraries(test_SatisfiedConstraint
 #   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_DartConstraintHelpers
-#   test_DartHelpers.cpp)
-# target_link_libraries(test_DartConstraintHelpers
-#   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
+aikido_add_test(test_DartConstraintHelpers
+  test_DartHelpers.cpp)
+target_link_libraries(test_DartConstraintHelpers
+  "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
 
 # aikido_add_test(test_FKTestable
 #   test_FKTestable.cpp)

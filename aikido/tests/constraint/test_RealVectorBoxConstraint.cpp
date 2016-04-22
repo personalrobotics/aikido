@@ -157,8 +157,8 @@ TEST_F(RealVectorBoxConstraintTests, getConstraintTypes)
   auto constraintTypes = constraint.getConstraintTypes();
 
   ASSERT_EQ(2, constraintTypes.size());
-  EXPECT_EQ(ConstraintType::INEQ, constraintTypes[0]);
-  EXPECT_EQ(ConstraintType::INEQ, constraintTypes[1]);
+  EXPECT_EQ(ConstraintType::INEQUALITY, constraintTypes[0]);
+  EXPECT_EQ(ConstraintType::INEQUALITY, constraintTypes[1]);
 }
 
 TEST_F(RealVectorBoxConstraintTests, isSatisfied_SatisfiesConstraint_ReturnsTrue)
@@ -348,7 +348,7 @@ TEST_F(RealVectorBoxConstraintTests, createSampleGenerator_RNGIsNull_Throws)
 
   EXPECT_THROW({
     constraint->createSampleGenerator();
-  }, std::runtime_error);
+      }, std::invalid_argument);
 }
 
 TEST_F(RealVectorBoxConstraintTests, createSampleGenerator_Unbounded_Throws)

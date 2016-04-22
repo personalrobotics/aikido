@@ -10,6 +10,7 @@
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
+#include "MockConstraints.hpp"
 
 using aikido::statespace::Rn;
 using aikido::statespace::SO2;
@@ -17,6 +18,7 @@ using aikido::constraint::FiniteSampleConstraint;
 using aikido::constraint::IkSampleableConstraint;
 using aikido::constraint::FiniteCyclicSampleConstraint;
 using aikido::statespace::SE3;
+using aikido::statespace::SO2;
 using dart::dynamics::FreeJoint;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::TSR;
@@ -86,6 +88,11 @@ protected:
     mInverseKinematics2 = InverseKinematics::create(bn4);
     mStateSpace2 = std::make_shared<MetaSkeletonStateSpace>(mManipulator2);
 
+    // Set FiniteSampleConstraint to generate pose close to the actual solution.
+    auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+    seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
+    seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
+    seedConstraint = std::make_shared<FiniteSampleConstraint>(mStateSpace1, seedState);
   }
 
   std::shared_ptr<TSR> mTsr;
@@ -100,10 +107,57 @@ protected:
   MetaSkeletonStateSpacePtr mStateSpace2;
   InverseKinematicsPtr mInverseKinematics2;
   BodyNodePtr bn3, bn4;
+  std::shared_ptr<FiniteSampleConstraint> seedConstraint;
 };
 
+TEST_F(IkSampleableConstraintTest, ConstructorThrowsOnNullStateSpace)
+{
+  EXPECT_THROW(IkSampleableConstraint(nullptr, mTsr, seedConstraint,
+                                      mInverseKinematics1, 1),
+               std::invalid_argument);
+}
 
-TEST_F(IkSampleableConstraintTest, Constructor)
+TEST_F(IkSampleableConstraintTest, ConstructorThrowsOnNullInverseKinematics)
+{
+  EXPECT_THROW(IkSampleableConstraint(mStateSpace1, mTsr, seedConstraint,
+                                      nullptr, 1),
+               std::invalid_argument);
+}
+
+TEST_F(IkSampleableConstraintTest, ConstructorThrowsOnNullPoseConstraint)
+{
+  EXPECT_THROW(IkSampleableConstraint(mStateSpace1, nullptr, seedConstraint,
+                                      mInverseKinematics1, 1),
+               std::invalid_argument);
+}
+
+
+TEST_F(IkSampleableConstraintTest, ConstructorThrowsOnNullSeedConstraint)
+{
+  EXPECT_THROW(IkSampleableConstraint(mStateSpace1, mTsr, nullptr,
+                                      mInverseKinematics1, 1),
+               std::invalid_argument);
+}
+
+
+TEST_F(IkSampleableConstraintTest, ConstructorThrowsOnSeedConstraintMismatch)
+{
+  auto ss = std::make_shared<MetaSkeletonStateSpace>(mManipulator1);
+  auto st = ss->createState();
+  auto sc = std::make_shared<FiniteSampleConstraint>(ss, st);
+  EXPECT_THROW(IkSampleableConstraint(mStateSpace1, mTsr, sc,
+                                      mInverseKinematics1, 1),
+               std::invalid_argument);
+}
+
+TEST_F(IkSampleableConstraintTest, ConstructorThrowsOnNegativeTrials)
+{
+  EXPECT_THROW(IkSampleableConstraint(mStateSpace1, mTsr, seedConstraint,
+                                      mInverseKinematics1, -1),
+               std::invalid_argument);
+}
+
+TEST_F(IkSampleableConstraintTest, ConstructorThrowsOnInvalidSeed)
 {
   // Invalid statespace for seed constraint.
   Eigen::Vector2d v(1,0);
@@ -115,20 +169,21 @@ TEST_F(IkSampleableConstraintTest, Constructor)
     new FiniteSampleConstraint(
       std::make_shared<Rn>(rvss), seedStateInvalid));
 
-  EXPECT_THROW(IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
-    invalid_seed_constraint, mInverseKinematics1, mRng->clone(), 1),
+  EXPECT_THROW(IkSampleableConstraint(mStateSpace1, mTsr,
+    invalid_seed_constraint, mInverseKinematics1, 1),
     std::invalid_argument);
+}
 
-
+TEST_F(IkSampleableConstraintTest, Constructor)
+{
   // Construct valid seed_constraint.
   auto seedStateValid = mStateSpace1->createState();
   std::shared_ptr<FiniteSampleConstraint> valid_seed_constraint( 
     new FiniteSampleConstraint(mStateSpace1, seedStateValid));
 
   IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
-    valid_seed_constraint, mInverseKinematics1, mRng->clone(), 1);
+    valid_seed_constraint, mInverseKinematics1, 1);
 }
-
 
 TEST_F(IkSampleableConstraintTest, SingleSampleGenerator)
 {
@@ -148,7 +203,7 @@ TEST_F(IkSampleableConstraintTest, SingleSampleGenerator)
 
   // Construct IkSampleableConstraint
   IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
-    seedConstraint, mInverseKinematics1, mRng->clone(), 1);
+    seedConstraint, mInverseKinematics1, 1);
 
   // Get IkSampleGenerator
   auto generator = ikConstraint.createSampleGenerator();
@@ -164,7 +219,6 @@ TEST_F(IkSampleableConstraintTest, SingleSampleGenerator)
   // Cannot sample anymore.
   ASSERT_FALSE(generator->canSample());
 }
-
 
 TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
 {
@@ -191,7 +245,7 @@ TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
 
   // Construct IkSampleableConstraint
   IkSampleableConstraint ikConstraint(mStateSpace1, tsrConstraint,
-    seedConstraint, mInverseKinematics1, mRng->clone(), 1);
+    seedConstraint, mInverseKinematics1, 1);
 
   // Get IkSampleGenerator
   auto generator = ikConstraint.createSampleGenerator();
@@ -207,7 +261,6 @@ TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
     ASSERT_NEAR(state.getSubStateHandle<SO2>(1).getAngle(), 0, 1e-5);
   }
 }
-
 
 TEST_F(IkSampleableConstraintTest, MultipleGeneratorsSampleSameSequence)
 {
@@ -232,7 +285,7 @@ TEST_F(IkSampleableConstraintTest, MultipleGeneratorsSampleSameSequence)
     new FiniteCyclicSampleConstraint(finiteSampleConstraint));
 
   IkSampleableConstraint ikConstraint(mStateSpace2, mTsr, 
-    seedConstraint, mInverseKinematics2, mRng->clone(), 1);
+    seedConstraint, mInverseKinematics2, 1);
 
   // Get 2 IkSampleGenerator
   auto generator1 = ikConstraint.createSampleGenerator();
@@ -258,7 +311,6 @@ TEST_F(IkSampleableConstraintTest, MultipleGeneratorsSampleSameSequence)
   }
 }
 
-
 TEST_F(IkSampleableConstraintTest, SampleGeneratorIkInfeasible)
 {
   // Tests that generator returns false when IK is infeasible.
@@ -282,7 +334,7 @@ TEST_F(IkSampleableConstraintTest, SampleGeneratorIkInfeasible)
     new FiniteCyclicSampleConstraint(finiteSampleConstraint));
 
   IkSampleableConstraint ikConstraint(mStateSpace1,
-    mTsr, seedConstraint, mInverseKinematics1, mRng->clone(), 1);
+    mTsr, seedConstraint, mInverseKinematics1, 1);
 
   auto generator = ikConstraint.createSampleGenerator();
 
