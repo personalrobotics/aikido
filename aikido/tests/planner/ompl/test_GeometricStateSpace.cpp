@@ -1,5 +1,5 @@
 #include "OMPLTestHelpers.hpp"
-#include <aikido/planner/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 
 using aikido::planner::ompl::GeometricStateSpace;
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;

@@ -1,5 +1,5 @@
-#include <aikido/planner/ompl/AIKIDOStateValidityChecker.hpp>
-#include <aikido/planner/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/StateValidityChecker.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 
 namespace aikido {
 namespace planner {

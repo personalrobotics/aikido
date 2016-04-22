@@ -1,6 +1,6 @@
 #include "OMPLTestHelpers.hpp"
 #include "../../constraint/MockConstraints.hpp"
-#include <aikido/planner/ompl/AIKIDOStateValidityChecker.hpp>
+#include <aikido/planner/ompl/StateValidityChecker.hpp>
 #include <aikido/planner/ompl/OMPLPlanner.hpp>
 
 using aikido::planner::ompl::GeometricStateSpace;

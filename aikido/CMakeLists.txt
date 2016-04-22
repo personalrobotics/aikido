@@ -46,6 +46,8 @@ include_directories(SYSTEM ${TinyXML2_INCLUDE_DIRS})
 find_package(OMPL QUIET)
 if (${OMPL_FOUND})
   message(STATUS "Looking for OMPL - found version ${OMPL_VERSION}")
+
+  include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
 else()
   message(STATUS "Looking for OMPL - NOT found, to use planning::ompl, please"
                  " install OMPL.")

@@ -1,5 +1,5 @@
-#include "../AIKIDOGeometricStateSpace.hpp"
-#include "../AIKIDOStateValidityChecker.hpp"
+#include "../GeometricStateSpace.hpp"
+#include "../StateValidityChecker.hpp"
 #include "../GoalRegion.hpp"
 #include "../../../trajectory/Interpolated.hpp"
 #include <ompl/geometric/PathGeometric.h>

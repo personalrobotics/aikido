@@ -5,7 +5,7 @@
 #include <aikido/constraint/TestableConstraint.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/planner/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/Rn.hpp>
