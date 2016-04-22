@@ -15,10 +15,10 @@ namespace dart {
 /// best modelled as having an SE(3) state space. If you are not sure what type
 /// of \c JointStateSpace to for a \c Joint you most likely should use
 /// the \c createJointStateSpace helper function.
-class RealVectorJointStateSpace
+class RnJoint
   : public Rn
   , public JointStateSpace
-  , public std::enable_shared_from_this<RealVectorJointStateSpace>
+  , public std::enable_shared_from_this<RnJoint>
 {
 public:
   using Rn::State;
@@ -26,7 +26,7 @@ public:
   /// Create a real vector state space for \c _joint.
   ///
   /// \param _joint joint to create a state space for
-  explicit RealVectorJointStateSpace(::dart::dynamics::Joint* _joint);
+  explicit RnJoint(::dart::dynamics::Joint* _joint);
 
   // Documentation inherited.
   void convertPositionsToState(

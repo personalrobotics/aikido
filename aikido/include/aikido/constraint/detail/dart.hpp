@@ -1,6 +1,6 @@
 #include <sstream>
 #include <dart/common/StlHelpers.h>
-#include "../../statespace/dart/RealVectorJointStateSpace.hpp"
+#include "../../statespace/dart/RnJoint.hpp"
 #include "../../statespace/dart/SO2JointStateSpace.hpp"
 #include "../../statespace/dart/SO3JointStateSpace.hpp"
 #include "../../statespace/dart/SE2JointStateSpace.hpp"
@@ -52,7 +52,7 @@ inline Eigen::VectorXd getPositionUpperLimits(
 
 //=============================================================================
 using JointStateSpaceTypeList = util::type_list<
-  statespace::dart::RealVectorJointStateSpace,
+  statespace::dart::RnJoint,
   statespace::dart::SO2JointStateSpace,
   statespace::dart::SO3JointStateSpace,
   statespace::dart::SE2JointStateSpace,
@@ -74,7 +74,7 @@ struct createSampleableFor_impl { };
 //=============================================================================
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
-  std::shared_ptr<statespace::dart::RealVectorJointStateSpace> _stateSpace,
+  std::shared_ptr<statespace::dart::RnJoint> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
   const auto joint = _stateSpace->getJoint();
@@ -89,9 +89,9 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 }
 
 template <>
-struct createDifferentiableFor_impl<statespace::dart::RealVectorJointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::dart::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -101,9 +101,9 @@ struct createDifferentiableFor_impl<statespace::dart::RealVectorJointStateSpace>
 };
 
 template <>
-struct createTestableFor_impl<statespace::dart::RealVectorJointStateSpace>
+struct createTestableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::dart::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
@@ -114,9 +114,9 @@ struct createTestableFor_impl<statespace::dart::RealVectorJointStateSpace>
 };
 
 template <>
-struct createProjectableFor_impl<statespace::dart::RealVectorJointStateSpace>
+struct createProjectableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::dart::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -127,9 +127,9 @@ struct createProjectableFor_impl<statespace::dart::RealVectorJointStateSpace>
 };
 
 template <>
-struct createSampleableFor_impl<statespace::dart::RealVectorJointStateSpace>
+struct createSampleableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::dart::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<SampleableConstraint> create(

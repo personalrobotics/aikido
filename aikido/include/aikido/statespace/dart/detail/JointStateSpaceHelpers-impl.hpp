@@ -1,6 +1,6 @@
 #include <memory>
 #include <dart/common/StlHelpers.h>
-#include "../RealVectorJointStateSpace.hpp"
+#include "../RnJoint.hpp"
 #include "../SO2JointStateSpace.hpp"
 #include "../SO3JointStateSpace.hpp"
 #include "../SE2JointStateSpace.hpp"
@@ -28,7 +28,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
     if (_joint->isCyclic(0))
        return make_unique<SO2JointStateSpace>(_joint);
     else
-       return make_unique<RealVectorJointStateSpace>(_joint);
+       return make_unique<RnJoint>(_joint);
   }
 };
 
@@ -38,7 +38,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
 {
   static Ptr create(::dart::dynamics::PrismaticJoint* _joint)
   {
-    return make_unique<RealVectorJointStateSpace>(_joint);
+    return make_unique<RnJoint>(_joint);
   }
 };
 
@@ -48,7 +48,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
 {
   static Ptr create(::dart::dynamics::TranslationalJoint* _joint)
   {
-    return make_unique<RealVectorJointStateSpace>(_joint);
+    return make_unique<RnJoint>(_joint);
   }
 };
 

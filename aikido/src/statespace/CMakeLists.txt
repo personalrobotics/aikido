@@ -14,7 +14,7 @@ aikido_add_library("${PROJECT_NAME}_statespace"
   dart/SE3JointStateSpace.cpp
   dart/SO2JointStateSpace.cpp
   dart/SO3JointStateSpace.cpp
-  dart/RealVectorJointStateSpace.cpp
+  dart/RnJoint.cpp
 )
 target_link_libraries("${PROJECT_NAME}_statespace"
   ${DART_LIBRARIES}
