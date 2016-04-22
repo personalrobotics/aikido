@@ -34,9 +34,9 @@ public:
   /// Required brief description of constructor.  This will often be as simple as:
   /// "Creates an instance of ExampleClass."
   ///
-  /// \param _foo this is an example parameter description
-  /// \param _bar this is a longer example parameter description that neesd
-  ///        to wrap across multiple lines.
+  /// \param[in] _foo this is an example parameter description
+  /// \param[in] _bar this is a longer example parameter description that needs
+  ///            to wrap across multiple lines.
   ExampleClass(std::unique_ptr<util::RNG> _foo,
                const Eigen::Isometry3d& _bar = Eigen::Isometry3d::Identity());
 
@@ -78,11 +78,11 @@ using ExamplePtr = std::shared_ptr<Example>;
 } // namespace example
 } // namespace aikido
 
-// In certain cases, such as heavily templated code, implementation must be included
-// in a header. In this case, a "detail" header should be created in the "./detail"
-// subdirectory with the same name as this class file, but an "_impl" suffix.
+// In certain cases, such as heavily templated code, implementations must be included
+// in headers. In this case, a "detail" header should be created in the "./detail"
+// subdirectory with the same name as the main header file, but an "_impl" suffix.
 // Private declarations in this header can use a "detail" sub-namespace.
-#include "./detail/example_class_impl.hpp"
+#include "./detail/ExampleClass_impl.hpp"
 
 #endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```
@@ -165,7 +165,7 @@ class MyExampleClass(object):
         :param bar: a brief required description of the parameter bar, but if
                     it needs to be really long, it should be wrapped like so
         :type  bar: the type of bar, note the extra space to get nice alignment
-        
+             <it is OK to leave a space between param comments if it looks cleaner>
         :param baz: description of baz (defaults to "Default Argument")
         :type  baz: the type of the parameter baz
         """
