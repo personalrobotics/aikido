@@ -1,5 +1,5 @@
-#ifndef AIKIDO_UTIL_METAPROGRAMMING_H_
-#define AIKIDO_UTIL_METAPROGRAMMING_H_
+#ifndef AIKIDO_UTIL_METAPROGRAMMING_HPP_
+#define AIKIDO_UTIL_METAPROGRAMMING_HPP_
 #include <memory>
 
 namespace aikido {
@@ -62,4 +62,4 @@ struct DynamicCastFactory_raw_ptr;
 
 #include "detail/metaprogramming-impl.hpp"
 
-#endif // ifndef AIKIDO_UTIL_METAPROGRAMMING_H_
+#endif // ifndef AIKIDO_UTIL_METAPROGRAMMING_HPP_
