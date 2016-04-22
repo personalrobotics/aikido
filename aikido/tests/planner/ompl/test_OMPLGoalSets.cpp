@@ -10,7 +10,7 @@
 #include <aikido/distance/Defaults.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/planner/ompl/OMPLPlanner.hpp>
+#include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/dart.h>
 #include <gtest/gtest.h>

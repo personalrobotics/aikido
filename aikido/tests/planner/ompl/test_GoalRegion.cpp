@@ -1,18 +1,18 @@
 #include "OMPLTestHelpers.hpp"
 #include "../../constraint/MockConstraints.hpp"
 #include <aikido/planner/ompl/GoalRegion.hpp>
-#include <aikido/planner/ompl/OMPLPlanner.hpp>
+#include <aikido/planner/ompl/Planner.hpp>
 
 using aikido::planner::ompl::GeometricStateSpace;
 using aikido::planner::ompl::GoalRegion;
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 
-class GoalRegionTest : public OMPLPlannerTest
+class GoalRegionTest : public PlannerTest
 {
 public:
   virtual void SetUp()
   {
-    OMPLPlannerTest::SetUp();
+    PlannerTest::SetUp();
     gSpace = std::make_shared<GeometricStateSpace>(
         stateSpace, interpolator, dmetric, sampler, boundsConstraint,
         boundsProjection);

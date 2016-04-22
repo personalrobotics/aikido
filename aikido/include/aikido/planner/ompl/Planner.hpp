@@ -133,6 +133,6 @@ trajectory::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
 } // namespace planner
 } // namespace aikido
 
-#include "detail/OMPLPlanner-impl.hpp"
+#include "detail/Planner-impl.hpp"
 
 #endif

@@ -1,7 +1,7 @@
 aikido_add_library("${PROJECT_NAME}_planner_ompl"
   GeometricStateSpace.cpp
   GoalRegion.cpp
-  OMPLPlanner.cpp
+  Planner.cpp
   StateSampler.cpp
   StateValidityChecker.cpp
 )

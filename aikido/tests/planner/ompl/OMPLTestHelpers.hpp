@@ -163,7 +163,7 @@ private:
   aikido::statespace::StateSpacePtr mStateSpace;
 };
 
-class OMPLPlannerTest : public ::testing::Test
+class PlannerTest : public ::testing::Test
 {
 public:
   virtual void SetUp()

@@ -5,12 +5,12 @@ using aikido::planner::ompl::GeometricStateSpace;
 using aikido::planner::ompl::StateSampler;
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 
-class StateSamplerTest : public OMPLPlannerTest
+class StateSamplerTest : public PlannerTest
 {
 public:
   virtual void SetUp()
   {
-    OMPLPlannerTest::SetUp();
+    PlannerTest::SetUp();
     gSpace = std::make_shared<GeometricStateSpace>(
         stateSpace, interpolator, dmetric, sampler, boundsConstraint,
         boundsProjection);
