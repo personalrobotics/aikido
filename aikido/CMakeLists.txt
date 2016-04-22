@@ -66,6 +66,21 @@ else()
 endif()
 
 #==============================================================================
+# Helper functions.
+#
+
+function(aikido_space_delimit output_variable input_list)
+  set(accumulator)
+  foreach(input_element ${input_list})
+    set(accumulator "${accumulator} ${input_element}")
+  endforeach()
+
+  #message(STATUS "${input_element} = ${accumulator}")
+
+  set("${output_variable}" "${accumulator}")
+endfunction()
+
+#==============================================================================
 # Register an Aikido library.
 #
 set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
@@ -151,6 +166,8 @@ if(${DOXYGEN_FOUND})
   get_property(DOXYGEN_STRIP_FROM_INC_PATH_LIST
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     PROPERTY INCLUDE_DIRECTORIES)
+  #aikido_space_delimit(DOXYGEN_STRIP_FROM_INC_PATH
+  #  DOXYGEN_STRIP_FROM_INC_PATH_LIST)
 
   # TODO: Replace this with a helper macro.
   set(DOXYGEN_STRIP_FROM_INC_PATH)
@@ -163,11 +180,16 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_TAGFILES)
   if(DOWNLOAD_TAGFILES)
     # TODO: Download a tagfile for DART once it is available.
+    file(DOWNLOAD "http://dartsim.github.io/dart/dart.tag"
+        "${DOXYGEN_WORKING_DIR}/dart.tag")
+    set(DOXYGEN_TAGFILES
+      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/")
 
     if(${OMPL_FOUND})
       file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
         "${DOXYGEN_WORKING_DIR}/ompl.tag")
-      set(DOXYGEN_TAGFILES "ompl.tag=http://ompl.kavrakilab.org/")
+      set(DOXYGEN_TAGFILES
+        "${DOXYGEN_TAGFILES} ompl.tag=http://ompl.kavrakilab.org/")
     endif()
   endif()
 
