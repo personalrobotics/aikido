@@ -1,15 +1,16 @@
 #include <aikido/distance/GeodesicDistanceMetric.hpp>
 
-namespace aikido
-{
-namespace distance
-{
+namespace aikido {
+namespace distance {
 
 //=============================================================================
 GeodesicDistanceMetric::GeodesicDistanceMetric(
     std::shared_ptr<statespace::SO3StateSpace> _space)
     : mStateSpace(std::move(_space))
 {
+  if (mStateSpace == nullptr) {
+    throw std::invalid_argument("SO3StateSpace is nullptr.");
+  }
 }
 
 //=============================================================================

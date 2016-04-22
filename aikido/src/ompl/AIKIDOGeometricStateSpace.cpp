@@ -6,11 +6,17 @@
 
 using dart::common::make_unique;
 
-namespace aikido
+namespace aikido {
+namespace ompl {
+
+//=============================================================================
+GeometricStateSpace::StateType::StateType(statespace::StateSpace::State *_st)
+    : mState(_st)
 {
-namespace ompl
-{
-AIKIDOGeometricStateSpace::AIKIDOGeometricStateSpace(
+}
+
+//=============================================================================
+GeometricStateSpace::GeometricStateSpace(
     statespace::StateSpacePtr _sspace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
@@ -24,32 +30,71 @@ AIKIDOGeometricStateSpace::AIKIDOGeometricStateSpace(
     , mBoundsConstraint(std::move(_boundsConstraint))
     , mBoundsProjection(std::move(_boundsProjection))
 {
+  if (mStateSpace == nullptr) {
+    throw std::invalid_argument("StateSpace is nullptr");
+  }
+
+  if (mInterpolator == nullptr) {
+    throw std::invalid_argument("Interpolator is nullptr");
+  }
+
+  if (mInterpolator->getStateSpace() != mStateSpace) {
+    throw std::invalid_argument("Interpolator does not match StateSpace");
+  }
+
+  if (mDistance == nullptr) {
+    throw std::invalid_argument("DistanceMetric is nullptr");
+  }
+
+  if (mDistance->getStateSpace() != mStateSpace) {
+    throw std::invalid_argument("DistanceMetric does not match StateSpace");
+  }
+
+  if (mSampler == nullptr) {
+    throw std::invalid_argument("Sampler is nullptr");
+  }
+
+  if (mSampler->getStateSpace() != mStateSpace) {
+    throw std::invalid_argument("Sampler does not match StateSpace");
+  }
+
+  if (mBoundsConstraint == nullptr) {
+    throw std::invalid_argument("BoundsConstraint is nullptr");
+  }
+
+  if (mBoundsConstraint->getStateSpace() != mStateSpace) {
+    throw std::invalid_argument("BoundConstraint does not match StateSpace");
+  }
+
+  if (mBoundsProjection == nullptr) {
+    throw std::invalid_argument("BoundsProjection is nullptr");
+  }
+
+  if (mBoundsProjection->getStateSpace() != mStateSpace) {
+    throw std::invalid_argument("BoundsProjection does not match StateSpace");
+  }
 }
 
-/// Get the dimension of the space (not the dimension of the surrounding ambient
-/// space)
-unsigned int AIKIDOGeometricStateSpace::getDimension() const
+//=============================================================================
+unsigned int GeometricStateSpace::getDimension() const
 {
   return mStateSpace->getDimension();
 }
 
-/// Get the maximum value a call to distance() can return (or an upper bound).
-/// For unbounded state spaces, this function can return infinity.
-double AIKIDOGeometricStateSpace::getMaximumExtent() const
+//=============================================================================
+double GeometricStateSpace::getMaximumExtent() const
 {
   return std::numeric_limits<double>::infinity();
 }
 
-/// Get a measure of the space (this can be thought of as a generalization of
-/// volume)
-double AIKIDOGeometricStateSpace::getMeasure() const
+//=============================================================================
+double GeometricStateSpace::getMeasure() const
 {
   throw std::runtime_error("getMeasure not implemented.");
 }
 
-/// Bring the state within the bounds of the state space.
-/// For unbounded spaces this function can be a no-op.
-void AIKIDOGeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
+//=============================================================================
+void GeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
 {
   auto state = static_cast<const StateType *>(_state);
   auto temporaryState = mStateSpace->createState();
@@ -57,17 +102,16 @@ void AIKIDOGeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
   mStateSpace->copyState(temporaryState, state->mState);
 }
 
-/// Check if a state is inside the bounding box.
-/// For unbounded spaces this function can always return true.
-bool AIKIDOGeometricStateSpace::satisfiesBounds(
+//=============================================================================
+bool GeometricStateSpace::satisfiesBounds(
     const ::ompl::base::State *_state) const
 {
   auto state = static_cast<const StateType *>(_state);
   return mBoundsConstraint->isSatisfied(state->mState);
 }
 
-/// Copy a state to another.
-void AIKIDOGeometricStateSpace::copyState(
+//=============================================================================
+void GeometricStateSpace::copyState(
     ::ompl::base::State *_destination, const ::ompl::base::State *_source) const
 {
   auto dst = static_cast<StateType *>(_destination);
@@ -75,10 +119,8 @@ void AIKIDOGeometricStateSpace::copyState(
   mStateSpace->copyState(sst->mState, dst->mState);
 }
 
-/// Computes distance between two states. This function satisfies
-/// the properties of a metric if isMetricSpace() is true, and its
-/// return value will always be between 0 and getMaximumExtent()
-double AIKIDOGeometricStateSpace::distance(
+//=============================================================================
+double GeometricStateSpace::distance(
     const ::ompl::base::State *_state1,
     const ::ompl::base::State *_state2) const
 {
@@ -88,19 +130,17 @@ double AIKIDOGeometricStateSpace::distance(
   return mDistance->distance(state1->mState, state2->mState);
 }
 
-/// Check state equality
-bool AIKIDOGeometricStateSpace::equalStates(
+//=============================================================================
+bool GeometricStateSpace::equalStates(
     const ::ompl::base::State *_state1,
     const ::ompl::base::State *_state2) const
 {
   double dist = distance(_state1, _state2);
-  return dist < 1e-7;
+  return dist < EQUALITY_EPSILON;
 }
 
-/// Computes the state that lies at time t in [0, 1] on the segment
-/// that connects from state to to state. The memory location of state
-/// is not required to be different from the memory of either from or to.
-void AIKIDOGeometricStateSpace::interpolate(const ::ompl::base::State *_from,
+//=============================================================================
+void GeometricStateSpace::interpolate(const ::ompl::base::State *_from,
                                             const ::ompl::base::State *_to,
                                             const double _t,
                                             ::ompl::base::State *_state) const
@@ -111,29 +151,26 @@ void AIKIDOGeometricStateSpace::interpolate(const ::ompl::base::State *_from,
   mInterpolator->interpolate(from->mState, to->mState, _t, state->mState);
 }
 
-/// Allocate an instance of the state sampler for this space.
-/// This sampler will be allocated with the sampler allocator that
-/// was previously specified by setStateSamplerAllocator() or,
-/// if no sampler allocator was specified, allocDefaultStateSampler() is called.
+//=============================================================================
 ::ompl::base::StateSamplerPtr
-AIKIDOGeometricStateSpace::allocDefaultStateSampler() const
+GeometricStateSpace::allocDefaultStateSampler() const
 {
   auto generator = mSampler->createSampleGenerator();
   auto stateSampler =
-      boost::make_shared<AIKIDOStateSampler>(this, std::move(generator));
+      boost::make_shared<StateSampler>(this, std::move(generator));
 
   return stateSampler;
 }
 
-/// Allocate a state that can store a point in the described space
-::ompl::base::State *AIKIDOGeometricStateSpace::allocState() const
+//=============================================================================
+::ompl::base::State *GeometricStateSpace::allocState() const
 {
   auto ast = mStateSpace->allocateState();
   return new StateType(ast);
 }
 
-/// Allocate a state constaining a copy of the aikido state
-::ompl::base::State *AIKIDOGeometricStateSpace::allocState(
+//=============================================================================
+::ompl::base::State *GeometricStateSpace::allocState(
     const aikido::statespace::StateSpace::State *_state) const
 {
   auto newState = mStateSpace->allocateState();
@@ -141,8 +178,8 @@ AIKIDOGeometricStateSpace::allocDefaultStateSampler() const
   return new StateType(newState);
 }
 
-/// Free the memory of the allocated state
-void AIKIDOGeometricStateSpace::freeState(::ompl::base::State *_state) const
+//=============================================================================
+void GeometricStateSpace::freeState(::ompl::base::State *_state) const
 {
   auto st = static_cast<StateType *>(_state);
   mStateSpace->freeState(st->mState);

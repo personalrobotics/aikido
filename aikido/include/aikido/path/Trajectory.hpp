@@ -1,39 +1,69 @@
-#ifndef AIKIDO_PATH_TRAJECTORY_H_
-#define AIKIDO_PATH_TRAJECTORY_H_
+#ifndef AIKIDO_PATH_TRAJECTORY_HPP_
+#define AIKIDO_PATH_TRAJECTORY_HPP_
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 #include "../statespace/StateSpace.hpp"
 
-namespace aikido
-{
-namespace path
-{
+namespace aikido {
+namespace path {
+
+/// Time-parameterized path in a \c StateSpace. The parameterization, number of
+/// derivatives available, and continuity of this trajectory is defined by the
+/// concrete implementation of this class. The interpretation of the time
+/// parameter is also implementation defined: it may represent an actual time
+/// time or some other value (e.g. arc length under a distance metric).
 class Trajectory
 {
 public:
   virtual ~Trajectory() = default;
 
-  /// Return the StateSpace this Trajectory is defined on
+  /// Gets the \c StateSpace that this trajectory is defined in.
+  ///
+  /// \return state space this trajectory is defined in.
   virtual aikido::statespace::StateSpacePtr getStateSpace() const = 0;
 
-  /// The number of non-zero value derivatives availabler
-  virtual int getNumDerivatives() const = 0;
+  /// Gets an upper bound on the number of non-zero derivatives available in
+  /// this parameterization. Note that \c evaluateDerivative may return zero
+  /// before this value for some trajectories.
+  ///
+  /// \return upper bound on the number of non-zero derivatives
+  virtual size_t getNumDerivatives() const = 0;
 
-  /// The duration of the trajectory
+  /// Duration of the trajectory. Note that \c getStartTime() may not be zero.
+  ///
+  /// \return duration of the trajectory
   virtual double getDuration() const = 0;
 
-  /// The time on the first waypoint of the trajectory
+  /// Time at which the trajectory starts. This may not be zero.
+  ///
+  /// \return time at which the trajectory starts
   virtual double getStartTime() const = 0;
 
-  /// The time on the last waypoint of the trajectory
+  /// Time at which the trajectory ends. This may not be \c getDuration() if
+  /// \c getStartTime() is not zero.
+  ///
+  /// \return time at which the trajectory ends
   virtual double getEndTime() const = 0;
 
-  /// Compute the state that should be achieved at time t when following
-  ///  the trajectory.
+  /// Evaluates the state of the trajectory at time \c _t and store the result
+  /// in a \c _state allocated by \c getStateSpace(). The output of this
+  /// function is implementation-defined if \c _t is not between
+  /// \c getStartTime() and \c getEndTime().
+  ///
+  /// \param _t time parameter
+  /// \param[out] _state output state of the trajectory at time \c _t
   virtual void evaluate(
       double _t, aikido::statespace::StateSpace::State *_state) const = 0;
 
-  /// Compute the derivative of the trajectory at time t.
+  /// Evaluates the derivative of the trajectory at time \c _t. The
+  /// \c _tangentVector is defined in the local frame (i.e. "body frame") and
+  /// is implementation-defined if not between \c getStartTime() and
+  /// \c getEndTime(). Derivatives of order higher than \c getNumDerivatives
+  /// are guaranteed to be zero.
+  ///
+  /// \param _t time parameter
+  /// \param _derivative order of derivative
+  /// \param[out] _tangentVector output tangent vector in the local frame
   virtual Eigen::VectorXd evaluate(double _t, int _derivative) const = 0;
 };
 
@@ -43,4 +73,4 @@ using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
 }  // namespace path
 }  // namespace aikido
 
-#endif  // ifndef AIKIDO_PATH_TRAJECTORY_H_
+#endif  // ifndef AIKIDO_PATH_TRAJECTORY_HPP_

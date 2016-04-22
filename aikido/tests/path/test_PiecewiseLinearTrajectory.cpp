@@ -1,9 +1,7 @@
 #include <aikido/path/PiecewiseLinearTrajectory.hpp>
-#include <aikido/distance/DistanceMetricDefaults.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 #include <gtest/gtest.h>
 
-using namespace aikido::distance;
 using namespace aikido::path;
 using namespace aikido::statespace;
 using std::shared_ptr;

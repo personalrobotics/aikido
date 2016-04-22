@@ -1,8 +1,8 @@
-#ifndef AIKIDO_ANGULAR_DISTANCE_H_
-#define AIKIDO_ANGULAR_DISTANCE_H_
+#ifndef AIKIDO_DISTANCE_ANGULARDISTANCEMETRIC_HPP_
+#define AIKIDO_DISTANCE_ANGULARDISTANCEMETRIC_HPP_
 
-#include <aikido/distance/DistanceMetric.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include "DistanceMetric.hpp"
+#include "../statespace/SO2StateSpace.hpp"
 
 namespace aikido
 {
@@ -13,13 +13,16 @@ class AngularDistanceMetric : public DistanceMetric
 {
 public:
   /// Constructor.
+  /// \param _space The SO2StateSpace this distance metric operates on
   explicit AngularDistanceMetric(
       std::shared_ptr<statespace::SO2StateSpace> _space);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Computes distance between two angles. (return value between 0 and pi)
+  /// Computes shortest distance between two angles. (return value between 0 and pi)
+  /// \param _state1 The first state (type: SO2StateSpace::State)
+  /// \param _state2 The second state (type: SO2StateSpace::State)
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 

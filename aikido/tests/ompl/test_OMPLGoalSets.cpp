@@ -105,7 +105,7 @@ protected:
         stateSpace, cd);
 
     // Distance metric
-    dmetric = aikido::distance::createDistanceMetricFor(stateSpace);
+    dmetric = aikido::distance::createDistanceMetric(stateSpace);
 
     // Sampler
     sampler =
@@ -148,29 +148,3 @@ protected:
   SampleableConstraintPtr goalSampleable;
   TestableConstraintPtr goalTestable;
 };
-
-TEST_F(OMPLGoalSetTest, Plan)
-{
-  auto startState = stateSpace->createState();
-  Eigen::Vector2d startPose(0, 0);
-  setStateValue(startPose, startState);
-
-  stateSpace->setState(startState);
-
-  // Plan
-  auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-      startState, goalTestable, goalSampleable, stateSpace, interpolator,
-      std::move(collConstraint), std::move(boundsConstraint),
-      std::move(dmetric), std::move(sampler), std::move(boundsProjection),
-      5.0);
-
-
-  // Check the first waypoint
-  auto s0 = stateSpace->createState();
-  traj->evaluate(0, s0);
-  EXPECT_TRUE(getStateValue(s0).isApprox(startPose));
-
-  // Check the last waypoint
-  traj->evaluate(traj->getDuration(), s0);
-  EXPECT_TRUE(goalTestable->isSatisfied(s0));
-}

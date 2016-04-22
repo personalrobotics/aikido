@@ -6,6 +6,11 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
+TEST(GeodesicDistance, ThrowsOnNullStateSpace)
+{
+  EXPECT_THROW(GeodesicDistanceMetric(nullptr), std::invalid_argument);
+}
+
 TEST(GeodesicDistance, StateSpaceEquality)
 {
   auto so3 = std::make_shared<SO3StateSpace>();

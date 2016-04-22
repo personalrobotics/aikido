@@ -5,6 +5,12 @@
 using namespace aikido::util;
 using std::pair;
 
+//=============================================================================
+// Required for odr-use.
+constexpr int VanDerCorput::BASE;
+constexpr int VanDerCorput::MAX;
+
+//=============================================================================
 VanDerCorput::VanDerCorput(const double span, const bool include_endpoints,
                            const double min_resolution_)
     : span(span)
@@ -16,6 +22,7 @@ VanDerCorput::VanDerCorput(const double span, const bool include_endpoints,
   }
 }
 
+//=============================================================================
 pair<double, double> VanDerCorput::operator[](int n)
 {
   pair<double, double> val_res;
@@ -42,6 +49,7 @@ pair<double, double> VanDerCorput::operator[](int n)
   return val_res;
 }
 
+//=============================================================================
 pair<double, double> VanDerCorput::compute_vandercorput(int n) const
 {
   // range: [1,int_max]
@@ -72,12 +80,14 @@ pair<double, double> VanDerCorput::compute_vandercorput(int n) const
   return std::make_pair(ret, resolution);
 }
 
+//=============================================================================
 VanDerCorput::const_iterator VanDerCorput::begin()
 {
   VanDerCorput::const_iterator itr{this};
   return itr;
 }
 
+//=============================================================================
 VanDerCorput::const_iterator VanDerCorput::end()
 {
   VanDerCorput::const_iterator itr{this};
@@ -85,6 +95,7 @@ VanDerCorput::const_iterator VanDerCorput::end()
   return itr;
 }
 
+//=============================================================================
 void VanDerCorput::const_iterator::increment()
 {
   if (final_iter) {
@@ -98,6 +109,7 @@ void VanDerCorput::const_iterator::increment()
   }
 }
 
+//=============================================================================
 bool VanDerCorput::const_iterator::equal(
     const VanDerCorput::const_iterator &other) const
 {

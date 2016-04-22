@@ -27,7 +27,7 @@ static Eigen::Matrix<double, 1, 1> make_scalar(double _value)
   return matrix;
 }
 
-TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds)
+TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds_CreatesSO2)
 {
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<RevoluteJoint>();
@@ -47,7 +47,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds)
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
-TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds)
+TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
 {
   auto skeleton = Skeleton::create();
   auto joint = skeleton->createJointAndBodyNodePair<RevoluteJoint>().first;
@@ -71,7 +71,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds)
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
-TEST(MetaSkeletonStateSpace, PrismaticJoint)
+TEST(MetaSkeletonStateSpace, PrismaticJoint_CreatesRealVector)
 {
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<PrismaticJoint>();
@@ -94,7 +94,7 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint)
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
-TEST(MetaSkeletonStateSpace, TranslationalJoint)
+TEST(MetaSkeletonStateSpace, TranslationalJoint_CreatesRealVector)
 {
   Vector3d value1(1., 2., 3.);
   Vector3d value2(4., 5., 6.);
@@ -120,7 +120,7 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint)
   EXPECT_TRUE(value2.isApprox(skeleton->getPositions()));
 }
 
-TEST(MetaSkeletonStateSpace, FreeJoint)
+TEST(MetaSkeletonStateSpace, FreeJoint_CreatesSE3)
 {
   Isometry3d value1 = Isometry3d::Identity();
   value1.rotate(Eigen::AngleAxisd(M_PI_2, Vector3d::UnitZ()));
@@ -149,7 +149,7 @@ TEST(MetaSkeletonStateSpace, FreeJoint)
     FreeJoint::convertToTransform(skeleton->getPositions())));
 }
 
-TEST(MetaSkeletonStateSpace, MultipleJoints)
+TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCompoundStateSpace)
 {
   Vector3d value1(2., 3., 4.);
   Vector3d value2(6., 7., 8.);

@@ -1,8 +1,8 @@
-#ifndef AIKIDO_EUCLIDEAN_DISTANCE_METRIC_H_
-#define AIKIDO_EUCLIDEAN_DISTANCE_METRIC_H_
+#ifndef AIKIDO_DISTANCE_EUCLIDEANDISTANCEMETRIC_HPP_
+#define AIKIDO_DISTANCE_EUCLIDEANDISTANCEMETRIC_HPP_
 
-#include <aikido/distance/DistanceMetric.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include "DistanceMetric.hpp"
+#include "../statespace/RealVectorStateSpace.hpp"
 
 namespace aikido
 {
@@ -13,13 +13,16 @@ class EuclideanDistanceMetric : public DistanceMetric
 {
 public:
   /// Constructor.
+  /// \param _space The RealVectorStateSpace this metric operates on
   explicit EuclideanDistanceMetric(
       std::shared_ptr<statespace::RealVectorStateSpace> _space);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Computes euclidean distance between two states.
+  /// Computes Euclidean distance between two states.
+  /// \param _state1 The first state (type RealVectorStateSpace::State)
+  /// \param _state2 The second state (type RealVectorStateSpace::State)
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 

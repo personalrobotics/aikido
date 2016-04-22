@@ -8,12 +8,9 @@
 #include "../../statespace/CompoundStateSpace.hpp"
 #include <dart/common/StlHelpers.h>
 
-namespace aikido
-{
-namespace distance
-{
-namespace detail
-{
+namespace aikido {
+namespace distance {
+namespace detail {
 using dart::common::make_unique;
 using Ptr = std::unique_ptr<DistanceMetric>;
 
@@ -58,7 +55,8 @@ template <>
 struct ForOneOf<> {
   static Ptr create(std::shared_ptr<statespace::StateSpace> _sspace)
   {
-    return nullptr;
+    throw std::invalid_argument(
+        "Unrecognized state space. Unable to create distance metric.");
   }
 };
 
@@ -86,13 +84,17 @@ template <>
 struct createDistanceMetricFor_impl<statespace::CompoundStateSpace> {
   static Ptr create(std::shared_ptr<statespace::CompoundStateSpace> _sspace)
   {
+    if (_sspace == nullptr)
+      throw std::invalid_argument(
+          "Cannot create distance metric for null statespace.");
+
     std::vector<std::shared_ptr<DistanceMetric> > metrics;
     metrics.reserve(_sspace->getNumStates());
     for (size_t i = 0; i < _sspace->getNumStates(); ++i) {
       auto subspace = _sspace->getSubSpace<>(i);
       auto metric =
           createDistanceMetricFor_wrapper::create(std::move(subspace));
-      metrics.emplace_back(metric.release());
+      metrics.emplace_back(std::move(metric));
     }
     return make_unique<WeightedDistanceMetric>(std::move(_sspace),
                                                std::move(metrics));
@@ -105,6 +107,14 @@ struct createDistanceMetricFor_impl<statespace::CompoundStateSpace> {
 template <class Space>
 std::unique_ptr<DistanceMetric> createDistanceMetricFor(
     std::shared_ptr<Space> _sspace)
+{
+  return detail::createDistanceMetricFor_impl<Space>::create(
+      std::move(_sspace));
+}
+
+//=============================================================================
+std::unique_ptr<DistanceMetric> createDistanceMetric(
+    statespace::StateSpacePtr _sspace)
 {
   return detail::createDistanceMetricFor_wrapper::create(std::move(_sspace));
 }

@@ -1,89 +1,65 @@
-#ifndef AIKIDO_UTIL_METAPROGRAMMING_H_
-#define AIKIDO_UTIL_METAPROGRAMMING_H_
+#ifndef AIKIDO_UTIL_METAPROGRAMMING_HPP_
+#define AIKIDO_UTIL_METAPROGRAMMING_HPP_
 #include <memory>
 
 namespace aikido {
 namespace util {
 
-//=============================================================================
 /// Wrapper for a variadic template parameter pack of types.
+///
+/// \tparam Types... list of types
 template <class... Types>
 class type_list {};
 
-//=============================================================================
-template <class Pointee>
-struct ForOneOf_shared_ptr
-{
-  using type = std::shared_ptr<Pointee>;
-
-  template <class Derived>
-  static std::shared_ptr<Derived> cast(std::shared_ptr<Pointee> _pointer)
-  {
-    return std::dynamic_pointer_cast<Derived>(std::move(_pointer));
-  }
-};
-
-template <class Pointee>
-struct ForOneOf_raw_ptr
-{
-  using type = Pointee*;
-
-  template <class Derived>
-  static Derived* cast(Pointee* _pointer)
-  {
-    return dynamic_cast<Derived*>(_pointer);
-  }
-};
-
+/// Call a template factory function based on runtime type of the first
+/// argument to a function. This class has a \c create function that takes
+/// a pointer to \c BaseParameter as its first parameter, optionally followed
+/// by arbitrary other parameters. If the runtime type of that argument is in
+/// \c TypeList, then it is cast to the \c Derived type and forwarded to the
+/// the template class \c Factory<Derived>::create function. Other parameters,
+/// and the return value of \c create, are perfectly forwarded. If the first
+/// argument is none of those types, then \c create returns \c nullptr.
+///
+/// RTTI is implemented by attempting to \c dynamic_cast the first parameter of
+/// \c create to each derived type in \c TypeList, in the order that they are
+/// specified in. This is a potentially expensive operation.
+///
+/// The \c Pointer<Derived> parameter is a template class that defines: (1) a
+/// pointer type \c Pointer<Derived>::type and (2) a corresponding
+/// \c dynamic_cast operator \c Pointer<T>::cast that attempts to cast a
+/// \c Pointer<BaseParameter>::type to a \c Pointer<Derived>>:type. The
+/// provided \c DynamicCastFactory_shared_ptr and
+/// \c DynamicCastFactory_raw_pointer classes implement this functionality for
+/// \c std::shared_ptr and raw pointers, respectively.
+///
+/// \tparam Factory factory template class with a static \c create function
+/// \tparam Pointer pointer type information
+/// \tparam BaseParameter base class
+/// \tparam TypeList \c type_list of subclasses of \c BaseParameter
 template <
   template <class> class Factory,
   template <class> class Pointer,
   class BaseParameter,
   class TypeList>
-struct ForOneOf {};
+struct DynamicCastFactory {};
 
-template <
-  template <class> class Factory,
-  template <class> class Pointer,
-  class BaseParameter>
-struct ForOneOf<Factory, Pointer, BaseParameter, util::type_list<>>
-{
-  template <class... Parameters>
-  static std::nullptr_t create(
-    typename Pointer<BaseParameter>::type /* unused */,
-    Parameters&&... /* unused */)
-  {
-    return nullptr;
-  }
-};
+/// Helper template class necessary to use \c std::shared_ptr as the pointer
+/// type in \c DynamicCastFactory.
+///
+/// \tparam pointee type
+template <class Pointee>
+struct DynamicCastFactory_shared_ptr;
 
-template <
-  template <class> class Factory,
-  template <class> class Pointer,
-  class BaseParameter,
-  class Arg,
-  class... Args>
-struct ForOneOf<Factory, Pointer, BaseParameter, util::type_list<Arg, Args...>>
-{
-  template <class... Parameters>
-  static auto create(typename Pointer<BaseParameter>::type _base,
-                     Parameters&&... _params)
-    -> decltype(Factory<Arg>::create(
-         Pointer<BaseParameter>::template cast<Arg>(_base),
-         std::forward<Parameters>(_params)...))
-  {
-    if (auto derived = Pointer<BaseParameter>::template cast<Arg>(_base))
-      return Factory<Arg>::create(
-        std::move(derived), std::forward<Parameters>(_params)...);
-    else
-      return ForOneOf<
-        Factory, Pointer, BaseParameter, util::type_list<Args...>>::create(
-          std::move(_base), std::forward<Parameters>(_params)...);
-  }
-};
+/// Helper template class necessary to use raw pointers  as the pointer type
+/// in \c DynamicCastFactory.
+///
+/// \tparam pointee type
+template <class Pointee>
+struct DynamicCastFactory_raw_ptr;
 
 } // namespace util
 } // namespace aikido
 
+#include "detail/metaprogramming-impl.hpp"
 
-#endif // ifndef AIKIDO_UTIL_METAPROGRAMMING_H_
+#endif // ifndef AIKIDO_UTIL_METAPROGRAMMING_HPP_

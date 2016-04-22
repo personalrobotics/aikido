@@ -169,7 +169,8 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
   evaluateAtTime(dynamicPath, timePrev, positionPrev, velocityPrev);
 
   auto outputTrajectory = make_unique<path::SplineTrajectory2>(
-    stateSpace, startState, timePrev + _inputTrajectory.getStartTime());
+    stateSpace, timePrev + _inputTrajectory.getStartTime());
+  auto segmentStartState = stateSpace->createState();
 
   for (const auto timeCurr : transitionTimes)
   {
@@ -186,9 +187,17 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
     problem.addConstantConstraint(1, 1, velocityCurr);
     const auto spline = problem.fit();
 
+    // Forward-integrate the trajectory from the start in one step. This should
+    // prevent accumulation of numerical error over long trajectories. Note
+    // that this is only possible in real vector spaces and SO(2).
+    stateSpace->expMap(positionPrev, relativeState);
+    stateSpace->compose(startState, relativeState, segmentStartState);
+
     // Add the ramp to the output trajectory.
+    assert(spline.getCoefficients().size() == 1);
     const auto& coefficients = spline.getCoefficients().front();
-    outputTrajectory->addSegment(coefficients, timeCurr - timePrev);
+    outputTrajectory->addSegment(
+      coefficients, timeCurr - timePrev, segmentStartState);
 
     timePrev = timeCurr;
     positionPrev = positionCurr;
