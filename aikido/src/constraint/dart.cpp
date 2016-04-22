@@ -84,7 +84,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
 }
 
 //=============================================================================
-std::unique_ptr<TestableConstraint> createTestableBounds(
+std::unique_ptr<Testable> createTestableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
   return util::DynamicCastFactory<
@@ -96,12 +96,12 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
 }
 
 //=============================================================================
-std::unique_ptr<TestableConstraint> createTestableBounds(
+std::unique_ptr<Testable> createTestableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
   const auto n = _metaSkeleton->getNumStates();
 
-  std::vector<std::shared_ptr<TestableConstraint>> constraints;
+  std::vector<std::shared_ptr<Testable>> constraints;
   constraints.reserve(n);
 
   for (size_t i = 0; i < n; ++i)

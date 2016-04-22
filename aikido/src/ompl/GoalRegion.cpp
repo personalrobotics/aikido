@@ -6,7 +6,7 @@ namespace ompl {
 
 //=============================================================================
 GoalRegion::GoalRegion(const ::ompl::base::SpaceInformationPtr& _si,
-                       constraint::TestableConstraintPtr _goalTestable,
+                       constraint::TestablePtr _goalTestable,
                        std::unique_ptr<constraint::SampleGenerator> _generator)
     : ::ompl::base::GoalSampleableRegion(_si)
     , mTestable(std::move(_goalTestable))

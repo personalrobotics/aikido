@@ -4,7 +4,7 @@
 #include "../distance/DistanceMetric.hpp"
 #include "../statespace/StateSpace.hpp"
 #include "../statespace/Interpolator.hpp"
-#include "../constraint/TestableConstraint.hpp"
+#include "../constraint/Testable.hpp"
 #include "../constraint/Sampleable.hpp"
 #include "../constraint/Projectable.hpp"
 #include "../trajectory/Trajectory.hpp"
@@ -46,8 +46,8 @@ trajectory::TrajectoryPtr planOMPL(
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _validityConstraint,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector, double _maxPlanTime);
 
 /// Use the template OMPL Planner type to plan a trajectory that moves from the
@@ -76,14 +76,14 @@ trajectory::TrajectoryPtr planOMPL(
 template <class PlannerType>
 trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
-    constraint::TestableConstraintPtr _goalTestable,
+    constraint::TestablePtr _goalTestable,
     constraint::SampleableConstraintPtr _goalSampler,
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _validityConstraint,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,
     double _maxPlanTime);
 
@@ -109,8 +109,8 @@ trajectory::TrajectoryPtr planOMPL(
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _validityConstraint,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector);
 
 /// Use the template OMPL Planner type to plan in a custom OMPL Space

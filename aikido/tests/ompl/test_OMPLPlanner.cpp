@@ -63,10 +63,10 @@ TEST_F(OMPLPlannerTest, PlanToGoalRegion)
   aikido::constraint::SampleableConstraintPtr goalSampleable =
       std::make_shared<aikido::constraint::SampleableSubSpace>(stateSpace,
                                                                sConstraints);
-  std::vector<std::shared_ptr<aikido::constraint::TestableConstraint>>
+  std::vector<std::shared_ptr<aikido::constraint::Testable>>
       tConstraints;
   tConstraints.push_back(boxConstraint);
-  aikido::constraint::TestableConstraintPtr goalTestable =
+  aikido::constraint::TestablePtr goalTestable =
       std::make_shared<aikido::constraint::TestableSubSpace>(stateSpace,
                                                              tConstraints);
 

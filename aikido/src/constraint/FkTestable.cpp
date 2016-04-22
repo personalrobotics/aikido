@@ -6,7 +6,7 @@ namespace constraint {
 //=============================================================================
 FkTestable::FkTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
                        dart::dynamics::ConstJacobianNodePtr _frame,
-                       TestableConstraintPtr _poseConstraint)
+                       TestablePtr _poseConstraint)
 : mStateSpace(std::move(_stateSpace))
 , mFrame(_frame)
 , mPoseConstraint(std::move(_poseConstraint))

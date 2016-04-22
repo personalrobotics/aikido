@@ -21,7 +21,7 @@ GeometricStateSpace::GeometricStateSpace(
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjection)
     : mStateSpace(std::move(_sspace))
     , mInterpolator(std::move(_interpolator))

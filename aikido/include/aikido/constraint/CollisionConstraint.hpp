@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_COLLISIONCONSTRAINT_HPP_
 #define AIKIDO_CONSTRAINT_COLLISIONCONSTRAINT_HPP_
 
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 #include <vector>
 #include <tuple>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -15,7 +15,7 @@ namespace constraint {
 /// A testable that uses a collision detector to check whether 
 /// a metakeleton state (configuration) results in collision between and within
 /// specified collision groups.
-class CollisionConstraint : public TestableConstraint
+class CollisionConstraint : public Testable
 {
 public:
   CollisionConstraint(

@@ -11,8 +11,8 @@ namespace ompl {
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _validityConstraint,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector)
 {
   if (_stateSpace == nullptr) {
@@ -88,7 +88,7 @@ namespace ompl {
   auto si = boost::make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
 
   // Validity checking
-  std::vector<constraint::TestableConstraintPtr> constraints{
+  std::vector<constraint::TestablePtr> constraints{
       std::move(_validityConstraint), std::move(_boundsConstraint)};
   auto conjunctionConstraint =
       std::make_shared<constraint::ConjunctionConstraint>(std::move(_stateSpace),

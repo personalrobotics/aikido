@@ -106,9 +106,9 @@ struct createTestableFor_impl<statespace::dart::RnJoint>
   using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
-    return createBoxConstraint<TestableConstraint>(
+    return createBoxConstraint<Testable>(
       std::move(_stateSpace), nullptr);
   }
 };
@@ -170,7 +170,7 @@ struct createTestableFor_impl<statespace::dart::SO2Joint>
   using StateSpace = statespace::dart::SO2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO2Joint must not have limits.");
@@ -237,7 +237,7 @@ struct createTestableFor_impl<statespace::dart::SO3Joint>
   using StateSpace = statespace::dart::SO3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO3Joint must not have limits.");
@@ -300,10 +300,10 @@ struct createTestableFor_impl<statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No TestableConstraint is available for SE2Joint.");
+      "No Testable is available for SE2Joint.");
   }
 };
 
@@ -354,10 +354,10 @@ struct createTestableFor_impl<statespace::dart::SE3Joint>
   using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No TestableConstraint is available for SE3Joint.");
+      "No Testable is available for SE3Joint.");
   }
 };
 
@@ -410,7 +410,7 @@ std::unique_ptr<Projectable> createProjectableBoundsFor(
 
 //=============================================================================
 template <class Space>
-std::unique_ptr<TestableConstraint> createTestableBoundsFor(
+std::unique_ptr<Testable> createTestableBoundsFor(
   std::shared_ptr<Space> _stateSpace)
 {
   return detail::createTestableFor_impl<Space>::create(

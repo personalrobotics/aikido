@@ -4,7 +4,7 @@
 #include "../Differentiable.hpp"
 #include "../Projectable.hpp"
 #include "../Sampleable.hpp"
-#include "../TestableConstraint.hpp"
+#include "../Testable.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -15,7 +15,7 @@ class RealVectorBoxConstraint
   : public constraint::Differentiable
   , public constraint::Projectable
   , public constraint::SampleableConstraint
-  , public constraint::TestableConstraint
+  , public constraint::Testable
 {
 public:
   /// Constructor.

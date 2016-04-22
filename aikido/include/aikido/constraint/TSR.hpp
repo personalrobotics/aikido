@@ -6,7 +6,7 @@
 #include <Eigen/Dense>
 #include "Projectable.hpp"
 #include "Differentiable.hpp"
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 #include <dart/math/MathTypes.h>
 
 namespace aikido {
@@ -24,7 +24,7 @@ namespace constraint {
 /// http://repository.cmu.edu/cgi/viewcontent.cgi?article=2024&context=robotics
 class TSR : public SampleableConstraint,
             public Differentiable,
-            public TestableConstraint,
+            public Testable,
             public Projectable
 {
 public:

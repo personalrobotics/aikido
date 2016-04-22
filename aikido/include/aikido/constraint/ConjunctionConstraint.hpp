@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_CONJUNCTION_HPP_
 #define AIKIDO_CONSTRAINT_CONJUNCTION_HPP_
 
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 #include <memory>
 #include <vector>
 
@@ -11,7 +11,7 @@ namespace constraint {
 /// A testable constraint grouping a set of testable constraint.
 /// This constriant is satisfied only if all constraints in the set
 /// are satisfied.
-class ConjunctionConstraint : public TestableConstraint
+class ConjunctionConstraint : public Testable
 {
 public:
   /// Construct a ConjunctionConstraint on a specific StateSpace.
@@ -19,8 +19,8 @@ public:
   /// \param constraints Set of constraints.
   ConjunctionConstraint(
     statespace::StateSpacePtr _stateSpace,
-    std::vector<TestableConstraintPtr> _constraints = 
-      std::vector<TestableConstraintPtr>());
+    std::vector<TestablePtr> _constraints = 
+      std::vector<TestablePtr>());
 
   // Documentation inherited.
   bool isSatisfied(
@@ -29,16 +29,16 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Add a TestableConstraint to the conjunction.
+  /// Add a Testable to the conjunction.
   /// \param constraint a constraint in the same StateSpace as the
   ///        ConjunctionConstraint was initialize with.
-  void addConstraint(TestableConstraintPtr constraint);
+  void addConstraint(TestablePtr constraint);
 
 private:
   statespace::StateSpacePtr mStateSpace;
-  std::vector<TestableConstraintPtr> mConstraints;
+  std::vector<TestablePtr> mConstraints;
 
-  void testConstraintStateSpaceOrThrow(const TestableConstraintPtr& constraint);
+  void testConstraintStateSpaceOrThrow(const TestablePtr& constraint);
 };
 }  // constraint
 }  // aikido

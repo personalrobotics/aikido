@@ -7,7 +7,7 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/constraint/CollisionConstraint.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/constraint/Testable.hpp>
 #include <dart/dart.h>
 #include <tuple>
 

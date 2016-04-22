@@ -10,7 +10,7 @@ using dart::common::make_unique;
 //=============================================================================
 TestableSubSpace::TestableSubSpace(
   std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-  std::vector<std::shared_ptr<TestableConstraint>> _constraints)
+  std::vector<std::shared_ptr<Testable>> _constraints)
 : mStateSpace(std::move(_stateSpace))
 , mConstraints(std::move(_constraints))
 {

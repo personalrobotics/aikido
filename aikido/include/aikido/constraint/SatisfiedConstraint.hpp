@@ -3,7 +3,7 @@
 #include "Differentiable.hpp"
 #include "Projectable.hpp"
 #include "Sampleable.hpp"
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -14,7 +14,7 @@ namespace constraint {
 class SatisfiedConstraint 
   : public constraint::Differentiable
   , public constraint::Projectable
-  , public constraint::TestableConstraint
+  , public constraint::Testable
 {
 public:
   /// Constructor.

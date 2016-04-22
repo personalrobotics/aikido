@@ -5,8 +5,8 @@
 #include "MockConstraints.hpp"
 
 using aikido::constraint::FkTestable;
-using aikido::constraint::TestableConstraint;
-using aikido::constraint::TestableConstraintPtr;
+using aikido::constraint::Testable;
+using aikido::constraint::TestablePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::SO2;
@@ -16,11 +16,11 @@ using dart::dynamics::RevoluteJoint;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::BodyNode;
 
-class EndEffectorTestableConstraint
-    : public aikido::constraint::TestableConstraint
+class EndEffectorTestable
+    : public aikido::constraint::Testable
 {
 public:
-  EndEffectorTestableConstraint(std::shared_ptr<SE3> stateSpace)
+  EndEffectorTestable(std::shared_ptr<SE3> stateSpace)
       : mStateSpace(stateSpace)
   {
   }
@@ -80,7 +80,7 @@ public:
     // Statespace
     stateSpace = std::make_shared<MetaSkeletonStateSpace>(robot);
     auto se3 = std::make_shared<SE3>();
-    poseConstraint = std::make_shared<EndEffectorTestableConstraint>(se3);
+    poseConstraint = std::make_shared<EndEffectorTestable>(se3);
   }
 
   void setStateValue(const Eigen::Vector2d &value,
@@ -104,7 +104,7 @@ public:
 
   BodyNodePtr endEffector;
   MetaSkeletonStateSpacePtr stateSpace;
-  TestableConstraintPtr poseConstraint;
+  TestablePtr poseConstraint;
 };
 
 TEST_F(FkTestableTest, ConstructorThrowsOnNullStateSpace)

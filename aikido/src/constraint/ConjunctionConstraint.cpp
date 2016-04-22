@@ -7,7 +7,7 @@ namespace constraint {
 //=============================================================================
 ConjunctionConstraint::ConjunctionConstraint(
     statespace::StateSpacePtr _stateSpace,
-    std::vector<std::shared_ptr<TestableConstraint>> _constraints)
+    std::vector<std::shared_ptr<Testable>> _constraints)
 : mStateSpace(std::move(_stateSpace))
 , mConstraints(std::move(_constraints))
 {
@@ -38,7 +38,7 @@ statespace::StateSpacePtr ConjunctionConstraint::getStateSpace() const
 }
 
 //=============================================================================
-void ConjunctionConstraint::addConstraint(TestableConstraintPtr _constraint)
+void ConjunctionConstraint::addConstraint(TestablePtr _constraint)
 {
   if (_constraint->getStateSpace() == mStateSpace) {
     mConstraints.emplace_back(std::move(_constraint));
@@ -50,7 +50,7 @@ void ConjunctionConstraint::addConstraint(TestableConstraintPtr _constraint)
 
 //=============================================================================
 void ConjunctionConstraint::testConstraintStateSpaceOrThrow(
-  const TestableConstraintPtr& constraint)
+  const TestablePtr& constraint)
 {
   if (constraint->getStateSpace() != mStateSpace) {
     throw std::invalid_argument{
