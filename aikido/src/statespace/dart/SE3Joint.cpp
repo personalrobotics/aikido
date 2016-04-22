@@ -1,18 +1,18 @@
-#include <aikido/statespace/dart/SE3JointStateSpace.hpp>
+#include <aikido/statespace/dart/SE3Joint.hpp>
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
 //=============================================================================
-SE3JointStateSpace::SE3JointStateSpace(::dart::dynamics::FreeJoint* _joint)
+SE3Joint::SE3Joint(::dart::dynamics::FreeJoint* _joint)
   : JointStateSpace(_joint)
   , SE3()
 {
 }
 
 //=============================================================================
-void SE3JointStateSpace::convertPositionsToState(
+void SE3Joint::convertPositionsToState(
   const Eigen::VectorXd& _positions,
   StateSpace::State* _state) const
 {
@@ -21,7 +21,7 @@ void SE3JointStateSpace::convertPositionsToState(
 }
 
 //=============================================================================
-void SE3JointStateSpace::convertStateToPositions(
+void SE3Joint::convertStateToPositions(
   const StateSpace::State* _state,
   Eigen::VectorXd& _positions) const
 {

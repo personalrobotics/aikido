@@ -4,8 +4,8 @@
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/SatisfiedConstraint.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
-#include <aikido/statespace/dart/SO2JointStateSpace.hpp>
-#include <aikido/statespace/dart/SO3JointStateSpace.hpp>
+#include <aikido/statespace/dart/SO2Joint.hpp>
+#include <aikido/statespace/dart/SO3Joint.hpp>
 
 using Vector0d = Eigen::Matrix<double, 0, 1>;
 using Vector1d = Eigen::Matrix<double, 1, 1>;
@@ -20,8 +20,8 @@ using dart::dynamics::SkeletonPtr;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::SatisfiedConstraint;
 using aikido::statespace::dart::RnJoint;
-using aikido::statespace::dart::SO2JointStateSpace;
-using aikido::statespace::dart::SO3JointStateSpace;
+using aikido::statespace::dart::SO2Joint;
+using aikido::statespace::dart::SO3Joint;
 using aikido::util::RNGWrapper;
 
 using aikido::constraint::createDifferentiableBoundsFor;
@@ -181,7 +181,7 @@ TEST_F(RnJointHelpersTests, createSampleableBounds)
 }
 
 //=============================================================================
-class SO2JointStateSpaceHelpersTests : public ::testing::Test
+class SO2JointHelpersTests : public ::testing::Test
 {
 protected:
   static constexpr int NUM_SAMPLES { 1000 };
@@ -193,46 +193,46 @@ protected:
       RevoluteJoint, BodyNode>().first;
     // Don't set any limits.
 
-    mStateSpace = std::make_shared<SO2JointStateSpace>(mJoint);
+    mStateSpace = std::make_shared<SO2Joint>(mJoint);
   }
 
   SkeletonPtr mSkeleton;
   RevoluteJoint* mJoint;
-  std::shared_ptr<SO2JointStateSpace> mStateSpace;
+  std::shared_ptr<SO2Joint> mStateSpace;
 };
 
 //=============================================================================
-TEST_F(SO2JointStateSpaceHelpersTests, createTestableBoundsFor)
+TEST_F(SO2JointHelpersTests, createTestableBoundsFor)
 {
   const auto constraint
-    = createTestableBoundsFor<SO2JointStateSpace>(mStateSpace);
+    = createTestableBoundsFor<SO2Joint>(mStateSpace);
   EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
-TEST_F(SO2JointStateSpaceHelpersTests, createProjectableBounds)
+TEST_F(SO2JointHelpersTests, createProjectableBounds)
 {
   const auto constraint
-    = createProjectableBoundsFor<SO2JointStateSpace>(mStateSpace);
+    = createProjectableBoundsFor<SO2Joint>(mStateSpace);
   EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
-TEST_F(SO2JointStateSpaceHelpersTests, createDifferentiableBounds)
+TEST_F(SO2JointHelpersTests, createDifferentiableBounds)
 {
   const auto constraint
-    = createDifferentiableBoundsFor<SO2JointStateSpace>(mStateSpace);
+    = createDifferentiableBoundsFor<SO2Joint>(mStateSpace);
   EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
-TEST_F(SO2JointStateSpaceHelpersTests, createSampleableBounds)
+TEST_F(SO2JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint
-    = createSampleableBoundsFor<SO2JointStateSpace>(mStateSpace,
+    = createSampleableBoundsFor<SO2Joint>(mStateSpace,
         make_unique<RNGWrapper<std::default_random_engine>>(0));
 
   ASSERT_TRUE(!!sampleableConstraint);
@@ -254,7 +254,7 @@ TEST_F(SO2JointStateSpaceHelpersTests, createSampleableBounds)
 }
 
 //=============================================================================
-class SO3JointStateSpaceHelpersTests : public ::testing::Test
+class SO3JointHelpersTests : public ::testing::Test
 {
 protected:
   static constexpr int NUM_SAMPLES { 1000 };
@@ -266,46 +266,46 @@ protected:
       BallJoint, BodyNode>().first;
     // Don't set any limits.
 
-    mStateSpace = std::make_shared<SO3JointStateSpace>(mJoint);
+    mStateSpace = std::make_shared<SO3Joint>(mJoint);
   }
 
   SkeletonPtr mSkeleton;
   BallJoint* mJoint;
-  std::shared_ptr<SO3JointStateSpace> mStateSpace;
+  std::shared_ptr<SO3Joint> mStateSpace;
 };
 
 //=============================================================================
-TEST_F(SO3JointStateSpaceHelpersTests, createTestableBoundsFor)
+TEST_F(SO3JointHelpersTests, createTestableBoundsFor)
 {
   const auto constraint
-    = createTestableBoundsFor<SO3JointStateSpace>(mStateSpace);
+    = createTestableBoundsFor<SO3Joint>(mStateSpace);
   EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
-TEST_F(SO3JointStateSpaceHelpersTests, createProjectableBounds)
+TEST_F(SO3JointHelpersTests, createProjectableBounds)
 {
   const auto constraint
-    = createProjectableBoundsFor<SO3JointStateSpace>(mStateSpace);
+    = createProjectableBoundsFor<SO3Joint>(mStateSpace);
   EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
-TEST_F(SO3JointStateSpaceHelpersTests, createDifferentiableBounds)
+TEST_F(SO3JointHelpersTests, createDifferentiableBounds)
 {
   const auto constraint
-    = createDifferentiableBoundsFor<SO3JointStateSpace>(mStateSpace);
+    = createDifferentiableBoundsFor<SO3Joint>(mStateSpace);
   EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
 //=============================================================================
-TEST_F(SO3JointStateSpaceHelpersTests, createSampleableBounds)
+TEST_F(SO3JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint
-    = createSampleableBoundsFor<SO3JointStateSpace>(mStateSpace,
+    = createSampleableBoundsFor<SO3Joint>(mStateSpace,
         make_unique<RNGWrapper<std::default_random_engine>>(0));
 
   ASSERT_TRUE(!!sampleableConstraint);

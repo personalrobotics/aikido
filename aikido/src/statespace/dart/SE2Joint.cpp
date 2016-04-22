@@ -1,18 +1,18 @@
-#include <aikido/statespace/dart/SE2JointStateSpace.hpp>
+#include <aikido/statespace/dart/SE2Joint.hpp>
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
 //=============================================================================
-SE2JointStateSpace::SE2JointStateSpace(::dart::dynamics::PlanarJoint* _joint)
+SE2Joint::SE2Joint(::dart::dynamics::PlanarJoint* _joint)
   : JointStateSpace(_joint)
   , SE2()
 {
 }
 
 //=============================================================================
-void SE2JointStateSpace::convertPositionsToState(
+void SE2Joint::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   Isometry2d pose = Isometry2d::Identity();
@@ -23,7 +23,7 @@ void SE2JointStateSpace::convertPositionsToState(
 }
 
 //=============================================================================
-void SE2JointStateSpace::convertStateToPositions(
+void SE2Joint::convertStateToPositions(
   const StateSpace::State* _state,
   Eigen::VectorXd& _positions) const
 {

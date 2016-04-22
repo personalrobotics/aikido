@@ -1,4 +1,4 @@
-#include <aikido/statespace/dart/SO3JointStateSpace.hpp>
+#include <aikido/statespace/dart/SO3Joint.hpp>
 
 // TODO: This will not be necessary once we switch to using
 // BallJoint::convertToRotation instead of calling dart::math::logMap directly.
@@ -12,14 +12,14 @@ namespace statespace {
 namespace dart {
 
 //=============================================================================
-SO3JointStateSpace::SO3JointStateSpace(::dart::dynamics::BallJoint* _joint)
+SO3Joint::SO3Joint(::dart::dynamics::BallJoint* _joint)
   : JointStateSpace(_joint)
   , SO3()
 {
 }
 
 //=============================================================================
-void SO3JointStateSpace::convertPositionsToState(
+void SO3Joint::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   setQuaternion(static_cast<State*>(_state), SO3::Quaternion(
@@ -27,7 +27,7 @@ void SO3JointStateSpace::convertPositionsToState(
 }
 
 //=============================================================================
-void SO3JointStateSpace::convertStateToPositions(
+void SO3Joint::convertStateToPositions(
   const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   // TODO: We should call BallJoint::convertToRotation instead of logMap once

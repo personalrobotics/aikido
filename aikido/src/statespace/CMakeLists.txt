@@ -10,10 +10,10 @@ aikido_add_library("${PROJECT_NAME}_statespace"
   dart/JointStateSpace.cpp
   dart/JointStateSpaceHelpers.cpp
   dart/MetaSkeletonStateSpace.cpp
-  dart/SE2JointStateSpace.cpp
-  dart/SE3JointStateSpace.cpp
-  dart/SO2JointStateSpace.cpp
-  dart/SO3JointStateSpace.cpp
+  dart/SE2Joint.cpp
+  dart/SE3Joint.cpp
+  dart/SO2Joint.cpp
+  dart/SO3Joint.cpp
   dart/RnJoint.cpp
 )
 target_link_libraries("${PROJECT_NAME}_statespace"

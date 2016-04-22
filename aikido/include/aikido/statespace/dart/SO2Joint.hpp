@@ -1,27 +1,27 @@
-#ifndef AIKIDO_STATESPACE_DART_SO3JOINTSTATESPACE_HPP_
-#define AIKIDO_STATESPACE_DART_SO3JOINTSTATESPACE_HPP_
-#include "../SO3.hpp"
+#ifndef AIKIDO_STATESPACE_DART_SO2JOINTSTATESPACE_HPP_
+#define AIKIDO_STATESPACE_DART_SO2JOINTSTATESPACE_HPP_
+#include "../SO2.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// \c SO3 for a DART \c BallJoint. This class does not support
+/// \c SO2 for a DART \c SingleDofJoint. This class does not support
 /// position limits.
-class SO3JointStateSpace
-  : public SO3
+class SO2Joint
+  : public SO2
   , public JointStateSpace
-  , public std::enable_shared_from_this<SO3JointStateSpace>
+  , public std::enable_shared_from_this<SO2Joint>
 {
 public:
-  using SO3::State;
+  using SO2::State;
 
-  /// Creates a state space for a \c BallJoint. This class does not support
+  /// Creates a state space for a \c FreeJoint. This class does not support
   /// position limits.
   ///
   /// \param _joint joint to create a state space for
-  explicit SO3JointStateSpace(::dart::dynamics::BallJoint* _joint);
+  explicit SO2Joint(::dart::dynamics::SingleDofJoint* _joint);
 
   // Documentation inherited.
   void convertPositionsToState(
@@ -38,4 +38,4 @@ public:
 } // namespace statespace
 } // namespace aikido
 
-#endif // ifndef AIKIDO_STATESPACE_SO3JOINTSTATESPACE_HPP_
+#endif // ifndef AIKIDO_STATESPACE_SO2JOINTSTATESPACE_HPP_

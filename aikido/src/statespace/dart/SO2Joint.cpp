@@ -1,11 +1,11 @@
-#include <aikido/statespace/dart/SO2JointStateSpace.hpp>
+#include <aikido/statespace/dart/SO2Joint.hpp>
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
 //=============================================================================
-SO2JointStateSpace::SO2JointStateSpace(
+SO2Joint::SO2Joint(
       ::dart::dynamics::SingleDofJoint* _joint)
   : JointStateSpace(_joint)
   , SO2()
@@ -13,14 +13,14 @@ SO2JointStateSpace::SO2JointStateSpace(
 }
 
 //=============================================================================
-void SO2JointStateSpace::convertPositionsToState(
+void SO2Joint::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   setAngle(static_cast<State*>(_state), _positions[0]);
 }
 
 //=============================================================================
-void SO2JointStateSpace::convertStateToPositions(
+void SO2Joint::convertStateToPositions(
   const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   _positions.resize(1);
