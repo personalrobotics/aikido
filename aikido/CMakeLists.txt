@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 2.8.11)
+# CMake 2.8.12 or above is required for CMakeParseArguments.
+cmake_minimum_required(VERSION 2.8.12)
 
 # Use MACOSX_RPATH by default on OS X. This was added in CMake 2.8.12 and
 # became default in CMake 3.0. Explicitly setting this policy is necessary to
@@ -31,6 +32,8 @@ endif()
 #==============================================================================
 # Required Dependencies
 #
+include(CMakeParseArguments)
+
 find_package(Boost REQUIRED COMPONENTS filesystem)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
@@ -58,9 +61,14 @@ endif()
 #
 set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
 set_property(GLOBAL PROPERTY AIKIDO_SOURCES)
+set_property(GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
 
 function(aikido_add_library target_name)
-  add_library("${target_name}" SHARED ${ARGN})
+  cmake_parse_arguments(AIKIDO_ADD_LIBRARY "EXTERNAL" "" "" ${ARGN})
+  set(is_external ${AIKIDO_ADD_LIBRARY_EXTERNAL})
+  set(relative_sources ${AIKIDO_ADD_LIBRARY_UNPARSED_ARGUMENTS})
+
+  add_library("${target_name}" SHARED ${relative_sources})
   set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
 
   install(TARGETS "${target_name}"
@@ -70,14 +78,18 @@ function(aikido_add_library target_name)
 
   # Compile a list of all source files to pass to coveralls. This function may
   # be called from a subdirctory, so we first convert to absolute paths.
-  set(sources)
-  foreach(relative_source ${ARGN})
+  set(absolute_sources)
+  foreach(relative_source ${relative_sources})
     get_filename_component(absolute_source
       "${CMAKE_CURRENT_SOURCE_DIR}/${relative_source}" ABSOLUTE)
-    list(APPEND sources "${absolute_source}")
+    list(APPEND absolute_sources "${absolute_source}")
   endforeach()
 
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_SOURCES ${sources})
+  if(${is_external})
+    set_property(GLOBAL APPEND PROPERTY AIKIDO_EXTERNAL_SOURCES ${sources})
+  else()
+    set_property(GLOBAL APPEND PROPERTY AIKIDO_SOURCES ${sources})
+  endif()
 endfunction()
 
 #==============================================================================
@@ -119,8 +131,9 @@ add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
 # Coveralls.
 #
 if(COVERALLS)
-  get_property(all_sources GLOBAL PROPERTY AIKIDO_SOURCES)
-  coveralls_setup("${all_sources}"
+  get_property(sources GLOBAL PROPERTY AIKIDO_SOURCES)
+
+  coveralls_setup("${sources}"
     ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake")
 endif()
