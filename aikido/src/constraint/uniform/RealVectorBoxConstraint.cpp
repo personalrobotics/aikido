@@ -97,9 +97,6 @@ RealVectorBoxConstraint
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
 
-  if (!mRng)
-    throw std::invalid_argument("mRng is null.");
-
   const auto dimension = mSpace->getDimension();
 
   if (mLowerLimits.size() != dimension)
@@ -245,6 +242,9 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> RealVectorBoxConstraint
 std::unique_ptr<constraint::SampleGenerator>
   RealVectorBoxConstraint::createSampleGenerator() const
 {  
+  if (!mRng)
+    throw std::invalid_argument("mRng is null.");
+
   for (size_t i = 0; i < mSpace->getDimension(); ++i)
   {
     if (!std::isfinite(mLowerLimits[i]) || !std::isfinite(mUpperLimits[i]))
