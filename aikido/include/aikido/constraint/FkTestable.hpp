@@ -2,7 +2,7 @@
 #define AIKIDO_CONSTRAINT_FKTESTABLE_HPP_
 
 #include "TestableConstraint.hpp"
-#include "../statespace/SE3StateSpace.hpp"
+#include "../statespace/SE3.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include <dart/dynamics/dynamics.h>
 
@@ -38,7 +38,7 @@ private:
     statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
     dart::dynamics::ConstJacobianNodePtr mFrame;
     TestableConstraintPtr mPoseConstraint;
-    std::shared_ptr<statespace::SE3StateSpace> mPoseStateSpace;
+    std::shared_ptr<statespace::SE3> mPoseStateSpace;
 };
 
 }

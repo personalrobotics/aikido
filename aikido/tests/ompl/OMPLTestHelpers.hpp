@@ -8,7 +8,7 @@
 #include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/dart.h>
@@ -48,9 +48,9 @@ void setTranslationalState(
     ::ompl::base::State *_state)
 {
   auto st = _state->as<aikido::ompl::GeometricStateSpace::StateType>();
-  auto cst = static_cast<aikido::statespace::CompoundStateSpace::State*>(st->mState);
+  auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
   auto subState =
-      _stateSpace->getSubStateHandle<aikido::statespace::RealVectorStateSpace>(
+      _stateSpace->getSubStateHandle<aikido::statespace::Rn>(
           cst, 0);
   subState.setValue(_value);
 }
@@ -60,9 +60,9 @@ Eigen::Vector3d getTranslationalState(
     ::ompl::base::State *_state)
 {
   auto st = _state->as<aikido::ompl::GeometricStateSpace::StateType>();
-  auto cst = static_cast<aikido::statespace::CompoundStateSpace::State*>(st->mState);
+  auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
   auto subState =
-      _stateSpace->getSubStateHandle<aikido::statespace::RealVectorStateSpace>(
+      _stateSpace->getSubStateHandle<aikido::statespace::Rn>(
           cst, 0);
   return subState.getValue();
 
@@ -87,10 +87,10 @@ public:
       const aikido::statespace::StateSpace::State *_state) const override
   {
     auto cst =
-        static_cast<const aikido::statespace::CompoundStateSpace::State *>(_state);
+        static_cast<const aikido::statespace::CartesianProduct::State *>(_state);
     auto subState =
         mStateSpace
-            ->getSubStateHandle<aikido::statespace::RealVectorStateSpace>(cst,
+            ->getSubStateHandle<aikido::statespace::Rn>(cst,
                                                                           0);
     auto val = subState.getValue();
 

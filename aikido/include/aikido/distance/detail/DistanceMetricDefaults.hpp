@@ -2,10 +2,10 @@
 #include "../AngularDistanceMetric.hpp"
 #include "../GeodesicDistanceMetric.hpp"
 #include "../EuclideanDistanceMetric.hpp"
-#include "../../statespace/SO2StateSpace.hpp"
-#include "../../statespace/SO3StateSpace.hpp"
-#include "../../statespace/RealVectorStateSpace.hpp"
-#include "../../statespace/CompoundStateSpace.hpp"
+#include "../../statespace/SO2.hpp"
+#include "../../statespace/SO3.hpp"
+#include "../../statespace/Rn.hpp"
+#include "../../statespace/CartesianProduct.hpp"
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
@@ -21,8 +21,8 @@ struct createDistanceMetricFor_impl {
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::RealVectorStateSpace> {
-  static Ptr create(std::shared_ptr<statespace::RealVectorStateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::Rn> {
+  static Ptr create(std::shared_ptr<statespace::Rn> _sspace)
   {
     return make_unique<EuclideanDistanceMetric>(std::move(_sspace));
   }
@@ -30,8 +30,8 @@ struct createDistanceMetricFor_impl<statespace::RealVectorStateSpace> {
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::SO2StateSpace> {
-  static Ptr create(std::shared_ptr<statespace::SO2StateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::SO2> {
+  static Ptr create(std::shared_ptr<statespace::SO2> _sspace)
   {
     return make_unique<AngularDistanceMetric>(std::move(_sspace));
   }
@@ -39,8 +39,8 @@ struct createDistanceMetricFor_impl<statespace::SO2StateSpace> {
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::SO3StateSpace> {
-  static Ptr create(std::shared_ptr<statespace::SO3StateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::SO3> {
+  static Ptr create(std::shared_ptr<statespace::SO3> _sspace)
   {
     return make_unique<GeodesicDistanceMetric>(std::move(_sspace));
   }
@@ -76,13 +76,13 @@ struct ForOneOf<Arg, Args...> {
 
 //=============================================================================
 using createDistanceMetricFor_wrapper =
-    ForOneOf<statespace::SO2StateSpace, statespace::SO3StateSpace,
-             statespace::RealVectorStateSpace, statespace::CompoundStateSpace>;
+    ForOneOf<statespace::SO2, statespace::SO3,
+             statespace::Rn, statespace::CartesianProduct>;
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::CompoundStateSpace> {
-  static Ptr create(std::shared_ptr<statespace::CompoundStateSpace> _sspace)
+struct createDistanceMetricFor_impl<statespace::CartesianProduct> {
+  static Ptr create(std::shared_ptr<statespace::CartesianProduct> _sspace)
   {
     if (_sspace == nullptr)
       throw std::invalid_argument(

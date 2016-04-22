@@ -1,5 +1,5 @@
 #include <aikido/path/SplineTrajectory2.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 #include <gtest/gtest.h>
 
 using namespace aikido::path;
@@ -14,9 +14,9 @@ class SplineTrajectory2Test : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<RealVectorStateSpace>(2);
+    mStateSpace = std::make_shared<Rn>(2);
 
-    mStartState = static_cast<RealVectorStateSpace::State*>(
+    mStartState = static_cast<Rn::State*>(
       mStateSpace->allocateState());
     mStateSpace->setValue(mStartState, START_VALUE);
   }
@@ -26,8 +26,8 @@ protected:
     mStateSpace->freeState(mStartState);
   }
 
-  std::shared_ptr<RealVectorStateSpace> mStateSpace;
-  RealVectorStateSpace::State* mStartState;
+  std::shared_ptr<Rn> mStateSpace;
+  Rn::State* mStartState;
   std::shared_ptr<SplineTrajectory2> mTrajectory;
 };
 

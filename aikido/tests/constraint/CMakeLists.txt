@@ -1,14 +1,14 @@
-# aikido_add_test(test_DifferentiableProjector 
-#   PolynomialConstraint.cpp
-#   test_DifferentiableProjector.cpp)
-# target_link_libraries(test_DifferentiableProjector
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_DifferentiableProjector 
+  PolynomialConstraint.cpp
+  test_DifferentiableProjector.cpp)
+target_link_libraries(test_DifferentiableProjector
+  "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_DifferentiableSubSpace
-#   PolynomialConstraint.cpp
-#   test_DifferentiableSubSpace.cpp)
-# target_link_libraries(test_DifferentiableSubSpace
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_DifferentiableSubSpace
+  PolynomialConstraint.cpp
+  test_DifferentiableSubSpace.cpp)
+target_link_libraries(test_DifferentiableSubSpace
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_FrameConstraintAdaptor
 #   test_FrameConstraintAdaptor.cpp)
@@ -35,10 +35,10 @@
 # target_link_libraries(test_TSR
 #   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_ConjunctionConstraint
-#   test_ConjunctionConstraint.cpp)
-# target_link_libraries(test_ConjunctionConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_ConjunctionConstraint
+  test_ConjunctionConstraint.cpp)
+target_link_libraries(test_ConjunctionConstraint
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_StackedConstraint
 #   test_StackedConstraint.cpp)

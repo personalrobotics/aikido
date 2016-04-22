@@ -89,7 +89,7 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
 
 //=============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
-  : CompoundStateSpace(
+  : CartesianProduct(
       convertVectorType<JointStateSpacePtr, StateSpacePtr>(
         createStateSpace(*_metaskeleton)))
   , mMetaSkeleton(std::move(_metaskeleton))

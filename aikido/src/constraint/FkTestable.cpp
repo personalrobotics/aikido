@@ -22,11 +22,11 @@ FkTestable::FkTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     throw std::invalid_argument("_frame is nullptr.");
 
 
-  mPoseStateSpace = std::dynamic_pointer_cast<statespace::SE3StateSpace>(
+  mPoseStateSpace = std::dynamic_pointer_cast<statespace::SE3>(
           mPoseConstraint->getStateSpace());
 
   if (!mPoseStateSpace)
-    throw std::invalid_argument("_poseConstraint is not in SE3StateSpace.");
+    throw std::invalid_argument("_poseConstraint is not in SE3.");
 
   // TODO: If possible, check that _frame is influenced by at least 
   // one DegreeOfFreedom in the _stateSpace's Skeleton.

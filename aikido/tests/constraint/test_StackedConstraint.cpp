@@ -2,7 +2,7 @@
 #include <aikido/constraint/StackedConstraint.hpp>
 #include <aikido/constraint/TSR.hpp>
 
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
@@ -12,7 +12,7 @@ using aikido::constraint::StackedConstraint;
 using aikido::constraint::TSR;
 using aikido::constraint::DifferentiablePtr;
 
-using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::Rn;
 using aikido::statespace::StateSpace;
 using aikido::statespace::StateSpacePtr;
 
@@ -20,7 +20,7 @@ using aikido::statespace::StateSpacePtr;
 TEST(StackedConstraint, InvalidConstructor)
 {
   std::vector<DifferentiablePtr> constraints;
-  std::shared_ptr<RealVectorStateSpace> rvss(new RealVectorStateSpace(1));
+  std::shared_ptr<Rn> rvss(new Rn(1));
 
   // empty constraints
   EXPECT_THROW(StackedConstraint(constraints, rvss), std::invalid_argument);
@@ -41,7 +41,7 @@ TEST(StackedConstraint, InvalidConstructor)
 TEST(StackedConstraint, getValue)
 {
   std::vector<DifferentiablePtr> constraints;
-  std::shared_ptr<RealVectorStateSpace> rvss(new RealVectorStateSpace(1));
+  std::shared_ptr<Rn> rvss(new Rn(1));
 
   // constraint1: 1 + 2x + 3x^2
   constraints.push_back(std::make_shared<PolynomialConstraint>(
@@ -67,7 +67,7 @@ TEST(StackedConstraint, getValue)
 TEST(StackedConstraint, getJacobian)
 {
   std::vector<DifferentiablePtr> constraints;
-  std::shared_ptr<RealVectorStateSpace> rvss(new RealVectorStateSpace(1));
+  std::shared_ptr<Rn> rvss(new Rn(1));
 
   // constraint1: 1 + 2x + 3x^2
   constraints.push_back(std::make_shared<PolynomialConstraint>(

@@ -1,16 +1,17 @@
 #include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
 #include <aikido/constraint/FiniteSampleConstraint.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
 #include <gtest/gtest.h>
 #include <dart/dart.h>
 
-using aikido::statespace::RealVectorStateSpace;
-using aikido::statespace::SO2StateSpace;
-using aikido::statespace::SO2StateSpaceSampleableConstraint;
+
+using aikido::statespace::SO2;
+using aikido::statespace::SO2SampleableConstraint;
+using aikido::statespace::Rn;
 using aikido::constraint::FiniteCyclicSampleConstraint;
 using aikido::constraint::FiniteSampleConstraint;
 using aikido::constraint::SampleGenerator;
@@ -32,8 +33,8 @@ TEST(FiniteCyclicSampleConstraintTest, ConstructorThrowsOnNullConstraint)
 
 TEST(FiniteCyclicSampleConstraintTest, ConstructorThrowsOnUnlimitiedSampleGenerator)
 {
-    auto so2 = std::make_shared<SO2StateSpace>();
-    auto constraint = std::make_shared<SO2StateSpaceSampleableConstraint>(so2, make_rng());
+    auto so2 = std::make_shared<SO2>();
+    auto constraint = std::make_shared<SO2SampleableConstraint>(so2, make_rng());
     EXPECT_THROW(std::make_shared<FiniteCyclicSampleConstraint>(constraint),
                  std::invalid_argument);
 }
@@ -44,13 +45,13 @@ TEST(FiniteCyclicSampleConstraintTest, SingleState)
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  RealVectorStateSpace rvss(1);
+  Rn rvss(1);
   auto s1 = rvss.createState();
   s1.setValue(v);
 
   // Single-sample-constraint.
   std::shared_ptr<FiniteSampleConstraint> constraint = std::make_shared<FiniteSampleConstraint>(
-    std::make_shared<RealVectorStateSpace>(rvss), s1);
+    std::make_shared<Rn>(rvss), s1);
 
   // Single-sample-cyclic-constraint.
   FiniteCyclicSampleConstraint cyclicConstraint(constraint);
@@ -80,7 +81,7 @@ TEST(FiniteCyclicSampleConstraintTest, MultipleStates)
   expected.push_back(v1);
   expected.push_back(v2);
 
-  RealVectorStateSpace rvss(2);
+  Rn rvss(2);
   auto s1 = rvss.createState();
   s1.setValue(v1);
 
@@ -94,7 +95,7 @@ TEST(FiniteCyclicSampleConstraintTest, MultipleStates)
   // Finite-sample constraint
   std::shared_ptr<FiniteSampleConstraint> constraint = 
     std::make_shared<FiniteSampleConstraint>(
-    std::make_shared<RealVectorStateSpace>(rvss), states);
+    std::make_shared<Rn>(rvss), states);
 
   // Finite-sample cyclic constraint
   FiniteCyclicSampleConstraint cyclicConstraint(constraint);

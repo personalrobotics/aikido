@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 #include <aikido/constraint/SatisfiedConstraint.hpp>
 
-using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::Rn;
 using aikido::constraint::SatisfiedConstraint;
 using Eigen::Vector2d;
 using Eigen::Matrix2d;
@@ -12,10 +12,10 @@ class SatisfiedConstraintTests : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<RealVectorStateSpace>(2);
+    mStateSpace = std::make_shared<Rn>(2);
   }
 
-  std::shared_ptr<RealVectorStateSpace> mStateSpace;
+  std::shared_ptr<Rn> mStateSpace;
 };
 
 TEST_F(SatisfiedConstraintTests, constructor_StateSpaceIsNull_Throws)

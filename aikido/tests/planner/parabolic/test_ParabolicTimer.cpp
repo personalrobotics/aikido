@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
-#include <aikido/statespace/SO3StateSpace.hpp>
-#include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/SO3.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 
 using Eigen::Vector2d;
@@ -11,10 +11,10 @@ using Eigen::Vector3d;
 using aikido::path::PiecewiseLinearTrajectory;
 using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::RealVectorStateSpace;
-using aikido::statespace::CompoundStateSpace;
-using aikido::statespace::SO2StateSpace;
-using aikido::statespace::SO3StateSpace;
+using aikido::statespace::Rn;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::SO2;
+using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
 
 class ParabolicTimerTests : public ::testing::Test
@@ -22,7 +22,7 @@ class ParabolicTimerTests : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<RealVectorStateSpace>(2);
+    mStateSpace = std::make_shared<Rn>(2);
     mMaxVelocity = Eigen::Vector2d(1., 1.);
     mMaxAcceleration = Eigen::Vector2d(2., 2.);
 
@@ -39,7 +39,7 @@ protected:
     mStraightLine->addWaypoint(1., state);
   }
 
-  std::shared_ptr<RealVectorStateSpace> mStateSpace;
+  std::shared_ptr<Rn> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
 
@@ -278,7 +278,7 @@ TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
 
 TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
 {
-  auto stateSpace = std::make_shared<SO3StateSpace>();
+  auto stateSpace = std::make_shared<SO3>();
   auto state = stateSpace->createState();
 
   PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
@@ -296,19 +296,19 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
   }, std::invalid_argument);
 }
 
-TEST_F(ParabolicTimerTests, UnsupportedCompoundStateSpace_Throws)
+TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
 {
-  auto stateSpace = std::make_shared<CompoundStateSpace>(
-    std::vector<StateSpacePtr> { std::make_shared<SO3StateSpace>() });
+  auto stateSpace = std::make_shared<CartesianProduct>(
+    std::vector<StateSpacePtr> { std::make_shared<SO3>() });
   auto state = stateSpace->createState();
 
   PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
 
-  state.getSubStateHandle<SO3StateSpace>(0).setQuaternion(
+  state.getSubStateHandle<SO3>(0).setQuaternion(
     Eigen::Quaterniond::Identity());
   inputTrajectory.addWaypoint(0., state);
 
-  state.getSubStateHandle<SO3StateSpace>(0).setQuaternion(Eigen::Quaterniond(
+  state.getSubStateHandle<SO3>(0).setQuaternion(Eigen::Quaterniond(
     Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
   inputTrajectory.addWaypoint(1., state);
 
@@ -318,23 +318,23 @@ TEST_F(ParabolicTimerTests, UnsupportedCompoundStateSpace_Throws)
   }, std::invalid_argument);
 }
 
-TEST_F(ParabolicTimerTests, SupportedCompoundStateSpace_DoesNotThrow)
+TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
 {
-  auto stateSpace = std::make_shared<CompoundStateSpace>(
+  auto stateSpace = std::make_shared<CartesianProduct>(
     std::vector<StateSpacePtr> {
-      std::make_shared<RealVectorStateSpace>(2),
-      std::make_shared<SO2StateSpace>(),
+      std::make_shared<Rn>(2),
+      std::make_shared<SO2>(),
     });
   auto state = stateSpace->createState();
 
   PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
 
-  state.getSubStateHandle<RealVectorStateSpace>(0).setValue(Vector2d::Zero());
-  state.getSubStateHandle<SO2StateSpace>(1).setAngle(0.);
+  state.getSubStateHandle<Rn>(0).setValue(Vector2d::Zero());
+  state.getSubStateHandle<SO2>(1).setAngle(0.);
   inputTrajectory.addWaypoint(0., state);
 
-  state.getSubStateHandle<RealVectorStateSpace>(0).setValue(Vector2d::Zero());
-  state.getSubStateHandle<SO2StateSpace>(1).setAngle(M_PI_2);
+  state.getSubStateHandle<Rn>(0).setValue(Vector2d::Zero());
+  state.getSubStateHandle<SO2>(1).setAngle(M_PI_2);
   inputTrajectory.addWaypoint(1., state);
 
   EXPECT_NO_THROW({

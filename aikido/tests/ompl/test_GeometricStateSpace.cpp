@@ -50,7 +50,7 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullDistanceMetric)
 
 TEST_F(GeometricStateSpaceTest, ThrowsOnDistanceMetricMismatch)
 {
-  auto sspace = std::make_shared<aikido::statespace::SO2StateSpace>();
+  auto sspace = std::make_shared<aikido::statespace::SO2>();
   auto bdmetric = aikido::distance::createDistanceMetric(sspace);
 
   EXPECT_THROW(

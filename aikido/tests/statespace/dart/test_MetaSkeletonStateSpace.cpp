@@ -1,9 +1,9 @@
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
-#include <aikido/statespace/SO3StateSpace.hpp>
-#include <aikido/statespace/SE2StateSpace.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
-#include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/SO3.hpp>
+#include <aikido/statespace/SE2.hpp>
+#include <aikido/statespace/SE3.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <gtest/gtest.h>
 #include <dart/dynamics/dynamics.h>
@@ -16,9 +16,9 @@ using dart::dynamics::PrismaticJoint;
 using dart::dynamics::TranslationalJoint;
 using dart::dynamics::FreeJoint;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::RealVectorStateSpace;
-using aikido::statespace::SO2StateSpace;
-using aikido::statespace::SE3StateSpace;
+using aikido::statespace::Rn;
+using aikido::statespace::SO2;
+using aikido::statespace::SE3;
 
 static Eigen::Matrix<double, 1, 1> make_scalar(double _value)
 {
@@ -36,7 +36,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds_CreatesSO2)
   ASSERT_EQ(1, space.getNumStates());
 
   auto state = space.createState();
-  auto substate = state.getSubStateHandle<SO2StateSpace>(0);
+  auto substate = state.getSubStateHandle<SO2>(0);
 
   skeleton->setPosition(0, 5.);
   space.getState(state);
@@ -56,11 +56,11 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
   MetaSkeletonStateSpace space(skeleton);
   ASSERT_EQ(1, space.getNumStates());
 
-  auto subspace = space.getSubSpace<RealVectorStateSpace>(0);
+  auto subspace = space.getSubSpace<Rn>(0);
   ASSERT_EQ(1, subspace->getDimension());
 
   auto state = space.createState();
-  auto substate = state.getSubStateHandle<RealVectorStateSpace>(0);
+  auto substate = state.getSubStateHandle<Rn>(0);
 
   skeleton->setPosition(0, 5.);
   space.getState(state);
@@ -79,11 +79,11 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint_CreatesRealVector)
   MetaSkeletonStateSpace space(skeleton);
   ASSERT_EQ(1, space.getNumStates());
 
-  auto subspace = space.getSubSpace<RealVectorStateSpace>(0);
+  auto subspace = space.getSubSpace<Rn>(0);
   ASSERT_EQ(1, subspace->getDimension());
 
   auto state = space.createState();
-  auto substate = state.getSubStateHandle<RealVectorStateSpace>(0);
+  auto substate = state.getSubStateHandle<Rn>(0);
 
   skeleton->setPosition(0, 5.);
   space.getState(state);
@@ -105,11 +105,11 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint_CreatesRealVector)
   MetaSkeletonStateSpace space(skeleton);
   ASSERT_EQ(1, space.getNumStates());
 
-  auto subspace = space.getSubSpace<RealVectorStateSpace>(0);
+  auto subspace = space.getSubSpace<Rn>(0);
   ASSERT_EQ(3, subspace->getDimension());
 
   auto state = space.createState();
-  auto substate = state.getSubStateHandle<RealVectorStateSpace>(0);
+  auto substate = state.getSubStateHandle<Rn>(0);
 
   skeleton->setPositions(value1);
   space.getState(state);
@@ -137,7 +137,7 @@ TEST(MetaSkeletonStateSpace, FreeJoint_CreatesSE3)
   ASSERT_EQ(1, space.getNumStates());
 
   auto state = space.createState();
-  auto substate = state.getSubStateHandle<SE3StateSpace>(0);
+  auto substate = state.getSubStateHandle<SE3>(0);
 
   skeleton->setPositions(FreeJoint::convertToPositions(value1));
   space.getState(state);
@@ -149,7 +149,7 @@ TEST(MetaSkeletonStateSpace, FreeJoint_CreatesSE3)
     FreeJoint::convertToTransform(skeleton->getPositions())));
 }
 
-TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCompoundStateSpace)
+TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCartesianProduct)
 {
   Vector3d value1(2., 3., 4.);
   Vector3d value2(6., 7., 8.);
@@ -162,8 +162,8 @@ TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCompoundStateSpace)
   ASSERT_EQ(2, space.getNumStates());
 
   auto state = space.createState();
-  auto substate1 = state.getSubStateHandle<SO2StateSpace>(0);
-  auto substate2 = state.getSubStateHandle<RealVectorStateSpace>(1);
+  auto substate1 = state.getSubStateHandle<SO2>(0);
+  auto substate2 = state.getSubStateHandle<Rn>(1);
 
   joint1->setPosition(0, 1.);
   joint2->setPositions(value1);

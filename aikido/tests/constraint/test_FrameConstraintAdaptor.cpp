@@ -1,9 +1,9 @@
 #include <aikido/constraint/FrameConstraintAdaptor.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/util/RNG.hpp>
 
 #include <gtest/gtest.h>
@@ -11,8 +11,8 @@
 
 using aikido::constraint::FrameConstraintAdaptor;
 using aikido::constraint::TSR;
-using aikido::statespace::SE3StateSpace;
-using aikido::statespace::SO2StateSpace;
+using aikido::statespace::SE3;
+using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::util::RNG;
@@ -78,8 +78,8 @@ TEST_F(FrameConstraintAdaptorTest, Value)
 {
   FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
-  state.getSubStateHandle<SE3StateSpace>(0).setIsometry(Eigen::Isometry3d::Identity());
-  state.getSubStateHandle<SO2StateSpace>(1).setAngle(0);
+  state.getSubStateHandle<SE3>(0).setIsometry(Eigen::Isometry3d::Identity());
+  state.getSubStateHandle<SO2>(1).setAngle(0);
   
   Eigen::VectorXd value = adaptor.getValue(state);
 
@@ -91,7 +91,7 @@ TEST_F(FrameConstraintAdaptorTest, Value)
              Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY()) *
              Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
-  state.getSubStateHandle<SE3StateSpace>(0).setIsometry(isometry);
+  state.getSubStateHandle<SE3>(0).setIsometry(isometry);
 
   value = adaptor.getValue(state);
   
@@ -124,8 +124,8 @@ TEST_F(FrameConstraintAdaptorTest, Jacobian)
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
   isometry.translation() = Eigen::Vector3d(0, 0, 1);
-  state.getSubStateHandle<SE3StateSpace>(0).setIsometry(isometry);
-  state.getSubStateHandle<SO2StateSpace>(1).setAngle(0);
+  state.getSubStateHandle<SE3>(0).setIsometry(isometry);
+  state.getSubStateHandle<SO2>(1).setAngle(0);
   
   Eigen::Vector6d value = adaptor.getValue(state);
   EXPECT_TRUE(value.isApprox(Eigen::VectorXd::Zero(6)));
@@ -135,7 +135,7 @@ TEST_F(FrameConstraintAdaptorTest, Jacobian)
 
   // state outside tsr
   isometry.translation() = Eigen::Vector3d(0, 0, 2);
-  state.getSubStateHandle<SE3StateSpace>(0).setIsometry(isometry);
+  state.getSubStateHandle<SE3>(0).setIsometry(isometry);
 
   jacobian = adaptor.getJacobian(state);
 

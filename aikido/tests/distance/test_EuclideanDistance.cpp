@@ -1,5 +1,5 @@
 #include <aikido/distance/EuclideanDistanceMetric.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 
 #include <gtest/gtest.h>
 
@@ -13,7 +13,7 @@ TEST(EuclideanDistanceMetric, ThrowsOnNullStateSpace)
 
 TEST(EuclideanDistanceMetric, StateSpaceEquality)
 {
-  auto rvss = std::make_shared<RealVectorStateSpace>(4);
+  auto rvss = std::make_shared<Rn>(4);
   EuclideanDistanceMetric dmetric(rvss);
   EXPECT_EQ(rvss, dmetric.getStateSpace());
 }
@@ -21,7 +21,7 @@ TEST(EuclideanDistanceMetric, StateSpaceEquality)
 
 TEST(EuclideanDistanceMetric, Distance)
 {
-  auto rvss = std::make_shared<RealVectorStateSpace>(4);
+  auto rvss = std::make_shared<Rn>(4);
   auto state1 = rvss->createState();
   auto state2 = rvss->createState();
 

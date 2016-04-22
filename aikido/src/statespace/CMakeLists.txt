@@ -1,21 +1,20 @@
 aikido_add_library("${PROJECT_NAME}_statespace"
   StateSpace.cpp
-  RealVectorStateSpace.cpp
-  CompoundStateSpace.cpp
-  SE2StateSpace.cpp
-  SE3StateSpace.cpp
-  SO2StateSpace.cpp
-  SO2StateSpace.cpp
-  SO3StateSpace.cpp
+  Rn.cpp
+  CartesianProduct.cpp
+  SE2.cpp
+  SE3.cpp
+  SO2.cpp
+  SO3.cpp
   GeodesicInterpolator.cpp
   dart/JointStateSpace.cpp
   dart/JointStateSpaceHelpers.cpp
   dart/MetaSkeletonStateSpace.cpp
-  dart/SE2JointStateSpace.cpp
-  dart/SE3JointStateSpace.cpp
-  dart/SO2JointStateSpace.cpp
-  dart/SO3JointStateSpace.cpp
-  dart/RealVectorJointStateSpace.cpp
+  dart/SE2Joint.cpp
+  dart/SE3Joint.cpp
+  dart/SO2Joint.cpp
+  dart/SO3Joint.cpp
+  dart/RnJoint.cpp
 )
 target_link_libraries("${PROJECT_NAME}_statespace"
   ${DART_LIBRARIES}

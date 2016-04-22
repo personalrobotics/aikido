@@ -4,7 +4,7 @@
 #include <dart/common/StlHelpers.h>
 #include "SampleGeneratorCoverage.hpp"
 
-using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::Rn;
 using aikido::statespace::RealVectorBoxConstraint;
 using aikido::constraint::ConstraintType;
 using aikido::constraint::SampleGenerator;
@@ -25,7 +25,7 @@ protected:
 
   void SetUp() override
   {
-    mStateSpace = std::make_shared<RealVectorStateSpace>(2);
+    mStateSpace = std::make_shared<Rn>(2);
     mDistance = std::make_shared<EuclideanDistanceMetric>(mStateSpace);
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
@@ -70,7 +70,7 @@ protected:
   }
 
   std::unique_ptr<RNG> mRng;
-  std::shared_ptr<RealVectorStateSpace> mStateSpace;
+  std::shared_ptr<Rn> mStateSpace;
   std::shared_ptr<EuclideanDistanceMetric> mDistance;
 
   Eigen::Vector2d mLowerLimits;
@@ -81,7 +81,7 @@ protected:
   std::vector<Eigen::Vector2d,
     Eigen::aligned_allocator<Eigen::Vector2d>> mBadValues;
 
-  std::vector<RealVectorStateSpace::ScopedState> mTargets;
+  std::vector<Rn::ScopedState> mTargets;
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;

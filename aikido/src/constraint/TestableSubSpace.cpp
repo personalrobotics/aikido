@@ -9,7 +9,7 @@ using dart::common::make_unique;
 
 //=============================================================================
 TestableSubSpace::TestableSubSpace(
-  std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+  std::shared_ptr<statespace::CartesianProduct> _stateSpace,
   std::vector<std::shared_ptr<TestableConstraint>> _constraints)
 : mStateSpace(std::move(_stateSpace))
 , mConstraints(std::move(_constraints))
@@ -19,7 +19,7 @@ TestableSubSpace::TestableSubSpace(
 
   if (mConstraints.size() != mStateSpace->getNumStates()) {
     std::stringstream msg;
-    msg << "Mismatch between size of CompoundStateSpace and the number of"
+    msg << "Mismatch between size of CartesianProduct and the number of"
         << " constraints: " << mStateSpace->getNumStates()
         << " != " << mConstraints.size() << ".";
     throw std::invalid_argument(msg.str());
@@ -45,7 +45,7 @@ bool TestableSubSpace::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {
   const auto state
-    = static_cast<const statespace::CompoundStateSpace::State*>(_state);
+    = static_cast<const statespace::CartesianProduct::State*>(_state);
 
   for (size_t i = 0; i < mStateSpace->getNumStates(); ++i) {
     auto subState = mStateSpace->getSubState<>(state, i);

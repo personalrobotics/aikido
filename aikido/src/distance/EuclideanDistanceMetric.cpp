@@ -5,11 +5,11 @@ namespace distance {
 
 //=============================================================================
 EuclideanDistanceMetric::EuclideanDistanceMetric(
-    std::shared_ptr<statespace::RealVectorStateSpace> _space)
+    std::shared_ptr<statespace::Rn> _space)
     : mStateSpace(std::move(_space))
 {
   if (mStateSpace == nullptr) {
-    throw std::invalid_argument("RealVectorStateSpace is nullptr.");
+    throw std::invalid_argument("Rn is nullptr.");
   }
 }
 
@@ -25,9 +25,9 @@ double EuclideanDistanceMetric::distance(
     const statespace::StateSpace::State* _state2) const
 {
   auto v1 = mStateSpace->getValue(
-      static_cast<const statespace::RealVectorStateSpace::State*>(_state1));
+      static_cast<const statespace::Rn::State*>(_state1));
   auto v2 = mStateSpace->getValue(
-      static_cast<const statespace::RealVectorStateSpace::State*>(_state2));
+      static_cast<const statespace::Rn::State*>(_state2));
   return (v2 - v1).norm();
 }
 
