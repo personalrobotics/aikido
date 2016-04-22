@@ -4,7 +4,7 @@
 #include <algorithm>
 
 namespace aikido {
-namespace path {
+namespace util {
 
 template <
   class Scalar, class Index,
@@ -401,5 +401,5 @@ Scalar SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>
   }
 }
 
-} // namespace path
+} // namespace util
 } // namespace aikido

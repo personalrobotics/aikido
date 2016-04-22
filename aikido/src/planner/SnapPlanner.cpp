@@ -1,5 +1,5 @@
 #include <aikido/constraint/TestableConstraint.hpp>
-#include <aikido/path/PiecewiseLinearTrajectory.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
 #include <aikido/statespace/Interpolator.hpp>
@@ -9,7 +9,7 @@
 namespace aikido {
 namespace planner {
 
-path::PiecewiseLinearTrajectoryPtr planSnap(
+trajectory::InterpolatedPtr planSnap(
   const std::shared_ptr<aikido::statespace::StateSpace>& stateSpace,
   const aikido::statespace::StateSpace::State *startState,
   const aikido::statespace::StateSpace::State *goalState,
@@ -22,7 +22,7 @@ path::PiecewiseLinearTrajectoryPtr planSnap(
         "StateSpace of constraint not equal to StateSpace of planning space");
   }
   aikido::util::VanDerCorput vdc{1, true, 0.02};  // TODO junk resolution
-  auto returnTraj = std::make_shared<aikido::path::PiecewiseLinearTrajectory>(
+  auto returnTraj = std::make_shared<trajectory::Interpolated>(
       stateSpace, interpolator);
   auto testState = stateSpace->createState();
 

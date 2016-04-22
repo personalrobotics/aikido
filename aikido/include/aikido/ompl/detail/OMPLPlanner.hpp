@@ -1,7 +1,7 @@
 #include "../AIKIDOGeometricStateSpace.hpp"
 #include "../AIKIDOStateValidityChecker.hpp"
 #include "../GoalRegion.hpp"
-#include "../../path/PiecewiseLinearTrajectory.hpp"
+#include "../../trajectory/Interpolated.hpp"
 #include <ompl/geometric/PathGeometric.h>
 
 namespace aikido {
@@ -9,7 +9,7 @@ namespace ompl {
 
 //=============================================================================
 template <class PlannerType>
-path::TrajectoryPtr planOMPL(
+trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
     statespace::StateSpacePtr _stateSpace,
@@ -46,7 +46,7 @@ path::TrajectoryPtr planOMPL(
 
 //=============================================================================
 template <class PlannerType>
-path::TrajectoryPtr planOMPL(
+trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     constraint::TestableConstraintPtr _goalTestable,
     constraint::SampleableConstraintPtr _goalSampler,

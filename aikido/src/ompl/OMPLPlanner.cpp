@@ -101,17 +101,18 @@ namespace ompl {
 }
 
 //=============================================================================
-path::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
-                             const ::ompl::base::ProblemDefinitionPtr &_pdef,
-                             statespace::StateSpacePtr _sspace,
-                             statespace::InterpolatorPtr _interpolator,
-                             double _maxPlanTime)
+trajectory::TrajectoryPtr planOMPL(
+  const ::ompl::base::PlannerPtr &_planner,
+  const ::ompl::base::ProblemDefinitionPtr &_pdef,
+  statespace::StateSpacePtr _sspace,
+  statespace::InterpolatorPtr _interpolator,
+  double _maxPlanTime)
 {
   // Planner
   _planner->setProblemDefinition(_pdef);
   _planner->setup();
   auto solved = _planner->solve(_maxPlanTime);
-  auto returnTraj = boost::make_shared<path::PiecewiseLinearTrajectory>(
+  auto returnTraj = boost::make_shared<trajectory::Interpolated>(
       std::move(_sspace), std::move(_interpolator));
 
   if (solved) {
