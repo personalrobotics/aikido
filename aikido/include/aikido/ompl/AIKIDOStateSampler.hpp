@@ -23,6 +23,7 @@ public:
   /// Sample a state from the space. Warning: The sampling is not guarenteed
   /// uniform.  The distribution of the sampling is determined by the
   /// SampleGenerator wrapped by this class.
+  /// \param[out] _state The sampled state
   void sampleUniform(::ompl::base::State *_state) override;
 
   /// Not implemented. Throws std::domain_error

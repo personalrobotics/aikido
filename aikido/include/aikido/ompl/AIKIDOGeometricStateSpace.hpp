@@ -9,10 +9,8 @@
 #include "../statespace/StateSpace.hpp"
 #include "../statespace/GeodesicInterpolator.hpp"
 
-namespace aikido
-{
-namespace ompl
-{
+namespace aikido {
+namespace ompl {
 /// The maximum distance between two states for them to still be considered
 /// equal
 constexpr double EQUALITY_EPSILON = 1e-7;
@@ -60,30 +58,41 @@ public:
   double getMeasure() const override;
 
   /// Bring the state within the bounds of the state space using the
-  /// boundsProjection
-  /// defined in the constructor.
+  /// boundsProjection defined in the constructor.
+  /// \param _state The state to modify
   void enforceBounds(::ompl::base::State *_state) const override;
 
   /// Check if a state satisfieds the boundsConstraint defined in the
   /// constructor
+  /// \param _state The state to check
   bool satisfiesBounds(const ::ompl::base::State *_state) const override;
 
-  /// Copy the value _source state to _destination
+  /// Copy the value of one state to another
+  /// \param[out] _destination The state to copy to
+  /// \param _source The state to copy from
   void copyState(::ompl::base::State *_destination,
                  const ::ompl::base::State *_source) const override;
 
   /// Computes distance between two states using the _dmetric defined in the
   /// constructor.
+  /// \param _state1 The first state
+  /// \param _state2 The second state
   double distance(const ::ompl::base::State *_state1,
                   const ::ompl::base::State *_state2) const override;
 
   /// Check state equality. The returns true if the distance between the states
   /// is 0.
+  /// \param _state1 The first state
+  /// \param _state2 The second state
   bool equalStates(const ::ompl::base::State *_state1,
                    const ::ompl::base::State *_state2) const override;
 
   /// Computes the state that lies at time t in [0, 1] on the segment
   /// that connects from state to to state.
+  /// \param _from The state that begins the segment
+  /// \param _to The state that ends the segment
+  /// \param _t The interpolation parameter (between 0 and 1)
+  /// \param[out] _state The result of the interpolation
   void interpolate(const ::ompl::base::State *_from,
                    const ::ompl::base::State *_to, const double _t,
                    ::ompl::base::State *_state) const override;
@@ -95,10 +104,13 @@ public:
   ::ompl::base::State *allocState() const override;
 
   /// Allocate a state constaining a copy of the aikido state
+  /// \param _state The aikido state to copy and wrap in an OMPL state
   ::ompl::base::State *allocState(
       const statespace::StateSpace::State *_state) const;
 
-  /// Free the memory of the allocated state
+  /// Free the memory of the allocated state. This also frees the memory of the
+  /// wrapped aikido state.
+  /// \param _state The state to free.
   void freeState(::ompl::base::State *_state) const override;
 
 private:

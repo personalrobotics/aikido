@@ -1,10 +1,10 @@
 #include <aikido/distance/AngularDistanceMetric.hpp>
 #include <boost/math/constants/constants.hpp>
 
-namespace aikido
-{
-namespace distance
-{
+namespace aikido {
+namespace distance {
+
+//=============================================================================
 AngularDistanceMetric::AngularDistanceMetric(
     std::shared_ptr<statespace::SO2StateSpace> _space)
     : mStateSpace(std::move(_space))
@@ -14,11 +14,13 @@ AngularDistanceMetric::AngularDistanceMetric(
   }
 }
 
+//=============================================================================
 statespace::StateSpacePtr AngularDistanceMetric::getStateSpace() const
 {
   return mStateSpace;
 }
 
+//=============================================================================
 double AngularDistanceMetric::distance(
     const aikido::statespace::StateSpace::State* _state1,
     const aikido::statespace::StateSpace::State* _state2) const

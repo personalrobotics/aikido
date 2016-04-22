@@ -13,6 +13,7 @@ class EuclideanDistanceMetric : public DistanceMetric
 {
 public:
   /// Constructor.
+  /// \param _space The RealVectorStateSpace this metric operates on
   explicit EuclideanDistanceMetric(
       std::shared_ptr<statespace::RealVectorStateSpace> _space);
 
@@ -20,6 +21,8 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   /// Computes Euclidean distance between two states.
+  /// \param _state1 The first state (type RealVectorStateSpace::State)
+  /// \param _state2 The second state (type RealVectorStateSpace::State)
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 

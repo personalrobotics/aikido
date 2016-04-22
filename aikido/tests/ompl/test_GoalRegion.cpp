@@ -60,7 +60,7 @@ TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
                std::invalid_argument);
 }
 
-TEST_F(GoalRegionTest, ValidSample)
+TEST_F(GoalRegionTest, DifferentSample)
 {
   auto si = aikido::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
@@ -79,6 +79,23 @@ TEST_F(GoalRegionTest, ValidSample)
                    .isApprox(getTranslationalState(stateSpace, state2)));
   si->freeState(state1);
   si->freeState(state2);
+}
+
+TEST_F(GoalRegionTest, ValidSample)
+{
+  auto si = aikido::ompl::getSpaceInformation(
+      stateSpace, interpolator, dmetric, sampler, collConstraint,
+      boundsConstraint, boundsProjection);
+  auto testable = std::make_shared<PassingConstraint>(stateSpace);
+  GoalRegion gr(si, std::move(testable),
+                std::move(sampler->createSampleGenerator()));
+
+  auto state1 = si->allocState();
+
+  // Check that a sampled state satisfies the goal
+  gr.sampleGoal(state1);
+  EXPECT_TRUE(gr.isSatisfied(state1));
+  si->freeState(state1);
 }
 
 TEST_F(GoalRegionTest, CantSample)

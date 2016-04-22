@@ -36,6 +36,8 @@ public:
 
   /// Computes distance between two states as the weighted sum
   ///  of distances between their matching subcomponents.
+  /// \param _state1 The first state (type CompoundStateSpace::State)
+  /// \param _state2 The second state (type CompoundStateSpace::State)
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 
