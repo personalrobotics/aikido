@@ -1,4 +1,5 @@
-# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.com/personalrobotics/aikido.svg?token=1MmAniN9fkMcwpRUTdFq&branch=master)](https://travis-ci.com/personalrobotics/aikido)
+![Build Status](https://api.travis-ci.org/personalrobotics/aikido.svg)
+# AIKIDO - AI for KIDO
 
 > :warning: **Warning:** AIKIDO is under heavy development. These instructions are
 > primarily for reference by the developers.
