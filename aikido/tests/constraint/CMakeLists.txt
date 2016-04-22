@@ -84,8 +84,3 @@ aikido_add_test(test_DartConstraintHelpers
   test_DartHelpers.cpp)
 target_link_libraries(test_DartConstraintHelpers
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
-
-# aikido_add_test(test_FKTestable
-#   test_FKTestable.cpp)
-# target_link_libraries(test_FKTestable
-#   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
