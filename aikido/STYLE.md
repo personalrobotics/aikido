@@ -69,8 +69,8 @@ private:
 // Use "using" directives to declare pointer helper types
 using ExamplePtr = std::shared_ptr<Example>; 
 
-}  // namespace example
-}  // namespace aikido
+} // namespace example
+} // namespace aikido
 
 #endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```
