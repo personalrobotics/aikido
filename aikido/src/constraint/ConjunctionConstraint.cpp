@@ -1,52 +1,62 @@
 #include <aikido/constraint/ConjunctionConstraint.hpp>
 #include <stdexcept>
 
-using namespace aikido::constraint;
+namespace aikido {
+namespace constraint {
 
+//=============================================================================
 ConjunctionConstraint::ConjunctionConstraint(
-    std::shared_ptr<aikido::statespace::StateSpace> stateSpace,
-    std::vector<std::shared_ptr<TestableConstraint>> constraints)
-    : mStateSpace(stateSpace)
-    , mConstraints{constraints}
+    statespace::StateSpacePtr _stateSpace,
+    std::vector<std::shared_ptr<TestableConstraint>> _constraints)
+: mStateSpace(std::move(_stateSpace))
+, mConstraints(std::move(_constraints))
 {
+  if (!mStateSpace)
+    throw std::invalid_argument("_statespace is nullptr.");
+
   for (auto c : mConstraints) {
     testConstraintStateSpaceOrThrow(c);
   }
 }
 
+//=============================================================================
 bool ConjunctionConstraint::isSatisfied(
-    const aikido::statespace::StateSpace::State* state) const
+    const aikido::statespace::StateSpace::State* _state) const
 {
   for (auto c : mConstraints) {
-    if (!c->isSatisfied(state)) {
+    if (!c->isSatisfied(_state)) {
       return false;
     }
   }
   return true;
 }
 
-std::shared_ptr<aikido::statespace::StateSpace> ConjunctionConstraint
-  ::getStateSpace() const
+//=============================================================================
+statespace::StateSpacePtr ConjunctionConstraint::getStateSpace() const
 {
   return mStateSpace;
 }
 
-void ConjunctionConstraint::addConstraint(
-    std::shared_ptr<TestableConstraint> constraint)
+//=============================================================================
+void ConjunctionConstraint::addConstraint(TestableConstraintPtr _constraint)
 {
-  if (constraint->getStateSpace() == mStateSpace) {
-    mConstraints.push_back(constraint);
+  if (_constraint->getStateSpace() == mStateSpace) {
+    mConstraints.emplace_back(std::move(_constraint));
   } else {
     throw std::invalid_argument{
-        "Constriants must all be in specified StateSpace"};
+        "Constraints must all be in specified StateSpace"};
   }
 }
 
+//=============================================================================
 void ConjunctionConstraint::testConstraintStateSpaceOrThrow(
-    std::shared_ptr<TestableConstraint> constraint)
+  const TestableConstraintPtr& constraint)
 {
   if (constraint->getStateSpace() != mStateSpace) {
     throw std::invalid_argument{
-        "Constriants must all be in specified StateSpace"};
+        "Constraints must all be in specified StateSpace"};
   }
+}
+
+}
 }

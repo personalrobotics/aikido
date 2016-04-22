@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_STACKEDCONSTRAINT_H
-#define AIKIDO_CONSTRAINT_STACKEDCONSTRAINT_H
+#ifndef AIKIDO_CONSTRAINT_STACKEDCONSTRAINT_HPP_
+#define AIKIDO_CONSTRAINT_STACKEDCONSTRAINT_HPP_
 
 #include "../statespace/StateSpace.hpp"
 #include "Differentiable.hpp"
@@ -15,8 +15,8 @@ class StackedConstraint : public Differentiable
 {
 public:
   StackedConstraint(
-    const std::vector<DifferentiablePtr>& _constraints,
-    const std::shared_ptr<aikido::statespace::StateSpace> _stateSpace);
+    std::vector<DifferentiablePtr> _constraints,
+    statespace::StateSpacePtr _stateSpace);
 
   // Documentation inherited.
   size_t getConstraintDimension() const override;

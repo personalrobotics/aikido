@@ -9,6 +9,8 @@
 namespace aikido {
 namespace statespace {
 
+/// A BoxConstraint on RealVectorStates.
+/// For each dimension, this constraint has lowerLimit and upperLimit. 
 class RealVectorBoxConstraint
   : public constraint::Differentiable
   , public constraint::Projectable
@@ -16,6 +18,13 @@ class RealVectorBoxConstraint
   , public constraint::TestableConstraint
 {
 public:
+  /// Constructor.
+  /// \param _space Space in which this constraint operates.
+  /// \param _rng Random number generator to be used for sampling.
+  /// \param _lowerLimits Lower limits on the states.
+  ///        The length of this vector should match the dimension of _space.
+  /// \param _upperLimits Upper limits.
+  ///        The length of this vector should match the dimension of _space. 
   RealVectorBoxConstraint(
     std::shared_ptr<statespace::RealVectorStateSpace> _space,
     std::unique_ptr<util::RNG> _rng,
@@ -54,6 +63,12 @@ public:
   // Documentation inherited.
   std::unique_ptr<constraint::SampleGenerator>
     createSampleGenerator() const override;
+
+  // Returns lower limits of this constraint.
+  Eigen::VectorXd getLowerLimits();
+
+  // Returns upper limits of this constraint.
+  Eigen::VectorXd getUpperLimits();
 
 private:
   std::shared_ptr<statespace::RealVectorStateSpace> mSpace;

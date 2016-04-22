@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_COLLISION_CONSTRAINT_HPP_
-#define AIKIDO_CONSTRAINT_COLLISION_CONSTRAINT_HPP_
+#ifndef AIKIDO_CONSTRAINT_COLLISIONCONSTRAINT_HPP_
+#define AIKIDO_CONSTRAINT_COLLISIONCONSTRAINT_HPP_
 
 #include "TestableConstraint.hpp"
 #include <vector>
@@ -9,35 +9,37 @@
 #include <dart/collision/Option.h>
 #include <dart/collision/CollisionGroup.h>
 
-namespace aikido
-{
-namespace constraint
-{
+namespace aikido {
+namespace constraint {
+
+/// A testable that uses a collision detector to check whether 
+/// a metakeleton state (configuration) results in collision between and within
+/// specified collision groups.
 class CollisionConstraint : public TestableConstraint
 {
 public:
   CollisionConstraint(
-      std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> statespace,
-      std::shared_ptr<dart::collision::CollisionDetector> collisionDetector)
-      : statespace{statespace}
-      , collisionDetector{collisionDetector}
-      , collisionOptions{false, true}
-  {
-  }
+      statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+      std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector);
 
-  std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
-  {
-    return statespace;
-  }
+  // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
 
-  bool isSatisfied(const aikido::statespace::StateSpace::State* state) const override;
+  // Documentation inherited.
+  bool isSatisfied(
+    const aikido::statespace::StateSpace::State* _state) const override;
 
+  /// Checks collision between group1 and group2.
+  /// \param group1 First collision group.
+  /// \param group2 Second collision group.
   void addPairwiseCheck(
-      std::shared_ptr<dart::collision::CollisionGroup> group1,
-      std::shared_ptr<dart::collision::CollisionGroup> group2);
+      std::shared_ptr<dart::collision::CollisionGroup> _group1,
+      std::shared_ptr<dart::collision::CollisionGroup> _group2);
 
+  /// Checks collision within group.
+  /// \param group Collision group.
   void addSelfCheck(
-      std::shared_ptr<dart::collision::CollisionGroup> group);
+      std::shared_ptr<dart::collision::CollisionGroup> _group);
 
   // void setCollisionMask(std::function_bool) // to collisionfilter -> option
 

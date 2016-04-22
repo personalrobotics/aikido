@@ -1,14 +1,38 @@
 #include <aikido/constraint/CollisionConstraint.hpp>
 #include <dart/collision/Result.h>
 
-using namespace aikido::constraint;
+namespace aikido {
+namespace constraint {
 
+//=============================================================================
+CollisionConstraint::CollisionConstraint(
+    statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+    std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector)
+: statespace(std::move(_statespace))
+, collisionDetector(std::move(_collisionDetector))
+, collisionOptions{false, true}
+{
+  if (!statespace)
+    throw std::invalid_argument("_statespace is nullptr.");
+
+  if (!collisionDetector)
+    throw std::invalid_argument("_collisionDetector is nullptr.");
+
+}
+
+//=============================================================================
+statespace::StateSpacePtr CollisionConstraint::getStateSpace() const
+{
+  return statespace;
+}
+
+//=============================================================================
 bool CollisionConstraint::isSatisfied(
-    const aikido::statespace::StateSpace::State* state) const
+    const aikido::statespace::StateSpace::State* _state) const
 {
   auto skelStatePtr =
     static_cast<const aikido::statespace::dart::MetaSkeletonStateSpace::State*>(
-      state);
+      _state);
   statespace->setState(skelStatePtr);
 
   bool collision = false;
@@ -28,15 +52,20 @@ bool CollisionConstraint::isSatisfied(
   return true;
 }
 
+//=============================================================================
 void CollisionConstraint::addPairwiseCheck(
-    std::shared_ptr<dart::collision::CollisionGroup> group1,
-    std::shared_ptr<dart::collision::CollisionGroup> group2)
+    std::shared_ptr<dart::collision::CollisionGroup> _group1,
+    std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
-  groupsToPairwiseCheck.push_back(std::make_pair(group1, group2));
+  groupsToPairwiseCheck.emplace_back(std::move(_group1), std::move(_group2));
 }
 
+//=============================================================================
 void CollisionConstraint::addSelfCheck(
-    std::shared_ptr<dart::collision::CollisionGroup> group)
+    std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
-  groupsToSelfCheck.push_back(group);
+  groupsToSelfCheck.emplace_back(std::move(_group));
+}
+
+}
 }

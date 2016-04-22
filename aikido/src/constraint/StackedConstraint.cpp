@@ -5,17 +5,26 @@ namespace constraint {
 
 //=============================================================================
 StackedConstraint::StackedConstraint(
-  const std::vector<DifferentiablePtr>& _constraints,
-  const std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
-: mConstraints(_constraints)
-, mStateSpace(_stateSpace)
+  std::vector<DifferentiablePtr> _constraints,
+  std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
+: mConstraints(std::move(_constraints))
+, mStateSpace(std::move(_stateSpace))
 {
   if (mConstraints.size() == 0)
-  {
-    throw std::invalid_argument("_constraint should not be empty.");
-  }
+    throw std::invalid_argument("_constraints should not be empty.");
+  
+  if (!mStateSpace)
+    throw std::invalid_argument("_stateSpace is nullptr.");
 
-  // TODO: Check if all constraints have the same statespace type.
+  // TODO: This checks pointer equality.
+  for (auto constraint: mConstraints)
+  {
+    if (!constraint)
+      throw std::invalid_argument("_constraints constaints nullptr.");
+
+    if (constraint->getStateSpace().get() != mStateSpace.get())
+      throw std::invalid_argument("All constraints should be equal to mStateSpace.");
+  }
 }
 
 
@@ -45,7 +54,7 @@ Eigen::VectorXd StackedConstraint::getValue(
   for (auto constraint: mConstraints)
   {
     int dim = constraint->getConstraintDimension();
-    value.block(index, 0, dim, 1) = constraint->getValue(_s);
+    value.segment(index, dim) = constraint->getValue(_s);
     index += dim;
   }
 
@@ -66,7 +75,7 @@ Eigen::MatrixXd StackedConstraint::getJacobian(
   for (auto constraint: mConstraints)
   {
     Eigen::MatrixXd jac = constraint->getJacobian(_s);
-    jacobian.block(index, 0, jac.rows(), statesDim) = jac;
+    jacobian.middleRows(index, jac.rows()) = jac;
     index += jac.rows();
   }
 
@@ -91,8 +100,8 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> StackedConstraint::getValueAndJacobi
     // Get (Eigen::VectorXd value, Eigen::MatrixXd jacobian) pair.
     auto pair = constraint->getValueAndJacobian(_s);
 
-    value.block(index, 0, constraintDim, 1) = pair.first;
-    jacobian.block(index, 0, constraintDim, statesDim) = pair.second;
+    value.segment(index, constraintDim) = pair.first;
+    jacobian.middleRows(index, constraintDim) = pair.second;
 
     index += pair.second.rows();
   }
@@ -105,6 +114,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> StackedConstraint::getValueAndJacobi
 std::vector<ConstraintType> StackedConstraint::getConstraintTypes() const
 {
   std::vector<ConstraintType> constraintTypes;
+  constraintTypes.reserve(mConstraints.size());
 
   for (auto constraint: mConstraints)
   {
@@ -121,7 +131,7 @@ std::vector<ConstraintType> StackedConstraint::getConstraintTypes() const
 //=============================================================================
 statespace::StateSpacePtr StackedConstraint::getStateSpace() const
 {
-  return mConstraints[0]->getStateSpace();
+  return mStateSpace;
 }
 
 }

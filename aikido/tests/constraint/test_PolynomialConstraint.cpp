@@ -1,9 +1,8 @@
-#include <aikido/constraint/PolynomialConstraint.hpp>
+#include "PolynomialConstraint.hpp"
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::constraint::PolynomialConstraint;
 using aikido::statespace::RealVectorStateSpace;
 
 TEST(PolynomialConstraint, Constructor)

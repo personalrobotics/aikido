@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLEPROJECTOR_H
-#define AIKIDO_CONSTRAINT_DIFFERENTIABLEPROJECTOR_H
+#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLEPROJECTOR_HPP_
+#define AIKIDO_CONSTRAINT_DIFFERENTIABLEPROJECTOR_HPP_
 
 #include <Eigen/Dense>
 #include "Projectable.hpp"
@@ -13,10 +13,19 @@ class DifferentiableProjector : public Projectable
 {
 public:
 
+  /// Constructor.
+  /// \param _differentiable Differentiable constraint to be projected. 
+  /// \param _tolerance Tolerances for checking whether the constraints
+  ///        are been satisfied. e.g. For equality, 
+  ///        |_differentiable->getValue(state)| <= tolerance
+  ///        The size of tolerances should match _differentiable's constraint
+  ///        dimension.
+  /// \param _maxIteration Max iteration for Newton's method.
+  /// \param _minStepSize Minimum step size to be taken in Newton's method.
   DifferentiableProjector(
     DifferentiablePtr _differentiable,
-    int _maxIteration=1000, 
-    double _tolerance=1e-4,  // These numbers seem to work for Eigen::MatrixXd.
+    std::vector<double> _tolerance,
+    int _maxIteration=1000,
     double _minStepSize=1e-5);
 
   // Documentation inherited.
@@ -29,8 +38,9 @@ public:
 
 private:
   DifferentiablePtr mDifferentiable;
+  statespace::StateSpacePtr mStateSpace;
   int mMaxIteration;
-  double mTolerance;
+  std::vector<double> mTolerance;
   double mMinStepSize;
 
   bool contains(const statespace::StateSpace::State* _s) const;

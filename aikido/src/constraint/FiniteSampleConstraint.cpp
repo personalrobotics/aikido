@@ -1,4 +1,5 @@
 #include <aikido/constraint/FiniteSampleConstraint.hpp>
+#include <dart/common/StlHelpers.h>
 
 namespace aikido {
 namespace constraint {
@@ -7,6 +8,11 @@ namespace constraint {
 class FiniteSampleGenerator : public SampleGenerator
 {
 public:
+
+  // For internal use only.
+  FiniteSampleGenerator(
+    statespace::StateSpacePtr _stateSpace,
+    const std::vector<statespace::StateSpace::State*>& _states);
 
   FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
   FiniteSampleGenerator(FiniteSampleGenerator&& other) = delete;
@@ -18,24 +24,19 @@ public:
 
   virtual ~FiniteSampleGenerator(); 
 
-  /// Documentation inherited.
+  // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   int getNumSamples() const override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   bool canSample() const override;
 
 private:
-
-  // For internal use only.
-  FiniteSampleGenerator(
-    statespace::StateSpacePtr _stateSpace,
-    const std::vector<statespace::StateSpace::State*>& _states);
 
   statespace::StateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
@@ -184,9 +185,7 @@ statespace::StateSpacePtr FiniteSampleConstraint::getStateSpace() const
 //=============================================================================
 std::unique_ptr<SampleGenerator> FiniteSampleConstraint::createSampleGenerator() const
 {
-  return std::unique_ptr<FiniteSampleGenerator>(new FiniteSampleGenerator(
-    mStateSpace,
-    mStates));
+  return dart::common::make_unique<FiniteSampleGenerator>(mStateSpace, mStates);
 }
 
 }

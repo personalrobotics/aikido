@@ -1,11 +1,9 @@
-#ifndef AIKIDO_CONSTRAINT_POLYNOMIALCONSTRAINT_H
-#define AIKIDO_CONSTRAINT_POLYNOMIALCONSTRAINT_H
+#ifndef AIKIDO_TESTS_CONSTRAINT_POLYNOMIALCONSTRAINT_HPP_
+#define AIKIDO_TESTS_CONSTRAINT_POLYNOMIALCONSTRAINT_HPP_
 
 #include "Differentiable.hpp"
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 
-namespace aikido {
-namespace constraint{
 
 class PolynomialConstraint: public Differentiable
 {
@@ -41,7 +39,5 @@ private:
 
 };
 
-} // constraint
-} // aikido
 
 #endif

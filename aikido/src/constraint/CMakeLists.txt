@@ -4,22 +4,23 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/SO3UniformSampler.cpp
   CollisionConstraint.cpp
   ConjunctionConstraint.cpp
-  SampleableSubSpace.cpp
-  TSR.cpp
-  FrameConstraintAdaptor.cpp
-  FramePairConstraintAdaptor.cpp
-  PolynomialConstraint.cpp
+  Differentiable.cpp
   DifferentiableProjector.cpp
-  ProjectableSubSpace.cpp
-  StackedConstraint.cpp
-  DifferentiableSubSpace.cpp
-  IkSampleableConstraint.cpp
-  FkTestable.cpp
-  SatisfiedConstraint.cpp
-  TestableSubSpace.cpp
-  Sampleable.cpp
+	DifferentiableSubSpace.cpp
   FiniteSampleConstraint.cpp
   FiniteCyclicSampleConstraint.cpp
+  FkTestable.cpp
+  FrameConstraintAdaptor.cpp
+  FramePairConstraintAdaptor.cpp
+  IkSampleableConstraint.cpp
+  Projectable.cpp
+  ProjectableSubSpace.cpp
+  Sampleable.cpp
+  SampleableSubSpace.cpp
+  SatisfiedConstraint.cpp
+  StackedConstraint.cpp
+  TSR.cpp
+  TestableSubSpace.cpp
   dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"

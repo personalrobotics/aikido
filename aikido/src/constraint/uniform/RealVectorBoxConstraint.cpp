@@ -97,6 +97,9 @@ RealVectorBoxConstraint
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
 
+  if (!mRng)
+    throw std::invalid_argument("mRng is null.");
+
   const auto dimension = mSpace->getDimension();
 
   if (mLowerLimits.size() != dimension)
@@ -145,7 +148,7 @@ size_t RealVectorBoxConstraint::getConstraintDimension() const
 std::vector<ConstraintType> RealVectorBoxConstraint::getConstraintTypes() const
 {
   return std::vector<ConstraintType>(
-    mSpace->getDimension(), ConstraintType::INEQ);
+    mSpace->getDimension(), ConstraintType::INEQUALITY);
 }
 
 //=============================================================================
@@ -241,10 +244,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> RealVectorBoxConstraint
 //=============================================================================
 std::unique_ptr<constraint::SampleGenerator>
   RealVectorBoxConstraint::createSampleGenerator() const
-{
-  if (!mRng)
-    throw std::runtime_error("RNG is nullptr.");
-  
+{  
   for (size_t i = 0; i < mSpace->getDimension(); ++i)
   {
     if (!std::isfinite(mLowerLimits[i]) || !std::isfinite(mUpperLimits[i]))
@@ -259,6 +259,18 @@ std::unique_ptr<constraint::SampleGenerator>
   return std::unique_ptr<RealVectorBoxConstraintSampleGenerator>(
     new RealVectorBoxConstraintSampleGenerator(
       mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
+}
+
+//=============================================================================
+Eigen::VectorXd RealVectorBoxConstraint::getLowerLimits()
+{
+  return mLowerLimits;
+}
+
+//=============================================================================
+Eigen::VectorXd RealVectorBoxConstraint::getUpperLimits()
+{
+  return mUpperLimits;
 }
 
 } // namespace statespace

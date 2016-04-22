@@ -1,9 +1,5 @@
-#include <aikido/constraint/PolynomialConstraint.hpp>
-
+#include "PolynomialConstraint.hpp"
 #include <memory>
-
-namespace aikido {
-namespace constraint{
 
 //=============================================================================
 PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs)
@@ -92,5 +88,3 @@ statespace::StateSpacePtr PolynomialConstraint::getStateSpace() const
   return std::make_shared<statespace::RealVectorStateSpace>(mStateSpace);
 }
 
-}
-}

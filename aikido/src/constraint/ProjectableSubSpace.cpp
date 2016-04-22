@@ -4,6 +4,7 @@
 namespace aikido {
 namespace constraint {
 
+//=============================================================================
 ProjectableSubSpace::ProjectableSubSpace(
       std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
       std::vector<ProjectablePtr> _constraints)
@@ -40,20 +41,25 @@ ProjectableSubSpace::ProjectableSubSpace(
   }
 }
 
+//=============================================================================
 statespace::StateSpacePtr ProjectableSubSpace::getStateSpace() const
 {
   return mStateSpace;
 }
 
+//=============================================================================
 bool ProjectableSubSpace::project(const statespace::StateSpace::State* _s,
   statespace::StateSpace::State* _out) const
 {
+  auto s = static_cast<const statespace::CompoundStateSpace::State*>(_s);
   auto out = static_cast<statespace::CompoundStateSpace::State*>(_out);
 
   for (size_t i = 0; i < mConstraints.size(); ++i)
   {
+    auto inSubState = mStateSpace->getSubState<>(s, i);
     auto outSubState = mStateSpace->getSubState<>(out, i);
-    if (!mConstraints[i]->project(_s, outSubState))
+
+    if (!mConstraints[i]->project(inSubState, outSubState))
       return false;
   }
 

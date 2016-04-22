@@ -20,10 +20,16 @@ public:
   virtual bool project(
     const statespace::StateSpace::State* _s,
     statespace::StateSpace::State* _out) const = 0;
+
+  /// Performs an in-place projection.
+  /// By default, it creates a copy and then calls the two-parameter project.
+  virtual bool project(
+    const statespace::StateSpacePtr _space,
+    statespace::StateSpace::State* _s) const;
+
 };
 
 using ProjectablePtr = std::shared_ptr<const Projectable>;
-
 
 } // constraint
 } // aikido

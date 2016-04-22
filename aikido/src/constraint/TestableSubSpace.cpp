@@ -9,11 +9,14 @@ using dart::common::make_unique;
 
 //=============================================================================
 TestableSubSpace::TestableSubSpace(
-    std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
-    std::vector<std::shared_ptr<TestableConstraint>> _constraints)
-    : mStateSpace(std::move(_stateSpace))
-    , mConstraints(std::move(_constraints))
+  std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+  std::vector<std::shared_ptr<TestableConstraint>> _constraints)
+: mStateSpace(std::move(_stateSpace))
+, mConstraints(std::move(_constraints))
 {
+  if (!mStateSpace)
+    throw std::invalid_argument("_stateSpace is nullptr.");
+
   if (mConstraints.size() != mStateSpace->getNumStates()) {
     std::stringstream msg;
     msg << "Mismatch between size of CompoundStateSpace and the number of"

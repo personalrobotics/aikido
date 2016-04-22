@@ -1,42 +1,46 @@
-#ifndef AIKIDO_CONSTRAINT_CONJUNCTION_CONSTRAINT_HPP_
-#define AIKIDO_CONSTRAINT_CONJUNCTION_CONSTRAINT_HPP_
+#ifndef AIKIDO_CONSTRAINT_CONJUNCTION_HPP_
+#define AIKIDO_CONSTRAINT_CONJUNCTION_HPP_
 
 #include "TestableConstraint.hpp"
 #include <memory>
 #include <vector>
 
-namespace aikido
-{
-namespace constraint
-{
+namespace aikido {
+namespace constraint {
+
+/// A testable constraint gruping a set of testable constraint.
+/// This constriant is satisfied only if all constraints in the set
+/// are satisfied.
 class ConjunctionConstraint : public TestableConstraint
 {
 public:
-  /// Construct a ConjunctionConstraint on a specific StateSpace
+  /// Construct a ConjunctionConstraint on a specific StateSpace.
+  /// \param statespace StateSpace this constraint operates in.
+  /// \param constraints Set of constraints.
   ConjunctionConstraint(
-      std::shared_ptr<aikido::statespace::StateSpace> stateSpace,
-      std::vector<std::shared_ptr<TestableConstraint>> constraints =
-          std::vector<std::shared_ptr<TestableConstraint>>());
+    statespace::StateSpacePtr _stateSpace,
+    std::vector<TestableConstraintPtr> _constraints = 
+      std::vector<TestableConstraintPtr>());
 
+  // Documentation inherited.
   bool isSatisfied(
     const aikido::statespace::StateSpace::State* state) const override;
 
-  std::shared_ptr<aikido::statespace::StateSpace>
-    getStateSpace() const override;
+  // Documentation inherited.
+  statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Add a TestableConstraint to the conjunction
+  /// Add a TestableConstraint to the conjunction.
   /// \param constraint a constraint in the same StateSpace as the
-  ///        ConjunctionConstraint was initialize with
-  void addConstraint(std::shared_ptr<TestableConstraint> constraint);
+  ///        ConjunctionConstraint was initialize with.
+  void addConstraint(TestableConstraintPtr constraint);
 
 private:
-  std::shared_ptr<aikido::statespace::StateSpace> mStateSpace;
-  std::vector<std::shared_ptr<TestableConstraint>> mConstraints;
+  statespace::StateSpacePtr mStateSpace;
+  std::vector<TestableConstraintPtr> mConstraints;
 
-  void testConstraintStateSpaceOrThrow(
-      std::shared_ptr<TestableConstraint> constraint);
+  void testConstraintStateSpaceOrThrow(const TestableConstraintPtr& constraint);
 };
 }  // constraint
 }  // aikido
 
-#endif  // AIKIDO_CONSTRAINT_CONJUNCTION_CONSTRAINT_HPP_
+#endif  // AIKIDO_CONSTRAINT_CONJUNCTION_HPP_

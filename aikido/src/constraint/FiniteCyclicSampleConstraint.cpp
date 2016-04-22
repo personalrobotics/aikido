@@ -1,4 +1,5 @@
 #include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
+#include <dart/common/StlHelpers.h>
 
 namespace aikido {
 namespace constraint {
@@ -8,6 +9,9 @@ namespace constraint {
 class FiniteCyclicSampleGenerator : public SampleGenerator
 {
 public:
+
+  FiniteCyclicSampleGenerator(
+    std::unique_ptr<SampleGenerator> _generator);
 
   FiniteCyclicSampleGenerator(const FiniteCyclicSampleGenerator&) = delete;
   FiniteCyclicSampleGenerator(FiniteCyclicSampleGenerator&& other) = delete;
@@ -19,24 +23,21 @@ public:
 
   virtual ~FiniteCyclicSampleGenerator(); 
 
-  /// Documentation inherited.
+  // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   int getNumSamples() const override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   bool canSample() const override;
 
 private:
 
-  // For internal use only.
-  FiniteCyclicSampleGenerator(
-    std::unique_ptr<SampleGenerator> _generator);
-
+  statespace::StateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
   std::unique_ptr<SampleGenerator> mGenerator;
   int mIndex;
@@ -63,6 +64,8 @@ private:
     throw std::invalid_argument("SampleGenerator has 0 samples.");
 
   mStates.reserve(mNumSamples);
+
+  mStateSpace = mGenerator->getStateSpace();
 }
 
 //=============================================================================
@@ -142,19 +145,21 @@ FiniteCyclicSampleConstraint::FiniteCyclicSampleConstraint(
   if (numSamples == 0)
     throw std::invalid_argument(
       "SampleableConstraint's SampleGenerator produces 0 sample.");
+
+  mStateSpace = mSampleable->getStateSpace();
 }
 
 //=============================================================================
 statespace::StateSpacePtr FiniteCyclicSampleConstraint::getStateSpace() const
 {
-  return mSampleable->getStateSpace();
+  return mStateSpace;
 }
 
 //=============================================================================
 std::unique_ptr<SampleGenerator> FiniteCyclicSampleConstraint::createSampleGenerator() const
 {
-  return std::unique_ptr<FiniteCyclicSampleGenerator>(
-    new FiniteCyclicSampleGenerator(mSampleable->createSampleGenerator()));
+  return dart::common::make_unique<FiniteCyclicSampleGenerator>(
+    mSampleable->createSampleGenerator());
 }
 
 }

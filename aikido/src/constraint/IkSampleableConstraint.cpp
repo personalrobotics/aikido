@@ -1,14 +1,11 @@
 #include <aikido/constraint/IkSampleableConstraint.hpp>
 #include <aikido/statespace/SE3StateSpace.hpp>
 
-using namespace dart::dynamics;
-
 namespace aikido {
 namespace constraint {
 
 using statespace::SE3StateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
-using util::RNG;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::SE3StateSpace;
 using dart::dynamics::INVALID_INDEX;
@@ -45,7 +42,6 @@ private:
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<SampleGenerator> _poseSampler,
     std::unique_ptr<SampleGenerator> _seedSampler,
-    std::unique_ptr<util::RNG> _rng,
     int _maxNumTrials);
 
   statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
@@ -53,7 +49,6 @@ private:
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<SampleGenerator> mPoseSampler;
   std::unique_ptr<SampleGenerator> mSeedSampler;
-  std::unique_ptr<util::RNG> mRng;
   int mMaxNumTrials;
 
   friend class IkSampleableConstraint;
@@ -66,13 +61,11 @@ IkSampleableConstraint::IkSampleableConstraint(
       SampleableConstraintPtr _poseConstraint,
       SampleableConstraintPtr _seedConstraint,
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
-      std::unique_ptr<util::RNG> _rng,
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
   , mPoseConstraint(std::move(_poseConstraint))
   , mSeedConstraint(std::move(_seedConstraint))
   , mInverseKinematics(std::move(_inverseKinematics))
-  , mRng(std::move(_rng))
   , mMaxNumTrials(_maxNumTrials)
 {
   if (!mStateSpace)
@@ -110,9 +103,6 @@ IkSampleableConstraint::IkSampleableConstraint(
     throw std::invalid_argument(
       "Seed SampleGenerator is not for this StateSpace.");
 
-  if (!mRng)
-    throw std::invalid_argument("RNG is nullptr.");
-
   if (mMaxNumTrials <= 0)
     throw std::invalid_argument("Maximum number of trials must be positive.");
 }
@@ -132,17 +122,9 @@ std::unique_ptr<SampleGenerator>
     mInverseKinematics,
     mPoseConstraint->createSampleGenerator(),
     mSeedConstraint->createSampleGenerator(),
-    mRng->clone(),
     mMaxNumTrials
   ));
 }
-
-//=============================================================================
-void IkSampleableConstraint::setRNG(std::unique_ptr<util::RNG> rng)
-{
-  mRng = std::move(rng);
-}
-
 
 //=============================================================================
 IkSampleGenerator::IkSampleGenerator(
@@ -150,7 +132,6 @@ IkSampleGenerator::IkSampleGenerator(
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       std::unique_ptr<SampleGenerator> _poseSampler,
       std::unique_ptr<SampleGenerator> _seedSampler,
-      std::unique_ptr<util::RNG> _rng,
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
   , mPoseStateSpace(
@@ -158,7 +139,6 @@ IkSampleGenerator::IkSampleGenerator(
   , mInverseKinematics(std::move(_inverseKinematics))
   , mPoseSampler(std::move(_poseSampler))
   , mSeedSampler(std::move(_seedSampler))
-  , mRng(std::move(_rng))
   , mMaxNumTrials(_maxNumTrials)
 {
   assert(mStateSpace);
@@ -167,7 +147,6 @@ IkSampleGenerator::IkSampleGenerator(
   assert(mPoseSampler);
   assert(mSeedSampler);
   assert(mSeedSampler->getStateSpace() == mStateSpace);
-  assert(mRng);
   assert(mMaxNumTrials > 0);
 
   if (mPoseSampler->getNumSamples() != NO_LIMIT)

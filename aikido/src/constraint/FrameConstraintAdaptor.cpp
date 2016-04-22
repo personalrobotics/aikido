@@ -8,9 +8,9 @@ namespace constraint {
 //=============================================================================
 FrameConstraintAdaptor::FrameConstraintAdaptor(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-  dart::dynamics::JacobianNodePtr _jacobianNode,
+  dart::dynamics::ConstJacobianNodePtr _jacobianNode,
   DifferentiablePtr _poseConstraint)
-: mJacobianNode(_jacobianNode)
+: mJacobianNode(std::move(_jacobianNode))
 , mPoseConstraint(std::move(_poseConstraint))
 , mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
 {
@@ -18,7 +18,7 @@ FrameConstraintAdaptor::FrameConstraintAdaptor(
     throw std::invalid_argument("_poseConstraint is nullptr.");
 
   if (!mJacobianNode)
-    throw std::invalid_argument("_bodyNode is nullptr.");
+    throw std::invalid_argument("_jacobianNode is nullptr.");
 
   if (!mMetaSkeletonStateSpace)
     throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
@@ -29,18 +29,22 @@ FrameConstraintAdaptor::FrameConstraintAdaptor(
     mPoseConstraint->getStateSpace().get());
 
   if (!space)
-  {
     throw std::invalid_argument("_poseConstraint is not in SE3StateSpace.");
-  }
-}
 
+  mMetaSkeleton = mMetaSkeletonStateSpace->getMetaSkeleton();
+
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("_metaSkeletonStateSpace does not have skeleton.");
+
+  // TODO: If possible, check that _frame is influenced by at least 
+  // one DegreeOfFreedom in the _stateSpace's Skeleton.
+}
 
 //=============================================================================
 size_t FrameConstraintAdaptor::getConstraintDimension() const
 {
   return mPoseConstraint->getConstraintDimension();
 }
-
 
 //=============================================================================
 Eigen::VectorXd FrameConstraintAdaptor::getValue(
@@ -58,7 +62,6 @@ Eigen::VectorXd FrameConstraintAdaptor::getValue(
   return mPoseConstraint->getValue(&bodyPose);
 
 }
-
 
 //=============================================================================
 Eigen::MatrixXd FrameConstraintAdaptor::getJacobian(
@@ -78,10 +81,8 @@ Eigen::MatrixXd FrameConstraintAdaptor::getJacobian(
   // where the tangent vector is expressed in world frame.
   Eigen::MatrixXd constraintJac = mPoseConstraint->getJacobian(&bodyPose);
 
-  MetaSkeletonPtr metaSkeleton = mMetaSkeletonStateSpace->getMetaSkeleton();
-
   // 6 x numDofs, Jacobian of SE3 pose of body node expressed in World Frame.
-  Eigen::MatrixXd skeletonJac = metaSkeleton->getWorldJacobian(mJacobianNode);
+  Eigen::MatrixXd skeletonJac = mMetaSkeleton->getWorldJacobian(mJacobianNode);
 
   // m x numDofs, Jacobian of pose w.r.t. generalized coordinates.
   return constraintJac*skeletonJac;
@@ -108,18 +109,14 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> FrameConstraintAdaptor::getValueAndJ
   // where the tangent vector is expressed in world frame.
   Eigen::MatrixXd constraintJac = mPoseConstraint->getJacobian(&bodyPose);
 
-  MetaSkeletonPtr metaSkeleton = mMetaSkeletonStateSpace->getMetaSkeleton();
-
   // 6 x numDofs, Jacobian of SE3 pose of body node expressed in World Frame.
-  Eigen::MatrixXd skeletonJac = metaSkeleton->getWorldJacobian(mJacobianNode);
+  Eigen::MatrixXd skeletonJac = mMetaSkeleton->getWorldJacobian(mJacobianNode);
 
   // m x numDofs, Jacobian of pose w.r.t. generalized coordinates.
   Eigen::MatrixXd jacobian = constraintJac*skeletonJac;
 
   return std::make_pair(value, jacobian);
 }
-
-
 
 //=============================================================================
 std::vector<ConstraintType> FrameConstraintAdaptor::getConstraintTypes() const

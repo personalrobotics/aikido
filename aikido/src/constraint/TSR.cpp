@@ -186,8 +186,9 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 //=============================================================================
 bool TSR::isSatisfied(const statespace::StateSpace::State* _s) const
 {
+  static constexpr double eps = 1e-6;
   Eigen::VectorXd dist = getValue(_s);
-  return dist.norm() < 1e-6;
+  return dist.norm() < eps;
 }
 
 //=============================================================================
@@ -196,7 +197,7 @@ void TSR::validate() const
   // Assertion checks for min, max on bounds
   for (int i = 0; i < 6; i++) {
     if (mBw(i, 0) > mBw(i, 1))
-      throw std::invalid_argument(
+      throw std::logic_error(
           str(format("Lower bound exceeds upper bound on dimension %d: %f > %f")
               % i % mBw(i, 0) % mBw(i, 1)));
   }
@@ -221,10 +222,7 @@ Eigen::VectorXd TSR::getValue(const statespace::StateSpace::State* _s) const
 
   Eigen::Isometry3d T0_w_inv = mT0_w.inverse(TransformTraits::Isometry);
   Eigen::Isometry3d Tw_e_inv = mTw_e.inverse(TransformTraits::Isometry);
-  Eigen::MatrixXd Tw_s_m = T0_w_inv.matrix() * se3.matrix() * Tw_e_inv.matrix();
-
-  Eigen::Isometry3d Tw_s;
-  Tw_s.matrix() = Tw_s_m;
+  Eigen::Isometry3d Tw_s = T0_w_inv * se3 * Tw_e_inv;
 
   Eigen::Vector3d translation = Tw_s.translation();
   Eigen::Vector3d eulerOrig = dart::math::matrixToEulerZYX(Tw_s.linear());
@@ -284,7 +282,7 @@ Eigen::MatrixXd TSR::getJacobian(const statespace::StateSpace::State* _s) const
 
   Eigen::Vector6d posit(twist), negat(twist);
 
-  double eps = 1e-5;
+  static constexpr double eps = 1e-5;
 
   auto se3posit = mStateSpace->createState();
   auto se3negat = mStateSpace->createState();
@@ -320,7 +318,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> TSR::getValueAndJacobian(
 //=============================================================================
 std::vector<ConstraintType> TSR::getConstraintTypes() const
 {
-  return std::vector<ConstraintType>(6, ConstraintType::INEQ);
+  return std::vector<ConstraintType>(6, ConstraintType::INEQUALITY);
 }
 
 //=============================================================================

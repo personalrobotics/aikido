@@ -1,15 +1,20 @@
-#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_H
-#define AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_H
+#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_
+#define AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_
 #include "../statespace/CompoundStateSpace.hpp"
 #include "Differentiable.hpp"
 
 namespace aikido {
 namespace constraint{
 
-class DifferentiableSubSpace : public constraint::Differentiable
+/// A differentiable constraint applied only on a subspace of
+/// a CompoundState.
+class DifferentiableSubSpace : public Differentiable
 {
 public:
   /// Apply _constraint to the i-th subspace of _stateSpace.
+  /// \param _stateSpace CompoundStateSpace.
+  /// \param _constraint Constraint being applied.
+  /// \param _index Subspace of _stateSpace to apply _constraint.
   DifferentiableSubSpace(
     std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
     DifferentiablePtr _constraint, size_t _index);
@@ -46,4 +51,4 @@ private:
 } // constraint
 } // aikido
 
-#endif // AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_H
+#endif // AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_

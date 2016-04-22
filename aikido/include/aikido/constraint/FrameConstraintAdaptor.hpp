@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_H
-#define AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_H
+#ifndef AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_HPP_
+#define AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_HPP_
 
 #include <dart/dynamics/dynamics.h>
 #include "Differentiable.hpp"
@@ -10,8 +10,8 @@
 namespace aikido {
 namespace constraint{
 
-/// A differentiable pose constraint on _jacobianNode's transform
-/// w.r.t. the configuration state of _jacobianNode's skeleton.
+/// A pose constraint on _jacobianNode's transform
+/// w.r.t. MetaSkeletonState of _jacobianNode.
 /// _poseConstraint is 
 ///     1) Differentiable
 ///     2) in SE3StateSpace.
@@ -20,9 +20,15 @@ class FrameConstraintAdaptor: public Differentiable
 {
 public:
 
+  /// Constructor.
+  /// \param _metaSkeletonStateSpace StateSpace whose state
+  ///        defines _jacobianNode's transform.
+  /// \param _jacobianNode The frame being constrained.
+  /// \param _poseConstraint Constraint on _jacobian. This should be 
+  ///        in SE3StateSpace.
   FrameConstraintAdaptor(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    dart::dynamics::JacobianNodePtr _jacobianNode,
+    dart::dynamics::ConstJacobianNodePtr _jacobianNode,
     DifferentiablePtr _poseConstraint);
 
   // Documentation inherited.
@@ -37,9 +43,9 @@ public:
   Eigen::MatrixXd getJacobian(
     const statespace::StateSpace::State* _s) const override;
 
-  // Documentation inherited. 
-  // This is more efficient than calling getValue and getJacobian separately
-  // because this sets MetaSkeleton's position only once.
+  /// Returns both Value and Jacobian.
+  /// This is more efficient than calling getValue and getJacobian separately
+  /// because this sets MetaSkeleton's position only once.
   std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
     const statespace::StateSpace::State* _s) const override;
 
@@ -50,9 +56,11 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
 private:
-  dart::dynamics::JacobianNodePtr mJacobianNode;
+  dart::dynamics::ConstJacobianNodePtr mJacobianNode;
   DifferentiablePtr mPoseConstraint;
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+
   
 };
 

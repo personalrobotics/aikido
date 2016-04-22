@@ -15,7 +15,7 @@ DifferentiableSubSpace::DifferentiableSubSpace(
   if (!mStateSpace)
     throw std::invalid_argument("CompoundStateSpace is nullptr.");
 
-  if (!_constraint)
+  if (!mConstraint)
     throw std::invalid_argument("Differentiable is nullptr.");
 
   if (_index >= mStateSpace->getNumStates())

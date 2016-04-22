@@ -1,14 +1,22 @@
-#ifndef AIKIDO_STATESPACE_SO3STATESPACESAMPLEABLECONSTRAINT_H_
-#define AIKIDO_STATESPACE_SO3STATESPACESAMPLEABLECONSTRAINT_H_
+#ifndef AIKIDO_CONSTRAINT_UNIFORM_SO3UNIFORMSAMPLER_HPP_
+#define AIKIDO_CONSTRAINT_UNIFORM_SO3UNIFORMSAMPLER_HPP_
 #include "../../statespace/SO3StateSpace.hpp"
 #include "../Sampleable.hpp"
 
 namespace aikido {
 namespace statespace {
 
+/// Uniform sampler for SO3States. Its SampleGenerators will sample
+/// uniformly from SO3StateSpace, and the sequence of samples is
+/// deterministically generated given a random number generator seed. 
 class SO3UniformSampler : public constraint::SampleableConstraint
 {
 public:
+
+  /// Constructor.
+  /// \param _space SO3StateSpace in which this constraint operates.
+  /// \param _rng Random number generator which determines the sampling
+  ///        sequence of this constraint's SampleGenerators.
   SO3UniformSampler(
     std::shared_ptr<statespace::SO3StateSpace> _space,
     std::unique_ptr<util::RNG> _rng);
@@ -28,4 +36,4 @@ private:
 } // namespace statespace
 } // namespace aikido
 
-#endif // AIKIDO_STATESPACE_SO3STATESPACESAMPLEABLECONSTRAINT_H_
+#endif // AIKIDO_CONSTRAINT_UNIFORM_SO3UNIFORMSAMPLER_HPP_

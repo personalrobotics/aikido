@@ -1,21 +1,28 @@
-#ifndef AIKIDO_CONSTRAINT_FINITESAMPLECONSTRAINT_H
-#define AIKIDO_CONSTRAINT_FINITESAMPLECONSTRAINT_H
+#ifndef AIKIDO_CONSTRAINT_FINITESAMPLECONSTRAINT_HPP_
+#define AIKIDO_CONSTRAINT_FINITESAMPLECONSTRAINT_HPP_
 
 #include "Sampleable.hpp"
 
 namespace aikido {
 namespace constraint {
 
-// Constraint that always returns a finite set of samples.
-// Its SampleGenerator will generate sample in the order of _states
-// until all samples are exhausted.
+/// Constraint that always returns a finite set of samples.
+/// Its SampleGenerator will generate sample 
+/// until all samples are exhausted.
 class FiniteSampleConstraint : public SampleableConstraint
 {
 public:
+  /// Constructor for single-sample constraint.
+  /// \param _stateSpace StateSpace in which _state belongs.
+  /// \param _state The only sample in this constraint.
   FiniteSampleConstraint(
     statespace::StateSpacePtr _stateSpace,
     const statespace::StateSpace::State* _state);
 
+  /// Constructor for multiple samples.
+  /// \param _stateSpace StateSpace in which _states belong.
+  /// \param _states Samples in this constraint.
+  ///        SampleGenerator will generate samples in this order.
   FiniteSampleConstraint(
     statespace::StateSpacePtr _stateSpace,
     const std::vector<const statespace::StateSpace::State*>& _states);
@@ -30,10 +37,10 @@ public:
 
   virtual ~FiniteSampleConstraint();
 
-  /// Documentation inherited.
+  // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
