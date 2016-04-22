@@ -1,4 +1,4 @@
-#include <aikido/path/PiecewiseLinearTrajectory.hpp>
+#include <aikido/path/Interpolated.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <gtest/gtest.h>
 
@@ -7,7 +7,7 @@ using namespace aikido::statespace;
 using std::shared_ptr;
 using std::make_shared;
 
-class PiecewiseLinearTrajectoryTest : public ::testing::Test
+class InterpolatedTest : public ::testing::Test
 {
 public:
   void SetUp()
@@ -22,7 +22,7 @@ public:
     auto s3 = rvss->createState();
     rvss->setValue(s3, Eigen::Vector2d(8, 1));
 
-    traj = make_shared<PiecewiseLinearTrajectory>(rvss, interpolator);
+    traj = make_shared<Interpolated>(rvss, interpolator);
     traj->addWaypoint(1, s1);
     traj->addWaypoint(3, s2);
     traj->addWaypoint(7, s3);
@@ -30,10 +30,10 @@ public:
 
   shared_ptr<Rn> rvss;
   shared_ptr<Interpolator> interpolator;
-  shared_ptr<PiecewiseLinearTrajectory> traj;
+  shared_ptr<Interpolated> traj;
 };
 
-TEST_F(PiecewiseLinearTrajectoryTest, AddWaypoint)
+TEST_F(InterpolatedTest, AddWaypoint)
 {
   EXPECT_DOUBLE_EQ(1, traj->getStartTime());
   EXPECT_DOUBLE_EQ(7, traj->getEndTime());
@@ -41,7 +41,7 @@ TEST_F(PiecewiseLinearTrajectoryTest, AddWaypoint)
   EXPECT_EQ(1, traj->getNumDerivatives());
 }
 
-TEST_F(PiecewiseLinearTrajectoryTest, EvaluatePt)
+TEST_F(InterpolatedTest, EvaluatePt)
 {
   using StateType = Rn::State;
   auto istate = rvss->createState();
@@ -68,7 +68,7 @@ TEST_F(PiecewiseLinearTrajectoryTest, EvaluatePt)
   EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(3, 3)));
 }
 
-TEST_F(PiecewiseLinearTrajectoryTest, EvaluateDerivative)
+TEST_F(InterpolatedTest, EvaluateDerivative)
 {
   using StateType = Rn::State;
 

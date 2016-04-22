@@ -8,7 +8,7 @@
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
-using aikido::path::PiecewiseLinearTrajectory;
+using aikido::path::Interpolated;
 using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::Rn;
@@ -27,7 +27,7 @@ protected:
     mMaxAcceleration = Eigen::Vector2d(2., 2.);
 
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
-    mStraightLine = std::make_shared<PiecewiseLinearTrajectory>(
+    mStraightLine = std::make_shared<Interpolated>(
       mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
@@ -44,12 +44,12 @@ protected:
   Eigen::Vector2d mMaxAcceleration;
 
   std::shared_ptr<GeodesicInterpolator> mInterpolator;
-  std::shared_ptr<PiecewiseLinearTrajectory> mStraightLine;
+  std::shared_ptr<Interpolated> mStraightLine;
 };
 
 TEST_F(ParabolicTimerTests, InputTrajectoryIsEmpty_Throws)
 {
-  PiecewiseLinearTrajectory emptyTrajectory(mStateSpace, mInterpolator);
+  Interpolated emptyTrajectory(mStateSpace, mInterpolator);
 
   EXPECT_THROW({
     computeParabolicTiming(emptyTrajectory, mMaxVelocity, mMaxAcceleration);
@@ -98,7 +98,7 @@ TEST_F(ParabolicTimerTests, MaxAccelerationIsNegative_Throws)
 
 TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
 {
-  PiecewiseLinearTrajectory inputTrajectory(mStateSpace, mInterpolator);
+  Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
   Eigen::VectorXd tangentVector;
@@ -127,7 +127,7 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
 
 TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
 {
-  PiecewiseLinearTrajectory inputTrajectory(mStateSpace, mInterpolator);
+  Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
   Eigen::VectorXd tangentVector;
@@ -179,7 +179,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
 
 TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
 {
-  PiecewiseLinearTrajectory inputTrajectory(mStateSpace, mInterpolator);
+  Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
   Eigen::VectorXd tangentVector;
@@ -249,7 +249,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
 
 TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
 {
-  PiecewiseLinearTrajectory inputTrajectory(mStateSpace, mInterpolator);
+  Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
   Eigen::VectorXd tangentVector;
@@ -281,7 +281,7 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
   auto stateSpace = std::make_shared<SO3>();
   auto state = stateSpace->createState();
 
-  PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
+  Interpolated inputTrajectory(stateSpace, mInterpolator);
 
   state.setQuaternion(Eigen::Quaterniond::Identity());
   inputTrajectory.addWaypoint(0., state);
@@ -302,7 +302,7 @@ TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
     std::vector<StateSpacePtr> { std::make_shared<SO3>() });
   auto state = stateSpace->createState();
 
-  PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
+  Interpolated inputTrajectory(stateSpace, mInterpolator);
 
   state.getSubStateHandle<SO3>(0).setQuaternion(
     Eigen::Quaterniond::Identity());
@@ -327,7 +327,7 @@ TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
     });
   auto state = stateSpace->createState();
 
-  PiecewiseLinearTrajectory inputTrajectory(stateSpace, mInterpolator);
+  Interpolated inputTrajectory(stateSpace, mInterpolator);
 
   state.getSubStateHandle<Rn>(0).setValue(Vector2d::Zero());
   state.getSubStateHandle<SO2>(1).setAngle(0.);

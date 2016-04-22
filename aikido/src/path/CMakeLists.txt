@@ -1,5 +1,5 @@
 aikido_add_library("${PROJECT_NAME}_path"
-  PiecewiseLinearTrajectory.cpp
+  Interpolated.cpp
   SplineTrajectory2.cpp
 )
 target_link_libraries("${PROJECT_NAME}_path"

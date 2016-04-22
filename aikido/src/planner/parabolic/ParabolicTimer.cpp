@@ -80,7 +80,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 } // namespace
 
 std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
-  const path::PiecewiseLinearTrajectory& _inputTrajectory,
+  const path::Interpolated& _inputTrajectory,
   const Eigen::VectorXd& _maxVelocity,
   const Eigen::VectorXd& _maxAcceleration)
 {
@@ -116,7 +116,7 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
       throw std::invalid_argument("Acceleration limits must be positive.");
   }
 
-  // Convert the PiecewiseLinearTrajectory to the internal data structure by
+  // Convert the Interpolated to the internal data structure by
   // computing the logMap relative to the starting state.
   std::vector<ParabolicRamp::Vector> milestones;
   milestones.reserve(numWaypoints);

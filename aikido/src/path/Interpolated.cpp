@@ -1,4 +1,4 @@
-#include <aikido/path/PiecewiseLinearTrajectory.hpp>
+#include <aikido/path/Interpolated.hpp>
 
 using aikido::statespace::GeodesicInterpolator;
 
@@ -10,7 +10,7 @@ namespace path
 using State = aikido::statespace::StateSpace::State;
 
 //=============================================================================
-PiecewiseLinearTrajectory::PiecewiseLinearTrajectory(
+Interpolated::Interpolated(
       aikido::statespace::StateSpacePtr _sspace,
       aikido::statespace::InterpolatorPtr _interpolator)
   : mStateSpace(std::move(_sspace))
@@ -19,25 +19,25 @@ PiecewiseLinearTrajectory::PiecewiseLinearTrajectory(
 }
 
 //=============================================================================
-statespace::StateSpacePtr PiecewiseLinearTrajectory::getStateSpace() const
+statespace::StateSpacePtr Interpolated::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-statespace::InterpolatorPtr PiecewiseLinearTrajectory::getInterpolator() const
+statespace::InterpolatorPtr Interpolated::getInterpolator() const
 {
   return mInterpolator;
 }
 
 //=============================================================================
-size_t PiecewiseLinearTrajectory::getNumDerivatives() const
+size_t Interpolated::getNumDerivatives() const
 {
   return mInterpolator->getNumDerivatives();
 }
 
 //=============================================================================
-double PiecewiseLinearTrajectory::getStartTime() const
+double Interpolated::getStartTime() const
 {
   if (mWaypoints.empty())
     throw std::domain_error("Requested getEndTime on empty trajectory.");
@@ -46,7 +46,7 @@ double PiecewiseLinearTrajectory::getStartTime() const
 }
 
 //=============================================================================
-double PiecewiseLinearTrajectory::getEndTime() const
+double Interpolated::getEndTime() const
 {
   if (mWaypoints.empty())
     throw std::domain_error("Requested getEndTime on empty trajectory.");
@@ -55,7 +55,7 @@ double PiecewiseLinearTrajectory::getEndTime() const
 }
 
 //=============================================================================
-double PiecewiseLinearTrajectory::getDuration() const
+double Interpolated::getDuration() const
 {
   if (!mWaypoints.empty())
     return getEndTime() - getStartTime();
@@ -64,7 +64,7 @@ double PiecewiseLinearTrajectory::getDuration() const
 }
 
 //=============================================================================
-void PiecewiseLinearTrajectory::evaluate(double _t, State *_state) const
+void Interpolated::evaluate(double _t, State *_state) const
 {
   if (mWaypoints.empty())
     throw std::invalid_argument(
@@ -89,7 +89,7 @@ void PiecewiseLinearTrajectory::evaluate(double _t, State *_state) const
 }
 
 //=============================================================================
-Eigen::VectorXd PiecewiseLinearTrajectory::evaluate(double _t,
+Eigen::VectorXd Interpolated::evaluate(double _t,
                                                     int _derivative) const
 {
   if (_derivative == 0)
@@ -130,7 +130,7 @@ Eigen::VectorXd PiecewiseLinearTrajectory::evaluate(double _t,
 }
 
 //=============================================================================
-void PiecewiseLinearTrajectory::addWaypoint(double _t, const State *_state)
+void Interpolated::addWaypoint(double _t, const State *_state)
 {
   State *state = mStateSpace->allocateState();
   mStateSpace->copyState(_state, state);
@@ -141,7 +141,7 @@ void PiecewiseLinearTrajectory::addWaypoint(double _t, const State *_state)
 }
 
 //=============================================================================
-const statespace::StateSpace::State* PiecewiseLinearTrajectory::getWaypoint(
+const statespace::StateSpace::State* Interpolated::getWaypoint(
   size_t _index) const
 {
   if (_index < mWaypoints.size())
@@ -151,13 +151,13 @@ const statespace::StateSpace::State* PiecewiseLinearTrajectory::getWaypoint(
 }
 
 //=============================================================================
-size_t PiecewiseLinearTrajectory::getNumWaypoints() const
+size_t Interpolated::getNumWaypoints() const
 {
   return mWaypoints.size();
 }
 
 //=============================================================================
-int PiecewiseLinearTrajectory::getWaypointIndexAfterTime(double _t) const
+int Interpolated::getWaypointIndexAfterTime(double _t) const
 {
   auto it = std::lower_bound(mWaypoints.begin(), mWaypoints.end(), _t);
   if (it == mWaypoints.end()) {
@@ -169,7 +169,7 @@ int PiecewiseLinearTrajectory::getWaypointIndexAfterTime(double _t) const
 }
 
 //=============================================================================
-PiecewiseLinearTrajectory::Waypoint::Waypoint(
+Interpolated::Waypoint::Waypoint(
       double _t, aikido::statespace::StateSpace::State *_state)
   : t(_t)
   , state(_state)
@@ -177,13 +177,13 @@ PiecewiseLinearTrajectory::Waypoint::Waypoint(
 }
 
 //=============================================================================
-bool PiecewiseLinearTrajectory::Waypoint::operator <(const Waypoint &rhs) const
+bool Interpolated::Waypoint::operator <(const Waypoint &rhs) const
 {
   return t < rhs.t;
 }
 
 //=============================================================================
-bool PiecewiseLinearTrajectory::Waypoint::operator <(const double &rhs) const
+bool Interpolated::Waypoint::operator <(const double &rhs) const
 {
   return t < rhs;
 }

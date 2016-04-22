@@ -1,6 +1,5 @@
-aikido_add_test(test_PiecewiseLinearTrajectory
-  test_PiecewiseLinearTrajectory.cpp)
-target_link_libraries(test_PiecewiseLinearTrajectory
+aikido_add_test(test_Interpolated test_Interpolated.cpp)
+target_link_libraries(test_Interpolated
   "${PROJECT_NAME}_path"
   "${PROJECT_NAME}_statespace")
 

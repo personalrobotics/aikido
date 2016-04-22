@@ -111,7 +111,7 @@ path::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
   _planner->setProblemDefinition(_pdef);
   _planner->setup();
   auto solved = _planner->solve(_maxPlanTime);
-  auto returnTraj = boost::make_shared<path::PiecewiseLinearTrajectory>(
+  auto returnTraj = boost::make_shared<path::Interpolated>(
       std::move(_sspace), std::move(_interpolator));
 
   if (solved) {
