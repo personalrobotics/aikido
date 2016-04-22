@@ -1,11 +1,11 @@
-#ifndef AIKIDO_PATH_TRAJECTORY_HPP_
-#define AIKIDO_PATH_TRAJECTORY_HPP_
+#ifndef AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
+#define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
-namespace path {
+namespace trajectory {
 
 /// Time-parameterized path in a \c StateSpace. The parameterization, number of
 /// derivatives available, and continuity of this trajectory is defined by the
@@ -70,7 +70,7 @@ public:
 using TrajectoryPtr = boost::shared_ptr<Trajectory>;
 using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
 
-}  // namespace path
+}  // namespace trajectory
 }  // namespace aikido
 
-#endif  // ifndef AIKIDO_PATH_TRAJECTORY_HPP_
+#endif  // ifndef AIKIDO_TRAJECTORY_TRAJECTORY_HPP_

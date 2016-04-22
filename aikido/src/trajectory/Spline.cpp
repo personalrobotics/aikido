@@ -1,8 +1,8 @@
 #include <aikido/util/Spline.hpp>
-#include <aikido/path/Spline.hpp>
+#include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
-namespace path {
+namespace trajectory {
 
 //=============================================================================
 Spline::Spline(
@@ -192,5 +192,5 @@ Eigen::VectorXd Spline::evaluatePolynomial(
   return outputVector;
 }
 
-} // namespace path
+} // namespace trajectory
 } // namespace aikido

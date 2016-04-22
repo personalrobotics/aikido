@@ -79,8 +79,8 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 
 } // namespace
 
-std::unique_ptr<path::Spline> computeParabolicTiming(
-  const path::Interpolated& _inputTrajectory,
+std::unique_ptr<trajectory::Spline> computeParabolicTiming(
+  const trajectory::Interpolated& _inputTrajectory,
   const Eigen::VectorXd& _maxVelocity,
   const Eigen::VectorXd& _maxAcceleration)
 {
@@ -168,7 +168,7 @@ std::unique_ptr<path::Spline> computeParabolicTiming(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(dynamicPath, timePrev, positionPrev, velocityPrev);
 
-  auto outputTrajectory = make_unique<path::Spline>(
+  auto outputTrajectory = make_unique<trajectory::Spline>(
     stateSpace, timePrev + _inputTrajectory.getStartTime());
   auto segmentStartState = stateSpace->createState();
 

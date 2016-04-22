@@ -1,9 +1,9 @@
-#include <aikido/path/Spline.hpp>
+#include <aikido/trajectory/Spline.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <gtest/gtest.h>
 
-using namespace aikido::path;
 using namespace aikido::statespace;
+using aikido::trajectory::Spline;
 using Eigen::Matrix2d;
 using Eigen::Vector2d;
 

@@ -1,8 +1,8 @@
-aikido_add_library("${PROJECT_NAME}_path"
+aikido_add_library("${PROJECT_NAME}_trajectory"
   Interpolated.cpp
   Spline.cpp
 )
-target_link_libraries("${PROJECT_NAME}_path"
+target_link_libraries("${PROJECT_NAME}_trajectory"
   "${PROJECT_NAME}_statespace"
   "${PROJECT_NAME}_util"
   ${DART_LIBRARIES}

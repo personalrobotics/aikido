@@ -1,9 +1,9 @@
-#include <aikido/path/Interpolated.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <gtest/gtest.h>
 
-using namespace aikido::path;
 using namespace aikido::statespace;
+using aikido::trajectory::Interpolated;
 using std::shared_ptr;
 using std::make_shared;
 

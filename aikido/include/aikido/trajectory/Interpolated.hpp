@@ -1,11 +1,11 @@
-#ifndef AIKIDO_PATH_PIECEWISELINEAR_TRAJECTORY_HPP_
-#define AIKIDO_PATH_PIECEWISELINEAR_TRAJECTORY_HPP_
+#ifndef AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_
+#define AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_
 
 #include "Trajectory.hpp"
 #include "../statespace/GeodesicInterpolator.hpp"
 
 namespace aikido {
-namespace path {
+namespace trajectory {
 
 /// Trajectory that uses an \c Interpolator to interpolate between waypoints.
 class Interpolated : public Trajectory
@@ -88,7 +88,7 @@ private:
 
 using InterpolatedPtr = std::shared_ptr<Interpolated>;
 
-} // namespace path
+} // namespace trajectory
 } // namespace aikido
 
-#endif // ifndef AIKIDO_PATH_PIECEWISELINEAR_TRAJECTORY_HPP_
+#endif // ifndef AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_

@@ -1,11 +1,9 @@
-#include <aikido/path/Interpolated.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 
 using aikido::statespace::GeodesicInterpolator;
 
-namespace aikido
-{
-namespace path
-{
+namespace aikido {
+namespace trajectory {
 
 using State = aikido::statespace::StateSpace::State;
 

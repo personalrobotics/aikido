@@ -8,7 +8,7 @@
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
-using aikido::path::Interpolated;
+using aikido::trajectory::Interpolated;
 using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::Rn;
