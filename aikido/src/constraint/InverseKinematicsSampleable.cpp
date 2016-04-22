@@ -1,4 +1,4 @@
-#include <aikido/constraint/IkSampleableConstraint.hpp>
+#include <aikido/constraint/InverseKinematicsSampleable.hpp>
 #include <aikido/statespace/SE3.hpp>
 
 namespace aikido {
@@ -51,12 +51,12 @@ private:
   std::unique_ptr<SampleGenerator> mSeedSampler;
   int mMaxNumTrials;
 
-  friend class IkSampleableConstraint;
+  friend class InverseKinematicsSampleable;
 };
 
 
 //=============================================================================
-IkSampleableConstraint::IkSampleableConstraint(
+InverseKinematicsSampleable::InverseKinematicsSampleable(
       MetaSkeletonStateSpacePtr _stateSpace,
       SampleableConstraintPtr _poseConstraint,
       SampleableConstraintPtr _seedConstraint,
@@ -108,14 +108,14 @@ IkSampleableConstraint::IkSampleableConstraint(
 }
 
 //=============================================================================
-statespace::StateSpacePtr IkSampleableConstraint::getStateSpace() const
+statespace::StateSpacePtr InverseKinematicsSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
 std::unique_ptr<SampleGenerator>
-  IkSampleableConstraint::createSampleGenerator() const
+  InverseKinematicsSampleable::createSampleGenerator() const
 {
   return std::unique_ptr<IkSampleGenerator>(new IkSampleGenerator(
     mStateSpace,

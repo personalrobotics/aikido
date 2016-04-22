@@ -1,5 +1,5 @@
 #include <aikido/constraint/CyclicSampleable.hpp>
-#include <aikido/constraint/FiniteSampleConstraint.hpp>
+#include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/Rn.hpp>
@@ -13,7 +13,7 @@ using aikido::statespace::SO2;
 using aikido::statespace::SO2SampleableConstraint;
 using aikido::statespace::Rn;
 using aikido::constraint::CyclicSampleable;
-using aikido::constraint::FiniteSampleConstraint;
+using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
 using dart::common::make_unique;
@@ -50,7 +50,7 @@ TEST(CyclicSampleableTest, SingleState)
   s1.setValue(v);
 
   // Single-sample-constraint.
-  std::shared_ptr<FiniteSampleConstraint> constraint = std::make_shared<FiniteSampleConstraint>(
+  std::shared_ptr<FiniteSampleable> constraint = std::make_shared<FiniteSampleable>(
     std::make_shared<Rn>(rvss), s1);
 
   // Single-sample-cyclic-constraint.
@@ -93,8 +93,8 @@ TEST(CyclicSampleableTest, MultipleStates)
   states.push_back(s2);
 
   // Finite-sample constraint
-  std::shared_ptr<FiniteSampleConstraint> constraint = 
-    std::make_shared<FiniteSampleConstraint>(
+  std::shared_ptr<FiniteSampleable> constraint = 
+    std::make_shared<FiniteSampleable>(
     std::make_shared<Rn>(rvss), states);
 
   // Finite-sample cyclic constraint

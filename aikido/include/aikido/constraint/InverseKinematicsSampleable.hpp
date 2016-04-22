@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_IKSAMPLEABLECONSTRAINT_HPP_
-#define AIKIDO_CONSTRAINT_IKSAMPLEABLECONSTRAINT_HPP_
+#ifndef AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLEABLE_HPP_
+#define AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLEABLE_HPP_
 
 #include "Sampleable.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -15,7 +15,7 @@ namespace constraint {
 /// into the metaskeleton's configuration space. This class will retry a
 /// configurable number of times if sampling from the provided sampleable
 /// pose constraint or finding an inverse kinematic solution fails.
-class IkSampleableConstraint : public SampleableConstraint
+class InverseKinematicsSampleable : public SampleableConstraint
 {
 public:
 
@@ -29,14 +29,14 @@ public:
   ///        sampled by _poseConstaint.
   /// \param _maxNumTrials Max number of trials for its sample generator
   ///        to retry sampling and finding an inverse kinematics solution.
-  IkSampleableConstraint(
+  InverseKinematicsSampleable(
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     SampleableConstraintPtr _poseConstraint,
     SampleableConstraintPtr _seedConstraint,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     int _maxNumTrials);
 
-  virtual ~IkSampleableConstraint() = default;
+  virtual ~InverseKinematicsSampleable() = default;
 
   // Documentation inherited.
   virtual statespace::StateSpacePtr getStateSpace() const override;
@@ -56,4 +56,4 @@ private:
 } // namespace constraint 
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_IKSAMPLEABLECONSTRAINT_HPP_
+#endif // AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLE_HPP_

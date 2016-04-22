@@ -3,7 +3,7 @@
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/constraint/NonColliding.hpp>
 #include <aikido/constraint/dart.hpp>
-#include <aikido/constraint/IkSampleableConstraint.hpp>
+#include <aikido/constraint/InverseKinematicsSampleable.hpp>
 #include <aikido/constraint/FkTestable.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
@@ -18,7 +18,7 @@
 #include <Eigen/Dense>
 
 using aikido::constraint::FkTestable;
-using aikido::constraint::IkSampleableConstraint;
+using aikido::constraint::InverseKinematicsSampleable;
 using aikido::constraint::ProjectablePtr;
 using aikido::constraint::SampleableConstraintPtr;
 using aikido::constraint::TSR;
@@ -94,7 +94,7 @@ protected:
     auto seedSampler =
         aikido::constraint::createSampleableBounds(stateSpace, make_rng());
     auto ik = dart::dynamics::InverseKinematics::create(endEffector);
-    goalSampleable = std::make_shared<IkSampleableConstraint>(
+    goalSampleable = std::make_shared<InverseKinematicsSampleable>(
         stateSpace, goalTSR, std::move(seedSampler), ik, make_rng(), 30);
     goalTestable =
         std::make_shared<FkTestable>(stateSpace, endEffector.get(), goalTSR);

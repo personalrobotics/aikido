@@ -1,54 +1,54 @@
 #include "../eigen_tests.hpp"
-#include <aikido/constraint/FiniteSampleConstraint.hpp>
+#include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
 #include <gtest/gtest.h>
 
 using aikido::statespace::Rn;
-using aikido::constraint::FiniteSampleConstraint;
+using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
 
-TEST(FiniteSampleConstraintTest, ConstructorThrowsOnNullStateSpace)
+TEST(FiniteSampleableTest, ConstructorThrowsOnNullStateSpace)
 {
   Rn rvss(1);
   auto s1 = rvss.createState();
   s1.setValue(aikido::tests::make_vector(5));
 
-  EXPECT_THROW(FiniteSampleConstraint(nullptr, s1), std::invalid_argument);
+  EXPECT_THROW(FiniteSampleable(nullptr, s1), std::invalid_argument);
 
   std::vector<const aikido::statespace::StateSpace::State*> states;
   states.push_back(s1);
-  EXPECT_THROW(FiniteSampleConstraint(nullptr, states), std::invalid_argument);
+  EXPECT_THROW(FiniteSampleable(nullptr, states), std::invalid_argument);
 }
 
 
-TEST(FiniteSampleConstraintTest, ConstructorThrowsOnNullState)
+TEST(FiniteSampleableTest, ConstructorThrowsOnNullState)
 {
   auto rvss = std::make_shared<Rn>(1);
   Rn::State* st = 0;
 
-  EXPECT_THROW(FiniteSampleConstraint(rvss, st), std::invalid_argument);
+  EXPECT_THROW(FiniteSampleable(rvss, st), std::invalid_argument);
 }
 
-TEST(FiniteSampleConstraintTest, ConstructorThrowsOnEmptyStates)
+TEST(FiniteSampleableTest, ConstructorThrowsOnEmptyStates)
 {
   auto rvss = std::make_shared<Rn>(1);
   std::vector<const aikido::statespace::StateSpace::State*> states;
-  EXPECT_THROW(FiniteSampleConstraint(rvss, states), std::invalid_argument);
+  EXPECT_THROW(FiniteSampleable(rvss, states), std::invalid_argument);
 }
 
-TEST(FiniteSampleConstraintTest, StateSpaceMatch){
+TEST(FiniteSampleableTest, StateSpaceMatch){
   auto rvss = std::make_shared<Rn>(1);
   Eigen::VectorXd v = aikido::tests::make_vector(-2);
   auto s1 = rvss->createState();
   s1.setValue(v);
-  FiniteSampleConstraint constraint(rvss, s1);
+  FiniteSampleable constraint(rvss, s1);
   EXPECT_EQ(rvss, constraint.getStateSpace());
 }
 
-TEST(FiniteSampleConstraintTest, SingleSampleGenerator)
+TEST(FiniteSampleableTest, SingleSampleGenerator)
 {
   // Single-sample.
   Eigen::VectorXd v = aikido::tests::make_vector(-2);
@@ -58,7 +58,7 @@ TEST(FiniteSampleConstraintTest, SingleSampleGenerator)
   s1.setValue(v);
 
   // Single-sample constraint.
-  FiniteSampleConstraint constraint(
+  FiniteSampleable constraint(
   	std::make_shared<Rn>(rvss), s1);
 
   // Single-sample-generator.
@@ -78,7 +78,7 @@ TEST(FiniteSampleConstraintTest, SingleSampleGenerator)
   
 }
 
-TEST(FiniteSampleConstraintTest, FiniteSampleGenerator)
+TEST(FiniteSampleableTest, FiniteSampleGenerator)
 {
 
   // Finite-samples
@@ -101,7 +101,7 @@ TEST(FiniteSampleConstraintTest, FiniteSampleGenerator)
   states.push_back(s2);
 
   // Finite-sample-constraint.
-  FiniteSampleConstraint constraint(
+  FiniteSampleable constraint(
     std::make_shared<Rn>(rvss), states);
 
   // Finite-sample generator.

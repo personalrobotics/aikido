@@ -1,4 +1,4 @@
-#include <aikido/constraint/FiniteSampleConstraint.hpp>
+#include <aikido/constraint/FiniteSampleable.hpp>
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
@@ -42,7 +42,7 @@ private:
   std::vector<statespace::StateSpace::State*> mStates;
   int mIndex;
 
-  friend class FiniteSampleConstraint;
+  friend class FiniteSampleable;
 };
 
 //=============================================================================
@@ -117,7 +117,7 @@ bool FiniteSampleGenerator::canSample() const
 }
 
 //=============================================================================
-FiniteSampleConstraint::FiniteSampleConstraint(
+FiniteSampleable::FiniteSampleable(
   statespace::StateSpacePtr _stateSpace,
   const statespace::StateSpace::State* _state)
 : mStateSpace(std::move(_stateSpace))
@@ -136,7 +136,7 @@ FiniteSampleConstraint::FiniteSampleConstraint(
 
 
 //=============================================================================
-FiniteSampleConstraint::FiniteSampleConstraint(
+FiniteSampleable::FiniteSampleable(
   statespace::StateSpacePtr _stateSpace,
     const std::vector<const statespace::StateSpace::State*>& _states)
 : mStateSpace(std::move(_stateSpace))
@@ -168,7 +168,7 @@ FiniteSampleConstraint::FiniteSampleConstraint(
 }
 
 //=============================================================================
-FiniteSampleConstraint::~FiniteSampleConstraint()
+FiniteSampleable::~FiniteSampleable()
 {
   for (auto state: mStates)
   {
@@ -177,13 +177,13 @@ FiniteSampleConstraint::~FiniteSampleConstraint()
 }
 
 //=============================================================================
-statespace::StateSpacePtr FiniteSampleConstraint::getStateSpace() const
+statespace::StateSpacePtr FiniteSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-std::unique_ptr<SampleGenerator> FiniteSampleConstraint::createSampleGenerator() const
+std::unique_ptr<SampleGenerator> FiniteSampleable::createSampleGenerator() const
 {
   return dart::common::make_unique<FiniteSampleGenerator>(mStateSpace, mStates);
 }
