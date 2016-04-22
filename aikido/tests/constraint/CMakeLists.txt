@@ -60,9 +60,9 @@ aikido_add_test(test_FiniteSampleConstraint
 target_link_libraries(test_FiniteSampleConstraint
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FiniteCyclicSampleConstraint
-  test_FiniteCyclicSampleConstraint.cpp)
-target_link_libraries(test_FiniteCyclicSampleConstraint
+aikido_add_test(test_CyclicSampleable
+  test_CyclicSampleable.cpp)
+target_link_libraries(test_CyclicSampleable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_FkTestable

@@ -1,4 +1,4 @@
-#include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
+#include <aikido/constraint/CyclicSampleable.hpp>
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
@@ -43,7 +43,7 @@ private:
   int mIndex;
   int mNumSamples;
 
-  friend class FiniteCyclicSampleConstraint;
+  friend class CyclicSampleable;
 };
 
 //=============================================================================
@@ -130,7 +130,7 @@ bool FiniteCyclicSampleGenerator::canSample() const
 }
 
 //=============================================================================
-FiniteCyclicSampleConstraint::FiniteCyclicSampleConstraint(
+CyclicSampleable::CyclicSampleable(
   SampleableConstraintPtr _sampleable)
 : mSampleable(std::move(_sampleable))
 {
@@ -150,13 +150,13 @@ FiniteCyclicSampleConstraint::FiniteCyclicSampleConstraint(
 }
 
 //=============================================================================
-statespace::StateSpacePtr FiniteCyclicSampleConstraint::getStateSpace() const
+statespace::StateSpacePtr CyclicSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-std::unique_ptr<SampleGenerator> FiniteCyclicSampleConstraint::createSampleGenerator() const
+std::unique_ptr<SampleGenerator> CyclicSampleable::createSampleGenerator() const
 {
   return dart::common::make_unique<FiniteCyclicSampleGenerator>(
     mSampleable->createSampleGenerator());

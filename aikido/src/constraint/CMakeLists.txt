@@ -6,7 +6,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   DifferentiableProjector.cpp
   DifferentiableSubSpace.cpp
   FiniteSampleConstraint.cpp
-  FiniteCyclicSampleConstraint.cpp
+  CyclicSampleable.cpp
   FkTestable.cpp
   FrameConstraintAdaptor.cpp
   FramePairConstraintAdaptor.cpp

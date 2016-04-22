@@ -1,4 +1,4 @@
-#include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
+#include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleConstraint.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/SO2.hpp>
@@ -12,7 +12,7 @@
 using aikido::statespace::SO2;
 using aikido::statespace::SO2SampleableConstraint;
 using aikido::statespace::Rn;
-using aikido::constraint::FiniteCyclicSampleConstraint;
+using aikido::constraint::CyclicSampleable;
 using aikido::constraint::FiniteSampleConstraint;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
@@ -26,20 +26,20 @@ static std::unique_ptr<DefaultRNG> make_rng()
   return make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
-TEST(FiniteCyclicSampleConstraintTest, ConstructorThrowsOnNullConstraint)
+TEST(CyclicSampleableTest, ConstructorThrowsOnNullConstraint)
 {
-  EXPECT_THROW(FiniteCyclicSampleConstraint(nullptr), std::invalid_argument);
+  EXPECT_THROW(CyclicSampleable(nullptr), std::invalid_argument);
 }
 
-TEST(FiniteCyclicSampleConstraintTest, ConstructorThrowsOnUnlimitiedSampleGenerator)
+TEST(CyclicSampleableTest, ConstructorThrowsOnUnlimitiedSampleGenerator)
 {
     auto so2 = std::make_shared<SO2>();
     auto constraint = std::make_shared<SO2SampleableConstraint>(so2, make_rng());
-    EXPECT_THROW(std::make_shared<FiniteCyclicSampleConstraint>(constraint),
+    EXPECT_THROW(std::make_shared<CyclicSampleable>(constraint),
                  std::invalid_argument);
 }
 
-TEST(FiniteCyclicSampleConstraintTest, SingleState)
+TEST(CyclicSampleableTest, SingleState)
 {
   // Single-sample-state.
   Eigen::VectorXd v(1);
@@ -54,7 +54,7 @@ TEST(FiniteCyclicSampleConstraintTest, SingleState)
     std::make_shared<Rn>(rvss), s1);
 
   // Single-sample-cyclic-constraint.
-  FiniteCyclicSampleConstraint cyclicConstraint(constraint);
+  CyclicSampleable cyclicConstraint(constraint);
 
   auto generator = cyclicConstraint.createSampleGenerator();
 
@@ -71,7 +71,7 @@ TEST(FiniteCyclicSampleConstraintTest, SingleState)
   }
 }
 
-TEST(FiniteCyclicSampleConstraintTest, MultipleStates)
+TEST(CyclicSampleableTest, MultipleStates)
 {
   // Finite samples.
   Eigen::Vector2d v1(0, 1);
@@ -98,7 +98,7 @@ TEST(FiniteCyclicSampleConstraintTest, MultipleStates)
     std::make_shared<Rn>(rvss), states);
 
   // Finite-sample cyclic constraint
-  FiniteCyclicSampleConstraint cyclicConstraint(constraint);
+  CyclicSampleable cyclicConstraint(constraint);
 
   auto generator = cyclicConstraint.createSampleGenerator();
 
