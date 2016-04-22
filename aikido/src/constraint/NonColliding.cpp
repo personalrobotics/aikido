@@ -1,11 +1,11 @@
-#include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/constraint/NonColliding.hpp>
 #include <dart/collision/Result.h>
 
 namespace aikido {
 namespace constraint {
 
 //=============================================================================
-CollisionConstraint::CollisionConstraint(
+NonColliding::NonColliding(
     statespace::dart::MetaSkeletonStateSpacePtr _statespace,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector)
 : statespace(std::move(_statespace))
@@ -21,13 +21,13 @@ CollisionConstraint::CollisionConstraint(
 }
 
 //=============================================================================
-statespace::StateSpacePtr CollisionConstraint::getStateSpace() const
+statespace::StateSpacePtr NonColliding::getStateSpace() const
 {
   return statespace;
 }
 
 //=============================================================================
-bool CollisionConstraint::isSatisfied(
+bool NonColliding::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {
   auto skelStatePtr =
@@ -53,7 +53,7 @@ bool CollisionConstraint::isSatisfied(
 }
 
 //=============================================================================
-void CollisionConstraint::addPairwiseCheck(
+void NonColliding::addPairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
@@ -61,7 +61,7 @@ void CollisionConstraint::addPairwiseCheck(
 }
 
 //=============================================================================
-void CollisionConstraint::addSelfCheck(
+void NonColliding::addSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
   groupsToSelfCheck.emplace_back(std::move(_group));

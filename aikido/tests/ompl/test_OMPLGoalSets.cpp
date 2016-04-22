@@ -1,7 +1,7 @@
 #include <random>
 #include <aikido/constraint/FkTestable.hpp>
 #include <aikido/constraint/TSR.hpp>
-#include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/constraint/NonColliding.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/IkSampleableConstraint.hpp>
 #include <aikido/constraint/FkTestable.hpp>
@@ -101,7 +101,7 @@ protected:
 
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();
-    collConstraint = std::make_shared<aikido::constraint::CollisionConstraint>(
+    collConstraint = std::make_shared<aikido::constraint::NonColliding>(
         stateSpace, cd);
 
     // Distance metric

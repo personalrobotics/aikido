@@ -2,11 +2,11 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/RealVectorBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
-  CollisionConstraint.cpp
+  NonColliding.cpp
   ConjunctionConstraint.cpp
   Differentiable.cpp
   DifferentiableProjector.cpp
-	DifferentiableSubSpace.cpp
+  DifferentiableSubSpace.cpp
   FiniteSampleConstraint.cpp
   FiniteCyclicSampleConstraint.cpp
   FkTestable.cpp
