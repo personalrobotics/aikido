@@ -1,18 +1,44 @@
 #include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
 #include <aikido/constraint/FiniteSampleConstraint.hpp>
+#include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/SO2StateSpace.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
 #include <gtest/gtest.h>
+#include <dart/dart.h>
 
 using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::SO2StateSpace;
+using aikido::statespace::SO2StateSpaceSampleableConstraint;
 using aikido::constraint::FiniteCyclicSampleConstraint;
 using aikido::constraint::FiniteSampleConstraint;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
+using dart::common::make_unique;
+using aikido::util::RNGWrapper;
+using aikido::util::RNG;
+using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
+static std::unique_ptr<DefaultRNG> make_rng()
+{
+  return make_unique<RNGWrapper<std::default_random_engine>>(0);
+}
 
-TEST(FiniteCyclicSampleConstraint, SingleState)
+TEST(FiniteCyclicSampleConstraintTest, ConstructorThrowsOnNullConstraint)
+{
+  EXPECT_THROW(FiniteCyclicSampleConstraint(nullptr), std::invalid_argument);
+}
+
+TEST(FiniteCyclicSampleConstraintTest, ConstructorThrowsOnUnlimitiedSampleGenerator)
+{
+    auto so2 = std::make_shared<SO2StateSpace>();
+    auto constraint = std::make_shared<SO2StateSpaceSampleableConstraint>(so2, make_rng());
+    EXPECT_THROW(std::make_shared<FiniteCyclicSampleConstraint>(constraint),
+                 std::invalid_argument);
+}
+
+TEST(FiniteCyclicSampleConstraintTest, SingleState)
 {
   // Single-sample-state.
   Eigen::VectorXd v(1);
@@ -44,7 +70,7 @@ TEST(FiniteCyclicSampleConstraint, SingleState)
   }
 }
 
-TEST(FiniteCyclicSampleConstraint, MultipleStates)
+TEST(FiniteCyclicSampleConstraintTest, MultipleStates)
 {
   // Finite samples.
   Eigen::Vector2d v1(0, 1);

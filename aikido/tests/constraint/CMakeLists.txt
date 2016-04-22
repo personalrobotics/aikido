@@ -55,15 +55,20 @@
 # target_link_libraries(test_SO2UniformSampler
 #   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
-# aikido_add_test(test_FiniteSampleConstraint
-#   test_FiniteSampleConstraint.cpp)
-# target_link_libraries(test_FiniteSampleConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_FiniteSampleConstraint
+  test_FiniteSampleConstraint.cpp)
+target_link_libraries(test_FiniteSampleConstraint
+  "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_FiniteCyclicSampleConstraint
-#   test_FiniteCyclicSampleConstraint.cpp)
-# target_link_libraries(test_FiniteCyclicSampleConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_FiniteCyclicSampleConstraint
+  test_FiniteCyclicSampleConstraint.cpp)
+target_link_libraries(test_FiniteCyclicSampleConstraint
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_FkTestable
+  test_FkTestable.cpp)
+target_link_libraries(test_FkTestable
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_SO3UniformSampler
 #   test_SO3UniformSampler.cpp)
