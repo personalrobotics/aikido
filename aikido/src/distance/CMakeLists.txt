@@ -1,7 +1,7 @@
 aikido_add_library("${PROJECT_NAME}_distance"
   SO2Angular.cpp
   RnEuclidean.cpp
-  GeodesicDistanceMetric.cpp
+  SO3Angular.cpp
   WeightedDistanceMetric.cpp
 )
 target_link_libraries("${PROJECT_NAME}_distance"

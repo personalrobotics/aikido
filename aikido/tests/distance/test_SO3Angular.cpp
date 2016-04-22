@@ -1,4 +1,4 @@
-#include <aikido/distance/GeodesicDistanceMetric.hpp>
+#include <aikido/distance/SO3Angular.hpp>
 #include <aikido/statespace/SO3.hpp>
 
 #include <gtest/gtest.h>
@@ -8,20 +8,20 @@ using namespace aikido::statespace;
 
 TEST(GeodesicDistance, ThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(GeodesicDistanceMetric(nullptr), std::invalid_argument);
+  EXPECT_THROW(SO3Angular(nullptr), std::invalid_argument);
 }
 
 TEST(GeodesicDistance, StateSpaceEquality)
 {
   auto so3 = std::make_shared<SO3>();
-  GeodesicDistanceMetric dmetric(so3);
+  SO3Angular dmetric(so3);
   EXPECT_EQ(so3, dmetric.getStateSpace());
 }
 
 TEST(GeodesicDistance, Distance)
 {
   auto so3 = std::make_shared<SO3>();
-  GeodesicDistanceMetric dmetric(so3);
+  SO3Angular dmetric(so3);
   auto state1 = so3->createState();
   auto state2 = so3->createState();
 

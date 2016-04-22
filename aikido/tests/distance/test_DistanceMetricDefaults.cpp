@@ -1,6 +1,6 @@
 #include <aikido/distance/DistanceMetricDefaults.hpp>
 #include <aikido/distance/WeightedDistanceMetric.hpp>
-#include <aikido/distance/GeodesicDistanceMetric.hpp>
+#include <aikido/distance/SO3Angular.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
@@ -41,7 +41,7 @@ TEST(DistanceMetricDefaults, CreateDistanceMetricFor)
 
   auto so3 = std::make_shared<SO3>();
   auto so3metric = createDistanceMetricFor<SO3>(so3);
-  auto so3metric_c = dynamic_cast<GeodesicDistanceMetric*>(so3metric.get());
+  auto so3metric_c = dynamic_cast<SO3Angular*>(so3metric.get());
   EXPECT_TRUE(so3metric_c != nullptr);
 
   std::vector<StateSpacePtr> spaces({so2, rv3, so3});
@@ -65,7 +65,7 @@ TEST(DistanceMetricDefaults, CreateDistanceMetric)
 
   auto so3 = std::make_shared<SO3>();
   auto so3metric = createDistanceMetric(so3);
-  auto so3metric_c = dynamic_cast<GeodesicDistanceMetric*>(so3metric.get());
+  auto so3metric_c = dynamic_cast<SO3Angular*>(so3metric.get());
   EXPECT_TRUE(so3metric_c != nullptr);
 
   std::vector<StateSpacePtr> spaces({so2, rv3, so3});
