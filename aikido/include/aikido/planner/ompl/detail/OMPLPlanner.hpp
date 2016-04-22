@@ -1,7 +1,7 @@
 #include "../AIKIDOGeometricStateSpace.hpp"
 #include "../AIKIDOStateValidityChecker.hpp"
 #include "../GoalRegion.hpp"
-#include "../../trajectory/Interpolated.hpp"
+#include "../../../trajectory/Interpolated.hpp"
 #include <ompl/geometric/PathGeometric.h>
 
 namespace aikido {

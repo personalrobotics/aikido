@@ -1,5 +1,5 @@
 #include "OMPLTestHelpers.hpp"
-#include <aikido/ompl/AIKIDOStateSampler.hpp>
+#include <aikido/planner/ompl/AIKIDOStateSampler.hpp>
 
 using aikido::ompl::GeometricStateSpace;
 using aikido::ompl::StateSampler;

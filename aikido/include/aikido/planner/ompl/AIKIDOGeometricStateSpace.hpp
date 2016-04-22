@@ -2,12 +2,12 @@
 #define AIKIDO_OMPL_AIKIDOGEOMETRICSTATESPACE_HPP_
 
 #include <ompl/base/StateSpace.h>
-#include "../constraint/Sampleable.hpp"
-#include "../constraint/TestableConstraint.hpp"
-#include "../constraint/Projectable.hpp"
-#include "../distance/DistanceMetric.hpp"
-#include "../statespace/StateSpace.hpp"
-#include "../statespace/GeodesicInterpolator.hpp"
+#include "../../constraint/Sampleable.hpp"
+#include "../../constraint/TestableConstraint.hpp"
+#include "../../constraint/Projectable.hpp"
+#include "../../distance/DistanceMetric.hpp"
+#include "../../statespace/StateSpace.hpp"
+#include "../../statespace/GeodesicInterpolator.hpp"
 
 namespace aikido {
 namespace ompl {

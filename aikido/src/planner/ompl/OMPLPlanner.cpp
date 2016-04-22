@@ -1,5 +1,5 @@
-#include <aikido/ompl/OMPLPlanner.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/OMPLPlanner.hpp>
+#include <aikido/planner/ompl/AIKIDOGeometricStateSpace.hpp>
 #include <aikido/constraint/ConjunctionConstraint.hpp>
 
 namespace aikido {

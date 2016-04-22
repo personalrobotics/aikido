@@ -1,13 +1,13 @@
 #ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
 #define AIKIDO_OMPL_OMPLPLANNER_HPP_
 
-#include "../distance/DistanceMetric.hpp"
-#include "../statespace/StateSpace.hpp"
-#include "../statespace/Interpolator.hpp"
-#include "../constraint/TestableConstraint.hpp"
-#include "../constraint/Sampleable.hpp"
-#include "../constraint/Projectable.hpp"
-#include "../trajectory/Trajectory.hpp"
+#include "../../distance/DistanceMetric.hpp"
+#include "../../statespace/StateSpace.hpp"
+#include "../../statespace/Interpolator.hpp"
+#include "../../constraint/TestableConstraint.hpp"
+#include "../../constraint/Sampleable.hpp"
+#include "../../constraint/Projectable.hpp"
+#include "../../trajectory/Trajectory.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>

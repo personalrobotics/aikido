@@ -3,8 +3,8 @@
 
 #include <ompl/base/StateValidityChecker.h>
 #include <ompl/base/SpaceInformation.h>
-#include "../statespace/StateSpace.hpp"
-#include "../constraint/TestableConstraint.hpp"
+#include "../../statespace/StateSpace.hpp"
+#include "../../constraint/TestableConstraint.hpp"
 
 namespace aikido {
 namespace ompl {

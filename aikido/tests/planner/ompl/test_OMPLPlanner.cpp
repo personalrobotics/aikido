@@ -1,6 +1,6 @@
 #include "OMPLTestHelpers.hpp"
-#include "../constraint/MockConstraints.hpp"
-#include <aikido/ompl/OMPLPlanner.hpp>
+#include "../../constraint/MockConstraints.hpp"
+#include <aikido/planner/ompl/OMPLPlanner.hpp>
 #include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
 #include <aikido/constraint/SampleableSubSpace.h>
 #include <aikido/constraint/TestableSubSpace.hpp>

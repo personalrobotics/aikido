@@ -1,7 +1,7 @@
 #include "OMPLTestHelpers.hpp"
-#include "../constraint/MockConstraints.hpp"
-#include <aikido/ompl/GoalRegion.hpp>
-#include <aikido/ompl/OMPLPlanner.hpp>
+#include "../../constraint/MockConstraints.hpp"
+#include <aikido/planner/ompl/GoalRegion.hpp>
+#include <aikido/planner/ompl/OMPLPlanner.hpp>
 
 using aikido::ompl::GeometricStateSpace;
 using aikido::ompl::GoalRegion;

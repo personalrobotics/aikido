@@ -1,5 +1,5 @@
-#include <aikido/ompl/AIKIDOStateSampler.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/AIKIDOStateSampler.hpp>
+#include <aikido/planner/ompl/AIKIDOGeometricStateSpace.hpp>
 
 namespace aikido {
 namespace ompl {
