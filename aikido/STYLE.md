@@ -267,7 +267,7 @@ is recognized by many documentation generators.
 """
 
 
-class MyExampleClass(object)
+class MyExampleClass(object):
     """
     This is a brief summary of the class.  It is required.
     
