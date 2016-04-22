@@ -58,6 +58,8 @@ private:
 	///For the ROS node that will work with the April Tags module
 	ros::NodeHandle mNode;
 
+	tf::TransformListener* mListener;
+
 };
 
 } //namespace perception

@@ -35,6 +35,7 @@ AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic,
 		mReferenceFrameId(referenceFrameId),
 		mReferenceLink(referenceLink)
 {
+	mListener = new tf::TransformListener();
 }
 
 //================================================================================================================================
@@ -75,14 +76,13 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 				//For the frame-frame transform
 				tf::StampedTransform transform;
-				tf::TransformListener listener;
 
 				try{
-					listener.waitForTransform(mReferenceFrameId,detection_frame,
-						ros::Time(0),ros::Duration(_timeout));
+					mListener->waitForTransform(mReferenceFrameId,detection_frame,
+						marker_stamp,ros::Duration(_timeout));
 
-					listener.lookupTransform(mReferenceFrameId,detection_frame,
-						ros::Time(0), transform);
+					mListener->lookupTransform(mReferenceFrameId,detection_frame,
+						marker_stamp, transform);
 				}
 				catch(const tf::ExtrapolationException& ex){
 					ROS_ERROR("%s",ex.what());
