@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/TestableConstraint.hpp>
 #include <aikido/constraint/dart.hpp>
-#include <aikido/distance/Defaults.hpp>
+#include <aikido/distance/defaults.hpp>
 #include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/StateSpace.hpp>

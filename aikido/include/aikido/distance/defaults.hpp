@@ -22,6 +22,6 @@ std::unique_ptr<DistanceMetric> createDistanceMetric(
 }
 }
 
-#include "detail/Defaults-impl.hpp"
+#include "detail/defaults-impl.hpp"
 
 #endif

@@ -1,4 +1,4 @@
-#include <aikido/distance/Defaults.hpp>
+#include <aikido/distance/defaults.hpp>
 #include <aikido/distance/Weighted.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
