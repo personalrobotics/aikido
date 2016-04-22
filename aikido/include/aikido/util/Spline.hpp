@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PATH_SPLINE_H_
-#define AIKIDO_PATH_SPLINE_H_
+#ifndef AIKIDO_UTIL_SPLINE_HPP_
+#define AIKIDO_UTIL_SPLINE_HPP_
 
 #include <cstddef>
 #include <vector>
@@ -10,7 +10,7 @@
 #include <Eigen/StdVector>
 
 namespace aikido {
-namespace path {
+namespace util {
 
 /// An arbitrary dimensional polynomial spline. The number of coefficients,
 /// outputs, and knot points may be specified either at compile time (via
@@ -333,9 +333,9 @@ public:
   );
 };
 
-} // namespace path
+} // namespace util
 } // namespace aikido
 
 #include "detail/Spline-impl.hpp"
 
-#endif // AIKIDO_PATH_SPLINE_H_
+#endif // AIKIDO_UTIL_SPLINE_HPP_

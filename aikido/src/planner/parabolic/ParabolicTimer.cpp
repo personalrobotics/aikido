@@ -1,6 +1,6 @@
 #include <cassert>
 #include <set>
-#include <aikido/path/Spline.hpp>
+#include <aikido/util/Spline.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -18,7 +18,7 @@ using aikido::statespace::StateSpace;
 using dart::common::make_unique;
 
 using CubicSplineProblem
-  = aikido::path::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+  = aikido::util::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
 
 namespace aikido {
 namespace planner {
@@ -79,8 +79,8 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 
 } // namespace
 
-std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
-  const path::PiecewiseLinearTrajectory& _inputTrajectory,
+std::unique_ptr<trajectory::Spline> computeParabolicTiming(
+  const trajectory::Interpolated& _inputTrajectory,
   const Eigen::VectorXd& _maxVelocity,
   const Eigen::VectorXd& _maxAcceleration)
 {
@@ -116,7 +116,7 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
       throw std::invalid_argument("Acceleration limits must be positive.");
   }
 
-  // Convert the PiecewiseLinearTrajectory to the internal data structure by
+  // Convert the Interpolated to the internal data structure by
   // computing the logMap relative to the starting state.
   std::vector<ParabolicRamp::Vector> milestones;
   milestones.reserve(numWaypoints);
@@ -168,7 +168,7 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(dynamicPath, timePrev, positionPrev, velocityPrev);
 
-  auto outputTrajectory = make_unique<path::SplineTrajectory2>(
+  auto outputTrajectory = make_unique<trajectory::Spline>(
     stateSpace, timePrev + _inputTrajectory.getStartTime());
   auto segmentStartState = stateSpace->createState();
 

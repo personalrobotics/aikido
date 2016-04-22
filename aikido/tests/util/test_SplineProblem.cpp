@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <gtest/gtest.h>
-#include <aikido/path/Spline.hpp>
+#include <aikido/util/Spline.hpp>
 #include "eigen_tests.hpp"
 
 using namespace aikido::tests;
@@ -10,7 +10,7 @@ static constexpr double EPSILON = 1e-6;
 class SplineProblemTests : public testing::Test
 {
 protected:
-  using SplineProblem = aikido::path::SplineProblem<>;
+  using SplineProblem = aikido::util::SplineProblem<>;
 
   void SetUp() override
   {

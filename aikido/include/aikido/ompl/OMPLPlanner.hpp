@@ -7,7 +7,7 @@
 #include "../constraint/TestableConstraint.hpp"
 #include "../constraint/Sampleable.hpp"
 #include "../constraint/Projectable.hpp"
-#include "../path/Trajectory.hpp"
+#include "../trajectory/Trajectory.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -39,7 +39,7 @@ namespace ompl {
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
 template <class PlannerType>
-path::TrajectoryPtr planOMPL(
+trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
     statespace::StateSpacePtr _stateSpace,
@@ -74,7 +74,7 @@ path::TrajectoryPtr planOMPL(
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
 template <class PlannerType>
-path::TrajectoryPtr planOMPL(
+trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     constraint::TestableConstraintPtr _goalTestable,
     constraint::SampleableConstraintPtr _goalSampler,
@@ -121,7 +121,7 @@ path::TrajectoryPtr planOMPL(
 /// \param _interpolator An aikido interpolator that can be used with the _stateSpace.
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
-path::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
+trajectory::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
                              const ::ompl::base::ProblemDefinitionPtr &_pdef,
                              statespace::StateSpacePtr _sspace,
                              statespace::InterpolatorPtr _interpolator,

@@ -1,15 +1,15 @@
-#include <aikido/path/SplineTrajectory2.hpp>
+#include <aikido/trajectory/Spline.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <gtest/gtest.h>
 
-using namespace aikido::path;
 using namespace aikido::statespace;
+using aikido::trajectory::Spline;
 using Eigen::Matrix2d;
 using Eigen::Vector2d;
 
 static const Vector2d START_VALUE(1., 2.);
 
-class SplineTrajectory2Test : public ::testing::Test
+class SplineTest : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -28,117 +28,117 @@ protected:
 
   std::shared_ptr<Rn> mStateSpace;
   Rn::State* mStartState;
-  std::shared_ptr<SplineTrajectory2> mTrajectory;
+  std::shared_ptr<Spline> mTrajectory;
 };
 
-TEST_F(SplineTrajectory2Test, addSegment_NegativeDurationThrows)
+TEST_F(SplineTest, addSegment_NegativeDurationThrows)
 {
   Eigen::Matrix2d coefficients;
   coefficients << 0., 1.,
                   0., 2.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
 
   EXPECT_THROW({
     trajectory.addSegment(coefficients, -1., mStartState);
   }, std::invalid_argument);
 }
 
-TEST_F(SplineTrajectory2Test, addSegment_ZeroDurationThrows)
+TEST_F(SplineTest, addSegment_ZeroDurationThrows)
 {
   Eigen::Matrix2d coefficients;
   coefficients << 0., 1.,
                   0., 2.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
 
   EXPECT_THROW({
     trajectory.addSegment(coefficients, 0., mStartState);
   }, std::invalid_argument);
 }
 
-TEST_F(SplineTrajectory2Test, addSegment_IncorrectDimension_Throws)
+TEST_F(SplineTest, addSegment_IncorrectDimension_Throws)
 {
   Eigen::Matrix<double, 1, 2> coefficients;
   coefficients << 0., 1.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
 
   EXPECT_THROW({
     trajectory.addSegment(coefficients, 1., mStartState);
   }, std::invalid_argument);
 }
 
-TEST_F(SplineTrajectory2Test, addSegment_EmptyCoefficients_Throws)
+TEST_F(SplineTest, addSegment_EmptyCoefficients_Throws)
 {
   Eigen::Matrix<double, 2, 0> coefficients;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
 
   EXPECT_THROW({
     trajectory.addSegment(coefficients, 1., mStartState);
   }, std::invalid_argument);
 }
 
-TEST_F(SplineTrajectory2Test, getStateSpace)
+TEST_F(SplineTest, getStateSpace)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
 
   EXPECT_EQ(mStateSpace, trajectory.getStateSpace());
 }
 
-TEST_F(SplineTrajectory2Test, getNumDerivatives_IsEmpty_ReturnsZero)
+TEST_F(SplineTest, getNumDerivatives_IsEmpty_ReturnsZero)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
 
   EXPECT_EQ(0, trajectory.getNumDerivatives());
 }
 
-TEST_F(SplineTrajectory2Test, getNumDerivatives_IsConstant_ReturnsZero)
+TEST_F(SplineTest, getNumDerivatives_IsConstant_ReturnsZero)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
   trajectory.addSegment(Vector2d(4., 5.), 1., mStartState);
 
   EXPECT_EQ(0, trajectory.getNumDerivatives());
 }
 
-TEST_F(SplineTrajectory2Test, getNumDerivatives_IsLinear_ReturnsOne)
+TEST_F(SplineTest, getNumDerivatives_IsLinear_ReturnsOne)
 {
   Matrix2d coefficients;
   coefficients << 0., 1.,
                   0., 2.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
   trajectory.addSegment(coefficients, 1., mStartState);
 
   EXPECT_EQ(1, trajectory.getNumDerivatives());
 }
 
-TEST_F(SplineTrajectory2Test, getNumDerivatives_IsQuadratic_ReturnsTwo)
+TEST_F(SplineTest, getNumDerivatives_IsQuadratic_ReturnsTwo)
 {
   Eigen::Matrix<double, 2, 3> coefficients;
   coefficients << 0., 0., 1.,
                   0., 0., 2.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
   trajectory.addSegment(coefficients, 1., mStartState);
 
   EXPECT_EQ(2, trajectory.getNumDerivatives());
 }
 
-TEST_F(SplineTrajectory2Test, getNumDerivatives_IsCubic_ReturnsThree)
+TEST_F(SplineTest, getNumDerivatives_IsCubic_ReturnsThree)
 {
   Eigen::Matrix<double, 2, 4> coefficients;
   coefficients << 0., 0., 0., 1.,
                   0., 0., 0., 2.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
   trajectory.addSegment(coefficients, 1., mStartState);
 
   EXPECT_EQ(3, trajectory.getNumDerivatives());
 }
 
-TEST_F(SplineTrajectory2Test, getNumDerivatives_IsHomogeneous_ReturnsZero)
+TEST_F(SplineTest, getNumDerivatives_IsHomogeneous_ReturnsZero)
 {
   Eigen::Matrix2d coefficients1, coefficients2;
   coefficients1 << 0., 1.,
@@ -146,14 +146,14 @@ TEST_F(SplineTrajectory2Test, getNumDerivatives_IsHomogeneous_ReturnsZero)
   coefficients2 << 0., 3.,
                    0., 4.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
   trajectory.addSegment(coefficients1, 1., mStartState);
   trajectory.addSegment(coefficients2, 1.);
 
   EXPECT_EQ(1, trajectory.getNumDerivatives());
 }
 
-TEST_F(SplineTrajectory2Test, getNumDerivatives_IsHeterogeneous_ReturnsMax)
+TEST_F(SplineTest, getNumDerivatives_IsHeterogeneous_ReturnsMax)
 {
   Eigen::Matrix2d coefficients1;
   Eigen::Matrix<double, 2, 3> coefficients2;
@@ -162,28 +162,28 @@ TEST_F(SplineTrajectory2Test, getNumDerivatives_IsHeterogeneous_ReturnsMax)
   coefficients2 << 0., 0., 3.,
                    0., 0., 4.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 0.);
+  Spline trajectory(mStateSpace, 0.);
   trajectory.addSegment(coefficients1, 2., mStartState);
   trajectory.addSegment(coefficients2, 3.);
 
   EXPECT_EQ(2, trajectory.getNumDerivatives());
 }
 
-TEST_F(SplineTrajectory2Test, getStartTime)
+TEST_F(SplineTest, getStartTime)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   EXPECT_DOUBLE_EQ(3., trajectory.getStartTime());
 }
 
-TEST_F(SplineTrajectory2Test, getEndTime_IsEmpty_ReturnsStartTime)
+TEST_F(SplineTest, getEndTime_IsEmpty_ReturnsStartTime)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   EXPECT_DOUBLE_EQ(3., trajectory.getEndTime());
 }
 
-TEST_F(SplineTrajectory2Test, getEndTime_IsNotEmpty_ReturnsEndTime)
+TEST_F(SplineTest, getEndTime_IsNotEmpty_ReturnsEndTime)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
 
   trajectory.addSegment(Vector2d(4., 5.), 11., mStartState);
   EXPECT_DOUBLE_EQ(14., trajectory.getEndTime());
@@ -192,15 +192,15 @@ TEST_F(SplineTrajectory2Test, getEndTime_IsNotEmpty_ReturnsEndTime)
   EXPECT_DOUBLE_EQ(27., trajectory.getEndTime());
 }
 
-TEST_F(SplineTrajectory2Test, getDuration_IsEmpty_ReturnsZero)
+TEST_F(SplineTest, getDuration_IsEmpty_ReturnsZero)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   EXPECT_DOUBLE_EQ(0., trajectory.getDuration());
 }
   
-TEST_F(SplineTrajectory2Test, getDuration_IsNotEmpty_ReturnsDuration)
+TEST_F(SplineTest, getDuration_IsNotEmpty_ReturnsDuration)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
 
   trajectory.addSegment(Vector2d(4., 5.), 11., mStartState);
   EXPECT_DOUBLE_EQ(11., trajectory.getDuration());
@@ -209,9 +209,9 @@ TEST_F(SplineTrajectory2Test, getDuration_IsNotEmpty_ReturnsDuration)
   EXPECT_DOUBLE_EQ(24., trajectory.getDuration());
 }
 
-TEST_F(SplineTrajectory2Test, evaluate_IsEmpty_Throws)
+TEST_F(SplineTest, evaluate_IsEmpty_Throws)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
 
   auto state = mStateSpace->createState();
 
@@ -220,13 +220,13 @@ TEST_F(SplineTrajectory2Test, evaluate_IsEmpty_Throws)
   }, std::logic_error);
 }
 
-TEST_F(SplineTrajectory2Test, evaluate_EvaluateStart_ReturnsStart)
+TEST_F(SplineTest, evaluate_EvaluateStart_ReturnsStart)
 {
   Matrix2d coefficients;
   coefficients << 0., 1.,
                   0., 2.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   trajectory.addSegment(coefficients, 1., mStartState);
 
   auto state = mStateSpace->createState();
@@ -235,7 +235,7 @@ TEST_F(SplineTrajectory2Test, evaluate_EvaluateStart_ReturnsStart)
   EXPECT_TRUE(START_VALUE.isApprox(state.getValue()));
 }
 
-TEST_F(SplineTrajectory2Test, evaluate_EvaluateEnd_ReturnsEnd)
+TEST_F(SplineTest, evaluate_EvaluateEnd_ReturnsEnd)
 {
   Matrix2d coefficients1, coefficients2;
   coefficients1 << 0., 1.,
@@ -243,7 +243,7 @@ TEST_F(SplineTrajectory2Test, evaluate_EvaluateEnd_ReturnsEnd)
   coefficients2 << 0., 3.,
                    0., 4.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   auto state = mStateSpace->createState();
 
   trajectory.addSegment(coefficients1, 1., mStartState);
@@ -255,7 +255,7 @@ TEST_F(SplineTrajectory2Test, evaluate_EvaluateEnd_ReturnsEnd)
   EXPECT_TRUE(Vector2d(8., 12.).isApprox(state.getValue()));
 }
 
-TEST_F(SplineTrajectory2Test, evaluate_Middle_ReturnsInterpolation)
+TEST_F(SplineTest, evaluate_Middle_ReturnsInterpolation)
 {
   Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
   coefficients1 << 0., 0., 1.,
@@ -265,7 +265,7 @@ TEST_F(SplineTrajectory2Test, evaluate_Middle_ReturnsInterpolation)
   coefficients3 << 0., 2., 3.,
                    0., 3., 3.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   trajectory.addSegment(coefficients1, 1., mStartState);
   trajectory.addSegment(coefficients2, 2.);
   trajectory.addSegment(coefficients3, 3.);
@@ -291,16 +291,16 @@ TEST_F(SplineTrajectory2Test, evaluate_Middle_ReturnsInterpolation)
   EXPECT_TRUE(Vector2d(45.00, 52.00).isApprox(state.getValue()));
 }
 
-TEST_F(SplineTrajectory2Test, evaluateDerivative_IsEmpty_Throws)
+TEST_F(SplineTest, evaluateDerivative_IsEmpty_Throws)
 {
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
 
   EXPECT_THROW({
     trajectory.evaluate(3., 1);
   }, std::logic_error);
 }
 
-TEST_F(SplineTrajectory2Test, evaluateDerivative_FirstDerivative)
+TEST_F(SplineTest, evaluateDerivative_FirstDerivative)
 {
   Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
   coefficients1 << 0., 0., 1.,
@@ -310,7 +310,7 @@ TEST_F(SplineTrajectory2Test, evaluateDerivative_FirstDerivative)
   coefficients3 << 0., 2., 3.,
                    0., 3., 3.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   trajectory.addSegment(coefficients1, 1., mStartState);
   trajectory.addSegment(coefficients2, 2.);
   trajectory.addSegment(coefficients3, 3.);
@@ -327,7 +327,7 @@ TEST_F(SplineTrajectory2Test, evaluateDerivative_FirstDerivative)
   EXPECT_TRUE(Vector2d(11., 12.).isApprox(tangentVector));
 }
 
-TEST_F(SplineTrajectory2Test, EvaluateDerivative_SecondDerivative)
+TEST_F(SplineTest, EvaluateDerivative_SecondDerivative)
 {
   Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
   coefficients1 << 0., 0., 1.,
@@ -337,7 +337,7 @@ TEST_F(SplineTrajectory2Test, EvaluateDerivative_SecondDerivative)
   coefficients3 << 0., 2., 3.,
                    0., 3., 3.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   trajectory.addSegment(coefficients1, 1., mStartState);
   trajectory.addSegment(coefficients2, 2.);
   trajectory.addSegment(coefficients3, 3.);
@@ -354,7 +354,7 @@ TEST_F(SplineTrajectory2Test, EvaluateDerivative_SecondDerivative)
   EXPECT_TRUE(Vector2d(6., 6.).isApprox(tangentVector));
 }
 
-TEST_F(SplineTrajectory2Test, EvaluateDerivative_HigherOrder_ReturnsZero)
+TEST_F(SplineTest, EvaluateDerivative_HigherOrder_ReturnsZero)
 {
   Eigen::Matrix<double, 2, 3> coefficients1, coefficients2, coefficients3;
   coefficients1 << 0., 0., 1.,
@@ -364,7 +364,7 @@ TEST_F(SplineTrajectory2Test, EvaluateDerivative_HigherOrder_ReturnsZero)
   coefficients3 << 0., 2., 3.,
                    0., 3., 3.;
 
-  SplineTrajectory2 trajectory(mStateSpace, 3.);
+  Spline trajectory(mStateSpace, 3.);
   trajectory.addSegment(coefficients1, 1., mStartState);
   trajectory.addSegment(coefficients2, 2.);
   trajectory.addSegment(coefficients3, 3.);
