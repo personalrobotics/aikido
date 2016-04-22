@@ -4,143 +4,75 @@ The code in this library generally follows the same coding convention as the [DA
 
 ## C++ Header Style
 
+C++ Headers should be contained in paths that match their namespace, with the extension `.hpp`.
+
 ```c++
-#ifndef AIKIDO_CONSTRAINT_TSR_H_
-#define AIKIDO_CONSTRAINT_TSR_H_
+#ifndef AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_  // Header guards must include the library, namespace, and source file names.
+#define AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 
-#include "Sampleable.hpp"
-#include "../statespace/SE3StateSpace.hpp"
-#include <Eigen/Dense>
-#include "Projectable.hpp"
-#include "Differentiable.hpp"
-#include "TestableConstraint.hpp"
-#include <dart/math/MathTypes.h>
+// Place all dependency includes at the top of the file.
+// Use relative paths for includes within the same directory structure, and place these at the top.
+#include "ExampleInterface.hpp"  
+#include "../other_example/ExampleOtherInterface.hpp"
+#include <library/library.hpp>
 
+// Namespaces scopes should be one line each with "cuddled" braces.
 namespace aikido {
-namespace constraint {
+namespace example {
 
-/// TSRs describe end-effector constraint sets as subsets of SE(3).
-/// A TSR consists of three parts:
-///     T0_w: transform from the origin to the TSR frame w
-///     B_w: 6 × 2 matrix of bounds in the coordinates of w.
-///     Tw_e: end-effector offset transform in the coordinates of w
-/// See:
-/// Berenson, Dmitry, Siddhartha S. Srinivasa, and James Kuffner.
-/// "Task space regions: A framework for pose-constrained manipulation
-/// planning." IJRR 2001:
-/// http://repository.cmu.edu/cgi/viewcontent.cgi?article=2024&context=robotics
-class TSR : public SampleableConstraint,
-            public Differentiable,
-            public TestableConstraint,
-            public Projectable
+/// A required doxygen comment descripion for this class.  This can be extended to
+/// include various useful detail about the class, and can use the standard doxygen
+/// tag set to refer to other classes or documentation.  It should use the '\\\'
+/// style of block comment.
+class ExampleClass
+    : public ExampleInterface
+    , public ExampleOtherInterface
 {
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW   // Many classes that require Eigen will also need this macro
 
-  /// Constructor.
-  /// \param _rng Random number generator used by SampleGenerators for this TSR.
-  /// \param _T0_w transform from the origin to the TSR frame w
-  /// \param _Bw 6 × 2 matrix of bounds in the coordinates of w.
-  ///        Top three rows bound translation, and bottom three rows
-  ///        bound rotation following Roll-Pitch-Yaw convention.
-  ///        _Bw(i, 0) should be less than or equal to _Bw(i, 1).
-  /// \param _Tw_e end-effector offset transform in the coordinates of w
-  TSR(std::unique_ptr<util::RNG> _rng,
-      const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
-      const Eigen::Matrix<double, 6, 2>& _Bw =
-          Eigen::Matrix<double, 6, 2>::Zero(),
-      const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity());
+  /// Required brief description of constructor.  This will often be as simple as:
+  /// "Creates an instance of ExampleClass."
+  ///
+  /// \param _foo this is an example parameter description
+  /// \param _bar this is a longer example parameter description that neesd
+  ///        to wrap across multiple lines.
+  ExampleClass(std::unique_ptr<util::RNG> _foo,
+               const Eigen::Isometry3d& _bar = Eigen::Isometry3d::Identity());
 
+  ExampleClass(const ExampleClass& other);
+  ExampleClass(ExampleClass&& other);
 
-  /// Constructor with default random seed generator.
-  /// \param _T0_w transform from the origin to the TSR frame w
-  /// \param _Bw 6 × 2 matrix of bounds in the coordinates of w.
-  ///        Top three rows bound translation, and bottom three rows
-  ///        bound rotation following Roll-Pitch-Yaw convention.
-  ///        _Bw(i, 0) should be less than or equal to _Bw(i, 1).
-  /// \param _Tw_e end-effector offset transform in the coordinates of w
-  TSR(const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
-      const Eigen::Matrix<double, 6, 2>& _Bw =
-          Eigen::Matrix<double, 6, 2>::Zero(),
-      const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity());
+  ExampleClass& operator=(const ExampleClass& other);
+  ExampleClass& operator=(ExampleClass&& other);
 
-  TSR(const TSR& other);
-  TSR(TSR&& other);
+  // If a class should be non-copyable, it should explicitly delete the following:
+  ExampleClass(const ExampleClass&) = delete;
+  ExampleClass(ExampleClass&& other) = delete;
+  ExampleClass& operator=(const ExampleClass& other) = delete;
+  ExampleClass& operator=(ExampleClass&& other) = delete;
+  
+  // Classes should explicitly declare a default virtual destructor
+  // if they do not declare one (unless marking a class as final).
+  virtual ~ExampleClass() = default; 
 
-  TSR& operator=(const TSR& other);
-  TSR& operator=(TSR&& other);
+  // Documentation inherited.  <-- Use this comment to indicate that the docstring of the interface method applies
+  int exampleInterfaceFunction() const override;
 
-  virtual ~TSR() = default;
-
-  // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
-
-  /// Returns the SE3StateSpace which this TSR operates in.
-  std::shared_ptr<statespace::SE3StateSpace> getSE3StateSpace() const;
-
-  // Documentation inherited.
-  std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
-
-  // Documentation inherited.
-  bool isSatisfied(const statespace::StateSpace::State* _s) const override;
-
-  /// Throws an invalid_argument exception if this TSR is invalid.
-  /// For a TSR to be valid, mBw(i, 0) <= mBw(i, 1).
-  void validate() const;
-
-  /// Set the random number generator used by SampleGenerators for this TSR.
-  void setRNG(std::unique_ptr<util::RNG> rng);
-
-  // Documentation inherited.
-  size_t getConstraintDimension() const override;
-
-  // Documentation inherited.
-  Eigen::VectorXd getValue(
-      const statespace::StateSpace::State* _s) const override;
-
-  /// Returns 6 x 6 matrix.
-  /// Jacobian of TSR with respect to the se(3) tangent vector of _s.
-  /// The jacobian is w.r.t. the origin frame.
-  /// se(3) tangent vector follows dart convention:
-  ///   top 3 rows is the angle-axis representation of _s's rotation.
-  ///   bottom 3 rows represent the translation.
-  Eigen::MatrixXd getJacobian(
-      const statespace::StateSpace::State* _s) const override;
-
-  // Documentation inherited.
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-      const statespace::StateSpace::State* _s) const override;
-
-  // Documentation inherited.
-  std::vector<ConstraintType> getConstraintTypes() const override;
-
-  // Documentation inherited.
-  bool project(const statespace::StateSpace::State* _s,
-      statespace::StateSpace::State* _out) const override;
-
-  /// Transformation from origin frame into the TSR frame "w".
-  /// "w" is usually centered at the origin of an object held by the hand
-  ///  or at a location on an object that is useful for grasping.
-  Eigen::Isometry3d mT0_w;
-
-  /// Bounds on "wiggling" in `x, y, z, roll, pitch, yaw`.
-  Eigen::Matrix<double, 6, 2> mBw;
-
-  /// Transformation from "w" frame into end frame.
-  /// This often represent an offset from "w" to the origin of the end-effector.
-  Eigen::Isometry3d mTw_e;
+  /// This is a docstring for a method, it is required.
+  void exampleMethod() const;
 
 private:
-  std::unique_ptr<util::RNG> mRng;
-  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
+  std::unique_ptr<util::RNG> mExampleMember; // Member variables are prefixed with "m"
 };
 
-using TSRPtr = std::shared_ptr<TSR>;
+// Use "using" directives to declare pointer helper types
+using ExamplePtr = std::shared_ptr<Example>; 
 
-}  // namespace constraint
+}  // namespace example
 }  // namespace aikido
 
-#endif  // AIKIDO_CONSTRAINT_TSR_H_
+#endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```
 
 ## C++ Source Style
