@@ -8,12 +8,9 @@
 #include "../../statespace/CompoundStateSpace.hpp"
 #include <dart/common/StlHelpers.h>
 
-namespace aikido
-{
-namespace distance
-{
-namespace detail
-{
+namespace aikido {
+namespace distance {
+namespace detail {
 using dart::common::make_unique;
 using Ptr = std::unique_ptr<DistanceMetric>;
 

@@ -1,9 +1,7 @@
 #include <aikido/distance/GeodesicDistanceMetric.hpp>
 
-namespace aikido
-{
-namespace distance
-{
+namespace aikido {
+namespace distance {
 
 //=============================================================================
 GeodesicDistanceMetric::GeodesicDistanceMetric(

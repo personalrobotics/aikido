@@ -24,6 +24,7 @@ public:
       constraint::TestableConstraintPtr _constraint);
 
   /// Return true if all constraints defined on this ValidityChecker are satisfied.
+  /// \param _state The state to check
   bool isValid(const ::ompl::base::State *_state) const override;
 
 private:
