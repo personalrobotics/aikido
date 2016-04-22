@@ -376,7 +376,6 @@ TEST(TSR, GetJacobian)
   Eigen::MatrixXd jacobian = tsr.getJacobian(state);
   EXPECT_TRUE(jacobian.isApproxToConstant(0));
 
-  
   // outside TSR
   isometry.translation() = Eigen::Vector3d(3, 0, 0);
   state.setIsometry(isometry);

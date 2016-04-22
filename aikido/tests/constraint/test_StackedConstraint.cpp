@@ -1,4 +1,4 @@
-#include <aikido/constraint/PolynomialConstraint.hpp>
+#include "PolynomialConstraint.hpp"
 #include <aikido/constraint/StackedConstraint.hpp>
 #include <aikido/statespace/RealVectorStateSpace.hpp>
 

@@ -322,6 +322,14 @@ std::vector<ConstraintType> TSR::getConstraintTypes() const
 }
 
 //=============================================================================
+bool TSR::project(const statespace::StateSpace::State* _s,
+  statespace::StateSpace::State* _out) const
+{
+  // TODO 
+  return false;
+}
+
+//=============================================================================
 TSRSampleGenerator::TSRSampleGenerator(
       std::unique_ptr<util::RNG> _rng,
       std::shared_ptr<SE3StateSpace> _stateSpace,
