@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_PROJECTABLESUBSPACE_H_
-#define AIKIDO_CONSTRAINT_PROJECTABLESUBSPACE_H_
+#ifndef AIKIDO_CONSTRAINT_CARTESIANPRODUCTPROJECTABLE_HPP_
+#define AIKIDO_CONSTRAINT_CARTESIANPRODUCTPROJECTABLE_HPP_
 #include "Projectable.hpp"
 #include "../statespace/CartesianProduct.hpp"
 
@@ -9,7 +9,7 @@ namespace constraint {
 /// A Projectable for CompoundStates. 
 /// It takes in a set of Projectables and project
 /// i-th substate to i-th constraint. 
-class ProjectableSubSpace : public Projectable
+class CartesianProductProjectable : public Projectable
 {
 public:
 
@@ -18,7 +18,7 @@ public:
   /// \param _constraints Set of constraints. The size of _constraints
   ///        should match the number of subspaces in _stateSpace.
   ///        i-th constraint applies to i-th subspace.
-  ProjectableSubSpace(
+  CartesianProductProjectable(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     std::vector<ProjectablePtr> _constraints);
 
@@ -39,4 +39,4 @@ private:
 } // namespace constraint
 } // namespace aikido
 
-#endif // ifndef AIKIDO_CONSTRAINT_PROJECTABLESUBSPACE_HPP_
+#endif // ifndef AIKIDO_CONSTRAINT_CARTESIANPRODUCTPROJECTABLE_HPP_

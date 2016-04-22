@@ -14,7 +14,7 @@ namespace statespace {
 class RealVectorBoxConstraint
   : public constraint::Differentiable
   , public constraint::Projectable
-  , public constraint::SampleableConstraint
+  , public constraint::Sampleable
   , public constraint::Testable
 {
 public:

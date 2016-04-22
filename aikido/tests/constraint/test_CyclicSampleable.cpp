@@ -10,7 +10,7 @@
 
 
 using aikido::statespace::SO2;
-using aikido::statespace::SO2SampleableConstraint;
+using aikido::statespace::SO2Sampleable;
 using aikido::statespace::Rn;
 using aikido::constraint::CyclicSampleable;
 using aikido::constraint::FiniteSampleable;
@@ -34,7 +34,7 @@ TEST(CyclicSampleableTest, ConstructorThrowsOnNullConstraint)
 TEST(CyclicSampleableTest, ConstructorThrowsOnUnlimitiedSampleGenerator)
 {
     auto so2 = std::make_shared<SO2>();
-    auto constraint = std::make_shared<SO2SampleableConstraint>(so2, make_rng());
+    auto constraint = std::make_shared<SO2Sampleable>(so2, make_rng());
     EXPECT_THROW(std::make_shared<CyclicSampleable>(constraint),
                  std::invalid_argument);
 }

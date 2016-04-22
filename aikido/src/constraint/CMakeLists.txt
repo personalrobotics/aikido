@@ -13,7 +13,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   InverseKinematicsSampleable.cpp
   NonColliding.cpp
   Projectable.cpp
-  ProjectableSubSpace.cpp
+  CartesianProductProjectable.cpp
   Sampleable.cpp
   SampleableSubSpace.cpp
   SatisfiedConstraint.cpp

@@ -1,11 +1,11 @@
 #include <sstream>
-#include <aikido/constraint/ProjectableSubSpace.hpp>
+#include <aikido/constraint/CartesianProductProjectable.hpp>
 
 namespace aikido {
 namespace constraint {
 
 //=============================================================================
-ProjectableSubSpace::ProjectableSubSpace(
+CartesianProductProjectable::CartesianProductProjectable(
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<ProjectablePtr> _constraints)
   : mStateSpace(std::move(_stateSpace))
@@ -42,13 +42,13 @@ ProjectableSubSpace::ProjectableSubSpace(
 }
 
 //=============================================================================
-statespace::StateSpacePtr ProjectableSubSpace::getStateSpace() const
+statespace::StateSpacePtr CartesianProductProjectable::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-bool ProjectableSubSpace::project(const statespace::StateSpace::State* _s,
+bool CartesianProductProjectable::project(const statespace::StateSpace::State* _s,
   statespace::StateSpace::State* _out) const
 {
   auto s = static_cast<const statespace::CartesianProduct::State*>(_s);

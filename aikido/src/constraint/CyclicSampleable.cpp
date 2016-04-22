@@ -131,20 +131,20 @@ bool FiniteCyclicSampleGenerator::canSample() const
 
 //=============================================================================
 CyclicSampleable::CyclicSampleable(
-  SampleableConstraintPtr _sampleable)
+  SampleablePtr _sampleable)
 : mSampleable(std::move(_sampleable))
 {
   if (!mSampleable)
-    throw std::invalid_argument("SampleableConstraint is nullptr.");
+    throw std::invalid_argument("Sampleable is nullptr.");
 
   int numSamples = mSampleable->createSampleGenerator()->getNumSamples();
 
   if (numSamples == SampleGenerator::NO_LIMIT)
-    throw std::invalid_argument("SampleableConstraint is not finite.");
+    throw std::invalid_argument("Sampleable is not finite.");
 
   if (numSamples == 0)
     throw std::invalid_argument(
-      "SampleableConstraint's SampleGenerator produces 0 sample.");
+      "Sampleable's SampleGenerator produces 0 sample.");
 
   mStateSpace = mSampleable->getStateSpace();
 }

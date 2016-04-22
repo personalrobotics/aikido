@@ -20,7 +20,7 @@ GeometricStateSpace::GeometricStateSpace(
     statespace::StateSpacePtr _sspace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
+    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjection)
     : mStateSpace(std::move(_sspace))

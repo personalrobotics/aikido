@@ -12,14 +12,14 @@ namespace constraint {
 /// the original sampleable constraint, but once the samples are exhausted,
 /// it will cycle through the samples, starting from the initial sample. 
 /// The original sampleable should be finite. 
-class CyclicSampleable : public SampleableConstraint
+class CyclicSampleable : public Sampleable
 {
 public:
 
 	/// Constructor.
 	/// \param _sampleable Sampleable whose samples are to be iterated.
   explicit CyclicSampleable(
-    SampleableConstraintPtr _sampleable);
+    SampleablePtr _sampleable);
 
   /// Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -28,7 +28,7 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
-  SampleableConstraintPtr mSampleable;
+  SampleablePtr mSampleable;
   statespace::StateSpacePtr mStateSpace;
 
 };

@@ -10,7 +10,7 @@ namespace constraint {
 /// Sampleable for CompoundStates. 
 /// It takes in a set of Sampleables and its SampleGenerators
 /// sample i-th substate from the i-th Sampleable.
-class SampleableSubSpace : public SampleableConstraint
+class SampleableSubSpace : public Sampleable
 {
 public:
 
@@ -21,7 +21,7 @@ public:
   ///        i-th constraint applies to i-th subspace.
   SampleableSubSpace(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-    std::vector<std::shared_ptr<SampleableConstraint>> _constraints);
+    std::vector<std::shared_ptr<Sampleable>> _constraints);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -31,7 +31,7 @@ public:
 
 private:
   std::shared_ptr<statespace::CartesianProduct> mStateSpace;
-  std::vector<std::shared_ptr<SampleableConstraint>> mConstraints;
+  std::vector<std::shared_ptr<Sampleable>> mConstraints;
 };
 
 } // namespace constraint

@@ -132,7 +132,7 @@ struct createSampleableFor_impl<statespace::dart::RnJoint>
   using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     const auto joint = _stateSpace->getJoint();
@@ -202,14 +202,14 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
   using StateSpace = statespace::dart::SO2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO2Joint must not have limits.");
 
     return dart::common::make_unique<
-      statespace::SO2SampleableConstraint>(
+      statespace::SO2Sampleable>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -269,7 +269,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
   using StateSpace = statespace::dart::SO3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     if (isLimited(_stateSpace->getJoint()))
@@ -326,7 +326,7 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     throw std::runtime_error(
@@ -380,7 +380,7 @@ struct createSampleableFor_impl<statespace::dart::SE3Joint>
   using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     throw std::runtime_error(
@@ -419,7 +419,7 @@ std::unique_ptr<Testable> createTestableBoundsFor(
 
 //=============================================================================
 template <class Space>
-std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
+std::unique_ptr<Sampleable> createSampleableBoundsFor(
   std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng)
 {
   return detail::createSampleableFor_impl<Space>::create(

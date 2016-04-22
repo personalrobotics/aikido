@@ -5,7 +5,7 @@
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::SO2;
-using aikido::statespace::SO2SampleableConstraint;
+using aikido::statespace::SO2Sampleable;
 using aikido::constraint::SampleGenerator;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
@@ -44,26 +44,26 @@ protected:
 TEST_F(SO2UniformSamplerTests, constructor_StateSpaceIsNull_Throws)
 {
   EXPECT_THROW({
-    SO2SampleableConstraint(nullptr, mRng->clone());
+    SO2Sampleable(nullptr, mRng->clone());
   }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, constructor_RNGIsNull_Throws)
 {
   EXPECT_THROW({
-    SO2SampleableConstraint(mStateSpace, nullptr);
+    SO2Sampleable(mStateSpace, nullptr);
   }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, getStateSpace)
 {
-  SO2SampleableConstraint constraint(mStateSpace, mRng->clone());
+  SO2Sampleable constraint(mStateSpace, mRng->clone());
   EXPECT_EQ(mStateSpace, constraint.getStateSpace());
 }
 
 TEST_F(SO2UniformSamplerTests, createSampleGenerator)
 {
-  SO2SampleableConstraint constraint(mStateSpace, mRng->clone());
+  SO2Sampleable constraint(mStateSpace, mRng->clone());
   auto generator = constraint.createSampleGenerator();
 
   ASSERT_TRUE(!!generator);

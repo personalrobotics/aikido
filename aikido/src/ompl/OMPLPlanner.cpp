@@ -10,7 +10,7 @@ namespace ompl {
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
+    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector)

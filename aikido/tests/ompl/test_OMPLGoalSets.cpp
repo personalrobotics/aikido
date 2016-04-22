@@ -20,7 +20,7 @@
 using aikido::constraint::FkTestable;
 using aikido::constraint::InverseKinematicsSampleable;
 using aikido::constraint::ProjectablePtr;
-using aikido::constraint::SampleableConstraintPtr;
+using aikido::constraint::SampleablePtr;
 using aikido::constraint::TSR;
 using aikido::constraint::TSRPtr;
 using aikido::constraint::TestablePtr;
@@ -141,10 +141,10 @@ protected:
   MetaSkeletonStateSpacePtr stateSpace;
   InterpolatorPtr interpolator;
   DistanceMetricPtr dmetric;
-  SampleableConstraintPtr sampler;
+  SampleablePtr sampler;
   ProjectablePtr boundsProjection;
   TestablePtr boundsConstraint;
   TestablePtr collConstraint;
-  SampleableConstraintPtr goalSampleable;
+  SampleablePtr goalSampleable;
   TestablePtr goalTestable;
 };

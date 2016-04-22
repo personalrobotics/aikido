@@ -43,7 +43,7 @@ public:
   GeometricStateSpace(statespace::StateSpacePtr _sspace,
                       statespace::InterpolatorPtr _interpolator,
                       distance::DistanceMetricPtr _dmetric,
-                      constraint::SampleableConstraintPtr _sampler,
+                      constraint::SampleablePtr _sampler,
                       constraint::TestablePtr _boundsConstraint,
                       constraint::ProjectablePtr _boundsProjection);
 
@@ -117,7 +117,7 @@ private:
   statespace::StateSpacePtr mStateSpace;
   statespace::InterpolatorPtr mInterpolator;
   distance::DistanceMetricPtr mDistance;
-  constraint::SampleableConstraintPtr mSampler;
+  constraint::SampleablePtr mSampler;
   constraint::TestablePtr mBoundsConstraint;
   constraint::ProjectablePtr mBoundsProjection;
 };

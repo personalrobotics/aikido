@@ -9,7 +9,7 @@ namespace constraint {
 /// Constraint that always returns a finite set of samples.
 /// Its SampleGenerator will generate sample 
 /// until all samples are exhausted.
-class FiniteSampleable : public SampleableConstraint
+class FiniteSampleable : public Sampleable
 {
 public:
   /// Constructor for single-sample constraint.

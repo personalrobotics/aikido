@@ -2,7 +2,7 @@
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
 #include <aikido/constraint/StackedConstraint.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
-#include <aikido/constraint/ProjectableSubSpace.hpp>
+#include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/SampleableSubSpace.h>
 #include <aikido/constraint/TestableSubSpace.hpp>
 #include <dart/common/StlHelpers.h>
@@ -79,7 +79,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<ProjectableSubSpace>(
+  return make_unique<CartesianProductProjectable>(
     std::move(_metaSkeleton), std::move(constraints));
 }
 
@@ -116,7 +116,7 @@ std::unique_ptr<Testable> createTestableBounds(
 }
 
 //=============================================================================
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
@@ -129,7 +129,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
 }
 
 //=============================================================================
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng)
 {
@@ -138,7 +138,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
   // Create a new RNG for each subspace.
   auto engines = splitEngine(*_rng, n, util::NUM_DEFAULT_SEEDS);
 
-  std::vector<std::shared_ptr<SampleableConstraint>> constraints;
+  std::vector<std::shared_ptr<Sampleable>> constraints;
   constraints.reserve(n);
 
   for (size_t i = 0; i < n; ++i)

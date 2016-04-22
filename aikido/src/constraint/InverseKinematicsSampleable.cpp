@@ -58,8 +58,8 @@ private:
 //=============================================================================
 InverseKinematicsSampleable::InverseKinematicsSampleable(
       MetaSkeletonStateSpacePtr _stateSpace,
-      SampleableConstraintPtr _poseConstraint,
-      SampleableConstraintPtr _seedConstraint,
+      SampleablePtr _poseConstraint,
+      SampleablePtr _seedConstraint,
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
@@ -94,10 +94,10 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 
   if (!dynamic_cast<SE3*>(mPoseConstraint->getStateSpace().get()))
     throw std::invalid_argument(
-      "Pose SampleableConstraint does not operate on a SE3.");
+      "Pose Sampleable does not operate on a SE3.");
 
   if (!mSeedConstraint)
-    throw std::invalid_argument("Seed SampleableConstraint is nullptr.");
+    throw std::invalid_argument("Seed Sampleable is nullptr.");
 
   if (mSeedConstraint->getStateSpace() != mStateSpace)
     throw std::invalid_argument(

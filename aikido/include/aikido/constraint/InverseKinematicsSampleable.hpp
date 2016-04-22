@@ -15,7 +15,7 @@ namespace constraint {
 /// into the metaskeleton's configuration space. This class will retry a
 /// configurable number of times if sampling from the provided sampleable
 /// pose constraint or finding an inverse kinematic solution fails.
-class InverseKinematicsSampleable : public SampleableConstraint
+class InverseKinematicsSampleable : public Sampleable
 {
 public:
 
@@ -31,8 +31,8 @@ public:
   ///        to retry sampling and finding an inverse kinematics solution.
   InverseKinematicsSampleable(
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    SampleableConstraintPtr _poseConstraint,
-    SampleableConstraintPtr _seedConstraint,
+    SampleablePtr _poseConstraint,
+    SampleablePtr _seedConstraint,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     int _maxNumTrials);
 
@@ -47,8 +47,8 @@ public:
   
 private:
   statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-  SampleableConstraintPtr mPoseConstraint;
-  SampleableConstraintPtr mSeedConstraint;
+  SampleablePtr mPoseConstraint;
+  SampleablePtr mSeedConstraint;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   int mMaxNumTrials;
 };

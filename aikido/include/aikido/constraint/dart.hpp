@@ -82,7 +82,7 @@ std::unique_ptr<Testable> createTestableBounds(
 /// \param _stateSpace The StateSpace where the Sampleable will be applied.
 /// \param _rng The random number generator to be used by the Sampleable
 template <class Space>
-std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
+std::unique_ptr<Sampleable> createSampleableBoundsFor(
   std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng);
 
 /// Create a Sampleabe constraint that can be used to sample values for the
@@ -91,7 +91,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
 /// JointStateSpace.
 /// \param _stateSpace The JointStateSpace where the Sampleable will be applied
 /// \param _rng The random number generator to be used by the Sampleable
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng);
 
@@ -101,7 +101,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Sampleable will be
 /// applied
 /// \param _rng The random number generator to be used by the Sampleable
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng);
 

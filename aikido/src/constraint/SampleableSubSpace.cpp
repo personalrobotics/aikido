@@ -76,7 +76,7 @@ private:
 //=============================================================================
 SampleableSubSpace::SampleableSubSpace(
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-      std::vector<std::shared_ptr<SampleableConstraint>> _constraints)
+      std::vector<std::shared_ptr<Sampleable>> _constraints)
   : mStateSpace(std::move(_stateSpace))
   , mConstraints(std::move(_constraints))
 {

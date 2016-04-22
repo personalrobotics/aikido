@@ -57,10 +57,10 @@ TEST_F(OMPLPlannerTest, PlanToGoalRegion)
       std::make_shared<aikido::statespace::RealVectorBoxConstraint>(
           stateSpace->getSubSpace<Rn>(0), make_rng(),
           Eigen::Vector3d(4, 4, 0), Eigen::Vector3d(5, 5, 0));
-  std::vector<std::shared_ptr<aikido::constraint::SampleableConstraint>>
+  std::vector<std::shared_ptr<aikido::constraint::Sampleable>>
       sConstraints;
   sConstraints.push_back(boxConstraint);
-  aikido::constraint::SampleableConstraintPtr goalSampleable =
+  aikido::constraint::SampleablePtr goalSampleable =
       std::make_shared<aikido::constraint::SampleableSubSpace>(stateSpace,
                                                                sConstraints);
   std::vector<std::shared_ptr<aikido::constraint::Testable>>

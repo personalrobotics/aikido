@@ -199,7 +199,7 @@ public:
   aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace;
   aikido::statespace::InterpolatorPtr interpolator;
   aikido::distance::DistanceMetricPtr dmetric;
-  aikido::constraint::SampleableConstraintPtr sampler;
+  aikido::constraint::SampleablePtr sampler;
   aikido::constraint::ProjectablePtr boundsProjection;
   aikido::constraint::TestablePtr boundsConstraint;
   aikido::constraint::TestablePtr collConstraint;

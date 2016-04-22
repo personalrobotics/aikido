@@ -15,7 +15,7 @@ trajectory::TrajectoryPtr planOMPL(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
+    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector, double _maxPlanTime)
@@ -49,11 +49,11 @@ template <class PlannerType>
 trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
-    constraint::SampleableConstraintPtr _goalSampler,
+    constraint::SampleablePtr _goalSampler,
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
+    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,

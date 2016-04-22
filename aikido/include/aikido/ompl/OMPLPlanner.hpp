@@ -24,7 +24,7 @@ namespace ompl {
 /// \param _interpolator An Interpolator defined on the StateSpace. This is used
 /// to interpolate between two points within the space.
 /// \param _dmetric A valid distance metric defined on the StateSpace
-/// \param _sampler A SampleableConstraint that can sample states from the
+/// \param _sampler A Sampleable that can sample states from the
 /// StateSpace. Warning: Many OMPL planners internally assume this sampler
 /// samples uniformly. Care should be taken when using a non-uniform sampler.
 /// \param _validityConstraint A constraint used to test validity during
@@ -45,7 +45,7 @@ trajectory::TrajectoryPtr planOMPL(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
+    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector, double _maxPlanTime);
@@ -59,7 +59,7 @@ trajectory::TrajectoryPtr planOMPL(
 /// \param _interpolator An Interpolator defined on the StateSpace. This is used
 /// to interpolate between two points within the space.
 /// \param _dmetric A valid distance metric defined on the StateSpace
-/// \param _sampler A SampleableConstraint that can sample states from the
+/// \param _sampler A Sampleable that can sample states from the
 /// StateSpace. Warning: Many OMPL planners internally assume this sampler
 /// samples uniformly. Care should be taken when using a non-uniform sampler.
 /// \param _validityConstraint A constraint used to test validity during
@@ -77,11 +77,11 @@ template <class PlannerType>
 trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
-    constraint::SampleableConstraintPtr _goalSampler,
+    constraint::SampleablePtr _goalSampler,
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
+    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,
@@ -92,7 +92,7 @@ trajectory::TrajectoryPtr planOMPL(
 /// \param _interpolator An Interpolator defined on the StateSpace. This is used
 /// to interpolate between two points within the space.
 /// \param _dmetric A valid distance metric defined on the StateSpace
-/// \param _sampler A SampleableConstraint that can sample states from the
+/// \param _sampler A Sampleable that can sample states from the
 /// StateSpace. Warning: Many OMPL planners internally assume this sampler
 /// samples uniformly. Care should be taken when using a non-uniform sampler.
 /// \param _validityConstraint A constraint used to test validity during
@@ -108,7 +108,7 @@ trajectory::TrajectoryPtr planOMPL(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
+    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector);
