@@ -1,7 +1,7 @@
 #include <aikido/distance/WeightedDistanceMetric.hpp>
 #include <aikido/distance/GeodesicDistanceMetric.hpp>
 #include <aikido/distance/EuclideanDistanceMetric.hpp>
-#include <aikido/distance/AngularDistanceMetric.hpp>
+#include <aikido/distance/SO2Angular.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 
 #include <gtest/gtest.h>
@@ -28,13 +28,13 @@ TEST(WeightedDistance, ThrowsOnNullMetric){
   auto space = std::make_shared<CartesianProduct>(spaces);
 
   std::vector<DistanceMetricPtr> dmetrics = {
-      std::make_shared<AngularDistanceMetric>(so2),
+      std::make_shared<SO2Angular>(so2),
       std::make_shared<EuclideanDistanceMetric>(rv3), nullptr};
 
   EXPECT_THROW(WeightedDistanceMetric(space, dmetrics), std::invalid_argument);
 
   std::vector<std::pair<DistanceMetricPtr, double>> dmetrics2 = {
-      std::make_pair(std::make_shared<AngularDistanceMetric>(so2), 1),
+      std::make_pair(std::make_shared<SO2Angular>(so2), 1),
       std::make_pair(std::make_shared<EuclideanDistanceMetric>(rv3), 1),
       std::make_pair(nullptr, 1)};
   EXPECT_THROW(WeightedDistanceMetric(space, dmetrics2),
@@ -51,14 +51,14 @@ TEST(WeightedDistance, ThrowsOnMissingMetric)
   auto space = std::make_shared<CartesianProduct>(spaces);
 
   std::vector<DistanceMetricPtr> dmetrics = {
-      std::make_shared<AngularDistanceMetric>(so2),
+      std::make_shared<SO2Angular>(so2),
               std::make_shared<EuclideanDistanceMetric>(rv3)
   };
 
   EXPECT_THROW(WeightedDistanceMetric(space, dmetrics), std::invalid_argument);
 
   std::vector<std::pair<DistanceMetricPtr,double>> dmetrics2 = {
-      std::make_pair(std::make_shared<AngularDistanceMetric>(so2), 1),
+      std::make_pair(std::make_shared<SO2Angular>(so2), 1),
       std::make_pair(std::make_shared<EuclideanDistanceMetric>(rv3), 1)
   };
   EXPECT_THROW(WeightedDistanceMetric(space, dmetrics2), std::invalid_argument);
@@ -75,7 +75,7 @@ TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
 
   EXPECT_THROW(WeightedDistanceMetric(
                     space, {std::make_shared<EuclideanDistanceMetric>(rv3),
-                            std::make_shared<AngularDistanceMetric>(so2),
+                            std::make_shared<SO2Angular>(so2),
                             std::make_shared<GeodesicDistanceMetric>(so3)}),
                 std::invalid_argument);
 
@@ -83,7 +83,7 @@ TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
       WeightedDistanceMetric(
           space,
           {std::make_pair(std::make_shared<EuclideanDistanceMetric>(rv3), 2),
-           std::make_pair(std::make_shared<AngularDistanceMetric>(so2), 1),
+           std::make_pair(std::make_shared<SO2Angular>(so2), 1),
            std::make_pair(std::make_shared<GeodesicDistanceMetric>(so3), 3)}),
       std::invalid_argument);
 }
@@ -100,7 +100,7 @@ TEST(WeightedDistance, ThrowsOnNegativeWeights)
       WeightedDistanceMetric(
           space,
           {std::make_pair(std::make_shared<EuclideanDistanceMetric>(rv3), 2),
-           std::make_pair(std::make_shared<AngularDistanceMetric>(so2), -1),
+           std::make_pair(std::make_shared<SO2Angular>(so2), -1),
            std::make_pair(std::make_shared<GeodesicDistanceMetric>(so3), 3)}),
       std::invalid_argument);
 }
@@ -115,13 +115,13 @@ TEST(WeightedDistance, StateSpaceEquality)
   auto space = std::make_shared<CartesianProduct>(spaces);
 
   WeightedDistanceMetric dmetric(
-      space, {std::make_shared<AngularDistanceMetric>(so2),
+      space, {std::make_shared<SO2Angular>(so2),
               std::make_shared<EuclideanDistanceMetric>(rv3),
               std::make_shared<GeodesicDistanceMetric>(so3)});
   EXPECT_EQ(space, dmetric.getStateSpace());
 
   WeightedDistanceMetric dmetric2(
-      space, {std::make_pair(std::make_shared<AngularDistanceMetric>(so2), 1),
+      space, {std::make_pair(std::make_shared<SO2Angular>(so2), 1),
               std::make_pair(std::make_shared<EuclideanDistanceMetric>(rv3), 2),
               std::make_pair(std::make_shared<GeodesicDistanceMetric>(so3), 3)});
   EXPECT_EQ(space, dmetric2.getStateSpace());
@@ -137,7 +137,7 @@ TEST(WeightedDistance, DistanceUnitWeights)
   auto space = std::make_shared<CartesianProduct>(spaces);
 
   WeightedDistanceMetric dmetric(
-      space, {std::make_shared<AngularDistanceMetric>(so2),
+      space, {std::make_shared<SO2Angular>(so2),
               std::make_shared<EuclideanDistanceMetric>(rv3),
               std::make_shared<GeodesicDistanceMetric>(so3)});
 
@@ -175,7 +175,7 @@ TEST(WeightedDistance, DistanceCustomWeights)
   auto space = std::make_shared<CartesianProduct>(spaces);
 
   WeightedDistanceMetric dmetric(
-      space, {std::make_pair(std::make_shared<AngularDistanceMetric>(so2), 2),
+      space, {std::make_pair(std::make_shared<SO2Angular>(so2), 2),
               std::make_pair(std::make_shared<EuclideanDistanceMetric>(rv3), 3),
               std::make_pair(std::make_shared<GeodesicDistanceMetric>(so3), 4)});
 

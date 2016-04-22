@@ -9,12 +9,12 @@ namespace aikido
 namespace distance
 {
 /// Computes the shortest distance between two angles in SO(2)
-class AngularDistanceMetric : public DistanceMetric
+class SO2Angular : public DistanceMetric
 {
 public:
   /// Constructor.
   /// \param _space The SO2 this distance metric operates on
-  explicit AngularDistanceMetric(
+  explicit SO2Angular(
       std::shared_ptr<statespace::SO2> _space);
 
   // Documentation inherited

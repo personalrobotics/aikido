@@ -2,7 +2,7 @@
 #include <aikido/distance/WeightedDistanceMetric.hpp>
 #include <aikido/distance/GeodesicDistanceMetric.hpp>
 #include <aikido/distance/EuclideanDistanceMetric.hpp>
-#include <aikido/distance/AngularDistanceMetric.hpp>
+#include <aikido/distance/SO2Angular.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 
 #include <gtest/gtest.h>
@@ -31,7 +31,7 @@ TEST(DistanceMetricDefaults, CreateDistanceMetricFor)
 {
   auto so2 = std::make_shared<SO2>();
   auto so2metric = createDistanceMetricFor<SO2>(so2);
-  auto so2metric_c = dynamic_cast<AngularDistanceMetric*>(so2metric.get());
+  auto so2metric_c = dynamic_cast<SO2Angular*>(so2metric.get());
   EXPECT_TRUE(so2metric_c != nullptr);
 
   auto rv3 = std::make_shared<Rn>(3);
@@ -55,7 +55,7 @@ TEST(DistanceMetricDefaults, CreateDistanceMetric)
 {
   auto so2 = std::make_shared<SO2>();
   auto so2metric = createDistanceMetric(so2);
-  auto so2metric_c = dynamic_cast<AngularDistanceMetric*>(so2metric.get());
+  auto so2metric_c = dynamic_cast<SO2Angular*>(so2metric.get());
   EXPECT_TRUE(so2metric_c != nullptr);
 
   auto rv3 = std::make_shared<Rn>(3);

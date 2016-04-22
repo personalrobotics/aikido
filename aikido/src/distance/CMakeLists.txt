@@ -1,5 +1,5 @@
 aikido_add_library("${PROJECT_NAME}_distance"
-  AngularDistanceMetric.cpp
+  SO2Angular.cpp
   EuclideanDistanceMetric.cpp
   GeodesicDistanceMetric.cpp
   WeightedDistanceMetric.cpp

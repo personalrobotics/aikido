@@ -4,9 +4,9 @@ target_link_libraries(test_EuclideanDistance
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace")
 
-aikido_add_test(test_AngularDistance
-  test_AngularDistance.cpp)
-target_link_libraries(test_AngularDistance
+aikido_add_test(test_SO2Angular
+  test_SO2Angular.cpp)
+target_link_libraries(test_SO2Angular
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace")
 
