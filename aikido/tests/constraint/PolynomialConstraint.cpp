@@ -12,6 +12,20 @@ PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs)
   }
 }
 
+//=============================================================================
+PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs, 
+  std::shared_ptr<aikido::statespace::RealVectorStateSpace> _space)
+: mCoeffs(_coeffs)
+, mStateSpace(std::move(_space))
+{
+  if(std::abs(mCoeffs(mCoeffs.rows()-1)) < std::numeric_limits<double>::epsilon())
+  {
+    throw std::invalid_argument("_coeffs last element is zero.");
+  }
+
+  if (!mStateSpace)
+    throw std::invalid_argument("StateSpace is null.");
+}
 
 //=============================================================================
 size_t PolynomialConstraint::getConstraintDimension() const

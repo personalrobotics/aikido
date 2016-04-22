@@ -23,7 +23,11 @@ StackedConstraint::StackedConstraint(
       throw std::invalid_argument("_constraints constaints nullptr.");
 
     if (constraint->getStateSpace().get() != mStateSpace.get())
-      throw std::invalid_argument("All constraints should be equal to mStateSpace.");
+    {
+      std::stringstream msg;
+      msg << "All constraints should have same statespace as mStatespace.";
+      throw std::invalid_argument(msg.str());
+    }
   }
 }
 

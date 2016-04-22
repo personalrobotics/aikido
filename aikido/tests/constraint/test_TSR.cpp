@@ -72,7 +72,7 @@ TEST(TSR, CopyConstructor)
 
 
   tsr2.mBw(0,0) = 3;
-  EXPECT_THROW(tsr2.validate(), std::invalid_argument);
+  EXPECT_THROW(tsr2.validate(), std::logic_error);
   EXPECT_NO_THROW(tsr.validate());
 
 }
@@ -95,7 +95,7 @@ TEST(TSR, AssignmentOperator)
 
   tsr2.mBw(0,0) = 3;
 
-  EXPECT_THROW(tsr2.validate(), std::invalid_argument);
+  EXPECT_THROW(tsr2.validate(), std::logic_error);
   EXPECT_NO_THROW(tsr.validate());
 
 }
@@ -108,7 +108,7 @@ TEST(TSR, Validate)
   tsr.mBw(3,0) = M_PI/2;
   tsr.mBw(3,1) = -M_PI/2;
   
-  EXPECT_THROW(tsr.validate(), std::invalid_argument);
+  EXPECT_THROW(tsr.validate(), std::logic_error);
 
   Eigen::MatrixXd Bw = Eigen::MatrixXd::Zero(6,2);
   Bw(3,0) = M_PI;

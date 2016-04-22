@@ -10,7 +10,10 @@ class PolynomialConstraint: public aikido::constraint::Differentiable
 public:
   /// a0 + a1*x + a2*x^2 + ... + aN*x^N = 0.
   /// Last element (aN) should be non-zero.
-  PolynomialConstraint(Eigen::VectorXd _coeffs);
+  explicit PolynomialConstraint(Eigen::VectorXd _coeffs);
+
+  PolynomialConstraint(Eigen::VectorXd _coeffs, 
+    std::shared_ptr<aikido::statespace::RealVectorStateSpace> _space);
 
   // Documentation inherited.
   size_t getConstraintDimension() const override;
