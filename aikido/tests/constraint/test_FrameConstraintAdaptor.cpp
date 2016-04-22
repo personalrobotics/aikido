@@ -1,10 +1,12 @@
 #include <aikido/constraint/FrameConstraintAdaptor.hpp>
 #include <aikido/constraint/TSR.hpp>
+#include <aikido/constraint/SatisfiedConstraint.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/util/RNG.hpp>
+
 
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
@@ -66,13 +68,56 @@ class FrameConstraintAdaptorTest : public ::testing::Test {
 
 };
 
-TEST_F(FrameConstraintAdaptorTest, Constructor)
+TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnNullStateSpace)
+{
+  EXPECT_THROW(FrameConstraintAdaptor(nullptr, bn2.get(), tsr),
+               std::invalid_argument);
+}
+
+TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnNullJacobianNode)
+{
+  EXPECT_THROW(FrameConstraintAdaptor(spacePtr, nullptr, tsr),
+               std::invalid_argument);
+}
+
+TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnNullPoseConstraint)
+{
+  EXPECT_THROW(FrameConstraintAdaptor(spacePtr, bn2.get(), nullptr),
+               std::invalid_argument);
+}
+
+TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnInvalidPoseConstraint)
+{
+  auto so2 = std::make_shared<SO2>();
+  auto pconstraint = std::make_shared<aikido::constraint::SatisfiedConstraint>(so2);
+  EXPECT_THROW(FrameConstraintAdaptor(spacePtr, bn2.get(), pconstraint),
+               std::invalid_argument);
+}
+
+TEST_F(FrameConstraintAdaptorTest, ConstraintDimension)
 {
   FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);         
   EXPECT_EQ(tsr->getConstraintDimension(),
             adaptor.getConstraintDimension());
 }
 
+TEST_F(FrameConstraintAdaptorTest, StateSpaceMatch)
+{
+  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);
+  EXPECT_EQ(spacePtr, adaptor.getStateSpace());
+}
+
+TEST_F(FrameConstraintAdaptorTest, ConstraintTypes)
+{
+  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);
+  std::vector<aikido::constraint::ConstraintType> ctypes =
+      adaptor.getConstraintTypes();
+  std::vector<aikido::constraint::ConstraintType> tsrTypes =
+      tsr->getConstraintTypes();
+  EXPECT_EQ(tsrTypes.size(), ctypes.size());
+  for(size_t i = 0; i < ctypes.size(); ++i)
+      EXPECT_EQ(tsrTypes[i], ctypes[i]);
+}
 
 TEST_F(FrameConstraintAdaptorTest, Value)
 {
@@ -102,7 +147,6 @@ TEST_F(FrameConstraintAdaptorTest, Value)
 
   EXPECT_TRUE(value.isApprox(expected));
 }
-
 
 TEST_F(FrameConstraintAdaptorTest, Jacobian)
 {
@@ -144,3 +188,4 @@ TEST_F(FrameConstraintAdaptorTest, Jacobian)
   EXPECT_TRUE(jacobian.isApprox(expected, 1e-3));
 
 }
+

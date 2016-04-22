@@ -1,4 +1,5 @@
 #include <aikido/constraint/FramePairConstraintAdaptor.hpp>
+#include <aikido/constraint/SatisfiedConstraint.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/SE3.hpp>
@@ -17,6 +18,7 @@ using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using dart::dynamics::Skeleton;
 using aikido::statespace::SE3;
+using aikido::statespace::SO2;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
 using dart::dynamics::FreeJoint;
@@ -59,13 +61,62 @@ class FramePairConstraintAdaptorTest : public ::testing::Test {
 
 };
 
-TEST_F(FramePairConstraintAdaptorTest, Constructor)
+TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullStateSpace)
+{
+  EXPECT_THROW(FramePairConstraintAdaptor(nullptr, bn1.get(), bn2.get(), tsr),
+               std::invalid_argument);
+}
+
+TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullNode1)
+{
+  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, nullptr, bn2.get(), tsr),
+               std::invalid_argument);
+}
+
+TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullNode2)
+{
+  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, bn1.get(), nullptr, tsr),
+               std::invalid_argument);
+}
+
+TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullPoseConstraint)
+{
+  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, bn1.get(), bn2.get(), nullptr),
+               std::invalid_argument);
+}
+
+TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnInvalidPoseConstraint)
+{
+  auto so2 = std::make_shared<SO2>();
+  auto pconstraint = std::make_shared<aikido::constraint::SatisfiedConstraint>(so2);
+  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, bn1.get(), bn2.get(), pconstraint),
+               std::invalid_argument);
+}
+
+TEST_F(FramePairConstraintAdaptorTest, ConstraintDimension)
 {
   FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);         
   EXPECT_EQ(tsr->getConstraintDimension(),
             adaptor.getConstraintDimension());
 }
 
+TEST_F(FramePairConstraintAdaptorTest, StateSpaceMatch)
+{
+  FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
+  EXPECT_EQ(spacePtr, adaptor.getStateSpace());
+}
+
+TEST_F(FramePairConstraintAdaptorTest, ConstraintTypes)
+{
+  FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
+  std::vector<aikido::constraint::ConstraintType> ctypes =
+      adaptor.getConstraintTypes();
+  std::vector<aikido::constraint::ConstraintType> tsrTypes =
+      tsr->getConstraintTypes();
+  EXPECT_EQ(tsrTypes.size(), ctypes.size());
+  for(size_t i = 0; i < ctypes.size(); ++i)
+      EXPECT_EQ(tsrTypes[i], ctypes[i]);
+}
 
 TEST_F(FramePairConstraintAdaptorTest, Value)
 {

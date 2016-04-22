@@ -10,15 +10,15 @@ aikido_add_test(test_DifferentiableSubSpace
 target_link_libraries(test_DifferentiableSubSpace
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_FrameConstraintAdaptor
-#   test_FrameConstraintAdaptor.cpp)
-# target_link_libraries(test_FrameConstraintAdaptor
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_FrameConstraintAdaptor
+  test_FrameConstraintAdaptor.cpp)
+target_link_libraries(test_FrameConstraintAdaptor
+  "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_FramePairConstraintAdaptor
-#   test_FramePairConstraintAdaptor.cpp)
-# target_link_libraries(test_FramePairConstraintAdaptor
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_FramePairConstraintAdaptor
+  test_FramePairConstraintAdaptor.cpp)
+target_link_libraries(test_FramePairConstraintAdaptor
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_IkSampleableConstraint
 #   test_IkSampleableConstraint.cpp)
