@@ -78,105 +78,37 @@ using ExamplePtr = std::shared_ptr<Example>;
 ## C++ Source Style
 
 ```c++
-#include <aikido/constraint/TSR.hpp>
-#include <dart/common/Console.h>
-#include <dart/common/StlHelpers.h>
-#include <dart/math/Geometry.h>
+// Includes should be at the top of the file.
+#include <aikido/example/ExampleClass.hpp>
 #include <boost/format.hpp>
 #include <stdexcept>
-#include <math.h>
-#include <vector>
-#include <random>
 
 using boost::format;
 using boost::str;
 using aikido::statespace::SE3StateSpace;
 
+// Namespace nesting is preferred to "using namespace" directives.
+// Namespaces scopes should be one line each with "cuddled" braces.
 namespace aikido {
-namespace constraint {
+namespace example {
 
-class TSRSampleGenerator : public SampleGenerator
-{
-public:
-  TSRSampleGenerator(const TSRSampleGenerator&) = delete;
-  TSRSampleGenerator(TSRSampleGenerator&& other) = delete;
-  TSRSampleGenerator& operator=(const TSRSampleGenerator& other) = delete;
-  TSRSampleGenerator& operator=(TSRSampleGenerator&& other) = delete;
-  virtual ~TSRSampleGenerator() = default; 
-
-  // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
-
-  /// Return a transform sampled from this TSR.
-  ///
-  /// This function uses the provided RNG to create a sample `Tw_s` from the
-  /// `Bw` bounds matrix of this TSR, and returns the result:
-  /// `T0_w * Tw_s * Tw_e`.
-  ///
-  /// \param[in] rng Random number generator from which to sample
-  /// \return a transform within the bounds of this TSR.
-  bool sample(statespace::StateSpace::State* _state) override;
-
-  // Documentation inherited.
-  bool canSample() const override;
-
-  [...]
-
-private:
-  // For internal use only.
-  TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
-                     std::shared_ptr<statespace::SE3StateSpace> _stateSpace,
-                     const Eigen::Isometry3d& _T0_w,
-                     const Eigen::Matrix<double, 6, 2>& _Bw,
-                     const Eigen::Isometry3d& _Tw_e);
-  
-  std::unique_ptr<util::RNG> mRng;
-
-  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
-
-  /// Transformation from origin frame into "wiggle" frame.
-  Eigen::Isometry3d mT0_w;
-
-  /// Bounds on "wiggling" in `x, y, z, roll, pitch, yaw`.
-  Eigen::Matrix<double, 6, 2> mBw;
-
-  /// Transformation from "wiggle" frame into end frame.
-  Eigen::Isometry3d mTw_e;
-
-  // True for point TSR.
-  bool mPointTSR;
-
-  // True if point TSR and has already been sampled.
-  bool mPointTSRSampled;
-
-
-  friend class TSR;
-};
-
-[...]
-
+// Each function is separated by an 80 column line of "=" characters.
 //=============================================================================
-bool TSRSampleGenerator::canSample() const
+int ExampleClass::exampleInterfaceFunction() const
 {
-  if (mPointTSR && mPointTSRSampled)
-    return false;
+  if (mExampleMember)
+    return 3;
 
-  return true;
+  return -1;
 }
 
 //=============================================================================
-int TSRSampleGenerator::getNumSamples() const
+void ExampleClass::exampleMethod() const
 {
-  if (mPointTSR && !mPointTSRSampled)
-    return 1;
-
-  if (mPointTSR && mPointTSRSampled)
-    return 0;
-
-  return NO_LIMIT;
+  mExampleMember.reset(nullptr);
 }
 
-} // namespace constraint
+} // namespace example
 } // namespace aikido
 ```
 
