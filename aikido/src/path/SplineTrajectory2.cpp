@@ -1,4 +1,4 @@
-#include <aikido/path/Spline.hpp>
+#include <aikido/util/Spline.hpp>
 #include <aikido/path/SplineTrajectory2.hpp>
 
 namespace aikido {
@@ -177,9 +177,9 @@ Eigen::VectorXd SplineTrajectory2::evaluatePolynomial(
   const auto numOutputs = _coefficients.rows();
   const auto numCoeffs = _coefficients.cols();
 
-  const auto timeVector = SplineProblem<>::createTimeVector(
+  const auto timeVector = util::SplineProblem<>::createTimeVector(
     _t, _derivative, numCoeffs);
-  const auto derivativeMatrix = SplineProblem<>::createCoefficientMatrix(
+  const auto derivativeMatrix = util::SplineProblem<>::createCoefficientMatrix(
     numCoeffs);
   const auto derivativeVector = derivativeMatrix.row(_derivative);
   const auto evaluationVector = derivativeVector.cwiseProduct(timeVector.transpose());

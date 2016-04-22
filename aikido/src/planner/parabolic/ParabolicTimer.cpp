@@ -1,6 +1,6 @@
 #include <cassert>
 #include <set>
-#include <aikido/path/Spline.hpp>
+#include <aikido/util/Spline.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -18,7 +18,7 @@ using aikido::statespace::StateSpace;
 using dart::common::make_unique;
 
 using CubicSplineProblem
-  = aikido::path::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+  = aikido::util::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
 
 namespace aikido {
 namespace planner {

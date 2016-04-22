@@ -6,4 +6,5 @@ aikido_add_library("${PROJECT_NAME}_planner_parabolic"
 target_link_libraries("${PROJECT_NAME}_planner_parabolic"
   "${PROJECT_NAME}_hauserparabolicsmoother"
   "${PROJECT_NAME}_path"
+  "${PROJECT_NAME}_util"
   "${PROJECT_NAME}_statespace")

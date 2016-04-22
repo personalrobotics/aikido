@@ -1,11 +1,11 @@
 #include <cstdlib>
 #include <gtest/gtest.h>
-#include <aikido/path/Spline.hpp>
+#include <aikido/util/Spline.hpp>
 #include "eigen_tests.hpp"
 
 using namespace aikido::tests;
 
-using aikido::path::SplineND;
+using aikido::util::SplineND;
 
 static constexpr double EPSILON = 1e-6;
 
