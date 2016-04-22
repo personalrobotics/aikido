@@ -1,10 +1,10 @@
-#include <aikido/constraint/FkTestable.hpp>
+#include <aikido/constraint/FrameTestable.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <gtest/gtest.h>
 #include "MockConstraints.hpp"
 
-using aikido::constraint::FkTestable;
+using aikido::constraint::FrameTestable;
 using aikido::constraint::Testable;
 using aikido::constraint::TestablePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -44,7 +44,7 @@ private:
   std::shared_ptr<SE3> mStateSpace;
 };
 
-class FkTestableTest : public ::testing::Test
+class FrameTestableTest : public ::testing::Test
 {
 public:
   void SetUp() override
@@ -107,55 +107,55 @@ public:
   TestablePtr poseConstraint;
 };
 
-TEST_F(FkTestableTest, ConstructorThrowsOnNullStateSpace)
+TEST_F(FrameTestableTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(FkTestable(nullptr, endEffector.get(), poseConstraint),
+  EXPECT_THROW(FrameTestable(nullptr, endEffector.get(), poseConstraint),
                std::invalid_argument);
 }
 
-TEST_F(FkTestableTest, ConstructorThrowsOnNullFrame)
+TEST_F(FrameTestableTest, ConstructorThrowsOnNullFrame)
 {
-  EXPECT_THROW(FkTestable(stateSpace, nullptr, poseConstraint),
+  EXPECT_THROW(FrameTestable(stateSpace, nullptr, poseConstraint),
                std::invalid_argument);
 }
 
-TEST_F(FkTestableTest, ConstructorThrowsOnNullPoseConstraint)
+TEST_F(FrameTestableTest, ConstructorThrowsOnNullPoseConstraint)
 {
-  EXPECT_THROW(FkTestable(stateSpace, endEffector.get(), nullptr),
+  EXPECT_THROW(FrameTestable(stateSpace, endEffector.get(), nullptr),
                std::invalid_argument);
 }
 
-TEST_F(FkTestableTest, ConstructorThrowsOnBadPoseConstraint)
+TEST_F(FrameTestableTest, ConstructorThrowsOnBadPoseConstraint)
 {
   auto so2 = std::make_shared<aikido::statespace::SO2>();
   auto pconstraint = std::make_shared<PassingConstraint>(so2);
 
-  EXPECT_THROW(FkTestable(stateSpace, endEffector.get(), pconstraint),
+  EXPECT_THROW(FrameTestable(stateSpace, endEffector.get(), pconstraint),
                std::invalid_argument);
 }
 
-TEST_F(FkTestableTest, StateSpaceMatch)
+TEST_F(FrameTestableTest, StateSpaceMatch)
 {
-  FkTestable fk(stateSpace, endEffector.get(), poseConstraint);
+  FrameTestable fk(stateSpace, endEffector.get(), poseConstraint);
   EXPECT_EQ(stateSpace, fk.getStateSpace());
 }
 
-TEST_F(FkTestableTest, SatifiedConstraint)
+TEST_F(FrameTestableTest, SatifiedConstraint)
 {
   Eigen::Vector2d pose(-M_PI * 0.25, -M_PI * 0.5);
   auto state = stateSpace->createState();
   setStateValue(pose, state);
-  FkTestable fk(stateSpace, endEffector.get(), poseConstraint);
+  FrameTestable fk(stateSpace, endEffector.get(), poseConstraint);
   
   EXPECT_TRUE(fk.isSatisfied(state));
 }
 
-TEST_F(FkTestableTest, UnsatisfiedConstraint)
+TEST_F(FrameTestableTest, UnsatisfiedConstraint)
 {
   Eigen::Vector2d pose(0, 0);
   auto state = stateSpace->createState();
   setStateValue(pose, state);
-  FkTestable fk(stateSpace, endEffector.get(), poseConstraint);
+  FrameTestable fk(stateSpace, endEffector.get(), poseConstraint);
 
   EXPECT_FALSE(fk.isSatisfied(state));
 }

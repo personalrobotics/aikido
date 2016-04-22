@@ -1,4 +1,4 @@
-#include <aikido/constraint/FrameConstraintAdaptor.hpp>
+#include <aikido/constraint/FrameDifferentiable.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::constraint::FrameConstraintAdaptor;
+using aikido::constraint::FrameDifferentiable;
 using aikido::constraint::TSR;
 using aikido::statespace::SE3;
 using aikido::statespace::SO2;
@@ -26,7 +26,7 @@ using dart::dynamics::RevoluteJoint;
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
 
-class FrameConstraintAdaptorTest : public ::testing::Test {
+class FrameDifferentiableTest : public ::testing::Test {
   protected:
     virtual void SetUp() {
 
@@ -68,48 +68,48 @@ class FrameConstraintAdaptorTest : public ::testing::Test {
 
 };
 
-TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnNullStateSpace)
+TEST_F(FrameDifferentiableTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(FrameConstraintAdaptor(nullptr, bn2.get(), tsr),
+  EXPECT_THROW(FrameDifferentiable(nullptr, bn2.get(), tsr),
                std::invalid_argument);
 }
 
-TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnNullJacobianNode)
+TEST_F(FrameDifferentiableTest, ConstructorThrowsOnNullJacobianNode)
 {
-  EXPECT_THROW(FrameConstraintAdaptor(spacePtr, nullptr, tsr),
+  EXPECT_THROW(FrameDifferentiable(spacePtr, nullptr, tsr),
                std::invalid_argument);
 }
 
-TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnNullPoseConstraint)
+TEST_F(FrameDifferentiableTest, ConstructorThrowsOnNullPoseConstraint)
 {
-  EXPECT_THROW(FrameConstraintAdaptor(spacePtr, bn2.get(), nullptr),
+  EXPECT_THROW(FrameDifferentiable(spacePtr, bn2.get(), nullptr),
                std::invalid_argument);
 }
 
-TEST_F(FrameConstraintAdaptorTest, ConstructorThrowsOnInvalidPoseConstraint)
+TEST_F(FrameDifferentiableTest, ConstructorThrowsOnInvalidPoseConstraint)
 {
   auto so2 = std::make_shared<SO2>();
   auto pconstraint = std::make_shared<aikido::constraint::Satisfied>(so2);
-  EXPECT_THROW(FrameConstraintAdaptor(spacePtr, bn2.get(), pconstraint),
+  EXPECT_THROW(FrameDifferentiable(spacePtr, bn2.get(), pconstraint),
                std::invalid_argument);
 }
 
-TEST_F(FrameConstraintAdaptorTest, ConstraintDimension)
+TEST_F(FrameDifferentiableTest, ConstraintDimension)
 {
-  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);         
+  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);         
   EXPECT_EQ(tsr->getConstraintDimension(),
             adaptor.getConstraintDimension());
 }
 
-TEST_F(FrameConstraintAdaptorTest, StateSpaceMatch)
+TEST_F(FrameDifferentiableTest, StateSpaceMatch)
 {
-  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);
+  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);
   EXPECT_EQ(spacePtr, adaptor.getStateSpace());
 }
 
-TEST_F(FrameConstraintAdaptorTest, ConstraintTypes)
+TEST_F(FrameDifferentiableTest, ConstraintTypes)
 {
-  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);
+  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);
   std::vector<aikido::constraint::ConstraintType> ctypes =
       adaptor.getConstraintTypes();
   std::vector<aikido::constraint::ConstraintType> tsrTypes =
@@ -119,9 +119,9 @@ TEST_F(FrameConstraintAdaptorTest, ConstraintTypes)
       EXPECT_EQ(tsrTypes[i], ctypes[i]);
 }
 
-TEST_F(FrameConstraintAdaptorTest, Value)
+TEST_F(FrameDifferentiableTest, Value)
 {
-  FrameConstraintAdaptor adaptor(spacePtr, bn2.get(), tsr);
+  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
   state.getSubStateHandle<SE3>(0).setIsometry(Eigen::Isometry3d::Identity());
   state.getSubStateHandle<SO2>(1).setAngle(0);
@@ -148,7 +148,7 @@ TEST_F(FrameConstraintAdaptorTest, Value)
   EXPECT_TRUE(value.isApprox(expected));
 }
 
-TEST_F(FrameConstraintAdaptorTest, Jacobian)
+TEST_F(FrameDifferentiableTest, Jacobian)
 {
 
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
@@ -162,7 +162,7 @@ TEST_F(FrameConstraintAdaptorTest, Jacobian)
 
   tsr->mBw = Bw;
 
-  FrameConstraintAdaptor adaptor(spacePtr, bn1.get(), tsr);
+  FrameDifferentiable adaptor(spacePtr, bn1.get(), tsr);
 
   // state strictly inside tsr
   auto state = spacePtr->getScopedStateFromMetaSkeleton();

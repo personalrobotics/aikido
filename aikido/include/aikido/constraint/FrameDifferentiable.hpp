@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_HPP_
-#define AIKIDO_CONSTRAINT_FRAMECONSTRAINTADAPTOR_HPP_
+#ifndef AIKIDO_CONSTRAINT_FRAMEDIFFERENTIABLE_HPP_
+#define AIKIDO_CONSTRAINT_FRAMEDIFFERENTIABLE_HPP_
 
 #include <dart/dynamics/dynamics.h>
 #include "Differentiable.hpp"
@@ -16,7 +16,7 @@ namespace constraint{
 ///     1) Differentiable
 ///     2) in SE3.
 ///     2) constrains _jacobianNode's pose in World Frame.
-class FrameConstraintAdaptor: public Differentiable
+class FrameDifferentiable: public Differentiable
 {
 public:
 
@@ -26,7 +26,7 @@ public:
   /// \param _jacobianNode The frame being constrained.
   /// \param _poseConstraint Constraint on _jacobian. This should be 
   ///        in SE3.
-  FrameConstraintAdaptor(
+  FrameDifferentiable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode,
     DifferentiablePtr _poseConstraint);

@@ -1,4 +1,4 @@
-#include <aikido/constraint/FramePairConstraintAdaptor.hpp>
+#include <aikido/constraint/FramePairDifferentiable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::constraint::FramePairConstraintAdaptor;
+using aikido::constraint::FramePairDifferentiable;
 using aikido::constraint::TSR;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::SkeletonPtr;
@@ -24,7 +24,7 @@ using aikido::util::RNGWrapper;
 using dart::dynamics::FreeJoint;
 using dart::dynamics::BodyNode;
 
-class FramePairConstraintAdaptorTest : public ::testing::Test {
+class FramePairDifferentiableTest : public ::testing::Test {
   protected:
     virtual void SetUp() {
 
@@ -61,54 +61,54 @@ class FramePairConstraintAdaptorTest : public ::testing::Test {
 
 };
 
-TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullStateSpace)
+TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(FramePairConstraintAdaptor(nullptr, bn1.get(), bn2.get(), tsr),
+  EXPECT_THROW(FramePairDifferentiable(nullptr, bn1.get(), bn2.get(), tsr),
                std::invalid_argument);
 }
 
-TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullNode1)
+TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullNode1)
 {
-  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, nullptr, bn2.get(), tsr),
+  EXPECT_THROW(FramePairDifferentiable(spacePtr, nullptr, bn2.get(), tsr),
                std::invalid_argument);
 }
 
-TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullNode2)
+TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullNode2)
 {
-  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, bn1.get(), nullptr, tsr),
+  EXPECT_THROW(FramePairDifferentiable(spacePtr, bn1.get(), nullptr, tsr),
                std::invalid_argument);
 }
 
-TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnNullPoseConstraint)
+TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullPoseConstraint)
 {
-  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, bn1.get(), bn2.get(), nullptr),
+  EXPECT_THROW(FramePairDifferentiable(spacePtr, bn1.get(), bn2.get(), nullptr),
                std::invalid_argument);
 }
 
-TEST_F(FramePairConstraintAdaptorTest, ConstructorThrowsOnInvalidPoseConstraint)
+TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnInvalidPoseConstraint)
 {
   auto so2 = std::make_shared<SO2>();
   auto pconstraint = std::make_shared<aikido::constraint::Satisfied>(so2);
-  EXPECT_THROW(FramePairConstraintAdaptor(spacePtr, bn1.get(), bn2.get(), pconstraint),
+  EXPECT_THROW(FramePairDifferentiable(spacePtr, bn1.get(), bn2.get(), pconstraint),
                std::invalid_argument);
 }
 
-TEST_F(FramePairConstraintAdaptorTest, ConstraintDimension)
+TEST_F(FramePairDifferentiableTest, ConstraintDimension)
 {
-  FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);         
+  FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);         
   EXPECT_EQ(tsr->getConstraintDimension(),
             adaptor.getConstraintDimension());
 }
 
-TEST_F(FramePairConstraintAdaptorTest, StateSpaceMatch)
+TEST_F(FramePairDifferentiableTest, StateSpaceMatch)
 {
-  FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
+  FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
   EXPECT_EQ(spacePtr, adaptor.getStateSpace());
 }
 
-TEST_F(FramePairConstraintAdaptorTest, ConstraintTypes)
+TEST_F(FramePairDifferentiableTest, ConstraintTypes)
 {
-  FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
+  FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
   std::vector<aikido::constraint::ConstraintType> ctypes =
       adaptor.getConstraintTypes();
   std::vector<aikido::constraint::ConstraintType> tsrTypes =
@@ -118,9 +118,9 @@ TEST_F(FramePairConstraintAdaptorTest, ConstraintTypes)
       EXPECT_EQ(tsrTypes[i], ctypes[i]);
 }
 
-TEST_F(FramePairConstraintAdaptorTest, Value)
+TEST_F(FramePairDifferentiableTest, Value)
 {
-  FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
+  FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
   state.getSubStateHandle<SE3>(0).setIsometry(
     Eigen::Isometry3d::Identity());
@@ -144,7 +144,7 @@ TEST_F(FramePairConstraintAdaptorTest, Value)
   EXPECT_TRUE(value.isApprox(expected));
 }
 
-TEST_F(FramePairConstraintAdaptorTest, Jacobian)
+TEST_F(FramePairDifferentiableTest, Jacobian)
 {
 
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
@@ -156,7 +156,7 @@ TEST_F(FramePairConstraintAdaptorTest, Jacobian)
 
   tsr->mBw = Bw;
 
-  FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
+  FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
 
   // state strictly inside tsr
   auto state = spacePtr->getScopedStateFromMetaSkeleton();

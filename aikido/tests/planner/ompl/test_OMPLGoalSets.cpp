@@ -1,10 +1,10 @@
 #include <random>
-#include <aikido/constraint/FkTestable.hpp>
+#include <aikido/constraint/FrameTestable.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/constraint/NonColliding.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/InverseKinematicsSampleable.hpp>
-#include <aikido/constraint/FkTestable.hpp>
+#include <aikido/constraint/FrameTestable.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/distance/Defaults.hpp>
@@ -17,7 +17,7 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <Eigen/Dense>
 
-using aikido::constraint::FkTestable;
+using aikido::constraint::FrameTestable;
 using aikido::constraint::InverseKinematicsSampleable;
 using aikido::constraint::ProjectablePtr;
 using aikido::constraint::SampleablePtr;
@@ -97,7 +97,7 @@ protected:
     goalSampleable = std::make_shared<InverseKinematicsSampleable>(
         stateSpace, goalTSR, std::move(seedSampler), ik, make_rng(), 30);
     goalTestable =
-        std::make_shared<FkTestable>(stateSpace, endEffector.get(), goalTSR);
+        std::make_shared<FrameTestable>(stateSpace, endEffector.get(), goalTSR);
 
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();

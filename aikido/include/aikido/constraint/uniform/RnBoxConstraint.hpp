@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
-#define AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
+#ifndef AIKIDO_STATESPACE_RNBOXCONSTRAINT_H_
+#define AIKIDO_STATESPACE_RNBOXCONSTRAINT_H_
 #include "../../statespace/Rn.hpp"
 #include "../Differentiable.hpp"
 #include "../Projectable.hpp"
@@ -11,7 +11,7 @@ namespace statespace {
 
 /// A BoxConstraint on RealVectorStates.
 /// For each dimension, this constraint has lowerLimit and upperLimit. 
-class RealVectorBoxConstraint
+class RnBoxConstraint
   : public constraint::Differentiable
   , public constraint::Projectable
   , public constraint::Sampleable
@@ -25,7 +25,7 @@ public:
   ///        The length of this vector should match the dimension of _space.
   /// \param _upperLimits Upper limits.
   ///        The length of this vector should match the dimension of _space. 
-  RealVectorBoxConstraint(
+  RnBoxConstraint(
     std::shared_ptr<statespace::Rn> _space,
     std::unique_ptr<util::RNG> _rng,
     const Eigen::VectorXd& _lowerLimits,

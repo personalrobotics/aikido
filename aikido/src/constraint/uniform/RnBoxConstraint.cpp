@@ -1,5 +1,5 @@
 #include <stdexcept>
-#include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
+#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 
 namespace aikido {
 namespace statespace {
@@ -7,7 +7,7 @@ namespace statespace {
 using constraint::ConstraintType;
 
 //=============================================================================
-class RealVectorBoxConstraintSampleGenerator
+class RnBoxConstraintSampleGenerator
   : public constraint::SampleGenerator
 {
 public:
@@ -20,7 +20,7 @@ public:
   bool canSample() const override;
 
 private:
-  RealVectorBoxConstraintSampleGenerator(
+  RnBoxConstraintSampleGenerator(
     std::shared_ptr<statespace::Rn> _space,
     std::unique_ptr<util::RNG> _rng,
     const Eigen::VectorXd& _lowerLimits,
@@ -30,11 +30,11 @@ private:
   std::unique_ptr<util::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
 
-  friend class RealVectorBoxConstraint;
+  friend class RnBoxConstraint;
 };
 
 //=============================================================================
-RealVectorBoxConstraintSampleGenerator::RealVectorBoxConstraintSampleGenerator(
+RnBoxConstraintSampleGenerator::RnBoxConstraintSampleGenerator(
       std::shared_ptr<statespace::Rn> _space,
       std::unique_ptr<util::RNG> _rng,
       const Eigen::VectorXd& _lowerLimits,
@@ -51,13 +51,13 @@ RealVectorBoxConstraintSampleGenerator::RealVectorBoxConstraintSampleGenerator(
 
 //=============================================================================
 statespace::StateSpacePtr
-  RealVectorBoxConstraintSampleGenerator::getStateSpace() const
+  RnBoxConstraintSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
 //=============================================================================
-bool RealVectorBoxConstraintSampleGenerator::sample(
+bool RnBoxConstraintSampleGenerator::sample(
   statespace::StateSpace::State* _state)
 {
   Eigen::VectorXd value(mDistributions.size());
@@ -71,20 +71,20 @@ bool RealVectorBoxConstraintSampleGenerator::sample(
 }
 
 //=============================================================================
-int RealVectorBoxConstraintSampleGenerator::getNumSamples() const
+int RnBoxConstraintSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
 //=============================================================================
-bool RealVectorBoxConstraintSampleGenerator::canSample() const
+bool RnBoxConstraintSampleGenerator::canSample() const
 {
   return true;
 }
 
 //=============================================================================
-RealVectorBoxConstraint
-  ::RealVectorBoxConstraint(
+RnBoxConstraint
+  ::RnBoxConstraint(
       std::shared_ptr<statespace::Rn> _space,
       std::unique_ptr<util::RNG> _rng,
       const Eigen::VectorXd& _lowerLimits,
@@ -129,27 +129,27 @@ RealVectorBoxConstraint
 }
 
 //=============================================================================
-statespace::StateSpacePtr RealVectorBoxConstraint::getStateSpace() const
+statespace::StateSpacePtr RnBoxConstraint::getStateSpace() const
 {
   return mSpace;
 }
 
 //=============================================================================
-size_t RealVectorBoxConstraint::getConstraintDimension() const
+size_t RnBoxConstraint::getConstraintDimension() const
 {
   // TODO: Only create constraints for bounded dimensions.
   return mSpace->getDimension();
 }
 
 //=============================================================================
-std::vector<ConstraintType> RealVectorBoxConstraint::getConstraintTypes() const
+std::vector<ConstraintType> RnBoxConstraint::getConstraintTypes() const
 {
   return std::vector<ConstraintType>(
     mSpace->getDimension(), ConstraintType::INEQUALITY);
 }
 
 //=============================================================================
-bool RealVectorBoxConstraint::isSatisfied(const StateSpace::State* state) const
+bool RnBoxConstraint::isSatisfied(const StateSpace::State* state) const
 {
   const auto value = mSpace->getValue(
     static_cast<const Rn::State*>(state));
@@ -163,7 +163,7 @@ bool RealVectorBoxConstraint::isSatisfied(const StateSpace::State* state) const
 }
 
 //=============================================================================
-bool RealVectorBoxConstraint::project(
+bool RnBoxConstraint::project(
   const statespace::StateSpace::State* _s,
   statespace::StateSpace::State* _out) const
 {
@@ -185,7 +185,7 @@ bool RealVectorBoxConstraint::project(
 }
 
 //=============================================================================
-Eigen::VectorXd RealVectorBoxConstraint::getValue(
+Eigen::VectorXd RnBoxConstraint::getValue(
   const statespace::StateSpace::State* _s) const
 {
   auto stateValue = mSpace->getValue(
@@ -208,7 +208,7 @@ Eigen::VectorXd RealVectorBoxConstraint::getValue(
 }
 
 //=============================================================================
-Eigen::MatrixXd RealVectorBoxConstraint::getJacobian(
+Eigen::MatrixXd RnBoxConstraint::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   auto stateValue = mSpace->getValue(
@@ -231,7 +231,7 @@ Eigen::MatrixXd RealVectorBoxConstraint::getJacobian(
 }
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> RealVectorBoxConstraint
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> RnBoxConstraint
   ::getValueAndJacobian(const statespace::StateSpace::State* _s) const
 {
   // TODO: Avoid calling getValue twice here.
@@ -240,7 +240,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> RealVectorBoxConstraint
 
 //=============================================================================
 std::unique_ptr<constraint::SampleGenerator>
-  RealVectorBoxConstraint::createSampleGenerator() const
+  RnBoxConstraint::createSampleGenerator() const
 {  
   if (!mRng)
     throw std::invalid_argument("mRng is null.");
@@ -256,19 +256,19 @@ std::unique_ptr<constraint::SampleGenerator>
     }
   }
 
-  return std::unique_ptr<RealVectorBoxConstraintSampleGenerator>(
-    new RealVectorBoxConstraintSampleGenerator(
+  return std::unique_ptr<RnBoxConstraintSampleGenerator>(
+    new RnBoxConstraintSampleGenerator(
       mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
 }
 
 //=============================================================================
-Eigen::VectorXd RealVectorBoxConstraint::getLowerLimits()
+Eigen::VectorXd RnBoxConstraint::getLowerLimits()
 {
   return mLowerLimits;
 }
 
 //=============================================================================
-Eigen::VectorXd RealVectorBoxConstraint::getUpperLimits()
+Eigen::VectorXd RnBoxConstraint::getUpperLimits()
 {
   return mUpperLimits;
 }

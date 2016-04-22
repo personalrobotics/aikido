@@ -1,4 +1,4 @@
-#include <aikido/constraint/DifferentiableProjector.hpp>
+#include <aikido/constraint/NewtonsMethodProjectable.hpp>
 #include <limits>
 #include <aikido/util/PseudoInverse.hpp>
 #include <math.h>
@@ -9,7 +9,7 @@ namespace aikido{
 namespace constraint{
 
 //=============================================================================
-DifferentiableProjector::DifferentiableProjector(
+NewtonsMethodProjectable::NewtonsMethodProjectable(
   DifferentiablePtr _differentiable, std::vector<double> _tolerance,
   int _maxIteration, double _minStepSize)
 : mDifferentiable(std::move(_differentiable))
@@ -45,7 +45,7 @@ DifferentiableProjector::DifferentiableProjector(
 }
 
 //=============================================================================
-bool DifferentiableProjector::contains(
+bool NewtonsMethodProjectable::contains(
   const statespace::StateSpace::State* _s) const
 {
   Eigen::VectorXd values = mDifferentiable->getValue(_s);
@@ -70,7 +70,7 @@ bool DifferentiableProjector::contains(
 }
 
 //=============================================================================
-bool DifferentiableProjector::project(
+bool NewtonsMethodProjectable::project(
   const statespace::StateSpace::State* _s,
   statespace::StateSpace::State* _out) const
 {
@@ -114,7 +114,7 @@ bool DifferentiableProjector::project(
 }
 
 //=============================================================================
-statespace::StateSpacePtr DifferentiableProjector::getStateSpace() const
+statespace::StateSpacePtr NewtonsMethodProjectable::getStateSpace() const
 {
   return mDifferentiable->getStateSpace();
 }

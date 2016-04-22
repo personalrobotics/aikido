@@ -6,7 +6,7 @@
 #include "../../statespace/dart/SE2Joint.hpp"
 #include "../../statespace/dart/SE3Joint.hpp"
 #include "../../util/metaprogramming.hpp"
-#include "../uniform/RealVectorBoxConstraint.hpp"
+#include "../uniform/RnBoxConstraint.hpp"
 #include "../uniform/SO2UniformSampler.hpp"
 #include "../uniform/SO3UniformSampler.hpp"
 #include "../Satisfied.hpp"
@@ -80,7 +80,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
-    return dart::common::make_unique<statespace::RealVectorBoxConstraint>(
+    return dart::common::make_unique<statespace::RnBoxConstraint>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
   else
@@ -138,7 +138,7 @@ struct createSampleableFor_impl<statespace::dart::RnJoint>
     const auto joint = _stateSpace->getJoint();
 
     if (isLimited(joint))
-      return dart::common::make_unique<statespace::RealVectorBoxConstraint>(
+      return dart::common::make_unique<statespace::RnBoxConstraint>(
         std::move(_stateSpace), std::move(_rng),
         getPositionLowerLimits(joint), getPositionUpperLimits(joint));
     else

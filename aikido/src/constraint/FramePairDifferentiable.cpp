@@ -1,4 +1,4 @@
-#include <aikido/constraint/FramePairConstraintAdaptor.hpp>
+#include <aikido/constraint/FramePairDifferentiable.hpp>
 #include <aikido/statespace/SE3.hpp>
 
 namespace aikido {
@@ -6,7 +6,7 @@ namespace constraint {
 
 
 //=============================================================================
-FramePairConstraintAdaptor::FramePairConstraintAdaptor(
+FramePairDifferentiable::FramePairDifferentiable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode1,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode2,
@@ -47,13 +47,13 @@ FramePairConstraintAdaptor::FramePairConstraintAdaptor(
 }
 
 //=============================================================================
-size_t FramePairConstraintAdaptor::getConstraintDimension() const
+size_t FramePairDifferentiable::getConstraintDimension() const
 {
   return mRelPoseConstraint->getConstraintDimension();
 }
 
 //=============================================================================
-Eigen::VectorXd FramePairConstraintAdaptor::getValue(
+Eigen::VectorXd FramePairDifferentiable::getValue(
   const statespace::StateSpace::State* _s) const
 {
   using State = statespace::CartesianProduct::State;
@@ -73,7 +73,7 @@ Eigen::VectorXd FramePairConstraintAdaptor::getValue(
 
 
 //=============================================================================
-Eigen::MatrixXd FramePairConstraintAdaptor::getJacobian(
+Eigen::MatrixXd FramePairDifferentiable::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   using State = statespace::CartesianProduct::State;
@@ -106,7 +106,7 @@ Eigen::MatrixXd FramePairConstraintAdaptor::getJacobian(
 
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> FramePairConstraintAdaptor::getValueAndJacobian(
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> FramePairDifferentiable::getValueAndJacobian(
     const statespace::StateSpace::State* _s) const
 {
   using State = statespace::CartesianProduct::State;
@@ -144,14 +144,14 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> FramePairConstraintAdaptor::getValue
 
 
 //=============================================================================
-std::vector<ConstraintType> FramePairConstraintAdaptor::getConstraintTypes() const
+std::vector<ConstraintType> FramePairDifferentiable::getConstraintTypes() const
 {
   return mRelPoseConstraint->getConstraintTypes();
 }
 
 
 //=============================================================================
-statespace::StateSpacePtr FramePairConstraintAdaptor::getStateSpace() const
+statespace::StateSpacePtr FramePairDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

@@ -1,15 +1,15 @@
 aikido_add_library("${PROJECT_NAME}_constraint"
-  uniform/RealVectorBoxConstraint.cpp
+  uniform/RnBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
   Differentiable.cpp
-  DifferentiableProjector.cpp
+  NewtonsMethodProjectable.cpp
   DifferentiableSubSpace.cpp
   FiniteSampleable.cpp
   CyclicSampleable.cpp
-  FkTestable.cpp
-  FrameConstraintAdaptor.cpp
-  FramePairConstraintAdaptor.cpp
+  FrameTestable.cpp
+  FrameDifferentiable.cpp
+  FramePairDifferentiable.cpp
   InverseKinematicsSampleable.cpp
   NonColliding.cpp
   Projectable.cpp
@@ -20,7 +20,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   DifferentiableIntersection.cpp
   TSR.cpp
   TestableIntersection.cpp
-  TestableSubSpace.cpp
+  TestableSubspace.cpp
   dart.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"

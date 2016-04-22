@@ -1,5 +1,5 @@
 #include "PolynomialConstraint.hpp"
-#include <aikido/constraint/DifferentiableProjector.hpp>
+#include <aikido/constraint/NewtonsMethodProjectable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/TSR.hpp>
 
@@ -8,73 +8,73 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::constraint::DifferentiableProjector;
+using aikido::constraint::NewtonsMethodProjectable;
 using aikido::constraint::Satisfied;
 using aikido::constraint::TSR;
 using aikido::statespace::Rn;
 
-TEST(DifferentiableProjectorTest, ConstructorThrowsOnNullDifferentiable)
+TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNullDifferentiable)
 {
-  EXPECT_THROW(DifferentiableProjector(nullptr, std::vector<double>{}, 1, 1),
+  EXPECT_THROW(NewtonsMethodProjectable(nullptr, std::vector<double>{}, 1, 1),
                std::invalid_argument);
 }
 
-TEST(DifferentiableProjectorTest, ConstructorThrowsOnBadToleranceDimension)
+TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnBadToleranceDimension)
 {
   auto ss = std::make_shared<Rn>(3);
   auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
-      DifferentiableProjector(constraint, std::vector<double>({0.1}), 1, 1e-4),
+      NewtonsMethodProjectable(constraint, std::vector<double>({0.1}), 1, 1e-4),
       std::invalid_argument);
 }
 
-TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeTolerance)
+TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeTolerance)
 {
   auto ss = std::make_shared<Rn>(3);
   auto constraint =
       std::make_shared<PolynomialConstraint>(Eigen::Vector3d(1, 2, 3));
   EXPECT_THROW(
-      DifferentiableProjector(constraint, std::vector<double>({-0.1}), 1, 1e-4),
+      NewtonsMethodProjectable(constraint, std::vector<double>({-0.1}), 1, 1e-4),
       std::invalid_argument);
 }
 
-TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeIteration)
+TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeIteration)
 {
   auto ss = std::make_shared<Rn>(3);
   auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
-      DifferentiableProjector(constraint, std::vector<double>(), 0, 1e-4),
+      NewtonsMethodProjectable(constraint, std::vector<double>(), 0, 1e-4),
       std::invalid_argument);
   EXPECT_THROW(
-      DifferentiableProjector(constraint, std::vector<double>(), -1, 1e-4),
+      NewtonsMethodProjectable(constraint, std::vector<double>(), -1, 1e-4),
       std::invalid_argument);
 
 }
 
-TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeStepsize)
+TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeStepsize)
 {
   auto ss = std::make_shared<Rn>(3);
   auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
-      DifferentiableProjector(constraint, std::vector<double>(), 1, 0),
+      NewtonsMethodProjectable(constraint, std::vector<double>(), 1, 0),
       std::invalid_argument);
   EXPECT_THROW(
-      DifferentiableProjector(constraint, std::vector<double>(), 1, -0.1),
+      NewtonsMethodProjectable(constraint, std::vector<double>(), 1, -0.1),
       std::invalid_argument);
 
 }
 
-TEST(DifferentiableProjector, Constructor)
+TEST(NewtonsMethodProjectable, Constructor)
 {
   // Constraint: x^2 - 1 = 0.
-  DifferentiableProjector projector(
+  NewtonsMethodProjectable projector(
       std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1)),
       std::vector<double>({0.1}), 10, 1e-4);
 }
 
-TEST(DifferentiableProjector, ProjectPolynomialFirstOrder)
+TEST(NewtonsMethodProjectable, ProjectPolynomialFirstOrder)
 {
-  DifferentiableProjector projector(
+  NewtonsMethodProjectable projector(
       std::make_shared<PolynomialConstraint>(Eigen::Vector2d(1, 2)),
       std::vector<double>({0.1}), 1, 1e-4);
 
@@ -96,10 +96,10 @@ TEST(DifferentiableProjector, ProjectPolynomialFirstOrder)
   EXPECT_TRUE(expected.isApprox(projected));
 }
 
-TEST(DifferentiableProjector, ProjectPolynomialSecondOrder)
+TEST(NewtonsMethodProjectable, ProjectPolynomialSecondOrder)
 { 
   // Constraint: x^2 - 1 = 0.
-  DifferentiableProjector projector(
+  NewtonsMethodProjectable projector(
       std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1)),
       std::vector<double>({1e-6}), 10, 1e-8);
 
@@ -144,7 +144,7 @@ TEST(DifferentiableProjector, ProjectPolynomialSecondOrder)
 
 }
 
-TEST(DifferentiableProjector, ProjectTSRTranslation)
+TEST(NewtonsMethodProjectable, ProjectTSRTranslation)
 {
   std::shared_ptr<TSR> tsr = std::make_shared<TSR>();
 
@@ -163,7 +163,7 @@ TEST(DifferentiableProjector, ProjectTSRTranslation)
   isometry.translation() = Eigen::Vector3d(-1, 0, 1);
   seedState.setIsometry(isometry);
 
-  DifferentiableProjector projector(tsr, std::vector<double>(6, 1e-4), 1000,
+  NewtonsMethodProjectable projector(tsr, std::vector<double>(6, 1e-4), 1000,
                                     1e-8);
 
   auto out = space->createState();
@@ -177,7 +177,7 @@ TEST(DifferentiableProjector, ProjectTSRTranslation)
 
 }
 
-TEST(DifferentiableProjector, ProjectTSRRotation)
+TEST(NewtonsMethodProjectable, ProjectTSRRotation)
 {
   std::shared_ptr<TSR> tsr = std::make_shared<TSR>();
 
@@ -193,7 +193,7 @@ TEST(DifferentiableProjector, ProjectTSRRotation)
 
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
 
-  DifferentiableProjector projector(tsr, std::vector<double>(6, 1e-4), 1000, 1e-8);
+  NewtonsMethodProjectable projector(tsr, std::vector<double>(6, 1e-4), 1000, 1e-8);
 
   auto out = space->createState();
   EXPECT_TRUE(projector.project(seedState, out));

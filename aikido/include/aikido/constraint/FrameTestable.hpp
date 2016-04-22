@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_FKTESTABLE_HPP_
-#define AIKIDO_CONSTRAINT_FKTESTABLE_HPP_
+#ifndef AIKIDO_CONSTRAINT_FRAMETESTABLE_HPP_
+#define AIKIDO_CONSTRAINT_FRAMETESTABLE_HPP_
 
 #include "Testable.hpp"
 #include "../statespace/SE3.hpp"
@@ -12,14 +12,14 @@ namespace constraint {
 /// Transforms a SE(3) Testable into a MetaSkeleton-Testable by
 /// performing forward kinematics on a configuration (metaskeleton state)
 /// and checking the resulting SE(3) pose of the asked frame.
-class FkTestable : public Testable
+class FrameTestable : public Testable
 {
 public:
   /// Creat a Testable for the MetaSkeleton.
   /// \param _stateSpace Configuration space of the metaskeleton.
   /// \param _frame Frame constrained by _poseConstraint.
   /// \param _poseConstraint A testable constraint on _frame.
-  FkTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+  FrameTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
              dart::dynamics::ConstJacobianNodePtr _frame,
              TestablePtr _poseConstraint);
 

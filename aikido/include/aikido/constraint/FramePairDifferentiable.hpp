@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_FRAMEPAIRCONSTRAINTADAPTOR_HPP_
-#define AIKIDO_CONSTRAINT_FRAMEPAIRCONSTRAINTADAPTOR_HPP_
+#ifndef AIKIDO_CONSTRAINT_FRAMEPAIRDIFFERENTIABLE_HPP_
+#define AIKIDO_CONSTRAINT_FRAMEPAIRDIFFERENTIABLE_HPP_
 
 #include <dart/dynamics/dynamics.h>
 #include "Differentiable.hpp"
@@ -15,7 +15,7 @@ namespace constraint{
 ///     1) Differentiable
 ///     2) in SE3.
 ///     2) constrains _jacobianNodeTarget's pose in jacobianNodeBase's frame.
-class FramePairConstraintAdaptor: public Differentiable
+class FramePairDifferentiable: public Differentiable
 {
 public:
 
@@ -27,7 +27,7 @@ public:
   /// \param _jacobianNodeBase The base frame for this constraint.
   /// \param _relPoseConstraint Relative pose constraint on _jacobianNodeTarget
   ///        w.r.t. _jacobianNodeBase. 
-  FramePairConstraintAdaptor(
+  FramePairDifferentiable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     dart::dynamics::ConstJacobianNodePtr _jacobianNodeTarget,
     dart::dynamics::ConstJacobianNodePtr _jacobianNodeBase,

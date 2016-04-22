@@ -1,10 +1,10 @@
-#include <aikido/constraint/FkTestable.hpp>
+#include <aikido/constraint/FrameTestable.hpp>
 
 namespace aikido {
 namespace constraint {
 
 //=============================================================================
-FkTestable::FkTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+FrameTestable::FrameTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
                        dart::dynamics::ConstJacobianNodePtr _frame,
                        TestablePtr _poseConstraint)
 : mStateSpace(std::move(_stateSpace))
@@ -33,7 +33,7 @@ FkTestable::FkTestable(statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
 }
 
 //=============================================================================
-bool FkTestable::isSatisfied(const statespace::StateSpace::State* _state) const
+bool FrameTestable::isSatisfied(const statespace::StateSpace::State* _state) const
 {
   // Set the state
   auto state 
@@ -48,7 +48,7 @@ bool FkTestable::isSatisfied(const statespace::StateSpace::State* _state) const
 }
 
 //=============================================================================
-std::shared_ptr<statespace::StateSpace> FkTestable::getStateSpace() const
+std::shared_ptr<statespace::StateSpace> FrameTestable::getStateSpace() const
 {
   return mStateSpace;
 }

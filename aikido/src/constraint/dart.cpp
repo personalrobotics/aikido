@@ -4,7 +4,7 @@
 #include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
-#include <aikido/constraint/TestableSubSpace.hpp>
+#include <aikido/constraint/TestableSubspace.hpp>
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
@@ -111,7 +111,7 @@ std::unique_ptr<Testable> createTestableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<TestableSubSpace>(
+  return make_unique<TestableSubspace>(
     std::move(_metaSkeleton), std::move(constraints));
 }
 

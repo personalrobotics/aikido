@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLEPROJECTOR_HPP_
-#define AIKIDO_CONSTRAINT_DIFFERENTIABLEPROJECTOR_HPP_
+#ifndef AIKIDO_CONSTRAINT_NEWTONSMETHODPROJECTABLE_HPP_
+#define AIKIDO_CONSTRAINT_NEWTONSMETHODPROJECTABLE_HPP_
 
 #include <Eigen/Dense>
 #include "Projectable.hpp"
@@ -9,7 +9,7 @@ namespace aikido {
 namespace constraint{
 
 /// Uses Newton's method to project state.
-class DifferentiableProjector : public Projectable
+class NewtonsMethodProjectable : public Projectable
 {
 public:
 
@@ -22,7 +22,7 @@ public:
   ///        dimension.
   /// \param _maxIteration Max iteration for Newton's method.
   /// \param _minStepSize Minimum step size to be taken in Newton's method.
-  DifferentiableProjector(
+  NewtonsMethodProjectable(
     DifferentiablePtr _differentiable,
     std::vector<double> _tolerance,
     int _maxIteration=1000,

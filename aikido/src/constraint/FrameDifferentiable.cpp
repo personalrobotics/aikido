@@ -1,4 +1,4 @@
-#include <aikido/constraint/FrameConstraintAdaptor.hpp>
+#include <aikido/constraint/FrameDifferentiable.hpp>
 #include <aikido/statespace/SE3.hpp>
 
 namespace aikido {
@@ -6,7 +6,7 @@ namespace constraint {
 
 
 //=============================================================================
-FrameConstraintAdaptor::FrameConstraintAdaptor(
+FrameDifferentiable::FrameDifferentiable(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
   dart::dynamics::ConstJacobianNodePtr _jacobianNode,
   DifferentiablePtr _poseConstraint)
@@ -41,13 +41,13 @@ FrameConstraintAdaptor::FrameConstraintAdaptor(
 }
 
 //=============================================================================
-size_t FrameConstraintAdaptor::getConstraintDimension() const
+size_t FrameDifferentiable::getConstraintDimension() const
 {
   return mPoseConstraint->getConstraintDimension();
 }
 
 //=============================================================================
-Eigen::VectorXd FrameConstraintAdaptor::getValue(
+Eigen::VectorXd FrameDifferentiable::getValue(
   const statespace::StateSpace::State* _s) const
 {
   using State = statespace::CartesianProduct::State;
@@ -64,7 +64,7 @@ Eigen::VectorXd FrameConstraintAdaptor::getValue(
 }
 
 //=============================================================================
-Eigen::MatrixXd FrameConstraintAdaptor::getJacobian(
+Eigen::MatrixXd FrameDifferentiable::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   using State = statespace::CartesianProduct::State;
@@ -90,7 +90,7 @@ Eigen::MatrixXd FrameConstraintAdaptor::getJacobian(
 }
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> FrameConstraintAdaptor::getValueAndJacobian(
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> FrameDifferentiable::getValueAndJacobian(
     const statespace::StateSpace::State* _s) const 
 {
   using State = statespace::CartesianProduct::State;
@@ -119,14 +119,14 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> FrameConstraintAdaptor::getValueAndJ
 }
 
 //=============================================================================
-std::vector<ConstraintType> FrameConstraintAdaptor::getConstraintTypes() const
+std::vector<ConstraintType> FrameDifferentiable::getConstraintTypes() const
 {
   return mPoseConstraint->getConstraintTypes();
 }
 
 
 //=============================================================================
-statespace::StateSpacePtr FrameConstraintAdaptor::getStateSpace() const
+statespace::StateSpacePtr FrameDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

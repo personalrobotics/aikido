@@ -1,5 +1,5 @@
 #include <dart/common/StlHelpers.h>
-#include <aikido/constraint/TestableSubSpace.hpp>
+#include <aikido/constraint/TestableSubspace.hpp>
 
 namespace aikido
 {
@@ -8,7 +8,7 @@ namespace constraint
 using dart::common::make_unique;
 
 //=============================================================================
-TestableSubSpace::TestableSubSpace(
+TestableSubspace::TestableSubspace(
   std::shared_ptr<statespace::CartesianProduct> _stateSpace,
   std::vector<std::shared_ptr<Testable>> _constraints)
 : mStateSpace(std::move(_stateSpace))
@@ -35,13 +35,13 @@ TestableSubSpace::TestableSubSpace(
 }
 
 //=============================================================================
-statespace::StateSpacePtr TestableSubSpace::getStateSpace() const
+statespace::StateSpacePtr TestableSubspace::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-bool TestableSubSpace::isSatisfied(
+bool TestableSubspace::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {
   const auto state

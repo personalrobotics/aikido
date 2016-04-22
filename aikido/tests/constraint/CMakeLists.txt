@@ -1,7 +1,7 @@
-aikido_add_test(test_DifferentiableProjector 
+aikido_add_test(test_NewtonsMethodProjectable 
   PolynomialConstraint.cpp
-  test_DifferentiableProjector.cpp)
-target_link_libraries(test_DifferentiableProjector
+  test_NewtonsMethodProjectable.cpp)
+target_link_libraries(test_NewtonsMethodProjectable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_DifferentiableSubSpace
@@ -10,14 +10,14 @@ aikido_add_test(test_DifferentiableSubSpace
 target_link_libraries(test_DifferentiableSubSpace
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FrameConstraintAdaptor
-  test_FrameConstraintAdaptor.cpp)
-target_link_libraries(test_FrameConstraintAdaptor
+aikido_add_test(test_FrameDifferentiable
+  test_FrameDifferentiable.cpp)
+target_link_libraries(test_FrameDifferentiable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FramePairConstraintAdaptor
-  test_FramePairConstraintAdaptor.cpp)
-target_link_libraries(test_FramePairConstraintAdaptor
+aikido_add_test(test_FramePairDifferentiable
+  test_FramePairDifferentiable.cpp)
+target_link_libraries(test_FramePairDifferentiable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_InverseKinematicsSampleable
@@ -45,9 +45,9 @@ target_link_libraries(test_TestableIntersection
 # target_link_libraries(test_DifferentiableIntersection
 #   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_RealVectorBoxConstraint
-  test_RealVectorBoxConstraint.cpp)
-target_link_libraries(test_RealVectorBoxConstraint
+aikido_add_test(test_RnBoxConstraint
+  test_RnBoxConstraint.cpp)
+target_link_libraries(test_RnBoxConstraint
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
 aikido_add_test(test_SO2UniformSampler
@@ -65,9 +65,9 @@ aikido_add_test(test_CyclicSampleable
 target_link_libraries(test_CyclicSampleable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FkTestable
-  test_FkTestable.cpp)
-target_link_libraries(test_FkTestable
+aikido_add_test(test_FrameTestable
+  test_FrameTestable.cpp)
+target_link_libraries(test_FrameTestable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_SO3UniformSampler
