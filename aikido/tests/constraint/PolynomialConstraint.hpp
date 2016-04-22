@@ -36,7 +36,7 @@ public:
 
 private:
   Eigen::VectorXd mCoeffs;
-  aikido::statespace::RealVectorStateSpace mStateSpace;
+  std::shared_ptr<aikido::statespace::RealVectorStateSpace> mStateSpace;
 };
 
 
