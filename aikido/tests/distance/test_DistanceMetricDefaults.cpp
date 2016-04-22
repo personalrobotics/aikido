@@ -1,4 +1,4 @@
-#include <aikido/distance/DistanceMetricDefaults.hpp>
+#include <aikido/distance/Defaults.hpp>
 #include <aikido/distance/Weighted.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
@@ -10,7 +10,7 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
-TEST(DistanceMetricDefaults, CreateDistanceMetricForThrowsOnNull)
+TEST(Defaults, CreateDistanceMetricForThrowsOnNull)
 {
   EXPECT_THROW(createDistanceMetricFor<SO2>(nullptr),
                std::invalid_argument);
@@ -22,12 +22,12 @@ TEST(DistanceMetricDefaults, CreateDistanceMetricForThrowsOnNull)
                std::invalid_argument);
 }
 
-TEST(DistanceMetricDefaults, CreateDistanceMetricThrowsOnNull)
+TEST(Defaults, CreateDistanceMetricThrowsOnNull)
 {
   EXPECT_THROW(createDistanceMetric(nullptr), std::invalid_argument);
 }
 
-TEST(DistanceMetricDefaults, CreateDistanceMetricFor)
+TEST(Defaults, CreateDistanceMetricFor)
 {
   auto so2 = std::make_shared<SO2>();
   auto so2metric = createDistanceMetricFor<SO2>(so2);
@@ -51,7 +51,7 @@ TEST(DistanceMetricDefaults, CreateDistanceMetricFor)
   EXPECT_TRUE(cmetric != nullptr);
 }
 
-TEST(DistanceMetricDefaults, CreateDistanceMetric)
+TEST(Defaults, CreateDistanceMetric)
 {
   auto so2 = std::make_shared<SO2>();
   auto so2metric = createDistanceMetric(so2);
