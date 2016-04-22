@@ -7,13 +7,13 @@
 namespace aikido {
 namespace statespace {
 
-// Defined in detail/CompoundStateSpace.hpp
+// Defined in detail/CartesianProduct.hpp
 template <class>
 class CompoundStateHandle;
 
 /// Represents the Cartesian product of other <tt>StateSpace</tt>s.
-class CompoundStateSpace
-  : public std::enable_shared_from_this<CompoundStateSpace>
+class CartesianProduct
+  : public std::enable_shared_from_this<CartesianProduct>
   , public virtual StateSpace
 {
 public:
@@ -24,7 +24,7 @@ public:
     State() = default;
     ~State() = default;
 
-    friend class CompoundStateSpace;
+    friend class CartesianProduct;
   };
 
   using StateHandle = CompoundStateHandle<State>;
@@ -35,7 +35,7 @@ public:
 
   /// Construct the Cartesian product of a vector of subspaces.
   /// \param subspaces vector of subspaces
-  explicit CompoundStateSpace(std::vector<StateSpacePtr> _subspaces);
+  explicit CartesianProduct(std::vector<StateSpacePtr> _subspaces);
 
   /// Helper function to create a \c ScopedState.
   ///
@@ -58,7 +58,7 @@ public:
   /// Gets substate of type \c Space::State from a CompoundState by index.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
-  /// \param _state state in this \c CompoundStateSpace
+  /// \param _state state in this \c CartesianProduct
   /// \param _index in the range [ 0, \c getNumStates() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
@@ -68,7 +68,7 @@ public:
   /// is an overload for when \c _state is \c const.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
-  /// \param _state state in this \c CompoundStateSpace
+  /// \param _state state in this \c CartesianProduct
   /// \param _index in the range [ 0, \c getNumStates() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
@@ -79,7 +79,7 @@ public:
   /// wraps it in a \c Space::StateHandle helper class.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
-  /// \param _state state in this \c CompoundStateSpace
+  /// \param _state state in this \c CartesianProduct
   /// \param _index in the range [ 0, \c getNumStates() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
@@ -91,7 +91,7 @@ public:
   /// overload for when \c _state is \c const.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
-  /// \param _state state in this \c CompoundStateSpace
+  /// \param _state state in this \c CartesianProduct
   /// \param _index in the range [ 0, \ getNumStates() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
@@ -154,6 +154,6 @@ private:
 }  // namespace statespace
 }  // namespace aikido
 
-#include "detail/CompoundStateSpace-impl.hpp"
+#include "detail/CartesianProduct-impl.hpp"
 
 #endif // AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_

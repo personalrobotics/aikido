@@ -3,7 +3,7 @@
 #include <aikido/constraint/SatisfiedConstraint.hpp>
 #include <aikido/constraint/TSR.hpp>
 
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
@@ -11,7 +11,7 @@
 using aikido::constraint::DifferentiableProjector;
 using aikido::constraint::SatisfiedConstraint;
 using aikido::constraint::TSR;
-using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::Rn;
 
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnNullDifferentiable)
 {
@@ -21,7 +21,7 @@ TEST(DifferentiableProjectorTest, ConstructorThrowsOnNullDifferentiable)
 
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnBadToleranceDimension)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto ss = std::make_shared<Rn>(3);
   auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
   EXPECT_THROW(
       DifferentiableProjector(constraint, std::vector<double>({0.1}), 1, 1e-4),
@@ -30,7 +30,7 @@ TEST(DifferentiableProjectorTest, ConstructorThrowsOnBadToleranceDimension)
 
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeTolerance)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto ss = std::make_shared<Rn>(3);
   auto constraint =
       std::make_shared<PolynomialConstraint>(Eigen::Vector3d(1, 2, 3));
   EXPECT_THROW(
@@ -40,7 +40,7 @@ TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeTolerance)
 
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeIteration)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto ss = std::make_shared<Rn>(3);
   auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
   EXPECT_THROW(
       DifferentiableProjector(constraint, std::vector<double>(), 0, 1e-4),
@@ -53,7 +53,7 @@ TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeIteration)
 
 TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeStepsize)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto ss = std::make_shared<Rn>(3);
   auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
   EXPECT_THROW(
       DifferentiableProjector(constraint, std::vector<double>(), 1, 0),
@@ -81,7 +81,7 @@ TEST(DifferentiableProjector, ProjectPolynomialFirstOrder)
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  RealVectorStateSpace rvss(1);
+  Rn rvss(1);
   auto s1 = rvss.createState();
   s1.setValue(v);
 
@@ -107,7 +107,7 @@ TEST(DifferentiableProjector, ProjectPolynomialSecondOrder)
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  RealVectorStateSpace rvss(1);
+  Rn rvss(1);
   auto seedState = rvss.createState();
   seedState.setValue(v);
 
@@ -155,7 +155,7 @@ TEST(DifferentiableProjector, ProjectTSRTranslation)
 
   tsr->mBw = Bw;
 
-  auto space = tsr->getSE3StateSpace();
+  auto space = tsr->getSE3();
 
   auto seedState = space->createState();  
 
@@ -188,7 +188,7 @@ TEST(DifferentiableProjector, ProjectTSRRotation)
 
   tsr->mBw = Bw;
 
-  auto space = tsr->getSE3StateSpace();
+  auto space = tsr->getSE3();
   auto seedState = space->createState();
 
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();

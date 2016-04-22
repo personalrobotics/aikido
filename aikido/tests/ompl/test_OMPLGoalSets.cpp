@@ -27,7 +27,7 @@ using aikido::constraint::TestableConstraintPtr;
 using aikido::distance::DistanceMetricPtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::InterpolatorPtr;
-using aikido::statespace::SO2StateSpace;
+using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::util::RNG;
@@ -121,16 +121,16 @@ protected:
   void setStateValue(const Eigen::Vector2d &value,
                      MetaSkeletonStateSpace::State *state) const
   {
-    auto j1Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 0);
-    auto j2Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 1);
+    auto j1Joint = stateSpace->getSubState<SO2::State>(state, 0);
+    auto j2Joint = stateSpace->getSubState<SO2::State>(state, 1);
     j1Joint->setAngle(value[0]);
     j2Joint->setAngle(value[1]);
   }
 
   Eigen::Vector2d getStateValue(MetaSkeletonStateSpace::State *state) const
   {
-    auto j1Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 0);
-    auto j2Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 1);
+    auto j1Joint = stateSpace->getSubState<SO2::State>(state, 0);
+    auto j2Joint = stateSpace->getSubState<SO2::State>(state, 1);
 
     Eigen::Vector2d retVal(j1Joint->getAngle(), j2Joint->getAngle());
     return retVal;

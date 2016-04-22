@@ -5,10 +5,10 @@ space of an arbitrary robot and provides utilities for mapping between a
 `StateSpace` and the `DegreeOfFreedom`s of a DART `MetaSkeleton`. The following
 `StateSpace` types are included:
 
-- `RealVectorStateSpace` an `n`-dimensional real vector space
-- `SO2StateSpace` the space of planar rotations
-- `SO3StateSpace` the space of spatial rotations
-- `CompoundStateSpace` a Cartesian product of other `StateSpace`s
+- `Rn` an `n`-dimensional real vector space
+- `SO2` the space of planar rotations
+- `SO3` the space of spatial rotations
+- `CartesianProduct` a Cartesian product of other `StateSpace`s
 
 Each of these `StateSpace` classes is paired with a `StateSpace::State` class
 that represents an element of that state. The `StateSpace` stores *all*
@@ -19,26 +19,26 @@ large numbers of `State`s.
 
 ### Creating and Destroying `State`s
 
-For a *fixed-size `StateSpace`*, such as `SO2StateSpace` or `SO3StateSpace`,
+For a *fixed-size `StateSpace`*, such as `SO2` or `SO3`,
 you may directly instantiate and modify the `State` type:
 ```c++
-SO2StateSpace::State fixed_state;
+SO2::State fixed_state;
 fixed_state.setAngle(M_PI);
 ```
 
 This is not possible on *variable-size `StateSpace`*, such as
-`RealVectorStateSpace` and `CompoundStateSpace`: the `State` does not know its
+`Rn` and `CartesianProduct`: the `State` does not know its
 own size! You must create *and* modify variable-length `State`s through their
 `StateSpace` class:
 ```c++
-RealVectorStateSpace space(2);
-auto state = static_cast<RealVectorStateSpace::State*>(space.allocateState());
+Rn space(2);
+auto state = static_cast<Rn::State*>(space.allocateState());
 space.setValue(state, Eigen::Vector2d(1., 2.));
 ```
 
 We provide a `StateHandle` class to automate this operation:
 ```c++
-RealVectorStateSpace::StateHandle state_handle(&space, state);
+Rn::StateHandle state_handle(&space, state);
 state_handle.setValue(Eigen::Vector2d(3., 4.));
 ```
 
@@ -46,7 +46,7 @@ In both cases, you must remember to call `space.deallocateState(state)` to
 avoid leaking memory. We provide a `ScopedState` class that combines the
 functionality of `StateHandle` with RAII memory management:
 ```c++
-RealVectorStateSpace::ScopedState scoped_state(&space);
+Rn::ScopedState scoped_state(&space);
 state_handle.setValue(Eigen::Vector2d(1., 2.));
 ```
 
@@ -58,50 +58,50 @@ This is especially important when creating a large number of states, e.g. when
 implementing a sample-based motion planner.
 
 
-### Working with `CompoundStateSpace`
+### Working with `CartesianProduct`
 
-`CompoundStateSpace` represents the Cartesian product of an arbitrary number of
+`CartesianProduct` represents the Cartesian product of an arbitrary number of
 heterogeneous `StateSpace`s, known as *subspaces*:
 ```c++
-CompoundStateSpace compound_space({
-  std::make_shared<SO2StateSpace>(),
-  std::make_shared<RealVectorStateSpace>(2)
+CartesianProduct compound_space({
+  std::make_shared<SO2>(),
+  std::make_shared<Rn>(2)
 });
-CompoundStateSpace::ScopedState compound_handle(compound_space);
-CompoundStateSpace::State* compound_state = compound_handle.getState();
+CartesianProduct::ScopedState compound_handle(compound_space);
+CartesianProduct::State* compound_state = compound_handle.getState();
 ```
 
 This class also provides member functions for retrieving a subspace by index.
 Accessing a subspace with incorrect type will result in a runtime error (in
 debug mode) or crash (in release mode):
 ```c++
-compound_space.getSubSpace<SO2StateSpace>(0); // OK
-compound_space.getSubSpace<RealVectorStateSpace>(1); // OK
+compound_space.getSubSpace<SO2>(0); // OK
+compound_space.getSubSpace<Rn>(1); // OK
 compound_space.getSubSpace<StateSpace>(1); // OK, inherits from StateSpace
-compound_space.getSubSpace<SO2StateSpace>(1); // ERROR, type mismatch
+compound_space.getSubSpace<SO2>(1); // ERROR, type mismatch
 ```
 
-Since `CompoundStateSpace` is variable-length*, it also provides member
+Since `CartesianProduct` is variable-length*, it also provides member
 functions for accessing substates by index. Just as above, accessing an
 incorrect type will result in a runtime error or crash:
 ```c++
-compound_space.getSubState<SO2StateSpace>(compound_state, 0); // OK
-compound_space.getSubState<RealVectorStateSpace>(compound_state, 1); // OK
+compound_space.getSubState<SO2>(compound_state, 0); // OK
+compound_space.getSubState<Rn>(compound_state, 1); // OK
 compound_space.getSubState<StateSpace>(1, 1); // OK, inherits from StateSpace
-compound_space.getSubState<SO2StateSpace>(1, 1); // ERROR, type mismatch
+compound_space.getSubState<SO2>(1, 1); // ERROR, type mismatch
 ```
 
 This is inconvienent when working with nested variable-length state spaces. For
 example, the following code is required to set the real vector component of
 `compound_state`:
 ```c++
-compound_space.getSubSpace<RealVectorStateSpace>(1).setValue(
-  compound_space.getSubState<RealVectorStateSpace>(compound_state, 1), Eigen::Vector2d(3., 4.));
+compound_space.getSubSpace<Rn>(1).setValue(
+  compound_space.getSubState<Rn>(compound_state, 1), Eigen::Vector2d(3., 4.));
 ```
 
 It is significantly less verbose to use the `StateHandle` wrapper:
 ```c++
-compound_handle.getSubStateHandle<RealVectorStateSpace>(1).setValue(Eigen::Vector2d(3., 4.));
+compound_handle.getSubStateHandle<Rn>(1).setValue(Eigen::Vector2d(3., 4.));
 ```
 
 

@@ -1,5 +1,5 @@
 #include <aikido/distance/AngularDistanceMetric.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2.hpp>
 
 #include <gtest/gtest.h>
 
@@ -13,7 +13,7 @@ TEST(AngularDistanceMetric, ThrowsOnNullStateSpace)
 
 TEST(AngularDistanceMetric, StateSpaceEquality)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
+  auto so2 = std::make_shared<SO2>();
   AngularDistanceMetric dmetric(so2);
 
   EXPECT_EQ(so2, dmetric.getStateSpace());
@@ -21,7 +21,7 @@ TEST(AngularDistanceMetric, StateSpaceEquality)
 
 TEST(AngularDistanceMetric, Distance)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
+  auto so2 = std::make_shared<SO2>();
   AngularDistanceMetric dmetric(so2);
 
   auto state1 = so2->createState();

@@ -143,7 +143,7 @@ struct createSampleableFor_impl<statespace::dart::RealVectorJointStateSpace>
         getPositionLowerLimits(joint), getPositionUpperLimits(joint));
     else
       throw std::runtime_error(
-        "Unable to create Sampleable for unbounded RealVectorStateSpace.");
+        "Unable to create Sampleable for unbounded Rn.");
   }
 };
 
@@ -209,7 +209,7 @@ struct createSampleableFor_impl<statespace::dart::SO2JointStateSpace>
       throw std::invalid_argument("SO2JointStateSpace must not have limits.");
 
     return dart::common::make_unique<
-      statespace::SO2StateSpaceSampleableConstraint>(
+      statespace::SO2SampleableConstraint>(
         std::move(_stateSpace), std::move(_rng));
   }
 };

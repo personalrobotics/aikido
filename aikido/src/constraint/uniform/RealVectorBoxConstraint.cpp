@@ -21,12 +21,12 @@ public:
 
 private:
   RealVectorBoxConstraintSampleGenerator(
-    std::shared_ptr<statespace::RealVectorStateSpace> _space,
+    std::shared_ptr<statespace::Rn> _space,
     std::unique_ptr<util::RNG> _rng,
     const Eigen::VectorXd& _lowerLimits,
     const Eigen::VectorXd& _upperLimits);
 
-  std::shared_ptr<statespace::RealVectorStateSpace> mSpace;
+  std::shared_ptr<statespace::Rn> mSpace;
   std::unique_ptr<util::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
 
@@ -35,7 +35,7 @@ private:
 
 //=============================================================================
 RealVectorBoxConstraintSampleGenerator::RealVectorBoxConstraintSampleGenerator(
-      std::shared_ptr<statespace::RealVectorStateSpace> _space,
+      std::shared_ptr<statespace::Rn> _space,
       std::unique_ptr<util::RNG> _rng,
       const Eigen::VectorXd& _lowerLimits,
       const Eigen::VectorXd& _upperLimits)
@@ -65,7 +65,7 @@ bool RealVectorBoxConstraintSampleGenerator::sample(
   for (size_t i = 0; i < value.size(); ++i)
     value[i] = mDistributions[i](*mRng);
 
-  mSpace->setValue(static_cast<RealVectorStateSpace::State*>(_state), value);
+  mSpace->setValue(static_cast<Rn::State*>(_state), value);
 
   return true;
 }
@@ -85,7 +85,7 @@ bool RealVectorBoxConstraintSampleGenerator::canSample() const
 //=============================================================================
 RealVectorBoxConstraint
   ::RealVectorBoxConstraint(
-      std::shared_ptr<statespace::RealVectorStateSpace> _space,
+      std::shared_ptr<statespace::Rn> _space,
       std::unique_ptr<util::RNG> _rng,
       const Eigen::VectorXd& _lowerLimits,
       const Eigen::VectorXd& _upperLimits)
@@ -152,7 +152,7 @@ std::vector<ConstraintType> RealVectorBoxConstraint::getConstraintTypes() const
 bool RealVectorBoxConstraint::isSatisfied(const StateSpace::State* state) const
 {
   const auto value = mSpace->getValue(
-    static_cast<const RealVectorStateSpace::State*>(state));
+    static_cast<const Rn::State*>(state));
 
   for (size_t i = 0; i < value.size(); ++i)
   {
@@ -168,7 +168,7 @@ bool RealVectorBoxConstraint::project(
   statespace::StateSpace::State* _out) const
 {
   Eigen::VectorXd value = mSpace->getValue(
-    static_cast<const RealVectorStateSpace::State*>(_s));
+    static_cast<const Rn::State*>(_s));
 
   for (size_t i = 0; i < value.size(); ++i)
   {
@@ -179,7 +179,7 @@ bool RealVectorBoxConstraint::project(
   }
 
   mSpace->setValue(
-    static_cast<RealVectorStateSpace::State*>(_out), value);
+    static_cast<Rn::State*>(_out), value);
 
   return true;
 }
@@ -189,7 +189,7 @@ Eigen::VectorXd RealVectorBoxConstraint::getValue(
   const statespace::StateSpace::State* _s) const
 {
   auto stateValue = mSpace->getValue(
-    static_cast<const RealVectorStateSpace::State*>(_s));
+    static_cast<const Rn::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
   Eigen::VectorXd constraintValue(dimension);
@@ -212,7 +212,7 @@ Eigen::MatrixXd RealVectorBoxConstraint::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   auto stateValue = mSpace->getValue(
-    static_cast<const RealVectorStateSpace::State*>(_s));
+    static_cast<const Rn::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(dimension, dimension);

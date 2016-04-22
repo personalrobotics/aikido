@@ -1,4 +1,4 @@
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <boost/math/constants/constants.hpp>
 
 namespace aikido
@@ -6,83 +6,83 @@ namespace aikido
 namespace statespace
 {
 //=============================================================================
-SO2StateSpace::State::State()
+SO2::State::State()
     : mAngle(0.)
 {
 }
 
 //=============================================================================
-SO2StateSpace::State::State(double _angle)
+SO2::State::State(double _angle)
     : mAngle(_angle)
 {
 }
 
 //=============================================================================
-double SO2StateSpace::State::getAngle() const { return mAngle; }
+double SO2::State::getAngle() const { return mAngle; }
 
 //=============================================================================
-void SO2StateSpace::State::setAngle(double _angle) { mAngle = _angle; }
+void SO2::State::setAngle(double _angle) { mAngle = _angle; }
 
 //=============================================================================
-Eigen::Rotation2Dd SO2StateSpace::State::getRotation() const
+Eigen::Rotation2Dd SO2::State::getRotation() const
 {
   return Eigen::Rotation2Dd(mAngle);
 }
 
 //=============================================================================
-void SO2StateSpace::State::setRotation(const Eigen::Rotation2Dd &_rotation)
+void SO2::State::setRotation(const Eigen::Rotation2Dd &_rotation)
 {
   mAngle = _rotation.angle();
 }
 
 //=============================================================================
-auto SO2StateSpace::createState() const -> ScopedState
+auto SO2::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
 //=============================================================================
-double SO2StateSpace::getAngle(const State *_state) const
+double SO2::getAngle(const State *_state) const
 {
   return _state->getAngle();
 }
 
 //=============================================================================
-void SO2StateSpace::setAngle(State *_state, double _angle) const
+void SO2::setAngle(State *_state, double _angle) const
 {
   _state->setAngle(_angle);
 }
 
 //=============================================================================
-Eigen::Rotation2Dd SO2StateSpace::getRotation(const State *_state) const
+Eigen::Rotation2Dd SO2::getRotation(const State *_state) const
 {
   return Eigen::Rotation2Dd(_state->mAngle);
 }
 
 //=============================================================================
-void SO2StateSpace::setRotation(State *_state,
+void SO2::setRotation(State *_state,
                                 const Eigen::Rotation2Dd &_rotation) const
 {
   _state->mAngle = _rotation.angle();
 }
 
 //=============================================================================
-size_t SO2StateSpace::getStateSizeInBytes() const { return sizeof(State); }
+size_t SO2::getStateSizeInBytes() const { return sizeof(State); }
 
 //=============================================================================
-StateSpace::State *SO2StateSpace::allocateStateInBuffer(void *_buffer) const
+StateSpace::State *SO2::allocateStateInBuffer(void *_buffer) const
 {
   return new (_buffer) State;
 }
 
 //=============================================================================
-void SO2StateSpace::freeStateInBuffer(StateSpace::State *_state) const
+void SO2::freeStateInBuffer(StateSpace::State *_state) const
 {
   static_cast<State *>(_state)->~State();
 }
 
 //=============================================================================
-void SO2StateSpace::compose(const StateSpace::State *_state1,
+void SO2::compose(const StateSpace::State *_state1,
                             const StateSpace::State *_state2,
                             StateSpace::State *_out) const
 {
@@ -98,14 +98,14 @@ void SO2StateSpace::compose(const StateSpace::State *_state1,
 }
 
 //=============================================================================
-void SO2StateSpace::getIdentity(StateSpace::State *_out) const
+void SO2::getIdentity(StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
   setAngle(out, 0.);
 }
 
 //=============================================================================
-void SO2StateSpace::getInverse(const StateSpace::State *_in,
+void SO2::getInverse(const StateSpace::State *_in,
                                StateSpace::State *_out) const
 {
   // TODO: Disable this in release mode.
@@ -119,13 +119,13 @@ void SO2StateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-size_t SO2StateSpace::getDimension() const
+size_t SO2::getDimension() const
 {
   return 1;
 }
 
 //=============================================================================
-void SO2StateSpace::copyState(
+void SO2::copyState(
   const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto source = static_cast<const State *>(_source);
@@ -134,7 +134,7 @@ void SO2StateSpace::copyState(
 }
 
 //=============================================================================
-void SO2StateSpace::expMap(const Eigen::VectorXd &_tangent,
+void SO2::expMap(const Eigen::VectorXd &_tangent,
                            StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
@@ -152,7 +152,7 @@ void SO2StateSpace::expMap(const Eigen::VectorXd &_tangent,
 }
 
 //=============================================================================
-void SO2StateSpace::logMap(const StateSpace::State *_in,
+void SO2::logMap(const StateSpace::State *_in,
                            Eigen::VectorXd &_tangent) const
 {
   if (_tangent.rows() != 1) {

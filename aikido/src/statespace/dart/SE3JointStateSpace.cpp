@@ -7,7 +7,7 @@ namespace dart {
 //=============================================================================
 SE3JointStateSpace::SE3JointStateSpace(::dart::dynamics::FreeJoint* _joint)
   : JointStateSpace(_joint)
-  , SE3StateSpace()
+  , SE3()
 {
 }
 
@@ -26,7 +26,7 @@ void SE3JointStateSpace::convertStateToPositions(
   Eigen::VectorXd& _positions) const
 {
   _positions = ::dart::dynamics::FreeJoint::convertToPositions(
-      getIsometry(static_cast<const SE3StateSpace::State*>(_state)));
+      getIsometry(static_cast<const SE3::State*>(_state)));
 }
 
 } // namespace dart

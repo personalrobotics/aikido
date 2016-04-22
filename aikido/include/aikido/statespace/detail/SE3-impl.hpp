@@ -1,24 +1,24 @@
 namespace aikido {
 namespace statespace {
 
-/// \c StateHandle for a \c SE2StateSpace. The template parameter is
+/// \c StateHandle for a \c SE3. The template parameter is
 /// necessary to support both \c const and non-<tt>const</tt> states.
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
-class SE2StateHandle
-  : public statespace::StateHandle<SE2StateSpace, _QualifiedState>
+class SE3StateHandle
+  : public statespace::StateHandle<SE3, _QualifiedState>
 {
 public:
   using typename statespace::StateHandle<
-    SE2StateSpace, _QualifiedState>::State;
+    SE3, _QualifiedState>::State;
   using typename statespace::StateHandle<
-    SE2StateSpace, _QualifiedState>::StateSpace;
+    SE3, _QualifiedState>::StateSpace;
   using typename statespace::StateHandle<
-    SE2StateSpace, _QualifiedState>::QualifiedState;
+    SE3, _QualifiedState>::QualifiedState;
 
   /// Construct and initialize to \c nullptr.
-  SE2StateHandle()
+  SE3StateHandle()
   {
   }
 
@@ -26,23 +26,23 @@ public:
   ///
   /// \param _space state space that created \c _state
   /// \param _state state created by \c _space
-  SE2StateHandle(const StateSpace* _space, QualifiedState* _state)
-    : statespace::StateHandle<SE2StateSpace, QualifiedState>(_space, _state)
+  SE3StateHandle(const StateSpace* _space, QualifiedState* _state)
+    : statespace::StateHandle<SE3, QualifiedState>(_space, _state)
   {
   }
 
   /// Gets value as an Eigen transformation object.
   ///
   /// \return Eigen transformation
-  Eigen::Isometry2d getIsometry() const
+  Eigen::Isometry3d getIsometry() const
   {
     return this->getStateSpace()->getIsometry(this->getState());
   }
 
-  /// Sets value to an Eigen transfomation object.
+  /// Gets value as an Eigen transformation object.
   ///
-  /// \param _transform Eigen transformation
-  void setIsometry(const Eigen::Isometry2d& _transform) const
+  /// \return Eigen trasnformation 
+  void setIsometry(const Eigen::Isometry3d& _transform) const
   {
     return this->getStateSpace()->setIsometry(this->getState(), _transform);
   }

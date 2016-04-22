@@ -7,13 +7,13 @@
 namespace aikido {
 namespace statespace {
 
-// Defined in detail/SO3StateSpace-impl.hpp
+// Defined in detail/SO3-impl.hpp
 template <class>
 class SO3StateHandle;
 
 /// The two-dimensional special orthogonal group SO(3), i.e. the space of
 /// spatial rigid body rotations.
-class SO3StateSpace : virtual public StateSpace
+class SO3 : virtual public StateSpace
 {
 public:
   /// State in SO(3), a spatial rotation.
@@ -45,7 +45,7 @@ public:
   private:
     Quaternion mValue;
 
-    friend class SO3StateSpace;
+    friend class SO3;
   };
 
   using StateHandle = SO3StateHandle<State>;
@@ -57,7 +57,7 @@ public:
   using Quaternion = State::Quaternion;
 
   /// Constructs a state space representing SO(3).
-  SO3StateSpace() = default;
+  SO3() = default;
 
   /// Helper function to create a \c ScopedState.
   ///
@@ -125,6 +125,6 @@ public:
 } // namespace statespace
 } // namespace aikido
 
-#include "detail/SO3StateSpace-impl.hpp"
+#include "detail/SO3-impl.hpp"
 
 #endif // ifndef AIKIDO_STATESPACE_SO3STATESPACE_HPP_

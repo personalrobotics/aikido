@@ -1,21 +1,21 @@
 #ifndef AIKIDO_STATESPACE_DART_SO3JOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_SO3JOINTSTATESPACE_HPP_
-#include "../SO3StateSpace.hpp"
+#include "../SO3.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// \c SO3StateSpace for a DART \c BallJoint. This class does not support
+/// \c SO3 for a DART \c BallJoint. This class does not support
 /// position limits.
 class SO3JointStateSpace
-  : public SO3StateSpace
+  : public SO3
   , public JointStateSpace
   , public std::enable_shared_from_this<SO3JointStateSpace>
 {
 public:
-  using SO3StateSpace::State;
+  using SO3::State;
 
   /// Creates a state space for a \c BallJoint. This class does not support
   /// position limits.

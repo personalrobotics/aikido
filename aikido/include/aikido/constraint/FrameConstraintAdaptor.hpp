@@ -14,7 +14,7 @@ namespace constraint{
 /// w.r.t. MetaSkeletonState of _jacobianNode.
 /// _poseConstraint is 
 ///     1) Differentiable
-///     2) in SE3StateSpace.
+///     2) in SE3.
 ///     2) constrains _jacobianNode's pose in World Frame.
 class FrameConstraintAdaptor: public Differentiable
 {
@@ -25,7 +25,7 @@ public:
   ///        defines _jacobianNode's transform.
   /// \param _jacobianNode The frame being constrained.
   /// \param _poseConstraint Constraint on _jacobian. This should be 
-  ///        in SE3StateSpace.
+  ///        in SE3.
   FrameConstraintAdaptor(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode,

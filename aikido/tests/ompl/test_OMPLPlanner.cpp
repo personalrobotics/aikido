@@ -8,7 +8,7 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
-using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
+using Rn = aikido::statespace::Rn;
 using aikido::ompl::getSpaceInformation;
 
 TEST_F(OMPLPlannerTest, PlanToConfiguration)
@@ -18,12 +18,12 @@ TEST_F(OMPLPlannerTest, PlanToConfiguration)
 
   auto startState = stateSpace->createState();
   auto subState1 =
-      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+      stateSpace->getSubStateHandle<Rn>(startState, 0);
   subState1.setValue(startPose);
 
   auto goalState = stateSpace->createState();
   auto subState2 =
-      stateSpace->getSubStateHandle<RealVectorStateSpace>(goalState, 0);
+      stateSpace->getSubStateHandle<Rn>(goalState, 0);
   subState2.setValue(goalPose);
 
   // Plan
@@ -35,12 +35,12 @@ TEST_F(OMPLPlannerTest, PlanToConfiguration)
   // Check the first waypoint
   auto s0 = stateSpace->createState();
   traj->evaluate(0, s0);
-  auto r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  auto r0 = s0.getSubStateHandle<Rn>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
   // Check the last waypoint
   traj->evaluate(traj->getDuration(), s0);
-  r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  r0 = s0.getSubStateHandle<Rn>(0);
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 }
 
@@ -50,12 +50,12 @@ TEST_F(OMPLPlannerTest, PlanToGoalRegion)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+      stateSpace->getSubStateHandle<Rn>(startState, 0);
   subState1.setValue(startPose);
 
   auto boxConstraint =
       std::make_shared<aikido::statespace::RealVectorBoxConstraint>(
-          stateSpace->getSubSpace<RealVectorStateSpace>(0), make_rng(),
+          stateSpace->getSubSpace<Rn>(0), make_rng(),
           Eigen::Vector3d(4, 4, 0), Eigen::Vector3d(5, 5, 0));
   std::vector<std::shared_ptr<aikido::constraint::SampleableConstraint>>
       sConstraints;
@@ -79,7 +79,7 @@ TEST_F(OMPLPlannerTest, PlanToGoalRegion)
   // Check the first waypoint
   auto s0 = stateSpace->createState();
   traj->evaluate(0, s0);
-  auto r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  auto r0 = s0.getSubStateHandle<Rn>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
   // Check the last waypoint
@@ -93,7 +93,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalTestable)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+      stateSpace->getSubStateHandle<Rn>(startState, 0);
   subState1.setValue(startPose);
 
   // Easiest sampleable to get
@@ -115,7 +115,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnGoalTestableMismatch)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+      stateSpace->getSubStateHandle<Rn>(startState, 0);
   subState1.setValue(startPose);
 
   // Easiest sampleable to get
@@ -142,7 +142,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalSampler)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+      stateSpace->getSubStateHandle<Rn>(startState, 0);
   subState1.setValue(startPose);
 
   // Dummy testable
@@ -163,7 +163,7 @@ TEST_F(OMPLPlannerTest, PlanThrowsOnGoalSamplerMismatch)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+      stateSpace->getSubStateHandle<Rn>(startState, 0);
   subState1.setValue(startPose);
 
   // Easiest sampleable to get
@@ -204,7 +204,7 @@ TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullInterpolator)
 
 TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnInterpolatorMismatch)
 {
-  auto ss = std::make_shared<aikido::statespace::SO2StateSpace>();
+  auto ss = std::make_shared<aikido::statespace::SO2>();
   auto binterpolator =
       std::make_shared<aikido::statespace::GeodesicInterpolator>(ss);
 

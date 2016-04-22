@@ -1,4 +1,4 @@
-#include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <iostream>
 
 namespace aikido
@@ -7,7 +7,7 @@ namespace statespace
 {
 
 //=============================================================================
-CompoundStateSpace::CompoundStateSpace(std::vector<StateSpacePtr> _subspaces)
+CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
   : mSubspaces(std::move(_subspaces))
   , mOffsets(mSubspaces.size(), 0u)
   , mSizeInBytes(0u)
@@ -27,19 +27,19 @@ CompoundStateSpace::CompoundStateSpace(std::vector<StateSpacePtr> _subspaces)
 }
 
 //=============================================================================
-auto CompoundStateSpace::createState() const -> ScopedState
+auto CartesianProduct::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
 //=============================================================================
-size_t CompoundStateSpace::getNumStates() const { return mSubspaces.size(); }
+size_t CartesianProduct::getNumStates() const { return mSubspaces.size(); }
 
 //=============================================================================
-size_t CompoundStateSpace::getStateSizeInBytes() const { return mSizeInBytes; }
+size_t CartesianProduct::getStateSizeInBytes() const { return mSizeInBytes; }
 
 //=============================================================================
-StateSpace::State *CompoundStateSpace::allocateStateInBuffer(
+StateSpace::State *CartesianProduct::allocateStateInBuffer(
     void *_buffer) const
 {
   auto state = reinterpret_cast<State *>(_buffer);
@@ -51,7 +51,7 @@ StateSpace::State *CompoundStateSpace::allocateStateInBuffer(
 }
 
 //=============================================================================
-void CompoundStateSpace::freeStateInBuffer(StateSpace::State *_state) const
+void CartesianProduct::freeStateInBuffer(StateSpace::State *_state) const
 {
   auto state = static_cast<State *>(_state);
 
@@ -60,7 +60,7 @@ void CompoundStateSpace::freeStateInBuffer(StateSpace::State *_state) const
 }
 
 //=============================================================================
-void CompoundStateSpace::compose(const StateSpace::State *_state1,
+void CartesianProduct::compose(const StateSpace::State *_state1,
                                  const StateSpace::State *_state2,
                                  StateSpace::State *_out) const
 {
@@ -79,7 +79,7 @@ void CompoundStateSpace::compose(const StateSpace::State *_state1,
 }
 
 //=============================================================================
-void CompoundStateSpace::getIdentity(StateSpace::State *_out) const
+void CartesianProduct::getIdentity(StateSpace::State *_out) const
 {
   auto state = static_cast<State *>(_out);
 
@@ -89,7 +89,7 @@ void CompoundStateSpace::getIdentity(StateSpace::State *_out) const
 }
 
 //=============================================================================
-void CompoundStateSpace::getInverse(const StateSpace::State *_in,
+void CartesianProduct::getInverse(const StateSpace::State *_in,
                                     StateSpace::State *_out) const
 {
   // TODO: Disable this in release mode.
@@ -105,7 +105,7 @@ void CompoundStateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-size_t CompoundStateSpace::getDimension() const
+size_t CartesianProduct::getDimension() const
 {
   size_t dim = 0;
   for (auto const &sspace : mSubspaces) {
@@ -115,7 +115,7 @@ size_t CompoundStateSpace::getDimension() const
 }
 
 //=============================================================================
-void CompoundStateSpace::copyState(
+void CartesianProduct::copyState(
   const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto destination = static_cast<State *>(_destination);
@@ -127,7 +127,7 @@ void CompoundStateSpace::copyState(
 }
 
 //=============================================================================
-void CompoundStateSpace::expMap(const Eigen::VectorXd &_tangent,
+void CartesianProduct::expMap(const Eigen::VectorXd &_tangent,
                                 StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
@@ -151,7 +151,7 @@ void CompoundStateSpace::expMap(const Eigen::VectorXd &_tangent,
 }
 
 //=============================================================================
-void CompoundStateSpace::logMap(const StateSpace::State *_in,
+void CartesianProduct::logMap(const StateSpace::State *_in,
                                 Eigen::VectorXd &_tangent) const
 {
   auto dimension = getDimension();

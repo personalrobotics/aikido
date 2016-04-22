@@ -9,7 +9,7 @@ namespace aikido {
 namespace constraint {
 
 /// A constraint which is always satisfied.
-/// This class is often used in CompoundStateSpace constraints 
+/// This class is often used in CartesianProduct constraints 
 /// to represent that some subspace doesn't have any constraint.
 class SatisfiedConstraint 
   : public constraint::Differentiable

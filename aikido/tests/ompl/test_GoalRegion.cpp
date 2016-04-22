@@ -53,7 +53,7 @@ TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
   auto si = aikido::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
-  auto so3 = std::make_shared<aikido::statespace::SO3StateSpace>();
+  auto so3 = std::make_shared<aikido::statespace::SO3>();
   auto testable = std::make_shared<PassingConstraint>(so3);
   auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   EXPECT_THROW(GoalRegion(si, std::move(testable), std::move(generator)),

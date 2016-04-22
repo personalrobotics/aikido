@@ -3,21 +3,21 @@
 namespace aikido {
 namespace statespace {
 
-/// \c StateHandle for a \c RealVectorStateSpace. The template parameter is
+/// \c StateHandle for a \c Rn. The template parameter is
 /// necessary to support both \c const and non-<tt>const</tt> states.
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
 class RealVectorStateHandle 
-  : public statespace::StateHandle<RealVectorStateSpace, _QualifiedState>
+  : public statespace::StateHandle<Rn, _QualifiedState>
 {
 public:
   using typename statespace::StateHandle<
-    RealVectorStateSpace, _QualifiedState>::State;
+    Rn, _QualifiedState>::State;
   using typename statespace::StateHandle<
-    RealVectorStateSpace, _QualifiedState>::StateSpace;
+    Rn, _QualifiedState>::StateSpace;
   using typename statespace::StateHandle<
-    RealVectorStateSpace, _QualifiedState>::QualifiedState;
+    Rn, _QualifiedState>::QualifiedState;
 
   using ValueType = std::conditional<std::is_const<QualifiedState>::value,
     const Eigen::VectorXd, Eigen::VectorXd>;

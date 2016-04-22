@@ -2,7 +2,7 @@
 #define AIKIDO_DISTANCE_GEODESICDISTANCEMETRIC_HPP_
 
 #include "DistanceMetric.hpp"
-#include "../statespace/SO3StateSpace.hpp"
+#include "../statespace/SO3.hpp"
 
 namespace aikido
 {
@@ -13,21 +13,21 @@ class GeodesicDistanceMetric : public DistanceMetric
 {
 public:
   /// Constructor.
-  /// \param _space The SO3StateSpace this distance metric operates on
+  /// \param _space The SO3 this distance metric operates on
   explicit GeodesicDistanceMetric(
-      std::shared_ptr<statespace::SO3StateSpace> _space);
+      std::shared_ptr<statespace::SO3> _space);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
 
   /// Computes distance (in radians) between the two states
-  /// \param _state1 The first state (type SO3StateSpace::State)
-  /// \param _state2 The second state (type SO3StateSpace::State)
+  /// \param _state1 The first state (type SO3::State)
+  /// \param _state2 The second state (type SO3::State)
   double distance(const statespace::StateSpace::State* _state1,
                   const statespace::StateSpace::State* _state2) const override;
 
 private:
-  std::shared_ptr<statespace::SO3StateSpace> mStateSpace;
+  std::shared_ptr<statespace::SO3> mStateSpace;
 };
 };
 }

@@ -1,21 +1,21 @@
 namespace aikido {
 namespace statespace {
 
-/// \c StateHandle for a \c SO3StateSpace. The template parameter is
+/// \c StateHandle for a \c SO3. The template parameter is
 /// necessary to support both \c const and non-<tt>const</tt> states.
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
 class SO3StateHandle
-  : public statespace::StateHandle<SO3StateSpace, _QualifiedState>
+  : public statespace::StateHandle<SO3, _QualifiedState>
 {
 public:
   using typename statespace::StateHandle<
-    SO3StateSpace, _QualifiedState>::State;
+    SO3, _QualifiedState>::State;
   using typename statespace::StateHandle<
-    SO3StateSpace, _QualifiedState>::StateSpace;
+    SO3, _QualifiedState>::StateSpace;
   using typename statespace::StateHandle<
-    SO3StateSpace, _QualifiedState>::QualifiedState;
+    SO3, _QualifiedState>::QualifiedState;
 
   using Quaternion = typename State::Quaternion;
 

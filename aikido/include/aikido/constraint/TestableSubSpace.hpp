@@ -2,7 +2,7 @@
 #define AIKIDO_CONSTRAINT_TESTABLESUBSPACE_HPP_
 #include <vector>
 #include "TestableConstraint.hpp"
-#include "../statespace/CompoundStateSpace.hpp"
+#include "../statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -20,7 +20,7 @@ public:
   ///        should match the number of subspaces in _stateSpace.
   ///        i-th constraint applies to i-th subspace.
   TestableSubSpace(
-      std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<TestableConstraintPtr> _constraints);
 
   statespace::StateSpacePtr getStateSpace() const override;
@@ -29,7 +29,7 @@ public:
       const aikido::statespace::StateSpace::State* _state) const override;
 
 private:
-  std::shared_ptr<statespace::CompoundStateSpace> mStateSpace;
+  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
   std::vector<TestableConstraintPtr> mConstraints;
 };
 

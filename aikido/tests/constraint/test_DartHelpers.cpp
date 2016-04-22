@@ -326,5 +326,5 @@ TEST_F(SO3JointStateSpaceHelpersTests, createSampleableBounds)
   }
 }
 
-// TODO: Add tests for SE2StateSpace bounds once they're implemented.
-// TODO: Add tests for SE3StateSpace bounds once they're implemented.
+// TODO: Add tests for SE2 bounds once they're implemented.
+// TODO: Add tests for SE3 bounds once they're implemented.

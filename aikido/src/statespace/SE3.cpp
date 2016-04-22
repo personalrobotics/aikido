@@ -1,4 +1,4 @@
-#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
 #include <dart/math/Geometry.h>
 
 namespace aikido
@@ -6,65 +6,65 @@ namespace aikido
 namespace statespace
 {
 //=============================================================================
-SE3StateSpace::State::State()
+SE3::State::State()
     : mTransform(Isometry3d::Identity())
 {
 }
 
 //=============================================================================
-SE3StateSpace::State::State(const Isometry3d &_transform)
+SE3::State::State(const Isometry3d &_transform)
     : mTransform(_transform)
 {
 }
 
 //=============================================================================
-auto SE3StateSpace::State::getIsometry() const -> const Isometry3d &
+auto SE3::State::getIsometry() const -> const Isometry3d &
 {
   return mTransform;
 }
 
 //=============================================================================
-void SE3StateSpace::State::setIsometry(const Isometry3d &_transform)
+void SE3::State::setIsometry(const Isometry3d &_transform)
 {
   mTransform = _transform;
 }
 
 //=============================================================================
-auto SE3StateSpace::createState() const -> ScopedState
+auto SE3::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
 //=============================================================================
-auto SE3StateSpace::getIsometry(const State *_state) const -> const Isometry3d &
+auto SE3::getIsometry(const State *_state) const -> const Isometry3d &
 {
   return _state->getIsometry();
 }
 
 //=============================================================================
-void SE3StateSpace::setIsometry(State *_state,
+void SE3::setIsometry(State *_state,
                                 const Isometry3d &_transform) const
 {
   _state->setIsometry(_transform);
 }
 
 //=============================================================================
-size_t SE3StateSpace::getStateSizeInBytes() const { return sizeof(State); }
+size_t SE3::getStateSizeInBytes() const { return sizeof(State); }
 
 //=============================================================================
-StateSpace::State *SE3StateSpace::allocateStateInBuffer(void *_buffer) const
+StateSpace::State *SE3::allocateStateInBuffer(void *_buffer) const
 {
   return new (_buffer) State;
 }
 
 //=============================================================================
-void SE3StateSpace::freeStateInBuffer(StateSpace::State *_state) const
+void SE3::freeStateInBuffer(StateSpace::State *_state) const
 {
   static_cast<State *>(_state)->~State();
 }
 
 //=============================================================================
-void SE3StateSpace::compose(const StateSpace::State *_state1,
+void SE3::compose(const StateSpace::State *_state1,
                             const StateSpace::State *_state2,
                             StateSpace::State *_out) const
 {
@@ -80,14 +80,14 @@ void SE3StateSpace::compose(const StateSpace::State *_state1,
 }
 
 //=============================================================================
-void SE3StateSpace::getIdentity(StateSpace::State *_out) const
+void SE3::getIdentity(StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
   setIsometry(out, Isometry3d::Identity());
 }
 
 //=============================================================================
-void SE3StateSpace::getInverse(const StateSpace::State *_in,
+void SE3::getInverse(const StateSpace::State *_in,
                                StateSpace::State *_out) const
 {
   // TODO: Disable this in release mode.
@@ -100,13 +100,13 @@ void SE3StateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-size_t SE3StateSpace::getDimension() const
+size_t SE3::getDimension() const
 {
   return 6;
 }
 
 //=============================================================================
-void SE3StateSpace::copyState(
+void SE3::copyState(
   const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto source = static_cast<const State *>(_source);
@@ -115,7 +115,7 @@ void SE3StateSpace::copyState(
 }
 
 //=============================================================================
-void SE3StateSpace::expMap(const Eigen::VectorXd &_tangent,
+void SE3::expMap(const Eigen::VectorXd &_tangent,
                            StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
@@ -133,7 +133,7 @@ void SE3StateSpace::expMap(const Eigen::VectorXd &_tangent,
 }
 
 //=============================================================================
-void SE3StateSpace::logMap(const StateSpace::State *_in,
+void SE3::logMap(const StateSpace::State *_in,
                            Eigen::VectorXd &_tangent) const
 {
   // TODO: Skip these checks in release mode.

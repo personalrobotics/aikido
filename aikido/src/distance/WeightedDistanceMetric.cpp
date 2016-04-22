@@ -5,18 +5,18 @@ namespace distance {
 
 //=============================================================================
 WeightedDistanceMetric::WeightedDistanceMetric(
-    std::shared_ptr<statespace::CompoundStateSpace> _space,
+    std::shared_ptr<statespace::CartesianProduct> _space,
     std::vector<DistanceMetricPtr> _metrics)
     : mStateSpace(std::move(_space))
 {
   if (mStateSpace == nullptr) {
-    throw std::invalid_argument("CompoundStateSpace is nullptr");
+    throw std::invalid_argument("CartesianProduct is nullptr");
   }
 
   if (mStateSpace->getNumStates() != _metrics.size()) {
     std::stringstream msg;
     msg << "Must provide a metric for every subspace in the "
-           "CompoundStateSpace. "
+           "CartesianProduct. "
         << " (subspaces = " << mStateSpace->getNumStates()
         << " , metrics = " << _metrics.size() << ")";
     throw std::invalid_argument(msg.str());
@@ -42,19 +42,19 @@ WeightedDistanceMetric::WeightedDistanceMetric(
 
 //=============================================================================
 WeightedDistanceMetric::WeightedDistanceMetric(
-    std::shared_ptr<statespace::CompoundStateSpace> _space,
+    std::shared_ptr<statespace::CartesianProduct> _space,
     std::vector<std::pair<DistanceMetricPtr, double>> _metrics)
     : mStateSpace(std::move(_space))
     , mMetrics(std::move(_metrics))
 {
   if (mStateSpace == nullptr) {
-    throw std::invalid_argument("CompoundStateSpace is nullptr");
+    throw std::invalid_argument("CartesianProduct is nullptr");
   }
 
   if (mStateSpace->getNumStates() != mMetrics.size()) {
     std::stringstream msg;
     msg << "Must provide a metric for every subspace in the "
-           "CompoundStateSpace. "
+           "CartesianProduct. "
         << " (subspaces = " << mStateSpace->getNumStates()
         << " , metrics = " << mMetrics.size() << ")";
     throw std::invalid_argument(msg.str());
@@ -93,9 +93,9 @@ double WeightedDistanceMetric::distance(
     const aikido::statespace::StateSpace::State* _state2) const
 {
   auto state1 =
-      static_cast<const statespace::CompoundStateSpace::State*>(_state1);
+      static_cast<const statespace::CartesianProduct::State*>(_state1);
   auto state2 =
-      static_cast<const statespace::CompoundStateSpace::State*>(_state2);
+      static_cast<const statespace::CartesianProduct::State*>(_state2);
 
   double dist = 0.0;
   for (size_t i = 0; i < mMetrics.size(); ++i) {

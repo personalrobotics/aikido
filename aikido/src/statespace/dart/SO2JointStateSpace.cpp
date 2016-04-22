@@ -8,7 +8,7 @@ namespace dart {
 SO2JointStateSpace::SO2JointStateSpace(
       ::dart::dynamics::SingleDofJoint* _joint)
   : JointStateSpace(_joint)
-  , SO2StateSpace()
+  , SO2()
 {
 }
 

@@ -1,21 +1,21 @@
 namespace aikido {
 namespace statespace {
 
-/// \c StateHandle for a \c SO2StateSpace. The template parameter is
+/// \c StateHandle for a \c SO2. The template parameter is
 /// necessary to support both \c const and non-<tt>const</tt> states.
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
 class SO2StateHandle
-  : public statespace::StateHandle<SO2StateSpace, _QualifiedState>
+  : public statespace::StateHandle<SO2, _QualifiedState>
 {
 public:
   using typename statespace::StateHandle<
-    SO2StateSpace, _QualifiedState>::State;
+    SO2, _QualifiedState>::State;
   using typename statespace::StateHandle<
-    SO2StateSpace, _QualifiedState>::StateSpace;
+    SO2, _QualifiedState>::StateSpace;
   using typename statespace::StateHandle<
-    SO2StateSpace, _QualifiedState>::QualifiedState;
+    SO2, _QualifiedState>::QualifiedState;
 
   /// Construct and initialize to \c nullptr.
   SO2StateHandle()

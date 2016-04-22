@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 
-using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::Rn;
 
-TEST(RealVectorStateSpace, Compose)
+TEST(Rn, Compose)
 {
-  RealVectorStateSpace rvss(3);
+  Rn rvss(3);
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -19,9 +19,9 @@ TEST(RealVectorStateSpace, Compose)
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
 }
 
-TEST(RealVectorStateSpace, Identity)
+TEST(Rn, Identity)
 {
-  RealVectorStateSpace rvss(3);
+  Rn rvss(3);
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -35,9 +35,9 @@ TEST(RealVectorStateSpace, Identity)
   EXPECT_TRUE(out.getValue().isApprox(s1.getValue()));
 }
 
-TEST(RealVectorStateSpace, Inverse)
+TEST(Rn, Inverse)
 {
-  RealVectorStateSpace rvss(3);
+  Rn rvss(3);
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -53,9 +53,9 @@ TEST(RealVectorStateSpace, Inverse)
   EXPECT_TRUE(out.getValue().isApprox(ident.getValue()));
 }
 
-TEST(RealVectorStateSpace, ExpMap)
+TEST(Rn, ExpMap)
 {
-  RealVectorStateSpace rvss(3);
+  Rn rvss(3);
 
   auto out = rvss.createState();
   rvss.expMap(Eigen::Vector3d(1, 2, 3), out);
@@ -63,9 +63,9 @@ TEST(RealVectorStateSpace, ExpMap)
   EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(1, 2, 3)));
 }
 
-TEST(RealVectorStateSpace, LogMap)
+TEST(Rn, LogMap)
 {
-  RealVectorStateSpace rvss(3);
+  Rn rvss(3);
 
   auto state = rvss.createState();
   rvss.setValue(state, Eigen::Vector3d(1, 2, 3));
@@ -79,9 +79,9 @@ TEST(RealVectorStateSpace, LogMap)
   EXPECT_TRUE(out.isApprox(Eigen::Vector3d(4, 5, 7)));
 }
 
-TEST(RealVectorStateSpace, CopyState)
+TEST(Rn, CopyState)
 {
-  RealVectorStateSpace rvss(4);
+  Rn rvss(4);
   auto source = rvss.createState();
   auto dest = rvss.createState();
   source.setValue(Eigen::Vector4d(0, 1, 2, 3));

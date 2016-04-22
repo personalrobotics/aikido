@@ -1,8 +1,8 @@
 #include <random>
 #include <aikido/constraint/FkTestable.hpp>
 #include <aikido/constraint/TSR.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
@@ -10,7 +10,7 @@
 using aikido::constraint::FkTestable;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::TSR;
-using aikido::statespace::SO2StateSpace;
+using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::util::RNG;
@@ -91,8 +91,8 @@ TEST_F(FkTestableTest, PoseTests)
   FkTestable testable(stateSpace, endEffector.get(), tsr);
 
   auto state = stateSpace->createState();
-  auto j1Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 0);
-  auto j2Joint = stateSpace->getSubState<SO2StateSpace::State>(state, 1);
+  auto j1Joint = stateSpace->getSubState<SO2::State>(state, 0);
+  auto j2Joint = stateSpace->getSubState<SO2::State>(state, 1);
 
   j1Joint->setAngle(-M_PI / 4);
   j2Joint->setAngle(-M_PI / 2);

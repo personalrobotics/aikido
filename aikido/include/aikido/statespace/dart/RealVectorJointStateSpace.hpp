@@ -1,13 +1,13 @@
 #ifndef AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
-#include "../RealVectorStateSpace.hpp"
+#include "../Rn.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// \c RealVectorStateSpace for an arbitrary type of DART \c Joint with an
+/// \c Rn for an arbitrary type of DART \c Joint with an
 /// arbitrary number of <tt>DegreeOfFreedom</tt>s. This class treats the
 /// joint's positions as a real vector space.
 ///
@@ -16,12 +16,12 @@ namespace dart {
 /// of \c JointStateSpace to for a \c Joint you most likely should use
 /// the \c createJointStateSpace helper function.
 class RealVectorJointStateSpace
-  : public RealVectorStateSpace
+  : public Rn
   , public JointStateSpace
   , public std::enable_shared_from_this<RealVectorJointStateSpace>
 {
 public:
-  using RealVectorStateSpace::State;
+  using Rn::State;
 
   /// Create a real vector state space for \c _joint.
   ///

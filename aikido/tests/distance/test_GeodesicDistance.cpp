@@ -1,5 +1,5 @@
 #include <aikido/distance/GeodesicDistanceMetric.hpp>
-#include <aikido/statespace/SO3StateSpace.hpp>
+#include <aikido/statespace/SO3.hpp>
 
 #include <gtest/gtest.h>
 
@@ -13,14 +13,14 @@ TEST(GeodesicDistance, ThrowsOnNullStateSpace)
 
 TEST(GeodesicDistance, StateSpaceEquality)
 {
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so3 = std::make_shared<SO3>();
   GeodesicDistanceMetric dmetric(so3);
   EXPECT_EQ(so3, dmetric.getStateSpace());
 }
 
 TEST(GeodesicDistance, Distance)
 {
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so3 = std::make_shared<SO3>();
   GeodesicDistanceMetric dmetric(so3);
   auto state1 = so3->createState();
   auto state2 = so3->createState();

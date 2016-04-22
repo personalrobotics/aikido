@@ -14,7 +14,7 @@ namespace dart {
 //=============================================================================
 SO3JointStateSpace::SO3JointStateSpace(::dart::dynamics::BallJoint* _joint)
   : JointStateSpace(_joint)
-  , SO3StateSpace()
+  , SO3()
 {
 }
 
@@ -22,7 +22,7 @@ SO3JointStateSpace::SO3JointStateSpace(::dart::dynamics::BallJoint* _joint)
 void SO3JointStateSpace::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
-  setQuaternion(static_cast<State*>(_state), SO3StateSpace::Quaternion(
+  setQuaternion(static_cast<State*>(_state), SO3::Quaternion(
     BallJoint::convertToRotation(_positions)));
 }
 

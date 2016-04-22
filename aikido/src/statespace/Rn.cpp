@@ -1,23 +1,23 @@
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 
 namespace aikido
 {
 namespace statespace
 {
 //=============================================================================
-RealVectorStateSpace::RealVectorStateSpace(int _dimension)
+Rn::Rn(int _dimension)
     : mDimension(_dimension)
 {
 }
 
 //=============================================================================
-auto RealVectorStateSpace::createState() const -> ScopedState
+auto Rn::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
 //=============================================================================
-Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::getMutableValue(
+Eigen::Map<Eigen::VectorXd> Rn::getMutableValue(
     State *_state) const
 {
   auto valueBuffer =
@@ -27,7 +27,7 @@ Eigen::Map<Eigen::VectorXd> RealVectorStateSpace::getMutableValue(
 }
 
 //=============================================================================
-Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
+Eigen::Map<const Eigen::VectorXd> Rn::getValue(
     const State *_state) const
 {
   auto valueBuffer = reinterpret_cast<const double *>(
@@ -37,7 +37,7 @@ Eigen::Map<const Eigen::VectorXd> RealVectorStateSpace::getValue(
 }
 
 //=============================================================================
-void RealVectorStateSpace::setValue(State *_state,
+void Rn::setValue(State *_state,
                                     const Eigen::VectorXd &_value) const
 {
   // TODO: Skip this check in release mode.
@@ -52,13 +52,13 @@ void RealVectorStateSpace::setValue(State *_state,
 }
 
 //=============================================================================
-size_t RealVectorStateSpace::getStateSizeInBytes() const
+size_t Rn::getStateSizeInBytes() const
 {
   return mDimension * sizeof(double);
 }
 
 //=============================================================================
-StateSpace::State *RealVectorStateSpace::allocateStateInBuffer(
+StateSpace::State *Rn::allocateStateInBuffer(
     void *_buffer) const
 {
   auto state = reinterpret_cast<State *>(_buffer);
@@ -67,13 +67,13 @@ StateSpace::State *RealVectorStateSpace::allocateStateInBuffer(
 }
 
 //=============================================================================
-void RealVectorStateSpace::freeStateInBuffer(StateSpace::State *_state) const
+void Rn::freeStateInBuffer(StateSpace::State *_state) const
 {
   // Do nothing.
 }
 
 //=============================================================================
-void RealVectorStateSpace::compose(const StateSpace::State *_state1,
+void Rn::compose(const StateSpace::State *_state1,
                                    const StateSpace::State *_state2,
                                    StateSpace::State *_out) const
 {
@@ -89,20 +89,20 @@ void RealVectorStateSpace::compose(const StateSpace::State *_state1,
 }
 
 //=============================================================================
-size_t RealVectorStateSpace::getDimension() const
+size_t Rn::getDimension() const
 {
   return mDimension;
 }
 
 //=============================================================================
-void RealVectorStateSpace::getIdentity(StateSpace::State *_out) const
+void Rn::getIdentity(StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
   setValue(out, Eigen::VectorXd::Zero(mDimension));
 }
 
 //=============================================================================
-void RealVectorStateSpace::getInverse(const StateSpace::State *_in,
+void Rn::getInverse(const StateSpace::State *_in,
                                       StateSpace::State *_out) const
 {
   // TODO: Disable this in release mode.
@@ -116,7 +116,7 @@ void RealVectorStateSpace::getInverse(const StateSpace::State *_in,
 }
 
 //=============================================================================
-void RealVectorStateSpace::copyState(
+void Rn::copyState(
   const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto destination = static_cast<State *>(_destination);
@@ -125,7 +125,7 @@ void RealVectorStateSpace::copyState(
 }
 
 //=============================================================================
-void RealVectorStateSpace::expMap(const Eigen::VectorXd &_tangent,
+void Rn::expMap(const Eigen::VectorXd &_tangent,
                                   StateSpace::State *_out) const
 {
   // TODO: Skip this check in release mode.
@@ -141,7 +141,7 @@ void RealVectorStateSpace::expMap(const Eigen::VectorXd &_tangent,
 }
 
 //=============================================================================
-void RealVectorStateSpace::logMap(const StateSpace::State *_in,
+void Rn::logMap(const StateSpace::State *_in,
                                   Eigen::VectorXd &_tangent) const
 {
   if (_tangent.size() != mDimension) {

@@ -1,21 +1,21 @@
 #ifndef AIKIDO_STATESPACE_DART_SE3JOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_SE3JOINTSTATESPACE_HPP_
-#include "../SE3StateSpace.hpp"
+#include "../SE3.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// \c SE3StateSpace for a DART \c FreeJoint. This class does not support
+/// \c SE3 for a DART \c FreeJoint. This class does not support
 /// position limits on the three rotational <tt>DegreeOfFreedom</tt>s.
 class SE3JointStateSpace
-  : public SE3StateSpace
+  : public SE3
   , public JointStateSpace
   , public std::enable_shared_from_this<SE3JointStateSpace>
 {
 public:
-  using SE3StateSpace::State;
+  using SE3::State;
 
   /// Creates a state space for a \c FreeJoint. This class does not support
   /// position limits on the rotational <tt>DegreeOfFreedom</tt>s.

@@ -7,23 +7,23 @@
 namespace aikido {
 namespace statespace {
 
-// Defined in detail/RealVectorStateSpace-impl.hpp
+// Defined in detail/Rn-impl.hpp
 template <class>
 class RealVectorStateHandle;
 
 /// Represents a n-dimensional real vector space with vector addition as the
 /// group operation.
-class RealVectorStateSpace : public virtual StateSpace
+class Rn : public virtual StateSpace
 {
 public:
-  /// Point in a \c RealVectorStateSpace.
+  /// Point in a \c Rn.
   class State : public StateSpace::State
   {
   protected:
     State() = default;
     ~State() = default;
 
-    friend class RealVectorStateSpace;
+    friend class Rn;
   };
 
   using StateHandle = RealVectorStateHandle<State>;
@@ -35,7 +35,7 @@ public:
   /// Constructs a \c _dimension dimensional real vector space.
   ///
   /// \param _dimension dimension of the space
-  explicit RealVectorStateSpace(int _dimension);
+  explicit Rn(int _dimension);
 
   /// Helper function to create a \c ScopedState.
   ///
@@ -100,7 +100,7 @@ public:
               Eigen::VectorXd &_tangent) const override;
 
 private:
-  /// Gets the mutable value stored in a RealVectorStateSpace::State. This is
+  /// Gets the mutable value stored in a Rn::State. This is
   /// used internally to implement the public \c getValue member functions.
   ///
   /// \param _state element of this state space
@@ -113,6 +113,6 @@ private:
 } // namespace statespace
 } // namespace aikido
 
-#include "detail/RealVectorStateSpace-impl.hpp"
+#include "detail/Rn-impl.hpp"
 
 #endif // ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACE_HPP_

@@ -1,29 +1,29 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include "eigen_tests.hpp"
 
-using aikido::statespace::SO2StateSpace;
+using aikido::statespace::SO2;
 using aikido::tests::make_vector;
 using Eigen::Rotation2Dd;
 
 static constexpr double TOLERANCE { 1e-6 };
 
-TEST(SO2StateSpace, Compose)
+TEST(SO2, Compose)
 {
-  SO2StateSpace::State s1(M_PI / 4);
-  SO2StateSpace::State s2(M_PI / 2);
-  SO2StateSpace::State out;
-  SO2StateSpace::State expected(3.0 / 4.0 * M_PI);
+  SO2::State s1(M_PI / 4);
+  SO2::State s2(M_PI / 2);
+  SO2::State out;
+  SO2::State expected(3.0 / 4.0 * M_PI);
 
-  SO2StateSpace so2;
+  SO2 so2;
   so2.compose(&s1, &s2, &out);
 
   EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
 }
 
-TEST(SO2StateSpace, Identity)
+TEST(SO2, Identity)
 {
-  SO2StateSpace so2;
+  SO2 so2;
   auto s1 = so2.createState();
   s1.setAngle(M_PI / 4);
 
@@ -35,9 +35,9 @@ TEST(SO2StateSpace, Identity)
   EXPECT_DOUBLE_EQ(s1.getAngle(), out.getAngle());
 }
 
-TEST(SO2StateSpace, Inverse)
+TEST(SO2, Inverse)
 {
-  SO2StateSpace so2;
+  SO2 so2;
   auto s1 = so2.createState();
   s1.setAngle(M_PI / 5);
 
@@ -53,12 +53,12 @@ TEST(SO2StateSpace, Inverse)
   EXPECT_DOUBLE_EQ(ident.getAngle(), out.getAngle());
 }
 
-TEST(SO2StateSpace, ExpMap)
+TEST(SO2, ExpMap)
 {
-  SO2StateSpace::State out;
-  SO2StateSpace::State expected;
+  SO2::State out;
+  SO2::State expected;
 
-  SO2StateSpace so2;
+  SO2 so2;
 
   so2.expMap(make_vector(0.), &out);
   EXPECT_EIGEN_EQUAL(
@@ -73,10 +73,10 @@ TEST(SO2StateSpace, ExpMap)
     Rotation2Dd(M_PI).matrix(), out.getRotation().matrix(), TOLERANCE);
 }
 
-TEST(SO2StateSpace, LogMap)
+TEST(SO2, LogMap)
 {
-  SO2StateSpace::State state;
-  SO2StateSpace so2;
+  SO2::State state;
+  SO2 so2;
   so2.setAngle(&state, M_PI / 5);
 
   Eigen::VectorXd out;
@@ -90,9 +90,9 @@ TEST(SO2StateSpace, LogMap)
   EXPECT_TRUE(out.isApprox(in));
 }
 
-TEST(SO2StateSpace, CopyState)
+TEST(SO2, CopyState)
 {
-  SO2StateSpace so2;
+  SO2 so2;
   auto dest = so2.createState();
   auto source = so2.createState();
   source.setAngle(3.14159);

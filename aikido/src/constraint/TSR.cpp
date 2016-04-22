@@ -10,7 +10,7 @@
 
 using boost::format;
 using boost::str;
-using aikido::statespace::SE3StateSpace;
+using aikido::statespace::SE3;
 
 namespace aikido {
 namespace constraint {
@@ -46,14 +46,14 @@ public:
 private:
   // For internal use only.
   TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
-                     std::shared_ptr<statespace::SE3StateSpace> _stateSpace,
+                     std::shared_ptr<statespace::SE3> _stateSpace,
                      const Eigen::Isometry3d& _T0_w,
                      const Eigen::Matrix<double, 6, 2>& _Bw,
                      const Eigen::Isometry3d& _Tw_e);
   
   std::unique_ptr<util::RNG> mRng;
 
-  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
+  std::shared_ptr<statespace::SE3> mStateSpace;
 
   /// Transformation from origin frame into "wiggle" frame.
   Eigen::Isometry3d mT0_w;
@@ -78,7 +78,7 @@ private:
 TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
          const Eigen::Matrix<double, 6, 2>& _Bw, const Eigen::Isometry3d& _Tw_e)
     : mRng(std::move(_rng))
-    , mStateSpace(std::make_shared<SE3StateSpace>())
+    , mStateSpace(std::make_shared<SE3>())
     , mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
@@ -91,7 +91,7 @@ TSR::TSR(const Eigen::Isometry3d& _T0_w, const Eigen::Matrix<double, 6, 2>& _Bw,
          const Eigen::Isometry3d& _Tw_e)
     : mRng(std::unique_ptr<util::RNG>(
           new util::RNGWrapper<std::default_random_engine>(0)))
-    , mStateSpace(std::make_shared<SE3StateSpace>())
+    , mStateSpace(std::make_shared<SE3>())
     , mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
@@ -102,7 +102,7 @@ TSR::TSR(const Eigen::Isometry3d& _T0_w, const Eigen::Matrix<double, 6, 2>& _Bw,
 //=============================================================================
 TSR::TSR(const TSR& other)
     : mRng(std::move(other.mRng->clone()))
-    , mStateSpace(std::make_shared<SE3StateSpace>())
+    , mStateSpace(std::make_shared<SE3>())
     , mT0_w(other.mT0_w)
     , mTw_e(other.mTw_e)
     , mBw(other.mBw)
@@ -113,7 +113,7 @@ TSR::TSR(const TSR& other)
 //=============================================================================
 TSR::TSR(TSR&& other)
     : mRng(std::move(other.mRng))
-    , mStateSpace(std::make_shared<SE3StateSpace>())
+    , mStateSpace(std::make_shared<SE3>())
     , mT0_w(other.mT0_w)
     , mTw_e(other.mTw_e)
     , mBw(other.mBw)
@@ -153,7 +153,7 @@ std::shared_ptr<statespace::StateSpace> TSR::getStateSpace() const
 }
 
 //=============================================================================
-std::shared_ptr<statespace::SE3StateSpace> TSR::getSE3StateSpace() const
+std::shared_ptr<statespace::SE3> TSR::getSE3() const
 {
   return mStateSpace;
 }
@@ -212,8 +212,8 @@ size_t TSR::getConstraintDimension() const { return 6; }
 //=============================================================================
 Eigen::VectorXd TSR::getValue(const statespace::StateSpace::State* _s) const
 {
-  using SE3StateSpace = statespace::SE3StateSpace;
-  using SE3State = SE3StateSpace::State;
+  using SE3 = statespace::SE3;
+  using SE3State = SE3::State;
 
   auto se3state = static_cast<const SE3State*>(_s);
   Eigen::Isometry3d se3 = se3state->getIsometry();
@@ -270,8 +270,8 @@ Eigen::VectorXd TSR::getValue(const statespace::StateSpace::State* _s) const
 //=============================================================================
 Eigen::MatrixXd TSR::getJacobian(const statespace::StateSpace::State* _s) const
 {
-  using SE3StateSpace = statespace::SE3StateSpace;
-  using SE3State = SE3StateSpace::State;
+  using SE3 = statespace::SE3;
+  using SE3State = SE3::State;
 
   Eigen::Matrix6d jacobian;
 
@@ -332,7 +332,7 @@ bool TSR::project(const statespace::StateSpace::State* _s,
 //=============================================================================
 TSRSampleGenerator::TSRSampleGenerator(
       std::unique_ptr<util::RNG> _rng,
-      std::shared_ptr<SE3StateSpace> _stateSpace,
+      std::shared_ptr<SE3> _stateSpace,
       const Eigen::Isometry3d& _T0_w,
       const Eigen::Matrix<double, 6, 2>& _Bw,
       const Eigen::Isometry3d& _Tw_e)
@@ -368,7 +368,7 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
   if ( mPointTSR && mPointTSRSampled )
     return false;
 
-  using statespace::SE3StateSpace;
+  using statespace::SE3;
 
   Eigen::Vector3d translation; 
   Eigen::Vector3d angles;
@@ -405,7 +405,7 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
   Tw_s.linear() = dart::math::eulerZYXToMatrix(angles.reverse());
 
   Eigen::Isometry3d T0_s(mT0_w * Tw_s * mTw_e);
-  mStateSpace->setIsometry(static_cast<SE3StateSpace::State*>(_state), T0_s);
+  mStateSpace->setIsometry(static_cast<SE3::State*>(_state), T0_s);
 
   return true;
 }

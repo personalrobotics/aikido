@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/SE2StateSpace.hpp>
+#include <aikido/statespace/SE2.hpp>
 
-using aikido::statespace::SE2StateSpace;
+using aikido::statespace::SE2;
 
-TEST(SE2StateSpace, Compose)
+TEST(SE2, Compose)
 {
-  SE2StateSpace space;
+  SE2 space;
 
   auto identity = space.createState();
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry2d::Identity()));
@@ -29,9 +29,9 @@ TEST(SE2StateSpace, Compose)
   EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
 }
 
-TEST(SE2StateSpace, Identity)
+TEST(SE2, Identity)
 {
-  SE2StateSpace space;
+  SE2 space;
   Eigen::Isometry2d pose1 = Eigen::Isometry2d::Identity();
   pose1.rotate(Eigen::Rotation2Dd(M_PI_2));
   auto state1 = space.createState();
@@ -46,9 +46,9 @@ TEST(SE2StateSpace, Identity)
   EXPECT_TRUE(state1.getIsometry().isApprox(out.getIsometry()));
 }
 
-TEST(SE2StateSpace, Inverse)
+TEST(SE2, Inverse)
 {
-  SE2StateSpace space;
+  SE2 space;
   Eigen::Isometry2d pose1 = Eigen::Isometry2d::Identity();
   pose1.rotate(Eigen::Rotation2Dd(M_PI_2));
   auto state1 = space.createState();
@@ -66,22 +66,22 @@ TEST(SE2StateSpace, Inverse)
   EXPECT_TRUE(ident.getIsometry().isApprox(out.getIsometry()));
 }
 
-TEST(SE2StateSpace, ExpMap)
+TEST(SE2, ExpMap)
 {
-  SE2StateSpace::State out;
+  SE2::State out;
 
   Eigen::Isometry2d expected_pose = Eigen::Isometry2d::Identity();
   expected_pose.rotate(Eigen::Rotation2Dd(M_PI_2));
 
-  SE2StateSpace se2;
+  SE2 se2;
   se2.expMap(Eigen::Vector3d(M_PI_2, 0, 0), &out);
 
   EXPECT_TRUE(out.getIsometry().isApprox(expected_pose));
 }
 
-TEST(SE2StateSpace, LogMap)
+TEST(SE2, LogMap)
 {
-  SE2StateSpace se2;
+  SE2 se2;
   auto state = se2.createState();
   Eigen::Isometry2d pose1 = Eigen::Isometry2d::Identity();
   pose1.rotate(Eigen::Rotation2Dd(M_PI_2));

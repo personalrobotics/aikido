@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
 
-using aikido::statespace::SE3StateSpace;
+using aikido::statespace::SE3;
 using Vector6d = Eigen::Matrix<double, 6, 1>;
 
-TEST(SE3StateSpace, Compose)
+TEST(SE3, Compose)
 {
-  SE3StateSpace space;
+  SE3 space;
 
   auto identity = space.createState();
   EXPECT_TRUE(identity.getIsometry().isApprox(Eigen::Isometry3d::Identity()));
@@ -23,15 +23,15 @@ TEST(SE3StateSpace, Compose)
 
   Eigen::Isometry3d expected = pose2 * pose3;
 
-  SE3StateSpace::ScopedState out(&space);
+  SE3::ScopedState out(&space);
   space.compose(s2, s3, out);
 
   EXPECT_TRUE(expected.isApprox(out.getIsometry()));
 }
 
-TEST(SE3StateSpace, Identity)
+TEST(SE3, Identity)
 {
-  SE3StateSpace space;
+  SE3 space;
 
   Eigen::Isometry3d pose1 = Eigen::Isometry3d::Identity();
   pose1.rotate(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX()));
@@ -46,9 +46,9 @@ TEST(SE3StateSpace, Identity)
   EXPECT_TRUE(s1.getIsometry().isApprox(out.getIsometry()));
 }
 
-TEST(SE3StateSpace, Inverse)
+TEST(SE3, Inverse)
 {
-  SE3StateSpace space;
+  SE3 space;
 
   Eigen::Isometry3d pose1 = Eigen::Isometry3d::Identity();
   pose1.rotate(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX()));
@@ -66,14 +66,14 @@ TEST(SE3StateSpace, Inverse)
   EXPECT_TRUE(ident.getIsometry().isApprox(out.getIsometry()));
 }
 
-TEST(SE3StateSpace, ExpMap)
+TEST(SE3, ExpMap)
 {
-  SE3StateSpace::State out;
+  SE3::State out;
 
   Eigen::Isometry3d expected_pose = Eigen::Isometry3d::Identity();
   expected_pose.translation() = Eigen::Vector3d(1, 2, 3);
 
-  SE3StateSpace se3;
+  SE3 se3;
   Vector6d twist(Vector6d::Zero());
   twist.bottomRows(3) = Eigen::Vector3d(1, 2, 3);
 
@@ -82,9 +82,9 @@ TEST(SE3StateSpace, ExpMap)
   EXPECT_TRUE(out.getIsometry().isApprox(expected_pose));
 }
 
-TEST(SE3StateSpace, LogMap)
+TEST(SE3, LogMap)
 {
-  SE3StateSpace se3;
+  SE3 se3;
   Vector6d twist;
   twist << M_PI / 5, 0, 0, 1, 2, 3;
 

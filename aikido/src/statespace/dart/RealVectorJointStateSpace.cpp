@@ -7,7 +7,7 @@ namespace dart {
 //=============================================================================
 RealVectorJointStateSpace::RealVectorJointStateSpace(
       ::dart::dynamics::Joint* _joint)
-  : RealVectorStateSpace(_joint->getNumDofs())
+  : Rn(_joint->getNumDofs())
   , JointStateSpace(_joint)
 {
 }

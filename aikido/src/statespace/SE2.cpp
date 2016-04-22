@@ -1,4 +1,4 @@
-#include <aikido/statespace/SE2StateSpace.hpp>
+#include <aikido/statespace/SE2.hpp>
 #include <Eigen/Geometry>
 
 namespace aikido
@@ -6,65 +6,65 @@ namespace aikido
 namespace statespace
 {
 //=============================================================================
-SE2StateSpace::State::State()
+SE2::State::State()
     : mTransform(Isometry2d::Identity())
 {
 }
 
 //=============================================================================
-SE2StateSpace::State::State(const Isometry2d& _transform)
+SE2::State::State(const Isometry2d& _transform)
     : mTransform(_transform)
 {
 }
 
 //=============================================================================
-auto SE2StateSpace::State::getIsometry() const -> const Isometry2d &
+auto SE2::State::getIsometry() const -> const Isometry2d &
 {
   return mTransform;
 }
 
 //=============================================================================
-void SE2StateSpace::State::setIsometry(const Isometry2d& _transform)
+void SE2::State::setIsometry(const Isometry2d& _transform)
 {
   mTransform = _transform;
 }
 
 //=============================================================================
-auto SE2StateSpace::createState() const -> ScopedState
+auto SE2::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
 //=============================================================================
-auto SE2StateSpace::getIsometry(const State* _state) const -> const Isometry2d &
+auto SE2::getIsometry(const State* _state) const -> const Isometry2d &
 {
   return _state->getIsometry();
 }
 
 //=============================================================================
-void SE2StateSpace::setIsometry(State* _state,
+void SE2::setIsometry(State* _state,
                                 const Isometry2d& _transform) const
 {
   _state->setIsometry(_transform);
 }
 
 //=============================================================================
-size_t SE2StateSpace::getStateSizeInBytes() const { return sizeof(State); }
+size_t SE2::getStateSizeInBytes() const { return sizeof(State); }
 
 //=============================================================================
-StateSpace::State* SE2StateSpace::allocateStateInBuffer(void* _buffer) const
+StateSpace::State* SE2::allocateStateInBuffer(void* _buffer) const
 {
   return new (_buffer) State;
 }
 
 //=============================================================================
-void SE2StateSpace::freeStateInBuffer(StateSpace::State* _state) const
+void SE2::freeStateInBuffer(StateSpace::State* _state) const
 {
   static_cast<State*>(_state)->~State();
 }
 
 //=============================================================================
-void SE2StateSpace::compose(const StateSpace::State* _state1,
+void SE2::compose(const StateSpace::State* _state1,
                             const StateSpace::State* _state2,
                             StateSpace::State* _out) const
 {
@@ -80,20 +80,20 @@ void SE2StateSpace::compose(const StateSpace::State* _state1,
 }
 
 //=============================================================================
-size_t SE2StateSpace::getDimension() const
+size_t SE2::getDimension() const
 {
   return 3;
 }
 
 //=============================================================================
-void SE2StateSpace::getIdentity(StateSpace::State* _out) const
+void SE2::getIdentity(StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
   setIsometry(out, Isometry2d::Identity());
 }
 
 //=============================================================================
-void SE2StateSpace::getInverse(const StateSpace::State* _in,
+void SE2::getInverse(const StateSpace::State* _in,
                                StateSpace::State* _out) const
 {
   // TODO: Disable this in release mode.
@@ -106,7 +106,7 @@ void SE2StateSpace::getInverse(const StateSpace::State* _in,
 }
 
 //=============================================================================
-void SE2StateSpace::copyState(
+void SE2::copyState(
   const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto source = static_cast<const State*>(_source);
@@ -115,7 +115,7 @@ void SE2StateSpace::copyState(
 }
 
 //=============================================================================
-void SE2StateSpace::expMap(const Eigen::VectorXd& _tangent,
+void SE2::expMap(const Eigen::VectorXd& _tangent,
                            StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
@@ -138,7 +138,7 @@ void SE2StateSpace::expMap(const Eigen::VectorXd& _tangent,
 }
 
 //=============================================================================
-void SE2StateSpace::logMap(const StateSpace::State* _in,
+void SE2::logMap(const StateSpace::State* _in,
                            Eigen::VectorXd& _tangent) const
 {
   if (_tangent.rows() != 3) {

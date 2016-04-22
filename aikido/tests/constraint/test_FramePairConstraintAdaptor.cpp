@@ -1,9 +1,9 @@
 #include <aikido/constraint/FramePairConstraintAdaptor.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/util/RNG.hpp>
 
 #include <gtest/gtest.h>
@@ -16,7 +16,7 @@ using dart::dynamics::SkeletonPtr;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using dart::dynamics::Skeleton;
-using aikido::statespace::SE3StateSpace;
+using aikido::statespace::SE3;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
 using dart::dynamics::FreeJoint;
@@ -71,9 +71,9 @@ TEST_F(FramePairConstraintAdaptorTest, Value)
 {
   FramePairConstraintAdaptor adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
-  state.getSubStateHandle<SE3StateSpace>(0).setIsometry(
+  state.getSubStateHandle<SE3>(0).setIsometry(
     Eigen::Isometry3d::Identity());
-  state.getSubStateHandle<SE3StateSpace>(1).setIsometry(
+  state.getSubStateHandle<SE3>(1).setIsometry(
     Eigen::Isometry3d::Identity());
   
   Eigen::VectorXd value = adaptor.getValue(state);
@@ -109,9 +109,9 @@ TEST_F(FramePairConstraintAdaptorTest, Jacobian)
 
   // state strictly inside tsr
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
-  state.getSubStateHandle<SE3StateSpace>(0).setIsometry(
+  state.getSubStateHandle<SE3>(0).setIsometry(
     Eigen::Isometry3d::Identity());
-  state.getSubStateHandle<SE3StateSpace>(1).setIsometry(
+  state.getSubStateHandle<SE3>(1).setIsometry(
     Eigen::Isometry3d::Identity());
   
   Eigen::Vector6d value = adaptor.getValue(state);
@@ -124,7 +124,7 @@ TEST_F(FramePairConstraintAdaptorTest, Jacobian)
   // state outside tsr
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
   isometry.translation() = Eigen::Vector3d(0, 0, 2);
-  state.getSubStateHandle<SE3StateSpace>(0).setIsometry(isometry);
+  state.getSubStateHandle<SE3>(0).setIsometry(isometry);
 
   jacobian = adaptor.getJacobian(state);
 

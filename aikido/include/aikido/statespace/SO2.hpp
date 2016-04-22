@@ -8,13 +8,13 @@
 namespace aikido {
 namespace statespace {
 
-// Defined in detail/SO2StateSpace-impl.hpp
+// Defined in detail/SO2-impl.hpp
 template <class>
 class SO2StateHandle;
 
 /// The two-dimensional special orthogonal group SO(2), i.e. the space of
 /// planar rigid body rotations.
-class SO2StateSpace : virtual public StateSpace
+class SO2 : virtual public StateSpace
 {
 public:
   /// State in SO(2), a planar rotation.
@@ -54,7 +54,7 @@ public:
   private:
     double mAngle;
 
-    friend class SO2StateSpace;
+    friend class SO2;
   };
 
   using StateHandle = SO2StateHandle<State>;
@@ -64,7 +64,7 @@ public:
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   /// Constructs a state space representing SO(2).
-  SO2StateSpace() = default;
+  SO2() = default;
 
   /// Helper function to create a \c ScopedState.
   ///
@@ -145,6 +145,6 @@ public:
 }  // namespace statespace
 }  // namespace aikido
 
-#include "detail/SO2StateSpace-impl.hpp"
+#include "detail/SO2-impl.hpp"
 
 #endif // ifndef AIKIDO_STATESPACE_SO2STATESPACE_HPP_
