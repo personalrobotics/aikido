@@ -80,6 +80,9 @@ SampleableSubSpace::SampleableSubSpace(
   : mStateSpace(std::move(_stateSpace))
   , mConstraints(std::move(_constraints))
 {
+  if(!mStateSpace)
+    throw std::invalid_argument("_stateSpace is nullptr.");
+
   if (mConstraints.size() != mStateSpace->getNumStates())
   {
     std::stringstream msg;
@@ -91,6 +94,13 @@ SampleableSubSpace::SampleableSubSpace(
 
   for (size_t i = 0; i < mStateSpace->getNumStates(); ++i)
   {
+    if (!mConstraints[i])
+    {
+      std::stringstream msg;
+      msg << "Constraint " << i << " is null.";
+      throw std::invalid_argument(msg.str());
+    }
+    
     if (mConstraints[i]->getStateSpace() != mStateSpace->getSubSpace<>(i))
     {
       std::stringstream msg;

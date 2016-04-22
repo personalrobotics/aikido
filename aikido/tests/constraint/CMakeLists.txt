@@ -30,20 +30,22 @@
 # target_link_libraries(test_PolynomialConstraint
 #   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_TSR
-#   test_TSR.cpp)
-# target_link_libraries(test_TSR
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_TSR
+	PolynomialConstraint.cpp
+  test_TSR.cpp)
+target_link_libraries(test_TSR
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_ConjunctionConstraint
 #   test_ConjunctionConstraint.cpp)
 # target_link_libraries(test_ConjunctionConstraint
 #   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_StackedConstraint
-#   test_StackedConstraint.cpp)
-# target_link_libraries(test_StackedConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_StackedConstraint
+	PolynomialConstraint.cpp
+  test_StackedConstraint.cpp)
+target_link_libraries(test_StackedConstraint
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_RealVectorBoxConstraint
 #   test_RealVectorBoxConstraint.cpp)
@@ -70,10 +72,10 @@
 # target_link_libraries(test_SO3UniformSampler
 #   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
-# aikido_add_test(test_SatisfiedConstraint
-#   test_SatisfiedConstraint.cpp)
-# target_link_libraries(test_SatisfiedConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_SatisfiedConstraint
+  test_SatisfiedConstraint.cpp)
+target_link_libraries(test_SatisfiedConstraint
+  "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_DartConstraintHelpers
 #   test_DartHelpers.cpp)
@@ -84,3 +86,29 @@
 #   test_FKTestable.cpp)
 # target_link_libraries(test_FKTestable
 #   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
+
+aikido_add_test(test_TestableSubSpace
+  test_TestableSubSpace.cpp)
+target_link_libraries(test_TestableSubSpace
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_SampleableSubSpace
+  test_SampleableSubSpace.cpp)
+target_link_libraries(test_SampleableSubSpace
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_ProjectableSubSpace
+  test_ProjectableSubSpace.cpp)
+target_link_libraries(test_ProjectableSubSpace
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_Projectable
+  test_Projectable.cpp)
+target_link_libraries(test_Projectable
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_Collision
+  test_Collision.cpp)
+target_link_libraries(test_Collision
+  "${PROJECT_NAME}_constraint")
+

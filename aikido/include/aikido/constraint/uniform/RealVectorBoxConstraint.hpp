@@ -18,6 +18,8 @@ class RealVectorBoxConstraint
   , public constraint::TestableConstraint
 {
 public:
+  using constraint::Projectable::project;
+
   /// Constructor.
   /// \param _space Space in which this constraint operates.
   /// \param _rng Random number generator to be used for sampling.

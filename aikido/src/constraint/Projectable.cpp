@@ -4,11 +4,11 @@ namespace aikido {
 namespace constraint {
 
 //=============================================================================
-bool Projectable::project(const statespace::StateSpacePtr _space,
-  statespace::StateSpace::State* _s) const
+bool Projectable::project(statespace::StateSpace::State* _s) const
 {
-  auto state = _space->createState();
-  _space->copyState(state, _s);
+  auto space = getStateSpace();
+  auto state = space->createState();
+  space->copyState(state, _s);
   return project(state, _s);
 }
 

@@ -1,5 +1,6 @@
 #include <aikido/constraint/TSR.hpp>
-// #include <aikido/statesoace/SE3StateSpace.hpp>
+#include <aikido/constraint/Differentiable.hpp>
+#include <aikido/statespace/SE3StateSpace.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/common/StlHelpers.h>
 #include <gtest/gtest.h>
@@ -9,6 +10,7 @@
 
 using aikido::constraint::TSR;
 using aikido::statespace::SE3StateSpace;
+using aikido::constraint::ConstraintType;
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
 using dart::common::make_unique;
@@ -386,3 +388,90 @@ TEST(TSR, GetJacobian)
   EXPECT_TRUE(jacobian.isApprox(expected, 1e-3));
 
 }
+
+
+TEST(TSR, GetValueAndJacobian)
+{
+  TSR tsr;
+
+  Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(0,0) = 0;
+  Bw(0,1) = 2;
+
+  tsr.mBw = Bw;
+
+  auto state = tsr.getSE3StateSpace()->createState();  
+
+  // strictly inside TSR
+  Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
+  isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
+  state.setIsometry(isometry);
+
+  auto value = tsr.getValue(state);
+  auto jacobian = tsr.getJacobian(state);
+  auto valueAndJacobian = tsr.getValueAndJacobian(state);
+
+  EXPECT_TRUE(value.isApprox(valueAndJacobian.first));
+  EXPECT_TRUE(jacobian.isApprox(valueAndJacobian.second));
+
+}
+
+TEST(TSR, GetConstraintTypes)
+{
+  // This tests current behavior, but it may fail.
+  TSR tsr;
+  auto types = tsr.getConstraintTypes();
+
+  EXPECT_EQ(6, types.size());
+
+  for (auto t: types)
+  {
+    EXPECT_EQ(t, ConstraintType::INEQUALITY);
+  }
+}
+
+TEST(TSR, GetConstraintDimension)
+{
+  TSR tsr;
+  auto dim = tsr.getConstraintDimension();
+
+  EXPECT_EQ(6, dim);
+}
+
+TEST(TSR, IsSatisfied)
+{
+  TSR tsr;
+
+  Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(0,0) = 0;
+  Bw(0,1) = 2;
+
+  tsr.mBw = Bw;
+
+  auto state = tsr.getSE3StateSpace()->createState();  
+
+  // strictly inside TSR
+  Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
+  isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
+  state.setIsometry(isometry);
+
+  EXPECT_TRUE(tsr.isSatisfied(state));
+
+  // outside TSR
+  isometry.translation() = Eigen::Vector3d(3, 0, 0);
+  state.setIsometry(isometry);
+
+  EXPECT_FALSE(tsr.isSatisfied(state));
+}
+
+TEST(TSR, GetSE3StateSpaceEqualToGetStateSpace)
+{
+  TSR tsr;
+  auto se3space = tsr.getSE3StateSpace();  
+  auto space = tsr.getStateSpace();
+
+  EXPECT_EQ(se3space, space);
+}
+
+
+
