@@ -25,6 +25,7 @@ script:
 - ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args tests test -- aikido
 # Rebuild Aikido in debug mode with coveralls enabled to measure test coverage.
 - ./scripts/internal-run.sh catkin clean -y aikido
-- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON -- --make-args all tests test coveralls -- aikido
+- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON -- --make-args all tests -- aikido
+- ./scripts/internal-run.sh make -C build/aikido coveralls
 after_script:
 - ./scripts/view-all-results.sh test_results
