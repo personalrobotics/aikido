@@ -147,9 +147,20 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/html/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
   set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
-  set(DOXYGEN_TAGFILES)
+
+  get_property(DOXYGEN_STRIP_FROM_INC_PATH_LIST
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    PROPERTY INCLUDE_DIRECTORIES)
+
+  # TODO: Replace this with a helper macro.
+  set(DOXYGEN_STRIP_FROM_INC_PATH)
+  foreach(include_path ${DOXYGEN_STRIP_FROM_INC_PATH_LIST})
+    set(DOXYGEN_STRIP_FROM_INC_PATH
+      "${DOXYGEN_STRIP_FROM_INC_PATH} ${include_path}")
+  endforeach()
 
   # Optionally download Doxygen tagfiles for dependencies.
+  set(DOXYGEN_TAGFILES)
   if(DOWNLOAD_TAGFILES)
     # TODO: Download a tagfile for DART once it is available.
 
