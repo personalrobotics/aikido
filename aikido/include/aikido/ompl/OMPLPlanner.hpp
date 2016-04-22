@@ -1,5 +1,5 @@
-#ifndef AIKIDO_OMPL_PLANNER_H_
-#define AIKIDO_OMPL_PLANNER_H_
+#ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
+#define AIKIDO_OMPL_OMPLPLANNER_HPP_
 
 #include "../distance/DistanceMetric.hpp"
 #include "../statespace/StateSpace.hpp"
@@ -14,58 +14,121 @@
 #include <ompl/base/SpaceInformation.h>
 #include <boost/make_shared.hpp>
 
-namespace aikido
-{
-namespace ompl
-{
+namespace aikido {
+namespace ompl {
+/// Use the template OMPL Planner type to plan a trajectory that moves from the
+/// start to the goal point.
+/// \param _start The start state
+/// \param _goal The goal state
+/// \param _statespace The StateSpace that the planner must plan within
+/// \param _interpolator An Interpolator defined on the StateSpace. This is used
+/// to interpolate between two points within the space.
+/// \param _dmetric A valid distance metric defined on the StateSpace
+/// \param _sampler A SampleableConstraint that can sample states from the
+/// StateSpace. Warning: Many OMPL planners internally assume this sampler
+/// samples uniformly. Care should be taken when using a non-uniform sampler.
+/// \param _validityConstraint A constraint used to test validity during
+/// planning. This should include collision checking and any other constraints
+/// that must be satisfied for a state to be considered valid.
+/// \param _boundsConstraint A constraint used to determine whether states
+/// encountered during planning fall within any bounds specified on the
+/// StateSpace. In addition to the _validityConstraint, this must also be
+/// satsified for a state to be considered valid.
+/// \param _boundsProjector A Projectable that projects a state back within
+/// valid bounds defined on the StateSpace
+/// \param _maxPlanTime The maximum time to allow the planner to search for a
+/// solution
 template <class PlannerType>
 path::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
-    const statespace::StateSpacePtr &_stateSpace,
-    const statespace::InterpolatorPtr &_interpolator,
-    const constraint::TestableConstraintPtr &_collConstraint,
-    const constraint::TestableConstraintPtr &_boundsConstraint,
-    const distance::DistanceMetricPtr &_dmetric,
-    const constraint::SampleableConstraintPtr &_sampler,
-    const constraint::ProjectablePtr &_boundsProjector,
-    const double &_maxPlanTime);
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleableConstraintPtr _sampler,
+    constraint::TestableConstraintPtr _validityConstraint,
+    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector, double _maxPlanTime);
 
+/// Use the template OMPL Planner type to plan a trajectory that moves from the
+/// start to a goal region.
+/// \param _start The start state
+/// \param _goalTestable A Testable constraint that can determine if a given state is a goal state
+/// \param _goalSamplers A Sampleable capable of sampling states that satisfy _goalTestable
+/// \param _statespace The StateSpace that the planner must plan within
+/// \param _interpolator An Interpolator defined on the StateSpace. This is used
+/// to interpolate between two points within the space.
+/// \param _dmetric A valid distance metric defined on the StateSpace
+/// \param _sampler A SampleableConstraint that can sample states from the
+/// StateSpace. Warning: Many OMPL planners internally assume this sampler
+/// samples uniformly. Care should be taken when using a non-uniform sampler.
+/// \param _validityConstraint A constraint used to test validity during
+/// planning. This should include collision checking and any other constraints
+/// that must be satisfied for a state to be considered valid.
+/// \param _boundsConstraint A constraint used to determine whether states
+/// encountered during planning fall within any bounds specified on the
+/// StateSpace. In addition to the _validityConstraint, this must also be
+/// satsified for a state to be considered valid.
+/// \param _boundsProjector A Projectable that projects a state back within
+/// valid bounds defined on the StateSpace
+/// \param _maxPlanTime The maximum time to allow the planner to search for a
+/// solution
 template <class PlannerType>
 path::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
-    const statespace::InterpolatorPtr &_interpolator,
-    const constraint::TestableConstraintPtr &_goalTestable,
-    const constraint::SampleableConstraintPtr &_goalSampler,
-    const statespace::StateSpacePtr &_stateSpace,
-    const constraint::TestableConstraintPtr &_collConstraint,
-    const constraint::TestableConstraintPtr &_boundsConstraint,
-    const distance::DistanceMetricPtr &_dmetric,
-    const constraint::SampleableConstraintPtr &_sampler,
-    const constraint::ProjectablePtr &_boundsProjector,
-    const double &_maxPlanTime);
+    constraint::TestableConstraintPtr _goalTestable,
+    constraint::SampleableConstraintPtr _goalSampler,
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleableConstraintPtr _sampler,
+    constraint::TestableConstraintPtr _validityConstraint,
+    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxPlanTime);
 
+/// Generate an OMPL SpaceInformation from aikido components
+/// \param _statespace The StateSpace that the SpaceInformation operates on
+/// \param _interpolator An Interpolator defined on the StateSpace. This is used
+/// to interpolate between two points within the space.
+/// \param _dmetric A valid distance metric defined on the StateSpace
+/// \param _sampler A SampleableConstraint that can sample states from the
+/// StateSpace. Warning: Many OMPL planners internally assume this sampler
+/// samples uniformly. Care should be taken when using a non-uniform sampler.
+/// \param _validityConstraint A constraint used to test validity during
+/// planning. This should include collision checking and any other constraints
+/// that must be satisfied for a state to be considered valid.
+/// \param _boundsConstraint A constraint used to determine whether states
+/// encountered during planning fall within any bounds specified on the
+/// StateSpace. In addition to the _validityConstraint, this must also be
+/// satsified for a state to be considered valid.
+/// \param _boundsProjector A Projectable that projects a state back within
+/// valid bounds defined on the StateSpace
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    const statespace::StateSpacePtr &_stateSpace,
-    const statespace::InterpolatorPtr &_interpolator,
-    const distance::DistanceMetricPtr &_dmetric,
-    const constraint::SampleableConstraintPtr &_sampler,
-    const constraint::TestableConstraintPtr &_boundsConstraint,
-    const constraint::ProjectablePtr &_boundsProjector);
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleableConstraintPtr _sampler,
+    constraint::TestableConstraintPtr _validityConstraint,
+    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector);
 
-void setValidityConstraints(
-    const ::ompl::base::SpaceInformationPtr &_si,
-    const constraint::TestableConstraintPtr &_collConstraint,
-    const constraint::TestableConstraintPtr &_boundsConstraint);
-
-template <class PlannerType>
-path::TrajectoryPtr planOMPL(const ::ompl::base::SpaceInformationPtr &_si,
+/// Use the template OMPL Planner type to plan in a custom OMPL Space
+/// Information and problem definition and return an aikido Trajector
+/// \param _si The SpaceInformation used by the planner
+/// \param _pdef The ProblemDefintion. This contains start and goal conditions for the planner.
+/// \param _sspace The aikido StateSpace to plan against. Used for constructing the return trajectory.
+/// \param _interpolator An aikido interpolator that can be used with the _stateSpace.
+/// \param _maxPlanTime The maximum time to allow the planner to search for a
+/// solution
+path::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
                              const ::ompl::base::ProblemDefinitionPtr &_pdef,
-                             const statespace::StateSpacePtr &_stateSpace,
-                             const distance::DistanceMetricPtr &_dmetric,
-                             const double &_maxPlanTime);
-}
-}
+                             statespace::StateSpacePtr _sspace,
+                             statespace::InterpolatorPtr _interpolator,
+                             double _maxPlanTime);
+
+} // namespace ompl
+} // namespace aikido
 
 #include "detail/OMPLPlanner.hpp"
 

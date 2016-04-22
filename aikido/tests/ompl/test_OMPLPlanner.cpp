@@ -1,143 +1,36 @@
-#include <gtest/gtest.h>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/constraint/CollisionConstraint.hpp>
-#include <aikido/constraint/dart.hpp>
-#include <aikido/distance/DistanceMetricDefaults.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include "OMPLTestHelpers.hpp"
+#include "../constraint/MockConstraints.hpp"
 #include <aikido/ompl/OMPLPlanner.hpp>
+#include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
+#include <aikido/constraint/SampleableSubSpace.h>
+#include <aikido/constraint/TestableSubSpace.hpp>
+#include <aikido/constraint/dart.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <dart/dart.h>
-#include <tuple>
 
-using std::shared_ptr;
-using std::make_shared;
-using aikido::util::RNGWrapper;
-using aikido::statespace::GeodesicInterpolator;
-using aikido::util::RNG;
-using dart::common::make_unique;
-using DefaultRNG = RNGWrapper<std::default_random_engine>;
-using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
-using AIKIDOStateSpace = aikido::ompl::AIKIDOGeometricStateSpace;
+using RealVectorStateSpace = aikido::statespace::RealVectorStateSpace;
+using aikido::ompl::getSpaceInformation;
 
-static std::unique_ptr<DefaultRNG> make_rng()
-{
-  return make_unique<RNGWrapper<std::default_random_engine>>(0);
-}
-
-class OMPLPlannerTest : public ::testing::Test
-{
-public:
-  virtual void SetUp()
-  {
-    // Create robot
-    auto robot = dart::dynamics::Skeleton::create("robot");
-    auto jn_bn =
-        robot->createJointAndBodyNodePair<dart::dynamics::TranslationalJoint>();
-
-    stateSpace = make_shared<StateSpace>(robot);
-    interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
-
-    // Set bounds on the skeleton
-    robot->setPositionLowerLimit(0, -5);
-    robot->setPositionUpperLimit(0, 5);
-    robot->setPositionLowerLimit(1, -5);
-    robot->setPositionUpperLimit(1, 5);
-    robot->setPositionLowerLimit(2, 0);
-    robot->setPositionUpperLimit(2, 0);
-
-    // Collision constraint
-    auto cd = dart::collision::FCLCollisionDetector::create();
-    collConstraint = std::make_shared<aikido::constraint::CollisionConstraint>(
-        stateSpace, cd);
-
-    // Distance metric
-    dmetric = aikido::distance::createDistanceMetric(stateSpace);
-
-    // Sampler
-    sampler =
-        aikido::constraint::createSampleableBounds(stateSpace, make_rng());
-
-    // Projectable constraint
-    boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
-
-    // Joint limits
-    boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
-  }
-
-  StateSpace::ScopedState getStartState(const Eigen::Vector3d &startPose) const
-  {
-    // Start state - 3 dof real vector
-    StateSpace::ScopedState startState = stateSpace->createState();
-    auto subState = startState.getSubStateHandle<RealVectorStateSpace>(0);
-    subState.setValue(startPose);
-
-    return startState;
-  }
-
-  StateSpace::ScopedState getGoalState(const Eigen::Vector3d &goalPose) const
-  {
-    // Goal state
-    StateSpace::ScopedState goalState = stateSpace->createState();
-    auto subState = goalState.getSubStateHandle<RealVectorStateSpace>(0);
-    subState.setValue(goalPose);
-
-    return goalState;
-  }
-
-  void setStateValue(const Eigen::Vector3d &value,
-                     aikido::statespace::StateSpace::State *state) const
-  {
-    auto subState = stateSpace->getSubStateHandle<RealVectorStateSpace>(
-      static_cast<StateSpace::State*>(state), 0);
-    subState.setValue(value);
-  }
-
-  Eigen::Vector3d getStateValue(
-      aikido::statespace::StateSpace::State *state) const
-  {
-    auto subState = stateSpace->getSubStateHandle<RealVectorStateSpace>(
-      static_cast<StateSpace::State*>(state), 0);
-    return subState.getValue();
-  }
-
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace;
-  aikido::statespace::InterpolatorPtr interpolator;
-  aikido::distance::DistanceMetricPtr dmetric;
-  aikido::constraint::SampleableConstraintPtr sampler;
-  aikido::constraint::ProjectablePtr boundsProjection;
-  aikido::constraint::TestableConstraintPtr boundsConstraint;
-  aikido::constraint::TestableConstraintPtr collConstraint;
-};
-
-class AIKIDOGeometricStateSpaceTest : public OMPLPlannerTest
-{
-public:
-  virtual void SetUp()
-  {
-    OMPLPlannerTest::SetUp();
-    gSpace = make_shared<AIKIDOStateSpace>(stateSpace, interpolator, dmetric,
-      sampler, boundsConstraint, boundsProjection);
-  }
-  std::shared_ptr<AIKIDOStateSpace> gSpace;
-};
-
-TEST_F(OMPLPlannerTest, Plan)
+TEST_F(OMPLPlannerTest, PlanToConfiguration)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
 
-  StateSpace::ScopedState startState = getStartState(startPose);
-  stateSpace->setState(startState);
+  auto startState = stateSpace->createState();
+  auto subState1 =
+      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+  subState1.setValue(startPose);
 
-  StateSpace::ScopedState goalState = getGoalState(goalPose);
+  auto goalState = stateSpace->createState();
+  auto subState2 =
+      stateSpace->getSubStateHandle<RealVectorStateSpace>(goalState, 0);
+  subState2.setValue(goalPose);
 
   // Plan
   auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
-    startState, goalState, stateSpace, interpolator, std::move(collConstraint),
-    std::move(boundsConstraint), std::move(dmetric), std::move(sampler),
-    std::move(boundsProjection), 5.0);
+      startState, goalState, stateSpace, interpolator, std::move(dmetric),
+      std::move(sampler), std::move(collConstraint),
+      std::move(boundsConstraint), std::move(boundsProjection), 5.0);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
@@ -151,151 +44,317 @@ TEST_F(OMPLPlannerTest, Plan)
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, Dimension)
+TEST_F(OMPLPlannerTest, PlanToGoalRegion)
 {
-  EXPECT_EQ(3, gSpace->getDimension());
+  auto startState = stateSpace->createState();
+  Eigen::Vector3d startPose(-5, -5, 0);
+
+  auto subState1 =
+      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+  subState1.setValue(startPose);
+
+  auto boxConstraint =
+      std::make_shared<aikido::statespace::RealVectorBoxConstraint>(
+          stateSpace->getSubSpace<RealVectorStateSpace>(0), make_rng(),
+          Eigen::Vector3d(4, 4, 0), Eigen::Vector3d(5, 5, 0));
+  std::vector<std::shared_ptr<aikido::constraint::SampleableConstraint>>
+      sConstraints;
+  sConstraints.push_back(boxConstraint);
+  aikido::constraint::SampleableConstraintPtr goalSampleable =
+      std::make_shared<aikido::constraint::SampleableSubSpace>(stateSpace,
+                                                               sConstraints);
+  std::vector<std::shared_ptr<aikido::constraint::TestableConstraint>>
+      tConstraints;
+  tConstraints.push_back(boxConstraint);
+  aikido::constraint::TestableConstraintPtr goalTestable =
+      std::make_shared<aikido::constraint::TestableSubSpace>(stateSpace,
+                                                             tConstraints);
+
+  // Plan
+  auto traj = aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+      startState, goalTestable, goalSampleable, stateSpace, interpolator,
+      std::move(dmetric), std::move(sampler), std::move(collConstraint),
+      std::move(boundsConstraint), std::move(boundsProjection), 5.0);
+
+  // Check the first waypoint
+  auto s0 = stateSpace->createState();
+  traj->evaluate(0, s0);
+  auto r0 = s0.getSubStateHandle<RealVectorStateSpace>(0);
+  EXPECT_TRUE(r0.getValue().isApprox(startPose));
+
+  // Check the last waypoint
+  traj->evaluate(traj->getDuration(), s0);
+  EXPECT_TRUE(goalTestable->isSatisfied(s0));
 }
 
-// TODO: Maximum Extent
-
-// TODO: Measure
-
-TEST_F(AIKIDOGeometricStateSpaceTest, EnforceBounds)
+TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalTestable)
 {
-  auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d badValue(-6, 16, 10);
-  setStateValue(badValue, state->mState);
+  auto startState = stateSpace->createState();
+  Eigen::Vector3d startPose(-5, -5, 0);
 
-  gSpace->enforceBounds(state);
-  EXPECT_TRUE(getStateValue(state->mState).isApprox(Eigen::Vector3d(-5, 5, 0)));
+  auto subState1 =
+      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+  subState1.setValue(startPose);
 
-  Eigen::Vector3d goodValue(2, -3, 0);
-  setStateValue(goodValue, state->mState);
-  gSpace->enforceBounds(state);
-  EXPECT_TRUE(getStateValue(state->mState).isApprox(goodValue));
+  // Easiest sampleable to get
+  auto goalSampleable =
+      aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
-  gSpace->freeState(state);
+  // Plan
+  EXPECT_THROW(aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+                   startState, nullptr, std::move(goalSampleable), stateSpace,
+                   interpolator, std::move(dmetric), std::move(sampler),
+                   std::move(collConstraint), std::move(boundsConstraint),
+                   std::move(boundsProjection), 5.0),
+               std::invalid_argument);
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, SatisfiesBounds)
+TEST_F(OMPLPlannerTest, PlanThrowsOnGoalTestableMismatch)
 {
-  auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d badValue(-6, 16, 10);
-  setStateValue(badValue, state->mState);
-  EXPECT_FALSE(gSpace->satisfiesBounds(state));
+  auto startState = stateSpace->createState();
+  Eigen::Vector3d startPose(-5, -5, 0);
 
-  Eigen::Vector3d goodValue(2, -3, 0);
-  setStateValue(goodValue, state->mState);
-  EXPECT_TRUE(gSpace->satisfiesBounds(state));
+  auto subState1 =
+      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+  subState1.setValue(startPose);
 
-  gSpace->freeState(state);
+  // Easiest sampleable to get
+  auto goalSampleable =
+      aikido::constraint::createSampleableBounds(stateSpace, make_rng());
+
+  // Easiest testable to get
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto goalTestable = std::make_shared<PassingConstraint>(ss);
+
+  // Plan
+  EXPECT_THROW(
+      aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+          startState, goalTestable, std::move(goalSampleable), stateSpace,
+          interpolator, std::move(dmetric), std::move(sampler),
+          std::move(collConstraint), std::move(boundsConstraint),
+          std::move(boundsProjection), 5.0),
+      std::invalid_argument);
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, CopyState)
+TEST_F(OMPLPlannerTest, PlanThrowsOnNullGoalSampler)
 {
-  auto state = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d value(-2, 3, 0);
-  setStateValue(value, state->mState);
+  auto startState = stateSpace->createState();
+  Eigen::Vector3d startPose(-5, -5, 0);
 
-  auto copyState = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  gSpace->copyState(copyState, state);
-  EXPECT_TRUE(
-      getStateValue(copyState->mState).isApprox(getStateValue(state->mState)));
+  auto subState1 =
+      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+  subState1.setValue(startPose);
 
-  gSpace->freeState(state);
-  gSpace->freeState(copyState);
+  // Dummy testable
+  auto goalTestable = std::make_shared<PassingConstraint>(stateSpace);
+
+  // Plan
+  EXPECT_THROW(
+      aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+          startState, goalTestable, nullptr, stateSpace, interpolator,
+          std::move(dmetric), std::move(sampler), std::move(collConstraint),
+          std::move(boundsConstraint), std::move(boundsProjection), 5.0),
+      std::invalid_argument);
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, Distance)
+TEST_F(OMPLPlannerTest, PlanThrowsOnGoalSamplerMismatch)
 {
-  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d v1(-2, 3, 0);
-  setStateValue(v1, s1->mState);
+  auto startState = stateSpace->createState();
+  Eigen::Vector3d startPose(-5, -5, 0);
 
-  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d v2(3, 4, 0);
-  setStateValue(v2, s2->mState);
+  auto subState1 =
+      stateSpace->getSubStateHandle<RealVectorStateSpace>(startState, 0);
+  subState1.setValue(startPose);
 
-  EXPECT_DOUBLE_EQ((v1 - v2).norm(), gSpace->distance(s1, s2));
+  // Easiest sampleable to get
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto goalSampleable =
+      aikido::constraint::createSampleableBounds(ss, make_rng());
 
-  gSpace->freeState(s1);
-  gSpace->freeState(s2);
+  // Dummy testable
+  auto goalTestable = std::make_shared<PassingConstraint>(stateSpace);
+
+  // Plan
+  EXPECT_THROW(
+      aikido::ompl::planOMPL<ompl::geometric::RRTConnect>(
+          startState, goalTestable, std::move(goalSampleable), stateSpace,
+          interpolator, std::move(dmetric), std::move(sampler),
+          std::move(collConstraint), std::move(boundsConstraint),
+          std::move(boundsProjection), 5.0),
+      std::invalid_argument);
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, EqualStates)
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullStateSpace)
 {
-  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d v1(-2, 3, 0);
-  setStateValue(v1, s1->mState);
-
-  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d v2(3, 4, 0);
-  setStateValue(v2, s2->mState);
-
-  auto s3 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  setStateValue(v1, s3->mState);
-
-  EXPECT_TRUE(gSpace->equalStates(s1, s3));
-  EXPECT_FALSE(gSpace->equalStates(s1, s2));
-
-  gSpace->freeState(s1);
-  gSpace->freeState(s2);
-  gSpace->freeState(s3);
+  EXPECT_THROW(getSpaceInformation(
+                   nullptr, std::move(interpolator), std::move(dmetric),
+                   std::move(sampler), std::move(collConstraint),
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, Interpolate)
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullInterpolator)
 {
-  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d v1(-2, 3, 0);
-  setStateValue(v1, s1->mState);
-
-  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d v2(3, 4, 0);
-  setStateValue(v2, s2->mState);
-
-  auto s3 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-
-  gSpace->interpolate(s1, s2, 0, s3);
-  EXPECT_TRUE(getStateValue(s3->mState).isApprox(getStateValue(s1->mState)));
-
-  gSpace->interpolate(s1, s2, 1, s3);
-  EXPECT_TRUE(getStateValue(s3->mState).isApprox(getStateValue(s2->mState)));
-
-  gSpace->interpolate(s1, s2, 0.5, s3);
-  EXPECT_TRUE(getStateValue(s3->mState).isApprox(Eigen::Vector3d(0.5, 3.5, 0)));
-
-  gSpace->freeState(s1);
-  gSpace->freeState(s2);
-  gSpace->freeState(s3);
+  EXPECT_THROW(getSpaceInformation(
+                   std::move(stateSpace), nullptr, std::move(dmetric),
+                   std::move(sampler), std::move(collConstraint),
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, AllocStateSampler)
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnInterpolatorMismatch)
 {
-  ompl::base::StateSamplerPtr ssampler = gSpace->allocDefaultStateSampler();
-  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  auto s2 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
+  auto ss = std::make_shared<aikido::statespace::SO2StateSpace>();
+  auto binterpolator =
+      std::make_shared<aikido::statespace::GeodesicInterpolator>(ss);
 
-  // Ensure we get two different states if we sample twice
-  ssampler->sampleUniform(s1);
-  ssampler->sampleUniform(s2);
-  EXPECT_FALSE(getStateValue(s1->mState).isApprox(getStateValue(s2->mState)));
-
-  EXPECT_THROW(ssampler->sampleUniformNear(s1, s2, 0.05), std::runtime_error);
-  EXPECT_THROW(ssampler->sampleGaussian(s1, s2, 0.05), std::runtime_error);
-
-  gSpace->freeState(s1);
-  gSpace->freeState(s2);
+  EXPECT_THROW(
+      getSpaceInformation(
+          std::move(stateSpace), std::move(binterpolator), std::move(dmetric),
+          std::move(sampler), std::move(collConstraint),
+          std::move(boundsConstraint), std::move(boundsProjection)),
+      std::invalid_argument);
 }
 
-TEST_F(AIKIDOGeometricStateSpaceTest, CopyAlloc)
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullDistanceMetric)
 {
-  auto s1 = gSpace->allocState()->as<AIKIDOStateSpace::StateType>();
-  Eigen::Vector3d value(-2, 3, 0);
-  setStateValue(value, s1->mState);
-
-  auto s2 = gSpace->allocState(s1->mState)->as<AIKIDOStateSpace::StateType>();
-  EXPECT_TRUE(getStateValue(s1->mState).isApprox(getStateValue(s2->mState)));
-
-  gSpace->freeState(s1);
-  gSpace->freeState(s2);
+  EXPECT_THROW(getSpaceInformation(
+                   std::move(stateSpace), std::move(interpolator), nullptr,
+                   std::move(sampler), std::move(collConstraint),
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
 }
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnDistanceMetricMismatch)
+{
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto dm = aikido::distance::createDistanceMetric(ss);
+
+  EXPECT_THROW(getSpaceInformation(
+                   std::move(stateSpace), std::move(interpolator),
+                   std::move(dm), std::move(sampler), std::move(collConstraint),
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullSampler)
+{
+  EXPECT_THROW(getSpaceInformation(
+                   std::move(stateSpace), std::move(interpolator),
+                   std::move(dmetric), nullptr, std::move(collConstraint),
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnSamplerMismatch)
+{
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto ds = aikido::constraint::createSampleableBounds(ss, make_rng());
+
+  EXPECT_THROW(getSpaceInformation(
+                   std::move(stateSpace), std::move(interpolator),
+                   std::move(dmetric), std::move(ds), std::move(collConstraint),
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullValidityConstraint)
+{
+  EXPECT_THROW(getSpaceInformation(
+                   std::move(stateSpace), std::move(interpolator),
+                   std::move(dmetric), std::move(sampler), nullptr,
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnValidityConstraintMismatch)
+{
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto dv = std::make_shared<MockTranslationalRobotConstraint>(
+      ss, Eigen::Vector3d(-0.1, -0.1, -0.1), Eigen::Vector3d(0.1, 0.1, 0.1));
+  EXPECT_THROW(getSpaceInformation(
+                   std::move(stateSpace), std::move(interpolator),
+                   std::move(dmetric), std::move(sampler), std::move(dv),
+                   std::move(boundsConstraint), std::move(boundsProjection)),
+               std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullBoundsConstraint)
+{
+  EXPECT_THROW(
+      getSpaceInformation(std::move(stateSpace), std::move(interpolator),
+                          std::move(dmetric), std::move(sampler),
+                          std::move(collConstraint), nullptr,
+                          std::move(boundsProjection)),
+      std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnBoundsConstraintMismatch)
+{
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto ds = aikido::constraint::createTestableBounds(ss);
+
+  EXPECT_THROW(
+      getSpaceInformation(std::move(stateSpace), std::move(interpolator),
+                          std::move(dmetric), std::move(sampler),
+                          std::move(collConstraint), std::move(ds),
+                          std::move(boundsProjection)),
+      std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnNullBoundsProjector)
+{
+  EXPECT_THROW(
+      getSpaceInformation(std::move(stateSpace), std::move(interpolator),
+                          std::move(dmetric), std::move(sampler),
+                          std::move(collConstraint),
+                          std::move(boundsConstraint), nullptr),
+      std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationThrowsOnBoundsProjectorMismatch)
+{
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto ds = aikido::constraint::createProjectableBounds(ss);
+
+  EXPECT_THROW(
+      getSpaceInformation(std::move(stateSpace), std::move(interpolator),
+                          std::move(dmetric), std::move(sampler),
+                          std::move(collConstraint),
+                          std::move(boundsConstraint), std::move(ds)),
+      std::invalid_argument);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationNotNull)
+{
+  auto si = getSpaceInformation(
+      std::move(stateSpace), std::move(interpolator), std::move(dmetric),
+      std::move(sampler), std::move(collConstraint),
+      std::move(boundsConstraint), std::move(boundsProjection));
+  EXPECT_FALSE(si == nullptr);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationCreatesGeometricStateSpace)
+{
+  auto si = getSpaceInformation(
+      std::move(stateSpace), std::move(interpolator), std::move(dmetric),
+      std::move(sampler), std::move(collConstraint),
+      std::move(boundsConstraint), std::move(boundsProjection));
+
+  auto ss = boost::dynamic_pointer_cast<aikido::ompl::GeometricStateSpace>(
+      si->getStateSpace());
+  EXPECT_FALSE(ss == nullptr);
+}
+
+TEST_F(OMPLPlannerTest, GetSpaceInformationCreatesValidityChecker)
+{
+  auto si = getSpaceInformation(
+      std::move(stateSpace), std::move(interpolator), std::move(dmetric),
+      std::move(sampler), std::move(collConstraint),
+      std::move(boundsConstraint), std::move(boundsProjection));
+
+  auto vc = boost::dynamic_pointer_cast<aikido::ompl::StateValidityChecker>(
+      si->getStateValidityChecker());
+  EXPECT_FALSE(vc == nullptr);
+}
+

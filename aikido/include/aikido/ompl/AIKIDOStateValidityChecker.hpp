@@ -1,29 +1,34 @@
-#ifndef AIKIDO_STATE_VALIDITY_CHECKER_H
-#define AIKIDO_STATE_VALIDITY_CHECKER_H
+#ifndef AIKIDO_OMPL_AIKIDOSTATEVALIDITYCHECKER_HPP_
+#define AIKIDO_OMPL_AIKIDOSTATEVALIDITYCHECKER_HPP_
 
 #include <ompl/base/StateValidityChecker.h>
 #include <ompl/base/SpaceInformation.h>
-#include <aikido/statespace/StateSpace.hpp>
-#include <aikido/constraint/TestableConstraint.hpp>
+#include "../statespace/StateSpace.hpp"
+#include "../constraint/TestableConstraint.hpp"
 
 namespace aikido {
 namespace ompl {
-
-class AIKIDOStateValidityChecker : public ::ompl::base::StateValidityChecker {
+/// Expose a set of aikido::conststraint::TestableConstraint class as a
+/// StateValidityChecker to the OMPL framework.  This checker will mark a state
+/// valid if all constraints defined within the class are valid for the state.
+class StateValidityChecker : public ::ompl::base::StateValidityChecker {
 
 public:
-  AIKIDOStateValidityChecker(
+  /// Constructor
+  /// \param _si Information about the planning space where this ValidityChecker
+  /// will be used
+  /// \param _constraint The constraint that must pass for a state to
+  /// be marked valid
+  StateValidityChecker(
       const ::ompl::base::SpaceInformationPtr &_si,
-      std::vector<constraint::TestableConstraintPtr>
-          _constraints);
+      constraint::TestableConstraintPtr _constraint);
 
-  /// Return true if the state state is valid. Usually, this means at
-  /// least collision checking and bounds checking
-  virtual bool isValid(const ::ompl::base::State *_state) const;
+  /// Return true if all constraints defined on this ValidityChecker are satisfied.
+  bool isValid(const ::ompl::base::State *_state) const override;
 
 private:
-  std::vector<constraint::TestableConstraintPtr>
-      mConstraints;
+  constraint::TestableConstraintPtr mConstraint;
+
 };
 }
 }

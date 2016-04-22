@@ -7,6 +7,7 @@ aikido_add_library("${PROJECT_NAME}_ompl"
 )
 target_link_libraries("${PROJECT_NAME}_ompl"
   "${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace"
   ${Boost_LIBRARIES}
   ${DART_LIBRARIES}
