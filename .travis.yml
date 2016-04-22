@@ -4,6 +4,7 @@ language: generic
 env:
   global:
   - TIMEOUT=30
+  - CATKIN_CONFIG_OPTIONS=--link-devel --cmake-args -DCMAKE_BUILD_TYPE=Release
 cache:
 - apt
 # Install test fixture dependencies.
@@ -20,6 +21,10 @@ install:
 script:
 - ./scripts/internal-build.sh ${PACKAGE_NAMES}
 - ./scripts/internal-test.sh ${PACKAGE_NAMES}
-- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 --make-args tests test -- aikido
+# Manually run Aikido's tests; they are not run automatically because it is not a Catkin package.
+- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args tests test -- aikido
+# Rebuild Aikido in debug mode with coveralls enabled to measure test coverage.
+- ./scripts/internal-run.sh catkin clean -y aikido
+- ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON -- --make-args all tests test coveralls -- aikido
 after_script:
 - ./scripts/view-all-results.sh test_results
