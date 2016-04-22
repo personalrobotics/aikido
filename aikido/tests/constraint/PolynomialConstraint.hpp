@@ -2,7 +2,7 @@
 #define AIKIDO_TESTS_CONSTRAINT_POLYNOMIALCONSTRAINT_HPP_
 
 #include <aikido/constraint/Differentiable.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 
 
 class PolynomialConstraint: public aikido::constraint::Differentiable
@@ -13,7 +13,7 @@ public:
   explicit PolynomialConstraint(Eigen::VectorXd _coeffs);
 
   PolynomialConstraint(Eigen::VectorXd _coeffs, 
-    std::shared_ptr<aikido::statespace::RealVectorStateSpace> _space);
+    std::shared_ptr<aikido::statespace::Rn> _space);
 
   // Documentation inherited.
   size_t getConstraintDimension() const override;
@@ -39,7 +39,7 @@ public:
 
 private:
   Eigen::VectorXd mCoeffs;
-  std::shared_ptr<aikido::statespace::RealVectorStateSpace> mStateSpace;
+  std::shared_ptr<aikido::statespace::Rn> mStateSpace;
 };
 
 

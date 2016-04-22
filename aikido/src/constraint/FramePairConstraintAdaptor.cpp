@@ -1,5 +1,5 @@
 #include <aikido/constraint/FramePairConstraintAdaptor.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -28,13 +28,13 @@ FramePairConstraintAdaptor::FramePairConstraintAdaptor(
   if (!mMetaSkeletonStateSpace)
     throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
 
-  using SE3StateSpace = statespace::SE3StateSpace;
+  using SE3 = statespace::SE3;
 
-  auto space = dynamic_cast<SE3StateSpace*>(
+  auto space = dynamic_cast<SE3*>(
     mRelPoseConstraint->getStateSpace().get());
 
   if (!space)
-    throw std::invalid_argument("_relPoseConstraint is not in SE3StateSpace.");
+    throw std::invalid_argument("_relPoseConstraint is not in SE3.");
 
   mMetaSkeleton = mMetaSkeletonStateSpace->getMetaSkeleton();
 
@@ -56,8 +56,8 @@ size_t FramePairConstraintAdaptor::getConstraintDimension() const
 Eigen::VectorXd FramePairConstraintAdaptor::getValue(
   const statespace::StateSpace::State* _s) const
 {
-  using State = statespace::CompoundStateSpace::State;
-  using SE3State = statespace::SE3StateSpace::State;
+  using State = statespace::CartesianProduct::State;
+  using SE3State = statespace::SE3::State;
 
   auto state = static_cast<const State*>(_s);
   
@@ -76,8 +76,8 @@ Eigen::VectorXd FramePairConstraintAdaptor::getValue(
 Eigen::MatrixXd FramePairConstraintAdaptor::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
-  using State = statespace::CompoundStateSpace::State;
-  using SE3State = statespace::SE3StateSpace::State;
+  using State = statespace::CartesianProduct::State;
+  using SE3State = statespace::SE3::State;
   using dart::dynamics::MetaSkeletonPtr;
 
   auto state = static_cast<const State*>(_s);
@@ -109,8 +109,8 @@ Eigen::MatrixXd FramePairConstraintAdaptor::getJacobian(
 std::pair<Eigen::VectorXd, Eigen::MatrixXd> FramePairConstraintAdaptor::getValueAndJacobian(
     const statespace::StateSpace::State* _s) const
 {
-  using State = statespace::CompoundStateSpace::State;
-  using SE3State = statespace::SE3StateSpace::State;
+  using State = statespace::CartesianProduct::State;
+  using SE3State = statespace::SE3::State;
   using dart::dynamics::MetaSkeletonPtr;
 
   auto state = static_cast<const State*>(_s);

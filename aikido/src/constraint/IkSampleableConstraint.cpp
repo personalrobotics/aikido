@@ -1,13 +1,13 @@
 #include <aikido/constraint/IkSampleableConstraint.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
 
 namespace aikido {
 namespace constraint {
 
-using statespace::SE3StateSpace;
+using statespace::SE3;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
-using statespace::SE3StateSpace;
+using statespace::SE3;
 using dart::dynamics::INVALID_INDEX;
 
 
@@ -45,7 +45,7 @@ private:
     int _maxNumTrials);
 
   statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-  std::shared_ptr<statespace::SE3StateSpace> mPoseStateSpace;
+  std::shared_ptr<statespace::SE3> mPoseStateSpace;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<SampleGenerator> mPoseSampler;
   std::unique_ptr<SampleGenerator> mSeedSampler;
@@ -92,9 +92,9 @@ IkSampleableConstraint::IkSampleableConstraint(
   if (!mPoseConstraint)
     throw std::invalid_argument("Pose SampleGenerator is nullptr.");
 
-  if (!dynamic_cast<SE3StateSpace*>(mPoseConstraint->getStateSpace().get()))
+  if (!dynamic_cast<SE3*>(mPoseConstraint->getStateSpace().get()))
     throw std::invalid_argument(
-      "Pose SampleableConstraint does not operate on a SE3StateSpace.");
+      "Pose SampleableConstraint does not operate on a SE3.");
 
   if (!mSeedConstraint)
     throw std::invalid_argument("Seed SampleableConstraint is nullptr.");
@@ -135,7 +135,7 @@ IkSampleGenerator::IkSampleGenerator(
       int _maxNumTrials)
   : mStateSpace(std::move(_stateSpace))
   , mPoseStateSpace(
-      std::dynamic_pointer_cast<SE3StateSpace>(_poseSampler->getStateSpace()))
+      std::dynamic_pointer_cast<SE3>(_poseSampler->getStateSpace()))
   , mInverseKinematics(std::move(_inverseKinematics))
   , mPoseSampler(std::move(_poseSampler))
   , mSeedSampler(std::move(_seedSampler))

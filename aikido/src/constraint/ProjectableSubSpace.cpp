@@ -6,13 +6,13 @@ namespace constraint {
 
 //=============================================================================
 ProjectableSubSpace::ProjectableSubSpace(
-      std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<ProjectablePtr> _constraints)
   : mStateSpace(std::move(_stateSpace))
   , mConstraints(std::move(_constraints))
 {
   if (!mStateSpace)
-    throw std::invalid_argument("CompoundStateSpace is nullptr.");
+    throw std::invalid_argument("CartesianProduct is nullptr.");
 
   if (mConstraints.size() != mStateSpace->getNumStates())
   {
@@ -51,8 +51,8 @@ statespace::StateSpacePtr ProjectableSubSpace::getStateSpace() const
 bool ProjectableSubSpace::project(const statespace::StateSpace::State* _s,
   statespace::StateSpace::State* _out) const
 {
-  auto s = static_cast<const statespace::CompoundStateSpace::State*>(_s);
-  auto out = static_cast<statespace::CompoundStateSpace::State*>(_out);
+  auto s = static_cast<const statespace::CartesianProduct::State*>(_s);
+  auto out = static_cast<statespace::CartesianProduct::State*>(_out);
 
   for (size_t i = 0; i < mConstraints.size(); ++i)
   {

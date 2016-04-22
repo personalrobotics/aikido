@@ -2,7 +2,7 @@
 #include <aikido/distance/GeodesicDistanceMetric.hpp>
 #include <aikido/distance/EuclideanDistanceMetric.hpp>
 #include <aikido/distance/AngularDistanceMetric.hpp>
-#include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 
 #include <gtest/gtest.h>
 
@@ -20,12 +20,12 @@ TEST(WeightedDistance, ThrowsOnNullStateSpace)
 }
 
 TEST(WeightedDistance, ThrowsOnNullMetric){
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so2 = std::make_shared<SO2>();
+  auto rv3 = std::make_shared<Rn>(3);
+  auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>(spaces);
+  auto space = std::make_shared<CartesianProduct>(spaces);
 
   std::vector<DistanceMetricPtr> dmetrics = {
       std::make_shared<AngularDistanceMetric>(so2),
@@ -43,12 +43,12 @@ TEST(WeightedDistance, ThrowsOnNullMetric){
 
 TEST(WeightedDistance, ThrowsOnMissingMetric)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so2 = std::make_shared<SO2>();
+  auto rv3 = std::make_shared<Rn>(3);
+  auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>(spaces);
+  auto space = std::make_shared<CartesianProduct>(spaces);
 
   std::vector<DistanceMetricPtr> dmetrics = {
       std::make_shared<AngularDistanceMetric>(so2),
@@ -66,12 +66,12 @@ TEST(WeightedDistance, ThrowsOnMissingMetric)
 
 TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so2 = std::make_shared<SO2>();
+  auto rv3 = std::make_shared<Rn>(3);
+  auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>(spaces);
+  auto space = std::make_shared<CartesianProduct>(spaces);
 
   EXPECT_THROW(WeightedDistanceMetric(
                     space, {std::make_shared<EuclideanDistanceMetric>(rv3),
@@ -90,12 +90,12 @@ TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
 
 TEST(WeightedDistance, ThrowsOnNegativeWeights)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so2 = std::make_shared<SO2>();
+  auto rv3 = std::make_shared<Rn>(3);
+  auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>(spaces);
+  auto space = std::make_shared<CartesianProduct>(spaces);
   EXPECT_THROW(
       WeightedDistanceMetric(
           space,
@@ -107,12 +107,12 @@ TEST(WeightedDistance, ThrowsOnNegativeWeights)
 
 TEST(WeightedDistance, StateSpaceEquality)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so2 = std::make_shared<SO2>();
+  auto rv3 = std::make_shared<Rn>(3);
+  auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>(spaces);
+  auto space = std::make_shared<CartesianProduct>(spaces);
 
   WeightedDistanceMetric dmetric(
       space, {std::make_shared<AngularDistanceMetric>(so2),
@@ -129,12 +129,12 @@ TEST(WeightedDistance, StateSpaceEquality)
 
 TEST(WeightedDistance, DistanceUnitWeights)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so2 = std::make_shared<SO2>();
+  auto rv3 = std::make_shared<Rn>(3);
+  auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>(spaces);
+  auto space = std::make_shared<CartesianProduct>(spaces);
 
   WeightedDistanceMetric dmetric(
       space, {std::make_shared<AngularDistanceMetric>(so2),
@@ -153,13 +153,13 @@ TEST(WeightedDistance, DistanceUnitWeights)
   auto quat2 = Eigen::Quaterniond(
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
-  state1.getSubStateHandle<SO2StateSpace>(0).setAngle(angle1);
-  state1.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv1);
-  state1.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat1);
+  state1.getSubStateHandle<SO2>(0).setAngle(angle1);
+  state1.getSubStateHandle<Rn>(1).setValue(rv1);
+  state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
-  state2.getSubStateHandle<SO2StateSpace>(0).setAngle(angle2);
-  state2.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv2);
-  state2.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat2);
+  state2.getSubStateHandle<SO2>(0).setAngle(angle2);
+  state2.getSubStateHandle<Rn>(1).setValue(rv2);
+  state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 
   auto vdiff = Eigen::Vector3d(2, 2, 2);
   EXPECT_DOUBLE_EQ(0.5 + 0.5 + vdiff.norm(), dmetric.distance(state1, state2));
@@ -167,12 +167,12 @@ TEST(WeightedDistance, DistanceUnitWeights)
 
 TEST(WeightedDistance, DistanceCustomWeights)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv3 = std::make_shared<RealVectorStateSpace>(3);
-  auto so3 = std::make_shared<SO3StateSpace>();
+  auto so2 = std::make_shared<SO2>();
+  auto rv3 = std::make_shared<Rn>(3);
+  auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
-  auto space = std::make_shared<CompoundStateSpace>(spaces);
+  auto space = std::make_shared<CartesianProduct>(spaces);
 
   WeightedDistanceMetric dmetric(
       space, {std::make_pair(std::make_shared<AngularDistanceMetric>(so2), 2),
@@ -191,13 +191,13 @@ TEST(WeightedDistance, DistanceCustomWeights)
   auto quat2 = Eigen::Quaterniond(
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
-  state1.getSubStateHandle<SO2StateSpace>(0).setAngle(angle1);
-  state1.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv1);
-  state1.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat1);
+  state1.getSubStateHandle<SO2>(0).setAngle(angle1);
+  state1.getSubStateHandle<Rn>(1).setValue(rv1);
+  state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
-  state2.getSubStateHandle<SO2StateSpace>(0).setAngle(angle2);
-  state2.getSubStateHandle<RealVectorStateSpace>(1).setValue(rv2);
-  state2.getSubStateHandle<SO3StateSpace>(2).setQuaternion(quat2);
+  state2.getSubStateHandle<SO2>(0).setAngle(angle2);
+  state2.getSubStateHandle<Rn>(1).setValue(rv2);
+  state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 
   auto vdiff = Eigen::Vector3d(2, 2, 2);
   EXPECT_DOUBLE_EQ(2*0.5 + 4*0.5 + 3*vdiff.norm(), dmetric.distance(state1, state2));

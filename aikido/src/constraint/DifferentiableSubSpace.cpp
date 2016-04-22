@@ -6,14 +6,14 @@ namespace constraint {
 
 //=============================================================================
 DifferentiableSubSpace::DifferentiableSubSpace(
-      std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       DifferentiablePtr _constraint, size_t _index)
   : mStateSpace(std::move(_stateSpace))
   , mConstraint(std::move(_constraint))
   , mIndex(_index)
 {
   if (!mStateSpace)
-    throw std::invalid_argument("CompoundStateSpace is nullptr.");
+    throw std::invalid_argument("CartesianProduct is nullptr.");
 
   if (!mConstraint)
     throw std::invalid_argument("Differentiable is nullptr.");
@@ -53,7 +53,7 @@ size_t DifferentiableSubSpace::getConstraintDimension() const
 Eigen::VectorXd DifferentiableSubSpace::getValue(
   const statespace::StateSpace::State* _s) const
 {
-  auto state = static_cast<const statespace::CompoundStateSpace::State*>(_s);
+  auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
   return mConstraint->getValue(substate);
 }
@@ -62,7 +62,7 @@ Eigen::VectorXd DifferentiableSubSpace::getValue(
 Eigen::MatrixXd DifferentiableSubSpace::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
-  auto state = static_cast<const statespace::CompoundStateSpace::State*>(_s);
+  auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
   return mConstraint->getJacobian(substate);
 }
@@ -72,7 +72,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd>
   DifferentiableSubSpace::getValueAndJacobian(
     const statespace::StateSpace::State* _s) const
 {
-  auto state = static_cast<const statespace::CompoundStateSpace::State*>(_s);
+  auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
   return mConstraint->getValueAndJacobian(substate);
 }

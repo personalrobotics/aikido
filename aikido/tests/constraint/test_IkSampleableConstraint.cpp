@@ -2,21 +2,21 @@
 #include <aikido/constraint/IkSampleableConstraint.hpp>
 #include <aikido/constraint/FiniteSampleConstraint.hpp>
 #include <aikido/constraint/FiniteCyclicSampleConstraint.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/util/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::statespace::RealVectorStateSpace;
-using aikido::statespace::SO2StateSpace;
+using aikido::statespace::Rn;
+using aikido::statespace::SO2;
 using aikido::constraint::FiniteSampleConstraint;
 using aikido::constraint::IkSampleableConstraint;
 using aikido::constraint::FiniteCyclicSampleConstraint;
-using aikido::statespace::SE3StateSpace;
+using aikido::statespace::SE3;
 using dart::dynamics::FreeJoint;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::TSR;
@@ -107,13 +107,13 @@ TEST_F(IkSampleableConstraintTest, Constructor)
 {
   // Invalid statespace for seed constraint.
   Eigen::Vector2d v(1,0);
-  RealVectorStateSpace rvss(2);
+  Rn rvss(2);
   auto seedStateInvalid = rvss.createState();
   seedStateInvalid.setValue(v);
 
   std::shared_ptr<FiniteSampleConstraint> invalid_seed_constraint( 
     new FiniteSampleConstraint(
-      std::make_shared<RealVectorStateSpace>(rvss), seedStateInvalid));
+      std::make_shared<Rn>(rvss), seedStateInvalid));
 
   EXPECT_THROW(IkSampleableConstraint ikConstraint(mStateSpace1, mTsr,
     invalid_seed_constraint, mInverseKinematics1, mRng->clone(), 1),
@@ -140,8 +140,8 @@ TEST_F(IkSampleableConstraintTest, SingleSampleGenerator)
 
   // Set FiniteSampleConstraint to generate pose close to the actual solution.
   auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
-  seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0.1);
-  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
 
   std::shared_ptr<FiniteSampleConstraint> seedConstraint( 
     new FiniteSampleConstraint(mStateSpace1, seedState));
@@ -158,8 +158,8 @@ TEST_F(IkSampleableConstraintTest, SingleSampleGenerator)
   auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
 
   ASSERT_TRUE(generator->sample(state));
-  ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(0).getAngle(), 0, 1e-5);
-  ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(1).getAngle(), 0, 1e-5);
+  ASSERT_NEAR(state.getSubStateHandle<SO2>(0).getAngle(), 0, 1e-5);
+  ASSERT_NEAR(state.getSubStateHandle<SO2>(1).getAngle(), 0, 1e-5);
 
   // Cannot sample anymore.
   ASSERT_FALSE(generator->canSample());
@@ -177,8 +177,8 @@ TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
   // Set FiniteCyclicSampleConstraint to generate
   // pose close to the actual solution.
   auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
-  seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0.1);
-  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
 
   std::shared_ptr<FiniteSampleConstraint> finiteSampleConstraint = 
     std::make_shared<FiniteSampleConstraint>(mStateSpace1, seedState);
@@ -203,8 +203,8 @@ TEST_F(IkSampleableConstraintTest, CyclicSampleGenerator)
     auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
 
     ASSERT_TRUE(generator->sample(state));
-    ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(0).getAngle(), 0, 1e-5);
-    ASSERT_NEAR(state.getSubStateHandle<SO2StateSpace>(1).getAngle(), 0, 1e-5);
+    ASSERT_NEAR(state.getSubStateHandle<SO2>(0).getAngle(), 0, 1e-5);
+    ASSERT_NEAR(state.getSubStateHandle<SO2>(1).getAngle(), 0, 1e-5);
   }
 }
 
@@ -222,8 +222,8 @@ TEST_F(IkSampleableConstraintTest, MultipleGeneratorsSampleSameSequence)
   auto seedState = mStateSpace2->getScopedStateFromMetaSkeleton();
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
   isometry.translation() = Eigen::Vector3d(0.1, 0.1, 0.1);
-  seedState.getSubStateHandle<SE3StateSpace>(0).setIsometry(isometry);
-  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SE3>(0).setIsometry(isometry);
+  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
 
   std::shared_ptr<FiniteSampleConstraint> finiteSampleConstraint = 
     std::make_shared<FiniteSampleConstraint>(mStateSpace2, seedState);
@@ -250,11 +250,11 @@ TEST_F(IkSampleableConstraintTest, MultipleGeneratorsSampleSameSequence)
     ASSERT_TRUE(generator1->sample(state1));
     ASSERT_TRUE(generator2->sample(state2));
 
-    EXPECT_TRUE(state1.getSubStateHandle<SE3StateSpace>(0).getIsometry().isApprox
-      (state2.getSubStateHandle<SE3StateSpace>(0).getIsometry()));
+    EXPECT_TRUE(state1.getSubStateHandle<SE3>(0).getIsometry().isApprox
+      (state2.getSubStateHandle<SE3>(0).getIsometry()));
 
-    EXPECT_DOUBLE_EQ(state1.getSubStateHandle<SO2StateSpace>(1).getAngle(),
-      state2.getSubStateHandle<SO2StateSpace>(1).getAngle());
+    EXPECT_DOUBLE_EQ(state1.getSubStateHandle<SO2>(1).getAngle(),
+      state2.getSubStateHandle<SO2>(1).getAngle());
   }
 }
 
@@ -272,8 +272,8 @@ TEST_F(IkSampleableConstraintTest, SampleGeneratorIkInfeasible)
 
   // Set FiniteCyclicSampleConstraint.
   auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
-  seedState.getSubStateHandle<SO2StateSpace>(0).setAngle(0);
-  seedState.getSubStateHandle<SO2StateSpace>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(0).setAngle(0);
+  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
 
   std::shared_ptr<FiniteSampleConstraint> finiteSampleConstraint = 
     std::make_shared<FiniteSampleConstraint>(mStateSpace1, seedState);

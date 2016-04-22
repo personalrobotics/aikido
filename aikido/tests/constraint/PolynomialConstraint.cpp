@@ -4,7 +4,7 @@
 //=============================================================================
 PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs)
 : mCoeffs(_coeffs)
-, mStateSpace(std::make_shared<aikido::statespace::RealVectorStateSpace>(1))
+, mStateSpace(std::make_shared<aikido::statespace::Rn>(1))
 {
   if(std::abs(mCoeffs(mCoeffs.rows()-1)) < std::numeric_limits<double>::epsilon())
   {
@@ -14,7 +14,7 @@ PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs)
 
 //=============================================================================
 PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs, 
-  std::shared_ptr<aikido::statespace::RealVectorStateSpace> _space)
+  std::shared_ptr<aikido::statespace::Rn> _space)
 : mCoeffs(_coeffs)
 , mStateSpace(std::move(_space))
 {
@@ -37,7 +37,7 @@ size_t PolynomialConstraint::getConstraintDimension() const
 Eigen::VectorXd PolynomialConstraint::getValue(
     const aikido::statespace::StateSpace::State* _s) const
 {
-  using State = aikido::statespace::RealVectorStateSpace::State;
+  using State = aikido::statespace::Rn::State;
   auto s = static_cast<const State*>(_s);
 
   double x = mStateSpace->getValue(s)(0);
@@ -59,7 +59,7 @@ Eigen::VectorXd PolynomialConstraint::getValue(
 Eigen::MatrixXd PolynomialConstraint::getJacobian(
     const aikido::statespace::StateSpace::State* _s) const
 {
-  using State = aikido::statespace::RealVectorStateSpace::State;
+  using State = aikido::statespace::Rn::State;
   auto s = static_cast<const State*>(_s);
 
   Eigen::VectorXd derivCoeffs(mCoeffs.rows()-1);
@@ -77,7 +77,7 @@ Eigen::MatrixXd PolynomialConstraint::getJacobian(
 std::pair<Eigen::VectorXd, Eigen::MatrixXd> PolynomialConstraint::getValueAndJacobian(
     const aikido::statespace::StateSpace::State* _s) const
 {
-  using State = aikido::statespace::RealVectorStateSpace::State;
+  using State = aikido::statespace::Rn::State;
   auto s = static_cast<const State*>(_s);
 
   Eigen::VectorXd value = getValue(s);

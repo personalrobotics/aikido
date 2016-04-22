@@ -11,7 +11,7 @@ class SubSpaceSampleGenerator : public SampleGenerator
 {
 public:
   SubSpaceSampleGenerator(
-        std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+        std::shared_ptr<statespace::CartesianProduct> _stateSpace,
         std::vector<std::unique_ptr<SampleGenerator>> _generators)
     : mStateSpace(std::move(_stateSpace))
     , mGenerators(std::move(_generators))
@@ -28,7 +28,7 @@ public:
     if (mGenerators.empty())
       return false;
 
-    auto state = static_cast<statespace::CompoundStateSpace::State*>(_state);
+    auto state = static_cast<statespace::CartesianProduct::State*>(_state);
 
     for (size_t i = 0; i < mStateSpace->getNumStates(); ++i)
     {
@@ -69,13 +69,13 @@ public:
   }
 
 private:
-  std::shared_ptr<statespace::CompoundStateSpace> mStateSpace;
+  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
   std::vector<std::unique_ptr<SampleGenerator>> mGenerators;
 };
 
 //=============================================================================
 SampleableSubSpace::SampleableSubSpace(
-      std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<std::shared_ptr<SampleableConstraint>> _constraints)
   : mStateSpace(std::move(_stateSpace))
   , mConstraints(std::move(_constraints))
@@ -83,7 +83,7 @@ SampleableSubSpace::SampleableSubSpace(
   if (mConstraints.size() != mStateSpace->getNumStates())
   {
     std::stringstream msg;
-    msg << "Mismatch between size of CompoundStateSpace and the number of"
+    msg << "Mismatch between size of CartesianProduct and the number of"
         << " constraints: " << mStateSpace->getNumStates() << " != "
         << mConstraints.size() << ".";
     throw std::invalid_argument(msg.str());

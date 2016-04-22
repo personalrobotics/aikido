@@ -2,16 +2,16 @@
 #include <gtest/gtest.h>
 #include "MockConstraints.hpp"
 #include <stdexcept>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 
 using aikido::constraint::ConjunctionConstraint;
 using aikido::constraint::TestableConstraint;
-using aikido::statespace::RealVectorStateSpace;
+using aikido::statespace::Rn;
 
 TEST(ConjuntionConstraintTest, ThrowOnNullStateSpace)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(0);
+  auto ss = std::make_shared<Rn>(0);
   auto pc = std::make_shared<PassingConstraint>(ss);
   EXPECT_THROW(
       ConjunctionConstraint(
@@ -21,7 +21,7 @@ TEST(ConjuntionConstraintTest, ThrowOnNullStateSpace)
 
 TEST(ConjunctionConstraintTest, ReturnCorrectStateSpace)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(0);
+  auto ss = std::make_shared<Rn>(0);
   auto pc = std::make_shared<PassingConstraint>(ss);
   ConjunctionConstraint satisfiedConstraint{
       ss, std::vector<std::shared_ptr<TestableConstraint>>({pc, pc})};
@@ -30,7 +30,7 @@ TEST(ConjunctionConstraintTest, ReturnCorrectStateSpace)
 
 TEST(ConjunctionConstraintTest, IsSatisfiedReturnsConjuctionOfAllConstraints)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(0);
+  auto ss = std::make_shared<Rn>(0);
   auto pc = std::make_shared<PassingConstraint>(ss);
   auto fc = std::make_shared<FailingConstraint>(ss);
 
@@ -53,14 +53,14 @@ TEST(ConjunctionConstraintTest, IsSatisfiedReturnsConjuctionOfAllConstraints)
 
 TEST(ConjunctionConstraintTest, ReturnsTrueIfNoConstraints)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(0);
+  auto ss = std::make_shared<Rn>(0);
   ConjunctionConstraint cc{ss};
   EXPECT_TRUE(cc.isSatisfied(nullptr));
 }
 
 TEST(ConjunctionConstraintTest, AddConstraintAppendsInitialConstraints)
 {
-  auto ss = std::make_shared<RealVectorStateSpace>(0);
+  auto ss = std::make_shared<Rn>(0);
   auto pc = std::make_shared<PassingConstraint>(ss);
   auto fc = std::make_shared<FailingConstraint>(ss);
   ConjunctionConstraint originallyPassingC{
@@ -79,8 +79,8 @@ TEST(ConjunctionConstraintTest, AddConstraintAppendsInitialConstraints)
 
 TEST(ConjunctionConstraintTest, ThrowIfDifferentStateSpacesOnConstruction)
 {
-  auto ss1 = std::make_shared<RealVectorStateSpace>(0);
-  auto ss2 = std::make_shared<aikido::statespace::SO2StateSpace>();
+  auto ss1 = std::make_shared<Rn>(0);
+  auto ss2 = std::make_shared<aikido::statespace::SO2>();
   auto ss2C = std::make_shared<PassingConstraint>(ss2);
   auto avoidMacro = [&]() {
     ConjunctionConstraint cc{
@@ -92,8 +92,8 @@ TEST(ConjunctionConstraintTest, ThrowIfDifferentStateSpacesOnConstruction)
 
 TEST(ConjunctionConstraintTest, ThrowIfDifferentStateSpaceConstraintAdded)
 {
-  auto ss1 = std::make_shared<RealVectorStateSpace>(0);
-  auto ss2 = std::make_shared<aikido::statespace::SO2StateSpace>();
+  auto ss1 = std::make_shared<Rn>(0);
+  auto ss2 = std::make_shared<aikido::statespace::SO2>();
   auto ss2C = std::make_shared<PassingConstraint>(ss2);
   ConjunctionConstraint cc{ss1};
   EXPECT_THROW(cc.addConstraint(ss2C), std::invalid_argument);

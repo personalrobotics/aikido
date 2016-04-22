@@ -1,6 +1,6 @@
 #ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
 #define AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
-#include "../../statespace/RealVectorStateSpace.hpp"
+#include "../../statespace/Rn.hpp"
 #include "../Differentiable.hpp"
 #include "../Projectable.hpp"
 #include "../Sampleable.hpp"
@@ -26,7 +26,7 @@ public:
   /// \param _upperLimits Upper limits.
   ///        The length of this vector should match the dimension of _space. 
   RealVectorBoxConstraint(
-    std::shared_ptr<statespace::RealVectorStateSpace> _space,
+    std::shared_ptr<statespace::Rn> _space,
     std::unique_ptr<util::RNG> _rng,
     const Eigen::VectorXd& _lowerLimits,
     const Eigen::VectorXd& _upperLimits);
@@ -71,7 +71,7 @@ public:
   Eigen::VectorXd getUpperLimits();
 
 private:
-  std::shared_ptr<statespace::RealVectorStateSpace> mSpace;
+  std::shared_ptr<statespace::Rn> mSpace;
   std::unique_ptr<util::RNG> mRng;
   Eigen::VectorXd mLowerLimits;
   Eigen::VectorXd mUpperLimits;

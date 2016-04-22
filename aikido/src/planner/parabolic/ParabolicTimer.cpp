@@ -2,18 +2,18 @@
 #include <set>
 #include <aikido/path/Spline.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
-#include <aikido/statespace/CompoundStateSpace.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <dart/common/StlHelpers.h>
 #include "DynamicPath.h"
 
 using Eigen::Vector2d;
-using aikido::statespace::CompoundStateSpace;
+using aikido::statespace::CartesianProduct;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::RealVectorStateSpace;
-using aikido::statespace::SO2StateSpace;
+using aikido::statespace::Rn;
+using aikido::statespace::SO2;
 using aikido::statespace::StateSpace;
 using dart::common::make_unique;
 
@@ -60,11 +60,11 @@ void evaluateAtTime(
 
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
-  if (dynamic_cast<const RealVectorStateSpace*>(_stateSpace) != nullptr)
+  if (dynamic_cast<const Rn*>(_stateSpace) != nullptr)
     return true;
-  else if (dynamic_cast<const SO2StateSpace*>(_stateSpace) != nullptr)
+  else if (dynamic_cast<const SO2*>(_stateSpace) != nullptr)
     return true;
-  else if (auto space = dynamic_cast<const CompoundStateSpace*>(_stateSpace))
+  else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
   {
     for (size_t isubspace = 0; isubspace < space->getNumStates(); ++isubspace)
     {
@@ -90,8 +90,8 @@ std::unique_ptr<path::SplineTrajectory2> computeParabolicTiming(
 
   if (!checkStateSpace(stateSpace.get()))
     throw std::invalid_argument(
-      "computeParabolicTiming only supports RealVectorStateSpace, "
-      "SO2StateSpace, and CompoundStateSpaces consisting of those types.");
+      "computeParabolicTiming only supports Rn, "
+      "SO2, and CartesianProducts consisting of those types.");
 
   const auto interpolator = _inputTrajectory.getInterpolator();
   if (dynamic_cast<const GeodesicInterpolator*>(interpolator.get()) == nullptr)

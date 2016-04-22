@@ -13,7 +13,7 @@ namespace constraint{
 /// of jacobianNodeTarget w.r.t. jacobianNodeBase.
 /// _relPoseConstraint is 
 ///     1) Differentiable
-///     2) in SE3StateSpace.
+///     2) in SE3.
 ///     2) constrains _jacobianNodeTarget's pose in jacobianNodeBase's frame.
 class FramePairConstraintAdaptor: public Differentiable
 {
