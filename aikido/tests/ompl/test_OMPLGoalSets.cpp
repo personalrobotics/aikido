@@ -7,7 +7,7 @@
 #include <aikido/constraint/FkTestable.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
-#include <aikido/distance/DistanceMetricDefaults.hpp>
+#include <aikido/distance/Defaults.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/ompl/OMPLPlanner.hpp>

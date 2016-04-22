@@ -1,10 +1,10 @@
-#include <aikido/distance/GeodesicDistanceMetric.hpp>
+#include <aikido/distance/SO3Angular.hpp>
 
 namespace aikido {
 namespace distance {
 
 //=============================================================================
-GeodesicDistanceMetric::GeodesicDistanceMetric(
+SO3Angular::SO3Angular(
     std::shared_ptr<statespace::SO3> _space)
     : mStateSpace(std::move(_space))
 {
@@ -14,13 +14,13 @@ GeodesicDistanceMetric::GeodesicDistanceMetric(
 }
 
 //=============================================================================
-statespace::StateSpacePtr GeodesicDistanceMetric::getStateSpace() const
+statespace::StateSpacePtr SO3Angular::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-double GeodesicDistanceMetric::distance(
+double SO3Angular::distance(
     const aikido::statespace::StateSpace::State* _state1,
     const aikido::statespace::StateSpace::State* _state2) const
 {

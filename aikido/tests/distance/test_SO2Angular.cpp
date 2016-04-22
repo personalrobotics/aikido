@@ -1,4 +1,4 @@
-#include <aikido/distance/AngularDistanceMetric.hpp>
+#include <aikido/distance/SO2Angular.hpp>
 #include <aikido/statespace/SO2.hpp>
 
 #include <gtest/gtest.h>
@@ -6,23 +6,23 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
-TEST(AngularDistanceMetric, ThrowsOnNullStateSpace)
+TEST(SO2Angular, ThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(AngularDistanceMetric(nullptr), std::invalid_argument);
+  EXPECT_THROW(SO2Angular(nullptr), std::invalid_argument);
 }
 
-TEST(AngularDistanceMetric, StateSpaceEquality)
+TEST(SO2Angular, StateSpaceEquality)
 {
   auto so2 = std::make_shared<SO2>();
-  AngularDistanceMetric dmetric(so2);
+  SO2Angular dmetric(so2);
 
   EXPECT_EQ(so2, dmetric.getStateSpace());
 }
 
-TEST(AngularDistanceMetric, Distance)
+TEST(SO2Angular, Distance)
 {
   auto so2 = std::make_shared<SO2>();
-  AngularDistanceMetric dmetric(so2);
+  SO2Angular dmetric(so2);
 
   auto state1 = so2->createState();
   auto state2 = so2->createState();

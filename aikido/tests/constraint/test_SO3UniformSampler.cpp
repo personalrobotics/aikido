@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <dart/common/StlHelpers.h>
 #include <aikido/constraint/uniform/SO3UniformSampler.hpp>
-#include <aikido/distance/GeodesicDistanceMetric.hpp>
+#include <aikido/distance/SO3Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::SO3;
 using aikido::statespace::SO3UniformSampler;
 using aikido::constraint::SampleGenerator;
-using aikido::distance::GeodesicDistanceMetric;
+using aikido::distance::SO3Angular;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
 using dart::common::make_unique;
@@ -23,7 +23,7 @@ protected:
   void SetUp() override
   {
     mStateSpace = std::make_shared<SO3>();
-    mDistance = std::make_shared<GeodesicDistanceMetric>(mStateSpace);
+    mDistance = std::make_shared<SO3Angular>(mStateSpace);
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
@@ -48,7 +48,7 @@ protected:
 
   std::unique_ptr<RNG> mRng;
   std::shared_ptr<SO3> mStateSpace;
-  std::shared_ptr<GeodesicDistanceMetric> mDistance;
+  std::shared_ptr<SO3Angular> mDistance;
   std::vector<SO3::ScopedState> mTargets;
 };
 

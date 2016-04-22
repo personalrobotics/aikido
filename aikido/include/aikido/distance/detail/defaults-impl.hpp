@@ -1,7 +1,7 @@
-#include "../WeightedDistanceMetric.hpp"
-#include "../AngularDistanceMetric.hpp"
-#include "../GeodesicDistanceMetric.hpp"
-#include "../EuclideanDistanceMetric.hpp"
+#include "../Weighted.hpp"
+#include "../SO2Angular.hpp"
+#include "../SO3Angular.hpp"
+#include "../RnEuclidean.hpp"
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
 #include "../../statespace/Rn.hpp"
@@ -24,7 +24,7 @@ template <>
 struct createDistanceMetricFor_impl<statespace::Rn> {
   static Ptr create(std::shared_ptr<statespace::Rn> _sspace)
   {
-    return make_unique<EuclideanDistanceMetric>(std::move(_sspace));
+    return make_unique<RnEuclidean>(std::move(_sspace));
   }
 };
 
@@ -33,7 +33,7 @@ template <>
 struct createDistanceMetricFor_impl<statespace::SO2> {
   static Ptr create(std::shared_ptr<statespace::SO2> _sspace)
   {
-    return make_unique<AngularDistanceMetric>(std::move(_sspace));
+    return make_unique<SO2Angular>(std::move(_sspace));
   }
 };
 
@@ -42,7 +42,7 @@ template <>
 struct createDistanceMetricFor_impl<statespace::SO3> {
   static Ptr create(std::shared_ptr<statespace::SO3> _sspace)
   {
-    return make_unique<GeodesicDistanceMetric>(std::move(_sspace));
+    return make_unique<SO3Angular>(std::move(_sspace));
   }
 };
 
@@ -96,7 +96,7 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct> {
           createDistanceMetricFor_wrapper::create(std::move(subspace));
       metrics.emplace_back(std::move(metric));
     }
-    return make_unique<WeightedDistanceMetric>(std::move(_sspace),
+    return make_unique<Weighted>(std::move(_sspace),
                                                std::move(metrics));
   }
 };

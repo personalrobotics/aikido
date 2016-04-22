@@ -9,12 +9,12 @@ namespace aikido
 namespace distance
 {
 /// Implements a distance metric on SO(3)
-class GeodesicDistanceMetric : public DistanceMetric
+class SO3Angular : public DistanceMetric
 {
 public:
   /// Constructor.
   /// \param _space The SO3 this distance metric operates on
-  explicit GeodesicDistanceMetric(
+  explicit SO3Angular(
       std::shared_ptr<statespace::SO3> _space);
 
   // Documentation inherited

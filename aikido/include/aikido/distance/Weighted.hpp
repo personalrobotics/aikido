@@ -11,14 +11,14 @@ namespace distance
 /// Implements a distance metric on a CartesianProduct. This metric computes
 /// the weighted
 /// sum of distances on the individual components of the statespace.
-class WeightedDistanceMetric : public DistanceMetric
+class Weighted : public DistanceMetric
 {
 public:
   /// Constructor. Default the weights applied to each subspace to 1.
   /// \param _space The state space
   /// \param _metrics A vector containing one element for every component of the
   /// CartesianProduct
-  WeightedDistanceMetric(std::shared_ptr<statespace::CartesianProduct> _space,
+  Weighted(std::shared_ptr<statespace::CartesianProduct> _space,
                          std::vector<DistanceMetricPtr> _metrics);
 
   /// Constructor.
@@ -27,7 +27,7 @@ public:
   /// CartesianProduct. The first element of every pair in the vector is the
   /// metric and the second is the weight to be applied to the metric. The
   /// weights must all be positive.
-  WeightedDistanceMetric(std::shared_ptr<statespace::CartesianProduct> _space,
+  Weighted(std::shared_ptr<statespace::CartesianProduct> _space,
                          std::vector<std::pair<DistanceMetricPtr, double>> _metrics);
 
 

@@ -1,10 +1,10 @@
-#include <aikido/distance/WeightedDistanceMetric.hpp>
+#include <aikido/distance/Weighted.hpp>
 
 namespace aikido {
 namespace distance {
 
 //=============================================================================
-WeightedDistanceMetric::WeightedDistanceMetric(
+Weighted::Weighted(
     std::shared_ptr<statespace::CartesianProduct> _space,
     std::vector<DistanceMetricPtr> _metrics)
     : mStateSpace(std::move(_space))
@@ -41,7 +41,7 @@ WeightedDistanceMetric::WeightedDistanceMetric(
 }
 
 //=============================================================================
-WeightedDistanceMetric::WeightedDistanceMetric(
+Weighted::Weighted(
     std::shared_ptr<statespace::CartesianProduct> _space,
     std::vector<std::pair<DistanceMetricPtr, double>> _metrics)
     : mStateSpace(std::move(_space))
@@ -82,13 +82,13 @@ WeightedDistanceMetric::WeightedDistanceMetric(
 }
 
 //=============================================================================
-statespace::StateSpacePtr WeightedDistanceMetric::getStateSpace() const
+statespace::StateSpacePtr Weighted::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-double WeightedDistanceMetric::distance(
+double Weighted::distance(
     const aikido::statespace::StateSpace::State* _state1,
     const aikido::statespace::StateSpace::State* _state2) const
 {
