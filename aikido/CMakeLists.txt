@@ -19,6 +19,7 @@ list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
+set(DOCS_INSTALL_DIR "share/doc/${PROJECT_NAME}")
 
 option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
@@ -48,12 +49,20 @@ include_directories(SYSTEM ${TinyXML2_INCLUDE_DIRS})
 #
 find_package(OMPL QUIET)
 if (${OMPL_FOUND})
-  message(STATUS "Looking for OMPL - found version ${OMPL_VERSION}")
+  message(STATUS "Looking for OMPL - version ${OMPL_VERSION} found")
 
   include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
 else()
   message(STATUS "Looking for OMPL - NOT found, to use planning::ompl, please"
                  " install OMPL.")
+endif()
+
+find_package(Doxygen QUIET)
+if(DOXYGEN_FOUND)
+  message(STATUS "Looking for Doxygen - version ${DOXYGEN_VERSION} found")
+else()
+  message(STATUS "Looking for Doxygen - NOT found, to generate API"
+                 " documentation, please install Doxygen")
 endif()
 
 #==============================================================================
@@ -126,6 +135,29 @@ add_subdirectory("tests" EXCLUDE_FROM_ALL)
 get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
 add_custom_target(tests DEPENDS ${all_tests})
 add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+
+#==============================================================================
+# Doxygen.
+#
+if(${DOXYGEN_FOUND})
+  set(DOXYGEN_INPUT_ROOT
+    "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
+  set(DOXYGEN_OUTPUT_ROOT "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
+  set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/html/index.html")
+  set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
+
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Doxyfile.in"
+    "${DOXYGEN_WORKING_DIR}/Doxyfile" @ONLY)
+
+  add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
+    COMMAND "${DOXYGEN_EXECUTABLE}"
+    DEPENDS "${DOXYGEN_WORKING_DIR}/Doxyfile"
+    WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}")
+
+  add_custom_target(docs
+    DEPENDS "${DOXYGEN_HTML_INDEX}"
+    COMMENT "Generating documentation.")
+endif()
 
 #==============================================================================
 # Coveralls.
