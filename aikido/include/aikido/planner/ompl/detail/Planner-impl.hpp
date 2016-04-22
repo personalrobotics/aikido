@@ -16,9 +16,9 @@ trajectory::TrajectoryPtr planOMPL(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _validityConstraint,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector, double _maxPlanTime)
 {
   // Create a SpaceInformation.  This function will ensure state space matching
@@ -49,14 +49,14 @@ trajectory::TrajectoryPtr planOMPL(
 template <class PlannerType>
 trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
-    constraint::TestableConstraintPtr _goalTestable,
-    constraint::SampleableConstraintPtr _goalSampler,
+    constraint::TestablePtr _goalTestable,
+    constraint::SampleablePtr _goalSampler,
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _validityConstraint,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,
     double _maxPlanTime)
 {

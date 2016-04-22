@@ -8,7 +8,7 @@ namespace ompl {
 //=============================================================================
 StateValidityChecker::StateValidityChecker(
     const ::ompl::base::SpaceInformationPtr &_si,
-    constraint::TestableConstraintPtr _constraint)
+    constraint::TestablePtr _constraint)
     : ::ompl::base::StateValidityChecker(_si)
     , mConstraint(std::move(_constraint))
 {

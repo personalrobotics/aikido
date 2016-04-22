@@ -6,7 +6,7 @@
 #include <Eigen/Dense>
 #include "Projectable.hpp"
 #include "Differentiable.hpp"
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 #include <dart/math/MathTypes.h>
 
 namespace aikido {
@@ -22,9 +22,9 @@ namespace constraint {
 /// "Task space regions: A framework for pose-constrained manipulation
 /// planning." IJRR 2001:
 /// http://repository.cmu.edu/cgi/viewcontent.cgi?article=2024&context=robotics
-class TSR : public SampleableConstraint,
+class TSR : public Sampleable,
             public Differentiable,
-            public TestableConstraint,
+            public Testable,
             public Projectable
 {
 public:

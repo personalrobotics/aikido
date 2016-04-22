@@ -23,7 +23,7 @@ public:
 TEST_F(StateValidityCheckerTest, ThrowsOnNullSpaceInformation)
 {
   auto constraint =
-      std::make_shared<aikido::constraint::SatisfiedConstraint>(stateSpace);
+      std::make_shared<aikido::constraint::Satisfied>(stateSpace);
   EXPECT_THROW(StateValidityChecker(nullptr, std::move(constraint)),
                std::invalid_argument);
 }

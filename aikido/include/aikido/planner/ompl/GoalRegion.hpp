@@ -2,7 +2,7 @@
 #define AIKIDO_OMPL_GOALREGION_HPP_
 
 #include <ompl/base/goals/GoalSampleableRegion.h>
-#include "../../constraint/TestableConstraint.hpp"
+#include "../../constraint/Testable.hpp"
 #include "../../constraint/Sampleable.hpp"
 
 namespace aikido {
@@ -17,11 +17,11 @@ public:
   ///  and a SampleGenerator.
   /// \param _si The SpaceInformation defining the planning instance where this
   /// goal is used
-  /// \param _goalTestable A TestableConstraint that is satisfied for all states
+  /// \param _goalTestable A Testable that is satisfied for all states
   /// in this GoalRegion
   /// \param _generator A SampleGenerator that returns states in this GoalRegion
   GoalRegion(const ::ompl::base::SpaceInformationPtr& _si,
-             constraint::TestableConstraintPtr _goalTestable,
+             constraint::TestablePtr _goalTestable,
              std::unique_ptr<constraint::SampleGenerator> _generator);
 
   /// Sample a state in the goal region using the SampleGenerator defined on the class
@@ -44,7 +44,7 @@ public:
   bool isSatisfied(const ::ompl::base::State* _state) const override;
 
 private:
-  constraint::TestableConstraintPtr mTestable;
+  constraint::TestablePtr mTestable;
   std::unique_ptr<constraint::SampleGenerator> mSampleGenerator;
 };
 

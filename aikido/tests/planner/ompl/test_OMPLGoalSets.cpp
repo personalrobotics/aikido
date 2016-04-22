@@ -1,10 +1,10 @@
 #include <random>
-#include <aikido/constraint/FkTestable.hpp>
+#include <aikido/constraint/FrameTestable.hpp>
 #include <aikido/constraint/TSR.hpp>
-#include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/constraint/NonColliding.hpp>
 #include <aikido/constraint/dart.hpp>
-#include <aikido/constraint/IkSampleableConstraint.hpp>
-#include <aikido/constraint/FkTestable.hpp>
+#include <aikido/constraint/InverseKinematicsSampleable.hpp>
+#include <aikido/constraint/FrameTestable.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/distance/Defaults.hpp>
@@ -17,13 +17,13 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <Eigen/Dense>
 
-using aikido::constraint::FkTestable;
-using aikido::constraint::IkSampleableConstraint;
+using aikido::constraint::FrameTestable;
+using aikido::constraint::InverseKinematicsSampleable;
 using aikido::constraint::ProjectablePtr;
-using aikido::constraint::SampleableConstraintPtr;
+using aikido::constraint::SampleablePtr;
 using aikido::constraint::TSR;
 using aikido::constraint::TSRPtr;
-using aikido::constraint::TestableConstraintPtr;
+using aikido::constraint::TestablePtr;
 using aikido::distance::DistanceMetricPtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::InterpolatorPtr;
@@ -94,14 +94,14 @@ protected:
     auto seedSampler =
         aikido::constraint::createSampleableBounds(stateSpace, make_rng());
     auto ik = dart::dynamics::InverseKinematics::create(endEffector);
-    goalSampleable = std::make_shared<IkSampleableConstraint>(
+    goalSampleable = std::make_shared<InverseKinematicsSampleable>(
         stateSpace, goalTSR, std::move(seedSampler), ik, make_rng(), 30);
     goalTestable =
-        std::make_shared<FkTestable>(stateSpace, endEffector.get(), goalTSR);
+        std::make_shared<FrameTestable>(stateSpace, endEffector.get(), goalTSR);
 
     // Collision constraint
     auto cd = dart::collision::FCLCollisionDetector::create();
-    collConstraint = std::make_shared<aikido::constraint::CollisionConstraint>(
+    collConstraint = std::make_shared<aikido::constraint::NonColliding>(
         stateSpace, cd);
 
     // Distance metric
@@ -141,10 +141,10 @@ protected:
   MetaSkeletonStateSpacePtr stateSpace;
   InterpolatorPtr interpolator;
   DistanceMetricPtr dmetric;
-  SampleableConstraintPtr sampler;
+  SampleablePtr sampler;
   ProjectablePtr boundsProjection;
-  TestableConstraintPtr boundsConstraint;
-  TestableConstraintPtr collConstraint;
-  SampleableConstraintPtr goalSampleable;
-  TestableConstraintPtr goalTestable;
+  TestablePtr boundsConstraint;
+  TestablePtr collConstraint;
+  SampleablePtr goalSampleable;
+  TestablePtr goalTestable;
 };

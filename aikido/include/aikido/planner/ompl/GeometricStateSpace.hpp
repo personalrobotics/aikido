@@ -3,7 +3,7 @@
 
 #include <ompl/base/StateSpace.h>
 #include "../../constraint/Sampleable.hpp"
-#include "../../constraint/TestableConstraint.hpp"
+#include "../../constraint/Testable.hpp"
 #include "../../constraint/Projectable.hpp"
 #include "../../distance/DistanceMetric.hpp"
 #include "../../statespace/StateSpace.hpp"
@@ -38,15 +38,15 @@ public:
   /// \param _dmetric The distance metric to use to compute distance between two
   /// states in the StateSpace
   /// \param sampler A state sampler used to sample new states in the StateSpace
-  /// \param boundsConstraint A TestableConstraint used to determine whether
+  /// \param boundsConstraint A Testable used to determine whether
   /// states fall with in bounds defined on the space.
   /// \param boundsProjection A Projectable that can be used to project a state
   /// back within the valid boundary defined on the space.
   GeometricStateSpace(statespace::StateSpacePtr _sspace,
                       statespace::InterpolatorPtr _interpolator,
                       distance::DistanceMetricPtr _dmetric,
-                      constraint::SampleableConstraintPtr _sampler,
-                      constraint::TestableConstraintPtr _boundsConstraint,
+                      constraint::SampleablePtr _sampler,
+                      constraint::TestablePtr _boundsConstraint,
                       constraint::ProjectablePtr _boundsProjection);
 
   /// Get the dimension of the space.
@@ -119,8 +119,8 @@ private:
   statespace::StateSpacePtr mStateSpace;
   statespace::InterpolatorPtr mInterpolator;
   distance::DistanceMetricPtr mDistance;
-  constraint::SampleableConstraintPtr mSampler;
-  constraint::TestableConstraintPtr mBoundsConstraint;
+  constraint::SampleablePtr mSampler;
+  constraint::TestablePtr mBoundsConstraint;
   constraint::ProjectablePtr mBoundsProjection;
 };
 

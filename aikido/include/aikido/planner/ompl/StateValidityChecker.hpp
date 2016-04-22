@@ -4,13 +4,13 @@
 #include <ompl/base/StateValidityChecker.h>
 #include <ompl/base/SpaceInformation.h>
 #include "../../statespace/StateSpace.hpp"
-#include "../../constraint/TestableConstraint.hpp"
+#include "../../constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {
 namespace ompl {
 
-/// Expose a set of aikido::conststraint::TestableConstraint class as a
+/// Expose a set of aikido::constraint::Testable class as a
 /// StateValidityChecker to the OMPL framework.  This checker will mark a state
 /// valid if all constraints defined within the class are valid for the state.
 class StateValidityChecker : public ::ompl::base::StateValidityChecker {
@@ -23,14 +23,14 @@ public:
   /// be marked valid
   StateValidityChecker(
       const ::ompl::base::SpaceInformationPtr &_si,
-      constraint::TestableConstraintPtr _constraint);
+      constraint::TestablePtr _constraint);
 
   /// Return true if all constraints defined on this ValidityChecker are satisfied.
   /// \param _state The state to check
   bool isValid(const ::ompl::base::State *_state) const override;
 
 private:
-  constraint::TestableConstraintPtr mConstraint;
+  constraint::TestablePtr mConstraint;
 
 };
 

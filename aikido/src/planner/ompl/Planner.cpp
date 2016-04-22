@@ -1,6 +1,6 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
-#include <aikido/constraint/ConjunctionConstraint.hpp>
+#include <aikido/constraint/TestableIntersection.hpp>
 
 namespace aikido {
 namespace planner {
@@ -11,9 +11,9 @@ namespace ompl {
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
-    constraint::SampleableConstraintPtr _sampler,
-    constraint::TestableConstraintPtr _validityConstraint,
-    constraint::TestableConstraintPtr _boundsConstraint,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector)
 {
   if (_stateSpace == nullptr) {
@@ -89,10 +89,10 @@ namespace ompl {
   auto si = boost::make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
 
   // Validity checking
-  std::vector<constraint::TestableConstraintPtr> constraints{
+  std::vector<constraint::TestablePtr> constraints{
       std::move(_validityConstraint), std::move(_boundsConstraint)};
   auto conjunctionConstraint =
-      std::make_shared<constraint::ConjunctionConstraint>(std::move(_stateSpace),
+      std::make_shared<constraint::TestableIntersection>(std::move(_stateSpace),
                                                           std::move(constraints));
   ::ompl::base::StateValidityCheckerPtr vchecker =
       boost::make_shared<StateValidityChecker>(si, conjunctionConstraint);

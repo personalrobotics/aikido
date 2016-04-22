@@ -9,15 +9,15 @@ namespace statespace {
 /// Uniform sampler for SO2States. Its SampleGenerators will sample
 /// uniformly from SO2, and the sequence of samples is
 /// deterministically generated given a random number generator seed. 
-class SO2SampleableConstraint
-  : public constraint::SampleableConstraint
+class SO2Sampleable
+  : public constraint::Sampleable
 {
 public:
   /// Constructor.
   /// \param _space SO2 in which this constraint operates.
   /// \param _rng Random number generator which determines the sampling
   ///        sequence of this constraint's SampleGenerators.
-  SO2SampleableConstraint(
+  SO2Sampleable(
     std::shared_ptr<statespace::SO2> _space,
     std::unique_ptr<util::RNG> _rng);
 

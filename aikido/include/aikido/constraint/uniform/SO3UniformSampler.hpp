@@ -9,7 +9,7 @@ namespace statespace {
 /// Uniform sampler for SO3States. Its SampleGenerators will sample
 /// uniformly from SO3, and the sequence of samples is
 /// deterministically generated given a random number generator seed. 
-class SO3UniformSampler : public constraint::SampleableConstraint
+class SO3UniformSampler : public constraint::Sampleable
 {
 public:
 

@@ -5,9 +5,9 @@
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/constraint/CollisionConstraint.hpp>
+#include <aikido/constraint/NonColliding.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/constraint/Testable.hpp>
 #include <dart/dart.h>
 #include <tuple>
 
@@ -19,7 +19,7 @@ class SnapPlannerTest : public ::testing::Test
 public:
   using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
   using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
-  using CollisionConstraint = aikido::constraint::CollisionConstraint;
+  using NonColliding = aikido::constraint::NonColliding;
   using DistanceMetric = aikido::distance::DistanceMetric;
   using MetaSkeletonStateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
   using SO2 = aikido::statespace::SO2;

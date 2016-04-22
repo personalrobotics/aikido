@@ -2,7 +2,7 @@
 #define AIKIDO_TESTS_OMPL_OMPLTESTHELPERS_HPP_
 
 #include <gtest/gtest.h>
-#include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/constraint/Testable.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
@@ -69,7 +69,7 @@ Eigen::Vector3d getTranslationalState(
 }
 
 class MockTranslationalRobotConstraint
-    : public aikido::constraint::TestableConstraint
+    : public aikido::constraint::Testable
 {
 public:
   // Construct the mock constraint
@@ -199,9 +199,9 @@ public:
   aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace;
   aikido::statespace::InterpolatorPtr interpolator;
   aikido::distance::DistanceMetricPtr dmetric;
-  aikido::constraint::SampleableConstraintPtr sampler;
+  aikido::constraint::SampleablePtr sampler;
   aikido::constraint::ProjectablePtr boundsProjection;
-  aikido::constraint::TestableConstraintPtr boundsConstraint;
-  aikido::constraint::TestableConstraintPtr collConstraint;
+  aikido::constraint::TestablePtr boundsConstraint;
+  aikido::constraint::TestablePtr collConstraint;
 };
 #endif

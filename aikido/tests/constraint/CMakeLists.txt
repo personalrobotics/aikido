@@ -1,7 +1,7 @@
-aikido_add_test(test_DifferentiableProjector 
+aikido_add_test(test_NewtonsMethodProjectable 
   PolynomialConstraint.cpp
-  test_DifferentiableProjector.cpp)
-target_link_libraries(test_DifferentiableProjector
+  test_NewtonsMethodProjectable.cpp)
+target_link_libraries(test_NewtonsMethodProjectable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_DifferentiableSubSpace
@@ -10,19 +10,19 @@ aikido_add_test(test_DifferentiableSubSpace
 target_link_libraries(test_DifferentiableSubSpace
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FrameConstraintAdaptor
-  test_FrameConstraintAdaptor.cpp)
-target_link_libraries(test_FrameConstraintAdaptor
+aikido_add_test(test_FrameDifferentiable
+  test_FrameDifferentiable.cpp)
+target_link_libraries(test_FrameDifferentiable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FramePairConstraintAdaptor
-  test_FramePairConstraintAdaptor.cpp)
-target_link_libraries(test_FramePairConstraintAdaptor
+aikido_add_test(test_FramePairDifferentiable
+  test_FramePairDifferentiable.cpp)
+target_link_libraries(test_FramePairDifferentiable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_IkSampleableConstraint
-  test_IkSampleableConstraint.cpp)
-target_link_libraries(test_IkSampleableConstraint
+aikido_add_test(test_InverseKinematicsSampleable
+  test_InverseKinematicsSampleable.cpp)
+target_link_libraries(test_InverseKinematicsSampleable
   "${PROJECT_NAME}_constraint")
 
 # aikido_add_test(test_PolynomialConstraint
@@ -35,19 +35,19 @@ target_link_libraries(test_IkSampleableConstraint
 # target_link_libraries(test_TSR
 #   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_ConjunctionConstraint
-  test_ConjunctionConstraint.cpp)
-target_link_libraries(test_ConjunctionConstraint
+aikido_add_test(test_TestableIntersection
+  test_TestableIntersection.cpp)
+target_link_libraries(test_TestableIntersection
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_StackedConstraint
-#   test_StackedConstraint.cpp)
-# target_link_libraries(test_StackedConstraint
+# aikido_add_test(test_DifferentiableIntersection
+#   test_DifferentiableIntersection.cpp)
+# target_link_libraries(test_DifferentiableIntersection
 #   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_RealVectorBoxConstraint
-  test_RealVectorBoxConstraint.cpp)
-target_link_libraries(test_RealVectorBoxConstraint
+aikido_add_test(test_RnBoxConstraint
+  test_RnBoxConstraint.cpp)
+target_link_libraries(test_RnBoxConstraint
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
 aikido_add_test(test_SO2UniformSampler
@@ -55,19 +55,19 @@ aikido_add_test(test_SO2UniformSampler
 target_link_libraries(test_SO2UniformSampler
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
-aikido_add_test(test_FiniteSampleConstraint
-  test_FiniteSampleConstraint.cpp)
-target_link_libraries(test_FiniteSampleConstraint
+aikido_add_test(test_FiniteSampleable
+  test_FiniteSampleable.cpp)
+target_link_libraries(test_FiniteSampleable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FiniteCyclicSampleConstraint
-  test_FiniteCyclicSampleConstraint.cpp)
-target_link_libraries(test_FiniteCyclicSampleConstraint
+aikido_add_test(test_CyclicSampleable
+  test_CyclicSampleable.cpp)
+target_link_libraries(test_CyclicSampleable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_FkTestable
-  test_FkTestable.cpp)
-target_link_libraries(test_FkTestable
+aikido_add_test(test_FrameTestable
+  test_FrameTestable.cpp)
+target_link_libraries(test_FrameTestable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_SO3UniformSampler
@@ -75,9 +75,9 @@ aikido_add_test(test_SO3UniformSampler
 target_link_libraries(test_SO3UniformSampler
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
-# aikido_add_test(test_SatisfiedConstraint
-#   test_SatisfiedConstraint.cpp)
-# target_link_libraries(test_SatisfiedConstraint
+# aikido_add_test(test_Satisfied
+#   test_Satisfied.cpp)
+# target_link_libraries(test_Satisfied
 #   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_DartConstraintHelpers

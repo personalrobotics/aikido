@@ -2,7 +2,7 @@
 #define AIKIDO_PLANNER_SNAP_PLANNER_HPP_
 #include "../statespace/StateSpace.hpp"
 #include "../statespace/Interpolator.hpp"
-#include "../constraint/TestableConstraint.hpp"
+#include "../constraint/Testable.hpp"
 #include "../trajectory/Interpolated.hpp"
 #include "PlanningResult.hpp"
 
@@ -27,7 +27,7 @@ trajectory::InterpolatedPtr planSnap(
   const statespace::StateSpace::State *startState,
   const statespace::StateSpace::State *goalState,
   const std::shared_ptr<statespace::Interpolator>& interpolator,
-  const std::shared_ptr<constraint::TestableConstraint>& constraint,
+  const std::shared_ptr<constraint::Testable>& constraint,
   planner::PlanningResult& planningResult);
 
 } // namespace planner

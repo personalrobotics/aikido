@@ -1,9 +1,9 @@
 #include "OMPLTestHelpers.hpp"
 #include "../../constraint/MockConstraints.hpp"
 #include <aikido/planner/ompl/Planner.hpp>
-#include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
-#include <aikido/constraint/SampleableSubSpace.h>
-#include <aikido/constraint/TestableSubSpace.hpp>
+#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
+#include <aikido/constraint/CartesianProductSampleable.hpp>
+#include <aikido/constraint/TestableSubspace.hpp>
 #include <aikido/constraint/dart.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
@@ -54,20 +54,20 @@ TEST_F(PlannerTest, PlanToGoalRegion)
   subState1.setValue(startPose);
 
   auto boxConstraint =
-      std::make_shared<aikido::statespace::RealVectorBoxConstraint>(
+      std::make_shared<aikido::statespace::RnBoxConstraint>(
           stateSpace->getSubSpace<Rn>(0), make_rng(),
           Eigen::Vector3d(4, 4, 0), Eigen::Vector3d(5, 5, 0));
-  std::vector<std::shared_ptr<aikido::constraint::SampleableConstraint>>
+  std::vector<std::shared_ptr<aikido::constraint::Sampleable>>
       sConstraints;
   sConstraints.push_back(boxConstraint);
-  aikido::constraint::SampleableConstraintPtr goalSampleable =
-      std::make_shared<aikido::constraint::SampleableSubSpace>(stateSpace,
+  aikido::constraint::SampleablePtr goalSampleable =
+      std::make_shared<aikido::constraint::CartesianProductSampleable>(stateSpace,
                                                                sConstraints);
-  std::vector<std::shared_ptr<aikido::constraint::TestableConstraint>>
+  std::vector<std::shared_ptr<aikido::constraint::Testable>>
       tConstraints;
   tConstraints.push_back(boxConstraint);
-  aikido::constraint::TestableConstraintPtr goalTestable =
-      std::make_shared<aikido::constraint::TestableSubSpace>(stateSpace,
+  aikido::constraint::TestablePtr goalTestable =
+      std::make_shared<aikido::constraint::TestableSubspace>(stateSpace,
                                                              tConstraints);
 
   // Plan

@@ -2,7 +2,7 @@
 #include <dart/dynamics/dynamics.h>
 #include <dart/common/StlHelpers.h>
 #include <aikido/constraint/dart.hpp>
-#include <aikido/constraint/SatisfiedConstraint.hpp>
+#include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
 #include <aikido/statespace/dart/SO3Joint.hpp>
@@ -18,7 +18,7 @@ using dart::dynamics::RevoluteJoint;
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
 using aikido::constraint::SampleGenerator;
-using aikido::constraint::SatisfiedConstraint;
+using aikido::constraint::Satisfied;
 using aikido::statespace::dart::RnJoint;
 using aikido::statespace::dart::SO2Joint;
 using aikido::statespace::dart::SO3Joint;
@@ -206,7 +206,7 @@ TEST_F(SO2JointHelpersTests, createTestableBoundsFor)
 {
   const auto constraint
     = createTestableBoundsFor<SO2Joint>(mStateSpace);
-  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_TRUE(!!dynamic_cast<Satisfied*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
@@ -215,7 +215,7 @@ TEST_F(SO2JointHelpersTests, createProjectableBounds)
 {
   const auto constraint
     = createProjectableBoundsFor<SO2Joint>(mStateSpace);
-  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_TRUE(!!dynamic_cast<Satisfied*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
@@ -224,7 +224,7 @@ TEST_F(SO2JointHelpersTests, createDifferentiableBounds)
 {
   const auto constraint
     = createDifferentiableBoundsFor<SO2Joint>(mStateSpace);
-  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_TRUE(!!dynamic_cast<Satisfied*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
@@ -279,7 +279,7 @@ TEST_F(SO3JointHelpersTests, createTestableBoundsFor)
 {
   const auto constraint
     = createTestableBoundsFor<SO3Joint>(mStateSpace);
-  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_TRUE(!!dynamic_cast<Satisfied*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
@@ -288,7 +288,7 @@ TEST_F(SO3JointHelpersTests, createProjectableBounds)
 {
   const auto constraint
     = createProjectableBoundsFor<SO3Joint>(mStateSpace);
-  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_TRUE(!!dynamic_cast<Satisfied*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
@@ -297,7 +297,7 @@ TEST_F(SO3JointHelpersTests, createDifferentiableBounds)
 {
   const auto constraint
     = createDifferentiableBoundsFor<SO3Joint>(mStateSpace);
-  EXPECT_TRUE(!!dynamic_cast<SatisfiedConstraint*>(constraint.get()));
+  EXPECT_TRUE(!!dynamic_cast<Satisfied*>(constraint.get()));
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 

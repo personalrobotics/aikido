@@ -1,4 +1,4 @@
-#include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/constraint/Testable.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
@@ -14,7 +14,7 @@ trajectory::InterpolatedPtr planSnap(
   const aikido::statespace::StateSpace::State *startState,
   const aikido::statespace::StateSpace::State *goalState,
   const std::shared_ptr<aikido::statespace::Interpolator>& interpolator,
-  const std::shared_ptr<aikido::constraint::TestableConstraint>& constraint,
+  const std::shared_ptr<aikido::constraint::Testable>& constraint,
   aikido::planner::PlanningResult& planningResult)
 {
   if (stateSpace != constraint->getStateSpace()) {

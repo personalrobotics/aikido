@@ -3,7 +3,7 @@
 #include "Differentiable.hpp"
 #include "Projectable.hpp"
 #include "Sampleable.hpp"
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 #include "../statespace/dart/JointStateSpace.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 
@@ -59,14 +59,14 @@ std::unique_ptr<Projectable> createProjectableBounds(
 /// lies within bounds set on the StateSpace.
 /// \param _stateSpace The StateSpace where the Testable will be applied
 template <class Space>
-std::unique_ptr<TestableConstraint> createTestableBoundsFor(
+std::unique_ptr<Testable> createTestableBoundsFor(
   std::shared_ptr<Space> _stateSpace);
 
 /// Create a Testable constraint that can be used to determine if the value of a
 /// joint is within the joint limits. The Testable is created from the joint
 /// limits set on the joint wrapped by the given JointStateSpace.
 /// \param _stateSpace The JointStateSpace where the Testable will be applied
-std::unique_ptr<TestableConstraint> createTestableBounds(
+std::unique_ptr<Testable> createTestableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace);
 
 /// Create a set of Testable constraints for each joint in the MetaSkeleton
@@ -74,7 +74,7 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
 /// state is within the joint limits defined on all joints of the MetaSkeleton.
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Testable will be
 /// applied.
-std::unique_ptr<TestableConstraint> createTestableBounds(
+std::unique_ptr<Testable> createTestableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
 
 /// Create a Sampleable constraint that can be used to sample a state that is
@@ -82,7 +82,7 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
 /// \param _stateSpace The StateSpace where the Sampleable will be applied.
 /// \param _rng The random number generator to be used by the Sampleable
 template <class Space>
-std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
+std::unique_ptr<Sampleable> createSampleableBoundsFor(
   std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng);
 
 /// Create a Sampleabe constraint that can be used to sample values for the
@@ -91,7 +91,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
 /// JointStateSpace.
 /// \param _stateSpace The JointStateSpace where the Sampleable will be applied
 /// \param _rng The random number generator to be used by the Sampleable
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng);
 
@@ -101,7 +101,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Sampleable will be
 /// applied
 /// \param _rng The random number generator to be used by the Sampleable
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng);
 
