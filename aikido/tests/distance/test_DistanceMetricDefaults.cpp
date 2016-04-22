@@ -1,7 +1,7 @@
 #include <aikido/distance/DistanceMetricDefaults.hpp>
 #include <aikido/distance/WeightedDistanceMetric.hpp>
 #include <aikido/distance/GeodesicDistanceMetric.hpp>
-#include <aikido/distance/EuclideanDistanceMetric.hpp>
+#include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 
@@ -36,7 +36,7 @@ TEST(DistanceMetricDefaults, CreateDistanceMetricFor)
 
   auto rv3 = std::make_shared<Rn>(3);
   auto rv3metric = createDistanceMetricFor<Rn>(rv3);
-  auto rv3metric_c = dynamic_cast<EuclideanDistanceMetric*>(rv3metric.get());
+  auto rv3metric_c = dynamic_cast<RnEuclidean*>(rv3metric.get());
   EXPECT_TRUE(rv3metric_c != nullptr);
 
   auto so3 = std::make_shared<SO3>();
@@ -60,7 +60,7 @@ TEST(DistanceMetricDefaults, CreateDistanceMetric)
 
   auto rv3 = std::make_shared<Rn>(3);
   auto rv3metric = createDistanceMetric(rv3);
-  auto rv3metric_c = dynamic_cast<EuclideanDistanceMetric*>(rv3metric.get());
+  auto rv3metric_c = dynamic_cast<RnEuclidean*>(rv3metric.get());
   EXPECT_TRUE(rv3metric_c != nullptr);
 
   auto so3 = std::make_shared<SO3>();

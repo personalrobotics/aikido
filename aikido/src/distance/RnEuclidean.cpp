@@ -1,10 +1,10 @@
-#include <aikido/distance/EuclideanDistanceMetric.hpp>
+#include <aikido/distance/RnEuclidean.hpp>
 
 namespace aikido {
 namespace distance {
 
 //=============================================================================
-EuclideanDistanceMetric::EuclideanDistanceMetric(
+RnEuclidean::RnEuclidean(
     std::shared_ptr<statespace::Rn> _space)
     : mStateSpace(std::move(_space))
 {
@@ -14,13 +14,13 @@ EuclideanDistanceMetric::EuclideanDistanceMetric(
 }
 
 //=============================================================================
-statespace::StateSpacePtr EuclideanDistanceMetric::getStateSpace() const
+statespace::StateSpacePtr RnEuclidean::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-double EuclideanDistanceMetric::distance(
+double RnEuclidean::distance(
     const statespace::StateSpace::State* _state1,
     const statespace::StateSpace::State* _state2) const
 {

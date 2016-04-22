@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
-#include <aikido/distance/EuclideanDistanceMetric.hpp>
+#include <aikido/distance/RnEuclidean.hpp>
 #include <dart/common/StlHelpers.h>
 #include "SampleGeneratorCoverage.hpp"
 
@@ -8,7 +8,7 @@ using aikido::statespace::Rn;
 using aikido::statespace::RealVectorBoxConstraint;
 using aikido::constraint::ConstraintType;
 using aikido::constraint::SampleGenerator;
-using aikido::distance::EuclideanDistanceMetric;
+using aikido::distance::RnEuclidean;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
 using dart::common::make_unique;
@@ -26,7 +26,7 @@ protected:
   void SetUp() override
   {
     mStateSpace = std::make_shared<Rn>(2);
-    mDistance = std::make_shared<EuclideanDistanceMetric>(mStateSpace);
+    mDistance = std::make_shared<RnEuclidean>(mStateSpace);
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mLowerLimits = Vector2d(-1., 1.);
@@ -71,7 +71,7 @@ protected:
 
   std::unique_ptr<RNG> mRng;
   std::shared_ptr<Rn> mStateSpace;
-  std::shared_ptr<EuclideanDistanceMetric> mDistance;
+  std::shared_ptr<RnEuclidean> mDistance;
 
   Eigen::Vector2d mLowerLimits;
   Eigen::Vector2d mUpperLimits;

@@ -1,7 +1,7 @@
 #include "../WeightedDistanceMetric.hpp"
 #include "../SO2Angular.hpp"
 #include "../GeodesicDistanceMetric.hpp"
-#include "../EuclideanDistanceMetric.hpp"
+#include "../RnEuclidean.hpp"
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
 #include "../../statespace/Rn.hpp"
@@ -24,7 +24,7 @@ template <>
 struct createDistanceMetricFor_impl<statespace::Rn> {
   static Ptr create(std::shared_ptr<statespace::Rn> _sspace)
   {
-    return make_unique<EuclideanDistanceMetric>(std::move(_sspace));
+    return make_unique<RnEuclidean>(std::move(_sspace));
   }
 };
 

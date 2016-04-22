@@ -1,4 +1,4 @@
-#include <aikido/distance/EuclideanDistanceMetric.hpp>
+#include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/statespace/Rn.hpp>
 
 #include <gtest/gtest.h>
@@ -6,20 +6,20 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
-TEST(EuclideanDistanceMetric, ThrowsOnNullStateSpace)
+TEST(RnEuclidean, ThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(EuclideanDistanceMetric(nullptr), std::invalid_argument);
+  EXPECT_THROW(RnEuclidean(nullptr), std::invalid_argument);
 }
 
-TEST(EuclideanDistanceMetric, StateSpaceEquality)
+TEST(RnEuclidean, StateSpaceEquality)
 {
   auto rvss = std::make_shared<Rn>(4);
-  EuclideanDistanceMetric dmetric(rvss);
+  RnEuclidean dmetric(rvss);
   EXPECT_EQ(rvss, dmetric.getStateSpace());
 }
 
 
-TEST(EuclideanDistanceMetric, Distance)
+TEST(RnEuclidean, Distance)
 {
   auto rvss = std::make_shared<Rn>(4);
   auto state1 = rvss->createState();
@@ -28,6 +28,6 @@ TEST(EuclideanDistanceMetric, Distance)
   state1.setValue(Eigen::Vector4d(0, 1, 2, 3));
   state2.setValue(Eigen::Vector4d(-1, -2, -3, -4));
 
-  EuclideanDistanceMetric dmetric(rvss);
+  RnEuclidean dmetric(rvss);
   EXPECT_DOUBLE_EQ(std::sqrt(84), dmetric.distance(state1, state2));
 }

@@ -9,12 +9,12 @@ namespace aikido
 namespace distance
 {
 /// Implements a Euclidean distance metric
-class EuclideanDistanceMetric : public DistanceMetric
+class RnEuclidean : public DistanceMetric
 {
 public:
   /// Constructor.
   /// \param _space The Rn this metric operates on
-  explicit EuclideanDistanceMetric(
+  explicit RnEuclidean(
       std::shared_ptr<statespace::Rn> _space);
 
   // Documentation inherited
