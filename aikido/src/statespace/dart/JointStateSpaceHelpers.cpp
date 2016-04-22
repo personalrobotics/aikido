@@ -8,9 +8,9 @@ namespace dart {
 std::unique_ptr<JointStateSpace> createJointStateSpace(
   ::dart::dynamics::Joint* _joint)
 {
-  auto space = util::ForOneOf<
+  auto space = util::DynamicCastFactory<
         detail::createJointStateSpaceFor_impl,
-        util::ForOneOf_raw_ptr,
+        util::DynamicCastFactory_raw_ptr,
         ::dart::dynamics::Joint,
         detail::SupportedJoints
     >::create(_joint);
