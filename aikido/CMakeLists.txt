@@ -60,15 +60,15 @@ endif()
 # Register an Aikido library.
 #
 set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
-set_property(GLOBAL PROPERTY AIKIDO_SOURCES)
+set_property(GLOBAL PROPERTY AIKIDO_INTERNAL_SOURCES)
 set_property(GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
 
 function(aikido_add_library target_name)
   cmake_parse_arguments(AIKIDO_ADD_LIBRARY "EXTERNAL" "" "" ${ARGN})
   set(is_external ${AIKIDO_ADD_LIBRARY_EXTERNAL})
-  set(relative_sources ${AIKIDO_ADD_LIBRARY_UNPARSED_ARGUMENTS})
+  set(rel_sources ${AIKIDO_ADD_LIBRARY_UNPARSED_ARGUMENTS})
 
-  add_library("${target_name}" SHARED ${relative_sources})
+  add_library("${target_name}" SHARED ${rel_sources})
   set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
 
   install(TARGETS "${target_name}"
@@ -78,17 +78,17 @@ function(aikido_add_library target_name)
 
   # Compile a list of all source files to pass to coveralls. This function may
   # be called from a subdirctory, so we first convert to absolute paths.
-  set(absolute_sources)
-  foreach(relative_source ${relative_sources})
-    get_filename_component(absolute_source
-      "${CMAKE_CURRENT_SOURCE_DIR}/${relative_source}" ABSOLUTE)
-    list(APPEND absolute_sources "${absolute_source}")
+  set(abs_sources)
+  foreach(rel_source ${rel_sources})
+    get_filename_component(abs_source
+      "${CMAKE_CURRENT_SOURCE_DIR}/${rel_source}" ABSOLUTE)
+    list(APPEND abs_sources "${abs_source}")
   endforeach()
 
   if(${is_external})
-    set_property(GLOBAL APPEND PROPERTY AIKIDO_EXTERNAL_SOURCES ${sources})
+    set_property(GLOBAL APPEND PROPERTY AIKIDO_EXTERNAL_SOURCES ${abs_sources})
   else()
-    set_property(GLOBAL APPEND PROPERTY AIKIDO_SOURCES ${sources})
+    set_property(GLOBAL APPEND PROPERTY AIKIDO_INTERNAL_SOURCES ${abs_sources})
   endif()
 endfunction()
 
@@ -131,9 +131,16 @@ add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
 # Coveralls.
 #
 if(COVERALLS)
-  get_property(sources GLOBAL PROPERTY AIKIDO_SOURCES)
+  get_property(internal_sources GLOBAL PROPERTY AIKIDO_INTERNAL_SOURCES)
+  get_property(external_sources GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
 
-  coveralls_setup("${sources}"
+  list(LENGTH internal_sources internal_sources_length)
+  list(LENGTH external_sources external_sources_length)
+
+  message(STATUS "Computing test coverage for ${internal_sources_length} files"
+                 " (skipped ${external_sources_length} external files).")
+
+  coveralls_setup("${internal_sources}"
     ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake")
 endif()
