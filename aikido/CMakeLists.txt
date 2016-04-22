@@ -145,10 +145,13 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_OUTPUT_ROOT "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
   set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/html/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
+  set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
 
+  # Generate a Doxyfile.
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Doxyfile.in"
     "${DOXYGEN_WORKING_DIR}/Doxyfile" @ONLY)
 
+  # Create the "docs" target that runs Doxygen.
   add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
     COMMAND "${DOXYGEN_EXECUTABLE}"
     DEPENDS "${DOXYGEN_WORKING_DIR}/Doxyfile"
