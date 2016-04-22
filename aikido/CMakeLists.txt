@@ -23,6 +23,7 @@ set(DOCS_INSTALL_DIR "share/doc/${PROJECT_NAME}")
 
 option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
+option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
 
 # Enable coveralls. This must appear before any targets are created.
 if(COVERALLS)
@@ -143,9 +144,22 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_INPUT_ROOT
     "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
   set(DOXYGEN_OUTPUT_ROOT "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
+  set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_OUTPUT_ROOT}/aikido.tag")
   set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/html/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
   set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
+  set(DOXYGEN_TAGFILES)
+
+  # Optionally download Doxygen tagfiles for dependencies.
+  if(DOWNLOAD_TAGFILES)
+    # TODO: Download a tagfile for DART once it is available.
+
+    if(${FOUND_OMPL})
+      file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
+        "${DOXYGEN_WORKING_DIR}/ompl.tag")
+      set(DOXYGEN_TAGFILES "ompl.tag=http://ompl.kavrakilab.org/")
+    endif()
+  endif()
 
   # Generate a Doxyfile.
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Doxyfile.in"
