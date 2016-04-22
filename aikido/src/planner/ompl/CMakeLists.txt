@@ -1,11 +1,11 @@
-aikido_add_library("${PROJECT_NAME}_ompl"
-  AIKIDOGeometricStateSpace.cpp
-  AIKIDOStateSampler.cpp
-  AIKIDOStateValidityChecker.cpp
-  OMPLPlanner.cpp
+aikido_add_library("${PROJECT_NAME}_planner_ompl"
+  GeometricStateSpace.cpp
   GoalRegion.cpp
+  Planner.cpp
+  StateSampler.cpp
+  StateValidityChecker.cpp
 )
-target_link_libraries("${PROJECT_NAME}_ompl"
+target_link_libraries("${PROJECT_NAME}_planner_ompl"
   "${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace"

@@ -1,10 +1,11 @@
-#include "../AIKIDOGeometricStateSpace.hpp"
-#include "../AIKIDOStateValidityChecker.hpp"
+#include "../GeometricStateSpace.hpp"
+#include "../StateValidityChecker.hpp"
 #include "../GoalRegion.hpp"
-#include "../../trajectory/Interpolated.hpp"
+#include "../../../trajectory/Interpolated.hpp"
 #include <ompl/geometric/PathGeometric.h>
 
 namespace aikido {
+namespace planner {
 namespace ompl {
 
 //=============================================================================
@@ -97,5 +98,6 @@ trajectory::TrajectoryPtr planOMPL(
                   std::move(_interpolator), _maxPlanTime);
 }
 
+}
 }
 }

@@ -2,15 +2,17 @@
 #define AIKIDO_OMPL_AIKIDOGEOMETRICSTATESPACE_HPP_
 
 #include <ompl/base/StateSpace.h>
-#include "../constraint/Sampleable.hpp"
-#include "../constraint/Testable.hpp"
-#include "../constraint/Projectable.hpp"
-#include "../distance/DistanceMetric.hpp"
-#include "../statespace/StateSpace.hpp"
-#include "../statespace/GeodesicInterpolator.hpp"
+#include "../../constraint/Sampleable.hpp"
+#include "../../constraint/Testable.hpp"
+#include "../../constraint/Projectable.hpp"
+#include "../../distance/DistanceMetric.hpp"
+#include "../../statespace/StateSpace.hpp"
+#include "../../statespace/GeodesicInterpolator.hpp"
 
 namespace aikido {
+namespace planner {
 namespace ompl {
+
 /// The maximum distance between two states for them to still be considered
 /// equal
 constexpr double EQUALITY_EPSILON = 1e-7;
@@ -123,6 +125,8 @@ private:
 };
 
 using GeometricStateSpacePtr = std::shared_ptr<GeometricStateSpace>;
+
+}
 }
 }
 #endif

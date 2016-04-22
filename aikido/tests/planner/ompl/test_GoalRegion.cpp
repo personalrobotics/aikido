@@ -1,18 +1,18 @@
 #include "OMPLTestHelpers.hpp"
-#include "../constraint/MockConstraints.hpp"
-#include <aikido/ompl/GoalRegion.hpp>
-#include <aikido/ompl/OMPLPlanner.hpp>
+#include "../../constraint/MockConstraints.hpp"
+#include <aikido/planner/ompl/GoalRegion.hpp>
+#include <aikido/planner/ompl/Planner.hpp>
 
-using aikido::ompl::GeometricStateSpace;
-using aikido::ompl::GoalRegion;
+using aikido::planner::ompl::GeometricStateSpace;
+using aikido::planner::ompl::GoalRegion;
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 
-class GoalRegionTest : public OMPLPlannerTest
+class GoalRegionTest : public PlannerTest
 {
 public:
   virtual void SetUp()
   {
-    OMPLPlannerTest::SetUp();
+    PlannerTest::SetUp();
     gSpace = std::make_shared<GeometricStateSpace>(
         stateSpace, interpolator, dmetric, sampler, boundsConstraint,
         boundsProjection);
@@ -30,7 +30,7 @@ TEST_F(GoalRegionTest, ThrowsOnNullSpaceInformation)
 
 TEST_F(GoalRegionTest, ThrowsOnNullTestable)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
@@ -40,7 +40,7 @@ TEST_F(GoalRegionTest, ThrowsOnNullTestable)
 
 TEST_F(GoalRegionTest, ThrowsOnNullGenerator)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -50,7 +50,7 @@ TEST_F(GoalRegionTest, ThrowsOnNullGenerator)
 
 TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto so3 = std::make_shared<aikido::statespace::SO3>();
@@ -62,7 +62,7 @@ TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
 
 TEST_F(GoalRegionTest, DifferentSample)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -83,7 +83,7 @@ TEST_F(GoalRegionTest, DifferentSample)
 
 TEST_F(GoalRegionTest, ValidSample)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -100,7 +100,7 @@ TEST_F(GoalRegionTest, ValidSample)
 
 TEST_F(GoalRegionTest, CantSample)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -114,7 +114,7 @@ TEST_F(GoalRegionTest, CantSample)
 
 TEST_F(GoalRegionTest, FailedSample)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -128,7 +128,7 @@ TEST_F(GoalRegionTest, FailedSample)
 
 TEST_F(GoalRegionTest, NumSamples)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -139,7 +139,7 @@ TEST_F(GoalRegionTest, NumSamples)
 
 TEST_F(GoalRegionTest, CouldSampleTrue)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -150,7 +150,7 @@ TEST_F(GoalRegionTest, CouldSampleTrue)
 
 TEST_F(GoalRegionTest, CouldSampleFalse)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -161,7 +161,7 @@ TEST_F(GoalRegionTest, CouldSampleFalse)
 
 TEST_F(GoalRegionTest, ZeroDistance)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -175,7 +175,7 @@ TEST_F(GoalRegionTest, ZeroDistance)
 
 TEST_F(GoalRegionTest, InfiniteDistance)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<FailingConstraint>(stateSpace);
@@ -190,7 +190,7 @@ TEST_F(GoalRegionTest, InfiniteDistance)
 
 TEST_F(GoalRegionTest, GoalSatisfied)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
@@ -204,7 +204,7 @@ TEST_F(GoalRegionTest, GoalSatisfied)
 
 TEST_F(GoalRegionTest, GoalNotSatisfied)
 {
-  auto si = aikido::ompl::getSpaceInformation(
+  auto si = aikido::planner::ompl::getSpaceInformation(
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<FailingConstraint>(stateSpace);

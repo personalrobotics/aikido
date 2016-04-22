@@ -1,8 +1,9 @@
-#include <aikido/ompl/OMPLPlanner.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/Planner.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
 
 namespace aikido {
+namespace planner {
 namespace ompl {
 
 //=============================================================================
@@ -135,6 +136,8 @@ trajectory::TrajectoryPtr planOMPL(
     }
   }
   return returnTraj;
+}
+
 }
 }
 }

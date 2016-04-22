@@ -1,13 +1,13 @@
 #ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
 #define AIKIDO_OMPL_OMPLPLANNER_HPP_
 
-#include "../distance/DistanceMetric.hpp"
-#include "../statespace/StateSpace.hpp"
-#include "../statespace/Interpolator.hpp"
-#include "../constraint/Testable.hpp"
-#include "../constraint/Sampleable.hpp"
-#include "../constraint/Projectable.hpp"
-#include "../trajectory/Trajectory.hpp"
+#include "../../distance/DistanceMetric.hpp"
+#include "../../statespace/StateSpace.hpp"
+#include "../../statespace/Interpolator.hpp"
+#include "../../constraint/Testable.hpp"
+#include "../../constraint/Sampleable.hpp"
+#include "../../constraint/Projectable.hpp"
+#include "../../trajectory/Trajectory.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -15,7 +15,9 @@
 #include <boost/make_shared.hpp>
 
 namespace aikido {
+namespace planner {
 namespace ompl {
+
 /// Use the template OMPL Planner type to plan a trajectory that moves from the
 /// start to the goal point.
 /// \param _start The start state
@@ -128,8 +130,9 @@ trajectory::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
                              double _maxPlanTime);
 
 } // namespace ompl
+} // namespace planner
 } // namespace aikido
 
-#include "detail/OMPLPlanner.hpp"
+#include "detail/Planner-impl.hpp"
 
 #endif

@@ -2,9 +2,10 @@
 #define AIKIDO_OMPL_AIKIDOSTATESAMPLER_HPP_
 
 #include <ompl/base/StateSampler.h>
-#include "../constraint/Sampleable.hpp"
+#include "../../constraint/Sampleable.hpp"
 
 namespace aikido {
+namespace planner {
 namespace ompl {
 
 /// Wraps an aikido::constraint::SampleGenerator in a
@@ -38,6 +39,9 @@ public:
 private:
   std::unique_ptr<aikido::constraint::SampleGenerator> mGenerator;
 };
+
 }
 }
+}
+
 #endif

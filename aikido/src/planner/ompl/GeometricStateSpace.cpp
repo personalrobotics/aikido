@@ -1,5 +1,5 @@
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
-#include <aikido/ompl/AIKIDOStateSampler.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
+#include <aikido/planner/ompl/StateSampler.hpp>
 #include <aikido/constraint/Sampleable.hpp>
 #include <dart/common/StlHelpers.h>
 #include <boost/make_shared.hpp>
@@ -7,6 +7,7 @@
 using dart::common::make_unique;
 
 namespace aikido {
+namespace planner {
 namespace ompl {
 
 //=============================================================================
@@ -184,6 +185,8 @@ void GeometricStateSpace::freeState(::ompl::base::State *_state) const
   auto st = static_cast<StateType *>(_state);
   mStateSpace->freeState(st->mState);
   delete st;
+}
+
 }
 }
 }
