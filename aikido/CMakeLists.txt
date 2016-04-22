@@ -20,7 +20,7 @@ set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
-option(COVERALLS "Enagle coveralls support" OFF)
+option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 
 # Enable coveralls. This must appear before any targets are created.
