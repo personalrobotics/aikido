@@ -1,4 +1,4 @@
-#include "../WeightedDistanceMetric.hpp"
+#include "../Weighted.hpp"
 #include "../SO2Angular.hpp"
 #include "../SO3Angular.hpp"
 #include "../RnEuclidean.hpp"
@@ -96,7 +96,7 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct> {
           createDistanceMetricFor_wrapper::create(std::move(subspace));
       metrics.emplace_back(std::move(metric));
     }
-    return make_unique<WeightedDistanceMetric>(std::move(_sspace),
+    return make_unique<Weighted>(std::move(_sspace),
                                                std::move(metrics));
   }
 };
