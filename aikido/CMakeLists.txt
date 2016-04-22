@@ -153,7 +153,7 @@ if(${DOXYGEN_FOUND})
   if(DOWNLOAD_TAGFILES)
     # TODO: Download a tagfile for DART once it is available.
 
-    if(${FOUND_OMPL})
+    if(${OMPL_FOUND})
       file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
         "${DOXYGEN_WORKING_DIR}/ompl.tag")
       set(DOXYGEN_TAGFILES "ompl.tag=http://ompl.kavrakilab.org/")
