@@ -1,5 +1,6 @@
-#include <aikido/constraint/PolynomialConstraint.hpp>
+#include "PolynomialConstraint.hpp"
 #include <aikido/constraint/DifferentiableProjector.hpp>
+#include <aikido/constraint/SatisfiedConstraint.hpp>
 #include <aikido/constraint/TSR.hpp>
 
 #include <aikido/statespace/RealVectorStateSpace.hpp>
@@ -7,21 +8,75 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::constraint::PolynomialConstraint;
 using aikido::constraint::DifferentiableProjector;
+using aikido::constraint::SatisfiedConstraint;
 using aikido::constraint::TSR;
 using aikido::statespace::RealVectorStateSpace;
 
+TEST(DifferentiableProjectorTest, ConstructorThrowsOnNullDifferentiable)
+{
+  EXPECT_THROW(DifferentiableProjector(nullptr, std::vector<double>{}, 1, 1),
+               std::invalid_argument);
+}
+
+TEST(DifferentiableProjectorTest, ConstructorThrowsOnBadToleranceDimension)
+{
+  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
+  EXPECT_THROW(
+      DifferentiableProjector(constraint, std::vector<double>({0.1}), 1, 1e-4),
+      std::invalid_argument);
+}
+
+TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeTolerance)
+{
+  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto constraint =
+      std::make_shared<PolynomialConstraint>(Eigen::Vector3d(1, 2, 3));
+  EXPECT_THROW(
+      DifferentiableProjector(constraint, std::vector<double>({-0.1}), 1, 1e-4),
+      std::invalid_argument);
+}
+
+TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeIteration)
+{
+  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
+  EXPECT_THROW(
+      DifferentiableProjector(constraint, std::vector<double>(), 0, 1e-4),
+      std::invalid_argument);
+  EXPECT_THROW(
+      DifferentiableProjector(constraint, std::vector<double>(), -1, 1e-4),
+      std::invalid_argument);
+
+}
+
+TEST(DifferentiableProjectorTest, ConstructorThrowsOnNegativeStepsize)
+{
+  auto ss = std::make_shared<RealVectorStateSpace>(3);
+  auto constraint = std::make_shared<SatisfiedConstraint>(ss); //dimension = 0
+  EXPECT_THROW(
+      DifferentiableProjector(constraint, std::vector<double>(), 1, 0),
+      std::invalid_argument);
+  EXPECT_THROW(
+      DifferentiableProjector(constraint, std::vector<double>(), 1, -0.1),
+      std::invalid_argument);
+
+}
+
 TEST(DifferentiableProjector, Constructor)
 {
-  DifferentiableProjector p(
-    std::make_shared<PolynomialConstraint>(Eigen::Vector3d(1, 2 ,3))); 
+  // Constraint: x^2 - 1 = 0.
+  DifferentiableProjector projector(
+      std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1)),
+      std::vector<double>({0.1}), 10, 1e-4);
 }
 
 TEST(DifferentiableProjector, ProjectPolynomialFirstOrder)
 {
   DifferentiableProjector projector(
-    std::make_shared<PolynomialConstraint>(Eigen::Vector2d(1, 2)));
+      std::make_shared<PolynomialConstraint>(Eigen::Vector2d(1, 2)),
+      std::vector<double>({0.1}), 1, 1e-4);
 
   Eigen::VectorXd v(1);
   v(0) = -2;
@@ -41,12 +96,12 @@ TEST(DifferentiableProjector, ProjectPolynomialFirstOrder)
   EXPECT_TRUE(expected.isApprox(projected));
 }
 
-
 TEST(DifferentiableProjector, ProjectPolynomialSecondOrder)
 { 
   // Constraint: x^2 - 1 = 0.
   DifferentiableProjector projector(
-    std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1)));
+      std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1)),
+      std::vector<double>({1e-6}), 10, 1e-8);
 
   // Project x = -2. Should get -1 as projected solution.
   Eigen::VectorXd v(1);
@@ -65,7 +120,6 @@ TEST(DifferentiableProjector, ProjectPolynomialSecondOrder)
 
   EXPECT_TRUE(expected.isApprox(projected, 1e-5));
 
-
   // Project x = 1.5. Should get 1 as projected solution.
   v(0) = 1.5;
   seedState.setValue(v);
@@ -76,7 +130,6 @@ TEST(DifferentiableProjector, ProjectPolynomialSecondOrder)
   expected(0) = 1;
 
   EXPECT_TRUE(expected.isApprox(projected, 1e-5));
-
 
   // Project x = 1. Should get 1 as projected solution. 
   v(0) = 1;
@@ -110,7 +163,8 @@ TEST(DifferentiableProjector, ProjectTSRTranslation)
   isometry.translation() = Eigen::Vector3d(-1, 0, 1);
   seedState.setIsometry(isometry);
 
-  DifferentiableProjector projector(tsr, 1000, 1e-4, 1e-5);
+  DifferentiableProjector projector(tsr, std::vector<double>(6, 1e-4), 1000,
+                                    1e-8);
 
   auto out = space->createState();
   EXPECT_TRUE(projector.project(seedState, out));
@@ -122,7 +176,6 @@ TEST(DifferentiableProjector, ProjectTSRTranslation)
   EXPECT_TRUE(expected.isApprox(projected, 5e-4));
 
 }
-
 
 TEST(DifferentiableProjector, ProjectTSRRotation)
 {
@@ -140,7 +193,7 @@ TEST(DifferentiableProjector, ProjectTSRRotation)
 
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
 
-  DifferentiableProjector projector(tsr, 1000, 1e-4, 1e-5);
+  DifferentiableProjector projector(tsr, std::vector<double>(6, 1e-4), 1000, 1e-8);
 
   auto out = space->createState();
   EXPECT_TRUE(projector.project(seedState, out));

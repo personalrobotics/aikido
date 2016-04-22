@@ -20,7 +20,7 @@ DifferentiableProjector::DifferentiableProjector(
   if (!mDifferentiable)
     throw std::invalid_argument("_differentiable is nullptr.");
 
-  if (!mDifferentiable->getConstraintDimension() != mTolerance.size())
+  if (mDifferentiable->getConstraintDimension() != mTolerance.size())
   {
     std::stringstream msg;
     msg << "Number of tolerances does not match the number of constraints:"
