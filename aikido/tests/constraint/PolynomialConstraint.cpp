@@ -4,7 +4,7 @@
 //=============================================================================
 PolynomialConstraint::PolynomialConstraint(Eigen::VectorXd _coeffs)
 : mCoeffs(_coeffs)
-, mStateSpace(aikido::statespace::RealVectorStateSpace(1))
+, mStateSpace(std::make_shared<aikido::statespace::RealVectorStateSpace>(1))
 {
   if(std::abs(mCoeffs(mCoeffs.rows()-1)) < std::numeric_limits<double>::epsilon())
   {
@@ -26,7 +26,7 @@ Eigen::VectorXd PolynomialConstraint::getValue(
   using State = aikido::statespace::RealVectorStateSpace::State;
   auto s = static_cast<const State*>(_s);
 
-  double x = mStateSpace.getValue(s)(0);
+  double x = mStateSpace->getValue(s)(0);
   double val = 0; 
   
   for(int i = 0; i < mCoeffs.rows(); i++)
@@ -86,7 +86,6 @@ PolynomialConstraint::getConstraintTypes() const
 //=============================================================================
 aikido::statespace::StateSpacePtr PolynomialConstraint::getStateSpace() const
 {
-  return std::make_shared<aikido::statespace::RealVectorStateSpace>(
-      mStateSpace);
+  return mStateSpace;
 }
 
