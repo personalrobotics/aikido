@@ -1,4 +1,4 @@
-#include <aikido/constraint/dart.hpp>
+#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
 #include <aikido/constraint/DifferentiableIntersection.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>

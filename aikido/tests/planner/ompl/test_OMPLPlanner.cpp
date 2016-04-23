@@ -4,7 +4,7 @@
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/TestableSubspace.hpp>
-#include <aikido/constraint/dart.hpp>
+#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
