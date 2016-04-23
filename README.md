@@ -46,10 +46,10 @@ Aikido is developed by the
 Michael Koval ([**@mkoval**](https://github.com/mkoval))
 and Pras Velagapudi ([**@psigen**](https://github.com/psigen)). It has received
 major contributions from
-Shushman Choudhury [**@Shushman**](https://github.com/Shushman))(
-Aaron Johnson ([**@aaronjoh**](https://github.com/aaronjoh))
-Jennifer King ([**@jeking**](https://github.com/jeking04))
-Gilwoo Lee ([**@lgw903**](https://github.com/lgw903))
+Shushman Choudhury ([**@Shushman**](https://github.com/Shushman)),
+Aaron Johnson ([**@aaronjoh**](https://github.com/aaronjoh)),
+Jennifer King ([**@jeking**](https://github.com/jeking04)),
+Gilwoo Lee ([**@lgw903**](https://github.com/lgw903)),
 and Clint Liddick ([**@ClintLiddick**](https://github.com/ClintLiddick)). We
 also would like to thank
 Michael Grey ([**@mxgrey**](https://github.com/mxgrey))
