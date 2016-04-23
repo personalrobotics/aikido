@@ -8,7 +8,7 @@ space of an arbitrary robot and provides utilities for mapping between a
 - `Rn` an `n`-dimensional real vector space
 - `SO2` the space of planar rotations
 - `SO3` the space of spatial rotations
-- `CartesianProduct` a Cartesian product of other `StateSpace`s
+- `CartesianProduct` of other `StateSpace`s
 
 Each of these `StateSpace` classes is paired with a `StateSpace::State` class
 that represents an element of that state. The `StateSpace` stores *all*
@@ -19,7 +19,7 @@ large numbers of `State`s.
 
 ### Creating and Destroying `State`s
 
-For a *fixed-size `StateSpace`*, such as `SO2` or `SO3`,
+For a *fixed-size `StateSpace`, such as `SO2` or `SO3`,
 you may directly instantiate and modify the `State` type:
 ```c++
 SO2::State fixed_state;
@@ -47,7 +47,7 @@ avoid leaking memory. We provide a `ScopedState` class that combines the
 functionality of `StateHandle` with RAII memory management:
 ```c++
 Rn::ScopedState scoped_state(&space);
-state_handle.setValue(Eigen::Vector2d(1., 2.));
+scoped_state.setValue(Eigen::Vector2d(1., 2.));
 ```
 
 For typical use, we *strongly* recommend using `ScopedState` to avoid manual
@@ -87,8 +87,8 @@ incorrect type will result in a runtime error or crash:
 ```c++
 compound_space.getSubState<SO2>(compound_state, 0); // OK
 compound_space.getSubState<Rn>(compound_state, 1); // OK
-compound_space.getSubState<StateSpace>(1, 1); // OK, inherits from StateSpace
-compound_space.getSubState<SO2>(1, 1); // ERROR, type mismatch
+compound_space.getSubState<StateSpace>(compound_state, 1); // OK
+compound_space.getSubState<SO2>(compound_state, 1); // ERROR, type mismatch
 ```
 
 This is inconvienent when working with nested variable-length state spaces. For

@@ -18,6 +18,12 @@ namespace constraint {
 class NonColliding : public Testable
 {
 public:
+  /// Constructs an empty constraint that uses \c _collisionDetector to test
+  /// for collision. You should call \c addPairWiseCheck and \c addSelfCheck
+  /// to register collision checks before calling \c isSatisfied.
+  ///
+  /// \param _statespace state space on which the constraint operates
+  /// \param _collisionDetector collision detector used to test for collision
   NonColliding(
       statespace::dart::MetaSkeletonStateSpacePtr _statespace,
       std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector);
@@ -40,8 +46,6 @@ public:
   /// \param group Collision group.
   void addSelfCheck(
       std::shared_ptr<dart::collision::CollisionGroup> _group);
-
-  // void setCollisionMask(std::function_bool) // to collisionfilter -> option
 
 private:
   using CollisionGroup = dart::collision::CollisionGroup;

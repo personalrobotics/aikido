@@ -67,8 +67,8 @@ public:
   virtual Eigen::VectorXd evaluate(double _t, int _derivative) const = 0;
 };
 
-using TrajectoryPtr = boost::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
+using TrajectoryPtr = std::shared_ptr<Trajectory>;
+using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
 
 }  // namespace trajectory
 }  // namespace aikido

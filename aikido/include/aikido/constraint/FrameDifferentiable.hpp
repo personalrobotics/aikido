@@ -38,8 +38,8 @@ public:
   Eigen::VectorXd getValue(
     const statespace::StateSpace::State* _s) const override; 
 
-  //  m x numDofs, where m is the number of constraints. 
-  //  Jacobian of poseConstraint w.r.t. generalized coordinates.
+  ///  m x numDofs, where m is the number of constraints. 
+  ///  Jacobian of poseConstraint w.r.t. generalized coordinates.
   Eigen::MatrixXd getJacobian(
     const statespace::StateSpace::State* _s) const override;
 

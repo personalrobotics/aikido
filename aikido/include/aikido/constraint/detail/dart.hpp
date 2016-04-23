@@ -26,6 +26,7 @@ inline bool isLimited(const dart::dynamics::Joint* _joint)
   return false;
 }
 
+//=============================================================================
 inline Eigen::VectorXd getPositionLowerLimits(
   const dart::dynamics::Joint* _joint)
 {
@@ -38,6 +39,7 @@ inline Eigen::VectorXd getPositionLowerLimits(
   return bounds;
 }
 
+//=============================================================================
 inline Eigen::VectorXd getPositionUpperLimits(
   const dart::dynamics::Joint* _joint)
 {
@@ -59,6 +61,7 @@ using JointStateSpaceTypeList = util::type_list<
   statespace::dart::SE3Joint
 >;
 
+//=============================================================================
 template <class T>
 struct createDifferentiableFor_impl { };
 

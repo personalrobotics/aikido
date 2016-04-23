@@ -68,14 +68,11 @@ endif()
 #==============================================================================
 # Helper functions.
 #
-
 function(aikido_space_delimit output_variable input_list)
   set(accumulator)
   foreach(input_element ${input_list})
     set(accumulator "${accumulator} ${input_element}")
   endforeach()
-
-  #message(STATUS "${input_element} = ${accumulator}")
 
   set("${output_variable}" "${accumulator}")
 endfunction()
@@ -163,23 +160,16 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
   set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
 
+  # Strip include_directories() being used by CMake from #include paths.
   get_property(DOXYGEN_STRIP_FROM_INC_PATH_LIST
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     PROPERTY INCLUDE_DIRECTORIES)
-  #aikido_space_delimit(DOXYGEN_STRIP_FROM_INC_PATH
-  #  DOXYGEN_STRIP_FROM_INC_PATH_LIST)
-
-  # TODO: Replace this with a helper macro.
-  set(DOXYGEN_STRIP_FROM_INC_PATH)
-  foreach(include_path ${DOXYGEN_STRIP_FROM_INC_PATH_LIST})
-    set(DOXYGEN_STRIP_FROM_INC_PATH
-      "${DOXYGEN_STRIP_FROM_INC_PATH} ${include_path}")
-  endforeach()
+  aikido_space_delimit(DOXYGEN_STRIP_FROM_INC_PATH
+    "${DOXYGEN_STRIP_FROM_INC_PATH_LIST}")
 
   # Optionally download Doxygen tagfiles for dependencies.
   set(DOXYGEN_TAGFILES)
   if(DOWNLOAD_TAGFILES)
-    # TODO: Download a tagfile for DART once it is available.
     file(DOWNLOAD "http://dartsim.github.io/dart/dart.tag"
         "${DOXYGEN_WORKING_DIR}/dart.tag")
     set(DOXYGEN_TAGFILES

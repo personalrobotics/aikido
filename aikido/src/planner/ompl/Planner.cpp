@@ -109,11 +109,10 @@ trajectory::TrajectoryPtr planOMPL(
   statespace::InterpolatorPtr _interpolator,
   double _maxPlanTime)
 {
-  // Planner
   _planner->setProblemDefinition(_pdef);
   _planner->setup();
   auto solved = _planner->solve(_maxPlanTime);
-  auto returnTraj = boost::make_shared<trajectory::Interpolated>(
+  auto returnTraj = std::make_shared<trajectory::Interpolated>(
       std::move(_sspace), std::move(_interpolator));
 
   if (solved) {
