@@ -44,7 +44,7 @@ TEST_F(GoalRegionTest, ThrowsOnNullGenerator)
       stateSpace, interpolator, dmetric, sampler, collConstraint,
       boundsConstraint, boundsProjection);
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  EXPECT_THROW(GoalRegion(nullptr, std::move(testable), nullptr),
+  EXPECT_THROW(GoalRegion(si, std::move(testable), nullptr),
                std::invalid_argument);
 }
 
