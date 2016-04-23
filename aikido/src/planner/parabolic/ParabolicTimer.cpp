@@ -68,7 +68,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   {
     for (size_t isubspace = 0; isubspace < space->getNumSubspaces(); ++isubspace)
     {
-      if (!checkStateSpace(space->getSubSpace<>(isubspace).get()))
+      if (!checkStateSpace(space->getSubspace<>(isubspace).get()))
         return false;
     }
     return true;

@@ -75,10 +75,10 @@ This class also provides member functions for retrieving a subspace by index.
 Accessing a subspace with incorrect type will result in a runtime error (in
 debug mode) or crash (in release mode):
 ```c++
-compound_space.getSubSpace<SO2>(0); // OK
-compound_space.getSubSpace<Rn>(1); // OK
-compound_space.getSubSpace<StateSpace>(1); // OK, inherits from StateSpace
-compound_space.getSubSpace<SO2>(1); // ERROR, type mismatch
+compound_space.getSubspace<SO2>(0); // OK
+compound_space.getSubspace<Rn>(1); // OK
+compound_space.getSubspace<StateSpace>(1); // OK, inherits from StateSpace
+compound_space.getSubspace<SO2>(1); // ERROR, type mismatch
 ```
 
 Since `CartesianProduct` is variable-length*, it also provides member
@@ -95,7 +95,7 @@ This is inconvienent when working with nested variable-length state spaces. For
 example, the following code is required to set the real vector component of
 `compound_state`:
 ```c++
-compound_space.getSubSpace<Rn>(1).setValue(
+compound_space.getSubspace<Rn>(1).setValue(
   compound_space.getSubState<Rn>(compound_state, 1), Eigen::Vector2d(3., 4.));
 ```
 

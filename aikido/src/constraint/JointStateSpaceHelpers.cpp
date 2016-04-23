@@ -1,5 +1,5 @@
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/constraint/DifferentiableSubSpace.hpp>
+#include <aikido/constraint/DifferentiableSubspace.hpp>
 #include <aikido/constraint/DifferentiableIntersection.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/constraint/CartesianProductProjectable.hpp>
@@ -39,9 +39,9 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   // TODO: Filter out trivial constraints for efficiency.
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);
     auto subSpaceConstraint = createDifferentiableBounds(std::move(subspace));
-    auto constraint = std::make_shared<DifferentiableSubSpace>(
+    auto constraint = std::make_shared<DifferentiableSubspace>(
       _metaSkeleton, std::move(subSpaceConstraint), i);
     constraints.emplace_back(std::move(constraint));
   }
@@ -74,7 +74,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
 
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);
     auto constraint = createProjectableBounds(std::move(subspace));
     constraints.emplace_back(constraint.release());
   }
@@ -106,7 +106,7 @@ std::unique_ptr<Testable> createTestableBounds(
 
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);
     auto constraint = createTestableBounds(std::move(subspace));
     constraints.emplace_back(constraint.release());
   }
@@ -143,7 +143,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
 
   for (size_t i = 0; i < n; ++i)
   {
-    auto subspace = _metaSkeleton->getSubSpace<statespace::dart::JointStateSpace>(i);
+    auto subspace = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);
     auto constraint = createSampleableBounds(
       std::move(subspace), std::move(engines[i]));
     constraints.emplace_back(constraint.release());

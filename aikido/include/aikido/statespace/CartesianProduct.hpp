@@ -53,7 +53,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return subspace at \c _index
   template <class Space = StateSpace>
-  std::shared_ptr<Space> getSubSpace(size_t _index) const;
+  std::shared_ptr<Space> getSubspace(size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index.
   ///

@@ -111,7 +111,7 @@ void MetaSkeletonStateSpace::convertPositionsToState(
 
   for (size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
-    const auto subspace = getSubSpace<JointStateSpace>(isubspace);
+    const auto subspace = getSubspace<JointStateSpace>(isubspace);
     const auto joint = subspace->getJoint();
 
     // TODO: Find a more efficient way to do this mapping.
@@ -142,7 +142,7 @@ void MetaSkeletonStateSpace::convertStateToPositions(
 
   for (size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
-    const auto subspace = getSubSpace<JointStateSpace>(isubspace);
+    const auto subspace = getSubspace<JointStateSpace>(isubspace);
     const auto joint = subspace->getJoint();
     const auto substate = getSubState<>(_state, isubspace);
 

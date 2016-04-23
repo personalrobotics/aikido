@@ -4,7 +4,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/SO3UniformSampler.cpp
   Differentiable.cpp
   NewtonsMethodProjectable.cpp
-  DifferentiableSubSpace.cpp
+  DifferentiableSubspace.cpp
   FiniteSampleable.cpp
   CyclicSampleable.cpp
   FrameTestable.cpp

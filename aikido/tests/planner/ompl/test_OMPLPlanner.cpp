@@ -55,7 +55,7 @@ TEST_F(PlannerTest, PlanToGoalRegion)
 
   auto boxConstraint =
       std::make_shared<aikido::constraint::RnBoxConstraint>(
-          stateSpace->getSubSpace<Rn>(0), make_rng(),
+          stateSpace->getSubspace<Rn>(0), make_rng(),
           Eigen::Vector3d(4, 4, 0), Eigen::Vector3d(5, 5, 0));
   std::vector<std::shared_ptr<aikido::constraint::Sampleable>>
       sConstraints;

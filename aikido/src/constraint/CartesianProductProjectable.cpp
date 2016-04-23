@@ -32,7 +32,7 @@ CartesianProductProjectable::CartesianProductProjectable(
       throw std::invalid_argument(msg.str());
     }
 
-    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubSpace<>(i))
+    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubspace<>(i))
     {
       std::stringstream msg;
       msg << "Constraint " << i << " operates on the wrong state space.";

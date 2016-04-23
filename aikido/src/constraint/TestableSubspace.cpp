@@ -36,7 +36,7 @@ TestableSubspace::TestableSubspace(
   }
 
   for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i) {
-    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubSpace<>(i)) {
+    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubspace<>(i)) {
       std::stringstream msg;
       msg << "Constraint " << i << " is not defined over this StateSpace.";
       throw std::invalid_argument(msg.str());

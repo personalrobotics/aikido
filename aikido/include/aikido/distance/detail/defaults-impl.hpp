@@ -65,7 +65,7 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
 
     for (size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
     {
-      auto subspace = _sspace->getSubSpace<>(i);
+      auto subspace = _sspace->getSubspace<>(i);
       auto metric = createDistanceMetric(std::move(subspace));
       metrics.emplace_back(std::move(metric));
     }

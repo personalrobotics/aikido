@@ -56,7 +56,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
   MetaSkeletonStateSpace space(skeleton);
   ASSERT_EQ(1, space.getNumSubspaces());
 
-  auto subspace = space.getSubSpace<Rn>(0);
+  auto subspace = space.getSubspace<Rn>(0);
   ASSERT_EQ(1, subspace->getDimension());
 
   auto state = space.createState();
@@ -79,7 +79,7 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint_CreatesRealVector)
   MetaSkeletonStateSpace space(skeleton);
   ASSERT_EQ(1, space.getNumSubspaces());
 
-  auto subspace = space.getSubSpace<Rn>(0);
+  auto subspace = space.getSubspace<Rn>(0);
   ASSERT_EQ(1, subspace->getDimension());
 
   auto state = space.createState();
@@ -105,7 +105,7 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint_CreatesRealVector)
   MetaSkeletonStateSpace space(skeleton);
   ASSERT_EQ(1, space.getNumSubspaces());
 
-  auto subspace = space.getSubSpace<Rn>(0);
+  auto subspace = space.getSubspace<Rn>(0);
   ASSERT_EQ(3, subspace->getDimension());
 
   auto state = space.createState();

@@ -4,10 +4,10 @@ aikido_add_test(test_NewtonsMethodProjectable
 target_link_libraries(test_NewtonsMethodProjectable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_DifferentiableSubSpace
+aikido_add_test(test_DifferentiableSubspace
   PolynomialConstraint.cpp
-  test_DifferentiableSubSpace.cpp)
-target_link_libraries(test_DifferentiableSubSpace
+  test_DifferentiableSubspace.cpp)
+target_link_libraries(test_DifferentiableSubspace
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_FrameDifferentiable
@@ -92,9 +92,9 @@ aikido_add_test(test_TestableSubspace
 target_link_libraries(test_TestableSubspace
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_SampleableSubSpace
-  test_SampleableSubSpace.cpp)
-target_link_libraries(test_SampleableSubSpace
+aikido_add_test(test_SampleableSubspace
+  test_SampleableSubspace.cpp)
+target_link_libraries(test_SampleableSubspace
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_CartesianProductProjectable

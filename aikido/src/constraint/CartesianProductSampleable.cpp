@@ -7,10 +7,10 @@ namespace constraint {
 using dart::common::make_unique;
 
 //=============================================================================
-class SubSpaceSampleGenerator : public SampleGenerator
+class SubspaceSampleGenerator : public SampleGenerator
 {
 public:
-  SubSpaceSampleGenerator(
+  SubspaceSampleGenerator(
         std::shared_ptr<statespace::CartesianProduct> _stateSpace,
         std::vector<std::unique_ptr<SampleGenerator>> _generators)
     : mStateSpace(std::move(_stateSpace))
@@ -101,7 +101,7 @@ CartesianProductSampleable::CartesianProductSampleable(
       throw std::invalid_argument(msg.str());
     }
     
-    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubSpace<>(i))
+    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubspace<>(i))
     {
       std::stringstream msg;
       msg << "Constraint " << i << " is not defined over this StateSpace.";
@@ -126,7 +126,7 @@ std::unique_ptr<SampleGenerator> CartesianProductSampleable
   for (const auto& constraint : mConstraints)
     generators.emplace_back(constraint->createSampleGenerator());
 
-  return make_unique<SubSpaceSampleGenerator>(
+  return make_unique<SubspaceSampleGenerator>(
     mStateSpace, std::move(generators));
 }
 

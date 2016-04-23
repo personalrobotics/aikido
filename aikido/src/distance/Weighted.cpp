@@ -30,7 +30,7 @@ Weighted::Weighted(
       throw std::invalid_argument(msg.str());
     }
 
-    if (mStateSpace->getSubSpace<>(i) != _metrics[i]->getStateSpace()) {
+    if (mStateSpace->getSubspace<>(i) != _metrics[i]->getStateSpace()) {
       std::stringstream msg;
       msg << "DistanceMetric " << i
           << " is not defined over the correct StateSpace.";
@@ -66,7 +66,7 @@ Weighted::Weighted(
       msg << "DistanceMetric " << i << " is nullptr.";
       throw std::invalid_argument(msg.str());
     }
-    if (mStateSpace->getSubSpace<>(i) != mMetrics[i].first->getStateSpace()) {
+    if (mStateSpace->getSubspace<>(i) != mMetrics[i].first->getStateSpace()) {
       std::stringstream msg;
       msg << "DistanceMetric " << i
           << " is not defined over the correct StateSpace.";
