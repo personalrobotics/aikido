@@ -35,7 +35,7 @@ public:
   /// Gets state by subspace index.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
-  /// \param _index in the range [ 0, \c getNumStates() ]
+  /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = statespace::StateSpace>
   typename Space::State* getSubState(size_t _index) const
@@ -48,7 +48,7 @@ public:
   /// helper class.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
-  /// \param _index in the range [ 0, \c getNumStates() ]
+  /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = statespace::StateSpace>
   typename Space::StateHandle getSubStateHandle(size_t _index) const

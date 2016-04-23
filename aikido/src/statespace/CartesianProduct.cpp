@@ -33,7 +33,7 @@ auto CartesianProduct::createState() const -> ScopedState
 }
 
 //=============================================================================
-size_t CartesianProduct::getNumStates() const { return mSubspaces.size(); }
+size_t CartesianProduct::getNumSubspaces() const { return mSubspaces.size(); }
 
 //=============================================================================
 size_t CartesianProduct::getStateSizeInBytes() const { return mSizeInBytes; }

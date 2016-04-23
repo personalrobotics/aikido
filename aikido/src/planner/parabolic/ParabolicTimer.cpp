@@ -66,7 +66,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
     return true;
   else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
   {
-    for (size_t isubspace = 0; isubspace < space->getNumStates(); ++isubspace)
+    for (size_t isubspace = 0; isubspace < space->getNumSubspaces(); ++isubspace)
     {
       if (!checkStateSpace(space->getSubSpace<>(isubspace).get()))
         return false;

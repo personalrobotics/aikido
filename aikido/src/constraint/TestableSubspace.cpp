@@ -27,15 +27,15 @@ TestableSubspace::TestableSubspace(
     }
   }
   
-  if (mConstraints.size() != mStateSpace->getNumStates()) {
+  if (mConstraints.size() != mStateSpace->getNumSubspaces()) {
     std::stringstream msg;
     msg << "Mismatch between size of CartesianProduct and the number of"
-        << " constraints: " << mStateSpace->getNumStates()
+        << " constraints: " << mStateSpace->getNumSubspaces()
         << " != " << mConstraints.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mStateSpace->getNumStates(); ++i) {
+  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i) {
     if (mConstraints[i]->getStateSpace() != mStateSpace->getSubSpace<>(i)) {
       std::stringstream msg;
       msg << "Constraint " << i << " is not defined over this StateSpace.";
@@ -57,7 +57,7 @@ bool TestableSubspace::isSatisfied(
   const auto state
     = static_cast<const statespace::CartesianProduct::State*>(_state);
 
-  for (size_t i = 0; i < mStateSpace->getNumStates(); ++i) {
+  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i) {
     auto subState = mStateSpace->getSubState<>(state, i);
     if (!mConstraints[i]->isSatisfied(subState)) {
       return false;

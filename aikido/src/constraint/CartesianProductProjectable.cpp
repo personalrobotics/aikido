@@ -14,11 +14,11 @@ CartesianProductProjectable::CartesianProductProjectable(
   if (!mStateSpace)
     throw std::invalid_argument("CartesianProduct is nullptr.");
 
-  if (mConstraints.size() != mStateSpace->getNumStates())
+  if (mConstraints.size() != mStateSpace->getNumSubspaces())
   {
     std::stringstream msg;
     msg << "Number of constraints does not match the number of subspaces:"
-        << " expected " << mStateSpace->getNumStates() << ", got "
+        << " expected " << mStateSpace->getNumSubspaces() << ", got "
         << mConstraints.size();
     throw std::invalid_argument(msg.str());
   }

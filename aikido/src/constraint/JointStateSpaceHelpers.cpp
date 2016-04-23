@@ -31,7 +31,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   if (!_metaSkeleton)
     throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
 
-  const auto n = _metaSkeleton->getNumStates();
+  const auto n = _metaSkeleton->getNumSubspaces();
 
   std::vector<std::shared_ptr<Differentiable>> constraints;
   constraints.reserve(n);
@@ -67,7 +67,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
 std::unique_ptr<Projectable> createProjectableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
-  const auto n = _metaSkeleton->getNumStates();
+  const auto n = _metaSkeleton->getNumSubspaces();
 
   std::vector<ProjectablePtr> constraints;
   constraints.reserve(n);
@@ -99,7 +99,7 @@ std::unique_ptr<Testable> createTestableBounds(
 std::unique_ptr<Testable> createTestableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
-  const auto n = _metaSkeleton->getNumStates();
+  const auto n = _metaSkeleton->getNumSubspaces();
 
   std::vector<std::shared_ptr<Testable>> constraints;
   constraints.reserve(n);
@@ -133,7 +133,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng)
 {
-  const auto n = _metaSkeleton->getNumStates();
+  const auto n = _metaSkeleton->getNumSubspaces();
 
   // Create a new RNG for each subspace.
   auto engines = splitEngine(*_rng, n, util::NUM_DEFAULT_SEEDS);

@@ -61,9 +61,9 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
           "Cannot create distance metric for null statespace.");
 
     std::vector<std::shared_ptr<DistanceMetric> > metrics;
-    metrics.reserve(_sspace->getNumStates());
+    metrics.reserve(_sspace->getNumSubspaces());
 
-    for (size_t i = 0; i < _sspace->getNumStates(); ++i)
+    for (size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
     {
       auto subspace = _sspace->getSubSpace<>(i);
       auto metric = createDistanceMetric(std::move(subspace));

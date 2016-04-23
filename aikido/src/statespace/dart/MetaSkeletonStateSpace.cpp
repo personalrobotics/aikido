@@ -109,7 +109,7 @@ void MetaSkeletonStateSpace::convertPositionsToState(
   if (_positions.size() != mMetaSkeleton->getNumDofs())
     throw std::invalid_argument("Incorrect number of positions.");
 
-  for (size_t isubspace = 0; isubspace < getNumStates(); ++isubspace)
+  for (size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubSpace<JointStateSpace>(isubspace);
     const auto joint = subspace->getJoint();
@@ -140,7 +140,7 @@ void MetaSkeletonStateSpace::convertStateToPositions(
 {
   _positions.resize(mMetaSkeleton->getNumDofs());
 
-  for (size_t isubspace = 0; isubspace < getNumStates(); ++isubspace)
+  for (size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubSpace<JointStateSpace>(isubspace);
     const auto joint = subspace->getJoint();

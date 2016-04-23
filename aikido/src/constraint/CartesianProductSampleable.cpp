@@ -30,7 +30,7 @@ public:
 
     auto state = static_cast<statespace::CartesianProduct::State*>(_state);
 
-    for (size_t i = 0; i < mStateSpace->getNumStates(); ++i)
+    for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
     {
       auto subState = mStateSpace->getSubState<>(state, i);
 
@@ -83,16 +83,16 @@ CartesianProductSampleable::CartesianProductSampleable(
   if(!mStateSpace)
     throw std::invalid_argument("_stateSpace is nullptr.");
 
-  if (mConstraints.size() != mStateSpace->getNumStates())
+  if (mConstraints.size() != mStateSpace->getNumSubspaces())
   {
     std::stringstream msg;
     msg << "Mismatch between size of CartesianProduct and the number of"
-        << " constraints: " << mStateSpace->getNumStates() << " != "
+        << " constraints: " << mStateSpace->getNumSubspaces() << " != "
         << mConstraints.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mStateSpace->getNumStates(); ++i)
+  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     if (!mConstraints[i])
     {
@@ -121,7 +121,7 @@ std::unique_ptr<SampleGenerator> CartesianProductSampleable
   ::createSampleGenerator() const
 {
   std::vector<std::unique_ptr<SampleGenerator>> generators;
-  generators.reserve(mStateSpace->getNumStates());
+  generators.reserve(mStateSpace->getNumSubspaces());
 
   for (const auto& constraint : mConstraints)
     generators.emplace_back(constraint->createSampleGenerator());

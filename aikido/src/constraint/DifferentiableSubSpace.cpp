@@ -18,11 +18,11 @@ DifferentiableSubSpace::DifferentiableSubSpace(
   if (!mConstraint)
     throw std::invalid_argument("Differentiable is nullptr.");
 
-  if (_index >= mStateSpace->getNumStates())
+  if (_index >= mStateSpace->getNumSubspaces())
   {
     std::stringstream msg;
     msg << "Subspace Index " << _index << " is out of range [0, "
-        << mStateSpace->getNumStates() << "].";
+        << mStateSpace->getNumSubspaces() << "].";
     throw std::invalid_argument(msg.str());
   }
 

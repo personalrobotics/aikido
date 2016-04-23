@@ -33,7 +33,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds_CreatesSO2)
   skeleton->createJointAndBodyNodePair<RevoluteJoint>();
 
   MetaSkeletonStateSpace space(skeleton);
-  ASSERT_EQ(1, space.getNumStates());
+  ASSERT_EQ(1, space.getNumSubspaces());
 
   auto state = space.createState();
   auto substate = state.getSubStateHandle<SO2>(0);
@@ -54,7 +54,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
   joint->setPositionLowerLimit(0, -1.);
 
   MetaSkeletonStateSpace space(skeleton);
-  ASSERT_EQ(1, space.getNumStates());
+  ASSERT_EQ(1, space.getNumSubspaces());
 
   auto subspace = space.getSubSpace<Rn>(0);
   ASSERT_EQ(1, subspace->getDimension());
@@ -77,7 +77,7 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint_CreatesRealVector)
   skeleton->createJointAndBodyNodePair<PrismaticJoint>();
 
   MetaSkeletonStateSpace space(skeleton);
-  ASSERT_EQ(1, space.getNumStates());
+  ASSERT_EQ(1, space.getNumSubspaces());
 
   auto subspace = space.getSubSpace<Rn>(0);
   ASSERT_EQ(1, subspace->getDimension());
@@ -103,7 +103,7 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint_CreatesRealVector)
   skeleton->createJointAndBodyNodePair<TranslationalJoint>();
 
   MetaSkeletonStateSpace space(skeleton);
-  ASSERT_EQ(1, space.getNumStates());
+  ASSERT_EQ(1, space.getNumSubspaces());
 
   auto subspace = space.getSubSpace<Rn>(0);
   ASSERT_EQ(3, subspace->getDimension());
@@ -134,7 +134,7 @@ TEST(MetaSkeletonStateSpace, FreeJoint_CreatesSE3)
   skeleton->createJointAndBodyNodePair<FreeJoint>();
 
   MetaSkeletonStateSpace space(skeleton);
-  ASSERT_EQ(1, space.getNumStates());
+  ASSERT_EQ(1, space.getNumSubspaces());
 
   auto state = space.createState();
   auto substate = state.getSubStateHandle<SE3>(0);
@@ -159,7 +159,7 @@ TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCartesianProduct)
   auto joint2 = skeleton->createJointAndBodyNodePair<TranslationalJoint>().first;
 
   MetaSkeletonStateSpace space(skeleton);
-  ASSERT_EQ(2, space.getNumStates());
+  ASSERT_EQ(2, space.getNumSubspaces());
 
   auto state = space.createState();
   auto substate1 = state.getSubStateHandle<SO2>(0);
