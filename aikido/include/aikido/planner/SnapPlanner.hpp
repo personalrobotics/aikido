@@ -2,8 +2,8 @@
 #define AIKIDO_PLANNER_SNAP_PLANNER_HPP_
 #include "../statespace/StateSpace.hpp"
 #include "../statespace/Interpolator.hpp"
-#include "../constraint/TestableConstraint.hpp"
-#include "../path/PiecewiseLinearTrajectory.hpp"
+#include "../constraint/Testable.hpp"
+#include "../trajectory/Interpolated.hpp"
 #include "PlanningResult.hpp"
 
 namespace aikido {
@@ -22,12 +22,12 @@ namespace planner {
 /// \param constraint trajectory-wide constraint that must be satisfied
 /// \param[out] planningResult information about success or failure
 /// \return trajectory or \c nullptr if planning failed
-path::PiecewiseLinearTrajectoryPtr planSnap(
+trajectory::InterpolatedPtr planSnap(
   const std::shared_ptr<statespace::StateSpace>& stateSpace,
   const statespace::StateSpace::State *startState,
   const statespace::StateSpace::State *goalState,
   const std::shared_ptr<statespace::Interpolator>& interpolator,
-  const std::shared_ptr<constraint::TestableConstraint>& constraint,
+  const std::shared_ptr<constraint::Testable>& constraint,
   planner::PlanningResult& planningResult);
 
 } // namespace planner

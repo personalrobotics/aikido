@@ -1,6 +1,6 @@
 #ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_
 #define AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_
-#include "../statespace/CompoundStateSpace.hpp"
+#include "../statespace/CartesianProduct.hpp"
 #include "Differentiable.hpp"
 
 namespace aikido {
@@ -12,11 +12,11 @@ class DifferentiableSubSpace : public Differentiable
 {
 public:
   /// Apply _constraint to the i-th subspace of _stateSpace.
-  /// \param _stateSpace CompoundStateSpace.
+  /// \param _stateSpace CartesianProduct.
   /// \param _constraint Constraint being applied.
   /// \param _index Subspace of _stateSpace to apply _constraint.
   DifferentiableSubSpace(
-    std::shared_ptr<statespace::CompoundStateSpace> _stateSpace,
+    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     DifferentiablePtr _constraint, size_t _index);
 
   virtual ~DifferentiableSubSpace() = default;
@@ -43,7 +43,7 @@ public:
     const statespace::StateSpace::State* _s) const override;
 
 private:
-  std::shared_ptr<statespace::CompoundStateSpace> mStateSpace;
+  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
   DifferentiablePtr mConstraint;
   size_t mIndex;
 };

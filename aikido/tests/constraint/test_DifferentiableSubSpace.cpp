@@ -2,33 +2,33 @@
 #include "PolynomialConstraint.hpp"
 #include "../eigen_tests.hpp"
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
-#include <aikido/constraint/SatisfiedConstraint.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/constraint/Satisfied.hpp>
+#include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/Rn.hpp>
 
 using aikido::constraint::DifferentiableSubSpace;
-using aikido::constraint::SatisfiedConstraint;
-using aikido::statespace::CompoundStateSpace;
-using aikido::statespace::SO2StateSpace;
-using aikido::statespace::RealVectorStateSpace;
+using aikido::constraint::Satisfied;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::SO2;
+using aikido::statespace::Rn;
 
 class DifferentiableSubSpaceTest : public testing::Test
 {
 public:
   virtual void SetUp()
   {
-    auto so2 = std::make_shared<SO2StateSpace>();
+    auto so2 = std::make_shared<SO2>();
     constraint =
         std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1));
     auto rv = constraint->getStateSpace();
 
-    cs = std::make_shared<CompoundStateSpace>(
+    cs = std::make_shared<CartesianProduct>(
         std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
     ds = std::make_shared<DifferentiableSubSpace>(cs, constraint, 1);
   }
 
   std::shared_ptr<PolynomialConstraint> constraint;
-  std::shared_ptr<CompoundStateSpace> cs;
+  std::shared_ptr<CartesianProduct> cs;
   std::shared_ptr<DifferentiableSubSpace> ds;
 };
 
@@ -40,10 +40,10 @@ TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnNullStateSpace)
 
 TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnNullConstraint)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv = std::make_shared<RealVectorStateSpace>(3);
-  auto constraint = std::make_shared<SatisfiedConstraint>(rv);
-  auto cs = std::make_shared<CompoundStateSpace>(
+  auto so2 = std::make_shared<SO2>();
+  auto rv = std::make_shared<Rn>(3);
+  auto constraint = std::make_shared<Satisfied>(rv);
+  auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
   EXPECT_THROW(DifferentiableSubSpace(cs, nullptr, 1), std::invalid_argument);
@@ -51,10 +51,10 @@ TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnNullConstraint)
 
 TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnInvalidIndex)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv = std::make_shared<RealVectorStateSpace>(3);
-  auto constraint = std::make_shared<SatisfiedConstraint>(rv);
-  auto cs = std::make_shared<CompoundStateSpace>(
+  auto so2 = std::make_shared<SO2>();
+  auto rv = std::make_shared<Rn>(3);
+  auto constraint = std::make_shared<Satisfied>(rv);
+  auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
   EXPECT_THROW(DifferentiableSubSpace(cs, constraint, 2),
@@ -63,10 +63,10 @@ TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnInvalidIndex)
 
 TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnMismatchStateSpace)
 {
-  auto so2 = std::make_shared<SO2StateSpace>();
-  auto rv = std::make_shared<RealVectorStateSpace>(3);
-  auto constraint = std::make_shared<SatisfiedConstraint>(rv);
-  auto cs = std::make_shared<CompoundStateSpace>(
+  auto so2 = std::make_shared<SO2>();
+  auto rv = std::make_shared<Rn>(3);
+  auto constraint = std::make_shared<Satisfied>(rv);
+  auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
   EXPECT_THROW(DifferentiableSubSpace(cs, constraint, 0),
@@ -93,8 +93,8 @@ TEST_F(DifferentiableSubSpaceTest, ConstraintDimension)
 TEST_F(DifferentiableSubSpaceTest, ConstraintValue)
 {
   auto st = cs->createState();
-  auto subSpace = cs->getSubSpace<RealVectorStateSpace>(1);
-  auto subState = cs->getSubStateHandle<RealVectorStateSpace>(st, 1);
+  auto subSpace = cs->getSubSpace<Rn>(1);
+  auto subState = cs->getSubStateHandle<Rn>(st, 1);
 
   subSpace->setValue(subState, aikido::tests::make_vector(2));
 
@@ -105,8 +105,8 @@ TEST_F(DifferentiableSubSpaceTest, ConstraintValue)
 TEST_F(DifferentiableSubSpaceTest, ConstraintJacobian)
 {
   auto st = cs->createState();
-  auto subSpace = cs->getSubSpace<RealVectorStateSpace>(1);
-  auto subState = cs->getSubStateHandle<RealVectorStateSpace>(st, 1);
+  auto subSpace = cs->getSubSpace<Rn>(1);
+  auto subState = cs->getSubStateHandle<Rn>(st, 1);
 
   subSpace->setValue(subState, aikido::tests::make_vector(2));
 
@@ -117,8 +117,8 @@ TEST_F(DifferentiableSubSpaceTest, ConstraintJacobian)
 TEST_F(DifferentiableSubSpaceTest, ConstraintValueAndJacobian)
 {
   auto st = cs->createState();
-  auto subSpace = cs->getSubSpace<RealVectorStateSpace>(1);
-  auto subState = cs->getSubStateHandle<RealVectorStateSpace>(st, 1);
+  auto subSpace = cs->getSubSpace<Rn>(1);
+  auto subState = cs->getSubStateHandle<Rn>(st, 1);
 
   subSpace->setValue(subState, aikido::tests::make_vector(2));
 

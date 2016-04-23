@@ -1,10 +1,10 @@
 #include <aikido/constraint/dart.hpp>
 #include <aikido/constraint/DifferentiableSubSpace.hpp>
-#include <aikido/constraint/StackedConstraint.hpp>
-#include <aikido/constraint/ConjunctionConstraint.hpp>
-#include <aikido/constraint/ProjectableSubSpace.hpp>
-#include <aikido/constraint/SampleableSubSpace.h>
-#include <aikido/constraint/TestableSubSpace.hpp>
+#include <aikido/constraint/DifferentiableIntersection.hpp>
+#include <aikido/constraint/TestableIntersection.hpp>
+#include <aikido/constraint/CartesianProductProjectable.hpp>
+#include <aikido/constraint/CartesianProductSampleable.hpp>
+#include <aikido/constraint/TestableSubspace.hpp>
 #include <dart/common/StlHelpers.h>
 
 namespace aikido {
@@ -47,8 +47,8 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   }
 
   // TODO: We should std::move constraints here, but we can't because
-  // StackedConstraint does not take by value.
-  return make_unique<StackedConstraint>(constraints, _metaSkeleton);
+  // DifferentiableIntersection does not take by value.
+  return make_unique<DifferentiableIntersection>(constraints, _metaSkeleton);
 }
 
 //=============================================================================
@@ -79,12 +79,12 @@ std::unique_ptr<Projectable> createProjectableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<ProjectableSubSpace>(
+  return make_unique<CartesianProductProjectable>(
     std::move(_metaSkeleton), std::move(constraints));
 }
 
 //=============================================================================
-std::unique_ptr<TestableConstraint> createTestableBounds(
+std::unique_ptr<Testable> createTestableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
   return util::DynamicCastFactory<
@@ -96,12 +96,12 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
 }
 
 //=============================================================================
-std::unique_ptr<TestableConstraint> createTestableBounds(
+std::unique_ptr<Testable> createTestableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
   const auto n = _metaSkeleton->getNumStates();
 
-  std::vector<std::shared_ptr<TestableConstraint>> constraints;
+  std::vector<std::shared_ptr<Testable>> constraints;
   constraints.reserve(n);
 
   for (size_t i = 0; i < n; ++i)
@@ -111,12 +111,12 @@ std::unique_ptr<TestableConstraint> createTestableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<TestableSubSpace>(
+  return make_unique<TestableSubspace>(
     std::move(_metaSkeleton), std::move(constraints));
 }
 
 //=============================================================================
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
@@ -129,7 +129,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
 }
 
 //=============================================================================
-std::unique_ptr<SampleableConstraint> createSampleableBounds(
+std::unique_ptr<Sampleable> createSampleableBounds(
   statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
   std::unique_ptr<util::RNG> _rng)
 {
@@ -138,7 +138,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
   // Create a new RNG for each subspace.
   auto engines = splitEngine(*_rng, n, util::NUM_DEFAULT_SEEDS);
 
-  std::vector<std::shared_ptr<SampleableConstraint>> constraints;
+  std::vector<std::shared_ptr<Sampleable>> constraints;
   constraints.reserve(n);
 
   for (size_t i = 0; i < n; ++i)
@@ -149,7 +149,7 @@ std::unique_ptr<SampleableConstraint> createSampleableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<SampleableSubSpace>(
+  return make_unique<CartesianProductSampleable>(
     std::move(_metaSkeleton), std::move(constraints));
 }
 

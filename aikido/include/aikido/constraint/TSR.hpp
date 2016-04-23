@@ -2,11 +2,11 @@
 #define AIKIDO_CONSTRAINT_TSR_H_
 
 #include "Sampleable.hpp"
-#include "../statespace/SE3StateSpace.hpp"
+#include "../statespace/SE3.hpp"
 #include <Eigen/Dense>
 #include "Projectable.hpp"
 #include "Differentiable.hpp"
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 #include <dart/math/MathTypes.h>
 
 namespace aikido {
@@ -22,9 +22,9 @@ namespace constraint {
 /// "Task space regions: A framework for pose-constrained manipulation
 /// planning." IJRR 2001:
 /// http://repository.cmu.edu/cgi/viewcontent.cgi?article=2024&context=robotics
-class TSR : public SampleableConstraint,
+class TSR : public Sampleable,
             public Differentiable,
-            public TestableConstraint,
+            public Testable,
             public Projectable
 {
 public:
@@ -68,8 +68,8 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Returns the SE3StateSpace which this TSR operates in.
-  std::shared_ptr<statespace::SE3StateSpace> getSE3StateSpace() const;
+  /// Returns the SE3 which this TSR operates in.
+  std::shared_ptr<statespace::SE3> getSE3() const;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
@@ -125,7 +125,7 @@ public:
 
 private:
   std::unique_ptr<util::RNG> mRng;
-  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
+  std::shared_ptr<statespace::SE3> mStateSpace;
 };
 
 using TSRPtr = std::shared_ptr<TSR>;

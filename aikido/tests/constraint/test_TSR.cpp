@@ -1,6 +1,6 @@
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/constraint/Differentiable.hpp>
-#include <aikido/statespace/SE3StateSpace.hpp>
+#include <aikido/statespace/SE3.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/common/StlHelpers.h>
 #include <gtest/gtest.h>
@@ -9,8 +9,8 @@
 #include <dart/math/Geometry.h>
 
 using aikido::constraint::TSR;
-using aikido::statespace::SE3StateSpace;
 using aikido::constraint::ConstraintType;
+using aikido::statespace::SE3;
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
 using dart::common::make_unique;
@@ -123,7 +123,7 @@ TEST(TSR, Validate)
 TEST(TSRSampleGenerator, SampleIdentity)
 {
   TSR tsr;
-  auto state = tsr.getSE3StateSpace()->createState();
+  auto state = tsr.getSE3()->createState();
 
   ASSERT_TRUE(tsr.createSampleGenerator()->sample(state));
   ASSERT_TRUE(state.getIsometry().isApprox(Eigen::Isometry3d::Identity()));
@@ -143,7 +143,7 @@ TEST(TSRSampleGenerator, SamplePointTSR)
   tsr.mT0_w = T0_w;
   tsr.validate();
 
-  auto state = tsr.getSE3StateSpace()->createState();
+  auto state = tsr.getSE3()->createState();
   auto generator = tsr.createSampleGenerator();
 
   ASSERT_TRUE(generator->canSample());
@@ -166,7 +166,7 @@ TEST(TSRSampleGenerator, SampleWithinBounds)
   tsr.mBw = Bw;
 
   auto sampler = tsr.createSampleGenerator();
-  auto state = tsr.getSE3StateSpace()->createState();
+  auto state = tsr.getSE3()->createState();
   
   for (int i = 0; i < 10; i++)
   {
@@ -192,8 +192,8 @@ TEST(TSRSampleGenerator, SampleSameSequence)
   auto sampler1 = tsr.createSampleGenerator();
   auto sampler2 = tsr.createSampleGenerator();
 
-  auto state1 = tsr.getSE3StateSpace()->createState();
-  auto state2 = tsr.getSE3StateSpace()->createState();
+  auto state1 = tsr.getSE3()->createState();
+  auto state2 = tsr.getSE3()->createState();
 
   for (int i = 0; i < 10; i++)
   {
@@ -214,7 +214,7 @@ TEST(TSR, GetValue)
 
   tsr.mBw = Bw;
 
-  auto state = tsr.getSE3StateSpace()->createState();  
+  auto state = tsr.getSE3()->createState();  
 
   // strictly inside TSR
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
@@ -368,7 +368,7 @@ TEST(TSR, GetJacobian)
 
   tsr.mBw = Bw;
 
-  auto state = tsr.getSE3StateSpace()->createState();  
+  auto state = tsr.getSE3()->createState();  
 
   // strictly inside TSR
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
@@ -400,7 +400,7 @@ TEST(TSR, GetValueAndJacobian)
 
   tsr.mBw = Bw;
 
-  auto state = tsr.getSE3StateSpace()->createState();  
+  auto state = tsr.getSE3()->createState();  
 
   // strictly inside TSR
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
@@ -448,7 +448,7 @@ TEST(TSR, IsSatisfied)
 
   tsr.mBw = Bw;
 
-  auto state = tsr.getSE3StateSpace()->createState();  
+  auto state = tsr.getSE3()->createState();  
 
   // strictly inside TSR
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
@@ -464,10 +464,10 @@ TEST(TSR, IsSatisfied)
   EXPECT_FALSE(tsr.isSatisfied(state));
 }
 
-TEST(TSR, GetSE3StateSpaceEqualToGetStateSpace)
+TEST(TSR, getSE3EqualToGetStateSpace)
 {
   TSR tsr;
-  auto se3space = tsr.getSE3StateSpace();  
+  auto se3space = tsr.getSE3();  
   auto space = tsr.getStateSpace();
 
   EXPECT_EQ(se3space, space);

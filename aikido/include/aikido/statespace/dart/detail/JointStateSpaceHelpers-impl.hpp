@@ -1,10 +1,10 @@
 #include <memory>
 #include <dart/common/StlHelpers.h>
-#include "../RealVectorJointStateSpace.hpp"
-#include "../SO2JointStateSpace.hpp"
-#include "../SO3JointStateSpace.hpp"
-#include "../SE2JointStateSpace.hpp"
-#include "../SE3JointStateSpace.hpp"
+#include "../RnJoint.hpp"
+#include "../SO2Joint.hpp"
+#include "../SO3Joint.hpp"
+#include "../SE2Joint.hpp"
+#include "../SE3Joint.hpp"
 #include "../../../util/metaprogramming.hpp"
 
 namespace aikido {
@@ -26,9 +26,9 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
   static Ptr create(::dart::dynamics::RevoluteJoint* _joint)
   {
     if (_joint->isCyclic(0))
-       return make_unique<SO2JointStateSpace>(_joint);
+       return make_unique<SO2Joint>(_joint);
     else
-       return make_unique<RealVectorJointStateSpace>(_joint);
+       return make_unique<RnJoint>(_joint);
   }
 };
 
@@ -38,7 +38,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
 {
   static Ptr create(::dart::dynamics::PrismaticJoint* _joint)
   {
-    return make_unique<RealVectorJointStateSpace>(_joint);
+    return make_unique<RnJoint>(_joint);
   }
 };
 
@@ -48,7 +48,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
 {
   static Ptr create(::dart::dynamics::TranslationalJoint* _joint)
   {
-    return make_unique<RealVectorJointStateSpace>(_joint);
+    return make_unique<RnJoint>(_joint);
   }
 };
 
@@ -58,7 +58,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::BallJoint>
 {
   static Ptr create(::dart::dynamics::BallJoint* _joint)
   {
-    return make_unique<SO3JointStateSpace>(_joint);
+    return make_unique<SO3Joint>(_joint);
   }
 };
 
@@ -68,7 +68,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PlanarJoint>
 {
   static Ptr create(::dart::dynamics::PlanarJoint* _joint)
   {
-    return make_unique<SE2JointStateSpace>(_joint);
+    return make_unique<SE2Joint>(_joint);
   }
 };
 
@@ -78,7 +78,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
 {
   static Ptr create(::dart::dynamics::FreeJoint* _joint)
   {
-    return make_unique<SE3JointStateSpace>(_joint);
+    return make_unique<SE3Joint>(_joint);
   }
 };
 

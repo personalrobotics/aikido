@@ -1,25 +1,25 @@
 #ifndef AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
 #include <dart/dynamics/dynamics.h>
-#include "../CompoundStateSpace.hpp"
+#include "../CartesianProduct.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// \c StateSpace of a DART \c MetaSkeleton. This is a \c CompoundStateSpace,
+/// \c StateSpace of a DART \c MetaSkeleton. This is a \c CartesianProduct,
 /// where the i-th subspace is a \c JointStateSpace for the i-th \c Joint of
 /// the \c MetaSkeleton. This class provides functions for converting between
 /// \c State objects and vectors of DART joint positions.
 ///
 /// The behavior of this class is undefined if you modify the structure of the
 /// \c MetaSkeleton or its position limits after construction.
-class MetaSkeletonStateSpace : public CompoundStateSpace
+class MetaSkeletonStateSpace : public CartesianProduct
 {
 public:
-  using CompoundStateSpace::State;
-  using CompoundStateSpace::ScopedState;
+  using CartesianProduct::State;
+  using CartesianProduct::ScopedState;
 
   /// Constructs a state space for a DART \c MetaSkeleton.
   ///

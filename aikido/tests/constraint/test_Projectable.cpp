@@ -1,25 +1,25 @@
 #include <gtest/gtest.h>
 #include "../eigen_tests.hpp"
-#include <aikido/constraint/uniform/RealVectorBoxConstraint.hpp>
-#include <aikido/constraint/ProjectableSubSpace.hpp>
+#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
+#include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/Projectable.hpp>
-#include <aikido/statespace/RealVectorStateSpace.hpp>
+#include <aikido/statespace/Rn.hpp>
 #include <dart/common/Console.h>
 
-using aikido::constraint::ProjectableSubSpace;
+using aikido::constraint::CartesianProductProjectable;
 using aikido::constraint::ProjectablePtr;
-using aikido::statespace::CompoundStateSpace;
-using aikido::statespace::RealVectorStateSpace;
-using aikido::statespace::RealVectorBoxConstraint;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::Rn;
+using aikido::constraint::RnBoxConstraint;
 
 TEST(Project, ProjectInPlaceDefault)
 {
-  dtwarn << "This is tested on RealVectorBoxConstraint, which uses "
+  dtwarn << "This is tested on RnBoxConstraint, which uses "
             "default in-place project method. If this class later "
             "overrides this method, we should write a different test.\n";
 
-  auto rvss = std::make_shared<RealVectorStateSpace>(3);
-  auto rvBox = std::make_shared<RealVectorBoxConstraint>(
+  auto rvss = std::make_shared<Rn>(3);
+  auto rvBox = std::make_shared<RnBoxConstraint>(
     rvss, nullptr, Eigen::Vector3d(1, 1, 1), Eigen::Vector3d(2, 1, 1));
 
   auto state = rvss->createState();

@@ -20,9 +20,9 @@ class SampleGenerator;
 /// samples. For that reason, you should be careful to use the same
 /// SampleGenerator when obtaining a sequence of samples to avoid
 /// re-sampling the beginning of the same deterministic sequence repeatedly.
-class SampleableConstraint {
+class Sampleable {
 public:
-  virtual ~SampleableConstraint() = default;
+  virtual ~Sampleable() = default;
 
   /// Gets the StateSpace that this constraint operates on.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
@@ -32,7 +32,7 @@ public:
 };
 
 
-/// Generator for drawing samples from a SampleableConstraint. This object
+/// Generator for drawing samples from a Sampleable. This object
 /// may represent both finite and inifinite sets of samples, as indicated by
 /// the return value of getNumSamples(). Note that this value provides only an
 /// upper bound on the number of samples available: sample() may transiently
@@ -57,10 +57,10 @@ public:
   virtual bool canSample() const = 0;
 };
 
-using SampleableConstraintPtr = std::shared_ptr<SampleableConstraint>;
+using SampleablePtr = std::shared_ptr<Sampleable>;
 
 
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_SAMPLEABLE_H_
+#endif // AIKIDO_CONSTRAINT_SAMPLEABLE_HPP_
