@@ -80,7 +80,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
-    return dart::common::make_unique<statespace::RnBoxConstraint>(
+    return dart::common::make_unique<RnBoxConstraint>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
   else
@@ -138,7 +138,7 @@ struct createSampleableFor_impl<statespace::dart::RnJoint>
     const auto joint = _stateSpace->getJoint();
 
     if (isLimited(joint))
-      return dart::common::make_unique<statespace::RnBoxConstraint>(
+      return dart::common::make_unique<RnBoxConstraint>(
         std::move(_stateSpace), std::move(_rng),
         getPositionLowerLimits(joint), getPositionUpperLimits(joint));
     else
@@ -209,7 +209,7 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
       throw std::invalid_argument("SO2Joint must not have limits.");
 
     return dart::common::make_unique<
-      statespace::SO2Sampleable>(
+      SO2Sampleable>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -275,7 +275,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<statespace::SO3UniformSampler>(
+    return dart::common::make_unique<SO3UniformSampler>(
       std::move(_stateSpace), std::move(_rng));
   }
 };

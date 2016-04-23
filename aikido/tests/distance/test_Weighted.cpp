@@ -99,8 +99,8 @@ TEST(WeightedDistance, ThrowsOnNegativeWeights)
   EXPECT_THROW(
       Weighted(
           space,
-          {std::make_pair(std::make_shared<RnEuclidean>(rv3), 2),
-           std::make_pair(std::make_shared<SO2Angular>(so2), -1),
+          {std::make_pair(std::make_shared<SO2Angular>(so2), -1),
+           std::make_pair(std::make_shared<RnEuclidean>(rv3), 2),
            std::make_pair(std::make_shared<SO3Angular>(so3), 3)}),
       std::invalid_argument);
 }

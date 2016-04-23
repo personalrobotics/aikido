@@ -30,20 +30,22 @@ target_link_libraries(test_InverseKinematicsSampleable
 # target_link_libraries(test_PolynomialConstraint
 #   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_TSR
-#   test_TSR.cpp)
-# target_link_libraries(test_TSR
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_TSR
+	PolynomialConstraint.cpp
+  test_TSR.cpp)
+target_link_libraries(test_TSR
+  "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_TestableIntersection
   test_TestableIntersection.cpp)
 target_link_libraries(test_TestableIntersection
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_DifferentiableIntersection
-#   test_DifferentiableIntersection.cpp)
-# target_link_libraries(test_DifferentiableIntersection
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_DifferentiableIntersection
+	PolynomialConstraint.cpp
+  test_DifferentiableIntersection.cpp)
+target_link_libraries(test_DifferentiableIntersection
+  "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_RnBoxConstraint
   test_RnBoxConstraint.cpp)
@@ -75,12 +77,37 @@ aikido_add_test(test_SO3UniformSampler
 target_link_libraries(test_SO3UniformSampler
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
-# aikido_add_test(test_Satisfied
-#   test_Satisfied.cpp)
-# target_link_libraries(test_Satisfied
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_Satisfied
+  test_Satisfied.cpp)
+target_link_libraries(test_Satisfied
+  "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_DartConstraintHelpers
   test_DartHelpers.cpp)
 target_link_libraries(test_DartConstraintHelpers
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
+
+aikido_add_test(test_TestableSubspace
+  test_TestableSubspace.cpp)
+target_link_libraries(test_TestableSubspace
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_SampleableSubSpace
+  test_SampleableSubSpace.cpp)
+target_link_libraries(test_SampleableSubSpace
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_CartesianProductProjectable
+  test_CartesianProductProjectable.cpp)
+target_link_libraries(test_CartesianProductProjectable
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_Projectable
+  test_Projectable.cpp)
+target_link_libraries(test_Projectable
+  "${PROJECT_NAME}_constraint")
+
+aikido_add_test(test_NonColliding
+  test_NonColliding.cpp)
+target_link_libraries(test_NonColliding
+  "${PROJECT_NAME}_constraint")

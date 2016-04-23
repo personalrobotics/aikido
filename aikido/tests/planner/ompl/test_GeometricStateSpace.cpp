@@ -117,9 +117,18 @@ TEST_F(GeometricStateSpaceTest, Dimension)
   EXPECT_EQ(3, gSpace->getDimension());
 }
 
-// TODO: Maximum Extent
+TEST_F(GeometricStateSpaceTest, GetMaximumExtent)
+{
+  constructStateSpace();
+  EXPECT_DOUBLE_EQ(gSpace->getMaximumExtent(),
+                   std::numeric_limits<double>::infinity());
+}
 
-// TODO: Measure
+TEST_F(GeometricStateSpaceTest, GetMeasure)
+{
+  constructStateSpace();
+  EXPECT_THROW(gSpace->getMeasure(), std::runtime_error);
+}
 
 TEST_F(GeometricStateSpaceTest, EnforceBoundsProjection)
 {

@@ -5,7 +5,7 @@
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::Rn;
-using aikido::statespace::RnBoxConstraint;
+using aikido::constraint::RnBoxConstraint;
 using aikido::constraint::ConstraintType;
 using aikido::constraint::SampleGenerator;
 using aikido::distance::RnEuclidean;

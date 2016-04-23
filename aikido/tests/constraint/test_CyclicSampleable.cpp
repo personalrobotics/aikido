@@ -10,7 +10,7 @@
 
 
 using aikido::statespace::SO2;
-using aikido::statespace::SO2Sampleable;
+using aikido::constraint::SO2Sampleable;
 using aikido::statespace::Rn;
 using aikido::constraint::CyclicSampleable;
 using aikido::constraint::FiniteSampleable;

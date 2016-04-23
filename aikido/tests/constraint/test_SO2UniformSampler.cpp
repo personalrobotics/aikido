@@ -5,7 +5,7 @@
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::SO2;
-using aikido::statespace::SO2Sampleable;
+using aikido::constraint::SO2Sampleable;
 using aikido::constraint::SampleGenerator;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;

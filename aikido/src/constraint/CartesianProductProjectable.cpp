@@ -8,8 +8,8 @@ namespace constraint {
 CartesianProductProjectable::CartesianProductProjectable(
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<ProjectablePtr> _constraints)
-  : mStateSpace(std::move(_stateSpace))
-  , mConstraints(std::move(_constraints))
+: mStateSpace(std::move(_stateSpace))
+, mConstraints(std::move(_constraints))
 {
   if (!mStateSpace)
     throw std::invalid_argument("CartesianProduct is nullptr.");

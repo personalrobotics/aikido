@@ -13,7 +13,6 @@
 #include "MockConstraints.hpp"
 
 using aikido::statespace::Rn;
-using aikido::statespace::SO2;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::InverseKinematicsSampleable;
 using aikido::constraint::CyclicSampleable;

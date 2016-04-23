@@ -4,7 +4,7 @@
 #include "../Sampleable.hpp"
 
 namespace aikido {
-namespace statespace {
+namespace constraint {
 
 /// Uniform sampler for SO3States. Its SampleGenerators will sample
 /// uniformly from SO3, and the sequence of samples is
@@ -33,7 +33,7 @@ private:
   std::unique_ptr<util::RNG> mRng;
 };
 
-} // namespace statespace
+} // namespace constraint
 } // namespace aikido
 
 #endif // AIKIDO_CONSTRAINT_UNIFORM_SO3UNIFORMSAMPLER_HPP_

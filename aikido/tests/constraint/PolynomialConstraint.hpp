@@ -26,7 +26,7 @@ public:
   Eigen::MatrixXd getJacobian(
       const aikido::statespace::StateSpace::State* _s) const override;
 
-  // Documentation inherited.
+  /// These are all equality constriants.
   std::vector<aikido::constraint::ConstraintType> getConstraintTypes()
       const override;
 

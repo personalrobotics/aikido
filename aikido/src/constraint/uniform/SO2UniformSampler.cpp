@@ -2,7 +2,7 @@
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 
 namespace aikido {
-namespace statespace {
+namespace constraint {
 
 //=============================================================================
 class SO2UniformSampleGenerator : public constraint::SampleGenerator
@@ -54,7 +54,7 @@ bool SO2UniformSampleGenerator::sample(
   statespace::StateSpace::State* _state)
 {
   const double angle = mDistribution(*mRng);
-  mSpace->setAngle(static_cast<SO2::State*>(_state), angle);
+  mSpace->setAngle(static_cast<statespace::SO2::State*>(_state), angle);
   return true;
 }
 

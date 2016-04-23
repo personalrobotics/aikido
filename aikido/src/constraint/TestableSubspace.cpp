@@ -17,6 +17,16 @@ TestableSubspace::TestableSubspace(
   if (!mStateSpace)
     throw std::invalid_argument("_stateSpace is nullptr.");
 
+  for(int i = 0; i < mConstraints.size(); ++i)
+  {
+    if (!mConstraints[i])
+    {
+      std::stringstream msg;
+      msg << i << "th constraint is null.";
+      throw std::invalid_argument(msg.str());
+    }
+  }
+  
   if (mConstraints.size() != mStateSpace->getNumStates()) {
     std::stringstream msg;
     msg << "Mismatch between size of CartesianProduct and the number of"

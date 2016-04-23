@@ -4,7 +4,7 @@
 #include "../Sampleable.hpp"
 
 namespace aikido {
-namespace statespace {
+namespace constraint {
 
 /// Uniform sampler for SO2States. Its SampleGenerators will sample
 /// uniformly from SO2, and the sequence of samples is
@@ -34,7 +34,7 @@ private:
 };
 
 
-} // namespace statespace
+} // namespace constraint
 } // namespace aikido
 
 #endif // AIKIDO_CONSTRAINT_UNIFORM_SO2UNIFORMSAMPLER_HPP_

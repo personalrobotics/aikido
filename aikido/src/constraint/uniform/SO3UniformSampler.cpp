@@ -2,7 +2,7 @@
 #include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 
 namespace aikido {
-namespace statespace {
+namespace constraint {
 
 //=============================================================================
 class SO3UniformSampleGenerator : public constraint::SampleGenerator
@@ -54,8 +54,8 @@ bool SO3UniformSampleGenerator::sample(
   statespace::StateSpace::State* _state)
 {
   mSpace->setQuaternion(
-    static_cast<SO3::State*>(_state),
-    util::sampleQuaternion<util::RNG, double, SO3::Quaternion>(
+    static_cast<statespace::SO3::State*>(_state),
+    util::sampleQuaternion<util::RNG, double, statespace::SO3::Quaternion>(
       *mRng, mDistribution)
   );
 

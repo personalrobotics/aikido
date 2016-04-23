@@ -2,7 +2,7 @@
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 
 namespace aikido {
-namespace statespace {
+namespace constraint {
 
 using constraint::ConstraintType;
 
@@ -65,7 +65,7 @@ bool RnBoxConstraintSampleGenerator::sample(
   for (size_t i = 0; i < value.size(); ++i)
     value[i] = mDistributions[i](*mRng);
 
-  mSpace->setValue(static_cast<Rn::State*>(_state), value);
+  mSpace->setValue(static_cast<statespace::Rn::State*>(_state), value);
 
   return true;
 }
@@ -149,10 +149,10 @@ std::vector<ConstraintType> RnBoxConstraint::getConstraintTypes() const
 }
 
 //=============================================================================
-bool RnBoxConstraint::isSatisfied(const StateSpace::State* state) const
+bool RnBoxConstraint::isSatisfied(const statespace::StateSpace::State* state) const
 {
   const auto value = mSpace->getValue(
-    static_cast<const Rn::State*>(state));
+    static_cast<const statespace::Rn::State*>(state));
 
   for (size_t i = 0; i < value.size(); ++i)
   {
@@ -168,7 +168,7 @@ bool RnBoxConstraint::project(
   statespace::StateSpace::State* _out) const
 {
   Eigen::VectorXd value = mSpace->getValue(
-    static_cast<const Rn::State*>(_s));
+    static_cast<const statespace::Rn::State*>(_s));
 
   for (size_t i = 0; i < value.size(); ++i)
   {
@@ -179,7 +179,7 @@ bool RnBoxConstraint::project(
   }
 
   mSpace->setValue(
-    static_cast<Rn::State*>(_out), value);
+    static_cast<statespace::Rn::State*>(_out), value);
 
   return true;
 }
@@ -189,7 +189,7 @@ Eigen::VectorXd RnBoxConstraint::getValue(
   const statespace::StateSpace::State* _s) const
 {
   auto stateValue = mSpace->getValue(
-    static_cast<const Rn::State*>(_s));
+    static_cast<const statespace::Rn::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
   Eigen::VectorXd constraintValue(dimension);
@@ -212,7 +212,7 @@ Eigen::MatrixXd RnBoxConstraint::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   auto stateValue = mSpace->getValue(
-    static_cast<const Rn::State*>(_s));
+    static_cast<const statespace::Rn::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(dimension, dimension);

@@ -7,7 +7,7 @@
 #include "../Testable.hpp"
 
 namespace aikido {
-namespace statespace {
+namespace constraint {
 
 /// A BoxConstraint on RealVectorStates.
 /// For each dimension, this constraint has lowerLimit and upperLimit. 
@@ -18,6 +18,8 @@ class RnBoxConstraint
   , public constraint::Testable
 {
 public:
+  using constraint::Projectable::project;
+
   /// Constructor.
   /// \param _space Space in which this constraint operates.
   /// \param _rng Random number generator to be used for sampling.
@@ -41,7 +43,7 @@ public:
   std::vector<constraint::ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  bool isSatisfied(const StateSpace::State* state) const override;
+  bool isSatisfied(const statespace::StateSpace::State* state) const override;
 
   // Documentation inherited.
   bool project(
@@ -78,7 +80,7 @@ private:
 };
 
 
-} // namespace statespace
+} // namespace constraint
 } // namespace aikido
 
 #endif // AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
