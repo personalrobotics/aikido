@@ -72,14 +72,16 @@ TEST_F(InterpolatedTest, EvaluateDerivative)
 {
   using StateType = Rn::State;
 
-  EXPECT_THROW(traj->evaluate(1.5, 0), std::invalid_argument);
+  Eigen::VectorXd tangentVector;
 
-  auto d1 = traj->evaluate(1.5, 2);
-  EXPECT_TRUE(d1.isApprox(Eigen::Vector2d::Zero()));
+  EXPECT_THROW(traj->evaluateDerivative(1.5, 0, tangentVector), std::invalid_argument);
 
-  auto d2 = traj->evaluate(1.5, 1);
-  EXPECT_TRUE(d2.isApprox(Eigen::Vector2d(1.5, 1.5)));
+  traj->evaluateDerivative(1.5, 2, tangentVector);
+  EXPECT_TRUE(tangentVector.isApprox(Eigen::Vector2d::Zero()));
 
-  auto d3 = traj->evaluate(6, 1);
-  EXPECT_TRUE(d3.isApprox(Eigen::Vector2d(5. / 4, -2. / 4)));
+  traj->evaluateDerivative(1.5, 1, tangentVector);
+  EXPECT_TRUE(tangentVector.isApprox(Eigen::Vector2d(1.5, 1.5)));
+
+  traj->evaluateDerivative(6, 1, tangentVector);
+  EXPECT_TRUE(tangentVector.isApprox(Eigen::Vector2d(5. / 4, -2. / 4)));
 }

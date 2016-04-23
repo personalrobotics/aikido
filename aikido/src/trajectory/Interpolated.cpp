@@ -80,22 +80,25 @@ void Interpolated::evaluate(double _t, State *_state) const
         prevWpt.state, currentWpt.state,
         (_t - prevWpt.t) / (currentWpt.t - prevWpt.t), _state);
     }
-  } catch (std::domain_error e) {
+  } catch (const std::domain_error& e) {
     // Time past end of trajectory - return last waypoint
     mStateSpace->copyState(mWaypoints.back().state, _state);
   }
 }
 
 //=============================================================================
-Eigen::VectorXd Interpolated::evaluate(double _t,
-                                                    int _derivative) const
+void Interpolated::evaluateDerivative(double _t, int _derivative,
+  Eigen::VectorXd& _tangentVector ) const
 {
   if (_derivative == 0)
     throw std::invalid_argument(
         "0th derivative not available. Use evaluate(t, state).");
 
   if (_derivative > mInterpolator->getNumDerivatives())
-    return Eigen::VectorXd::Zero(mStateSpace->getDimension());
+  {
+    _tangentVector.resize(mStateSpace->getDimension());
+    _tangentVector.setZero();
+  }
 
   // Compute the interpolated state at time t
   auto iPt = mStateSpace->createState();
@@ -108,22 +111,22 @@ Eigen::VectorXd Interpolated::evaluate(double _t,
 
     // Time before beginning of trajectory - return 0
     if (idx == 0)
-      return Eigen::VectorXd::Zero(mStateSpace->getDimension());
+      throw std::domain_error("Time is before the trajectory starts.");
 
     const auto segmentTime = mWaypoints[idx].t - mWaypoints[idx - 1].t;
     const auto alpha = (_t - mWaypoints[idx - 1].t) / segmentTime;
 
-    Eigen::VectorXd tangentVector;
     mInterpolator->getDerivative(
       mWaypoints[idx - 1].state, mWaypoints[idx].state, _derivative, alpha,
-      tangentVector);
+      _tangentVector);
 
-    return tangentVector / segmentTime;
+    _tangentVector /= segmentTime;
   }
+  // Time past end of trajectory - return zero
   catch (const std::domain_error& e)
   {
-    // Time past end of trajectory - return zero
-    return Eigen::VectorXd::Zero(mStateSpace->getDimension());
+    _tangentVector.resize(mStateSpace->getDimension());
+    _tangentVector.setZero();
   }
 }
 
