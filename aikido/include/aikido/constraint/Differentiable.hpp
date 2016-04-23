@@ -1,14 +1,17 @@
-#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLE_H
-#define AIKIDO_CONSTRAINT_DIFFERENTIABLE_H
+#ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLE_HPP_
+#define AIKIDO_CONSTRAINT_DIFFERENTIABLE_HPP_
 
 #include "../statespace/StateSpace.hpp"
 #include <Eigen/Dense>
 #include <memory>
 
 namespace aikido {
-namespace constraint{
+namespace constraint {
 
-enum class ConstraintType {EQ, INEQ};
+/// Enum for classifying constraints used in Differentiable.
+/// Equality constraint is satisfied by f(x) = 0.
+/// Inequality constraint is satisfied by f(x) <= 0. 
+enum class ConstraintType {EQUALITY, INEQUALITY};
 
 /// A differentiable constraint.
 /// Contains n constraints that can be evaluated in real-value. 
@@ -20,7 +23,8 @@ public:
   /// Gets the StateSpace that this constraint operates on.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
 
-  /// Returns a vector of constraints' types.
+  /// Returns a vector of constraints' types, i-th element correspoinding to 
+  /// the type of i-th constraint.
   virtual std::vector<ConstraintType> getConstraintTypes() const = 0;
 
   /// Size of constraints
@@ -45,7 +49,7 @@ public:
 
   /// Returns (Value, Jacobian).
   virtual std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-    const statespace::StateSpace::State* _s) const = 0;
+    const statespace::StateSpace::State* _s) const;
 };
 
 using DifferentiablePtr = std::shared_ptr<Differentiable>;

@@ -2,12 +2,12 @@
 #include <gtest/gtest.h>
 #include "../constraint/MockConstraints.hpp"
 #include <aikido/planner/PlanningResult.hpp>
-#include <aikido/statespace/SO2StateSpace.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/constraint/CollisionConstraint.hpp>
-#include <aikido/distance/DistanceMetricDefaults.hpp>
-#include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/constraint/NonColliding.hpp>
+#include <aikido/distance/defaults.hpp>
+#include <aikido/constraint/Testable.hpp>
 #include <dart/dart.h>
 #include <tuple>
 
@@ -18,11 +18,11 @@ class SnapPlannerTest : public ::testing::Test
 {
 public:
   using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
-  using StateSpace = aikido::statespace::MetaSkeletonStateSpace;
-  using CollisionConstraint = aikido::constraint::CollisionConstraint;
+  using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
+  using NonColliding = aikido::constraint::NonColliding;
   using DistanceMetric = aikido::distance::DistanceMetric;
-  using MetaSkeletonStateSpace = aikido::statespace::MetaSkeletonStateSpace;
-  using SO2StateSpace = aikido::statespace::SO2StateSpace;
+  using MetaSkeletonStateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
+  using SO2 = aikido::statespace::SO2;
   using GeodesicInterpolator = aikido::statespace::GeodesicInterpolator;
   using ScopedState = MetaSkeletonStateSpace::ScopedState;
 
@@ -60,39 +60,38 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 {
   SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
   auto differentStateSpace = make_shared<MetaSkeletonStateSpace>(empty_skel);
-  EXPECT_THROW(planSnap(*startState, *goalState, differentStateSpace,
-                        passingConstraint, interpolator, &planningResult),
-               std::invalid_argument);
+  EXPECT_THROW({
+    planSnap(differentStateSpace, *startState, *goalState,
+      interpolator, passingConstraint, planningResult);
+  }, std::invalid_argument);
 }
 
 TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
-  stateSpace->getStateFromMetaSkeleton(*startState);
+  stateSpace->getState(*startState);
   stateSpace->getMetaSkeleton()->setPosition(0, 2.0);
-  stateSpace->getStateFromMetaSkeleton(*goalState);
+  stateSpace->setState(*goalState);
 
-  auto traj = planSnap(*startState, *goalState, stateSpace, passingConstraint,
-                       interpolator, &planningResult);
+  auto traj = planSnap(stateSpace, *startState, *goalState, interpolator,
+    passingConstraint, planningResult);
 
-  auto subSpace = stateSpace->getSubSpace<SO2StateSpace>(0);
-  EXPECT_EQ(2, traj.size());
+  auto subSpace = stateSpace->getSubSpace<SO2>(0);
+  EXPECT_EQ(2, traj->getNumWaypoints());
 
   auto startValue =
-      startState->getSubStateHandle<SO2StateSpace>(0).getRotation();
+      startState->getSubStateHandle<SO2>(0).getRotation();
 
-  auto traj0 = stateSpace->getSubStateHandle<SO2StateSpace>(
-                               static_cast<MetaSkeletonStateSpace::State*>(
-                                   traj.at(0).getState()),
-                               0).getRotation();
+  auto tmpState = stateSpace->createState();
+  traj->evaluate(0, tmpState);
+  auto traj0 =
+      stateSpace->getSubStateHandle<SO2>(tmpState, 0).getRotation();
 
   EXPECT_TRUE(startValue.isApprox(traj0));
 
-  auto goalValue = goalState->getSubStateHandle<SO2StateSpace>(0).getRotation();
+  auto goalValue = goalState->getSubStateHandle<SO2>(0).getRotation();
 
-  auto traj1 = stateSpace->getSubStateHandle<SO2StateSpace>(
-                               static_cast<MetaSkeletonStateSpace::State*>(
-                                   traj.at(traj.size() - 1).getState()),
-                               0).getRotation();
+  traj->evaluate(traj->getDuration(), tmpState);
+  auto traj1 = stateSpace->getSubStateHandle<SO2>(tmpState,0).getRotation();
 
   EXPECT_TRUE(goalValue.isApprox(traj1))
       << "on success final element of trajectory should be goal state.";
@@ -100,7 +99,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
-  auto traj = planSnap(*startState, *goalState, stateSpace, failingConstraint,
-                       interpolator, &planningResult);
-  EXPECT_EQ(0, traj.size());  // TODO boost::optional
+  auto traj = planSnap(stateSpace, *startState, *goalState, interpolator,
+    failingConstraint, planningResult);
+  EXPECT_EQ(0, traj->getNumWaypoints());  // TODO boost::optional
 }

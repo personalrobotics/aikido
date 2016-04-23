@@ -1,55 +1,19 @@
 #include <sstream>
 #include <dart/common/StlHelpers.h>
-#include "../../statespace/dart/RealVectorJointStateSpace.hpp"
-#include "../../statespace/dart/SO2JointStateSpace.hpp"
-#include "../../statespace/dart/SO3JointStateSpace.hpp"
-#include "../../statespace/dart/SE2JointStateSpace.hpp"
-#include "../../statespace/dart/SE3JointStateSpace.hpp"
+#include "../../statespace/dart/RnJoint.hpp"
+#include "../../statespace/dart/SO2Joint.hpp"
+#include "../../statespace/dart/SO3Joint.hpp"
+#include "../../statespace/dart/SE2Joint.hpp"
+#include "../../statespace/dart/SE3Joint.hpp"
 #include "../../util/metaprogramming.hpp"
-#include "../uniform/RealVectorBoxConstraint.hpp"
+#include "../uniform/RnBoxConstraint.hpp"
 #include "../uniform/SO2UniformSampler.hpp"
 #include "../uniform/SO3UniformSampler.hpp"
-#include "../SatisfiedConstraint.hpp"
+#include "../Satisfied.hpp"
 
 namespace aikido {
 namespace constraint {
 namespace detail {
-
-//=============================================================================
-template <template <class> class Factory, class BaseParameter, class TypeList>
-struct ForOneOf {};
-
-template <template <class> class Factory, class BaseParameter>
-struct ForOneOf<Factory, BaseParameter, util::type_list<>>
-{
-  template <class... Parameters>
-  static std::nullptr_t create(std::shared_ptr<BaseParameter> /* unused */,
-                               Parameters&&... /* unused */)
-  {
-    return nullptr;
-  }
-};
-
-template <template <class> class Factory, class BaseParameter,
-          class Arg, class... Args>
-struct ForOneOf<Factory, BaseParameter, util::type_list<Arg, Args...>>
-{
-  template <class... Parameters>
-  static auto create(std::shared_ptr<BaseParameter> _delegate,
-                     Parameters&&... _params)
-    -> decltype(Factory<Arg>::create(
-         std::dynamic_pointer_cast<Arg>(_delegate),
-         std::forward<Parameters>(_params)...))
-  {
-    if (auto arg = std::dynamic_pointer_cast<Arg>(_delegate))
-      return Factory<Arg>::create(
-        std::move(arg), std::forward<Parameters>(_params)...);
-    else
-      return ForOneOf<
-        Factory, BaseParameter, util::type_list<Args...>>::create(
-          std::move(_delegate), std::forward<Parameters>(_params)...);
-  }
-};
 
 //=============================================================================
 inline bool isLimited(const dart::dynamics::Joint* _joint)
@@ -88,11 +52,11 @@ inline Eigen::VectorXd getPositionUpperLimits(
 
 //=============================================================================
 using JointStateSpaceTypeList = util::type_list<
-  statespace::RealVectorJointStateSpace,
-  statespace::SO2JointStateSpace,
-  statespace::SO3JointStateSpace,
-  statespace::SE2JointStateSpace,
-  statespace::SE3JointStateSpace
+  statespace::dart::RnJoint,
+  statespace::dart::SO2Joint,
+  statespace::dart::SO3Joint,
+  statespace::dart::SE2Joint,
+  statespace::dart::SE3Joint
 >;
 
 template <class T>
@@ -110,24 +74,24 @@ struct createSampleableFor_impl { };
 //=============================================================================
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
-  std::shared_ptr<statespace::RealVectorJointStateSpace> _stateSpace,
+  std::shared_ptr<statespace::dart::RnJoint> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
-    return dart::common::make_unique<statespace::RealVectorBoxConstraint>(
+    return dart::common::make_unique<RnBoxConstraint>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
   else
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
 }
 
 template <>
-struct createDifferentiableFor_impl<statespace::RealVectorJointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -137,22 +101,22 @@ struct createDifferentiableFor_impl<statespace::RealVectorJointStateSpace>
 };
 
 template <>
-struct createTestableFor_impl<statespace::RealVectorJointStateSpace>
+struct createTestableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
-    return createBoxConstraint<TestableConstraint>(
+    return createBoxConstraint<Testable>(
       std::move(_stateSpace), nullptr);
   }
 };
 
 template <>
-struct createProjectableFor_impl<statespace::RealVectorJointStateSpace>
+struct createProjectableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -163,264 +127,264 @@ struct createProjectableFor_impl<statespace::RealVectorJointStateSpace>
 };
 
 template <>
-struct createSampleableFor_impl<statespace::RealVectorJointStateSpace>
+struct createSampleableFor_impl<statespace::dart::RnJoint>
 {
-  using StateSpace = statespace::RealVectorJointStateSpace;
+  using StateSpace = statespace::dart::RnJoint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     const auto joint = _stateSpace->getJoint();
 
     if (isLimited(joint))
-      return dart::common::make_unique<statespace::RealVectorBoxConstraint>(
+      return dart::common::make_unique<RnBoxConstraint>(
         std::move(_stateSpace), std::move(_rng),
         getPositionLowerLimits(joint), getPositionUpperLimits(joint));
     else
       throw std::runtime_error(
-        "Unable to create Sampleable for unbounded RealVectorStateSpace.");
+        "Unable to create Sampleable for unbounded Rn.");
   }
 };
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SO2JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SO2Joint>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO2JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
 
 template <>
-struct createTestableFor_impl<statespace::SO2JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SO2Joint>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO2JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SO2JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SO2Joint>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO2JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SO2JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SO2Joint>
 {
-  using StateSpace = statespace::SO2JointStateSpace;
+  using StateSpace = statespace::dart::SO2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO2JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO2Joint must not have limits.");
 
     return dart::common::make_unique<
-      statespace::SO2StateSpaceSampleableConstraint>(
+      SO2Sampleable>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SO3JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SO3Joint>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO3JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
 
 template <>
-struct createTestableFor_impl<statespace::SO3JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SO3Joint>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO3JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SO3JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SO3Joint>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO3JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<SatisfiedConstraint>(
+    return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
   }
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SO3JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SO3Joint>
 {
-  using StateSpace = statespace::SO3JointStateSpace;
+  using StateSpace = statespace::dart::SO3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     if (isLimited(_stateSpace->getJoint()))
-      throw std::invalid_argument("SO3JointStateSpace must not have limits.");
+      throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<statespace::SO3UniformSampler>(
+    return dart::common::make_unique<SO3UniformSampler>(
       std::move(_stateSpace), std::move(_rng));
   }
 };
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SE2JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SE2Joint>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No DifferentiableConstraint is available for SE2JointStateSpace.");
+      "No DifferentiableConstraint is available for SE2Joint.");
   }
 };
 
 template <>
-struct createTestableFor_impl<statespace::SE2JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SE2Joint>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No TestableConstraint is available for SE2JointStateSpace.");
+      "No Testable is available for SE2Joint.");
   }
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SE2JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SE2Joint>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No Projectable is available for SE2JointStateSpace.");
+      "No Projectable is available for SE2Joint.");
   }
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SE2JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SE2Joint>
 {
-  using StateSpace = statespace::SE2JointStateSpace;
+  using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     throw std::runtime_error(
-      "No Sampleable is available for SE2JointStateSpace.");
+      "No Sampleable is available for SE2Joint.");
   }
 };
 
 //=============================================================================
 template <>
-struct createDifferentiableFor_impl<statespace::SE3JointStateSpace>
+struct createDifferentiableFor_impl<statespace::dart::SE3Joint>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No DifferentiableConstraint is available for SE3JointStateSpace.");
+      "No DifferentiableConstraint is available for SE3Joint.");
   }
 };
 
 template <>
-struct createTestableFor_impl<statespace::SE3JointStateSpace>
+struct createTestableFor_impl<statespace::dart::SE3Joint>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<TestableConstraint> create(StateSpacePtr _stateSpace)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No TestableConstraint is available for SE3JointStateSpace.");
+      "No Testable is available for SE3Joint.");
   }
 };
 
 template <>
-struct createProjectableFor_impl<statespace::SE3JointStateSpace>
+struct createProjectableFor_impl<statespace::dart::SE3Joint>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
-      "No Projectable is available for SE3JointStateSpace.");
+      "No Projectable is available for SE3Joint.");
   }
 };
 
 template <>
-struct createSampleableFor_impl<statespace::SE3JointStateSpace>
+struct createSampleableFor_impl<statespace::dart::SE3Joint>
 {
-  using StateSpace = statespace::SE3JointStateSpace;
+  using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<SampleableConstraint> create(
+  static std::unique_ptr<Sampleable> create(
     StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     throw std::runtime_error(
-      "No Sampleable is available for SE3JointStateSpace.");
+      "No Sampleable is available for SE3Joint.");
   }
 };
 
@@ -446,7 +410,7 @@ std::unique_ptr<Projectable> createProjectableBoundsFor(
 
 //=============================================================================
 template <class Space>
-std::unique_ptr<TestableConstraint> createTestableBoundsFor(
+std::unique_ptr<Testable> createTestableBoundsFor(
   std::shared_ptr<Space> _stateSpace)
 {
   return detail::createTestableFor_impl<Space>::create(
@@ -455,7 +419,7 @@ std::unique_ptr<TestableConstraint> createTestableBoundsFor(
 
 //=============================================================================
 template <class Space>
-std::unique_ptr<SampleableConstraint> createSampleableBoundsFor(
+std::unique_ptr<Sampleable> createSampleableBoundsFor(
   std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng)
 {
   return detail::createSampleableFor_impl<Space>::create(

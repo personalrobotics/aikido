@@ -1,8 +1,8 @@
 aikido_add_library("${PROJECT_NAME}_distance"
-  AngularDistanceMetric.cpp
-  EuclideanDistanceMetric.cpp
-  GeodesicDistanceMetric.cpp
-  WeightedDistanceMetric.cpp
+  SO2Angular.cpp
+  RnEuclidean.cpp
+  SO3Angular.cpp
+  Weighted.cpp
 )
 target_link_libraries("${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace"

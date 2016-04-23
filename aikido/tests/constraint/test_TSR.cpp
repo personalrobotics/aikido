@@ -1,5 +1,6 @@
 #include <aikido/constraint/TSR.hpp>
-// #include <aikido/statesoace/SE3StateSpace.hpp>
+#include <aikido/constraint/Differentiable.hpp>
+#include <aikido/statespace/SE3.hpp>
 #include <aikido/util/RNG.hpp>
 #include <dart/common/StlHelpers.h>
 #include <gtest/gtest.h>
@@ -8,7 +9,8 @@
 #include <dart/math/Geometry.h>
 
 using aikido::constraint::TSR;
-using aikido::statespace::SE3StateSpace;
+using aikido::constraint::ConstraintType;
+using aikido::statespace::SE3;
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
 using dart::common::make_unique;
@@ -72,7 +74,7 @@ TEST(TSR, CopyConstructor)
 
 
   tsr2.mBw(0,0) = 3;
-  EXPECT_THROW(tsr2.validate(), std::invalid_argument);
+  EXPECT_THROW(tsr2.validate(), std::logic_error);
   EXPECT_NO_THROW(tsr.validate());
 
 }
@@ -95,7 +97,7 @@ TEST(TSR, AssignmentOperator)
 
   tsr2.mBw(0,0) = 3;
 
-  EXPECT_THROW(tsr2.validate(), std::invalid_argument);
+  EXPECT_THROW(tsr2.validate(), std::logic_error);
   EXPECT_NO_THROW(tsr.validate());
 
 }
@@ -108,7 +110,7 @@ TEST(TSR, Validate)
   tsr.mBw(3,0) = M_PI/2;
   tsr.mBw(3,1) = -M_PI/2;
   
-  EXPECT_THROW(tsr.validate(), std::invalid_argument);
+  EXPECT_THROW(tsr.validate(), std::logic_error);
 
   Eigen::MatrixXd Bw = Eigen::MatrixXd::Zero(6,2);
   Bw(3,0) = M_PI;
@@ -121,7 +123,7 @@ TEST(TSR, Validate)
 TEST(TSRSampleGenerator, SampleIdentity)
 {
   TSR tsr;
-  auto state = tsr.getSE3StateSpace()->createState();
+  auto state = tsr.getSE3()->createState();
 
   ASSERT_TRUE(tsr.createSampleGenerator()->sample(state));
   ASSERT_TRUE(state.getIsometry().isApprox(Eigen::Isometry3d::Identity()));
@@ -141,7 +143,7 @@ TEST(TSRSampleGenerator, SamplePointTSR)
   tsr.mT0_w = T0_w;
   tsr.validate();
 
-  auto state = tsr.getSE3StateSpace()->createState();
+  auto state = tsr.getSE3()->createState();
   auto generator = tsr.createSampleGenerator();
 
   ASSERT_TRUE(generator->canSample());
@@ -164,7 +166,7 @@ TEST(TSRSampleGenerator, SampleWithinBounds)
   tsr.mBw = Bw;
 
   auto sampler = tsr.createSampleGenerator();
-  auto state = tsr.getSE3StateSpace()->createState();
+  auto state = tsr.getSE3()->createState();
   
   for (int i = 0; i < 10; i++)
   {
@@ -190,8 +192,8 @@ TEST(TSRSampleGenerator, SampleSameSequence)
   auto sampler1 = tsr.createSampleGenerator();
   auto sampler2 = tsr.createSampleGenerator();
 
-  auto state1 = tsr.getSE3StateSpace()->createState();
-  auto state2 = tsr.getSE3StateSpace()->createState();
+  auto state1 = tsr.getSE3()->createState();
+  auto state2 = tsr.getSE3()->createState();
 
   for (int i = 0; i < 10; i++)
   {
@@ -212,7 +214,7 @@ TEST(TSR, GetValue)
 
   tsr.mBw = Bw;
 
-  auto state = tsr.getSE3StateSpace()->createState();  
+  auto state = tsr.getSE3()->createState();  
 
   // strictly inside TSR
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
@@ -366,7 +368,7 @@ TEST(TSR, GetJacobian)
 
   tsr.mBw = Bw;
 
-  auto state = tsr.getSE3StateSpace()->createState();  
+  auto state = tsr.getSE3()->createState();  
 
   // strictly inside TSR
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
@@ -376,7 +378,6 @@ TEST(TSR, GetJacobian)
   Eigen::MatrixXd jacobian = tsr.getJacobian(state);
   EXPECT_TRUE(jacobian.isApproxToConstant(0));
 
-  
   // outside TSR
   isometry.translation() = Eigen::Vector3d(3, 0, 0);
   state.setIsometry(isometry);
@@ -387,3 +388,90 @@ TEST(TSR, GetJacobian)
   EXPECT_TRUE(jacobian.isApprox(expected, 1e-3));
 
 }
+
+
+TEST(TSR, GetValueAndJacobian)
+{
+  TSR tsr;
+
+  Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(0,0) = 0;
+  Bw(0,1) = 2;
+
+  tsr.mBw = Bw;
+
+  auto state = tsr.getSE3()->createState();  
+
+  // strictly inside TSR
+  Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
+  isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
+  state.setIsometry(isometry);
+
+  auto value = tsr.getValue(state);
+  auto jacobian = tsr.getJacobian(state);
+  auto valueAndJacobian = tsr.getValueAndJacobian(state);
+
+  EXPECT_TRUE(value.isApprox(valueAndJacobian.first));
+  EXPECT_TRUE(jacobian.isApprox(valueAndJacobian.second));
+
+}
+
+TEST(TSR, GetConstraintTypes)
+{
+  // This tests current behavior, but it may fail.
+  TSR tsr;
+  auto types = tsr.getConstraintTypes();
+
+  EXPECT_EQ(6, types.size());
+
+  for (auto t: types)
+  {
+    EXPECT_EQ(t, ConstraintType::INEQUALITY);
+  }
+}
+
+TEST(TSR, GetConstraintDimension)
+{
+  TSR tsr;
+  auto dim = tsr.getConstraintDimension();
+
+  EXPECT_EQ(6, dim);
+}
+
+TEST(TSR, IsSatisfied)
+{
+  TSR tsr;
+
+  Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+  Bw(0,0) = 0;
+  Bw(0,1) = 2;
+
+  tsr.mBw = Bw;
+
+  auto state = tsr.getSE3()->createState();  
+
+  // strictly inside TSR
+  Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
+  isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
+  state.setIsometry(isometry);
+
+  EXPECT_TRUE(tsr.isSatisfied(state));
+
+  // outside TSR
+  isometry.translation() = Eigen::Vector3d(3, 0, 0);
+  state.setIsometry(isometry);
+
+  EXPECT_FALSE(tsr.isSatisfied(state));
+}
+
+TEST(TSR, getSE3EqualToGetStateSpace)
+{
+  TSR tsr;
+  auto se3space = tsr.getSE3();  
+  auto space = tsr.getStateSpace();
+
+  EXPECT_EQ(se3space, space);
+}
+
+
+

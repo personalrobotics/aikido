@@ -1,12 +1,15 @@
-#ifndef AIKIDO_STATESPACE_SCOPEDSTATE_H
-#define AIKIDO_STATESPACE_SCOPEDSTATE_H
+#ifndef AIKIDO_STATESPACE_SCOPEDSTATE_HPP_
+#define AIKIDO_STATESPACE_SCOPEDSTATE_HPP_
 #include <memory>
 #include "StateHandle.hpp"
 
 namespace aikido {
 namespace statespace {
 
-/// RAII wrapper for StateHandle.
+/// CRTP RAII wrapper for a \c StateHandle. The constructor of \c ScopedState
+/// allocates a state and the destructor destroys it.
+///
+/// \tparam _Handle \c StateHandle class being wrapped.
 template <class _Handle>
 class ScopedState : public _Handle
 {
@@ -16,19 +19,13 @@ public:
   using typename Handle::State;
   using typename Handle::QualifiedState;
 
-  /// Construct a ScopedState for a StateSpace.
-  explicit ScopedState(const StateSpace* _space)
-  {
-    this->mSpace = _space;
-    mBuffer.reset(new char[_space->getStateSizeInBytes()]);
-    this->mState = static_cast<ScopedState::State*>(
-      _space->allocateStateInBuffer(mBuffer.get()));
-  }
+  /// Construct a \c ScopedState by allocating a new state in \c _space. This
+  /// state will be freed when \c ScopedState is destructed.
+  ///
+  /// \param _space state 
+  explicit ScopedState(const StateSpace* _space);
 
-  virtual ~ScopedState()
-  {
-    this->mSpace->freeStateInBuffer(this->mState);
-  }
+  virtual ~ScopedState();
 
   // ScopedState is uncopyable, must use std::move
   ScopedState(const ScopedState&) = delete;
@@ -44,4 +41,6 @@ private:
 } // namespace statespace
 } // namespace aikido
 
-#endif // ifndef AIKIDO_STATESPACE_SCOPEDSTATE_H
+#include "detail/ScopedState-impl.hpp"
+
+#endif // ifndef AIKIDO_STATESPACE_SCOPEDSTATE_HPP_

@@ -2,30 +2,56 @@
 #define AIKIDO_CONSTRAINT_TSR_H_
 
 #include "Sampleable.hpp"
-#include "../statespace/SE3StateSpace.hpp"
+#include "../statespace/SE3.hpp"
 #include <Eigen/Dense>
 #include "Projectable.hpp"
 #include "Differentiable.hpp"
-#include "TestableConstraint.hpp"
+#include "Testable.hpp"
 #include <dart/math/MathTypes.h>
 
-namespace aikido
-{
-namespace constraint
-{
-class TSR : public SampleableConstraint,
+namespace aikido {
+namespace constraint {
+
+/// TSRs describe end-effector constraint sets as subsets of SE(3).
+/// A TSR consists of three parts:
+///     T0_w: transform from the origin to the TSR frame w
+///     B_w: 6 × 2 matrix of bounds in the coordinates of w.
+///     Tw_e: end-effector offset transform in the coordinates of w
+/// See:
+/// Berenson, Dmitry, Siddhartha S. Srinivasa, and James Kuffner.
+/// "Task space regions: A framework for pose-constrained manipulation
+/// planning." IJRR 2001:
+/// http://repository.cmu.edu/cgi/viewcontent.cgi?article=2024&context=robotics
+class TSR : public Sampleable,
             public Differentiable,
-            public TestableConstraint
+            public Testable,
+            public Projectable
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+  /// Constructor.
+  /// \param _rng Random number generator used by SampleGenerators for this TSR.
+  /// \param _T0_w transform from the origin to the TSR frame w
+  /// \param _Bw 6 × 2 matrix of bounds in the coordinates of w.
+  ///        Top three rows bound translation, and bottom three rows
+  ///        bound rotation following Roll-Pitch-Yaw convention.
+  ///        _Bw(i, 0) should be less than or equal to _Bw(i, 1).
+  /// \param _Tw_e end-effector offset transform in the coordinates of w
   TSR(std::unique_ptr<util::RNG> _rng,
       const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity());
 
+
+  /// Constructor with default random seed generator.
+  /// \param _T0_w transform from the origin to the TSR frame w
+  /// \param _Bw 6 × 2 matrix of bounds in the coordinates of w.
+  ///        Top three rows bound translation, and bottom three rows
+  ///        bound rotation following Roll-Pitch-Yaw convention.
+  ///        _Bw(i, 0) should be less than or equal to _Bw(i, 1).
+  /// \param _Tw_e end-effector offset transform in the coordinates of w
   TSR(const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
@@ -42,8 +68,8 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  // Documentation inherited.
-  std::shared_ptr<statespace::SE3StateSpace> getSE3StateSpace() const;
+  /// Returns the SE3 which this TSR operates in.
+  std::shared_ptr<statespace::SE3> getSE3() const;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
@@ -52,6 +78,7 @@ public:
   bool isSatisfied(const statespace::StateSpace::State* _s) const override;
 
   /// Throws an invalid_argument exception if this TSR is invalid.
+  /// For a TSR to be valid, mBw(i, 0) <= mBw(i, 1).
   void validate() const;
 
   /// Set the random number generator used by SampleGenerators for this TSR.
@@ -64,9 +91,12 @@ public:
   Eigen::VectorXd getValue(
       const statespace::StateSpace::State* _s) const override;
 
-  // Returns 6 x 6 matrix.
-  // Jacobian of TSR w.r.t. se3 tangent vector in World Frame
-  // -- the frame SE3 was written w.r.t.
+  /// Returns 6 x 6 matrix.
+  /// Jacobian of TSR with respect to the se(3) tangent vector of _s.
+  /// The jacobian is w.r.t. the origin frame.
+  /// se(3) tangent vector follows dart convention:
+  ///   top 3 rows is the angle-axis representation of _s's rotation.
+  ///   bottom 3 rows represent the translation.
   Eigen::MatrixXd getJacobian(
       const statespace::StateSpace::State* _s) const override;
 
@@ -77,18 +107,25 @@ public:
   // Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;
 
-  /// Transformation from origin frame into "wiggle" frame.
+  // Documentation inherited.
+  bool project(const statespace::StateSpace::State* _s,
+      statespace::StateSpace::State* _out) const override;
+
+  /// Transformation from origin frame into the TSR frame "w".
+  /// "w" is usually centered at the origin of an object held by the hand
+  ///  or at a location on an object that is useful for grasping.
   Eigen::Isometry3d mT0_w;
 
   /// Bounds on "wiggling" in `x, y, z, roll, pitch, yaw`.
   Eigen::Matrix<double, 6, 2> mBw;
 
-  /// Transformation from "wiggle" frame into end frame.
+  /// Transformation from "w" frame into end frame.
+  /// This often represent an offset from "w" to the origin of the end-effector.
   Eigen::Isometry3d mTw_e;
 
 private:
   std::unique_ptr<util::RNG> mRng;
-  std::shared_ptr<statespace::SE3StateSpace> mStateSpace;
+  std::shared_ptr<statespace::SE3> mStateSpace;
 };
 
 using TSRPtr = std::shared_ptr<TSR>;

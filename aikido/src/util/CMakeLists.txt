@@ -3,6 +3,7 @@ aikido_add_library("${PROJECT_NAME}_util"
   PseudoInverse.cpp
   VanDerCorput.cpp
   StepSequence.cpp
+  RNG.cpp
 )
 target_link_libraries("${PROJECT_NAME}_util"
   ${Boost_FILESYSTEM_LIBRARY}
