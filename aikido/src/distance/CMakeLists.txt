@@ -3,6 +3,7 @@ aikido_add_library("${PROJECT_NAME}_distance"
   RnEuclidean.cpp
   SO3Angular.cpp
   Weighted.cpp
+  defaults.cpp
 )
 target_link_libraries("${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace"
