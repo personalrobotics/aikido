@@ -96,7 +96,8 @@ public:
     double _t, statespace::StateSpace::State *_state) const override;
 
   // Documentation inherited.
-  Eigen::VectorXd evaluate(double _t, int _derivative) const override;
+  void evaluateDerivative(double _t, int _derivative,
+    Eigen::VectorXd& _tangentVector ) const override;
 
 private:
   struct PolynomialSegment

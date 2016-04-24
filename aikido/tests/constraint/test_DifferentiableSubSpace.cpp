@@ -1,18 +1,18 @@
 #include <gtest/gtest.h>
 #include "PolynomialConstraint.hpp"
 #include "../eigen_tests.hpp"
-#include <aikido/constraint/DifferentiableSubSpace.hpp>
+#include <aikido/constraint/DifferentiableSubspace.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/Rn.hpp>
 
-using aikido::constraint::DifferentiableSubSpace;
+using aikido::constraint::DifferentiableSubspace;
 using aikido::constraint::Satisfied;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::Rn;
 
-class DifferentiableSubSpaceTest : public testing::Test
+class DifferentiableSubspaceTest : public testing::Test
 {
 public:
   virtual void SetUp()
@@ -24,21 +24,21 @@ public:
 
     cs = std::make_shared<CartesianProduct>(
         std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
-    ds = std::make_shared<DifferentiableSubSpace>(cs, constraint, 1);
+    ds = std::make_shared<DifferentiableSubspace>(cs, constraint, 1);
   }
 
   std::shared_ptr<PolynomialConstraint> constraint;
   std::shared_ptr<CartesianProduct> cs;
-  std::shared_ptr<DifferentiableSubSpace> ds;
+  std::shared_ptr<DifferentiableSubspace> ds;
 };
 
-TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnNullStateSpace)
+TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(DifferentiableSubSpace(nullptr, constraint, 1),
+  EXPECT_THROW(DifferentiableSubspace(nullptr, constraint, 1),
                std::invalid_argument);
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnNullConstraint)
+TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullConstraint)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv = std::make_shared<Rn>(3);
@@ -46,10 +46,10 @@ TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnNullConstraint)
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
-  EXPECT_THROW(DifferentiableSubSpace(cs, nullptr, 1), std::invalid_argument);
+  EXPECT_THROW(DifferentiableSubspace(cs, nullptr, 1), std::invalid_argument);
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnInvalidIndex)
+TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnInvalidIndex)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv = std::make_shared<Rn>(3);
@@ -57,11 +57,11 @@ TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnInvalidIndex)
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
-  EXPECT_THROW(DifferentiableSubSpace(cs, constraint, 2),
+  EXPECT_THROW(DifferentiableSubspace(cs, constraint, 2),
                std::invalid_argument);
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnMismatchStateSpace)
+TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnMismatchStateSpace)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv = std::make_shared<Rn>(3);
@@ -69,31 +69,31 @@ TEST_F(DifferentiableSubSpaceTest, ConstructorThrowsOnMismatchStateSpace)
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
-  EXPECT_THROW(DifferentiableSubSpace(cs, constraint, 0),
+  EXPECT_THROW(DifferentiableSubspace(cs, constraint, 0),
                std::invalid_argument);
 }
 
-TEST_F(DifferentiableSubSpaceTest, StateSpace)
+TEST_F(DifferentiableSubspaceTest, StateSpace)
 {
   EXPECT_EQ(cs, ds->getStateSpace());
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstraintType)
+TEST_F(DifferentiableSubspaceTest, ConstraintType)
 {
   auto ctypes = ds->getConstraintTypes();
   EXPECT_EQ(1, ctypes.size());
   EXPECT_EQ(aikido::constraint::ConstraintType::EQUALITY, ctypes[0]);
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstraintDimension)
+TEST_F(DifferentiableSubspaceTest, ConstraintDimension)
 {
   EXPECT_EQ(1, ds->getConstraintDimension());
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstraintValue)
+TEST_F(DifferentiableSubspaceTest, ConstraintValue)
 {
   auto st = cs->createState();
-  auto subSpace = cs->getSubSpace<Rn>(1);
+  auto subSpace = cs->getSubspace<Rn>(1);
   auto subState = cs->getSubStateHandle<Rn>(st, 1);
 
   subSpace->setValue(subState, aikido::tests::make_vector(2));
@@ -102,10 +102,10 @@ TEST_F(DifferentiableSubSpaceTest, ConstraintValue)
   EXPECT_TRUE(ds->getValue(st).isApprox(expected));
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstraintJacobian)
+TEST_F(DifferentiableSubspaceTest, ConstraintJacobian)
 {
   auto st = cs->createState();
-  auto subSpace = cs->getSubSpace<Rn>(1);
+  auto subSpace = cs->getSubspace<Rn>(1);
   auto subState = cs->getSubStateHandle<Rn>(st, 1);
 
   subSpace->setValue(subState, aikido::tests::make_vector(2));
@@ -114,10 +114,10 @@ TEST_F(DifferentiableSubSpaceTest, ConstraintJacobian)
   EXPECT_TRUE(ds->getJacobian(st).isApprox(expected));
 }
 
-TEST_F(DifferentiableSubSpaceTest, ConstraintValueAndJacobian)
+TEST_F(DifferentiableSubspaceTest, ConstraintValueAndJacobian)
 {
   auto st = cs->createState();
-  auto subSpace = cs->getSubSpace<Rn>(1);
+  auto subSpace = cs->getSubspace<Rn>(1);
   auto subState = cs->getSubStateHandle<Rn>(st, 1);
 
   subSpace->setValue(subState, aikido::tests::make_vector(2));

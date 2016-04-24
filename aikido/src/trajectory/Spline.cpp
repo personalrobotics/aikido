@@ -128,7 +128,8 @@ void Spline::evaluate(
 }
 
 //=============================================================================
-Eigen::VectorXd Spline::evaluate(double _t, int _derivative) const
+void Spline::evaluateDerivative(double _t, int _derivative,
+  Eigen::VectorXd& _tangentVector ) const
 {
   if (mSegments.empty())
     throw std::logic_error("Unable to evaluate empty trajectory.");
@@ -141,12 +142,17 @@ Eigen::VectorXd Spline::evaluate(double _t, int _derivative) const
 
   // Return zero for higher-order derivatives.
   if (_derivative < targetSegment.mCoefficients.cols())
+  {
     // TODO: We should transform this into the body frame using the adjoint
     // transformation.
-    return evaluatePolynomial(targetSegment.mCoefficients, evaluationTime,
-      _derivative);
+    _tangentVector = evaluatePolynomial(
+      targetSegment.mCoefficients, evaluationTime, _derivative);
+  }
   else
-    return Eigen::VectorXd::Zero(mStateSpace->getDimension());
+  {
+    _tangentVector.resize(mStateSpace->getDimension());
+    _tangentVector.setZero();
+  }
 }
 
 //=============================================================================

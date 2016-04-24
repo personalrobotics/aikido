@@ -24,29 +24,43 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Returns 0.
+  /// Returns \c 0.
   size_t getConstraintDimension() const override;
 
   /// Returns an empty vector.
   std::vector<constraint::ConstraintType> getConstraintTypes() const override;
 
-  /// Returns true.
+  /// Returns \c true.
+  ///
+  /// \param state a state in \c getStateSpace()
   bool isSatisfied(const statespace::StateSpace::State* state) const override;
 
-  /// _out will always match the value of _s.
+  /// Sets \c _out to \c _s.
+  ///
+  /// \param _s input state
+  /// \param[out] _out output state
   bool project(
     const statespace::StateSpace::State* _s,
     statespace::StateSpace::State* _out) const override;
 
-  // Returns an empty vector.
+  /// Returns an empty vector.
+  ///
+  /// \param _s input state
+  /// \return empty vector
   Eigen::VectorXd getValue(
     const statespace::StateSpace::State* _s) const override;
 
   /// Returns an empty matrix.
+  ///
+  /// \param _s input state
+  /// \return empty Jacobian matrix
   Eigen::MatrixXd getJacobian(
     const statespace::StateSpace::State* _s) const override;
 
   /// Returns a pair of empty vector and empty matrix.
+  ///
+  /// \param _s input state
+  /// \return pair of empty vector and matrix
   std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
     const statespace::StateSpace::State* _s) const override;
 

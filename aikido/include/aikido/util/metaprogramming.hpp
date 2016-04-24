@@ -50,7 +50,7 @@ struct DynamicCastFactory {};
 template <class Pointee>
 struct DynamicCastFactory_shared_ptr;
 
-/// Helper template class necessary to use raw pointers  as the pointer type
+/// Helper template class necessary to use raw pointers as the pointer type
 /// in \c DynamicCastFactory.
 ///
 /// \tparam pointee type

@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <aikido/constraint/Testable.hpp>
-#include <aikido/constraint/dart.hpp>
+#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>

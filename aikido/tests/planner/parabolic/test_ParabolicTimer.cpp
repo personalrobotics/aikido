@@ -160,20 +160,20 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
   EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
 
   // Velocity
-  tangentVector = timedTrajectory->evaluate(0.5, 1);
+  timedTrajectory->evaluateDerivative(0.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(1.0, 1);
+  timedTrajectory->evaluateDerivative(1.0, 1, tangentVector);
   EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(1.5, 1);
+  timedTrajectory->evaluateDerivative(1.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
 
   // Acceleration.
-  tangentVector = timedTrajectory->evaluate(0.5, 2);
+  timedTrajectory->evaluateDerivative(0.5, 2, tangentVector);
   EXPECT_TRUE(Vector2d(1., 1.).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(1.5, 2);
+  timedTrajectory->evaluateDerivative(1.5, 2, tangentVector);
   EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector));
 }
 
@@ -216,34 +216,34 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
   EXPECT_TRUE(Vector2d(3.0, 4.0).isApprox(state.getValue()));
 
   // Velocity
-  tangentVector = timedTrajectory->evaluate(0.5, 1);
+  timedTrajectory->evaluateDerivative(0.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(1.0, 1);
+  timedTrajectory->evaluateDerivative(1.0, 1, tangentVector);
   EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(1.5, 1);
+  timedTrajectory->evaluateDerivative(1.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(2.0, 1);
+  timedTrajectory->evaluateDerivative(2.0, 1, tangentVector);
   EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(2.5, 1);
+  timedTrajectory->evaluateDerivative(2.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(3.0, 1);
+  timedTrajectory->evaluateDerivative(3.0, 1, tangentVector);
   // TODO: isApprox does not work when comparing against zero.
   //EXPECT_TRUE(Vector2d(0.0, 0.0).isApprox(tangentVector));
 
   // Acceleration.
-  tangentVector = timedTrajectory->evaluate(0.5, 2);
+  timedTrajectory->evaluateDerivative(0.5, 2, tangentVector);
   EXPECT_TRUE(Vector2d(1., 1.).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(1.5, 2);
+  timedTrajectory->evaluateDerivative(1.5, 2, tangentVector);
   // TODO: isApprox does not work when comparing against zero.
   //EXPECT_TRUE(Vector2d(0., 0.).isApprox(tangentVector));
 
-  tangentVector = timedTrajectory->evaluate(2.5, 2);
+  timedTrajectory->evaluateDerivative(2.5, 2, tangentVector);
   EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector));
 }
 

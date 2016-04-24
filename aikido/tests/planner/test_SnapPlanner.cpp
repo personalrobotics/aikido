@@ -75,7 +75,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   auto traj = planSnap(stateSpace, *startState, *goalState, interpolator,
     passingConstraint, planningResult);
 
-  auto subSpace = stateSpace->getSubSpace<SO2>(0);
+  auto subSpace = stateSpace->getSubspace<SO2>(0);
   EXPECT_EQ(2, traj->getNumWaypoints());
 
   auto startValue =

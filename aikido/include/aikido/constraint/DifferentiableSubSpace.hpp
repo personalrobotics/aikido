@@ -8,18 +8,18 @@ namespace constraint{
 
 /// A differentiable constraint applied only on a subspace of
 /// a CompoundState.
-class DifferentiableSubSpace : public Differentiable
+class DifferentiableSubspace : public Differentiable
 {
 public:
   /// Apply _constraint to the i-th subspace of _stateSpace.
   /// \param _stateSpace CartesianProduct.
   /// \param _constraint Constraint being applied.
   /// \param _index Subspace of _stateSpace to apply _constraint.
-  DifferentiableSubSpace(
+  DifferentiableSubspace(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     DifferentiablePtr _constraint, size_t _index);
 
-  virtual ~DifferentiableSubSpace() = default;
+  virtual ~DifferentiableSubspace() = default;
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;

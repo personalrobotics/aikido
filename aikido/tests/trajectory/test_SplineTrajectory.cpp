@@ -294,9 +294,10 @@ TEST_F(SplineTest, evaluate_Middle_ReturnsInterpolation)
 TEST_F(SplineTest, evaluateDerivative_IsEmpty_Throws)
 {
   Spline trajectory(mStateSpace, 3.);
+  Eigen::VectorXd tangentVector;
 
   EXPECT_THROW({
-    trajectory.evaluate(3., 1);
+    trajectory.evaluateDerivative(3., 1, tangentVector);
   }, std::logic_error);
 }
 
@@ -317,13 +318,13 @@ TEST_F(SplineTest, evaluateDerivative_FirstDerivative)
  
   Eigen::VectorXd tangentVector;
 
-  tangentVector = trajectory.evaluate(3.5, 1);
+  trajectory.evaluateDerivative(3.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(1.00, 2.00).isApprox(tangentVector));
 
-  tangentVector = trajectory.evaluate(5.0, 1);
+  trajectory.evaluateDerivative(5.0, 1, tangentVector);
   EXPECT_TRUE(Vector2d(5.00, 6.00).isApprox(tangentVector));
 
-  tangentVector = trajectory.evaluate(7.5, 1);
+  trajectory.evaluateDerivative(7.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(11., 12.).isApprox(tangentVector));
 }
 
@@ -344,13 +345,13 @@ TEST_F(SplineTest, EvaluateDerivative_SecondDerivative)
  
   Eigen::VectorXd tangentVector;
 
-  tangentVector = trajectory.evaluate(3.5, 2);
+  trajectory.evaluateDerivative(3.5, 2, tangentVector);
   EXPECT_TRUE(Vector2d(2., 2.).isApprox(tangentVector));
 
-  tangentVector = trajectory.evaluate(5.0, 2);
+  trajectory.evaluateDerivative(5.0, 2, tangentVector);
   EXPECT_TRUE(Vector2d(4., 4.).isApprox(tangentVector));
 
-  tangentVector = trajectory.evaluate(7.5, 2);
+  trajectory.evaluateDerivative(7.5, 2, tangentVector);
   EXPECT_TRUE(Vector2d(6., 6.).isApprox(tangentVector));
 }
 
@@ -371,12 +372,12 @@ TEST_F(SplineTest, EvaluateDerivative_HigherOrder_ReturnsZero)
  
   Eigen::VectorXd tangentVector;
 
-  tangentVector = trajectory.evaluate(3.5, 3);
+  trajectory.evaluateDerivative(3.5, 3, tangentVector);
   EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
 
-  tangentVector = trajectory.evaluate(5.0, 3);
+  trajectory.evaluateDerivative(5.0, 3, tangentVector);
   EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
 
-  tangentVector = trajectory.evaluate(7.5, 3);
+  trajectory.evaluateDerivative(7.5, 3, tangentVector);
   EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
 }

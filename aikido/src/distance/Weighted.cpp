@@ -13,24 +13,24 @@ Weighted::Weighted(
     throw std::invalid_argument("CartesianProduct is nullptr");
   }
 
-  if (mStateSpace->getNumStates() != _metrics.size()) {
+  if (mStateSpace->getNumSubspaces() != _metrics.size()) {
     std::stringstream msg;
     msg << "Must provide a metric for every subspace in the "
            "CartesianProduct. "
-        << " (subspaces = " << mStateSpace->getNumStates()
+        << " (subspaces = " << mStateSpace->getNumSubspaces()
         << " , metrics = " << _metrics.size() << ")";
     throw std::invalid_argument(msg.str());
   }
 
   mMetrics.reserve(_metrics.size());
-  for (size_t i = 0; i < mStateSpace->getNumStates(); ++i) {
+  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i) {
     if (_metrics[i] == nullptr) {
       std::stringstream msg;
       msg << "DistanceMetric " << i << " is nullptr.";
       throw std::invalid_argument(msg.str());
     }
 
-    if (mStateSpace->getSubSpace<>(i) != _metrics[i]->getStateSpace()) {
+    if (mStateSpace->getSubspace<>(i) != _metrics[i]->getStateSpace()) {
       std::stringstream msg;
       msg << "DistanceMetric " << i
           << " is not defined over the correct StateSpace.";
@@ -51,22 +51,22 @@ Weighted::Weighted(
     throw std::invalid_argument("CartesianProduct is nullptr");
   }
 
-  if (mStateSpace->getNumStates() != mMetrics.size()) {
+  if (mStateSpace->getNumSubspaces() != mMetrics.size()) {
     std::stringstream msg;
     msg << "Must provide a metric for every subspace in the "
            "CartesianProduct. "
-        << " (subspaces = " << mStateSpace->getNumStates()
+        << " (subspaces = " << mStateSpace->getNumSubspaces()
         << " , metrics = " << mMetrics.size() << ")";
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mStateSpace->getNumStates(); ++i) {
+  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i) {
     if (mMetrics[i].first == nullptr) {
       std::stringstream msg;
       msg << "DistanceMetric " << i << " is nullptr.";
       throw std::invalid_argument(msg.str());
     }
-    if (mStateSpace->getSubSpace<>(i) != mMetrics[i].first->getStateSpace()) {
+    if (mStateSpace->getSubspace<>(i) != mMetrics[i].first->getStateSpace()) {
       std::stringstream msg;
       msg << "DistanceMetric " << i
           << " is not defined over the correct StateSpace.";

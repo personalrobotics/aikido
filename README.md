@@ -35,14 +35,27 @@ with `catkin_make_isolated`. This may dramatically increase your build time, so 
 [`catkin_tools` package][Catkin Tools], if possible.
 
 ### License
-AIKIDO is licensed under a BSD license. See [LICENSE](./LICENSE) for more information.
+Aikido is licensed under a BSD license. See [LICENSE](./LICENSE) for more
+information.
 
 ### Authors
-AIKIDO was developed by Michael Koval ([**@mkoval**](https://github.com/mkoval))
-and Pras Velagapudi ([**@psigen**](https://github.com/psigen)) in the
+Aikido is developed by the
 [Personal Robotics Lab](https://personalrobotics.ri.cmu.edu/) in the
 [Robotics Institute](http://ri.cmu.edu/) at
-[Carnegie Mellon University](http://www.cmu.edu/).
+[Carnegie Mellon University](http://www.cmu.edu/). The library was started by 
+Michael Koval ([**@mkoval**](https://github.com/mkoval))
+and Pras Velagapudi ([**@psigen**](https://github.com/psigen)). It has received
+major contributions from
+Shushman Choudhury ([**@Shushman**](https://github.com/Shushman)),
+Aaron Johnson ([**@aaronjoh**](https://github.com/aaronjoh)),
+Jennifer King ([**@jeking**](https://github.com/jeking04)),
+Gilwoo Lee ([**@lgw903**](https://github.com/lgw903)),
+and Clint Liddick ([**@ClintLiddick**](https://github.com/ClintLiddick)). We
+also would like to thank
+Michael Grey ([**@mxgrey**](https://github.com/mxgrey))
+and J.S. Lee ([**@jslee02**](https://github.com/jslee02))
+for making changes to DART to better support Aikido.
+
 
 [DART]: http://dartsim.github.io/
 [OMPL]: http://ompl.kavrakilab.org/

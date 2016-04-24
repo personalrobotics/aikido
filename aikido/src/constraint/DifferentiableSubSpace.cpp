@@ -1,11 +1,11 @@
 #include <sstream>
-#include <aikido/constraint/DifferentiableSubSpace.hpp>
+#include <aikido/constraint/DifferentiableSubspace.hpp>
 
 namespace aikido {
 namespace constraint {
 
 //=============================================================================
-DifferentiableSubSpace::DifferentiableSubSpace(
+DifferentiableSubspace::DifferentiableSubspace(
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       DifferentiablePtr _constraint, size_t _index)
   : mStateSpace(std::move(_stateSpace))
@@ -18,39 +18,39 @@ DifferentiableSubSpace::DifferentiableSubSpace(
   if (!mConstraint)
     throw std::invalid_argument("Differentiable is nullptr.");
 
-  if (_index >= mStateSpace->getNumStates())
+  if (_index >= mStateSpace->getNumSubspaces())
   {
     std::stringstream msg;
     msg << "Subspace Index " << _index << " is out of range [0, "
-        << mStateSpace->getNumStates() << "].";
+        << mStateSpace->getNumSubspaces() << "].";
     throw std::invalid_argument(msg.str());
   }
 
-  if (mConstraint->getStateSpace() != mStateSpace->getSubSpace<>(mIndex))
+  if (mConstraint->getStateSpace() != mStateSpace->getSubspace<>(mIndex))
     throw std::invalid_argument(
-      "Constraint does not apply to the specified SubSpace.");
+      "Constraint does not apply to the specified Subspace.");
 }
 
 //=============================================================================
-statespace::StateSpacePtr DifferentiableSubSpace::getStateSpace() const
+statespace::StateSpacePtr DifferentiableSubspace::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
-std::vector<ConstraintType> DifferentiableSubSpace::getConstraintTypes() const
+std::vector<ConstraintType> DifferentiableSubspace::getConstraintTypes() const
 {
   return mConstraint->getConstraintTypes();
 }
 
 //=============================================================================
-size_t DifferentiableSubSpace::getConstraintDimension() const
+size_t DifferentiableSubspace::getConstraintDimension() const
 {
   return mConstraint->getConstraintDimension();
 }
 
 //=============================================================================
-Eigen::VectorXd DifferentiableSubSpace::getValue(
+Eigen::VectorXd DifferentiableSubspace::getValue(
   const statespace::StateSpace::State* _s) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
@@ -59,7 +59,7 @@ Eigen::VectorXd DifferentiableSubSpace::getValue(
 }
 
 //=============================================================================
-Eigen::MatrixXd DifferentiableSubSpace::getJacobian(
+Eigen::MatrixXd DifferentiableSubspace::getJacobian(
   const statespace::StateSpace::State* _s) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
@@ -69,7 +69,7 @@ Eigen::MatrixXd DifferentiableSubSpace::getJacobian(
 
 //=============================================================================
 std::pair<Eigen::VectorXd, Eigen::MatrixXd>
-  DifferentiableSubSpace::getValueAndJacobian(
+  DifferentiableSubspace::getValueAndJacobian(
     const statespace::StateSpace::State* _s) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);

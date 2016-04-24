@@ -52,8 +52,8 @@ public:
   ///
   /// \param _t time parameter
   /// \param[out] _state output state of the trajectory at time \c _t
-  virtual void evaluate(
-      double _t, aikido::statespace::StateSpace::State *_state) const = 0;
+  virtual void evaluate(double _t,
+    statespace::StateSpace::State *_state) const = 0;
 
   /// Evaluates the derivative of the trajectory at time \c _t. The
   /// \c _tangentVector is defined in the local frame (i.e. "body frame") and
@@ -64,11 +64,12 @@ public:
   /// \param _t time parameter
   /// \param _derivative order of derivative
   /// \param[out] _tangentVector output tangent vector in the local frame
-  virtual Eigen::VectorXd evaluate(double _t, int _derivative) const = 0;
+  virtual void evaluateDerivative(double _t, int _derivative,
+    Eigen::VectorXd& _tangentVector ) const = 0;
 };
 
-using TrajectoryPtr = boost::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = boost::shared_ptr<const Trajectory>;
+using TrajectoryPtr = std::shared_ptr<Trajectory>;
+using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
 
 }  // namespace trajectory
 }  // namespace aikido

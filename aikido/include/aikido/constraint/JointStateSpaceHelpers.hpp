@@ -9,6 +9,7 @@
 
 namespace aikido {
 namespace constraint {
+
 /// Create differentiable bounds that can be applied to the given StateSpace
 /// \param _stateSpace The StateSpace where the Differentiable will be applied
 template <class Space>
@@ -108,6 +109,6 @@ std::unique_ptr<Sampleable> createSampleableBounds(
 } // namespace constraint
 } // namespace aikido
 
-#include "detail/dart.hpp"
+#include "detail/JointStateSpaceHelpers-impl.hpp"
 
 #endif // ifndef AIKIDO_CONSTRAINT_DART_HPP_

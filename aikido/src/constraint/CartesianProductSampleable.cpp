@@ -7,10 +7,10 @@ namespace constraint {
 using dart::common::make_unique;
 
 //=============================================================================
-class SubSpaceSampleGenerator : public SampleGenerator
+class SubspaceSampleGenerator : public SampleGenerator
 {
 public:
-  SubSpaceSampleGenerator(
+  SubspaceSampleGenerator(
         std::shared_ptr<statespace::CartesianProduct> _stateSpace,
         std::vector<std::unique_ptr<SampleGenerator>> _generators)
     : mStateSpace(std::move(_stateSpace))
@@ -30,7 +30,7 @@ public:
 
     auto state = static_cast<statespace::CartesianProduct::State*>(_state);
 
-    for (size_t i = 0; i < mStateSpace->getNumStates(); ++i)
+    for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
     {
       auto subState = mStateSpace->getSubState<>(state, i);
 
@@ -83,16 +83,16 @@ CartesianProductSampleable::CartesianProductSampleable(
   if(!mStateSpace)
     throw std::invalid_argument("_stateSpace is nullptr.");
 
-  if (mConstraints.size() != mStateSpace->getNumStates())
+  if (mConstraints.size() != mStateSpace->getNumSubspaces())
   {
     std::stringstream msg;
     msg << "Mismatch between size of CartesianProduct and the number of"
-        << " constraints: " << mStateSpace->getNumStates() << " != "
+        << " constraints: " << mStateSpace->getNumSubspaces() << " != "
         << mConstraints.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mStateSpace->getNumStates(); ++i)
+  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     if (!mConstraints[i])
     {
@@ -101,7 +101,7 @@ CartesianProductSampleable::CartesianProductSampleable(
       throw std::invalid_argument(msg.str());
     }
     
-    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubSpace<>(i))
+    if (mConstraints[i]->getStateSpace() != mStateSpace->getSubspace<>(i))
     {
       std::stringstream msg;
       msg << "Constraint " << i << " is not defined over this StateSpace.";
@@ -121,12 +121,12 @@ std::unique_ptr<SampleGenerator> CartesianProductSampleable
   ::createSampleGenerator() const
 {
   std::vector<std::unique_ptr<SampleGenerator>> generators;
-  generators.reserve(mStateSpace->getNumStates());
+  generators.reserve(mStateSpace->getNumSubspaces());
 
   for (const auto& constraint : mConstraints)
     generators.emplace_back(constraint->createSampleGenerator());
 
-  return make_unique<SubSpaceSampleGenerator>(
+  return make_unique<SubspaceSampleGenerator>(
     mStateSpace, std::move(generators));
 }
 
