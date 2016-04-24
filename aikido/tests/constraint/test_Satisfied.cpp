@@ -65,7 +65,8 @@ TEST_F(SatisfiedTests, getValue_ReturnsZero)
   Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
-  auto constraintValue = constraint.getValue(state);
+  Eigen::VectorXd constraintValue;
+  constraint.getValue(state, constraintValue);
   EXPECT_TRUE(expectedValue.isApprox(constraintValue));
 }
 
@@ -76,7 +77,8 @@ TEST_F(SatisfiedTests, getJacobian_ReturnsZero)
   Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
-  auto constraintJacobian = constraint.getJacobian(state);
+  Eigen::MatrixXd constraintJacobian;
+  constraint.getJacobian(state, constraintJacobian);
   EXPECT_TRUE(expectedJacobian.isApprox(constraintJacobian));
 }
 
@@ -88,7 +90,10 @@ TEST_F(SatisfiedTests, getValueAndJacobian_ReturnsZero)
   Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
-  auto valueAndJacobian = constraint.getValueAndJacobian(state);
-  EXPECT_TRUE(expectedValue.isApprox(valueAndJacobian.first));
-  EXPECT_TRUE(expectedJacobian.isApprox(valueAndJacobian.second));
+  Eigen::VectorXd value;
+  Eigen::MatrixXd jacobian;
+
+  constraint.getValueAndJacobian(state, value, jacobian);
+  EXPECT_TRUE(expectedValue.isApprox(value));
+  EXPECT_TRUE(expectedJacobian.isApprox(jacobian));
 }

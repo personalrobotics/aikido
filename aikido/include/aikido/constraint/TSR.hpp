@@ -30,6 +30,8 @@ class TSR : public Sampleable,
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+  using Differentiable::getValueAndJacobian;
+
   /// Constructor.
   /// \param _rng Random number generator used by SampleGenerators for this TSR.
   /// \param _T0_w transform from the origin to the TSR frame w
@@ -88,21 +90,20 @@ public:
   size_t getConstraintDimension() const override;
 
   // Documentation inherited.
-  Eigen::VectorXd getValue(
-      const statespace::StateSpace::State* _s) const override;
+  void getValue(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _out) const override;
 
-  /// Returns 6 x 6 matrix.
   /// Jacobian of TSR with respect to the se(3) tangent vector of _s.
   /// The jacobian is w.r.t. the origin frame.
   /// se(3) tangent vector follows dart convention:
   ///   top 3 rows is the angle-axis representation of _s's rotation.
   ///   bottom 3 rows represent the translation.
-  Eigen::MatrixXd getJacobian(
-      const statespace::StateSpace::State* _s) const override;
-
-  // Documentation inherited.
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-      const statespace::StateSpace::State* _s) const override;
+  /// \param _s State to be evaluated at.
+  /// \param[out] _out Jacobian, 6 x 6 matrix.
+  void getJacobian(
+    const statespace::StateSpace::State* _s,
+    Eigen::MatrixXd& _out) const override;
 
   // Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;

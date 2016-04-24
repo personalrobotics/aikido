@@ -86,13 +86,12 @@ TEST(NewtonsMethodProjectable, ProjectPolynomialFirstOrder)
   s1.setValue(v);
 
   auto out = rvss.createState();
-  bool success = projector.project(s1, out);
+  ASSERT_TRUE(projector.project(s1, out));
   Eigen::VectorXd projected = rvss.getValue(out);
 
   Eigen::VectorXd expected(1);
   expected(0) = -0.5;
 
-  EXPECT_TRUE(success);
   EXPECT_TRUE(expected.isApprox(projected));
 }
 

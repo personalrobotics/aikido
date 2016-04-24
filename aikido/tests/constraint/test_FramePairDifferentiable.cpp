@@ -127,7 +127,8 @@ TEST_F(FramePairDifferentiableTest, Value)
   state.getSubStateHandle<SE3>(1).setIsometry(
     Eigen::Isometry3d::Identity());
   
-  Eigen::VectorXd value = adaptor.getValue(state);
+  Eigen::VectorXd value;
+  adaptor.getValue(state, value);
   EXPECT_TRUE(value.isApprox(Eigen::VectorXd::Zero(6)));
 
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
@@ -137,7 +138,7 @@ TEST_F(FramePairDifferentiableTest, Value)
   tsr->mBw = Bw;
 
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
-  value = adaptor.getValue(state);
+  adaptor.getValue(state, value);
   
   Eigen::VectorXd expected(Eigen::VectorXd::Zero(6));
   expected(2) = 1;
@@ -165,10 +166,12 @@ TEST_F(FramePairDifferentiableTest, Jacobian)
   state.getSubStateHandle<SE3>(1).setIsometry(
     Eigen::Isometry3d::Identity());
   
-  Eigen::Vector6d value = adaptor.getValue(state);
+  Eigen::VectorXd value;
+  adaptor.getValue(state, value);
   EXPECT_TRUE(value.isApprox(Eigen::VectorXd::Zero(6)));
 
-  Eigen::MatrixXd jacobian = adaptor.getJacobian(state);
+  Eigen::MatrixXd jacobian;
+  adaptor.getJacobian(state, jacobian);
   EXPECT_TRUE(jacobian.isApproxToConstant(0, 1e-3));
 
 
@@ -177,7 +180,7 @@ TEST_F(FramePairDifferentiableTest, Jacobian)
   isometry.translation() = Eigen::Vector3d(0, 0, 2);
   state.getSubStateHandle<SE3>(0).setIsometry(isometry);
 
-  jacobian = adaptor.getJacobian(state);
+  adaptor.getJacobian(state, jacobian);
 
   Eigen::MatrixXd expected(Eigen::MatrixXd::Zero(6, 12));
   expected(2, 5) = 1; 

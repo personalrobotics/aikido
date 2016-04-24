@@ -133,23 +133,24 @@ TEST_F(RnJointHelpersTests, createDifferentiableBounds)
   // Value is zero when the constraint is satisfied.
   mJoint->setPosition(0, -0.9);
   mStateSpace->getState(state);
-  auto constraintValue = differentiableConstraint->getValue(state);
+  Eigen::VectorXd constraintValue;
+  differentiableConstraint->getValue(state, constraintValue);
   EXPECT_TRUE(Vector1d::Zero().isApprox(constraintValue));
 
   mJoint->setPosition(0, 1.9);
   mStateSpace->getState(state);
-  constraintValue = differentiableConstraint->getValue(state);
+  differentiableConstraint->getValue(state, constraintValue);
   EXPECT_TRUE(Vector1d::Zero().isApprox(constraintValue));
 
   // Value is non-zero when the constraint is not satisfied.
   mJoint->setPosition(0, -1.1);
   mStateSpace->getState(state);
-  constraintValue = differentiableConstraint->getValue(state);
+  differentiableConstraint->getValue(state, constraintValue);
   EXPECT_FALSE(Vector1d::Zero().isApprox(constraintValue));
 
   mJoint->setPosition(0, 2.1);
   mStateSpace->getState(state);
-  constraintValue = differentiableConstraint->getValue(state);
+  differentiableConstraint->getValue(state, constraintValue);
   EXPECT_FALSE(Vector1d::Zero().isApprox(constraintValue));
 }
 

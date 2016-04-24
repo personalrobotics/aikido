@@ -185,57 +185,48 @@ bool RnBoxConstraint::project(
 }
 
 //=============================================================================
-Eigen::VectorXd RnBoxConstraint::getValue(
-  const statespace::StateSpace::State* _s) const
+void RnBoxConstraint::getValue(
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _out) const
 {
   auto stateValue = mSpace->getValue(
     static_cast<const statespace::Rn::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
-  Eigen::VectorXd constraintValue(dimension);
+  _out.resize(dimension);
 
   for (size_t i = 0; i < dimension; ++i)
   {
     if (stateValue[i] < mLowerLimits[i])
-      constraintValue[i] = stateValue[i] - mLowerLimits[i];
+      _out[i] = stateValue[i] - mLowerLimits[i];
     else if (stateValue[i] > mUpperLimits[i])
-      constraintValue[i] = mUpperLimits[i] - stateValue[i];
+      _out[i] = mUpperLimits[i] - stateValue[i];
     else
-      constraintValue[i] = 0.;
+      _out[i] = 0.;
   }
 
-  return constraintValue;
 }
 
 //=============================================================================
-Eigen::MatrixXd RnBoxConstraint::getJacobian(
-  const statespace::StateSpace::State* _s) const
+void RnBoxConstraint::getJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::MatrixXd& _out) const
 {
   auto stateValue = mSpace->getValue(
     static_cast<const statespace::Rn::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
-  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(dimension, dimension);
+  _out = Eigen::MatrixXd::Zero(dimension, dimension);
 
-  for (size_t i = 0; i < jacobian.rows(); ++i)
+  for (size_t i = 0; i < _out.rows(); ++i)
   {
     if (stateValue[i] < mLowerLimits[i])
-      jacobian(i, i) = -1.;
+      _out(i, i) = -1.;
     else if (stateValue[i] > mUpperLimits[i])
-      jacobian(i, i) =  1.;
+      _out(i, i) =  1.;
     else
-      jacobian(i, i) =  0.;
+      _out(i, i) =  0.;
   }
-
-  return jacobian;
-}
-
-//=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> RnBoxConstraint
-  ::getValueAndJacobian(const statespace::StateSpace::State* _s) const
-{
-  // TODO: Avoid calling getValue twice here.
-  return std::make_pair(getValue(_s), getJacobian(_s));
 }
 
 //=============================================================================
