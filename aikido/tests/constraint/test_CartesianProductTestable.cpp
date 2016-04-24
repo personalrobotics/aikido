@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include "../eigen_tests.hpp"
-#include <aikido/constraint/TestableSubspace.hpp>
+#include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/Rn.hpp>
 
-using aikido::constraint::TestableSubspace;
+using aikido::constraint::CartesianProductTestable;
 using aikido::constraint::Satisfied;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
@@ -16,7 +16,7 @@ using aikido::constraint::TestablePtr;
 using aikido::constraint::Testable;
 using aikido::constraint::RnBoxConstraint;
 
-class TestableSubspaceTest : public testing::Test
+class CartesianProductTestableTest : public testing::Test
 {
 public:
   virtual void SetUp()
@@ -35,11 +35,11 @@ public:
 
     cs = std::make_shared<CartesianProduct>(
         std::vector<aikido::statespace::StateSpacePtr>({rvss, so2}));
-    ts = std::make_shared<TestableSubspace>(cs, testables);
+    ts = std::make_shared<CartesianProductTestable>(cs, testables);
   }
 
   std::shared_ptr<CartesianProduct> cs;
-  std::shared_ptr<TestableSubspace> ts;
+  std::shared_ptr<CartesianProductTestable> ts;
   std::vector<TestablePtr> testables;
   std::shared_ptr<Satisfied> satisfied;
   std::shared_ptr<Rn> rvss;
@@ -47,41 +47,41 @@ public:
 
 };
 
-TEST_F(TestableSubspaceTest, ConstructorThrowsOnNullStateSpace)
+TEST_F(CartesianProductTestableTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(TestableSubspace(nullptr, testables),
+  EXPECT_THROW(CartesianProductTestable(nullptr, testables),
                std::invalid_argument);
 }
 
-TEST_F(TestableSubspaceTest, ConstructorThrowsOnNullTestables)
+TEST_F(CartesianProductTestableTest, ConstructorThrowsOnNullTestables)
 {
   std::vector<TestablePtr> testables;
   testables.push_back(nullptr);
   testables.push_back(nullptr);
 
-  EXPECT_THROW(TestableSubspace(cs, testables),
+  EXPECT_THROW(CartesianProductTestable(cs, testables),
                std::invalid_argument);
 }
 
-TEST_F(TestableSubspaceTest, ConstructorThrowsOnUnmatchingStateSpaceTestablesPair)
+TEST_F(CartesianProductTestableTest, ConstructorThrowsOnUnmatchingStateSpaceTestablesPair)
 {
   auto space = std::make_shared<CartesianProduct>(
         std::vector<aikido::statespace::StateSpacePtr>({rvss, so2, rvss}));
-  EXPECT_THROW(TestableSubspace(space, testables),
+  EXPECT_THROW(CartesianProductTestable(space, testables),
                std::invalid_argument);
 
   testables.push_back(satisfied);
-  EXPECT_THROW(TestableSubspace(space, testables),
+  EXPECT_THROW(CartesianProductTestable(space, testables),
                std::invalid_argument);
 }
 
-TEST_F(TestableSubspaceTest, GetStateSpaceMatchesConstructorStateSpace)
+TEST_F(CartesianProductTestableTest, GetStateSpaceMatchesConstructorStateSpace)
 {
   auto space = ts->getStateSpace();
   EXPECT_EQ(space, cs);
 }
 
-TEST_F(TestableSubspaceTest, IsSastisfiedReturnsTrue)
+TEST_F(CartesianProductTestableTest, IsSastisfiedReturnsTrue)
 {
   auto state = cs->createState();
 
@@ -89,7 +89,7 @@ TEST_F(TestableSubspaceTest, IsSastisfiedReturnsTrue)
 }
 
 
-TEST_F(TestableSubspaceTest, IsSastisfiedReturnsFalse)
+TEST_F(CartesianProductTestableTest, IsSastisfiedReturnsFalse)
 {
   auto state = cs->createState();
   auto subState = cs->getSubStateHandle<Rn>(state, 0);
