@@ -6,10 +6,10 @@ namespace constraint {
 //=============================================================================
 void Differentiable::getValueAndJacobian(
   const statespace::StateSpace::State* _s,
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd>& _out) const
+  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
 {
-  getValue(_s, _out.first);
-  getJacobian(_s, _out.second);
+  getValue(_s, _val);
+  getJacobian(_s, _jac);
 }
 
 }

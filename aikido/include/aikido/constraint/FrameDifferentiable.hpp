@@ -41,8 +41,7 @@ public:
 
   /// Get jacobian of poseConstraint w.r.t. generalized coordinates.
   /// \param _s State to be evaluated at.
-  /// \param _out _m x numDofs, where m is the number of constraints. 
-  /// \return True if jacobian is succesfully stored in _out. 
+  /// \param[out] _out _m x numDofs, where m is the number of constraints. 
   void getJacobian(
     const statespace::StateSpace::State* _s,
     Eigen::MatrixXd& _out) const override;
@@ -51,12 +50,11 @@ public:
   /// This is more efficient than calling getValue and getJacobian separately
   /// because this sets MetaSkeleton's position only once.
   /// \param _s State to be evaluated at.
-  /// \param _out Pair of value and jacobian.
-  /// \return True if both value and jacobian are successfully stored 
-  ///         at _out.
+  /// \param[out] _val Value of constraints.
+  /// \param[out] _jac Jacobian of constraints.
   void getValueAndJacobian(
     const statespace::StateSpace::State* _s,
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd>& _out) const override;
+    Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const override;
 
   // Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;

@@ -114,8 +114,9 @@ TEST(DifferentiableIntersection, GetValueAndJacobianMatchValueAndJacobian)
   s1.setValue(v);
 
   DifferentiableIntersection stacked(constraints, rvss);
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> out;
-  stacked.getValueAndJacobian(s1, out);
+  Eigen::VectorXd val;
+  Eigen::MatrixXd jac;
+  stacked.getValueAndJacobian(s1, val, jac);
 
   Eigen::VectorXd value;
   Eigen::MatrixXd jacobian;
@@ -123,8 +124,8 @@ TEST(DifferentiableIntersection, GetValueAndJacobianMatchValueAndJacobian)
   stacked.getValue(s1, value);
   stacked.getJacobian(s1, jacobian);
 
-  EXPECT_TRUE(out.first.isApprox(value));
-  EXPECT_TRUE(out.second.isApprox(jacobian));
+  EXPECT_TRUE(val.isApprox(value));
+  EXPECT_TRUE(jac.isApprox(jacobian));
 }
 
 TEST(DifferentiableIntersection, GetConstraintTypes)

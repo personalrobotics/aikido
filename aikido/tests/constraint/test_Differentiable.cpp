@@ -19,19 +19,21 @@ TEST(Differentiable, GetValueAndJacobianDefault)
   auto s1 = rvss.createState();
   s1.setValue(v);
 
-  Eigen::VectorXd value;
-  p.getValue(s1, value);
-  EXPECT_DOUBLE_EQ(value(0), 9);
+  Eigen::VectorXd valExpected;
+  p.getValue(s1, valExpected);
+  EXPECT_DOUBLE_EQ(valExpected(0), 9);
 
+  Eigen::MatrixXd jacExpected;
+  p.getJacobian(s1, jacExpected);
+  EXPECT_DOUBLE_EQ(-10, jacExpected(0,0));
+
+  Eigen::VectorXd val;
   Eigen::MatrixXd jac;
-  p.getJacobian(s1, jac);
-  EXPECT_DOUBLE_EQ(-10, jac(0,0));
 
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueJacPair;
-  p.getValueAndJacobian(s1, valueJacPair);
+  p.getValueAndJacobian(s1, val, jac);
 
-  EXPECT_TRUE(value.isApprox(valueJacPair.first));
-  EXPECT_TRUE(jac.isApprox(valueJacPair.second));
+  EXPECT_TRUE(valExpected.isApprox(val));
+  EXPECT_TRUE(jacExpected.isApprox(jac));
 }
 
 

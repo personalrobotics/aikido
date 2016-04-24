@@ -100,7 +100,7 @@ public:
   ///   top 3 rows is the angle-axis representation of _s's rotation.
   ///   bottom 3 rows represent the translation.
   /// \param _s State to be evaluated at.
-  /// \param _out Jacobian, 6 x 6 matrix.
+  /// \param[out] _out Jacobian, 6 x 6 matrix.
   void getJacobian(
     const statespace::StateSpace::State* _s,
     Eigen::MatrixXd& _out) const override;

@@ -40,7 +40,7 @@ public:
   // Documentation inherited. 
   void getValueAndJacobian(
     const statespace::StateSpace::State* _s,
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd>& _out) const override;
+    Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const override;
 
 private:
   std::vector<DifferentiablePtr> mConstraints;

@@ -94,8 +94,8 @@ void FrameDifferentiable::getJacobian(
 
 //=============================================================================
 void FrameDifferentiable::getValueAndJacobian(
-    const statespace::StateSpace::State* _s,
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd>& _out) const 
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
@@ -107,7 +107,7 @@ void FrameDifferentiable::getValueAndJacobian(
 
   SE3State bodyPose(mJacobianNode->getTransform());
 
-  mPoseConstraint->getValue(&bodyPose, _out.first);
+  mPoseConstraint->getValue(&bodyPose, _val);
  
   // m x 6 matrix, Jacobian of constraints w.r.t. SE3 pose (se3 tangent vector)
   // where the tangent vector is expressed in world frame.
@@ -118,7 +118,7 @@ void FrameDifferentiable::getValueAndJacobian(
   Eigen::MatrixXd skeletonJac = mMetaSkeleton->getWorldJacobian(mJacobianNode);
 
   // m x numDofs, Jacobian of pose w.r.t. generalized coordinates.
-  _out.second = constraintJac*skeletonJac;
+  _jac = constraintJac*skeletonJac;
 }
 
 //=============================================================================

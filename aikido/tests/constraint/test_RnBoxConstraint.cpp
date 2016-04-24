@@ -302,13 +302,13 @@ TEST_F(RnBoxConstraintTests, getValueAndJacobian_SatisfiesConstraint_ReturnsZero
   for (const auto& value : mGoodValues)
   {
     state.setValue(value);
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueAndJacobian;
-    constraint.getValueAndJacobian(state, valueAndJacobian);
-    const auto& constraintValue = valueAndJacobian.first;
-    const auto& constraintJacobian = valueAndJacobian.second;
+    Eigen::VectorXd constraintValue;
+    Eigen::MatrixXd constraintJac;
+
+    constraint.getValueAndJacobian(state, constraintValue, constraintJac);
 
     EXPECT_TRUE(Vector2d::Zero().isApprox(constraintValue));
-    EXPECT_TRUE(Matrix2d::Zero().isApprox(constraintJacobian));
+    EXPECT_TRUE(Matrix2d::Zero().isApprox(constraintJac));
   }
 }
 
@@ -322,13 +322,13 @@ TEST_F(RnBoxConstraintTests, getValueAndJacobian_DoesNotSatisfyConstraint_Return
   for (const auto& value : mBadValues)
   {
     state.setValue(value);
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueAndJacobian;
-    constraint.getValueAndJacobian(state, valueAndJacobian);
-    const auto& constraintValue = valueAndJacobian.first;
-    const auto& constraintJacobian = valueAndJacobian.second;
+    Eigen::VectorXd constraintValue;
+    Eigen::MatrixXd constraintJac;
+
+    constraint.getValueAndJacobian(state, constraintValue, constraintJac);
 
     EXPECT_FALSE(Vector2d::Zero().isApprox(constraintValue));
-    EXPECT_FALSE(Matrix2d::Zero().isApprox(constraintJacobian));
+    EXPECT_FALSE(Matrix2d::Zero().isApprox(constraintJac));
   }
 }
 

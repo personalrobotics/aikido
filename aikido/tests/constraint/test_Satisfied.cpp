@@ -90,8 +90,10 @@ TEST_F(SatisfiedTests, getValueAndJacobian_ReturnsZero)
   Satisfied constraint(mStateSpace);
   auto state = mStateSpace->createState();
 
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueAndJacobian;
-  constraint.getValueAndJacobian(state, valueAndJacobian);
-  EXPECT_TRUE(expectedValue.isApprox(valueAndJacobian.first));
-  EXPECT_TRUE(expectedJacobian.isApprox(valueAndJacobian.second));
+  Eigen::VectorXd value;
+  Eigen::MatrixXd jacobian;
+
+  constraint.getValueAndJacobian(state, value, jacobian);
+  EXPECT_TRUE(expectedValue.isApprox(value));
+  EXPECT_TRUE(expectedJacobian.isApprox(jacobian));
 }

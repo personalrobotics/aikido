@@ -71,12 +71,12 @@ void DifferentiableSubspace::getJacobian(
 
 //=============================================================================
 void  DifferentiableSubspace::getValueAndJacobian(
-    const statespace::StateSpace::State* _s,
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd>& _out) const
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
-  return mConstraint->getValueAndJacobian(substate, _out);
+  return mConstraint->getValueAndJacobian(substate, _val, _jac);
 }
 
 } // constraint

@@ -34,7 +34,7 @@ public:
   /// Should be 0 to satisfy equality constraints.
   /// Should be <=0 to satisfy inequality constraints.
   /// \param _s State to be evaluated at.
-  /// \param _out Vector to store the value. Length should match the number
+  /// \param[out] _out Vector to store the value. Length should match the number
   ///        of constraints.
   /// \return True if value is successfully stored at _out.
   virtual void getValue(
@@ -44,7 +44,7 @@ public:
   /// Get the jacobian of constraints evaluated at _s,
   /// expressed in the frame each state space is expressed in).
   /// \param _s State to be evaluated at.
-  /// \param _out Jacobian matrix. The dimension should be the following:
+  /// \param[out] _out Jacobian matrix. The dimension should be the following:
   ///     SO3 StateSpace  : m x 3 
   ///     SO2             : m x 1
   ///     SE2             : m x 3
@@ -57,9 +57,12 @@ public:
     const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const = 0;
 
   /// Returns (Value, Jacobian).
+  /// \param _s State to be evaluated.
+  /// \param[out] _val Value of constraints.
+  /// \param[out] _jac Jacoiban of constraints. 
   virtual void getValueAndJacobian(
     const statespace::StateSpace::State* _s,
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd>& _out) const;
+    Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const;
 };
 
 using DifferentiablePtr = std::shared_ptr<Differentiable>;

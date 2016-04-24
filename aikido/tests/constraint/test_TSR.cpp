@@ -409,15 +409,15 @@ TEST(TSR, GetValueAndJacobian)
   isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
   state.setIsometry(isometry);
 
-  Eigen::VectorXd value;
-  Eigen::MatrixXd jacobian;
+  Eigen::VectorXd valExpected, val;
+  Eigen::MatrixXd jacExpected, jac;
   std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueAndJacobian;
-  tsr.getValue(state, value);
-  tsr.getJacobian(state, jacobian);
-  tsr.getValueAndJacobian(state, valueAndJacobian);
+  tsr.getValue(state, valExpected);
+  tsr.getJacobian(state, jacExpected);
+  tsr.getValueAndJacobian(state, val, jac);
 
-  EXPECT_TRUE(value.isApprox(valueAndJacobian.first));
-  EXPECT_TRUE(jacobian.isApprox(valueAndJacobian.second));
+  EXPECT_TRUE(valExpected.isApprox(val));
+  EXPECT_TRUE(jacExpected.isApprox(jac));
 
 }
 

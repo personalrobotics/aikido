@@ -132,9 +132,10 @@ TEST_F(DifferentiableSubspaceTest, ConstraintValueAndJacobian)
   Eigen::VectorXd expectedVal = aikido::tests::make_vector(3);
   Eigen::VectorXd expectedJac = aikido::tests::make_vector(4);
 
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> jv;
-  ds->getValueAndJacobian(st, jv)
+  Eigen::VectorXd val;
+  Eigen::MatrixXd jac;
+  ds->getValueAndJacobian(st, val, jac)
   ;
-  EXPECT_TRUE(jv.first.isApprox(expectedVal));
-  EXPECT_TRUE(jv.second.isApprox(expectedJac));
+  EXPECT_TRUE(val.isApprox(expectedVal));
+  EXPECT_TRUE(jac.isApprox(expectedJac));
 }
