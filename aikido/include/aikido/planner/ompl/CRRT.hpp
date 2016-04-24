@@ -1,17 +1,15 @@
-
-#ifndef PR_CONSTRAINT_OMPL_PLANNERS_GEOMETRIC_PLANNERS_RRT_CRRT_
-#define PR_CONSTRAINT_OMPL_PLANNERS_GEOMETRIC_PLANNERS_RRT_CRRT_
+#ifndef AIKIDO_PLANNER_OMPL_CRRT_HPP_
+#define AIKIDO_PLANNER_OMPL_CRRT_HPP_
 
 #include <ompl/base/Planner.h>
 #include <ompl/geometric/planners/PlannerIncludes.h>
 #include <ompl/datastructures/NearestNeighbors.h>
 
-#include "../constraint/Projectable.hpp"
+#include "../../constraint/Projectable.hpp"
 
-namespace aikido
-{
-namespace ompl
-{
+namespace aikido {
+namespace planner {
+namespace ompl {
 /// Implements a constraint RRT planner
 class CRRT : public ::ompl::base::Planner
 {
@@ -61,12 +59,15 @@ public:
   /// Set the range the planner is supposed to use. This parameter greatly
   /// influences the runtime of the algorithm. It represents the maximum length
   /// of a motion to be added in the tree of motions.
+  /// \param distance The maximum length of a motionto be added in the tree of
+  /// motions
   void setRange(double distance);
 
   /// Get the range the planner is using
   double getRange(void) const;
 
   /// Set a projectable constraint to be applied throughout the trajectory
+    /// \param _projectable The constraint to apply to the trajectory
   void setTrajectoryWideConstraint(
       const constraint::ProjectablePtr &_projectable);
 
