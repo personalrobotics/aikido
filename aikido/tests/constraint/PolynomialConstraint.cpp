@@ -34,8 +34,9 @@ size_t PolynomialConstraint::getConstraintDimension() const
 }
 
 //=============================================================================
-Eigen::VectorXd PolynomialConstraint::getValue(
-    const aikido::statespace::StateSpace::State* _s) const
+void PolynomialConstraint::getValue(
+    const aikido::statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _out) const
 {
   using State = aikido::statespace::Rn::State;
   auto s = static_cast<const State*>(_s);
@@ -44,20 +45,17 @@ Eigen::VectorXd PolynomialConstraint::getValue(
   double val = 0; 
   
   for(int i = 0; i < mCoeffs.rows(); i++)
-  {
     val += mCoeffs(i)*pow(x, i);
-  }
 
-  Eigen::VectorXd value(1);
-  value(0) = val;
-
-  return value;
+  _out.resize(1);
+  _out(0) = val;
 }
 
 
 //=============================================================================
-Eigen::MatrixXd PolynomialConstraint::getJacobian(
-    const aikido::statespace::StateSpace::State* _s) const
+void PolynomialConstraint::getJacobian(
+    const aikido::statespace::StateSpace::State* _s,
+    Eigen::MatrixXd& _out) const
 {
   using State = aikido::statespace::Rn::State;
   auto s = static_cast<const State*>(_s);
@@ -70,22 +68,11 @@ Eigen::MatrixXd PolynomialConstraint::getJacobian(
 
   PolynomialConstraint derivPoly(derivCoeffs);
 
-  return derivPoly.getValue(_s);
+  Eigen::VectorXd out;
+  derivPoly.getValue(_s, out);
+  _out.resize(out.rows(), 1);
+  _out.col(0) = out;
 } 
-
-//=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> PolynomialConstraint::getValueAndJacobian(
-    const aikido::statespace::StateSpace::State* _s) const
-{
-  using State = aikido::statespace::Rn::State;
-  auto s = static_cast<const State*>(_s);
-
-  Eigen::VectorXd value = getValue(s);
-  Eigen::MatrixXd jacobian = getJacobian(s); 
-
-  return std::make_pair(value, jacobian);
-
-}
 
 
 //=============================================================================

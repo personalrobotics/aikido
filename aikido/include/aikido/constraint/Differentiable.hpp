@@ -30,26 +30,37 @@ public:
   /// Size of constraints
   virtual size_t getConstraintDimension() const = 0;
 
-  /// Value of constraints at _s.
+  /// Get the value of constraints at _s.
   /// Should be 0 to satisfy equality constraints.
   /// Should be <=0 to satisfy inequality constraints.
-  virtual Eigen::VectorXd getValue(
-    const statespace::StateSpace::State* _s) const = 0;
+  /// \param _s State to be evaluated at.
+  /// \param[out] _out Vector to store the value. Length should match the number
+  ///        of constraints.
+  virtual void getValue(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _out) const = 0;
 
-  /// Jacobian of constraints at _s,
+  /// Get the jacobian of constraints evaluated at _s,
   /// expressed in the frame each state space is expressed in).
-  /// For SO3 StateSpace: m x 3 
-  ///     SO2           : m x 1
-  ///     SE2           : m x 3
-  ///     SE3           : m x 6 
-  ///     RealVector(n) : m x n
-  ///     Compound      : m x k (k = sum of all state jacobian cols)
-  virtual Eigen::MatrixXd getJacobian(
-    const statespace::StateSpace::State* _s) const = 0;
+  /// \param _s State to be evaluated at.
+  /// \param[out] _out Jacobian matrix. The dimension should be the following:
+  ///     SO3 StateSpace  : m x 3 
+  ///     SO2             : m x 1
+  ///     SE2             : m x 3
+  ///     SE3             : m x 6 
+  ///     Rn              : m x n
+  ///     CartesianProduct: m x k (k = sum of all state jacobian cols)
+  /// If Matrix of incorrect dimension is given, false will be returned.
+  virtual void getJacobian(
+    const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const = 0;
 
-  /// Returns (Value, Jacobian).
-  virtual std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-    const statespace::StateSpace::State* _s) const;
+  /// Get both Value and Jacobian.
+  /// \param _s State to be evaluated.
+  /// \param[out] _val Value of constraints.
+  /// \param[out] _jac Jacoiban of constraints. 
+  virtual void getValueAndJacobian(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const;
 };
 
 using DifferentiablePtr = std::shared_ptr<Differentiable>;

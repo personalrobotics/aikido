@@ -25,10 +25,11 @@ aikido_add_test(test_InverseKinematicsSampleable
 target_link_libraries(test_InverseKinematicsSampleable
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_PolynomialConstraint
-#   test_PolynomialConstraint.cpp)
-# target_link_libraries(test_PolynomialConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_PolynomialConstraint
+  test_PolynomialConstraint.cpp
+  PolynomialConstraint.cpp)
+target_link_libraries(test_PolynomialConstraint
+  "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_TSR
 	PolynomialConstraint.cpp
@@ -87,9 +88,9 @@ aikido_add_test(test_DartConstraintHelpers
 target_link_libraries(test_DartConstraintHelpers
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
 
-aikido_add_test(test_TestableSubspace
-  test_TestableSubspace.cpp)
-target_link_libraries(test_TestableSubspace
+aikido_add_test(test_CartesianProductTestable
+  test_CartesianProductTestable.cpp)
+target_link_libraries(test_CartesianProductTestable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_SampleableSubspace
@@ -110,4 +111,11 @@ target_link_libraries(test_Projectable
 aikido_add_test(test_NonColliding
   test_NonColliding.cpp)
 target_link_libraries(test_NonColliding
+  "${PROJECT_NAME}_constraint")
+
+
+aikido_add_test(test_Differentiable
+	PolynomialConstraint.cpp
+  test_Differentiable.cpp)
+target_link_libraries(test_Differentiable
   "${PROJECT_NAME}_constraint")

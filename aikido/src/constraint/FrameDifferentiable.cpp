@@ -47,8 +47,9 @@ size_t FrameDifferentiable::getConstraintDimension() const
 }
 
 //=============================================================================
-Eigen::VectorXd FrameDifferentiable::getValue(
-  const statespace::StateSpace::State* _s) const
+void FrameDifferentiable::getValue(
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _out) const
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
@@ -59,13 +60,14 @@ Eigen::VectorXd FrameDifferentiable::getValue(
 
   SE3State bodyPose(mJacobianNode->getTransform());
 
-  return mPoseConstraint->getValue(&bodyPose);
+  mPoseConstraint->getValue(&bodyPose, _out);
 
 }
 
 //=============================================================================
-Eigen::MatrixXd FrameDifferentiable::getJacobian(
-  const statespace::StateSpace::State* _s) const
+void FrameDifferentiable::getJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::MatrixXd& _out) const
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
@@ -79,19 +81,21 @@ Eigen::MatrixXd FrameDifferentiable::getJacobian(
  
   // m x 6 matrix, Jacobian of constraints w.r.t. SE3 pose (se3 tangent vector)
   // where the tangent vector is expressed in world frame.
-  Eigen::MatrixXd constraintJac = mPoseConstraint->getJacobian(&bodyPose);
+  Eigen::MatrixXd constraintJac;
+  mPoseConstraint->getJacobian(&bodyPose, constraintJac);
 
   // 6 x numDofs, Jacobian of SE3 pose of body node expressed in World Frame.
   Eigen::MatrixXd skeletonJac = mMetaSkeleton->getWorldJacobian(mJacobianNode);
 
   // m x numDofs, Jacobian of pose w.r.t. generalized coordinates.
-  return constraintJac*skeletonJac;
+  _out = constraintJac*skeletonJac;
 
 }
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> FrameDifferentiable::getValueAndJacobian(
-    const statespace::StateSpace::State* _s) const 
+void FrameDifferentiable::getValueAndJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
@@ -103,19 +107,18 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> FrameDifferentiable::getValueAndJaco
 
   SE3State bodyPose(mJacobianNode->getTransform());
 
-  Eigen::VectorXd value = mPoseConstraint->getValue(&bodyPose);
+  mPoseConstraint->getValue(&bodyPose, _val);
  
   // m x 6 matrix, Jacobian of constraints w.r.t. SE3 pose (se3 tangent vector)
   // where the tangent vector is expressed in world frame.
-  Eigen::MatrixXd constraintJac = mPoseConstraint->getJacobian(&bodyPose);
+  Eigen::MatrixXd constraintJac;
+  mPoseConstraint->getJacobian(&bodyPose, constraintJac);
 
   // 6 x numDofs, Jacobian of SE3 pose of body node expressed in World Frame.
   Eigen::MatrixXd skeletonJac = mMetaSkeleton->getWorldJacobian(mJacobianNode);
 
   // m x numDofs, Jacobian of pose w.r.t. generalized coordinates.
-  Eigen::MatrixXd jacobian = constraintJac*skeletonJac;
-
-  return std::make_pair(value, jacobian);
+  _jac = constraintJac*skeletonJac;
 }
 
 //=============================================================================

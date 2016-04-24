@@ -47,54 +47,58 @@ size_t DifferentiableIntersection::getConstraintDimension() const
 
 
 //=============================================================================
-Eigen::VectorXd DifferentiableIntersection::getValue(
-  const statespace::StateSpace::State* _s) const
+void DifferentiableIntersection::getValue(
+  const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const 
 {
   int dimension = getConstraintDimension();
   
-  Eigen::VectorXd value(dimension);
+  _out.resize(dimension);
 
   int index = 0;
   for (auto constraint: mConstraints)
   {
     int dim = constraint->getConstraintDimension();
-    value.segment(index, dim) = constraint->getValue(_s);
+    Eigen::VectorXd out;
+    constraint->getValue(_s, out);
+    _out.segment(index, dim) = out;
     index += dim;
   }
 
-  return value;
 }
 
 
 //=============================================================================
-Eigen::MatrixXd DifferentiableIntersection::getJacobian(
-  const statespace::StateSpace::State* _s) const
+void DifferentiableIntersection::getJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::MatrixXd& _out) const
 {
   int constraintsDim = getConstraintDimension();
   int statesDim = mStateSpace->getDimension();
 
-  Eigen::MatrixXd jacobian(constraintsDim, statesDim);
+  _out.resize(constraintsDim, statesDim);
 
   int index = 0;
   for (auto constraint: mConstraints)
   {
-    Eigen::MatrixXd jac = constraint->getJacobian(_s);
-    jacobian.middleRows(index, jac.rows()) = jac;
+    Eigen::MatrixXd jac;
+    constraint->getJacobian(_s, jac);
+    _out.middleRows(index, jac.rows()) = jac;
+
     index += jac.rows();
   }
 
-  return jacobian;
 }
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> DifferentiableIntersection::getValueAndJacobian(
-  const statespace::StateSpace::State* _s) const
+void DifferentiableIntersection::getValueAndJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
 {
   int constraintsDim = getConstraintDimension();
   int statesDim = mStateSpace->getDimension();
 
-  Eigen::VectorXd value(constraintsDim);
-  Eigen::MatrixXd jacobian(constraintsDim, statesDim);
+  _val.resize(constraintsDim);
+  _jac.resize(constraintsDim, statesDim);
 
   int index = 0;
   for (auto constraint: mConstraints)
@@ -102,15 +106,15 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> DifferentiableIntersection::getValue
     int constraintDim = constraint->getConstraintDimension();
 
     // Get (Eigen::VectorXd value, Eigen::MatrixXd jacobian) pair.
-    auto pair = constraint->getValueAndJacobian(_s);
+    Eigen::VectorXd val;
+    Eigen::MatrixXd jac;
+    constraint->getValueAndJacobian(_s, val, jac);
 
-    value.segment(index, constraintDim) = pair.first;
-    jacobian.middleRows(index, constraintDim) = pair.second;
+    _val.segment(index, constraintDim) = val;
+    _jac.middleRows(index, constraintDim) = jac;
 
-    index += pair.second.rows();
+    index += jac.rows();
   }
-
-  return std::make_pair(value, jacobian);
 }
 
 
