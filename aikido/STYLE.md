@@ -4,7 +4,12 @@ The code in this library generally follows the same coding convention as the [DA
 
 ## C++ Header Style
 
-C++ Headers should be contained in paths that match their namespace, with the extension `.hpp`.
+C++ headers should be contained in a subdirectory of `include/` that matches their namespace, with the extension `.hpp`.
+
+* Use **two-space** indentation
+* Use **camelCase** function names
+* Use **PascalCase** class names
+* No "cuddled" braces!
 
 ```c++
 #ifndef AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_  // Header guards must include the library, namespace, and source file names.
@@ -89,6 +94,13 @@ using ExamplePtr = std::shared_ptr<Example>;
 
 ## C++ Source Style
 
+C++ sources should be contained in a subdirectory of `src/` that matches their namespace, with the extension `.cpp`.
+
+* Use **two-space** indentation
+* Use **camelCase** function names
+* Use **PascalCase** class names
+* No "cuddled" braces!
+
 ```c++
 // Includes should be at the top of the file.
 // The first include in a class source file should be the matching `.hpp` header file.
@@ -119,7 +131,9 @@ int ExampleClass::exampleInterfaceFunction() const
 int ExampleClass::exampleMethod(int _A, int _B, int *_out) const
 {
   int result = A + B:
-  
+  if (_out)
+    *_out = result;
+  return result;
 }
 
 } // namespace example
@@ -170,4 +184,55 @@ class MyExampleClass(object):
         :type  baz: the type of the parameter baz
         """
         pass
+```
+
+## CMake Style
+
+* Use **two-space** indentation
+* Use **lowercase** function names
+* Use *all-caps** variables except when referring to target names
+* Use `target_VARIABLE` when naming target-specific variables
+* **ALWAYS** quote singleton variables (e.g. `"${MY_VARIABLE}"` but not `${MY_LIST_VARIABLE}`) 
+
+```cmake
+cmake_minimum_required(VERSION 2.8.11)  # Always declare a minimum version in the top-level CMakeLists.txt.
+
+project(aikido)  # Only declare a project name in the top-level CMakeLists.txt.
+
+# Put in comments liberally!  CMake is complicated!
+if(SOME_VARIABLE)
+  message(STATUS "Variable was set to '${SOME_VARIABLE}'.")
+endif()
+
+# Prefer using LIST functions to SET functions when working with list variables
+list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")   # ALWAYS quote around singleton variables
+list(APPEND CMAKE_CXX_FLAGS "-std=c++11")
+
+set(MY_INCLUDE_DIR include)  # Use all-caps for variables.
+
+find_package(SomeLibrary REQUIRED)  # Use REQUIRED keyword when appropriate.
+
+# For now, `include_directories` is necessary, but later we will switch to `target_include_directories`.
+include_directories(
+  "${MY_INCUDE_DIR}"  # This should be quoted.
+)
+
+# Complex commands should be split into one line for each semantic group (with two-space indentation).
+# It is OK to put a target or output on the first line.
+include_directories(SYSTEM 
+  ${SomeLibrary_INCLUDE_DIRS}  # This should NOT be quoted, because it is a list.
+)
+
+add_library("${PROJECT_NAME}" SHARED  # This target name is generated from a variable, so it should be quoted.
+  src/MySourceCode.cpp
+)
+
+# Always prefer `target_link_directories` to `link_directories` or other global functions.
+target_link_libraries("${PROJECT_NAME}"
+  ${SomeLibrary_LIBRARIES}
+)
+
+# Tests will typically be added to the end of the time from a `tests` subdirectory like the following.
+enable_testing()
+add_subdirectory(tests)
 ```
