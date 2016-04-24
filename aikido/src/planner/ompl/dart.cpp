@@ -3,7 +3,7 @@
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/constraint/dart.hpp>
+#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 
 namespace aikido {
 namespace planner {
