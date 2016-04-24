@@ -25,10 +25,11 @@ aikido_add_test(test_InverseKinematicsSampleable
 target_link_libraries(test_InverseKinematicsSampleable
   "${PROJECT_NAME}_constraint")
 
-# aikido_add_test(test_PolynomialConstraint
-#   test_PolynomialConstraint.cpp)
-# target_link_libraries(test_PolynomialConstraint
-#   "${PROJECT_NAME}_constraint")
+aikido_add_test(test_PolynomialConstraint
+  test_PolynomialConstraint.cpp
+  PolynomialConstraint.cpp)
+target_link_libraries(test_PolynomialConstraint
+  "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_TSR
 	PolynomialConstraint.cpp

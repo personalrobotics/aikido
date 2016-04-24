@@ -220,21 +220,22 @@ TEST(TSR, GetValue)
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
   isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
   state.setIsometry(isometry);
-  Eigen::VectorXd value = tsr.getValue(state);
+  Eigen::VectorXd value;
+  tsr.getValue(state, value);
   EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
 
 
   // strictly inside TSR
   isometry.translation() = Eigen::Vector3d(1, 0, 0);
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   EXPECT_TRUE(value.isApproxToConstant(0));
 
 
   // boundary of TSR
   isometry.translation() = Eigen::Vector3d(2, 0, 0);
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   EXPECT_TRUE(value.isApproxToConstant(0));
 
 
@@ -244,8 +245,8 @@ TEST(TSR, GetValue)
 
   Eigen::Vector6d expected(Eigen::Vector6d::Zero());
   expected(0) = 1; 
-  value = tsr.getValue(state);
-  EXPECT_TRUE(tsr.getValue(state).isApprox(expected));
+  tsr.getValue(state, value);
+  EXPECT_TRUE(value.isApprox(expected));
 
 
   // TSR non-trivial angle bounds
@@ -264,7 +265,7 @@ TEST(TSR, GetValue)
   isometry = Eigen::Isometry3d::Identity();
   isometry.linear() = rotation;
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
 
   EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
 
@@ -278,7 +279,7 @@ TEST(TSR, GetValue)
              Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   expected = Eigen::Vector6d::Zero();
   EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
 
@@ -292,7 +293,7 @@ TEST(TSR, GetValue)
              Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   expected = Eigen::Vector6d::Zero();
   EXPECT_TRUE(value.isApproxToConstant(0, 1e-3));
 
@@ -304,7 +305,7 @@ TEST(TSR, GetValue)
 
   isometry.linear() = rotation;
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   EXPECT_TRUE(value.isApproxToConstant(0));
 
 
@@ -319,7 +320,7 @@ TEST(TSR, GetValue)
              Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   expected = Eigen::Vector6d::Zero();
   expected(3) = 0.1; 
   EXPECT_TRUE(value.isApprox(expected));
@@ -336,7 +337,7 @@ TEST(TSR, GetValue)
              Eigen::AngleAxisd(M_PI_2 - 0.1, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   expected = Eigen::Vector6d::Zero();
   expected(3) = 0.1; 
   EXPECT_TRUE(value.isApprox(expected));
@@ -351,7 +352,7 @@ TEST(TSR, GetValue)
              Eigen::AngleAxisd(M_PI_4 - 0.1, Eigen::Vector3d::UnitX());
   isometry.linear() = rotation;
   state.setIsometry(isometry);
-  value = tsr.getValue(state);
+  tsr.getValue(state, value);
   expected = Eigen::Vector6d::Zero();
   expected(3) = M_PI_4-0.1;
   EXPECT_TRUE(value.isApprox(expected, 1e-3));
@@ -375,13 +376,14 @@ TEST(TSR, GetJacobian)
   isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
   state.setIsometry(isometry);
 
-  Eigen::MatrixXd jacobian = tsr.getJacobian(state);
+  Eigen::MatrixXd jacobian;
+  tsr.getJacobian(state, jacobian);
   EXPECT_TRUE(jacobian.isApproxToConstant(0));
 
   // outside TSR
   isometry.translation() = Eigen::Vector3d(3, 0, 0);
   state.setIsometry(isometry);
-  jacobian = tsr.getJacobian(state);
+  tsr.getJacobian(state, jacobian);
 
   Eigen::Matrix6d expected(Eigen::Matrix6d::Zero());
   expected(0, 3) = 1; 
@@ -407,9 +409,12 @@ TEST(TSR, GetValueAndJacobian)
   isometry.translation() = Eigen::Vector3d(1.5, 0, 0);
   state.setIsometry(isometry);
 
-  auto value = tsr.getValue(state);
-  auto jacobian = tsr.getJacobian(state);
-  auto valueAndJacobian = tsr.getValueAndJacobian(state);
+  Eigen::VectorXd value;
+  Eigen::MatrixXd jacobian;
+  std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueAndJacobian;
+  tsr.getValue(state, value);
+  tsr.getJacobian(state, jacobian);
+  tsr.getValueAndJacobian(state, valueAndJacobian);
 
   EXPECT_TRUE(value.isApprox(valueAndJacobian.first));
   EXPECT_TRUE(jacobian.isApprox(valueAndJacobian.second));

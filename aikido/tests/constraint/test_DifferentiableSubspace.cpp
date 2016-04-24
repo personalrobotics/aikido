@@ -99,7 +99,10 @@ TEST_F(DifferentiableSubspaceTest, ConstraintValue)
   subSpace->setValue(subState, aikido::tests::make_vector(2));
 
   Eigen::VectorXd expected = aikido::tests::make_vector(3);
-  EXPECT_TRUE(ds->getValue(st).isApprox(expected));
+  Eigen::VectorXd value;
+  ds->getValue(st, value);
+
+  EXPECT_TRUE(value.isApprox(expected));
 }
 
 TEST_F(DifferentiableSubspaceTest, ConstraintJacobian)
@@ -111,7 +114,11 @@ TEST_F(DifferentiableSubspaceTest, ConstraintJacobian)
   subSpace->setValue(subState, aikido::tests::make_vector(2));
 
   Eigen::VectorXd expected = aikido::tests::make_vector(4);
-  EXPECT_TRUE(ds->getJacobian(st).isApprox(expected));
+
+  Eigen::MatrixXd jacobian;
+  ds->getJacobian(st, jacobian);
+
+  EXPECT_TRUE(jacobian.isApprox(expected));
 }
 
 TEST_F(DifferentiableSubspaceTest, ConstraintValueAndJacobian)
@@ -124,7 +131,10 @@ TEST_F(DifferentiableSubspaceTest, ConstraintValueAndJacobian)
 
   Eigen::VectorXd expectedVal = aikido::tests::make_vector(3);
   Eigen::VectorXd expectedJac = aikido::tests::make_vector(4);
-  auto jv = ds->getValueAndJacobian(st);
+
+  std::pair<Eigen::VectorXd, Eigen::MatrixXd> jv;
+  ds->getValueAndJacobian(st, jv)
+  ;
   EXPECT_TRUE(jv.first.isApprox(expectedVal));
   EXPECT_TRUE(jv.second.isApprox(expectedJac));
 }

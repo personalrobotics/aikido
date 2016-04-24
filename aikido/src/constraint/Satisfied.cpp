@@ -47,26 +47,20 @@ bool Satisfied::project(
 }
 
 //=============================================================================
-Eigen::VectorXd Satisfied::getValue(
-  const statespace::StateSpace::State* _s) const
+void Satisfied::getValue(
+  const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
-  return Eigen::Matrix<double, 0, 1>();
+  _out = Eigen::Matrix<double, 0, 1>();
 }
 
 //=============================================================================
-Eigen::MatrixXd Satisfied::getJacobian(
-  const statespace::StateSpace::State* _s) const
+void Satisfied::getJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::MatrixXd& _out) const
 {
-  return Eigen::Matrix<double, 0, 0>();
+  _out = Eigen::Matrix<double, 0, 0>();
 }
 
-//=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> Satisfied
-  ::getValueAndJacobian(const statespace::StateSpace::State* _s) const
-{
-  return std::pair<Eigen::VectorXd, Eigen::MatrixXd>(
-    Eigen::Matrix<double, 0, 1>(), Eigen::Matrix<double, 0, 0>());
-}
 
 } // namespace constraint
 } // namespace aikido

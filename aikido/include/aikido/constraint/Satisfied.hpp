@@ -17,6 +17,9 @@ class Satisfied
   , public constraint::Testable
 {
 public:
+
+  using Differentiable::getValueAndJacobian;
+
   /// Constructor.
   /// \param _space StateSpace in which this constraint operates.
   explicit Satisfied(statespace::StateSpacePtr _space);
@@ -46,23 +49,18 @@ public:
   /// Returns an empty vector.
   ///
   /// \param _s input state
-  /// \return empty vector
-  Eigen::VectorXd getValue(
-    const statespace::StateSpace::State* _s) const override;
+  /// \param _out returns an empty vector
+  void getValue(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _out) const override;
 
   /// Returns an empty matrix.
   ///
   /// \param _s input state
-  /// \return empty Jacobian matrix
-  Eigen::MatrixXd getJacobian(
-    const statespace::StateSpace::State* _s) const override;
-
-  /// Returns a pair of empty vector and empty matrix.
-  ///
-  /// \param _s input state
-  /// \return pair of empty vector and matrix
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-    const statespace::StateSpace::State* _s) const override;
+  /// \param _out empty Jacobian matrix
+  void getJacobian(
+    const statespace::StateSpace::State* _s,
+    Eigen::MatrixXd& _out) const override;
 
 private:
   statespace::StateSpacePtr mStateSpace;

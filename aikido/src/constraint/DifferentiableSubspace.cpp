@@ -50,31 +50,33 @@ size_t DifferentiableSubspace::getConstraintDimension() const
 }
 
 //=============================================================================
-Eigen::VectorXd DifferentiableSubspace::getValue(
-  const statespace::StateSpace::State* _s) const
+void DifferentiableSubspace::getValue(
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _out) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
-  return mConstraint->getValue(substate);
+  mConstraint->getValue(substate, _out);
 }
 
 //=============================================================================
-Eigen::MatrixXd DifferentiableSubspace::getJacobian(
-  const statespace::StateSpace::State* _s) const
+void DifferentiableSubspace::getJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::MatrixXd& _out) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
-  return mConstraint->getJacobian(substate);
+  return mConstraint->getJacobian(substate, _out);
 }
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd>
-  DifferentiableSubspace::getValueAndJacobian(
-    const statespace::StateSpace::State* _s) const
+void  DifferentiableSubspace::getValueAndJacobian(
+    const statespace::StateSpace::State* _s,
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd>& _out) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
-  return mConstraint->getValueAndJacobian(substate);
+  return mConstraint->getValueAndJacobian(substate, _out);
 }
 
 } // constraint

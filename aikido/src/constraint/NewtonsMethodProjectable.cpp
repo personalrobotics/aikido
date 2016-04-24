@@ -48,7 +48,8 @@ NewtonsMethodProjectable::NewtonsMethodProjectable(
 bool NewtonsMethodProjectable::contains(
   const statespace::StateSpace::State* _s) const
 {
-  Eigen::VectorXd values = mDifferentiable->getValue(_s);
+  Eigen::VectorXd values;
+  mDifferentiable->getValue(_s, values);
   std::vector<ConstraintType> types = mDifferentiable->getConstraintTypes();
 
   for(int i = 0; i < values.size(); i++)
@@ -89,8 +90,10 @@ bool NewtonsMethodProjectable::project(
   {
     iteration++;
 
-    Eigen::VectorXd value = mDifferentiable->getValue(_out);
-    Eigen::MatrixXd jac = mDifferentiable->getJacobian(_out);
+    Eigen::VectorXd value;
+    mDifferentiable->getValue(_out, value);
+    Eigen::MatrixXd jac;
+    mDifferentiable->getJacobian(_out, jac);
     
     // Minimization step in tangent space.
     Eigen::VectorXd tangentStep = -1*util::pseudoinverse(jac)*value;

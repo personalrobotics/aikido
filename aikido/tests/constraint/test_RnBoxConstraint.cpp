@@ -232,7 +232,8 @@ TEST_F(RnBoxConstraintTests, getValue_SatisfiesConstraint_ReturnsZero)
   for (const auto& value : mGoodValues)
   {
     state.setValue(value);
-    auto constraintValue = constraint.getValue(state);
+    Eigen::VectorXd constraintValue;
+    constraint.getValue(state, constraintValue);
     EXPECT_TRUE(Vector2d::Zero().isApprox(constraintValue));
   }
 }
@@ -250,7 +251,8 @@ TEST_F(RnBoxConstraintTests, getValue_DoesNotSatisfyConstraint_ReturnsNonZero)
   for (const auto& value : mBadValues)
   {
     state.setValue(value);
-    auto constraintValue = constraint.getValue(state);
+    Eigen::VectorXd constraintValue;
+    constraint.getValue(state, constraintValue);
     EXPECT_FALSE(Vector2d::Zero().isApprox(constraintValue));
   }
 }
@@ -265,7 +267,8 @@ TEST_F(RnBoxConstraintTests, getJacobian_SatisfiesConstraint_ReturnsZero)
   for (const auto& value : mGoodValues)
   {
     state.setValue(value);
-    auto jacobian = constraint.getJacobian(state);
+    Eigen::MatrixXd jacobian;
+    constraint.getJacobian(state, jacobian);
     EXPECT_TRUE(Matrix2d::Zero().isApprox(jacobian));
   }
 }
@@ -283,7 +286,8 @@ TEST_F(RnBoxConstraintTests, getJacobian_DoesNotSatisfyConstraint_ReturnsNonZero
   for (const auto& value : mBadValues)
   {
     state.setValue(value);
-    auto jacobian = constraint.getJacobian(state);
+    Eigen::MatrixXd jacobian;
+    constraint.getJacobian(state, jacobian);
     EXPECT_FALSE(Matrix2d::Zero().isApprox(jacobian));
   }
 }
@@ -298,7 +302,8 @@ TEST_F(RnBoxConstraintTests, getValueAndJacobian_SatisfiesConstraint_ReturnsZero
   for (const auto& value : mGoodValues)
   {
     state.setValue(value);
-    auto valueAndJacobian = constraint.getValueAndJacobian(state);
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueAndJacobian;
+    constraint.getValueAndJacobian(state, valueAndJacobian);
     const auto& constraintValue = valueAndJacobian.first;
     const auto& constraintJacobian = valueAndJacobian.second;
 
@@ -317,7 +322,8 @@ TEST_F(RnBoxConstraintTests, getValueAndJacobian_DoesNotSatisfyConstraint_Return
   for (const auto& value : mBadValues)
   {
     state.setValue(value);
-    auto valueAndJacobian = constraint.getValueAndJacobian(state);
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> valueAndJacobian;
+    constraint.getValueAndJacobian(state, valueAndJacobian);
     const auto& constraintValue = valueAndJacobian.first;
     const auto& constraintJacobian = valueAndJacobian.second;
 
