@@ -2,9 +2,9 @@
 #define AIKIDO_TESTS_CONSTRAINT_MOCK_CONSTRAINTS_HPP_
 
 #include <memory>
-#include <aikido/constraint/TestableConstraint.hpp>
+#include <aikido/constraint/Testable.hpp>
 
-class PassingConstraint : public aikido::constraint::TestableConstraint
+class PassingConstraint : public aikido::constraint::Testable
 {
 public:
   explicit PassingConstraint(
@@ -29,7 +29,7 @@ private:
   std::shared_ptr<aikido::statespace::StateSpace> stateSpace;
 };
 
-class FailingConstraint : public aikido::constraint::TestableConstraint
+class FailingConstraint : public aikido::constraint::Testable
 {
 public:
   explicit FailingConstraint(

@@ -1,26 +1,27 @@
 aikido_add_library("${PROJECT_NAME}_constraint"
-  uniform/RealVectorBoxConstraint.cpp
+  uniform/RnBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
-  CollisionConstraint.cpp
-  ConjunctionConstraint.cpp
-  SampleableSubSpace.cpp
-  TSR.cpp
-  FrameConstraintAdaptor.cpp
-  FramePairConstraintAdaptor.cpp
-  PolynomialConstraint.cpp
-  DifferentiableProjector.cpp
-  ProjectableSubSpace.cpp
-  StackedConstraint.cpp
-  DifferentiableSubSpace.cpp
-  IkSampleableConstraint.cpp
-  FkTestable.cpp
-  SatisfiedConstraint.cpp
-  TestableSubSpace.cpp
+  Differentiable.cpp
+  NewtonsMethodProjectable.cpp
+  DifferentiableSubspace.cpp
+  FiniteSampleable.cpp
+  CyclicSampleable.cpp
+  FrameTestable.cpp
+  FrameDifferentiable.cpp
+  FramePairDifferentiable.cpp
+  InverseKinematicsSampleable.cpp
+  NonColliding.cpp
+  Projectable.cpp
+  CartesianProductProjectable.cpp
   Sampleable.cpp
-  FiniteSampleConstraint.cpp
-  FiniteCyclicSampleConstraint.cpp
-  dart.cpp
+  CartesianProductSampleable.cpp
+  Satisfied.cpp
+  DifferentiableIntersection.cpp
+  TSR.cpp
+  TestableIntersection.cpp
+  CartesianProductTestable.cpp
+  JointStateSpaceHelpers.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_statespace"

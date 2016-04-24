@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <dart/common/StlHelpers.h>
-#include <aikido/distance/AngularDistanceMetric.hpp>
+#include <aikido/distance/SO2Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
-using aikido::statespace::SO2StateSpace;
-using aikido::statespace::SO2StateSpaceSampleableConstraint;
+using aikido::statespace::SO2;
+using aikido::constraint::SO2Sampleable;
 using aikido::constraint::SampleGenerator;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
-using aikido::distance::AngularDistanceMetric;
+using aikido::distance::SO2Angular;
 using dart::common::make_unique;
 
 class SO2UniformSamplerTests : public ::testing::Test
@@ -21,8 +21,8 @@ protected:
 
   void SetUp() override
   {
-    mStateSpace = std::make_shared<SO2StateSpace>();
-    mDistance = std::make_shared<AngularDistanceMetric>(mStateSpace);
+    mStateSpace = std::make_shared<SO2>();
+    mDistance = std::make_shared<SO2Angular>(mStateSpace);
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
@@ -36,34 +36,34 @@ protected:
   }
 
   std::unique_ptr<RNG> mRng;
-  std::shared_ptr<SO2StateSpace> mStateSpace;
-  std::shared_ptr<AngularDistanceMetric> mDistance;
-  std::vector<SO2StateSpace::ScopedState> mTargets;
+  std::shared_ptr<SO2> mStateSpace;
+  std::shared_ptr<SO2Angular> mDistance;
+  std::vector<SO2::ScopedState> mTargets;
 };
 
 TEST_F(SO2UniformSamplerTests, constructor_StateSpaceIsNull_Throws)
 {
   EXPECT_THROW({
-    SO2StateSpaceSampleableConstraint(nullptr, mRng->clone());
+    SO2Sampleable(nullptr, mRng->clone());
   }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, constructor_RNGIsNull_Throws)
 {
   EXPECT_THROW({
-    SO2StateSpaceSampleableConstraint(mStateSpace, nullptr);
+    SO2Sampleable(mStateSpace, nullptr);
   }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, getStateSpace)
 {
-  SO2StateSpaceSampleableConstraint constraint(mStateSpace, mRng->clone());
+  SO2Sampleable constraint(mStateSpace, mRng->clone());
   EXPECT_EQ(mStateSpace, constraint.getStateSpace());
 }
 
 TEST_F(SO2UniformSamplerTests, createSampleGenerator)
 {
-  SO2StateSpaceSampleableConstraint constraint(mStateSpace, mRng->clone());
+  SO2Sampleable constraint(mStateSpace, mRng->clone());
   auto generator = constraint.createSampleGenerator();
 
   ASSERT_TRUE(!!generator);
