@@ -1,13 +1,12 @@
-#include <aikido/ompl/CRRT.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
+#include <aikido/planner/ompl/CRRT.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <ompl/base/goals/GoalSampleableRegion.h>
 #include <ompl/tools/config/SelfConfig.h>
 #include <limits>
 
-namespace aikido
-{
-namespace ompl
-{
+namespace aikido {
+namespace planner {
+namespace ompl {
 //=============================================================================
 CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &si)
     : ::ompl::base::Planner(si, "CRRT")
@@ -16,11 +15,11 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &si)
     , maxDistance_(0.0)
     , lastGoalMotion_(NULL)
 {
-  auto ss = boost::dynamic_pointer_cast<AIKIDOGeometricStateSpace>(
+  auto ss = boost::dynamic_pointer_cast<GeometricStateSpace>(
       si->getStateSpace());
   if (!ss) {
     throw std::invalid_argument(
-        "CRRT algorithm requires an AIKIDOGeometricStateSpace");
+        "CRRT algorithm requires an GeometricStateSpace");
   }
 
   specs_.approximateSolutions = true;
@@ -66,16 +65,28 @@ void CRRT::clear(void)
 }
 
 //=============================================================================
-void CRRT::setGoalBias(double goalBias) { goalBias_ = goalBias; }
+void CRRT::setGoalBias(double goalBias) 
+{
+  goalBias_ = goalBias; 
+}
 
 //=============================================================================
-double CRRT::getGoalBias() const { return goalBias_; }
+double CRRT::getGoalBias() const 
+{
+  return goalBias_; 
+}
 
 //=============================================================================
-void CRRT::setRange(double distance) { maxDistance_ = distance; }
+void CRRT::setRange(double distance) 
+{
+  maxDistance_ = distance;
+}
 
 //=============================================================================
-double CRRT::getRange() const { return maxDistance_; }
+double CRRT::getRange() const 
+{ 
+  return maxDistance_;
+}
 
 //=============================================================================
 void CRRT::setTrajectoryWideConstraint(
@@ -164,8 +175,8 @@ void CRRT::freeMemory(void)
 
     /* do single-step constraint projection */
     if (cons_) {
-      auto dst = dstate->as<AIKIDOGeometricStateSpace::StateType>();
-      auto pst = pstate->as<AIKIDOGeometricStateSpace::StateType>();
+      auto dst = dstate->as<GeometricStateSpace::StateType>();
+      auto pst = pstate->as<GeometricStateSpace::StateType>();
       cons_->project(dst->mState, pst->mState);
       dstate = pstate;
     }
@@ -228,6 +239,7 @@ void CRRT::freeMemory(void)
 //=============================================================================
 ::ompl::base::PlannerStatus CRRT::solve(double solveTime) {
     return solve(::ompl::base::timedPlannerTerminationCondition(solveTime));//, std::min(solveTime/100., 0.1)));
+}
 }
 }
 }

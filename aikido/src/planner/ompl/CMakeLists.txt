@@ -1,4 +1,5 @@
 aikido_add_library("${PROJECT_NAME}_planner_ompl"
+  CRRT.cpp
   GeometricStateSpace.cpp
   GoalRegion.cpp
   Planner.cpp
