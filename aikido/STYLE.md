@@ -2,6 +2,11 @@
 
 The code in this library generally follows the same coding convention as the [DART/KIDO](https://github.com/dartsim/dart).
 
+* [C++ Header Style](#c-header-style)
+* [C++ Source Style](#c-source-style)
+* [Python Style](#python-style)
+* [CMake Style](#cmake-style)
+
 ## C++ Header Style
 
 C++ headers should be contained in a subdirectory of `include/` that matches their namespace, with the extension `.hpp`.
@@ -190,7 +195,7 @@ class MyExampleClass(object):
 
 * Use **two-space** indentation
 * Use **lowercase** function names
-* Use *all-caps** variables except when referring to target names
+* Use **all-caps** variables except when referring to target names
 * Use `target_VARIABLE` when naming target-specific variables
 * **ALWAYS** quote singleton variables (e.g. `"${MY_VARIABLE}"` but not `${MY_LIST_VARIABLE}`) 
 
