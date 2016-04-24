@@ -49,7 +49,7 @@ public:
   /// Returns an empty vector.
   ///
   /// \param _s input state
-  /// \param _out returns an empty vector
+  /// \param[out] _out returns an empty vector
   void getValue(
     const statespace::StateSpace::State* _s,
     Eigen::VectorXd& _out) const override;
@@ -57,7 +57,7 @@ public:
   /// Returns an empty matrix.
   ///
   /// \param _s input state
-  /// \param _out empty Jacobian matrix
+  /// \param[out] _out empty Jacobian matrix
   void getJacobian(
     const statespace::StateSpace::State* _s,
     Eigen::MatrixXd& _out) const override;

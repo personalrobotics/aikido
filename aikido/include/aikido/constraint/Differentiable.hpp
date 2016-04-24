@@ -36,7 +36,6 @@ public:
   /// \param _s State to be evaluated at.
   /// \param[out] _out Vector to store the value. Length should match the number
   ///        of constraints.
-  /// \return True if value is successfully stored at _out.
   virtual void getValue(
     const statespace::StateSpace::State* _s,
     Eigen::VectorXd& _out) const = 0;
@@ -52,11 +51,10 @@ public:
   ///     Rn              : m x n
   ///     CartesianProduct: m x k (k = sum of all state jacobian cols)
   /// If Matrix of incorrect dimension is given, false will be returned.
-  /// \return True if evaluation is successfully stored at _out.
   virtual void getJacobian(
     const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const = 0;
 
-  /// Returns (Value, Jacobian).
+  /// Get both Value and Jacobian.
   /// \param _s State to be evaluated.
   /// \param[out] _val Value of constraints.
   /// \param[out] _jac Jacoiban of constraints. 
