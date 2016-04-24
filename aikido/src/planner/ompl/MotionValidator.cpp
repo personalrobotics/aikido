@@ -12,10 +12,18 @@ MotionValidator::MotionValidator(
     : ::ompl::base::MotionValidator(_si)
     , mSequenceResolution(_maxDistBtwValidityChecks)
 {
+  if (_si == nullptr) {
+    throw std::invalid_argument("SpaceInformation is nullptr.");
+  }
+
+  if (mSequenceResolution <= 0){
+    throw std::invalid_argument(
+        "Max distance between validity checks must be >= 0.");
+  }
 }
 
 bool MotionValidator::checkMotion(const ::ompl::base::State* _s1,
-                                      const ::ompl::base::State* _s2) const
+                                  const ::ompl::base::State* _s2) const
 {
   double dist = si_->distance(_s1, _s2);
   aikido::util::VanDerCorput vdc{1, true,  // include endpoints
