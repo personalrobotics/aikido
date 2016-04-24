@@ -112,3 +112,10 @@ aikido_add_test(test_NonColliding
   test_NonColliding.cpp)
 target_link_libraries(test_NonColliding
   "${PROJECT_NAME}_constraint")
+
+
+aikido_add_test(test_Differentiable
+	PolynomialConstraint.cpp
+  test_Differentiable.cpp)
+target_link_libraries(test_Differentiable
+  "${PROJECT_NAME}_constraint")
