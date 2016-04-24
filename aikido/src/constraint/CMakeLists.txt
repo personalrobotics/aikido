@@ -20,7 +20,7 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   DifferentiableIntersection.cpp
   TSR.cpp
   TestableIntersection.cpp
-  TestableSubspace.cpp
+  CartesianProductTestable.cpp
   JointStateSpaceHelpers.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"

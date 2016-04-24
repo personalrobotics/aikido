@@ -88,9 +88,9 @@ aikido_add_test(test_DartConstraintHelpers
 target_link_libraries(test_DartConstraintHelpers
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_statespace")
 
-aikido_add_test(test_TestableSubspace
-  test_TestableSubspace.cpp)
-target_link_libraries(test_TestableSubspace
+aikido_add_test(test_CartesianProductTestable
+  test_CartesianProductTestable.cpp)
+target_link_libraries(test_CartesianProductTestable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_SampleableSubspace

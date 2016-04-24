@@ -3,7 +3,7 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
-#include <aikido/constraint/TestableSubspace.hpp>
+#include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
@@ -67,7 +67,7 @@ TEST_F(PlannerTest, PlanToGoalRegion)
       tConstraints;
   tConstraints.push_back(boxConstraint);
   aikido::constraint::TestablePtr goalTestable =
-      std::make_shared<aikido::constraint::TestableSubspace>(stateSpace,
+      std::make_shared<aikido::constraint::CartesianProductTestable>(stateSpace,
                                                              tConstraints);
 
   // Plan

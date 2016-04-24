@@ -10,7 +10,7 @@ namespace constraint {
 /// Testable for CompoundStates. 
 /// It takes in a set of Testables and test i-th substate on 
 /// the i-th Testable.
-class TestableSubspace : public Testable
+class CartesianProductTestable : public Testable
 {
 public:
 
@@ -19,7 +19,7 @@ public:
   /// \param _constraints Set of testables. The size of _constraints
   ///        should match the number of subspaces in _stateSpace.
   ///        i-th constraint applies to i-th subspace.
-  TestableSubspace(
+  CartesianProductTestable(
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<TestablePtr> _constraints);
 
