@@ -32,7 +32,7 @@
 #define PARABOLIC_RAMP_H
 
 #include <math.h>
-#include "Math.h"
+#include "HauserMath.h"
 
 namespace ParabolicRamp {
 

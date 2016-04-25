@@ -1,5 +1,5 @@
-#ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_H_
-#define AIKIDO_UTIL_CATKINRESOURCERETRIEVER_H_
+#ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
+#define AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -8,15 +8,30 @@
 namespace aikido {
 namespace util {
 
-class CatkinResourceRetriever : public virtual dart::common::ResourceRetriever {
+/// Retreive resources specified by 'package://' URIs. This class resolves
+/// a 'package://' URI to a 'file://' URI using the same logic as
+/// `catkin.find_in_workspaces`, then resolves the resource using a delegate
+/// \c ResourceRetriever.
+class CatkinResourceRetriever : public virtual dart::common::ResourceRetriever
+{
 public:
+  /// Constructs a resource retriever that delegates to a
+  /// \c LocalResourceRetriever to resolve 'file://' URIs.
   CatkinResourceRetriever();
+
+  /// Constructs a resource retriever that delegates to a
+  /// \c LocalResourceRetriever to retrieve 'file://' URIs.
+  ///
+  /// \param _delegate resource retriever to retrieve 'file://' URIs
   explicit CatkinResourceRetriever(
     const dart::common::ResourceRetrieverPtr& _delegate);
+
   virtual ~CatkinResourceRetriever() = default;
 
+  // Documentation inherited.
   bool exists(const dart::common::Uri& _uri) override;
 
+  // Documentation inherited.
   dart::common::ResourcePtr retrieve(
     const dart::common::Uri& _uri) override;
 
@@ -36,4 +51,4 @@ private:
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_H_
+#endif // ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
