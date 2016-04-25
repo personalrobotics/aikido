@@ -10,7 +10,7 @@ namespace ompl {
 
 //=============================================================================
 template <class PlannerType>
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
     statespace::StateSpacePtr _stateSpace,
@@ -48,7 +48,7 @@ trajectory::TrajectoryPtr planOMPL(
 
 //=============================================================================
 template <class PlannerType>
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,

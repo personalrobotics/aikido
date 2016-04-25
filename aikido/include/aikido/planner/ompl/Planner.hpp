@@ -7,7 +7,7 @@
 #include "../../constraint/Testable.hpp"
 #include "../../constraint/Sampleable.hpp"
 #include "../../constraint/Projectable.hpp"
-#include "../../trajectory/Trajectory.hpp"
+#include "../../trajectory/Interpolated.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -43,7 +43,7 @@ namespace ompl {
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
 /// validity checking two successive points on a tree extension
 template <class PlannerType>
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
     statespace::StateSpacePtr _stateSpace,
@@ -81,7 +81,7 @@ trajectory::TrajectoryPtr planOMPL(
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
 /// validity checking two successive points on a tree extension
 template <class PlannerType>
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
@@ -131,7 +131,7 @@ trajectory::TrajectoryPtr planOMPL(
 /// \param _interpolator An aikido interpolator that can be used with the _stateSpace.
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
-trajectory::TrajectoryPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
+trajectory::InterpolatedPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
                              const ::ompl::base::ProblemDefinitionPtr &_pdef,
                              statespace::StateSpacePtr _sspace,
                              statespace::InterpolatorPtr _interpolator,

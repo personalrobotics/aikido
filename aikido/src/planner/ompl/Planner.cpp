@@ -114,7 +114,7 @@ namespace ompl {
 }
 
 //=============================================================================
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
   const ::ompl::base::PlannerPtr &_planner,
   const ::ompl::base::ProblemDefinitionPtr &_pdef,
   statespace::StateSpacePtr _sspace,
