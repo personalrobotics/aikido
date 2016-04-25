@@ -9,6 +9,8 @@ namespace planner
 {
 namespace ompl
 {
+
+//=============================================================================
 CRRTConnect::CRRTConnect(const ::ompl::base::SpaceInformationPtr &si)
     : ::ompl::base::Planner(si, "CRRTConnect")
 {
@@ -25,8 +27,10 @@ CRRTConnect::CRRTConnect(const ::ompl::base::SpaceInformationPtr &si)
   cons_ = nullptr;
 }
 
+//=============================================================================
 CRRTConnect::~CRRTConnect(void) { freeMemory(); }
 
+//=============================================================================
 void CRRTConnect::setup(void)
 {
   Planner::setup();
@@ -47,6 +51,7 @@ void CRRTConnect::setup(void)
       boost::bind(&CRRTConnect::distanceFunction, this, _1, _2));
 }
 
+//=============================================================================
 void CRRTConnect::freeMemory(void)
 {
   std::vector<Motion *> motions;
@@ -79,6 +84,26 @@ void CRRTConnect::clear(void)
       std::make_pair<::ompl::base::State *, ::ompl::base::State *>(NULL, NULL);
 }
 
+//=============================================================================
+void CRRTConnect::setRange(double distance) 
+{
+  maxDistance_ = distance;
+}
+
+//=============================================================================
+double CRRTConnect::getRange() const 
+{ 
+  return maxDistance_;
+}
+
+//=============================================================================
+void CRRTConnect::setTrajectoryWideConstraint(
+    constraint::ProjectablePtr _projectable)
+{
+  cons_ = std::move(_projectable);
+}
+
+//=============================================================================
 CRRTConnect::GrowState CRRTConnect::growTree(TreeData &tree,
                                              TreeGrowingInfo &tgi,
                                              Motion *rmotion)
@@ -140,6 +165,7 @@ CRRTConnect::GrowState CRRTConnect::growTree(TreeData &tree,
     return TRAPPED;
 }
 
+//=============================================================================
 ::ompl::base::PlannerStatus CRRTConnect::solve(
     const ::ompl::base::PlannerTerminationCondition &ptc)
 {
@@ -312,6 +338,7 @@ CRRTConnect::GrowState CRRTConnect::growTree(TreeData &tree,
       ::ompl::base::PlannerStatus::TIMEOUT;
 }
 
+//=============================================================================
 void CRRTConnect::getPlannerData(::ompl::base::PlannerData &data) const
 {
   Planner::getPlannerData(data);

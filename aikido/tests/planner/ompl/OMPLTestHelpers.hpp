@@ -68,8 +68,49 @@ Eigen::Vector3d getTranslationalState(
 
 }
 
-class MockTranslationalRobotConstraint
-    : public aikido::constraint::Testable
+class MockProjectionConstraint : public aikido::constraint::Projectable
+{
+public:
+  // Construct a constraint that project to x=_val
+  MockProjectionConstraint(
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      double _val)
+      : mStateSpace(std::move(_stateSpace))
+      , mValue(_val)
+  {
+  }
+
+  // Documentation inherited
+  aikido::statespace::StateSpacePtr getStateSpace() const override
+  {
+    return mStateSpace;
+  }
+
+  // Documentation inherited
+  bool project(const aikido::statespace::StateSpace::State *_s,
+               aikido::statespace::StateSpace::State *_out) const override
+  {
+    auto instate =
+        static_cast<const aikido::statespace::CartesianProduct::State *>(_s);
+    auto outstate =
+        static_cast<aikido::statespace::CartesianProduct::State *>(_out);
+    auto inSubState =
+        mStateSpace
+            ->getSubStateHandle<aikido::statespace::Rn>(instate, 0);
+    auto outSubState =
+        mStateSpace
+            ->getSubStateHandle<aikido::statespace::Rn>(outstate, 0);
+    auto val = inSubState.getValue();
+    Eigen::Vector3d newval(mValue, val(1), val(2));
+    outSubState.setValue(newval);
+  }
+
+private:
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+    double mValue;
+};
+
+class MockTranslationalRobotConstraint : public aikido::constraint::Testable
 {
 public:
   // Construct the mock constraint
@@ -90,8 +131,7 @@ public:
         static_cast<const aikido::statespace::CartesianProduct::State *>(_state);
     auto subState =
         mStateSpace
-            ->getSubStateHandle<aikido::statespace::Rn>(cst,
-                                                                          0);
+            ->getSubStateHandle<aikido::statespace::Rn>(cst, 0);
     auto val = subState.getValue();
 
     for (size_t i = 0; i < 3; ++i) {

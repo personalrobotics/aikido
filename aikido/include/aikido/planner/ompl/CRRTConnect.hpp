@@ -63,7 +63,7 @@ public:
   /// Set a projectable constraint to be applied throughout the trajectory
   /// \param _projectable The constraint to apply to the trajectory
   void setTrajectoryWideConstraint(
-      const constraint::ProjectablePtr &_projectable);
+      constraint::ProjectablePtr _projectable);
 
   /// Set a nearest neighbors data structure for both the start and goal trees
   template <template <typename T> class NN>
