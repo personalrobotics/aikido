@@ -182,11 +182,13 @@ GeometricStateSpace::allocDefaultStateSampler() const
 //=============================================================================
 void GeometricStateSpace::freeState(::ompl::base::State *_state) const
 {
-  auto st = static_cast<StateType *>(_state);
-  if(st->mState != nullptr){
+  if (_state != nullptr) {
+    auto st = static_cast<StateType *>(_state);
+    if (st->mState != nullptr) {
       mStateSpace->freeState(st->mState);
+    }
+    delete st;
   }
-  delete st;
 }
 
 //=============================================================================

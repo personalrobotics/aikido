@@ -314,3 +314,8 @@ TEST_F(GeometricStateSpaceTest, DeallocNullAikidoState) {
   state->mState = nullptr;
   gSpace->freeState(state);
 }
+
+TEST_F(GeometricStateSpaceTest, DallocNullState) {
+    constructStateSpace();
+    gSpace->freeState(nullptr);
+}
