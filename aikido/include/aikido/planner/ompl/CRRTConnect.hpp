@@ -1,24 +1,26 @@
-#ifndef AIKIDO_PLANNER_OMPL_CRRT_HPP_
-#define AIKIDO_PLANNER_OMPL_CRRT_HPP_
+#ifndef AIKIDO_PLANNER_OMPL_CRRTCONNECT_HPP_
+#define AIKIDO_PLANNER_OMPL_CRRTCONNECT_HPP_
 
-#include <ompl/base/Planner.h>
 #include <ompl/geometric/planners/PlannerIncludes.h>
 #include <ompl/datastructures/NearestNeighbors.h>
-
 #include "../../constraint/Projectable.hpp"
 
-namespace aikido {
-namespace planner {
-namespace ompl {
-/// Implements a constraint RRT planner
-class CRRT : public ::ompl::base::Planner
+namespace aikido
+{
+namespace planner
+{
+namespace ompl
+{
+/// Implements a bi-direction constrained RRT planner
+class CRRTConnect : public ::ompl::base::Planner
 {
 public:
   /// Constructor
-  CRRT(const ::ompl::base::SpaceInformationPtr &_si);
+  /// \param si Information about the planning instance
+  CRRTConnect(const ::ompl::base::SpaceInformationPtr &si);
 
   /// Destructor
-  virtual ~CRRT(void);
+  virtual ~CRRTConnect(void);
 
   /// Get information about the current run of the motion planner. Repeated
   /// calls to this function will update data (only additions are made). This is
@@ -48,17 +50,6 @@ public:
   /// Subsequent calls to solve() will ignore all previous work.
   void clear(void) override;
 
-  /// Set the goal bias. In the process of randomly selecting states in the
-  /// state space to attempt to go towards, the algorithm may in fact choose the
-  /// actual goal state, if it knows it, with some probability. This probability
-  /// is a real number between 0.0 and 1.0; its value should usually be around
-  /// 0.05 and should not be too large. It is probably a good idea to use the
-  /// default value.
-  void setGoalBias(double goalBias);
-
-  /// Get the goal bias the planner is using
-  double getGoalBias(void) const;
-
   /// Set the range the planner is supposed to use. This parameter greatly
   /// influences the runtime of the algorithm. It represents the maximum length
   /// of a motion to be added in the tree of motions.
@@ -72,13 +63,14 @@ public:
   /// Set a projectable constraint to be applied throughout the trajectory
   /// \param _projectable The constraint to apply to the trajectory
   void setTrajectoryWideConstraint(
-      constraint::ProjectablePtr _projectable);
+      const constraint::ProjectablePtr &_projectable);
 
-  /// Set a nearest neighbors data structure
+  /// Set a nearest neighbors data structure for both the start and goal trees
   template <template <typename T> class NN>
   void setNearestNeighbors(void)
   {
-    nn_.reset(new NN<Motion *>());
+    tStart_.reset(new NN<Motion *>());
+    tGoal_.reset(new NN<Motion *>());
   }
 
   /// Perform extra configuration steps, if needed. This call will also issue a
@@ -87,32 +79,53 @@ public:
   void setup(void) override;
 
 protected:
-  /** \brief Representation of a motion
-      This only contains pointers to parent motions as we
-      only need to go backwards in the tree. */
+  /** \brief Representation of a motion */
   class Motion
   {
   public:
     Motion(void)
-        : state(NULL)
+        : root(NULL)
+        , state(NULL)
         , parent(NULL)
     {
+      parent = NULL;
+      state = NULL;
     }
 
-    /** \brief Constructor that allocates memory for the state */
     Motion(const ::ompl::base::SpaceInformationPtr &si)
-        : state(si->allocState())
+        : root(NULL)
+        , state(si->allocState())
         , parent(NULL)
     {
     }
 
     ~Motion(void) {}
 
-    /** \brief The state contained by the motion */
+    const ::ompl::base::State *root;
     ::ompl::base::State *state;
-
-    /** \brief The parent motion in the exploration tree */
     Motion *parent;
+  };
+
+  /** \brief A nearest-neighbor datastructure representing a tree of motions */
+  typedef boost::shared_ptr<::ompl::NearestNeighbors<Motion *>> TreeData;
+
+  /** \brief Information attached to growing a tree of motions (used internally)
+   */
+  struct TreeGrowingInfo {
+    ::ompl::base::State *xstate;
+    ::ompl::base::State *pstate;
+    Motion *xmotion;
+    bool start;
+  };
+
+  /** \brief The state of the tree after an attempt to extend it */
+  enum GrowState {
+    /// no progress has been made
+    TRAPPED,
+    /// progress has been made towards the randomly sampled state
+    ADVANCED,
+    /// the randomly sampled state was reached
+    REACHED
   };
 
   /** \brief Free the memory allocated by this planner */
@@ -125,15 +138,17 @@ protected:
     return si_->distance(a->state, b->state);
   }
 
+  /** \brief Grow a tree towards a random state */
+  GrowState growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion);
+
   /** \brief State sampler */
   ::ompl::base::StateSamplerPtr sampler_;
 
-  /** \brief A nearest-neighbors datastructure containing the tree of motions */
-  boost::shared_ptr<::ompl::NearestNeighbors<Motion *>> nn_;
+  /** \brief The start tree */
+  TreeData tStart_;
 
-  /** \brief The fraction of time the goal is picked as the state to expand
-   * towards (if such a state is available) */
-  double goalBias_;
+  /** \brief The goal tree */
+  TreeData tGoal_;
 
   /** \brief The maximum length of a motion to be added to a tree */
   double maxDistance_;
@@ -141,14 +156,15 @@ protected:
   /** \brief The random number generator */
   ::ompl::RNG rng_;
 
-  /** \brief The most recent goal motion.  Used for PlannerData computation */
-  Motion *lastGoalMotion_;
+  /** \brief The pair of states in each tree connected during planning.  Used
+   * for PlannerData computation */
+  std::pair<::ompl::base::State *, ::ompl::base::State *> connectionPoint_;
 
   /** \brief The trajectory-wide PR holonomic constraint to be followed */
   constraint::ProjectablePtr cons_;
+
 };
 }
 }
 }
-
-#endif
+#endif  //AIKIDO_PLANNER_OMPL_CRRTCONNECT_HPP_

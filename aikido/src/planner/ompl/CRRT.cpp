@@ -90,7 +90,7 @@ double CRRT::getRange() const
 
 //=============================================================================
 void CRRT::setTrajectoryWideConstraint(
-    const constraint::ProjectablePtr &_projectable)
+    constraint::ProjectablePtr _projectable)
 {
   cons_ = std::move(_projectable);
 }
