@@ -1,22 +1,29 @@
-#include <aikido/ompl/OMPLMotionValidator.hpp>
+#include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/util/VanDerCorput.hpp>
 #include <aikido/util/StepSequence.hpp>
 #include <ompl/base/SpaceInformation.h>
 
-namespace aikido
-{
-namespace ompl
-{
-OMPLMotionValidator::OMPLMotionValidator(
+namespace aikido {
+namespace planner {
+namespace ompl {
+MotionValidator::MotionValidator(
     const ::ompl::base::SpaceInformationPtr& _si,
     const double& _maxDistBtwValidityChecks)
     : ::ompl::base::MotionValidator(_si)
     , mSequenceResolution(_maxDistBtwValidityChecks)
 {
+  if (_si == nullptr) {
+    throw std::invalid_argument("SpaceInformation is nullptr.");
+  }
+
+  if (mSequenceResolution <= 0){
+    throw std::invalid_argument(
+        "Max distance between validity checks must be >= 0.");
+  }
 }
 
-bool OMPLMotionValidator::checkMotion(const ::ompl::base::State* _s1,
-                                      const ::ompl::base::State* _s2) const
+bool MotionValidator::checkMotion(const ::ompl::base::State* _s1,
+                                  const ::ompl::base::State* _s2) const
 {
   double dist = si_->distance(_s1, _s2);
   aikido::util::VanDerCorput vdc{1, true,  // include endpoints
@@ -37,7 +44,7 @@ bool OMPLMotionValidator::checkMotion(const ::ompl::base::State* _s1,
   return valid;
 }
 
-bool OMPLMotionValidator::checkMotion(
+bool MotionValidator::checkMotion(
     const ::ompl::base::State* _s1, const ::ompl::base::State* _s2,
     std::pair<::ompl::base::State*, double>& _lastValid) const
 {
@@ -70,6 +77,7 @@ bool OMPLMotionValidator::checkMotion(
   }
 
   return valid;
+}
 }
 }
 }
