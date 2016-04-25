@@ -124,10 +124,11 @@ trajectory::InterpolatedPtr planOMPL(
   _planner->setProblemDefinition(_pdef);
   _planner->setup();
   auto solved = _planner->solve(_maxPlanTime);
-  auto returnTraj = std::make_shared<trajectory::Interpolated>(
-      std::move(_sspace), std::move(_interpolator));
 
   if (solved) {
+    auto returnTraj = std::make_shared<trajectory::Interpolated>(
+        std::move(_sspace), std::move(_interpolator));
+
     // Get the path
     auto path =
         boost::dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
@@ -145,8 +146,10 @@ trajectory::InterpolatedPtr planOMPL(
       // Arbitrary timing
       returnTraj->addWaypoint(idx, st->mState);
     }
+
+    return returnTraj;
   }
-  return returnTraj;
+  return nullptr;
 }
 
 }

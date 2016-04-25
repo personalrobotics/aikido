@@ -19,7 +19,7 @@ namespace planner {
 namespace ompl {
 
 /// Use the template OMPL Planner type to plan a trajectory that moves from the
-/// start to the goal point.
+/// start to the goal point. Returns nullptr on planning failure.
 /// \param _start The start state
 /// \param _goal The goal state
 /// \param _statespace The StateSpace that the planner must plan within
@@ -56,7 +56,7 @@ trajectory::InterpolatedPtr planOMPL(
     double _maxPlanTime, double _maxDistanceBtwValidityChecks);
 
 /// Use the template OMPL Planner type to plan a trajectory that moves from the
-/// start to a goal region.
+/// start to a goal region. Returns nullptr on planning failure.
 /// \param _start The start state
 /// \param _goalTestable A Testable constraint that can determine if a given state is a goal state
 /// \param _goalSamplers A Sampleable capable of sampling states that satisfy _goalTestable
@@ -125,6 +125,7 @@ trajectory::InterpolatedPtr planOMPL(
 
 /// Use the template OMPL Planner type to plan in a custom OMPL Space
 /// Information and problem definition and return an aikido Trajector
+/// Returns nullptr on planning failure.
 /// \param _si The SpaceInformation used by the planner
 /// \param _pdef The ProblemDefintion. This contains start and goal conditions for the planner.
 /// \param _sspace The aikido StateSpace to plan against. Used for constructing the return trajectory.
