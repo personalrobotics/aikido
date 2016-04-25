@@ -108,6 +108,8 @@ bool GeometricStateSpace::satisfiesBounds(
     const ::ompl::base::State *_state) const
 {
   auto state = static_cast<const StateType *>(_state);
+  if( state == nullptr || state->mState == nullptr )
+      return false;
   return mBoundsConstraint->isSatisfied(state->mState);
 }
 

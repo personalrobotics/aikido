@@ -168,6 +168,7 @@ TEST_F(GeometricStateSpaceTest, SatisfiesBoundsFalse)
 
   gSpace->freeState(state);
 }
+
 TEST_F(GeometricStateSpaceTest, SatisfiesBoundsTrue)
 {
   constructStateSpace();
@@ -178,6 +179,21 @@ TEST_F(GeometricStateSpaceTest, SatisfiesBoundsTrue)
   EXPECT_TRUE(gSpace->satisfiesBounds(state));
 
   gSpace->freeState(state);
+}
+
+TEST_F(GeometricStateSpaceTest, SatisfiesBoundsFalseNullOmplState)
+{
+  constructStateSpace();
+  EXPECT_FALSE(nullptr);
+}
+
+TEST_F(GeometricStateSpaceTest, SatisfiesBoundsFalseNullAikidoState)
+{
+  constructStateSpace();
+  auto state = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  stateSpace->freeState(state->mState);
+  state->mState = nullptr;
+  EXPECT_FALSE(gSpace->satisfiesBounds(state));
 }
 
 TEST_F(GeometricStateSpaceTest, CopyState)
