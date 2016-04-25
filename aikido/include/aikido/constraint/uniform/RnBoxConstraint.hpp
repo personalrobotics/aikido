@@ -19,6 +19,7 @@ class RnBoxConstraint
 {
 public:
   using constraint::Projectable::project;
+  using constraint::Differentiable::getValueAndJacobian;
 
   /// Constructor.
   /// \param _space Space in which this constraint operates.
@@ -51,17 +52,15 @@ public:
     statespace::StateSpace::State* _out) const override;
 
   // Documentation inherited.
-  Eigen::VectorXd getValue(
-    const statespace::StateSpace::State* _s) const override;
+  void getValue(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _out) const override;
 
   // Documentation inherited.
-  Eigen::MatrixXd getJacobian(
-    const statespace::StateSpace::State* _s) const override;
-
-  // Documentation inherited. 
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-    const statespace::StateSpace::State* _s) const override;
-
+  void getJacobian(
+    const statespace::StateSpace::State* _s,
+    Eigen::MatrixXd& _out) const override;
+  
   // Documentation inherited.
   std::unique_ptr<constraint::SampleGenerator>
     createSampleGenerator() const override;

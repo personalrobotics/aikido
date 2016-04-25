@@ -4,11 +4,12 @@ namespace aikido {
 namespace constraint {
 
 //=============================================================================
-std::pair<Eigen::VectorXd, Eigen::MatrixXd> Differentiable::getValueAndJacobian(
-  const statespace::StateSpace::State* _s) const
+void Differentiable::getValueAndJacobian(
+  const statespace::StateSpace::State* _s,
+  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
 {
-  return std::make_pair<Eigen::VectorXd, Eigen::MatrixXd>(
-    getValue(_s), getJacobian(_s));
+  getValue(_s, _val);
+  getJacobian(_s, _jac);
 }
 
 }

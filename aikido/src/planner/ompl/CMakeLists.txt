@@ -1,6 +1,8 @@
 aikido_add_library("${PROJECT_NAME}_planner_ompl"
+  dart.cpp
   GeometricStateSpace.cpp
   GoalRegion.cpp
+  MotionValidator.cpp
   Planner.cpp
   StateSampler.cpp
   StateValidityChecker.cpp

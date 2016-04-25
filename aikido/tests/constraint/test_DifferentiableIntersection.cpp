@@ -57,7 +57,10 @@ TEST(DifferentiableIntersection, getValue)
   DifferentiableIntersection stacked(constraints, rvss);
 
   Eigen::Vector2d expected(9, -6);
-  EXPECT_TRUE(stacked.getValue(s1).isApprox(expected));
+  Eigen::VectorXd out;
+  stacked.getValue(s1, out);
+
+  EXPECT_TRUE(out.isApprox(expected));
 }
 
 
@@ -85,7 +88,10 @@ TEST(DifferentiableIntersection, getJacobian)
   expected(0, 0) = -10;
   expected(1, 0) = 5;
 
-  EXPECT_TRUE(stacked.getJacobian(s1).isApprox(expected));
+  Eigen::MatrixXd out;
+  stacked.getJacobian(s1, out);
+
+  EXPECT_TRUE(out.isApprox(expected));
 }
 
 /// Compare returned values with getValue and getJacobian
@@ -108,12 +114,18 @@ TEST(DifferentiableIntersection, GetValueAndJacobianMatchValueAndJacobian)
   s1.setValue(v);
 
   DifferentiableIntersection stacked(constraints, rvss);
-  auto valueAndJacobian = stacked.getValueAndJacobian(s1);
-  auto value = stacked.getValue(s1);
-  auto jacobian = stacked.getJacobian(s1);
+  Eigen::VectorXd val;
+  Eigen::MatrixXd jac;
+  stacked.getValueAndJacobian(s1, val, jac);
 
-  EXPECT_TRUE(valueAndJacobian.first.isApprox(value));
-  EXPECT_TRUE(valueAndJacobian.second.isApprox(jacobian));
+  Eigen::VectorXd value;
+  Eigen::MatrixXd jacobian;
+
+  stacked.getValue(s1, value);
+  stacked.getJacobian(s1, jacobian);
+
+  EXPECT_TRUE(val.isApprox(value));
+  EXPECT_TRUE(jac.isApprox(jacobian));
 }
 
 TEST(DifferentiableIntersection, GetConstraintTypes)

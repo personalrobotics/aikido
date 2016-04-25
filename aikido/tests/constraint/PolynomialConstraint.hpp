@@ -19,12 +19,14 @@ public:
   size_t getConstraintDimension() const override;
 
   // Documentation inherited.
-  Eigen::VectorXd getValue(
-      const aikido::statespace::StateSpace::State* _s) const override;
+  void getValue(
+      const aikido::statespace::StateSpace::State* _s,
+      Eigen::VectorXd& _out) const override;
 
   // Documentation inherited.
-  Eigen::MatrixXd getJacobian(
-      const aikido::statespace::StateSpace::State* _s) const override;
+  void getJacobian(
+      const aikido::statespace::StateSpace::State* _s,
+      Eigen::MatrixXd& _out) const override;
 
   /// These are all equality constriants.
   std::vector<aikido::constraint::ConstraintType> getConstraintTypes()
@@ -32,10 +34,6 @@ public:
 
   // Documentation inherited.
   aikido::statespace::StateSpacePtr getStateSpace() const override;
-
-  // Documentation inherited.
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-      const aikido::statespace::StateSpace::State* _s) const override;
 
 private:
   Eigen::VectorXd mCoeffs;

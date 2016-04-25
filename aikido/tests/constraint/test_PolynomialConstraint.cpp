@@ -23,7 +23,10 @@ TEST(PolynomialConstraint, GetValue)
   auto s1 = rvss.createState();
   s1.setValue(v);
 
-  EXPECT_DOUBLE_EQ(p.getValue(s1)(0), 9);
+  Eigen::VectorXd value;
+  p.getValue(s1, value);
+
+  EXPECT_DOUBLE_EQ(value(0), 9);
 
 }
 
@@ -39,7 +42,8 @@ TEST(PolynomialConstraint, GetJacobian)
   auto s1 = rvss.createState();
   s1.setValue(v);
 
-  Eigen::MatrixXd jac = p.getJacobian(s1);
+  Eigen::MatrixXd jac;
+  p.getJacobian(s1, jac);
   EXPECT_DOUBLE_EQ(-10, jac(0,0));
 
 }

@@ -22,12 +22,14 @@ public:
   size_t getConstraintDimension() const override;
   
   // Documentation inherited.
-  Eigen::VectorXd getValue(
-    const statespace::StateSpace::State* _s) const override; 
+  void getValue(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _out) const override; 
 
   // Documentation inherited.
-  Eigen::MatrixXd getJacobian(
-    const statespace::StateSpace::State* _s) const override;
+  void getJacobian(
+    const statespace::StateSpace::State* _s,
+    Eigen::MatrixXd& _out) const override;
 
   // Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;
@@ -36,8 +38,9 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited. 
-  std::pair<Eigen::VectorXd, Eigen::MatrixXd> getValueAndJacobian(
-    const statespace::StateSpace::State* _s) const override;
+  void getValueAndJacobian(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const override;
 
 private:
   std::vector<DifferentiablePtr> mConstraints;
