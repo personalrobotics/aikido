@@ -40,6 +40,8 @@ namespace ompl {
 /// valid bounds defined on the StateSpace
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
+/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
+/// validity checking two successive points on a tree extension
 template <class PlannerType>
 trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
@@ -50,7 +52,8 @@ trajectory::TrajectoryPtr planOMPL(
     constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
-    constraint::ProjectablePtr _boundsProjector, double _maxPlanTime);
+    constraint::ProjectablePtr _boundsProjector, 
+    double _maxPlanTime, double _maxDistanceBtwValidityChecks);
 
 /// Use the template OMPL Planner type to plan a trajectory that moves from the
 /// start to a goal region.
@@ -75,6 +78,8 @@ trajectory::TrajectoryPtr planOMPL(
 /// valid bounds defined on the StateSpace
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
+/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
+/// validity checking two successive points on a tree extension
 template <class PlannerType>
 trajectory::TrajectoryPtr planOMPL(
     const statespace::StateSpace::State *_start,
@@ -87,7 +92,7 @@ trajectory::TrajectoryPtr planOMPL(
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,
-    double _maxPlanTime);
+    double _maxPlanTime, double _maxDistanceBtwValidityChecks);
 
 /// Generate an OMPL SpaceInformation from aikido components
 /// \param _statespace The StateSpace that the SpaceInformation operates on
@@ -106,6 +111,8 @@ trajectory::TrajectoryPtr planOMPL(
 /// satsified for a state to be considered valid.
 /// \param _boundsProjector A Projectable that projects a state back within
 /// valid bounds defined on the StateSpace
+/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
+/// validity checking two successive points on a tree extension
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
@@ -113,7 +120,8 @@ trajectory::TrajectoryPtr planOMPL(
     constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
-    constraint::ProjectablePtr _boundsProjector);
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwValidityChecks);
 
 /// Use the template OMPL Planner type to plan in a custom OMPL Space
 /// Information and problem definition and return an aikido Trajector

@@ -5,6 +5,7 @@
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
+#include <aikido/planner/ompl/MotionValidator.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -30,7 +31,7 @@ TEST_F(PlannerTest, PlanToConfiguration)
   auto traj = aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
       startState, goalState, stateSpace, interpolator, std::move(dmetric),
       std::move(sampler), std::move(collConstraint),
-      std::move(boundsConstraint), std::move(boundsProjection), 5.0);
+      std::move(boundsConstraint), std::move(boundsProjection), 5.0, 0.1);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
@@ -74,7 +75,7 @@ TEST_F(PlannerTest, PlanToGoalRegion)
   auto traj = aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
       startState, goalTestable, goalSampleable, stateSpace, interpolator,
       std::move(dmetric), std::move(sampler), std::move(collConstraint),
-      std::move(boundsConstraint), std::move(boundsProjection), 5.0);
+      std::move(boundsConstraint), std::move(boundsProjection), 5.0, 0.1);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
@@ -105,7 +106,7 @@ TEST_F(PlannerTest, PlanThrowsOnNullGoalTestable)
                    startState, nullptr, std::move(goalSampleable), stateSpace,
                    interpolator, std::move(dmetric), std::move(sampler),
                    std::move(collConstraint), std::move(boundsConstraint),
-                   std::move(boundsProjection), 5.0),
+                   std::move(boundsProjection), 5.0, 0.1),
                std::invalid_argument);
 }
 
@@ -132,7 +133,7 @@ TEST_F(PlannerTest, PlanThrowsOnGoalTestableMismatch)
           startState, goalTestable, std::move(goalSampleable), stateSpace,
           interpolator, std::move(dmetric), std::move(sampler),
           std::move(collConstraint), std::move(boundsConstraint),
-          std::move(boundsProjection), 5.0),
+          std::move(boundsProjection), 5.0, 0.1),
       std::invalid_argument);
 }
 
@@ -153,7 +154,7 @@ TEST_F(PlannerTest, PlanThrowsOnNullGoalSampler)
       aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
           startState, goalTestable, nullptr, stateSpace, interpolator,
           std::move(dmetric), std::move(sampler), std::move(collConstraint),
-          std::move(boundsConstraint), std::move(boundsProjection), 5.0),
+          std::move(boundsConstraint), std::move(boundsProjection), 5.0, 0.1),
       std::invalid_argument);
 }
 
@@ -180,7 +181,7 @@ TEST_F(PlannerTest, PlanThrowsOnGoalSamplerMismatch)
           startState, goalTestable, std::move(goalSampleable), stateSpace,
           interpolator, std::move(dmetric), std::move(sampler),
           std::move(collConstraint), std::move(boundsConstraint),
-          std::move(boundsProjection), 5.0),
+          std::move(boundsProjection), 5.0, 0.1),
       std::invalid_argument);
 }
 
@@ -189,7 +190,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullStateSpace)
   EXPECT_THROW(getSpaceInformation(
                    nullptr, std::move(interpolator), std::move(dmetric),
                    std::move(sampler), std::move(collConstraint),
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -198,7 +199,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullInterpolator)
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), nullptr, std::move(dmetric),
                    std::move(sampler), std::move(collConstraint),
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -212,7 +213,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnInterpolatorMismatch)
       getSpaceInformation(
           std::move(stateSpace), std::move(binterpolator), std::move(dmetric),
           std::move(sampler), std::move(collConstraint),
-          std::move(boundsConstraint), std::move(boundsProjection)),
+          std::move(boundsConstraint), std::move(boundsProjection), 0.1),
       std::invalid_argument);
 }
 
@@ -221,7 +222,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullDistanceMetric)
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator), nullptr,
                    std::move(sampler), std::move(collConstraint),
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -233,7 +234,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnDistanceMetricMismatch)
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator),
                    std::move(dm), std::move(sampler), std::move(collConstraint),
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -242,7 +243,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullSampler)
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator),
                    std::move(dmetric), nullptr, std::move(collConstraint),
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -254,7 +255,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnSamplerMismatch)
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator),
                    std::move(dmetric), std::move(ds), std::move(collConstraint),
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -263,7 +264,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullValidityConstraint)
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator),
                    std::move(dmetric), std::move(sampler), nullptr,
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -275,7 +276,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnValidityConstraintMismatch)
   EXPECT_THROW(getSpaceInformation(
                    std::move(stateSpace), std::move(interpolator),
                    std::move(dmetric), std::move(sampler), std::move(dv),
-                   std::move(boundsConstraint), std::move(boundsProjection)),
+                   std::move(boundsConstraint), std::move(boundsProjection), 0.1),
                std::invalid_argument);
 }
 
@@ -285,7 +286,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullBoundsConstraint)
       getSpaceInformation(std::move(stateSpace), std::move(interpolator),
                           std::move(dmetric), std::move(sampler),
                           std::move(collConstraint), nullptr,
-                          std::move(boundsProjection)),
+                          std::move(boundsProjection), 0.1),
       std::invalid_argument);
 }
 
@@ -298,7 +299,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnBoundsConstraintMismatch)
       getSpaceInformation(std::move(stateSpace), std::move(interpolator),
                           std::move(dmetric), std::move(sampler),
                           std::move(collConstraint), std::move(ds),
-                          std::move(boundsProjection)),
+                          std::move(boundsProjection), 0.1),
       std::invalid_argument);
 }
 
@@ -308,7 +309,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullBoundsProjector)
       getSpaceInformation(std::move(stateSpace), std::move(interpolator),
                           std::move(dmetric), std::move(sampler),
                           std::move(collConstraint),
-                          std::move(boundsConstraint), nullptr),
+                          std::move(boundsConstraint), nullptr, 0.1),
       std::invalid_argument);
 }
 
@@ -321,7 +322,20 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnBoundsProjectorMismatch)
       getSpaceInformation(std::move(stateSpace), std::move(interpolator),
                           std::move(dmetric), std::move(sampler),
                           std::move(collConstraint),
-                          std::move(boundsConstraint), std::move(ds)),
+                          std::move(boundsConstraint), std::move(ds), 0.1),
+      std::invalid_argument);
+}
+
+TEST_F(PlannerTest, GetSpaceInformationThrowsOnNegativeDistanceBetweenChecks)
+{
+  auto ss = std::make_shared<StateSpace>(robot);
+  auto ds = aikido::constraint::createProjectableBounds(ss);
+
+  EXPECT_THROW(
+      getSpaceInformation(std::move(stateSpace), std::move(interpolator),
+                          std::move(dmetric), std::move(sampler),
+                          std::move(collConstraint),
+                          std::move(boundsConstraint), std::move(boundsProjection), -0.1),
       std::invalid_argument);
 }
 
@@ -330,7 +344,7 @@ TEST_F(PlannerTest, GetSpaceInformationNotNull)
   auto si = getSpaceInformation(
       std::move(stateSpace), std::move(interpolator), std::move(dmetric),
       std::move(sampler), std::move(collConstraint),
-      std::move(boundsConstraint), std::move(boundsProjection));
+      std::move(boundsConstraint), std::move(boundsProjection), 0.1);
   EXPECT_FALSE(si == nullptr);
 }
 
@@ -339,7 +353,7 @@ TEST_F(PlannerTest, GetSpaceInformationCreatesGeometricStateSpace)
   auto si = getSpaceInformation(
       std::move(stateSpace), std::move(interpolator), std::move(dmetric),
       std::move(sampler), std::move(collConstraint),
-      std::move(boundsConstraint), std::move(boundsProjection));
+      std::move(boundsConstraint), std::move(boundsProjection), 0.1);
 
   auto ss = boost::dynamic_pointer_cast<aikido::planner::ompl::GeometricStateSpace>(
       si->getStateSpace());
@@ -351,10 +365,21 @@ TEST_F(PlannerTest, GetSpaceInformationCreatesValidityChecker)
   auto si = getSpaceInformation(
       std::move(stateSpace), std::move(interpolator), std::move(dmetric),
       std::move(sampler), std::move(collConstraint),
-      std::move(boundsConstraint), std::move(boundsProjection));
+      std::move(boundsConstraint), std::move(boundsProjection), 0.1);
 
   auto vc = boost::dynamic_pointer_cast<aikido::planner::ompl::StateValidityChecker>(
       si->getStateValidityChecker());
   EXPECT_FALSE(vc == nullptr);
 }
 
+TEST_F(PlannerTest, GetSpaceInformationCreatesMotionValidator)
+{
+  auto si = getSpaceInformation(
+      std::move(stateSpace), std::move(interpolator), std::move(dmetric),
+      std::move(sampler), std::move(collConstraint),
+      std::move(boundsConstraint), std::move(boundsProjection), 0.1);
+
+  auto mvalidator = boost::dynamic_pointer_cast<aikido::planner::ompl::MotionValidator>(
+      si->getMotionValidator());
+  EXPECT_FALSE(mvalidator == nullptr);
+}

@@ -1,5 +1,6 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
+#include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
 
 namespace aikido {
@@ -14,7 +15,8 @@ namespace ompl {
     constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
-    constraint::ProjectablePtr _boundsProjector)
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwValidityChecks)
 {
   if (_stateSpace == nullptr) {
     throw std::invalid_argument("StateSpace is nullptr.");
@@ -79,6 +81,12 @@ namespace ompl {
         "StateSpace of BoundsProjector not equal to planning StateSpace");
   }
 
+  // Ensure max distance between validity checks is positive
+  if (_maxDistanceBtwValidityChecks <= 0.0) {
+      throw std::invalid_argument(
+          "Max distance between validity checks must be >= 0");
+  }
+
   // Geometric State space
   auto sspace = boost::make_shared<GeometricStateSpace>(
     _stateSpace, std::move(_interpolator), std::move(_dmetric),
@@ -97,6 +105,10 @@ namespace ompl {
   ::ompl::base::StateValidityCheckerPtr vchecker =
       boost::make_shared<StateValidityChecker>(si, conjunctionConstraint);
   si->setStateValidityChecker(vchecker);
+
+  ::ompl::base::MotionValidatorPtr mvalidator =
+        boost::make_shared<MotionValidator>(si, _maxDistanceBtwValidityChecks);
+  si->setMotionValidator(mvalidator);
 
   return si;
 }

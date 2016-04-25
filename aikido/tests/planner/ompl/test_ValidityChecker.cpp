@@ -16,8 +16,12 @@ public:
     gSpace = std::make_shared<GeometricStateSpace>(
         stateSpace, interpolator, dmetric, sampler, boundsConstraint,
         boundsProjection);
+    si = aikido::planner::ompl::getSpaceInformation(
+      stateSpace, interpolator, dmetric, sampler, collConstraint,
+      boundsConstraint, boundsProjection, 0.1);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
+  boost::shared_ptr<::ompl::base::SpaceInformation> si;
 };
 
 TEST_F(StateValidityCheckerTest, ThrowsOnNullSpaceInformation)
@@ -30,17 +34,11 @@ TEST_F(StateValidityCheckerTest, ThrowsOnNullSpaceInformation)
 
 TEST_F(StateValidityCheckerTest, ThrowsOnNullConstraint)
 {
-  auto si = aikido::planner::ompl::getSpaceInformation(
-      stateSpace, interpolator, dmetric, sampler, collConstraint,
-      boundsConstraint, boundsProjection);
   EXPECT_THROW(StateValidityChecker(si, nullptr), std::invalid_argument);
 }
 
 TEST_F(StateValidityCheckerTest, ValidState)
 {
-  auto si = aikido::planner::ompl::getSpaceInformation(
-      stateSpace, interpolator, dmetric, sampler, collConstraint,
-      boundsConstraint, boundsProjection);
   auto constraint = std::make_shared<PassingConstraint>(stateSpace);
   StateValidityChecker vchecker(si, constraint);
   auto state = si->allocState();
@@ -50,9 +48,6 @@ TEST_F(StateValidityCheckerTest, ValidState)
 
 TEST_F(StateValidityCheckerTest, InvalidState)
 {
-  auto si = aikido::planner::ompl::getSpaceInformation(
-      stateSpace, interpolator, dmetric, sampler, collConstraint,
-      boundsConstraint, boundsProjection);
   auto constraint = std::make_shared<FailingConstraint>(stateSpace);
   StateValidityChecker vchecker(si, constraint);
   auto state = si->allocState();
@@ -62,9 +57,6 @@ TEST_F(StateValidityCheckerTest, InvalidState)
 
 TEST_F(StateValidityCheckerTest, NullAikidoState)
 {
-  auto si = aikido::planner::ompl::getSpaceInformation(
-      stateSpace, interpolator, dmetric, sampler, collConstraint,
-      boundsConstraint, boundsProjection);
   auto constraint = std::make_shared<PassingConstraint>(stateSpace);
   StateValidityChecker vchecker(si, constraint);
   auto state = si->allocState()->as<GeometricStateSpace::StateType>();
@@ -76,9 +68,6 @@ TEST_F(StateValidityCheckerTest, NullAikidoState)
 
 TEST_F(StateValidityCheckerTest, NullOmplState)
 {
-  auto si = aikido::planner::ompl::getSpaceInformation(
-      stateSpace, interpolator, dmetric, sampler, collConstraint,
-      boundsConstraint, boundsProjection);
   auto constraint = std::make_shared<PassingConstraint>(stateSpace);
   StateValidityChecker vchecker(si, constraint);
   EXPECT_FALSE(vchecker.isValid(nullptr));
