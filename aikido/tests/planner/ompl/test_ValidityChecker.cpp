@@ -59,3 +59,27 @@ TEST_F(StateValidityCheckerTest, InvalidState)
   EXPECT_FALSE(vchecker.isValid(state));
   si->freeState(state);
 }
+
+TEST_F(StateValidityCheckerTest, NullAikidoState)
+{
+  auto si = aikido::planner::ompl::getSpaceInformation(
+      stateSpace, interpolator, dmetric, sampler, collConstraint,
+      boundsConstraint, boundsProjection);
+  auto constraint = std::make_shared<PassingConstraint>(stateSpace);
+  StateValidityChecker vchecker(si, constraint);
+  auto state = si->allocState()->as<GeometricStateSpace::StateType>();
+  stateSpace->freeState(state->mState);
+  state->mState = nullptr;
+  EXPECT_FALSE(vchecker.isValid(state));
+  si->freeState(state);
+}
+
+TEST_F(StateValidityCheckerTest, NullOmplState)
+{
+  auto si = aikido::planner::ompl::getSpaceInformation(
+      stateSpace, interpolator, dmetric, sampler, collConstraint,
+      boundsConstraint, boundsProjection);
+  auto constraint = std::make_shared<PassingConstraint>(stateSpace);
+  StateValidityChecker vchecker(si, constraint);
+  EXPECT_FALSE(vchecker.isValid(nullptr));
+}
