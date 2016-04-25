@@ -300,3 +300,17 @@ TEST_F(GeometricStateSpaceTest, CopyAlloc)
   gSpace->freeState(s1);
   gSpace->freeState(s2);
 }
+
+TEST_F(GeometricStateSpaceTest, GetAikidoStateSpace) {
+  constructStateSpace();
+  EXPECT_EQ(stateSpace, gSpace->getAikidoStateSpace());
+}
+
+TEST_F(GeometricStateSpaceTest, DeallocNullAikidoState) {
+  constructStateSpace();
+  auto state =
+      gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  stateSpace->freeState(state->mState);
+  state->mState = nullptr;
+  gSpace->freeState(state);
+}

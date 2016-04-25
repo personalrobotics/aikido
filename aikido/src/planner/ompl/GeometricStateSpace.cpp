@@ -183,10 +183,16 @@ GeometricStateSpace::allocDefaultStateSampler() const
 void GeometricStateSpace::freeState(::ompl::base::State *_state) const
 {
   auto st = static_cast<StateType *>(_state);
-  mStateSpace->freeState(st->mState);
+  if(st->mState != nullptr){
+      mStateSpace->freeState(st->mState);
+  }
   delete st;
 }
 
+//=============================================================================
+statespace::StateSpacePtr GeometricStateSpace::getAikidoStateSpace() const {
+  return mStateSpace;
+}
 }
 }
 }
