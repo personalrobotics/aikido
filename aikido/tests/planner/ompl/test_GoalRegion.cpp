@@ -2,6 +2,7 @@
 #include "../../constraint/MockConstraints.hpp"
 #include <aikido/planner/ompl/GoalRegion.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
+#include <ompl/base/spaces/SO2StateSpace.h>
 
 using aikido::planner::ompl::GeometricStateSpace;
 using aikido::planner::ompl::GoalRegion;
@@ -107,9 +108,22 @@ TEST_F(GoalRegionTest, CantSample)
   auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
-  auto state = si->allocState();
-  EXPECT_THROW(gr.sampleGoal(state), std::runtime_error);
+  auto state = si->allocState()->as<GeometricStateSpace::StateType>();
+  gr.sampleGoal(state);
+  EXPECT_EQ(nullptr, state->mState);
   si->freeState(state);
+}
+
+TEST_F(GoalRegionTest, CantSampleBadStateSpace)
+{
+  auto so2 = boost::make_shared<::ompl::base::SO2StateSpace>();
+  auto si = boost::make_shared<::ompl::base::SpaceInformation>(so2);
+  auto testable = std::make_shared<PassingConstraint>(stateSpace);
+  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  GoalRegion gr(si, std::move(testable), std::move(generator));
+
+  GeometricStateSpace::StateType state(stateSpace->createState());
+  EXPECT_THROW(gr.sampleGoal(&state), std::runtime_error);
 }
 
 TEST_F(GoalRegionTest, FailedSample)
@@ -121,8 +135,9 @@ TEST_F(GoalRegionTest, FailedSample)
   auto generator = dart::common::make_unique<FailedSampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
-  auto state = si->allocState();
-  EXPECT_THROW(gr.sampleGoal(state), std::runtime_error);
+  auto state = si->allocState()->as<GeometricStateSpace::StateType>();
+  gr.sampleGoal(state);
+  EXPECT_EQ(nullptr, state->mState);
   si->freeState(state);
 }
 
