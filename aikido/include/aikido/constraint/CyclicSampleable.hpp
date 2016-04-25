@@ -15,7 +15,6 @@ namespace constraint {
 class CyclicSampleable : public Sampleable
 {
 public:
-
 	/// Constructor.
 	/// \param _sampleable Sampleable whose samples are to be iterated.
   explicit CyclicSampleable(
