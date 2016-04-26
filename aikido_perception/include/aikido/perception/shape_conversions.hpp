@@ -6,8 +6,8 @@
  * between ROS and Eigen Pose.
  */
 
-#ifndef AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_
-#define AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_
+#ifndef AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H
+#define AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H
 
 #include <Eigen/Dense>
 #include <geometry_msgs/Pose.h>
@@ -27,4 +27,4 @@ Eigen::Isometry3d convertStampedTransformToEigen(tf::StampedTransform const &t);
 
 } //namespace aikido
 
-#endif //AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H_
+#endif //AIKIDO_PERCEPTION_SHAPE_CONVERSIONS_H

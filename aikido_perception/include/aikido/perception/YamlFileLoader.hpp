@@ -21,16 +21,22 @@
 namespace aikido{
 namespace perception{
 
-/// The YAML File configuration data loader
 class YamlFileLoader : public virtual ConfigDataLoader
 {
 public:
+
+    //! The constructor for YAML Loader
+    /*!
+        \param resourceRetriever the pointer to obtain the config. file
+        \param configDataURI the URI for the configuration information file
+    */
     YamlFileLoader(const dart::common::ResourceRetrieverPtr& resourceRetriever,
                    dart::common::Uri configDataURI);
 
+    //! The virtual destructor
     virtual ~YamlFileLoader() = default;
 
-    ///Lookup tag name and return name of body, resource to URDF file and offset of body
+    //! The implementation of the virtual method from ConfigDataLoader
     bool getTagNameOffset(const std::string& _tagName, std::string& body_name, dart::common::Uri& body_resource, Eigen::Isometry3d& body_offset) override;
 
 private:

@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(DART REQUIRED COMPONENTS core)
 find_package(Boost REQUIRED)
-find_package(aikido REQUIRED)
+find_package(aikido REQUIRED COMPONENTS util)
 
 include(FindPkgConfig)
 pkg_check_modules(YamlCpp REQUIRED yaml-cpp)
@@ -27,8 +27,6 @@ include_directories(SYSTEM
 )
 
 link_directories(
-  ${DART_LIBRARY_DIRS}
-  ${Eigen_LIBRARY_DIRS}
   ${catkin_LIBRARY_DIRS}
 )
 

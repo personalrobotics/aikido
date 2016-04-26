@@ -26,17 +26,28 @@
 namespace aikido{
 namespace perception{
 
-/// The April Tag detector 
+
 class AprilTagsModule : public virtual PerceptionModule
 {
 public:
+	//! The constructor for the April Tags detector
+	/*!
+		\param node the node handle to be passed to the detector
+		\markerTopic the name of the topic on which april tags information is being published
+		\configData the pointer to some configuration data loader
+		\resourceRetriever a DART retriever for resources related to config files and models and so on
+		\destinationFrame the desired TF for the detections
+		\referenceLink a link on HERB with respect to which the pose is transformed
+	*/
 	AprilTagsModule(ros::NodeHandle node, std::string markerTopic, std::shared_ptr<ConfigDataLoader> configData,
-					const dart::common::ResourceRetrieverPtr& resourceRetriever,
+					const dart::common::ResourceRetrieverPtr resourceRetriever,
 					std::string destinationFrame, dart::dynamics::Frame* referenceLink);
+
+	//!The virtual destructor
 	virtual ~AprilTagsModule() = default;
 
-
-	void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout=10.0, ros::Time timestamp=ros::Time::now()) override; 
+	//! Implementation of the virtual method of PerceptionModule
+	void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout=10.0, ros::Time timestamp=ros::Time(0.0)) override; 
 
 
 private:
@@ -57,8 +68,6 @@ private:
 
 	///For the ROS node that will work with the April Tags module
 	ros::NodeHandle mNode;
-
-	tf::TransformListener* mListener;
 
 };
 

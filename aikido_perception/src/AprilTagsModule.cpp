@@ -19,6 +19,7 @@
 #include <tf/LinearMath/Vector3.h>
 #include <tf/LinearMath/Quaternion.h>
 #include <stdexcept>
+ #include <utility>
 
 namespace aikido{
 namespace perception{
@@ -26,22 +27,22 @@ namespace perception{
 //================================================================================================================================
 
 AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic, std::shared_ptr<ConfigDataLoader> configData,
-								  const dart::common::ResourceRetrieverPtr& resourceRetriever,	
+								  const dart::common::ResourceRetrieverPtr resourceRetriever,	
 								  std::string referenceFrameId, dart::dynamics::Frame* referenceLink):
-		mNode(node),
-		mMarkerTopic(markerTopic),
-		mConfigData(configData),
-		mResourceRetriever(resourceRetriever),
-		mReferenceFrameId(referenceFrameId),
-		mReferenceLink(referenceLink)
+		mNode(std::move(node)),
+		mMarkerTopic(std::move(markerTopic)),
+		mConfigData(std::move(configData)),
+		mResourceRetriever(std::move(resourceRetriever)),
+		mReferenceFrameId(std::move(referenceFrameId)),
+		mReferenceLink(std::move(referenceLink))
 {
-	mListener = new tf::TransformListener();
 }
 
 //================================================================================================================================
 void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout, ros::Time timestamp)
 {
 	bool transform_lookedup = false;
+	tf::TransformListener listener(mNode);
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list
 	do{
@@ -56,7 +57,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			const auto& detection_frame = marker_transform.header.frame_id;
 
 			if(marker_stamp < timestamp){
-				dtwarn << "Marker stamp " << marker_stamp<< " for " << tag_name 
+				dtwarn << "[AprilTagsModule::detectObjects] Marker stamp " << marker_stamp<< " for " << tag_name 
 				<< "is behind timestamp parameter: " <<timestamp <<"\n";
 
 				continue;
@@ -78,19 +79,16 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				tf::StampedTransform transform;
 
 				try{
-					mListener->waitForTransform(mReferenceFrameId,detection_frame,
+					listener.waitForTransform(mReferenceFrameId,detection_frame,
 						marker_stamp,ros::Duration(_timeout));
 
-					mListener->lookupTransform(mReferenceFrameId,detection_frame,
+					listener.lookupTransform(mReferenceFrameId,detection_frame,
 						marker_stamp, transform);
 				}
 				catch(const tf::ExtrapolationException& ex){
-					ROS_ERROR("%s",ex.what());
+					std::string error_msg = std::string("[AprilTagsModule::detectObjects] TF timestamp is out-of-date compared to marker timestamp")+std::string(ex.what());
+					ROS_ERROR("%s",error_msg.c_str());
 					continue;
-				}
-				catch(const tf::TransformException& ex){
-					ROS_ERROR("%s",ex.what());
-					throw std::runtime_error("TF Error which cannot be recovered");
 				}
 
 				transform_lookedup = true;
@@ -148,7 +146,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 				//Check if successful down-cast
 				if(freejtptr == NULL){
-					dtwarn << "Could not cast the joint of the body to a Free Joint so ignoring marker "<<tag_name << std::endl;
+					dtwarn << "[AprilTagsModule::detectObjects] Could not cast the joint of the body to a Free Joint so ignoring marker "<<tag_name << std::endl;
 					continue;
 				}
 
