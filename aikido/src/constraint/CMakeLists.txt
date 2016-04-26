@@ -1,0 +1,30 @@
+aikido_add_library("${PROJECT_NAME}_constraint"
+  uniform/RnBoxConstraint.cpp
+  uniform/SO2UniformSampler.cpp
+  uniform/SO3UniformSampler.cpp
+  Differentiable.cpp
+  NewtonsMethodProjectable.cpp
+  DifferentiableSubspace.cpp
+  FiniteSampleable.cpp
+  CyclicSampleable.cpp
+  FrameTestable.cpp
+  FrameDifferentiable.cpp
+  FramePairDifferentiable.cpp
+  InverseKinematicsSampleable.cpp
+  NonColliding.cpp
+  Projectable.cpp
+  CartesianProductProjectable.cpp
+  Sampleable.cpp
+  CartesianProductSampleable.cpp
+  Satisfied.cpp
+  DifferentiableIntersection.cpp
+  TSR.cpp
+  TestableIntersection.cpp
+  CartesianProductTestable.cpp
+  JointStateSpaceHelpers.cpp
+)
+target_link_libraries("${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_statespace"
+  "${PROJECT_NAME}_util"
+  ${DART_LIBRARIES}
+)
