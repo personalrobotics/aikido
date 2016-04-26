@@ -183,6 +183,20 @@ TEST_F(GoalRegionTest, GoalSatisfied)
   si->freeState(state);
 }
 
+TEST_F(GoalRegionTest, GoalSatisfiedFailsOnNullState)
+{
+  auto testable = std::make_shared<PassingConstraint>(stateSpace);
+  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  GoalRegion gr(si, std::move(testable), std::move(generator));
+  EXPECT_FALSE(gr.isSatisfied(nullptr));
+
+  auto state = si->allocState()->as<GeometricStateSpace::StateType>();
+  stateSpace->freeState(state->mState);
+  state->mState = nullptr;
+  EXPECT_FALSE(gr.isSatisfied(state));
+  si->freeState(state);
+}
+
 TEST_F(GoalRegionTest, GoalNotSatisfied)
 {
   auto testable = std::make_shared<FailingConstraint>(stateSpace);

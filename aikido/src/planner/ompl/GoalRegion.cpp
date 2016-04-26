@@ -73,6 +73,8 @@ double GoalRegion::distanceGoal(const ::ompl::base::State* _state) const
 bool GoalRegion::isSatisfied(const ::ompl::base::State* _state) const
 {
   auto state = static_cast<const GeometricStateSpace::StateType*>(_state);
+  if (state == nullptr || state->mState == nullptr)
+      return false;
   return mTestable->isSatisfied(state->mState);
 }
 
