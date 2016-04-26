@@ -15,6 +15,9 @@
 #include <ompl/base/State.h>
 
 using dart::common::make_unique;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::Rn;
+using aikido::planner::ompl::GeometricStateSpace;
 using aikido::util::RNGWrapper;
 using aikido::util::RNG;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
@@ -48,7 +51,7 @@ void setTranslationalState(
     ::ompl::base::State *_state)
 {
   auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
-  auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
+  auto cst = static_cast<CartesianProduct::State*>(st->mState);
   auto subState =
       _stateSpace->getSubStateHandle<aikido::statespace::Rn>(
           cst, 0);
@@ -59,17 +62,17 @@ Eigen::Vector3d getTranslationalState(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_stateSpace,
     ::ompl::base::State *_state)
 {
-  auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
-  auto cst = static_cast<aikido::statespace::CartesianProduct::State*>(st->mState);
+  auto st = _state->as<GeometricStateSpace::StateType>();
+  auto cst = static_cast<CartesianProduct::State*>(st->mState);
   auto subState =
-      _stateSpace->getSubStateHandle<aikido::statespace::Rn>(
+      _stateSpace->getSubStateHandle<Rn>(
           cst, 0);
   return subState.getValue();
 
 }
 
-class MockProjectionConstraint : public aikido::constraint::Projectable
-{
+class MockProjectionConstraint : public aikido::constraint::Projectable,
+                                 aikido::constraint::Testable {
 public:
   // Construct a constraint that project to x=_val
   MockProjectionConstraint(
@@ -88,21 +91,28 @@ public:
 
   // Documentation inherited
   bool project(const aikido::statespace::StateSpace::State *_s,
-               aikido::statespace::StateSpace::State *_out) const override
-  {
+               aikido::statespace::StateSpace::State *_out) const override {
     auto instate =
-        static_cast<const aikido::statespace::CartesianProduct::State *>(_s);
+        static_cast<const CartesianProduct::State *>(_s);
     auto outstate =
-        static_cast<aikido::statespace::CartesianProduct::State *>(_out);
+        static_cast<CartesianProduct::State *>(_out);
     auto inSubState =
         mStateSpace
-            ->getSubStateHandle<aikido::statespace::Rn>(instate, 0);
+            ->getSubStateHandle<Rn>(instate, 0);
     auto outSubState =
         mStateSpace
-            ->getSubStateHandle<aikido::statespace::Rn>(outstate, 0);
+            ->getSubStateHandle<Rn>(outstate, 0);
     auto val = inSubState.getValue();
     Eigen::Vector3d newval(mValue, val(1), val(2));
     outSubState.setValue(newval);
+  }
+
+  bool
+  isSatisfied(const aikido::statespace::StateSpace::State *_s) const override {
+    auto state =
+        static_cast<const CartesianProduct::State *>(_s);
+    auto val = mStateSpace->getSubStateHandle<Rn>(state, 0).getValue();
+    return std::fabs(val[0] - mValue) < 1e-6;
   }
 
 private:
@@ -128,10 +138,10 @@ public:
       const aikido::statespace::StateSpace::State *_state) const override
   {
     auto cst =
-        static_cast<const aikido::statespace::CartesianProduct::State *>(_state);
+        static_cast<const CartesianProduct::State *>(_state);
     auto subState =
         mStateSpace
-            ->getSubStateHandle<aikido::statespace::Rn>(cst, 0);
+            ->getSubStateHandle<Rn>(cst, 0);
     auto val = subState.getValue();
 
     for (size_t i = 0; i < 3; ++i) {
@@ -144,8 +154,8 @@ public:
   }
 
   // Documentatoin inherited
-  std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
-  {
+  std::shared_ptr<aikido::statespace::StateSpace>
+  getStateSpace() const override {
     return mStateSpace;
   }
 

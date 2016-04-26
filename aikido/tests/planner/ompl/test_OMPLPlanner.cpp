@@ -1,15 +1,18 @@
 #include "OMPLTestHelpers.hpp"
 #include "../../constraint/MockConstraints.hpp"
 #include <aikido/planner/ompl/Planner.hpp>
+#include <aikido/planner/ompl/CRRT.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
+#include <aikido/util/StepSequence.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using Rn = aikido::statespace::Rn;
 using aikido::planner::ompl::getSpaceInformation;
+using aikido::planner::ompl::CRRT;
 
 TEST_F(PlannerTest, PlanToConfiguration)
 {
@@ -85,6 +88,62 @@ TEST_F(PlannerTest, PlanToGoalRegion)
   // Check the last waypoint
   traj->evaluate(traj->getDuration(), s0);
   EXPECT_TRUE(goalTestable->isSatisfied(s0));
+}
+
+
+TEST_F(PlannerTest, PlanConstrained)
+{
+  double constraintVal = -2;
+  Eigen::Vector3d startPose(constraintVal, -5, 0);
+
+  auto startState = stateSpace->createState();
+  auto subState1 =
+      stateSpace->getSubStateHandle<Rn>(startState, 0);
+  subState1.setValue(startPose);
+
+  auto boxConstraint =
+      std::make_shared<aikido::constraint::RnBoxConstraint>(
+          stateSpace->getSubspace<Rn>(0), make_rng(),
+          Eigen::Vector3d(constraintVal-1, 4, 0), Eigen::Vector3d(constraintVal+1, 5, 0));
+  std::vector<std::shared_ptr<aikido::constraint::Sampleable>>
+      sConstraints;
+  sConstraints.push_back(boxConstraint);
+  aikido::constraint::SampleablePtr goalSampleable =
+      std::make_shared<aikido::constraint::CartesianProductSampleable>(stateSpace,
+                                                               sConstraints);
+  std::vector<std::shared_ptr<aikido::constraint::Testable>>
+      tConstraints;
+  tConstraints.push_back(boxConstraint);
+  aikido::constraint::TestablePtr goalTestable =
+      std::make_shared<aikido::constraint::CartesianProductTestable>(stateSpace,
+                                                             tConstraints);
+
+
+  auto trajConstraint = std::make_shared<MockProjectionConstraint>(stateSpace, constraintVal);
+
+  // Plan
+  auto traj = aikido::planner::ompl::planConstrained<CRRT>(
+      startState, goalTestable, goalSampleable, trajConstraint, stateSpace, interpolator,
+      std::move(dmetric), std::move(sampler), std::move(collConstraint),
+      std::move(boundsConstraint), std::move(boundsProjection), 5.0);
+
+  // Check the first waypoint
+  auto s0 = stateSpace->createState();
+  traj->evaluate(0, s0);
+  auto r0 = s0.getSubStateHandle<Rn>(0);
+  EXPECT_TRUE(r0.getValue().isApprox(startPose));
+
+  // Check the last waypoint
+  traj->evaluate(traj->getEndTime(), s0);
+  EXPECT_TRUE(goalTestable->isSatisfied(s0));
+
+  // Check all intermediate waypoints adhere to constraint
+  aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
+                                 traj->getEndTime());
+  for (double t : seq) {
+    traj->evaluate(t, s0);
+    EXPECT_TRUE(trajConstraint->isSatisfied(s0));
+  }
 }
 
 TEST_F(PlannerTest, PlanThrowsOnNullGoalTestable)
