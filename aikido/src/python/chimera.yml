@@ -25,14 +25,5 @@ template:
 namespaces:
   'aikido':
     name: null  # Collapse the 'aikido' namespace into its parent.
-types:
-  # Suppressed due to bugs in Chimera:
-  'std::unique_ptr<aikido::util::RNG>': null
-classes:
-  # Suppressed due to bugs in Chimera:
-  'aikido::constraint::RnBoxConstraint': null
-  'aikido::constraint::SO2Sampleable': null
-  'aikido::constraint::SO3UniformSampler': null
-  'aikido::constraint::TSR': null
-  'aikido::planner::ompl::GoalRegion': null
-  'aikido::planner::ompl::StateSampler': null
+types: []
+classes: []
