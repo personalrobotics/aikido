@@ -1,0 +1,28 @@
+template:
+  module:
+    source:
+      'templates/module.mstch.cpp'
+  cxx_record:
+    source:
+      'templates/cxx_record.mstch.cpp'
+  enum:
+    source:
+      'templates/enum.mstch.cpp'
+  function:
+    source:
+      'templates/function.mstch.cpp'
+  variable:
+    source:
+      'templates/variable.mstch.cpp'
+  file:
+    header: |
+      #include "get_signature.hpp"
+      #include "chimera.cpp"
+  main:
+    precontent: |
+      boost::python::import("boost_numpy_eigen");
+      boost::python::import("dartpy");
+namespaces:
+  'aikido':
+    name: null  # Collapse the 'aikido' namespace into its parent.
+
