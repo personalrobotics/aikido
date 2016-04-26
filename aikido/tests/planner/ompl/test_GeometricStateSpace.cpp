@@ -157,6 +157,20 @@ TEST_F(GeometricStateSpaceTest, EnforceBoundsNoProjection)
   gSpace->freeState(state);
 }
 
+TEST_F(GeometricStateSpaceTest, EnforceBoundsNullState) {
+  constructStateSpace();
+  EXPECT_THROW(gSpace->enforceBounds(nullptr), std::invalid_argument);
+}
+
+TEST_F(GeometricStateSpaceTest, EnforceBoundsNullAikidoState) {
+  constructStateSpace();
+  auto state = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  stateSpace->freeState(state->mState);
+  state->mState = nullptr;
+  EXPECT_THROW(gSpace->enforceBounds(state), std::invalid_argument);
+  gSpace->freeState(state);
+}
+
 TEST_F(GeometricStateSpaceTest, SatisfiesBoundsFalse) 
 {
   constructStateSpace();
@@ -212,6 +226,36 @@ TEST_F(GeometricStateSpaceTest, CopyState)
   gSpace->freeState(copyState);
 }
 
+TEST_F(GeometricStateSpaceTest, CopyStateThrowsOnNullSource)
+{
+  constructStateSpace();
+  auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  EXPECT_THROW(gSpace->copyState(s1, nullptr), std::invalid_argument);
+
+  auto s2 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  stateSpace->freeState(s2->mState);
+  s2->mState = nullptr;
+  EXPECT_THROW(gSpace->copyState(s1, s2), std::invalid_argument);
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+}
+
+TEST_F(GeometricStateSpaceTest, CopyStateThrowsOnNullDestination)
+{
+  constructStateSpace();
+  auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  EXPECT_THROW(gSpace->copyState(nullptr, s1), std::invalid_argument);
+
+  auto s2 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  stateSpace->freeState(s2->mState);
+  s2->mState = nullptr;
+  EXPECT_THROW(gSpace->copyState(s2, s1), std::invalid_argument);
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+}
+
 TEST_F(GeometricStateSpaceTest, Distance)
 {
   constructStateSpace();
@@ -224,6 +268,24 @@ TEST_F(GeometricStateSpaceTest, Distance)
   setTranslationalState(v2, stateSpace, s2);
 
   EXPECT_DOUBLE_EQ((v1 - v2).norm(), gSpace->distance(s1, s2));
+
+  gSpace->freeState(s1);
+  gSpace->freeState(s2);
+}
+
+TEST_F(GeometricStateSpaceTest, DistanceThrowsOnNullState)
+{
+  constructStateSpace();
+  auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  auto s2 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+
+  EXPECT_THROW(gSpace->distance(s1, nullptr), std::invalid_argument);
+  EXPECT_THROW(gSpace->distance(nullptr, s1), std::invalid_argument);
+  
+  stateSpace->freeState(s1->mState);
+  s1->mState = nullptr;
+  EXPECT_THROW(gSpace->distance(s1, s2), std::invalid_argument);
+  EXPECT_THROW(gSpace->distance(s2, s1), std::invalid_argument);  
 
   gSpace->freeState(s1);
   gSpace->freeState(s2);
@@ -292,6 +354,23 @@ TEST_F(GeometricStateSpaceTest, Interpolate)
   gSpace->freeState(s1);
   gSpace->freeState(s2);
   gSpace->freeState(s3);
+}
+
+TEST_F(GeometricStateSpaceTest, InterpolateThrowsOnNullState) 
+{
+  constructStateSpace();
+  auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  auto s2 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  auto s3 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  EXPECT_THROW(gSpace->interpolate(nullptr, s2, 0, s3), std::invalid_argument);
+  EXPECT_THROW(gSpace->interpolate(s1, nullptr, 0, s3), std::invalid_argument);
+  EXPECT_THROW(gSpace->interpolate(s1, s2, 0, nullptr), std::invalid_argument);
+
+  stateSpace->freeState(s1->mState);
+  s1->mState = nullptr;
+  EXPECT_THROW(gSpace->interpolate(s1, s2, 0, s3), std::invalid_argument);
+  EXPECT_THROW(gSpace->interpolate(s2, s1, 0, s3), std::invalid_argument);
+  EXPECT_THROW(gSpace->interpolate(s2, s3, 0, s1), std::invalid_argument);
 }
 
 TEST_F(GeometricStateSpaceTest, AllocStateSampler)
