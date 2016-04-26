@@ -2,6 +2,7 @@
 #include "../../constraint/MockConstraints.hpp"
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ompl/CRRT.hpp>
+#include <aikido/planner/ompl/CRRTConnect.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
@@ -13,6 +14,7 @@ using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using Rn = aikido::statespace::Rn;
 using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::CRRT;
+using aikido::planner::ompl::CRRTConnect;
 
 TEST_F(PlannerTest, PlanToConfiguration)
 {

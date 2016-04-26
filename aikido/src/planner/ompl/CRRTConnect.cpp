@@ -3,8 +3,7 @@
 #include <ompl/base/goals/GoalSampleableRegion.h>
 #include <ompl/tools/config/SelfConfig.h>
 
-namespace aikido
-{
+namespace aikido {
 namespace planner
 {
 namespace ompl
@@ -225,10 +224,10 @@ CRRTConnect::GrowState CRRTConnect::growTree(TreeData &tree,
     if (tGoal_->size() == 0) {
       while (ptc == false) {
         const ::ompl::base::State *st = pis_.nextGoal(ptc);
-        if (!st) {
+        if (!si_->isValid(st)) {
           //OMPL_ERROR("%s: Unable to sample any valid states for goal tree",
           //           getName().c_str());
-          break;
+            continue;
         }
         // if (!satisfiesConstraint(st)) {
         //   //OMPL_WARN("a goal state does not meet the constraint! ignoring ...");
@@ -242,15 +241,11 @@ CRRTConnect::GrowState CRRTConnect::growTree(TreeData &tree,
       }
     } else if (pis_.getSampledGoalsCount() < tGoal_->size() / 2) {
       const ::ompl::base::State *st = pis_.nextGoal();
-      if (st) {
-//        if (satisfiesConstraint(st)) {
-          Motion *motion = new Motion(si_);
-          si_->copyState(motion->state, st);
-          motion->root = motion->state;
-          tGoal_->add(motion);
-        // } else {
-        //   //OMPL_WARN("a goal state does not meet the constraint! ignoring ...");
-        // }
+      if (si_->isValid(st)) {
+        Motion *motion = new Motion(si_);
+        si_->copyState(motion->state, st);
+        motion->root = motion->state;
+        tGoal_->add(motion);
       }
     }
 
