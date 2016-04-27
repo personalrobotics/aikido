@@ -1,8 +1,5 @@
+add_subdirectory("ompl")
 add_subdirectory("parabolic")
-
-if(${OMPL_FOUND})
-  add_subdirectory("ompl")
-endif()
 
 aikido_add_library("${PROJECT_NAME}_planner" SnapPlanner.cpp)
 target_link_libraries("${PROJECT_NAME}_planner"
