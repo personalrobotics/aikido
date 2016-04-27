@@ -2,8 +2,6 @@
 #include <Eigen/Dense>
 #include <aikido/constraint/RejectionSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>
-// #include <aikido/constraint/Sampleable.hpp>
-
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 

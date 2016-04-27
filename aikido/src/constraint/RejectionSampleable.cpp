@@ -64,18 +64,12 @@ RejectionSampleable::RejectionSampleable(statespace::StateSpacePtr _stateSpace,
     throw std::invalid_argument("Testable is null.");
 
   if (mStateSpace != mSampleable->getStateSpace())
-  {
-    std::stringstream msg;
-    msg << "Sampleable's statespace does not match StateSpace.";
-    throw std::invalid_argument(msg.str());
-  }
+    throw std::invalid_argument("Sampleable's statespace "
+      "does not match StateSpace.");
 
   if (mStateSpace != mTestable->getStateSpace())
-  {
-    std::stringstream msg;
-    msg << "Testable's statespace does not match StateSpace.";
-    throw std::invalid_argument(msg.str());
-  }
+    throw std::invalid_argument("Testable's statespace "
+      "does not match StateSpace.");
 
   if (mMaxTrialPerSample <= 0)
     throw std::invalid_argument("MaxNumTrialsPerSample is not positive.");
