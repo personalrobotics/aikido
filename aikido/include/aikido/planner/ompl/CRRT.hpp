@@ -25,7 +25,7 @@ public:
   /// useful to see what changed in the exploration datastructure, between calls
   /// to solve(), for example (without calling clear() in between).
   /// \param[out] data Data about the current run of the motion planner
-  void getPlannerData(::ompl::base::PlannerData &data) const override;
+  void getPlannerData(::ompl::base::PlannerData &_data) const override;
 
   /// Function that can solve the motion planning problem. This function can be
   /// called multiple times on the same problem, without calling clear() in
@@ -38,11 +38,11 @@ public:
   /// true.
   /// \param ptc Conditions for terminating planning before a solution is found
   ::ompl::base::PlannerStatus solve(
-      const ::ompl::base::PlannerTerminationCondition &ptc) override;
+      const ::ompl::base::PlannerTerminationCondition &_ptc) override;
 
   /// Solve the motion planning problem in the given time
   /// \param solveTime The maximum allowable time to solve the planning problem
-  ::ompl::base::PlannerStatus solve(double solveTime);
+  ::ompl::base::PlannerStatus solve(double _solveTime);
 
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
@@ -54,7 +54,7 @@ public:
   /// is a real number between 0.0 and 1.0; its value should usually be around
   /// 0.05 and should not be too large. It is probably a good idea to use the
   /// default value.
-  void setGoalBias(double goalBias);
+  void setGoalBias(double _goalBias);
 
   /// Get the goal bias the planner is using
   double getGoalBias(void) const;
@@ -64,7 +64,7 @@ public:
   /// of a motion to be added in the tree of motions.
   /// \param distance The maximum length of a motionto be added in the tree of
   /// motions
-  void setRange(double distance);
+  void setRange(double _distance);
 
   /// Get the range the planner is using
   double getRange(void) const;
@@ -76,10 +76,7 @@ public:
 
   /// Set a nearest neighbors data structure
   template <template <typename T> class NN>
-  void setNearestNeighbors(void)
-  {
-    nn_.reset(new NN<Motion *>());
-  }
+  void setNearestNeighbors(void);
 
   /// Perform extra configuration steps, if needed. This call will also issue a
   /// call to ompl::base::SpaceInformation::setup() if needed. This must be
@@ -87,68 +84,61 @@ public:
   void setup(void) override;
 
 protected:
-  /** \brief Representation of a motion
-      This only contains pointers to parent motions as we
-      only need to go backwards in the tree. */
+  /// Representation of a node in the tree. Contains the state at the node and a
+  /// pointer to the parent node.
   class Motion
   {
   public:
-    Motion(void)
-        : state(NULL)
-        , parent(NULL)
-    {
-    }
+    /// Constructor. Sets state and parent to null ptr.
+    Motion(void);
 
-    /** \brief Constructor that allocates memory for the state */
-    Motion(const ::ompl::base::SpaceInformationPtr &si)
-        : state(si->allocState())
-        , parent(NULL)
-    {
-    }
+    /// Constructor that allocates memory for the state
+    Motion(const ::ompl::base::SpaceInformationPtr &_si);
 
-    ~Motion(void) {}
+    /// Destructor
+    ~Motion(void);
 
-    /** \brief The state contained by the motion */
-    ::ompl::base::State *state;
+    /// The state contained in this node
+    ::ompl::base::State* state;
 
-    /** \brief The parent motion in the exploration tree */
-    Motion *parent;
+    /// The parent of this node
+    Motion* parent;
   };
 
-  /** \brief Free the memory allocated by this planner */
+  /// Free the memory allocated by this planner
   void freeMemory(void);
 
-  /** \brief Compute distance between motions (actually distance between
-   * contained states) */
-  double distanceFunction(const Motion *a, const Motion *b) const
-  {
-    return si_->distance(a->state, b->state);
-  }
+  /// Compute distance between motions (actually distance between contained
+  /// states
+  double distanceFunction(const Motion *a, const Motion *b) const;
 
-  /** \brief State sampler */
-  ::ompl::base::StateSamplerPtr sampler_;
+  /// State sampler
+  ::ompl::base::StateSamplerPtr mSampler;
 
-  /** \brief A nearest-neighbors datastructure containing the tree of motions */
-  boost::shared_ptr<::ompl::NearestNeighbors<Motion *>> nn_;
+  /// A nearest-neighbors datastructure containing the tree of motions
+  boost::shared_ptr<::ompl::NearestNeighbors<Motion *>> mNN;
 
-  /** \brief The fraction of time the goal is picked as the state to expand
-   * towards (if such a state is available) */
-  double goalBias_;
+  /// The fraction of time the goal is picked as the state to expand towards (if
+  /// such a state is available)
+  double mGoalBias;
 
-  /** \brief The maximum length of a motion to be added to a tree */
-  double maxDistance_;
+  /// The maximum length of a motion to be added to a tree
+  double mMaxDistance;
 
-  /** \brief The random number generator */
-  ::ompl::RNG rng_;
+  /// The random number generator used to determine whether to sample a goal
+  /// state or a state uniformly from free space
+  ::ompl::RNG mRng;
 
-  /** \brief The most recent goal motion.  Used for PlannerData computation */
-  Motion *lastGoalMotion_;
+  /// The most recent goal motion.  Used for PlannerData computation
+  Motion *mLastGoalMotion;
 
-  /** \brief The trajectory-wide PR holonomic constraint to be followed */
-  constraint::ProjectablePtr cons_;
+  /// The constraint that must be satisfied throughout the trajectory
+  constraint::ProjectablePtr mCons;
 };
 }
 }
 }
+
+#include "detail/CRRT-impl.hpp"
 
 #endif
