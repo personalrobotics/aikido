@@ -16,10 +16,13 @@ namespace ompl {
 /// should be done before marking a state as valid. This constraint should
 /// include collision checks. It does not need to include joint limits or
 /// boundary checks. These will be added by the function.
+/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
+/// validity checking two successive points on a tree extension
 /// \param _rng A random number generator to be used by state samplers
 ::ompl::base::SpaceInformationPtr createSpaceInformation(
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     constraint::TestablePtr _validityConstraint,
+    double _maxDistanceBtwValidityChecks,
     std::unique_ptr<util::RNG> _rng);
 }
 }

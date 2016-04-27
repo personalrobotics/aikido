@@ -10,7 +10,7 @@ namespace ompl {
 
 //=============================================================================
 template <class PlannerType>
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State *_start,
     const statespace::StateSpace::State *_goal,
     statespace::StateSpacePtr _stateSpace,
@@ -19,13 +19,14 @@ trajectory::TrajectoryPtr planOMPL(
     constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
-    constraint::ProjectablePtr _boundsProjector, double _maxPlanTime)
+    constraint::ProjectablePtr _boundsProjector, 
+    double _maxPlanTime, double _maxDistanceBtwValidityChecks)
 {
   // Create a SpaceInformation.  This function will ensure state space matching
   auto si = getSpaceInformation(
       _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
       std::move(_validityConstraint), std::move(_boundsConstraint),
-      std::move(_boundsProjector));
+      std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
 
   // Start and states
   auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
@@ -47,7 +48,7 @@ trajectory::TrajectoryPtr planOMPL(
 
 //=============================================================================
 template <class PlannerType>
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
@@ -58,7 +59,7 @@ trajectory::TrajectoryPtr planOMPL(
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,
-    double _maxPlanTime)
+    double _maxPlanTime, double _maxDistanceBtwValidityChecks)
 {
   if (_goalTestable == nullptr) {
     throw std::invalid_argument("Testable goal is nullptr.");
@@ -79,7 +80,7 @@ trajectory::TrajectoryPtr planOMPL(
   auto si = getSpaceInformation(
       _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
       std::move(_validityConstraint), std::move(_boundsConstraint),
-      std::move(_boundsProjector));
+      std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
 
   // Set the start and goal
   auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
