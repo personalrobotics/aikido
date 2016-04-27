@@ -2,26 +2,27 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   uniform/RnBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
+  CartesianProductProjectable.cpp
+  CartesianProductSampleable.cpp
+  CartesianProductTestable.cpp
+  CyclicSampleable.cpp
   Differentiable.cpp
-  NewtonsMethodProjectable.cpp
+  DifferentiableIntersection.cpp
   DifferentiableSubspace.cpp
   FiniteSampleable.cpp
-  CyclicSampleable.cpp
   FrameTestable.cpp
   FrameDifferentiable.cpp
   FramePairDifferentiable.cpp
   InverseKinematicsSampleable.cpp
+  JointStateSpaceHelpers.cpp
+  NewtonsMethodProjectable.cpp
   NonColliding.cpp
   Projectable.cpp
-  CartesianProductProjectable.cpp
+  RejectionSampleable.cpp
   Sampleable.cpp
-  CartesianProductSampleable.cpp
   Satisfied.cpp
-  DifferentiableIntersection.cpp
   TSR.cpp
   TestableIntersection.cpp
-  CartesianProductTestable.cpp
-  JointStateSpaceHelpers.cpp
 )
 target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_statespace"
