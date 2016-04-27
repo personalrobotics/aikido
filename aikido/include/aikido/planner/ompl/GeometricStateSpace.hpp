@@ -115,6 +115,9 @@ public:
   /// \param _state The state to free.
   void freeState(::ompl::base::State *_state) const override;
 
+  /// Return the Aikido StateSpace that this OMPL StateSpace wraps
+  statespace::StateSpacePtr getAikidoStateSpace() const;
+
 private:
   statespace::StateSpacePtr mStateSpace;
   statespace::InterpolatorPtr mInterpolator;
