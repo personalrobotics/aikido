@@ -1,5 +1,6 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
+#include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
 
 namespace aikido {
@@ -14,7 +15,8 @@ namespace ompl {
     constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
-    constraint::ProjectablePtr _boundsProjector)
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwValidityChecks)
 {
   if (_stateSpace == nullptr) {
     throw std::invalid_argument("StateSpace is nullptr.");
@@ -79,6 +81,12 @@ namespace ompl {
         "StateSpace of BoundsProjector not equal to planning StateSpace");
   }
 
+  // Ensure max distance between validity checks is positive
+  if (_maxDistanceBtwValidityChecks <= 0.0) {
+      throw std::invalid_argument(
+          "Max distance between validity checks must be >= 0");
+  }
+
   // Geometric State space
   auto sspace = boost::make_shared<GeometricStateSpace>(
     _stateSpace, std::move(_interpolator), std::move(_dmetric),
@@ -98,11 +106,15 @@ namespace ompl {
       boost::make_shared<StateValidityChecker>(si, conjunctionConstraint);
   si->setStateValidityChecker(vchecker);
 
+  ::ompl::base::MotionValidatorPtr mvalidator =
+        boost::make_shared<MotionValidator>(si, _maxDistanceBtwValidityChecks);
+  si->setMotionValidator(mvalidator);
+
   return si;
 }
 
 //=============================================================================
-trajectory::TrajectoryPtr planOMPL(
+trajectory::InterpolatedPtr planOMPL(
   const ::ompl::base::PlannerPtr &_planner,
   const ::ompl::base::ProblemDefinitionPtr &_pdef,
   statespace::StateSpacePtr _sspace,
@@ -112,10 +124,11 @@ trajectory::TrajectoryPtr planOMPL(
   _planner->setProblemDefinition(_pdef);
   _planner->setup();
   auto solved = _planner->solve(_maxPlanTime);
-  auto returnTraj = std::make_shared<trajectory::Interpolated>(
-      std::move(_sspace), std::move(_interpolator));
 
   if (solved) {
+    auto returnTraj = std::make_shared<trajectory::Interpolated>(
+        std::move(_sspace), std::move(_interpolator));
+
     // Get the path
     auto path =
         boost::dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
@@ -133,8 +146,10 @@ trajectory::TrajectoryPtr planOMPL(
       // Arbitrary timing
       returnTraj->addWaypoint(idx, st->mState);
     }
+
+    return returnTraj;
   }
-  return returnTraj;
+  return nullptr;
 }
 
 }
