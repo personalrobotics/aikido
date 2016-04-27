@@ -38,7 +38,7 @@ set(AIKIDO_INCLUDE_DIRS)
 
 include(CMakeParseArguments)
 
-find_package(Boost REQUIRED COMPONENTS filesystem)
+find_package(Boost COMPONENTS filesystem python)
 list(APPEND AIKIDO_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 
 find_package(DART REQUIRED COMPONENTS core)
@@ -50,8 +50,13 @@ list(APPEND AIKIDO_INCLUDE_DIRS ${TinyXML2_INCLUDE_DIRS})
 #==============================================================================
 # Optional Dependencies
 #
+find_package(chimera QUIET)
+if(chimera_FOUND)
+  message(STATUS "Looking for Chimera - version ${chimera_VERSION} found")
+endif()
+
 find_package(OMPL QUIET)
-if (${OMPL_FOUND})
+if(OMPL_FOUND)
   message(STATUS "Looking for OMPL - version ${OMPL_VERSION} found")
 
   include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
@@ -67,6 +72,9 @@ else()
   message(STATUS "Looking for Doxygen - NOT found, to generate API"
                  " documentation, please install Doxygen")
 endif()
+
+find_package(PythonInterp QUIET)
+find_package(PythonLibs QUIET)
 
 #==============================================================================
 # Helper functions.

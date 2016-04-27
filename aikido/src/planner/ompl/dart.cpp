@@ -11,6 +11,7 @@ namespace ompl {
 ::ompl::base::SpaceInformationPtr createSpaceInformation(
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     constraint::TestablePtr _validityConstraint,
+    double _maxDistanceBtwValidityChecks,
     std::unique_ptr<util::RNG> _rng)
 {
 
@@ -34,7 +35,8 @@ namespace ompl {
                              std::move(dmetric), std::move(sampler),
                              std::move(_validityConstraint),
                              std::move(boundsConstraint),
-                             std::move(boundsProjection));
+                             std::move(boundsProjection),
+                             _maxDistanceBtwValidityChecks);
 }
 }
 }

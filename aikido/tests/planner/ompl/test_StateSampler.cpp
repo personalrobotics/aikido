@@ -1,5 +1,7 @@
 #include "OMPLTestHelpers.hpp"
 #include <aikido/planner/ompl/StateSampler.hpp>
+#include <boost/make_shared.hpp>
+#include <ompl/base/spaces/SO2StateSpace.h>
 
 using aikido::planner::ompl::GeometricStateSpace;
 using aikido::planner::ompl::StateSampler;
@@ -37,7 +39,8 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorCantSample)
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
   // Ensure we get two different states if we sample twice
-  EXPECT_THROW(ssampler.sampleUniform(s1), std::runtime_error);
+  ssampler.sampleUniform(s1);
+  EXPECT_EQ(nullptr, s1->mState);
 
   gSpace->freeState(s1);
 }
@@ -50,7 +53,8 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorFailsSample)
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
   // Ensure we get two different states if we sample twice
-  EXPECT_THROW(ssampler.sampleUniform(s1), std::runtime_error);
+  ssampler.sampleUniform(s1);
+  EXPECT_EQ(nullptr, s1->mState);
   gSpace->freeState(s1);
 }
 
@@ -94,4 +98,15 @@ TEST_F(StateSamplerTest, SampleGaussianAlwaysThrows)
 
   gSpace->freeState(s1);
   gSpace->freeState(s2);
+}
+
+TEST_F(StateSamplerTest, BadStateSpaceThrows)
+{
+  auto so2 = boost::make_shared<::ompl::base::SO2StateSpace>();
+  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  StateSampler ssampler(so2.get(), std::move(generator));
+
+  auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
+  EXPECT_THROW(ssampler.sampleUniform(s1), std::runtime_error);
+  gSpace->freeState(s1);
 }

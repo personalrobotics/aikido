@@ -22,7 +22,7 @@ public:
         std::make_shared<MetaSkeletonStateSpace>(robot);
 
     auto mockTestable = std::make_shared<PassingConstraint>(stateSpace);
-    si = aikido::planner::ompl::createSpaceInformation(stateSpace, mockTestable, make_rng());
+    si = aikido::planner::ompl::createSpaceInformation(stateSpace, mockTestable, 0.1, make_rng());
 
     auto mockCollisionConstraint =
         std::make_shared<MockTranslationalRobotConstraint>(

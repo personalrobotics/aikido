@@ -111,9 +111,13 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
   {
     if (_maxVelocity[i] <= 0.)
       throw std::invalid_argument("Velocity limits must be positive.");
+    if (!std::isfinite(_maxVelocity[i]))
+      throw std::invalid_argument("Velocity limits must be finite.");
 
     if (_maxAcceleration[i] <= 0.)
       throw std::invalid_argument("Acceleration limits must be positive.");
+    if (!std::isfinite(_maxAcceleration[i]))
+      throw std::invalid_argument("Acceleration limits must be finite.");
   }
 
   // Convert the Interpolated to the internal data structure by

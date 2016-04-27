@@ -40,7 +40,14 @@ void GoalRegion::sampleGoal(::ompl::base::State* _state) const
     valid = mSampleGenerator->sample(state->mState);
   }
   if (!valid) {
-    throw std::runtime_error("Failed to sample a valid goal");
+    auto stateSpace =
+        boost::dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
+    if (!stateSpace) {
+      throw std::runtime_error(
+          "GoalRegion can only sample states from the GeometricStateSpace");
+    }
+    stateSpace->getAikidoStateSpace()->freeState(state->mState);
+    state->mState = nullptr;
   }
 }
 
@@ -66,6 +73,8 @@ double GoalRegion::distanceGoal(const ::ompl::base::State* _state) const
 bool GoalRegion::isSatisfied(const ::ompl::base::State* _state) const
 {
   auto state = static_cast<const GeometricStateSpace::StateType*>(_state);
+  if (state == nullptr || state->mState == nullptr)
+      return false;
   return mTestable->isSatisfied(state->mState);
 }
 
