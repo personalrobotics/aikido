@@ -37,13 +37,10 @@ void CRRTConnect::setup(void)
   sc.configurePlannerRange(maxDistance_);
 
   if (!tStart_)
-    tStart_.reset(
-        ::ompl::tools::SelfConfig::getDefaultNearestNeighbors<Motion *>(
-            si_->getStateSpace()));
+    tStart_.reset(new ::ompl::NearestNeighborsGNAT<Motion *>);
   if (!tGoal_)
-    tGoal_.reset(
-        ::ompl::tools::SelfConfig::getDefaultNearestNeighbors<Motion *>(
-            si_->getStateSpace()));
+    tGoal_.reset(new ::ompl::NearestNeighborsGNAT<Motion *>);
+
   tStart_->setDistanceFunction(
       boost::bind(&CRRTConnect::distanceFunction, this, _1, _2));
   tGoal_->setDistanceFunction(

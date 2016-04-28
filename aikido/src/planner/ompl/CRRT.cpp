@@ -97,8 +97,8 @@ void CRRT::setup(void) {
   sc.configurePlannerRange(mMaxDistance);
 
   if (!mNN)
-    mNN.reset(::ompl::tools::SelfConfig::getDefaultNearestNeighbors<Motion *>(
-        si_->getStateSpace()));
+    mNN.reset(new ::ompl::NearestNeighborsGNAT<Motion *>);
+
   mNN->setDistanceFunction(boost::bind(&CRRT::distanceFunction, this, _1, _2));
 }
 
