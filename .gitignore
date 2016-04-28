@@ -1,3 +1,6 @@
+# build folder
+build/
+
 # Compiled Object files
 *.slo
 *.lo
@@ -26,3 +29,6 @@
 *.exe
 *.out
 *.app
+
+# Temp files
+*~

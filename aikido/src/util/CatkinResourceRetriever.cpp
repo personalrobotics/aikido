@@ -229,13 +229,13 @@ Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
   using boost::filesystem::path;
 
   if(!_uri.mScheme || *_uri.mScheme != "package")
-    return "";
+    return Uri();
 
   if(!_uri.mAuthority)
   {
     dtwarn << "Failed extracting package name from URI '"
            << _uri.toString() << ".\n";
-    return "";
+    return Uri();
   }
 
   const std::string& packageName = *_uri.mAuthority;

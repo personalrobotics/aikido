@@ -1,0 +1,6 @@
+#include "distance/DistanceMetric.hpp"
+#include "distance/RnEuclidean.hpp"
+#include "distance/SO2Angular.hpp"
+#include "distance/SO3Angular.hpp"
+#include "distance/Weighted.hpp"
+#include "distance/defaults.hpp"
