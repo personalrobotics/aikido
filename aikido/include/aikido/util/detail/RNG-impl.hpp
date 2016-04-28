@@ -72,6 +72,46 @@ std::unique_ptr<RNG> RNGWrapper<T>::clone(result_type _seed) const
 }
 
 //=============================================================================
+template <class T>
+RNGFactory<T>::RNGFactory()
+{
+  std::random_device randomDevice;
+  mSeedSequence = std::seed_seq { randomDevice() };
+}
+
+//=============================================================================
+template <class T>
+RNGFactory<T>::RNGFactory(std::seed_seq::result_type _seed)
+  : mSeedSequence { _seed }
+{
+}
+
+//=============================================================================
+template <class T>
+std::unique_ptr<RNGWrapper<T>> RNGFactory<T>::create()
+{
+  std::vector<std::seed_seq::result_type> seeds(1);
+  mSeedSequence.generate(std::begin(seeds), std::end(seeds));
+
+  return std::unique_ptr<RNGWrapper<T>>(
+    new RNGWrapper<T>(seeds.front()));
+}
+
+//=============================================================================
+template <class T>
+RNGFactory<T>::operator std::unique_ptr<RNG>();
+{
+  return create();
+}
+
+//=============================================================================
+template <class T>
+RNGFactory<T>::operator std::unique_ptr<RNGWrapper<T>>()
+{
+  return create();
+}
+
+//=============================================================================
 template <class Engine, class Scalar, class Quaternion>
 Quaternion sampleQuaternion(
   Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution)

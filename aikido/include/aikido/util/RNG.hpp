@@ -114,6 +114,23 @@ private:
 };
 
 
+template <class T>
+class RNGFactory
+{
+public:
+  RNGFactory();
+  explicit RNGFactory(std::seed_seq::result_type _seed);
+
+  std::unique_ptr<RNGWrapper<T>> create();
+
+  operator std::unique_ptr<RNG>();
+  operator std::unique_ptr<RNGWrapper<T>>();
+
+private:
+  std::seed_seq mSeedSequence;
+};
+
+
 /// Sample a unit quaternion uniformly at random. This function requires that
 /// the provided std::uniform_real_distribution has bounds of [ 0, 1 ].
 ///
