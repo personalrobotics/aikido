@@ -153,7 +153,6 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
 
     // Continue on invalid sample
     if(!si_->isValid(rstate)){
-        std::cout << "invalid sample" << std::endl;
         continue;
     }
     
