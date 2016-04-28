@@ -39,11 +39,7 @@ inline void deserialize(
         matrix.resize(rows, 1);
 
         for (Index i = 0; i < rows; ++i) {
-#ifdef YAMLCPP_NEWAPI
             matrix(i, 0) = node[i].template as< _Scalar >();
-#else
-            node[i] >> matrix(i, 0);
-#endif
         }
     } else if (node[0].Type() == YAML::NodeType::Sequence) {
         Index const cols = node[0].size();
@@ -68,11 +64,7 @@ inline void deserialize(
             }
 
             for (Index c = 0; c < cols; ++c) {
-#ifdef YAMLCPP_NEWAPI
                 matrix(r, c) = node[r][c].template as<_Scalar>();
-#else
-                node[r][c] >> matrix(r, c);
-#endif
             }
         }
     } else {
@@ -91,16 +83,10 @@ inline void deserialize(YAML::Node const &node,
 template <class T>
 inline bool has_child(YAML::Node const &node, T const &key)
 {
-#ifdef YAMLCPP_NEWAPI
     return node[key].IsDefined();
-#else // ifdef YAMLCPP_NEWAPI
-    return !!node.FindValue(key);
-#endif // ifndef YAMLCPP_NEWAPI
 }
 
 namespace YAML {
-
-#ifdef YAMLCPP_NEWAPI
 
 namespace detail {
 
@@ -150,7 +136,7 @@ struct encode_impl<MatrixType, false> {
   }
 };
 
-}
+} //namespace detail
 
 template <typename _Scalar, int _Dim, int _Mode, int _Options>
 struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options> > {
@@ -198,74 +184,6 @@ inline void operator>>(Node const &node, T &value)
     value = node.as<T>();
 }
 
-#else // ifdef YAMLCPP_NEWAPI
-
-template <class _Scalar,
-          int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
-inline Emitter &operator<<(
-    Emitter &emitter,
-    Eigen::Matrix<_Scalar,
-        _Rows, _Cols, _Options, _MaxRows, _MaxCols> const &matrix)
-{
-    typedef Eigen::Matrix<_Scalar, _Rows, _Cols, _Options,
-                          _MaxRows, _MaxCols> MatrixType;
-    typedef typename MatrixType::Index Index;
-
-    if (MatrixType::IsVectorAtCompileTime) {
-        emitter << LocalTag("Vector")
-                << Flow
-                << BeginSeq;
-
-        for (Index i = 0; i < matrix.size(); ++i) {
-            emitter << matrix(i, 0);
-        }
-
-        emitter << EndSeq;
-    } else {
-        emitter << LocalTag("Matrix")
-                << BeginSeq;
-
-        for (Index r = 0; r < matrix.rows(); ++r) {
-            emitter << Flow
-                    << BeginSeq;
-            for (Index c = 0; c < matrix.cols(); ++c) {
-                emitter << matrix(r, c);
-            }
-
-            emitter << EndSeq;
-        }
-
-        emitter << EndSeq;
-    }
-    return emitter;
-}
-
-template <class _Scalar, int Dim, int Mode, int _Options>
-inline Emitter &operator<<(Emitter &emitter,
-                           Eigen::Transform<_Scalar, Dim, Mode, _Options> &tf)
-{
-    return emitter << tf.matrix();
-}
-
-template <class _Scalar, int Dim, int Mode, int _Options>
-inline void operator>>(
-    Node const &node,
-    Eigen::Transform<_Scalar, Dim, Mode, _Options> &tf)
-{
-    deserialize(node, tf.matrix());
-}
-
-template <class _Scalar,
-          int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
-inline void operator>>(
-    Node const &node,
-    Eigen::Matrix<_Scalar,
-        _Rows, _Cols, _Options, _MaxRows, _MaxCols> &matrix)
-{
-    deserialize(node, matrix);
-}
-
-#endif // else ifdef YAMLCPP_NEWAPI
 
 } // namespace YAML
 

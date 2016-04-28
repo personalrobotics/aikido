@@ -1,16 +1,7 @@
-/** 
- * @file YamlFileLoader.cpp
- * @author Shushman Choudhury
- * @date Apr 20, 2016
- * @brief The instance of the configuration data loader for marker-based perception which
- * reads a YAML file.
- */
-
-
 #include <dart/common/Console.h>
 #include <dart/common/LocalResourceRetriever.h>
 #include <aikido/perception/YamlFileLoader.hpp>
- #include "yaml-cpp/exceptions.h" 
+#include <yaml-cpp/exceptions.h> 
 
 namespace aikido{
 namespace perception{
@@ -22,13 +13,13 @@ YamlFileLoader::YamlFileLoader(const dart::common::ResourceRetrieverPtr& resourc
 
     //Read JSON file into string
     if(!resourceRetriever){
-        throw std::invalid_argument("[YamlFileLoader::YamlFileLoader] ResourceRetrieverPtr given is null!");
+        throw std::invalid_argument("ResourceRetrieverPtr given is null!");
     }
     
     const dart::common::ResourcePtr resource = resourceRetriever->retrieve(configDataURI);
     if(!resource)
     {
-        throw std::runtime_error(std::string("[YamlFileLoader::YamlFileLoader] Failed opening URI - ")+configDataURI.toString());
+        throw std::runtime_error(std::string("Failed opening URI - ")+configDataURI.toString());
     }
 
     //Put file in string
@@ -37,7 +28,7 @@ YamlFileLoader::YamlFileLoader(const dart::common::ResourceRetrieverPtr& resourc
     content.resize(size);
     if(resource->read(&content.front(), size, 1) != 1)
     {
-        throw std::runtime_error(std::string("[YamlFileLoader::YamlFileLoader] Failed reading  URI - ")+configDataURI.toString());
+        throw std::runtime_error(std::string("Failed reading  URI - ")+configDataURI.toString());
     }
 
     //Load from string
@@ -72,7 +63,6 @@ bool YamlFileLoader::getTagNameOffset(const std::string& _tagName, std::string& 
         return true;
     }
     else{
-        dtwarn << "[YamlFileLoader::getTagNameOffset] Could not find Tag ID " << _tagName <<"\n";
         return false;
     }
 }

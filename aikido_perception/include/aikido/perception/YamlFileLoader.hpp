@@ -1,11 +1,3 @@
-/** 
- * @file YamlFileLoader.hpp
- * @author Shushman Choudhury
- * @date Apr 20, 2016
- * @brief The header for the instance of the configuration data loader 
- * for marker-based perception which reads a YAML file.
- */
-
 #ifndef AIKIDO_PERCEPTION_YAML_FILE_LOADER_H
 #define AIKIDO_PERCEPTION_YAML_FILE_LOADER_H
 
@@ -21,22 +13,21 @@
 namespace aikido{
 namespace perception{
 
-class YamlFileLoader : public virtual ConfigDataLoader
+/// The header for the instance of the configuration data loader for marker-based perception which reads a YAML file.
+class YamlFileLoader : public ConfigDataLoader
 {
 public:
 
-    //! The constructor for YAML Loader
-    /*!
-        \param resourceRetriever the pointer to obtain the config. file
-        \param configDataURI the URI for the configuration information file
-    */
+    /// The constructor for YAML Loader
+    /// \param[in] resourceRetriever the pointer to obtain the configuration file
+    /// \param[in] configDataURI the URI for the configuration information file
     YamlFileLoader(const dart::common::ResourceRetrieverPtr& resourceRetriever,
                    dart::common::Uri configDataURI);
 
-    //! The virtual destructor
+    /// The virtual destructor
     virtual ~YamlFileLoader() = default;
 
-    //! The implementation of the virtual method from ConfigDataLoader
+    // Documentation inherited
     bool getTagNameOffset(const std::string& _tagName, std::string& body_name, dart::common::Uri& body_resource, Eigen::Isometry3d& body_offset) override;
 
 private:

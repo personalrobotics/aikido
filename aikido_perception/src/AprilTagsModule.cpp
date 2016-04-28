@@ -1,11 +1,3 @@
-/** 
- * @file AprilTagsModule.cpp
- * @author Shushman Choudhury
- * @date Apr 14, 2016
- * @brief The implementation of the April Tags detector. The function detectObjects
- * waits for the next ROS message on the specified topic.
- */
-
 #include <aikido/perception/AprilTagsModule.hpp>
 #include <aikido/perception/shape_conversions.hpp>
 #include "dart/common/Console.h"
@@ -36,12 +28,14 @@ AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic,
 		mReferenceFrameId(std::move(referenceFrameId)),
 		mReferenceLink(std::move(referenceLink))
 {
+	mListener = std::unique_ptr<tf::TransformListener>(new tf::TransformListener(node));
 }
 
 //================================================================================================================================
 void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout, ros::Time timestamp)
 {
 	bool transform_lookedup = false;
+	bool any_valid = false;
 	tf::TransformListener listener(mNode);
 	//Looks at all detected tags, looks up config file 
 	//Appends new skeletons to skeleton list
@@ -56,13 +50,11 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			const auto& tag_name = marker_transform.ns;
 			const auto& detection_frame = marker_transform.header.frame_id;
 
-			if(marker_stamp < timestamp){
-				dtwarn << "[AprilTagsModule::detectObjects] Marker stamp " << marker_stamp<< " for " << tag_name 
-				<< "is behind timestamp parameter: " <<timestamp <<"\n";
-
+			if(!timestamp.isValid() || marker_stamp < timestamp){
 				continue;
 			}
 
+			any_valid = true;
 			std::string skel_name;
 			Eigen::Isometry3d skel_offset;
 			dart::common::Uri skel_resource;
@@ -79,15 +71,14 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				tf::StampedTransform transform;
 
 				try{
-					listener.waitForTransform(mReferenceFrameId,detection_frame,
+					mListener->waitForTransform(mReferenceFrameId,detection_frame,
 						marker_stamp,ros::Duration(_timeout));
 
-					listener.lookupTransform(mReferenceFrameId,detection_frame,
+					mListener->lookupTransform(mReferenceFrameId,detection_frame,
 						marker_stamp, transform);
 				}
 				catch(const tf::ExtrapolationException& ex){
-					std::string error_msg = std::string("[AprilTagsModule::detectObjects] TF timestamp is out-of-date compared to marker timestamp")+std::string(ex.what());
-					ROS_ERROR("%s",error_msg.c_str());
+					dtwarn<< "[AprilTagsModule::detectObjects] TF timestamp is out-of-date compared to marker timestamp" << std::string(ex.what());
 					continue;
 				}
 
@@ -127,7 +118,7 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 						urdfLoader.parseSkeleton(skel_resource,mResourceRetriever);
 					
 					if(!skel_to_update)
-						dtwarn<<"Empty SkeletonPtr for "<<skel_name<<std::endl;
+						dtwarn<<"[AprilTagsModule::detectObjects] Failed to load skeleton for URI "<<skel_resource.toString()<<std::endl;
 					skel_to_update->setName(skel_name);
 
 				}
@@ -138,14 +129,21 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 				}
 
 
+				dart::dynamics::Joint* jtptr;
 				//Get root joint of skeleton
-				dart::dynamics::Joint* jtptr = skel_to_update->getJoint(0);
+				if(skel_to_update->getNumDofs() > 0){
+					jtptr = skel_to_update->getJoint(0);
+				}
+				else{
+					dtwarn<< "[AprilTagsModule::detectObjects] Skeleton "<<skel_name<<" has 0 DOFs! \n";
+					continue; 
+				}
 
 				//Downcast Joint to FreeJoint
 				dart::dynamics::FreeJoint* freejtptr = dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
 
 				//Check if successful down-cast
-				if(freejtptr == NULL){
+				if(freejtptr == nullptr){
 					dtwarn << "[AprilTagsModule::detectObjects] Could not cast the joint of the body to a Free Joint so ignoring marker "<<tag_name << std::endl;
 					continue;
 				}
@@ -160,6 +158,9 @@ void AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			}
 
 		}
+		if(!any_valid)
+			dtwarn<< "[AprilTagsModule::detectObjects] TF timestamp is out-of-date compared to any marker timestamp \n";
+
 	}while(!transform_lookedup);
 }
 
