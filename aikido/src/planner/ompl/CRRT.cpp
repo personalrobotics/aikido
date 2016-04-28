@@ -10,7 +10,7 @@ namespace ompl {
 //=============================================================================
 CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si)
     : ::ompl::base::Planner(_si, "CRRT"), mCons(nullptr), mGoalBias(0.05),
-      mMaxDistance(0.0), mLastGoalMotion(nullptr) {
+      mMaxDistance(0.1), mLastGoalMotion(nullptr) {
   auto ss =
       boost::dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
   if (!ss) {
@@ -151,6 +151,12 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
     else
       mSampler->sampleUniform(rstate);
 
+    // Continue on invalid sample
+    if(!si_->isValid(rstate)){
+        std::cout << "invalid sample" << std::endl;
+        continue;
+    }
+    
     /* find closest state in the tree */
     Motion *nmotion = mNN->nearest(rmotion);
     ::ompl::base::State *dstate = rstate;

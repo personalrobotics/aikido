@@ -25,11 +25,16 @@ public:
   class StateType : public ::ompl::base::State
   {
   public:
-    /// Constructor
+    /// Constructor. 
     /// \param _st The state to wrap
     StateType(statespace::StateSpace::State *_st);
 
+    /// The wrapped aikido state
     statespace::StateSpace::State *mState;
+
+    /// A flag indicating whether the state has been properly initialized
+    /// The value defaults to true.
+    bool mValid;
   };
 
   /// Construct a state space
@@ -114,6 +119,9 @@ public:
   /// wrapped aikido state.
   /// \param _state The state to free.
   void freeState(::ompl::base::State *_state) const override;
+
+  /// Return the Aikido StateSpace that this OMPL StateSpace wraps
+  statespace::StateSpacePtr getAikidoStateSpace() const;
 
 private:
   statespace::StateSpacePtr mStateSpace;

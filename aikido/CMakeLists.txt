@@ -1,4 +1,5 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
+# CMake 2.8.11 or above is required for target_include_directories
 cmake_minimum_required(VERSION 2.8.12)
 
 # Use MACOSX_RPATH by default on OS X. This was added in CMake 2.8.12 and
@@ -33,16 +34,18 @@ endif()
 #==============================================================================
 # Required Dependencies
 #
+set(AIKIDO_INCLUDE_DIRS)
+
 include(CMakeParseArguments)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+list(APPEND AIKIDO_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 
 find_package(DART REQUIRED COMPONENTS core)
-include_directories(SYSTEM ${DART_INCLUDE_DIRS})
+list(APPEND AIKIDO_INCLUDE_DIRS ${DART_INCLUDE_DIRS})
 
 find_package(TinyXML2 REQUIRED)
-include_directories(SYSTEM ${TinyXML2_INCLUDE_DIRS})
+list(APPEND AIKIDO_INCLUDE_DIRS ${TinyXML2_INCLUDE_DIRS})
 
 #==============================================================================
 # Optional Dependencies
@@ -113,6 +116,7 @@ function(aikido_add_library target_name)
   endif()
 endfunction()
 
+
 #==============================================================================
 # Register an Aikido test.
 #
@@ -132,10 +136,8 @@ endfunction()
 #
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories(
-  "include"
-  "src"
-)
+include_directories(SYSTEM ${AIKIDO_INCLUDE_DIRS})
+include_directories("include" "src")
 
 add_subdirectory("src")
 
@@ -238,6 +240,10 @@ install(EXPORT "${PROJECT_NAME}Targets"
 
 # Generate and install a Config.cmake file.
 include(CMakePackageConfigHelpers)
+
+get_property(AIKIDO_LIBRARIES GLOBAL PROPERTY AIKIDO_LIBRARIES)
+get_property(AIKIDO_INCLUDE_DIRS GLOBAL PROPERTY AIKIDO_INCLUDE_DIRS)
+
 configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"

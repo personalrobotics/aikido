@@ -30,9 +30,7 @@ void StateSampler::sampleUniform(::ompl::base::State *_state) {
     valid = mGenerator->sample(state->mState);
   }
 
-  if (!valid) {
-    throw std::runtime_error("Failed to generate valid sample.");
-  }
+  state->mValid = valid;
 }
 
 //=============================================================================

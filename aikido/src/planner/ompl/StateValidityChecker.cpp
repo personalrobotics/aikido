@@ -25,6 +25,8 @@ StateValidityChecker::StateValidityChecker(
 bool StateValidityChecker::isValid(const ::ompl::base::State *_state) const
 {
   auto st = static_cast<const GeometricStateSpace::StateType *>(_state);
+  if(!st->mValid)
+      return false;
   return mConstraint->isSatisfied(st->mState);
 }
 

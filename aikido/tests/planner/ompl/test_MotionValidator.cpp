@@ -1,35 +1,38 @@
 #include "OMPLTestHelpers.hpp"
+#include "../../constraint/MockConstraints.hpp"
 #include <gtest/gtest.h>
-#include <aikido/ompl/dart.hpp>
-#include <aikido/ompl/OMPLMotionValidator.hpp>
-#include <aikido/ompl/AIKIDOGeometricStateSpace.hpp>
-#include <aikido/ompl/AIKIDOStateValidityChecker.hpp>
+#include <aikido/planner/ompl/dart.hpp>
+#include <aikido/planner/ompl/MotionValidator.hpp>
+#include <aikido/planner/ompl/GeometricStateSpace.hpp>
+#include <aikido/planner/ompl/StateValidityChecker.hpp>
 #include <boost/make_shared.hpp>
+
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::planner::ompl::MotionValidator;
 
 /// This test creates a world with a translational robot
 /// and a .2x.2x.2 block obstacle at the origin
-class OMPLMotionValidatorTest : public ::testing::Test
+class MotionValidatorTest : public ::testing::Test
 {
 public:
   virtual void SetUp()
   {
     auto robot = createTranslationalRobot();
     stateSpace =
-        std::make_shared<aikido::statespace::MetaSkeletonStateSpace>(robot);
+        std::make_shared<MetaSkeletonStateSpace>(robot);
 
-    si = aikido::ompl::createSpaceInformation(stateSpace, make_rng());
+    auto mockTestable = std::make_shared<PassingConstraint>(stateSpace);
+    si = aikido::planner::ompl::createSpaceInformation(stateSpace, mockTestable, 0.1, make_rng());
 
     auto mockCollisionConstraint =
         std::make_shared<MockTranslationalRobotConstraint>(
             stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
             Eigen::Vector3d(0.1, 0.1, 0.1));
-    std::vector<aikido::constraint::TestableConstraintPtr> constraints;
-    constraints.emplace_back(mockCollisionConstraint);
     ::ompl::base::StateValidityCheckerPtr vchecker =
-        boost::make_shared<aikido::ompl::AIKIDOStateValidityChecker>(
-            si, constraints);
+          boost::make_shared<aikido::planner::ompl::StateValidityChecker>(
+            si, mockCollisionConstraint);
     si->setStateValidityChecker(vchecker);
-    validator = std::make_shared<aikido::ompl::OMPLMotionValidator>(si, 0.1);
+    validator = std::make_shared<MotionValidator>(si, 0.1);
 
     state1 = si->allocState();
     state2 = si->allocState();
@@ -41,28 +44,43 @@ public:
     si->freeState(state2);
   }
 
-  std::shared_ptr<aikido::ompl::OMPLMotionValidator> validator;
+  std::shared_ptr<MotionValidator> validator;
   ::ompl::base::State* state1;
   ::ompl::base::State* state2;
   ::ompl::base::SpaceInformationPtr si;
-  aikido::statespace::MetaSkeletonStateSpacePtr stateSpace;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace;
 };
 
-TEST_F(OMPLMotionValidatorTest, SuccessValidation)
+TEST_F(MotionValidatorTest, ConstructorThrowsOnNullSpaceInformation)
+{
+  EXPECT_THROW(MotionValidator(nullptr, 0.1), std::invalid_argument);
+}
+
+TEST_F(MotionValidatorTest, ConstructorThrowsOnZeroDistance)
+{
+  EXPECT_THROW(MotionValidator(si, 0.0), std::invalid_argument);
+}
+
+TEST_F(MotionValidatorTest, ConstructorThrowsOnNegativeDistance)
+{
+  EXPECT_THROW(MotionValidator(si, -0.1), std::invalid_argument);
+}
+
+TEST_F(MotionValidatorTest, SuccessValidation)
 {
   setTranslationalState(Eigen::Vector3d(-5, -5, 0), stateSpace, state1);
   setTranslationalState(Eigen::Vector3d(-5, 5, 0), stateSpace, state2);
   EXPECT_TRUE(validator->checkMotion(state1, state2));
 }
 
-TEST_F(OMPLMotionValidatorTest, FailedValidation)
+TEST_F(MotionValidatorTest, FailedValidation)
 {
   setTranslationalState(Eigen::Vector3d(-5, -5, 0), stateSpace, state1);
   setTranslationalState(Eigen::Vector3d(5, 5, 0), stateSpace, state2);
   EXPECT_FALSE(validator->checkMotion(state1, state2));
 }
 
-TEST_F(OMPLMotionValidatorTest, LastValidEmptyState)
+TEST_F(MotionValidatorTest, LastValidEmptyState)
 {
   // Check that nothing throws if lastValid has no state
   setTranslationalState(Eigen::Vector3d(-5, -5, 0), stateSpace, state1);
@@ -71,7 +89,7 @@ TEST_F(OMPLMotionValidatorTest, LastValidEmptyState)
   EXPECT_TRUE(validator->checkMotion(state1, state2, lastValid));
 }
 
-TEST_F(OMPLMotionValidatorTest, SuccessValidationLastValid)
+TEST_F(MotionValidatorTest, SuccessValidationLastValid)
 {
   setTranslationalState(Eigen::Vector3d(-5, -5, 0), stateSpace, state1);
   setTranslationalState(Eigen::Vector3d(-5, 5, 0), stateSpace, state2);
@@ -84,7 +102,7 @@ TEST_F(OMPLMotionValidatorTest, SuccessValidationLastValid)
                   .isApprox(Eigen::Vector3d(-5, 5, 0.)));
 }
 
-TEST_F(OMPLMotionValidatorTest, FailedValidationLastValid)
+TEST_F(MotionValidatorTest, FailedValidationLastValid)
 {
   setTranslationalState(Eigen::Vector3d(0, -5, 0), stateSpace, state1);
   setTranslationalState(Eigen::Vector3d(0, 5, 0), stateSpace, state2);
@@ -97,7 +115,7 @@ TEST_F(OMPLMotionValidatorTest, FailedValidationLastValid)
                   .isApprox(Eigen::Vector3d(0, -0.2, 0.)));
 }
 
-TEST_F(OMPLMotionValidatorTest, BadValidationSmallResolution)
+TEST_F(MotionValidatorTest, BadValidationSmallResolution)
 {
   setTranslationalState(Eigen::Vector3d(-0.2, -0.2, 0), stateSpace, state1);
   setTranslationalState(Eigen::Vector3d(5, 5, 0), stateSpace, state2);
@@ -105,6 +123,6 @@ TEST_F(OMPLMotionValidatorTest, BadValidationSmallResolution)
   // Set stepsize large enough that validation shoudl succeed even with obstacle
   // in the way
   auto validator1 =
-      std::make_shared<aikido::ompl::OMPLMotionValidator>(si, 0.5);
+      std::make_shared<aikido::planner::ompl::MotionValidator>(si, 0.5);
   EXPECT_TRUE(validator1->checkMotion(state1, state2));
 }

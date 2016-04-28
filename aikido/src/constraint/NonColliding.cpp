@@ -1,5 +1,7 @@
 #include <aikido/constraint/NonColliding.hpp>
-#include <dart/collision/Result.h>
+#include <dart/dart.h>
+
+using dart::collision::BodyNodeCollisionFilter;
 
 namespace aikido {
 namespace constraint {
@@ -8,9 +10,22 @@ namespace constraint {
 NonColliding::NonColliding(
     statespace::dart::MetaSkeletonStateSpacePtr _statespace,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector)
+: NonColliding(
+    std::move(_statespace),
+    std::move(_collisionDetector),
+    dart::collision::Option(
+      false, true, 1, std::make_shared<BodyNodeCollisionFilter>()))
+{
+}
+
+//=============================================================================
+NonColliding::NonColliding(
+    statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+    std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
+    dart::collision::Option _collisionOptions)
 : statespace(std::move(_statespace))
 , collisionDetector(std::move(_collisionDetector))
-, collisionOptions{false, true}
+, collisionOptions(std::move(_collisionOptions))
 {
   if (!statespace)
     throw std::invalid_argument("_statespace is nullptr.");

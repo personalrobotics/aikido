@@ -39,9 +39,7 @@ void GoalRegion::sampleGoal(::ompl::base::State* _state) const
   if (mSampleGenerator->canSample()) {
     valid = mSampleGenerator->sample(state->mState);
   }
-  if (!valid) {
-    throw std::runtime_error("Failed to sample a valid goal");
-  }
+  state->mValid = valid;
 }
 
 //=============================================================================
@@ -66,6 +64,8 @@ double GoalRegion::distanceGoal(const ::ompl::base::State* _state) const
 bool GoalRegion::isSatisfied(const ::ompl::base::State* _state) const
 {
   auto state = static_cast<const GeometricStateSpace::StateType*>(_state);
+  if (state == nullptr || state->mState == nullptr)
+      return false;
   return mTestable->isSatisfied(state->mState);
 }
 

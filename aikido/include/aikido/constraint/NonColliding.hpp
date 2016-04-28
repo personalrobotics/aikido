@@ -19,14 +19,29 @@ class NonColliding : public Testable
 {
 public:
   /// Constructs an empty constraint that uses \c _collisionDetector to test
-  /// for collision. You should call \c addPairWiseCheck and \c addSelfCheck
-  /// to register collision checks before calling \c isSatisfied.
+  /// for collision with default \c CollisionOptions. The default behavior is
+  /// terminate on first collision and use
+  /// a \c dart::collision::BodyNodeCollisionFilter. You should call \c
+  /// addPairWiseCheck and \c addSelfCheck to register collision checks before
+  /// calling \c isSatisfied.
   ///
   /// \param _statespace state space on which the constraint operates
   /// \param _collisionDetector collision detector used to test for collision
   NonColliding(
       statespace::dart::MetaSkeletonStateSpacePtr _statespace,
       std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector);
+
+  /// Constructs an empty constraint that uses \c _collisionDetector to test
+  /// for collision. You should call \c addPairWiseCheck and \c addSelfCheck
+  /// to register collision checks before calling \c isSatisfied.
+  ///
+  /// \param _statespace state space on which the constraint operates
+  /// \param _collisionDetector collision detector used to test for collision
+  /// \param _collisionOptions options passed to \c _collisionDetector
+  NonColliding(
+      statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+      std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
+      dart::collision::Option _collisionOptions);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
