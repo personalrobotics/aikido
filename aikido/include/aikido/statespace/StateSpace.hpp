@@ -159,6 +159,11 @@ public:
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
   virtual void logMap(const State *_in, Eigen::VectorXd &_tangent) const = 0;
+
+  /// Print the state to the output stream
+  /// \param _state The element to print
+  /// \param _os The stream to print to
+  virtual void print(const State *_state, std::ostream &_os) const = 0;
 };
 
 using StateSpacePtr = std::shared_ptr<StateSpace>;

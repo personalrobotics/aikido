@@ -145,6 +145,12 @@ public:
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
 
+  /// Print the contents of each substate contained in the state
+  /// as a list with each substate enclosed in brackets and including its
+  /// index
+  /// Format: [0: ...] [1: ...] ... [n: ...]
+  void print(const StateSpace::State *_state, std::ostream &_os) const override;
+
 private:
   std::vector<StateSpacePtr> mSubspaces;
   std::vector<std::size_t> mOffsets;

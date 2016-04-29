@@ -156,5 +156,17 @@ void SO3::logMap(const StateSpace::State *_in,
   _tangent = dart::math::logMap(rotMat);
 }
 
+//=============================================================================
+void SO3::print(const StateSpace::State *_state, std::ostream &_os) const
+{
+    auto state = static_cast<const State*>(_state);
+
+    Eigen::IOFormat cleanFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ",",
+                             ",", "", "", "[", "]");
+    auto quat = getQuaternion(state);
+    _os << Eigen::Vector4d(quat.w(), quat.x(), quat.y(), quat.z()).format(cleanFmt);
+
+}
+
 }  // namespace statespace
 }  // namespace aikido
