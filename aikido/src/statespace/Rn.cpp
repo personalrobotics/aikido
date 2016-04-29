@@ -152,5 +152,14 @@ void Rn::logMap(const StateSpace::State *_in,
   _tangent = getValue(in);
 }
 
+//=============================================================================
+void Rn::print(const StateSpace::State *_state, std::ostream &_os) const 
+{
+    auto val = getValue(static_cast<const State*>(_state));
+    
+    Eigen::IOFormat cleanFmt(3, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
+    _os << val.format(cleanFmt);
+}
+
 }  // namespace statespace
 }  // namespace aikido

@@ -1,3 +1,8 @@
+if(NOT ${OMPL_FOUND})
+  message(STATUS "Skipping OMPL bindings - OMPL not found")
+  return()
+endif()
+
 aikido_add_library("${PROJECT_NAME}_planner_ompl"
   CRRT.cpp
   CRRTConnect.cpp
