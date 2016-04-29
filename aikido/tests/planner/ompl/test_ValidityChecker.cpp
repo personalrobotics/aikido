@@ -48,6 +48,16 @@ TEST_F(StateValidityCheckerTest, ValidState)
 
 TEST_F(StateValidityCheckerTest, InvalidState)
 {
+  auto constraint = std::make_shared<PassingConstraint>(stateSpace);
+  StateValidityChecker vchecker(si, constraint);
+  auto state = si->allocState()->as<GeometricStateSpace::StateType>();
+  state->mValid = false;
+  EXPECT_FALSE(vchecker.isValid(state));
+  si->freeState(state);
+}
+
+TEST_F(StateValidityCheckerTest, FailedConstraint)
+{
   auto constraint = std::make_shared<FailingConstraint>(stateSpace);
   StateValidityChecker vchecker(si, constraint);
   auto state = si->allocState();

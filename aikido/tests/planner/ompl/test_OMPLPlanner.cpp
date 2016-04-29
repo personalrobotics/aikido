@@ -128,7 +128,7 @@ TEST_F(PlannerTest, PlanConstrained)
   auto traj = aikido::planner::ompl::planConstrained<CRRT>(
       startState, goalTestable, goalSampleable, trajConstraint, stateSpace, interpolator,
       std::move(dmetric), std::move(sampler), std::move(collConstraint),
-      std::move(boundsConstraint), std::move(boundsProjection), 5.0);
+      std::move(boundsConstraint), std::move(boundsProjection), 5.0, 0.1);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
