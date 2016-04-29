@@ -5,15 +5,11 @@
 #include <ompl/datastructures/NearestNeighbors.h>
 #include "../../constraint/Projectable.hpp"
 
-namespace aikido
-{
-namespace planner
-{
-namespace ompl
-{
+namespace aikido {
+namespace planner {
+namespace ompl {
 /// Implements a bi-direction constrained RRT planner
-class CRRTConnect : public ::ompl::base::Planner
-{
+class CRRTConnect : public ::ompl::base::Planner {
 public:
   /// Constructor
   /// \param si Information about the planning instance
@@ -27,7 +23,7 @@ public:
   /// useful to see what changed in the exploration datastructure, between calls
   /// to solve(), for example (without calling clear() in between).
   /// \param[out] data Data about the current run of the motion planner
-  void getPlannerData(::ompl::base::PlannerData &data) const override;
+  void getPlannerData(::ompl::base::PlannerData &_data) const override;
 
   /// Function that can solve the motion planning problem. This function can be
   /// called multiple times on the same problem, without calling clear() in
@@ -39,12 +35,12 @@ public:
   /// start/goal states). The function terminates if the call to ptc returns
   /// true.
   /// \param ptc Conditions for terminating planning before a solution is found
-  ::ompl::base::PlannerStatus solve(
-      const ::ompl::base::PlannerTerminationCondition &ptc) override;
+  ::ompl::base::PlannerStatus
+  solve(const ::ompl::base::PlannerTerminationCondition &p_tc) override;
 
   /// Solve the motion planning problem in the given time
   /// \param solveTime The maximum allowable time to solve the planning problem
-  ::ompl::base::PlannerStatus solve(double solveTime);
+  ::ompl::base::PlannerStatus solve(double _solveTime);
 
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
@@ -55,23 +51,17 @@ public:
   /// of a motion to be added in the tree of motions.
   /// \param distance The maximum length of a motionto be added in the tree of
   /// motions
-  void setRange(double distance);
+  void setRange(double _distance);
 
   /// Get the range the planner is using
   double getRange(void) const;
 
   /// Set a projectable constraint to be applied throughout the trajectory
   /// \param _projectable The constraint to apply to the trajectory
-  void setTrajectoryWideConstraint(
-      constraint::ProjectablePtr _projectable);
+  void setTrajectoryWideConstraint(constraint::ProjectablePtr _projectable);
 
   /// Set a nearest neighbors data structure for both the start and goal trees
-  template <template <typename T> class NN>
-  void setNearestNeighbors(void)
-  {
-    tStart_.reset(new NN<Motion *>());
-    tGoal_.reset(new NN<Motion *>());
-  }
+  template <template <typename T> class NN> void setNearestNeighbors(void);
 
   /// Perform extra configuration steps, if needed. This call will also issue a
   /// call to ompl::base::SpaceInformation::setup() if needed. This must be
@@ -79,38 +69,33 @@ public:
   void setup(void) override;
 
 protected:
-  /** \brief Representation of a motion */
-  class Motion
-  {
+  /// Represents a node in the tree
+  class Motion {
   public:
-    Motion(void)
-        : root(NULL)
-        , state(NULL)
-        , parent(NULL)
-    {
-      parent = NULL;
-      state = NULL;
-    }
+    /// Constructor. root, paret and state all intiialized to null
+    Motion(void);
 
-    Motion(const ::ompl::base::SpaceInformationPtr &si)
-        : root(NULL)
-        , state(si->allocState())
-        , parent(NULL)
-    {
-    }
+    /// Constructor. The state node is initialized with a newly allocated state.
+    /// \param si The SpaceInformation to use to alloc the state
+    Motion(const ::ompl::base::SpaceInformationPtr &si);
 
-    ~Motion(void) {}
+    /// Destructor
+    ~Motion(void);
 
+    /// The root of the tree this node is a part of
     const ::ompl::base::State *root;
+
+    /// The state represented by this node
     ::ompl::base::State *state;
+
+    /// The parent of this node in the tree
     Motion *parent;
   };
 
-  /** \brief A nearest-neighbor datastructure representing a tree of motions */
+  /// A nearest-neighbor datastructure representing a tree of motions */
   typedef boost::shared_ptr<::ompl::NearestNeighbors<Motion *>> TreeData;
 
-  /** \brief Information attached to growing a tree of motions (used internally)
-   */
+  /// Information attached to growing a tree of motions (used internally)
   struct TreeGrowingInfo {
     ::ompl::base::State *xstate;
     ::ompl::base::State *pstate;
@@ -118,7 +103,7 @@ protected:
     bool start;
   };
 
-  /** \brief The state of the tree after an attempt to extend it */
+  /// The state of the tree after an attempt to extend it */
   enum GrowState {
     /// no progress has been made
     TRAPPED,
@@ -128,43 +113,42 @@ protected:
     REACHED
   };
 
-  /** \brief Free the memory allocated by this planner */
+  /// Free the memory allocated by this planner
   void freeMemory(void);
 
-  /** \brief Compute distance between motions (actually distance between
-   * contained states) */
-  double distanceFunction(const Motion *a, const Motion *b) const
-  {
-    return si_->distance(a->state, b->state);
-  }
+  /// Compute distance between motions (actually distance between contained
+  /// states)
+  double distanceFunction(const Motion *a, const Motion *b) const;
 
-  /** \brief Grow a tree towards a random state */
+  /// Grow a tree towards a random state
   GrowState growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion);
 
-  /** \brief State sampler */
-  ::ompl::base::StateSamplerPtr sampler_;
+  /// State sampler
+  ::ompl::base::StateSamplerPtr mSampler;
 
-  /** \brief The start tree */
-  TreeData tStart_;
+  /// Start tree
+  TreeData mStartTree;
 
-  /** \brief The goal tree */
-  TreeData tGoal_;
+  /// The goal tree
+  TreeData mGoalTree;
 
-  /** \brief The maximum length of a motion to be added to a tree */
-  double maxDistance_;
+  /// maximum length of a motion to be added to a tree
+  double mMaxDistance;
 
-  /** \brief The random number generator */
-  ::ompl::RNG rng_;
+  /// The random number generator
+  ::ompl::RNG mRNG;
 
-  /** \brief The pair of states in each tree connected during planning.  Used
-   * for PlannerData computation */
-  std::pair<::ompl::base::State *, ::ompl::base::State *> connectionPoint_;
+  /// The pair of states in each tree connected during planning.  Use for
+  /// PlannerData computation
+  std::pair<::ompl::base::State *, ::ompl::base::State *> mConnectionPoint;
 
-  /** \brief The trajectory-wide PR holonomic constraint to be followed */
-  constraint::ProjectablePtr cons_;
-
+  /// The trajectory-wide PR holonomic constraint to be followed
+  constraint::ProjectablePtr mCons;
 };
 }
 }
 }
-#endif  //AIKIDO_PLANNER_OMPL_CRRTCONNECT_HPP_
+
+#include "detail/CRRTConnect-impl.hpp"
+
+#endif // AIKIDO_PLANNER_OMPL_CRRTCONNECT_HPP_
