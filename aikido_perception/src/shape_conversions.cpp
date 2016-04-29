@@ -1,11 +1,3 @@
-/** 
- * @file shape_conversions.cpp
- * @author Shushman Choudhury
- * @date Apr 20, 2016
- * @brief The source for the utility file that has methods to convert
- * between ROS and Eigen Pose.
- */
-
 #include <aikido/perception/shape_conversions.hpp>
 #include <dart/common/Console.h>
 

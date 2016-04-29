@@ -5,39 +5,41 @@
 #include <ros/ros.h>
 #include <ros/forwards.h>
 #include <ros/single_subscriber_publisher.h>
-#include <aikido/perception/ConfigDataLoader.hpp>
 #include <tf/transform_listener.h>
 #include <dart/dart.h>
 #include <aikido/util/CatkinResourceRetriever.hpp>
+#include <aikido/perception/AprilTagsDatabase.hpp>
+#include <aikido/perception/PerceptionModule.hpp>
 #include <yaml-cpp/yaml.h>
 #include <memory>
 
-#include "PerceptionModule.hpp"
 
 
 namespace aikido{
 namespace perception{
 
-/// The AprilTag Detector instantiation of the Perception Module
+/// Perception Module instantiation specific to April Tags. It receives input from an April Tags detector
+/// running in a separate process, by subscribing to a visualization_msg::Marker ROS topic published by
+/// the AprilTags node. It uses a \c AprilTagsDatabase to resolve each marker to a \c dart::common::Uri,
+/// and updates the environment which is a list of \c dart::dynamics::SkeletonPtr.
 class AprilTagsModule : public PerceptionModule
 {
 public:
-	/// The constructor for the April Tags detector
+	/// The constructor for the AprilTags detector.
 	///	\param[in] node the node handle to be passed to the detector
 	///	\param[in] markerTopic the name of the topic on which april tags information is being published
 	///	\param[in] configData the pointer to some configuration data loader
 	///	\param[in] resourceRetriever a DART retriever for resources related to config files and models and so on
 	///	\param[in] destinationFrame the desired TF for the detections
 	///	\param[in] referenceLink a link on HERB with respect to which the pose is transformed
-	AprilTagsModule(ros::NodeHandle node, std::string markerTopic, std::shared_ptr<ConfigDataLoader> configData,
+	AprilTagsModule(ros::NodeHandle node, std::string markerTopic, std::shared_ptr<AprilTagsDatabase> configData,
 					dart::common::ResourceRetrieverPtr resourceRetriever,
 					std::string destinationFrame, dart::dynamics::Frame* referenceLink);
 
-	/// The virtual destructor
 	virtual ~AprilTagsModule() = default;
 
 	// Documentation inherited
-	void detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,double _timeout=10.0, ros::Time timestamp=ros::Time(0.0)) override; 
+	bool detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list, ros::Duration timeout = ros::Duration(0.0), ros::Time timestamp=ros::Time(0.0)) override; 
 
 
 private:
@@ -54,13 +56,13 @@ private:
 	dart::dynamics::Frame* mReferenceLink;
 
 	///The pointer to the loader of configuration data
-	std::shared_ptr<ConfigDataLoader> mConfigData;
+	std::shared_ptr<AprilTagsDatabase> mConfigData;
 
 	///For the ROS node that will work with the April Tags module
 	ros::NodeHandle mNode;
 
 	///Listens to the transform attached to the node
-	std::unique_ptr<tf::TransformListener> mListener;
+	tf::TransformListener mListener;
 
 };
 

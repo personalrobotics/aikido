@@ -1,13 +1,13 @@
 #include <dart/common/Console.h>
 #include <dart/common/LocalResourceRetriever.h>
-#include <aikido/perception/YamlFileLoader.hpp>
+#include <aikido/perception/YamlAprilTagsDatabase.hpp>
 #include <yaml-cpp/exceptions.h> 
 
 namespace aikido{
 namespace perception{
 
 //================================================================================================================================
-YamlFileLoader::YamlFileLoader(const dart::common::ResourceRetrieverPtr& resourceRetriever,
+YamlAprilTagsDatabase::YamlAprilTagsDatabase(const dart::common::ResourceRetrieverPtr& resourceRetriever,
                                dart::common::Uri configDataURI)
 {
 
@@ -37,7 +37,7 @@ YamlFileLoader::YamlFileLoader(const dart::common::ResourceRetrieverPtr& resourc
 }
 
 //================================================================================================================================
-bool YamlFileLoader::getTagNameOffset(const std::string& _tagName, std::string& body_name, dart::common::Uri& body_resource, Eigen::Isometry3d& body_offset)
+bool YamlAprilTagsDatabase::getTagNameOffset(const std::string& _tagName, std::string& body_name, dart::common::Uri& body_resource, Eigen::Isometry3d& body_offset)
 {
     //Get name of object and pose for a given tag ID
     YAML::Node name_offset = mTagData[_tagName];
@@ -48,7 +48,7 @@ bool YamlFileLoader::getTagNameOffset(const std::string& _tagName, std::string& 
             body_resource.fromString(name_offset["resource"].as<std::string>());
         }
         catch(const YAML::ParserException& ex){
-            throw std::runtime_error("[YamlFileLoader::getTagNameOffset] Error in converting [resource] field");
+            throw std::runtime_error("[YamlAprilTagsDatabase::getTagNameOffset] Error in converting [resource] field");
         }
 
         //Convert name field
@@ -56,7 +56,7 @@ bool YamlFileLoader::getTagNameOffset(const std::string& _tagName, std::string& 
             body_name = name_offset["name"].as<std::string>();
         }
         catch(const YAML::ParserException& ex){
-            throw std::runtime_error("[YamlFileLoader::getTagNameOffset] Error in converting [name] field");
+            throw std::runtime_error("[YamlAprilTagsDatabase::getTagNameOffset] Error in converting [name] field");
         }
 
         body_offset = name_offset["offset"].as<Eigen::Isometry3d>();
