@@ -7,3 +7,4 @@ add_subdirectory("trajectory") # Dependencies: statespace
 add_subdirectory("constraint") # Dependencies: statespace, util
 add_subdirectory("planner")    # Dependencies: external, statespace, trajectory
 add_subdirectory("python")     # Dependencies: everything
+add_subdirectory("control")    # Dependencies: statespace, trajectory, dart
