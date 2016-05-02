@@ -14,6 +14,7 @@ CRRTConnect::CRRTConnect(const ::ompl::base::SpaceInformationPtr &_si)
   specs_.directed = true;
 
   mMaxDistance = 0.0;
+  mConnectionRadius = 0.02;
 
   Planner::declareParam<double>("range", this, &CRRTConnect::setRange,
                                 &CRRTConnect::getRange, "0.:1.:10000.");
@@ -82,7 +83,10 @@ void CRRTConnect::clear(void) {
 }
 
 //=============================================================================
-void CRRTConnect::setRange(double distance) { mMaxDistance = distance; }
+void CRRTConnect::setRange(double distance) { 
+    mMaxDistance = distance; 
+    mConnectionRadius = distance;
+}
 
 //=============================================================================
 double CRRTConnect::getRange() const { return mMaxDistance; }
@@ -125,7 +129,7 @@ CRRTConnect::growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion) {
     if (d - d_new < 0.0001)
       return TRAPPED;
 
-    reach = false;
+    reach = (d_new < mConnectionRadius);
   }
 
   // if we are in the start tree, we just check the motion like we normally do;

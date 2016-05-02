@@ -122,13 +122,15 @@ TEST_F(PlannerTest, PlanConstrained)
                                                              tConstraints);
 
 
-  auto trajConstraint = std::make_shared<MockProjectionConstraint>(stateSpace, constraintVal);
+  auto trajConstraint = std::make_shared<MockProjectionConstraint>(stateSpace, goalSampleable, constraintVal);
 
   // Plan
-  auto traj = aikido::planner::ompl::planConstrained<CRRT>(
-      startState, goalTestable, goalSampleable, trajConstraint, stateSpace, interpolator,
+  auto traj = aikido::planner::ompl::planConstrained<CRRTConnect>(
+      startState, goalTestable, trajConstraint, trajConstraint, stateSpace, interpolator,
       std::move(dmetric), std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 5.0, 0.1);
+
+  ASSERT_TRUE(traj != nullptr);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
@@ -444,3 +446,4 @@ TEST_F(PlannerTest, GetSpaceInformationCreatesMotionValidator)
       si->getMotionValidator());
   EXPECT_FALSE(mvalidator == nullptr);
 }
+

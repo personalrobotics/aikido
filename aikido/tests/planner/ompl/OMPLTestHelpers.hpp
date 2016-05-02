@@ -39,8 +39,8 @@ dart::dynamics::SkeletonPtr createTranslationalRobot()
   robot->setPositionUpperLimit(0, 5);
   robot->setPositionLowerLimit(1, -5);
   robot->setPositionUpperLimit(1, 5);
-  robot->setPositionLowerLimit(2, 0);
-  robot->setPositionUpperLimit(2, 0);
+  robot->setPositionLowerLimit(2, -1e-4);
+  robot->setPositionUpperLimit(2, 1e-4);
 
   return robot;
 }
@@ -71,14 +71,58 @@ Eigen::Vector3d getTranslationalState(
 
 }
 
+class MockConstrainedSampleGenerator
+    : public aikido::constraint::SampleGenerator {
+
+public:
+  MockConstrainedSampleGenerator(
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      std::unique_ptr<aikido::constraint::SampleGenerator> _generator,
+      double _value)
+      : mStateSpace(std::move(_stateSpace))
+      , mSampleGenerator(std::move(_generator))
+      , mValue(_value){}
+
+  aikido::statespace::StateSpacePtr getStateSpace() const override {
+    return mStateSpace;
+  }
+
+  /// Returns one sample from this constraint; returns true if succeeded.
+  bool sample(aikido::statespace::StateSpace::State *_state) override {
+    mSampleGenerator->sample(_state);
+    auto outstate = static_cast<CartesianProduct::State *>(_state);
+    auto outSubState = mStateSpace->getSubStateHandle<Rn>(outstate, 0);
+    auto val = outSubState.getValue();
+    Eigen::Vector3d newval(mValue, val(1), val(2));
+    outSubState.setValue(newval);
+    return true;
+  }
+
+  /// Gets an upper bound on the number of samples remaining or NO_LIMIT.
+  int getNumSamples() const override {
+    return mSampleGenerator->getNumSamples();
+  }
+
+  /// Returns whether getNumSamples() > 0.
+  bool canSample() const override { return mSampleGenerator->canSample(); }
+
+private:
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+    std::unique_ptr<aikido::constraint::SampleGenerator> mSampleGenerator;
+    double mValue;
+};
+
 class MockProjectionConstraint : public aikido::constraint::Projectable,
-                                 aikido::constraint::Testable {
+                                 public aikido::constraint::Testable,
+                                 public aikido::constraint::Sampleable {
 public:
   // Construct a constraint that project to x=_val
   MockProjectionConstraint(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      aikido::constraint::SampleablePtr _sampleable,
       double _val)
       : mStateSpace(std::move(_stateSpace))
+      , mSampleable(std::move(_sampleable))
       , mValue(_val)
   {
   }
@@ -115,8 +159,14 @@ public:
     return std::fabs(val[0] - mValue) < 1e-6;
   }
 
+    std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator() const {
+    return make_unique<MockConstrainedSampleGenerator>(
+        mStateSpace, mSampleable->createSampleGenerator(), mValue);
+  }
+
 private:
     aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+    aikido::constraint::SampleablePtr mSampleable;
     double mValue;
 };
 

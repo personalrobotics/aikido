@@ -160,6 +160,7 @@ trajectory::InterpolatedPtr planConstrained(
 
   auto planner = boost::make_shared<PlannerType>(si);
   planner->setTrajectoryWideConstraint(std::move(_trajConstraint));
+  planner->setRange(_maxDistanceBtwValidityChecks);
   return planOMPL(planner, pdef, std::move(_stateSpace),
                   std::move(_interpolator), _maxPlanTime);
 }

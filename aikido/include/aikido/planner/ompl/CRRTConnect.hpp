@@ -135,6 +135,9 @@ protected:
   /// maximum length of a motion to be added to a tree
   double mMaxDistance;
 
+  /// Max distance between two trees to consider them connected
+  double mConnectionRadius;
+
   /// The random number generator
   ::ompl::RNG mRNG;
 
