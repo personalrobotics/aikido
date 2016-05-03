@@ -97,3 +97,10 @@ TEST(SE2, LogMap)
   EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI / 6, 4, 6)));
 }
 
+TEST(SE2, PrintState)
+{
+  SE2 se2;
+  auto state = se2.createState();
+  Eigen::Isometry2d pose1 = Eigen::Isometry2d::Identity();
+  se2.print(state, std::cout);
+}

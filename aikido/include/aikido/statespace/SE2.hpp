@@ -124,6 +124,9 @@ public:
   /// \param[out] _tangent corresponding element of the tangent space
   void logMap(const StateSpace::State *_state,
               Eigen::VectorXd &_tangent) const override;
+
+  /// Print the state. Format: [x, y, theta]
+  void print(const StateSpace::State *_state, std::ostream &_os) const override;
 };
 
 }  // namespace statespace

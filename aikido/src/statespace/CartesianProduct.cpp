@@ -174,5 +174,17 @@ void CartesianProduct::logMap(const StateSpace::State *_in,
   }
 }
 
+//=============================================================================
+void CartesianProduct::print(const StateSpace::State *_state,
+                             std::ostream &_os) const {
+
+  auto state = static_cast<const State *>(_state);
+  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+    _os << "[ " << i << ":";
+    getSubspace<>(i)->print(getSubState<>(state, i), _os);
+    _os << " ] ";
+  }
+}
+
 }  // namespace statespace
 }  // namespace aikido
