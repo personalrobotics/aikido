@@ -15,11 +15,16 @@ namespace perception{
 
 /// Instantiation of AprilTagsDatabase that reads a YAML file containing the information
 /// that maps tag IDs to the object name, resource and relative transform
+/// The YAML file should have a map with keys being the names of the expected tags
+/// Each such key points to a nested map, where the keys are 'resource', 'name' and 'offset'
+/// The values for each of the nested keys for a particular Tag ID are to be returned to the
+/// calling method via the callback.
 class YamlAprilTagsDatabase : public AprilTagsDatabase
 {
 public:
 
-    /// The constructor for YamlAprilTagsDatabase
+    /// The constructor for \c YamlAprilTagsDatabase that uses \c ResourceRetriever to
+    /// load configuration data from a YAML file at URI \c configDataURI
     /// \param[in] resourceRetriever the pointer to obtain the configuration file
     /// \param[in] configDataURI the URI for the configuration information file
     YamlAprilTagsDatabase(const dart::common::ResourceRetrieverPtr& resourceRetriever,

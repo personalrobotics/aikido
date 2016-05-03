@@ -9,14 +9,16 @@ namespace perception{
 
 /// An interface for providing configuration information for the AprilTags perception module.
 /// It provides a callback that maps the AprilTag ID to the information of the object it
-/// is attached to - name, resource URI, and relative transform. This 
+/// is attached to - name, resource URI, and relative transform.
 class AprilTagsDatabase
 {
 public:
 
     virtual ~AprilTagsDatabase() = default;
 
-    /// The virtual method for the callback used by the perception module.
+    /// The virtual method for the callback used by the perception module. It takes the name of the
+    /// AprilTag and returns the name of the body, the resource file and the offset between
+    /// the position of the AprilTag and the origin of the object
     /// \param[in] _tagName the ID of the tag to look up
     /// \param[out] body_name the name of the object associated with the tag
     /// \param[out] body_resource the resource that points to the URDF file of the object

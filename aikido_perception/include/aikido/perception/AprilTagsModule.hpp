@@ -25,13 +25,15 @@ namespace perception{
 class AprilTagsModule : public PerceptionModule
 {
 public:
-	/// The constructor for the AprilTags detector.
+	/// Constructs an AprilTags receiver that subscribes to the specified topic where AprilTag information
+	/// is being published as a visualization_msg::MarkerArray, uses a database loader for configuration information related to tags
+	/// and obtains the desired transformation frame for the object pose.
 	///	\param[in] node the node handle to be passed to the detector
 	///	\param[in] markerTopic the name of the topic on which april tags information is being published
 	///	\param[in] configData the pointer to some configuration data loader
 	///	\param[in] resourceRetriever a DART retriever for resources related to config files and models and so on
 	///	\param[in] destinationFrame the desired TF for the detections
-	///	\param[in] referenceLink a link on HERB with respect to which the pose is transformed
+	///	\param[in] referenceLink a link on the robot with respect to which the pose is transformed
 	AprilTagsModule(ros::NodeHandle node, std::string markerTopic, std::shared_ptr<AprilTagsDatabase> configData,
 					dart::common::ResourceRetrieverPtr resourceRetriever,
 					std::string destinationFrame, dart::dynamics::Frame* referenceLink);

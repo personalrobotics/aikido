@@ -27,7 +27,7 @@ AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic,
 		mResourceRetriever(std::move(resourceRetriever)),
 		mReferenceFrameId(std::move(referenceFrameId)),
 		mReferenceLink(std::move(referenceLink)),
-		mListener(std::move(node))
+		mListener(mNode)
 {
 }
 
@@ -42,7 +42,7 @@ bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
  			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(mMarkerTopic,mNode,timeout);
 
  	if(marker_message->markers.size()==0){
- 		dtwarn<<"[AprilTagsModule::detectObjects] No markers on topic "<<mMarkerTopic;
+ 		dtwarn<<"[AprilTagsModule::detectObjects] No markers on topic "<<mMarkerTopic<<std::endl;
  		return false;
  	}
 
@@ -81,7 +81,7 @@ bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 					marker_stamp, transform);
 			}
 			catch(const tf::ExtrapolationException& ex){
-				dtwarn<< "[AprilTagsModule::detectObjects] TF timestamp is out-of-date compared to marker timestamp" << std::string(ex.what());
+				dtwarn<< "[AprilTagsModule::detectObjects] TF timestamp is out-of-date compared to marker timestamp " << ex.what();
 				continue;
 			}
 

@@ -48,7 +48,7 @@ bool YamlAprilTagsDatabase::getTagNameOffset(const std::string& _tagName, std::s
             body_resource.fromString(name_offset["resource"].as<std::string>());
         }
         catch(const YAML::ParserException& ex){
-            throw std::runtime_error("[YamlAprilTagsDatabase::getTagNameOffset] Error in converting [resource] field");
+            throw std::runtime_error("Error in converting [resource] field");
         }
 
         //Convert name field
@@ -56,10 +56,16 @@ bool YamlAprilTagsDatabase::getTagNameOffset(const std::string& _tagName, std::s
             body_name = name_offset["name"].as<std::string>();
         }
         catch(const YAML::ParserException& ex){
-            throw std::runtime_error("[YamlAprilTagsDatabase::getTagNameOffset] Error in converting [name] field");
+            throw std::runtime_error("Error in converting [name] field");
         }
 
-        body_offset = name_offset["offset"].as<Eigen::Isometry3d>();
+        //Convert offset field
+        try{
+            body_offset = name_offset["offset"].as<Eigen::Isometry3d>();
+        }
+        catch(const YAML::ParserException& ex){
+            throw std::runtime_error("Error in converting [offset] field");
+        }
         return true;
     }
     else{
