@@ -163,5 +163,12 @@ void SO2::logMap(const StateSpace::State *_in,
   _tangent(0) = getAngle(in);
 }
 
+//=============================================================================
+void SO2::print(const StateSpace::State *_state, std::ostream &_os) const
+{
+    auto state = static_cast<const State*>(_state);
+    _os << "[" << getAngle(state) << "]";
+}
+
 }  // namespace statespace
 }  // namespace aikido

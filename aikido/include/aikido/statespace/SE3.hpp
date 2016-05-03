@@ -124,6 +124,11 @@ public:
   /// \param[out] _tangent corresponding element of the tangent space
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
+
+  /// Print the quaternion followed by the translation
+  /// Format: [q.w, q.x, q.y, q.z, x, y, z] where is the quaternion
+  /// representation of the rotational component of the state
+  void print(const StateSpace::State *_state, std::ostream &_os) const override;
 };
 
 } // namespace statespace

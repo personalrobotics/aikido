@@ -140,6 +140,8 @@ public:
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
 
+  /// Print the angle represented by the state
+  void print(const StateSpace::State *_state, std::ostream &_os) const override;
 };
 
 }  // namespace statespace

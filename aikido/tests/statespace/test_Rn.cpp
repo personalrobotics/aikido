@@ -88,3 +88,11 @@ TEST(Rn, CopyState)
   rvss.copyState(source, dest);
   EXPECT_TRUE(dest.getValue().isApprox(source.getValue()));
 }
+
+TEST(Rn, PrintState)
+{
+  Rn rvss(4);
+  auto source = rvss.createState();
+  source.setValue(Eigen::Vector4d(0, 1, 2, 3));
+  rvss.print(source, std::cout);
+}

@@ -93,3 +93,13 @@ TEST(SO3, CopyState)
   so3.copyState(source, dest);
   EXPECT_TRUE(source.getQuaternion().isApprox(dest.getQuaternion()));
 }
+
+TEST(SO3, PrintState)
+{
+  SO3 so3;
+  auto source = so3.createState();
+  auto quat = Eigen::Quaterniond(
+      Eigen::AngleAxisd(1.8 * M_PI, Eigen::Vector3d::UnitX()));
+  source.setQuaternion(quat);
+  so3.print(source, std::cout);
+}
