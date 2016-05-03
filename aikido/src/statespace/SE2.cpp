@@ -154,5 +154,19 @@ void SE2::logMap(const StateSpace::State* _in,
   _tangent(0) = rotation.angle();
 }
 
+//=============================================================================
+void SE2::print(const StateSpace::State *_state, std::ostream &_os) const
+{
+    auto state = static_cast<const State*>(_state);
+    auto transform = getIsometry(state);
+    
+    Eigen::IOFormat cleanFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ",",
+                             ",", "", "", "[", "]");
+    Eigen::Rotation2Dd rotation = Eigen::Rotation2Dd::Identity();
+    rotation.fromRotationMatrix(transform.rotation());
+    _os << Eigen::Vector3d(transform.translation()[0],
+                           transform.translation()[1],
+                           rotation.angle()).format(cleanFmt);
+}
 }  // namespace statespace
 }  // namespace aikido
