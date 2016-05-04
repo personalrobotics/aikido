@@ -1,7 +1,7 @@
 add_subdirectory("ompl")
 add_subdirectory("parabolic")
 
-aikido_add_library("${PROJECT_NAME}_planner" SnapPlanner.cpp)
+aikido_add_library("${PROJECT_NAME}_planner" SnapPlanner.cpp VectorFieldPlanner.cpp)
 target_link_libraries("${PROJECT_NAME}_planner"
   "${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_distance"
