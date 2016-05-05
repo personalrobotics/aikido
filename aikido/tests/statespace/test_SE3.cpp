@@ -95,3 +95,10 @@ TEST(SE3, LogMap)
   EXPECT_TRUE(out.isApprox(twist));
 }
 
+TEST(SE3, PrintState)
+{
+  SE3 se3;
+  auto state = se3.createState();
+  state.setIsometry(Eigen::Isometry3d::Identity());
+  se3.print(state, std::cout);
+}

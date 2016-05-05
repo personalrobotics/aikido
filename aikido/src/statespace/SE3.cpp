@@ -147,5 +147,21 @@ void SE3::logMap(const StateSpace::State *_in,
   _tangent = dart::math::logMap(transform);
 }
 
+//=============================================================================
+void SE3::print(const StateSpace::State *_state, std::ostream &_os) const
+{
+    auto state = static_cast<const State*>(_state);
+    auto transform = getIsometry(state);
+    auto t = transform.translation();
+
+    Eigen::VectorXd vals(7);
+    Eigen::Quaterniond quat(transform.rotation());
+    vals << quat.w(), quat.x(), quat.y(), quat.z(), t(0), t(1), t(2);
+
+    Eigen::IOFormat cleanFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ",",
+                             ",", "", "", "[", "]");
+    _os << vals.format(cleanFmt);
+}
+
 }  // namespace statespace
 }  // namespace aikido
