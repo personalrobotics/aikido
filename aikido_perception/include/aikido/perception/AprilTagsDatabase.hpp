@@ -16,9 +16,10 @@ public:
 
     virtual ~AprilTagsDatabase() = default;
 
-    /// The virtual method for the callback used by the perception module. It takes the name of the
-    /// AprilTag and returns the name of the body, the resource file and the offset between
-    /// the position of the AprilTag and the origin of the object
+    /// Look up the name of the detected AprilTag and return
+    /// the name of the body, the resource file for the body and the relative offset
+    /// between the tag position and object origin
+    /// 
     /// \param[in] _tagName the ID of the tag to look up
     /// \param[out] body_name the name of the object associated with the tag
     /// \param[out] body_resource the resource that points to the URDF file of the object

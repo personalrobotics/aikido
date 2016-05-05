@@ -23,8 +23,8 @@ class YamlAprilTagsDatabase : public AprilTagsDatabase
 {
 public:
 
-    /// The constructor for \c YamlAprilTagsDatabase that uses \c ResourceRetriever to
-    /// load configuration data from a YAML file at URI \c configDataURI
+    /// Construct a \c YamlAprilTagsDatabase that uses \c ResourceRetriever to
+    /// load configuration data from a YAML file at URI \c configDataURI.
     /// \param[in] resourceRetriever the pointer to obtain the configuration file
     /// \param[in] configDataURI the URI for the configuration information file
     YamlAprilTagsDatabase(const dart::common::ResourceRetrieverPtr& resourceRetriever,

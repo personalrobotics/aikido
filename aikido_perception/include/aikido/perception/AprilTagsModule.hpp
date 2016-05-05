@@ -18,16 +18,17 @@
 namespace aikido{
 namespace perception{
 
-/// Perception Module instantiation specific to April Tags. It receives input from an April Tags detector
+/// Instantiates the \c PerceptionModule specifically for AprilTags. It receives input from an April Tags detector
 /// running in a separate process, by subscribing to a visualization_msg::Marker ROS topic published by
 /// the AprilTags node. It uses a \c AprilTagsDatabase to resolve each marker to a \c dart::common::Uri,
 /// and updates the environment which is a list of \c dart::dynamics::SkeletonPtr.
 class AprilTagsModule : public PerceptionModule
 {
 public:
-	/// Constructs an AprilTags receiver that subscribes to the specified topic where AprilTag information
-	/// is being published as a visualization_msg::MarkerArray, uses a database loader for configuration information related to tags
-	/// and obtains the desired transformation frame for the object pose.
+	/// Construct an AprilTags receiver that subscribes to the specified topic where AprilTag information
+	/// is being published as a \c visualization_msg::MarkerArray, uses a database loader for configuration information
+	/// related to tags and obtains the desired transformation frame for the object pose. 
+	///
 	///	\param[in] node the node handle to be passed to the detector
 	///	\param[in] markerTopic the name of the topic on which april tags information is being published
 	///	\param[in] configData the pointer to some configuration data loader
@@ -41,6 +42,7 @@ public:
 	virtual ~AprilTagsModule() = default;
 
 	// Documentation inherited
+	/// 
 	bool detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list, ros::Duration timeout = ros::Duration(0.0), ros::Time timestamp=ros::Time(0.0)) override; 
 
 
