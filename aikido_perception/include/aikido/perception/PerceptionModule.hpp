@@ -6,6 +6,7 @@ namespace perception{
 
 /// The interface for the generic perception module. Provides a \c detectObjects() method for
 /// detecting all objects in the environment and updating the world representation accordingly.
+/// 
 class PerceptionModule{
 public:
 

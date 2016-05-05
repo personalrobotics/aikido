@@ -19,6 +19,7 @@ namespace perception{
 /// Each such key points to a nested map, where the keys are 'resource', 'name' and 'offset'
 /// The values for each of the nested keys for a particular Tag ID are to be returned to the
 /// calling method via the callback.
+/// 
 class YamlAprilTagsDatabase : public AprilTagsDatabase
 {
 public:

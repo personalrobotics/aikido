@@ -22,6 +22,7 @@ namespace perception{
 /// running in a separate process, by subscribing to a visualization_msg::Marker ROS topic published by
 /// the AprilTags node. It uses a \c AprilTagsDatabase to resolve each marker to a \c dart::common::Uri,
 /// and updates the environment which is a list of \c dart::dynamics::SkeletonPtr.
+///
 class AprilTagsModule : public PerceptionModule
 {
 public:
@@ -42,7 +43,6 @@ public:
 	virtual ~AprilTagsModule() = default;
 
 	// Documentation inherited
-	/// 
 	bool detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list, ros::Duration timeout = ros::Duration(0.0), ros::Time timestamp=ros::Time(0.0)) override; 
 
 

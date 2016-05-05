@@ -10,6 +10,7 @@ namespace perception{
 /// An interface for providing configuration information for the AprilTags perception module.
 /// It provides a callback that maps the AprilTag ID to the information of the object it
 /// is attached to - name, resource URI, and relative transform.
+///
 class AprilTagsDatabase
 {
 public:
