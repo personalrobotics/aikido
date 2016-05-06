@@ -260,5 +260,3 @@ configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   DESTINATION "${CONFIG_INSTALL_DIR}"
 )
-
-# TODO: We should also generate and install a _VERSION file.

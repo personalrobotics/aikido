@@ -141,7 +141,7 @@ bool CatkinResourceRetriever::exists(const Uri& _uri)
 }
 
 dart::common::ResourcePtr CatkinResourceRetriever::retrieve(const Uri& _uri)
-{
+{ 
   const Uri resolvedUri = resolvePackageUri(_uri);
   if(resolvedUri.mPath)
     return mDelegate->retrieve(resolvedUri);
