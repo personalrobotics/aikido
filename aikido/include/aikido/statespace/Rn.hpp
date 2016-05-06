@@ -99,6 +99,10 @@ public:
   void logMap(const StateSpace::State *_in,
               Eigen::VectorXd &_tangent) const override;
 
+  /// Print the n-dimensional vector represented by the state
+  /// Format: [x_1, x_2, ..., x_n]
+  void print(const StateSpace::State *_state, std::ostream &_os) const override;
+
 private:
   /// Gets the mutable value stored in a Rn::State. This is
   /// used internally to implement the public \c getValue member functions.

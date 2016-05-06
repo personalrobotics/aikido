@@ -3,11 +3,13 @@
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
+#include <aikido/statespace/SE2.hpp>
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::Rn;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
+using aikido::statespace::SE2;
 
 TEST(CartesianProduct, Compose)
 {
@@ -154,4 +156,33 @@ TEST(CartesianProduct, CopyState)
 
   auto out3 = dest.getSubStateHandle<SO3>(2).getQuaternion();
   EXPECT_TRUE(out3.isApprox(quat));
+}
+
+TEST(CartesianProduct, PrintState)
+{
+  CartesianProduct space({
+      std::make_shared<SO2>(),
+      std::make_shared<Rn>(3),
+      std::make_shared<SO3>(),
+      std::make_shared<SE2>(),
+//      std::make_shared<SE3>(),
+  });
+
+  auto source = space.createState();
+
+  double angle = M_PI;
+  auto rv = Eigen::Vector3d(3, 4, 5);
+  auto quat =
+      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
+  auto pose1 = Eigen::Isometry2d::Identity();
+  pose1.rotate(Eigen::Rotation2Dd(M_PI_2));
+  pose1.translation() << 2, 3;
+
+  source.getSubStateHandle<SO2>(0).setAngle(angle);
+  source.getSubStateHandle<Rn>(1).setValue(rv);
+  source.getSubStateHandle<SO3>(2).setQuaternion(quat);
+  source.getSubStateHandle<SE2>(3).setIsometry(pose1);
+
+  std::cout.precision(3);
+  space.print(source, std::cout);
 }

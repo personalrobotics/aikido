@@ -100,3 +100,10 @@ TEST(SO2, CopyState)
   EXPECT_DOUBLE_EQ(source.getAngle(), dest.getAngle());
 }
 
+TEST(SO2, PrintState)
+{
+  SO2 so2;
+  auto source = so2.createState();
+  source.setAngle(M_PI);
+  so2.print(source, std::cout);
+}
