@@ -14,10 +14,12 @@ CRRTConnect::CRRTConnect(const ::ompl::base::SpaceInformationPtr &_si)
   specs_.directed = true;
 
   mMaxDistance = 0.0;
-  mConnectionRadius = 0.02;
+  mConnectionRadius = 1e-4;
 
   Planner::declareParam<double>("range", this, &CRRTConnect::setRange,
                                 &CRRTConnect::getRange, "0.:1.:10000.");
+  Planner::declareParam<double>("connectionRadius", this, &CRRTConnect::setConnectionRadius,
+                                &CRRTConnect::getConnectionRadius, "0.:1.:10000.");
   mConnectionPoint =
       std::make_pair<::ompl::base::State *, ::ompl::base::State *>(nullptr,
                                                                    nullptr);
@@ -85,11 +87,18 @@ void CRRTConnect::clear(void) {
 //=============================================================================
 void CRRTConnect::setRange(double distance) { 
     mMaxDistance = distance; 
-    mConnectionRadius = distance;
+}
+
+//=============================================================================
+void CRRTConnect::setConnectionRadius(double radius) {
+    mConnectionRadius = radius;
 }
 
 //=============================================================================
 double CRRTConnect::getRange() const { return mMaxDistance; }
+
+//=============================================================================
+double CRRTConnect::getConnectionRadius() const { return mConnectionRadius; }
 
 //=============================================================================
 void CRRTConnect::setTrajectoryWideConstraint(

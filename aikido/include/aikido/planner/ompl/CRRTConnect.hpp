@@ -56,6 +56,13 @@ public:
   /// Get the range the planner is using
   double getRange(void) const;
 
+  /// \param radius The maximum distance between two trees for them to be
+  /// considered connected
+  void setConnectionRadius(double _radius);
+
+    /// Get the connection radius the planner is using
+  double getConnectionRadius(void) const;
+
   /// Set a projectable constraint to be applied throughout the trajectory
   /// \param _projectable The constraint to apply to the trajectory
   void setTrajectoryWideConstraint(constraint::ProjectablePtr _projectable);
