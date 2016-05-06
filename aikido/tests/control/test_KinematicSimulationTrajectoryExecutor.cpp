@@ -73,20 +73,19 @@ protected:
 
 };
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, ConstructorThrowsOnNullSkeleton)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
 {
   EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr, mPeriod),
     std::invalid_argument);
 }
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, Constructor)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor)
 {
   EXPECT_NO_THROW(
     KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod));
 }
 
-
-TEST_F(KinematicSimulationTrajectoryExecutorTest, ConstructorThrowsOnZeroPeriod)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_ZeroPeriod_Throws)
 {
   std::chrono::milliseconds period(0);
   EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr, period),
@@ -94,13 +93,25 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, ConstructorThrowsOnZeroPeriod)
 }
 
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteThrowsOnNullTraj)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_NullTrajectory_Throws)
 {
   KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
   EXPECT_THROW(executor.execute(nullptr), std::invalid_argument);
 }
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteThrowsOnTrajWithUnmatchingDofs)
+
+TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_NonMetaSkeletonStateSpace_Throws)
+{
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
+
+  auto space = std::make_shared<SO2>();
+  auto interpolator = std::make_shared<GeodesicInterpolator>(space);
+  auto traj = std::make_shared<Interpolated>(space, interpolator);
+
+  EXPECT_THROW(executor.execute(traj), std::invalid_argument);
+}
+
+TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajWithUncontrolledDofs_Throws)
 {
   auto skeleton = Skeleton::create("Skeleton");
 
@@ -109,7 +120,7 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteThrowsOnTrajWithUnmatch
 }
 
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteTrajSetFuture)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_WaitOnFuture_TrajectoryWasExecuted)
 {
   KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
 
@@ -122,7 +133,7 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteTrajSetFuture)
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteTrajThrowOnMultipleImmediateExecution)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajectoryIsAlreadyRunning_Throws)
 {
   KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
 
@@ -138,7 +149,7 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteTrajThrowOnMultipleImme
 }
 
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, WaitAndExecuteMultipleTrajectories)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajectoryFinished_DoesNotThrow)
 {
   KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
 
