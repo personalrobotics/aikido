@@ -27,6 +27,12 @@ public:
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
+  /// Execute _traj and set future upon completion. If trajectory terminates
+  /// before completion, future will be set to a runtime_error exception.
+  /// \param _traj Trajectory to be executed. Its StateSpace should be a 
+  ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton 
+  ///        should be all in _skeleton passed to the constructor.
+  /// \throws invalid_argument if _traj is invalid.
   std::future<void> execute(
     trajectory::TrajectoryPtr _traj) override;
 
@@ -36,23 +42,23 @@ private:
   std::unique_ptr<std::promise<void>> mPromise;
   trajectory::TrajectoryPtr mTraj; 
   
-  // spin()'s trajectory execution cycle.
+  /// spin()'s trajectory execution cycle.
   std::chrono::milliseconds mPeriod;
 
-  // Blocks spin() until execute(...) is called; paired with mSpinLock.
+  /// Blocks spin() until execute(...) is called; paired with mSpinLock.
   std::condition_variable mCv;
 
-   // Lock for keeping spin thread alive and executing a trajectory. 
-   // Manages access on mTraj, mPromise, mRunning
-  std::mutex mSpinLock;
+   /// Lock for keeping spin thread alive and executing a trajectory. 
+   /// Manages access on mTraj, mPromise, mRunning
+  std::mutex mSpinMutex;
 
-  // Thread for spin().
+  /// Thread for spin().
   std::thread mThread;
   
-  // Flag for killing spin thread. 
+  /// Flag for killing spin thread. 
   bool mRunning;
 
-  // Simulates mTraj. To be executed on a separate thread.
+  /// Simulates mTraj. To be executed on a separate thread.
   void spin(); 
 };
 

@@ -14,7 +14,7 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
   ::dart::dynamics::SkeletonPtr _skeleton,
   std::chrono::milliseconds _period)
 : mSkeleton(std::move(_skeleton))
-, mSpinLock()
+, mSpinMutex()
 , mRunning(true)
 , mPromise(nullptr)
 , mTraj(nullptr)
@@ -27,7 +27,7 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
 
-  if (mPeriod == milliseconds::zero())
+  if (mPeriod.count() < 0)
     throw std::invalid_argument("Period must be positive.");
 
   mThread = std::thread(&KinematicSimulationTrajectoryExecutor::spin, this);
@@ -37,7 +37,7 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
 KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 {
   {
-    std::lock_guard<std::mutex> lockSpin(mSpinLock);
+    std::lock_guard<std::mutex> lockSpin(mSpinMutex);
     mRunning = false;
   }
   mCv.notify_one();
@@ -58,31 +58,29 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
 
   if (!space)
     throw std::invalid_argument("Trajectory does not operate in this Executor's"
-      "MetaSkeletonStateSpace.");
+      " MetaSkeletonStateSpace.");
 
   auto metaSkeleton = space->getMetaSkeleton();
 
   // Check if metaSkeleton contains Dofs only in mSkeleton.
+  std::unique_lock<std::mutex> skeleton_lock(mSkeleton->getMutex());
   for (auto dof : metaSkeleton->getDofs())
   {
-    auto name = dof->getName();
+    auto name = dof->getName();    
+    auto dof_in_skeleton = mSkeleton->getDof(name);
 
-    {
-      std::lock_guard<std::mutex> skeleton_lock(mSkeleton->getMutex());
-      auto dof_in_skeleton = mSkeleton->getDof(name);
+    if (!dof_in_skeleton){
+      std::stringstream msg;
+      msg << "_traj contrains dof [" << name 
+      << "], which is not in mSkeleton.";
 
-      if (!dof_in_skeleton){
-        std::stringstream msg;
-        msg << "_traj contrains dof [" << name 
-        << "], which is not in mSkeleton.";
-
-        throw std::invalid_argument(msg.str());
-      }
+      throw std::invalid_argument(msg.str());
     }
   }
+  skeleton_lock.unlock();
 
   {
-    std::lock_guard<std::mutex> lockSpin(mSpinLock);
+    std::lock_guard<std::mutex> lockSpin(mSpinMutex);
 
     if (mTraj)
       throw std::runtime_error("Another trajectory in execution.");
@@ -111,7 +109,7 @@ void KinematicSimulationTrajectoryExecutor::spin()
   while(true)
   {
     // Terminate the thread if mRunning is false.
-    std::unique_lock<std::mutex> lockSpin(mSpinLock);
+    std::unique_lock<std::mutex> lockSpin(mSpinMutex);
     mCv.wait(lockSpin, [&] {
       // Reset startTime at the beginning of mTraj's execution.
       if (!trajInExecution && this->mTraj)
@@ -130,11 +128,11 @@ void KinematicSimulationTrajectoryExecutor::spin()
           std::runtime_error("Trajectory terminated while in execution.")));
         this->mTraj.reset();
       }
-      
-      lockSpin.unlock();
       break;
     }
     
+    // Can't do static here because MetaSkeletonStateSpace inherits 
+    // CartesianProduct which inherits virtual StateSpace 
     auto space = std::dynamic_pointer_cast<
       MetaSkeletonStateSpace>(mTraj->getStateSpace());
     auto metaSkeleton = space->getMetaSkeleton();
@@ -159,7 +157,6 @@ void KinematicSimulationTrajectoryExecutor::spin()
       trajInExecution = false;
     } 
 
-    lockSpin.unlock();
     std::this_thread::sleep_until(now + mPeriod);
   }
 }
