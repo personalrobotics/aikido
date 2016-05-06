@@ -13,7 +13,7 @@ public:
 
   virtual ~TrajectoryExecutor() = default;
 
-  virtual std::future<TrajectoryResultPtr> execute(
+  virtual std::future<void> execute(
     trajectory::TrajectoryPtr _traj) = 0;
 };
 

@@ -3,6 +3,7 @@
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
+#include <chrono>
 
 using aikido::control::KinematicSimulationTrajectoryExecutor;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -52,8 +53,10 @@ public:
     s2.getSubStateHandle<SO2>(0).setAngle(1);
 
     mTraj = std::make_shared<Interpolated>(mSpace, interpolator);
-    mTraj->addWaypoint(10, s1);
-    mTraj->addWaypoint(11, s2);
+    mTraj->addWaypoint(0, s1);
+    mTraj->addWaypoint(1, s2);
+
+    mPeriod = std::chrono::milliseconds(1);
 
   }
 
@@ -64,23 +67,36 @@ protected:
   std::shared_ptr<Interpolator> interpolator;
   std::shared_ptr<Interpolated> mTraj;
 
+  std::chrono::milliseconds mPeriod;
+
   BodyNodePtr bn1;
 
 };
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, ConstructorThrowsOnNullSkeleton)
 {
-  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr), std::invalid_argument);
+  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr, mPeriod),
+    std::invalid_argument);
 }
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, Constructor)
 {
-  EXPECT_NO_THROW(KinematicSimulationTrajectoryExecutor executor(mSkeleton));
+  EXPECT_NO_THROW(
+    KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod));
 }
+
+
+TEST_F(KinematicSimulationTrajectoryExecutorTest, ConstructorThrowsOnZeroPeriod)
+{
+  std::chrono::milliseconds period(0);
+  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr, period),
+    std::invalid_argument);
+}
+
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteThrowsOnNullTraj)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
   EXPECT_THROW(executor.execute(nullptr), std::invalid_argument);
 }
 
@@ -88,29 +104,27 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteThrowsOnTrajWithUnmatch
 {
   auto skeleton = Skeleton::create("Skeleton");
 
-  KinematicSimulationTrajectoryExecutor executor(skeleton);
+  KinematicSimulationTrajectoryExecutor executor(skeleton, mPeriod);
   EXPECT_THROW(executor.execute(mTraj), std::invalid_argument);
 }
 
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteTrajSetFuture)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-  future.wait();
 
-  auto result = future.get();
-  EXPECT_TRUE(!!result);
+  future.wait();
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteTrajThrowOnMultipleImmediateExecution)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
@@ -120,31 +134,25 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, ExecuteTrajThrowOnMultipleImme
   EXPECT_THROW(executor.execute(mTraj), std::runtime_error);
 
   future.wait();
-  auto result = future.get();
-  EXPECT_TRUE(!!result);
-
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
 
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, WaitAndExecuteMultipleTrajectories)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
   
   auto future = executor.execute(mTraj);
   future.wait();
-  auto result = future.get();
-  EXPECT_TRUE(!!result);
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 
   mSkeleton->getDof(0)->setPosition(-1.0);
   
   // Execute second traj.
   future = executor.execute(mTraj);
-  result = future.get();
-  EXPECT_TRUE(!!result);
+  future.wait();
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 
 }

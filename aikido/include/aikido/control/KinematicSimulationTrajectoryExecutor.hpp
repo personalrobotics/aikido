@@ -6,30 +6,53 @@
 
 #include <future>
 #include <mutex>
+#include <condition_variable>
 
 namespace aikido {
 namespace control {
 
-class KinematicSimulationTrajectoryExecutor : public virtual TrajectoryExecutor
+/// Executes trajectories in DART. This will spin a new thread
+/// and simulate trajectories by setting dof positions
+/// without running dynamic simulation.
+class KinematicSimulationTrajectoryExecutor : public TrajectoryExecutor
 {
 public:
-  explicit KinematicSimulationTrajectoryExecutor(
-    const ::dart::dynamics::SkeletonPtr& _skeleton);
+  /// Constructor.
+  /// \param _skeleton Skeleton to execute trajectories on.
+  ///        All trajectories must have dofs only in this skeleton.
+  /// \param _period Sets the cycle period of the execution thread.
+  KinematicSimulationTrajectoryExecutor(
+    ::dart::dynamics::SkeletonPtr _skeleton, 
+    std::chrono::milliseconds _period);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
-  std::future<TrajectoryResultPtr> execute(
+  std::future<void> execute(
     trajectory::TrajectoryPtr _traj) override;
 
 private:
 
-  std::mutex mMutex;
-  std::thread mThread;
-  bool mRunning;
   ::dart::dynamics::SkeletonPtr mSkeleton;
-  std::unique_ptr<std::promise<TrajectoryResultPtr>> mPromise;
+  std::unique_ptr<std::promise<void>> mPromise;
   trajectory::TrajectoryPtr mTraj; 
+  
+  // spin()'s trajectory execution cycle.
+  std::chrono::milliseconds mPeriod;
 
+  // Blocks spin() until execute(...) is called; paired with mSpinLock.
+  std::condition_variable mCv;
+
+   // Lock for keeping spin thread alive and executing a trajectory. 
+   // Manages access on mTraj, mPromise, mRunning
+  std::mutex mSpinLock;
+
+  // Thread for spin().
+  std::thread mThread;
+  
+  // Flag for killing spin thread. 
+  bool mRunning;
+
+  // Simulates mTraj. To be executed on a separate thread.
   void spin(); 
 };
 
