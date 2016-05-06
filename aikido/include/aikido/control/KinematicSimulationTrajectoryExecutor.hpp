@@ -27,11 +27,12 @@ public:
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
-  /// Execute _traj and set future upon completion. If trajectory terminates
-  /// before completion, future will be set to a runtime_error exception.
+  /// Execute _traj and set future upon completion. 
   /// \param _traj Trajectory to be executed. Its StateSpace should be a 
   ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton 
   ///        should be all in _skeleton passed to the constructor.
+  /// \return future<void> for trajectory execution. If trajectory terminates
+  ///        before completion, future will be set to a runtime_error.
   /// \throws invalid_argument if _traj is invalid.
   std::future<void> execute(
     trajectory::TrajectoryPtr _traj) override;

@@ -27,7 +27,7 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
 
-  if (mPeriod.count() < 0)
+  if (mPeriod.count() <= 0)
     throw std::invalid_argument("Period must be positive.");
 
   mThread = std::thread(&KinematicSimulationTrajectoryExecutor::spin, this);

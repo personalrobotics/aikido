@@ -88,7 +88,7 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor)
 TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_ZeroPeriod_Throws)
 {
   std::chrono::milliseconds period(0);
-  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr, period),
+  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(mSkeleton, period),
     std::invalid_argument);
 }
 
@@ -96,7 +96,7 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_ZeroPeriod_Throws)
 TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_NegativePeriod_Throws)
 {
   std::chrono::milliseconds period(-3);
-  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr, period),
+  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(mSkeleton, period),
     std::invalid_argument);
 }
 
