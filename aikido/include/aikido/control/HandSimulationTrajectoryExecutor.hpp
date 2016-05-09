@@ -20,7 +20,8 @@ class HandSimulationTrajectoryExecutor
 public:
   /// Constructor.
   /// \param _fingers Fingers to be controlled by this Executor.
-  ///        First 2 fingers should have 3 joints (spread, primal, distal)
+  ///        First 2 fingers should have 3 joints (spread, primal, distal),
+  ///        each with 1 dof. 
   ///        Third finger should have 2 joints (primal, joint).
   /// \param _cyclePeriod
   /// \param _collisionDetector
