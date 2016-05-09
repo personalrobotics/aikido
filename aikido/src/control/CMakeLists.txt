@@ -1,5 +1,7 @@
 aikido_add_library("${PROJECT_NAME}_control"
 	KinematicSimulationTrajectoryExecutor.cpp
+	FingerSimulationStepExecutor.cpp
+	HandSimulationTrajectoryExecutor.cpp
 )
 target_link_libraries("${PROJECT_NAME}_control"
   "${PROJECT_NAME}_statespace"
