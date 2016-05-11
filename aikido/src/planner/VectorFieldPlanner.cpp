@@ -16,7 +16,7 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/planner/PlanningResult.hpp>
-#include <aikido/planner/VectorFieldPlanner.h>
+#include <aikido/planner/VectorFieldPlanner.hpp>
 #include <aikido/statespace/Interpolator.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/util/VanDerCorput.hpp>
@@ -85,15 +85,11 @@ trajectory::InterpolatedPtr planVF(
 
   do {
     // Evaluate the vector field.
-    try {
-      if (!vector_field_cb(q, t, &dq)) {
-        throw VectorFieldTerminated("Failed evaluating VectorField.");
-      }
-    } catch (VectorFieldTerminated const &e) {
-      termination_status = Status::TERMINATE;
-      termination_error = std::current_exception();
-      break;
-    }
+  
+    if (!vector_field_cb(q, t, &dq)) {
+      planningResult.message = "Failed evaluating VectorField";
+      return returnTraj;
+    } 
 
     if (dq.size() != num_dof) {
       throw std::length_error(
@@ -105,30 +101,15 @@ trajectory::InterpolatedPtr planVF(
 
     // Compute the number of collision checks we need.
     for (int istep = 0; istep < num_steps; ++istep) {
-      try {
-        stateSpace->copyState(currentState,q);
-        if(!constraint->isSatisfied(currentState)) {          
-          throw VectorFieldTerminated("Collision Check Failed.");
-        }
-      } catch (VectorFieldTerminated const &e) {
-        termination_status = Status::TERMINATE;
-        termination_error = std::current_exception();
-        break;
-      }
+
+      stateSpace->copyState(currentState,q);
+      if(!constraint->isSatisfied(currentState)) {          
+        planningResult.message = "Collision detected";
+        return returnTraj;
+      } 
       
       // Insert the waypoint.
-      //FIXME: Not sure why this doesnt work
-      //assert(q.getDimension() == num_dof);
       assert(dq.size() == num_dof);
-
-      /*
-      Knot knot;
-      knot.t = t;
-      knot.dqvalues.resize(num_dof);
-      knot.qvalues = q;
-      knot.dqvalues = dq;
-      knots.push_back(knot);
-      */
       
       returnTraj->addWaypoint(istep,q);
       dqvalues.push_back(dq);
@@ -150,6 +131,7 @@ trajectory::InterpolatedPtr planVF(
   } while (termination_status != Status::TERMINATE
         && termination_status != Status::CACHE_AND_TERMINATE);
 
+/*
   if (cache_index >= 0) {
     // Print the termination condition.
     if (termination_error) {
@@ -161,7 +143,6 @@ trajectory::InterpolatedPtr planVF(
       }
     }
 
-/*
     // Construct the output spline.
     Eigen::VectorXd times(cache_index);
     std::transform(knots.begin(), knots.begin() + cache_index, times.data(),
@@ -185,7 +166,7 @@ trajectory::InterpolatedPtr planVF(
     */
     
     return returnTraj;
-  }
+/*  }
   // Re-throw whatever error caused planner to fail.
   else if (termination_error) {
     std::rethrow_exception(termination_error);
@@ -193,6 +174,7 @@ trajectory::InterpolatedPtr planVF(
     throw VectorFieldTerminated(
       "Planning was terminated by the StatusCallback.");
   }
+  */
 }
 
 } // namespace planner
