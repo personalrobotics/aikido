@@ -78,6 +78,18 @@ public:
   void setPathConstraint(
       constraint::ProjectablePtr _projectable);
 
+  /// Set the resolution for the projection. During tree extension, a projection
+  /// back to the constraint will be performed after any step larger than this
+  /// distance.
+  /// \param _resolution The max step on an extension before projecting back to
+  /// constraint
+  void setProjectionResolution(double _resolution);
+
+  /// Get the resolution for the projection. During tree extension, a
+  /// projection back to the constraint will be performed after any step
+  /// larger than this distance.
+  double getProjectionResolution(void) const;
+
   /// Set a nearest neighbors data structure
   template <template <typename T> class NN>
   void setNearestNeighbors(void);
@@ -94,13 +106,14 @@ protected:
   {
   public:
     /// Constructor. Sets state and parent to null ptr.
-    Motion(void);
+    Motion(void) : state(nullptr), parent(nullptr) {}
 
     /// Constructor that allocates memory for the state
-    Motion(const ::ompl::base::SpaceInformationPtr &_si);
+    Motion(const ::ompl::base::SpaceInformationPtr &_si)
+        : state(_si->allocState()), parent(nullptr) {}
 
     /// Destructor
-    ~Motion(void);
+    ~Motion(void) {}
 
     /// The state contained in this node
     ::ompl::base::State* state;
@@ -115,6 +128,21 @@ protected:
   /// Compute distance between motions (actually distance between contained
   /// states
   double distanceFunction(const Motion *a, const Motion *b) const;
+
+  /// Perform an extension that projects to a constraint
+  /// \param ptc Planner termination conditions. Used to stop extending if
+  /// planning time expires.
+  /// \param nmotion The node in the tree to extend from
+  /// \param gstate The state the extension aims to reach
+  /// \param xstate A temporary state that can be used during extension
+  /// \param goal The goal of the planning instance
+  /// \param[out] dist The closest distance this extension got to the goal
+  /// \param[out] fmotion The closest node along the extension to the goal
+  /// \return True if the extension reached the goal.
+  bool constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
+                         Motion *nmotion, ::ompl::base::State *gstate,
+                         ::ompl::base::State *xstate, ::ompl::base::Goal *goal,
+                         double &dist, Motion *fmotion);
 
   /// State sampler
   ::ompl::base::StateSamplerPtr mSampler;
@@ -138,6 +166,9 @@ protected:
 
   /// The constraint that must be satisfied throughout the trajectory
   constraint::ProjectablePtr mCons;
+
+  /// The maximum length of a step before projecting
+  double mMaxStepsize;
 };
 } // namespace ompl
 } // namespace planner

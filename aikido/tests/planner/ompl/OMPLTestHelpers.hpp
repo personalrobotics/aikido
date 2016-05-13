@@ -149,6 +149,7 @@ public:
     auto val = inSubState.getValue();
     Eigen::Vector3d newval(mValue, val(1), val(2));
     outSubState.setValue(newval);
+    return true;
   }
 
   bool

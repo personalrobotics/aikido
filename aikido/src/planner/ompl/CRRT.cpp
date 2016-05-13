@@ -10,7 +10,7 @@ namespace ompl {
 //=============================================================================
 CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si)
     : ::ompl::base::Planner(_si, "CRRT"), mCons(nullptr), mGoalBias(0.05),
-      mMaxDistance(0.1), mLastGoalMotion(nullptr) {
+      mMaxDistance(0.1), mLastGoalMotion(nullptr), mMaxStepsize(0.1) {
   auto ss =
       boost::dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
   if (!ss) {
@@ -25,6 +25,8 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si)
                                 "0.:1.:10000.");
   Planner::declareParam<double>("goal_bias", this, &CRRT::setGoalBias,
                                 &CRRT::getGoalBias, "0.:.05:1.");
+  Planner::declareParam<double>("proj_res", this, &CRRT::setProjectionResolution,
+                                &CRRT::getProjectionResolution, "0.:1.:10000.");
 }
 
 //=============================================================================
@@ -97,8 +99,21 @@ double CRRT::getRange() const
 
 //=============================================================================
 void CRRT::setPathConstraint(
-    constraint::ProjectablePtr _projectable) {
+    constraint::ProjectablePtr _projectable)
+{
   mCons = std::move(_projectable);
+}
+
+//=============================================================================
+void CRRT::setProjectionResolution(double _resolution)
+{
+  mMaxStepsize = _resolution;
+}
+
+//=============================================================================
+double CRRT::getProjectionResolution(void) const
+{ 
+  return mMaxStepsize; 
 }
 
 //=============================================================================
@@ -134,6 +149,8 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
   ::ompl::base::GoalSampleableRegion *goalSampleable =
       dynamic_cast<::ompl::base::GoalSampleableRegion *>(goal);
 
+  std::cout << "Begin solve" << std::endl;
+
   while (const ::ompl::base::State *st = pis_.nextStart()) {
     Motion *motion = new Motion(si_);
     si_->copyState(motion->state, st);
@@ -152,59 +169,36 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
   double approxdif = std::numeric_limits<double>::infinity();
   Motion *rmotion = new Motion(si_);
   ::ompl::base::State *rstate = rmotion->state;
-  ::ompl::base::State *xstate = si_->allocState();
-  ::ompl::base::State *pstate = si_->allocState(); /* projected state */
+  ::ompl::base::State *xstate = si_->allocState(); /* temp state */
 
+  bool foundgoal = false;
   while (_ptc == false) {
     /* sample random state (with goal biasing) */
-    if (goalSampleable && mRng.uniform01() < mGoalBias && goalSampleable->canSample())
+    if (goalSampleable && mRng.uniform01() < mGoalBias &&
+        goalSampleable->canSample())
       goalSampleable->sampleGoal(rstate);
     else
       mSampler->sampleUniform(rstate);
 
     // Continue on invalid sample
-    if(!si_->isValid(rstate)){
-        continue;
+    if (!si_->isValid(rstate)) {
+      continue;
     }
-    
+
     /* find closest state in the tree */
     Motion *nmotion = mNN->nearest(rmotion);
-    ::ompl::base::State *dstate = rstate;
 
-    /* find state to add (initially unconstrained) */
-    double d = si_->distance(nmotion->state, rstate);
-    if (d > mMaxDistance) {
-      si_->getStateSpace()->interpolate(nmotion->state, rstate,
-                                        mMaxDistance / d, xstate);
-      dstate = xstate;
-    }
-
-    /* do single-step constraint projection */
-    if (mCons) {
-      auto dst = dstate->as<GeometricStateSpace::StateType>();
-      auto pst = pstate->as<GeometricStateSpace::StateType>();
-      mCons->project(dst->mState, pst->mState);
-      dstate = pstate;
-    }
-
-    if (si_->checkMotion(nmotion->state, dstate)) {
-      /* create a motion */
-      Motion *motion = new Motion(si_);
-      si_->copyState(motion->state, dstate);
-      motion->parent = nmotion;
-
-      mNN->add(motion);
-      double dist = 0.0;
-      bool sat = goal->isSatisfied(motion->state, &dist);
-      if (sat) {
-        approxdif = dist;
-        solution = motion;
-        break;
-      }
-      if (dist < approxdif) {
-        approxdif = dist;
-        approxsol = motion;
-      }
+    /* Perform a constrained extension */
+    double bestdist = std::numeric_limits<double>::infinity();
+    Motion *bestmotion = nullptr;
+    foundgoal = constrainedExtend(_ptc, nmotion, rmotion->state, xstate, goal,
+                                  bestdist, bestmotion);
+    if (foundgoal) {
+      solution = bestmotion;
+      break;
+    } else if (bestdist < approxdif) {
+      approxdif = bestdist;
+      approxsol = bestmotion;
     }
   }
 
@@ -235,12 +229,99 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
   }
 
   si_->freeState(xstate);
-  si_->freeState(pstate);
   if (rmotion->state)
     si_->freeState(rmotion->state);
   delete rmotion;
 
   return ::ompl::base::PlannerStatus(solved, approximate);
+}
+
+//=============================================================================
+bool CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
+                             Motion *nmotion, ::ompl::base::State *gstate,
+                             ::ompl::base::State *xstate,
+                             ::ompl::base::Goal *goal, double &dist,
+                             Motion *fmotion) {
+    std::cout << "Begin constrainedExtend" << std::endl;
+
+  ::ompl::base::State *cstate = nmotion->state;   // current state
+  ::ompl::base::State *ostate = nmotion->state;   // old state
+
+  // Compute the current and previous distance to the goal state
+  double prevDistToTarget = si_->distance(cstate, gstate);
+  double distToTarget = prevDistToTarget;
+
+  // Set up the current parent motion
+  Motion *pmotion = nmotion;
+  dist = std::numeric_limits<double>::infinity();
+
+  // Loop while time remaining
+  auto sspace = si_->getStateSpace()->as<GeometricStateSpace>()->getAikidoStateSpace();
+  while (ptc == false) {
+    if (distToTarget == 0) {
+      // Reached the desired state
+        std::cout << "Reached desired" << std::endl;
+      return false;
+    } else if (distToTarget > prevDistToTarget) {
+      // Stopped making progress, bail
+        std::cout << "No progress" << std::endl;
+      return false;
+    }
+
+    // Save the current state off as the old state
+    ostate = cstate;
+
+    // Take a step towards the goal state
+    si_->getStateSpace()->interpolate(
+        cstate, gstate, std::min(mMaxStepsize, distToTarget), xstate);
+
+
+    if (mCons) {
+      // Project the endpoint of the step
+      auto xst = xstate->as<GeometricStateSpace::StateType>();
+      auto cst = cstate->as<GeometricStateSpace::StateType>();
+      sspace->print(xst->mState, std::cout);
+      std::cout << std::endl;
+
+      if (!mCons->project(xst->mState, cst->mState)) {
+        // Can't project back to constraint anymore, return
+        return false;
+      }
+
+    } else { // no constraint
+      cstate = xstate;
+    }
+
+    std::cout << "Checking motion" << std::endl;
+
+    if (si_->checkMotion(ostate, cstate)) {
+      // Add the motion to the tree
+      Motion *motion = new Motion(si_);
+      si_->copyState(motion->state, cstate);
+      motion->parent = pmotion;
+
+      mNN->add(motion);
+      pmotion = motion;
+      double newdist = 0.0;
+      bool satisfied = goal->isSatisfied(motion->state, &newdist);
+      if (satisfied) {
+        dist = newdist;
+        fmotion = motion;
+        return true;
+      }
+      if (newdist < dist) {
+        dist = newdist;
+        fmotion = motion;
+      }
+    } else {
+      // Extension failed validity check
+      return false;
+    }
+  
+    // Update distances
+    prevDistToTarget = distToTarget;
+    distToTarget = si_->distance(cstate, gstate);
+  }
 }
 
 //=============================================================================

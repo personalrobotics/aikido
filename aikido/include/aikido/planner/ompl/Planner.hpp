@@ -94,7 +94,7 @@ trajectory::InterpolatedPtr planOMPL(
     constraint::ProjectablePtr _boundsProjector,
     double _maxPlanTime, double _maxDistanceBtwValidityChecks);
 
-/// Use the template OMPL Planner type to plan a trajectory that moves from the
+/// Use the CRRT planner to plan a trajectory that moves from the
 /// start to a goal region while respecting a constraint
 /// \param _start The start state
 /// \param _goalTestable A Testable constraint that can determine if a given state is a goal state
@@ -118,10 +118,11 @@ trajectory::InterpolatedPtr planOMPL(
 /// valid bounds defined on the StateSpace
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
-/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
-/// validity checking two successive points on a tree extension
-template <class PlannerType>
-trajectory::InterpolatedPtr planConstrained(
+/// \param _maxExtensionDistance The maximum distance to extend the tree on
+///  a single extension
+/// \param _maxDistanceBtwProjections The maximum distance (under dmetric) between
+/// projecting and validity checking two successive points on a tree extension
+trajectory::InterpolatedPtr planCRRT(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
@@ -133,7 +134,8 @@ trajectory::InterpolatedPtr planConstrained(
     constraint::TestablePtr _validityConstraint,
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector, 
-    double _maxPlanTime, double _maxDistanceBtwValidityChecks);
+    double _maxPlanTime, double _maxExtensionDistance,
+    double _maxDistanceBtwProjections);
 
 /// Generate an OMPL SpaceInformation from aikido components
 /// \param _statespace The StateSpace that the SpaceInformation operates on
