@@ -39,8 +39,8 @@ dart::dynamics::SkeletonPtr createTranslationalRobot()
   robot->setPositionUpperLimit(0, 5);
   robot->setPositionLowerLimit(1, -5);
   robot->setPositionUpperLimit(1, 5);
-  robot->setPositionLowerLimit(2, -1e-4);
-  robot->setPositionUpperLimit(2, 1e-4);
+  robot->setPositionLowerLimit(2, 0);
+  robot->setPositionUpperLimit(2, 0);
 
   return robot;
 }

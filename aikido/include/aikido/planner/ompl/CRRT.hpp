@@ -10,7 +10,7 @@
 namespace aikido {
 namespace planner {
 namespace ompl {
-/// Implements a constraint RRT planner
+/// Implements a constrained RRT planner
 class CRRT : public ::ompl::base::Planner
 {
 public:
@@ -62,16 +62,20 @@ public:
   /// Set the range the planner is supposed to use. This parameter greatly
   /// influences the runtime of the algorithm. It represents the maximum length
   /// of a motion to be added in the tree of motions.
-  /// \param distance The maximum length of a motionto be added in the tree of
+  /// \param distance The maximum length of a motion to be added in the tree of
   /// motions
   void setRange(double _distance);
 
   /// Get the range the planner is using
   double getRange(void) const;
 
-  /// Set a projectable constraint to be applied throughout the trajectory
-  /// \param _projectable The constraint to apply to the trajectory
-  void setTrajectoryWideConstraint(
+  /// Set a projectable constraint to be applied throughout the trajectory.
+  /// The projection is applied after each extension of the tree.  Each extension
+  ///  will be at most getRange distance from the node being extend. Therefore,
+  ///  the resolution of the projection is the range set on the planner through
+  ///  setRange.
+  /// \param _projectable The constraint
+  void setPathConstraint(
       constraint::ProjectablePtr _projectable);
 
   /// Set a nearest neighbors data structure
@@ -135,10 +139,10 @@ protected:
   /// The constraint that must be satisfied throughout the trajectory
   constraint::ProjectablePtr mCons;
 };
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido
 
 #include "detail/CRRT-impl.hpp"
 
-#endif
+#endif // AIKIDO_PLANNER_OMPL_CRRT_HPP_

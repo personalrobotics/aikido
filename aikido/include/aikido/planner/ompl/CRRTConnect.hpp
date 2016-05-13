@@ -49,7 +49,7 @@ public:
   /// Set the range the planner is supposed to use. This parameter greatly
   /// influences the runtime of the algorithm. It represents the maximum length
   /// of a motion to be added in the tree of motions.
-  /// \param distance The maximum length of a motionto be added in the tree of
+  /// \param distance The maximum length of a motion to be added in the tree of
   /// motions
   void setRange(double _distance);
 
@@ -65,7 +65,7 @@ public:
 
   /// Set a projectable constraint to be applied throughout the trajectory
   /// \param _projectable The constraint to apply to the trajectory
-  void setTrajectoryWideConstraint(constraint::ProjectablePtr _projectable);
+  void setPathConstraint(constraint::ProjectablePtr _projectable);
 
   /// Set a nearest neighbors data structure for both the start and goal trees
   template <template <typename T> class NN> void setNearestNeighbors(void);
@@ -100,7 +100,7 @@ protected:
   };
 
   /// A nearest-neighbor datastructure representing a tree of motions */
-  typedef boost::shared_ptr<::ompl::NearestNeighbors<Motion *>> TreeData;
+  using TreeData = boost::shared_ptr<::ompl::NearestNeighbors<Motion *>>;
 
   /// Information attached to growing a tree of motions (used internally)
   struct TreeGrowingInfo {
@@ -152,12 +152,12 @@ protected:
   /// PlannerData computation
   std::pair<::ompl::base::State *, ::ompl::base::State *> mConnectionPoint;
 
-  /// The trajectory-wide PR holonomic constraint to be followed
+  /// The constraint to be applied to the entire path
   constraint::ProjectablePtr mCons;
 };
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido
 
 #include "detail/CRRTConnect-impl.hpp"
 

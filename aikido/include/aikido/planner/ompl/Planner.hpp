@@ -98,7 +98,7 @@ trajectory::InterpolatedPtr planOMPL(
 /// start to a goal region while respecting a constraint
 /// \param _start The start state
 /// \param _goalTestable A Testable constraint that can determine if a given state is a goal state
-/// \param _goalSamplers A Sampleable capable of sampling states that satisfy _goalTestable
+/// \param _goalSampler A Sampleable capable of sampling states that satisfy _goalTestable
 /// \param _trajConstraint The constraint to satisfy along the trajectory
 /// \param _statespace The StateSpace that the planner must plan within
 /// \param _interpolator An Interpolator defined on the StateSpace. This is used

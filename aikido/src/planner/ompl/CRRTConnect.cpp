@@ -101,7 +101,7 @@ double CRRTConnect::getRange() const { return mMaxDistance; }
 double CRRTConnect::getConnectionRadius() const { return mConnectionRadius; }
 
 //=============================================================================
-void CRRTConnect::setTrajectoryWideConstraint(
+void CRRTConnect::setPathConstraint(
     constraint::ProjectablePtr _projectable) {
   mCons = std::move(_projectable);
 }
@@ -336,10 +336,6 @@ CRRTConnect::solve(const ::ompl::base::PlannerTerminationCondition &ptc) {
   // getName().c_str(),
   //            tStart_->size() + tGoal_->size(), tStart_->size(),
   //            tGoal_->size());
-
-  std::cout << "Created " << mStartTree->size() + mGoalTree->size() << " states "
-            << "( " << mStartTree->size() << " start + " << mGoalTree->size() << " goal )"
-            << std::endl;
 
   return solved ? ::ompl::base::PlannerStatus::EXACT_SOLUTION
                 : ::ompl::base::PlannerStatus::TIMEOUT;

@@ -63,7 +63,14 @@ void CRRT::clear(void) {
 
 //=============================================================================
 void CRRT::setGoalBias(double _goalBias)
-{ 
+{
+  if (_goalBias < 0.0 || _goalBias > 1.0) {
+    std::stringstream ss;
+    ss << "Invalid value for goal bias: " << _goalBias
+       << ". Value must be between 0 and 1.";
+    throw std::invalid_argument(ss.str());
+  }
+
   mGoalBias = _goalBias;
 }
 
@@ -75,6 +82,10 @@ double CRRT::getGoalBias() const
 
 //=============================================================================
 void CRRT::setRange(double _distance){
+  if (_distance < 0.0) {
+    throw std::invalid_argument(
+        "Distance must be positive on call to setRange.");
+  }
   mMaxDistance = _distance;
 }
 
@@ -85,7 +96,7 @@ double CRRT::getRange() const
 }
 
 //=============================================================================
-void CRRT::setTrajectoryWideConstraint(
+void CRRT::setPathConstraint(
     constraint::ProjectablePtr _projectable) {
   mCons = std::move(_projectable);
 }

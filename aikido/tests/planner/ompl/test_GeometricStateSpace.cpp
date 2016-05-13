@@ -139,6 +139,7 @@ TEST_F(GeometricStateSpaceTest, EnforceBoundsProjection)
   setTranslationalState(badValue, stateSpace, state);
 
   gSpace->enforceBounds(state);
+
   EXPECT_TRUE(getTranslationalState(stateSpace, state)
                   .isApprox(Eigen::Vector3d(-5, 5, 0)));
   gSpace->freeState(state);

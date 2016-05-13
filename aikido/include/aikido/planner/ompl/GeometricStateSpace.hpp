@@ -32,7 +32,10 @@ public:
     /// The wrapped aikido state
     statespace::StateSpace::State *mState;
 
-    /// A flag indicating whether the state has been properly initialized
+    /// Indicates whether the state has been initialized to represent a valid
+    /// state. This allows samplers to indicate failure by setting this flag to
+    /// false when sampling fails.  The StateValidityChecker should check this
+    /// flag when determining if the state is valide.
     /// The value defaults to true.
     bool mValid;
   };

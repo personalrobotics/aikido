@@ -159,12 +159,12 @@ trajectory::InterpolatedPtr planConstrained(
   pdef->setGoal(goalRegion);
 
   auto planner = boost::make_shared<PlannerType>(si);
-  planner->setTrajectoryWideConstraint(std::move(_trajConstraint));
+  planner->setPathConstraint(std::move(_trajConstraint));
   planner->setRange(_maxDistanceBtwValidityChecks);
   return planOMPL(planner, pdef, std::move(_stateSpace),
                   std::move(_interpolator), _maxPlanTime);
 }
 
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido
