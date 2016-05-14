@@ -44,6 +44,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
   
   mThread.join();
 }
+
 //=============================================================================
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
   trajectory::TrajectoryPtr _traj)

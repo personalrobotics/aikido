@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <aikido/control/FingerSimulationStepExecutor.hpp>
+#include <aikido/control/BarrettFingerPositionCommandExecutor.hpp>
 
 #include <chrono>
 
-using aikido::control::FingerSimulationStepExecutor;
+using aikido::control::BarrettFingerPositionCommandExecutor;
 using ::dart::dynamics::Chain;
 using ::dart::dynamics::ChainPtr;
 using ::dart::dynamics::Skeleton;
@@ -12,7 +12,7 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
-class FingerSimulationStepExecutorTest : public testing::Test
+class BarrettFingerPositionCommandExecutorTest : public testing::Test
 {
 public:
   virtual void SetUp()
@@ -45,7 +45,7 @@ public:
       BodyNode::Properties(std::string("distal"))).second;
 
     Chain::IncludeBoth_t t;
-    mFingerChain = Chain::create(mBn2, mBn3, t);
+    mFingerChain = Chain::create(mBn1, mBn3, t);
   }
 
 protected:
@@ -55,32 +55,30 @@ protected:
 };
 
 
-TEST_F(FingerSimulationStepExecutorTest, constructor_NullChain_Throws)
+TEST_F(BarrettFingerPositionCommandExecutorTest, constructor_NullChain_Throws)
 {
-  EXPECT_THROW(FingerSimulationStepExecutor(nullptr),
+  EXPECT_THROW(BarrettFingerPositionCommandExecutor(nullptr, 0, 0),
     std::invalid_argument);
 }
 
-TEST_F(FingerSimulationStepExecutorTest, constructor)
+TEST_F(BarrettFingerPositionCommandExecutorTest, constructor)
 {
-  EXPECT_NO_THROW(FingerSimulationStepExecutor executor(mFingerChain));
+  EXPECT_NO_THROW(BarrettFingerPositionCommandExecutor(mFingerChain, 1, 2));
 }
 
-TEST_F(FingerSimulationStepExecutorTest, constructor_ThreeDofChain_Throws)
+TEST_F(BarrettFingerPositionCommandExecutorTest, constructor_NonexistentPrimal_throws)
 {
-  Chain::IncludeBoth_t t;
-  auto finger = Chain::create(mBn1, mBn3, t);
-  EXPECT_THROW(FingerSimulationStepExecutor executor(finger),
+  EXPECT_THROW(BarrettFingerPositionCommandExecutor(mFingerChain, 3, 1),
      std::invalid_argument);
 }
 
 
-TEST_F(FingerSimulationStepExecutorTest, execute_primalAndDistal)
+TEST_F(BarrettFingerPositionCommandExecutorTest, execute_primalAndDistal)
 {
-  FingerSimulationStepExecutor executor(mFingerChain);
+  BarrettFingerPositionCommandExecutor executor(mFingerChain, 1, 2);
 
   double step = 0.3;
-  double mimicRatio = FingerSimulationStepExecutor::getMimicRatio();
+  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
 
   double startPrimal = mBn2->getParentJoint()->getDof(0)->getPosition();
   double startDistal = mBn3->getParentJoint()->getDof(0)->getPosition();
@@ -94,12 +92,12 @@ TEST_F(FingerSimulationStepExecutorTest, execute_primalAndDistal)
 
 }
 
-TEST_F(FingerSimulationStepExecutorTest, execute_distalOnly)
+TEST_F(BarrettFingerPositionCommandExecutorTest, execute_distalOnly)
 {
-  FingerSimulationStepExecutor executor(mFingerChain);
+  BarrettFingerPositionCommandExecutor executor(mFingerChain, 1, 2);
 
   double step = 0.3;
-  double mimicRatio = FingerSimulationStepExecutor::getMimicRatio();
+  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
 
   double startPrimal = mBn2->getParentJoint()->getDof(0)->getPosition();
   double startDistal = mBn3->getParentJoint()->getDof(0)->getPosition();
@@ -113,14 +111,14 @@ TEST_F(FingerSimulationStepExecutorTest, execute_distalOnly)
 
 }
 
-TEST_F(FingerSimulationStepExecutorTest, execute_stepAboveDofUpperLimit_mapToDofUpperLimit)
+TEST_F(BarrettFingerPositionCommandExecutorTest, execute_stepAboveDofUpperLimit_mapToDofUpperLimit)
 {
-  FingerSimulationStepExecutor executor(mFingerChain);
+  BarrettFingerPositionCommandExecutor executor(mFingerChain, 1, 2);
 
   double step = 0.7;
-  double mimicRatio = FingerSimulationStepExecutor::getMimicRatio();
+  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
 
-  mFingerChain->getDof(0)->setPositionUpperLimit(0.5);
+  mFingerChain->getDof(1)->setPositionUpperLimit(0.5);
 
   double startPrimal = mBn2->getParentJoint()->getDof(0)->getPosition();
   double startDistal = mBn3->getParentJoint()->getDof(0)->getPosition();
@@ -129,21 +127,21 @@ TEST_F(FingerSimulationStepExecutorTest, execute_stepAboveDofUpperLimit_mapToDof
 
   executor.execute(step, false);
 
-  EXPECT_DOUBLE_EQ(mBn2->getParentJoint()->getDof(0)->getPosition(), goalPrimal);
-  EXPECT_DOUBLE_EQ(mBn3->getParentJoint()->getDof(0)->getPosition(), goalDistal);
+  EXPECT_DOUBLE_EQ(goalPrimal, mBn2->getParentJoint()->getDof(0)->getPosition());
+  EXPECT_DOUBLE_EQ(goalDistal, mBn3->getParentJoint()->getDof(0)->getPosition());
 
 }
 
 
 
-TEST_F(FingerSimulationStepExecutorTest, execute_stepAboveDofLowerLimit_mapToDofLowerLimit)
+TEST_F(BarrettFingerPositionCommandExecutorTest, execute_stepAboveDofLowerLimit_mapToDofLowerLimit)
 {
-  FingerSimulationStepExecutor executor(mFingerChain);
+  BarrettFingerPositionCommandExecutor executor(mFingerChain, 1, 2);
 
   double step = -0.7;
-  double mimicRatio = FingerSimulationStepExecutor::getMimicRatio();
+  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
 
-  mFingerChain->getDof(0)->setPositionLowerLimit(0);
+  mFingerChain->getDof(1)->setPositionLowerLimit(0);
 
   double startPrimal = mBn2->getParentJoint()->getDof(0)->getPosition();
   double startDistal = mBn3->getParentJoint()->getDof(0)->getPosition();
@@ -152,7 +150,7 @@ TEST_F(FingerSimulationStepExecutorTest, execute_stepAboveDofLowerLimit_mapToDof
 
   executor.execute(step, false);
 
-  EXPECT_DOUBLE_EQ(mBn2->getParentJoint()->getDof(0)->getPosition(), goalPrimal);
-  EXPECT_DOUBLE_EQ(mBn3->getParentJoint()->getDof(0)->getPosition(), goalDistal);
+  EXPECT_DOUBLE_EQ(goalPrimal, mBn2->getParentJoint()->getDof(0)->getPosition());
+  EXPECT_DOUBLE_EQ(goalDistal, mBn3->getParentJoint()->getDof(0)->getPosition());
 
 }
