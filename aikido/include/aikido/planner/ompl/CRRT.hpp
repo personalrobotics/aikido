@@ -70,10 +70,8 @@ public:
   double getRange(void) const;
 
   /// Set a projectable constraint to be applied throughout the trajectory.
-  /// The projection is applied after each extension of the tree.  Each extension
-  ///  will be at most getRange distance from the node being extend. Therefore,
-  ///  the resolution of the projection is the range set on the planner through
-  ///  setRange.
+  /// The projection is applied at the resolution set via
+  /// setProjectionResolution
   /// \param _projectable The constraint
   void setPathConstraint(
       constraint::ProjectablePtr _projectable);
@@ -137,12 +135,12 @@ protected:
   /// \param xstate A temporary state that can be used during extension
   /// \param goal The goal of the planning instance
   /// \param[out] dist The closest distance this extension got to the goal
-  /// \param[out] fmotion The closest node along the extension to the goal
-  /// \return True if the extension reached the goal.
-  bool constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
-                         Motion *nmotion, ::ompl::base::State *gstate,
-                         ::ompl::base::State *xstate, ::ompl::base::Goal *goal,
-                         double &dist, Motion *fmotion);
+  /// \param[out] True if the extension reached the goal.    
+  /// \return fmotion The closest node along the extension to the goal
+  Motion* constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
+                            Motion *nmotion, ::ompl::base::State *gstate,
+                            ::ompl::base::State *xstate, ::ompl::base::Goal *goal,
+                            double &dist, bool &foundgoal);
 
   /// State sampler
   ::ompl::base::StateSamplerPtr mSampler;
