@@ -8,7 +8,7 @@ bool Projectable::project(statespace::StateSpace::State* _s) const
 {
   auto space = getStateSpace();
   auto state = space->createState();
-  space->copyState(state, _s);
+  space->copyState(_s, state);
   return project(state, _s);
 }
 
