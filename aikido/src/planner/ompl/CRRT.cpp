@@ -249,10 +249,6 @@ CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
   double prevDistToTarget = std::numeric_limits<double>::infinity();
   double distToTarget = si_->distance(cmotion->state, gstate);
 
-  // TODO: Remove
-  auto sspace =
-      si_->getStateSpace()->as<GeometricStateSpace>()->getAikidoStateSpace();
-
   // Loop while time remaining
   foundgoal = false;
   while (ptc == false) {
@@ -264,8 +260,10 @@ CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
     }
 
     // Take a step towards the goal state
+    double stepLength =
+        std::min(mMaxDistance, std::min(mMaxStepsize, distToTarget));
     si_->getStateSpace()->interpolate(
-        cmotion->state, gstate, std::min(mMaxStepsize, distToTarget), xstate);
+        cmotion->state, gstate, stepLength / distToTarget, xstate);
 
     if (mCons) {
       // Project the endpoint of the step
