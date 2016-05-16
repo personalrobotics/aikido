@@ -254,7 +254,7 @@ CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
   while (ptc == false) {
 
     if (distToTarget == 0 ||
-        std::fabs(distToTarget - prevDistToTarget) < 1e-6) {
+        distToTarget - prevDistToTarget >= -1e-6) {
       // reached target or not making progress
       break;
     }
