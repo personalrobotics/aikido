@@ -8,9 +8,14 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 //=============================================================================
-CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si)
-    : ::ompl::base::Planner(_si, "CRRT"), mCons(nullptr), mGoalBias(0.05),
+CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si) : CRRT(_si, "CRRT") {}
+
+//=============================================================================
+CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si,
+           const std::string &name)
+    : ::ompl::base::Planner(_si, name), mCons(nullptr), mGoalBias(0.05),
       mMaxDistance(0.1), mLastGoalMotion(nullptr), mMaxStepsize(0.1) {
+
   auto ss =
       boost::dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
   if (!ss) {
@@ -30,15 +35,15 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si)
 }
 
 //=============================================================================
-CRRT::~CRRT(void) { freeMemory(); }
+CRRT::~CRRT(void) { clear(); }
 
 //=============================================================================
 void CRRT::getPlannerData(::ompl::base::PlannerData &_data) const {
   ::ompl::base::Planner::getPlannerData(_data);
 
   std::vector<Motion *> motions;
-  if (mNN)
-    mNN->list(motions);
+  if (mStartTree)
+    mStartTree->list(motions);
 
   if (mLastGoalMotion)
     _data.addGoalVertex(
@@ -58,8 +63,8 @@ void CRRT::clear(void) {
   ::ompl::base::Planner::clear();
   mSampler.reset();
   freeMemory();
-  if (mNN)
-    mNN->clear();
+  if (mStartTree)
+    mStartTree->clear();
   mLastGoalMotion = nullptr;
 }
 
@@ -122,17 +127,17 @@ void CRRT::setup(void) {
   ::ompl::tools::SelfConfig sc(si_, getName());
   sc.configurePlannerRange(mMaxDistance);
 
-  if (!mNN)
-    mNN.reset(new ::ompl::NearestNeighborsGNAT<Motion *>);
+  if (!mStartTree)
+    mStartTree.reset(new ::ompl::NearestNeighborsGNAT<Motion *>);
 
-  mNN->setDistanceFunction(boost::bind(&CRRT::distanceFunction, this, _1, _2));
+  mStartTree->setDistanceFunction(boost::bind(&CRRT::distanceFunction, this, _1, _2));
 }
 
 //=============================================================================
 void CRRT::freeMemory(void) {
-  if (mNN) {
+  if (mStartTree) {
     std::vector<Motion *> motions;
-    mNN->list(motions);
+    mStartTree->list(motions);
     for (unsigned int i = 0; i < motions.size(); ++i) {
       if (motions[i]->state)
         si_->freeState(motions[i]->state);
@@ -152,10 +157,10 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
   while (const ::ompl::base::State *st = pis_.nextStart()) {
     Motion *motion = new Motion(si_);
     si_->copyState(motion->state, st);
-    mNN->add(motion);
+    mStartTree->add(motion);
   }
 
-  if (mNN->size() == 0) {
+  if (mStartTree->size() == 0) {
     return ::ompl::base::PlannerStatus::INVALID_START;
   }
 
@@ -184,12 +189,12 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
     }
 
     /* find closest state in the tree */
-    Motion *nmotion = mNN->nearest(rmotion);
+    Motion *nmotion = mStartTree->nearest(rmotion);
 
     /* Perform a constrained extension */
     double bestdist = std::numeric_limits<double>::infinity();
-    Motion *bestmotion = constrainedExtend(_ptc, nmotion, rmotion->state, xstate, goal,
-                                  bestdist, foundgoal);
+    Motion *bestmotion = constrainedExtend(_ptc, mStartTree, nmotion, rmotion->state, xstate, goal,
+                                           false, bestdist, foundgoal);
     if (foundgoal) {
       solution = bestmotion;
       break;
@@ -236,9 +241,10 @@ CRRT::solve(const ::ompl::base::PlannerTerminationCondition &_ptc) {
 //=============================================================================
 CRRT::Motion *
 CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
+                        TreeData &tree,
                         Motion *nmotion, ::ompl::base::State *gstate,
                         ::ompl::base::State *xstate, ::ompl::base::Goal *goal,
-                        double &dist, bool &foundgoal) {
+                        bool returnlast, double &dist, bool &foundgoal) {
 
   // Set up the current parent motion
   Motion *cmotion = nmotion;
@@ -279,7 +285,7 @@ CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
       Motion *motion = new Motion(si_);
       si_->copyState(motion->state, xstate);
       motion->parent = cmotion;
-      mNN->add(motion);
+      tree->add(motion);
 
       cmotion = motion;
       double newdist = 0.0;
@@ -292,6 +298,10 @@ CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
       }
       if (newdist < dist) {
         dist = newdist;
+        bestmotion = motion;
+      }
+      if (returnlast){
+        // Always make the "bestmotion" the current motion
         bestmotion = motion;
       }
     } else {

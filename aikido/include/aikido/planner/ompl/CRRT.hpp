@@ -15,7 +15,13 @@ class CRRT : public ::ompl::base::Planner
 {
 public:
   /// Constructor
+  /// \param _si Information about the planning space
   CRRT(const ::ompl::base::SpaceInformationPtr &_si);
+
+  /// Constructor
+  /// \param _si Information about the planning space
+  /// \param _name A name for this planner
+  CRRT(const ::ompl::base::SpaceInformationPtr &_si, const std::string &name);
 
   /// Destructor
   virtual ~CRRT(void);
@@ -46,7 +52,7 @@ public:
 
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
-  void clear(void) override;
+  virtual void clear(void) override;
 
   /// Set the goal bias. In the process of randomly selecting states in the
   /// state space to attempt to go towards, the algorithm may in fact choose the
@@ -121,32 +127,40 @@ protected:
   };
 
   /// Free the memory allocated by this planner
-  void freeMemory(void);
+  virtual void freeMemory(void);
 
   /// Compute distance between motions (actually distance between contained
   /// states
   double distanceFunction(const Motion *a, const Motion *b) const;
 
+
+  /// A nearest-neighbor datastructure representing a tree of motions */
+  using TreeData = boost::shared_ptr<::ompl::NearestNeighbors<Motion *>>;
+
+  /// A nearest-neighbors datastructure containing the tree of motions
+  TreeData mStartTree;
+
   /// Perform an extension that projects to a constraint
   /// \param ptc Planner termination conditions. Used to stop extending if
   /// planning time expires.
+  /// \param tree The tree to extend
   /// \param nmotion The node in the tree to extend from
   /// \param gstate The state the extension aims to reach
   /// \param xstate A temporary state that can be used during extension
   /// \param goal The goal of the planning instance
+  /// \param returnlast If true, return the last node added to the tree,
+  /// otherwise return the node added that was nearest the goal
   /// \param[out] dist The closest distance this extension got to the goal
-  /// \param[out] True if the extension reached the goal.    
-  /// \return fmotion The closest node along the extension to the goal
-  Motion* constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
-                            Motion *nmotion, ::ompl::base::State *gstate,
-                            ::ompl::base::State *xstate, ::ompl::base::Goal *goal,
-                            double &dist, bool &foundgoal);
+  /// \param[out] True if the extension reached the goal.
+  /// \return fmotion If returnlast is true, the last node on the extension,
+  /// otherwise the closest node along the extension to the goal
+  Motion *constrainedExtend(
+      const ::ompl::base::PlannerTerminationCondition &ptc, TreeData &tree,
+      Motion *nmotion, ::ompl::base::State *gstate, ::ompl::base::State *xstate,
+      ::ompl::base::Goal *goal, bool returnlast, double &dist, bool &foundgoal);
 
   /// State sampler
   ::ompl::base::StateSamplerPtr mSampler;
-
-  /// A nearest-neighbors datastructure containing the tree of motions
-  boost::shared_ptr<::ompl::NearestNeighbors<Motion *>> mNN;
 
   /// The fraction of time the goal is picked as the state to expand towards (if
   /// such a state is available)

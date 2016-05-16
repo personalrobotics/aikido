@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_OMPL_CRRTCONNECT_HPP_
 #define AIKIDO_PLANNER_OMPL_CRRTCONNECT_HPP_
 
+#include <aikido/planner/ompl/CRRT.hpp>
 #include <ompl/geometric/planners/PlannerIncludes.h>
 #include <ompl/datastructures/NearestNeighbors.h>
 #include "../../constraint/Projectable.hpp"
@@ -9,7 +10,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 /// Implements a bi-direction constrained RRT planner
-class CRRTConnect : public ::ompl::base::Planner {
+class CRRTConnect : public CRRT {
 public:
   /// Constructor
   /// \param si Information about the planning instance
@@ -46,26 +47,12 @@ public:
   /// Subsequent calls to solve() will ignore all previous work.
   void clear(void) override;
 
-  /// Set the range the planner is supposed to use. This parameter greatly
-  /// influences the runtime of the algorithm. It represents the maximum length
-  /// of a motion to be added in the tree of motions.
-  /// \param distance The maximum length of a motion to be added in the tree of
-  /// motions
-  void setRange(double _distance);
-
-  /// Get the range the planner is using
-  double getRange(void) const;
-
   /// \param radius The maximum distance between two trees for them to be
   /// considered connected
   void setConnectionRadius(double _radius);
 
     /// Get the connection radius the planner is using
   double getConnectionRadius(void) const;
-
-  /// Set a projectable constraint to be applied throughout the trajectory
-  /// \param _projectable The constraint to apply to the trajectory
-  void setPathConstraint(constraint::ProjectablePtr _projectable);
 
   /// Set a nearest neighbors data structure for both the start and goal trees
   template <template <typename T> class NN> void setNearestNeighbors(void);
@@ -76,84 +63,20 @@ public:
   void setup(void) override;
 
 protected:
-  /// Represents a node in the tree
-  class Motion {
-  public:
-    /// Constructor. root, paret and state all intiialized to null
-    Motion(void);
-
-    /// Constructor. The state node is initialized with a newly allocated state.
-    /// \param si The SpaceInformation to use to alloc the state
-    Motion(const ::ompl::base::SpaceInformationPtr &si);
-
-    /// Destructor
-    ~Motion(void);
-
-    /// The root of the tree this node is a part of
-    const ::ompl::base::State *root;
-
-    /// The state represented by this node
-    ::ompl::base::State *state;
-
-    /// The parent of this node in the tree
-    Motion *parent;
-  };
-
-  /// A nearest-neighbor datastructure representing a tree of motions */
-  using TreeData = boost::shared_ptr<::ompl::NearestNeighbors<Motion *>>;
-
-  /// Information attached to growing a tree of motions (used internally)
-  struct TreeGrowingInfo {
-    ::ompl::base::State *xstate;
-    ::ompl::base::State *pstate;
-    Motion *xmotion;
-    bool start;
-  };
-
-  /// The state of the tree after an attempt to extend it */
-  enum GrowState {
-    /// no progress has been made
-    TRAPPED,
-    /// progress has been made towards the randomly sampled state
-    ADVANCED,
-    /// the randomly sampled state was reached
-    REACHED
-  };
 
   /// Free the memory allocated by this planner
-  void freeMemory(void);
-
-  /// Compute distance between motions (actually distance between contained
-  /// states)
-  double distanceFunction(const Motion *a, const Motion *b) const;
-
-  /// Grow a tree towards a random state
-  GrowState growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion);
-
-  /// State sampler
-  ::ompl::base::StateSamplerPtr mSampler;
-
-  /// Start tree
-  TreeData mStartTree;
+  void freeMemory(void) override;
 
   /// The goal tree
   TreeData mGoalTree;
 
-  /// maximum length of a motion to be added to a tree
-  double mMaxDistance;
-
   /// Max distance between two trees to consider them connected
   double mConnectionRadius;
-
-  /// The random number generator
-  ::ompl::RNG mRNG;
 
   /// The pair of states in each tree connected during planning.  Use for
   /// PlannerData computation
   std::pair<::ompl::base::State *, ::ompl::base::State *> mConnectionPoint;
 
-  /// The constraint to be applied to the entire path
-  constraint::ProjectablePtr mCons;
 };
 } // namespace ompl
 } // namespace planner
