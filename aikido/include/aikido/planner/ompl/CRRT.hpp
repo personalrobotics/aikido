@@ -94,6 +94,18 @@ public:
   /// larger than this distance.
   double getProjectionResolution(void) const;
 
+  /// Set the minimum distance between two states for them to be considered
+  /// "equivalent". This is used during extension to determine if a projection
+  /// is near enough the previous projection to say progress is no longer being
+  /// made and quit extending.
+  void setMinStateDifference(double _mindist);
+
+  /// Get the minimum distance between two states for them to be considered
+  /// "equivalent". This is used during extension to determine if a projection
+  /// is near enough the previous projection to say progress is no longer being
+  /// made and quit extending.
+  double getMinStateDifference(void) const;
+
   /// Set a nearest neighbors data structure
   template <template <typename T> class NN>
   void setNearestNeighbors(void);
@@ -181,6 +193,10 @@ protected:
 
   /// The maximum length of a step before projecting
   double mMaxStepsize;
+
+  /// The minumum step size along the constraint. Used to determine
+  /// when projection is no longer making progress during an extension.
+  double mMinStepsize;
 };
 } // namespace ompl
 } // namespace planner

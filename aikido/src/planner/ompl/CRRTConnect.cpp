@@ -48,8 +48,6 @@ void CRRTConnect::freeMemory(void) {
     std::vector<Motion *> motions;
     mGoalTree->list(motions);
     for (unsigned int i = 0; i < motions.size(); ++i) {
-      std::cout << "[CRRTConnect] Freeing goal state " << i << " of " << motions.size()-1
-                << " (" << motions[i]->state << ") " << std::endl;
       if (motions[i]->state)
         si_->freeState(motions[i]->state);
       delete motions[i];

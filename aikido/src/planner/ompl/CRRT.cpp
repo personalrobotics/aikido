@@ -14,7 +14,7 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si) : CRRT(_si, "CRRT") {}
 CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si,
            const std::string &name)
     : ::ompl::base::Planner(_si, name), mCons(nullptr), mGoalBias(0.05),
-      mMaxDistance(0.1), mLastGoalMotion(nullptr), mMaxStepsize(0.1) {
+      mMaxDistance(0.1), mLastGoalMotion(nullptr), mMaxStepsize(0.1), mMinStepsize(1e-4) {
 
   auto ss =
       boost::dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
@@ -32,6 +32,9 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si,
                                 &CRRT::getGoalBias, "0.:.05:1.");
   Planner::declareParam<double>("proj_res", this, &CRRT::setProjectionResolution,
                                 &CRRT::getProjectionResolution, "0.:1.:10000.");
+Planner::declareParam<double>("min_step", this, &CRRT::setMinStateDifference,
+                                &CRRT::getMinStateDifference, "0.:1.:10000.");
+  
 }
 
 //=============================================================================
@@ -122,6 +125,18 @@ double CRRT::getProjectionResolution(void) const
 }
 
 //=============================================================================
+void CRRT::setMinStateDifference(double _mindist) 
+{ 
+  mMinStepsize = _mindist;
+}
+
+//=============================================================================
+double CRRT::getMinStateDifference(void) const
+{ 
+  return mMinStepsize;
+}
+
+//=============================================================================
 void CRRT::setup(void) {
   ::ompl::base::Planner::setup();
   ::ompl::tools::SelfConfig sc(si_, getName());
@@ -139,8 +154,9 @@ void CRRT::freeMemory(void) {
     std::vector<Motion *> motions;
     mStartTree->list(motions);
     for (unsigned int i = 0; i < motions.size(); ++i) {
-      if (motions[i]->state)
+      if (motions[i]->state) {
         si_->freeState(motions[i]->state);
+      }
       delete motions[i];
     }
   }
@@ -260,7 +276,7 @@ CRRT::constrainedExtend(const ::ompl::base::PlannerTerminationCondition &ptc,
   while (ptc == false) {
 
     if (distToTarget == 0 ||
-        distToTarget - prevDistToTarget >= -1e-6) {
+        distToTarget - prevDistToTarget >= -mMinStepsize) {
       // reached target or not making progress
       break;
     }

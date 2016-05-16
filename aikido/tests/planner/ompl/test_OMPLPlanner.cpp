@@ -127,7 +127,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
       startState, goalTestable, trajConstraint, trajConstraint, stateSpace, interpolator,
       std::move(dmetric), std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 5.0, 
-      std::numeric_limits<double>::infinity(), 0.1, 0.1);
+      std::numeric_limits<double>::infinity(), 0.1, 0.05, 0.1);
 
   ASSERT_TRUE(traj != nullptr);
 
@@ -185,7 +185,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
       startState, goalTestable, trajConstraint, trajConstraint, stateSpace, interpolator,
       std::move(dmetric), std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 5.0, 
-      std::numeric_limits<double>::infinity(), 0.1);
+      std::numeric_limits<double>::infinity(), 0.1, 0.05);
 
   ASSERT_TRUE(traj != nullptr);
 

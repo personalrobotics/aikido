@@ -190,7 +190,7 @@ trajectory::InterpolatedPtr planCRRT(
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,
     double _maxPlanTime, double _maxExtensionDistance,
-    double _maxDistanceBtwProjections)
+    double _maxDistanceBtwProjections, double _minStepsize)
 {
   if (_trajConstraint == nullptr) {
     throw std::invalid_argument("Trajectory constraint is nullptr.");
@@ -203,6 +203,19 @@ trajectory::InterpolatedPtr planCRRT(
   if (_trajConstraint->getStateSpace() != _stateSpace) {
     throw std::invalid_argument(
         "Trajectory constraint does not match StateSpace");
+  }
+
+  if (_maxExtensionDistance <= 0){
+    throw std::invalid_argument("Max extension distance must be positive");
+  }
+
+  if (_maxDistanceBtwProjections < 0){
+    throw std::invalid_argument(
+        "Max distance between projections must be >= 0");
+  }
+  
+  if (_minStepsize < 0){
+    throw std::invalid_argument("Min stepsize must be >= 0");
   }
 
   auto si = getSpaceInformation(
@@ -225,6 +238,7 @@ trajectory::InterpolatedPtr planCRRT(
   planner->setPathConstraint(std::move(_trajConstraint));
   planner->setRange(_maxExtensionDistance);
   planner->setProjectionResolution(_maxDistanceBtwProjections);
+  planner->setMinStateDifference(_minStepsize);
   return planOMPL(planner, pdef, std::move(_stateSpace),
                   std::move(_interpolator), _maxPlanTime);
 }
@@ -244,7 +258,8 @@ trajectory::InterpolatedPtr planCRRTConnect(
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector,
     double _maxPlanTime, double _maxExtensionDistance,
-    double _maxDistanceBtwProjections, double _minTreeConnectionDistance)
+    double _maxDistanceBtwProjections, double _minStepsize, 
+    double _minTreeConnectionDistance)
 {
   if (_trajConstraint == nullptr) {
     throw std::invalid_argument("Trajectory constraint is nullptr.");
@@ -257,6 +272,23 @@ trajectory::InterpolatedPtr planCRRTConnect(
   if (_trajConstraint->getStateSpace() != _stateSpace) {
     throw std::invalid_argument(
         "Trajectory constraint does not match StateSpace");
+  }
+
+  if (_maxExtensionDistance <= 0){
+    throw std::invalid_argument("Max extension distance must be positive");
+  }
+
+  if (_maxDistanceBtwProjections < 0){
+    throw std::invalid_argument(
+        "Max distance between projections must be >= 0");
+  }
+  
+  if (_minStepsize < 0){
+    throw std::invalid_argument("Min stepsize must be >= 0");
+  }
+
+  if (_minTreeConnectionDistance < 0) {
+    throw std::invalid_argument("Min connection distance must be >= 0");
   }
 
   auto si = getSpaceInformation(
@@ -280,6 +312,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
   planner->setRange(_maxExtensionDistance);
   planner->setProjectionResolution(_maxDistanceBtwProjections);
   planner->setConnectionRadius(_minTreeConnectionDistance);
+  planner->setMinStateDifference(_minStepsize);
   return planOMPL(planner, pdef, std::move(_stateSpace),
                   std::move(_interpolator), _maxPlanTime);
 }

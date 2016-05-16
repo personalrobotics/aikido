@@ -123,6 +123,8 @@ trajectory::InterpolatedPtr planOMPL(
 ///  a single extension
 /// \param _maxDistanceBtwProjections The maximum distance (under dmetric) between
 /// projecting and validity checking two successive points on a tree extension
+/// \param _minStepsize The minimum distance between two states for the them to
+/// be considered "different"
 trajectory::InterpolatedPtr planCRRT(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
@@ -136,7 +138,7 @@ trajectory::InterpolatedPtr planCRRT(
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector, 
     double _maxPlanTime, double _maxExtensionDistance,
-    double _maxDistanceBtwProjections);
+    double _maxDistanceBtwProjections, double _minStepsize);
 
 /// Use the CRRT planner to plan a trajectory that moves from the
 /// start to a goal region while respecting a constraint
@@ -168,6 +170,8 @@ trajectory::InterpolatedPtr planCRRT(
 /// projecting and validity checking two successive points on a tree extension
 /// \param _minTreeConnectionDistance The minumum distance between the start and
 /// goal tree to consider them connected
+/// \param _minStepsize The minimum distance between two states for the them to
+/// be considered "different"
 trajectory::InterpolatedPtr planCRRTConnect(
     const statespace::StateSpace::State *_start,
     constraint::TestablePtr _goalTestable,
@@ -181,7 +185,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
     constraint::TestablePtr _boundsConstraint,
     constraint::ProjectablePtr _boundsProjector, 
     double _maxPlanTime, double _maxExtensionDistance,
-    double _maxDistanceBtwProjections, 
+    double _maxDistanceBtwProjections, double _minStepsize, 
     double _minTreeConnectionDistance);
 
 /// Generate an OMPL SpaceInformation from aikido components
