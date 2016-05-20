@@ -1,0 +1,8 @@
+aikido_add_library("${PROJECT_NAME}_control"
+	KinematicSimulationTrajectoryExecutor.cpp
+)
+target_link_libraries("${PROJECT_NAME}_control"
+  "${PROJECT_NAME}_statespace"
+  "${PROJECT_NAME}_trajectory"
+  ${DART_LIBRARIES}
+)
