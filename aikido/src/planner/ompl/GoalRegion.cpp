@@ -39,16 +39,7 @@ void GoalRegion::sampleGoal(::ompl::base::State* _state) const
   if (mSampleGenerator->canSample()) {
     valid = mSampleGenerator->sample(state->mState);
   }
-  if (!valid) {
-    auto stateSpace =
-        boost::dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
-    if (!stateSpace) {
-      throw std::runtime_error(
-          "GoalRegion can only sample states from the GeometricStateSpace");
-    }
-    stateSpace->getAikidoStateSpace()->freeState(state->mState);
-    state->mState = nullptr;
-  }
+  state->mValid = valid;
 }
 
 //=============================================================================

@@ -97,20 +97,8 @@ TEST_F(GoalRegionTest, CantSample)
 
   auto state = si->allocState()->as<GeometricStateSpace::StateType>();
   gr.sampleGoal(state);
-  EXPECT_EQ(nullptr, state->mState);
+  EXPECT_FALSE(state->mValid);
   si->freeState(state);
-}
-
-TEST_F(GoalRegionTest, CantSampleBadStateSpace)
-{
-  auto so2 = boost::make_shared<::ompl::base::SO2StateSpace>();
-  auto sinew = boost::make_shared<::ompl::base::SpaceInformation>(so2);
-  auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
-  GoalRegion gr(sinew, std::move(testable), std::move(generator));
-
-  GeometricStateSpace::StateType state(stateSpace->createState());
-  EXPECT_THROW(gr.sampleGoal(&state), std::runtime_error);
 }
 
 TEST_F(GoalRegionTest, FailedSample)
@@ -121,7 +109,7 @@ TEST_F(GoalRegionTest, FailedSample)
 
   auto state = si->allocState()->as<GeometricStateSpace::StateType>();
   gr.sampleGoal(state);
-  EXPECT_EQ(nullptr, state->mState);
+  EXPECT_FALSE(state->mValid);
   si->freeState(state);
 }
 

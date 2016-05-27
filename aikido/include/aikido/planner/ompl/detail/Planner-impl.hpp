@@ -98,7 +98,6 @@ trajectory::InterpolatedPtr planOMPL(
   return planOMPL(planner, pdef, std::move(_stateSpace),
                   std::move(_interpolator), _maxPlanTime);
 }
-
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido
