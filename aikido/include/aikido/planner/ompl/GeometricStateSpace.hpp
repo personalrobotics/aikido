@@ -25,11 +25,19 @@ public:
   class StateType : public ::ompl::base::State
   {
   public:
-    /// Constructor
+    /// Constructor. 
     /// \param _st The state to wrap
     StateType(statespace::StateSpace::State *_st);
 
+    /// The wrapped aikido state
     statespace::StateSpace::State *mState;
+
+    /// Indicates whether the state has been initialized to represent a valid
+    /// state. This allows samplers to indicate failure by setting this flag to
+    /// false when sampling fails.  The StateValidityChecker should check this
+    /// flag when determining if the state is valide.
+    /// The value defaults to true.
+    bool mValid;
   };
 
   /// Construct a state space

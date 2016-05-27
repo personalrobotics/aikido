@@ -30,16 +30,7 @@ void StateSampler::sampleUniform(::ompl::base::State *_state) {
     valid = mGenerator->sample(state->mState);
   }
 
-  if (!valid) {
-    auto stateSpace =
-        dynamic_cast<const GeometricStateSpace*>(space_);
-    if (!stateSpace) {
-      throw std::runtime_error(
-          "StateSampler can only sample states from the GeometricStateSpace");
-    }
-    stateSpace->getAikidoStateSpace()->freeState(state->mState);
-    state->mState = nullptr;
-  }
+  state->mValid = valid;
 }
 
 //=============================================================================
