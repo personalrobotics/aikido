@@ -1,5 +1,5 @@
-#ifndef AIKIDO_UTILS_KINBODY_PARSER_H
-#define AIKIDO_UTILS_KINBODY_PARSER_H
+#ifndef AIKIDO_UTIL_KINBODY_PARSER_H
+#define AIKIDO_UTIL_KINBODY_PARSER_H
 
 #include "dart/dart.h"
 #include "dart/common/LocalResourceRetriever.h"
@@ -9,11 +9,11 @@
 
 namespace aikido {
 
-namespace utils {
+namespace util {
 
 namespace KinBodyParser {
 
-  dart::dynamics::SkeletonPtr readKinbodyXMLFile(
+  dart::dynamics::SkeletonPtr readKinBodyXMLFile(
     const dart::common::Uri& _fileUri,
     const dart::common::ResourceRetrieverPtr& _retriever = nullptr);
 
@@ -22,3 +22,5 @@ namespace KinBodyParser {
 } //namespace utils
 
 } //namespace aikido
+
+#endif

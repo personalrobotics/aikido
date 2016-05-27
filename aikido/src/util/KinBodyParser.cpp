@@ -10,7 +10,6 @@
 #endif
 #include "dart/collision/dart/DARTCollisionDetector.h"
 #include "dart/collision/fcl/FCLCollisionDetector.h"
-#include "dart/collision/fcl_mesh/FCLMeshCollisionDetector.h"
 #include "dart/constraint/ConstraintSolver.h"
 #include "dart/dynamics/BodyNode.h"
 #include "dart/dynamics/SoftBodyNode.h"
@@ -45,8 +44,8 @@ namespace util {
 
 namespace { 
 
-using BodyPropPtr = std::shared_ptr<dynamics::BodyNode::Properties>;
-using JointPropPtr = std::shared_ptr<dynamics::Joint::Properties>;
+using BodyPropPtr = std::shared_ptr<dart::dynamics::BodyNode::Properties>;
+using JointPropPtr = std::shared_ptr<dart::dynamics::Joint::Properties>;
 
 struct SkelBodyNode
 {
@@ -100,7 +99,7 @@ dart::dynamics::ShapePtr readShape(
   const dart::common::ResourceRetrieverPtr& _retriever);
 
 dart::dynamics::ShapeNode* readShapeNode(
-    dynamics::BodyNode* bodyNode,
+    dart::dynamics::BodyNode* bodyNode,
     tinyxml2::XMLElement* shapeNodeEle,
     const std::string& shapeNodeName,
     const dart::common::Uri& baseUri,
@@ -143,11 +142,11 @@ dart::dynamics::SkeletonPtr KinBodyParser::readKinBodyXMLFile(
   tinyxml2::XMLDocument _kinBodyFile;
   try
   {
-    openXMLFile(_kinBodyFile, _fileUri, _retriever);
+    dart::utils::openXMLFile(_kinBodyFile, _fileUri, _retriever);
   }
   catch(std::exception const& e)
   {
-    std::cout << "LoadFile [" << _fileUri.toString() << "] Fails: "
+    dterr << "[KinBodyParser] LoadFile [" << _fileUri.toString() << "] Fails: "
               << e.what() << std::endl;
     return nullptr;
   }
@@ -156,7 +155,7 @@ dart::dynamics::SkeletonPtr KinBodyParser::readKinBodyXMLFile(
   kinBodyElement = _kinBodyFile.FirstChildElement("KinBody");
   if (kinBodyElement == nullptr)
   {
-    dterr << "KinBody  file[" << _fileUri.toString()
+    dterr << "[KinBodyParser] KinBody  file[" << _fileUri.toString()
           << "] does not contain <KinBody> as the element.\n";
     return nullptr;
   }
@@ -182,7 +181,7 @@ dart::dynamics::SkeletonPtr readKinBody(
   Eigen::Isometry3d skeletonFrame = Eigen::Isometry3d::Identity();
 
   // Name attribute
-  std::string name = getAttributeString(_KinBodyElement, "name");
+  std::string name = dart::utils::getAttributeString(_KinBodyElement, "name");
   newSkeleton->setName(name);
 
   //Get Body node
@@ -190,7 +189,7 @@ dart::dynamics::SkeletonPtr readKinBody(
   bodyElement = _KinBodyElement->FirstChildElement("Body");
   if (bodyElement == nullptr)
   {
-    dterr << "KinBody file[" << _baseUri.toString()
+    dterr << "[KinBodyParser] KinBody file[" << _baseUri.toString()
           << "] does not contain <Body> element "
           <<"under <KinBody> element.\n";
     return nullptr;
@@ -239,13 +238,13 @@ SkelBodyNode readBodyNode(
   Eigen::Isometry3d initTransform = Eigen::Isometry3d::Identity();
 
   // Name attribute
-  newBodyNode->mName = getAttributeString(_bodyNodeElement, "name");
+  newBodyNode->mName = dart::utils::getAttributeString(_bodyNodeElement, "name");
 
   // transformation
-  if (hasElement(_bodyNodeElement, "transformation"))
+  if (dart::utils::hasElement(_bodyNodeElement, "transformation"))
   {
     Eigen::Isometry3d W =
-        getValueIsometry3d(_bodyNodeElement, "transformation");
+        dart::utils::getValueIsometry3d(_bodyNodeElement, "transformation");
     initTransform = _skeletonFrame * W;
   }
   else
@@ -270,11 +269,11 @@ void readAddons(
     const dart::common::Uri& _baseUri,
     const dart::common::ResourceRetrieverPtr& retriever)
 {
-  ElementEnumerator xmlBodies(_KinBodyElement, "Body");
+  dart::utils::ElementEnumerator xmlBodies(_KinBodyElement, "Body");
   while (xmlBodies.next())
   {
     auto bodyElement = xmlBodies.get();
-    auto bodyNodeName = getAttributeString(bodyElement, "name");
+    auto bodyNodeName = dart::utils::getAttributeString(bodyElement, "name");
     auto bodyNode = skeleton->getBodyNode(bodyNodeName);
 
     //Assume either 1 or 2 Geom elements
@@ -282,20 +281,20 @@ void readAddons(
     geomElement = bodyElement->FirstChildElement("Geom");
     if (geomElement == nullptr)
     {
-      dterr << "KinBody file[" << _baseUri.toString()
+      dterr << "[KinBodyParser] KinBody file[" << _baseUri.toString()
           << "] does not contain <Geom> element "
           <<"under <Body>, under <KinBody> element.\n";
       assert(0);
     }
 
-    element_count = 0;
-    if (hasElement(geomElement,"Render"))
+    int element_count = 0;
+    if (dart::utils::hasElement(geomElement,"Render"))
     {
       element_count ++;
       readVisualizationShapeNode(bodyNode, geomElement, _baseUri, retriever);
     }
     
-    if (hasElement(geomElement,"Data"))
+    if (dart::utils::hasElement(geomElement,"Data"))
     {
       element_count ++;
       readCollisionShapeNode(bodyNode, geomElement, _baseUri, retriever);
@@ -303,23 +302,24 @@ void readAddons(
 
     if(element_count == 0){
       //Neither Render nor Data
-      dterr <<" Geom Element in "<< _baseUri.toString()<<" has neither Render nor Data \n";
+      dterr <<"[KinBodyParser] Geom Element in "<< _baseUri.toString()<<" has neither Render nor Data \n";
       assert(0);
     }
     else if(element_count == 1){
       //One done not the other
-      geomElement = bodyElement->ChildElement("Geom",1)
-      if (geomElement == nullptr)
+      tinyxml2::XMLElement* geomElementSibling = nullptr;
+      geomElementSibling = geomElement->NextSiblingElement("Geom");
+      if (geomElementSibling == nullptr)
       {
-        dterr<<" Only one Geom element in "<<_baseUri.toString()<<" which does not have both Render and Data \n";
+        dterr<<"[KinBodyParser] Only one Geom element in "<<_baseUri.toString()<<" which does not have both Render and Data \n";
         assert(0);
       }
 
-      if(hasElement(geomElement,"Render")){
-        readVisualizationShapeNode(bodyNode, geomElement, _baseUri, retriever);
+      if(dart::utils::hasElement(geomElementSibling,"Render")){
+        readVisualizationShapeNode(bodyNode, geomElementSibling, _baseUri, retriever);
       }
-      if(hasElement(geomElement,"Data")){
-        readCollisionShapeNode(bodyNode, geomElement, _baseUri, retriever);
+      if(dart::utils::hasElement(geomElementSibling,"Data")){
+        readCollisionShapeNode(bodyNode, geomElementSibling, _baseUri, retriever);
       }
 
     }
@@ -342,9 +342,9 @@ void readVisualizationShapeNode(
   visualAddon->setColor(Eigen::Vector3d(1,1,1));
 
   // color
-  if (hasElement(vizShapeNodeEle, "color"))
+  if (dart::utils::hasElement(vizShapeNodeEle, "color"))
   {
-    Eigen::Vector3d color = getValueVector3d(vizShapeNodeEle, "color");
+    Eigen::Vector3d color = dart::utils::getValueVector3d(vizShapeNodeEle, "color");
     visualAddon->setColor(color);
   }
 }
@@ -366,9 +366,9 @@ void readCollisionShapeNode(
   newShapeNode->createDynamicsAddon();
 
   // collidable
-  if (hasElement(collShapeNodeEle, "collidable"))
+  if (dart::utils::hasElement(collShapeNodeEle, "collidable"))
   {
-    const bool collidable = getValueDouble(collShapeNodeEle, "collidable");
+    const bool collidable = dart::utils::getValueDouble(collShapeNodeEle, "collidable");
     collisionAddon->setCollidable(collidable);
   }
 }
@@ -387,9 +387,9 @@ dart::dynamics::ShapeNode* readShapeNode(
   auto shapeNode = bodyNode->createShapeNode(shape, shapeNodeName);
 
   // Transformation
-  if (hasElement(shapeNodeEle, "transformation"))
+  if (dart::utils::hasElement(shapeNodeEle, "transformation"))
   {
-    Eigen::Isometry3d W = getValueIsometry3d(shapeNodeEle, "transformation");
+    Eigen::Isometry3d W = dart::utils::getValueIsometry3d(shapeNodeEle, "transformation");
     shapeNode->setRelativeTransform(W);
   }
 
@@ -407,26 +407,26 @@ dart::dynamics::ShapePtr readShape(
   dart::dynamics::ShapePtr newShape;
 
   //Either viz(Render field) or col(Data field)
-  if(hasElement(vizOrColEle,fieldName))
+  if(dart::utils::hasElement(vizOrColEle,fieldName))
   {
-    std::string filename = getValueString(vizOrColEle, fieldName);
+    std::string filename = dart::utils::getValueString(vizOrColEle, fieldName);
     const std::string meshUri = dart::common::Uri::getRelativeUri(_baseUri, filename);
     const aiScene* model = dart::dynamics::MeshShape::loadMesh(meshUri, _retriever);
     const Eigen::Vector3d scale(1.0,1.0,1.0); //Default scale as kinbody does not have info
     if (model)
     {
-      newShape = std::make_shared<dynamics::MeshShape>(
+      newShape = std::make_shared<dart::dynamics::MeshShape>(
           scale, model, meshUri, _retriever);
     }
     else
     {
-      dterr << "Fail to load model[" << filename << "]." << std::endl;
+      dterr << "[KinBodyParser] Fail to load model[" << filename << "]." << std::endl;
     }
   }
   else
   {
     //No field
-    dterr << "[KinBodyParser::readShape] "<<fieldName<<" not present in Geom ";
+    dterr << "[KinBodyParser] "<<fieldName<<" not present in Geom ";
     assert(0);
     return nullptr;
   }
@@ -441,7 +441,7 @@ dart::common::ResourceRetrieverPtr getRetriever(
   if(_retriever)
     return _retriever;
   else
-    return std::make_shared<common::LocalResourceRetriever>();
+    return std::make_shared<dart::common::LocalResourceRetriever>();
 }
 
 } //anonymous namespace
