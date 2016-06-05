@@ -4,6 +4,13 @@ aikido_add_test(test_KinematicSimulationTrajectoryExecutor
 target_link_libraries(test_KinematicSimulationTrajectoryExecutor
   "${PROJECT_NAME}_control")
 
+aikido_add_test(test_BarrettFingerSpreadCommandExecutor
+  test_BarrettFingerSpreadCommandExecutor.cpp)
+
+target_link_libraries(test_BarrettFingerSpreadCommandExecutor
+  "${PROJECT_NAME}_control")
+
+
 aikido_add_test(test_BarrettFingerPositionCommandExecutor
   test_BarrettFingerPositionCommandExecutor.cpp)
 

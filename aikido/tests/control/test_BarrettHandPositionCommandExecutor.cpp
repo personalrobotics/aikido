@@ -1,12 +1,18 @@
 #include <gtest/gtest.h>
 #include <aikido/control/BarrettHandPositionCommandExecutor.hpp>
 #include <aikido/control/BarrettFingerPositionCommandExecutor.hpp>
+#include <aikido/control/BarrettFingerSpreadCommandExecutor.hpp>
+
 #include <dart/dart.h>
 
 #include <chrono>
 
+using aikido::control::BarrettFingerPositionCommandExecutorPtr;
+using aikido::control::BarrettFingerSpreadCommandExecutorPtr;
+
 using aikido::control::BarrettHandPositionCommandExecutor;
 using aikido::control::BarrettFingerPositionCommandExecutor;
+using aikido::control::BarrettFingerSpreadCommandExecutor;
 
 using ::dart::dynamics::Chain;
 using ::dart::dynamics::ChainPtr;
@@ -166,9 +172,21 @@ public:
     mCollisionDetector = FCLCollisionDetector::create();
     mCollideWith = mCollisionDetector->createCollisionGroupAsSharedPtr();
 
-    // Cycle
-    mCyclePeriod = std::chrono::milliseconds(1);
-    mDuration = std::chrono::milliseconds(100);
+    int spreadDof = 0; 
+    int primalDof[3] = {1,1,0};
+    int distalDof[3] = {2,2,1};
+
+    for(int i = 0 ; i < 3; ++i)
+    {
+      mPositionExecutors.push_back(std::make_shared<BarrettFingerPositionCommandExecutor>(
+        mFingerChains[i], primalDof[i], distalDof[i], mCollisionDetector));
+    }
+
+    for(int i = 0; i < 2; ++i)
+    {
+      mSpreadExecutors.push_back(std::make_shared<BarrettFingerSpreadCommandExecutor>(
+        mFingerChains[i], spreadDof, mCollisionDetector));
+    }
 
     mPositions = Eigen::Matrix<double, 4, 1>::Ones();
     mPositions(3) = M_PI/2;
@@ -176,100 +194,73 @@ public:
 
 protected:
   std::vector<ChainPtr> mFingerChains;
-  std::chrono::milliseconds mCyclePeriod, mDuration;
   CollisionDetectorPtr mCollisionDetector;
   CollisionGroupPtr mCollideWith;
+  std::vector<BarrettFingerPositionCommandExecutorPtr> mPositionExecutors;
+  std::vector<BarrettFingerSpreadCommandExecutorPtr> mSpreadExecutors;
 
   Eigen::Matrix<double, 4, 1> mPositions;
-  static constexpr double eps = 0.001;
+  static constexpr double eps = 0.01;
 
 };
 
-TEST_F(BarrettHandPositionCommandExecutorTest, constructor_nullChain_Throws)
+TEST_F(BarrettHandPositionCommandExecutorTest, constructor_lessthan3PositionExecutors_throws)
 {
-  std::vector<ChainPtr> fingers; 
-  fingers.push_back(nullptr);
-  fingers.push_back(nullptr);
-  fingers.push_back(nullptr);
+  std::vector<BarrettFingerPositionCommandExecutorPtr> positionExecutors; 
+  positionExecutors.push_back(mPositionExecutors[0]);
+  positionExecutors.push_back(mPositionExecutors[1]);
   
-  EXPECT_THROW(BarrettHandPositionCommandExecutor(fingers,
-    mCyclePeriod, mCollisionDetector),
-    std::invalid_argument);
-}
-
-TEST_F(BarrettHandPositionCommandExecutorTest, constructor_negative_cycle_Throws)
-{
-  mCyclePeriod = std::chrono::milliseconds(-3);
-
-  EXPECT_THROW(BarrettHandPositionCommandExecutor(mFingerChains,
-    mCyclePeriod, mCollisionDetector),
-    std::invalid_argument);
+  EXPECT_THROW(BarrettHandPositionCommandExecutor(
+    positionExecutors, mSpreadExecutors), std::invalid_argument);
 }
 
 
-
-TEST_F(BarrettHandPositionCommandExecutorTest, constructor_zero_cycle_Throws)
+TEST_F(BarrettHandPositionCommandExecutorTest, constructor_nullPositionExecutor_throws)
 {
-  mCyclePeriod = std::chrono::milliseconds(0);
-
-  EXPECT_THROW(BarrettHandPositionCommandExecutor(mFingerChains,
-    mCyclePeriod, mCollisionDetector),
-    std::invalid_argument);
-}
-
-
-TEST_F(BarrettHandPositionCommandExecutorTest, constructor_lessthan3Fingers_throws)
-{
-  std::vector<ChainPtr> fingers; 
-  fingers.push_back(create3DoFFinger());
-  fingers.push_back(create3DoFFinger());
+  std::vector<BarrettFingerPositionCommandExecutorPtr> positionExecutors; 
+  positionExecutors.push_back(mPositionExecutors[0]);
+  positionExecutors.push_back(mPositionExecutors[1]);
+  positionExecutors.push_back(nullptr);
   
-  EXPECT_THROW(BarrettHandPositionCommandExecutor(fingers,
-    mCyclePeriod, mCollisionDetector),
-    std::invalid_argument);
+  EXPECT_THROW(BarrettHandPositionCommandExecutor(
+    positionExecutors, mSpreadExecutors), std::invalid_argument);
 }
 
-TEST_F(BarrettHandPositionCommandExecutorTest, constructor_incorecctDofFingers_throws)
+
+TEST_F(BarrettHandPositionCommandExecutorTest, constructor_lessthan2SpreadExecutors_throws)
 {
-  std::vector<ChainPtr> fingers; 
-  fingers.push_back(create3DoFFinger());
-  fingers.push_back(create2DoFFinger());
-  fingers.push_back(create3DoFFinger());
-
-  EXPECT_THROW(BarrettHandPositionCommandExecutor(fingers,
-    mCyclePeriod, mCollisionDetector),
-    std::invalid_argument);
+  std::vector<BarrettFingerSpreadCommandExecutorPtr> spreadExecutors; 
+  spreadExecutors.push_back(mSpreadExecutors[0]);
+  
+  EXPECT_THROW(BarrettHandPositionCommandExecutor(
+    mPositionExecutors, spreadExecutors), std::invalid_argument);
 }
+
+
+TEST_F(BarrettHandPositionCommandExecutorTest, constructor_nullSpreadExecutor_throws)
+{
+  std::vector<BarrettFingerSpreadCommandExecutorPtr> spreadExecutors; 
+  spreadExecutors.push_back(mSpreadExecutors[0]);
+  spreadExecutors.push_back(nullptr);
+  
+  EXPECT_THROW(BarrettHandPositionCommandExecutor(
+    mPositionExecutors, spreadExecutors), std::invalid_argument);
+}
+
+
 
 TEST_F(BarrettHandPositionCommandExecutorTest, constructor_no_throw)
 {
-  EXPECT_NO_THROW(BarrettHandPositionCommandExecutor(mFingerChains,
-    mCyclePeriod, mCollisionDetector));
-}
-
-TEST_F(BarrettHandPositionCommandExecutorTest, constructor_NullCollisionDetector_throws)
-{
-  EXPECT_THROW(BarrettHandPositionCommandExecutor executor(mFingerChains,
-    mCyclePeriod, nullptr), std::invalid_argument);
-}
-
-TEST_F(BarrettHandPositionCommandExecutorTest, execute_negative_duration_throws)
-{
-  BarrettHandPositionCommandExecutor executor(mFingerChains,
-    mCyclePeriod, mCollisionDetector);
-
-  auto duration = std::chrono::milliseconds(-1);
-
-  EXPECT_THROW(executor.execute(mPositions, duration, mCollideWith),
-    std::invalid_argument);
+  EXPECT_NO_THROW(BarrettHandPositionCommandExecutor(
+    mPositionExecutors, mSpreadExecutors));
 }
 
 
 TEST_F(BarrettHandPositionCommandExecutorTest, execute_WaitOnFuture_CommandExecuted)
 {
   // Setup
-  BarrettHandPositionCommandExecutor executor(mFingerChains,
-    mCyclePeriod, mCollisionDetector);
+  BarrettHandPositionCommandExecutor executor(
+    mPositionExecutors, mSpreadExecutors);
 
   double startPrimalDofValues[3];
   double startDistalDofValues[3];
@@ -289,9 +280,18 @@ TEST_F(BarrettHandPositionCommandExecutorTest, execute_WaitOnFuture_CommandExecu
   startDistalDofValues[2] = mFingerChains[2]->getDof(1)->getPosition();
 
   // Execute trajectory
-  auto future = executor.execute(mPositions, mDuration, mCollideWith);
+  auto future = executor.execute(mPositions, mCollideWith);
 
-  future.wait();
+  std::future_status status;
+  auto stepTime = std::chrono::milliseconds(1);
+  double stepTimeCount = stepTime.count();
+  do
+  {
+    executor.step(stepTimeCount);
+    status = future.wait_for(stepTime);
+  }while(status != std::future_status::ready);
+
+  future.get();
 
   // Validate dof values
   for(int i = 0; i < 2; ++i)
@@ -299,41 +299,51 @@ TEST_F(BarrettHandPositionCommandExecutorTest, execute_WaitOnFuture_CommandExecu
     double primal = mFingerChains[i]->getDof(1)->getPosition();
     double distal = mFingerChains[i]->getDof(2)->getPosition();
 
-    EXPECT_NEAR(startPrimalDofValues[i] + mPositions(i), primal, eps);
-    EXPECT_NEAR(startDistalDofValues[i] + mPositions(i)*mimicRatio, distal, eps);
+    EXPECT_NEAR(mPositions(i), primal, eps);
+    EXPECT_NEAR(mPositions(i)*mimicRatio, distal, eps);
 
     double spread = mFingerChains[i]->getDof(0)->getPosition();
-    EXPECT_NEAR(spread, startSpread + mPositions(3), eps);
+    EXPECT_NEAR(spread, mPositions(3), eps);
   }
 
   double primal = mFingerChains[2]->getDof(0)->getPosition();
   double distal = mFingerChains[2]->getDof(1)->getPosition();
 
-  EXPECT_NEAR(startPrimalDofValues[2] + mPositions(2), primal, eps);
-  EXPECT_NEAR(startDistalDofValues[2] + mPositions(2)*mimicRatio, distal, eps);
+  EXPECT_NEAR(mPositions(2), primal, eps);
+  EXPECT_NEAR(mPositions(2)*mimicRatio, distal, eps);
 }
 
 TEST_F(BarrettHandPositionCommandExecutorTest, execute_CommandIsAlreadyRunning_Throws)
 {
-  BarrettHandPositionCommandExecutor executor(mFingerChains,
-    mCyclePeriod, mCollisionDetector);
+  BarrettHandPositionCommandExecutor executor(
+    mPositionExecutors, mSpreadExecutors);
 
   // Execute trajectory
-  auto future = executor.execute(mPositions, mDuration, mCollideWith);
-  EXPECT_THROW(executor.execute(mPositions, mDuration, mCollideWith),
+  auto future = executor.execute(mPositions, mCollideWith);
+  EXPECT_THROW(executor.execute(mPositions, mCollideWith),
     std::runtime_error);
 }
 
 TEST_F(BarrettHandPositionCommandExecutorTest, execute_PrevCommandFinished_DoesNotThrow)
 {
-  BarrettHandPositionCommandExecutor executor(mFingerChains,
-    mCyclePeriod, mCollisionDetector);
+  BarrettHandPositionCommandExecutor executor(
+    mPositionExecutors, mSpreadExecutors);
 
   // Execute trajectory
-  auto future = executor.execute(mPositions, mDuration, mCollideWith);
-  future.wait();
+  auto future = executor.execute(mPositions, mCollideWith);
 
-  EXPECT_NO_THROW(executor.execute(mPositions, mDuration, mCollideWith));
+  std::future_status status;
+  auto stepTime = std::chrono::milliseconds(1);
+  double stepTimeCount = stepTime.count();
+  do
+  {
+    executor.step(stepTimeCount);
+    status = future.wait_for(stepTime);
+  }while(status != std::future_status::ready);
+
+  future.get();
+
+  EXPECT_NO_THROW(executor.execute(mPositions, mCollideWith));
 }
 
 TEST_F(BarrettHandPositionCommandExecutorTest, execute_PrimalStopsAtCollsionDistalContinues)
@@ -346,11 +356,22 @@ TEST_F(BarrettHandPositionCommandExecutorTest, execute_PrimalStopsAtCollsionDist
   Eigen::VectorXd position(Eigen::VectorXd::Zero(4));
   double goal = M_PI;
   position(0) = goal;
+  
+  BarrettHandPositionCommandExecutor executor(
+    mPositionExecutors, mSpreadExecutors);
 
-  BarrettHandPositionCommandExecutor executor(mFingerChains,
-    mCyclePeriod, mCollisionDetector);
-  auto future = executor.execute(position, mDuration, std::move(collideWith));
-  future.wait();
+  auto future = executor.execute(position, std::move(collideWith));
+
+  std::future_status status;
+  auto stepTime = std::chrono::milliseconds(1);
+  double stepTimeCount = stepTime.count();
+  do
+  {
+    executor.step(stepTimeCount);
+    status = future.wait_for(stepTime);
+  }while(status != std::future_status::ready);
+
+  future.get();
 
   double primal = mFingerChains[0]->getDof(1)->getPosition();
   double distal = mFingerChains[0]->getDof(2)->getPosition();
@@ -372,10 +393,21 @@ TEST_F(BarrettHandPositionCommandExecutorTest, execute_DistalStopsAtCollsionProm
   double goal = M_PI/4;
   position(0) = goal;
 
-  BarrettHandPositionCommandExecutor executor(mFingerChains,
-    mCyclePeriod, mCollisionDetector);
-  auto future = executor.execute(position, mDuration, std::move(collideWith));
-  future.wait();
+  
+  BarrettHandPositionCommandExecutor executor(
+    mPositionExecutors, mSpreadExecutors);
+  auto future = executor.execute(position, std::move(collideWith));
+  
+  std::future_status status;
+  auto stepTime = std::chrono::milliseconds(1);
+  double stepTimeCount = stepTime.count();
+  do
+  {
+    executor.step(stepTimeCount);
+    status = future.wait_for(stepTime);
+  }while(status != std::future_status::ready);
+
+  future.get();
 
   double primal = mFingerChains[0]->getDof(1)->getPosition();
   double distal = mFingerChains[0]->getDof(2)->getPosition();

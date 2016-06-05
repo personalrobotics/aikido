@@ -1,7 +1,8 @@
 aikido_add_library("${PROJECT_NAME}_control"
-	KinematicSimulationTrajectoryExecutor.cpp
-	BarrettHandPositionCommandExecutor.cpp
-	BarrettFingerPositionCommandExecutor.cpp
+  KinematicSimulationTrajectoryExecutor.cpp
+  BarrettHandPositionCommandExecutor.cpp
+  BarrettFingerPositionCommandExecutor.cpp
+  BarrettFingerSpreadCommandExecutor.cpp
 )
 target_link_libraries("${PROJECT_NAME}_control"
   "${PROJECT_NAME}_statespace"
