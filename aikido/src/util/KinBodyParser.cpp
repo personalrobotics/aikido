@@ -409,14 +409,17 @@ dart::dynamics::ShapePtr readShape(
   //Either viz(Render field) or col(Data field)
   if(dart::utils::hasElement(vizOrColEle,fieldName))
   {
-    std::string filename = dart::utils::getValueString(vizOrColEle, fieldName);
+    std::string filename_ext = dart::utils::getValueString(vizOrColEle, fieldName);
+    std::string filename = filename_ext.substr(0,filename_ext.find(" "));
     const std::string meshUri = dart::common::Uri::getRelativeUri(_baseUri, filename);
     const aiScene* model = dart::dynamics::MeshShape::loadMesh(meshUri, _retriever);
     const Eigen::Vector3d scale(1.0,1.0,1.0); //Default scale as kinbody does not have info
     if (model)
     {
+      std::cout<<"Loading "<<meshUri<<std::endl; 
       newShape = std::make_shared<dart::dynamics::MeshShape>(
           scale, model, meshUri, _retriever);
+
     }
     else
     {
