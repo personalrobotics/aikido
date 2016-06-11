@@ -40,7 +40,7 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorCantSample)
 
   // Ensure we get two different states if we sample twice
   ssampler.sampleUniform(s1);
-  EXPECT_EQ(nullptr, s1->mState);
+  EXPECT_FALSE(s1->mValid);
 
   gSpace->freeState(s1);
 }
@@ -54,7 +54,7 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorFailsSample)
 
   // Ensure we get two different states if we sample twice
   ssampler.sampleUniform(s1);
-  EXPECT_EQ(nullptr, s1->mState);
+  EXPECT_FALSE(s1->mValid);
   gSpace->freeState(s1);
 }
 
@@ -98,15 +98,4 @@ TEST_F(StateSamplerTest, SampleGaussianAlwaysThrows)
 
   gSpace->freeState(s1);
   gSpace->freeState(s2);
-}
-
-TEST_F(StateSamplerTest, BadStateSpaceThrows)
-{
-  auto so2 = boost::make_shared<::ompl::base::SO2StateSpace>();
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
-  StateSampler ssampler(so2.get(), std::move(generator));
-
-  auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
-  EXPECT_THROW(ssampler.sampleUniform(s1), std::runtime_error);
-  gSpace->freeState(s1);
 }

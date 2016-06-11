@@ -12,7 +12,7 @@ namespace ompl {
 
 //=============================================================================
 GeometricStateSpace::StateType::StateType(statespace::StateSpace::State *_st)
-    : mState(_st)
+    : mState(_st), mValid(true)
 {
 }
 
@@ -101,6 +101,9 @@ void GeometricStateSpace::enforceBounds(::ompl::base::State *_state) const
   if (state == nullptr || state->mState == nullptr)
     throw std::invalid_argument("enforceBounds called with null state");
 
+  if (!state->mValid)
+    throw std::invalid_argument("enforceBounds called with invalid state");
+
   auto temporaryState = mStateSpace->createState();
   mBoundsProjection->project(state->mState, temporaryState);
   mStateSpace->copyState(temporaryState, state->mState);
@@ -112,7 +115,10 @@ bool GeometricStateSpace::satisfiesBounds(
 {
   auto state = static_cast<const StateType *>(_state);
   if( state == nullptr || state->mState == nullptr )
-      return false;
+    return false;
+  if (!state->mValid)
+    return false;
+
   return mBoundsConstraint->isSatisfied(state->mState);
 }
 
@@ -127,6 +133,7 @@ void GeometricStateSpace::copyState(
   if (sst == nullptr || sst->mState == nullptr)
     throw std::invalid_argument("copyState called with null source state");
   mStateSpace->copyState(sst->mState, dst->mState);
+  dst->mValid = sst->mValid;
 }
 
 //=============================================================================
@@ -141,6 +148,10 @@ double GeometricStateSpace::distance(
     throw std::invalid_argument("distance called with null state1");
   if (state2 == nullptr || state2->mState == nullptr)
     throw std::invalid_argument("distance called with null state2");
+  if (!state1->mValid)
+    throw std::invalid_argument("distance called with invalid state1");
+  if (!state2->mValid)
+    throw std::invalid_argument("distance called with invaid state2");
 
   return mDistance->distance(state1->mState, state2->mState);
 }
@@ -150,6 +161,11 @@ bool GeometricStateSpace::equalStates(
     const ::ompl::base::State *_state1,
     const ::ompl::base::State *_state2) const
 {
+  auto state1 = static_cast<const StateType *>(_state1);
+  auto state2 = static_cast<const StateType *>(_state2);
+  if (state1->mValid != state2->mValid)
+    return false;
+
   double dist = distance(_state1, _state2);
   return dist < EQUALITY_EPSILON;
 }
@@ -169,6 +185,11 @@ void GeometricStateSpace::interpolate(const ::ompl::base::State *_from,
   auto state = static_cast<StateType *>(_state);
   if (state == nullptr || state->mState == nullptr)
     throw std::invalid_argument("interpolate called with null out state");
+  if (!from->mValid)
+    throw std::invalid_argument("interpolate called with invalid from state");
+  if (!to->mValid)
+    throw std::invalid_argument("interpolate called with invalid to state");
+
   mInterpolator->interpolate(from->mState, to->mState, _t, state->mState);
 }
 
