@@ -9,13 +9,13 @@
 #include <condition_variable>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <ros/ros.h>
-#include <actionlib/server/simple_action_server.h>
+#include <actionlib/client/simple_action_client.h>
 
 namespace aikido {
 
 namespace ros_control {
 
-class RosTrajectoryExecutor : public TrajectoryExecutor
+class RosTrajectoryExecutor : public aikido::control::TrajectoryExecutor
 {
 public:
 

@@ -13,10 +13,11 @@
   <depend>dart</depend>
   <depend>boost</depend>
   <depend>aikido</depend>
-  <depend>tf</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>trajectory_msgs</depend>
   <depend>roscpp</depend>
-  <depend>visualization_msgs</depend>
-  <depend>yaml-cpp</depend>
+  <depend>actionlib</depend>
+  <depend>actionlib_msgs</depend>
+  <depend>control_msgs</depend>
 </package>
