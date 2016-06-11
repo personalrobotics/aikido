@@ -109,11 +109,14 @@ std::future<void> RosTrajectoryExecutor::execute(
     // Convert aikido trajectory to a set of trajectory_msgs/JointTrajectoryPoint
     // and put in traj_goal.trajectory
 
+    // Assume that the subspace is either rn or so2
     auto subspace_rn = space->getSubspace<aikido::statespace::Rn>(0);
     auto subspace_so2 = space->getSubspace<aikido::statespace::SO2>(0);
     std::shared_ptr<aikido::statespace::StateSpace> subspace;
 
-    //Either of the above pointers will be null
+    // Either of the above pointers will be null
+    // Note to Mike - It seems with all the if conditioning, this block
+    // is only useful for the error throw and getDimension() general call
     if(!subspace_rn && !subspace_so2)
     {
         throw std::runtime_error("Space cannot be casted to either Rn or SO2");
@@ -127,6 +130,7 @@ std::future<void> RosTrajectoryExecutor::execute(
 
 
     size_t n_dims = subspace->getDimension(); 
+
     size_t n_ders = mTraj->getNumDerivatives();
     double start = mTraj->getStartTime();
     double end = mTraj->getEndTime();
@@ -138,11 +142,8 @@ std::future<void> RosTrajectoryExecutor::execute(
     {
         double time_val = start + i*mTrajTimeStep;
         trajectory_msgs::JointTrajectoryPoint jtpoint;
-        //auto state = subspace->createState();
-        //mTraj->evaluate(time_val, state);
 
-        // Assume n_dims == 1 implies SO2, else Rn
-        if (n_dims==1)
+        if (!subspace_rn)
         {
             auto state = subspace_so2->createState();
             mTraj->evaluate(time_val, state);
@@ -155,12 +156,14 @@ std::future<void> RosTrajectoryExecutor::execute(
             mTraj->evaluate(time_val, state);
             Eigen::VectorXd state_vect = subspace_rn->getValue(state);
             double* state_values = state_vect.data();
+            
             // Is this correct??????
             jtpoint.positions.assign(state_values, state_values+n_dims);
         }
         
         //Assign derivatives if applicable
         int min_ders = std::min(2,(int)n_ders);
+
         for (int j=1; j <= min_ders; j++)
         {
             Eigen::VectorXd der_vect;
@@ -183,18 +186,22 @@ std::future<void> RosTrajectoryExecutor::execute(
     if(duration - time_steps*mTrajTimeStep > std::numeric_limits<double>::epsilon())
     {
         // Not a perfect division of time-steps
-        auto state = subspace->createState();
-        mTraj->evaluate(end, state);
+        trajectory_msgs::JointTrajectoryPoint jtpoint;
 
-        if (n_dims==1)
+        if (!subspace_rn)
         {
+            auto state = subspace_so2->createState();
+            mTraj->evaluate(end, state);
             double angle_value = subspace_so2->getAngle(state);
             jtpoint.positions.push_back(angle_value);
         }
         else
         {
+            auto state = subspace_rn->createState();
+            mTraj->evaluate(end, state);
             Eigen::VectorXd state_vect = subspace_rn->getValue(state);
             double* state_values = state_vect.data();
+            
             // Is this correct??????
             jtpoint.positions.assign(state_values, state_values+n_dims);
         }
