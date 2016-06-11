@@ -13,12 +13,13 @@ namespace aikido {
 namespace control {
 
 /// This executor mimics the spread behavior of BarretFinger. 
-/// It moves a finger's spread to its goal value, joint limit, or until collision.
+/// It moves two finger spreads simultaneously to certain goal value;
+/// it will stop prematurely if joint limit is reached or collision is detected.
 class BarrettFingerSpreadCommandExecutor
 {
 public:
   /// Constructor.
-  /// \param _finger finger to be controlled by this Executor.
+  /// \param _fingers 2 fingers to be controlled by this Executor.
   /// \param _spread Index of spread dof
   /// \param _collisionDetector CollisionDetector for detecting self collision
   ///        and collision with objects. 
@@ -26,12 +27,12 @@ public:
   ///        maxNumContacts = 1.) 
   ///        See dart/collison/Option.h for more information 
   BarrettFingerSpreadCommandExecutor(
-    ::dart::dynamics::ChainPtr _finger, int _spread, 
+    std::array<::dart::dynamics::ChainPtr, 2> _fingers, int _spread, 
     ::dart::collision::CollisionDetectorPtr _collisionDetector,
     ::dart::collision::Option _collisionOptions = ::dart::collision::Option(
       false, true, 1));
 
-  /// Sets varialbes to move the spread joint by _goalPosition,
+  /// Sets variables to move the spread joint by _goalPosition,
   /// joint limit has reached, or until collision is detected.
   /// Must call step function after this for actual execution. 
   /// \param _goalPosition Desired angle of spread joint.
@@ -40,7 +41,7 @@ public:
   std::future<void> execute(double _goalPosition,
     ::dart::collision::CollisionGroupPtr _collideWith);
 
-  /// Moves the joint of the finger by certain velocity*_timeSIncePreviousCall
+  /// Moves the joint of the finger by certain velocity*_timeSincePreviousCall
   /// until execute's goalPosition by spread dof or collision is detected.
   /// If multiple threads are accessing this function or skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
@@ -55,9 +56,14 @@ private:
   /// If (current dof - goalPosition) execution terminates. 
   constexpr static double kTolerance = 1e-3;
 
-  ::dart::dynamics::ChainPtr mFinger; 
+  /// All fingers dof values should be the same (approx. within this tolerance).
+  constexpr static double kDofTolerance = 1e-3;
 
-  ::dart::dynamics::DegreeOfFreedom* mSpreadDof;
+  constexpr static int kNumFingers = 2;
+
+  std::array<::dart::dynamics::ChainPtr, 2> mFingers; 
+
+  std::vector<::dart::dynamics::DegreeOfFreedom*> mSpreadDofs;
 
   std::pair<double, double> mDofLimits;
 

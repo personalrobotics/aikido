@@ -6,7 +6,7 @@ namespace control{
 
 //=============================================================================
 BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
-  ::dart::dynamics::ChainPtr _finger, int _primal, int _distal,
+  ::dart::dynamics::ChainPtr _finger, int _proximal, int _distal,
   ::dart::collision::CollisionDetectorPtr _collisionDetector,
   ::dart::collision::Option _collisionOptions)
 : mFinger(std::move(_finger))
@@ -17,14 +17,14 @@ BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
   if (!mFinger)
     throw std::invalid_argument("Finger is null.");
 
-  if (_primal == _distal)
-    throw std::invalid_argument("Primal and distal dofs should be different.");
+  if (_proximal == _distal)
+    throw std::invalid_argument("proximal and distal dofs should be different.");
 
-  mPrimalDof = mFinger->getDof(_primal);
+  mProximalDof = mFinger->getDof(_proximal);
   mDistalDof = mFinger->getDof(_distal);
 
-  if (!mPrimalDof)
-    throw std::invalid_argument("Finger does not have primal dof.");
+  if (!mProximalDof)
+    throw std::invalid_argument("Finger does not have proximal dof.");
 
   if (!mDistalDof)
     throw std::invalid_argument("Finger does not have distal dof.");
@@ -32,13 +32,13 @@ BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
   if (!mCollisionDetector)
     throw std::invalid_argument("CollisionDetctor is null.");
 
-  mPrimalCollisionGroup = mCollisionDetector->createCollisionGroup(
-      mPrimalDof->getChildBodyNode());
+  mProximalCollisionGroup = mCollisionDetector->createCollisionGroup(
+      mProximalDof->getChildBodyNode());
 
   mDistalCollisionGroup = mCollisionDetector->createCollisionGroup(
       mDistalDof->getChildBodyNode());
 
-  mPrimalLimits = mPrimalDof->getPositionLimits();
+  mProximalLimits = mProximalDof->getPositionLimits();
   mDistalLimits = mDistalDof->getPositionLimits();
 }
 
@@ -56,7 +56,7 @@ std::future<void> BarrettFingerPositionCommandExecutor::execute(
     throw std::invalid_argument("CollideWith is null.");
 
   if (!mFinger->isAssembled())
-    throw std::runtime_error("Finger no longer linked.");
+    throw std::runtime_error("Finger is disassembled.");
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -69,26 +69,25 @@ std::future<void> BarrettFingerPositionCommandExecutor::execute(
     mInExecution = true;
     mDistalOnly = false;
 
-    // Set mPrimalGoalPosition and mDistalGoalPosition.
-    if (_goalPosition < mPrimalLimits.first)
-      mPrimalGoalPosition = mPrimalLimits.first;
-    else if (_goalPosition > mPrimalLimits.second)
-      mPrimalGoalPosition = mPrimalLimits.second;
+    // Set mProximalGoalPosition.
+    if (_goalPosition < mProximalLimits.first)
+      mProximalGoalPosition = mProximalLimits.first;
+    else if (_goalPosition > mProximalLimits.second)
+      mProximalGoalPosition = mProximalLimits.second;
     else
-      mPrimalGoalPosition = _goalPosition;
-
-    double distalGoalPosition = mPrimalGoalPosition*kMimicRatio;
-    if (distalGoalPosition < mDistalLimits.first)
-      mDistalGoalPosition = mDistalLimits.first;
-    else if (distalGoalPosition > mDistalLimits.second)
-      mDistalGoalPosition = mDistalLimits.second;
-    else
-      mDistalGoalPosition = distalGoalPosition;
+      mProximalGoalPosition = _goalPosition;
 
     return mPromise->get_future();
   }
 }
 
+//=============================================================================
+void BarrettFingerPositionCommandExecutor::terminate()
+{
+  mPromise->set_value();
+  mInExecution = false;
+  mCollideWith.reset();
+}
 //=============================================================================
 void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
 {
@@ -101,7 +100,7 @@ void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
     return;
     
   double distalPosition = mDistalDof->getPosition();
-  double primalPosition = mPrimalDof->getPosition();
+  double proximalPosition = mProximalDof->getPosition();
 
   // Check distal collision
   Result collisionResult;
@@ -109,48 +108,83 @@ void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
     mDistalCollisionGroup.get(), mCollideWith.get(),
     mCollisionOptions, collisionResult);
 
-  if (distalCollision || 
-      std::abs(mDistalGoalPosition - distalPosition) < kTolerance)
+  if (distalCollision)
   {
-    mPromise->set_value();
-    mInExecution = false;
-    mCollideWith.reset();
+    terminate();
     return;
   }
 
   double newDistal;
-  if (distalPosition < mDistalGoalPosition)
-    newDistal = std::min(mDistalGoalPosition, 
-                         distalPosition + _timeSincePreviousCall*kDistalVelocity);
+  bool distalLimitReached = false;
+
+  if (proximalPosition < mProximalGoalPosition)
+  { 
+    newDistal = distalPosition + _timeSincePreviousCall*kDistalVelocity;
+    if (mDistalLimits.second <= newDistal)
+    {
+      newDistal = mDistalLimits.second;
+      distalLimitReached = true;
+    }
+  }
   else
-    newDistal = std::max(mDistalGoalPosition,
-                         distalPosition - _timeSincePreviousCall*kDistalVelocity);
+  {
+    newDistal = distalPosition - _timeSincePreviousCall*kDistalVelocity;
+    if (mDistalLimits.first >= newDistal)
+    {
+      newDistal = mDistalLimits.first;
+      distalLimitReached = true;
+    }
+  }
 
   mDistalDof->setPosition(newDistal);
+
+  if (distalLimitReached)
+  {
+    terminate();
+    return;
+  }
 
   if (mDistalOnly)
     return;
 
-  // Check primal collision 
-  bool primalCollision = mCollisionDetector->collide(
-    mPrimalCollisionGroup.get(), mCollideWith.get(),
+  // Check proximal collision 
+  bool proximalCollision = mCollisionDetector->collide(
+    mProximalCollisionGroup.get(), mCollideWith.get(),
     mCollisionOptions, collisionResult);
 
-  if (primalCollision){
+  if (proximalCollision){
     mDistalOnly = true;
     return;
   }
 
-  double newPrimal;
-  if (primalPosition < mPrimalGoalPosition)
-    newPrimal = std::min(mPrimalGoalPosition,
-                         primalPosition + _timeSincePreviousCall*kPrimalVelocity);
+  double newProximal;
+  bool proximalGoalReached = false;
+  if (proximalPosition < mProximalGoalPosition)
+  {
+    newProximal = proximalPosition + _timeSincePreviousCall*kProximalVelocity;
+    if (mProximalGoalPosition <= newProximal)
+    {
+      newProximal = mProximalGoalPosition;
+      proximalGoalReached = true;
+    }
+  }
   else
-    newPrimal = std::max(mPrimalGoalPosition,
-                         primalPosition - _timeSincePreviousCall*kPrimalVelocity);
+  {
+    newProximal = proximalPosition - _timeSincePreviousCall*kProximalVelocity;
+    if (mProximalGoalPosition >= newProximal)
+    {
+      newProximal = mProximalGoalPosition;
+      proximalGoalReached = true;
+    }
+  }
 
-  mPrimalDof->setPosition(newPrimal);
+  mProximalDof->setPosition(newProximal);
 
+  if (proximalGoalReached)
+  {
+    terminate();
+    return;
+  }
 }
 
 }

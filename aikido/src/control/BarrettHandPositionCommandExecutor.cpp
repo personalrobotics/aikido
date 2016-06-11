@@ -8,49 +8,24 @@ namespace control{
 
 //=============================================================================
 BarrettHandPositionCommandExecutor::BarrettHandPositionCommandExecutor(
-  std::vector<BarrettFingerPositionCommandExecutorPtr> _positionCommandExecutors,
-  std::vector<BarrettFingerSpreadCommandExecutorPtr> _spreadCommandExecutors) 
+  std::array<BarrettFingerPositionCommandExecutorPtr, 3> _positionCommandExecutors,
+  BarrettFingerSpreadCommandExecutorPtr _spreadCommandExecutor) 
 : mPositionCommandExecutors(std::move(_positionCommandExecutors))
-, mSpreadCommandExecutors(std::move(_spreadCommandExecutors))
+, mSpreadCommandExecutor(std::move(_spreadCommandExecutor))
 , mInExecution(false)
 {
-  if (mPositionCommandExecutors.size() != kNumFingers)
-  {
-    std::stringstream msg; 
-    msg << "Need " << kNumFingers << " PositionCommandExecutors;"
-    << " got " << mPositionCommandExecutors.size() << " executors."; 
-    throw std::invalid_argument(msg.str());
-  }
-
-  for(int i=0; i < kNumFingers; ++i)
+  for(int i=0; i < kNumPositionExecutor; ++i)
   {
     if (!mPositionCommandExecutors[i])
     {
       std::stringstream msg;
-      msg << i << "th PositionCommandExecutor null.";
+      msg << i << "th PositionCommandExecutor is null.";
       throw std::invalid_argument(msg.str());
     }
   }
 
-  if (mSpreadCommandExecutors.size() != kNumSpreadFingers)
-  {
-    std::stringstream msg; 
-    msg << "Need " << kNumSpreadFingers << " SpreadCommandExecutors."
-    << " got " << mSpreadCommandExecutors.size() << " executors."; 
-    throw std::invalid_argument(msg.str());
-  }
-
-  for(int i=0; i < kNumSpreadFingers; ++i)
-  {
-    if (!mSpreadCommandExecutors[i])
-    {
-      std::stringstream msg;
-      msg << i << "th SpreadCommandExecutor is null.";
-      throw std::invalid_argument(msg.str());
-    }
-  }
-
-  
+  if (!mSpreadCommandExecutor)
+    throw std::invalid_argument("SpreadCommandExecutor is null.");  
 }
 
 //=============================================================================
@@ -67,22 +42,21 @@ std::future<void> BarrettHandPositionCommandExecutor::execute(
     throw std::runtime_error("Another command in execution.");
 
   mPromise.reset(new std::promise<void>());
-  mPrimalGoalPositions = _positions.topRows(3); 
+  mProximalGoalPositions = _positions.topRows(3); 
   mSpreadGoalPosition = _positions(3);
   mCollideWith = _collideWith;
   mInExecution = true;
   mFingerFutures.clear();
 
-  // mFingerFutures.reserve(kNumFingers + kNumSpreadFingers);
-  for(int i=0; i < kNumFingers; ++i)
-    mFingerFutures.push_back(std::move(
+  mFingerFutures.reserve(kNumPositionExecutor + kNumSpreadExecutor);
+  for(int i=0; i < kNumPositionExecutor; ++i)
+    mFingerFutures.emplace_back(
       mPositionCommandExecutors[i]->execute(
-        mPrimalGoalPositions(i), mCollideWith)));
+        mProximalGoalPositions(i), mCollideWith));
   
-  for(int i=0; i < kNumSpreadFingers; ++i)
-    mFingerFutures.push_back(std::move(
-      mSpreadCommandExecutors[i]->execute(
-        mSpreadGoalPosition, mCollideWith)));
+  mFingerFutures.emplace_back(
+    mSpreadCommandExecutor->execute(
+      mSpreadGoalPosition, mCollideWith));
 
   return mPromise->get_future();
 
@@ -141,11 +115,10 @@ void BarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
   }
 
   // Call the finger executors' step function.
-  for(int i=0; i < kNumFingers; ++i)
+  for(int i=0; i < kNumPositionExecutor; ++i)
     mPositionCommandExecutors[i]->step(_timeSincePreviousCall);
 
-  for(int i=0; i < kNumSpreadFingers; ++i)
-    mSpreadCommandExecutors[i]->step(_timeSincePreviousCall);
+  mSpreadCommandExecutor->step(_timeSincePreviousCall);
 
 }
 

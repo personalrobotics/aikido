@@ -16,7 +16,7 @@ namespace aikido {
 namespace control {
 
 /// Position command executor for BarrettHand fingers. 
-/// Assumes that fingers are underactuated: primal joint is actuated
+/// Assumes that fingers are underactuated: proximal joint is actuated
 /// and distal joint moves with certain mimic ratio until collision.
 /// If 
 class BarrettHandPositionCommandExecutor
@@ -24,19 +24,20 @@ class BarrettHandPositionCommandExecutor
 public:
   /// Constructor.
   /// \param _positionCommandExecutors 3 executors to control
-  ///        primal and distal joints of the fingers. 
-  /// \param _spreadCommandExecutors 2 executors to control
+  ///        proximal and distal joints of the fingers. The first two fingers
+  ///        should have (spread, proximal, distal) joints. 
+  ///        Third finger should have 2 joints (proximal, distal).
+  /// \param _spreadCommandExecutor Executors to control
   ///        spreads of the fingers.
-  ///        Third finger should have 2 joints (primal, joint).
    BarrettHandPositionCommandExecutor(
-    std::vector<BarrettFingerPositionCommandExecutorPtr> _positionCommandExecutors,
-    std::vector<BarrettFingerSpreadCommandExecutorPtr> _spreadCommandExecutors);
+    std::array<BarrettFingerPositionCommandExecutorPtr, 3> _positionCommandExecutors,
+    BarrettFingerSpreadCommandExecutorPtr _spreadCommandExecutor);
 
   /// Set relevant variables for moving fingers.
   /// In order to move the fingers, step method should be called multiple times 
   /// until future returns.
-  /// \param _goalPositions End dof pose for primal joints and spread. 
-  ///        First 3 should be for primal joints, the last element should be
+  /// \param _goalPositions End dof pose for proximal joints and spread. 
+  ///        First 3 should be for proximal joints, the last element should be
   ///        for spread. If _positions are above/below joint limits,
   ///        the fingers will move only upto the limit.
   /// \param _collideWith CollisionGroup to check collision with fingers.
@@ -46,32 +47,35 @@ public:
     ::dart::collision::CollisionGroupPtr _collideWith);
 
   /// Calls step method of finger executors.
+  /// If multiple threads are accessing this function or skeleton associated
+  /// with this executor, it is necessary to lock the skeleton before
+  /// calling this method.
   /// \param _timeSincePreviousCall Time since previous call. 
   void step(double _timeSincePreviousCall);
 
 private:
 
-  constexpr static int kNumFingers = 3; 
-  constexpr static int kNumSpreadFingers = 2;
+  constexpr static int kNumPositionExecutor = 3;
+  constexpr static int kNumSpreadExecutor = 1; 
   constexpr static auto kWaitPeriod = std::chrono::milliseconds(1);
 
-  /// Executor for primal and distal joints. 
-  std::vector<BarrettFingerPositionCommandExecutorPtr> mPositionCommandExecutors;
-  std::vector<BarrettFingerSpreadCommandExecutorPtr> mSpreadCommandExecutors;
+  /// Executor for proximal and distal joints. 
+  std::array<BarrettFingerPositionCommandExecutorPtr, 3> mPositionCommandExecutors;
+  BarrettFingerSpreadCommandExecutorPtr mSpreadCommandExecutor;
 
   std::unique_ptr<std::promise<void>> mPromise;
 
   std::vector<std::future<void>> mFingerFutures;
 
   /// Control access to mPromise, mInExecution
-  /// mPrimalGoalPositions, mSpreadGoalPositin, mSpread
+  /// mProximalGoalPositions, mSpreadGoalPositin, mSpread
   std::mutex mMutex;
 
   /// Flag for indicating execution of a command. 
   bool mInExecution;
 
   /// Values for executing a position and spread command. 
-  Eigen::Vector3d mPrimalGoalPositions; 
+  Eigen::Vector3d mProximalGoalPositions; 
   double mSpreadGoalPosition;
 
   ::dart::collision::CollisionGroupPtr mCollideWith;
