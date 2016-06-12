@@ -6,6 +6,8 @@
 namespace aikido{
 namespace control{
 
+constexpr std::chrono::milliseconds BarrettHandPositionCommandExecutor::kWaitPeriod;
+
 //=============================================================================
 BarrettHandPositionCommandExecutor::BarrettHandPositionCommandExecutor(
   std::array<BarrettFingerPositionCommandExecutorPtr, 3> _positionCommandExecutors,
