@@ -6,7 +6,7 @@
 #include <ros/forwards.h>
 #include <ros/single_subscriber_publisher.h>
 #include <tf/transform_listener.h>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 #include <aikido/util/CatkinResourceRetriever.hpp>
 #include <aikido/perception/AprilTagsDatabase.hpp>
 #include <aikido/perception/PerceptionModule.hpp>

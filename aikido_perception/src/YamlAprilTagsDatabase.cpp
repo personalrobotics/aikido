@@ -1,5 +1,5 @@
-#include <dart/common/Console.h>
-#include <dart/common/LocalResourceRetriever.h>
+#include <dart/common/Console.hpp>
+#include <dart/common/LocalResourceRetriever.hpp>
 #include <aikido/perception/YamlAprilTagsDatabase.hpp>
 #include <yaml-cpp/exceptions.h> 
 
