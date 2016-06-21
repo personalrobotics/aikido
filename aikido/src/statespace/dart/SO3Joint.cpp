@@ -3,7 +3,7 @@
 // TODO: This will not be necessary once we switch to using
 // BallJoint::convertToRotation instead of calling dart::math::logMap directly.
 // See the comment below for more information.
-#include <dart/math/Geometry.h>
+#include <dart/math/Geometry.hpp>
 
 using ::dart::dynamics::BallJoint;
 

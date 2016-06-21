@@ -4,7 +4,7 @@
 #include "Testable.hpp"
 #include "../statespace/SE3.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 
 namespace aikido {
 namespace constraint {

@@ -1,5 +1,5 @@
 #include <aikido/statespace/SE3.hpp>
-#include <dart/math/Geometry.h>
+#include <dart/math/Geometry.hpp>
 
 namespace aikido
 {

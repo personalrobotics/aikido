@@ -7,7 +7,7 @@
 #include "../../statespace/Rn.hpp"
 #include "../../statespace/CartesianProduct.hpp"
 #include "../../util/metaprogramming.hpp"
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
 namespace distance {

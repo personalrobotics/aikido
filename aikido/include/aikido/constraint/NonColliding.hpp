@@ -5,9 +5,9 @@
 #include <vector>
 #include <tuple>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include <dart/collision/CollisionDetector.h>
-#include <dart/collision/Option.h>
-#include <dart/collision/CollisionGroup.h>
+#include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/Option.hpp>
+#include <dart/collision/CollisionGroup.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -41,7 +41,7 @@ public:
   NonColliding(
       statespace::dart::MetaSkeletonStateSpacePtr _statespace,
       std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
-      dart::collision::Option _collisionOptions);
+      dart::collision::CollisionOption _collisionOptions);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -67,7 +67,7 @@ private:
 
   std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> statespace;
   std::shared_ptr<dart::collision::CollisionDetector> collisionDetector;
-  dart::collision::Option collisionOptions;
+  dart::collision::CollisionOption collisionOptions;
   std::vector<std::pair<std::shared_ptr<CollisionGroup>, std::shared_ptr<CollisionGroup>>>
       groupsToPairwiseCheck;
   std::vector<std::shared_ptr<CollisionGroup>> groupsToSelfCheck;

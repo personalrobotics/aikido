@@ -1,7 +1,7 @@
 #include <aikido/constraint/TSR.hpp>
-#include <dart/common/Console.h>
-#include <dart/common/StlHelpers.h>
-#include <dart/math/Geometry.h>
+#include <dart/common/Console.hpp>
+#include <dart/common/StlHelpers.hpp>
+#include <dart/math/Geometry.hpp>
 #include <boost/format.hpp>
 #include <stdexcept>
 #include <math.h>

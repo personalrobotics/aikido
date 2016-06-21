@@ -1,5 +1,5 @@
 #include <aikido/constraint/FiniteSampleable.hpp>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
 namespace constraint {

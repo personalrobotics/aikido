@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_FRAMEDIFFERENTIABLE_HPP_
 #define AIKIDO_CONSTRAINT_FRAMEDIFFERENTIABLE_HPP_
 
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 #include "Differentiable.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 

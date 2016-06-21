@@ -2,11 +2,11 @@
 #define AIKIDO_CONTROL_BARRETTHANDPOSITIONCOMANDEXECUTOR_HPP_
 #include "BarrettFingerPositionCommandExecutor.hpp"
 #include "BarrettFingerSpreadCommandExecutor.hpp"
-#include <dart/collision/CollisionDetector.h>
-#include <dart/collision/Option.h>
-#include <dart/collision/CollisionGroup.h>
-#include <dart/collision/CollisionFilter.h>
-#include <dart/dynamics/dynamics.h>
+#include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/Option.hpp>
+#include <dart/collision/CollisionGroup.hpp>
+#include <dart/collision/CollisionFilter.hpp>
+#include <dart/dynamics/dynamics.hpp>
 #include <Eigen/Dense>
 #include <future>
 #include <mutex>

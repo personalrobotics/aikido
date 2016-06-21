@@ -1,5 +1,5 @@
 #include <aikido/constraint/NonColliding.hpp>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 
 using dart::collision::BodyNodeCollisionFilter;
 
@@ -13,8 +13,8 @@ NonColliding::NonColliding(
 : NonColliding(
     std::move(_statespace),
     std::move(_collisionDetector),
-    dart::collision::Option(
-      false, true, 1, std::make_shared<BodyNodeCollisionFilter>()))
+    dart::collision::CollisionOption(
+      false, 1, std::make_shared<BodyNodeCollisionFilter>()))
 {
 }
 
@@ -22,7 +22,7 @@ NonColliding::NonColliding(
 NonColliding::NonColliding(
     statespace::dart::MetaSkeletonStateSpacePtr _statespace,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
-    dart::collision::Option _collisionOptions)
+    dart::collision::CollisionOption _collisionOptions)
 : statespace(std::move(_statespace))
 , collisionDetector(std::move(_collisionDetector))
 , collisionOptions(std::move(_collisionOptions))
@@ -51,17 +51,17 @@ bool NonColliding::isSatisfied(
   statespace->setState(skelStatePtr);
 
   bool collision = false;
-  dart::collision::Result collisionResult;
+  dart::collision::CollisionResult collisionResult;
   for (auto groups : groupsToPairwiseCheck) {
     collision =
         collisionDetector->collide(groups.first.get(), groups.second.get(),
-                                   collisionOptions, collisionResult);
+                                   collisionOptions, &collisionResult);
     if (collision) return false;
   }
 
   for (auto group : groupsToSelfCheck) {
     collision = collisionDetector->collide(group.get(), collisionOptions,
-                                           collisionResult);
+                                           &collisionResult);
     if (collision) return false;
   }
   return true;

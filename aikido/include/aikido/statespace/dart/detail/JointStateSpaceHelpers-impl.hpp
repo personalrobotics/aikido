@@ -1,5 +1,5 @@
 #include <memory>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 #include "../RnJoint.hpp"
 #include "../SO2Joint.hpp"
 #include "../SO3Joint.hpp"
