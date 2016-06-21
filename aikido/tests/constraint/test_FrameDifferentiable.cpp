@@ -42,20 +42,27 @@ class FrameDifferentiableTest : public ::testing::Test {
       skeleton = Skeleton::create("manipulator");
 
       // Root joint
-      FreeJoint::Properties properties1;
-      properties1.mName = "root joint";
+      FreeJoint::Properties jointProperties1;
+      jointProperties1.mName = "root joint";
+
+      BodyNode::Properties bodyProperties1;
+      bodyProperties1.mName = "body1";
+
       bn1 = skeleton->createJointAndBodyNodePair<FreeJoint>(
-                        nullptr, properties1, 
-                        BodyNode::Properties(std::string("body1"))).second;
+        nullptr, jointProperties1, bodyProperties1).second;
 
       // joint 2, body 2
-      RevoluteJoint::Properties properties2;
-      properties2.mAxis = Eigen::Vector3d::UnitY();
-      properties2.mName = "joint 2";
-      properties2.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
+      RevoluteJoint::Properties jointProperties2;
+      jointProperties2.mAxis = Eigen::Vector3d::UnitY();
+      jointProperties2.mName = "joint 2";
+      jointProperties2.mT_ParentBodyToJoint.translation()
+        = Eigen::Vector3d::UnitZ();
+
+      BodyNode::Properties bodyProperties2;
+      bodyProperties2.mName = "body2";
+
       bn2 = skeleton->createJointAndBodyNodePair<RevoluteJoint>(
-                        bn1, properties2, 
-                        BodyNode::Properties(std::string("body2"))).second;
+        bn1, jointProperties2, bodyProperties2).second;
 
       MetaSkeletonStateSpace space(skeleton);
       spacePtr = std::make_shared<MetaSkeletonStateSpace>(space);

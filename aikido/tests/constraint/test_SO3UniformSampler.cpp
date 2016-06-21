@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"

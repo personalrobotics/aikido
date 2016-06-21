@@ -4,9 +4,8 @@
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-
 #include <gtest/gtest.h>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 
 
 using aikido::statespace::SO2;

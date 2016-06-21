@@ -28,21 +28,27 @@ public:
     mSkeleton = Skeleton::create("Skeleton");
 
     // root joint
-    RevoluteJoint::Properties properties1;
-    properties1.mAxis = Eigen::Vector3d::UnitY();
-    properties1.mName = "Joint";
+    RevoluteJoint::Properties jointProperties1;
+    jointProperties1.mAxis = Eigen::Vector3d::UnitY();
+    jointProperties1.mName = "Joint";
+
+    BodyNode::Properties bodyProperties1;
+    bodyProperties1.mName = "root_body";
+
     bn1 = mSkeleton->createJointAndBodyNodePair<RevoluteJoint>(
-      nullptr, properties1, 
-      BodyNode::Properties(std::string("root_body"))).second;
+      nullptr, jointProperties1, bodyProperties1).second;
 
     // joint 2, body 2
-    RevoluteJoint::Properties properties2;
-    properties2.mAxis = Eigen::Vector3d::UnitY();
-    properties2.mName = "Joint2";
-    properties2.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
+    RevoluteJoint::Properties jointProperties2;
+    jointProperties2.mAxis = Eigen::Vector3d::UnitY();
+    jointProperties2.mName = "Joint2";
+    jointProperties2.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
+
+    BodyNode::Properties bodyProperties2;
+    bodyProperties2.mName = "second_body";
+
     mSkeleton->createJointAndBodyNodePair<RevoluteJoint>(
-      bn1, properties2, 
-      BodyNode::Properties(std::string("second_body")));
+      bn1, jointProperties2, bodyProperties2);
 
     mSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton);
     interpolator = std::make_shared<GeodesicInterpolator>(mSpace);

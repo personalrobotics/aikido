@@ -4,7 +4,7 @@
 #include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/Projectable.hpp>
 #include <aikido/statespace/Rn.hpp>
-#include <dart/common/Console.h>
+#include <dart/common/Console.hpp>
 
 using aikido::constraint::CartesianProductProjectable;
 using aikido::constraint::ProjectablePtr;
