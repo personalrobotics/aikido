@@ -2,7 +2,7 @@
 #define AIKIDO_RVIZ_SHAPEFRAMEMARKER_H_
 
 #include <boost/optional.hpp>
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include "ResourceServer.hpp"
