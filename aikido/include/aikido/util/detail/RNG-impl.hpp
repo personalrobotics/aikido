@@ -33,7 +33,9 @@ RNGWrapper<T>::RNGWrapper(result_type _seed)
 template <class T>
 auto RNGWrapper<T>::rng() -> T&
 {
-  return mRng.base();
+  // This is potentially dangerous, but is necessary to implement the current
+  // API. We should deprecate this function in the future.
+  return const_cast<T&>(mRng.base());
 }
 
 //=============================================================================
