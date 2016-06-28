@@ -1,5 +1,5 @@
 #include <aikido/constraint/RejectionSampleable.hpp>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 
 using dart::common::make_unique;
 

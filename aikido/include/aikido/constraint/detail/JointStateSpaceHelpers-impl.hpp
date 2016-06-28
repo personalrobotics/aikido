@@ -1,5 +1,5 @@
 #include <sstream>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 #include "../../statespace/dart/RnJoint.hpp"
 #include "../../statespace/dart/SO2Joint.hpp"
 #include "../../statespace/dart/SO3Joint.hpp"

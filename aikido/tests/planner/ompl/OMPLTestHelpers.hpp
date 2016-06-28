@@ -11,7 +11,7 @@
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/util/RNG.hpp>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 #include <ompl/base/State.h>
 
 using dart::common::make_unique;
@@ -152,15 +152,18 @@ public:
     return true;
   }
 
-  bool
-  isSatisfied(const aikido::statespace::StateSpace::State *_s) const override {
+  bool isSatisfied(
+    const aikido::statespace::StateSpace::State *_s) const override
+  {
     auto state =
         static_cast<const CartesianProduct::State *>(_s);
     auto val = mStateSpace->getSubStateHandle<Rn>(state, 0).getValue();
     return std::fabs(val[0] - mValue) < 1e-6;
   }
 
-    std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator() const {
+  std::unique_ptr<aikido::constraint::SampleGenerator>
+    createSampleGenerator() const override 
+  {
     return make_unique<MockConstrainedSampleGenerator>(
         mStateSpace, mSampleable->createSampleGenerator(), mValue);
   }

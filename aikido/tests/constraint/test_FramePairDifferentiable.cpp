@@ -37,18 +37,24 @@ class FramePairDifferentiableTest : public ::testing::Test {
       skeleton = Skeleton::create("env");
 
       // body 1
-      FreeJoint::Properties properties1;
-      properties1.mName = "joint1";
-      bn1 = skeleton->createJointAndBodyNodePair<FreeJoint>(
-                        nullptr, properties1, 
-                        BodyNode::Properties(std::string("body1"))).second;
+      FreeJoint::Properties jointProperties1;
+      jointProperties1.mName = "joint1";
 
-      //   body 2
-      FreeJoint::Properties properties2;
-      properties2.mName = "joint 2";
+      BodyNode::Properties bodyProperties1;
+      bodyProperties1.mName = "body1";
+
+      bn1 = skeleton->createJointAndBodyNodePair<FreeJoint>(
+        nullptr, jointProperties1, bodyProperties1).second;
+
+      // body 2
+      FreeJoint::Properties jointProperties2;
+      jointProperties2.mName = "joint 2";
+
+      BodyNode::Properties bodyProperties2;
+      bodyProperties2.mName = "body2";
+
       bn2 = skeleton->createJointAndBodyNodePair<FreeJoint>(
-                        nullptr, properties2, 
-                        BodyNode::Properties(std::string("body2"))).second;
+        nullptr,  jointProperties2, bodyProperties2).second;
 
       MetaSkeletonStateSpace space(skeleton);
       spacePtr = std::make_shared<MetaSkeletonStateSpace>(space);

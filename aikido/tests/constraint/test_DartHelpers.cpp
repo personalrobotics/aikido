@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <dart/dynamics/dynamics.h>
-#include <dart/common/StlHelpers.h>
+#include <dart/dynamics/dynamics.hpp>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>

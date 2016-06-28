@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
 

@@ -8,7 +8,7 @@ namespace control{
 BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
   ::dart::dynamics::ChainPtr _finger, int _proximal, int _distal,
   ::dart::collision::CollisionDetectorPtr _collisionDetector,
-  ::dart::collision::Option _collisionOptions)
+  ::dart::collision::CollisionOption _collisionOptions)
 : mFinger(std::move(_finger))
 , mCollisionDetector(std::move(_collisionDetector))
 , mCollisionOptions(std::move(_collisionOptions))
@@ -92,7 +92,6 @@ void BarrettFingerPositionCommandExecutor::terminate()
 void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
 {
   using std::chrono::milliseconds; 
-  using ::dart::collision::Result;
 
   std::lock_guard<std::mutex> lock(mMutex);
 
@@ -103,10 +102,10 @@ void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
   double proximalPosition = mProximalDof->getPosition();
 
   // Check distal collision
-  Result collisionResult;
+  ::dart::collision::CollisionResult collisionResult;
   bool distalCollision = mCollisionDetector->collide(
     mDistalCollisionGroup.get(), mCollideWith.get(),
-    mCollisionOptions, collisionResult);
+    mCollisionOptions, &collisionResult);
 
   if (distalCollision)
   {
@@ -150,7 +149,7 @@ void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
   // Check proximal collision 
   bool proximalCollision = mCollisionDetector->collide(
     mProximalCollisionGroup.get(), mCollideWith.get(),
-    mCollisionOptions, collisionResult);
+    mCollisionOptions, &collisionResult);
 
   if (proximalCollision){
     mDistalOnly = true;

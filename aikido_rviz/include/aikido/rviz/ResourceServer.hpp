@@ -3,7 +3,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <microhttpd.h>
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 
 namespace aikido {
 namespace rviz {

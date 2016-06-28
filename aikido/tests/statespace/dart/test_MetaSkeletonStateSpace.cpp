@@ -6,7 +6,7 @@
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <gtest/gtest.h>
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 
 using Eigen::Isometry3d;
 using Eigen::Vector3d;

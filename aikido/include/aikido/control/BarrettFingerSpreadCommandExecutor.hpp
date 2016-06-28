@@ -1,10 +1,10 @@
 #ifndef AIKIDO_CONTROL_BARRETFINGERSPREADCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETFINGERSPREADCOMMANDEXECUTOR_HPP_
-#include <dart/collision/CollisionDetector.h>
-#include <dart/collision/Option.h>
-#include <dart/collision/CollisionGroup.h>
-#include <dart/collision/CollisionFilter.h>
-#include <dart/dynamics/dynamics.h>
+#include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/Option.hpp>
+#include <dart/collision/CollisionGroup.hpp>
+#include <dart/collision/CollisionFilter.hpp>
+#include <dart/dynamics/dynamics.hpp>
 #include <future>
 #include <mutex>
 #include <condition_variable>
@@ -29,8 +29,8 @@ public:
   BarrettFingerSpreadCommandExecutor(
     std::array<::dart::dynamics::ChainPtr, 2> _fingers, int _spread, 
     ::dart::collision::CollisionDetectorPtr _collisionDetector,
-    ::dart::collision::Option _collisionOptions = ::dart::collision::Option(
-      false, true, 1));
+    ::dart::collision::CollisionOption _collisionOptions
+      = ::dart::collision::CollisionOption(false, 1));
 
   /// Sets variables to move the spread joint by _goalPosition,
   /// joint limit has reached, or until collision is detected.
@@ -68,7 +68,7 @@ private:
   std::pair<double, double> mDofLimits;
 
   ::dart::collision::CollisionDetectorPtr mCollisionDetector;
-  ::dart::collision::Option mCollisionOptions;
+  ::dart::collision::CollisionOption mCollisionOptions;
 
   ::dart::collision::CollisionGroupPtr mSpreadCollisionGroup;
 

@@ -45,7 +45,7 @@ class StepSequence::const_iterator
 {
 public:
   /// Return the value of the iterator
-  double dereference() const;
+  double const& dereference() const;
 
   /// Increment the sequence
   void increment();
@@ -60,10 +60,12 @@ private:
       : mSeq(seq)
       , mStep(step)
   {
+    mValue = (*mSeq)[mStep];
   }
 
   StepSequence *mSeq;
   int mStep;
+  double mValue;
 };
 
 }  // util

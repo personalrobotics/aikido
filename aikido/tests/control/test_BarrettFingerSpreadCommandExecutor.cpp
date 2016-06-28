@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/control/BarrettFingerSpreadCommandExecutor.hpp>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 
 #include <chrono>
 
@@ -16,7 +16,14 @@ using ::dart::dynamics::RevoluteJoint;
 using namespace dart::dynamics;
 using namespace dart::collision;
 using namespace dart::simulation;
-using namespace dart::gui;
+
+static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
+{
+  BodyNode::Properties properties;
+  properties.mName = _name;
+  return properties;
+}
+
 class BarrettFingerSpreadCommandExecutorTest : public testing::Test
 {
 public:
@@ -29,8 +36,8 @@ public:
 
     // Create a shpae node for visualization and collision checking
     auto shapeNode
-        = bn->createShapeNodeWith<VisualAddon,
-          CollisionAddon, DynamicsAddon>(fingerShape);
+        = bn->createShapeNodeWith<VisualAspect,
+          CollisionAspect, DynamicsAspect>(fingerShape);
 
     // Set the location of the shape node
     Eigen::Isometry3d box_tf(Eigen::Isometry3d::Identity());
@@ -53,8 +60,7 @@ public:
     properties1.mAxis = spreadAxis;
     properties1.mName = "Joint1";
     auto bn1 = finger->createJointAndBodyNodePair<RevoluteJoint>(
-      nullptr, properties1, 
-      BodyNode::Properties(std::string("spread"))).second;
+      nullptr, properties1, create_BodyNodeProperties("spread")).second;
     bn1->getParentJoint()->setTransformFromParentBodyNode(transform);
     bn1->getParentJoint()->setPositionUpperLimit(0, M_PI);
     bn1->getParentJoint()->setPositionLowerLimit(0, 0);  
@@ -64,8 +70,7 @@ public:
     properties2.mAxis = Eigen::Vector3d::UnitY();
     properties2.mName = "Joint2";
     auto bn2 = finger->createJointAndBodyNodePair<RevoluteJoint>(
-      bn1, properties2, 
-      BodyNode::Properties(std::string("proximal"))).second;
+      bn1, properties2, create_BodyNodeProperties("proximal")).second;
     bn2->getParentJoint()->setPositionUpperLimit(0, M_PI);
     bn2->getParentJoint()->setPositionLowerLimit(0, -M_PI);    
     setGeometry(bn2);
@@ -76,14 +81,12 @@ public:
     properties3.mName = "Joint3";
     properties3.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
     auto bn3 = finger->createJointAndBodyNodePair<RevoluteJoint>(
-      bn2, properties3, 
-      BodyNode::Properties(std::string("distal"))).second;
+      bn2, properties3, create_BodyNodeProperties("distal")).second;
     bn3->getParentJoint()->setPositionUpperLimit(0, M_PI);
     bn3->getParentJoint()->setPositionLowerLimit(0, -M_PI);    
     setGeometry(bn3);
 
-    Chain::IncludeBoth_t t;
-    return Chain::create(bn1, bn3, t);
+    return Chain::create(bn1, bn3, Chain::IncludeBoth);
   }
 
   /// \param transform pose of ball
@@ -97,7 +100,7 @@ public:
     auto skeleton = Skeleton::create("Ball");
     auto ballBody = skeleton->createJointAndBodyNodePair<FreeJoint>(
       nullptr).second;
-      ballBody->createShapeNodeWith<VisualAddon, CollisionAddon, DynamicsAddon>(
+      ballBody->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(
         ballShape);
     ballBody->getParentJoint()->setTransformFromParentBodyNode(
       transform);

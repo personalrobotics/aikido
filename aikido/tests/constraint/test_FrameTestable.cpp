@@ -44,6 +44,13 @@ private:
   std::shared_ptr<SE3> mStateSpace;
 };
 
+static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
+{
+  BodyNode::Properties properties;
+  properties.mName = _name;
+  return properties;
+}
+
 class FrameTestableTest : public ::testing::Test
 {
 public:
@@ -56,8 +63,7 @@ public:
     properties1.mAxis = Eigen::Vector3d::UnitZ();
     properties1.mName = "j1";
     auto bn1 = robot->createJointAndBodyNodePair<RevoluteJoint>(
-                          nullptr, properties1,
-                          BodyNode::Properties(std::string("b1"))).second;
+      nullptr, properties1, create_BodyNodeProperties("b1")).second;
 
     // Joint 2
     RevoluteJoint::Properties properties2;
@@ -65,8 +71,7 @@ public:
     properties2.mName = "j2";
     properties2.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0, 1, 0);
     auto bn2 = robot->createJointAndBodyNodePair<RevoluteJoint>(
-                          bn1, properties2,
-                          BodyNode::Properties(std::string("b2"))).second;
+      bn1, properties2, create_BodyNodeProperties("b2")).second;
 
     // End effector
     RevoluteJoint::Properties propertiesEE;
@@ -74,8 +79,7 @@ public:
     propertiesEE.mName = "ee";
     propertiesEE.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0, 1, 0);
     endEffector = robot->createJointAndBodyNodePair<RevoluteJoint>(
-                             bn2, propertiesEE,
-                             BodyNode::Properties(std::string("b3"))).second;
+      bn2, propertiesEE, create_BodyNodeProperties("b3")).second;
 
     // Statespace
     stateSpace = std::make_shared<MetaSkeletonStateSpace>(robot);

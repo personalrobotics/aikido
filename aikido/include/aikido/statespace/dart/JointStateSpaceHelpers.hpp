@@ -1,7 +1,7 @@
 #ifndef AIKIDO_STATESPACE_DART_JOINTSTATESPACEHELPERS_HPP_
 #define AIKIDO_STATESPACE_DART_JOINTSTATESPACEHELPERS_HPP_
 #include <memory>
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 #include "JointStateSpace.hpp"
 
 namespace aikido {

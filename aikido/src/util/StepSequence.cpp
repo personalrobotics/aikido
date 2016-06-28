@@ -61,14 +61,15 @@ int StepSequence::getMaxSteps() const
   }
 }
 
-double StepSequence::const_iterator::dereference() const
+double const& StepSequence::const_iterator::dereference() const
 {
-  return (*mSeq)[mStep];
+  return mValue;
 }
 
 void StepSequence::const_iterator::increment()
 {
   mStep = std::min(mSeq->getMaxSteps(), mStep + 1);
+  mValue = (*mSeq)[mStep];
 }
 
 bool StepSequence::const_iterator::equal(

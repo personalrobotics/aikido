@@ -33,6 +33,13 @@ using dart::dynamics::RevoluteJoint;
 using dart::dynamics::InverseKinematics;
 using dart::dynamics::InverseKinematicsPtr;
 
+static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
+{
+  BodyNode::Properties bodyProperties;
+  bodyProperties.mName = _name;
+  return bodyProperties;
+}
+
 class InverseKinematicsSampleableTest : public ::testing::Test
 {
 protected:
@@ -48,9 +55,9 @@ protected:
     RevoluteJoint::Properties properties1;
     properties1.mAxis = Eigen::Vector3d::UnitY();
     properties1.mName = "Joint1";
+
     bn1 = mManipulator1->createJointAndBodyNodePair<RevoluteJoint>(
-      nullptr, properties1, 
-      BodyNode::Properties(std::string("root_body"))).second;
+      nullptr, properties1, create_BodyNodeProperties("root_body")).second;
 
     // joint 2, body 2
     RevoluteJoint::Properties properties2;
@@ -58,8 +65,7 @@ protected:
     properties2.mName = "Joint2";
     properties2.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
     bn2 = mManipulator1->createJointAndBodyNodePair<RevoluteJoint>(
-      bn1, properties2, 
-      BodyNode::Properties(std::string("second_body"))).second;
+      bn1, properties2, create_BodyNodeProperties("second_body")).second;
 
     mInverseKinematics1 = InverseKinematics::create(bn2);
     mStateSpace1 = std::make_shared<MetaSkeletonStateSpace>(mManipulator1);
@@ -72,8 +78,7 @@ protected:
     FreeJoint::Properties properties3;
     properties3.mName = "Joint1";
     bn3 = mManipulator2->createJointAndBodyNodePair<FreeJoint>(
-      nullptr, properties3, 
-      BodyNode::Properties(std::string("root_body"))).second;
+      nullptr, properties3, create_BodyNodeProperties("root_body")).second;
     
     // Joint 2, body 2
     RevoluteJoint::Properties properties4;
@@ -81,8 +86,7 @@ protected:
     properties4.mName = "Joint2";
     properties4.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0,0,1);
     bn4 = mManipulator2->createJointAndBodyNodePair<RevoluteJoint>(
-      bn3, properties4, 
-      BodyNode::Properties(std::string("second_body"))).second;
+      bn3, properties4,  create_BodyNodeProperties("second_body")).second;
 
     mInverseKinematics2 = InverseKinematics::create(bn4);
     mStateSpace2 = std::make_shared<MetaSkeletonStateSpace>(mManipulator2);

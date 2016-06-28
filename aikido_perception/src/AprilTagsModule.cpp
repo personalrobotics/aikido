@@ -1,6 +1,7 @@
 #include <aikido/perception/AprilTagsModule.hpp>
 #include <aikido/perception/shape_conversions.hpp>
-#include <dart/common/Console.h>
+#include <dart/common/Console.hpp>
+#include <dart/utils/urdf/DartLoader.hpp>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <ros/topic.h>

@@ -9,7 +9,7 @@ namespace control{
 BarrettFingerSpreadCommandExecutor::BarrettFingerSpreadCommandExecutor(
   std::array<::dart::dynamics::ChainPtr, 2> _fingers, int _spread, 
   ::dart::collision::CollisionDetectorPtr _collisionDetector,
-  ::dart::collision::Option _collisionOptions)
+  ::dart::collision::CollisionOption _collisionOptions)
 : mFingers(std::move(_fingers))
 , mCollisionDetector(std::move(_collisionDetector))
 , mCollisionOptions(std::move(_collisionOptions))
@@ -118,7 +118,6 @@ std::future<void> BarrettFingerSpreadCommandExecutor::execute(
 void BarrettFingerSpreadCommandExecutor::step(double _timeSincePreviousCall)
 {
   using std::chrono::milliseconds; 
-  using ::dart::collision::Result;
 
   // Terminate the thread if mRunning is false.
   std::lock_guard<std::mutex> lock(mMutex);
@@ -144,10 +143,10 @@ void BarrettFingerSpreadCommandExecutor::step(double _timeSincePreviousCall)
   }
   
   // Check collision 
-  Result collisionResult;
+  ::dart::collision::CollisionResult collisionResult;
   bool collision = mCollisionDetector->collide(
     mSpreadCollisionGroup.get(), mCollideWith.get(),
-    mCollisionOptions, collisionResult);
+    mCollisionOptions, &collisionResult);
 
   // Termination condition
   if (collision || std::abs(spread - mGoalPosition) < kTolerance)
