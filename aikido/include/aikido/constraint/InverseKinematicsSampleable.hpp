@@ -3,7 +3,7 @@
 
 #include "Sampleable.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 
 namespace aikido {
 namespace constraint {

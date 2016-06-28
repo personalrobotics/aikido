@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::Rn;

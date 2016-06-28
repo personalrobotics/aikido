@@ -1,4 +1,4 @@
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include <aikido/rviz/ResourceServer.hpp>
@@ -8,8 +8,8 @@
 using interactive_markers::InteractiveMarkerServer;
 using visualization_msgs::InteractiveMarkerControl;
 using visualization_msgs::Marker;
-using dart::dynamics::CollisionAddon;
-using dart::dynamics::VisualAddon;
+using dart::dynamics::CollisionAspect;
+using dart::dynamics::VisualAspect;
 using dart::dynamics::ShapeFrame;
 using dart::dynamics::ConstShapePtr;
 using aikido::rviz::ShapeFrameMarker;
@@ -89,13 +89,13 @@ bool ShapeFrameMarker::update()
 
   // Otherwise, create a new marker.
   const ConstShapePtr shape = mShapeFrame->getShape();
-  const VisualAddon *visualAddon = mShapeFrame->getVisualAddon();
-  const CollisionAddon *collisionAddon = mShapeFrame->getCollisionAddon();
+  const VisualAspect *visualAspect = mShapeFrame->getVisualAspect();
+  const CollisionAspect *collisionAspect = mShapeFrame->getCollisionAspect();
 
   const bool showVisual
-    = mShowVisual && visualAddon && !visualAddon->isHidden();
+    = mShowVisual && visualAspect && !visualAspect->isHidden();
   const bool showCollision
-    = mShowCollision && collisionAddon && collisionAddon->isCollidable();
+    = mShowCollision && collisionAspect && collisionAspect->isCollidable();
   
   if (showVisual || showCollision) {
     mVisualControl->markers.resize(1);
@@ -116,7 +116,7 @@ bool ShapeFrameMarker::update()
     if (mColor) {
       marker.color = convertEigenToROSColorRGBA(*mColor);
     } else if (showVisual) {
-      marker.color = convertEigenToROSColorRGBA(visualAddon->getRGBA());
+      marker.color = convertEigenToROSColorRGBA(visualAspect->getRGBA());
     } else if (showCollision) {
       marker.color = convertEigenToROSColorRGBA(COLLISION_COLOR);
     } else {

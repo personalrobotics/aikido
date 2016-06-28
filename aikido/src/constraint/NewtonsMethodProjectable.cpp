@@ -2,7 +2,7 @@
 #include <limits>
 #include <aikido/util/PseudoInverse.hpp>
 #include <math.h>
-#include <dart/math/Geometry.h>
+#include <dart/math/Geometry.hpp>
 #include <iostream>
 
 namespace aikido{

@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_FRAMEPAIRDIFFERENTIABLE_HPP_
 #define AIKIDO_CONSTRAINT_FRAMEPAIRDIFFERENTIABLE_HPP_
 
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 #include "Differentiable.hpp"
 #include <Eigen/Dense>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"

@@ -7,7 +7,7 @@
 #include "Projectable.hpp"
 #include "Differentiable.hpp"
 #include "Testable.hpp"
-#include <dart/math/MathTypes.h>
+#include <dart/math/MathTypes.hpp>
 
 namespace aikido {
 namespace constraint {

@@ -2,8 +2,8 @@
 #include <sstream>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/dart/JointStateSpaceHelpers.hpp>
-#include <dart/common/StlHelpers.h>
-#include <dart/common/Console.h>
+#include <dart/common/StlHelpers.hpp>
+#include <dart/common/Console.hpp>
 
 using ::dart::dynamics::MetaSkeleton;
 using ::dart::dynamics::MetaSkeletonPtr;

@@ -41,7 +41,7 @@ include(CMakeParseArguments)
 find_package(Boost COMPONENTS filesystem python)
 list(APPEND AIKIDO_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 
-find_package(DART REQUIRED COMPONENTS core)
+find_package(DART REQUIRED COMPONENTS optimizer-nlopt)
 list(APPEND AIKIDO_INCLUDE_DIRS ${DART_INCLUDE_DIRS})
 
 find_package(TinyXML2 REQUIRED)

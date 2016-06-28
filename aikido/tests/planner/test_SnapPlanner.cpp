@@ -8,7 +8,7 @@
 #include <aikido/constraint/NonColliding.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/constraint/Testable.hpp>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 #include <tuple>
 
 using std::shared_ptr;

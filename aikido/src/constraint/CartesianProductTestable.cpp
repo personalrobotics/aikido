@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
 
 namespace aikido

@@ -1,7 +1,7 @@
 #include <assimp/cexport.h>
 #include <boost/filesystem.hpp>
 #include <Eigen/StdVector>
-#include <dart/dynamics/dynamics.h>
+#include <dart/dynamics/dynamics.hpp>
 #include <aikido/rviz/shape_conversions.hpp>
 #include <aikido/rviz/ResourceServer.hpp>
 

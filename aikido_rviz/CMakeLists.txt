@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
 )
 
-find_package(DART REQUIRED COMPONENTS core)
+find_package(DART REQUIRED)
 find_package(Boost REQUIRED filesystem python)
 find_package(PythonLibs REQUIRED)
 

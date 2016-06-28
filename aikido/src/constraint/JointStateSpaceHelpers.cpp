@@ -5,7 +5,7 @@
 #include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
 namespace constraint {

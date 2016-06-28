@@ -1,9 +1,9 @@
-#include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 #include <chrono>
 #include <thread>
-#include <dart/common/StlHelpers.h>
-
+#include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 #include <aikido/statespace/SO2.hpp>
+#include <dart/common/StlHelpers.hpp>
+
 using aikido::statespace::SO2;
 
 namespace aikido{

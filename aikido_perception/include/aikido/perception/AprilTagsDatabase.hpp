@@ -2,7 +2,7 @@
 #define AIKIDO_PERCEPTION_APRILTAGS_DATABASE_H
 
 #include <Eigen/Dense>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 
 namespace aikido{
 namespace perception{

@@ -1,5 +1,5 @@
 #include <aikido/perception/shape_conversions.hpp>
-#include <dart/common/Console.h>
+#include <dart/common/Console.hpp>
 
 namespace aikido {
 

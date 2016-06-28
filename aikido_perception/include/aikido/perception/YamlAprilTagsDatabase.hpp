@@ -4,8 +4,8 @@
 #include "yaml-cpp/yaml.h"
 #include <aikido/perception/eigen_yaml.hpp>
 #include <aikido/util/CatkinResourceRetriever.hpp>
-#include <dart/common/LocalResourceRetriever.h>
-#include <dart/dart.h>
+#include <dart/common/LocalResourceRetriever.hpp>
+#include <dart/dart.hpp>
 #include <Eigen/Geometry>
 #include "AprilTagsDatabase.hpp"
 #include <stdexcept>

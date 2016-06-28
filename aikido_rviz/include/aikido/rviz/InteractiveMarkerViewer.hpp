@@ -4,8 +4,8 @@
 #include <set>
 #include <thread>
 #include <ros/ros.h>
-#include <dart/dynamics/Frame.h>
-#include <dart/dynamics/SmartPointer.h>
+#include <dart/dynamics/Frame.hpp>
+#include <dart/dynamics/SmartPointer.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include "SmartPointers.hpp"
 

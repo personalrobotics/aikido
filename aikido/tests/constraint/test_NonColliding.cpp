@@ -4,7 +4,7 @@
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <dart/dart.h>
+#include <dart/dart.hpp>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
@@ -36,7 +36,7 @@ protected:
     Eigen::Vector3d boxSize(0.5, 0.5, 0.5);
     std::shared_ptr<BoxShape> boxShape(new BoxShape(boxSize));
     auto shapeNode = boxNode->createShapeNodeWith
-                      <VisualAddon, CollisionAddon, DynamicsAddon>(boxShape);
+                      <VisualAspect, CollisionAspect, DynamicsAspect>(boxShape);
 
     // Set shapes on the bodies.
     Eigen::Vector3d shape(0.2, 0.2, 0.7);
@@ -44,7 +44,7 @@ protected:
 
     // Create a shpae node for visualization and collision checking
     auto shapeNode1 = bn1->createShapeNodeWith
-                      <VisualAddon, CollisionAddon, DynamicsAddon>(box);
+                      <VisualAspect, CollisionAspect, DynamicsAspect>(box);
 
     // Add skeleton to world
     mCollisionDetector = FCLCollisionDetector::create();
@@ -73,8 +73,8 @@ public:
   std::shared_ptr<CollisionGroup> mCollisionGroup1;
   std::shared_ptr<CollisionGroup> mCollisionGroup2;
   std::shared_ptr<CollisionGroup> mCollisionGroup3;
-  dart::collision::Option mCollisionOption;
-  dart::collision::Result mCollisionResult;
+  dart::collision::CollisionOption mCollisionOption;
+  dart::collision::CollisionResult mCollisionResult;
 
   // statespace setup
   MetaSkeletonStateSpacePtr mStateSpace;

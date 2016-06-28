@@ -6,7 +6,7 @@
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
 #include "DynamicPath.h"
 
 using Eigen::Vector2d;

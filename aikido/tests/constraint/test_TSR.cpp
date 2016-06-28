@@ -2,11 +2,11 @@
 #include <aikido/constraint/Differentiable.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/util/RNG.hpp>
-#include <dart/common/StlHelpers.h>
+#include <dart/common/StlHelpers.hpp>
+#include <dart/math/Geometry.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <dart/math/Geometry.h>
 
 using aikido::constraint::TSR;
 using aikido::constraint::ConstraintType;
