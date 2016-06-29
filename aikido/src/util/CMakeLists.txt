@@ -4,6 +4,7 @@ aikido_add_library("${PROJECT_NAME}_util"
   VanDerCorput.cpp
   StepSequence.cpp
   RNG.cpp
+  stream.cpp
 )
 target_link_libraries("${PROJECT_NAME}_util"
   ${Boost_FILESYSTEM_LIBRARY}
