@@ -3,6 +3,7 @@ aikido_add_library("${PROJECT_NAME}_util"
   PseudoInverse.cpp
   VanDerCorput.cpp
   StepSequence.cpp
+  KinBodyParser.cpp
   RNG.cpp
   stream.cpp
 )

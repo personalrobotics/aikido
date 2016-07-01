@@ -1,0 +1,9 @@
+1. Can be either RN or SO2 -> Check if can be downcasted to either
+
+2. Let the timestep be a parameter
+
+3. Use getDerivative of trajectory to get velocity and acceleration
+
+4. Check that it is metaskeleton state space and dof names respect that ordering
+
+5. SO2 is a single effective value
