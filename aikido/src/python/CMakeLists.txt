@@ -1,22 +1,13 @@
-if(NOT Boost_PYTHON_FOUND)
-  message(STATUS "Skipping Python bindings - Boost.Python not found")
-  return()
-endif()
+find_package(chimera QUIET)
+aikido_check_package(chimera "Python bindings" "Chimera")
 
-if(NOT chimera_FOUND)
-  message(STATUS "Skipping Python bindings - Chimera not found")
-  return()
-endif()
+find_package(PythonInterp QUIET)
+aikido_check_package(PYTHONINTERP "Python bindings" "Python interpreter")
 
-if(NOT PYTHONINTERP_FOUND)
-  message(STATUS "Skipping Python bindings - Python interpreter not found")
-  return()
-endif()
+find_package(PythonLibs QUIET)
+aikido_check_package(PYTHONLIBS "Python bindings" "Python libraries")
 
-if(NOT PYTHONLIBS_FOUND)
-  message(STATUS "Skipping Python bindings - Python libraries not found")
-  return()
-endif()
+aikido_check_package(Boost_PYTHON "Python bindings" "Boost.Python")
  
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
   "from distutils.sysconfig import get_python_lib;\

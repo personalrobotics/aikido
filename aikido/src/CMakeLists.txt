@@ -1,6 +1,7 @@
 add_subdirectory("external/hauser_parabolic_smoother")
 
 add_subdirectory("util")
+add_subdirectory("perception")
 add_subdirectory("statespace")
 add_subdirectory("distance")   # Dependencies: statespace
 add_subdirectory("trajectory") # Dependencies: statespace

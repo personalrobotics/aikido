@@ -1,7 +1,5 @@
-if(NOT ${OMPL_FOUND})
-  message(STATUS "Skipping OMPL bindings - OMPL not found")
-  return()
-endif()
+find_package(OMPL QUIET)
+aikido_check_package(OMPL "aikido::planner::ompl" "OMPL")
 
 aikido_add_library("${PROJECT_NAME}_planner_ompl"
   CRRT.cpp
