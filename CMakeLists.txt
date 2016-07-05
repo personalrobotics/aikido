@@ -11,6 +11,8 @@ endif()
 
 project(aikido)
 
+set(_CATKIN_CONFIG_ALL_INCLUDED_ true)
+
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
 
 #==============================================================================
@@ -127,8 +129,11 @@ include(FindPkgConfig)
 find_package(Boost COMPONENTS filesystem)
 aikido_include_directories(${Boost_INCLUDE_DIRS})
 
-# TODO: utils-urdf should only be required for aikido::perception.
-find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf)
+# Find DART in CONFIG mode to avoid finding built-in "FindDart.cmake" file,
+# which shipped with CMake, on case-insensitive file systems. This is
+# particularly a problem on OS X, which is generally case-insensitive.
+# TODO: utils-urdf should only be required for aikido::perception
+find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
 aikido_include_directories(${DART_INCLUDE_DIRS})
 
 find_package(TinyXML2 REQUIRED)
@@ -141,16 +146,22 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories("include" "src")
 
+# Create "test" and "run_tests" targets to mimic a Catkin package. "tests"
+# builds tests and "run_tests" (a synonym for "test") runs them. This MUST
+# occur before we find_package() any Catkin packages because they attempt to
+# re-define these targets.
+add_custom_target(tests)
+add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+
+set(CATKIN_ENABLE_TESTING false)
+
 add_subdirectory("src")
 
 enable_testing()
 add_subdirectory("tests" EXCLUDE_FROM_ALL)
 
-# Targets to mimic a Catkin package. "tests" builds tests and "test" (or
-# "run_tests") runs them.
 get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
-add_custom_target(tests DEPENDS ${all_tests})
-add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+add_dependencies(tests ${all_tests})
 
 #==============================================================================
 # Doxygen.

@@ -9,3 +9,5 @@ target_link_libraries("${PROJECT_NAME}_control"
   "${PROJECT_NAME}_trajectory"
   ${DART_LIBRARIES}
 )
+
+add_subdirectory("ros") # Dependencies: control, statespace, trajectory

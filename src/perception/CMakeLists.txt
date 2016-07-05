@@ -23,15 +23,7 @@ aikido_check_package(visualization_msgs "aikido::perception"
   "visualization_msgs")
 aikido_include_directories(${visualization_msgs_INCLUDE_DIRS})
 
-# TODO: Workaround because find_package(tf) imports "tests" and "run_tests"
-# targets that conflict with the targets defined by Aikido.
-set(tf_FOUND true)
-find_path(tf_INCLUDE_DIRS tf
-  PATHS "/opt/ros/indigo/include"
-  PATH_SUFFIXES "tf/tf.h")
-find_library(tf_LIBRARIES tf
-  PATHS "/opt/ros/indigo/lib")
-
+find_package(tf QUIET)
 aikido_check_package(tf "aikido::perception" "tf")
 aikido_include_directories(${tf_INCLUDE_DIRS})
 

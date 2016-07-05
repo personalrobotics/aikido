@@ -11,6 +11,7 @@
   <depend>boost</depend>
   <depend>dart</depend>
   <depend>eigen</depend>
+  <depend>libmicrohttpd</depend>
   <depend>ompl</depend>
   <depend>python</depend>
   <depend>tinyxml2</depend>
