@@ -20,50 +20,37 @@ class RosTrajectoryExecutor : public aikido::control::TrajectoryExecutor
 public:
   RosTrajectoryExecutor(
     ::dart::dynamics::SkeletonPtr skeleton, 
-    std::chrono::milliseconds period,
-    const std::string& serverName,
     ::ros::NodeHandle node,
-    double trajTimeStep);
+    const std::string& serverName,
+    double timestep);
 
   virtual ~RosTrajectoryExecutor();
 
   std::future<void> execute(trajectory::TrajectoryPtr _traj) override;
 
-private:
-  using TrajectoryClient
-    = actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>;
-
   /// Simulates mTraj. To be executed on a separate thread.
   void spin();
 
+private:
+  using TrajectoryActionClient
+    = actionlib::ActionClient<control_msgs::FollowJointTrajectoryAction>;
+  using GoalHandle = TrajectoryActionClient::GoalHandle;
+
+  void transitionCallback(GoalHandle _handle);
+
   ::ros::NodeHandle mNode;
+  ::ros::CallbackQueue mCallbackQueue;
+  TrajectoryActionClient mClient;
+  TrajectoryActionClient::GoalHandle mGoalHandle;
 
   ::dart::dynamics::SkeletonPtr mSkeleton;
-  std::unique_ptr<std::promise<void>> mPromise;
-  trajectory::TrajectoryPtr mTraj;
+  double mTimestep;
 
-  std::string mServerName;
+  bool mInProgress;
+  std::promise<void> mPromise;
+  trajectory::TrajectoryPtr mTrajectory;
 
-  /// The time resolution at which to publish trajectory
-  double mTrajTimeStep;
-
-  /// spin()'s trajectory execution cycle.
-  std::chrono::milliseconds mPeriod;
-
-  /// Blocks spin() until execute(...) is called; paired with mSpinLock.
-  std::condition_variable mCv;
-
-  /// Lock for keeping spin thread alive and executing a trajectory. 
-  /// Manages access on mTraj, mPromise, mRunning
-  std::mutex mSpinMutex;
-
-  /// Thread for spin().
-  std::thread mThread;
-
-  /// Flag for killing spin thread. 
-  bool mRunning;
-
-  TrajectoryClient mTrajClientPtr;
+  std::mutex mMutex;
 };
 
 } // namespace ros
