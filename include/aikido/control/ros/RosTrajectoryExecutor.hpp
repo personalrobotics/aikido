@@ -1,15 +1,19 @@
-#ifndef ROS_TRAJECTORYEXECUTOR_HPP
-#define ROS_TRAJECTORYEXECUTOR_HPP
-#include <aikido/control/TrajectoryExecutor.hpp>
-#include <aikido/trajectory/Trajectory.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-
+#ifndef AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTOR_HPP_
+#define AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTOR_HPP_
+#include <chrono>
 #include <future>
 #include <mutex>
-#include <condition_variable>
-#include <control_msgs/FollowJointTrajectoryAction.h>
 #include <ros/ros.h>
-#include <actionlib/client/simple_action_client.h>
+#include <ros/callback_queue.h>
+#include <control_msgs/FollowJointTrajectoryAction.h>
+#include <dart/dart.hpp>
+#include <aikido/control/TrajectoryExecutor.hpp>
+#include <aikido/trajectory/Trajectory.hpp>
+
+// actionlib and DART both #define this macro.
+#undef DEPRECATED
+#include <actionlib/client/action_client.h>
+#undef DEPRECATED
 
 namespace aikido {
 namespace control {
@@ -19,10 +23,16 @@ class RosTrajectoryExecutor : public aikido::control::TrajectoryExecutor
 {
 public:
   RosTrajectoryExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton, 
+    ::dart::dynamics::MetaSkeletonPtr skeleton, 
     ::ros::NodeHandle node,
     const std::string& serverName,
-    double timestep);
+    double timestep,
+    double goalTimeTolerance,
+    std::chrono::milliseconds connectionTimeout
+      = std::chrono::milliseconds{1000},
+    std::chrono::milliseconds connectionPollingRate
+      = std::chrono::milliseconds{20}
+  );
 
   virtual ~RosTrajectoryExecutor();
 
@@ -36,6 +46,8 @@ private:
     = actionlib::ActionClient<control_msgs::FollowJointTrajectoryAction>;
   using GoalHandle = TrajectoryActionClient::GoalHandle;
 
+  bool waitForServer();
+
   void transitionCallback(GoalHandle _handle);
 
   ::ros::NodeHandle mNode;
@@ -43,8 +55,12 @@ private:
   TrajectoryActionClient mClient;
   TrajectoryActionClient::GoalHandle mGoalHandle;
 
-  ::dart::dynamics::SkeletonPtr mSkeleton;
+  ::dart::dynamics::MetaSkeletonPtr mSkeleton;
   double mTimestep;
+  double mGoalTimeTolerance;
+
+  std::chrono::milliseconds mConnectionTimeout;
+  std::chrono::milliseconds mConnectionPollingRate;
 
   bool mInProgress;
   std::promise<void> mPromise;
@@ -57,4 +73,4 @@ private:
 } // namespace control
 } // namespace aikido
 
-#endif
+#endif // ifndef AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTOR_HPP_

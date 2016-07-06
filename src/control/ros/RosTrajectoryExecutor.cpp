@@ -1,51 +1,87 @@
 #include <aikido/control/ros/RosTrajectoryExecutor.hpp>
-#include <aikido/statespace/SO2.hpp>
-#include <aikido/statespace/Rn.hpp>
-#include <trajectory_msgs/JointTrajectory.h>
-#include <chrono>
-#include <thread>
-#include <Eigen/Core>
-#include <algorithm>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/util/StepSequence.hpp>
 
 namespace aikido {
 namespace control {
 namespace ros {
+namespace {
 
-RosTrajectoryExecutor::RosTrajectoryExecutor( 
-      ::dart::dynamics::SkeletonPtr skeleton,
+//=============================================================================
+std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
+{
+  using Result = control_msgs::FollowJointTrajectoryResult;
+
+  switch (errorCode)
+  {
+    case Result::SUCCESSFUL:
+      return "successful";
+
+    case Result::INVALID_GOAL:
+      return "invalid goal";
+
+    case Result::INVALID_JOINTS:
+      return "invalid joints";
+
+    case Result::OLD_HEADER_TIMESTAMP:
+      return "old header timestamp";
+
+    case Result::PATH_TOLERANCE_VIOLATED:
+      return "path tolerance violated";
+
+    case Result::GOAL_TOLERANCE_VIOLATED:
+      return "goal tolerance violated";
+
+    default:
+      return "unknown";
+  }
+}
+
+} // namespace
+
+//=============================================================================
+RosTrajectoryExecutor::RosTrajectoryExecutor(
+      ::dart::dynamics::MetaSkeletonPtr skeleton, 
       ::ros::NodeHandle node,
       const std::string& serverName,
-      double timestep)
-  : mNode(std::move(node))
-  , mCallbackQueue()
-  , mClient(mNode, serverName, &mCallbackQueue)
-  , mSkeleton(std::move(skeleton))
-  , mTimestep(timestep)
+      double timestep,
+      double goalTimeTolerance,
+      std::chrono::milliseconds connectionTimeout,
+      std::chrono::milliseconds connectionPollingRate)
+  : mNode{std::move(node)}
+  , mCallbackQueue{}
+  , mClient{mNode, serverName, &mCallbackQueue}
+  , mSkeleton{std::move(skeleton)}
+  , mTimestep{timestep}
+  , mGoalTimeTolerance{goalTimeTolerance}
+  , mConnectionTimeout{connectionTimeout}
+  , mConnectionPollingRate{connectionPollingRate}
 {
-  using std::chrono::duration;
-  using std::chrono::duration_cast;
-  using std::chrono::milliseconds;
-
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
 
   if (mTimestep <= 0)
     throw std::invalid_argument("Timestep must be positive.");
+
+  if (mGoalTimeTolerance <= 0)
+    throw std::invalid_argument("Goal time tolerance must be positive.");
 }
 
+//=============================================================================
 RosTrajectoryExecutor::~RosTrajectoryExecutor()
 {
   // Do nothing.
   // TODO: Should we wait for the current trajectory to finish executing?
 }
 
+//=============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
   trajectory::TrajectoryPtr _traj)
 {
   using statespace::dart::MetaSkeletonStateSpace;
 
   if (!_traj)
-    throw std::invalid_argument("Traj is null.");
+    throw std::invalid_argument("Trajectory is null.");
 
   const auto space = std::dynamic_pointer_cast<
     MetaSkeletonStateSpace>(_traj->getStateSpace());
@@ -55,7 +91,6 @@ std::future<void> RosTrajectoryExecutor::execute(
       "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
-  // Verify that 
   const auto trajectorySkeleton = space->getMetaSkeleton();
   for (const auto dof : mSkeleton->getDofs())
   {
@@ -69,30 +104,25 @@ std::future<void> RosTrajectoryExecutor::execute(
     }
   }
 
-  // Discretize time at the desired timestep.
-  const auto numDofs = mSkeleton->getNumDofs();
-  const auto numDerivatives = std::min<int>(_traj->getNumDerivatives(), 2);
-  const auto numWaypoints = static_cast<int>(
-    _traj->getDuration() / mTimestep + 1);
-  std::vector<double> waypointTimes;
-  waypointTimes.reserve(numWaypoints + 1);
-
-  for (int iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
-    waypointTimes.emplace_back(iwaypoint * mTimestep);
-
-  waypointTimes.emplace_back(_traj->getEndTime());
+  // Setup the goal properties.
+  // TODO: Also set the goal properties.
+  control_msgs::FollowJointTrajectoryGoal goal;
+  goal.goal_time_tolerance = ::ros::Duration(mGoalTimeTolerance);
 
   // Convert the Aikido trajectory into a ROS JointTrajectory.
-  control_msgs::FollowJointTrajectoryGoal goal;
+  util::StepSequence timeSequence{mTimestep, true, 0., _traj->getDuration()};
+  const auto numDofs = mSkeleton->getNumDofs();
+  const auto numWaypoints = timeSequence.getMaxSteps();
+  const auto numDerivatives = std::min<int>(_traj->getNumDerivatives(), 2);
 
   goal.trajectory.joint_names.reserve(numDofs);
   for (const auto dof : mSkeleton->getDofs())
     goal.trajectory.joint_names.emplace_back(dof->getName());
 
-  goal.trajectory.points.reserve(waypointTimes.size());
-  for (const auto timeFromStart : waypointTimes)
+  goal.trajectory.points.reserve(numWaypoints);
+  for (const auto timeFromStart : timeSequence)
   {
-    const auto timeAbsolute = _traj->getStartTime();
+    const auto timeAbsolute = _traj->getStartTime() + timeFromStart;
     trajectory_msgs::JointTrajectoryPoint waypoint;
 
     Eigen::VectorXd tangentVector;
@@ -120,49 +150,121 @@ std::future<void> RosTrajectoryExecutor::execute(
     goal.trajectory.points.emplace_back(waypoint);
   }
 
-  std::lock_guard<std::mutex> lock(mMutex);
+  if (!waitForServer())
+    throw std::runtime_error("Unable to connect to action server.");
 
-  if (mInProgress)
-    throw std::runtime_error("Another trajectory is in progress.");
+  {
+    std::lock_guard<std::mutex> lock(mMutex);
 
-  // TODO: Wait for actionlib to start up.
-  if (!mClient.isServerConnected())
-    throw std::runtime_error("Not connected to the ActionServer.");
+    if (mInProgress)
+      throw std::runtime_error("Another trajectory is in progress.");
 
-  mPromise = std::promise<void>();
-  mInProgress = true;
-  mGoalHandle = mClient.sendGoal(goal, 
-    boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
+    mPromise = std::promise<void>();
+    mInProgress = true;
+    mGoalHandle = mClient.sendGoal(goal, 
+      boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
 
-  return mPromise.get_future();
+    return mPromise.get_future();
+  }
 }
 
+//=============================================================================
+bool RosTrajectoryExecutor::waitForServer()
+{
+  using Clock = std::chrono::steady_clock;
+
+  const auto startTime = Clock::now();
+  const auto endTime = startTime + mConnectionTimeout;
+  auto currentTime = startTime + mConnectionPollingRate;
+
+  while (currentTime < endTime)
+  {
+    mCallbackQueue.callAvailable();
+
+    // TODO: Is this thread safe?
+    if (mClient.isServerConnected())
+      return true;
+
+    currentTime += mConnectionPollingRate;
+    std::this_thread::sleep_until(currentTime);
+  }
+
+  return false;
+}
+
+//=============================================================================
 void RosTrajectoryExecutor::transitionCallback(GoalHandle _handle)
 {
+  // This function assumes that mMutex is locked.
+
+  using actionlib::TerminalState;
+  using Result = control_msgs::FollowJointTrajectoryResult;
+
+#if 0
+  ROS_INFO("Transition: CommState = %s TerminalState = %s",
+    _handle.getCommState().toString().c_str(),
+    _handle.getTerminalState().toString().c_str());
+#endif
+  
   if (_handle.getCommState() == actionlib::CommState::DONE)
   {
+    std::stringstream message;
+    bool isSuccessful = true;
+
+    // Check the status of the actionlib call. Note that the actionlib call can
+    // succeed, even if execution failed.
     const auto terminalState = _handle.getTerminalState();
-    if (terminalState == actionlib::TerminalState::SUCCEEDED)
+    if (terminalState != TerminalState::SUCCEEDED)
+    {
+      message << "Action " << terminalState.toString();
+
+      const auto terminalMessage = terminalState.getText();
+      if (!terminalMessage.empty())
+        message << " (" << terminalMessage << ")";
+
+      isSuccessful = false;
+    }
+    else
+    {
+      message << "Execution failed";
+    }
+
+    // Check the status of execution. This is only possible if the actionlib
+    // call succeeded.
+    const auto result = _handle.getResult();
+    if (result && result->error_code != Result::SUCCESSFUL)
+    {
+      message << ": "
+        << getFollowJointTrajectoryErrorMessage(result->error_code);
+
+      if (!result->error_string.empty())
+        message << " (" << result->error_string << ")";
+
+      isSuccessful = false;
+    }
+
+    if (isSuccessful)
     {
       mPromise.set_value();
     }
     else
     {
-      std::stringstream message;
-      message << "Trajectory execution " << terminalState.toString() << ": "
-        << terminalState.getText();
-
       mPromise.set_exception(
         std::make_exception_ptr(
           std::runtime_error(message.str())));
     }
+
+    mInProgress = false;
   }
 }
 
+//=============================================================================
 void RosTrajectoryExecutor::spin()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   mCallbackQueue.callAvailable();
+
+  // TODO: Check mGoalTimeTolerance here as a fail-safe.
 }
 
 } // namespace ros
