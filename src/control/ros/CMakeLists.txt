@@ -22,6 +22,7 @@ aikido_include_directories(${trajectory_msgs_INCLUDE_DIRS})
 # Libraries
 #
 aikido_add_library("${PROJECT_NAME}_control_ros"
+  RosJointStateClient.cpp
   RosTrajectoryExecutor.cpp
 )
 target_link_libraries("${PROJECT_NAME}_control_ros"
