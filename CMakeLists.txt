@@ -133,7 +133,8 @@ aikido_include_directories(${Boost_INCLUDE_DIRS})
 # which shipped with CMake, on case-insensitive file systems. This is
 # particularly a problem on OS X, which is generally case-insensitive.
 # TODO: utils-urdf should only be required for aikido::perception
-find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
+# TODO: utils is only included to workaround a bug in DART
+find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils utils-urdf CONFIG)
 aikido_include_directories(${DART_INCLUDE_DIRS})
 
 find_package(TinyXML2 REQUIRED)
