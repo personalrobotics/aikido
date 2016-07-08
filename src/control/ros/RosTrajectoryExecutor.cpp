@@ -56,6 +56,7 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
   , mGoalTimeTolerance{goalTimeTolerance}
   , mConnectionTimeout{connectionTimeout}
   , mConnectionPollingRate{connectionPollingRate}
+  , mInProgress{false}
 {
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
