@@ -1,5 +1,6 @@
 #ifndef AIKIDO_UTIL_EXECUTORTHREAD_HPP_
 #define AIKIDO_UTIL_EXECUTORTHREAD_HPP_
+#include <atomic>
 #include <chrono>
 #include <functional>
 #include <mutex>
