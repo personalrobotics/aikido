@@ -1,9 +1,11 @@
 aikido_add_library("${PROJECT_NAME}_util"
   CatkinResourceRetriever.cpp
+  ExecutorMultiplexer.cpp
+  ExecutorThread.cpp
   PseudoInverse.cpp
-  VanDerCorput.cpp
-  StepSequence.cpp
   RNG.cpp
+  StepSequence.cpp
+  VanDerCorput.cpp
   stream.cpp
 )
 target_link_libraries("${PROJECT_NAME}_util"
