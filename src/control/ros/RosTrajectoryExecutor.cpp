@@ -265,6 +265,13 @@ void RosTrajectoryExecutor::spin()
   std::lock_guard<std::mutex> lock(mMutex);
   mCallbackQueue.callAvailable();
 
+  if (!::ros::ok() && mInProgress)
+  {
+    mPromise.set_exception(
+      std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
+    mInProgress = false;
+  }
+
   // TODO: Check mGoalTimeTolerance here as a fail-safe.
 }
 
