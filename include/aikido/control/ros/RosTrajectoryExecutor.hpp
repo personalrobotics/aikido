@@ -38,6 +38,9 @@ public:
 
   std::future<void> execute(trajectory::TrajectoryPtr _traj) override;
 
+  std::future<void> execute(
+    trajectory::TrajectoryPtr _traj, const ::ros::Time& _startTime);
+
   /// Simulates mTraj. To be executed on a separate thread.
   void spin();
 

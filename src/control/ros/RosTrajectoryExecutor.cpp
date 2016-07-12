@@ -79,6 +79,14 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 std::future<void> RosTrajectoryExecutor::execute(
   trajectory::TrajectoryPtr _traj)
 {
+  static const ::ros::Time invalidTime;
+  return execute(_traj, invalidTime);
+}
+
+//=============================================================================
+std::future<void> RosTrajectoryExecutor::execute(
+  trajectory::TrajectoryPtr _traj, const ::ros::Time& _startTime)
+{
   using statespace::dart::MetaSkeletonStateSpace;
 
   if (!_traj)
@@ -108,9 +116,11 @@ std::future<void> RosTrajectoryExecutor::execute(
   // Setup the goal properties.
   // TODO: Also set the goal properties.
   control_msgs::FollowJointTrajectoryGoal goal;
+  goal.trajectory.header.stamp = _startTime;
   goal.goal_time_tolerance = ::ros::Duration(mGoalTimeTolerance);
 
   // Convert the Aikido trajectory into a ROS JointTrajectory.
+  // TODO: Move this into a helper function.
   util::StepSequence timeSequence{mTimestep, true, 0., _traj->getDuration()};
   const auto numDofs = mSkeleton->getNumDofs();
   const auto numWaypoints = timeSequence.getMaxSteps();
