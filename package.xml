@@ -16,8 +16,6 @@
   <depend>python</depend>
   <depend>tinyxml2</depend>
   <doc_depend>doxygen</doc_depend>
-  <!-- Workaround to build DART with optional features enabled. -->
-  <depend>nlopt</depend>
   <!-- Coveralls dependencies. -->
   <test_depend>curl</test_depend>
   <!-- This is required by REP-136. -->
