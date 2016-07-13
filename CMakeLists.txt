@@ -65,6 +65,84 @@ function(aikido_include_directories)
 endfunction()
 
 #==============================================================================
+# Register an Aikido component.
+#
+set_property(GLOBAL PROPERTY AIKIDO_COMPONENTS)
+
+function(aikido_set_component_property component_name property_name)
+  string(TOUPPER "${component_name}" component_name_upper)
+  string(TOUPPER "${property_name}" property_name_upper)
+  set_property(GLOBAL PROPERTY
+    "AIKIDO_COMPONENT_${component_name_upper}_${property_name_upper}" ${ARGN})
+endfunction()
+
+# TODO: Make this an option of aikido_set_component_property.
+function(aikido_append_component_property component_name property_name)
+  string(TOUPPER "${component_name}" component_name_upper)
+  string(TOUPPER "${property_name}" property_name_upper)
+  set_property(GLOBAL APPEND PROPERTY
+    "AIKIDO_COMPONENT_${component_name_upper}_${property_name_upper}" ${ARGN})
+endfunction()
+
+function(aikido_get_component_property output component_name property_name)
+  string(TOUPPER "${component_name}" component_name_upper)
+  string(TOUPPER "${property_name}" property_name_upper)
+  get_property(property_value GLOBAL PROPERTY
+    "AIKIDO_COMPONENT_${component_name_upper}_${property_name_upper}")
+
+  set("${output}" ${property_value} PARENT_SCOPE)
+endfunction()
+
+
+function(aikido_add_component component_name)
+  cmake_parse_arguments(args "REQUIRED" "" "DEPENDENCIES" ${ARGN})
+
+  string(TOUPPER "${component_name}" component_name_upper)
+  set(component_prefix "AIKIDO_COMPONENT_${component_name_upper}")
+
+  # Check for a duplicate component.
+  aikido_get_component_property(component_found "${component_name}" "FOUND")
+  if(${component_found})
+    message(FATAL_ERROR
+      "Attempted to add duplicate component '${component_name}'.")
+  endif()
+
+  # Check if the dependencies were found.
+
+  message(STATUS "")
+  message(STATUS "============================================================================")
+  message(STATUS "Component: ${component_name}")
+  message(STATUS "----------------------------------------------------------------------------")
+  set(dependencies_found TRUE)
+
+  foreach(dependency_name ${args_DEPENDENCIES})
+    aikido_get_component_property(
+      dependency_found "${dependency_name}" "FOUND")
+
+    if(${dependency_found})
+      message(STATUS "Looking for component ${dependency_name} - found")
+    else()
+      message(STATUS "Looking for component ${dependency_name} - not found")
+      set(dependencies_found FALSE)
+    endif()
+  endforeach()
+
+  if(${args_REQUIRED} AND NOT ${dependencies_found})
+    message(FATAL_ERROR
+      "Skipping component ${component_name} because one or more required"
+      " components were not found.")
+  endif()
+
+  # Register the component with Aikido.
+  aikido_set_component_property("${component_name}" FOUND
+    ${dependencies_found})
+  aikido_set_component_property("${component_name}" DEPENDENCIES
+    ${args_DEPENDENCIES})
+  aikido_set_component_property("${component_name}" LIBRARIES)
+  set_property(GLOBAL APPEND PROPERTY AIKIDO_COMPONENTS "${component_name}")
+endfunction()
+
+#==============================================================================
 # Register an Aikido library.
 #
 set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
@@ -72,11 +150,30 @@ set_property(GLOBAL PROPERTY AIKIDO_INTERNAL_SOURCES)
 set_property(GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
 
 function(aikido_add_library target_name)
-  cmake_parse_arguments(AIKIDO_ADD_LIBRARY "EXTERNAL" "" "" ${ARGN})
-  set(is_external ${AIKIDO_ADD_LIBRARY_EXTERNAL})
-  set(rel_sources ${AIKIDO_ADD_LIBRARY_UNPARSED_ARGUMENTS})
+  cmake_parse_arguments(args "EXTERNAL" "COMPONENT" "" ${ARGN})
+  set(relative_sources ${args_UNPARSED_ARGUMENTS})
 
-  add_library("${target_name}" SHARED ${rel_sources})
+  if(DEFINED args_COMPONENT)
+    set(component_name ${args_COMPONENT})
+    aikido_get_component_property(component_found "${component_name}" "FOUND")
+
+    if(${component_found})
+      message(STATUS "Registered library '${target_name}' as part of component"
+                     " '${component_name}'.")
+    else()
+      message(FATAL_ERROR "Library '${target_name}' is declared as part of"
+                          " missing component" " '${component_name}'.")
+    endif()
+
+    aikido_append_component_property(
+      "${component_name}" LIBRARIES "${target_name}")
+  else()
+    message(STATUS "Registered library '${target_name}'.")
+  endif()
+
+  aikido_set_component_property("${component_name}" LIBRARIES)
+
+  add_library("${target_name}" SHARED ${relative_sources})
   set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
 
   install(TARGETS "${target_name}"
@@ -87,13 +184,13 @@ function(aikido_add_library target_name)
   # Compile a list of all source files to pass to coveralls. This function may
   # be called from a subdirctory, so we first convert to absolute paths.
   set(abs_sources)
-  foreach(rel_source ${rel_sources})
+  foreach(rel_source ${relative_sources})
     get_filename_component(abs_source
       "${CMAKE_CURRENT_SOURCE_DIR}/${rel_source}" ABSOLUTE)
     list(APPEND abs_sources "${abs_source}")
   endforeach()
 
-  if(${is_external})
+  if(${args_EXTERNAL})
     set_property(GLOBAL APPEND PROPERTY AIKIDO_EXTERNAL_SOURCES ${abs_sources})
   else()
     set_property(GLOBAL APPEND PROPERTY AIKIDO_INTERNAL_SOURCES ${abs_sources})
@@ -128,7 +225,7 @@ find_package(Boost COMPONENTS filesystem)
 aikido_include_directories(${Boost_INCLUDE_DIRS})
 
 # TODO: utils-urdf should only be required for aikido::perception.
-find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf)
+find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
 aikido_include_directories(${DART_INCLUDE_DIRS})
 
 find_package(TinyXML2 REQUIRED)

@@ -1,4 +1,6 @@
-aikido_add_library("${PROJECT_NAME}_constraint"
+aikido_add_component(constraint REQUIRED DEPENDENCIES statespace util)
+
+aikido_add_library("${PROJECT_NAME}_constraint" COMPONENT constraint
   uniform/RnBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp

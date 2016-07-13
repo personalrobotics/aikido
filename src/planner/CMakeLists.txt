@@ -1,10 +1,14 @@
-add_subdirectory("ompl")
-add_subdirectory("parabolic")
+aikido_add_component(planner REQUIRED
+  DEPENDENCIES constraint distance statespace trajectory util)
 
-aikido_add_library("${PROJECT_NAME}_planner" SnapPlanner.cpp)
+aikido_add_library("${PROJECT_NAME}_planner" COMPONENT planner
+  SnapPlanner.cpp)
 target_link_libraries("${PROJECT_NAME}_planner"
   "${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_trajectory"
   "${PROJECT_NAME}_statespace"
   "${PROJECT_NAME}_util")
+
+add_subdirectory("ompl")
+add_subdirectory("parabolic")

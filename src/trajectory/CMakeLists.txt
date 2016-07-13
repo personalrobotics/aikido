@@ -1,4 +1,5 @@
-aikido_add_library("${PROJECT_NAME}_trajectory"
+aikido_add_component(trajectory REQUIRED DEPENDENCIES statespace util)
+aikido_add_library("${PROJECT_NAME}_trajectory" COMPONENT trajectory
   Interpolated.cpp
   Spline.cpp
 )

@@ -1,4 +1,5 @@
-aikido_add_library("${PROJECT_NAME}_util"
+aikido_add_component(util REQUIRED)
+aikido_add_library("${PROJECT_NAME}_util" COMPONENT util
   CatkinResourceRetriever.cpp
   PseudoInverse.cpp
   VanDerCorput.cpp

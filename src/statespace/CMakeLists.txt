@@ -1,4 +1,5 @@
-aikido_add_library("${PROJECT_NAME}_statespace"
+aikido_add_component(statespace REQUIRED)
+aikido_add_library("${PROJECT_NAME}_statespace" COMPONENT statespace
   StateSpace.cpp
   Rn.cpp
   CartesianProduct.cpp
