@@ -2,44 +2,53 @@ set(aikido_VERSION x.y.z)
 
 @PACKAGE_INIT@
 
+# This is an auto-generated file that contains meta-data about the components.
+include("${CMAKE_CURRENT_LIST_DIR}/aikidoComponents.cmake")
+
 # This is an auto-generated file that creates IMPORTed targets with the correct
 # properties (e.g. IMPORTED_LOCATION) set.
 include("${CMAKE_CURRENT_LIST_DIR}/aikidoTargets.cmake")
 
 set_and_check(aikido_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
-set(aikido_INCLUDE_DIRS "${aikido_INCLUDE_DIR}" @AIKIDO_INCLUDE_DIRS@)
-
-# Load all known components. The _FOUND variables are checked for required
-# components by the find_package_handle_standard_args function below. This
-# logic requires that all of Aikido's be prefixed by "aikido_".
-set(all_targets @AIKIDO_LIBRARIES@)
-
-foreach(target_name ${all_targets})
-  set("${target_name}_FOUND" TRUE)
-  set("${target_name}_LIBRARY" "${target_name}")
-endforeach()
-
-# Add libraries for the specified COMPONENTS to aikido_LIBRARIES and mark them
-# as _FOUND. Errors are handled by find_package_handle_standard_args below.
+set(aikido_INCLUDE_DIRS "${aikido_INCLUDE_DIR}")
 set(aikido_LIBRARIES)
 
 if(aikido_FIND_COMPONENTS)
   foreach(component_name ${aikido_FIND_COMPONENTS})
-    set(target_name "aikido_${component_name}")
-    if(TARGET "${target_name}")
-      list(APPEND aikido_LIBRARIES "${target_name}")
+    string(TOLOWER "${component_name}" component_name_lower)
+    if(NOT "AIKIDO_${component_name_upper}_FOUND")
+      message(WARNING "Component '${component_name}' does not exist.")
+    elseif(NOT ${AIKIDO_${component_name_upper}_FOUND})
+      message(WARNING "Component '${component_name}' was not built.")
     endif()
+
+    # Include an auto-generated CMake file that creates IMPORTed targets.
+    string(TOUPPER "${component_name}" component_name_upper)
+    include("${CMAKE_CURRENT_LIST_DIR}/aikido_${component_name_lower}Targets.cmake")
+
+    set(component_libraries ${AIKIDO_${component_name_upper}_LIBRARIES})
+    set(component_include_dirs ${AIKIDO_${component_name_upper}_INCLUDE_DIRS})
+
+    # Sanity check that the imported targets exist.
+    foreach(library_name ${component_libraries})
+      if(NOT TARGET "${library_name}")
+        message(FATAL_ERROR
+          "Unable to find target '${library_name}' in component"
+          " '${component_name}'. This should never happen. Has your Aikido"
+          " install been corrupted?")
+      endif()
+    endforeach()
+
+    list(APPEND aikido_INCLUDE_DIRS
+      ${AIKIDO_${component_name_upper}_INCLUDE_DIRS})
+    list(APPEND aikido_LIBRARIES
+      ${AIKIDO_${component_name_upper}_LIBRARIES})
   endforeach()
 else()
   message(WARNING
     "Aikido uses CMake components, but you called find_package(aikido) without"
     " the COMPONENTS keyword. No libraries will be added to aikido_LIBRARIES.")
 endif()
-
-# Clean up after ourselves.
-unset(all_targets)
-unset(component_name)
-unset(target_name)
 
 # Use find_package_handle_standard_args to generate output. This handles the
 # REQUIRED keyword, sets aikido_FOUND, and generates the appropriate STATUS and

@@ -1,8 +1,16 @@
 aikido_add_component(planner REQUIRED
-  DEPENDENCIES constraint distance statespace trajectory util)
-
-aikido_add_library("${PROJECT_NAME}_planner" COMPONENT planner
-  SnapPlanner.cpp)
+  DEPENDENCIES
+    constraint
+    distance
+    statespace
+    trajectory
+    util
+)
+aikido_add_library("${PROJECT_NAME}_planner"
+  COMPONENT planner
+  SOURCES
+    SnapPlanner.cpp
+)
 target_link_libraries("${PROJECT_NAME}_planner"
   "${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_distance"

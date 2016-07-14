@@ -1,3 +1,5 @@
+aikido_add_component(rviz)
+
 #==============================================================================
 # Dependencies
 #
@@ -37,13 +39,15 @@ aikido_include_directories(${libmicrohttpd_INCLUDE_DIRS})
 # Libraries
 #
 aikido_add_library("${PROJECT_NAME}_rviz"
-  shape_conversions.cpp
-  BodyNodeMarker.cpp
-  FrameMarker.cpp
-  SkeletonMarker.cpp
-  ShapeFrameMarker.cpp
-  ResourceServer.cpp
-  InteractiveMarkerViewer.cpp
+  COMPONENT rviz
+  SOURCES
+    shape_conversions.cpp
+    BodyNodeMarker.cpp
+    FrameMarker.cpp
+    SkeletonMarker.cpp
+    ShapeFrameMarker.cpp
+    ResourceServer.cpp
+    InteractiveMarkerViewer.cpp
 )
 target_link_libraries("${PROJECT_NAME}_rviz"
   ${DART_LIBRARIES}
