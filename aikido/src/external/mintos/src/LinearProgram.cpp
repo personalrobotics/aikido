@@ -385,7 +385,7 @@ void LinearConstraints::Print(std::ostream& out) const
       out<<" = "<<p(i);
     out<<endl;
     
-    if((out == cout || out == cerr) && (numlines-lastline) >= 40) {
+    if((&out == &cout || &out == &cerr) && (numlines-lastline) >= 40) {
       out<<"Press enter to continue..."<<endl;
       getchar();
       lastline = numlines;
@@ -788,7 +788,7 @@ void LinearConstraints_Sparse::Print(std::ostream& out) const
       break;
     }
 
-    if((out == cout || out == cerr) && (numlines-lastline) == 40) {
+    if((&out == &cout || &out == &cerr) && (numlines-lastline) == 40) {
       out<<"Press enter to continue..."<<endl;
       getchar();
       lastline = numlines;

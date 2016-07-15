@@ -64,7 +64,7 @@ void SparseVectorTemplate<T>::set(const VectorT& v,T zeroTol)
   BaseT::resize(v.n);
   this->entries.clear();
   for(int i=0;i<v.n;i++) {
-    if(!FuzzyZero(v(i),zeroTol)) push_back(i,v(i));
+    if(!FuzzyZero(v(i),zeroTol)) this->push_back(i,v(i));
   }
 }
 
@@ -74,7 +74,7 @@ void SparseVectorTemplate<T>::set(const T* v,int n,T zeroTol)
   this->resize(n);
   this->entries.clear();
   for(int i=0;i<n;i++) {
-    if(!FuzzyZero(v[i],zeroTol)) push_back(i,v[i]);
+    if(!FuzzyZero(v[i],zeroTol)) this->push_back(i,v[i]);
   }
 }
 
@@ -127,7 +127,7 @@ void SparseVectorTemplate<T>::inplaceDiv(T s)
 template <class T>
 void SparseVectorTemplate<T>::copy(const MyT& a)
 {
-  operator = (a);
+  this->operator = (a);
 }
 
 template <class T>
@@ -178,14 +178,14 @@ void SparseVectorTemplate<T>::sub(const MyT&, const MyT&);
 template <class T>
 void SparseVectorTemplate<T>::mul(const MyT& a, T s)
 {
-  operator = (a);
+  this->operator = (a);
   inplaceMul(s);
 }
 
 template <class T>
 void SparseVectorTemplate<T>::div(const MyT& b, T s)
 {
-  operator = (b);
+  this->operator = (b);
   inplaceDiv(s);
 }
 

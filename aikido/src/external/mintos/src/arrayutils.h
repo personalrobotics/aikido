@@ -4,12 +4,6 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
-#if defined (__GNUC__) && (__GNUC__ > 2)
-#include <ext/algorithm>
-namespace std {
-  using __gnu_cxx::copy_n;
-}
-#endif
 #include <assert.h>
 
 

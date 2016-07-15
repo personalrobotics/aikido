@@ -61,7 +61,7 @@ DiagonalMatrixTemplate<T>::DiagonalMatrixTemplate(int m, const T* diagVals)
 template <class T>
 void DiagonalMatrixTemplate<T>::operator *= (const MyT& m)
 {
-  inplaceComponentMul(m);
+  this->inplaceComponentMul(m);
 }
 
 template <class T>
@@ -73,7 +73,7 @@ void DiagonalMatrixTemplate<T>::copyDiagonal(const MatrixT& m)
 	}
 	if(BaseT::n == 0)
 	{
-		resize(m.m);
+		this->resize(m.m);
 	}
 	else if(BaseT::n != m.m)
 	{
@@ -85,7 +85,7 @@ void DiagonalMatrixTemplate<T>::copyDiagonal(const MatrixT& m)
 template <class T>
 void DiagonalMatrixTemplate<T>::mulMatrix(const MyT& a, const MyT& b)
 {
-  componentMul(a,b);
+  this->componentMul(a,b);
 }
 
 template <class T>
@@ -207,7 +207,7 @@ template <class T>
 void DiagonalMatrixTemplate<T>::setInverse(const MyT& a)
 {
   if(this->empty())
-    resize(a.n);
+    this->resize(a.n);
   else if(this->size() != a.size()) {
     RaiseErrorFmt(WHERE_AM_I,MatrixError_IncompatibleDimensions,this->n,this->n,a.n,a.n);
   }
@@ -221,7 +221,7 @@ template <class T>
 void DiagonalMatrixTemplate<T>::setPseudoInverse(const MyT& a)
 {
   if(this->empty())
-		resize(a.n);
+		this->resize(a.n);
   else if(this->size() != a.size()) {
     RaiseErrorFmt(WHERE_AM_I,MatrixError_IncompatibleDimensions,this->n,this->n,a.n,a.n);
   }
