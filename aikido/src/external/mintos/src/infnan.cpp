@@ -31,6 +31,7 @@
 #include <mintos/math/math.h>
 #include <stdio.h>
 #include <math.h>
+#include <cmath>
 
 namespace Math {
 
@@ -39,7 +40,7 @@ int IsNaN(double x)
 #ifdef _MSC_VER
   return _isnan(x);
 #elif HAVE_DECL_ISNAN
-  return isnan(x);
+  return std::isnan(x);
 #elif HAVE_IEEE_COMPARISONS
   return (x!=x?1:0);
 #else
@@ -53,7 +54,7 @@ int IsFinite(double x)
 #ifdef _MSC_VER
   return _finite(x);
 #elif HAVE_DECL_ISFINITE
-  return isfinite(x);
+  return std::isfinite(x);
 #elif HAVE_DECL_FINITE
   return finite(x);
 #elif HAVE_IEEE_COMPARISONS
@@ -96,8 +97,7 @@ int IsNaN(float x)
 #ifdef _MSC_VER
   return _isnan(x);
 #elif HAVE_DECL_ISNAN
-  //return isnanf(x);
-  return isnan(x);
+  return std::isnan(x);
 #elif HAVE_IEEE_COMPARISONS
   return (x!=x?1:0);
 #else
@@ -113,7 +113,7 @@ int IsFinite(float x)
 #elif HAVE_DECL_FINITE
   return finitef(x);
 #elif HAVE_DECL_ISFINITE
-  return isfinite(x);
+  return std::isfinite(x);
 #elif HAVE_IEEE_COMPARISONS
   float y=x-x;
   return (y==y?1:0);
@@ -132,7 +132,7 @@ int IsInf(float x)
   else return 0;
 #elif HAVE_DECL_ISINF
   //if(isinff(x)) {
-  if(isinf(x)) {
+  if(std::isinf(x)) {
     if(x > 0) return 1;
     else return -1;
   }
