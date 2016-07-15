@@ -113,7 +113,7 @@ int IsFinite(float x)
 #elif HAVE_DECL_FINITE
   return finitef(x);
 #elif HAVE_DECL_ISFINITE
-  return isfinitef(x);
+  return isfinite(x);
 #elif HAVE_IEEE_COMPARISONS
   float y=x-x;
   return (y==y?1:0);
