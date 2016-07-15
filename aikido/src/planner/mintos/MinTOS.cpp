@@ -1,6 +1,6 @@
 #include <aikido/planner/mintos/MinTOS.hpp>
 #include <aikido/util/StepSequence.hpp>
-#include <mintos/MinTOS.h>
+#include <mintos/Mintos.h>
 
 namespace aikido {
 namespace planner {
