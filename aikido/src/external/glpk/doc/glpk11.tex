@@ -1,0 +1,197 @@
+%* glpk11.tex *%
+
+\chapter{Stand-alone LP/MIP Solver}
+\label{chaglpsol}
+
+The GLPK package includes the program \verb|glpsol|, which is a
+stand-alone LP/MIP solver. This program can be invoked from the command
+line of from the shell to read LP/MIP problem data in any format
+supported by GLPK, solve the problem, and write the problem solution
+obtained to an output text file.
+
+\subsubsection*{Usage}
+
+\noindent
+\verb|glpsol| [{\it options\dots}] [{\it filename}]
+
+\subsubsection*{General options}
+
+\noindent
+\begin{tabular}{@{}p{30mm}p{92.3mm}@{}}
+\verb|--mps|      &  read LP/MIP problem in fixed MPS format \\
+\verb|--freemps|  &  read LP/MIP problem in free MPS format (default)\\
+\verb|--cpxlp|    &  read LP/MIP problem in CPLEX LP format \\
+\verb|--math|     &  read LP/MIP model written in GNU MathProg modeling
+                     language \\
+\multicolumn{2}{@{}l}{{\tt -m} {\it filename}, {\tt --model}
+{\it filename}} \\
+                  &  read model section and optional data section from
+                     {\it filename} (the same as \verb|--math|) \\
+\multicolumn{2}{@{}l}{{\tt -d} {\it filename}, {\tt --data}
+{\it filename}} \\
+                  &  read data section from {\it filename}
+                     (for \verb|--math| only); if model file also has
+                     data section, that section is ignored \\
+\multicolumn{2}{@{}l}{{\tt -y} {\it filename}, {\tt --display}
+{\it filename}} \\
+                  &  send display output to {\it filename}
+                     (for \verb|--math| only); by default the output is
+                     sent to \verb|stdout| \\
+\end{tabular}
+
+\noindent
+\begin{tabular}{@{}p{30mm}p{92.3mm}@{}}
+\verb|--mincost|  &  read min-cost flow problem in DIMACS format\\
+\verb|--maxflow|  &  read maximum flow problem in DIMACS format\\
+\verb|--simplex|  &  use simplex method (default) \\
+\verb|--interior| &  use interior point method (for pure LP only) \\
+\multicolumn{2}{@{}l}{{\tt -r} {\it filename}, {\tt --read}
+{\it filename}} \\
+                  &  read solution from {\it filename} rather to find
+                     it with the solver \\
+\verb|--min|      &  minimization \\
+\verb|--max|      &  maximization \\
+\verb|--scale|    &  scale problem (default) \\
+\verb|--noscale|  &  do not scale problem \\
+\multicolumn{2}{@{}l}{{\tt -o} {\it filename}, {\tt --output}
+{\it filename}} \\
+                  &  write solution to {\it filename} in printable
+                     format \\
+\multicolumn{2}{@{}l}{{\tt -w} {\it filename}, {\tt --write}
+{\it filename}} \\
+                  &  write solution to {\it filename} in plain text
+                     format \\
+\multicolumn{2}{@{}l}{{\tt --bounds} {\it filename}} \\
+                  &  write sensitivity bounds to {\it filename} in
+                     printable format (LP only) \\
+\verb|--tmlim| {\it nnn}
+                  &  limit solution time to {\it nnn} seconds
+                     (\verb|--tmlim 0| allows obtaining solution at
+                     initial point) \\
+\verb|--memlim| {\it nnn}
+                  &  limit available memory to {\it nnn} Megabytes \\
+\verb|--check|    &  do not solve problem, check input data only \\
+\verb|--name| {\it probname}
+                  &  change problem name to {\it probname} \\
+\verb|--wmps| {\it filename}
+                  &  write problem to {\it filename} in fixed MPS
+                     format \\
+\multicolumn{2}{@{}l}{{\tt --wfreemps} {\it filename}} \\
+                  &  write problem to {\it filename} in free MPS
+                     format \\
+\multicolumn{2}{@{}l}{{\tt --wcpxlp} {\it filename}} \\
+                  &  write problem to {\it filename} in CPLEX LP
+                     format \\
+\verb|--log| {\it filename}
+                  &  write copy of terminal output to {\it filename} \\
+\verb|-h|, \verb|--help|
+                  &  display this help information and exit \\
+\verb|-v|, \verb|--version|
+                  &  display program version and exit \\
+\end{tabular}
+
+\subsection*{LP basis factorization options}
+
+\noindent
+\begin{tabular}{@{}p{30mm}p{92.3mm}@{}}
+\verb|--luf|      &  LU + Forrest--Tomlin update \\
+                  &  (faster, less stable; default) \\
+\verb|--cbg|      &  LU + Schur complement + Bartels--Golub update \\
+                  &  (slower, more stable) \\
+\verb|--cbg|      &  LU + Schur complement + Givens rotation update \\
+                  &  (slower, more stable) \\
+\end{tabular}
+
+\subsubsection*{Options specific to the simplex solver}
+
+\noindent
+\begin{tabular}{@{}p{30mm}p{92.3mm}@{}}
+\verb|--primal|   &  use primal simplex (default) \\
+\verb|--dual|     &  use dual simplex \\
+\verb|--std|      &  use standard initial basis of all slacks \\
+\verb|--adv|      &  use advanced initial basis (default) \\
+\verb|--bib|      &  use Bixby's initial basis\\
+\verb|--steep|    &  use steepest edge technique (default) \\
+\verb|--nosteep|  &  use standard ``textbook'' pricing \\
+\verb|--relax|    &  use Harris' two-pass ratio test (default) \\
+\verb|--norelax|  &  use standard ``textbook'' ratio test \\
+\verb|--presol|   &  use LP presolver (default; assumes \verb|--scale|
+                     and \verb|--adv|) \\
+\verb|--nopresol| &  do not use LP presolver \\
+\verb|--exact|    & use simplex method based on exact arithmetic \\
+\verb|--xcheck|   & check final basis using exact arithmetic \\
+\end{tabular}
+
+\subsubsection*{Options specific to the interior-point solver}
+
+\noindent
+\begin{tabular}{@{}p{30mm}p{92.3mm}@{}}
+\verb|--nord|     &  use natural (original) ordering \\
+\verb|--qmd|      &  use quotient minimum degree ordering \\
+\verb|--amd|      &  use approximate minimum degree ordering (default)\\
+\verb|--symamd|   &  use approximate minimum degree ordering \\
+\end{tabular}
+
+\subsubsection*{Options specific to the MIP solver}
+
+\noindent
+\begin{tabular}{@{}p{30mm}p{92.3mm}@{}}
+\verb|--nomip|    &  consider all integer variables as continuous
+                     (allows solving MIP as pure LP) \\
+\verb|--first|    &  branch on first integer variable \\
+\verb|--last|     &  branch on last integer variable \\
+\verb|--drtom|    &  branch using heuristic by Driebeck and Tomlin
+                     (default) \\
+\verb|--mostf|    &  branch on most fractional variable \\
+\verb|--dfs|      &  backtrack using depth first search \\
+\verb|--bfs|      &  backtrack using breadth first search \\
+\verb|--bestp|    &  backtrack using the best projection heuristic
+                     (default) \\
+\verb|--bestb|    &  backtrack using node with best local bound \\
+\verb|--intopt|   &  use advanced MIP solver (enables MIP presolving)\\
+\verb|--binarize| &  replace general integer variables by binary ones
+                     (assumes \verb|--intopt|)\\
+\verb|--cover|    &  generate mixed cover cuts\\
+\verb|--clique|   &  generate clique cuts\\
+\verb|--gomory|   &  generate Gomory's mixed integer cuts\\
+\end{tabular}
+
+\noindent
+\begin{tabular}{@{}p{30mm}p{92.3mm}@{}}
+\verb|--mir|      &  generate MIR (mixed integer rounding) cuts\\
+\verb|--cuts|     &  generate cuts of all classes above (assumes
+                     \verb|--intopt|)\\
+\end{tabular}
+
+\bigskip
+
+\noindent
+For description of the MPS format see Appendix \ref{champs},
+page \pageref{champs}.
+
+\bigskip
+
+\noindent
+For description of the CPLEX LP format see Appendix \ref{chacplex},
+page \pageref{chacplex}.
+
+\bigskip
+
+\noindent
+For description of the modeling language see the document ``Modeling
+Language GNU MathProg: Language Reference'' included in the GLPK
+distribution.
+
+\bigskip
+
+\noindent
+For description of the DIMACS min-cost flow problem format see
+subsection \ref{subsecmincost}, page \pageref{subsecmincost}.
+
+\bigskip
+
+\noindent
+For description of the DIMACS maximum flow problem format see
+subsection \ref{subsecmaxflow}, page \pageref{subsecmaxflow}.
+
+%* eof *%

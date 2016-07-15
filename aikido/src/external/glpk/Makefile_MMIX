@@ -1,0 +1,148 @@
+# Build GLPK for MMIX with GCC cross-compiler
+
+#**********************************************************************#
+# You can use this Makefile to build GLPK with GCC cross-compiler for  #
+# MMIX. No configuring is needed.                                      #
+#                                                                      #
+# MMIX is a 64-bit RISC computer for the third millennium designed by  #
+# Prof. Donald Knuth. For details see:                                 #
+#                                                                      #
+# http://www-cs-faculty.stanford.edu/~knuth/mmix.html                  #
+# http://en.wikipedia.org/wiki/MMIX                                    #
+# http://www.malgil.com/mmix                                           #
+#                                                                      #
+# The GNU MMIX compiler tool-suite (GCC backend, binutils, and newlib) #
+# was developed by Hans-Peter Nilsson. You may follow his instructions #
+# to build and install the MMIX tools; see:                            #
+#                                                                      #
+# http://bitrange.com/mmix/install.html                                #
+#**********************************************************************#
+
+GCC = mmix-gcc
+AR = mmix-ar
+MMIX = mmix
+CFLAGS = -O2
+
+OBJSET = \
+src/glpapi01.o \
+src/glpapi02.o \
+src/glpapi03.o \
+src/glpapi04.o \
+src/glpapi05.o \
+src/glpapi06.o \
+src/glpapi07.o \
+src/glpapi08.o \
+src/glpapi09.o \
+src/glpapi10.o \
+src/glpapi11.o \
+src/glpapi12.o \
+src/glpapi13.o \
+src/glpapi14.o \
+src/glpapi15.o \
+src/glpapi16.o \
+src/glpapi17.o \
+src/glpapi18.o \
+src/glpapi19.o \
+src/glpavl.o \
+src/glpbfd.o \
+src/glpbfx.o \
+src/glpcpx.o \
+src/glpdmp.o \
+src/glpdmx.o \
+src/glpfhv.o \
+src/glpgmp.o \
+src/glphbm.o \
+src/glpini01.o \
+src/glpini02.o \
+src/glpios01.o \
+src/glpios02.o \
+src/glpios03.o \
+src/glpios04.o \
+src/glpios05.o \
+src/glpios06.o \
+src/glpios07.o \
+src/glpios08.o \
+src/glpios09.o \
+src/glpios10.o \
+src/glpipm.o \
+src/glpipp01.o \
+src/glpipp02.o \
+src/glplib01.o \
+src/glplib02.o \
+src/glplib03.o \
+src/glplib04.o \
+src/glplib05.o \
+src/glplib06.o \
+src/glplib07.o \
+src/glplib08.o \
+src/glplib09.o \
+src/glplib10.o \
+src/glplib11.o \
+src/glplib12.o \
+src/glplpf.o \
+src/glplpx01.o \
+src/glplpx02.o \
+src/glplpx03.o \
+src/glplpx04.o \
+src/glpluf.o \
+src/glplux.o \
+src/glpmat.o \
+src/glpmpl01.o \
+src/glpmpl02.o \
+src/glpmpl03.o \
+src/glpmpl04.o \
+src/glpmpl05.o \
+src/glpmpl06.o \
+src/glpmps.o \
+src/glpnet01.o \
+src/glpnet02.o \
+src/glpnet03.o \
+src/glpnet04.o \
+src/glpnet05.o \
+src/glpnet06.o \
+src/glpnet07.o \
+src/glpnpp01.o \
+src/glpnpp02.o \
+src/glpnpp03.o \
+src/glpqmd.o \
+src/glprgr.o \
+src/glprng01.o \
+src/glprng02.o \
+src/glpscf.o \
+src/glpscg.o \
+src/glpscl.o \
+src/glpsdf.o \
+src/glpspm.o \
+src/glpspx01.o \
+src/glpspx02.o \
+src/glpsql.o \
+src/glpssx01.o \
+src/glpssx02.o \
+src/glptsp.o \
+src/amd/amd_1.o \
+src/amd/amd_2.o \
+src/amd/amd_aat.o \
+src/amd/amd_control.o \
+src/amd/amd_defaults.o \
+src/amd/amd_dump.o \
+src/amd/amd_info.o \
+src/amd/amd_order.o \
+src/amd/amd_post_tree.o \
+src/amd/amd_postorder.o \
+src/amd/amd_preprocess.o \
+src/amd/amd_valid.o \
+src/colamd/colamd.o
+
+.c.o:
+	$(GCC) $(CFLAGS) -Iinclude -Isrc -o $@ -c $<
+
+all: libglpk.a glpsol.mmo
+
+libglpk.a: $(OBJSET)
+	$(AR) cru libglpk.a $(OBJSET)
+
+glpsol.mmo: examples/glpsol.o libglpk.a
+	$(GCC) $(CFLAGS) -o glpsol.mmo examples/glpsol.o libglpk.a -lm
+
+check: glpsol.mmo
+	$(MMIX) glpsol.mmo --mps examples/plan.mps

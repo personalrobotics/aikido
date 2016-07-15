@@ -1,0 +1,728 @@
+%* glpk07.tex *%
+
+\chapter{Miscellaneous API Routines}
+
+\section{Library environment routines}
+
+\subsection{glp\_long---64-bit integer data type}
+
+Some GLPK API routines use 64-bit integer data type, which is declared
+in the header \verb|glpk.h| as follows:
+
+\begin{verbatim}
+typedef struct { int lo, hi; } glp_long;
+\end{verbatim}
+
+\noindent
+where \verb|lo| contains low 32 bits, and \verb|hi| contains high 32
+bits of 64-bit integer value.\footnote{GLPK conforms to ILP32, LLP64,
+and LP64 programming models, where the built-in type {\tt int}
+corresponds to 32-bit integers.}
+
+\subsection{glp\_version---determine library version}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+const char *glp_version(void);
+\end{verbatim}
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_version| returns a pointer to a null-terminated
+character string, which specifies the version of the GLPK library in
+the form \verb|"X.Y"|, where `\verb|X|' is the major version number, and
+`\verb|Y|' is the minor version number, for example, \verb|"4.16"|.
+
+\newpage
+
+\subsubsection*{Example}
+
+\begin{verbatim}
+printf("GLPK version is %s\n", glp_version());
+\end{verbatim}
+
+\subsection{glp\_printf---write formatted output to terminal}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_printf(const char *fmt, ...);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_printf| uses the format control string
+\verb|fmt| to format its parameters and writes the formatted output to
+the terminal.
+
+This routine is a replacement of the standard C function
+\verb|printf| and used by all GLPK routines to perform terminal
+output. The application program may use \verb|glp_printf| for the same
+purpose that allows controlling its terminal output with the routines
+\verb|glp_term_out| and \verb|glp_term_hook|.
+
+\subsection{glp\_vprintf---write formatted output to terminal}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_vprintf(const char *fmt, va_list arg);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_vprintf| uses the format control string
+\verb|fmt| to format its parameters specified by the list \verb|arg|
+and writes the formatted output to the terminal.
+
+This routine is a replacement of the standard C function
+\verb|vprintf| and used by all GLPK routines to perform terminal
+output. The application program may use \verb|glp_vprintf| for the same
+purpose that allows controlling its terminal output with the routines
+\verb|glp_term_out| and \verb|glp_term_hook|.
+
+\newpage
+
+\subsection{glp\_term\_out---enable/disable terminal output}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+int glp_term_out(int flag);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+Depending on the parameter flag the routine \verb|glp_term_out| enables
+or disables terminal output performed by glpk routines:
+
+\verb|GLP_ON | --- enable terminal output;
+
+\verb|GLP_OFF| --- disable terminal output.
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_term_out| returns the current terminal output
+mode before it was changed (\verb|GLP_ON| or \verb|GLP_OFF|).
+
+\subsection{glp\_term\_hook---intercept terminal output}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_term_hook(int (*func)(void *info, const char *s),
+      void *info);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_term_hook| installs the user-defined hook routine
+to intercept all terminal output performed by GLPK routines.
+
+%This feature can be used to redirect the terminal output to other
+%destination, for example, to a file or a text window.
+
+The parameter {\it func} specifies the user-defined hook routine. It is
+called from an internal printing routine, which passes to it two
+parameters: {\it info} and {\it s}. The parameter {\it info} is a
+transit pointer specified in corresponding call to the routine
+\verb|glp_term_hook|; it may be used to pass some additional information
+to the hook routine. The parameter {\it s} is a pointer to the null
+terminated character string, which is intended to be written to the
+terminal. If the hook routine returns zero, the printing routine writes
+the string {\it s} to the terminal in a usual way; otherwise, if the
+hook routine returns non-zero, no terminal output is performed.
+
+To uninstall the hook routine both parameters {\it func} and {\it info}
+should be specified as \verb|NULL|.
+
+\newpage
+
+\subsubsection*{Example}
+
+\begin{footnotesize}
+\begin{verbatim}
+static int hook(void *info, const char *s)
+{     FILE *foo = info;
+      fputs(s, foo);
+      return 1;
+}
+
+int main(void)
+{     FILE *foo;
+      . . .
+      /* redirect terminal output */
+      glp_term_hook(hook, foo);
+      . . .
+      /* resume terminal output */
+      glp_term_hook(NULL, NULL);
+      . . .
+}
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{glp\_malloc---allocate memory block}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void *glp_malloc(int size);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_malloc| dynamically allocates a memory block of
+\verb|size| bytes long. Should note that:
+
+1) the parameter \verb|size| must be positive;
+
+2) being allocated the memory block contains arbitrary data, that is,
+it is {\it not} initialized by binary zeros;
+
+3) if the block cannot be allocated due to insufficient memory, the
+routine prints an error message and abnormally terminates the program.
+
+This routine is a replacement of the standard C function \verb|malloc|
+and used by all GLPK routines for dynamic memory allocation. The
+application program may use \verb|glp_malloc| for the same purpose.
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_malloc| returns a pointer to the memory block
+allocated. To free this block the routine \verb|glp_free| (not the
+standard C function \verb|free|!) must be used.
+
+\subsection{glp\_calloc---allocate memory block}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void *glp_calloc(int n, int size);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_calloc| dynamically allocates a memory block of
+\verb|n|$\times$\verb|size| bytes long. Should note that:
+
+1) both parameters \verb|n| and \verb|size| must be positive;
+
+2) being allocated the memory block contains arbitrary data, that is,
+it is {\it not} initialized by binary zeros;
+
+3) if the block cannot be allocated due to insufficient memory, the
+routine prints an error message and abnormally terminates the program.
+
+This routine is a replacement of the standard C function \verb|calloc|
+(with exception that the block is not cleaned) and used by all GLPK
+routines for dynamic memory allocation. The application program may use
+\verb|glp_calloc| for the same purpose.
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_calloc| returns a pointer to the memory block
+allocated. To free this block the routine \verb|glp_free| (not the
+standard C function \verb|free|!) must be used.
+
+\subsection{glp\_free---free memory block}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_free(void *ptr);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_free| frees (deallocates) a memory block pointed
+to by \verb|ptr|, which was previously allocated by the routine
+\verb|glp_malloc| or \verb|glp_calloc|. Note that the pointer \verb|ptr|
+must valid and must not be \verb|NULL|.
+
+This routine is a replacement of the standard C function \verb|free|
+and used by all GLPK routines for dynamic memory allocation. The
+application program may use \verb|glp_free| for the same purpose.
+
+\subsection{glp\_mem\_usage---get memory usage information}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_mem_usage(int *count, int *cpeak, glp_long *total,
+      glp_long *tpeak);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_mem_usage| reports some information about
+utilization of the memory by the routines \verb|glp_malloc|,
+\verb|glp_calloc|, and \verb|glp_free|. Information is stored to
+locations specified by corresponding parameters (see below). Any
+parameter can be specified as \verb|NULL|, in which case corresponding
+information is not stored.
+
+\verb|*count| is the number of currently allocated memory blocks.
+
+\verb|*cpeak| is the peak value of \verb|*count| reached since the
+initialization of the GLPK library environment.
+
+\verb|*total| is the total amount, in bytes, of currently allocated
+memory blocks.
+
+\verb|*tpeak| is the peak value of \verb|*total| reached since the
+initialization of the GLPK library envirionment.
+
+\subsubsection*{Example}
+
+\begin{verbatim}
+glp_mem_usage(&count, NULL, NULL, NULL);
+printf("%d memory block(s) are still allocated\n", count);
+\end{verbatim}
+
+\subsection{glp\_mem\_limit---set memory usage limit}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_mem_limit(int limit);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_mem_limit| limits the amount of memory available
+for dynamic allocation (with the routines \verb|glp_malloc| and
+\verb|glp_calloc|) to \verb|limit| megabytes.
+
+\subsection{glp\_assert---check logical condition}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_assert(int expr);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_assert| (implemented as a macro) checks
+a logical condition specified by the expression \verb|expr|. If the
+condition is true (non-zero), the routine does nothing; otherwise, if
+the condition is false (zero), the routine prints an error message and
+abnormally terminates the program.
+
+This routine is a replacement of the standard C function \verb|assert|
+and used by all GLPK routines to check program logic. The application
+program may use \verb|glp_assert| for the same purpose.
+
+\subsection{glp\_free\_env---free GLPK library environment}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_free_env(void);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_free_env| frees all resources used by GLPK
+routines (memory blocks, etc.) which are currently still in use.
+
+\subsubsection*{Usage notes}
+
+Normally the application program does not need to call this routine,
+because GLPK routines always free all unused resources. However, if
+the application program even has deleted all problem objects, there
+will be several memory blocks still allocated for the internal library
+needs. For some reasons the application program may want GLPK to free
+this memory, in which case it should call \verb|glp_free_env|.
+
+Note that a call to \verb|glp_free_env| invalidates all problem objects
+which still exist.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\section{Plain data file reading routines}
+
+\subsection{Introduction}
+
+On developing simple applications to solve optimization problems it is
+often needed to read data from plain text files. To do this the standard
+C function \verb|fscanf| may be used, however, it is not convenient; for
+example, if it scans an integer number according to the format
+specification `\verb|%d|', and that number is coded incorrectly,
+no diagnostics is provided.
+
+This section describes a set of GLPK API routines, which may be used in
+application programs to simplify reading data from plain text files.
+
+\subsubsection*{Example 1}
+
+The following main program reads ten integer numbers from plain text
+file \verb|data.txt| and prints their sum.
+
+\begin{footnotesize}
+\begin{verbatim}
+/* sdfsamp1.c */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <glpk.h>
+
+int main(void)
+{     glp_data *data;
+      int j, num, sum;
+      /* open plain data file */
+      data = glp_sdf_open_file("data.txt");
+      if (data == NULL) exit(EXIT_FAILURE);
+      sum = 0;
+      for (j = 1; j <= 10; j++)
+      {  /* read next integer number */
+         num = glp_sdf_read_int(data);
+         sum += num;
+      }
+      printf("sum = %d\n", sum);
+      /* close plain data file */
+      glp_sdf_close_file(data);
+      return 0;
+}
+
+/* eof */
+\end{verbatim}
+\end{footnotesize}
+
+The input data are coded in free format. For example, the file
+\verb|data.txt| may look like this:
+
+\begin{footnotesize}
+\begin{verbatim}
+123 65 432 890 -12 743 895 -7 111 326
+\end{verbatim}
+\end{footnotesize}
+
+\noindent
+or like this:
+
+\begin{footnotesize}
+\begin{verbatim}
+123   65  432  890  -12
+743  895   -7  111  326
+\end{verbatim}
+\end{footnotesize}
+
+\noindent
+If the input data file contains incorrect data, the routine
+\verb|glp_sdf_read_int| prints an error message and, if no error
+handling is provided by the application program, abnormally terminates
+program execution. For example, the file \verb|data.txt| could contain
+the following data:
+
+\begin{footnotesize}
+\begin{verbatim}
+123   65  432  890  -12
+743  895   =7  111  326
+\end{verbatim}
+\end{footnotesize}
+
+\noindent
+in which case the error message would be the following:
+
+\begin{footnotesize}
+\begin{verbatim}
+data.txt:2: cannot convert `=7' to integer
+\end{verbatim}
+\end{footnotesize}
+
+\subsubsection*{Example 2}
+
+As it was said above, by default any attempt to read incorrect data
+leads to abnormal termination. However, sometimes it is desirable to
+catch such errors. This feature is illustrated by the following main
+program, which does the same job as in the previous example.
+
+\begin{footnotesize}
+\begin{verbatim}
+/* sdfsamp2.c */
+
+#include <setjmp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <glpk.h>
+
+int main(void)
+{     glp_data *data;
+      jmp_buf jump;
+      int j, num, sum, ret;
+      /* open plain data file */
+      data = glp_sdf_open_file("data.txt");
+      if (data == NULL)
+      {  ret = EXIT_FAILURE;
+         goto done;
+      }
+      /* set up error handling */
+      if (setjmp(jump))
+      {  ret = EXIT_FAILURE;
+         goto done;
+      }
+      glp_sdf_set_jump(data, jump);
+      /* read and process data */
+      sum = 0;
+      for (j = 1; j <= 10; j++)
+      {  /* read next integer number */
+         num = glp_sdf_read_int(data);
+         if (abs(num) > 1000)
+            glp_sdf_error(data, "integer %d too big\n", num);
+         if (num < 0)
+            glp_sdf_warning(data, "integer %d is negative\n", num);
+         sum += num;
+      }
+      printf("sum = %d\n", sum);
+      ret = EXIT_SUCCESS;
+done: /* close plain data file */
+      if (data != NULL) glp_sdf_close_file(data);
+      return ret;
+}
+
+/* eof */
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{glp\_sdf\_open\_file---open plain data file}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+glp_data *glp_sdf_open_file(const char *fname);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_open_file| opens a plain data file, whose
+name is specified by the character string \verb|fname|.
+
+\subsubsection*{Returns}
+
+If the operation was successful, the routine \verb|glp_sdf_open_file|
+returns a pointer to the opaque program object of the type
+\verb|glp_data|\footnote{This data structure is declared in the header
+file {\tt glpk.h}.} associated with the plain data file. Otherwise, if
+the operation failed, the routine prints an error message and returns
+\verb|NULL|.
+
+\subsubsection*{Note}
+
+The application program should use the pointer returned by the routine
+\verb|glp_sdf_open_file| to perform all subsequent operations on the
+data file.
+
+\newpage
+
+\subsection{glp\_sdf\_set\_jump---set up error handling}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_sdf_set_jump(glp_data *data, jmp_buf jump);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_set_jump| sets up error handling for the
+plain data file specified by the parameter \verb|data|.
+
+The parameter \verb|jump| specifies the environment buffer, which must
+be initialized with the standard C function \verb|setjmp| prior to call
+to the routine \verb|glp_sdf_set_jump|. Detecting any incorrect data in
+the corresponding plain data file will cause non-local ``go to'' by
+a call to the standard C function \verb|longjmp|.
+
+The parameter \verb|jump| can be specified as \verb|NULL|, in which
+case the routine \verb|glp_sdf_set_jump| restores the default behavior,
+in which case detecting incorrect data leads to abnormal termination.
+
+\subsection{glp\_sdf\_error---print error message}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_sdf_error(glp_data *data, const char *fmt, ...);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_error| prints an error message related to the
+plain data file specified by the parameter \verb|data|. If error handing
+was not previously provided, the routine then abnormally terminates
+execution of the application program. Otherwise, it signals about the
+error by a call to the standard C function \verb|longjmp|.
+
+The character string \verb|fmt| and optional parameters following it
+have the same meaning as for the standard C function \verb|printf|.
+
+The message produced by the routine \verb|glp_sdf_error| looks like
+follows:
+
+\medskip
+
+{\it file}{\tt :}{\it line}{\tt :} {\it message text}
+
+\medskip
+
+\noindent
+where {\it file} is the filename passed to the routine
+\verb|glp_sdf_open| and {\it line} is the current line number.
+
+\newpage
+
+\subsection{glp\_sdf\_warning---print warning message}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_sdf_warning(glp_data *data, const char *fmt, ...);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_warning| prints a warning message related to
+the plain data file specified by the parameter \verb|data|.
+
+The character string \verb|fmt| and optional parameters following it
+have the same meaning as for the standard C function \verb|printf|.
+
+The message produced by the routine \verb|glp_sdf_warning| looks like
+follows:
+
+\medskip
+
+{\it file}{\tt :}{\it line}\verb|: warning:| {\it message text}
+
+\medskip
+
+\noindent
+where {\it file} is the filename passed to the routine
+\verb|glp_sdf_open| and {\it line} is the current line number.
+
+\subsection{glp\_sdf\_read\_int---read integer number}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+int glp_sdf_read_int(glp_data *data);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_read_int| skips optional white-space
+characters and then reads an integer number from the plain data file
+specified by the parameter \verb|data|. If the operation failed, the
+routine \verb|glp_sdf_read_int| calls the routine \verb|glp_sdf_error|
+(see above).
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_sdf_read_int| returns the integer number read.
+
+\newpage
+
+\subsection{glp\_sdf\_read\_num---read floating-point number}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+double glp_sdf_read_num(glp_data *data);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_read_num| skips optional white-space
+characters and then reads a floating-point number from the plain data
+file specified by the parameter \verb|data|. If the operation failed,
+the routine \verb|glp_sdf_num| calls the routine \verb|glp_sdf_error|
+(see above).
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_sdf_read_num| returns the floating-point number
+read.
+
+\subsection{glp\_sdf\_read\_item---read data item}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+const char *glp_sdf_read_item(glp_data *data);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_read_item| skips optional white-space
+characters and then reads a data item from the plain data file specified
+by the parameter \verb|data|. If the operation failed, the routine
+\verb|glp_sdf_read_item| calls the routine \verb|glp_sdf_error| (see
+above).
+
+{\it Data item} is a sequence of 1 to 255 arbitrary graphic characters
+delimited by white-space characters. Data items may be used to represent
+symbolic names, identifiers, etc.
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_sdf_read_item| returns a pointer to the internal
+buffer, which contains the data item read in the form of a
+null-terminated character string.
+
+\newpage
+
+\subsection{glp\_sdf\_read\_text---read text until end of line}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+const char *glp_sdf_read_text(glp_data *data);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_read_text| reads a text from the plain data
+file specified by the parameter \verb|data|.
+
+Reading starts from the current position and extends until end of the
+current line. Initial and trailing white-space characters as well as
+the newline character are not included in the text.
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_sdf_read_text| returns a pointer to the internal
+buffer, which contains the text read in the form of a null-terminated
+character string.
+
+\subsection{glp\_sdf\_line---determine current line number}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+int glp_sdf_line(glp_data *data);
+\end{verbatim}
+
+\subsubsection*{Returns}
+
+The routine \verb|glp_sdf_line| returns the current line number for the
+plain data file specified by the parameter \verb|data|.
+
+\subsection{glp\_sdf\_close\_file---close plain data file}
+
+\subsubsection*{Synopsis}
+
+\begin{verbatim}
+void glp_sdf_close_file(glp_data *data);
+\end{verbatim}
+
+\subsubsection*{Description}
+
+The routine \verb|glp_sdf_close_file| closes the plain data file
+specified by the parameter \verb|data| and frees all the resources
+allocated to this program object.
+
+%* eof *%

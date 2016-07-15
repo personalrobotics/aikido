@@ -1,0 +1,435 @@
+
+GNU Linear Programming Kit FAQ
+
+  Summary: Frequently Asked Questions about the GNU Linear Programming Kit
+
+  Author: Dr. Harley Mackenzie <hjm@hardsoftware.com>                     
+
+  Posting-Frequency: Monthly                                              
+
+  Language: English                                                       
+
+  $Date: 2004/01/09 05:57:57 $                                            
+
+  $Revision: 1.6 $                                                        
+
+
+
+Introduction
+
+  Q. What is GPLK?                                                        
+
+  A. GLPK stands for the GNU Linear Programming Kit. The GLPK package is  
+  a set of routines written in ANSI C and organized in the form of a      
+  callable library. This package is intended for solving large-scale      
+  linear programming (LP), mixed integer linear programming (MIP), and    
+  other related problems.                                                 
+
+  The GLPK package includes the following main components:                
+
+    * implementation of the simplex method,                                   
+
+    * implementation of the primal-dual interior point method,                
+
+    * implementation of the branch-and-bound method,                          
+
+    * application program interface (API),                                    
+
+    * GNU MathProg modeling language (a subset of AMPL),                      
+
+    * GLPSOL, a stand-alone LP/MIP solver.                                    
+
+
+  Q. Who develops and maintains GLPK?                                     
+
+  A. GLPK is currently developed and maintained by Andrew Makhorin,       
+  Department for Applied Informatics, Moscow Aviation Institute, Moscow,  
+  Russia. Andrew's email address is <mao@mai2.rcnet.ru> and his postal    
+  address is 125871, Russia, Moscow, Volokolamskoye sh., 4, Moscow        
+  Aviation Institute, Andrew O. Makhorin                                  
+
+
+  Q. How is GLPK licensed?                                                
+
+  A. GLPK is currently licensed under the GNU General Public License      
+  (GPL). GLPK is free software; you can redistribute it and/or modify it  
+  under the terms of the GNU General Public License as published by the   
+  Free Software Foundation; either version 2, or (at your option) any     
+  later version.                                                          
+
+  GLPK is not licensed under the Lesser General Public License (LGPL) as  
+  distinct from other free LP codes such as lp_solve. The most            
+  significant implication is that code that is linked to the GLPK library 
+  must be released under the GPL, whereas with the LGPL, code linked to   
+  the library does not have to be released under the same license.        
+
+
+  Q. Where is the GLPK home page?                                         
+
+  The GLPK home page is part of the GNU web site and can found at         
+  <http://www.gnu.org/software/glpk/glpk.html>.                           
+
+
+  Q. How do I download and install GLPK?                                  
+
+  A. The GLPK source distribution can be found in the subdirectory        
+  /gnu/glpk/ on your favorite GNU mirror                                  
+  <http://www.gnu.org/prep/ftp.html> and can be compiled directly from    
+  the source.                                                             
+
+  The GLPK package (like all other GNU software) is distributed in the    
+  form of packed archive. This is one file named 'glpk-x.y.tar.gz', where 
+  x is the major version number and y is the minor version number.        
+
+  In order to prepare the distribution for installation you should:       
+
+    1. Copy the GLPK distribution file to some subdirectory.                   
+
+    2. Enter the command 'gzip -d glpk-x.y.tar.gz' in order to unpack the      
+       distribution file. After unpacking the name of the distribution file    
+       will be automatically changed to 'glpk-x.y.tar'.                        
+
+    3. Enter the command 'tar -x < glpk-x.y.tar' in order to unarchive the     
+       distribution. After this operation the subdirectory 'glpk-x.y' which is 
+       the GLPK distribution will have been automatically created.             
+
+  After you have unpacked and unarchived GLPK distribution you should     
+  configure the package, and compiled the application. The result of      
+  compilation is:                                                         
+
+    * the file 'libglpk.a', which is a library archive containing object code 
+      for all GLPK routines; and                                              
+
+    * the program 'glpsol', which is a stand-alone LP/MIP solver.             
+
+  Complete compilation and installation instructions are included in the  
+  INSTALL file included with the distribution.                            
+
+  The distribution includes make files for the Microsoft Visual C/C++     
+  version 6 and Borland C/C++ version 5 and by default compiles and links 
+  a glpk*.lib library file, a glpk*.dll DLL file and an glpsol.exe        
+  application file. A GNU Windows 4.1 binary, source and documentation    
+  compiled using the mingw32 C/C++ compiler is also available from        
+  <http://gnuwin32.sourceforge.net/packages/glpk.htm>.                    
+
+
+  Q. Is there a GLPK mailing list or newsgroup?                           
+
+  A. GLPK has two mailing lists: <help-glpk@gnu.org> and                  
+  <bug-glpk@gnu.org>.                                                     
+
+  The main discussion list is <help-glpk@gnu.org>, and is used to discuss 
+  all aspects of GLPK, including its development and porting. There is    
+  also a special list used for reporting bugs at <bug-glpk@gnu.org>.      
+
+  To subscribe to any GLPK mailing list, send an empty mail with a        
+  Subject: header line of just "subscribe" to the relevant -request list. 
+  For example, to subscribe yourself to the main list, you would send     
+  mail to <help-glpk-request@gnu.org> with no body and a Subject: header  
+  line of just "subscribe".                                               
+
+  Another way to subscribe to the GLP mailing lists is to visit the web   
+  pages <http://mail.gnu.org/mailman/listinfo/help-glpk> and              
+  <http://mail.gnu.org/mailman/listinfo/bug-glpk>.                        
+
+  Currently there are no newsgroups dedicated to GLPK.                    
+
+
+  Q. Who maintains this FAQ and how do I contribute to this FAQ?          
+
+  A. The present maintainer of this FAQ is Dr. Harley Mackenzie, HARD     
+  software, although the content of the FAQ is derived from many sources  
+  such as GLPK documentation, GLPK email archives and original content.   
+
+  Harley's email address is <hjm@hardsoftware.com> and his postal address 
+  is c/o HARD software, PO Box 8004, Newtown, Victoria 3220, Australia.   
+
+  All contributions to this FAQ, such as questions and (preferably)       
+  answers should be sent to the <hjm@hardsoftware.com> email address.     
+  This FAQ is copyright Harley Mackenzie 2003 and is released under the   
+  same license, terms and conditions as GLPK, that is, GPL version 2 or   
+  later.                                                                  
+
+  Contributions are not directly referenced in the body of the FAQ as     
+  this would become unmanageable and messy, but rather as a list of       
+  contributors to this FAQ. If you are the author of any information      
+  included in this FAQ and you do not want your content to be included,   
+  please contact the FAQ maintainer and your material will be removed.    
+  Also if you have not been correctly included as a contributor to this   
+  FAQ, your details have changed, or you do not want your name listed in  
+  the list of contributors, please contact the FAQ maintainer for         
+  correction.                                                             
+
+
+  Q. Where can I download this FAQ?                                       
+
+  The latest version of the GLPK FAQ is available to download from        
+  <http://www.hardsoftware.com/downloads.php#GLPK+FAQ> in the following   
+  formats:                                                                
+
+    * DocBook                                                                 
+
+    * Formatted text                                                          
+
+    * Adobe PDF                                                               
+
+
+  Q. Who are the FAQ contributors?                                        
+
+  A. The FAQ contents were created from the following sources:            
+
+    * Michael Hennebry                                                        
+
+    * http://www-unix.mcs.anl.gov/otc/Guide/faq/linear-programming-faq.html   
+
+    * Harley Mackenzie, HARD software Pty. Ltd.                               
+
+    * Andrew Makhorin, Department for Applied Informatics, Moscow Aviation    
+      Institute                                                               
+
+
+GLPK functions & features
+
+  Q. What is the current state of GLPK development?                       
+
+  A. GLPK is a work in progress and is presently under continual          
+  development. As of the current version 4.3, GLPK is a simplex-based     
+  solver is able to handle problems with up to 100,000 constraints. In    
+  particular, it successfully solves all instances from netlib (see the   
+  file bench.txt included in the GLPK distribution). The interior-point   
+  solver is not very robust as it is unable to handle dense columns,      
+  sometimes terminates due to numeric instability or slow convergence.    
+
+  The Mixed Integer Programming (MIP) solver currently is based on        
+  branch-and-bound, so it is unable to solve hard or very large problems  
+  with a probable practical limit of 100-200 integer variables. However,  
+  sometimes it is able to solve larger problems of up to 1000 integer     
+  variables, although the size that depends on properties of particular   
+  problem.                                                                
+
+
+  Q. How does GLPK compare with other LP codes?                           
+
+  A. I think that on very large-scale instances CPLEX 8.0 dual simplex is 
+  10-100 times faster than the GLPK simplex solver and, of course, much   
+  more robust. In many cases GLPK is faster and more robust than lp_solve 
+  4.0 for pure LPs as well as MIP's. See the bench.txt file in the GLPK   
+  distribution doc directory for GLPK netlib benchmark results.           
+
+  You can find benchmarks for some LP and MIP solvers such as CPLEX,      
+  GLPK, lp_solve, and OSL on Hans Mittelmann's webpage at                 
+  <http://plato.asu.edu/bench.html>.                                      
+
+
+  Q. What are the differences between AMPL and GNU MathProg?              
+
+  A. The subset of AMPL implemented in MathProg approximately corresponds 
+  to AMPL status in 1990, because it is mainly based on the paper Robert  
+  Fourer, David M Gay and Brian W Kernighan (1990), "A Modeling Language  
+  for Mathematical Programming", Management Science, Vol 36, pp. 519-554  
+  and is available at                                                     
+  <http://users.iems.nwu.edu/~4er/WRITINGS/amplmod.pdf>.                  
+
+  The GNU MathProg translator was developed as part of GLPK. However, GNU 
+  MathProg can be easily used in other applications as there is a set of  
+  MathProg interface routines designed for use in other applications.     
+
+
+  Q. What input file formats does GLPK support?                           
+
+  A. GLPK presently can read input and output LP model files in three     
+  supported formats:                                                      
+
+    * MPS format - which is a column oriented and widely supported file       
+      format but has poor human readability.                                  
+
+    * CPLEX format - which is an easily readable row oriented format.         
+
+    * GNU MathProg - which is an AMPL like mathematical modeling language.    
+
+
+  Q. What interfaces are available for GLPK?                              
+
+  A. The GLPK package is in fact a C API that can be either by statically 
+  or dynamically linked directly with many programming systems.           
+
+  Presently there are three contributed external interfaces included with 
+  the GLPK package:                                                       
+
+    * GLPK Java Native Interface (JNI)                                        
+
+    * GLPK Delphi Interface (DELI)                                            
+
+    * GLPKMEX Matlab MEX interface                                            
+
+  There is an unofficial Microsoft Visual Basic, Tcl/Tk and Java GLPK     
+  interface available at                                                  
+  <http://gottfried.lindner.bei.t-online.de/glpk.htm>.                    
+
+  There are other language interfaces under development, including a Perl 
+  interface currently being developed by the FAQ maintainer, Dr. Harley   
+  Mackenzie <hjm@hardsoftware.com>.                                       
+
+
+  Q. Where can I find some examples?                                      
+
+  A. The GLPK package distribution contains many examples written in GNU  
+  MathProg (*.mod), C API calls (*.c), CPLEX input file format (*.lpt),   
+  MPS format (*.mps) as well as some specific Traveling Salesman examples 
+  (*.tsp).                                                                
+
+  All of the examples can be found in the GLPK distribution examples      
+  sub-directory.                                                          
+
+
+  Q. What are the future plans for GLPK?                                  
+
+  A. Developments planned for GLPK include improving the existing key     
+  GLPK components, such as developing a more robust and more efficient    
+  implementation of the simplex-based and interior-point solvers. Future  
+  GLPK enhancements planned are implementing a branch-and-cut solver, a   
+  MIP pre-processor, post-optimal and sensitivity analysis and possibly   
+  network simplex and quadratic programming solvers.                      
+
+
+  Q. How do I report a GLPK bug?                                          
+
+  A. If you think you have found a bug in GLPK, then you should send as   
+  complete a report as possible to <bug-glpk@gnu.org>.                    
+
+
+  Q. How do I contribute to the GLPK development?                         
+
+  A. At present new GLPK development patches should be emailed to Andrew  
+  Makhorin <mao@mai2.rcnet.ru >, with sufficient documentation and test   
+  code to explain the nature of the patch, how to install it and the      
+  implications of its use. Before commencing any major GLPK development   
+  for inclusion in the GLPK distribution, it would be a good idea to      
+  discuss the idea on the GLPK mailing list.                              
+
+
+  Q. How do I compile and link a GLPK application on a UNIX platform?     
+
+  A. To compile a GLPK application on a UNIX platform, then compiler must 
+  be able to include the GLPK include files and link to the GLPK library. 
+  For example, on a system where the GLPK system is installed:            
+
+  gcc mylp.c -o mylp -lglpk                                               
+
+  or specify the include files and libglpk.a explicitly, if GLPK is not   
+  installed.                                                              
+
+
+  Q. How do I compile and link a GLPK application on a Win32 platform?    
+
+  A. On a Win32 platform, GLPK is implemented either as a Win32 Dynamic   
+  Link Library (DLL) or can be statically linked to the glpk*.lib file.   
+  As with the UNIX instructions, a GLPK application must set a path to    
+  the GLPK include files and also reference the GLPK library if           
+  statically linked.                                                      
+
+
+  Q. How do I limit the GLPK execution time?                              
+
+  A. You can limit the computing time by setting the control parameter    
+  LPX_K_TMLIM via the API routine lpx_set_real_parm . At present there is 
+  no way of limiting the execution time of glpsol without changing the    
+  source and recompiling a specific version.                              
+
+
+GLPK Linear Programming
+
+  Q. What is Linear Programming and how does it work?                     
+
+  A. Linear Programming is a mathematical technique that is a generic     
+  method for solving certain systems of equations with linear terms. The  
+  real power of LP's are that they have many practical applications and   
+  have proven to be a powerful and robust tool.                           
+
+  The best single source of information on LP's is the Linear Programming 
+  FAQ                                                                     
+  <http://www-unix.mcs.anl.gov/otc/Guide/faq/linear-programming-faq.html> 
+  that has information on LP's and MIP's, includes a comprehensive list   
+  of available LP software and has many LP references for further study.  
+
+
+  Q. How do I determine the stability of an LP solution?                  
+
+  A. You can perform sensitivity analysis by specifying the --bounds      
+  option for glpsol as:                                                   
+
+  glpsol ... --bounds filename                                            
+
+  in which case the solver writes results of the analysis to the          
+  specified filename in plain text format. The corresponding API routine  
+  is lpx_print_sens_bnds() .                                              
+
+
+  Q. How do I determine which constraints are causing infeasibility?      
+
+  A straightforward way to find such a set of constraints is to drop      
+  constraints one at a time. If dropping a constraint results in a        
+  solvable problem, pick it up and go on to the next constraint. After    
+  applying phase 1 to an infeasible problem, all basic satisfied          
+  constraints may be dropped.                                             
+
+  If the problem has a feasible dual, then running the dual simplex       
+  method is a more direct approach. After the last pivot, the nonbasic    
+  constraints and one of the violated constraints will constitute a       
+  minimal set. The GLPK simplex table routines will allow you to pick a   
+  correct constraint from the violated ones.                              
+
+  Note that the GLPK pre-solver needs to be turned off for the preceding  
+  technique to work, otherwise GLPK does not keep the basis of an         
+  infeasible solution.                                                    
+
+  Also a more detailed methodology has been posted on the mail list       
+  archive at                                                              
+  <http://mail.gnu.org/archive/html/help-glpk/2003-09/msg00017.html>.     
+
+
+  Q. What is the difference between checks and constraints?               
+
+  A. Check statements are intended to check that all data specified by    
+  the user of the model are correct, mainly in the data section of a      
+  MathProg model. For example, if some parameter means the number of      
+  nodes in a network, it must be positive integer, that is just the       
+  condition to be checked in the check statement (although in this case   
+  such condition may be also checked directly in the parameter            
+  statement). Note that check statements are performed when the           
+  translator is generating the model, so they cannot include variables.   
+
+  Constraints are conditions that are expressed in terms of variables and 
+  resolved by the solver after the model has been completely generated.   
+  If all data specified in the model are correct a priori, check          
+  statements are not needed and can be omitted, while constraints are     
+  essential components of the model and therefore cannot be omitted.      
+
+
+GLPK Integer Programming 
+
+  Q. What is Integer Programming and how does it work?                    
+
+  A. Integer LP models are ones whose variables are constrained to take   
+  integer or whole number (as opposed to fractional) values. It may not   
+  be obvious that integer programming is a very much harder problem than  
+  ordinary linear programming, but that is nonetheless the case, in both  
+  theory and practice.                                                    
+
+
+  Q. What is the Integer Optimization Suite (IOS)?                        
+
+  A. IOS is a framework to implement implicit enumeration methods based   
+  on LP relaxation (like branch-and-bound and branch-and-cut). Currently  
+  IOS includes only basic features (the enumeration tree, API routines,   
+  and the driver) and is not completely documented.                       
+
+
+  Q. I have just changed an LP to a MIP and now it doesn't work?          
+
+  A. If you have an existing LP that is working and you change to an MIP  
+  and receive a "lpx_integer: optimal solution of LP relaxation required" 
+  204 (==LPX_E_FAULT) error, you probably have not called the LP solution 
+  method lpx_simplex() before lpx_integer() . The MIP routines use the LP 
+  solution as part of the MIP solution methodology.                       
+

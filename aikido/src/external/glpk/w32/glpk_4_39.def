@@ -1,0 +1,1063 @@
+LIBRARY glpk_4_39
+VERSION 4.39
+DESCRIPTION "GNU Linear Programming Kit"
+EXPORTS
+;; from amd_1 ;;
+ _glp_amd_1
+;; from amd_2 ;;
+ _glp_amd_2
+;; from amd_aat ;;
+ _glp_amd_aat
+;; from amd_control ;;
+ _glp_amd_control
+;; from amd_defaults ;;
+ _glp_amd_defaults
+;; from amd_dump ;;
+;; from amd_info ;;
+ _glp_amd_info
+;; from amd_order ;;
+ _glp_amd_order
+;; from amd_post_tree ;;
+ _glp_amd_post_tree
+;; from amd_postorder ;;
+ _glp_amd_postorder
+;; from amd_preprocess ;;
+ _glp_amd_preprocess
+;; from amd_valid ;;
+ _glp_amd_valid
+;; from colamd ;;
+ _glp_colamd
+ _glp_colamd_recommended
+ _glp_colamd_report
+ _glp_colamd_set_defaults
+ _glp_symamd
+ _glp_symamd_report
+;; from glpapi01 ;;
+ glp_add_cols
+ glp_add_rows
+ glp_copy_prob
+ glp_create_prob
+ glp_del_cols
+ glp_del_rows
+ glp_delete_prob
+ glp_erase_prob
+ glp_load_matrix
+ glp_set_col_bnds
+ glp_set_col_name
+ glp_set_mat_col
+ glp_set_mat_row
+ glp_set_obj_coef
+ glp_set_obj_dir
+ glp_set_obj_name
+ glp_set_prob_name
+ glp_set_row_bnds
+ glp_set_row_name
+;; from glpapi02 ;;
+ glp_get_col_lb
+ glp_get_col_name
+ glp_get_col_type
+ glp_get_col_ub
+ glp_get_mat_col
+ glp_get_mat_row
+ glp_get_num_cols
+ glp_get_num_nz
+ glp_get_num_rows
+ glp_get_obj_coef
+ glp_get_obj_dir
+ glp_get_obj_name
+ glp_get_prob_name
+ glp_get_row_lb
+ glp_get_row_name
+ glp_get_row_type
+ glp_get_row_ub
+;; from glpapi03 ;;
+ glp_create_index
+ glp_delete_index
+ glp_find_col
+ glp_find_row
+;; from glpapi04 ;;
+ glp_get_rii
+ glp_get_sjj
+ glp_set_rii
+ glp_set_sjj
+ glp_unscale_prob
+;; from glpapi05 ;;
+ glp_set_col_stat
+ glp_set_row_stat
+ glp_std_basis
+;; from glpapi06 ;;
+ glp_get_col_dual
+ glp_get_col_prim
+ glp_get_col_stat
+ glp_get_dual_stat
+ glp_get_obj_val
+ glp_get_prim_stat
+ glp_get_row_dual
+ glp_get_row_prim
+ glp_get_row_stat
+ glp_get_status
+ glp_get_unbnd_ray
+ glp_init_smcp
+ glp_simplex
+;; from glpapi07 ;;
+ glp_exact
+;; from glpapi08 ;;
+ glp_init_iptcp
+ glp_interior
+ glp_ipt_col_dual
+ glp_ipt_col_prim
+ glp_ipt_obj_val
+ glp_ipt_row_dual
+ glp_ipt_row_prim
+ glp_ipt_status
+;; from glpapi09 ;;
+ glp_get_col_kind
+ glp_get_num_bin
+ glp_get_num_int
+ glp_init_iocp
+ glp_intopt
+ glp_mip_col_val
+ glp_mip_obj_val
+ glp_mip_row_val
+ glp_mip_status
+ glp_set_col_kind
+;; from glpapi10 ;;
+ _glp_check_kkt
+;; from glpapi11 ;;
+ glp_print_ipt
+ glp_print_mip
+ glp_print_sol
+ glp_read_ipt
+ glp_read_mip
+ glp_read_sol
+ glp_write_ipt
+ glp_write_mip
+ glp_write_sol
+;; from glpapi12 ;;
+ glp_bf_exists
+ glp_bf_updated
+ glp_btran
+ glp_eval_tab_col
+ glp_eval_tab_row
+ glp_factorize
+ glp_ftran
+ glp_get_bfcp
+ glp_get_bhead
+ glp_get_col_bind
+ glp_get_row_bind
+ glp_set_bfcp
+ glp_warm_up
+;; from glpapi13 ;;
+ glp_ios_add_row
+ glp_ios_best_node
+ glp_ios_branch_upon
+ glp_ios_can_branch
+ glp_ios_clear_pool
+ glp_ios_curr_node
+ glp_ios_del_row
+ glp_ios_get_prob
+ glp_ios_heur_sol
+ glp_ios_mip_gap
+ glp_ios_next_node
+ glp_ios_node_bound
+ glp_ios_node_data
+ glp_ios_node_level
+ glp_ios_pool_size
+ glp_ios_prev_node
+ glp_ios_reason
+ glp_ios_row_attr
+ glp_ios_select_node
+ glp_ios_terminate
+ glp_ios_tree_size
+ glp_ios_up_node
+;; from glpapi14 ;;
+ glp_assert_
+ glp_calloc
+ glp_free
+ glp_free_env
+ glp_malloc
+ glp_mem_limit
+ glp_mem_usage
+ glp_printf
+ glp_term_hook
+ glp_term_out
+ glp_version
+ glp_vprintf
+;; from glpapi15 ;;
+ glp_mpl_alloc_wksp
+ glp_mpl_build_prob
+ glp_mpl_free_wksp
+ glp_mpl_generate
+ glp_mpl_postsolve
+ glp_mpl_read_data
+ glp_mpl_read_model
+;; from glpapi16 ;;
+ glp_add_arc
+ glp_add_vertices
+ glp_create_graph
+ glp_create_v_index
+ glp_delete_graph
+ glp_delete_v_index
+ glp_erase_graph
+ glp_find_vertex
+ glp_read_graph
+ glp_set_graph_name
+ glp_set_vertex_name
+ glp_write_graph
+;; from glpapi17 ;;
+ glp_strong_comp
+ glp_weak_comp
+;; from glpapi18 ;;
+ glp_asnprob_hall
+ glp_asnprob_lp
+ glp_asnprob_okalg
+ glp_check_asnprob
+ glp_maxflow_ffalg
+ glp_maxflow_lp
+ glp_mincost_lp
+ glp_mincost_okalg
+;; from glpapi19 ;;
+ glp_main
+;; from glpavl ;;
+ _glp_avl_create_tree
+ _glp_avl_delete_node
+ _glp_avl_delete_tree
+ _glp_avl_find_node
+ _glp_avl_get_node_link
+ _glp_avl_get_node_type
+ _glp_avl_insert_node
+ _glp_avl_set_node_link
+ _glp_avl_set_node_type
+ _glp_avl_strcmp
+;; from glpbfd ;;
+ _glp_bfd_btran
+ _glp_bfd_create_it
+ _glp_bfd_delete_it
+ _glp_bfd_factorize
+ _glp_bfd_ftran
+ _glp_bfd_update_it
+;; from glpbfx ;;
+ _glp_bfx_btran
+ _glp_bfx_create_binv
+ _glp_bfx_delete_binv
+ _glp_bfx_factorize
+ _glp_bfx_ftran
+ _glp_bfx_update
+;; from glpcpx ;;
+ glp_init_cpxcp
+ glp_read_lp
+ glp_write_lp
+;; from glpdmp ;;
+ _glp_dmp_create_pool
+ _glp_dmp_delete_pool
+ _glp_dmp_free_atom
+ _glp_dmp_get_atom
+ _glp_dmp_in_use
+;; from glpdmx ;;
+ glp_read_asnprob
+ glp_read_ccformat
+ glp_read_maxflow
+ glp_read_mincost
+ glp_write_asnprob
+ glp_write_ccformat
+ glp_write_maxflow
+ glp_write_mincost
+;; from glpfhv ;;
+ _glp_fhv_btran
+ _glp_fhv_create_it
+ _glp_fhv_delete_it
+ _glp_fhv_factorize
+ _glp_fhv_ftran
+ _glp_fhv_h_solve
+ _glp_fhv_update_it
+;; from glpgmp ;;
+ _glp_gmp_free_atom
+ _glp_gmp_free_mem
+ _glp_gmp_get_atom
+ _glp_gmp_get_work
+ _glp_gmp_pool_count
+ _glp_mpq_abs
+ _glp_mpq_add
+ _glp_mpq_canonicalize
+ _glp_mpq_clear
+ _glp_mpq_cmp
+ _glp_mpq_div
+ _glp_mpq_get_d
+ _glp_mpq_init
+ _glp_mpq_mul
+ _glp_mpq_neg
+ _glp_mpq_out_str
+ _glp_mpq_set
+ _glp_mpq_set_d
+ _glp_mpq_set_si
+ _glp_mpq_sgn
+ _glp_mpq_sub
+ _glp_mpz_abs
+ _glp_mpz_add
+ _glp_mpz_clear
+ _glp_mpz_cmp
+ _glp_mpz_div
+ _glp_mpz_gcd
+ _glp_mpz_get_d
+ _glp_mpz_get_d_2exp
+ _glp_mpz_init
+ _glp_mpz_mul
+ _glp_mpz_neg
+ _glp_mpz_out_str
+ _glp_mpz_set
+ _glp_mpz_set_si
+ _glp_mpz_sgn
+ _glp_mpz_sub
+ _glp_mpz_swap
+;; from glphbm ;;
+ _glp_hbm_free_mat
+ _glp_hbm_read_mat
+;; from glpini01 ;;
+ glp_adv_basis
+;; from glpini02 ;;
+ glp_cpx_basis
+;; from glpios01 ;;
+ _glp_ios_add_edge
+ _glp_ios_add_row
+ _glp_ios_best_node
+ _glp_ios_clear_pool
+ _glp_ios_clone_node
+ _glp_ios_create_pool
+ _glp_ios_create_tree
+ _glp_ios_del_row
+ _glp_ios_delete_node
+ _glp_ios_delete_pool
+ _glp_ios_delete_tree
+ _glp_ios_eval_degrad
+ _glp_ios_find_row
+ _glp_ios_freeze_node
+ _glp_ios_is_hopeful
+ _glp_ios_relative_gap
+ _glp_ios_revive_node
+ _glp_ios_round_bound
+ _glp_ios_solve_node
+;; from glpios02 ;;
+ _glp_ios_preprocess_node
+;; from glpios03 ;;
+ _glp_ios_driver
+;; from glpios04 ;;
+ _glp_ios_check_vec
+ _glp_ios_clean_vec
+ _glp_ios_clear_vec
+ _glp_ios_copy_vec
+ _glp_ios_create_vec
+ _glp_ios_delete_vec
+ _glp_ios_get_vj
+ _glp_ios_linear_comb
+ _glp_ios_set_vj
+;; from glpios05 ;;
+ _glp_ios_gmi_gen
+;; from glpios06 ;;
+ _glp_ios_mir_gen
+ _glp_ios_mir_init
+ _glp_ios_mir_term
+;; from glpios07 ;;
+ _glp_ios_cov_gen
+;; from glpios08 ;;
+ _glp_ios_clq_gen
+ _glp_ios_clq_init
+ _glp_ios_clq_term
+;; from glpios09 ;;
+ _glp_ios_pcost_branch
+ _glp_ios_pcost_free
+;; from glpios10 ;;
+ _glp_ios_feas_pump
+;; from glpipm ;;
+ _glp_ipm_solve
+;; from glpipp01 ;;
+ _glp_ipp_add_aij
+ _glp_ipp_add_col
+ _glp_ipp_add_row
+ _glp_ipp_append_tqe
+ _glp_ipp_build_prob
+ _glp_ipp_create_wksp
+ _glp_ipp_delete_wksp
+ _glp_ipp_deque_col
+ _glp_ipp_deque_row
+ _glp_ipp_enque_col
+ _glp_ipp_enque_row
+ _glp_ipp_load_orig
+ _glp_ipp_load_sol
+ _glp_ipp_remove_col
+ _glp_ipp_remove_row
+ _glp_ipp_tight_bnds
+ _glp_ipp_unload_sol
+;; from glpipp02 ;;
+ _glp_ipp_analyze_row
+ _glp_ipp_basic_tech
+ _glp_ipp_binarize
+ _glp_ipp_empty_col
+ _glp_ipp_empty_row
+ _glp_ipp_fixed_col
+ _glp_ipp_fixed_col_r
+ _glp_ipp_free_row
+ _glp_ipp_nonbin_col
+ _glp_ipp_nonbin_col_r
+ _glp_ipp_postsolve
+ _glp_ipp_reduce_bnds
+ _glp_ipp_reduce_coef
+ _glp_ipp_reduction
+ _glp_ipp_row_sing
+ _glp_ipp_shift_col
+ _glp_ipp_shift_col_r
+;; from glplib01 ;;
+ _glp_lib_free_env
+ _glp_lib_init_env
+ _glp_lib_link_env
+ _glp_lib_version
+;; from glplib02 ;;
+ _glp_lib_get_ptr
+ _glp_lib_set_ptr
+;; from glplib03 ;;
+ _glp_lib_err_msg
+ _glp_lib_fault_hook
+ _glp_lib_xassert
+ _glp_lib_xerrmsg
+ _glp_lib_xerror1
+ _glp_lib_xerror2
+;; from glplib04 ;;
+ _glp_lib_close_log
+ _glp_lib_open_log
+ _glp_lib_print_hook
+ _glp_lib_term_hook
+ _glp_lib_xgetc
+ _glp_lib_xprintf
+ _glp_lib_xputc
+ _glp_lib_xvprintf
+;; from glplib05 ;;
+ _glp_lib_bigdiv
+ _glp_lib_bigmul
+;; from glplib06 ;;
+ _glp_lib_xladd
+ _glp_lib_xlcmp
+ _glp_lib_xldiv
+ _glp_lib_xlmul
+ _glp_lib_xlneg
+ _glp_lib_xlset
+ _glp_lib_xlsub
+ _glp_lib_xltoa
+ _glp_lib_xltod
+;; from glplib07 ;;
+ _glp_lib_mem_limit
+ _glp_lib_mem_usage
+ _glp_lib_xcalloc
+ _glp_lib_xfree
+ _glp_lib_xmalloc
+;; from glplib08 ;;
+ _glp_lib_xfclose
+ _glp_lib_xfeof
+ _glp_lib_xferror
+ _glp_lib_xfflush
+ _glp_lib_xfgetc
+ _glp_lib_xfopen
+ _glp_lib_xfputc
+;; from glplib09 ;;
+ _glp_lib_doprnt
+ _glp_lib_xfprintf
+;; from glplib10 ;;
+ _glp_lib_xdifftime
+ _glp_lib_xtime
+;; from glplib11 ;;
+ _glp_lib_fp2rat
+ _glp_lib_gcd
+ _glp_lib_gcdn
+ _glp_lib_jdate
+ _glp_lib_jday
+ _glp_lib_lcm
+ _glp_lib_lcmn
+ _glp_lib_round2n
+ _glp_lib_str2int
+ _glp_lib_str2num
+ _glp_lib_strrev
+ _glp_lib_strspx
+ _glp_lib_strtrim
+;; from glplib12 ;;
+ _glp_xdlclose
+ _glp_xdlopen
+ _glp_xdlsym
+;; from glplpf ;;
+ _glp_lpf_btran
+ _glp_lpf_create_it
+ _glp_lpf_delete_it
+ _glp_lpf_factorize
+ _glp_lpf_ftran
+ _glp_lpf_update_it
+;; from glplpx01 ;;
+ _glp_lpx_add_cols
+ _glp_lpx_add_rows
+ _glp_lpx_adv_basis
+ _glp_lpx_check_int
+ _glp_lpx_check_kkt
+ _glp_lpx_cpx_basis
+ _glp_lpx_create_index
+ _glp_lpx_create_prob
+ _glp_lpx_del_cols
+ _glp_lpx_del_rows
+ _glp_lpx_delete_index
+ _glp_lpx_delete_prob
+ _glp_lpx_eval_tab_col
+ _glp_lpx_eval_tab_row
+ _glp_lpx_exact
+ _glp_lpx_find_col
+ _glp_lpx_find_row
+ _glp_lpx_get_class
+ _glp_lpx_get_col_bnds
+ _glp_lpx_get_col_dual
+ _glp_lpx_get_col_info
+ _glp_lpx_get_col_kind
+ _glp_lpx_get_col_lb
+ _glp_lpx_get_col_name
+ _glp_lpx_get_col_prim
+ _glp_lpx_get_col_stat
+ _glp_lpx_get_col_type
+ _glp_lpx_get_col_ub
+ _glp_lpx_get_dual_stat
+ _glp_lpx_get_int_parm
+ _glp_lpx_get_mat_col
+ _glp_lpx_get_mat_row
+ _glp_lpx_get_num_bin
+ _glp_lpx_get_num_cols
+ _glp_lpx_get_num_int
+ _glp_lpx_get_num_nz
+ _glp_lpx_get_num_rows
+ _glp_lpx_get_obj_coef
+ _glp_lpx_get_obj_dir
+ _glp_lpx_get_obj_name
+ _glp_lpx_get_obj_val
+ _glp_lpx_get_prim_stat
+ _glp_lpx_get_prob_name
+ _glp_lpx_get_ray_info
+ _glp_lpx_get_real_parm
+ _glp_lpx_get_row_bnds
+ _glp_lpx_get_row_dual
+ _glp_lpx_get_row_info
+ _glp_lpx_get_row_lb
+ _glp_lpx_get_row_name
+ _glp_lpx_get_row_prim
+ _glp_lpx_get_row_stat
+ _glp_lpx_get_row_type
+ _glp_lpx_get_row_ub
+ _glp_lpx_get_status
+ _glp_lpx_integer
+ _glp_lpx_interior
+ _glp_lpx_intopt
+ _glp_lpx_ipt_col_dual
+ _glp_lpx_ipt_col_prim
+ _glp_lpx_ipt_obj_val
+ _glp_lpx_ipt_row_dual
+ _glp_lpx_ipt_row_prim
+ _glp_lpx_ipt_status
+ _glp_lpx_is_b_avail
+ _glp_lpx_load_matrix
+ _glp_lpx_main
+ _glp_lpx_mip_col_val
+ _glp_lpx_mip_obj_val
+ _glp_lpx_mip_row_val
+ _glp_lpx_mip_status
+ _glp_lpx_print_ips
+ _glp_lpx_print_mip
+ _glp_lpx_print_prob
+ _glp_lpx_print_sol
+ _glp_lpx_read_bas
+ _glp_lpx_read_cpxlp
+ _glp_lpx_read_freemps
+ _glp_lpx_read_model
+ _glp_lpx_read_mps
+ _glp_lpx_reset_parms
+ _glp_lpx_scale_prob
+ _glp_lpx_set_class
+ _glp_lpx_set_col_bnds
+ _glp_lpx_set_col_kind
+ _glp_lpx_set_col_name
+ _glp_lpx_set_col_stat
+ _glp_lpx_set_int_parm
+ _glp_lpx_set_mat_col
+ _glp_lpx_set_mat_row
+ _glp_lpx_set_obj_coef
+ _glp_lpx_set_obj_dir
+ _glp_lpx_set_obj_name
+ _glp_lpx_set_prob_name
+ _glp_lpx_set_real_parm
+ _glp_lpx_set_row_bnds
+ _glp_lpx_set_row_name
+ _glp_lpx_set_row_stat
+ _glp_lpx_simplex
+ _glp_lpx_std_basis
+ _glp_lpx_unscale_prob
+ _glp_lpx_warm_up
+ _glp_lpx_write_bas
+ _glp_lpx_write_cpxlp
+ _glp_lpx_write_freemps
+ _glp_lpx_write_mps
+;; from glplpx02 ;;
+ _glp_lpx_dual_ratio_test
+ _glp_lpx_prim_ratio_test
+ _glp_lpx_transform_col
+ _glp_lpx_transform_row
+ _glp_order_matrix
+ _glp_put_mip_soln
+ _glp_put_solution
+;; from glplpx03 ;;
+ _glp_lpx_print_sens_bnds
+;; from glplpx04 ;;
+ _glp_lpx_write_pb
+;; from glpluf ;;
+ _glp_luf_a_solve
+ _glp_luf_create_it
+ _glp_luf_defrag_sva
+ _glp_luf_delete_it
+ _glp_luf_enlarge_col
+ _glp_luf_enlarge_row
+ _glp_luf_f_solve
+ _glp_luf_factorize
+ _glp_luf_v_solve
+;; from glplux ;;
+ _glp_lux_create
+ _glp_lux_decomp
+ _glp_lux_delete
+ _glp_lux_f_solve
+ _glp_lux_solve
+ _glp_lux_v_solve
+;; from glpmat ;;
+ _glp_mat_adat_numeric
+ _glp_mat_adat_symbolic
+ _glp_mat_amd_order1
+ _glp_mat_check_fvs
+ _glp_mat_check_pattern
+ _glp_mat_chol_numeric
+ _glp_mat_chol_symbolic
+ _glp_mat_min_degree
+ _glp_mat_symamd_ord
+ _glp_mat_transpose
+ _glp_mat_u_solve
+ _glp_mat_ut_solve
+;; from glpmpl01 ;;
+ _glp_mpl_append_block
+ _glp_mpl_append_char
+ _glp_mpl_append_slot
+ _glp_mpl_arg_list_len
+ _glp_mpl_branched_expression
+ _glp_mpl_check_statement
+ _glp_mpl_close_scope
+ _glp_mpl_constraint_statement
+ _glp_mpl_create_arg_list
+ _glp_mpl_create_block
+ _glp_mpl_create_domain
+ _glp_mpl_display_statement
+ _glp_mpl_domain_arity
+ _glp_mpl_elemset_argument
+ _glp_mpl_end_statement
+ _glp_mpl_enter_context
+ _glp_mpl_error_dimension
+ _glp_mpl_error_following
+ _glp_mpl_error_preceding
+ _glp_mpl_expand_arg_list
+ _glp_mpl_expression_0
+ _glp_mpl_expression_1
+ _glp_mpl_expression_10
+ _glp_mpl_expression_11
+ _glp_mpl_expression_12
+ _glp_mpl_expression_13
+ _glp_mpl_expression_2
+ _glp_mpl_expression_3
+ _glp_mpl_expression_4
+ _glp_mpl_expression_5
+ _glp_mpl_expression_6
+ _glp_mpl_expression_7
+ _glp_mpl_expression_8
+ _glp_mpl_expression_9
+ _glp_mpl_expression_list
+ _glp_mpl_for_statement
+ _glp_mpl_function_reference
+ _glp_mpl_get_char
+ _glp_mpl_get_token
+ _glp_mpl_indexing_expression
+ _glp_mpl_is_keyword
+ _glp_mpl_is_reserved
+ _glp_mpl_iterated_expression
+ _glp_mpl_literal_set
+ _glp_mpl_make_binary
+ _glp_mpl_make_code
+ _glp_mpl_make_ternary
+ _glp_mpl_make_unary
+ _glp_mpl_model_section
+ _glp_mpl_numeric_argument
+ _glp_mpl_numeric_literal
+ _glp_mpl_object_reference
+ _glp_mpl_objective_statement
+ _glp_mpl_parameter_statement
+ _glp_mpl_primary_expression
+ _glp_mpl_print_context
+ _glp_mpl_printf_statement
+ _glp_mpl_set_expression
+ _glp_mpl_set_statement
+ _glp_mpl_simple_statement
+ _glp_mpl_solve_statement
+ _glp_mpl_string_literal
+ _glp_mpl_subscript_list
+ _glp_mpl_symbolic_argument
+ _glp_mpl_table_statement
+ _glp_mpl_unget_token
+ _glp_mpl_variable_statement
+;; from glpmpl02 ;;
+ _glp_mpl_create_slice
+ _glp_mpl_data_section
+ _glp_mpl_delete_slice
+ _glp_mpl_expand_slice
+ _glp_mpl_fake_slice
+ _glp_mpl_is_literal
+ _glp_mpl_is_number
+ _glp_mpl_is_symbol
+ _glp_mpl_matrix_format
+ _glp_mpl_parameter_data
+ _glp_mpl_plain_format
+ _glp_mpl_read_number
+ _glp_mpl_read_slice
+ _glp_mpl_read_symbol
+ _glp_mpl_read_value
+ _glp_mpl_select_parameter
+ _glp_mpl_select_set
+ _glp_mpl_set_data
+ _glp_mpl_set_default
+ _glp_mpl_simple_format
+ _glp_mpl_slice_arity
+ _glp_mpl_slice_dimen
+ _glp_mpl_tabbing_format
+ _glp_mpl_tabular_format
+;; from glpmpl03 ;;
+ _glp_mpl_add_member
+ _glp_mpl_add_tuple
+ _glp_mpl_arelset_member
+ _glp_mpl_arelset_size
+ _glp_mpl_assign_dummy_index
+ _glp_mpl_build_subtuple
+ _glp_mpl_check_elem_set
+ _glp_mpl_check_then_add
+ _glp_mpl_check_value_num
+ _glp_mpl_check_value_sym
+ _glp_mpl_clean_check
+ _glp_mpl_clean_code
+ _glp_mpl_clean_constraint
+ _glp_mpl_clean_display
+ _glp_mpl_clean_domain
+ _glp_mpl_clean_for
+ _glp_mpl_clean_parameter
+ _glp_mpl_clean_printf
+ _glp_mpl_clean_set
+ _glp_mpl_clean_statement
+ _glp_mpl_clean_table
+ _glp_mpl_clean_variable
+ _glp_mpl_compare_strings
+ _glp_mpl_compare_symbols
+ _glp_mpl_compare_tuples
+ _glp_mpl_concat_symbols
+ _glp_mpl_constant_term
+ _glp_mpl_copy_elemset
+ _glp_mpl_copy_formula
+ _glp_mpl_copy_string
+ _glp_mpl_copy_symbol
+ _glp_mpl_copy_tuple
+ _glp_mpl_create_arelset
+ _glp_mpl_create_array
+ _glp_mpl_create_elemset
+ _glp_mpl_create_string
+ _glp_mpl_create_symbol_num
+ _glp_mpl_create_symbol_str
+ _glp_mpl_create_tuple
+ _glp_mpl_delete_array
+ _glp_mpl_delete_elemset
+ _glp_mpl_delete_formula
+ _glp_mpl_delete_string
+ _glp_mpl_delete_symbol
+ _glp_mpl_delete_tuple
+ _glp_mpl_delete_value
+ _glp_mpl_enter_domain_block
+ _glp_mpl_eval_elemset
+ _glp_mpl_eval_formula
+ _glp_mpl_eval_logical
+ _glp_mpl_eval_member_con
+ _glp_mpl_eval_member_num
+ _glp_mpl_eval_member_set
+ _glp_mpl_eval_member_sym
+ _glp_mpl_eval_member_var
+ _glp_mpl_eval_numeric
+ _glp_mpl_eval_symbolic
+ _glp_mpl_eval_tuple
+ _glp_mpl_eval_whole_con
+ _glp_mpl_eval_whole_par
+ _glp_mpl_eval_whole_set
+ _glp_mpl_eval_whole_var
+ _glp_mpl_eval_within_domain
+ _glp_mpl_execute_check
+ _glp_mpl_execute_display
+ _glp_mpl_execute_for
+ _glp_mpl_execute_printf
+ _glp_mpl_execute_statement
+ _glp_mpl_execute_table
+ _glp_mpl_expand_tuple
+ _glp_mpl_fetch_string
+ _glp_mpl_find_member
+ _glp_mpl_find_tuple
+ _glp_mpl_format_symbol
+ _glp_mpl_format_tuple
+ _glp_mpl_fp_add
+ _glp_mpl_fp_atan
+ _glp_mpl_fp_atan2
+ _glp_mpl_fp_cos
+ _glp_mpl_fp_div
+ _glp_mpl_fp_exp
+ _glp_mpl_fp_idiv
+ _glp_mpl_fp_irand224
+ _glp_mpl_fp_less
+ _glp_mpl_fp_log
+ _glp_mpl_fp_log10
+ _glp_mpl_fp_mod
+ _glp_mpl_fp_mul
+ _glp_mpl_fp_normal
+ _glp_mpl_fp_normal01
+ _glp_mpl_fp_power
+ _glp_mpl_fp_round
+ _glp_mpl_fp_sin
+ _glp_mpl_fp_sqrt
+ _glp_mpl_fp_sub
+ _glp_mpl_fp_trunc
+ _glp_mpl_fp_uniform01
+ _glp_mpl_free_dca
+ _glp_mpl_get_domain_tuple
+ _glp_mpl_is_member
+ _glp_mpl_linear_comb
+ _glp_mpl_loop_within_domain
+ _glp_mpl_out_of_domain
+ _glp_mpl_reduce_terms
+ _glp_mpl_remove_constant
+ _glp_mpl_set_cross
+ _glp_mpl_set_diff
+ _glp_mpl_set_inter
+ _glp_mpl_set_symdiff
+ _glp_mpl_set_union
+ _glp_mpl_single_variable
+ _glp_mpl_tab_get_arg
+ _glp_mpl_tab_get_name
+ _glp_mpl_tab_get_num
+ _glp_mpl_tab_get_str
+ _glp_mpl_tab_get_type
+ _glp_mpl_tab_num_args
+ _glp_mpl_tab_num_flds
+ _glp_mpl_tab_set_num
+ _glp_mpl_tab_set_str
+ _glp_mpl_take_member_con
+ _glp_mpl_take_member_num
+ _glp_mpl_take_member_set
+ _glp_mpl_take_member_sym
+ _glp_mpl_take_member_var
+ _glp_mpl_tuple_dimen
+ _glp_mpl_uniform
+ _glp_mpl_update_dummy_indices
+;; from glpmpl04 ;;
+ _glp_mpl_alloc_content
+ _glp_mpl_build_problem
+ _glp_mpl_clean_model
+ _glp_mpl_close_input
+ _glp_mpl_error
+ _glp_mpl_flush_output
+ _glp_mpl_generate
+ _glp_mpl_generate_model
+ _glp_mpl_get_col_bnds
+ _glp_mpl_get_col_kind
+ _glp_mpl_get_col_name
+ _glp_mpl_get_mat_row
+ _glp_mpl_get_num_cols
+ _glp_mpl_get_num_rows
+ _glp_mpl_get_prob_name
+ _glp_mpl_get_row_bnds
+ _glp_mpl_get_row_c0
+ _glp_mpl_get_row_kind
+ _glp_mpl_get_row_name
+ _glp_mpl_has_solve_stmt
+ _glp_mpl_initialize
+ _glp_mpl_open_input
+ _glp_mpl_open_output
+ _glp_mpl_postsolve
+ _glp_mpl_postsolve_model
+ _glp_mpl_put_col_value
+ _glp_mpl_read_char
+ _glp_mpl_read_data
+ _glp_mpl_read_model
+ _glp_mpl_terminate
+ _glp_mpl_warning
+ _glp_mpl_write_char
+ _glp_mpl_write_text
+;; from glpmpl05 ;;
+ _glp_mpl_fn_gmtime
+ _glp_mpl_fn_str2time
+ _glp_mpl_fn_time2str
+;; from glpmpl06 ;;
+ _glp_mpl_tab_drv_close
+ _glp_mpl_tab_drv_open
+ _glp_mpl_tab_drv_read
+ _glp_mpl_tab_drv_write
+;; from glpmps ;;
+ glp_init_mpscp
+ glp_read_mps
+ glp_write_mps
+;; from glpnet01 ;;
+ _glp_mc21a
+;; from glpnet02 ;;
+ _glp_mc13d
+;; from glpnet03 ;;
+ glp_netgen
+;; from glpnet04 ;;
+ glp_gridgen
+;; from glpnet05 ;;
+ glp_rmfgen
+;; from glpnet06 ;;
+ _glp_okalg
+;; from glpnet07 ;;
+ _glp_ffalg
+;; from glpnpp01 ;;
+ _glp_npp_add_aij
+ _glp_npp_add_col
+ _glp_npp_add_row
+ _glp_npp_build_prob
+ _glp_npp_create_wksp
+ _glp_npp_del_col
+ _glp_npp_del_row
+ _glp_npp_delete_wksp
+ _glp_npp_insert_col
+ _glp_npp_insert_row
+ _glp_npp_load_prob
+ _glp_npp_postprocess
+ _glp_npp_push_tse
+ _glp_npp_remove_col
+ _glp_npp_remove_row
+ _glp_npp_unload_sol
+;; from glpnpp02 ;;
+ _glp_npp_col_sngtn1
+ _glp_npp_col_sngtn2
+ _glp_npp_dbnd_col
+ _glp_npp_empty_col
+ _glp_npp_empty_row
+ _glp_npp_fixed_col
+ _glp_npp_forcing_row
+ _glp_npp_free_col
+ _glp_npp_free_row
+ _glp_npp_gteq_row
+ _glp_npp_implied_fixed
+ _glp_npp_implied_lower
+ _glp_npp_implied_upper
+ _glp_npp_lbnd_col
+ _glp_npp_lteq_row
+ _glp_npp_row_sngtn1
+ _glp_npp_row_sngtn2
+ _glp_npp_ubnd_col
+;; from glpnpp03 ;;
+ _glp_npp_preprocess
+;; from glpqmd ;;
+ _glp_qmd_genqmd
+ _glp_qmd_qmdmrg
+ _glp_qmd_qmdqt
+ _glp_qmd_qmdrch
+ _glp_qmd_qmdupd
+;; from glprgr ;;
+ _glp_rgr_write_bmp16
+;; from glprng01 ;;
+ _glp_rng_create_rand
+ _glp_rng_delete_rand
+ _glp_rng_init_rand
+ _glp_rng_next_rand
+ _glp_rng_unif_rand
+;; from glprng02 ;;
+ _glp_rng_unif_01
+ _glp_rng_uniform
+;; from glpscf ;;
+ _glp_scf_create_it
+ _glp_scf_delete_it
+ _glp_scf_reset_it
+ _glp_scf_solve_it
+ _glp_scf_update_exp
+;; from glpscg ;;
+ _glp_scg_add_edge
+ _glp_scg_add_nodes
+ _glp_scg_adj_list
+ _glp_scg_create_graph
+ _glp_scg_delete_graph
+ _glp_scg_max_clique
+;; from glpscl ;;
+ glp_scale_prob
+;; from glpsdf ;;
+ glp_sdf_close_file
+ glp_sdf_error
+ glp_sdf_line
+ glp_sdf_open_file
+ glp_sdf_read_int
+ glp_sdf_read_item
+ glp_sdf_read_num
+ glp_sdf_read_text
+ glp_sdf_set_jump
+ glp_sdf_warning
+;; from glpspm ;;
+ _glp_spm_add_mat
+ _glp_spm_add_num
+ _glp_spm_add_sym
+ _glp_spm_check_per
+ _glp_spm_count_nnz
+ _glp_spm_create_mat
+ _glp_spm_create_per
+ _glp_spm_delete_mat
+ _glp_spm_delete_per
+ _glp_spm_drop_zeros
+ _glp_spm_mul_mat
+ _glp_spm_mul_num
+ _glp_spm_mul_sym
+ _glp_spm_new_elem
+ _glp_spm_read_hbm
+ _glp_spm_read_mat
+ _glp_spm_show_mat
+ _glp_spm_test_mat_d
+ _glp_spm_test_mat_e
+ _glp_spm_transpose
+ _glp_spm_write_mat
+;; from glpspx01 ;;
+ _glp_spx_primal
+;; from glpspx02 ;;
+ _glp_spx_dual
+;; from glpsql ;;
+ _glp_db_iodbc_close
+ _glp_db_iodbc_open
+ _glp_db_iodbc_read
+ _glp_db_iodbc_write
+ _glp_db_mysql_close
+ _glp_db_mysql_open
+ _glp_db_mysql_read
+ _glp_db_mysql_write
+;; from glpssx01 ;;
+ _glp_ssx_change_basis
+ _glp_ssx_chuzc
+ _glp_ssx_chuzr
+ _glp_ssx_create
+ _glp_ssx_delete
+ _glp_ssx_eval_bbar
+ _glp_ssx_eval_cbar
+ _glp_ssx_eval_col
+ _glp_ssx_eval_dj
+ _glp_ssx_eval_pi
+ _glp_ssx_eval_rho
+ _glp_ssx_eval_row
+ _glp_ssx_factorize
+ _glp_ssx_get_xNj
+ _glp_ssx_update_bbar
+ _glp_ssx_update_cbar
+ _glp_ssx_update_pi
+;; from glpssx02 ;;
+ _glp_ssx_driver
+ _glp_ssx_phase_I
+ _glp_ssx_phase_II
+;; from glptsp ;;
+ _glp_tsp_distance
+ _glp_tsp_free_data
+ _glp_tsp_read_data

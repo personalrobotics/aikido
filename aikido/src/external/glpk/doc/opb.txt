@@ -1,0 +1,59 @@
+OPB (PSEUDO BOOLEAN) FORMAT
+
+Oscar Gustafsson <oscarg@isy.liu.se>
+
+
+The OPB format is used to represent linear problems with binary
+variables, i.e., integer variables that can take on the values 0 or 1.
+Furthermore, the coefficients are restricted to be integers.
+
+The routines in GLPK provides a normalized version, conformant with the
+files used in the PB evaluations (see
+http://www.cril.univ-artois.fr/PB07/) as well as a straightforward
+version with (slightly) higher human readability. There are several
+variations of the OPB-format. Therefore, it is not expected that the
+straightforward output of this routine works with all PB-solvers, while
+the normalized output should work with most.
+
+The objective function is always a function to be minimized and is
+specified as:
+
+min: coefficient1 variable1 coefficient2 variable2 ... ;
+
+Constraints are specified as:
+
+coefficient1 variable1 coefficient2 variable2 ... op1 bound1;
+coefficient1 variable1 coefficient2 variable2 ... op2 bound2;
+
+For a problem in normalized format the variables are always of the form
+xNN, where NN is an integer number. For the straightforward version the
+name provided by GLPK is used. At the end of a normalized file the
+translation between GLPK names and normalized names are provided as
+comments.
+
+opx is for normalized problems either '>=' or '=', while also '<=' is
+allowed for the straightforward format.
+
+In the straightforward format coefficients and variables are separated
+by '*'. If a coefficient is non-zero it is always represented
+explicitly, even if it is +1.
+
+All lines (except for comments) must end with ';'. A comment line starts
+with '*'.
+
+EXAMPLE
+
+Normalized:
+
+min: 1 x1 -1 x2;
+1 x1 4 x2 >= 3;
+1 x2 -1 x3 = 0;
+* x1 = orange
+* x2 = apple
+* x3 = banana
+
+Straightforward:
+
+min: 1*orange -1*apple;
+1*orange 4*apple >= 3;
+1*apple -1*banana = 0;

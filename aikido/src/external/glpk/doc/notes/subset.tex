@@ -1,0 +1,473 @@
+%% subset.tex %%
+
+\documentclass[a4paper,11pt,draft]{article}
+
+\begin{document}
+
+\title{A Portable Subset of the Standard C Library}
+
+\author{Andrew Makhorin\footnote{Department for Applied Informatics,
+Moscow Aviation Institute, Moscow, Russia. E-mail:
+{\tt <mao@mai2.rcnet.ru>}, {\tt <mao@gnu.org>}.}}
+
+\date{July, 2008}
+
+\maketitle
+
+\begin{abstract}
+This memorandum defines a subset of the standard C run-time library,
+which is absolutely portable between all modern 32-bit platforms, that
+has been proven by the practice.
+
+Using this subset as a base for implementation of the GLPK package
+provides its high portability and allows avoiding many portability
+problems. (Note that not all library objects from the subset are
+actually used in GLPK.)
+
+The subset conforms to the International Standard ISO/IEC
+9899.\footnote{See {\tt <http://www.open-std.org/JTC1/SC22/WG14/>}.}
+\end{abstract}
+
+\section*{Diagnostics {\tt <assert.h>}}
+
+\begin{verbatim}
+NDEBUG
+void assert(expr);
+\end{verbatim}
+
+\section*{Character handling {\tt <ctype.h>}}
+
+\subsection*{Character testing functions}
+
+\begin{verbatim}
+int isalnum(int c);
+int isalpha(int c);
+int iscntrl(int c);
+int isdigit(int c);
+int isgraph(int c);
+int islower(int c);
+int isprint(int c);
+int ispunct(int c);
+int isspace(int c);
+int isupper(int c);
+int isxdigit(int c);
+\end{verbatim}
+
+\subsection*{Character case mapping functions}
+
+\begin{verbatim}
+int tolower(int c);
+int toupper(int c);
+\end{verbatim}
+
+\section*{Errors {\tt <errno.h>}}
+
+\begin{verbatim}
+EDOM
+ERANGE
+errno
+\end{verbatim}
+
+\section*{Characteristics of floating types {\tt <errno.h>}}
+
+\begin{verbatim}
+FLT_RADIX
+FLT_MANT_DIG
+FLT_MIN_EXP
+FLT_MAX_EXP
+FLT_DIG
+FLT_MIN_10_EXP
+FLT_MAX_10_EXP
+FLT_EPSILON
+FLT_MIN
+FLT_MAX
+DBL_MANT_DIG
+DBL_MIN_EXP
+DBL_MAX_EXP
+DBL_DIG
+DBL_MIN_10_EXP
+DBL_MAX_10_EXP
+DBL_EPSILON
+DBL_MIN
+DBL_MAX
+\end{verbatim}
+
+\section*{Size of integer types {\tt <limits.h>}}
+
+\begin{verbatim}
+CHAR_BIT
+SCHAR_MIN
+SCHAR_MAX
+UCHAR_MAX
+CHAR_MIN
+CHAR_MAX
+SHRT_MIN
+SHRT_MAX
+USHRT_MAX
+INT_MIN
+INT_MAX
+UINT_MAX
+LONG_MIN
+LONG_MAX
+ULONG_MAX
+\end{verbatim}
+
+\section*{Mathematics {\tt <math.h>}}
+
+\subsection*{Trigonometric functions}
+
+\begin{verbatim}
+double acos(double x);
+double asin(double x);
+double atan(double x);
+double atan2(double y, double x);
+double cos(double x);
+double sin(double x);
+double tan(double x);
+\end{verbatim}
+
+\subsection*{Hyperbolic functions}
+
+\begin{verbatim}
+double cosh(double x);
+double sinh(double x);
+double tanh(double x);
+\end{verbatim}
+
+\subsection*{Exponential and logarithmic functions}
+
+\begin{verbatim}
+double exp(double x);
+double frexp(double value, int *exp);
+double ldexp(double x, int exp);
+double log(double x);
+double log10(double x);
+double modf(double value, double *iptr);
+\end{verbatim}
+
+\subsection*{Power and absolute value functions}
+
+\begin{verbatim}
+double fabs(double x);
+double pow(double x, double y);
+double sqrt(double x);
+\end{verbatim}
+
+\subsection*{Nearest integer functions}
+
+\begin{verbatim}
+double ceil(double x);
+double floor(double x);
+\end{verbatim}
+
+\subsection*{Remainder function}
+
+\begin{verbatim}
+double fmod(double x, double y);
+\end{verbatim}
+
+\section*{Non-local jumps {\tt <setjmp.h>}}
+
+\begin{verbatim}
+jmp_buf
+int setjmp(jmp_buf env);
+void longjmp(jmp_buf env, int val);
+\end{verbatim}
+
+\section*{Signal handling {\tt <signal.h>}}
+
+\begin{verbatim}
+sig_atomic_t
+SIG_DFL
+SIG_IGN
+SIG_ERR
+SIGINT
+SIGILL
+SIGFPE
+SIGSEGV
+SIGTERM
+SIGABRT
+void (*signal(int sig, void (*func)(int)))(int);
+int raise(int sig);
+\end{verbatim}
+
+\section*{Variable arguments {\tt <stdarg.h>}}
+
+\begin{verbatim}
+va_list
+type va_arg(va_list ap, type);
+void va_end(va_list ap);
+void va_start(va_list ap, parmN);
+\end{verbatim}
+
+\section*{Common definitions {\tt <stddef.h>}}
+
+\begin{verbatim}
+ptrdiff_t
+size_t
+NULL
+offsetof(type, member-designator)
+\end{verbatim}
+
+\newpage
+
+\section*{Input/output {\tt <stdio.h>}}
+
+\begin{verbatim}
+size_t
+va_list
+FILE
+fpos_t
+NULL
+_IOFBF
+_IOLBF
+_IONBF
+BUFSIZ
+EOF
+FOPEN_MAX
+FILENAME_MAX
+L_tmpnam
+SEEK_SET
+SEEK_CUR
+SEEK_END
+TMP_MAX
+stdin
+stdout
+stderr
+\end{verbatim}
+
+\subsection*{Operations on files}
+
+\begin{verbatim}
+int remove(const char *filename);
+int rename(const char *old, const char *new);
+FILE *tmpfile(void);
+char *tmpnam(char *s);
+\end{verbatim}
+
+\subsection*{File access functions}
+
+\begin{verbatim}
+int fclose(FILE *stream);
+int fflush(FILE *stream);
+FILE *fopen(const char *filename, const char *mode);
+FILE *freopen(const char *filename, const char *mode,
+   FILE *stream);
+void setbuf(FILE *stream, char *buf);
+int setvbuf(FILE *stream, char *buf, int mode, size_t size);
+\end{verbatim}
+
+\subsection*{Formatted input/output functions}
+
+\begin{verbatim}
+int fprintf(FILE *stream, const char *format, ...);
+int fscanf(FILE *stream, const char *format, ...);
+int printf(const char *format, ...);
+int scanf(const char *format, ...);
+int sprintf(char *s, const char *format, ...);
+int sscanf(const char *s, const char *format, ...);
+int vfprintf(FILE *stream, const char *format, va_list arg);
+int vprintf(const char *format, va_list arg);
+int vsprintf(char *s, const char *format, va_list arg);
+\end{verbatim}
+
+\subsection*{Character input/output functions}
+
+\begin{verbatim}
+int fgetc(FILE *stream);
+char *fgets(char *s, int n, FILE *stream);
+int fputc(int c, FILE *stream);
+int fputs(const char *s, FILE *stream);
+int getc(FILE *stream);
+int getchar(void);
+char *gets(char *s);
+int putc(int c, FILE *stream);
+int putchar(int c);
+int puts(const char *s);
+int ungetc(int c, FILE *stream);
+\end{verbatim}
+
+\subsection*{Direct input/output functions}
+
+\begin{verbatim}
+size_t fread(void *ptr, size_t size, size_t nmemb,
+   FILE *stream);
+size_t fwrite(const void *ptr, size_t size, size_t nmemb,
+   FILE *stream);
+\end{verbatim}
+
+\subsection*{File positioning functions}
+
+\begin{verbatim}
+int fgetpos(FILE *stream, fpos_t *pos);
+int fseek(FILE *stream, long int offset, int whence);
+int fsetpos(FILE *stream, const fpos_t *pos);
+long int ftell(FILE *stream);
+void rewind(FILE *stream);
+\end{verbatim}
+
+\subsection*{Error handling functions}
+
+\begin{verbatim}
+void clearerr(FILE *stream);
+int feof(FILE *stream);
+int ferror(FILE *stream);
+void perror(const char *s);
+\end{verbatim}
+
+\section*{General utilities {\tt <stdlib.h>}}
+
+\begin{verbatim}
+size_t
+div_t
+ldiv_t
+NULL
+EXIT_SUCCESS
+EXIT_FAILURE
+RAND_MAX
+\end{verbatim}
+
+\subsection*{String conversion functions}
+
+\begin{verbatim}
+double atof(const char *nptr);
+int atoi(const char *nptr);
+long int atol(const char *nptr);
+double strtod(const char *nptr, char **endptr);
+long int strtol(const char *nptr, char **endptr, int base);
+unsigned long int strtoul(const char *nptr, char **endptr,
+   int base);
+\end{verbatim}
+
+\subsection*{Pseudo-random sequence generation functions}
+
+\begin{verbatim}
+int rand(void);
+void srand(unsigned int seed);
+\end{verbatim}
+
+\subsection*{Memory management functions}
+
+\begin{verbatim}
+void *calloc(size_t nmemb, size_t size);
+void free(void *ptr);
+void *malloc(size_t size);
+void *realloc(void *ptr, size_t size);
+\end{verbatim}
+
+\subsection*{Communication with the environment}
+
+\begin{verbatim}
+void abort(void);
+int atexit(void (*func)(void));
+void exit(int status);
+char *getenv(const char *name);
+int system(const char *string);
+\end{verbatim}
+
+\subsection*{Searching and sorting utilities}
+
+\begin{verbatim}
+void *bsearch(const void *key, const void *base,
+   size_t nmemb, size_t size,
+   int (*compar)(const void *, const void *));
+void qsort(void *base, size_t nmemb, size_t size,
+   int (*compar)(const void *, const void *));
+\end{verbatim}
+
+\subsection*{Integer arithmetic functions}
+
+\begin{verbatim}
+int abs(int j);
+long int labs(long int j);
+div_t div(int numer, int denom);
+ldiv_t ldiv(long int numer, long int denom);
+\end{verbatim}
+
+\section*{String handling {\tt <string.h>}}
+
+\begin{verbatim}
+size_t
+NULL
+\end{verbatim}
+
+\subsection*{Copying functions}
+
+\begin{verbatim}
+void *memcpy(void *s1, const void *s2, size_t n);
+void *memmove(void *s1, const void *s2, size_t n);
+char *strcpy(char *s1, const char *s2);
+char *strncpy(char *s1, const char *s2, size_t n);
+\end{verbatim}
+
+\subsection*{Concatenation functions}
+
+\begin{verbatim}
+char *strcat(char *s1, const char *s2);
+char *strncat(char *s1, const char *s2, size_t n);
+\end{verbatim}
+
+\subsection*{Comparison functions}
+
+\begin{verbatim}
+int memcmp(const void *s1, const void *s2, size_t n);
+int strcmp(const char *s1, const char *s2);
+int strncmp(const char *s1, const char *s2, size_t n);
+\end{verbatim}
+
+\subsection*{Search functions}
+
+\begin{verbatim}
+void *memchr(const void *s, int c, size_t n);
+char *strchr(const char *s, int c);
+size_t strcspn(const char *s1, const char *s2);
+char *strpbrk(const char *s1, const char *s2);
+char *strrchr(const char *s, int c);
+size_t strspn(const char *s1, const char *s2);
+char *strstr(const char *s1, const char *s2);
+char *strtok(char *s1, const char *s2);
+\end{verbatim}
+
+\subsection*{Miscellaneous functions}
+
+\begin{verbatim}
+void *memset(void *s, int c, size_t n);
+char *strerror(int errnum);
+size_t strlen(const char *s);
+\end{verbatim}
+
+\section*{Date and time {\tt <time.h>}}
+
+\begin{verbatim}
+NULL
+CLOCKS_PER_SEC
+clock_t
+time_t
+struct tm
+\end{verbatim}
+
+\subsection*{Time manipulation functions}
+
+\begin{verbatim}
+clock_t clock(void);
+double difftime(time_t time1, time_t time0);
+time_t mktime(struct tm *timeptr);
+time_t time(time_t *timer);
+\end{verbatim}
+
+\subsection*{Time conversion functions}
+
+\begin{verbatim}
+char *asctime(const struct tm *timeptr);
+char *ctime(const time_t *timer);
+struct tm *gmtime(const time_t *timer);
+struct tm *localtime(const time_t *timer);
+\end{verbatim}
+
+\vspace{15mm}
+
+\begin{center}
+\rule{40mm}{.5pt}
+\end{center}
+
+\end{document}

@@ -1,0 +1,5 @@
+/* GLPK configuration file (Microsoft Visual C++ 6.0) */
+
+#define __WOE__ 1
+
+/* eof */

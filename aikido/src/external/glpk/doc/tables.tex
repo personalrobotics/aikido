@@ -1,0 +1,612 @@
+%* tables.tex *%
+
+%***********************************************************************
+%  This code is part of GLPK (GNU Linear Programming Kit).
+%
+%  Copyright (C) 2000,01,02,03,04,05,06,07,08,2009 Andrew Makhorin,
+%  Department for Applied Informatics, Moscow Aviation Institute,
+%  Moscow, Russia. All rights reserved. E-mail: <mao@mai2.rcnet.ru>.
+%
+%  GLPK is free software: you can redistribute it and/or modify it
+%  under the terms of the GNU General Public License as published by
+%  the Free Software Foundation, either version 3 of the License, or
+%  (at your option) any later version.
+%
+%  GLPK is distributed in the hope that it will be useful, but WITHOUT
+%  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+%  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+%  License for more details.
+%
+%  You should have received a copy of the GNU General Public License
+%  along with GLPK. If not, see <http://www.gnu.org/licenses/>.
+%***********************************************************************
+
+\documentclass[11pt,draft]{article}
+
+\begin{document}
+
+\title{Using Data Tables in the GNU MathProg Modeling Language}
+
+\author{\begin{tabular}{cc}
+Andrew Makhorin&Heinrich Schuchardt\\
+{\tt <mao@mai2.rcnet.ru>}&{\tt<heinrich.schuchardt@gmx.de>}\\
+\end{tabular}}
+
+\date{September, 2008}
+
+\maketitle
+
+\begin{abstract}
+This is a supplement to the document ``Modeling Language GNU
+MathProg''. It describes the table statement, which allows reading data
+from external tables into model objects such as sets and parameters as
+well as writing data from the model to external tables.
+\end{abstract}
+
+\section*{Table statement}
+
+\frame{
+\begin{tabular}{@{\hspace*{6mm}}l@{\hspace*{17mm}}}
+\\
+{\tt table} {\it name} {\it alias} {\tt IN} {\it driver} {\it arg}
+\dots {\it arg} {\tt:} \\
+\hspace{10mm} {\it set}{\tt\ <- [} {\it fld} {\tt,} \dots {\tt,}
+{\it fld} {\tt] ,}
+{\it par} {\tt \symbol{126}} {\it fld} {\tt,} \dots {\tt,} {\it par}
+{\tt \symbol{126}} {\it fld} {\tt;} \\
+\\
+{\tt table} {\it name} {\it alias} {\it domain} {\tt OUT} {\it driver}
+{\it arg} \dots {\it arg} {\tt:} \\
+\hspace{10mm} {\it expr} {\tt\symbol{126}} {\it fld} {\tt,}
+\dots {\tt,} {\it expr} {\tt\symbol{126}} {\it fld} {\tt;}\\
+\\
+\end{tabular}
+}
+
+\medskip
+
+\noindent
+\begin{tabular}{@{}lp{110.2mm}@{}}
+Where:&{\it name} is a symbolic name of the table;\\
+&{\it alias} is an optional string literal which specifies the alias of
+the table;\\
+&{\it domain} is an indexing expression which specifies the subscript
+domain of the (output) table;\\
+&{\tt IN} is the keyword which means reading data from the input
+table;\\
+&{\tt OUT} is the keyword which means writing data to the output
+table;\\
+&{\it driver} is a symbolic expression which specifies the name of the
+driver used to access the table. (For details see Section ``Table
+drivers'' below.)\\
+\end{tabular}
+
+\noindent
+\begin{tabular}{@{\hspace*{12.1mm}}lp{110.2mm}@{}}
+&{\it arg} is an optional symbolic expression which is an argument
+passed to the table driver. This symbolic expression must not contain
+dummy indices specified in the domain;\\
+&{\it set} is the name of an optional simple set called control set.
+It can be omitted along with the delimiter `{\tt <-}';\\
+&{\it fld} is the field name. Within square brackets at least one
+field should be specified. The field name following parameter name or
+expression is optional and can be omitted along with the delimiter
+`{\tt\symbol{126}}', in which case the name of corresponding model
+object is used as the field name;\\
+&{\it par} is the symbolic name of a model parameter;\\
+&{\it expr} is a numeric or symbolic expression.\\
+\end{tabular}
+
+\subsubsection*{Examples}
+
+\begin{verbatim}
+table data IN "CSV" "data.csv":
+      s <- [FROM,TO], d~DISTANCE, c~COST;
+table result{(f,t) in s} OUT "CSV" "result.csv":
+      f~FROM, t~TO, x[f,t]~FLOW;
+\end{verbatim}
+
+The table statement allows reading data from a table into model objects
+such as sets and (non-scalar) parameters as well as writing data from
+the model to a table.
+
+\subsection*{Table structure}
+
+The {\it data table} is an (unordered) set of {\it records}, where each
+record consists of the same number of {\it fields}, and each field is
+provided with a unique symbolic name called the {\it field name}. For
+example:
+
+\bigskip
+
+\begin{tabular}{@{\hspace*{43mm}}c@{\hspace*{11mm}}c@{\hspace*{10mm}}c
+@{\hspace*{9mm}}c}
+First&Second&&Last\\
+field&field&.\ \ .\ \ .&field\\
+$\downarrow$&$\downarrow$&&$\downarrow$\\
+\end{tabular}
+
+\begin{tabular}{ll@{}}
+Table header&$\rightarrow$\\
+First record&$\rightarrow$\\
+Second record&$\rightarrow$\\
+\\
+\hfil .\ \ .\ \ .\\
+\\
+Last record&$\rightarrow$\\
+\end{tabular}
+\begin{tabular}{|l|l|c|c|}
+\hline
+{\tt FROM}&{\tt TO}&{\tt DISTANCE}&{\tt COST}\\
+\hline
+{\tt Seattle}  &{\tt New-York}&{\tt 2.5}&{\tt 0.12}\\
+{\tt Seattle}  &{\tt Chicago} &{\tt 1.7}&{\tt 0.08}\\
+{\tt Seattle}  &{\tt Topeka}  &{\tt 1.8}&{\tt 0.09}\\
+{\tt San-Diego}&{\tt New-York}&{\tt 2.5}&{\tt 0.15}\\
+{\tt San-Diego}&{\tt Chicago} &{\tt 1.8}&{\tt 0.10}\\
+{\tt San-Diego}&{\tt Topeka}  &{\tt 1.4}&{\tt 0.07}\\
+\hline
+\end{tabular}
+
+\subsection*{Reading data from input table}
+
+The input table statement causes reading data from the specified table
+record by record.
+
+Once a next record has been read, numeric or symbolic values of fields,
+whose names are enclosed in square brackets in the table statement, are
+gathered into $n$-tuple, and if the control set is specified in the
+table statement, this $n$-tuple is added to it. Besides, a numeric or
+symbolic value of each field associated with a model parameter is
+assigned to the parameter member identified by subscripts, which are
+components of the $n$-tuple just read.
+
+For example, the following input table statement:
+
+\begin{verbatim}
+table data IN "...": s <- [FROM,TO], d~DISTANCE, c~COST;
+\end{verbatim}
+
+\noindent
+causes reading values of four fields named {\tt FROM}, {\tt TO},
+{\tt DISTANCE}, and {\tt COST} from each record of the specified table.
+Values of fields {\tt FROM} and {\tt TO} give a pair $(f,t)$, which is
+added to the control set {\tt s}. The value of field {\tt DISTANCE} is
+assigned to parameter member ${\tt d}[f,t]$, and the value of field
+{\tt COST} is assigned to parameter member ${\tt c}[f,t]$.
+
+Note that the input table may contain extra fields whose names are not
+specified in the table statement, in which case values of these fields
+on reading the table are ignored.
+
+\subsection*{Writing data to output table}
+
+The output table statement causes writing data to the specified table.
+Note that some drivers (namely, CSV and xBASE) destroy the output table
+before writing data, i.e. delete all its existing records.
+
+Each $n$-tuple in the specified domain set generates one record written
+to the output table. Values of fields are numeric or symbolic values of
+corresponding expressions specified in the table statement. These
+expressions are evaluated for each $n$-tuple in the domain set and,
+thus, may include dummy indices introduced in the corresponding indexing
+expression.
+
+For example, the following output table statement:
+
+\begin{verbatim}
+table result{(f,t) in s} OUT "...": f~FROM, t~TO, x[f,t]~FLOW;
+\end{verbatim}
+
+\noindent
+causes writing records, by one record for each pair $(f,t)$ in set
+{\tt s}, to the output table, where each record consists of three
+fields named {\tt FROM}, {\tt TO}, and {\tt FLOW}. The values written
+to fields {\tt FROM} and {\tt TO} are current values of dummy indices
+{\tt f} and {\tt t}, and the value written to field {\tt FLOW} is
+a value of member ${\tt x}[f,t]$ of corresponding subscripted parameter
+or variable.
+
+\section*{Table drivers}
+
+The {\it table driver} is a program module which provides transmitting
+data between MathProg model objects and data tables.
+
+Currently the GLPK package has four table drivers:
+
+$\bullet$ built-in CSV table driver;
+
+$\bullet$ built-in xBASE table driver;
+
+$\bullet$ ODBC table driver;
+
+$\bullet$ MySQL table driver.
+
+\subsection*{CSV table driver}
+
+The CSV table driver assumes that the data table is represented in the
+form of a plain text file in the CSV (comma-separated values) file
+format as described below.
+
+To choose the CSV table driver its name in the table statement should
+be specified as \verb|"CSV"|, and the only argument should specify the
+name of a plain text file containing the table. For example:
+
+\begin{verbatim}
+table data IN "CSV" "data.csv": ... ;
+\end{verbatim}
+
+The filename suffix may be arbitrary, however, it is recommended to use
+the suffix `\verb|.csv|'.
+
+On reading input tables the CSV table driver provides an implicit field
+named \verb|RECNO|, which contains the current record number. This field
+can be specified in the input table statement as if there were the
+actual field having the name \verb|RECNO| in the CSV file. For example:
+
+\begin{verbatim}
+table list IN "CSV" "list.csv": num <- [RECNO], ... ;
+\end{verbatim}
+
+\subsubsection*{CSV format\footnote{This material is based on the RFC
+document 4180.}}
+
+The CSV (comma-separated values) format is a plain text file format
+defined as follows.
+
+1. Each record is located on a separate line, delimited by a line
+break. For example:
+
+\begin{verbatim}
+aaa,bbb,ccc\n
+xxx,yyy,zzz\n
+\end{verbatim}
+
+\noindent
+where `\verb|\n|' means the control character LF (0x0A).
+
+\pagebreak
+
+2. The last record in the file may or may not have an ending line
+break. For example:
+
+\begin{verbatim}
+aaa,bbb,ccc\n
+xxx,yyy,zzz
+\end{verbatim}
+
+3. There should be a header line appearing as the first line of the
+file in the same format as normal record lines. This header should
+contain names corresponding to the fields in the file. The number of
+field names in the header line should be the same as the number of
+fields in the records of the file. For example:
+
+\begin{verbatim}
+name1,name2,name3\n
+aaa,bbb,ccc\n
+xxx,yyy,zzz\n
+\end{verbatim}
+
+4. Within the header and each record there may be one or more fields
+separated by commas. Each line should contain the same number of
+fields throughout the file. Spaces are considered as part of a field
+and therefore not ignored. The last field in the record should not
+be followed by a comma. For example:
+
+\begin{verbatim}
+aaa,bbb,ccc\n
+\end{verbatim}
+
+5. Fields may or may not be enclosed in double quotes. For example:
+
+\begin{verbatim}
+"aaa","bbb","ccc"\n
+zzz,yyy,xxx\n
+\end{verbatim}
+
+6. If a field is enclosed in double quotes, each double quote which is
+part of the field should be coded twice. For example:
+
+\begin{verbatim}
+"aaa","b""bb","ccc"\n
+\end{verbatim}
+
+The following is a complete example of the data table in CSV format:
+
+\begin{verbatim}
+FROM,TO,DISTANCE,COST
+Seattle,New-York,2.5,0.12
+Seattle,Chicago,1.7,0.08
+Seattle,Topeka,1.8,0.09
+San-Diego,New-York,2.5,0.15
+San-Diego,Chicago,1.8,0.10
+San-Diego,Topeka,1.4,0.07
+\end{verbatim}
+
+\subsection*{xBASE table driver}
+
+The xBASE table driver assumes that the data table is stored in the
+.dbf file format.
+
+To choose the xBASE table driver its name in the table statement should
+be specified as \verb|"xBASE"|, and the first argument should specify
+the name of a .dbf file containing the table. For the output table there
+should be the second argument defining the table format in the form
+\verb|"FF...F"|, where \verb|F| is either {\tt C({\it n})},
+which specifies a character field of length $n$, or
+{\tt N({\it n}{\rm [},{\it p}{\rm ]})}, which specifies a numeric field
+of length $n$ and precision $p$ (by default $p$ is 0).
+
+The following is a simple example which illustrates creating and
+reading a .dbf file:
+
+\begin{verbatim}
+table tab1{i in 1..10} OUT "xBASE" "foo.dbf"
+   "N(5)N(10,4)C(1)C(10)": 2*i+1 ~ B, Uniform(-20,+20) ~ A,
+   "?" ~ FOO, "[" & i & "]" ~ C;
+set S, dimen 4;
+table tab2 IN "xBASE" "foo.dbf": S <- [B, C, RECNO, A];
+display S;
+end;
+\end{verbatim}
+
+\subsection*{ODBC table driver}
+
+The ODBC table driver allows connecting to SQL databases using an
+implementation of the ODBC interface based on the Call Level Interface
+(CLI).\footnote{The corresponding software standard is defined in
+ISO/IEC 9075-3:2003.}
+
+\paragraph{Debian GNU/Linux.}
+Under Debian GNU/Linux the ODBC table driver uses the iODBC
+package,\footnote{See {\tt<http://www.iodbc.org/>}.} which should be
+installed before building the GLPK package. The installation can be
+effected with the following command:
+
+\begin{verbatim}
+sudo apt-get install libiodbc2-dev
+\end{verbatim}
+
+Note that on configuring the GLPK package to enable using the iODBC
+library the option `\verb|--enable-odbc|' should be passed to the
+configure script.
+
+The individual databases must be entered for systemwide usage in
+\linebreak \verb|/etc/odbc.ini| and \verb|/etc/odbcinst.ini|. Database
+connections to be used by a single user are specified by files in the
+home directory (\verb|.odbc.ini| and \verb|.odbcinst.ini|).
+
+\paragraph{Microsoft Windows.}
+Under Microsoft Windows the ODBC table driver uses the Microsoft ODBC
+library. To enable this feature the symbol:
+
+\begin{verbatim}
+#define ODBC_DLNAME "odbc32.dll"
+\end{verbatim}
+
+\noindent
+should be defined in the GLPK configuration file `\verb|config.h|'.
+
+Data sources can be created via the Administrative Tools from the
+Control Panel.
+
+\bigskip
+
+To choose the ODBC table driver its name in the table statement should
+be specified as \verb|'ODBC'| or \verb|'iODBC'|.
+
+The argument list is specified as follows.
+
+The first argument is the connection string passed to the ODBC library,
+for example:
+
+\verb|'DSN=glpk;UID=user;PWD=password'|, or
+
+\verb|'DRIVER=MySQL;DATABASE=glpkdb;UID=user;PWD=password'|.
+
+Different parts of the string are separated by semicolons. Each part
+consists of a pair {\it fieldname} and {\it value} separated by the
+equal sign. Allowable fieldnames depend on the ODBC library. Typically
+the following fieldnames are allowed:
+
+\verb|DATABASE | database;
+
+\verb|DRIVER   | ODBC driver;
+
+\verb|DSN      | name of a data source;
+
+\verb|FILEDSN  | name of a file data source;
+
+\verb|PWD      | user password;
+
+\verb|SERVER   | database;
+
+\verb|UID      | user name.
+
+The second argument and all following but the last one are considered
+to be SQL statements that shall be executed directly.
+
+For IN-table the last argument can be a SELECT command starting with
+the capitalized letters \verb|'SELECT '|. If the string does not start
+with \verb|'SELECT '| it is considered to be a table name and a SELECT
+statement is automatically generated.
+
+For OUT-table the last argument can contain one or multiple question
+marks. If it contains a question mark it is considered a template for
+the write routine. Otherwise the string is considered a table name and
+an INSERT template is automatically generated.
+
+The writing routine uses the template with the question marks and
+replaces the first question mark by the first output parameter, the
+second question mark by the second output parameter and so forth. Then
+the SQL command is issued.
+
+The following is an example of the output table statement:
+
+\begin{small}
+\begin{verbatim}
+table ta { l in LOCATIONS } OUT 
+   'ODBC'
+   'DSN=glpkdb;UID=glpkuser;PWD=glpkpassword'
+   'DROP TABLE IF EXISTS result'
+   'CREATE TABLE result ( ID INT, LOC VARCHAR(255), QUAN DOUBLE )'
+   'INSERT INTO result VALUES ( 4, ?, ? )' :
+   l ~ LOC, quantity[l] ~ QUAN;
+\end{verbatim}
+\end{small}
+
+\noindent
+Alternatively it could be written as follows:
+
+\begin{small}
+\begin{verbatim}
+table ta { l in LOCATIONS } OUT 
+   'ODBC'
+   'DSN=glpkdb;UID=glpkuser;PWD=glpkpassword'
+   'DROP TABLE IF EXISTS result'
+   'CREATE TABLE result ( ID INT, LOC VARCHAR(255), QUAN DOUBLE )'
+   'result' :
+   l ~ LOC, quantity[l] ~ QUAN, 4 ~ ID;
+\end{verbatim}
+\end{small}
+
+Using templates with `\verb|?|' supports not only INSERT, but also
+UPDATE, DELETE, etc. For example:
+
+\begin{small}
+\begin{verbatim}
+table ta { l in LOCATIONS } OUT
+   'ODBC'
+   'DSN=glpkdb;UID=glpkuser;PWD=glpkpassword'
+   'UPDATE result SET DATE = ' & date & ' WHERE ID = 4'
+   'UPDATE result SET QUAN = ? WHERE LOC = ? AND ID = 4' :
+   quantity[l], l;
+\end{verbatim}
+\end{small}
+
+\subsection*{MySQL table driver}
+
+The MySQL table driver allows connecting to MySQL databases.
+
+\paragraph{Debian GNU/Linux.}
+Under Debian GNU/Linux the MySQL table\linebreak driver uses the MySQL
+package,\footnote{For download development files see
+{\tt<http://dev.mysql.com/downloads/mysql/>}.} which should be installed
+before building the GLPK package. The installation can be effected with
+the following command:
+
+\begin{verbatim}
+sudo apt-get install libmysqlclient15-dev
+\end{verbatim}
+
+Note that on configuring the GLPK package to enable using the MySQL
+library the option `\verb|--enable-mysql|' should be passed to the
+configure script.
+
+\pagebreak
+
+\paragraph{Microsoft Windows.}
+Under Microsoft Windows the MySQL table driver also uses the MySQL
+library. To enable this feature the symbol:
+
+\begin{verbatim}
+#define MYSQL_DLNAME "libmysql.dll"
+\end{verbatim}
+
+\noindent
+should be defined in the GLPK configuration file `\verb|config.h|'.
+
+\bigskip
+
+To choose the MySQL table driver its name in the table statement should
+be specified as \verb|'MySQL'|.
+
+The argument list is specified as follows.
+
+The first argument specifies how to connect the data base in the DSN
+style, for example:
+
+\verb|'Database=glpk;UID=glpk;PWD=gnu'|.
+
+Different parts of the string are separated by semicolons. Each part
+consists of a pair {\it fieldname} and {\it value} separated by the
+equal sign. The following fieldnames are allowed:
+
+\verb|Server   | server running the database (defaulting to localhost);
+
+\verb|Database | name of the database;
+
+\verb|UID      | user name;
+
+\verb|PWD      | user password;
+
+\verb|Port     | port used by the server (defaulting to 3306).
+
+The second argument and all following but the last are considered to be
+SQL statements that shall be executed directly.
+
+For IN-table the last argument can be a SELECT command starting with
+the capitalized letters \verb|'SELECT '|. If the string does not start
+with \verb|'SELECT '| it is considered to be a table name and a SELECT
+statement is automatically generated.
+
+For OUT-table the last argument can contain one or multiple question
+marks. If it contains a question mark it is considered a template for
+the write routine. Otherwise the string is considered a table name and
+an INSERT template is automatically generated.
+
+The writing routine uses the template with the question marks and
+replaces the first question mark by the first output parameter, the
+second question mark by the second output parameter and so forth. Then
+the SQL command is issued.
+
+The following is an example of the output table statement:
+
+\begin{small}
+\begin{verbatim}
+table ta { l in LOCATIONS } OUT
+   'MySQL'
+   'Database=glpkdb;UID=glpkuser;PWD=glpkpassword'
+   'DROP TABLE IF EXISTS result'
+   'CREATE TABLE result ( ID INT, LOC VARCHAR(255), QUAN DOUBLE )'
+   'INSERT INTO result VALUES ( 4, ?, ? )' :
+   l ~ LOC, quantity[l] ~ QUAN;
+\end{verbatim}
+\end{small}
+
+\noindent
+Alternatively it could be written as follows:
+
+\begin{small}
+\begin{verbatim}
+table ta { l in LOCATIONS } OUT
+   'MySQL'
+   'Database=glpkdb;UID=glpkuser;PWD=glpkpassword'
+   'DROP TABLE IF EXISTS result'
+   'CREATE TABLE result ( ID INT, LOC VARCHAR(255), QUAN DOUBLE )'
+   'result' :
+   l ~ LOC, quantity[l] ~ QUAN, 4 ~ ID;
+\end{verbatim}
+\end{small}
+
+Using templates with `\verb|?|' supports not only INSERT, but also
+UPDATE, DELETE, etc. For example:
+
+\begin{small}
+\begin{verbatim}
+table ta { l in LOCATIONS } OUT
+   'MySQL'
+   'Database=glpkdb;UID=glpkuser;PWD=glpkpassword'
+   'UPDATE result SET DATE = ' & date & ' WHERE ID = 4'
+   'UPDATE result SET QUAN = ? WHERE LOC = ? AND ID = 4' :
+   quantity[l], l;
+\end{verbatim}
+\end{small}
+
+\vspace{15mm}
+
+\begin{center}
+\rule{40mm}{.5pt}
+\end{center}
+
+\end{document}
