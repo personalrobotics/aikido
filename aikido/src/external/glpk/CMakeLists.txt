@@ -1,8 +1,17 @@
 # Build GLPK as as an external project.
 ExternalProject_Add(glpk_EXTERNAL
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-  CONFIGURE_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/configure" "--prefix=<INSTALL_DIR>"
-  BUILD_COMMAND "make")
+  CONFIGURE_COMMAND
+    "${CMAKE_CURRENT_SOURCE_DIR}/configure"
+    "--with-pic"
+    "--enable-shared=no"
+    "--enable-static=yes"
+    "--prefix=<INSTALL_DIR>"
+  BUILD_COMMAND "make"
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
+)
 ExternalProject_Get_Property(glpk_EXTERNAL INSTALL_DIR)
 
 # Wrap GLPK in an IMPORTED target so CMake can use it as a dependency.
