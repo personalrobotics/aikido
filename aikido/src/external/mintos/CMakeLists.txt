@@ -56,7 +56,7 @@ target_link_libraries("${PROJECT_NAME}_mintos"
   ${glpk_LIBRARIES}
 )
 
-set(mintos_INCLUDE_DIRS "${INSTALL_DIR}/include"
+set(mintos_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
   CACHE PATH "MinTOS include directories")
 set(mintos_LIBRARIES "${PROJECT_NAME}_mintos"
   CACHE STRING "MinTOS libraries")
