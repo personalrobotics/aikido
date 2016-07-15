@@ -1,5 +1,6 @@
 add_subdirectory("ompl")
 add_subdirectory("parabolic")
+add_subdirectory("mintos")
 
 aikido_add_library("${PROJECT_NAME}_planner" SnapPlanner.cpp)
 target_link_libraries("${PROJECT_NAME}_planner"
