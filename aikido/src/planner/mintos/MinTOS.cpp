@@ -1,6 +1,7 @@
 #include <aikido/constraint/Differentiable.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
+#include <aikido/util/StepSequence.hpp>
 #include <mintos/MinTOS.h>
 
 namespace aikido {
@@ -145,7 +146,8 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   const Eigen::VectorXd& _maxVelocity,
   const Eigen::VectorXd& _minAcceleration,
   const Eigen::VectorXd& _maxAcceleration,
-  double _constraintTolerance)
+  double _constraintTolerance,
+  double _interpolationTimestep)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   Eigen::VectorXd tangentVector;
@@ -179,6 +181,7 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   const Mintos::Vector maxAcceleration(
     _maxAcceleration.size(), _maxAcceleration.data());
 
+  // Run MinTOS to produce a cubic Bezier curve.
   Mintos::TimeScaledBezierCurve outputCurve;
   auto const success = Mintos::InterpolateAndTimeOptimize(
     milestones,
@@ -189,6 +192,28 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
     outputCurve);
   if (!success)
     throw std::runtime_error("Failed to optimize input path.");
+
+  // Convert the output of MinTOS to an Aikido trajectory.
+  util::StepSequence timeSequence{
+    _interpolationTimestep, true, 0., outputCurve.EndTime()};
+  Eigen::VectorXd position, velocity, acceleration;
+  Math::Vector outputVector;
+
+
+  for (const auto t : timeSequence)
+  {
+    // Evaluate the MinTOS trajectory.
+    outputCurve.Eval(t, outputVector);
+    vectorToEigen(outputVector, position);
+
+    outputCurve.Deriv(t, outputVector);
+    vectorToEigen(outputVector, velocity);
+
+    outputCurve.Accel(t, outputVector);
+    vectorToEigen(outputVector, acceleration);
+
+    // TODO: Fit a polynomial to this segment.
+  }
 
   return nullptr;
 }
