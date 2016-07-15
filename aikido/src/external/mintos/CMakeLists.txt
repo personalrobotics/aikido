@@ -55,6 +55,9 @@ add_library("${PROJECT_NAME}_mintos" STATIC
 target_link_libraries("${PROJECT_NAME}_mintos" PRIVATE
   ${glpk_LIBRARIES}
 )
+set_target_properties("${PROJECT_NAME}_mintos" PROPERTIES
+  COMPILE_FLAGS "-fPIC"
+)
 
 set(mintos_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
   CACHE PATH "MinTOS include directories")
