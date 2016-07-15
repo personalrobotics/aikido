@@ -36,12 +36,13 @@ endif()
 #
 set(AIKIDO_INCLUDE_DIRS)
 
+include(ExternalProject)
 include(CMakeParseArguments)
 
 find_package(Boost COMPONENTS filesystem python)
 list(APPEND AIKIDO_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 
-find_package(DART REQUIRED COMPONENTS optimizer-nlopt)
+find_package(DART REQUIRED COMPONENTS optimizer-nlopt CONFIG)
 list(APPEND AIKIDO_INCLUDE_DIRS ${DART_INCLUDE_DIRS})
 
 find_package(TinyXML2 REQUIRED)
