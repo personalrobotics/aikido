@@ -1,6 +1,4 @@
-#include <aikido/constraint/Differentiable.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/trajectory/Spline.hpp>
+#include <aikido/planner/mintos/MinTOS.hpp>
 #include <aikido/util/StepSequence.hpp>
 #include <mintos/MinTOS.h>
 
