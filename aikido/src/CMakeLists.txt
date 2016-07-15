@@ -1,4 +1,6 @@
 add_subdirectory("external/hauser_parabolic_smoother")
+add_subdirectory("external/glpk")
+add_subdirectory("external/mintos")
 
 add_subdirectory("util")
 add_subdirectory("statespace")
