@@ -11,7 +11,7 @@ add_definitions(
   -DHAVE_GLPK=1
 )
 
-aikido_add_library("${PROJECT_NAME}_mintos" EXTERNAL
+add_library("${PROJECT_NAME}_mintos" STATIC
   Timer.cpp
   src/AABB.cpp
   src/ASCIIShade.cpp
@@ -52,7 +52,7 @@ aikido_add_library("${PROJECT_NAME}_mintos" EXTERNAL
   src/primitives.cpp
   src/stringutils.cpp
 )
-target_link_libraries("${PROJECT_NAME}_mintos"
+target_link_libraries("${PROJECT_NAME}_mintos" PRIVATE
   ${glpk_LIBRARIES}
 )
 
