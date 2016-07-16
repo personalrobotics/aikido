@@ -1,5 +1,6 @@
 #include <aikido/planner/mintos/MinTOS.hpp>
 #include <aikido/util/StepSequence.hpp>
+#include <aikido/util/Spline.hpp>
 #include <mintos/Mintos.h>
 
 namespace aikido {
@@ -21,6 +22,22 @@ void eigenToVector(const Eigen::VectorXd& _input, Math::Vector& _output)
 
   for (int i = 0; i < _input.size(); ++i)
     _output[i] = _input[i];
+}
+
+void sampleAtTime(Mintos::TimeScaledBezierCurve& _curve, double _t,
+  Eigen::VectorXd& _position, Eigen::VectorXd& _velocity,
+  Eigen::VectorXd& _acceleration)
+{
+  Math::Vector outputVector;
+
+  _curve.Eval(_t, outputVector);
+  vectorToEigen(outputVector, _position);
+
+  _curve.Deriv(_t, outputVector);
+  vectorToEigen(outputVector, _velocity);
+
+  _curve.Accel(_t, outputVector);
+  vectorToEigen(outputVector, _acceleration);
 }
 
 class DifferentiableWrapper : public Math::VectorFieldFunction
@@ -147,7 +164,11 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   double _constraintTolerance,
   double _interpolationTimestep)
 {
+  using QuinticSegmentProblem
+    = util::SplineProblem<double, int, 6, Eigen::Dynamic, 2>;
+
   const auto stateSpace = _inputTrajectory.getStateSpace();
+  const auto dimension = stateSpace->getDimension();
   Eigen::VectorXd tangentVector;
 
   // Convert the trajectory into a sequence of milestones.
@@ -168,6 +189,8 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
     milestones.emplace_back(tangentVector.size(), tangentVector.data());
   }
 
+  std::cout << "Created " << milestones.size() << " milestones." << std::endl;
+
   // Convert the Aikido constraint to a MinTOS VectorFieldFunction.
   DifferentiableWrapper constraintWrapper{&_constraint};
 
@@ -180,6 +203,7 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
     _maxAcceleration.size(), _maxAcceleration.data());
 
   // Run MinTOS to produce a cubic Bezier curve.
+  std::cout << "Running MinTOS." << std::endl;
   Mintos::TimeScaledBezierCurve outputCurve;
   auto const success = Mintos::InterpolateAndTimeOptimize(
     milestones,
@@ -191,29 +215,58 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   if (!success)
     throw std::runtime_error("Failed to optimize input path.");
 
+  std::cout << "Running MinTOS...DONE" << std::endl;
+  std::cout << "Output has duration " << outputCurve.EndTime() << std::endl;
+
   // Convert the output of MinTOS to an Aikido trajectory.
   util::StepSequence timeSequence{
     _interpolationTimestep, true, 0., outputCurve.EndTime()};
-  Eigen::VectorXd position, velocity, acceleration;
-  Math::Vector outputVector;
 
+  auto timeIterator = std::begin(timeSequence);
+  auto currTime = *timeIterator;
+  ++timeIterator;
 
-  for (const auto t : timeSequence)
+  const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
+  Eigen::VectorXd currPosition, currVelocity, currAcceleration;
+  sampleAtTime(outputCurve, *timeIterator,
+    currPosition, currVelocity, currAcceleration);
+
+  auto currState = stateSpace->createState();
+  std::unique_ptr<trajectory::Spline> outputTrajectory{
+    new trajectory::Spline{stateSpace}};
+
+  for (; timeIterator != std::end(timeSequence); ++timeIterator)
   {
-    // Evaluate the MinTOS trajectory.
-    outputCurve.Eval(t, outputVector);
-    vectorToEigen(outputVector, position);
+    const auto nextTime = *timeIterator;
+    const auto segmentDuration = nextTime - currTime;
 
-    outputCurve.Deriv(t, outputVector);
-    vectorToEigen(outputVector, velocity);
+    Eigen::VectorXd nextPosition, nextVelocity, nextAcceleration;
+    sampleAtTime(outputCurve, nextTime,
+      nextPosition, nextVelocity, nextAcceleration);
 
-    outputCurve.Accel(t, outputVector);
-    vectorToEigen(outputVector, acceleration);
+    // Fit a quintic polynomial to these boundary values.
+    QuinticSegmentProblem problem(
+      Eigen::Vector2d{0., segmentDuration}, 6, stateSpace->getDimension());
+    problem.addConstantConstraint(0, 0, zeroPosition);
+    problem.addConstantConstraint(0, 1, currVelocity);
+    problem.addConstantConstraint(0, 2, currAcceleration);
+    problem.addConstantConstraint(1, 0, nextPosition - currPosition);
+    problem.addConstantConstraint(1, 1, nextVelocity);
+    problem.addConstantConstraint(1, 2, nextAcceleration);
+    const auto solution = problem.fit();
+    const auto coefficients = solution.getCoefficients().front();
 
-    // TODO: Fit a polynomial to this segment.
+    // Build the output trajectory.
+    stateSpace->expMap(currPosition, currState);
+    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
+
+    currTime = nextTime;
+    currPosition = nextPosition;
+    currVelocity = nextVelocity;
+    currAcceleration = nextAcceleration;
   }
 
-  return nullptr;
+  return outputTrajectory;
 }
 
 } // namespace mintos
