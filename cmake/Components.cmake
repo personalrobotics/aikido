@@ -386,5 +386,8 @@ function(install_component_exports)
       PROPERTY "${property_prefix}TARGETS")
     file(APPEND "${output_path}"
       "set(\"${PROJECT_NAME}_${component}_TARGETS\" ${targets})\n")
+
+    install(FILES "${output_path}"
+      DESTINATION "${CONFIG_INSTALL_DIR}")
   endforeach()
 endfunction()

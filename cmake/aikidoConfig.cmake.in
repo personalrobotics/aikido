@@ -10,6 +10,9 @@ macro(aikido_traverse_components output_variable)
       set(target_include
         "${CMAKE_CURRENT_LIST_DIR}/aikido_${component}Targets.cmake")
 
+      message(STATUS "A: ${component_include}")
+      message(STATUS "A: ${target_include}")
+
       if(EXISTS "${component_include}" AND EXISTS "${target_include}")
         include("${component_include}")
 
@@ -30,6 +33,7 @@ macro(aikido_traverse_components output_variable)
           # LIBRARIES is automatically inherited in INTERFACE_LINK_LIBRARIES.
         endforeach()
 
+        message(STATUS "APPEND ${component}")
         list(APPEND "${output_variable}" "${component}")
       else()
         set("aikido_${component}_FOUND" FALSE)
@@ -48,6 +52,9 @@ endfunction()
 
 function(aikido_package_init)
   aikido_traverse_components(required_components "${ARGN}")
+
+  message(STATUS "REQUESTED COMPONENTS ${ARGN}")
+  message(STATUS "REQUIRES COMPONENTS ${required_components}")
 
   set(aikido_INCLUDE_DIRS)
   set(aikido_DEFINITIONS)
@@ -78,8 +85,8 @@ endfunction()
 
 #==============================================================================
 # TODO: Append this to aikido_<C>_INCLUDE_DIRS above.
-#set_and_check(aikido_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
-#set(aikido_INCLUDE_DIRS "${aikido_INCLUDE_DIR}" @PACKAGE_INCLUDE_DIRS@)
+set_and_check(aikido_PACKAGE_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set(aikido_INCLUDE_DIRS "${aikido_INCLUDE_DIR}" @PACKAGE_INCLUDE_DIRS@)
 
 if(aikido_FIND_COMPONENTS)
   aikido_package_init(${aikido_FIND_COMPONENTS})
@@ -96,5 +103,6 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(aikido
   FOUND_VAR aikido_FOUND
+  REQUIRED_VARS aikido_PACKAGE_INCLUDE_DIRS
   HANDLE_COMPONENTS
 )
