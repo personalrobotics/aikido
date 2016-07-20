@@ -41,16 +41,6 @@ aikido_check_package(libmicrohttpd "rviz" "libmicrohttpd")
 #==============================================================================
 # Libraries
 #
-set(include_dirs
-  ${interactive_markers_INCLUDE_DIRS}
-  ${geometry_msgs_INCLUDE_DIRS}
-  ${std_msgs_INCLUDE_DIRS}
-  ${visualization_msgs_INCLUDE_DIRS}
-  ${libmicrohttpd_INCLUDE_DIRS}
-  ${roscpp_INCLUDE_DIRS}
-)
-
-include_directories(SYSTEM ${include_dirs})
 add_library("${PROJECT_NAME}_rviz" SHARED
   BodyNodeMarker.cpp
   FrameMarker.cpp
@@ -61,7 +51,13 @@ add_library("${PROJECT_NAME}_rviz" SHARED
   shape_conversions.cpp
 )
 target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
-  PUBLIC ${include_dirs}
+  PUBLIC
+    ${interactive_markers_INCLUDE_DIRS}
+    ${geometry_msgs_INCLUDE_DIRS}
+    ${std_msgs_INCLUDE_DIRS}
+    ${visualization_msgs_INCLUDE_DIRS}
+    ${libmicrohttpd_INCLUDE_DIRS}
+    ${roscpp_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_rviz"
   ${Boost_filesystem_LIBRARIES}
@@ -76,4 +72,3 @@ target_link_libraries("${PROJECT_NAME}_rviz"
 
 add_component(rviz)
 add_component_targets(rviz "${PROJECT_NAME}_rviz")
-add_component_include_directories(rviz ${include_dirs})

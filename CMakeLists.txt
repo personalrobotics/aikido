@@ -82,9 +82,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
 include_directories(${DART_INCLUDE_DIRS})
 
-find_package(TinyXML2 REQUIRED)
-include_directories(${TinyXML2_INCLUDE_DIRS})
-
 #==============================================================================
 # Libraries and unit tests.
 #

@@ -1,7 +1,3 @@
-option(AIKIDO_USE_TRAJECTORY "Enable Aikido Trajectory component." ON)
-if(NOT ${AIKIDO_USE_TRAJECTORY})
-  return()
-endif()
 add_library("${PROJECT_NAME}_trajectory" SHARED
   Interpolated.cpp
   Spline.cpp

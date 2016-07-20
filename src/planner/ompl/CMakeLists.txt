@@ -1,9 +1,6 @@
-option(AIKIDO_USE_PLANNER_OMPL_ENABLED
-  "Enable Aikido OMPL planner component." ON)
-if(NOT ${AIKIDO_USE_PLANNER_OMPL_ENABLED})
-  return()
-endif()
-
+#==============================================================================
+# Dependencies
+#
 find_package(OMPL QUIET)
 if(OMPL_FOUND)
   message(STATUS "Looking for OMPL - version ${OMPL_VERSION} found")
@@ -13,6 +10,9 @@ else()
   return()
 endif()
 
+#==============================================================================
+# Libraries
+#
 add_library("${PROJECT_NAME}_planner_ompl" SHARED
   CRRT.cpp
   CRRTConnect.cpp
@@ -38,7 +38,6 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
 
 add_component(planner_ompl)
 add_component_targets(planner_ompl "${PROJECT_NAME}_planner_ompl")
-add_component_include_directories(planner_ompl ${OMPL_INCLUDE_DIRS})
 add_component_dependencies(planner_ompl
   constraint
   distance
