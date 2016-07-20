@@ -1,8 +1,8 @@
 include(CMakeParseArguments)
 
 set(component_prefix "${PROJECT_NAME}_component_")
+set(property_prefix "${component_prefix}")
 set(export_prefix "${component_prefix}")
-string(TOUPPER "${component_prefix}" property_prefix)
 
 set(prefix "${PROJECT_NAME}_")
 
@@ -286,7 +286,7 @@ function(add_component component)
 
   set_property(TARGET "${target}" PROPERTY "${property_prefix}COMPONENT" TRUE)
   set_property(TARGET "${target}" PROPERTY "${property_prefix}DEPENDENCIES")
-  set_property(TARGET "${target}" PROPERTY "${property_prefix}TARGETS")
+  set_property(TARGET "${target}" PROPERTY "${property_prefix}LIBRARIES")
   set_property(GLOBAL APPEND PROPERTY "${prefix}COMPONENTS" "${component}")
 endfunction()
 

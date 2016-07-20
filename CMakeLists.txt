@@ -85,7 +85,7 @@ include_directories(${DART_INCLUDE_DIRS})
 #==============================================================================
 # Libraries and unit tests.
 #
-# TODO: Make this an special global_definitions() macro.
+# TODO: Add this to each target's DEFINITIONS property.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories("include")
@@ -118,6 +118,7 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
 
   # Strip include_directories() being used by CMake from #include paths.
+  # TODO: Add per-target INCLUDE_DIRECTORIES properties to this list.
   get_property(DOXYGEN_STRIP_FROM_INC_PATH_LIST
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     PROPERTY INCLUDE_DIRECTORIES)
@@ -132,12 +133,11 @@ if(${DOXYGEN_FOUND})
     set(DOXYGEN_TAGFILES
       "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/")
 
-    if(${OMPL_FOUND})
-      file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
-        "${DOXYGEN_WORKING_DIR}/ompl.tag")
-      set(DOXYGEN_TAGFILES
-        "${DOXYGEN_TAGFILES} ompl.tag=http://ompl.kavrakilab.org/")
-    endif()
+    # TODO: Only download this if planner_ompl is being built.
+    file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
+      "${DOXYGEN_WORKING_DIR}/ompl.tag")
+    set(DOXYGEN_TAGFILES
+      "${DOXYGEN_TAGFILES} ompl.tag=http://ompl.kavrakilab.org/")
   endif()
 
   # Generate a Doxyfile.
@@ -162,16 +162,25 @@ endif()
 # Coveralls.
 #
 if(COVERALLS)
-  get_property(internal_sources GLOBAL PROPERTY AIKIDO_INTERNAL_SOURCES)
-  get_property(external_sources GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
+  # Aggregate source files across all known targets.
+  set(all_sources)
 
-  list(LENGTH internal_sources internal_sources_length)
-  list(LENGTH external_sources external_sources_length)
+  get_property(components GLOBAL PROPERTY "${PROJECT_NAME}_COMPONENTS")
+  foreach(component ${components})
+    set(target "${component_prefix}${component}")
+    get_property(libraries TARGET "${target}"
+      PROPERTY "${property_prefix}LIBRARIES")
 
-  message(STATUS "Computing test coverage for ${internal_sources_length} files"
-                 " (skipped ${external_sources_length} external files).")
+    foreach(library ${libraries})
+      get_property(target_sources TARGET "${library}" PROPERTY SOURCES)
+      list(APPEND all_sources ${target_sources})
+    endforeach()
+  endforeach()
 
-  coveralls_setup("${internal_sources}"
+  list(LENGTH all_sources all_sources_length)
+  message(STATUS "Computing test coverage for ${all_sources_length} files.")
+
+  coveralls_setup("${all_sources}"
     ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake"
   )
