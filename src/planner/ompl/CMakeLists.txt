@@ -1,28 +1,30 @@
-# TODO: Only register this component if the dependencies are found.
-aikido_add_component(planner_ompl
-  DEPENDENCIES
-    constraint
-    distance
-    planner
-    statespace
-    trajectory
-)
+option(AIKIDO_USE_PLANNER_OMPL_ENABLED
+  "Enable Aikido OMPL planner component." ON)
+if(NOT ${AIKIDO_USE_PLANNER_OMPL_ENABLED})
+  return()
+endif()
 
 find_package(OMPL QUIET)
-aikido_check_package(OMPL "aikido::planner::ompl" "OMPL")
+if(OMPL_FOUND)
+  message(STATUS "Looking for OMPL - version ${OMPL_VERSION} found")
+else()
+  message(STATUS
+    "Looking for OMPL - NOT found, skipping planner_ompl component")
+  return()
+endif()
 
-aikido_add_library("${PROJECT_NAME}_planner_ompl"
-  COMPONENT planner_ompl
-  SOURCES
-    CRRT.cpp
-    CRRTConnect.cpp
-    dart.cpp
-    GeometricStateSpace.cpp
-    GoalRegion.cpp
-    MotionValidator.cpp
-    Planner.cpp
-    StateSampler.cpp
-    StateValidityChecker.cpp
+include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
+
+add_library("${PROJECT_NAME}_planner_ompl" SHARED
+  CRRT.cpp
+  CRRTConnect.cpp
+  dart.cpp
+  GeometricStateSpace.cpp
+  GoalRegion.cpp
+  MotionValidator.cpp
+  Planner.cpp
+  StateSampler.cpp
+  StateValidityChecker.cpp
 )
 target_link_libraries("${PROJECT_NAME}_planner_ompl"
   "${PROJECT_NAME}_constraint"
@@ -31,4 +33,15 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
   "${PROJECT_NAME}_trajectory"
   ${DART_LIBRARIES}
   ${OMPL_LIBRARIES}
+)
+
+add_component(planner_ompl)
+add_component_targets(planner_ompl "${PROJECT_NAME}_planner_ompl")
+add_component_include_directories(planner_ompl ${OMPL_INCLUDE_DIRS})
+add_component_dependencies(planner_ompl
+  constraint
+  distance
+  planner
+  statespace
+  trajectory
 )

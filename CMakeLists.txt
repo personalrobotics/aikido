@@ -55,210 +55,6 @@ macro(aikido_check_package variable component dependency)
 endmacro()
 
 #==============================================================================
-# Register an Aikido include directory.
-#
-set_property(GLOBAL PROPERTY AIKIDO_INCLUDE_DIRS)
-
-function(aikido_include_directories)
-  cmake_parse_arguments(args "" "" "COMPONENT" ${ARGN})
-  set(directories ${args_UNPARSED_ARGUMENTS})
-
-  if(DEFINED args_COMPONENT)
-    set(component_name ${args_COMPONENT})
-    aikido_get_component_property(component_found "${component_name}" "FOUND")
-
-    if(NOT ${component_found})
-      message(FATAL_ERROR "Include directories added to missing component"
-                          " '${component_name}'.")
-    endif()
-
-    aikido_append_component_property(
-      "${component_name}" LIBRARIES ${directories})
-  else()
-    set_property(GLOBAL APPEND PROPERTY AIKIDO_INCLUDE_DIRS ${directories})
-  endif()
-
-  # TODO: Switch to target_include_directories.
-  include_directories(SYSTEM ${directories})
-endfunction()
-
-#==============================================================================
-# Register an Aikido component.
-#
-set_property(GLOBAL PROPERTY AIKIDO_COMPONENTS)
-set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
-set_property(GLOBAL PROPERTY AIKIDO_INTERNAL_SOURCES)
-set_property(GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
-
-function(aikido_set_component_property component_name property_name)
-  string(TOUPPER "${component_name}" component_name_upper)
-  string(TOUPPER "${property_name}" property_name_upper)
-  set_property(GLOBAL PROPERTY
-    "AIKIDO_COMPONENT_${component_name_upper}_${property_name_upper}" ${ARGN})
-endfunction()
-
-# TODO: Make this an option of aikido_set_component_property.
-function(aikido_append_component_property component_name property_name)
-  string(TOUPPER "${component_name}" component_name_upper)
-  string(TOUPPER "${property_name}" property_name_upper)
-  set_property(GLOBAL APPEND PROPERTY
-    "AIKIDO_COMPONENT_${component_name_upper}_${property_name_upper}" ${ARGN})
-endfunction()
-
-function(aikido_get_component_property output component_name property_name)
-  string(TOUPPER "${component_name}" component_name_upper)
-  string(TOUPPER "${property_name}" property_name_upper)
-  get_property(property_value GLOBAL PROPERTY
-    "AIKIDO_COMPONENT_${component_name_upper}_${property_name_upper}")
-
-  set("${output}" ${property_value} PARENT_SCOPE)
-endfunction()
-
-function(aikido_add_component component_name)
-  cmake_parse_arguments(args "REQUIRED" "" "DEPENDENCIES" ${ARGN})
-
-  string(TOUPPER "${component_name}" component_name_upper)
-  set(component_prefix "AIKIDO_COMPONENT_${component_name_upper}")
-
-  # Check for a duplicate component.
-  aikido_get_component_property(component_found "${component_name}" FOUND)
-  if(${component_found})
-    message(FATAL_ERROR
-      "Attempted to add duplicate component '${component_name}'.")
-  endif()
-
-  # Check if the dependencies were found.
-
-  message(STATUS "")
-  message(STATUS "============================================================================")
-  message(STATUS "Component: ${component_name}")
-  message(STATUS "----------------------------------------------------------------------------")
-  set(dependencies_found TRUE)
-
-  foreach(dependency_name ${args_DEPENDENCIES})
-    aikido_get_component_property(
-      dependency_found "${dependency_name}" "FOUND")
-
-    if(${dependency_found})
-      message(STATUS "Looking for component ${dependency_name} - found")
-    else()
-      message(STATUS "Looking for component ${dependency_name} - not found")
-      set(dependencies_found FALSE)
-    endif()
-  endforeach()
-
-  if(${args_REQUIRED} AND NOT ${dependencies_found})
-    message(FATAL_ERROR
-      "Skipping component ${component_name} because one or more required"
-      " components were not found.")
-  endif()
-
-  # Register the component with Aikido.
-  aikido_set_component_property("${component_name}" FOUND
-    ${dependencies_found})
-  aikido_set_component_property("${component_name}" DEPENDENCIES
-    ${args_DEPENDENCIES})
-  aikido_set_component_property("${component_name}" LIBRARIES)
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_COMPONENTS "${component_name}")
-endfunction()
-
-function(aikido_add_library target_name)
-  cmake_parse_arguments(args "EXTERNAL" "COMPONENT" "SOURCES" ${ARGN})
-  set(relative_sources ${args_SOURCES})
-
-  if(DEFINED args_COMPONENT)
-    set(component_name ${args_COMPONENT})
-    aikido_get_component_property(component_found "${component_name}" "FOUND")
-
-    if(${component_found})
-      message(STATUS "Registered library '${target_name}' as part of component"
-                     " '${component_name}'.")
-    else()
-      message(FATAL_ERROR "Library '${target_name}' is declared as part of"
-                          " missing component" " '${component_name}'.")
-    endif()
-
-    aikido_append_component_property(
-      "${component_name}" LIBRARIES "${target_name}")
-
-    string(TOLOWER "${component_name}" component_name_lower)
-    set(export_name "${PROJECT_NAME}_${component_name_lower}Targets")
-  else()
-    message(STATUS "Registered library '${target_name}'.")
-    set(export_name "${PROJECT_NAME}Targets")
-  endif()
-
-  add_library("${target_name}" SHARED ${relative_sources})
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
-
-  install(TARGETS "${target_name}"
-    EXPORT "${export_name}"
-    LIBRARY DESTINATION "${LIBRARY_INSTALL_DIR}"
-  )
-
-  # Compile a list of all source files to pass to coveralls. This function may
-  # be called from a subdirctory, so we first convert to absolute paths.
-  set(abs_sources)
-  foreach(rel_source ${relative_sources})
-    get_filename_component(abs_source
-      "${CMAKE_CURRENT_SOURCE_DIR}/${rel_source}" ABSOLUTE)
-    list(APPEND abs_sources "${abs_source}")
-  endforeach()
-
-  if(${args_EXTERNAL})
-    set_property(GLOBAL APPEND PROPERTY AIKIDO_EXTERNAL_SOURCES ${abs_sources})
-  else()
-    set_property(GLOBAL APPEND PROPERTY AIKIDO_INTERNAL_SOURCES ${abs_sources})
-  endif()
-endfunction()
-
-function(aikido_install_export)
-  get_property(component_names GLOBAL PROPERTY AIKIDO_COMPONENTS)
-
-  set(output_path "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_INSTALL_DIR}/${PROJECT_NAME}Components.cmake")
-  file(WRITE "${output_path}" "set(aikido_COMPONENTS ${component_names})\n")
-
-  foreach(component_name ${component_names})
-    string(TOUPPER "${component_name}" component_name_upper)
-
-    aikido_get_component_property(component_found "${component_name}" FOUND)
-    file(APPEND "${output_path}"
-      "set(aikido_${component_name_upper}_FOUND ${component_found})\n")
-
-    if (${component_found})
-      aikido_get_component_property(component_include_dirs 
-        "${component_name}" INCLUDE_DIRS)
-      aikido_get_component_property(component_libraries
-        "${component_name}" LIBRARIES)
-
-      file(APPEND "${output_path}"
-        "set(aikido_${component_name_upper}_INCLUDE_DIRS ${component_include_dirs})\n")
-      file(APPEND "${output_path}"
-        "set(aikido_${component_name_upper}_LIBRARIES ${component_libraries})\n")
-
-      if(component_libraries)
-        string(TOLOWER "${component_name}" component_name_lower)
-        install(EXPORT "${PROJECT_NAME}_${component_name_lower}Targets"
-          FILE "${PROJECT_NAME}_${component_name_lower}Targets.cmake"
-          DESTINATION "${CONFIG_INSTALL_DIR}"
-        )
-      endif()
-    else()
-      file(APPEND "${output_path}"
-        "set(aikido_${component_name_upper}_INCLUDE_DIRS aikido_${component_name_upper}_INCLUDE_DIRS-NOTFOUND)\n")
-      file(APPEND "${output_path}"
-        "set(aikido_${component_name_upper}_LIBRARIES aikido_${component_name_upper}_LIBRARIES-NOTFOUND)\n")
-    endif()
-  endforeach()
-
-  install(FILES "${output_path}"
-    DESTINATION "${CONFIG_INSTALL_DIR}")
-  install(EXPORT "${PROJECT_NAME}Targets"
-    FILE "${PROJECT_NAME}Targets.cmake"
-    DESTINATION "${CONFIG_INSTALL_DIR}")
-endfunction()
-
-#==============================================================================
 # Register an Aikido test.
 #
 set_property(GLOBAL PROPERTY AIKIDO_TESTS)
@@ -275,28 +71,27 @@ endfunction()
 #==============================================================================
 # Required Dependencies
 #
-set(AIKIDO_INCLUDE_DIRS)
-
+include(Components)
 include(CMakePackageConfigHelpers)
-include(CMakeParseArguments)
 include(FindPkgConfig)
 
 find_package(Boost COMPONENTS filesystem)
-aikido_include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
 
 # TODO: utils-urdf should only be required for aikido::perception.
 find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
-aikido_include_directories(${DART_INCLUDE_DIRS})
+include_directories(${DART_INCLUDE_DIRS})
 
 find_package(TinyXML2 REQUIRED)
-aikido_include_directories(${TinyXML2_INCLUDE_DIRS})
+include_directories(${TinyXML2_INCLUDE_DIRS})
 
 #==============================================================================
-# Building libraries and unit tests.
+# Libraries and unit tests.
 #
+# TODO: Make this an special global_definitions() macro.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories("include" "src")
+include_directories("include")
 
 add_subdirectory("src")
 
@@ -381,7 +176,8 @@ if(COVERALLS)
 
   coveralls_setup("${internal_sources}"
     ${COVERALLS_UPLOAD}
-    "${PROJECT_SOURCE_DIR}/cmake")
+    "${PROJECT_SOURCE_DIR}/cmake"
+  )
 endif()
 
 #==============================================================================
@@ -394,16 +190,22 @@ install(DIRECTORY "include/"
 install(FILES "package.xml"
   DESTINATION "share/${PROJECT_NAME}")
 
+install_component_exports()
+
 # Generate and install a Targets.cmake file that contains EXPORTED targets, to
 # be included() in the Config.cmake file. The target set "aikidoTargets" is
 # generated by the install(TARGETS) directive above.
-aikido_install_export()
+#install_component_exports()
 
 # Generate and install a Config.cmake file.
-get_property(AIKIDO_INCLUDE_DIRS GLOBAL PROPERTY AIKIDO_INCLUDE_DIRS)
+get_property(PACKAGE_INCLUDE_DIRS GLOBAL
+  PROPERTY "${PROJECT_NAME}_INCLUDE_DIRS"
+)
 configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
-  PATH_VARS INCLUDE_INSTALL_DIR)
+  PATH_VARS INCLUDE_INSTALL_DIR
+)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  DESTINATION "${CONFIG_INSTALL_DIR}")
+  DESTINATION "${CONFIG_INSTALL_DIR}"
+)
