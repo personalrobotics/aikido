@@ -384,8 +384,9 @@ function(install_component_exports)
 
     get_property(targets TARGET "${target}"
       PROPERTY "${property_prefix}TARGETS")
+    # TODO: Filter out non-libraries or change TARGETS to libraries.
     file(APPEND "${output_path}"
-      "set(\"${PROJECT_NAME}_${component}_TARGETS\" ${targets})\n")
+      "set(\"${PROJECT_NAME}_${component}_LIBRARIES\" ${targets})\n")
 
     install(FILES "${output_path}"
       DESTINATION "${CONFIG_INSTALL_DIR}")
