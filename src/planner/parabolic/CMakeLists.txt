@@ -1,18 +1,8 @@
-open_component(planner_parabolic
-  DEPENDENCIES
-    planner
-    util
-    statespace
-    trajectory
+add_library("${PROJECT_NAME}_planner_parabolic" SHARED
+  ParabolicTimer.cpp
 )
-
-
-add_component_library("${PROJECT_NAME}_planner_parabolic"
-  COMPONENT planner_parabolic
-  SOURCES ParabolicTimer.cpp
-)
-target_include_directories("${PROJECT_NAME}_planner_parabolic"
-  PRIVATE ${hauserparabolicsmoother_INCLUDE_DIRS}
+set_property(TARGET "${PROJECT_NAME}_planner_parabolic" APPEND PROPERTY
+  INCLUDE_DIRECTORIES "${hauserparabolicsmoother_INCLUDE_DIRS}"
 )
 target_link_libraries("${PROJECT_NAME}_planner_parabolic"
   PUBLIC
@@ -23,4 +13,11 @@ target_link_libraries("${PROJECT_NAME}_planner_parabolic"
     ${hauserparabolicsmoother_LIBRARIES}
 )
 
-close_component(planner_parabolic)
+add_component(planner_parabolic)
+add_component_targets(planner_parabolic "${PROJECT_NAME}_planner_parabolic")
+add_component_dependencies(planner_parabolic
+  planner
+  statespace
+  trajectory
+  util
+)

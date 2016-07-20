@@ -1,4 +1,5 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
+# CMake 2.8.12 or above is required for INTERFACE_INCLUDE_DIRECTORIES.
 # CMake 2.8.11 or above is required for target_include_directories
 cmake_minimum_required(VERSION 2.8.12)
 

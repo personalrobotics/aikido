@@ -308,7 +308,7 @@ endfunction()
 function(add_component_include_directories component)
   set(target "${component_prefix}${component}")
   set_property(TARGET "${target}" APPEND
-    PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${ARGN})
+    PROPERTY "${prefix}INCLUDE_DIRS" ${ARGN})
 endfunction()
 
 #==============================================================================
