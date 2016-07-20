@@ -1,15 +1,4 @@
 #==============================================================================
-# Helpers
-#
-macro(evaluate_condition output_variable)
-  if(${ARGN})
-    set("${output_variable}" TRUE)
-  else()
-    set("${output_variable}" FALSE)
-  endif()
-endmacro()
-
-#==============================================================================
 # Dependencies
 #
 find_package(roscpp QUIET)

@@ -34,6 +34,14 @@ endif()
 #==============================================================================
 # Helper functions.
 #
+macro(evaluate_condition output_variable)
+  if(${ARGN})
+    set("${output_variable}" TRUE)
+  else()
+    set("${output_variable}" FALSE)
+  endif()
+endmacro()
+
 function(aikido_space_delimit output_variable input_list)
   set(accumulator)
   foreach(input_element ${input_list})

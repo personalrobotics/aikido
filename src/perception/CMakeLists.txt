@@ -14,10 +14,14 @@ find_package(std_msgs QUIET)
 aikido_check_package(std_msgs "perception" "std_msgs")
 
 find_package(visualization_msgs QUIET)
-aikido_check_package(visualization_msgs "perception"
-  "visualization_msgs")
+aikido_check_package(visualization_msgs "perception" "visualization_msgs")
 
-find_package(tf QUIET)
+# TODO: Workaround because find_package(tf) imports "tests" and "run_tests"
+# targets that conflict with the targets defined by Aikido.
+find_path(tf_INCLUDE_DIRS tf PATHS "/opt/ros/indigo/include"
+  PATH_SUFFIXES "interactive_markeres/interactive_marker_client.h")
+find_library(tf_LIBRARIES tf PATHS "/opt/ros/indigo/lib")
+evaluate_condition(tf_FOUND tf_INCLUDE_DIRS AND tf_LIBRARIES)
 aikido_check_package(tf "perception" "tf")
 
 #==============================================================================
