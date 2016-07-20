@@ -60,6 +60,9 @@ add_library("${PROJECT_NAME}_rviz" SHARED
   SkeletonMarker.cpp
   shape_conversions.cpp
 )
+target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
+  PUBLIC ${include_dirs}
+)
 target_link_libraries("${PROJECT_NAME}_rviz"
   ${Boost_filesystem_LIBRARIES}
   ${DART_LIBRARIES}

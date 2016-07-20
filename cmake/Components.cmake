@@ -352,6 +352,19 @@ function(add_component_targets component)
   add_dependencies("${target}" ${ARGN})
 
   foreach(dependency_target ${dependency_targets})
+    if(NOT TARGET "${dependency_target}")
+      message(FATAL_ERROR "Target '${dependency_target}' does not exist.")
+    endif()
+
+    get_property(dependency_type TARGET "${dependency_target}" PROPERTY TYPE)
+    if(NOT ("${dependency_type}" STREQUAL STATIC_LIBRARY
+         OR "${dependency_type}" STREQUAL SHARED_LIBRARY))
+      message(FATAL_ERROR
+        "Target '${dependency_target}' has unsupported type"
+        " '${dependency_type}'. Only 'STATIC_LIBRARY' and 'SHARED_LIBRARY'"
+        " are supported.")
+    endif()
+
     install(TARGETS "${dependency_target}"
       EXPORT "${export_prefix}${component}"
       ARCHIVE DESTINATION "${LIBRARY_INSTALL_DIR}"
@@ -360,7 +373,7 @@ function(add_component_targets component)
   endforeach()
 
   set_property(TARGET "${target}" APPEND
-    PROPERTY "${property_prefix}TARGETS" ${dependency_targets})
+    PROPERTY "${property_prefix}LIBRARIES" ${dependency_targets})
 endfunction()
 
 #==============================================================================
@@ -382,11 +395,10 @@ function(install_component_exports)
     file(APPEND "${output_path}"
       "set(\"${PROJECT_NAME}_${component}_DEPENDENCIES\" ${dependencies})\n")
 
-    get_property(targets TARGET "${target}"
-      PROPERTY "${property_prefix}TARGETS")
-    # TODO: Filter out non-libraries or change TARGETS to libraries.
+    get_property(libraries TARGET "${target}"
+      PROPERTY "${property_prefix}LIBRARIES")
     file(APPEND "${output_path}"
-      "set(\"${PROJECT_NAME}_${component}_LIBRARIES\" ${targets})\n")
+      "set(\"${PROJECT_NAME}_${component}_LIBRARIES\" ${libraries})\n")
 
     install(FILES "${output_path}"
       DESTINATION "${CONFIG_INSTALL_DIR}")

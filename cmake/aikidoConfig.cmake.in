@@ -2,9 +2,14 @@ set(aikido_VERSION x.y.z)
 
 @PACKAGE_INIT@
 
-macro(aikido_traverse_components output_variable)
+function(aikido_traverse_components output_variable)
+  set(output_components)
+
   foreach(component ${ARGN})
-    if(NOT DEFINED "aikido_${component}_FOUND")
+    get_property(is_found DIRECTORY
+      PROPERTY "aikido_${component}_FOUND" DEFINED)
+
+    if(NOT is_found)
       set(component_include
         "${CMAKE_CURRENT_LIST_DIR}/aikido_${component}Component.cmake")
       set(target_include
@@ -13,33 +18,54 @@ macro(aikido_traverse_components output_variable)
       if(EXISTS "${component_include}" AND EXISTS "${target_include}")
         include("${component_include}")
 
-        set("aikido_${component}_FOUND" TRUE)
+        set_property(DIRECTORY PROPERTY "aikido_${component}_FOUND" TRUE)
+        set_property(DIRECTORY
+          PROPERTY "aikido_${component}_INCLUDE_DIRS"
+          ${aikido_${component}_INCLUDE_DIRS})
+        set_property(DIRECTORY
+          PROPERTY "aikido_${component}_DEFINITIONS"
+          ${aikido_${component}_DEFINITIONS})
+        set_property(DIRECTORY
+          PROPERTY "aikido_${component}_LIBRARIES"
+          ${aikido_${component}_LIBRARIES})
+        set_property(DIRECTORY
+          PROPERTY "aikido_${component}_DEPENDENCIES"
+          ${aikido_${component}_DEPENDENCIES})
 
         aikido_traverse_components("${output_variable}" 
           ${aikido_${component}_DEPENDENCIES})
 
         include("${target_include}")
 
-        # this is not necessary in recent versions of cmake, which supports
+        # This is not necessary in recent versions of cmake, which supports
         # transitive includes via INTERFACE_INCLUDE_DIRECTORIES.
         foreach(dependency ${aikido_${component}_DEPENDENCIES})
-          list(APPEND "aikido_${component}_INCLUDE_DIRS"
+          set_property(DIRECTORY APPEND
+            PROPERTY "aikido_${component}_INCLUDE_DIRS"
             ${aikido_${dependency}_INCLUDE_DIRS})
-          list(APPEND "aikido_${component}_DEFINITIONS"
+          set_property(DIRECTORY APPEND
+            PROPERTY "aikido_${component}_DEFINITIONS"
             ${aikido_${dependency}_DEFINITIONS})
-          # LIBRARIES is automatically inherited in INTERFACE_LINK_LIBRARIES.
+          # LIBRARIES is automatically inherited via INTERFACE_LINK_LIBRARIES.
         endforeach()
 
-        list(APPEND "${output_variable}" "${component}")
-      else()
-        set("aikido_${component}_FOUND" FALSE)
+        list(APPEND output_components "${component}")
       endif()
+    else()
+      set_property(DIRECTORY PROPERTY "aikido_${component}_FOUND" FALSE)
     endif()
   endforeach()
-endmacro()
+
+  set("${output_variable}" ${output_components} PARENT_SCOPE)
+endfunction()
 
 function(aikido_export_variable variable)
   set("${variable}" ${${variable}} CACHE INTERNAL "")
+endfunction()
+
+function(aikido_export_property variable)
+  get_property(value DIRECTORY PROPERTY "${variable}")
+  set("${variable}" ${value} CACHE INTERNAL "")
 endfunction()
 
 function(aikido_export_notfound variable)
@@ -54,12 +80,13 @@ function(aikido_package_init)
   set(aikido_LIBRARIES)
 
   foreach(component ${ARGN})
-    aikido_export_variable("aikido_${component}_FOUND")
+    aikido_export_property("aikido_${component}_FOUND")
 
     if(${aikido_${component}_FOUND})
-      aikido_export_variable("aikido_${component}_INCLUDE_DIRS")
-      aikido_export_variable("aikido_${component}_DEFINITIONS")
-      aikido_export_variable("aikido_${component}_LIBRARIES")
+      aikido_export_property("aikido_${component}_INCLUDE_DIRS")
+      aikido_export_property("aikido_${component}_DEFINITIONS")
+      aikido_export_property("aikido_${component}_LIBRARIES")
+      aikido_export_property("aikido_${component}_DEPENDENCIES")
 
       list(APPEND aikido_INCLUDE_DIRS ${aikido_${component}_INCLUDE_DIRS})
       list(APPEND aikido_DEFINITIONS ${aikido_${component}_DEFINITIONS})
@@ -68,6 +95,7 @@ function(aikido_package_init)
       aikido_export_notfound("aikido_${component}_INCLUDE_DIRS")
       aikido_export_notfound("aikido_${component}_DEFINITIONS")
       aikido_export_notfound("aikido_${component}_LIBRARIES")
+      aikido_export_notfound("aikido_${component}_DEPENDENCIES")
     endif()
   endforeach()
 
@@ -79,9 +107,12 @@ endfunction()
 #==============================================================================
 
 if(aikido_FIND_COMPONENTS)
-  # TODO: Append this to aikido_<C>_INCLUDE_DIRS above.
+  # TODO: Should we append this to aikido_<C>_INCLUDE_DIRS above?
   set_and_check(aikido_PACKAGE_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
-  set(aikido_INCLUDE_DIRS "${aikido_INCLUDE_DIR}" @PACKAGE_INCLUDE_DIRS@)
+  set(aikido_INCLUDE_DIRS
+    "${aikido_PACKAGE_INCLUDE_DIRS}"
+    @PACKAGE_INCLUDE_DIRS@
+    CACHE INTERNAL "")
 
   aikido_package_init(${aikido_FIND_COMPONENTS})
 else()
@@ -100,4 +131,3 @@ find_package_handle_standard_args(aikido
   REQUIRED_VARS aikido_PACKAGE_INCLUDE_DIRS
   HANDLE_COMPONENTS
 )
-

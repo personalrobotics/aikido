@@ -13,8 +13,6 @@ else()
   return()
 endif()
 
-include_directories(SYSTEM ${OMPL_INCLUDE_DIRS})
-
 add_library("${PROJECT_NAME}_planner_ompl" SHARED
   CRRT.cpp
   CRRTConnect.cpp
@@ -25,6 +23,9 @@ add_library("${PROJECT_NAME}_planner_ompl" SHARED
   Planner.cpp
   StateSampler.cpp
   StateValidityChecker.cpp
+)
+target_include_directories("${PROJECT_NAME}_planner_ompl" SYSTEM
+  PUBLIC ${OMPL_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_planner_ompl"
   "${PROJECT_NAME}_constraint"
