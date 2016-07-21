@@ -1,47 +1,6 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
 # CMake 2.8.11 or above is required for target_include_directories.
 cmake_minimum_required(VERSION 2.8.12)
-
-
-#==============================================================================
-# Get all propreties that cmake supports
-execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
-
-# Convert command output into a CMake list
-STRING(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-STRING(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-
-function(print_properties)
-    message ("CMAKE_PROPERTY_LIST = ${CMAKE_PROPERTY_LIST}")
-endfunction(print_properties)
-
-function(print_target_properties tgt)
-    if(NOT TARGET ${tgt})
-      message("There is no target named '${tgt}'")
-      return()
-    endif()
-
-    foreach (prop ${CMAKE_PROPERTY_LIST})
-        string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
-        # message ("Checking ${prop}")
-        get_property(propval TARGET ${tgt} PROPERTY ${prop} SET)
-        if (propval)
-            get_target_property(propval ${tgt} ${prop})
-            message ("${tgt} ${prop} = ${propval}")
-        endif()
-    endforeach(prop)
-endfunction(print_target_properties)
-
-# Use MACOSX_RPATH by default on OS X. This was added in CMake 2.8.12 and
-# became default in CMake 3.0. Explicitly setting this policy is necessary to
-# suppress a warning in CMake 3.0 and above.
-if(POLICY CMP0042)
-  cmake_policy(SET CMP0042 NEW)
-endif()
-#==============================================================================
-
-
-
 project(aikido)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
