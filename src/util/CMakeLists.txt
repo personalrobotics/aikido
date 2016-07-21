@@ -7,13 +7,15 @@ find_package(TinyXML2 REQUIRED)
 #==============================================================================
 # Libraries
 #
-add_library("${PROJECT_NAME}_util" SHARED
+set(sources
   CatkinResourceRetriever.cpp
   PseudoInverse.cpp
   VanDerCorput.cpp
   StepSequence.cpp
   RNG.cpp
 )
+
+add_library("${PROJECT_NAME}_util" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_util" SYSTEM
   PUBLIC ${Boost_INCLUDE_DIRS}
   PRIVATE ${TinyXML_INCLUDE_DIRS}
@@ -26,3 +28,5 @@ target_link_libraries("${PROJECT_NAME}_util"
 
 add_component(util)
 add_component_targets(util "${PROJECT_NAME}_util")
+
+coveralls_add_sources(${sources})

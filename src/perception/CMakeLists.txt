@@ -27,11 +27,13 @@ aikido_check_package(tf "perception" "tf")
 #==============================================================================
 # Libraries
 #
-add_library("${PROJECT_NAME}_perception" SHARED
+set(sources
   AprilTagsModule.cpp
   shape_conversions.cpp
   YamlAprilTagsDatabase.cpp
 )
+
+add_library("${PROJECT_NAME}_perception" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_perception" SYSTEM
   PUBLIC
     ${YAMLCPP_INCLUDE_DIRS}
@@ -53,3 +55,5 @@ target_link_libraries("${PROJECT_NAME}_perception"
 
 add_component(perception)
 add_component_targets(perception "${PROJECT_NAME}_perception")
+
+coveralls_add_sources(${sources})

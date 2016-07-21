@@ -1,6 +1,6 @@
-add_library("${PROJECT_NAME}_planner_parabolic" SHARED
-  ParabolicTimer.cpp
-)
+set(sources ParabolicTimer.cpp)
+
+add_library("${PROJECT_NAME}_planner_parabolic" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_planner_parabolic"
   PUBLIC
     "${PROJECT_NAME}_trajectory"
@@ -18,3 +18,5 @@ add_component_dependencies(planner_parabolic
   trajectory
   util
 )
+
+coveralls_add_sources(${sources})

@@ -61,3 +61,5 @@ target_link_libraries("${PROJECT_NAME}_rviz"
 
 add_component(rviz)
 add_component_targets(rviz "${PROJECT_NAME}_rviz")
+
+# Intentionally omit tests for or_rviz. It's not clear how to test a viewer.

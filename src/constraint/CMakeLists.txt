@@ -1,4 +1,4 @@
-add_library("${PROJECT_NAME}_constraint" SHARED
+set(sources
   uniform/RnBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
@@ -24,6 +24,8 @@ add_library("${PROJECT_NAME}_constraint" SHARED
   TSR.cpp
   TestableIntersection.cpp
 )
+
+add_library("${PROJECT_NAME}_constraint" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_statespace"
   "${PROJECT_NAME}_util"
@@ -34,3 +36,4 @@ add_component(constraint)
 add_component_targets(constraint "${PROJECT_NAME}_constraint")
 add_component_dependencies(constraint statespace util)
 
+coveralls_add_sources(${sources})

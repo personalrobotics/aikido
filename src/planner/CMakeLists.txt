@@ -1,6 +1,6 @@
-add_library("${PROJECT_NAME}_planner" SHARED
-  SnapPlanner.cpp
-)
+set(sources SnapPlanner.cpp)
+
+add_library("${PROJECT_NAME}_planner" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_planner"
   "${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_distance"
@@ -18,6 +18,8 @@ add_component_dependencies(planner
   trajectory
   util
 )
+
+coveralls_add_sources(${sources})
 
 add_subdirectory("ompl")
 add_subdirectory("parabolic")

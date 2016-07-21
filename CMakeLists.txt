@@ -2,12 +2,45 @@
 # CMake 2.8.11 or above is required for target_include_directories.
 cmake_minimum_required(VERSION 2.8.12)
 
+
+#==============================================================================
+# Get all propreties that cmake supports
+execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
+
+# Convert command output into a CMake list
+STRING(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+STRING(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+
+function(print_properties)
+    message ("CMAKE_PROPERTY_LIST = ${CMAKE_PROPERTY_LIST}")
+endfunction(print_properties)
+
+function(print_target_properties tgt)
+    if(NOT TARGET ${tgt})
+      message("There is no target named '${tgt}'")
+      return()
+    endif()
+
+    foreach (prop ${CMAKE_PROPERTY_LIST})
+        string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
+        # message ("Checking ${prop}")
+        get_property(propval TARGET ${tgt} PROPERTY ${prop} SET)
+        if (propval)
+            get_target_property(propval ${tgt} ${prop})
+            message ("${tgt} ${prop} = ${propval}")
+        endif()
+    endforeach(prop)
+endfunction(print_target_properties)
+
 # Use MACOSX_RPATH by default on OS X. This was added in CMake 2.8.12 and
 # became default in CMake 3.0. Explicitly setting this policy is necessary to
 # suppress a warning in CMake 3.0 and above.
 if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
+#==============================================================================
+
+
 
 project(aikido)
 
@@ -25,7 +58,29 @@ option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
 
-# Enable coveralls. This must appear before any targets are created.
+#==============================================================================
+# Coveralls Setup
+#
+define_property(GLOBAL PROPERTY COVERALLS_SOURCES
+  BRIEF_DOCS "Source files that Coveralls evaluates for test coverage."
+  FULL_DOCS "Source files that Coveralls evaluates for test coverage."
+)
+
+function(coveralls_add_sources)
+  foreach(source ${ARGN})
+    get_filename_component(source_abs
+      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    if(EXISTS "${source_abs}")
+      set_property(GLOBAL APPEND PROPERTY COVERALLS_SOURCES "${source_abs}")
+    else()
+      message(FATAL_ERROR
+        "Source file '${source}' does not exist at absolute path"
+        " '${source_abs}'. This should never happen. Did you recently delete"
+        " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
+    endif()
+  endforeach()
+endfunction()
+
 if(COVERALLS)
   include(Coveralls)
   coveralls_turn_on_coverage()
@@ -34,13 +89,13 @@ endif()
 #==============================================================================
 # Helper functions.
 #
-macro(evaluate_condition output_variable)
+function(evaluate_condition output_variable)
   if(${ARGN})
-    set("${output_variable}" TRUE)
+    set("${output_variable}" TRUE PARENT_SCOPE)
   else()
-    set("${output_variable}" FALSE)
+    set("${output_variable}" FALSE PARENT_SCOPE)
   endif()
-endmacro()
+endfunction()
 
 function(aikido_space_delimit output_variable input_list)
   set(accumulator)
@@ -48,7 +103,7 @@ function(aikido_space_delimit output_variable input_list)
     set(accumulator "${accumulator} ${input_element}")
   endforeach()
 
-  set("${output_variable}" "${accumulator}")
+  set("${output_variable}" "${accumulator}" PARENT_SCOPE)
 endfunction()
 
 macro(aikido_check_package variable component dependency)
@@ -170,25 +225,12 @@ endif()
 # Coveralls.
 #
 if(COVERALLS)
-  # Aggregate source files across all known targets.
-  set(all_sources)
+  get_property(sources GLOBAL PROPERTY COVERALLS_SOURCES)
 
-  get_property(components GLOBAL PROPERTY "${PROJECT_NAME}_COMPONENTS")
-  foreach(component ${components})
-    set(target "${component_prefix}${component}")
-    get_property(libraries TARGET "${target}"
-      PROPERTY "${property_prefix}LIBRARIES")
+  list(LENGTH sources sources_length)
+  message(STATUS "Running Coveralls on ${sources_length} source files.")
 
-    foreach(library ${libraries})
-      get_property(target_sources TARGET "${library}" PROPERTY SOURCES)
-      list(APPEND all_sources ${target_sources})
-    endforeach()
-  endforeach()
-
-  list(LENGTH all_sources all_sources_length)
-  message(STATUS "Computing test coverage for ${all_sources_length} files.")
-
-  coveralls_setup("${all_sources}"
+  coveralls_setup("${sources}"
     ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake"
   )

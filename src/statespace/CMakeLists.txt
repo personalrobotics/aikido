@@ -1,4 +1,4 @@
-add_library("${PROJECT_NAME}_statespace" SHARED
+set(sources
   StateSpace.cpp
   Rn.cpp
   CartesianProduct.cpp
@@ -16,9 +16,13 @@ add_library("${PROJECT_NAME}_statespace" SHARED
   dart/SO3Joint.cpp
   dart/RnJoint.cpp
 )
+
+add_library("${PROJECT_NAME}_statespace" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_statespace"
   ${DART_LIBRARIES}
 )
 
 add_component(statespace)
 add_component_targets(statespace "${PROJECT_NAME}_statespace")
+
+coveralls_add_sources(${sources})

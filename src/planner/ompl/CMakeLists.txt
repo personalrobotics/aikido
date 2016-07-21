@@ -13,7 +13,7 @@ endif()
 #==============================================================================
 # Libraries
 #
-add_library("${PROJECT_NAME}_planner_ompl" SHARED
+set(sources 
   CRRT.cpp
   CRRTConnect.cpp
   dart.cpp
@@ -24,6 +24,8 @@ add_library("${PROJECT_NAME}_planner_ompl" SHARED
   StateSampler.cpp
   StateValidityChecker.cpp
 )
+
+add_library("${PROJECT_NAME}_planner_ompl" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_planner_ompl" SYSTEM
   PUBLIC ${OMPL_INCLUDE_DIRS}
 )
@@ -45,3 +47,5 @@ add_component_dependencies(planner_ompl
   statespace
   trajectory
 )
+
+coveralls_add_sources(${sources})
