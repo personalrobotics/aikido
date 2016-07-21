@@ -135,7 +135,7 @@ if(${DOXYGEN_FOUND})
     "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
   set(DOXYGEN_OUTPUT_ROOT "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
   set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_OUTPUT_ROOT}/aikido.tag")
-  set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/html/index.html")
+  set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
   set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
 
@@ -175,6 +175,18 @@ if(${DOXYGEN_FOUND})
   add_custom_target(docs
     DEPENDS "${DOXYGEN_HTML_INDEX}"
     COMMENT "Generating documentation.")
+
+  # Create the "view_docs" target that opens the documentation.
+  if(APPLE)
+    set(open_command "open")
+  else()
+    set(open_command "xdg-open")
+  endif()
+
+  add_custom_target(view_docs "${open_command}" "${DOXYGEN_HTML_INDEX}"
+    DEPENDS "${DOXYGEN_HTML_INDEX}"
+    COMMENT "Opening documentation in a web browser."
+  )
 else()
   message(STATUS "Looking for Doxygen - NOT found, to generate API"
                  " documentation, please install Doxygen")
