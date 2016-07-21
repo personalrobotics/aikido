@@ -1,14 +1,6 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
-# CMake 2.8.11 or above is required for target_include_directories
+# CMake 2.8.11 or above is required for target_include_directories.
 cmake_minimum_required(VERSION 2.8.12)
-
-# Use MACOSX_RPATH by default on OS X. This was added in CMake 2.8.12 and
-# became default in CMake 3.0. Explicitly setting this policy is necessary to
-# suppress a warning in CMake 3.0 and above.
-if(POLICY CMP0042)
-  cmake_policy(SET CMP0042 NEW)
-endif()
-
 project(aikido)
 
 set(_CATKIN_CONFIG_ALL_INCLUDED_ true)
@@ -27,7 +19,29 @@ option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
 
-# Enable coveralls. This must appear before any targets are created.
+#==============================================================================
+# Coveralls Setup
+#
+define_property(GLOBAL PROPERTY COVERALLS_SOURCES
+  BRIEF_DOCS "Source files that Coveralls evaluates for test coverage."
+  FULL_DOCS "Source files that Coveralls evaluates for test coverage."
+)
+
+function(coveralls_add_sources)
+  foreach(source ${ARGN})
+    get_filename_component(source_abs
+      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    if(EXISTS "${source_abs}")
+      set_property(GLOBAL APPEND PROPERTY COVERALLS_SOURCES "${source_abs}")
+    else()
+      message(FATAL_ERROR
+        "Source file '${source}' does not exist at absolute path"
+        " '${source_abs}'. This should never happen. Did you recently delete"
+        " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
+    endif()
+  endforeach()
+endfunction()
+
 if(COVERALLS)
   include(Coveralls)
   coveralls_turn_on_coverage()
@@ -36,13 +50,21 @@ endif()
 #==============================================================================
 # Helper functions.
 #
+function(evaluate_condition output_variable)
+  if(${ARGN})
+    set("${output_variable}" TRUE PARENT_SCOPE)
+  else()
+    set("${output_variable}" FALSE PARENT_SCOPE)
+  endif()
+endfunction()
+
 function(aikido_space_delimit output_variable input_list)
   set(accumulator)
   foreach(input_element ${input_list})
     set(accumulator "${accumulator} ${input_element}")
   endforeach()
 
-  set("${output_variable}" "${accumulator}")
+  set("${output_variable}" "${accumulator}" PARENT_SCOPE)
 endfunction()
 
 macro(aikido_check_package variable component dependency)
@@ -55,53 +77,6 @@ macro(aikido_check_package variable component dependency)
     return()
   endif()
 endmacro()
-
-#==============================================================================
-# Register an Aikido include directory.
-#
-set_property(GLOBAL PROPERTY AIKIDO_INCLUDE_DIRS)
-
-function(aikido_include_directories)
-  include_directories(SYSTEM ${ARGN})
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_INCLUDE_DIRS ${ARGN})
-endfunction()
-
-#==============================================================================
-# Register an Aikido library.
-#
-set_property(GLOBAL PROPERTY AIKIDO_LIBRARIES)
-set_property(GLOBAL PROPERTY AIKIDO_INTERNAL_SOURCES)
-set_property(GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
-
-function(aikido_add_library target_name)
-  cmake_parse_arguments(AIKIDO_ADD_LIBRARY "EXTERNAL" "" "" ${ARGN})
-  set(is_external ${AIKIDO_ADD_LIBRARY_EXTERNAL})
-  set(rel_sources ${AIKIDO_ADD_LIBRARY_UNPARSED_ARGUMENTS})
-
-  add_library("${target_name}" SHARED ${rel_sources})
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_LIBRARIES "${target_name}")
-
-  install(TARGETS "${target_name}"
-    EXPORT "${PROJECT_NAME}Targets"
-    LIBRARY DESTINATION "${LIBRARY_INSTALL_DIR}"
-  )
-
-  # Compile a list of all source files to pass to coveralls. This function may
-  # be called from a subdirctory, so we first convert to absolute paths.
-  set(abs_sources)
-  foreach(rel_source ${rel_sources})
-    get_filename_component(abs_source
-      "${CMAKE_CURRENT_SOURCE_DIR}/${rel_source}" ABSOLUTE)
-    list(APPEND abs_sources "${abs_source}")
-  endforeach()
-
-  if(${is_external})
-    set_property(GLOBAL APPEND PROPERTY AIKIDO_EXTERNAL_SOURCES ${abs_sources})
-  else()
-    set_property(GLOBAL APPEND PROPERTY AIKIDO_INTERNAL_SOURCES ${abs_sources})
-  endif()
-endfunction()
-
 
 #==============================================================================
 # Register an Aikido test.
@@ -120,32 +95,28 @@ endfunction()
 #==============================================================================
 # Required Dependencies
 #
-set(AIKIDO_INCLUDE_DIRS)
-
+include(Components)
 include(CMakePackageConfigHelpers)
-include(CMakeParseArguments)
 include(FindPkgConfig)
 
 find_package(Boost COMPONENTS filesystem)
-aikido_include_directories(${Boost_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # Find DART in CONFIG mode to avoid finding built-in "FindDart.cmake" file,
 # which shipped with CMake, on case-insensitive file systems. This is
 # particularly a problem on OS X, which is generally case-insensitive.
 # TODO: utils-urdf should only be required for aikido::perception
 # TODO: utils is only included to workaround a bug in DART
-find_package(DART REQUIRED COMPONENTS utils utils-urdf CONFIG)
-aikido_include_directories(${DART_INCLUDE_DIRS})
-
-find_package(TinyXML2 REQUIRED)
-aikido_include_directories(${TinyXML2_INCLUDE_DIRS})
+find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
+include_directories(SYSTEM ${DART_INCLUDE_DIRS})
 
 #==============================================================================
-# Building libraries and unit tests.
+# Libraries and unit tests.
 #
+# TODO: Add this to each target's DEFINITIONS property.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories("include" "src")
+include_directories("include")
 
 # Create "test" and "run_tests" targets to mimic a Catkin package. "tests"
 # builds tests and "run_tests" (a synonym for "test") runs them. This MUST
@@ -176,11 +147,12 @@ if(${DOXYGEN_FOUND})
     "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
   set(DOXYGEN_OUTPUT_ROOT "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
   set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_OUTPUT_ROOT}/aikido.tag")
-  set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/html/index.html")
+  set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
   set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
 
   # Strip include_directories() being used by CMake from #include paths.
+  # TODO: Add per-target INCLUDE_DIRECTORIES properties to this list.
   get_property(DOXYGEN_STRIP_FROM_INC_PATH_LIST
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     PROPERTY INCLUDE_DIRECTORIES)
@@ -195,12 +167,11 @@ if(${DOXYGEN_FOUND})
     set(DOXYGEN_TAGFILES
       "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/")
 
-    if(${OMPL_FOUND})
-      file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
-        "${DOXYGEN_WORKING_DIR}/ompl.tag")
-      set(DOXYGEN_TAGFILES
-        "${DOXYGEN_TAGFILES} ompl.tag=http://ompl.kavrakilab.org/")
-    endif()
+    # TODO: Only download this if planner_ompl is being built.
+    file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
+      "${DOXYGEN_WORKING_DIR}/ompl.tag")
+    set(DOXYGEN_TAGFILES
+      "${DOXYGEN_TAGFILES} ompl.tag=http://ompl.kavrakilab.org/")
   endif()
 
   # Generate a Doxyfile.
@@ -216,6 +187,18 @@ if(${DOXYGEN_FOUND})
   add_custom_target(docs
     DEPENDS "${DOXYGEN_HTML_INDEX}"
     COMMENT "Generating documentation.")
+
+  # Create the "view_docs" target that opens the documentation.
+  if(APPLE)
+    set(open_command "open")
+  else()
+    set(open_command "xdg-open")
+  endif()
+
+  add_custom_target(view_docs "${open_command}" "${DOXYGEN_HTML_INDEX}"
+    DEPENDS "${DOXYGEN_HTML_INDEX}"
+    COMMENT "Opening documentation in a web browser."
+  )
 else()
   message(STATUS "Looking for Doxygen - NOT found, to generate API"
                  " documentation, please install Doxygen")
@@ -225,18 +208,15 @@ endif()
 # Coveralls.
 #
 if(COVERALLS)
-  get_property(internal_sources GLOBAL PROPERTY AIKIDO_INTERNAL_SOURCES)
-  get_property(external_sources GLOBAL PROPERTY AIKIDO_EXTERNAL_SOURCES)
+  get_property(sources GLOBAL PROPERTY COVERALLS_SOURCES)
 
-  list(LENGTH internal_sources internal_sources_length)
-  list(LENGTH external_sources external_sources_length)
+  list(LENGTH sources sources_length)
+  message(STATUS "Running Coveralls on ${sources_length} source files.")
 
-  message(STATUS "Computing test coverage for ${internal_sources_length} files"
-                 " (skipped ${external_sources_length} external files).")
-
-  coveralls_setup("${internal_sources}"
+  coveralls_setup("${sources}"
     ${COVERALLS_UPLOAD}
-    "${PROJECT_SOURCE_DIR}/cmake")
+    "${PROJECT_SOURCE_DIR}/cmake"
+  )
 endif()
 
 #==============================================================================
@@ -249,21 +229,22 @@ install(DIRECTORY "include/"
 install(FILES "package.xml"
   DESTINATION "share/${PROJECT_NAME}")
 
+install_component_exports()
+
 # Generate and install a Targets.cmake file that contains EXPORTED targets, to
 # be included() in the Config.cmake file. The target set "aikidoTargets" is
 # generated by the install(TARGETS) directive above.
-install(EXPORT "${PROJECT_NAME}Targets"
-  FILE "${PROJECT_NAME}Targets.cmake"
-  DESTINATION "${CONFIG_INSTALL_DIR}")
+#install_component_exports()
 
 # Generate and install a Config.cmake file.
-get_property(AIKIDO_LIBRARIES GLOBAL PROPERTY AIKIDO_LIBRARIES)
-get_property(AIKIDO_INCLUDE_DIRS GLOBAL PROPERTY AIKIDO_INCLUDE_DIRS)
-
+get_property(PACKAGE_INCLUDE_DIRS GLOBAL
+  PROPERTY "${PROJECT_NAME}_INCLUDE_DIRS"
+)
 configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
-  PATH_VARS INCLUDE_INSTALL_DIR)
-
+  PATH_VARS INCLUDE_INSTALL_DIR
+)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  DESTINATION "${CONFIG_INSTALL_DIR}")
+  DESTINATION "${CONFIG_INSTALL_DIR}"
+)

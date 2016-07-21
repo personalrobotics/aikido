@@ -1,7 +1,19 @@
+#==============================================================================
+# Dependencies
+#
 find_package(OMPL QUIET)
-aikido_check_package(OMPL "aikido::planner::ompl" "OMPL")
+if(OMPL_FOUND)
+  message(STATUS "Looking for OMPL - version ${OMPL_VERSION} found")
+else()
+  message(STATUS
+    "Looking for OMPL - NOT found, skipping planner_ompl component")
+  return()
+endif()
 
-aikido_add_library("${PROJECT_NAME}_planner_ompl"
+#==============================================================================
+# Libraries
+#
+set(sources 
   CRRT.cpp
   CRRTConnect.cpp
   dart.cpp
@@ -12,6 +24,11 @@ aikido_add_library("${PROJECT_NAME}_planner_ompl"
   StateSampler.cpp
   StateValidityChecker.cpp
 )
+
+add_library("${PROJECT_NAME}_planner_ompl" SHARED ${sources})
+target_include_directories("${PROJECT_NAME}_planner_ompl" SYSTEM
+  PUBLIC ${OMPL_INCLUDE_DIRS}
+)
 target_link_libraries("${PROJECT_NAME}_planner_ompl"
   "${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_distance"
@@ -20,3 +37,15 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
   ${DART_LIBRARIES}
   ${OMPL_LIBRARIES}
 )
+
+add_component(planner_ompl)
+add_component_targets(planner_ompl "${PROJECT_NAME}_planner_ompl")
+add_component_dependencies(planner_ompl
+  constraint
+  distance
+  planner
+  statespace
+  trajectory
+)
+
+coveralls_add_sources(${sources})

@@ -83,8 +83,6 @@ function(coveralls_setup _COVERAGE_SRCS _COVERALLS_UPLOAD)
 		)
 
 	if (_COVERALLS_UPLOAD)
-		message("COVERALLS UPLOAD: ON")
-
 		find_program(CURL_EXECUTABLE curl)
 
 		if (NOT CURL_EXECUTABLE)
@@ -104,7 +102,6 @@ function(coveralls_setup _COVERAGE_SRCS _COVERALLS_UPLOAD)
 
 		add_custom_target(coveralls DEPENDS coveralls_upload)
 	else()
-		message("COVERALLS UPLOAD: OFF")
 		add_custom_target(coveralls DEPENDS coveralls_generate)
 	endif()
 

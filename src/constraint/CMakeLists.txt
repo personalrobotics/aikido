@@ -1,4 +1,4 @@
-aikido_add_library("${PROJECT_NAME}_constraint"
+set(sources
   uniform/RnBoxConstraint.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
@@ -24,8 +24,16 @@ aikido_add_library("${PROJECT_NAME}_constraint"
   TSR.cpp
   TestableIntersection.cpp
 )
+
+add_library("${PROJECT_NAME}_constraint" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_statespace"
   "${PROJECT_NAME}_util"
   ${DART_LIBRARIES}
 )
+
+add_component(constraint)
+add_component_targets(constraint "${PROJECT_NAME}_constraint")
+add_component_dependencies(constraint statespace util)
+
+coveralls_add_sources(${sources})
