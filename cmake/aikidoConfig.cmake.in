@@ -6,10 +6,15 @@ function(aikido_traverse_components output_variable)
   set(output_components)
 
   foreach(component ${ARGN})
-    get_property(is_found DIRECTORY
-      PROPERTY "aikido_${component}_FOUND" DEFINED)
+    # We should be able to elminate the <C>_VISITED property by detecting
+    # whether the <C>_FOUND property is DEFINED. Unfortunately, DEFINED checks
+    # whether or not define_property() was called, not whether the variable was
+    # set. The exact behavior seems to vary between CMake versions, so we use
+    # an extra variable instead.
+    get_property(is_visited DIRECTORY PROPERTY "aikido_${component}_VISITED")
+    set_property(DIRECTORY PROPERTY "aikido_${component}_VISITED" TRUE)
 
-    if(NOT is_found)
+    if(NOT is_visited)
       set(component_include
         "${CMAKE_CURRENT_LIST_DIR}/aikido_${component}Component.cmake")
       set(target_include
@@ -50,9 +55,9 @@ function(aikido_traverse_components output_variable)
         endforeach()
 
         list(APPEND output_components "${component}")
+      else()
+        set_property(DIRECTORY PROPERTY "aikido_${component}_FOUND" FALSE)
       endif()
-    else()
-      set_property(DIRECTORY PROPERTY "aikido_${component}_FOUND" FALSE)
     endif()
   endforeach()
 
@@ -82,7 +87,7 @@ function(aikido_package_init)
   foreach(component ${ARGN})
     aikido_export_property("aikido_${component}_FOUND")
 
-    if(${aikido_${component}_FOUND})
+    if("aikido_${component}_FOUND")
       aikido_export_property("aikido_${component}_INCLUDE_DIRS")
       aikido_export_property("aikido_${component}_DEFINITIONS")
       aikido_export_property("aikido_${component}_LIBRARIES")
