@@ -34,14 +34,13 @@ endfunction()
 function(is_component output_variable component)
   set(target "${component_prefix}${component}")
 
-  if(NOT TARGET "${target}")
-    message(FATAL_ERROR
-      "'${component}' is not a component of ${PROJECT_NAME}.")
+  if(TARGET "${target}")
+    get_property(output TARGET "${target}"
+      PROPERTY "${component_prefix}COMPONENT")
+    set("${output_variable}" ${output} PARENT_SCOPE)
+  else()
+    set("${output_variable}" FALSE PARENT_SCOPE)
   endif()
-
-  get_property(output TARGET "${target}"
-    PROPERTY "${component_prefix}COMPONENT")
-  set("${output_variable}" ${output} PARENT_SCOPE)
 endfunction()
 
 #==============================================================================
