@@ -93,8 +93,9 @@ endfunction()
 #==============================================================================
 # Required Dependencies
 #
-include(Components)
 include(CMakePackageConfigHelpers)
+include(Components)
+include(ExternalProject)
 include(FindPkgConfig)
 
 find_package(Boost COMPONENTS filesystem)

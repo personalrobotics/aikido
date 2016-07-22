@@ -1,17 +1,4 @@
-# Force our build of GLPK to override the system version, which is likely too
-# new to work with MinTOS.
-include_directories(BEFORE SYSTEM ${glpk_INCLUDE_DIRS})
-
-include_directories("include")
-
-add_definitions(
-  -DHAVE_DECL_ISINF
-  -DHAVE_DECL_ISNAN
-  -DHAVE_DECL_ISFINITE
-  -DHAVE_GLPK=1
-)
-
-add_library("${PROJECT_NAME}_mintos" STATIC
+add_library("${PROJECT_NAME}_external_mintos" STATIC
   Timer.cpp
   src/AABB.cpp
   src/ASCIIShade.cpp
@@ -52,14 +39,23 @@ add_library("${PROJECT_NAME}_mintos" STATIC
   src/primitives.cpp
   src/stringutils.cpp
 )
-target_link_libraries("${PROJECT_NAME}_mintos" PRIVATE
-  ${glpk_LIBRARIES}
+target_compile_definitions("${PROJECT_NAME}_external_mintos"
+  PRIVATE
+    -DHAVE_DECL_ISINF
+    -DHAVE_DECL_ISNAN
+    -DHAVE_DECL_ISFINITE
+    -DHAVE_GLPK=1
 )
-set_target_properties("${PROJECT_NAME}_mintos" PROPERTIES
-  COMPILE_FLAGS "-fPIC"
-)
+target_include_directories("${PROJECT_NAME}_external_mintos"
+  PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries("${PROJECT_NAME}_external_mintos"
+  PRIVATE "${PROJECT_NAME}_external_glpk")
+set_target_properties("${PROJECT_NAME}_external_mintos" PROPERTIES
+  POSITION_INDEPENDENT_CODE TRUE)
 
-set(mintos_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  CACHE PATH "MinTOS include directories")
-set(mintos_LIBRARIES "${PROJECT_NAME}_mintos"
-  CACHE STRING "MinTOS libraries")
+# Our build of GLPK must occur BEFORE any system include paths to override the
+# any system version of GLPK, which is likely too recent for MinTOS.
+target_include_directories("${PROJECT_NAME}_external_mintos" BEFORE
+  PRIVATE ${glpk_EXTERNAL_INCLUDE_DIRS})
+
+message(STATUS "INCLUDE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}/include")

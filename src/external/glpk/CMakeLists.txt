@@ -15,12 +15,17 @@ ExternalProject_Add(glpk_EXTERNAL
 ExternalProject_Get_Property(glpk_EXTERNAL INSTALL_DIR)
 
 # Wrap GLPK in an IMPORTED target so CMake can use it as a dependency.
-add_library(glpk STATIC IMPORTED GLOBAL)
-set_property(TARGET glpk PROPERTY IMPORTED_LOCATION
-  "${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glpk${CMAKE_STATIC_LIBRARY_SUFFIX}")
-add_dependencies(glpk glpk_EXTERNAL)
+add_library("${PROJECT_NAME}_external_glpk" STATIC IMPORTED GLOBAL)
+add_dependencies("${PROJECT_NAME}_external_glpk" glpk_EXTERNAL)
+set_target_properties("${PROJECT_NAME}_external_glpk" PROPERTIES
+  IMPORTED_LOCATION "${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glpk${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  INTERFACE_POSITION_INDEPENDENT_CODE TRUE
+)
 
-set(glpk_INCLUDE_DIRS "${INSTALL_DIR}/include"
-  CACHE PATH "GLPK include directories")
-set(glpk_LIBRARIES "glpk"
-  CACHE STRING "GLPK libraries")
+# Ideally would add this directory to the INTERFACE_INCLUDE_DIRS property of
+# the IMPORTed target. Unfortunately, that is not possible for two reasons:
+# 1. it must occur BEFORE any system include paths to override the any system
+#    version of GLPK, which is likely too recent for MinTOS
+# 2. the directory is created at build time and CMake requires that all
+#    directories in INTERFACE_INCLUDE_DIRECTORIES exist at compile time
+set(glpk_EXTERNAL_INCLUDE_DIRS "${INSTALL_DIR}/include" CACHE INTERNAL "")

@@ -21,5 +21,6 @@ add_component_dependencies(planner
 
 coveralls_add_sources(${sources})
 
+add_subdirectory("mintos")
 add_subdirectory("ompl")
 add_subdirectory("parabolic")
