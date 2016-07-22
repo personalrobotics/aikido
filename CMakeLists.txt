@@ -148,18 +148,22 @@ if(${DOXYGEN_FOUND})
     "${DOXYGEN_STRIP_FROM_INC_PATH_LIST}")
 
   # Optionally download Doxygen tagfiles for dependencies.
-  set(DOXYGEN_TAGFILES)
+  set(DOXYGEN_TAGFILES "")
   if(DOWNLOAD_TAGFILES)
-    file(DOWNLOAD "http://dartsim.github.io/dart/dart.tag"
-        "${DOXYGEN_WORKING_DIR}/dart.tag")
+    set(tagfile_url "http://dartsim.github.io/dart/dart.tag")
+    message(STATUS "Downloading DART Doxygen tagfile from: ${tagfile_url}")
+    file(DOWNLOAD "${tagfile_url}" "${DOXYGEN_WORKING_DIR}/dart.tag")
     set(DOXYGEN_TAGFILES
       "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/")
 
-    # TODO: Only download this if planner_ompl is being built.
-    file(DOWNLOAD "http://ompl.kavrakilab.org/core/ompl.tag"
-      "${DOXYGEN_WORKING_DIR}/ompl.tag")
-    set(DOXYGEN_TAGFILES
-      "${DOXYGEN_TAGFILES} ompl.tag=http://ompl.kavrakilab.org/")
+    is_component(needs_ompl planner_ompl)
+    if(needs_ompl)
+      set(tagfile_url "http://ompl.kavrakilab.org/core/ompl.tag")
+      message(STATUS "Downloading OMPL Doxygen tagfile from: ${tagfile_url}")
+      file(DOWNLOAD "${tagfile_url}" "${DOXYGEN_WORKING_DIR}/ompl.tag")
+      set(DOXYGEN_TAGFILES
+        "${DOXYGEN_TAGFILES} ompl.tag=http://ompl.kavrakilab.org/")
+    endif()
   endif()
 
   # Generate a Doxyfile.
