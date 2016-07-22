@@ -166,7 +166,15 @@ if(${DOXYGEN_FOUND})
     endif()
   endif()
 
-  # Generate a Doxyfile.
+  # Generate a Doxyfile. This uses the variables:
+  #
+  # - DOXYGEN_EXCLUDE
+  # - DOXYGEN_EXTRA_INPUTS
+  # - DOXYGEN_GENERATE_TAGFILE
+  # - DOXYGEN_INPUT_ROOT
+  # - DOXYGEN_OUTPUT_ROOT
+  # - DOXYGEN_STRIP_FROM_INC_PATH
+  # - DOXYGEN_TAGFILES
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Doxyfile.in"
     "${DOXYGEN_WORKING_DIR}/Doxyfile" @ONLY)
 
