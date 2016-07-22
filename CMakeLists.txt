@@ -197,8 +197,7 @@ if(${DOXYGEN_FOUND})
 
   add_custom_target(view_docs "${open_command}" "${DOXYGEN_HTML_INDEX}"
     DEPENDS "${DOXYGEN_HTML_INDEX}"
-    COMMENT "Opening documentation in a web browser."
-  )
+    COMMENT "Opening documentation in a web browser.")
 else()
   message(STATUS "Looking for Doxygen - NOT found, to generate API"
                  " documentation, please install Doxygen")
@@ -213,10 +212,8 @@ if(COVERALLS)
   list(LENGTH sources sources_length)
   message(STATUS "Running Coveralls on ${sources_length} source files.")
 
-  coveralls_setup("${sources}"
-    ${COVERALLS_UPLOAD}
-    "${PROJECT_SOURCE_DIR}/cmake"
-  )
+  coveralls_setup("${sources}" ${COVERALLS_UPLOAD}
+    "${PROJECT_SOURCE_DIR}/cmake")
 endif()
 
 #==============================================================================
