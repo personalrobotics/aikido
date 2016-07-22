@@ -112,10 +112,9 @@ endfunction()
 #==============================================================================
 
 if(aikido_FIND_COMPONENTS)
-  # TODO: Should we append this to aikido_<C>_INCLUDE_DIRS above?
   set_and_check(aikido_PACKAGE_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
   set(aikido_INCLUDE_DIRS
-    "${aikido_PACKAGE_INCLUDE_DIRS}"
+    ${aikido_PACKAGE_INCLUDE_DIRS}
     @PACKAGE_INCLUDE_DIRS@
     CACHE INTERNAL "")
 
@@ -134,5 +133,4 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(aikido
   FOUND_VAR aikido_FOUND
   REQUIRED_VARS aikido_PACKAGE_INCLUDE_DIRS
-  HANDLE_COMPONENTS
-)
+  HANDLE_COMPONENTS)
