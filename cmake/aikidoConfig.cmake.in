@@ -87,7 +87,7 @@ function(aikido_package_init)
   foreach(component ${ARGN})
     aikido_export_property("aikido_${component}_FOUND")
 
-    if("aikido_${component}_FOUND")
+    if(aikido_${component}_FOUND)
       aikido_export_property("aikido_${component}_INCLUDE_DIRS")
       aikido_export_property("aikido_${component}_DEFINITIONS")
       aikido_export_property("aikido_${component}_LIBRARIES")
