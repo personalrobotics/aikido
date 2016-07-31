@@ -4,6 +4,7 @@
 #include "Sampleable.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include <dart/dynamics/dynamics.hpp>
+#include <Eigen/Dense>
 
 namespace aikido {
 namespace constraint {
@@ -35,6 +36,18 @@ public:
     SampleablePtr _seedConstraint,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     int _maxNumTrials);
+
+  /// Constructor for solving IK for single SE3 pose.
+  /// Uses current configuration as seed for solving IK. 
+  /// \param _stateSpace Statespace of a skeleton
+  ///         containing the target frame to solve for
+  /// \param _pose Target SE3 pose of target frame
+  /// \param _inverseKinematics InverseKinematics solver for _pose
+  InverseKinematicsSampleable(
+    statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const Eigen::Isometry3d& _pose,
+    dart::dynamics::InverseKinematicsPtr _inverseKinematics);
+
 
   virtual ~InverseKinematicsSampleable() = default;
 

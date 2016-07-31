@@ -188,6 +188,15 @@ TEST_F(InverseKinematicsSampleableTest, Constructor)
     valid_seed_constraint, mInverseKinematics1, 1);
 }
 
+TEST_F(InverseKinematicsSampleableTest, SingleSampleConstructor)
+{
+  Eigen::Isometry3d pose(Eigen::Isometry3d::Identity());
+
+  EXPECT_NO_THROW(InverseKinematicsSampleable(
+    mStateSpace1, pose, mInverseKinematics1));
+}
+
+
 TEST_F(InverseKinematicsSampleableTest, SingleSampleGenerator)
 {
   // Set mTSR to be a pointTSR that generates

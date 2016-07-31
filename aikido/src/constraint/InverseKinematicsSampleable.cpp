@@ -108,6 +108,45 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 }
 
 //=============================================================================
+InverseKinematicsSampleable::InverseKinematicsSampleable(
+      statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      const Eigen::Isometry3d& _pose,
+      dart::dynamics::InverseKinematicsPtr _inverseKinematics)
+  : mStateSpace(std::move(_stateSpace))
+  , mInverseKinematics(_inverseKinematics),
+  , mMaxNumTrials(1)
+{
+  if (!mStateSpace)
+    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
+
+  if (!mInverseKinematics)
+    throw std::invalid_argument("InverseKinematics is nullptr.");
+
+  const auto stateMetaSkeleton = mStateSpace->getMetaSkeleton();
+  const auto ikSkeleton = mInverseKinematics->getNode()->getSkeleton();
+  for (const size_t dofIndex : mInverseKinematics->getDofs())
+  {
+    const auto dof = ikSkeleton->getDof(dofIndex);
+    if (stateMetaSkeleton->getIndexOf(dof, false) == INVALID_INDEX)
+    {
+      std::stringstream msg;
+      msg << "DegreeOfFreedom '" << dof->getName() << "' is used by the"
+             " InverseKinematics solver, but is absent from the"
+             " MetaSkeletonStateSpace this constraint is defined over.";
+      throw std::invalid_argument(msg.str());
+    }
+  }
+
+  mPoseConstraint = std::make_shared<TSR>(new TSR(_pose));
+
+  // Use current skeleton state as seed. 
+  auto seedState = mStateSpace->getScopedStateFromMetaSkeleton();
+  seedConstraint = std::make_shared<FiniteSampleable>(mStateSpace, seedState);
+
+}
+
+
+//=============================================================================
 statespace::StateSpacePtr InverseKinematicsSampleable::getStateSpace() const
 {
   return mStateSpace;
