@@ -32,8 +32,8 @@ target_link_libraries("${PROJECT_NAME}_constraint"
   ${DART_LIBRARIES}
 )
 
-add_component(constraint)
-add_component_targets(constraint "${PROJECT_NAME}_constraint")
-add_component_dependencies(constraint statespace util)
+add_component(${PROJECT_NAME} constraint)
+add_component_targets(${PROJECT_NAME} constraint "${PROJECT_NAME}_constraint")
+add_component_dependencies(${PROJECT_NAME} constraint statespace util)
 
 coveralls_add_sources(${sources})

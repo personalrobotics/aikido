@@ -1,5 +1,4 @@
-#==============================================================================
-# Dependencies
+#============================================================================== # Dependencies
 #
 find_package(OMPL QUIET)
 if(OMPL_FOUND)
@@ -38,9 +37,9 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
   ${OMPL_LIBRARIES}
 )
 
-add_component(planner_ompl)
-add_component_targets(planner_ompl "${PROJECT_NAME}_planner_ompl")
-add_component_dependencies(planner_ompl
+add_component(${PROJECT_NAME} planner_ompl)
+add_component_targets(${PROJECT_NAME} planner_ompl "${PROJECT_NAME}_planner_ompl")
+add_component_dependencies(${PROJECT_NAME} planner_ompl
   constraint
   distance
   planner

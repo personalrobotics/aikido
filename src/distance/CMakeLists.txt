@@ -12,8 +12,8 @@ target_link_libraries("${PROJECT_NAME}_distance"
   ${DART_LIBRARIES}
 )
 
-add_component(distance)
-add_component_targets(distance "${PROJECT_NAME}_distance")
-add_component_dependencies(distance statespace)
+add_component(${PROJECT_NAME} distance)
+add_component_targets(${PROJECT_NAME} distance "${PROJECT_NAME}_distance")
+add_component_dependencies(${PROJECT_NAME} distance statespace)
 
 coveralls_add_sources(${sources})

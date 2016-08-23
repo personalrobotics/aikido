@@ -9,9 +9,9 @@ target_link_libraries("${PROJECT_NAME}_planner"
   "${PROJECT_NAME}_util"
 )
 
-add_component(planner)
-add_component_targets(planner "${PROJECT_NAME}_planner")
-add_component_dependencies(planner
+add_component(${PROJECT_NAME} planner)
+add_component_targets(${PROJECT_NAME} planner "${PROJECT_NAME}_planner")
+add_component_dependencies(${PROJECT_NAME} planner
   constraint
   distance
   statespace

@@ -53,7 +53,7 @@ target_link_libraries("${PROJECT_NAME}_perception"
   ${tf_LIBRARIES}
 )
 
-add_component(perception)
-add_component_targets(perception "${PROJECT_NAME}_perception")
+add_component(${PROJECT_NAME} perception)
+add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")
 
 coveralls_add_sources(${sources})
