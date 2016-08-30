@@ -22,7 +22,7 @@ target_link_libraries("${PROJECT_NAME}_statespace"
   ${DART_LIBRARIES}
 )
 
-add_component(statespace)
-add_component_targets(statespace "${PROJECT_NAME}_statespace")
+add_component(${PROJECT_NAME} statespace)
+add_component_targets(${PROJECT_NAME} statespace "${PROJECT_NAME}_statespace")
 
 coveralls_add_sources(${sources})

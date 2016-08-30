@@ -59,7 +59,7 @@ target_link_libraries("${PROJECT_NAME}_rviz"
   ${visualization_msgs_LIBRARIES}
 )
 
-add_component(rviz)
-add_component_targets(rviz "${PROJECT_NAME}_rviz")
+add_component(${PROJECT_NAME} rviz)
+add_component_targets(${PROJECT_NAME} rviz "${PROJECT_NAME}_rviz")
 
 # Intentionally omit tests for or_rviz. It's not clear how to test a viewer.

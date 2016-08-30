@@ -29,7 +29,7 @@ target_link_libraries("${PROJECT_NAME}_util"
   ${TinyXML2_LIBRARIES}
 )
 
-add_component(util)
-add_component_targets(util "${PROJECT_NAME}_util")
+add_component(${PROJECT_NAME} util)
+add_component_targets(${PROJECT_NAME} util "${PROJECT_NAME}_util")
 
 coveralls_add_sources(${sources})

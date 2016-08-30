@@ -10,9 +10,9 @@ target_link_libraries("${PROJECT_NAME}_planner_parabolic"
     "${PROJECT_NAME}_external_hauserparabolicsmoother"
 )
 
-add_component(planner_parabolic)
-add_component_targets(planner_parabolic "${PROJECT_NAME}_planner_parabolic")
-add_component_dependencies(planner_parabolic
+add_component(${PROJECT_NAME} planner_parabolic)
+add_component_targets(${PROJECT_NAME} planner_parabolic "${PROJECT_NAME}_planner_parabolic")
+add_component_dependencies(${PROJECT_NAME} planner_parabolic
   planner
   statespace
   trajectory

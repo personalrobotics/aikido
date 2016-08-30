@@ -96,6 +96,7 @@ endfunction()
 # Required Dependencies
 #
 include(Components)
+initialize_component_helpers(aikido)
 include(CMakePackageConfigHelpers)
 include(FindPkgConfig)
 
@@ -168,7 +169,7 @@ if(${DOXYGEN_FOUND})
     set(DOXYGEN_TAGFILES
       "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/")
 
-    is_component(needs_ompl planner_ompl)
+    is_component(needs_ompl aikido planner_ompl)
     if(needs_ompl)
       set(tagfile_url "http://ompl.kavrakilab.org/core/ompl.tag")
       message(STATUS "Downloading OMPL Doxygen tagfile from: ${tagfile_url}")
@@ -243,7 +244,7 @@ install(FILES "package.xml"
 #   - aikido_<C>_DEPENDENCIES: list of component dependencies
 #   - aikido_<C>_LIBRARIES: list of library targets in this component
 # - <C>Targets.cmake, which creates IMPORTED targets
-install_component_exports()
+install_component_exports(aikido)
 
 # Generate and install a Config.cmake file. This file includes the
 # <C>Component.cmake and <C>Targets.cmake created above. It also uses the

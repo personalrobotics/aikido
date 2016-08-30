@@ -10,8 +10,8 @@ target_link_libraries("${PROJECT_NAME}_trajectory"
   ${DART_LIBRARIES}
 )
 
-add_component(trajectory)
-add_component_targets(trajectory "${PROJECT_NAME}_trajectory")
-add_component_dependencies(trajectory statespace util)
+add_component(${PROJECT_NAME} trajectory)
+add_component_targets(${PROJECT_NAME} trajectory "${PROJECT_NAME}_trajectory")
+add_component_dependencies(${PROJECT_NAME} trajectory statespace util)
 
 coveralls_add_sources(${sources})

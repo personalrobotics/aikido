@@ -12,9 +12,9 @@ target_link_libraries("${PROJECT_NAME}_control"
   ${DART_LIBRARIES}
 )
 
-add_component(control)
-add_component_targets(control "${PROJECT_NAME}_control")
-add_component_dependencies(control statespace trajectory)
+add_component(${PROJECT_NAME} control)
+add_component_targets(${PROJECT_NAME} control "${PROJECT_NAME}_control")
+add_component_dependencies(${PROJECT_NAME} control statespace trajectory)
 
 coveralls_add_sources(${sources})
 
