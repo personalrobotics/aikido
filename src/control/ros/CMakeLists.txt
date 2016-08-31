@@ -42,8 +42,8 @@ target_link_libraries("${PROJECT_NAME}_control_ros"
   ${trajectory_msgs_LIBRARIES}
 )
 
-add_component(control_ros)
-add_component_targets(control_ros "${PROJECT_NAME}_control_ros")
-add_component_dependencies(control control statespace trajectory)
+add_component(${PROJECT_NAME} control_ros)
+add_component_targets(${PROJECT_NAME} control_ros "${PROJECT_NAME}_control_ros")
+add_component_dependencies(${PROJECT_NAME} control control statespace trajectory)
 
 coveralls_add_sources(${sources})
