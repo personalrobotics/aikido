@@ -21,7 +21,7 @@ public:
   /// position limits.
   ///
   /// \param _joint joint to create a state space for
-  explicit SO2Joint(::dart::dynamics::SingleDofJoint* _joint);
+  explicit SO2Joint(::dart::dynamics::GenericJoint<::dart::math::R1Space>* _joint);
 
   // Documentation inherited.
   void convertPositionsToState(
