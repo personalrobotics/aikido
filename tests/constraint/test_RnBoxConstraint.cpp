@@ -84,7 +84,7 @@ protected:
   std::vector<Rn::ScopedState> mTargets;
 
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 TEST_F(RnBoxConstraintTests, constructor_StateSpaceIsNull_Throws)
