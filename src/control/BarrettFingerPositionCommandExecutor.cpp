@@ -10,6 +10,8 @@ BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
   ::dart::collision::CollisionDetectorPtr _collisionDetector,
   ::dart::collision::CollisionOption _collisionOptions)
 : mFinger(std::move(_finger))
+, mProximalDof(nullptr)
+, mDistalDof(nullptr)
 , mCollisionDetector(std::move(_collisionDetector))
 , mCollisionOptions(std::move(_collisionOptions))
 , mInExecution(false)
@@ -20,8 +22,13 @@ BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
   if (_proximal == _distal)
     throw std::invalid_argument("proximal and distal dofs should be different.");
 
-  mProximalDof = mFinger->getDof(_proximal);
-  mDistalDof = mFinger->getDof(_distal);
+  const auto numDofs = mFinger->getNumDofs();
+
+  if (_proximal < numDofs)
+    mProximalDof = mFinger->getDof(_proximal);
+
+  if (_distal < numDofs)
+    mDistalDof = mFinger->getDof(_distal);
 
   if (!mProximalDof)
     throw std::invalid_argument("Finger does not have proximal dof.");
