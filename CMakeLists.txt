@@ -24,7 +24,7 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
-option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
+option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 
 #==============================================================================
 # Coveralls Setup
