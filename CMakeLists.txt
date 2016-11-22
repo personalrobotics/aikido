@@ -1,6 +1,14 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
 # CMake 2.8.11 or above is required for target_include_directories.
 cmake_minimum_required(VERSION 2.8.12)
+
+# Set the CMAKE_CXX_COMPILER_ID variable to AppleClang instead of Clang.
+# AppleClang and Clang have different version number. This was introduced in
+# CMake 3.0.
+if(POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW)
+endif()
+
 project(aikido)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
@@ -16,6 +24,7 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
+option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
 
 #==============================================================================
 # Coveralls Setup
@@ -104,6 +113,64 @@ include_directories(${Boost_INCLUDE_DIRS})
 # TODO: utils-urdf should only be required for aikido::perception.
 find_package(DART 6.1.0 REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
 include_directories(${DART_INCLUDE_DIRS})
+
+#==============================================================================
+# Compiler settings
+#
+if(CMAKE_COMPILER_IS_GNUCXX)
+
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+    message(FATAL_ERROR "The installed g++ version is
+        ${CMAKE_CXX_COMPILER_VERSION}. ${PROJECT_NAME} requires g++ 4.8 or
+        greater."
+    )
+  endif()
+
+  if(TREAT_WARNINGS_AS_ERRORS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+  endif()
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.3)
+    message(FATAL_ERROR "The installed Clang version is
+        ${CMAKE_CXX_COMPILER_VERSION}. ${PROJECT_NAME} requires clang 3.3 or
+        greater."
+    )
+  endif()
+
+  if(TREAT_WARNINGS_AS_ERRORS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+  endif()
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.1)
+    message(FATAL_ERROR "The installed AppleClang version is
+        ${CMAKE_CXX_COMPILER_VERSION}. ${PROJECT_NAME} requires AppleClang 6.1
+        or greater."
+    )
+  endif()
+
+  if(TREAT_WARNINGS_AS_ERRORS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+  endif()
+
+elseif(MSVC)
+
+  if(MSVC_VERSION VERSION_LESS 1900)
+     message(FATAL_ERROR "${PROJECT_NAME} requires VS 2015 or greater.")
+   endif()
+
+  if(TREAT_WARNINGS_AS_ERRORS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+  endif()
+
+else()
+
+  message(SEND_ERROR "Compiler[${CMAKE_CXX_COMPILER_ID}] not supported.")
+
+endif()
 
 #==============================================================================
 # Libraries and unit tests.
