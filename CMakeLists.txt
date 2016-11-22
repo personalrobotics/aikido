@@ -46,6 +46,29 @@ if(COVERALLS)
 endif()
 
 #==============================================================================
+# Automatic code formatting setup
+#
+define_property(GLOBAL PROPERTY CODE_FORMATTING_SOURCES
+  BRIEF_DOCS "Source files that are automatically formatted by clang-format."
+  FULL_DOCS "Source files that are automatically formatted by clang-format."
+)
+
+function(code_formatting_add_sources)
+  foreach(source ${ARGN})
+    get_filename_component(source_abs
+      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    if(EXISTS "${source_abs}")
+      set_property(GLOBAL APPEND PROPERTY CODE_FORMATTING_SOURCES "${source_abs}")
+    else()
+      message(FATAL_ERROR
+        "Source file '${source}' does not exist at absolute path"
+        " '${source_abs}'. This should never happen. Did you recently delete"
+        " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
+    endif()
+  endforeach()
+endfunction()
+
+#==============================================================================
 # Helper functions.
 #
 function(evaluate_condition output_variable)
@@ -215,6 +238,56 @@ if(COVERALLS)
 
   coveralls_setup("${sources}" ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake")
+endif()
+
+#===============================================================================
+# Automatic code formatting using clang-format.
+#
+find_program(
+  CLANG_FORMAT_EXECUTABLE
+  NAMES clang-format clang-format-3.9 clang-format-3.8
+)
+
+if (CLANG_FORMAT_EXECUTABLE)
+
+  get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)
+  list(LENGTH formatting_files formatting_files_length)
+
+  if ("${formatting_files}")
+
+    add_custom_target(code-formatting
+        COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of
+            ${formatting_files_length} files... "
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
+        COMMAND ${CMAKE_COMMAND} -E echo "Done."
+        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+    add_custom_target(code-style-checking
+        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of
+            ${formatting_files_length} files... "
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_code_format.sh
+            ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
+        COMMAND ${CMAKE_COMMAND} -E echo "Done."
+        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+
+  else()
+
+    add_custom_target(code-formatting
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to format code style."
+    )
+    add_custom_target(code-style-checking
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to check code style."
+    )
+
+  endif()
+
+else()
+
+  message(STATUS "Looking for clang-format - NOT found, please install clang-format to enable automatic code formatting")
+
 endif()
 
 #==============================================================================
