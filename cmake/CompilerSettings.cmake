@@ -34,7 +34,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
 
   if(TREAT_WARNINGS_AS_ERRORS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    add_compile_options(-Werror)
   endif()
 
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
