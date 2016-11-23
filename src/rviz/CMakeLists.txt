@@ -58,6 +58,9 @@ target_link_libraries("${PROJECT_NAME}_rviz"
   ${std_msgs_LIBRARIES}
   ${visualization_msgs_LIBRARIES}
 )
+target_compile_options("${PROJECT_NAME}_rviz"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+)
 
 add_component(${PROJECT_NAME} rviz)
 add_component_targets(${PROJECT_NAME} rviz "${PROJECT_NAME}_rviz")

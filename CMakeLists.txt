@@ -124,8 +124,6 @@ include(CompilerSettings)
 #==============================================================================
 # Libraries and unit tests.
 #
-# TODO: Add this to each target's DEFINITIONS property.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories("include")
 

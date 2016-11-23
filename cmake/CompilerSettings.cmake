@@ -15,8 +15,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     )
   endif()
 
+  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
+
   if(TREAT_WARNINGS_AS_ERRORS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    add_compile_options(-Werror)
   endif()
 
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -28,6 +30,8 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         greater."
     )
   endif()
+
+  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
 
   if(TREAT_WARNINGS_AS_ERRORS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
@@ -43,8 +47,10 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
     )
   endif()
 
+  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
+
   if(TREAT_WARNINGS_AS_ERRORS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    add_compile_options(-Werror)
   endif()
 
 elseif(MSVC)
@@ -54,8 +60,12 @@ elseif(MSVC)
      message(FATAL_ERROR "${PROJECT_NAME} requires VS 2015 or greater.")
    endif()
 
+   # We don't need to specify an additional definition to enable build with
+   # C++11 (e.g., -std=c++11) since Visual Studio enables it by default when
+   # available.
+
   if(TREAT_WARNINGS_AS_ERRORS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+    add_compile_options(/WX)
   endif()
 
 else()
@@ -63,3 +73,5 @@ else()
   message(SEND_ERROR "Compiler[${CMAKE_CXX_COMPILER_ID}] is not supported.")
 
 endif()
+
+add_compile_options(${AIKIDO_CXX_STANDARD_FLAGS})

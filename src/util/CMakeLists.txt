@@ -25,6 +25,9 @@ target_link_libraries("${PROJECT_NAME}_util"
   ${DART_LIBRARIES}
   ${TinyXML2_LIBRARIES}
 )
+target_compile_options("${PROJECT_NAME}_util"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+)
 
 add_component(${PROJECT_NAME} util)
 add_component_targets(${PROJECT_NAME} util "${PROJECT_NAME}_util")
