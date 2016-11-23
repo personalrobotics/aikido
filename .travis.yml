@@ -3,7 +3,7 @@ sudo: required
 language: generic
 env:
   global:
-  - TIMEOUT=30
+  - TIMEOUT=30 CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
 cache:
 - apt
 # Install test fixture dependencies.
