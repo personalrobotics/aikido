@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONTROL_BARRETFINGERPOSITIONCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETFINGERPOSITIONCOMMANDEXECUTOR_HPP_
 #include <dart/collision/CollisionDetector.hpp>
-#include <dart/collision/Option.hpp>
+#include <dart/collision/CollisionOption.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/dynamics/dynamics.hpp>
