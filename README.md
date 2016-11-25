@@ -1,4 +1,4 @@
-# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.com/personalrobotics/aikido.svg?token=1MmAniN9fkMcwpRUTdFq&branch=master)](https://travis-ci.com/personalrobotics/aikido)
+# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.org/personalrobotics/aikido.svg?branch=master)](https://travis-ci.org/personalrobotics/aikido) [![Coverage Status](https://coveralls.io/repos/github/personalrobotics/aikido/badge.svg?branch=master)](https://coveralls.io/github/personalrobotics/aikido?branch=master)
 
 > :warning: **Warning:** AIKIDO is under heavy development. These instructions are
 > primarily for reference by the developers.
@@ -10,7 +10,7 @@ optionally integrates with [ROS], through the suite of `aikido_ros` packages, fo
 execution on real robots.
 
 ### Dependencies
-AIKIDO depends on [CMake], [Boost], [DART] \(version 5.0 or above), [OMPL], and the
+AIKIDO depends on [CMake], [Boost], [DART] \(version 6.1 or above), [OMPL], and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
 make heavy use of C++11 and require a modern compiler.
 
@@ -35,14 +35,27 @@ with `catkin_make_isolated`. This may dramatically increase your build time, so 
 [`catkin_tools` package][Catkin Tools], if possible.
 
 ### License
-AIKIDO is licensed under a BSD license. See [LICENSE](./LICENSE) for more information.
+Aikido is licensed under a BSD license. See [LICENSE](./LICENSE) for more
+information.
 
 ### Authors
-AIKIDO was developed by Michael Koval ([**@mkoval**](https://github.com/mkoval))
-and Pras Velagapudi ([**@psigen**](https://github.com/psigen)) in the
+Aikido is developed by the
 [Personal Robotics Lab](https://personalrobotics.ri.cmu.edu/) in the
 [Robotics Institute](http://ri.cmu.edu/) at
-[Carnegie Mellon University](http://www.cmu.edu/).
+[Carnegie Mellon University](http://www.cmu.edu/). The library was started by 
+Michael Koval ([**@mkoval**](https://github.com/mkoval))
+and Pras Velagapudi ([**@psigen**](https://github.com/psigen)). It has received
+major contributions from
+Shushman Choudhury ([**@Shushman**](https://github.com/Shushman)),
+Aaron Johnson ([**@aaronjoh**](https://github.com/aaronjoh)),
+Jennifer King ([**@jeking**](https://github.com/jeking04)),
+Gilwoo Lee ([**@lgw903**](https://github.com/lgw903)),
+and Clint Liddick ([**@ClintLiddick**](https://github.com/ClintLiddick)). We
+also would like to thank
+Michael Grey ([**@mxgrey**](https://github.com/mxgrey))
+and J.S. Lee ([**@jslee02**](https://github.com/jslee02))
+for making changes to DART to better support Aikido.
+
 
 [DART]: http://dartsim.github.io/
 [OMPL]: http://ompl.kavrakilab.org/
