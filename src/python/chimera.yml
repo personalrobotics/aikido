@@ -1,0 +1,43 @@
+template:
+  module:
+    source:
+      'templates/module.mstch.cpp'
+  cxx_record:
+    source:
+      'templates/cxx_record.mstch.cpp'
+  enum:
+    source:
+      'templates/enum.mstch.cpp'
+  function:
+    source:
+      'templates/function.mstch.cpp'
+  variable:
+    source:
+      'templates/variable.mstch.cpp'
+  file:
+    header: |
+      #include "get_signature.hpp"
+      #include "chimera.cpp"
+  main:
+    precontent: |
+      boost::python::import("boost_numpy_eigen");
+      boost::python::import("dartpy");
+namespaces:
+  'aikido':
+    name: null  # Collapse the 'aikido' namespace into its parent.
+types:
+  'void *': null
+  # TODO: Wrap in a ScopedState.
+  'aikido::statespace::StateSpace::State *': null
+  'ompl::base::State *': null
+  # TODO: Wrap in a JointPtr
+  'dart::dynamics::Joint *':
+    return_value_policy: boost::python::reference_existing_object
+  # TODO: Convert to NumPy
+  'const aikido::statespace::SE2::State::Isometry2d &':
+    return_value_policy: boost::python::copy_const_reference
+  'const aikido::statespace::SE3::State::Isometry3d &':
+    return_value_policy: boost::python::copy_const_reference
+  'const aikido::statespace::SO3::State::Quaternion &':
+    return_value_policy: boost::python::copy_const_reference
+classes: []
