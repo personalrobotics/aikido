@@ -10,7 +10,7 @@ optionally integrates with [ROS], through the suite of `aikido_ros` packages, fo
 execution on real robots.
 
 ### Dependencies
-AIKIDO depends on [CMake], [Boost], [DART] \(version 5.0 or above), [OMPL], and the
+AIKIDO depends on [CMake], [Boost], [DART] \(version 6.1 or above), [OMPL], and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
 make heavy use of C++11 and require a modern compiler.
 
