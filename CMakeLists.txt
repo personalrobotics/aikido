@@ -253,3 +253,15 @@ configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   PATH_VARS INCLUDE_INSTALL_DIR)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   DESTINATION "${CONFIG_INSTALL_DIR}")
+
+#==============================================================================
+# Uninstallation.
+#
+# Add a custom target "uninstall"
+# Ref: http://www.cmake.org/Wiki/CMake_FAQ#Can_I_do_.22make_uninstall.22_with_CMake.3F
+configure_file(
+  "${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+  "${PROJECT_BINARY_DIR}/uninstall_target.cmake"
+  IMMEDIATE @ONLY)
+add_custom_target(uninstall
+  "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
