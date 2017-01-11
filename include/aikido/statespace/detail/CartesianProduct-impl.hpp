@@ -44,7 +44,7 @@ public:
       this->getState(), _index);
   }
 
-  /// Gets state by subspace indexa and wraps it in a \c Space::StateHandle
+  /// Gets state by subspace index and wraps it in a \c Space::StateHandle
   /// helper class.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
