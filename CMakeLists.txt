@@ -113,6 +113,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories("include")
 
+# This custom target doesn't affect on building aikido projects but is only for
+# displaying the header files in IDEs.
+FILE(GLOB_RECURSE aikido_headers "include/*.hpp")
+add_custom_target(headers SOURCES ${aikido_headers})
+
 add_subdirectory("src")
 
 enable_testing()
