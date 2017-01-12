@@ -3,6 +3,12 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(aikido)
 
+# If you change the version, please update the <version> tag in package.xml.
+set(AIKIDO_MAJOR_VERSION "0")
+set(AIKIDO_MINOR_VERSION "0")
+set(AIKIDO_PATCH_VERSION "1")
+set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
+
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
 
 #==============================================================================
@@ -251,7 +257,15 @@ configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
   PATH_VARS INCLUDE_INSTALL_DIR)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+write_basic_config_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  VERSION ${AIKIDO_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
   DESTINATION "${CONFIG_INSTALL_DIR}")
 
 #==============================================================================
