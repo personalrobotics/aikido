@@ -117,6 +117,13 @@ include_directories(${DART_INCLUDE_DIRS})
 # TODO: Add this to each target's DEFINITIONS property.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+configure_file(
+  ${CMAKE_MODULE_PATH}/version.hpp.in
+  ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
+  @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
+  DESTINATION "${INCLUDE_INSTALL_DIR}/aikido")
+
 include_directories("include")
 
 # This custom target doesn't affect on building aikido projects but is only for
