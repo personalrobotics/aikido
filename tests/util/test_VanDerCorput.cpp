@@ -1,21 +1,25 @@
-// #include <cstdlib>
 #include <gtest/gtest.h>
 #include <aikido/util/VanDerCorput.hpp>
 
 using aikido::util::VanDerCorput;
 
-TEST(VanDerCorput, IncludesEndpoints)
+TEST(VanDerCorput, IncludesStartpoint)
 {
-  VanDerCorput vdc{1, true};
-  auto itr = vdc.begin();
-  EXPECT_DOUBLE_EQ(0.0, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(1.0, *itr);
+  VanDerCorput vdc{1, true, false};
+  EXPECT_DOUBLE_EQ(0.0, vdc[0].first);
+  EXPECT_DOUBLE_EQ(0.5, vdc[1].first);
+}
+
+TEST(VanDerCorput, IncludesEndpoint)
+{
+  VanDerCorput vdc{1, false, true};
+  EXPECT_DOUBLE_EQ(1.0, vdc[0].first);
+  EXPECT_DOUBLE_EQ(0.5, vdc[1].first);
 }
 
 TEST(VanDerCorput, ExcludesEndpoints)
 {
-  VanDerCorput vdc{1, false};
+  VanDerCorput vdc{1, false, false};
   EXPECT_DOUBLE_EQ(0.5, vdc[0].first);
 }
 
@@ -27,7 +31,7 @@ TEST(VanDerCorput, DefaultConstructorExcludesEndpoints)
 
 TEST(VanDerCorput, FirstSevenValuesWithoutEndpoints)
 {
-  VanDerCorput vdc{1, false};
+  VanDerCorput vdc;
   EXPECT_DOUBLE_EQ(1./2, vdc[0].first);
   EXPECT_DOUBLE_EQ(1./4, vdc[1].first);
   EXPECT_DOUBLE_EQ(3./4, vdc[2].first);
@@ -39,7 +43,7 @@ TEST(VanDerCorput, FirstSevenValuesWithoutEndpoints)
 
 TEST(VanDerCorput, FirstSevenIteratorValuesWithoutEndpoints)
 {
-  VanDerCorput vdc{1, false};
+  VanDerCorput vdc;
   auto itr = vdc.begin();
   EXPECT_DOUBLE_EQ(1./2, *itr);
   ++itr;
@@ -58,7 +62,7 @@ TEST(VanDerCorput, FirstSevenIteratorValuesWithoutEndpoints)
 
 TEST(VanDerCorput, FirstNineValuesWithEndpoints)
 {
-  VanDerCorput vdc{1, true};
+  VanDerCorput vdc{1, true, true};
   EXPECT_DOUBLE_EQ(0.0 , vdc[0].first);
   EXPECT_DOUBLE_EQ(1.0 , vdc[1].first);
   EXPECT_DOUBLE_EQ(1./2, vdc[2].first);
@@ -72,7 +76,7 @@ TEST(VanDerCorput, FirstNineValuesWithEndpoints)
 
 TEST(VanDerCorput, FirstNineIteratorValuesWithEndpoints)
 {
-  VanDerCorput vdc{1, true};
+  VanDerCorput vdc{1, true, true};
   auto itr = vdc.begin();
   EXPECT_DOUBLE_EQ(0.0 , *itr);
   ++itr;
@@ -95,7 +99,7 @@ TEST(VanDerCorput, FirstNineIteratorValuesWithEndpoints)
 
 TEST(VanDerCorput, ScaleProperlyOverSpan)
 {
-  VanDerCorput vdc{2, false};
+  VanDerCorput vdc{2};
   EXPECT_DOUBLE_EQ(2.0/2, vdc[0].first);
   EXPECT_DOUBLE_EQ(2.0/4, vdc[1].first);
   EXPECT_DOUBLE_EQ(6.0/4, vdc[2].first);
@@ -107,7 +111,7 @@ TEST(VanDerCorput, ScaleProperlyOverSpan)
 
 TEST(VanDerCorput, ScaleProperlyOverSpanWithEndpoints)
 {
-  VanDerCorput vdc{2, true};
+  VanDerCorput vdc{2, true, true};
   EXPECT_DOUBLE_EQ(0.0  , vdc[0].first);
   EXPECT_DOUBLE_EQ(2.0  , vdc[1].first);
   EXPECT_DOUBLE_EQ(2.0/2, vdc[2].first);
@@ -121,21 +125,21 @@ TEST(VanDerCorput, ScaleProperlyOverSpanWithEndpoints)
 
 TEST(VanDerCorput, ResolutionAtEndpoints)
 {
-  VanDerCorput vdc{1, true};
+  VanDerCorput vdc{1, true, true};
   EXPECT_DOUBLE_EQ(1.0, vdc[0].second);
   EXPECT_DOUBLE_EQ(1.0, vdc[1].second);
 }
 
 TEST(VanDerCorput, ResolutionWhenAllDistancesTheSame)
 {
-  VanDerCorput vdc{1, false};
+  VanDerCorput vdc{1};
   EXPECT_DOUBLE_EQ(1./2, vdc[0].second);
   EXPECT_DOUBLE_EQ(1./4, vdc[2].second);
 }
 
 TEST(VanDerCorput, ResolutionAtAllPoints)
 {
-  VanDerCorput vdc{1, false};
+  VanDerCorput vdc{1};
   EXPECT_DOUBLE_EQ(1./2, vdc[0].second);
   EXPECT_DOUBLE_EQ(1./2, vdc[1].second);
   EXPECT_DOUBLE_EQ(1./4, vdc[2].second);
@@ -155,7 +159,7 @@ TEST(VanDerCorput, ResolutionAtAllPoints)
 
 TEST(VanDerCorput, Iterable)
 {
-  VanDerCorput vdc{1, true, 0.5};
+  VanDerCorput vdc{1, true, true, 0.5};
   int iterations = 0;
   EXPECT_NO_THROW({
     for (VanDerCorput::const_iterator itr = vdc.begin(); itr != vdc.end();
@@ -169,7 +173,7 @@ TEST(VanDerCorput, Iterable)
 
 TEST(VanDerCorput, ForEachIterable)
 {
-  VanDerCorput vdc{1, true, 0.5};
+  VanDerCorput vdc{1, true, true, 0.5};
   int iterations = 0;
   EXPECT_NO_THROW({
     for (double d : vdc) {
@@ -181,21 +185,21 @@ TEST(VanDerCorput, ForEachIterable)
 
 TEST(VanDerCorput, IterationEndsWhenMinimumResolutionReached)
 {
-  VanDerCorput vdc_0_5{1, false, 0.5};
+  VanDerCorput vdc_0_5{1, false, false, 0.5};
   int iterations = 0;
   for (auto itr = vdc_0_5.begin(); itr != vdc_0_5.end(); ++itr) {
     ++iterations;
   }
   EXPECT_EQ(1, iterations);
 
-  VanDerCorput vdc_0_25{1, false, 0.25};
+  VanDerCorput vdc_0_25{1, false, false, 0.25};
   iterations = 0;
   for (auto itr = vdc_0_25.begin(); itr != vdc_0_25.end(); ++itr) {
     ++iterations;
   }
   EXPECT_EQ(3, iterations);
 
-  VanDerCorput vdc_0_125{1, false, 0.125};
+  VanDerCorput vdc_0_125{1, false, false, 0.125};
   iterations = 0;
   for (auto itr = vdc_0_125.begin(); itr != vdc_0_125.end(); ++itr) {
     ++iterations;
