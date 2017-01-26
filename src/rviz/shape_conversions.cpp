@@ -232,31 +232,29 @@ bool convertShape(SoftMeshShape const &shape, Marker *marker,
 
 bool convertShape(Shape const &shape, Marker *marker, ResourceServer *rm)
 {
-  switch (shape.getShapeType()) {
-  case Shape::BOX:
+  if (shape.is<BoxShape>())
     return convertShape(dynamic_cast<BoxShape const &>(shape), marker, rm);
 
-  case Shape::ELLIPSOID:
+  else if (shape.is<EllipsoidShape>())
     return convertShape(dynamic_cast<EllipsoidShape const &>(shape), marker, rm);
 
-  case Shape::CYLINDER:
+  else if (shape.is<CylinderShape>())
     return convertShape(dynamic_cast<CylinderShape const &>(shape), marker, rm);
 
-  case Shape::LINE_SEGMENT:
+  else if (shape.is<LineSegmentShape>())
     return convertShape(dynamic_cast<LineSegmentShape const &>(shape), marker, rm);
 
-  case Shape::MESH:
+  else if (shape.is<MeshShape>())
     return convertShape(dynamic_cast<MeshShape const &>(shape), marker, rm);
 
-  case Shape::PLANE:
+  else if (shape.is<PlaneShape>())
     return convertShape(dynamic_cast<PlaneShape const &>(shape), marker, rm);
 
-  case Shape::SOFT_MESH:
+  else if (shape.is<SoftMeshShape>())
     return convertShape(dynamic_cast<SoftMeshShape const &>(shape), marker, rm);
 
-  default:
+  else
     return false;
-  }
 }
 
 } // namespace rviz
