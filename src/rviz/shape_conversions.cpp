@@ -90,7 +90,7 @@ bool convertAssimpMeshToROSTriangleList(
       triangle_list->push_back(ros_vertex);
     }
   }
-  return false;
+  return true;
 }
 
 bool convertShape(BoxShape const &shape, Marker *marker,
