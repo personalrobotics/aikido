@@ -2,6 +2,7 @@ set(sources
   SO2Angular.cpp
   RnEuclidean.cpp
   SO3Angular.cpp
+  SE2.cpp
   Weighted.cpp
   defaults.cpp
 )

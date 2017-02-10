@@ -2,6 +2,8 @@
 #include "../SO2Angular.hpp"
 #include "../SO3Angular.hpp"
 #include "../RnEuclidean.hpp"
+#include "../SE2.hpp"
+#include "../../statespace/SE2.hpp"
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
 #include "../../statespace/Rn.hpp"
@@ -76,11 +78,23 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
 };
 
 //=============================================================================
+template <>
+struct createDistanceMetricFor_impl<statespace::SE2>
+{
+  static Ptr create(std::shared_ptr<statespace::SE2> _sspace)
+  {
+    return make_unique<SE2>(std::move(_sspace));
+  }
+
+};
+
+//=============================================================================
 using SupportedStateSpaces = util::type_list<
     statespace::CartesianProduct,
     statespace::Rn,
     statespace::SO2,
-    statespace::SO3
+    statespace::SO3,
+    statespace::SE2
   >;
 
 } // namespace detail
