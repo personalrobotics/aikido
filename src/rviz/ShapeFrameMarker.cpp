@@ -108,7 +108,7 @@ bool ShapeFrameMarker::update()
       }
 
       dtwarn << "[ShapeMarkerFrame::update] Failed converting shape of type "
-             << shape->getShapeType()
+             << shape->getType()
              << " to a visualization_msgs/Marker ROS message.\n";
       return false;
     }
