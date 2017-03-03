@@ -5,8 +5,7 @@ namespace statespace {
 namespace dart {
 
 //=============================================================================
-SO2Joint::SO2Joint(
-      ::dart::dynamics::SingleDofJoint* _joint)
+SO2Joint::SO2Joint(::dart::dynamics::GenericJoint<::dart::math::R1Space> *_joint)
   : JointStateSpace(_joint)
   , SO2()
 {

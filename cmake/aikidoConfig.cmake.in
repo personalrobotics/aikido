@@ -1,4 +1,11 @@
-set(aikido_VERSION x.y.z)
+###############################################################################
+# CMake config file for Aikido
+#
+# This sets the following variables:
+# @PROJECT_NAME@_INCLUDE_DIRS - Directories containing the Aikido include files.
+# @PROJECT_NAME@_LIBRARIES    - Libraries needed to use Aikido.
+# @PROJECT_NAME@_VERSION      - Aikido version.
+###############################################################################
 
 @PACKAGE_INIT@
 

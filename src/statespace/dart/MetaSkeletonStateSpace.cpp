@@ -16,7 +16,6 @@ using ::dart::dynamics::RevoluteJoint;
 using ::dart::dynamics::Joint;
 using ::dart::dynamics::ScrewJoint;
 using ::dart::dynamics::TranslationalJoint;
-using ::dart::dynamics::SingleDofJoint;
 using ::dart::dynamics::WeldJoint;
 using ::dart::dynamics::INVALID_INDEX;
 

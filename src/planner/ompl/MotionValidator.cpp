@@ -26,7 +26,7 @@ bool MotionValidator::checkMotion(const ::ompl::base::State* _s1,
                                   const ::ompl::base::State* _s2) const
 {
   double dist = si_->distance(_s1, _s2);
-  aikido::util::VanDerCorput vdc{1, true,  // include endpoints
+  aikido::util::VanDerCorput vdc{1, true, true,  // include endpoints
                                  mSequenceResolution / dist};
 
   auto stateSpace = si_->getStateSpace();

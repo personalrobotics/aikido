@@ -3,7 +3,11 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(aikido)
 
-set(_CATKIN_CONFIG_ALL_INCLUDED_ true)
+# If you change the version, please update the <version> tag in package.xml.
+set(AIKIDO_MAJOR_VERSION "0")
+set(AIKIDO_MINOR_VERSION "0")
+set(AIKIDO_PATCH_VERSION "1")
+set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
 
@@ -103,13 +107,9 @@ include(FindPkgConfig)
 find_package(Boost COMPONENTS filesystem)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# Find DART in CONFIG mode to avoid finding built-in "FindDart.cmake" file,
-# which shipped with CMake, on case-insensitive file systems. This is
-# particularly a problem on OS X, which is generally case-insensitive.
-# TODO: utils-urdf should only be required for aikido::perception
-# TODO: utils is only included to workaround a bug in DART
-find_package(DART REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
-include_directories(SYSTEM ${DART_INCLUDE_DIRS})
+# TODO: utils-urdf should only be required for aikido::perception.
+find_package(DART 6.1.0 REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
+include_directories(${DART_INCLUDE_DIRS})
 
 #==============================================================================
 # Libraries and unit tests.
@@ -117,16 +117,19 @@ include_directories(SYSTEM ${DART_INCLUDE_DIRS})
 # TODO: Add this to each target's DEFINITIONS property.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+configure_file(
+  ${CMAKE_MODULE_PATH}/version.hpp.in
+  ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
+  @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
+  DESTINATION "${INCLUDE_INSTALL_DIR}/aikido")
+
 include_directories("include")
 
-# Create "test" and "run_tests" targets to mimic a Catkin package. "tests"
-# builds tests and "run_tests" (a synonym for "test") runs them. This MUST
-# occur before we find_package() any Catkin packages because they attempt to
-# re-define these targets.
-add_custom_target(tests)
-add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
-
-set(CATKIN_ENABLE_TESTING false)
+# This custom target doesn't affect on building aikido projects but is only for
+# displaying the header files in IDEs.
+FILE(GLOB_RECURSE aikido_headers "include/*.hpp")
+add_custom_target(headers SOURCES ${aikido_headers})
 
 add_subdirectory("src")
 
@@ -258,5 +261,25 @@ configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
   PATH_VARS INCLUDE_INSTALL_DIR)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+write_basic_config_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  VERSION ${AIKIDO_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
   DESTINATION "${CONFIG_INSTALL_DIR}")
+
+#==============================================================================
+# Uninstallation.
+#
+# Add a custom target "uninstall"
+# Ref: http://www.cmake.org/Wiki/CMake_FAQ#Can_I_do_.22make_uninstall.22_with_CMake.3F
+configure_file(
+  "${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+  "${PROJECT_BINARY_DIR}/uninstall_target.cmake"
+  IMMEDIATE @ONLY)
+add_custom_target(uninstall
+  "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/uninstall_target.cmake")

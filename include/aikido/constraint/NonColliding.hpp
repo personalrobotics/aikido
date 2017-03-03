@@ -6,7 +6,7 @@
 #include <tuple>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include <dart/collision/CollisionDetector.hpp>
-#include <dart/collision/Option.hpp>
+#include <dart/collision/CollisionOption.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 
 namespace aikido {

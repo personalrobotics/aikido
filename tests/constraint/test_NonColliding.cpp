@@ -62,7 +62,8 @@ protected:
     group->addDofs(mBox->getDofs());
 
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(group);
-    mManipulator->enableSelfCollision(true);
+    mManipulator->enableSelfCollisionCheck();
+    mManipulator->enableAdjacentBodyCheck();
 
   }
 

@@ -21,7 +21,7 @@ trajectory::InterpolatedPtr planSnap(
     throw std::invalid_argument(
         "StateSpace of constraint not equal to StateSpace of planning space");
   }
-  aikido::util::VanDerCorput vdc{1, true, 0.02};  // TODO junk resolution
+  aikido::util::VanDerCorput vdc{1, true, true, 0.02};  // TODO junk resolution
   auto returnTraj = std::make_shared<trajectory::Interpolated>(
       stateSpace, interpolator);
   auto testState = stateSpace->createState();
