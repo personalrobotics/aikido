@@ -271,11 +271,11 @@ if (CLANG_FORMAT_EXECUTABLE)
   get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)
   list(LENGTH formatting_files formatting_files_length)
 
-  if ("${formatting_files}")
+  if (formatting_files)
 
     add_custom_target(code-formatting
-        COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of
-            ${formatting_files_length} files... "
+        COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of"
+            "${formatting_files_length} files... "
         COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
         COMMAND ${CMAKE_COMMAND} -E echo "Done."
         DEPENDS ${CLANG_FORMAT_EXECUTABLE}
