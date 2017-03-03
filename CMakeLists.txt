@@ -59,7 +59,7 @@ define_property(GLOBAL PROPERTY CODE_FORMATTING_SOURCES
   FULL_DOCS "Source files that are automatically formatted by clang-format."
 )
 
-function(code_formatting_add_sources)
+function(format_add_sources)
   foreach(source ${ARGN})
     get_filename_component(source_abs
       "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
@@ -273,7 +273,7 @@ if (CLANG_FORMAT_EXECUTABLE)
 
   if (formatting_files)
 
-    add_custom_target(code-formatting
+    add_custom_target(format
         COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of"
             "${formatting_files_length} files... "
         COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
@@ -281,7 +281,7 @@ if (CLANG_FORMAT_EXECUTABLE)
         DEPENDS ${CLANG_FORMAT_EXECUTABLE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
-    add_custom_target(code-style-checking
+    add_custom_target(check-format
         COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of
             ${formatting_files_length} files... "
         COMMAND ${CMAKE_SOURCE_DIR}/tools/check_code_format.sh
