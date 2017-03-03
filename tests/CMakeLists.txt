@@ -5,6 +5,8 @@ include_directories("${gtest_SOURCE_DIR}/include")
 # Add helper scripts to the include path.
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
+add_custom_target(tests)
+
 add_subdirectory("constraint")
 add_subdirectory("control")
 add_subdirectory("distance")
