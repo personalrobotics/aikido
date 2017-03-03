@@ -11,10 +11,16 @@
   <depend>boost</depend>
   <depend>dart</depend>
   <depend>eigen</depend>
-  <depend>libmicrohttpd</depend>
   <depend>ompl</depend>
   <depend>python</depend>
   <depend>tinyxml2</depend>
+
+  <!-- Optional dependencies -->
+  <depend>actionlib</depend>
+  <depend>interactive_markers</depend>
+  <depend>libmicrohttpd</depend>
+  <depend>yaml-cpp</depend>
+
   <doc_depend>doxygen</doc_depend>
   <!-- Coveralls dependencies. -->
   <test_depend>curl</test_depend>
