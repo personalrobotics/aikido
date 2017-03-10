@@ -49,6 +49,39 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrame(
   return marker;
 }
 
+
+
+void InteractiveMarkerViewer::visualizeTSR(const aikido::constraint::TSR& _tsr,
+  int nSamples)
+{
+  using dart::dynamics::Frame;
+  using dart::dynamics::SimpleFrame;
+  using aikido::constraint::TSR;
+
+  auto sampler = _tsr.createSampleGenerator();
+  auto state = _tsr.getSE3()->createState();
+
+  for(int i = 0; i < nSamples && sampler->canSample(); ++i)
+  {
+    sampler->sample(state);
+
+    std::stringstream sstm;
+    sstm << "tsr" << i;
+
+    auto tsrFrame = std::make_shared<SimpleFrame>(
+      Frame::World(), sstm.str(), state.getIsometry());
+    mSimpleFrames.push_back(tsrFrame);
+    this->addFrame(tsrFrame.get());
+
+  }
+
+}
+
+void InteractiveMarkerViewer::cleanTSR()
+{
+  mSimpleFrames.clear();
+}
+
 SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
   SkeletonPtr const &skeleton)
 {
