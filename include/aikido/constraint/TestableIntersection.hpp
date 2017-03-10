@@ -40,6 +40,9 @@ private:
 
   void testConstraintStateSpaceOrThrow(const TestablePtr& constraint);
 };
+
+using TestableIntersectionPtr = std::shared_ptr<TestableIntersection>;
+
 }  // constraint
 }  // aikido
 
