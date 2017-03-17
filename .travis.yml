@@ -4,7 +4,6 @@ language: generic
 env:
   global:
   - TIMEOUT=30
-  - CATKIN_CONFIG_OPTIONS=--link-devel --cmake-args -DCMAKE_BUILD_TYPE=Release
 cache:
 - apt
 # Install test fixture dependencies.
