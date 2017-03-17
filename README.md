@@ -16,8 +16,7 @@ make heavy use of C++11 and require a modern compiler.
 
 ### Installation
 
-#### Homebrew macOS install
-Install on macOS from the command line using [Homebrew]:
+#### Install on macOS using [Homebrew]
 ```shell
 # install Homebrew package manager
 $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
