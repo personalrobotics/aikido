@@ -293,10 +293,10 @@ if (CLANG_FORMAT_EXECUTABLE)
 
   else()
 
-    add_custom_target(code-formatting
+    add_custom_target(format
         COMMAND ${CMAKE_COMMAND} -E echo "No file to format code style."
     )
-    add_custom_target(code-style-checking
+    add_custom_target(check-format
         COMMAND ${CMAKE_COMMAND} -E echo "No file to check code style."
     )
 
