@@ -52,7 +52,7 @@ public:
 
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
-  virtual void clear(void) override;
+  void clear(void) override;
 
   /// Set the goal bias. In the process of randomly selecting states in the
   /// state space to attempt to go towards, the algorithm may in fact choose the
