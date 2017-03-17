@@ -1,3 +1,7 @@
+// This header is for supporting OMPL across the multiple versions that include
+// API breaking changes. Currently, the most part is to support changes from the
+// usage of Boost to C++11 STL equivalents.
+
 #ifndef AIKIDO_PLANNER_OMPL_BACKWARDCOMPATIBILITY_HPP_
 #define AIKIDO_PLANNER_OMPL_BACKWARDCOMPATIBILITY_HPP_
 
