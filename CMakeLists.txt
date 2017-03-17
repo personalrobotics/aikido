@@ -11,6 +11,12 @@ endif()
 
 project(aikido)
 
+# If you change the version, please update the <version> tag in package.xml.
+set(AIKIDO_MAJOR_VERSION "0")
+set(AIKIDO_MINOR_VERSION "0")
+set(AIKIDO_PATCH_VERSION "1")
+set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
+
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
 
 #==============================================================================
@@ -125,7 +131,19 @@ include(CompilerSettings)
 # Libraries and unit tests.
 #
 
+configure_file(
+  ${CMAKE_MODULE_PATH}/version.hpp.in
+  ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
+  @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
+  DESTINATION "${INCLUDE_INSTALL_DIR}/aikido")
+
 include_directories("include")
+
+# This custom target doesn't affect on building aikido projects but is only for
+# displaying the header files in IDEs.
+FILE(GLOB_RECURSE aikido_headers "include/*.hpp")
+add_custom_target(headers SOURCES ${aikido_headers})
 
 add_subdirectory("src")
 
@@ -260,5 +278,25 @@ configure_package_config_file("cmake/${PROJECT_NAME}Config.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
   PATH_VARS INCLUDE_INSTALL_DIR)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+write_basic_config_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  VERSION ${AIKIDO_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
   DESTINATION "${CONFIG_INSTALL_DIR}")
+
+#==============================================================================
+# Uninstallation.
+#
+# Add a custom target "uninstall"
+# Ref: http://www.cmake.org/Wiki/CMake_FAQ#Can_I_do_.22make_uninstall.22_with_CMake.3F
+configure_file(
+  "${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+  "${PROJECT_BINARY_DIR}/uninstall_target.cmake"
+  IMMEDIATE @ONLY)
+add_custom_target(uninstall
+  "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
