@@ -1,47 +1,14 @@
+#include "aikido/util/KinBodyParser.hpp"
+
 #include <algorithm>
 #include <string>
 #include <vector>
 #include <Eigen/Dense>
 
-#include "dart/config.h"
-#include "dart/common/Console.h"
-#ifdef HAVE_BULLET_COLLISION
-  #include "dart/collision/bullet/BulletCollisionDetector.h"
-#endif
-#include "dart/collision/dart/DARTCollisionDetector.h"
-#include "dart/collision/fcl/FCLCollisionDetector.h"
-#include "dart/constraint/ConstraintSolver.h"
-#include "dart/dynamics/BodyNode.h"
-#include "dart/dynamics/SoftBodyNode.h"
-#include "dart/dynamics/BoxShape.h"
-#include "dart/dynamics/CylinderShape.h"
-#include "dart/dynamics/EllipsoidShape.h"
-#include "dart/dynamics/PlaneShape.h"
-#include "dart/dynamics/MeshShape.h"
-#include "dart/dynamics/SoftMeshShape.h"
-#include "dart/dynamics/WeldJoint.h"
-#include "dart/dynamics/PrismaticJoint.h"
-#include "dart/dynamics/RevoluteJoint.h"
-#include "dart/dynamics/ScrewJoint.h"
-#include "dart/dynamics/TranslationalJoint.h"
-#include "dart/dynamics/BallJoint.h"
-#include "dart/dynamics/FreeJoint.h"
-#include "dart/dynamics/EulerJoint.h"
-#include "dart/dynamics/UniversalJoint.h"
-#include "dart/dynamics/PlanarJoint.h"
-#include "dart/dynamics/Skeleton.h"
-#include "dart/dynamics/Marker.h"
-#include "dart/simulation/World.h"
-#include "dart/utils/XmlHelpers.h"
-#include "dart/common/LocalResourceRetriever.h"
-#include "dart/common/Uri.h"
-
-#include "aikido/util/KinBodyParser.h"
+#include <dart/utils/utils.hpp>
 
 namespace aikido {
-
 namespace util {
-
 namespace {
 
 using BodyPropPtr = std::shared_ptr<dart::dynamics::BodyNode::Properties>;
@@ -338,14 +305,14 @@ void readVisualizationShapeNode(
                       "Render",
                       baseUri, retriever);
 
-  auto visualAddon = newShapeNode->getVisualAddon(true);
-  visualAddon->setColor(Eigen::Vector3d(1,1,1));
+  auto visualAspect = newShapeNode->getVisualAspect(true);
+  visualAspect->setColor(Eigen::Vector3d(1,1,1));
 
   // color
   if (dart::utils::hasElement(vizShapeNodeEle, "color"))
   {
     Eigen::Vector3d color = dart::utils::getValueVector3d(vizShapeNodeEle, "color");
-    visualAddon->setColor(color);
+    visualAspect->setColor(color);
   }
 }
 
@@ -362,14 +329,14 @@ void readCollisionShapeNode(
                       "Data",
                       baseUri, retriever);
 
-  auto collisionAddon = newShapeNode->getCollisionAddon(true);
-  newShapeNode->createDynamicsAddon();
+  auto collisionAspect = newShapeNode->getCollisionAspect(true);
+  newShapeNode->createDynamicsAspect();
 
   // collidable
   if (dart::utils::hasElement(collShapeNodeEle, "collidable"))
   {
     const bool collidable = dart::utils::getValueDouble(collShapeNodeEle, "collidable");
-    collisionAddon->setCollidable(collidable);
+    collisionAspect->setCollidable(collidable);
   }
 }
 
@@ -448,7 +415,5 @@ dart::common::ResourceRetrieverPtr getRetriever(
 }
 
 } //anonymous namespace
-
 } //namespace utils
-
 } //namespace dart
