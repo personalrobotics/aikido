@@ -1,5 +1,0 @@
-aikido_add_test(test_KinematicSimulationTrajectoryExecutor
-  test_KinematicSimulationTrajectoryExecutor.cpp)
-
-target_link_libraries(test_KinematicSimulationTrajectoryExecutor
-  "${PROJECT_NAME}_control")
