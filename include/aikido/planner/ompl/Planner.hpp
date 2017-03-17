@@ -8,6 +8,7 @@
 #include "../../constraint/Sampleable.hpp"
 #include "../../constraint/Projectable.hpp"
 #include "../../trajectory/Interpolated.hpp"
+#include "../../planner/ompl/BackwardCompatibility.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -221,7 +222,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
 /// \param _si Information about the planning space
 /// \param _goalTestable A Testable constraint that can determine if a given state is a goal state
 /// \param _goalSampler A Sampleable capable of sampling states that satisfy _goalTestable
-boost::shared_ptr<::ompl::base::GoalRegion>
+ompl_shared_ptr<::ompl::base::GoalRegion>
 getGoalRegion(::ompl::base::SpaceInformationPtr _si,
               constraint::TestablePtr _goalTestable,
               constraint::SampleablePtr _goalSampler);

@@ -5,6 +5,7 @@
 #include <ompl/geometric/planners/PlannerIncludes.h>
 #include <ompl/datastructures/NearestNeighbors.h>
 
+#include "../../planner/ompl/BackwardCompatibility.hpp"
 #include "../../constraint/Projectable.hpp"
 
 namespace aikido {
@@ -147,7 +148,7 @@ protected:
 
 
   /// A nearest-neighbor datastructure representing a tree of motions */
-  using TreeData = boost::shared_ptr<::ompl::NearestNeighbors<Motion *>>;
+  using TreeData = ompl_shared_ptr<::ompl::NearestNeighbors<Motion *>>;
 
   /// A nearest-neighbors datastructure containing the tree of motions
   TreeData mStartTree;
