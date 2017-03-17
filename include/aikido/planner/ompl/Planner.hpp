@@ -14,7 +14,6 @@
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
-#include <boost/make_shared.hpp>
 
 namespace aikido {
 namespace planner {

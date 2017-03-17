@@ -21,13 +21,18 @@
   (OMPL_MAJOR_VERSION < x || (OMPL_MAJOR_VERSION <= x && \
   (OMPL_MINOR_VERSION < y || (OMPL_MINOR_VERSION <= y))))
 
+#if OMPL_VERSION_AT_LEAST(1,2,0)
+  #include <memory>
+#else
+  #include <boost/smart_ptr.hpp>
+  #include <boost/bind.hpp>
+#endif
+
 namespace aikido {
 namespace planner {
 namespace ompl {
 
 #if OMPL_VERSION_AT_LEAST(1,2,0)
-
-#include <memory>
 
 #define OMPL_PLACEHOLDER(ph) std::placeholders::ph
 
@@ -62,23 +67,20 @@ auto ompl_bind(F&& f, Args&&... args)
   return std::bind(std::forward<F>(f), std::forward<Args>(args)...);
 }
 
-#else
-
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#else // OMPL_VERSION_AT_LEAST(1,2,0)
 
 #define OMPL_PLACEHOLDER(ph) ph
 
 template <class T>
-using shared_ptr = boost::shared_ptr<T>;
+using ompl_shared_ptr = boost::shared_ptr<T>;
 
 template <class T>
-using weak_ptr = boost::weak_ptr<T>;
+using ompl_weak_ptr = boost::weak_ptr<T>;
 
 template <class T, class... Args>
 ompl_shared_ptr<T> ompl_make_shared(Args&&... args)
 {
-  return boost::make_shared<T>(boost::forward<Args>(args)...);
+  return boost::make_shared<T>(std::forward<Args>(args)...);
 }
 
 template <class T, class U>
@@ -95,12 +97,12 @@ ompl_shared_ptr<T> ompl_static_pointer_cast(const ompl_shared_ptr<U>& r)
 
 template <class F, class... Args>
 auto ompl_bind(F&& f, Args&&... args)
--> decltype(boost::bind(boost::forward<F>(f), boost::forward<Args>(args)...))
+-> decltype(boost::bind(std::forward<F>(f), std::forward<Args>(args)...))
 {
-  return boost::bind(boost::forward<F>(f), boost::forward<Args>(args)...);
+  return boost::bind(std::forward<F>(f), std::forward<Args>(args)...);
 }
 
-#endif
+#endif // OMPL_VERSION_AT_LEAST(1,2,0)
 
 } // namespace ompl
 } // namespace planner
