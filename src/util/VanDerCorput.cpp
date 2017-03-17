@@ -1,5 +1,8 @@
 #include <aikido/util/VanDerCorput.hpp>
+
+#include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 using namespace aikido::util;
 using std::pair;
