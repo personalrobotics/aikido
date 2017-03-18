@@ -4,8 +4,9 @@
 #include <dart/dart.hpp>
 
 // KinBodyParser is to parse the OpenRAVE's custom XML format
-// (http://openrave.programmingvision.com/wiki/index.php/Format:XML). Currently
-// assumes only one body node in a kinbody file.
+// (http://openrave.programmingvision.com/wiki/index.php/Format:XML). Currently,
+// KinBodyParser only parses a subset of the format assuming only one body node
+// in a kinbody file.
 
 namespace aikido {
 namespace util {

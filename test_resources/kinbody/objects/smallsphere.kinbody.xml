@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<KinBody name="smallsphere">
+	<Body name="sphere" type="dynamic">
+		<Geom type="sphere">
+			<Translation>0  0  0</Translation>
+			<diffuseColor>0 0.5 0</diffuseColor>
+			<radius>0.013</radius>
+		</Geom>
+	</Body>
+</KinBody>
