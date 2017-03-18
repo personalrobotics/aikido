@@ -95,8 +95,8 @@ dart::dynamics::SkeletonPtr readSkeleton(
   }
   catch(std::exception const& e)
   {
-    dterr << "[KinBodyParser] LoadFile '" << kinBodyFileUri.toString() << "' Fails: "
-              << e.what() << "\n";
+    dterr << "[KinBodyParser] LoadFile '" << kinBodyFileUri.toString()
+          << "' Fails: " << e.what() << "\n";
     return nullptr;
   }
 
@@ -120,8 +120,8 @@ dart::dynamics::SkeletonPtr readKinBody(
   auto kinBodyEle = kinBodyDoc.FirstChildElement("kinbody");
   if (!kinBodyEle)
   {
-    dterr << "[KinBodyParser] XML document does not contain <KinBody> as the "
-          << "root element.\n";
+    dterr << "[KinBodyParser] KinBody document does not contain <KinBody> as "
+          << "the root element.\n";
     return nullptr;
   }
 
@@ -146,13 +146,18 @@ dart::dynamics::SkeletonPtr readKinBody(
   // If name attribute doesn't exist, getAttributeString() returns empty string.
   // Empty name for skeleton is allowed.
   auto name = dart::utils::getAttributeString(kinBodyEle, "name");
+  if (name.empty())
+  {
+    dtwarn << "[KinBodyParser] The <KinBody> in '" << baseUri.toString()
+           << "' doesn't have name attribute or has empty name.\n";
+  }
   skeleton->setName(name);
 
   // Get Body node
   auto bodyEle = kinBodyEle->FirstChildElement("body");
   if (bodyEle == nullptr)
   {
-    dterr << "[KinBodyParser] KinBody file '" << baseUri.toString()
+    dterr << "[KinBodyParser] KinBody document '" << baseUri.toString()
           << "' does not contain <Body> element "
           << "under <KinBody> element.\n";
     return nullptr;
@@ -235,7 +240,7 @@ void readGeoms(
 
   if (!bodyEle->FirstChildElement("geom"))
   {
-    dtwarn << "[KinBodyParser] KinBody file '"
+    dtwarn << "[KinBodyParser] KinBody document '"
            << baseUri.toString() << "' does not contain any <Geom> element "
            << "under <Body name='" << bodyNodeName << "'>. This body will "
            << "have no shape.\n";
