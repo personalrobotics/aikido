@@ -145,7 +145,7 @@ TEST(KinBodyParser, LoadCylinderGeom)
 }
 
 //==============================================================================
-TEST(KinBodyParser, LoadTriMeshGeom)
+TEST(KinBodyParser, LoadTriMeshGeomBowl)
 {
   auto uri = std::string("file://")
       + TEST_RESOURCES_PATH
@@ -172,6 +172,46 @@ TEST(KinBodyParser, LoadTriMeshGeom)
   auto meshShape = static_cast<dart::dynamics::MeshShape*>(shape.get());
   EXPECT_TRUE(!meshShape->getMeshUri().empty());
   EXPECT_TRUE(meshShape->getScale().isApprox(Eigen::Vector3d::Constant(1.0)));
+
+  auto joint = skel->getJoint(0);
+  EXPECT_TRUE(joint != nullptr);
+}
+
+//==============================================================================
+TEST(KinBodyParser, LoadTriMeshGeomKinovaTool)
+{
+  auto uri = std::string("file://")
+      + TEST_RESOURCES_PATH
+      + std::string("/kinbody/objects/kinova_tool.kinbody.xml");
+  EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
+
+  auto skel = readSkeleton(uri);
+  EXPECT_TRUE(skel != nullptr);
+  EXPECT_TRUE(skel->getNumBodyNodes() == 1u);
+  EXPECT_TRUE(skel->getNumJoints() == 1u);
+
+  auto bodyNode = skel->getBodyNode(0);
+  EXPECT_TRUE(bodyNode != nullptr);
+
+  auto shapeNodes = bodyNode->getShapeNodes();
+  EXPECT_TRUE(shapeNodes.size() == 2u);
+
+  auto shapeNode1 = shapeNodes[0];
+  auto shapeNode2 = shapeNodes[1];
+  EXPECT_TRUE(shapeNode1 != nullptr);
+  EXPECT_TRUE(shapeNode2 != nullptr);
+
+  auto shape1 = shapeNode1->getShape();
+  auto shape2 = shapeNode2->getShape();
+  EXPECT_TRUE(shape1->is<dart::dynamics::MeshShape>());
+  EXPECT_TRUE(shape2->is<dart::dynamics::MeshShape>());
+
+  auto meshShape1 = static_cast<dart::dynamics::MeshShape*>(shape1.get());
+  auto meshShape2 = static_cast<dart::dynamics::MeshShape*>(shape2.get());
+  EXPECT_TRUE(!meshShape1->getMeshUri().empty());
+  EXPECT_TRUE(!meshShape2->getMeshUri().empty());
+  EXPECT_TRUE(meshShape1->getScale().isApprox(Eigen::Vector3d::Constant(1.0)));
+  EXPECT_TRUE(meshShape2->getScale().isApprox(Eigen::Vector3d::Constant(0.1)));
 
   auto joint = skel->getJoint(0);
   EXPECT_TRUE(joint != nullptr);

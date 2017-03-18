@@ -372,6 +372,8 @@ void readTriMeshGeom(
         dart::dynamics::VisualAspect,
         dart::dynamics::CollisionAspect,
         dart::dynamics::DynamicsAspect>(shape, shapeNodeName);
+
+    return;
   }
 
   if (hasRender)
