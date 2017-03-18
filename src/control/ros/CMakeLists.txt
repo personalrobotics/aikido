@@ -1,7 +1,6 @@
 #==============================================================================
 # Dependencies
 #
-
 find_package(actionlib QUIET)
 aikido_check_package(actionlib "aikido::control::ros" "actionlib")
 
