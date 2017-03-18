@@ -39,7 +39,7 @@ public:
   virtual ~InverseKinematicsSampleable() = default;
 
   // Documentation inherited.
-  virtual statespace::StateSpacePtr getStateSpace() const override;
+  statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
