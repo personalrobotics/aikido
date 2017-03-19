@@ -14,7 +14,6 @@ list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 #==============================================================================
 # Configuration Options
 #
-
 set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
@@ -267,12 +266,10 @@ find_program(
 )
 
 if (CLANG_FORMAT_EXECUTABLE)
-
   get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)
   list(LENGTH formatting_files formatting_files_length)
 
   if (formatting_files)
-
     add_custom_target(format
         COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of"
             "${formatting_files_length} files... "
@@ -290,22 +287,16 @@ if (CLANG_FORMAT_EXECUTABLE)
         DEPENDS ${CLANG_FORMAT_EXECUTABLE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
-
   else()
-
     add_custom_target(format
         COMMAND ${CMAKE_COMMAND} -E echo "No file to format code style."
     )
     add_custom_target(check-format
         COMMAND ${CMAKE_COMMAND} -E echo "No file to check code style."
     )
-
   endif()
-
 else()
-
   message(STATUS "Looking for clang-format - NOT found, please install clang-format to enable automatic code formatting")
-
 endif()
 
 #==============================================================================
