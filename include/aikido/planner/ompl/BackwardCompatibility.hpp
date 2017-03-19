@@ -26,10 +26,10 @@
   (OMPL_MINOR_VERSION < y || (OMPL_MINOR_VERSION <= y))))
 
 #if OMPL_VERSION_AT_LEAST(1,2,0)
-  #include <memory>
+#include <memory>
 #else
-  #include <boost/smart_ptr.hpp>
-  #include <boost/bind.hpp>
+#include <boost/smart_ptr.hpp>
+#include <boost/bind.hpp>
 #endif
 
 namespace aikido {
