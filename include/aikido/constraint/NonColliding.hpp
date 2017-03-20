@@ -73,6 +73,8 @@ private:
   std::vector<std::shared_ptr<CollisionGroup>> groupsToSelfCheck;
 };
 
+using NonCollidingPtr = std::shared_ptr<NonColliding>;
+
 }  // constraint
 }  // aikido
 #endif  // AIKIDO_CONSTRAINT_NONCOLLIDING_HPP_
