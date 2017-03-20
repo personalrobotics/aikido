@@ -13,6 +13,7 @@ set(sources
   VanDerCorput.cpp
   StepSequence.cpp
   RNG.cpp
+  stream.cpp
 )
 
 add_library("${PROJECT_NAME}_util" SHARED ${sources})
