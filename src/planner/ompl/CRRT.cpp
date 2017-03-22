@@ -17,7 +17,7 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr &_si,
       mMaxDistance(0.1), mLastGoalMotion(nullptr), mMaxStepsize(0.1), mMinStepsize(1e-4) {
 
   auto ss =
-      boost::dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
+      ompl_dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
   if (!ss) {
     throw std::invalid_argument(
         "CRRT algorithm requires a GeometricStateSpace");
@@ -145,7 +145,9 @@ void CRRT::setup(void) {
   if (!mStartTree)
     mStartTree.reset(new ::ompl::NearestNeighborsGNAT<Motion *>);
 
-  mStartTree->setDistanceFunction(boost::bind(&CRRT::distanceFunction, this, _1, _2));
+  mStartTree->setDistanceFunction(
+      ompl_bind(&CRRT::distanceFunction, this,
+                OMPL_PLACEHOLDER(_1), OMPL_PLACEHOLDER(_2)));
 }
 
 //=============================================================================
