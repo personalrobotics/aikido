@@ -90,13 +90,13 @@ namespace ompl {
   }
 
   // Geometric State space
-  auto sspace = boost::make_shared<GeometricStateSpace>(
+  auto sspace = ompl_make_shared<GeometricStateSpace>(
     _stateSpace, std::move(_interpolator), std::move(_dmetric),
     std::move(_sampler), _boundsConstraint,
     std::move(_boundsProjector));
 
   // Space Information
-  auto si = boost::make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
+  auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
 
   // Validity checking
   std::vector<constraint::TestablePtr> constraints{
@@ -105,18 +105,18 @@ namespace ompl {
       std::make_shared<constraint::TestableIntersection>(std::move(_stateSpace),
                                                           std::move(constraints));
   ::ompl::base::StateValidityCheckerPtr vchecker =
-      boost::make_shared<StateValidityChecker>(si, conjunctionConstraint);
+      ompl_make_shared<StateValidityChecker>(si, conjunctionConstraint);
   si->setStateValidityChecker(vchecker);
 
   ::ompl::base::MotionValidatorPtr mvalidator =
-        boost::make_shared<MotionValidator>(si, _maxDistanceBtwValidityChecks);
+        ompl_make_shared<MotionValidator>(si, _maxDistanceBtwValidityChecks);
   si->setMotionValidator(mvalidator);
 
   return si;
 }
 
 //=============================================================================
-boost::shared_ptr<::ompl::base::GoalRegion>
+ompl_shared_ptr<::ompl::base::GoalRegion>
 getGoalRegion(::ompl::base::SpaceInformationPtr _si,
               constraint::TestablePtr _goalTestable,
               constraint::SampleablePtr _goalSampler) {
@@ -133,8 +133,8 @@ getGoalRegion(::ompl::base::SpaceInformationPtr _si,
         "Statespace for sampler does not match Statespace for testable");
   }
 
-  return boost::make_shared<GoalRegion>(_si, std::move(_goalTestable),
-                                        _goalSampler->createSampleGenerator());
+  return ompl_make_shared<GoalRegion>(_si, std::move(_goalTestable),
+                                      _goalSampler->createSampleGenerator());
 }
   
 //=============================================================================
@@ -155,7 +155,7 @@ trajectory::InterpolatedPtr planOMPL(
 
     // Get the path
     auto path =
-        boost::dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
+        ompl_dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
             _pdef->getSolutionPath());
     if(!path){
       throw std::invalid_argument(
@@ -224,8 +224,8 @@ trajectory::InterpolatedPtr planCRRT(
       std::move(_boundsProjector), _maxDistanceBtwProjections);
 
   // Set the start and goal
-  auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
-  auto sspace = boost::static_pointer_cast<GeometricStateSpace>(
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
       si->getStateSpace());
   auto start = sspace->allocState(_start);
   pdef->addStartState(start); // copies
@@ -234,7 +234,7 @@ trajectory::InterpolatedPtr planCRRT(
   auto goalRegion = getGoalRegion(si, _goalTestable, _goalSampler);
   pdef->setGoal(goalRegion);
 
-  auto planner = boost::make_shared<CRRT>(si);
+  auto planner = ompl_make_shared<CRRT>(si);
   planner->setPathConstraint(std::move(_trajConstraint));
   planner->setRange(_maxExtensionDistance);
   planner->setProjectionResolution(_maxDistanceBtwProjections);
@@ -297,8 +297,8 @@ trajectory::InterpolatedPtr planCRRTConnect(
       std::move(_boundsProjector), _maxDistanceBtwProjections);
 
   // Set the start and goal
-  auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
-  auto sspace = boost::static_pointer_cast<GeometricStateSpace>(
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
       si->getStateSpace());
   auto start = sspace->allocState(_start);
   pdef->addStartState(start); // copies
@@ -307,7 +307,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
   auto goalRegion = getGoalRegion(si, _goalTestable, _goalSampler);
   pdef->setGoal(goalRegion);
 
-  auto planner = boost::make_shared<CRRTConnect>(si);
+  auto planner = ompl_make_shared<CRRTConnect>(si);
   planner->setPathConstraint(std::move(_trajConstraint));
   planner->setRange(_maxExtensionDistance);
   planner->setProjectionResolution(_maxDistanceBtwProjections);
