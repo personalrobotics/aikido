@@ -24,10 +24,10 @@ BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
 
   const auto numDofs = mFinger->getNumDofs();
 
-  if (_proximal < numDofs)
+  if ((unsigned int)_proximal < numDofs)
     mProximalDof = mFinger->getDof(_proximal);
 
-  if (_distal < numDofs)
+  if ((unsigned int)_distal < numDofs)
     mDistalDof = mFinger->getDof(_distal);
 
   if (!mProximalDof)

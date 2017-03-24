@@ -90,11 +90,11 @@ void Interpolated::evaluate(double _t, State *_state) const
 void Interpolated::evaluateDerivative(double _t, int _derivative,
   Eigen::VectorXd& _tangentVector ) const
 {
-  if (_derivative == 0)
+  if (_derivative <= 0) // Invalid
     throw std::invalid_argument(
-        "0th derivative not available. Use evaluate(t, state).");
+        "0th or negative derivative not available. If 0th, use evaluate(t, state)."); 
 
-  if (_derivative > mInterpolator->getNumDerivatives())
+  if ((unsigned int)_derivative > mInterpolator->getNumDerivatives()) // we are looking at ith derivative => i cannot be negative
   {
     _tangentVector.resize(mStateSpace->getDimension());
     _tangentVector.setZero();

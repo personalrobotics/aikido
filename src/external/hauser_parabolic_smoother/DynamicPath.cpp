@@ -39,6 +39,10 @@
 #include <algorithm>
 using namespace std;
 
+// Define a macro to account for assertion and unused variables -> cast to void
+#define _unused(x) ((void)(x))
+
+
 namespace ParabolicRamp {
 
 inline Real LInfDistance(const Vector& a,const Vector& b)
@@ -193,8 +197,9 @@ void DynamicPath::SetMilestones(const vector<Vector>& x)
       ramps[i].x1 = x[i+1];
       ramps[i].dx0 = zero;
       ramps[i].dx1 = zero;
-      bool res=ramps[i].SolveMinTimeLinear(accMax,velMax);
+      bool res = ramps[i].SolveMinTimeLinear(accMax,velMax);
       PARABOLIC_RAMP_ASSERT(res);
+      _unused(res); // Specify that variable is unused
     }
   }
 }
@@ -218,6 +223,7 @@ void DynamicPath::SetMilestones(const vector<Vector>& x,const vector<Vector>& dx
 	ramps[i].dx1 = dx[i+1];
 	bool res=ramps[i].SolveMinTime(accMax,velMax);
 	PARABOLIC_RAMP_ASSERT(res);
+	_unused(res); // Specify that variable is unused
       }
     }
     else {
@@ -233,6 +239,7 @@ void DynamicPath::SetMilestones(const vector<Vector>& x,const vector<Vector>& dx
 				     accMax,velMax,xMin,xMax,
 				     tempRamps);
 	PARABOLIC_RAMP_ASSERT(res >= 0);
+	_unused(res); // Specify that variable is unused
 	CombineRamps(tempRamps,tempRamps2);
 	ramps.insert(ramps.end(),tempRamps2.begin(),tempRamps2.end());
       }
@@ -275,6 +282,7 @@ void DynamicPath::Append(const Vector& x)
       fill(ramps[n].dx1.begin(),ramps[n].dx1.end(),0);
       bool res=ramps[n].SolveMinTime(accMax,velMax);
       PARABOLIC_RAMP_ASSERT(res);
+      _unused(res); // Specify that variable is unused
     }
     else {
       PARABOLIC_RAMP_ASSERT(InBounds(x,xMin,xMax));
@@ -284,6 +292,7 @@ void DynamicPath::Append(const Vector& x)
       Real res=SolveMinTimeBounded(ramps[p].x1,ramps[p].dx1,x,zero,
 				   accMax,velMax,xMin,xMax,tempRamps);
       PARABOLIC_RAMP_ASSERT(res>=0);
+      _unused(res); // Specify that variable is unused
       CombineRamps(tempRamps,tempRamps2);
       ramps.insert(ramps.end(),tempRamps2.begin(),tempRamps2.end());
     }
@@ -303,6 +312,7 @@ void DynamicPath::Append(const Vector& x,const Vector& dx)
     ramps[n].dx1 = dx;
     bool res=ramps[n].SolveMinTime(accMax,velMax);
     PARABOLIC_RAMP_ASSERT(res);
+    _unused(res); // Specify that variable is unused
   }
   else {
     PARABOLIC_RAMP_ASSERT(InBounds(x,xMin,xMax));
@@ -311,6 +321,7 @@ void DynamicPath::Append(const Vector& x,const Vector& dx)
     Real res=SolveMinTimeBounded(ramps[p].x1,ramps[p].dx1,x,dx,
 				 accMax,velMax,xMin,xMax,tempRamps);
     PARABOLIC_RAMP_ASSERT(res>=0);
+    _unused(res); // Specify that variable is unused
     CombineRamps(tempRamps,tempRamps2);
     ramps.insert(ramps.end(),tempRamps2.begin(),tempRamps2.end());
   }

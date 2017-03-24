@@ -134,7 +134,8 @@ void CartesianProduct::expMap(const Eigen::VectorXd &_tangent,
   auto dimension = getDimension();
 
   // TODO: Skip these checks in release mode.
-  if (_tangent.rows() != dimension) {
+  if ((unsigned int)_tangent.rows() != dimension) // Converting _tangent.rows to unsigned as it cannot be negative anyway
+  {   
     std::stringstream msg;
     msg << "_tangent has incorrect size: expected " << dimension << ", got "
         << _tangent.rows() << ".\n";
@@ -156,7 +157,8 @@ void CartesianProduct::logMap(const StateSpace::State *_in,
 {
   auto dimension = getDimension();
 
-  if (_tangent.rows() != dimension) {
+  if ((unsigned int)_tangent.rows() != dimension) // Converting _tangent.rows to unsigned as it cannot be negative anyway
+  {
     _tangent.resize(dimension);
   }
 
