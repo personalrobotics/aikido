@@ -38,6 +38,7 @@ add_library("${PROJECT_NAME}_rviz" SHARED
   ShapeFrameMarker.cpp
   SkeletonMarker.cpp
   shape_conversions.cpp
+  TSRMarker.cpp
 )
 target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
   PUBLIC

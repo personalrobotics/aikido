@@ -17,6 +17,10 @@ class SkeletonMarker;
 typedef std::shared_ptr<SkeletonMarker> SkeletonMarkerPtr;
 typedef std::shared_ptr<SkeletonMarker const> SkeletonMarkerConstPtr;
 
+class TSRMarker;
+typedef std::shared_ptr<TSRMarker> TSRMarkerPtr;
+typedef std::shared_ptr<TSRMarker const> TSRMarkerConstPtr;
+
 } // namespace rviz
 } // namespace aikido
 
