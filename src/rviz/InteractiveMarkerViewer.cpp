@@ -75,7 +75,7 @@ TSRMarkerPtr InteractiveMarkerViewer::visualizeTSR(
 
     std::stringstream ss;
     ss << "Marker[" << basename << "].frame[" << i << "]";
-    std::cout << ss.str() << std::endl;
+
     auto tsrFrame = std::make_shared<SimpleFrame>(
       Frame::World(), ss.str(), state.getIsometry());
     auto frameMarker = addFrame(tsrFrame.get());
