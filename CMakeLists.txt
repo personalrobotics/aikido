@@ -6,7 +6,7 @@ project(aikido)
 # If you change the version, please update the <version> tag in package.xml.
 set(AIKIDO_MAJOR_VERSION "0")
 set(AIKIDO_MINOR_VERSION "0")
-set(AIKIDO_PATCH_VERSION "1")
+set(AIKIDO_PATCH_VERSION "2")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
@@ -14,7 +14,6 @@ list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 #==============================================================================
 # Configuration Options
 #
-
 set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
@@ -50,6 +49,29 @@ if(COVERALLS)
   include(Coveralls)
   coveralls_turn_on_coverage()
 endif()
+
+#==============================================================================
+# Automatic code formatting setup
+#
+define_property(GLOBAL PROPERTY CODE_FORMATTING_SOURCES
+  BRIEF_DOCS "Source files that are automatically formatted by clang-format."
+  FULL_DOCS "Source files that are automatically formatted by clang-format."
+)
+
+function(format_add_sources)
+  foreach(source ${ARGN})
+    get_filename_component(source_abs
+      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    if(EXISTS "${source_abs}")
+      set_property(GLOBAL APPEND PROPERTY CODE_FORMATTING_SOURCES "${source_abs}")
+    else()
+      message(FATAL_ERROR
+        "Source file '${source}' does not exist at absolute path"
+        " '${source_abs}'. This should never happen. Did you recently delete"
+        " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
+    endif()
+  endforeach()
+endfunction()
 
 #==============================================================================
 # Helper functions.
@@ -233,6 +255,48 @@ if(COVERALLS)
 
   coveralls_setup("${sources}" ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake")
+endif()
+
+#===============================================================================
+# Automatic code formatting using clang-format.
+#
+find_program(
+  CLANG_FORMAT_EXECUTABLE
+  NAMES clang-format clang-format-3.9 clang-format-3.8
+)
+
+if (CLANG_FORMAT_EXECUTABLE)
+  get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)
+  list(LENGTH formatting_files formatting_files_length)
+
+  if (formatting_files)
+    add_custom_target(format
+        COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of"
+            "${formatting_files_length} files... "
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
+        COMMAND ${CMAKE_COMMAND} -E echo "Done."
+        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+    add_custom_target(check-format
+        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of
+            ${formatting_files_length} files... "
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_code_format.sh
+            ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
+        COMMAND ${CMAKE_COMMAND} -E echo "Done."
+        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+  else()
+    add_custom_target(format
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to format code style."
+    )
+    add_custom_target(check-format
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to check code style."
+    )
+  endif()
+else()
+  message(STATUS "Looking for clang-format - NOT found, please install clang-format to enable automatic code formatting")
 endif()
 
 #==============================================================================
