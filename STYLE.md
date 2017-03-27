@@ -160,7 +160,7 @@ $ make format
 ```
 If you only want to check the style without formatting the code, execute:
 ```bash
-$ make format-check
+$ make check-format
 ```
 
 ## Python Style
