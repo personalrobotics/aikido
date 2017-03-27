@@ -33,7 +33,8 @@ AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic,
 }
 
 //================================================================================================================================
-bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,ros::Duration timeout, ros::Time timestamp)
+// bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,ros::Duration timeout, ros::Time timestamp)
+AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::Duration timeout, ros::Time timestamp)
 {
 	bool any_valid = false;
 	tf::TransformListener listener(mNode);
@@ -41,6 +42,12 @@ bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 	//Appends new skeletons to skeleton list
 	visualization_msgs::MarkerArrayConstPtr marker_message
  			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(mMarkerTopic,mNode,timeout);
+
+ 	// Making sure the Apriltag Message is non empty
+ 	if(marker_message == NULL){
+ 		dtwarn<<"[AprilTagsModule::detectObjects] NULL Marker Message "<<mMarkerTopic<< std::endl;
+ 		return false;
+ 	}
 
  	if(marker_message->markers.size()==0){
  		dtwarn<<"[AprilTagsModule::detectObjects] No markers on topic "<<mMarkerTopic<<std::endl;
@@ -53,7 +60,6 @@ bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 		const auto& marker_stamp = marker_transform.header.stamp;
 		const auto& tag_name = marker_transform.ns;
 		const auto& detection_frame = marker_transform.header.frame_id;
-
 		if(!timestamp.isValid() || marker_stamp < timestamp){
 			continue;
 		}
@@ -70,8 +76,8 @@ bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			//Get orientation of marker
 			Eigen::Isometry3d marker_pose = aikido::perception::convertROSPoseToEigen(marker_transform.pose);
 
-
-			//For the frame-frame transform
+			//For the frame-frame transform from TF
+			// TODO: what happens if the TF transform is unavailable?
 			tf::StampedTransform transform;
 
 			try{
@@ -99,36 +105,55 @@ bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 			//Check if skel in skel_list
 			//If there then update pose
 			//If not then append skeleton
+			//Resolving naming conflicts by adding the marker names.
 			skel_name.append(std::to_string(marker_transform.id));
 			bool is_new_skel;
 
 			//Search skeleton_list for skeleton
-			const auto it = std::find_if(std::begin(skeleton_list), std::end(skeleton_list),
-				[&](const dart::dynamics::SkeletonPtr& skeleton)
-			  	{
-					return skeleton->getName() == skel_name;
-			  	}
-			);
 
 			dart::dynamics::SkeletonPtr skel_to_update;
-
-			if (it == std::end(skeleton_list)){
-				//New skeleton
+			dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skel_name)
+			
+			if(env_skeleton == NULL){
 				is_new_skel = true;
 				dart::utils::DartLoader urdfLoader;
 				skel_to_update = 
-					urdfLoader.parseSkeleton(skel_resource,mResourceRetriever);
-				
-				if(!skel_to_update)
-					dtwarn<<"[AprilTagsModule::detectObjects] Failed to load skeleton for URI "<<skel_resource.toString()<<std::endl;
-				skel_to_update->setName(skel_name);
+					urdfLoader.parseSkeleton(skel_resource, mResourceRetriever);
 
-			}
-			else{
-				//Get existing skeletonPtr
+					if(!skel_to_update)
+						dtwarn<<"[AprilTagsModule::detectObjects] Failed to load skeleton for URI "<<skel_resource.toString()<<std::endl;
+					skel_to_update->setName(skel_name);
+			} else {
 				is_new_skel = false;
-				skel_to_update = *it;
+				skel_to_update = env_skeleton
 			}
+
+			// const auto it = std::find_if(std::begin(skeleton_list), std::end(skeleton_list),
+			// 	[&](const dart::dynamics::SkeletonPtr& skeleton)
+			//   	{
+			// 		return skeleton->getName() == skel_name;
+			//   	}
+			// );
+
+			// dart::dynamics::SkeletonPtr skel_to_update;
+
+			// if (it == std::end(skeleton_list)){
+			// 	//New skeleton
+			// 	is_new_skel = true;
+			// 	dart::utils::DartLoader urdfLoader;
+			// 	skel_to_update = 
+			// 		urdfLoader.parseSkeleton(skel_resource,mResourceRetriever);
+				
+			// 	if(!skel_to_update)
+			// 		dtwarn<<"[AprilTagsModule::detectObjects] Failed to load skeleton for URI "<<skel_resource.toString()<<std::endl;
+			// 	skel_to_update->setName(skel_name);
+
+			// }
+			// else{
+			// 	//Get existing skeletonPtr
+			// 	is_new_skel = false;
+			// 	skel_to_update = *it;
+			// }
 
 
 			dart::dynamics::Joint* jtptr;
@@ -154,7 +179,8 @@ bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& sk
 
 			if(is_new_skel){
 				//Append to list
-				skeleton_list.push_back(skel_to_update);
+				// skeleton_list.push_back(skel_to_update);
+				env->addSkeleton(skel_to_update)
 			}
 
 		}
