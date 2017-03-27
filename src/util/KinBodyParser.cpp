@@ -66,7 +66,7 @@ std::vector<std::string> split(
 } //anonymous namespace
 
 //==============================================================================
-dart::dynamics::SkeletonPtr readSkeletonXML(
+dart::dynamics::SkeletonPtr readKinbodyString(
   const std::string& kinBodyString,
   const dart::common::Uri& baseUri,
   const dart::common::ResourceRetrieverPtr& nullOrRetriever)
@@ -83,7 +83,7 @@ dart::dynamics::SkeletonPtr readSkeletonXML(
 }
 
 //==============================================================================
-dart::dynamics::SkeletonPtr readSkeleton(
+dart::dynamics::SkeletonPtr readKinbody(
   const dart::common::Uri& kinBodyFileUri,
   const dart::common::ResourceRetrieverPtr& nullOrRetriever)
 {

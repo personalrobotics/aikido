@@ -22,7 +22,7 @@ TEST(KinBodyParser, LoadBoxGeomFromString)
       "  </Body>                                   \n"
       "</KinBody>                                    ";
 
-  auto skel = readSkeletonXML(str);
+  auto skel = readKinbodyString(str);
   EXPECT_TRUE(skel != nullptr);
   EXPECT_TRUE(skel->getNumBodyNodes() == 1u);
   EXPECT_TRUE(skel->getNumJoints() == 1u);
@@ -54,7 +54,7 @@ TEST(KinBodyParser, LoadBoxGeom)
       + std::string("/kinbody/objects/block.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
-  auto skel = readSkeleton(uri);
+  auto skel = readKinbody(uri);
   EXPECT_TRUE(skel != nullptr);
   EXPECT_TRUE(skel->getNumBodyNodes() == 1u);
   EXPECT_TRUE(skel->getNumJoints() == 1u);
@@ -87,7 +87,7 @@ TEST(KinBodyParser, LoadSphereGeom)
       + std::string("/kinbody/objects/smallsphere.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
-  auto skel = readSkeleton(uri);
+  auto skel = readKinbody(uri);
   EXPECT_TRUE(skel != nullptr);
   EXPECT_TRUE(skel->getNumBodyNodes() == 1u);
   EXPECT_TRUE(skel->getNumJoints() == 1u);
@@ -119,7 +119,7 @@ TEST(KinBodyParser, LoadCylinderGeom)
       + std::string("/kinbody/objects/stamp.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
-  auto skel = readSkeleton(uri);
+  auto skel = readKinbody(uri);
   EXPECT_TRUE(skel != nullptr);
   EXPECT_TRUE(skel->getNumBodyNodes() == 1u);
   EXPECT_TRUE(skel->getNumJoints() == 1u);
@@ -152,7 +152,7 @@ TEST(KinBodyParser, LoadTriMeshGeomBowl)
       + std::string("/kinbody/objects/bowl.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
-  auto skel = readSkeleton(uri);
+  auto skel = readKinbody(uri);
   EXPECT_TRUE(skel != nullptr);
   EXPECT_TRUE(skel->getNumBodyNodes() == 1u);
   EXPECT_TRUE(skel->getNumJoints() == 1u);
@@ -185,7 +185,7 @@ TEST(KinBodyParser, LoadTriMeshGeomKinovaTool)
       + std::string("/kinbody/objects/kinova_tool.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
-  auto skel = readSkeleton(uri);
+  auto skel = readKinbody(uri);
   EXPECT_TRUE(skel != nullptr);
   EXPECT_TRUE(skel->getNumBodyNodes() == 1u);
   EXPECT_TRUE(skel->getNumJoints() == 1u);
