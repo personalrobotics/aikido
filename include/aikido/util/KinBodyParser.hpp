@@ -8,11 +8,23 @@ namespace util {
 
 /// Read skeleton from a string of OpenRAVE's custom XML format
 ///
-/// The detail of the format can be found at:
-/// http://openrave.programmingvision.com/wiki/index.php/Format:XML).
-///
 /// This function only parses a subset of the format assuming only one body node
 /// in a kinbody file.
+///
+/// Followings are the available fields that this parser can read.
+/// \code
+/// kinbody - attributes: name, file, prefix, type, makejoinedlinksadjacent
+///   body - attributes: name, type (dynamic, static), file, skipgeometry, scalegeometry, enable
+///     geom - attributes: name, type (box, sphere, trimesh, cylinder)
+///       render - file scale (e.g., /path/to/mesh/file_render.stl 0.5)
+///       data - file scale (e.g., /path/to/mesh/file_collision.stl 0.5)
+///       extents - 3 float [box]
+///       height - float [cylinder]
+///       radius - float [cylinder, sphere]
+/// \endcode
+///
+/// The detail of the format can be found at:
+/// http://openrave.programmingvision.com/wiki/index.php/Format:XML).
 ///
 /// \param[in] kinBodyString The Kinbody XML string.
 /// \param[in] baseUri The base URI of the mesh files in the KinBody XML string.
@@ -27,11 +39,11 @@ dart::dynamics::SkeletonPtr readKinbodyString(
 
 /// Read skeleton from a file of OpenRAVE's custom XML format
 ///
-/// The detail of the format can be found at:
-/// http://openrave.programmingvision.com/wiki/index.php/Format:XML).
-///
 /// This function only parses a subset of the format assuming only one body node
 /// in a kinbody file.
+///
+/// The detail of the format can be found at:
+/// http://openrave.programmingvision.com/wiki/index.php/Format:XML).
 ///
 /// \param[in] kinBodyFileUri The file URI ("file://...") of the KinBody file.
 /// \param[in] retriever A DART retriever for the KinBody file and mesh files
