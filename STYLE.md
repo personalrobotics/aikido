@@ -5,7 +5,7 @@ The code in this library generally follows the same coding convention as the [DA
 * [C++ Style](#c-style)
   * [C++ Header Style](#header-style)
   * [C++ Source Style](#source-style)
-  * [Autoformatting using ClangFormat](#autoformatting using clangformat)
+  * [Autoformatting using ClangFormat](#autoformatting-using-clangformat)
 * [Python Style](#python-style)
 * [CMake Style](#cmake-style)
 
