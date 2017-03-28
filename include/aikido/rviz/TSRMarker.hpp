@@ -11,7 +11,7 @@ namespace rviz {
 class TSRMarker {
 public:
   TSRMarker();
-  ~TSRMarker(){};
+  virtual ~TSRMarker() = default;
 
   void addFrameMarker(FrameMarkerPtr const &marker);
 

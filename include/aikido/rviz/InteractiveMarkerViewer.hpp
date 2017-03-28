@@ -35,8 +35,9 @@ public:
     dart::dynamics::SkeletonPtr const &skeleton);
 
   /// Visualizes tsr with at most n samples
-  TSRMarkerPtr visualizeTSR(aikido::constraint::TSR const &_tsr, int nSamples = 10,
-    std::string basename = "");
+  TSRMarkerPtr visualizeTSR(
+    aikido::constraint::TSR const &_tsr,
+    int nSamples = 10, std::string basename = "");
 
   void setAutoUpdate(bool _flag);
   void update();

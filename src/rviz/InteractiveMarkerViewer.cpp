@@ -69,6 +69,7 @@ TSRMarkerPtr InteractiveMarkerViewer::visualizeTSR(
       ost << &tsrMarker;
       basename = ost.str();
   }
+
   for(int i = 0; i < nSamples && sampler->canSample(); ++i)
   {
     assert(sampler->sample(state));
