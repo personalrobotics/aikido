@@ -34,7 +34,11 @@ public:
   SkeletonMarkerPtr CreateSkeletonMarker(
     dart::dynamics::SkeletonPtr const &skeleton);
 
-  /// Visualizes tsr with at most n samples
+  /// Visualizes a TSR.
+  /// \param tsr TSR constraint
+  /// \param nSamples Max number of samples to be used in visualization
+  /// \param basename Basename for markers
+  /// \return TSRMarkerPtr contains sampled frames of TSR.
   TSRMarkerPtr addTSRMarker(
     aikido::constraint::TSR const &tsr,
     int nSamples = 10, const std::string &basename = "");
