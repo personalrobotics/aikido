@@ -13,7 +13,8 @@ namespace rviz {
 
 class TSRMarker {
 public:
-  explicit TSRMarker(std::vector<std::shared_ptr<dart::dynamics::SimpleFrame>> tsrFrames);
+  explicit TSRMarker(
+    std::vector<std::shared_ptr<dart::dynamics::SimpleFrame>> tsrFrames);
   virtual ~TSRMarker() = default;
 
 private:
