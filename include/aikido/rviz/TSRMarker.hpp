@@ -4,19 +4,20 @@
 #include <set>
 #include "FrameMarker.hpp"
 #include "SmartPointers.hpp"
+#include <dart/dynamics/Frame.hpp>
+#include <dart/dynamics/SmartPointer.hpp>
+
 
 namespace aikido {
 namespace rviz {
 
 class TSRMarker {
 public:
-  TSRMarker();
+  explicit TSRMarker(std::vector<std::shared_ptr<dart::dynamics::SimpleFrame>> tsrFrames);
   virtual ~TSRMarker() = default;
 
-  void addFrameMarker(FrameMarkerPtr const &marker);
-
 private:
-  std::set<FrameMarkerPtr> mFrameMarkers;
+  std::vector<std::shared_ptr<dart::dynamics::SimpleFrame>> mTsrFrames;
 
 };
 

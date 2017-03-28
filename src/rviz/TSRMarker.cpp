@@ -1,15 +1,13 @@
 #include <aikido/rviz/TSRMarker.hpp>
 
+using dart::dynamics::SimpleFrame;
+
 namespace aikido {
 namespace rviz {
 
-TSRMarker::TSRMarker()
+TSRMarker::TSRMarker(std::vector<std::shared_ptr<SimpleFrame>> tsrFrames)
+: mTsrFrames(std::move(tsrFrames))
 {
-}
-
-void TSRMarker::addFrameMarker(FrameMarkerPtr const &marker)
-{
-  mFrameMarkers.insert(marker);
 }
 
 } // namespace rviz

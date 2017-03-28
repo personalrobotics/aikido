@@ -50,39 +50,48 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrame(
   return marker;
 }
 
-TSRMarkerPtr InteractiveMarkerViewer::visualizeTSR(
-  aikido::constraint::TSR const &_tsr,
+TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
+  aikido::constraint::TSR const &tsr,
   int nSamples,
-  std::string basename)
+  const std::string& basename)
 {
   using dart::dynamics::Frame;
   using dart::dynamics::SimpleFrame;
   using aikido::constraint::TSR;
 
-  auto sampler = _tsr.createSampleGenerator();
-  auto state = _tsr.getSE3()->createState();
-  auto tsrMarker = std::make_shared<TSRMarker>();
+  auto sampler = tsr.createSampleGenerator();
+  auto state = tsr.getSE3()->createState();
 
-  if (basename == "")
+  std::string name; 
+  if (basename.empty())
   {
-      std::ostringstream ost;
-      ost << &tsrMarker;
-      basename = ost.str();
+    std::ostringstream ost;
+    ost << &tsr;
+    name = ost.str();
   }
+  else
+  {
+    name = basename;
+  }
+
+  std::vector<std::shared_ptr<SimpleFrame>> tsrFrames;
+  tsrFrames.reserve(nSamples);
 
   for(int i = 0; i < nSamples && sampler->canSample(); ++i)
   {
-    assert(sampler->sample(state));
+    auto sampled = sampler->sample(state);
+    assert(sampled);
 
     std::stringstream ss;
-    ss << "Marker[" << basename << "].frame[" << i << "]";
+    ss << "TSRMarker[" << name << "].frame[" << i << "]";
 
     auto tsrFrame = std::make_shared<SimpleFrame>(
       Frame::World(), ss.str(), state.getIsometry());
     auto frameMarker = addFrame(tsrFrame.get());
-    tsrMarker->addFrameMarker(frameMarker);
+    tsrFrames.emplace_back(tsrFrame);
   }
 
+  auto tsrMarker = std::make_shared<TSRMarker>(std::move(tsrFrames));
   return tsrMarker;
 }
 
