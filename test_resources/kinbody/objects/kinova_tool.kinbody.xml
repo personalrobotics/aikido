@@ -1,6 +1,6 @@
 <KinBody name="kinova_tool">
   <Body type="dynamic" name="kinova_tool">
-    <Geom type="trimesh" modifiable="false">
+    <Geom type="sphere" modifiable="false">
       <Render>kinova_tool.stl</Render>
       <Radius>0</Radius>
       <diffuseColor>0.0 0.0 0.0</diffuseColor>

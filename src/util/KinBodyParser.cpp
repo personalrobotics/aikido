@@ -24,7 +24,6 @@ struct BodyNodeInfo
 {
   dart::dynamics::BodyNode::Properties properties;
   Eigen::Isometry3d initTransform;
-  bool valid;
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
@@ -43,7 +42,7 @@ BodyNodeInfo readBodyNodeInfo(
     const dart::common::Uri& baseUri);
 
 void readGeoms(
-    const dart::dynamics::SkeletonPtr& skeleton,
+    dart::dynamics::BodyNode* bodyNode,
     tinyxml2::XMLElement* bodyElement,
     const dart::common::Uri& baseUri,
     const dart::common::ResourceRetrieverPtr& retriever);
@@ -164,8 +163,6 @@ dart::dynamics::SkeletonPtr readKinBody(
   }
 
   auto bodyNodeInfo = readBodyNodeInfo(bodyEle, baseUri);
-  if (!bodyNodeInfo.valid)
-    return nullptr;
 
   dart::dynamics::FreeJoint::Properties jointProps;
   jointProps.mName = DEFAULT_KINBODY_ROOT_JOINTNAME;
@@ -175,7 +172,7 @@ dart::dynamics::SkeletonPtr readKinBody(
       dart::dynamics::FreeJoint>(nullptr, jointProps, bodyNodeInfo.properties);
   assert(jointAndBodyNode.first && jointAndBodyNode.second);
 
-  readGeoms(skeleton, bodyEle, baseUri, retriever);
+  readGeoms(jointAndBodyNode.second, bodyEle, baseUri, retriever);
   skeleton->resetPositions();
   skeleton->resetVelocities();
 
@@ -193,19 +190,13 @@ BodyNodeInfo readBodyNodeInfo(
   // find the nullptr case, then we should fix the caller.
 
   BodyNodeInfo bodyNodeInfo;
-  bodyNodeInfo.valid = true;
 
   dart::dynamics::BodyNode::Properties properties;
 
   // Name attribute
-  properties.mName = dart::utils::getAttributeString(bodyNodeElement, "name");
-  if (properties.mName.empty())
-  {
-    dterr << "[KinBodyParser] <Body> in '" << baseUri.toString()
-          << "' doesn't have name attribute or has empty name, which is not "
-          << "allowed.\n";
-    bodyNodeInfo.valid = false;
-  }
+  properties.mName = "NoName";
+  if (dart::utils::hasAttribute(bodyNodeElement, "name"))
+    properties.mName = dart::utils::getAttributeString(bodyNodeElement, "name");
 
   // transformation
   Eigen::Isometry3d initTransform = Eigen::Isometry3d::Identity();
@@ -227,13 +218,11 @@ BodyNodeInfo readBodyNodeInfo(
 
 //==============================================================================
 void readGeoms(
-    const dart::dynamics::SkeletonPtr& skeleton,
+    dart::dynamics::BodyNode* bodyNode,
     tinyxml2::XMLElement* bodyEle,
     const dart::common::Uri& baseUri,
     const dart::common::ResourceRetrieverPtr& retriever)
 {
-  auto bodyNodeName = dart::utils::getAttributeString(bodyEle, "name");
-  auto bodyNode = skeleton->getBodyNode(bodyNodeName);
   assert(bodyNode);
 
   dart::utils::ElementEnumerator geomIterator(bodyEle, "geom");
@@ -242,8 +231,7 @@ void readGeoms(
   {
     dtwarn << "[KinBodyParser] KinBody document '"
            << baseUri.toString() << "' does not contain any <Geom> element "
-           << "under <Body name='" << bodyNodeName << "'>. This body will "
-           << "have no shape.\n";
+           << "under <Body>. This body will have no shape.\n";
   }
 
   while (geomIterator.next())
@@ -325,131 +313,140 @@ std::pair<std::string, double> resolveFileNameAndScale(
 }
 
 //==============================================================================
-void readTriMeshGeom(
-    tinyxml2::XMLElement* geomEle,
-    dart::dynamics::BodyNode* bodyNode,
-    const dart::common::Uri& baseUri,
-    const dart::common::ResourceRetrieverPtr& retriever)
-{
-  const auto hasRender = dart::utils::hasElement(geomEle, "render");
-  const auto hasData = dart::utils::hasElement(geomEle, "data");
-
-  if (!hasRender && !hasData)
-  {
-    dterr << "[KinBodyParser] <Geom> doesn't contains any of <Render> or "
-          << "<Data>, which is invalid. Please add at least one of them.\n";
-    return;
-  }
-
-  std::string fileNameOfRender;
-  std::string fileNameOfData;
-
-  double uniScaleOfRender;
-  double uniScaleOfData;
-
-  if (hasRender)
-  {
-    std::tie(fileNameOfRender, uniScaleOfRender)
-        = resolveFileNameAndScale(geomEle, "render");
-  }
-
-  if (hasData)
-  {
-    std::tie(fileNameOfData, uniScaleOfData)
-        = resolveFileNameAndScale(geomEle, "data");
-  }
-
-  // If both <Render> and <Data> exist and refer to the same mesh file, then
-  // create one ShapeNode with visual/collision/dynamics aspects for the same
-  // shape.
-  if (hasRender && hasData && fileNameOfRender == fileNameOfData)
-  {
-    auto shape
-        = readMeshShape(fileNameOfRender, uniScaleOfRender, baseUri, retriever);
-    auto shapeNodeName = resolveShapeName(geomEle, bodyNode);
-
-    bodyNode->createShapeNodeWith<
-        dart::dynamics::VisualAspect,
-        dart::dynamics::CollisionAspect,
-        dart::dynamics::DynamicsAspect>(shape, shapeNodeName);
-
-    return;
-  }
-
-  if (hasRender)
-  {
-    auto shape
-        = readMeshShape(fileNameOfRender, uniScaleOfRender, baseUri, retriever);
-    auto shapeNodeName = resolveShapeName(geomEle, bodyNode);
-
-    bodyNode->createShapeNodeWith<
-        dart::dynamics::VisualAspect>(shape, shapeNodeName);
-  }
-
-  if (hasData)
-  {
-    auto shape
-        = readMeshShape(fileNameOfData, uniScaleOfData, baseUri, retriever);
-    auto shapeNodeName = resolveShapeName(geomEle, bodyNode);
-
-    bodyNode->createShapeNodeWith<
-        dart::dynamics::CollisionAspect,
-        dart::dynamics::DynamicsAspect>(shape, shapeNodeName);
-  }
-}
-
-//==============================================================================
 void readGeom(
     tinyxml2::XMLElement* geomEle,
     dart::dynamics::BodyNode* bodyNode,
     const dart::common::Uri& baseUri,
     const dart::common::ResourceRetrieverPtr& retriever)
 {
-  auto attribType = dart::utils::getAttributeString(geomEle, "type");
+  // `type` attribute should be one of `none`, `box`, `sphere`, `trimesh`,
+  // or `cylinder`
+  auto typeAttr = dart::utils::getAttributeString(geomEle, "type");
 
-  if (attribType == "box")
+  dart::dynamics::ShapeNode* shapeNode = nullptr;
+  std::string fileNameOfCollision;
+  double uniScaleOfCollision = 1.0;
+
+  auto shapeNodeName = resolveShapeName(geomEle, bodyNode);
+
+  if (typeAttr == "none")
+  {
+    // Do nothing.
+  }
+  else if (typeAttr == "box")
   {
     auto extents = dart::utils::getValueVector3d(geomEle, "extents");
     auto shape = std::make_shared<dart::dynamics::BoxShape>(extents);
-    auto shapeNodeName = resolveShapeName(geomEle, bodyNode);
 
-    bodyNode->createShapeNodeWith<
-        dart::dynamics::VisualAspect,
+    shapeNode = bodyNode->createShapeNodeWith<
         dart::dynamics::CollisionAspect,
         dart::dynamics::DynamicsAspect>(shape, shapeNodeName);
   }
-  else if (attribType == "sphere")
+  else if (typeAttr == "sphere")
   {
     auto radius = dart::utils::getValueDouble(geomEle, "radius");
     auto shape = std::make_shared<dart::dynamics::SphereShape>(radius);
-    auto shapeNodeName = resolveShapeName(geomEle, bodyNode);
 
-    bodyNode->createShapeNodeWith<
-        dart::dynamics::VisualAspect,
+    shapeNode = bodyNode->createShapeNodeWith<
         dart::dynamics::CollisionAspect,
         dart::dynamics::DynamicsAspect>(shape, shapeNodeName);
   }
-  else if (attribType == "cylinder")
+  else if (typeAttr == "cylinder")
   {
     auto radius = dart::utils::getValueDouble(geomEle, "radius");
     auto height = dart::utils::getValueDouble(geomEle, "height");
     auto shape
         = std::make_shared<dart::dynamics::CylinderShape>(radius, height);
-    auto shapeNodeName = resolveShapeName(geomEle, bodyNode);
 
-    bodyNode->createShapeNodeWith<
-        dart::dynamics::VisualAspect,
+    shapeNode = bodyNode->createShapeNodeWith<
         dart::dynamics::CollisionAspect,
         dart::dynamics::DynamicsAspect>(shape, shapeNodeName);
   }
-  else if(attribType == "trimesh")
+  else if(typeAttr == "trimesh")
   {
-    readTriMeshGeom(geomEle, bodyNode, baseUri, retriever);
+    std::string collisionOrData;
+
+    auto hasCollisionEle = dart::utils::hasElement(geomEle, "collision");
+    auto hasDataEle = dart::utils::hasElement(geomEle, "data");
+
+    if (hasCollisionEle && hasDataEle)
+    {
+      dtwarn << "[KinBodyParser]: <Geom> element contains both of <Collision> "
+             << "and <Data> as the child elements. <Data> element is "
+             << "ignored.\n";
+    }
+
+    if (hasCollisionEle)
+    {
+      collisionOrData = "collision";
+    }
+    else if (hasDataEle)
+    {
+      collisionOrData = "data";
+    }
+    else
+    {
+      dterr << "[KinBodyParser] <Geom> element doesn't contain neither of "
+            << "<Collision> and <Data> as the child element. Ignoring this "
+            << "<Geom>.\n";
+      return;
+    }
+
+    auto fileNameAndScale = resolveFileNameAndScale(geomEle, collisionOrData);
+    fileNameOfCollision = fileNameAndScale.first;
+    uniScaleOfCollision = fileNameAndScale.second;
+    auto shape = readMeshShape(
+        fileNameOfCollision, uniScaleOfCollision, baseUri, retriever);
+
+    shapeNode = bodyNode->createShapeNodeWith<
+        dart::dynamics::CollisionAspect,
+        dart::dynamics::DynamicsAspect>(shape, shapeNodeName);
   }
   else
   {
     dterr << "[KinBodyParser] Attempts to parse unsupported geom type '"
-          << attribType << "'. Ignoring this geom.\n";
+          << typeAttr << "'. Ignoring this <Geom>.\n";
+    return;
+  }
+
+  // `render` is an optional attribute and true by default.
+  bool renderAttr = true;
+  if (dart::utils::hasAttribute(geomEle, "render"))
+    renderAttr = dart::utils::getAttributeBool(geomEle, "render");
+
+  if (!renderAttr)
+    return;
+
+  const auto hasRenderEle = dart::utils::hasElement(geomEle, "render");
+
+  if (hasRenderEle)
+  {
+    auto fileNameAndScaleOfRender = resolveFileNameAndScale(geomEle, "render");
+    auto fileNameOfRender = fileNameAndScaleOfRender.first;
+    auto uniScaleOfRender = fileNameAndScaleOfRender.second;
+    auto renderShapeNodeName = resolveShapeName(geomEle, bodyNode);
+
+    if (typeAttr == "trimesh"
+        && fileNameOfCollision == fileNameOfRender
+        && uniScaleOfCollision == uniScaleOfRender)
+    {
+      shapeNode->createVisualAspect();
+    }
+    else
+    {
+      auto shape = readMeshShape(
+          fileNameOfRender, uniScaleOfRender, baseUri, retriever);
+
+      // Create additional ShapeNode only for visualization
+      bodyNode->createShapeNodeWith<
+          dart::dynamics::VisualAspect>(shape, renderShapeNodeName);
+    }
+  }
+  else
+  {
+    if (!shapeNode)
+      shapeNode->createVisualAspect();
+    // `none` type geom can reach here that hasn't created a ShapeNode.
   }
 }
 

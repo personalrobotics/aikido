@@ -194,24 +194,30 @@ TEST(KinBodyParser, LoadTriMeshGeomKinovaTool)
   EXPECT_TRUE(bodyNode != nullptr);
 
   auto shapeNodes = bodyNode->getShapeNodes();
-  EXPECT_TRUE(shapeNodes.size() == 2u);
+  EXPECT_EQ(shapeNodes.size(), 3u);
 
   auto shapeNode1 = shapeNodes[0];
   auto shapeNode2 = shapeNodes[1];
+  auto shapeNode3 = shapeNodes[2];
   EXPECT_TRUE(shapeNode1 != nullptr);
   EXPECT_TRUE(shapeNode2 != nullptr);
+  EXPECT_TRUE(shapeNode3 != nullptr);
 
   auto shape1 = shapeNode1->getShape();
   auto shape2 = shapeNode2->getShape();
-  EXPECT_TRUE(shape1->is<dart::dynamics::MeshShape>());
+  auto shape3 = shapeNode3->getShape();
+  EXPECT_TRUE(shape1->is<dart::dynamics::SphereShape>());
   EXPECT_TRUE(shape2->is<dart::dynamics::MeshShape>());
+  EXPECT_TRUE(shape3->is<dart::dynamics::MeshShape>());
 
-  auto meshShape1 = static_cast<dart::dynamics::MeshShape*>(shape1.get());
+  auto sphereShape1 = static_cast<dart::dynamics::SphereShape*>(shape1.get());
   auto meshShape2 = static_cast<dart::dynamics::MeshShape*>(shape2.get());
-  EXPECT_TRUE(!meshShape1->getMeshUri().empty());
+  auto meshShape3 = static_cast<dart::dynamics::MeshShape*>(shape3.get());
+  EXPECT_TRUE(sphereShape1->getRadius() == 0.0);
   EXPECT_TRUE(!meshShape2->getMeshUri().empty());
-  EXPECT_TRUE(meshShape1->getScale().isApprox(Eigen::Vector3d::Constant(1.0)));
-  EXPECT_TRUE(meshShape2->getScale().isApprox(Eigen::Vector3d::Constant(0.1)));
+  EXPECT_TRUE(!meshShape3->getMeshUri().empty());
+  EXPECT_TRUE(meshShape2->getScale().isApprox(Eigen::Vector3d::Constant(1.0)));
+  EXPECT_TRUE(meshShape3->getScale().isApprox(Eigen::Vector3d::Constant(0.1)));
 
   auto joint = skel->getJoint(0);
   EXPECT_TRUE(joint != nullptr);

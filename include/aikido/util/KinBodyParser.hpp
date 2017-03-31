@@ -13,15 +13,16 @@ namespace util {
 ///
 /// Followings are the available fields that this parser can read.
 /// \code
-/// kinbody - attributes: name, file, prefix, type, makejoinedlinksadjacent
-///   body - attributes: name, type (dynamic, static), file, skipgeometry, scalegeometry, enable
-///     geom - attributes: name, type (box, sphere, trimesh, cylinder)
-///       render - file scale (e.g., /path/to/mesh/file_render.stl 0.5)
-///       data - file scale (e.g., /path/to/mesh/file_collision.stl 0.5)
-///       extents - 3 float [box]
-///       height - float [cylinder]
-///       radius - float [cylinder, sphere]
+/// kinbody - attributes: name
+///   body - attributes: name
+///     geom - attributes: name, type* (none, box, sphere, trimesh, cylinder), render
+///       data* (or collision) - file* scale (e.g., /path/to/mesh/file_collision.stl 0.5) [for trimesh]
+///       extents* - 3 float [for box]
+///       height* - float [for cylinder]
+///       radius* - float [for cylinder and sphere]
+///       render - file* scale (e.g., /path/to/mesh/file_render.stl 0.5)
 /// \endcode
+/// Elements marked with `*` are required ones.
 ///
 /// The detail of the format can be found at:
 /// http://openrave.programmingvision.com/wiki/index.php/Format:XML).
