@@ -1,12 +1,8 @@
 #ifndef AIKIDO_RVIZ_TSRMARKER_H_
 #define AIKIDO_RVIZ_TSRMARKER_H_
 
-#include <set>
-#include "FrameMarker.hpp"
-#include "SmartPointers.hpp"
-#include <dart/dynamics/Frame.hpp>
-#include <dart/dynamics/SmartPointer.hpp>
-
+#include <dart/dynamics/SimpleFrame.hpp>
+#include <memory>
 
 namespace aikido {
 namespace rviz {
@@ -14,11 +10,11 @@ namespace rviz {
 class TSRMarker {
 public:
   explicit TSRMarker(
-    std::vector<std::shared_ptr<dart::dynamics::SimpleFrame>> tsrFrames);
+    std::vector<std::unique_ptr<dart::dynamics::SimpleFrame>> tsrFrames);
   virtual ~TSRMarker() = default;
 
 private:
-  std::vector<std::shared_ptr<dart::dynamics::SimpleFrame>> mTsrFrames;
+  std::vector<std::unique_ptr<dart::dynamics::SimpleFrame>> mTsrFrames;
 
 };
 

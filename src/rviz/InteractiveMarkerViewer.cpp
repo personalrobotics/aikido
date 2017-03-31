@@ -1,6 +1,7 @@
 #include <aikido/rviz/FrameMarker.hpp>
 #include <aikido/rviz/SkeletonMarker.hpp>
 #include <aikido/rviz/InteractiveMarkerViewer.hpp>
+#include <dart/common/StlHelpers.hpp>
 
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
@@ -74,7 +75,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     name = basename;
   }
 
-  std::vector<std::shared_ptr<SimpleFrame>> tsrFrames;
+  std::vector<std::unique_ptr<SimpleFrame>> tsrFrames;
   tsrFrames.reserve(nSamples);
 
   for(int i = 0; i < nSamples && sampler->canSample(); ++i)
@@ -85,10 +86,10 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     std::stringstream ss;
     ss << "TSRMarker[" << name << "].frame[" << i << "]";
 
-    auto tsrFrame = std::make_shared<SimpleFrame>(
+    auto tsrFrame = dart::common::make_unique<SimpleFrame>(
       Frame::World(), ss.str(), state.getIsometry());
     auto frameMarker = addFrame(tsrFrame.get());
-    tsrFrames.emplace_back(tsrFrame);
+    tsrFrames.emplace_back(std::move(tsrFrame));
   }
 
   auto tsrMarker = std::make_shared<TSRMarker>(std::move(tsrFrames));
