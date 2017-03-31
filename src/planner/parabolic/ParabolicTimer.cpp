@@ -101,10 +101,10 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  if ((unsigned int)_maxVelocity.size() != dimension)
+  if (static_cast<size_t>(_maxVelocity.size()) != dimension)
     throw std::invalid_argument("Velocity limits have wrong dimension.");
 
-  if ((unsigned int)_maxAcceleration.size() != dimension)
+  if (static_cast<size_t>(_maxAcceleration.size()) != dimension)
     throw std::invalid_argument("Acceleration limits have wrong dimension.");
 
   for (size_t i = 0; i < dimension; ++i)

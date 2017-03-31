@@ -28,7 +28,7 @@ void Spline::addSegment(const Eigen::MatrixXd& _coefficients,
   if (_duration <= 0.)
     throw std::invalid_argument("Duration must be positive.");
 
-  if ((unsigned int)_coefficients.rows() != mStateSpace->getDimension())  // rows() cannot be negative
+  if (static_cast<size_t>(_coefficients.rows()) != mStateSpace->getDimension())  // rows() cannot be negative
     throw std::invalid_argument("Incorrect number of dimensions.");
 
   if (_coefficients.cols() < 1)

@@ -34,9 +34,6 @@
 #include <cstdio>
 using namespace std;
 
-// Define a macro to account for assertion and unused variables -> cast to void
-#define _unused(x) ((void)(x))
-
 namespace ParabolicRamp {
 
 //a flag used during testing of failed ramps
@@ -147,13 +144,11 @@ void TestRamps(const char* fn)
       PARABOLIC_RAMP_ASSERT( a >= 0 && v >= 0);
       bool res = ramp.SolveMinTime(a,v);
       PARABOLIC_RAMP_PLOG("Result %d: t=%g\n",(int)res,ramp.ttotal);
-      _unused(res); // Specify that variable is unused 
     }
     else if(a < 0) {
       PARABOLIC_RAMP_ASSERT( t >= 0 && v >= 0);
       bool res=ramp.SolveMinAccel(t,v);
       PARABOLIC_RAMP_PLOG("Result %d: a=%g\n",(int)res,ramp.a1);
-      _unused(res); // Specify that variable is unused 
     }
     else {
       bool res=ramp.SolveMinTime2(a,v,t);
@@ -162,7 +157,6 @@ void TestRamps(const char* fn)
       if(!res) {
 	bool res=ramp.SolveMinAccel(t,v);
 	PARABOLIC_RAMP_PLOG("SolveMinAccel result %d: a=%g\n",(int)res,ramp.a1);
-	_unused(res); // Specify that variable is unused 
       }
     }
     PARABOLIC_RAMP_PLOG("\n");
@@ -425,7 +419,6 @@ bool PPRamp::SolveMinTime(Real amax)
 	int res=quadratic(a*a,b,c,t1,t2);
 	PARABOLIC_RAMP_PERROR("Quadratic equation %g x^2 + %g x + %g = 0\n",a*a,b,c);
 	PARABOLIC_RAMP_PERROR("%d results, %g %g\n",res,t1,t2);
-	_unused(res); // Specify that variable is unused 
 	if(gErrorGetchar) getchar();
       }
       if(gErrorSave) SaveRamp("PP_SolveMinTime_failure.dat",x0,dx0,x1,dx1,amax,Inf,-1);
@@ -507,7 +500,6 @@ bool PPRamp::SolveMinTime2(Real amax,Real timeLowerBound)
 	int res=quadratic(a*a,b,c,t1,t2);
 	PARABOLIC_RAMP_PERROR("Quadratic equation %g x^2 + %g x + %g = 0\n",a*a,b,c);
 	PARABOLIC_RAMP_PERROR("%d results, %g %g\n",res,t1,t2);
-	_unused(res); // Specify that variable is unused 
       }
       if(gErrorGetchar) getchar();
       if(gErrorSave) SaveRamp("PP_SolveMinTime_failure.dat",x0,dx0,x1,dx1,amax,Inf,timeLowerBound);
@@ -561,7 +553,6 @@ bool PPRamp::SolveMinAccel(Real endTime)
 	  Real t1,t2;
 	  int res = quadratic(a,b,c,t1,t2);
 	  PARABOLIC_RAMP_PERROR("Solutions: %d, %g and %g\n",res,t1,t2);
-	  _unused(res); // Specify that variable is unused 
 	}
 	{
 	  Real sign = -1.0;
@@ -572,7 +563,6 @@ bool PPRamp::SolveMinAccel(Real endTime)
 	  Real t1,t2;
 	  int res = quadratic(a,b,c,t1,t2);
 	  PARABOLIC_RAMP_PERROR("Solutions: %d, %g and %g\n",res,t1,t2);
-	  _unused(res); // Specify that variable is unused 
 	}
       }
       if(gErrorSave) SaveRamp("PP_SolveMinAccel_failure.dat",x0,dx0,x1,dx1,-1,Inf,endTime);
@@ -1342,8 +1332,6 @@ bool ParabolicRamp1D::SolveMinAccel(Real endTime,Real vmax)
 	Real apn = pp.CalcMinAccel(endTime,1.0,switch1);
 	Real anp = pp.CalcMinAccel(endTime,-1.0,switch2);
 	PARABOLIC_RAMP_PERROR("PP Calcuations: +: %g %g, -: %g %g\n",apn,switch1,anp,switch2);
-	_unused(apn); // Specify that variable is unused 
-	_unused(anp); // Specify that variable is unused 
       }
       if(gErrorSave) SaveRamp("Ramp_SolveMinAccel_failure.dat",x0,dx0,x1,dx1,-1,vmax,endTime);
       if(gErrorGetchar) getchar();
@@ -2743,7 +2731,6 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
 	    if(gVerbose >= 1) {
 	      PARABOLIC_RAMP_PERROR("CombineRamps: Trimming caused ramp to become invalid\n");
 	      PARABOLIC_RAMP_PERROR("Old total time %g, new total time %g\n",oldTotal,iramp.ttotal);
-	      _unused(oldTotal); // Specify that variable is unused 
 	    }
 	  }
 	  PARABOLIC_RAMP_ASSERT(iramp.IsValid());

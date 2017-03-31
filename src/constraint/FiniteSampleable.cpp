@@ -95,7 +95,7 @@ statespace::StateSpacePtr FiniteSampleGenerator::getStateSpace() const
 //=============================================================================
 bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
-  if (mStates.size() <= (unsigned int)mIndex)
+  if (mStates.size() <= static_cast<size_t>(mIndex))
     return false;
 
   mStateSpace->copyState(mStates[mIndex], _state);
@@ -113,7 +113,7 @@ int FiniteSampleGenerator::getNumSamples() const
 //=============================================================================
 bool FiniteSampleGenerator::canSample() const
 {
-  return mStates.size() > (unsigned int)mIndex; // size() cannot be negative 
+  return mStates.size() > static_cast<size_t>(mIndex); // size() cannot be negative 
 }
 
 //=============================================================================

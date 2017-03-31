@@ -62,7 +62,7 @@ bool RnBoxConstraintSampleGenerator::sample(
 {
   Eigen::VectorXd value(mDistributions.size());
 
-  for (int i = 0; i < value.size(); ++i) // i should be the same type as size()
+  for (int i = 0; i < value.size(); ++i) 
     value[i] = mDistributions[i](*mRng);
 
   mSpace->setValue(static_cast<statespace::Rn::State*>(_state), value);
@@ -99,7 +99,7 @@ RnBoxConstraint
 
   const auto dimension = mSpace->getDimension();
 
-  if ((unsigned int)mLowerLimits.size() != dimension) // size() cannot be negative anyway
+  if (static_cast<size_t>(mLowerLimits.size()) != dimension) 
   {
     std::stringstream msg;
     msg << "Lower limits have incorrect dimension: expected "
@@ -107,7 +107,7 @@ RnBoxConstraint
     throw std::invalid_argument(msg.str());
   }
 
-  if ((unsigned int)mUpperLimits.size() != dimension)
+  if (static_cast<size_t>(mUpperLimits.size()) != dimension)
   {
     std::stringstream msg;
     msg << "Upper limits have incorrect dimension: expected "
