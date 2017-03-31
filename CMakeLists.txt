@@ -137,8 +137,7 @@ include_directories(${DART_INCLUDE_DIRS})
 # Libraries and unit tests.
 #
 # TODO: Add this to each target's DEFINITIONS property.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror -Wno-unused-local-typedefs -Wno-unused-variable")
-# TODO: ignored unused variables (which are specific to external for now. shall find a solution)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror -Wno-unused-local-typedefs")
 
 configure_file(
   ${CMAKE_MODULE_PATH}/version.hpp.in
