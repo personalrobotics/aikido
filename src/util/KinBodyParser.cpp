@@ -409,6 +409,14 @@ void readGeom(
     return;
   }
 
+  //
+  // Logic of what is used as the visual geometry:
+  // * If <Geom>'s render attribute is false, display nothing. Otherwise...
+  // * If <Render> is present, render the trimesh at the specified path.
+  //   Otherwise...
+  // * Render the collision geometry.
+  //
+
   // `render` is an optional attribute and true by default.
   bool renderAttr = true;
   if (dart::utils::hasAttribute(geomEle, "render"))
