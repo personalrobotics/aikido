@@ -73,5 +73,3 @@ else()
   message(SEND_ERROR "Compiler[${CMAKE_CXX_COMPILER_ID}] is not supported.")
 
 endif()
-
-add_compile_options(${AIKIDO_CXX_STANDARD_FLAGS})
