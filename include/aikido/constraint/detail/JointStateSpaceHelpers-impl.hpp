@@ -5,10 +5,12 @@
 #include "../../statespace/dart/SO3Joint.hpp"
 #include "../../statespace/dart/SE2Joint.hpp"
 #include "../../statespace/dart/SE3Joint.hpp"
+#include "../../statespace/dart/WeldJoint.hpp"
 #include "../../util/metaprogramming.hpp"
 #include "../uniform/RnBoxConstraint.hpp"
 #include "../uniform/SO2UniformSampler.hpp"
 #include "../uniform/SO3UniformSampler.hpp"
+#include "../uniform/ConstantSampler.hpp"
 #include "../Satisfied.hpp"
 
 namespace aikido {
@@ -58,7 +60,8 @@ using JointStateSpaceTypeList = util::type_list<
   statespace::dart::SO2Joint,
   statespace::dart::SO3Joint,
   statespace::dart::SE2Joint,
-  statespace::dart::SE3Joint
+  statespace::dart::SE3Joint,
+  statespace::dart::WeldJoint
 >;
 
 //=============================================================================
@@ -390,6 +393,74 @@ struct createSampleableFor_impl<statespace::dart::SE3Joint>
       "No Sampleable is available for SE3Joint.");
   }
 };
+
+//=============================================================================
+template <class OutputConstraint>
+std::unique_ptr<OutputConstraint> createBoxConstraint(
+  std::shared_ptr<statespace::dart::WeldJoint> _stateSpace,
+  std::unique_ptr<util::RNG> _rng)
+{
+  return dart::common::make_unique<Satisfied>(
+    std::move(_stateSpace));
+}
+
+template <>
+struct createDifferentiableFor_impl<statespace::dart::WeldJoint>
+{
+  using StateSpace = statespace::dart::WeldJoint;
+  using StateSpacePtr = std::shared_ptr<StateSpace>;
+
+  static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
+  {
+    return createBoxConstraint<Differentiable>(std::move(_stateSpace), nullptr);
+  }
+};
+
+template <>
+struct createTestableFor_impl<statespace::dart::WeldJoint>
+{
+  using StateSpace = statespace::dart::WeldJoint;
+  using StateSpacePtr = std::shared_ptr<StateSpace>;
+
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
+  {
+    return createBoxConstraint<Testable>(
+      std::move(_stateSpace), nullptr);
+  }
+};
+
+template <>
+struct createProjectableFor_impl<statespace::dart::WeldJoint>
+{
+  using StateSpace = statespace::dart::WeldJoint;
+  using StateSpacePtr = std::shared_ptr<StateSpace>;
+
+  static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
+  {
+    return createBoxConstraint<Projectable>(
+      std::move(_stateSpace), nullptr);
+  }
+};
+
+template <>
+struct createSampleableFor_impl<statespace::dart::WeldJoint>
+{
+  using StateSpace = statespace::dart::WeldJoint;
+  using StateSpacePtr = std::shared_ptr<StateSpace>;
+
+  static std::unique_ptr<Sampleable> create(
+    StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
+  {
+    const auto joint = _stateSpace->getJoint();
+    Eigen::VectorXd positions = joint->getPositions();
+
+    return dart::common::make_unique<ConstantSampler>(
+        std::move(_stateSpace), positions);
+  }
+};
+
+//=============================================================================
+
 
 } // namespace detail
 

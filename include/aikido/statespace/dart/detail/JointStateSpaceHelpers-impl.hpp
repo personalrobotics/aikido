@@ -5,6 +5,7 @@
 #include "../SO3Joint.hpp"
 #include "../SE2Joint.hpp"
 #include "../SE3Joint.hpp"
+#include "../WeldJoint.hpp"
 #include "../../../util/metaprogramming.hpp"
 
 namespace aikido {
@@ -83,15 +84,25 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
 };
 
 //=============================================================================
+template <>
+struct createJointStateSpaceFor_impl<::dart::dynamics::WeldJoint>
+{
+  static Ptr create(::dart::dynamics::WeldJoint* _joint)
+  {
+    return make_unique<WeldJoint>(_joint);
+  }
+};
+
+//=============================================================================
 using SupportedJoints = util::type_list<
   ::dart::dynamics::BallJoint,
   ::dart::dynamics::FreeJoint,
   ::dart::dynamics::PlanarJoint,
   ::dart::dynamics::PrismaticJoint,
   ::dart::dynamics::RevoluteJoint,
-  ::dart::dynamics::TranslationalJoint
+  ::dart::dynamics::TranslationalJoint,
+  ::dart::dynamics::WeldJoint
   // TODO: Support ScrewJoint.
-  // TODO: Support WeldJoint.
   // TODO: Support UniversalJoint.
   // TODO: Support EulerJoint.
 >;

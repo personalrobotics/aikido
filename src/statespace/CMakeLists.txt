@@ -15,6 +15,7 @@ set(sources
   dart/SO2Joint.cpp
   dart/SO3Joint.cpp
   dart/RnJoint.cpp
+  dart/WeldJoint.cpp
 )
 
 add_library("${PROJECT_NAME}_statespace" SHARED ${sources})
