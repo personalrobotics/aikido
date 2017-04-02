@@ -1,6 +1,7 @@
 #include <sstream>
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/util/Spline.hpp>
+#include <dart/dynamics/Joint.hpp>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
@@ -134,7 +135,19 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
       "Trajectory must contain at least two or more waypoints."};
   }
 
-  // TODO: Map betwen joint names and indices in the MetaSkeletonStateSpace.
+  // Check whether joint names match between _space and _jointTrajectory.
+  for (size_t i = 0; i < _jointTrajectory.joint_names.size(); ++i)
+  {
+    auto joint = _space->getJointSpace(i)->getJoint();
+    if (_jointTrajectory.joint_names[i] != joint->getName())
+    {
+      std::stringstream message;
+      message << "Unknown joint name: expected "
+          << joint->getName() << ", got "
+          << _jointTrajectory.joint_names[i] << ".";
+      throw std::invalid_argument{message.str()};
+    }
+  }
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
   Eigen::VectorXd currPosition, currVelocity, currAcceleration;
