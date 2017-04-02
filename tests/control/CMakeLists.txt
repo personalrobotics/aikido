@@ -18,9 +18,5 @@ aikido_add_test(test_BarrettHandPositionCommandExecutor
 target_link_libraries(test_BarrettHandPositionCommandExecutor
   "${PROJECT_NAME}_control")
 
-if(${FOUND_actionlib}
-  AND ${FOUND_control}
-  AND ${FOUND_roscpp}
-  AND ${FOUND_trajectory_msgs})
-  add_subdirectory("ros")
-endif()
+add_subdirectory("ros")
+

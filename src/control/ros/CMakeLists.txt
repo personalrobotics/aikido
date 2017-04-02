@@ -1,7 +1,7 @@
 #==============================================================================
 # Dependencies
 #
-find_package(trajectory_msgs QUIET)
+find_package(trajectory_msgs REQUIRED)
 aikido_check_package(trajectory_msgs "aikido::control::ros" "trajectory_msgs")
 
 #==============================================================================

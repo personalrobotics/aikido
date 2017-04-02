@@ -23,7 +23,7 @@ protected:
 
     RevoluteJoint::Properties jointProperties;
     jointProperties.mName = "Joint1";
-    jointProperties.mDofName = "DegreeOfFreedom1";
+    jointProperties.mDofNames[0] = "DegreeOfFreedom1";
 
     BodyNode::Properties bodyNodeProperties;
     bodyNodeProperties.mName = "BodyNode1";
@@ -34,7 +34,7 @@ protected:
 
     // Create a two-waypoint trajectory for mSkeleton.
     mTwoWaypointMessage = trajectory_msgs::JointTrajectory{};
-    mTwoWaypointMessage.joint_names.emplace_back(jointProperties.mDofName);
+    mTwoWaypointMessage.joint_names.emplace_back(jointProperties.mDofNames[0]);
     mTwoWaypointMessage.points.resize(2);
 
     auto& waypoint1 = mTwoWaypointMessage.points[0];
