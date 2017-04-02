@@ -12,69 +12,69 @@ namespace {
 
 //=============================================================================
 void checkVector(
-  const std::string& name, const std::vector<double>& values,
-  size_t expectedLength, bool isRequired, Eigen::VectorXd* output)
+  const std::string& _name, const std::vector<double>& _values,
+  size_t _expectedLength, bool _isRequired, Eigen::VectorXd* _output)
 {
-  if (values.empty())
+  if (_values.empty())
   {
-    if (isRequired)
+    if (_isRequired)
     {
       std::stringstream message;
-      message << name << " are required.";
+      message << _name << " are required.";
       throw std::invalid_argument{message.str()};
     }
   }
-  else if (values.size() != expectedLength)
+  else if (_values.size() != _expectedLength)
   {
     std::stringstream message;
-    message << "Expected " << name << " to be of length " << expectedLength
-      << ", got " << values.size() << ".";
+    message << "Expected " << _name << " to be of length " << _expectedLength
+      << ", got " << _values.size() << ".";
     throw std::invalid_argument{message.str()};
   }
 
-  if (output)
-    *output = Eigen::Map<const Eigen::VectorXd>(values.data(), values.size());
+  if (_output)
+    *_output = Eigen::Map<const Eigen::VectorXd>(_values.data(), _values.size());
 }
 
 //=============================================================================
 Eigen::MatrixXd fitPolynomial(
-  double currTime,
-  const Eigen::VectorXd& currPosition,
-  const Eigen::VectorXd& currVelocity,
-  const Eigen::VectorXd& currAcceleration,
-  double nextTime,
-  const Eigen::VectorXd& nextPosition,
-  const Eigen::VectorXd& nextVelocity,
-  const Eigen::VectorXd& nextAcceleration,
-  size_t numCoefficients)
+  double _currTime,
+  const Eigen::VectorXd& _currPosition,
+  const Eigen::VectorXd& _currVelocity,
+  const Eigen::VectorXd& _currAcceleration,
+  double _nextTime,
+  const Eigen::VectorXd& _nextPosition,
+  const Eigen::VectorXd& _nextVelocity,
+  const Eigen::VectorXd& _nextAcceleration,
+  size_t _numCoefficients)
 {
   using aikido::util::SplineProblem;
 
-  assert(numCoefficients == 2 || numCoefficients == 4 || numCoefficients == 6);
+  assert(_numCoefficients == 2 || _numCoefficients == 4 || _numCoefficients == 6);
 
-  const auto numDofs = currPosition.size();
+  const auto numDofs = _currPosition.size();
   SplineProblem<> splineProblem(
-    Eigen::Vector2d(currTime, nextTime), numCoefficients, numDofs);
+    Eigen::Vector2d(_currTime, _nextTime), _numCoefficients, numDofs);
 
-  assert(currPosition.size() == numDofs);
-  assert(nextPosition.size() == numDofs);
-  splineProblem.addConstantConstraint(0, 0, currPosition);
-  splineProblem.addConstantConstraint(1, 0, nextPosition);
+  assert(_currPosition.size() == numDofs);
+  assert(_nextPosition.size() == numDofs);
+  splineProblem.addConstantConstraint(0, 0, _currPosition);
+  splineProblem.addConstantConstraint(1, 0, _nextPosition);
 
-  if (numCoefficients >= 4)
+  if (_numCoefficients >= 4)
   {
-    assert(currVelocity.size() == numDofs);
-    assert(nextVelocity.size() == numDofs);
-    splineProblem.addConstantConstraint(0, 1, currVelocity);
-    splineProblem.addConstantConstraint(1, 1, nextVelocity);
+    assert(_currVelocity.size() == numDofs);
+    assert(_nextVelocity.size() == numDofs);
+    splineProblem.addConstantConstraint(0, 1, _currVelocity);
+    splineProblem.addConstantConstraint(1, 1, _nextVelocity);
   }
 
-  if (numCoefficients >= 6)
+  if (_numCoefficients >= 6)
   {
-    assert(currAcceleration.size() == numDofs);
-    assert(nextAcceleration.size() == numDofs);
-    splineProblem.addConstantConstraint(0, 2, currAcceleration);
-    splineProblem.addConstantConstraint(1, 2, nextAcceleration);
+    assert(_currAcceleration.size() == numDofs);
+    assert(_nextAcceleration.size() == numDofs);
+    splineProblem.addConstantConstraint(0, 2, _currAcceleration);
+    splineProblem.addConstantConstraint(1, 2, _nextAcceleration);
   }
 
   const auto splineSegment = splineProblem.fit();
@@ -83,27 +83,27 @@ Eigen::MatrixXd fitPolynomial(
 
 //=============================================================================
 void extractJointTrajectoryPoint(
-  const trajectory_msgs::JointTrajectory& trajectory,
-  size_t index, size_t numDofs,
-  Eigen::VectorXd* positions, bool positionsRequired,
-  Eigen::VectorXd* velocities, bool velocitiesRequired,
-  Eigen::VectorXd* accelerations, bool accelerationsRequired)
+  const trajectory_msgs::JointTrajectory& _trajectory,
+  size_t _index, size_t _numDofs,
+  Eigen::VectorXd* _positions, bool _positionsRequired,
+  Eigen::VectorXd* _velocities, bool _velocitiesRequired,
+  Eigen::VectorXd* _accelerations, bool _accelerationsRequired)
 {
-  const auto& waypoint = trajectory.points[index];
+  const auto& waypoint = _trajectory.points[_index];
 
   try
   {
-    checkVector("positions", waypoint.positions, numDofs,
-      positionsRequired, positions);
-    checkVector("velocities", waypoint.velocities, numDofs,
-      velocitiesRequired, velocities);
-    checkVector("accelerations", waypoint.accelerations, numDofs,
-      accelerationsRequired, accelerations);
+    checkVector("positions", waypoint.positions, _numDofs,
+      _positionsRequired, _positions);
+    checkVector("velocities", waypoint.velocities, _numDofs,
+      _velocitiesRequired, _velocities);
+    checkVector("accelerations", waypoint.accelerations, _numDofs,
+      _accelerationsRequired, _accelerations);
   }
   catch (const std::invalid_argument& e)
   {
     std::stringstream message;
-    message << "Waypoint " << index << " is invalid: " << e.what();
+    message << "Waypoint " << _index << " is invalid: " << e.what();
     throw std::invalid_argument(message.str());
   }
 }
@@ -112,36 +112,36 @@ void extractJointTrajectoryPoint(
 
 //=============================================================================
 std::unique_ptr<SplineTrajectory> convertJointTrajectory(
-  const std::shared_ptr<MetaSkeletonStateSpace>& space,
-  const trajectory_msgs::JointTrajectory& jointTrajectory)
+  const std::shared_ptr<MetaSkeletonStateSpace>& _space,
+  const trajectory_msgs::JointTrajectory& _jointTrajectory)
 {
-  if (!space)
+  if (!_space)
     throw std::invalid_argument{"StateSpace must be non-null."};
 
-  const auto numControlledDofs = space->getNumSubspaces();
-  if (jointTrajectory.joint_names.size() != numControlledDofs)
+  const auto numControlledDofs = _space->getNumSubspaces();
+  if (_jointTrajectory.joint_names.size() != numControlledDofs)
   {
     std::stringstream message;
     message << "Incorrect number of joints: expected "
         << numControlledDofs << ", got "
-        << jointTrajectory.joint_names.size() << ".";
+        << _jointTrajectory.joint_names.size() << ".";
     throw std::invalid_argument{message.str()};
   }
 
-  if (jointTrajectory.points.size() < 2)
+  if (_jointTrajectory.points.size() < 2)
   {
     throw std::invalid_argument{
-      "Trajectory must contain at two or more waypoints."};
+      "Trajectory must contain at least two or more waypoints."};
   }
 
   // TODO: Map betwen joint names and indices in the MetaSkeletonStateSpace.
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
   Eigen::VectorXd currPosition, currVelocity, currAcceleration;
-  extractJointTrajectoryPoint(jointTrajectory, 0, numControlledDofs,
+  extractJointTrajectoryPoint(_jointTrajectory, 0, numControlledDofs,
     &currPosition, true, &currVelocity, false, &currAcceleration, false);
 
-  const auto& firstWaypoint = jointTrajectory.points.front();
+  const auto& firstWaypoint = _jointTrajectory.points.front();
   auto currTimeFromStart = firstWaypoint.time_from_start.toSec();
 
   const auto isPositionRequired = true;
@@ -162,14 +162,14 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     numCoefficients = 2; // linear;
 
   // Convert the ROS trajectory message to an Aikido spline.
-  std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{space}};
-  auto currState = space->createState();
+  std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{_space}};
+  auto currState = _space->createState();
 
-  const auto& waypoints = jointTrajectory.points;
+  const auto& waypoints = _jointTrajectory.points;
   for (size_t iwaypoint = 1; iwaypoint < waypoints.size(); ++iwaypoint)
   {
     Eigen::VectorXd nextPosition, nextVelocity, nextAcceleration;
-    extractJointTrajectoryPoint(jointTrajectory, iwaypoint, numControlledDofs,
+    extractJointTrajectoryPoint(_jointTrajectory, iwaypoint, numControlledDofs,
       &nextPosition, isPositionRequired,
       &nextVelocity, isVelocityRequired,
       &nextAcceleration, isAccelerationRequired);
@@ -183,7 +183,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
       numCoefficients);
 
     // Add a segment to the trajectory.
-    space->convertPositionsToState(currPosition, currState);
+    _space->convertPositionsToState(currPosition, currState);
     trajectory->addSegment(segmentCoefficients, segmentDuration, currState);
 
     // Advance to the next segment.
@@ -199,3 +199,4 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
 } // namespace ros
 } // namespace control
 } // namespace aikido
+
