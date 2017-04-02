@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_CONSTANTSAMPLER_H_
-#define AIKIDO_STATESPACE_CONSTANTSAMPLER_H_
+#ifndef AIKIDO_CONSTRAINT_CONSTANTSAMPLER_H_
+#define AIKIDO_CONSTRAINT_CONSTANTSAMPLER_H_
 #include "../../statespace/Rn.hpp"
 #include "../Sampleable.hpp"
 
@@ -35,4 +35,5 @@ private:
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_STATESPACE_CONSTANTSAMPLER_H_
+#endif // AIKIDO_CONSTRAINT_CONSTANTSAMPLER_H_
+
