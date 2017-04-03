@@ -40,8 +40,8 @@ namespace util {
 ///
 /// \param[in] kinBodyString The KinBody XML string.
 /// \param[in] baseUri The base URI of the mesh files in the KinBody XML string.
-/// If an empty URI, which is the default, is passed in the mesh URIs should be
-/// complete ones (not relative paths).
+/// If an empty URI, which is the default, is passed, the mesh URIs in the
+/// KinBody XML string should be absolute URIs or paths.
 /// \param[in] retriever A DART retriever for the mesh URIs in the KinBody XML
 /// string. If nullptr is passed, this function uses a local file resource
 /// retriever which only can parse absolute file paths or file URIs
