@@ -2,6 +2,11 @@
 
 using aikido::constraint::TSRChain;
 
+TEST(TSRChain, Constructor)
+{
+
+}
+
 TEST(TSRChain, CopyConstructor)
 {
   TSRChain tsr_chain;
@@ -17,4 +22,20 @@ TEST(TSRChain, CopyConstructor)
     EXPECT_EQ(tsr_chain.mTSRs[i].mTw_e, 
               tsr_chain2.mTSRs[i].mTw_e);
   }
+}
+
+TEST(TSRChain, AssignmentOperator)
+{
+
+}
+
+TEST(TSRChain, Validate)
+{
+
+}
+
+TEST(TSRChainSampleGenerator, SamplePointTSR)
+{
+
+
 }
