@@ -470,9 +470,10 @@ void readGeom(
     else
     {
       dtwarn << "[KinBodyParser] <Geom> element doesn't contain neither of "
-             << "<Collision> and <Data> as the child element. Ignoring this "
-             << "<Geom>.\n";
-      return;
+             << "<Collision> and <Data> as the child element. Not creating "
+             << "collision geometry for this <Geom>.\n";
+      // We don't return here because there is a chance to create visualization
+      // geometry if <Render> element is provided.
     }
 
     resolveFileNameAndScale(
