@@ -13,9 +13,9 @@ set(sources
   PseudoInverse.cpp
   RNG.cpp
   StepSequence.cpp
-  VanDerCorput.cpp
   stream.cpp
   string.cpp
+  VanDerCorput.cpp
 )
 
 add_library("${PROJECT_NAME}_util" SHARED ${sources})
