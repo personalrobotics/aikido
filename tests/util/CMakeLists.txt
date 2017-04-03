@@ -51,3 +51,6 @@ target_link_libraries(test_Spline "${PROJECT_NAME}_util")
 aikido_add_test(test_SplineProblem test_SplineProblem.cpp)
 target_link_libraries(test_SplineProblem "${PROJECT_NAME}_util")
 
+aikido_add_test(test_string test_string.cpp)
+target_link_libraries(test_string "${PROJECT_NAME}_util")
+

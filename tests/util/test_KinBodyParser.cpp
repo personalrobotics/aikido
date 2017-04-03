@@ -1,10 +1,14 @@
 #include <gtest/gtest.h>
+#include <dart/utils/utils.hpp>
 #include <aikido/util/KinBodyParser.hpp>
+#include "eigen_tests.hpp"
 
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
 using namespace aikido::util;
+
+static constexpr double EPS = 1e-6;
 
 static std::string TEST_RESOURCES_PATH = STR(AIKIDO_TEST_RESOURCES_PATH);
 
@@ -40,10 +44,70 @@ TEST(KinBodyParser, LoadBoxGeomFromString)
   EXPECT_TRUE(shape->is<dart::dynamics::BoxShape>());
 
   auto boxShape = static_cast<dart::dynamics::BoxShape*>(shape.get());
-  EXPECT_TRUE(boxShape->getSize().isApprox(Eigen::Vector3d(0.1, 0.145, 0.055)));
+  EXPECT_EIGEN_EQUAL(
+      boxShape->getSize(), 2.0*Eigen::Vector3d(0.1, 0.145, 0.055), EPS);
+  // The extents is multiplied by 2.0 because OpenRAVE uses extents to refer to
+  // half extents whereas DART's BoxShape refers to full extents.
 
   auto joint = skel->getJoint(0);
   EXPECT_TRUE(joint != nullptr);
+}
+
+//==============================================================================
+TEST(KinBodyParser, MeshAndScale)
+{
+  std::string prefix =
+      "<KinBody name=\"paper_box\">                \n"
+      "  <Body type=\"static\" name=\"paper_box\"> \n"
+      "    <Geom type=\"trimesh\">                 \n"
+      "      <Data>";
+  std::string fileName = "kinbody/objects/bowl.stl";
+  std::string postfix =
+                                         "</Data>  \n"
+      "    </Geom>                                 \n"
+      "  </Body>                                   \n"
+      "</KinBody>                                    ";
+
+  double uniScale = 0.5;
+  Eigen::Vector3d scale = Eigen::Vector3d(0.1, 0.2, 0.3);
+
+  // <Data>path/to/file.stl</Data>
+  std::string testFileName
+      = prefix + fileName + postfix;
+
+  // <Data>path/to/file.stl 0.5</Data>
+  std::string testFileNameUniScale
+      = prefix + fileName + " " + dart::utils::toString(uniScale) + postfix;
+
+  // <Data>path/to/file.stl 0.1 0.2 0.3</Data>
+  std::string testFileNameScale
+      = prefix + fileName + " " + dart::utils::toString(scale) + postfix;
+
+  auto skel1
+      = readKinbodyString(testFileName, TEST_RESOURCES_PATH + "/");
+  auto skel2
+      = readKinbodyString(testFileNameUniScale, TEST_RESOURCES_PATH + "/");
+  auto skel3
+      = readKinbodyString(testFileNameScale, TEST_RESOURCES_PATH + "/");
+
+  EXPECT_TRUE(skel1 != nullptr);
+  EXPECT_TRUE(skel2 != nullptr);
+  EXPECT_TRUE(skel3 != nullptr);
+
+  auto shape1 = skel1->getBodyNode(0)->getShapeNode(0)->getShape();
+  auto shape2 = skel2->getBodyNode(0)->getShapeNode(0)->getShape();
+  auto shape3 = skel3->getBodyNode(0)->getShapeNode(0)->getShape();
+
+  auto meshShape1 = static_cast<dart::dynamics::MeshShape*>(shape1.get());
+  auto meshShape2 = static_cast<dart::dynamics::MeshShape*>(shape2.get());
+  auto meshShape3 = static_cast<dart::dynamics::MeshShape*>(shape3.get());
+
+  EXPECT_EIGEN_EQUAL(
+      meshShape1->getScale(), Eigen::Vector3d::Ones(), EPS);
+  EXPECT_EIGEN_EQUAL(
+      meshShape2->getScale(), Eigen::Vector3d::Constant(uniScale), EPS);
+  EXPECT_EIGEN_EQUAL(
+      meshShape3->getScale(), scale, EPS);
 }
 
 //==============================================================================
@@ -72,8 +136,10 @@ TEST(KinBodyParser, LoadBoxGeom)
   EXPECT_TRUE(shape->is<dart::dynamics::BoxShape>());
 
   auto boxShape = static_cast<dart::dynamics::BoxShape*>(shape.get());
-  EXPECT_TRUE(boxShape->getSize().isApprox(
-      Eigen::Vector3d(0.0127, 0.0127, 0.0127)));
+  EXPECT_EIGEN_EQUAL(boxShape->getSize(),
+                     2.0*Eigen::Vector3d(0.0127, 0.0127, 0.0127), EPS);
+  // The extents is multiplied by 2.0 because OpenRAVE uses extents to refer to
+  // half extents whereas DART's BoxShape refers to full extents.
 
   auto joint = skel->getJoint(0);
   EXPECT_TRUE(joint != nullptr);
@@ -171,7 +237,8 @@ TEST(KinBodyParser, LoadTriMeshGeomBowl)
 
   auto meshShape = static_cast<dart::dynamics::MeshShape*>(shape.get());
   EXPECT_TRUE(!meshShape->getMeshUri().empty());
-  EXPECT_TRUE(meshShape->getScale().isApprox(Eigen::Vector3d::Constant(1.0)));
+  EXPECT_EIGEN_EQUAL(
+      meshShape->getScale(), Eigen::Vector3d::Constant(1.0), EPS);
 
   auto joint = skel->getJoint(0);
   EXPECT_TRUE(joint != nullptr);
@@ -216,8 +283,10 @@ TEST(KinBodyParser, LoadTriMeshGeomKinovaTool)
   EXPECT_TRUE(sphereShape1->getRadius() == 0.0);
   EXPECT_TRUE(!meshShape2->getMeshUri().empty());
   EXPECT_TRUE(!meshShape3->getMeshUri().empty());
-  EXPECT_TRUE(meshShape2->getScale().isApprox(Eigen::Vector3d::Constant(1.0)));
-  EXPECT_TRUE(meshShape3->getScale().isApprox(Eigen::Vector3d::Constant(0.1)));
+  EXPECT_EIGEN_EQUAL(
+      meshShape2->getScale(), Eigen::Vector3d::Constant(1.0), EPS);
+  EXPECT_EIGEN_EQUAL(
+      meshShape3->getScale(), Eigen::Vector3d::Constant(0.1), EPS);
 
   auto joint = skel->getJoint(0);
   EXPECT_TRUE(joint != nullptr);

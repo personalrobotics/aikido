@@ -15,6 +15,7 @@ set(sources
   StepSequence.cpp
   VanDerCorput.cpp
   stream.cpp
+  string.cpp
 )
 
 add_library("${PROJECT_NAME}_util" SHARED ${sources})

@@ -16,23 +16,39 @@ namespace util {
 /// kinbody - attributes: name
 ///   body - attributes: name
 ///     geom - attributes: name, type* (none, box, sphere, trimesh, cylinder), render
-///       data* (or collision) - file* scale (e.g., /path/to/mesh/file_collision.stl 0.5) [for trimesh]
+///       data* (or collision) - file* scale [for trimesh] (see below for the detail)
 ///       extents* - 3 float [for box]
 ///       height* - float [for cylinder]
 ///       radius* - float [for cylinder and sphere]
-///       render - file* scale (e.g., /path/to/mesh/file_render.stl 0.5)
+///       render - file* scale (see below for the detail)
 /// \endcode
 /// Elements marked with `*` are required ones.
 ///
-/// The detail of the format can be found at:
-/// http://openrave.programmingvision.com/wiki/index.php/Format:XML).
+/// <render>, <data>, or <collision> contains the relative path to a mesh file
+/// and optionally a single float (for the uni-scale) or three float's (for the
+/// x, y, and z-axes) for the scale.
 ///
-/// \param[in] kinBodyString The Kinbody XML string.
+/// Example forms:
+///   <Render>my/mesh/file.stl<Render>
+///   <Render>my/mesh/file.stl 0.25<Render> <!--Unscale>
+///   <Render>my/mesh/file.stl 0.25 0.5 2.0<Render>
+///
+/// If the scale is not provided then (1, 1, 1) is used by default.
+///
+/// The detail of the format can be found at:
+/// http://openrave.programmingvision.com/wiki/index.php/Format:XML.
+///
+/// \param[in] kinBodyString The KinBody XML string.
 /// \param[in] baseUri The base URI of the mesh files in the KinBody XML string.
-/// \param[in] retriever A DART retriever for the mesh files in the KinBody XML
-/// string. If nullptr is passed, a local file resource retriever is used by
-/// default.
+/// If an empty URI, which is the default, is passed in the mesh URIs should be
+/// complete ones (not relative paths).
+/// \param[in] retriever A DART retriever for the mesh URIs in the KinBody XML
+/// string. If nullptr is passed, this function uses a local file resource
+/// retriever which only can parse absolute file paths or file URIs
+/// (e.g., file://path/to/local/file.kinbody.xml).
 /// \return The parsed DART skeleton; returns nullptr on failure.
+///
+/// \sa readKinbody
 dart::dynamics::SkeletonPtr readKinbodyString(
   const std::string& kinBodyString,
   const dart::common::Uri& baseUri = "",
@@ -44,15 +60,21 @@ dart::dynamics::SkeletonPtr readKinbodyString(
 /// in a kinbody file.
 ///
 /// The detail of the format can be found at:
-/// http://openrave.programmingvision.com/wiki/index.php/Format:XML).
+/// http://openrave.programmingvision.com/wiki/index.php/Format:XML.
 ///
-/// \param[in] kinBodyFileUri The file URI ("file://...") of the KinBody file.
-/// \param[in] retriever A DART retriever for the KinBody file and mesh files
-///  in the KinBody file. If nullptr is passed, a local file resource retriever
-/// is used by default.
+/// \param[in] kinBodyUri The URI to a KinBody file. If the URI scheme is not
+/// file (i.e., file://), a relevant ResourceRetriever should be passed to
+/// retrieve the KinBody file.
+/// \param[in] retriever A DART retriever for the URI to a KinBody. The
+/// retriever is also used to read the mesh URI in the KinBody file. If nullptr
+/// is passed, this function uses a local file resource retriever which only can
+/// parse absolute file paths or file URIs
+/// (e.g., file://path/to/local/file.kinbody.xml).
 /// \return The parsed DART skeleton; returns nullptr on failure.
+///
+/// \sa readKinbodyString
 dart::dynamics::SkeletonPtr readKinbody(
-  const dart::common::Uri& kinBodyFileUri,
+  const dart::common::Uri& kinBodyUri,
   const dart::common::ResourceRetrieverPtr& retriever = nullptr);
 
 } //namespace utils
