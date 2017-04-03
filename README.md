@@ -46,6 +46,9 @@ with `catkin_make_isolated`. This may dramatically increase your build time, so 
 *strongly recommend* that you use `catkin build`, which is provided by the
 [`catkin_tools` package][Catkin Tools], if possible.
 
+### Code Style
+Please follow the [Aikido code style](https://github.com/personalrobotics/aikido/blob/master/STYLE.md) when you making a contribution.
+
 ### License
 Aikido is licensed under a BSD license. See [LICENSE](./LICENSE) for more
 information.
