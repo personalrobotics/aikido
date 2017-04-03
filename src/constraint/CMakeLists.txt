@@ -22,6 +22,7 @@ set(sources
   Sampleable.cpp
   Satisfied.cpp
   TSR.cpp
+  TSRChain.cpp
   TestableIntersection.cpp
 )
 
