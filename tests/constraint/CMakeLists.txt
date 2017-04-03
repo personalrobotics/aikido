@@ -37,6 +37,11 @@ aikido_add_test(test_TSR
 target_link_libraries(test_TSR
   "${PROJECT_NAME}_constraint")
 
+aikido_add_test(test_TSRChain	
+  test_TSRChain.cpp)
+target_link_libraries(test_TSR
+  "${PROJECT_NAME}_constraint")
+
 aikido_add_test(test_TestableIntersection
   test_TestableIntersection.cpp)
 target_link_libraries(test_TestableIntersection
