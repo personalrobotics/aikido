@@ -328,6 +328,37 @@ bool TSR::project(const statespace::StateSpace::State* _s,
 }
 
 //=============================================================================
+Eigen::Isometry3d TSR::sampleTransformation()
+{
+  Eigen::Vector3d translation; 
+  Eigen::Vector3d angles;
+
+  std::vector<std::uniform_real_distribution<double> > distributions;
+  for(int i = 0; i < 6; i++) 
+  {
+    distributions.emplace_back(mBw(i, 0), mBw(i, 1));
+  }
+
+  for(int i = 0; i < 3; i++)
+  {
+    translation(i) = distributions.at(i)(*mRng);
+  }
+
+  for(int i = 0; i < 3; i++)
+  {
+    angles(i) = distributions.at(i+3)(*mRng);
+  }
+
+  Eigen::Isometry3d Tw_s;
+  Tw_s.setIdentity();
+  Tw_s.translation() = translation;
+  Tw_s.linear() = dart::math::eulerZYXToMatrix(angles.reverse());
+
+  return Tw_s;
+}
+
+
+//=============================================================================
 TSRSampleGenerator::TSRSampleGenerator(
       std::unique_ptr<util::RNG> _rng,
       std::shared_ptr<SE3> _stateSpace,

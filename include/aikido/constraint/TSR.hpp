@@ -124,6 +124,9 @@ public:
   /// This often represent an offset from "w" to the origin of the end-effector.
   Eigen::Isometry3d mTw_e;
 
+  /// Sample Tw_s from Bw
+  Eigen::Isometry3d sampleTransformation();
+
 private:
   std::unique_ptr<util::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
