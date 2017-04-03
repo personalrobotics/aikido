@@ -10,20 +10,21 @@ WeldJoint::WeldJoint(
   : Rn(_joint->getNumDofs())
   , JointStateSpace(_joint)
 {
+  // Do nothing.
 }
 
 //=============================================================================
 void WeldJoint::convertPositionsToState(
-  const Eigen::VectorXd& _positions, StateSpace::State* _state) const
+  const Eigen::VectorXd& /*_positions*/, StateSpace::State* /*_state*/) const
 {
-  setValue(static_cast<State*>(_state), _positions);
+  // Do nothing since the dimension is zero.
 }
 
 //=============================================================================
 void WeldJoint::convertStateToPositions(
-  const StateSpace::State* _state, Eigen::VectorXd& _positions) const
+  const StateSpace::State* /*_state*/, Eigen::VectorXd& _positions) const
 {
-  _positions = getValue(static_cast<const State*>(_state));
+  _positions.resize(0);
 }
 
 } // namespace dart
