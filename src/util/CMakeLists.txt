@@ -9,10 +9,12 @@ find_package(TinyXML2 REQUIRED)
 #
 set(sources
   CatkinResourceRetriever.cpp
+  ExecutorMultiplexer.cpp
+  ExecutorThread.cpp
   PseudoInverse.cpp
-  VanDerCorput.cpp
-  StepSequence.cpp
   RNG.cpp
+  StepSequence.cpp
+  VanDerCorput.cpp
   stream.cpp
 )
 
