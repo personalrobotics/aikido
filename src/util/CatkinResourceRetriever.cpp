@@ -1,12 +1,12 @@
-#include <aikido/util/CatkinResourceRetriever.hpp>
+#include <fstream>
+#include <iostream>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <dart/common/Console.hpp>
 #include <dart/common/LocalResourceRetriever.hpp>
 #include <dart/common/Uri.hpp>
-#include <fstream>
-#include <iostream>
 #include <tinyxml2.h>
+#include <aikido/util/CatkinResourceRetriever.hpp>
 
 static const std::string CATKIN_MARKER(".catkin");
 

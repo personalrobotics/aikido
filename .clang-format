@@ -45,12 +45,14 @@ ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 # sort headers by main include file (implicit priority 0),
 # then project and private includes, then system headers
 IncludeCategories:
-  - Regex:     '.*'
-    Priority:  1
-  - Regex:     '^(<|"(gtest|isl|json)/)'
-    Priority:  2
   - Regex:     '^<([a-z]+)>'
+    Priority:  1
+  - Regex:     '^(<|")aikido/'
     Priority:  3
+  - Regex:     '^(<[a-z]+)'
+    Priority:  2
+  - Regex:     '^".*'
+    Priority:  4
 IndentCaseLabels: true
 IndentFunctionDeclarationAfterType: false
 IndentWidth:     2

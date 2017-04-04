@@ -1,6 +1,6 @@
-#include <aikido/util/StepSequence.hpp>
 #include <cmath>
 #include <iostream>
+#include <aikido/util/StepSequence.hpp>
 
 namespace aikido {
 namespace util {
