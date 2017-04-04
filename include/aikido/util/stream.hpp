@@ -10,25 +10,27 @@ namespace util {
 /// \param collisionObject object to print
 /// \param[out] stream to use for output
 void printCollisionObject(
-  const dart::collision::CollisionObject& collisionObject,
-  std::ostream& stream);
+    const dart::collision::CollisionObject& collisionObject,
+    std::ostream& stream);
 
 /// Prints a CollisionResult for debugging purposes.
 /// \param collisionResult result to print
 /// \param[out] stream to use for output
 void printCollisionResult(
-  const dart::collision::CollisionResult& collisionResult,
-  std::ostream& stream);
+    const dart::collision::CollisionResult& collisionResult,
+    std::ostream& stream);
 
 namespace operators {
 
 /// Operator that calls printCollisionObject.
-std::ostream& operator <<(std::ostream& stream,
-  const dart::collision::CollisionObject& collisionObject);
+std::ostream& operator<<(
+    std::ostream& stream,
+    const dart::collision::CollisionObject& collisionObject);
 
 /// Operator that calls printCollisionReport.
-std::ostream& operator <<(std::ostream& stream,
-  const dart::collision::CollisionResult& collisionResult);
+std::ostream& operator<<(
+    std::ostream& stream,
+    const dart::collision::CollisionResult& collisionResult);
 
 } // namespace operators
 

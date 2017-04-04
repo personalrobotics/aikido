@@ -15,8 +15,10 @@ namespace util {
 /// \code
 /// kinbody - attributes: name
 ///   body - attributes: name
-///     geom - attributes: name, type* (none, box, sphere, trimesh, cylinder), render
-///       data* (or collision) - file* scale [for trimesh] (see below for the detail)
+///     geom - attributes: name, type* (none, box, sphere, trimesh, cylinder),
+///     render
+///       data* (or collision) - file* scale [for trimesh] (see below for the
+///       detail)
 ///       extents* - 3 float [for box]
 ///       height* - float [for cylinder]
 ///       radius* - float [for cylinder and sphere]
@@ -50,9 +52,9 @@ namespace util {
 ///
 /// \sa readKinbody
 dart::dynamics::SkeletonPtr readKinbodyString(
-  const std::string& kinBodyString,
-  const dart::common::Uri& baseUri = "",
-  const dart::common::ResourceRetrieverPtr& retriever = nullptr);
+    const std::string& kinBodyString,
+    const dart::common::Uri& baseUri = "",
+    const dart::common::ResourceRetrieverPtr& retriever = nullptr);
 
 /// Read skeleton from a file of OpenRAVE's custom XML format
 ///
@@ -74,10 +76,10 @@ dart::dynamics::SkeletonPtr readKinbodyString(
 ///
 /// \sa readKinbodyString
 dart::dynamics::SkeletonPtr readKinbody(
-  const dart::common::Uri& kinBodyUri,
-  const dart::common::ResourceRetrieverPtr& retriever = nullptr);
+    const dart::common::Uri& kinBodyUri,
+    const dart::common::ResourceRetrieverPtr& retriever = nullptr);
 
-} //namespace utils
-} //namespace aikido
+} // namespace utils
+} // namespace aikido
 
 #endif // AIKIDO_UTIL_KINBODYPARSER_HPP_

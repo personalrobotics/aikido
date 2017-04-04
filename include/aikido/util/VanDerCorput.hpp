@@ -40,7 +40,7 @@ public:
 
   /// Returns an iterator to the element following the last element of the
   /// sequence.
-  /// 
+  ///
   /// \return iterator followin the last element of the sequence
   const_iterator end() const;
 
@@ -52,8 +52,8 @@ public:
   std::pair<double, double> operator[](int n) const;
 
 private:
-  constexpr static int BASE { 2 };
-  constexpr static int MAX { std::numeric_limits<int>::max() };
+  constexpr static int BASE{2};
+  constexpr static int MAX{std::numeric_limits<int>::max()};
 
   std::pair<double, double> computeVanDerCorput(int n) const;
 
@@ -64,8 +64,10 @@ private:
 };
 
 class VanDerCorput::const_iterator
-    : public boost::iterator_facade<VanDerCorput::const_iterator, const double,
-                                    boost::forward_traversal_tag, const double>
+    : public boost::iterator_facade<VanDerCorput::const_iterator,
+                                    const double,
+                                    boost::forward_traversal_tag,
+                                    const double>
 {
 public:
   /// Dereference implementation for boost::iterator_facade
@@ -75,16 +77,16 @@ public:
   void increment();
 
   /// equal implementation for boost::iterator_facade
-  bool equal(const VanDerCorput::const_iterator &other) const;
+  bool equal(const VanDerCorput::const_iterator& other) const;
 
 private:
   friend class VanDerCorput;
 
   /// Private constructor that should always be constructed from
   /// VanDerCorput::begin()
-  const_iterator(const VanDerCorput *seq);
+  const_iterator(const VanDerCorput* seq);
 
-  const VanDerCorput *mSeq;
+  const VanDerCorput* mSeq;
   int mN;
   bool mFinalIter;
   std::pair<double, double> mCurr;

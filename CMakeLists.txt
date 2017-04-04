@@ -69,8 +69,12 @@ define_property(GLOBAL PROPERTY CODE_FORMATTING_SOURCES
 
 function(format_add_sources)
   foreach(source ${ARGN})
-    get_filename_component(source_abs
-      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    if(IS_ABSOLUTE "${source}")
+      set(source_abs "${source}")
+    else()
+      get_filename_component(source_abs
+        "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    endif()
     if(EXISTS "${source_abs}")
       set_property(GLOBAL APPEND PROPERTY CODE_FORMATTING_SOURCES "${source_abs}")
     else()
@@ -79,8 +83,13 @@ function(format_add_sources)
         " '${source_abs}'. This should never happen. Did you recently delete"
         " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
     endif()
+    message(STATUS "FILES: ${source_abs}")
   endforeach()
 endfunction()
+
+# TODO: Temporarily split header list per subdirectories.
+file(GLOB_RECURSE headers_util "${CMAKE_SOURCE_DIR}/include/aikido/util/*.hpp")
+format_add_sources(${headers_util})
 
 #==============================================================================
 # Helper functions.

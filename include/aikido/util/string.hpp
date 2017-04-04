@@ -1,8 +1,8 @@
 #ifndef AIKIDO_UTIL_STRING_HPP_
 #define AIKIDO_UTIL_STRING_HPP_
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace aikido {
 namespace util {
