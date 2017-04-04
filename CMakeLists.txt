@@ -293,9 +293,9 @@ if (CLANG_FORMAT_EXECUTABLE)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
     add_custom_target(check-format
-        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of
-            ${formatting_files_length} files... "
-        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_code_format.sh
+        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of"
+            "${formatting_files_length} files... "
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_format.sh
             ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
         COMMAND ${CMAKE_COMMAND} -E echo "Done."
         DEPENDS ${CLANG_FORMAT_EXECUTABLE}
