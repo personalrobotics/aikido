@@ -2,7 +2,7 @@
 BasedOnStyle:  Google
 AccessModifierOffset: -2
 AlignAfterOpenBracket: AlwaysBreak
-AlignEscapedNewlinesLeft: true
+AlignEscapedNewlinesLeft: false
 AlignOperands:   true
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: true
