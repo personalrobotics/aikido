@@ -65,11 +65,11 @@ public:
   std::unique_ptr<constraint::SampleGenerator>
     createSampleGenerator() const override;
 
-  // Returns lower limits of this constraint.
-  Eigen::VectorXd getLowerLimits();
+  /// Returns lower limits of this constraint.
+  const Eigen::VectorXd& getLowerLimits() const;
 
-  // Returns upper limits of this constraint.
-  Eigen::VectorXd getUpperLimits();
+  /// Returns upper limits of this constraint.
+  const Eigen::VectorXd& getUpperLimits() const;
 
 private:
   std::shared_ptr<statespace::Rn> mSpace;

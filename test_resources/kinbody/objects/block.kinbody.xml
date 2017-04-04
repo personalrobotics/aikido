@@ -1,0 +1,9 @@
+<KinBody name="blue_wood_block_1inx1in">
+  <Body type="static" name="blue_wood_block_1inx1in">
+    <Geom type="box">
+      <Translation>0 0 0.0127</Translation>
+      <Extents>0.0127 0.0127 0.0127</Extents>
+      <DiffuseColor>0 0 1.0</DiffuseColor>
+    </Geom>
+  </Body>
+</KinBody>
