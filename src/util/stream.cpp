@@ -70,6 +70,6 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace operators
-}  // namespace util
-}  // namespace aikido
+} // namespace operators
+} // namespace util
+} // namespace aikido

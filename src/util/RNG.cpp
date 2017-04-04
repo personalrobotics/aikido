@@ -33,5 +33,5 @@ std::vector<std::unique_ptr<util::RNG>> splitEngine(
   return output;
 }
 
-}  // namespace util
-}  // namespace aikido
+} // namespace util
+} // namespace aikido

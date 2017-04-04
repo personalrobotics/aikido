@@ -63,7 +63,7 @@ dart::common::ResourceRetrieverPtr getRetriever(
 tinyxml2::XMLElement* transformElementNamesToLowerCases(
     tinyxml2::XMLDocument& doc);
 
-}  // anonymous namespace
+} // anonymous namespace
 
 //==============================================================================
 dart::dynamics::SkeletonPtr readKinbodyString(
@@ -587,6 +587,6 @@ tinyxml2::XMLElement* transformElementNamesToLowerCases(
     transformElementNamesToLowerCasesRecurse(firstEle);
 }
 
-}  // anonymous namespace
-}  // namespace utils
-}  // namespace dart
+} // anonymous namespace
+} // namespace utils
+} // namespace dart

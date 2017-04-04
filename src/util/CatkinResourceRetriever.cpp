@@ -91,7 +91,7 @@ void searchForPackages(
                << package_name << "': '" << result.first->second << "' and '"
                << _packagePath << "'.\n";
       }
-      return;  // Don't search for packages inside packages.
+      return; // Don't search for packages inside packages.
     }
   }
 
@@ -117,7 +117,7 @@ void searchForPackages(
   }
 }
 
-}  // namespace
+} // namespace
 
 CatkinResourceRetriever::CatkinResourceRetriever()
   : CatkinResourceRetriever(
@@ -274,5 +274,5 @@ Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
   return Uri();
 }
 
-}  // namespace util
-}  // namespace aikido
+} // namespace util
+} // namespace aikido
