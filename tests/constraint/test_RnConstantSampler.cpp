@@ -50,12 +50,15 @@ template <int Dimension>
 void testSampleGenerator()
 {
   Eigen::VectorXd value = Eigen::VectorXd::Zero(Dimension);
+  EXPECT_EQ(value.size(), Dimension);
+
   auto stateSpace = std::make_shared<statespace::Rn>(Dimension);
   EXPECT_EQ(stateSpace->getDimension(), Dimension);
 
   auto sampler
       = std::make_shared<constraint::RnConstantSampler>(stateSpace, value);
   EXPECT_EQ(sampler->getStateSpace(), stateSpace);
+  EXPECT_EQ(sampler->getConstantValue(), value);
 
   auto generator = sampler->createSampleGenerator();
   EXPECT_EQ(generator->getStateSpace(), stateSpace);
@@ -63,11 +66,13 @@ void testSampleGenerator()
   for (auto i = 0u; i < 1e+3; ++i)
   {
     EXPECT_TRUE(generator->canSample());
+    EXPECT_EQ(
+        generator->getNumSamples(), constraint::SampleGenerator::NO_LIMIT);
 
     auto state = stateSpace->createState();
     EXPECT_TRUE(generator->sample(state));
 
-    EXPECT_EQ(state.getValue(), value);
+    EXPECT_EQ(state.getValue(), sampler->getConstantValue());
   }
 }
 

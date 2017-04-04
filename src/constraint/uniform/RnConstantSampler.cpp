@@ -103,6 +103,12 @@ std::unique_ptr<constraint::SampleGenerator>
       mSpace, mValue);
 }
 
+//=============================================================================
+const Eigen::VectorXd& RnConstantSampler::getConstantValue() const
+{
+  return mValue;
+}
+
 } // namespace constraint
 } // namespace aikido
 
