@@ -39,7 +39,12 @@ void ExecutorThread::spin()
     catch (const std::exception& e)
     {
       std::cerr << "Exception thrown by callback: " << e.what() << std::endl;
+      // TODO: We should find another way to handle this error, so we don't
+      // print directly to std::cerr. Unfortunately, we don't have a better
+      // solution yet since Aikido doesn't use any particular logging framework.
       mIsRunning.store(false);
+
+      break;
     }
 
     currentTime += mPeriod;

@@ -41,3 +41,14 @@ TEST(ExecutorThread, Execute)
   exec.stop();
   EXPECT_TRUE(!exec.isRunning());
 }
+
+//==============================================================================
+TEST(ExecutorThread, ExceptionThrownByCallback)
+{
+  ExecutorThread exec(
+      []() { throw std::exception(); }, std::chrono::milliseconds(1));
+
+  std::this_thread::sleep_for(std::chrono::seconds(3));
+
+  EXPECT_TRUE(!exec.isRunning());
+}

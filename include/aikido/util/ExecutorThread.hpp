@@ -25,18 +25,18 @@ class ExecutorThread final
 public:
   /// Constructs from callback and period. The thread begins execution
   /// immediately upon construction.
-  /// \param[in] callback
-  /// \param[in] period
+  /// \param[in] callback Callback to be repeatedly executed by the thread.
+  /// \param[in] period The period of calling the callback.
   template <typename Duration>
   ExecutorThread(std::function<void ()> callback, const Duration& period);
 
-  /// Default destructor. The thread is stopped as ExecutorThread is destructed.
+  /// Default destructor. The thread stops as ExecutorThread is destructed.
   ~ExecutorThread();
 
   /// Returns true if the thread is running.
   bool isRunning() const;
 
-  /// Stops the thread. It is safe to call this function even when the thread is
+  /// Stops the thread. It is safe to call this function even when the thread
   /// already stopped.
   void stop();
 
