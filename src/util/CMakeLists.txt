@@ -9,11 +9,13 @@ find_package(TinyXML2 REQUIRED)
 #
 set(sources
   CatkinResourceRetriever.cpp
+  KinBodyParser.cpp
   PseudoInverse.cpp
-  VanDerCorput.cpp
-  StepSequence.cpp
   RNG.cpp
+  StepSequence.cpp
   stream.cpp
+  string.cpp
+  VanDerCorput.cpp
 )
 
 add_library("${PROJECT_NAME}_util" SHARED ${sources})
