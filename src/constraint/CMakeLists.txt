@@ -31,6 +31,9 @@ target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_util"
   ${DART_LIBRARIES}
 )
+target_compile_options("${PROJECT_NAME}_constraint"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+)
 
 add_component(${PROJECT_NAME} constraint)
 add_component_targets(${PROJECT_NAME} constraint "${PROJECT_NAME}_constraint")

@@ -52,6 +52,9 @@ target_link_libraries("${PROJECT_NAME}_perception"
   ${visualization_msgs_LIBRARIES}
   ${tf_LIBRARIES}
 )
+target_compile_options("${PROJECT_NAME}_perception"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+)
 
 add_component(${PROJECT_NAME} perception)
 add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")
