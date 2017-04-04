@@ -1,21 +1,44 @@
 #include <aikido/util/ExecutorMultiplexer.hpp>
 
+#include <dart/dart.hpp>
+
 namespace aikido {
 namespace util {
 
 //=============================================================================
-void ExecutorMultiplexer::addCallback(std::function<void ()> _callback)
+void ExecutorMultiplexer::addCallback(std::function<void ()> callback)
 {
   std::lock_guard<std::mutex> lock{mMutex};
-  mCallbacks.emplace_back(std::move(_callback));
+  DART_UNUSED(lock);
+
+  mCallbacks.emplace_back(std::move(callback));
 }
 
 //=============================================================================
-void ExecutorMultiplexer::operator ()()
+void ExecutorMultiplexer::removeAllCallbacks()
+{
+  mCallbacks.clear();
+}
+
+//=============================================================================
+bool ExecutorMultiplexer::isEmpty() const
+{
+  return mCallbacks.empty();
+}
+
+//=============================================================================
+std::size_t ExecutorMultiplexer::getNumCallbacks() const
+{
+  return mCallbacks.size();
+}
+
+//=============================================================================
+void ExecutorMultiplexer::operator()()
 {
   std::lock_guard<std::mutex> lock{mMutex};
+  DART_UNUSED(lock);
 
-  for (auto& callback : mCallbacks)
+  for (const auto& callback : mCallbacks)
     callback();
 }
 

@@ -5,24 +5,13 @@ namespace aikido {
 namespace util {
 
 //=============================================================================
-ExecutorThread::ExecutorThread(
-      std::function<void ()> _callback,
-      std::chrono::milliseconds _period)
-  : mCallback{std::move(_callback)}
-  , mPeriod{_period}
-  , mIsRunning{true}
-{
-  mThread = std::thread(&ExecutorThread::spin, this);
-}
-
-//=============================================================================
 ExecutorThread::~ExecutorThread()
 {
   stop();
 }
 
 //=============================================================================
-bool ExecutorThread::is_running() const
+bool ExecutorThread::isRunning() const
 {
   return mIsRunning.load();
 }
@@ -31,7 +20,9 @@ bool ExecutorThread::is_running() const
 void ExecutorThread::stop()
 {
   mIsRunning.store(false);
-  mThread.join();
+
+  if (mThread.joinable())
+    mThread.join();
 }
 
 //=============================================================================
