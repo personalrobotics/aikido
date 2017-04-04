@@ -5,10 +5,6 @@
 
 using namespace aikido;
 
-static constexpr size_t NUM_TARGETS { 10 };
-static constexpr size_t NUM_SAMPLES { 10000 };
-static constexpr double DISTANCE_THRESHOLD { 0.15 };
-
 //==============================================================================
 template <int Dimension>
 void testConstructorThrowsForNullStateSpace()
@@ -64,7 +60,7 @@ void testSampleGenerator()
   auto generator = sampler->createSampleGenerator();
   EXPECT_EQ(generator->getStateSpace(), stateSpace);
 
-  for (auto i = 0u; i < NUM_SAMPLES; ++i)
+  for (auto i = 0u; i < 1e+3; ++i)
   {
     EXPECT_TRUE(generator->canSample());
 
