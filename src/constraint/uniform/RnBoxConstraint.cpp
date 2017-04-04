@@ -252,13 +252,13 @@ std::unique_ptr<constraint::SampleGenerator>
 }
 
 //=============================================================================
-Eigen::VectorXd RnBoxConstraint::getLowerLimits()
+const Eigen::VectorXd& RnBoxConstraint::getLowerLimits() const
 {
   return mLowerLimits;
 }
 
 //=============================================================================
-Eigen::VectorXd RnBoxConstraint::getUpperLimits()
+const Eigen::VectorXd& RnBoxConstraint::getUpperLimits() const
 {
   return mUpperLimits;
 }
