@@ -11,7 +11,7 @@ namespace util {
 /// This function only parses a subset of the format assuming only one body node
 /// in a kinbody file.
 ///
-/// Followings are the available fields that this parser can read.
+/// The following are the available fields that this parser can read.
 /// \code
 /// kinbody - attributes: name
 ///   body - attributes: name
@@ -22,15 +22,15 @@ namespace util {
 ///       radius* - float [for cylinder and sphere]
 ///       render - file* scale (see below for the detail)
 /// \endcode
-/// Elements marked with `*` are required ones.
+/// Elements marked with `*` are required.
 ///
-/// <render>, <data>, or <collision> contains the relative path to a mesh file
-/// and optionally a single float (for the uni-scale) or three float's (for the
+/// <render>, <data>, or <collision> contain the relative path to a mesh file
+/// and optionally a single float (for all three axes) or three float's (for the
 /// x, y, and z-axes) for the scale.
 ///
 /// Example forms:
 ///   <Render>my/mesh/file.stl<Render>
-///   <Render>my/mesh/file.stl 0.25<Render> <!--Unscale>
+///   <Render>my/mesh/file.stl 0.25<Render> <!--scale for all three axes-->
 ///   <Render>my/mesh/file.stl 0.25 0.5 2.0<Render>
 ///
 /// If the scale is not provided then (1, 1, 1) is used by default.

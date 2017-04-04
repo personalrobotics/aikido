@@ -12,6 +12,5 @@
     <Geom type="trimesh" modifiable="false" render="false">
         <Data>kinova_tool.stl 0.1</Data>
     </Geom>
-    <!-- TODO: Add a sphere approximation. -->
   </Body>
 </KinBody>

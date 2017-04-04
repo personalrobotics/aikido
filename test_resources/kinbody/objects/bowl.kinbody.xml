@@ -1,7 +1,6 @@
 <KinBody name="bowl">
   <Body type="static" name="bowl">
     <Geom type="trimesh">
-      <!--<Data>bowl.iv</Data>-->
       <Render>bowl.stl</Render>
       <Data>bowl.stl</Data>
     </Geom>      
