@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_CONSTANTSAMPLER_H_
-#define AIKIDO_CONSTRAINT_CONSTANTSAMPLER_H_
+#ifndef AIKIDO_CONSTRAINT_RNCONSTANTSAMPLER_HPP_
+#define AIKIDO_CONSTRAINT_RNCONSTANTSAMPLER_HPP_
 #include "../../statespace/Rn.hpp"
 #include "../Sampleable.hpp"
 
@@ -8,15 +8,13 @@ namespace constraint {
 
 /// ConstantSampler for RealVectorStates.
 /// Stub sampler for WeldJoint or any fixed constant state space.
-class ConstantSampler
-  : public constraint::Sampleable
+class RnConstantSampler : public constraint::Sampleable
 {
 public:
-
   /// Constructor.
   /// \param _space Space in which this constraint operates.
   /// \param _value Value to return when sampled.
-  ConstantSampler(
+  RnConstantSampler(
     std::shared_ptr<statespace::Rn> _space,
     const Eigen::VectorXd& _value);
 
@@ -35,5 +33,5 @@ private:
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_CONSTANTSAMPLER_H_
+#endif // AIKIDO_CONSTRAINT_RNCONSTANTSAMPLER_HPP_
 

@@ -1,14 +1,22 @@
+#include <aikido/constraint/uniform/RnConstantSampler.hpp>
+
 #include <stdexcept>
-#include <aikido/constraint/uniform/ConstantSampler.hpp>
+
+#include <dart/dart.hpp>
 
 namespace aikido {
 namespace constraint {
 
+namespace {
+
 //=============================================================================
-class ConstantSamplerSampleGenerator
-  : public constraint::SampleGenerator
+class RnConstantSamplerSampleGenerator : public constraint::SampleGenerator
 {
 public:
+  RnConstantSamplerSampleGenerator(
+    std::shared_ptr<statespace::Rn> _space,
+    const Eigen::VectorXd& _value);
+
   statespace::StateSpacePtr getStateSpace() const override;
 
   bool sample(statespace::StateSpace::State* _state) override;
@@ -18,35 +26,30 @@ public:
   bool canSample() const override;
 
 private:
-  ConstantSamplerSampleGenerator(
-    std::shared_ptr<statespace::Rn> _space,
-    const Eigen::VectorXd& _value);
-
   std::shared_ptr<statespace::Rn> mSpace;
   Eigen::VectorXd mValue;
-
-  friend class ConstantSampler;
 };
 
 //=============================================================================
-ConstantSamplerSampleGenerator::ConstantSamplerSampleGenerator(
+RnConstantSamplerSampleGenerator::RnConstantSamplerSampleGenerator(
       std::shared_ptr<statespace::Rn> _space,
       const Eigen::VectorXd& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
 {
+  // Do nothing
 }
 
 //=============================================================================
 statespace::StateSpacePtr
-  ConstantSamplerSampleGenerator::getStateSpace() const
+RnConstantSamplerSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
 //=============================================================================
-bool ConstantSamplerSampleGenerator::sample(
-  statespace::StateSpace::State* _state)
+bool RnConstantSamplerSampleGenerator::sample(
+    statespace::StateSpace::State* _state)
 {
   mSpace->setValue(static_cast<statespace::Rn::State*>(_state), mValue);
 
@@ -54,22 +57,23 @@ bool ConstantSamplerSampleGenerator::sample(
 }
 
 //=============================================================================
-int ConstantSamplerSampleGenerator::getNumSamples() const
+int RnConstantSamplerSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
 //=============================================================================
-bool ConstantSamplerSampleGenerator::canSample() const
+bool RnConstantSamplerSampleGenerator::canSample() const
 {
   return true;
 }
 
+} // namespace anonymous
+
 //=============================================================================
-ConstantSampler
-  ::ConstantSampler(
-      std::shared_ptr<statespace::Rn> _space,
-      const Eigen::VectorXd& _value)
+RnConstantSampler::RnConstantSampler(
+    std::shared_ptr<statespace::Rn> _space,
+    const Eigen::VectorXd& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
 {
@@ -86,18 +90,17 @@ ConstantSampler
 }
 
 //=============================================================================
-statespace::StateSpacePtr ConstantSampler::getStateSpace() const
+statespace::StateSpacePtr RnConstantSampler::getStateSpace() const
 {
   return mSpace;
 }
 
 //=============================================================================
 std::unique_ptr<constraint::SampleGenerator>
-  ConstantSampler::createSampleGenerator() const
+  RnConstantSampler::createSampleGenerator() const
 {
-  return std::unique_ptr<ConstantSamplerSampleGenerator>(
-    new ConstantSamplerSampleGenerator(
-      mSpace, mValue));
+  return dart::common::make_unique<RnConstantSamplerSampleGenerator>(
+      mSpace, mValue);
 }
 
 } // namespace constraint

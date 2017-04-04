@@ -59,7 +59,6 @@ public:
 
 using SampleablePtr = std::shared_ptr<Sampleable>;
 
-
 } // namespace constraint
 } // namespace aikido
 

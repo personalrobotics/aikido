@@ -7,8 +7,7 @@ namespace constraint {
 using constraint::ConstraintType;
 
 //=============================================================================
-class RnBoxConstraintSampleGenerator
-  : public constraint::SampleGenerator
+class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
 public:
   statespace::StateSpacePtr getStateSpace() const override;
