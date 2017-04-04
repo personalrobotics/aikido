@@ -136,7 +136,7 @@ include(CMakePackageConfigHelpers)
 include(FindPkgConfig)
 
 find_package(Boost COMPONENTS filesystem)
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # TODO: utils-urdf should only be required for aikido::perception.
 find_package(DART 6.1.0 REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
@@ -172,11 +172,8 @@ add_subdirectory("src")
 enable_testing()
 add_subdirectory("tests" EXCLUDE_FROM_ALL)
 
-# Targets to mimic a Catkin package. "tests" builds tests and "test" (or
-# "run_tests") runs them.
 get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
-add_custom_target(tests DEPENDS ${all_tests})
-add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+add_dependencies(tests ${all_tests})
 
 #==============================================================================
 # Doxygen.
