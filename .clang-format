@@ -1,7 +1,7 @@
 ---
 BasedOnStyle:  Google
 AccessModifierOffset: -2
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: AlwaysBreak
 AlignEscapedNewlinesLeft: true
 AlignOperands:   true
 AlignTrailingComments: true
@@ -28,10 +28,10 @@ BraceWrapping:
   BeforeCatch:     true
   BeforeElse:      true
   IndentBraces:    false
-BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Custom
-BreakBeforeTernaryOperators: false
-BreakConstructorInitializersBeforeComma: true
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializersBeforeComma: false
 ColumnLimit:     80
 CommentPragmas:  ''
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
