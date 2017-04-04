@@ -36,3 +36,4 @@ add_component(${PROJECT_NAME} util)
 add_component_targets(${PROJECT_NAME} util "${PROJECT_NAME}_util")
 
 coveralls_add_sources(${sources})
+format_add_sources(${sources})

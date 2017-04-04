@@ -2,28 +2,32 @@
 #include <cmath>
 #include <iostream>
 
-namespace aikido
-{
-namespace util
-{
-StepSequence::StepSequence(const double _stepSize, const bool _includeEndpoints,
-                           const double _startPoint, const double _endPoint)
-    : mStepSize(_stepSize)
-    , mStartPoint(_startPoint)
-    , mEndPoint(_endPoint)
-    , mIncludeEndpoints(_includeEndpoints)
+namespace aikido {
+namespace util {
+StepSequence::StepSequence(
+    const double _stepSize,
+    const bool _includeEndpoints,
+    const double _startPoint,
+    const double _endPoint)
+  : mStepSize(_stepSize),
+    mStartPoint(_startPoint),
+    mEndPoint(_endPoint),
+    mIncludeEndpoints(_includeEndpoints)
 {
 }
 
 double StepSequence::operator[](int n)
 {
   double val = mStartPoint + mStepSize * n;
-  if (val > mEndPoint) {
+  if (val > mEndPoint)
+  {
     if (mIncludeEndpoints)
       return mEndPoint;
     else
       throw std::out_of_range("Indexed maximum intenger.");
-  } else if (val < mStartPoint) {
+  }
+  else if (val < mStartPoint)
+  {
     if (mIncludeEndpoints)
       return mStartPoint;
     else
@@ -47,14 +51,20 @@ StepSequence::const_iterator StepSequence::end()
 int StepSequence::getMaxSteps() const
 {
   int numSteps = (mEndPoint - mStartPoint) / mStepSize;
-  if (!mIncludeEndpoints) {
+  if (!mIncludeEndpoints)
+  {
     // Return numSteps + 1 for the start
     return numSteps + 1;
-  } else {
-    if (fabs(mStartPoint + mStepSize * numSteps - mEndPoint) < 1e-7) {
+  }
+  else
+  {
+    if (fabs(mStartPoint + mStepSize * numSteps - mEndPoint) < 1e-7)
+    {
       // Return numSteps + 1 for the start (endpt already included)
       return numSteps + 1;
-    } else {
+    }
+    else
+    {
       // Return numSteps + 1 for the start + 1 for the end
       return numSteps + 2;
     }
@@ -73,7 +83,7 @@ void StepSequence::const_iterator::increment()
 }
 
 bool StepSequence::const_iterator::equal(
-    const StepSequence::const_iterator &other) const
+    const StepSequence::const_iterator& other) const
 {
   return other.mStep == mStep && other.mSeq == mSeq;
 }

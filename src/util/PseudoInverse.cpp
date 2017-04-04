@@ -1,9 +1,9 @@
 #include <aikido/util/PseudoInverse.hpp>
 
-#include <memory>
 #include <Eigen/Dense>
-#include <limits>
 #include <iostream>
+#include <limits>
+#include <memory>
 
 namespace aikido {
 namespace util {
@@ -11,7 +11,7 @@ namespace util {
 Eigen::MatrixXd pseudoinverse(const Eigen::MatrixXd& mat)
 {
 
-  double eps = 1e-6; 
+  double eps = 1e-6;
 
   if (mat.rows() == mat.cols() && mat.determinant() > eps)
     return mat.inverse();
@@ -20,27 +20,28 @@ Eigen::MatrixXd pseudoinverse(const Eigen::MatrixXd& mat)
   {
     if (mat.cols() == 1)
     {
-      if ( mat.isApproxToConstant(0) )
+      if (mat.isApproxToConstant(0))
       {
         return Eigen::VectorXd::Zero(mat.rows());
       }
 
-      return mat.transpose()/(pow(mat.norm(), 2)); 
+      return mat.transpose() / (pow(mat.norm(), 2));
     }
 
     /// Use SVD decomposition.
-    Eigen::JacobiSVD<Eigen::MatrixXd> jacSVD(mat, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    Eigen::JacobiSVD<Eigen::MatrixXd> jacSVD(
+        mat, Eigen::ComputeFullU | Eigen::ComputeFullV);
     Eigen::MatrixXd U = jacSVD.matrixU();
     Eigen::MatrixXd V = jacSVD.matrixV();
     Eigen::VectorXd S = jacSVD.singularValues();
 
     Eigen::MatrixXd S_inv(Eigen::MatrixXd::Zero(mat.cols(), mat.rows()));
 
-    for (int i = 0; i < S.rows(); i ++)
+    for (int i = 0; i < S.rows(); i++)
     {
-      if ( S(i) > eps )
+      if (S(i) > eps)
       {
-        S_inv(i, i) = 1.0/S(i);
+        S_inv(i, i) = 1.0 / S(i);
       }
       else
       {
@@ -48,10 +49,8 @@ Eigen::MatrixXd pseudoinverse(const Eigen::MatrixXd& mat)
       }
     }
 
-    return V*S_inv*U.transpose();
+    return V * S_inv * U.transpose();
   }
-
 }
-
 }
 }

@@ -30,5 +30,5 @@ std::vector<std::string> split(
   return tokens;
 }
 
-} // namespace util
-} // namespace aikido
+}  // namespace util
+}  // namespace aikido

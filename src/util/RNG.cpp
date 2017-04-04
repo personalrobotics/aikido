@@ -9,7 +9,7 @@ constexpr std::size_t RNG::NUM_BITS;
 
 //=============================================================================
 std::vector<std::unique_ptr<util::RNG>> splitEngine(
-  RNG& _engine, size_t _numOutputs, size_t _numSeeds)
+    RNG& _engine, size_t _numOutputs, size_t _numSeeds)
 {
   // Use the input RNG to create an initial batch of seeds.
   std::vector<util::RNG::result_type> initialSeeds;
@@ -23,7 +23,7 @@ std::vector<std::unique_ptr<util::RNG>> splitEngine(
   std::vector<util::RNG::result_type> improvedSeeds(_numOutputs);
   seqSeeds.generate(std::begin(improvedSeeds), std::end(improvedSeeds));
 
-  // Create the 
+  // Create the
   std::vector<std::unique_ptr<util::RNG>> output;
   output.reserve(_numOutputs);
 
@@ -33,5 +33,5 @@ std::vector<std::unique_ptr<util::RNG>> splitEngine(
   return output;
 }
 
-} // namespace util
-} // namespace aikido
+}  // namespace util
+}  // namespace aikido

@@ -4,28 +4,27 @@ namespace aikido {
 namespace util {
 
 void printCollisionObject(
-  const dart::collision::CollisionObject& collisionObject,
-  std::ostream& stream)
+    const dart::collision::CollisionObject& collisionObject,
+    std::ostream& stream)
 {
-    const auto shapeFrame = collisionObject.getShapeFrame();
+  const auto shapeFrame = collisionObject.getShapeFrame();
 
-    if (const auto shapeNode = shapeFrame->asShapeNode())
-    {
-      const auto bodyNode = shapeNode->getBodyNodePtr();
-      const auto skeleton = bodyNode->getSkeleton();
-      stream << skeleton->getName()
-             << ":" << bodyNode->getName() 
-             << ":" << shapeNode->getName();
-    }
-    else
-    {
-      stream << "ShapeFrame::" << shapeFrame->getName();
-    }
+  if (const auto shapeNode = shapeFrame->asShapeNode())
+  {
+    const auto bodyNode = shapeNode->getBodyNodePtr();
+    const auto skeleton = bodyNode->getSkeleton();
+    stream << skeleton->getName() << ":" << bodyNode->getName() << ":"
+           << shapeNode->getName();
+  }
+  else
+  {
+    stream << "ShapeFrame::" << shapeFrame->getName();
+  }
 }
 
 void printCollisionResult(
-  const dart::collision::CollisionResult& collisionReport,
-  std::ostream& stream)
+    const dart::collision::CollisionResult& collisionReport,
+    std::ostream& stream)
 {
   if (collisionReport.getNumContacts() > 0)
   {
@@ -55,20 +54,22 @@ void printCollisionResult(
 
 namespace operators {
 
-std::ostream& operator <<(std::ostream& stream,
-  const dart::collision::CollisionObject& collisionObject)
+std::ostream& operator<<(
+    std::ostream& stream,
+    const dart::collision::CollisionObject& collisionObject)
 {
   printCollisionObject(collisionObject, stream);
   return stream;
 }
 
-std::ostream& operator <<(std::ostream& stream,
-  const dart::collision::CollisionResult& collisionResult)
+std::ostream& operator<<(
+    std::ostream& stream,
+    const dart::collision::CollisionResult& collisionResult)
 {
   printCollisionResult(collisionResult, stream);
   return stream;
 }
 
-} // namespace operators
-} // namespace util
-} // namespace aikido
+}  // namespace operators
+}  // namespace util
+}  // namespace aikido

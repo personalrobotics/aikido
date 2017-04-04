@@ -2,8 +2,8 @@
 
 #include <algorithm>
 #include <regex>
-#include <string>
 #include <sstream>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -39,9 +39,9 @@ dart::dynamics::SkeletonPtr readKinBody(
     const dart::common::ResourceRetrieverPtr& retriever);
 
 dart::dynamics::SkeletonPtr readKinBody(
-  tinyxml2::XMLDocument& kinBodyDoc,
-  const dart::common::Uri& baseUri,
-  const dart::common::ResourceRetrieverPtr& retriever);
+    tinyxml2::XMLDocument& kinBodyDoc,
+    const dart::common::Uri& baseUri,
+    const dart::common::ResourceRetrieverPtr& retriever);
 
 BodyNodeInfo readBodyNodeInfo(tinyxml2::XMLElement* bodyNodeElement);
 
@@ -58,18 +58,18 @@ void readGeom(
     const dart::common::ResourceRetrieverPtr& retriever);
 
 dart::common::ResourceRetrieverPtr getRetriever(
-  const dart::common::ResourceRetrieverPtr& retriever);
+    const dart::common::ResourceRetrieverPtr& retriever);
 
 tinyxml2::XMLElement* transformElementNamesToLowerCases(
     tinyxml2::XMLDocument& doc);
 
-} //anonymous namespace
+}  // anonymous namespace
 
 //==============================================================================
 dart::dynamics::SkeletonPtr readKinbodyString(
-  const std::string& kinBodyString,
-  const dart::common::Uri& baseUri,
-  const dart::common::ResourceRetrieverPtr& nullOrRetriever)
+    const std::string& kinBodyString,
+    const dart::common::Uri& baseUri,
+    const dart::common::ResourceRetrieverPtr& nullOrRetriever)
 {
   const auto retriever = getRetriever(nullOrRetriever);
 
@@ -86,8 +86,8 @@ dart::dynamics::SkeletonPtr readKinbodyString(
 
 //==============================================================================
 dart::dynamics::SkeletonPtr readKinbody(
-  const dart::common::Uri& kinBodyUri,
-  const dart::common::ResourceRetrieverPtr& nullOrRetriever)
+    const dart::common::Uri& kinBodyUri,
+    const dart::common::ResourceRetrieverPtr& nullOrRetriever)
 {
   const auto retriever = getRetriever(nullOrRetriever);
 
@@ -97,7 +97,7 @@ dart::dynamics::SkeletonPtr readKinbody(
   {
     dart::utils::openXMLFile(kinBodyDoc, kinBodyUri, retriever);
   }
-  catch(std::exception const& e)
+  catch (std::exception const& e)
   {
     dtwarn << "[KinBodyParser] Failed to load '" << kinBodyUri.toString()
            << "'. Reason: " << e.what() << ". Returning nullptr.\n";
@@ -111,9 +111,9 @@ namespace {
 
 //==============================================================================
 dart::dynamics::SkeletonPtr readKinBody(
-  tinyxml2::XMLDocument& kinBodyDoc,
-  const dart::common::Uri& baseUri,
-  const dart::common::ResourceRetrieverPtr& retriever)
+    tinyxml2::XMLDocument& kinBodyDoc,
+    const dart::common::Uri& baseUri,
+    const dart::common::ResourceRetrieverPtr& retriever)
 {
   assert(retriever);
 
@@ -187,8 +187,9 @@ dart::dynamics::SkeletonPtr readKinBody(
   jointProps.mName = DEFAULT_KINBODY_ROOT_JOINT_NAME;
   jointProps.mT_ParentBodyToJoint = bodyNodeInfo.initTransform;
 
-  auto jointAndBodyNode = skeleton->createJointAndBodyNodePair<
-      dart::dynamics::FreeJoint>(nullptr, jointProps, bodyNodeInfo.properties);
+  auto jointAndBodyNode
+      = skeleton->createJointAndBodyNodePair<dart::dynamics::FreeJoint>(
+          nullptr, jointProps, bodyNodeInfo.properties);
   assert(jointAndBodyNode.first && jointAndBodyNode.second);
 
   readGeoms(jointAndBodyNode.second, bodyEle, baseUri, retriever);
@@ -244,8 +245,8 @@ void readGeoms(
 
   if (!bodyEle->FirstChildElement("geom"))
   {
-    dtwarn << "[KinBodyParser] KinBody document '"
-           << baseUri.toString() << "' does not contain any <Geom> element "
+    dtwarn << "[KinBodyParser] KinBody document '" << baseUri.toString()
+           << "' does not contain any <Geom> element "
            << "under <Body>. This body will have no shape.\n";
   }
 
@@ -269,7 +270,7 @@ dart::dynamics::ShapePtr readMeshShape(
   if (model)
   {
     return std::make_shared<dart::dynamics::MeshShape>(
-          scale, model, meshUri, retriever);
+        scale, model, meshUri, retriever);
   }
   else
   {
@@ -281,8 +282,7 @@ dart::dynamics::ShapePtr readMeshShape(
 
 //==============================================================================
 std::string resolveShapeName(
-    tinyxml2::XMLElement* geomEle,
-    dart::dynamics::BodyNode* bodyNode)
+    tinyxml2::XMLElement* geomEle, dart::dynamics::BodyNode* bodyNode)
 {
   std::string shapeNodeName;
 
@@ -292,8 +292,8 @@ std::string resolveShapeName(
   }
   else
   {
-    shapeNodeName = bodyNode->getName()
-        + " shape (" + std::to_string(bodyNode->getShapeNodes().size()) + ")";
+    shapeNodeName = bodyNode->getName() + " shape ("
+                    + std::to_string(bodyNode->getShapeNodes().size()) + ")";
   }
 
   return shapeNodeName;
@@ -304,9 +304,8 @@ void checkScaleValidity(Eigen::Vector3d& scale)
 {
   if (scale.any() == 0.0)
   {
-    dtwarn << "[KinBodyParser]: Invalid scale ("
-           << scale[0] << ", " << scale[1] << ", " << scale[2]
-           << "). All the elements shouln't be zero.\n";
+    dtwarn << "[KinBodyParser]: Invalid scale (" << scale[0] << ", " << scale[1]
+           << ", " << scale[2] << "). All the elements shouln't be zero.\n";
   }
 }
 
@@ -331,22 +330,21 @@ void resolveFileNameAndScale(
   const auto fileNameAndScale
       = util::split(dart::utils::getValueString(geomEle, elementName), " ");
 
-  if (fileNameAndScale.size() != 1u
-      && fileNameAndScale.size() != 2u
+  if (fileNameAndScale.size() != 1u && fileNameAndScale.size() != 2u
       && fileNameAndScale.size() != 4u)
   {
     throw std::invalid_argument(
-          "[KinBodyParser]: Invalid number of arguments for file name and "
-          "scale. It should be 1, 2, or 4. "
-          "Ex) <Render>path/to/file.stl 0.1</Render>");
+        "[KinBodyParser]: Invalid number of arguments for file name and "
+        "scale. It should be 1, 2, or 4. "
+        "Ex) <Render>path/to/file.stl 0.1</Render>");
   }
 
   fileName = fileNameAndScale[0];
 
   if (fileNameAndScale.size() == 2u)
   {
-    scale = Eigen::Vector3d::Constant(
-        dart::utils::toDouble(fileNameAndScale[1]));
+    scale
+        = Eigen::Vector3d::Constant(dart::utils::toDouble(fileNameAndScale[1]));
   }
   else if (fileNameAndScale.size() == 4u)
   {
@@ -368,8 +366,8 @@ void shouldBeNonPositive(const Eigen::Vector3d& extents)
 {
   if (extents.any() <= 0.0)
   {
-    dtwarn << "[KinBodyParser]: Invalid extents ("
-           << extents[0] << ", " << extents[1] << ", " << extents[2]
+    dtwarn << "[KinBodyParser]: Invalid extents (" << extents[0] << ", "
+           << extents[1] << ", " << extents[2]
            << "). All the elements should be positive. "
            << "If you used 0 value intentionally to create a pure "
            << "visualization geometry, try to use 'none' attribute for the "
@@ -417,10 +415,11 @@ void readGeom(
     auto halfExtents = dart::utils::getValueVector3d(geomEle, "extents");
     shouldBeNonPositive(halfExtents);
 
-    auto shape = std::make_shared<dart::dynamics::BoxShape>(2.0*halfExtents);
+    auto shape = std::make_shared<dart::dynamics::BoxShape>(2.0 * halfExtents);
 
-    collShapeNode = bodyNode->createShapeNodeWith<
-        dart::dynamics::CollisionAspect>(shape, shapeNodeName);
+    collShapeNode
+        = bodyNode->createShapeNodeWith<dart::dynamics::CollisionAspect>(
+            shape, shapeNodeName);
   }
   else if (typeAttr == "sphere")
   {
@@ -429,8 +428,9 @@ void readGeom(
 
     auto shape = std::make_shared<dart::dynamics::SphereShape>(radius);
 
-    collShapeNode = bodyNode->createShapeNodeWith<
-        dart::dynamics::CollisionAspect>(shape, shapeNodeName);
+    collShapeNode
+        = bodyNode->createShapeNodeWith<dart::dynamics::CollisionAspect>(
+            shape, shapeNodeName);
   }
   else if (typeAttr == "cylinder")
   {
@@ -442,10 +442,11 @@ void readGeom(
     auto shape
         = std::make_shared<dart::dynamics::CylinderShape>(radius, height);
 
-    collShapeNode = bodyNode->createShapeNodeWith<
-        dart::dynamics::CollisionAspect>(shape, shapeNodeName);
+    collShapeNode
+        = bodyNode->createShapeNodeWith<dart::dynamics::CollisionAspect>(
+            shape, shapeNodeName);
   }
-  else if(typeAttr == "trimesh")
+  else if (typeAttr == "trimesh")
   {
     std::string collisionOrData;
 
@@ -481,8 +482,9 @@ void readGeom(
     auto shape = readMeshShape(
         fileNameOfCollision, scaleOfCollision, baseUri, retriever);
 
-    collShapeNode = bodyNode->createShapeNodeWith<
-        dart::dynamics::CollisionAspect>(shape, shapeNodeName);
+    collShapeNode
+        = bodyNode->createShapeNodeWith<dart::dynamics::CollisionAspect>(
+            shape, shapeNodeName);
   }
   else
   {
@@ -518,20 +520,19 @@ void readGeom(
     resolveFileNameAndScale(fileNameOfRender, scaleOfRender, geomEle, "render");
     auto renderShapeNodeName = resolveShapeName(geomEle, bodyNode);
 
-    if (typeAttr == "trimesh"
-        && fileNameOfCollision == fileNameOfRender
+    if (typeAttr == "trimesh" && fileNameOfCollision == fileNameOfRender
         && scaleOfCollision == scaleOfRender)
     {
       collShapeNode->createVisualAspect();
     }
     else
     {
-      auto shape = readMeshShape(
-          fileNameOfRender, scaleOfRender, baseUri, retriever);
+      auto shape
+          = readMeshShape(fileNameOfRender, scaleOfRender, baseUri, retriever);
 
       // Create additional ShapeNode only for visualization
-      bodyNode->createShapeNodeWith<
-          dart::dynamics::VisualAspect>(shape, renderShapeNodeName);
+      bodyNode->createShapeNodeWith<dart::dynamics::VisualAspect>(
+          shape, renderShapeNodeName);
     }
   }
   else
@@ -546,7 +547,7 @@ void readGeom(
 
 //==============================================================================
 dart::common::ResourceRetrieverPtr getRetriever(
-  const dart::common::ResourceRetrieverPtr& nullOrRetriever)
+    const dart::common::ResourceRetrieverPtr& nullOrRetriever)
 {
   if (nullOrRetriever)
     return nullOrRetriever;
@@ -586,6 +587,6 @@ tinyxml2::XMLElement* transformElementNamesToLowerCases(
     transformElementNamesToLowerCasesRecurse(firstEle);
 }
 
-} //anonymous namespace
-} //namespace utils
-} //namespace dart
+}  // anonymous namespace
+}  // namespace utils
+}  // namespace dart
