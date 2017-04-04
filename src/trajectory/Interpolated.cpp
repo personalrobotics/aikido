@@ -94,7 +94,7 @@ void Interpolated::evaluateDerivative(double _t, int _derivative,
     throw std::invalid_argument(
         "0th derivative not available. Use evaluate(t, state)."); 
 
-  if (static_cast<size_t>(_derivative) > mInterpolator->getNumDerivatives()) // we are looking at ith derivative => i cannot be negative
+  if (static_cast<size_t>(_derivative) > mInterpolator->getNumDerivatives())
   {
     _tangentVector.resize(mStateSpace->getDimension());
     _tangentVector.setZero();

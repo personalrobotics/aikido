@@ -113,7 +113,7 @@ int FiniteSampleGenerator::getNumSamples() const
 //=============================================================================
 bool FiniteSampleGenerator::canSample() const
 {
-  return mStates.size() > static_cast<size_t>(mIndex); // size() cannot be negative 
+  return mStates.size() > static_cast<size_t>(mIndex); 
 }
 
 //=============================================================================

@@ -7,7 +7,7 @@ namespace dart {
 //=============================================================================
 SE2Joint::SE2Joint(::dart::dynamics::PlanarJoint* _joint)
   : SE2()
-  , JointStateSpace(_joint) // ordering of class members is important
+  , JointStateSpace(_joint)
   
 {
 }
