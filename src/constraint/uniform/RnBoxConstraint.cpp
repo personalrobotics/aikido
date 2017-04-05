@@ -7,8 +7,7 @@ namespace constraint {
 using constraint::ConstraintType;
 
 //=============================================================================
-class RnBoxConstraintSampleGenerator
-  : public constraint::SampleGenerator
+class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
 public:
   statespace::StateSpacePtr getStateSpace() const override;
@@ -253,13 +252,13 @@ std::unique_ptr<constraint::SampleGenerator>
 }
 
 //=============================================================================
-Eigen::VectorXd RnBoxConstraint::getLowerLimits()
+const Eigen::VectorXd& RnBoxConstraint::getLowerLimits() const
 {
   return mLowerLimits;
 }
 
 //=============================================================================
-Eigen::VectorXd RnBoxConstraint::getUpperLimits()
+const Eigen::VectorXd& RnBoxConstraint::getUpperLimits() const
 {
   return mUpperLimits;
 }

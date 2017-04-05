@@ -1,5 +1,6 @@
 set(sources
   uniform/RnBoxConstraint.cpp
+  uniform/RnConstantSampler.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
   CartesianProductProjectable.cpp
