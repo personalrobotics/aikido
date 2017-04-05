@@ -119,20 +119,33 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   if (!_space)
     throw std::invalid_argument{"StateSpace must be non-null."};
 
-  const auto numControlledDofs = _space->getNumSubspaces();
-  if (_jointTrajectory.joint_names.size() != numControlledDofs)
+  const auto numControlledJoints = _space->getNumSubspaces();
+  if (_jointTrajectory.joint_names.size() != numControlledJoints)
   {
     std::stringstream message;
     message << "Incorrect number of joints: expected "
-        << numControlledDofs << ", got "
+        << numControlledJoints << ", got "
         << _jointTrajectory.joint_names.size() << ".";
     throw std::invalid_argument{message.str()};
+  }
+
+  // Check that all joints are single DOF.
+  for (size_t i = 0; i < _space->getNumSubspaces(); ++i)
+  {
+    auto n = _space->getJointSpace(i)->getJoint()->getNumDofs();
+    if (n != 1)
+    {
+      std::stringstream message;
+      message << "[Conversion] Expected 1 dof. Joint "
+      << i << " has " << n << " dofs.";
+      throw std::invalid_argument{message.str()};
+    }
   }
 
   if (_jointTrajectory.points.size() < 2)
   {
     throw std::invalid_argument{
-      "Trajectory must contain at least two or more waypoints."};
+      "Trajectory must contain two or more waypoints."};
   }
 
   // Check whether joint names match between _space and _jointTrajectory.
@@ -151,7 +164,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
   Eigen::VectorXd currPosition, currVelocity, currAcceleration;
-  extractJointTrajectoryPoint(_jointTrajectory, 0, numControlledDofs,
+  extractJointTrajectoryPoint(_jointTrajectory, 0, numControlledJoints,
     &currPosition, true, &currVelocity, false, &currAcceleration, false);
 
   const auto& firstWaypoint = _jointTrajectory.points.front();
@@ -172,7 +185,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   else if (isVelocityRequired)
     numCoefficients = 4; // cubic
   else
-    numCoefficients = 2; // linear;
+    numCoefficients = 2; // linear
 
   // Convert the ROS trajectory message to an Aikido spline.
   std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{_space}};
@@ -182,7 +195,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   for (size_t iwaypoint = 1; iwaypoint < waypoints.size(); ++iwaypoint)
   {
     Eigen::VectorXd nextPosition, nextVelocity, nextAcceleration;
-    extractJointTrajectoryPoint(_jointTrajectory, iwaypoint, numControlledDofs,
+    extractJointTrajectoryPoint(_jointTrajectory, iwaypoint, numControlledJoints,
       &nextPosition, isPositionRequired,
       &nextVelocity, isVelocityRequired,
       &nextAcceleration, isAccelerationRequired);
@@ -191,7 +204,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     const auto nextTimeFromStart = waypoints[iwaypoint].time_from_start.toSec();
     const auto segmentDuration = nextTimeFromStart - currTimeFromStart;
     const auto segmentCoefficients = fitPolynomial(
-      0., Eigen::VectorXd::Zero(numControlledDofs), currVelocity, currAcceleration,
+      0., Eigen::VectorXd::Zero(numControlledJoints), currVelocity, currAcceleration,
       segmentDuration, nextPosition - currPosition, nextVelocity, nextAcceleration,
       numCoefficients);
 
