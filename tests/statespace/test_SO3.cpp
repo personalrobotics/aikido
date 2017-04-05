@@ -89,6 +89,7 @@ TEST(SO3, CopyState)
 
   auto quat = Eigen::Quaterniond(
       Eigen::AngleAxisd(1.8 * M_PI, Eigen::Vector3d::UnitX()));
+  source.setQuaternion(quat);
 
   so3.copyState(source, dest);
   EXPECT_TRUE(source.getQuaternion().isApprox(dest.getQuaternion()));
