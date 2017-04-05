@@ -33,13 +33,12 @@ AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic,
 }
 
 //================================================================================================================================
-// bool AprilTagsModule::detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list,ros::Duration timeout, ros::Time timestamp)
-AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::Duration timeout, ros::Time timestamp)
+bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::Duration timeout, ros::Time timestamp)
 {
 	bool any_valid = false;
 	tf::TransformListener listener(mNode);
 	//Looks at all detected tags, looks up config file 
-	//Appends new skeletons to skeleton list
+	//Adding new skeletons to the world env
 	visualization_msgs::MarkerArrayConstPtr marker_message
  			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(mMarkerTopic,mNode,timeout);
 
@@ -93,7 +92,8 @@ AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::Durati
 			}
 
 			//Get the transform as a pose matrix
-			Eigen::Isometry3d frame_pose = aikido::perception::convertStampedTransformToEigen(transform);
+			Eigen::Isometry3d frame_pose = 
+				aikido::perception::convertStampedTransformToEigen(transform);
 
 			//Compose to get actual skeleton pose
 			Eigen::Isometry3d temp_pose = frame_pose * marker_pose;
@@ -109,65 +109,41 @@ AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::Durati
 			skel_name.append(std::to_string(marker_transform.id));
 			bool is_new_skel;
 
-			//Search skeleton_list for skeleton
-
+			//Search the enviornment for skeleton
 			dart::dynamics::SkeletonPtr skel_to_update;
-			dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skel_name)
+			dart::dynamics::SkeletonPtr env_skeleton = 
+				env -> getSkeleton(skel_name);
 			
 			if(env_skeleton == NULL){
+				// Getting the model for the new object
 				is_new_skel = true;
 				dart::utils::DartLoader urdfLoader;
 				skel_to_update = 
 					urdfLoader.parseSkeleton(skel_resource, mResourceRetriever);
 
-					if(!skel_to_update)
-						dtwarn<<"[AprilTagsModule::detectObjects] Failed to load skeleton for URI "<<skel_resource.toString()<<std::endl;
+					if(!skel_to_update){
+						dtwarn<<"[AprilTagsModule::detectObjects] Failed to load skeleton for URI "<< skel_resource.toString()<<std::endl;
+					}
+
 					skel_to_update->setName(skel_name);
 			} else {
+				// 
 				is_new_skel = false;
-				skel_to_update = env_skeleton
+				skel_to_update = env_skeleton;
 			}
-
-			// const auto it = std::find_if(std::begin(skeleton_list), std::end(skeleton_list),
-			// 	[&](const dart::dynamics::SkeletonPtr& skeleton)
-			//   	{
-			// 		return skeleton->getName() == skel_name;
-			//   	}
-			// );
-
-			// dart::dynamics::SkeletonPtr skel_to_update;
-
-			// if (it == std::end(skeleton_list)){
-			// 	//New skeleton
-			// 	is_new_skel = true;
-			// 	dart::utils::DartLoader urdfLoader;
-			// 	skel_to_update = 
-			// 		urdfLoader.parseSkeleton(skel_resource,mResourceRetriever);
-				
-			// 	if(!skel_to_update)
-			// 		dtwarn<<"[AprilTagsModule::detectObjects] Failed to load skeleton for URI "<<skel_resource.toString()<<std::endl;
-			// 	skel_to_update->setName(skel_name);
-
-			// }
-			// else{
-			// 	//Get existing skeletonPtr
-			// 	is_new_skel = false;
-			// 	skel_to_update = *it;
-			// }
-
 
 			dart::dynamics::Joint* jtptr;
 			//Get root joint of skeleton
 			if(skel_to_update->getNumDofs() > 0){
 				jtptr = skel_to_update->getJoint(0);
-			}
-			else{
+			} else {
 				dtwarn<< "[AprilTagsModule::detectObjects] Skeleton "<<skel_name<<" has 0 DOFs! \n";
 				continue; 
 			}
 
 			//Downcast Joint to FreeJoint
-			dart::dynamics::FreeJoint* freejtptr = dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
+			dart::dynamics::FreeJoint* freejtptr = 
+				dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
 
 			//Check if successful down-cast
 			if(freejtptr == nullptr){
@@ -178,16 +154,16 @@ AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::Durati
 			freejtptr->setTransform(skel_pose);
 
 			if(is_new_skel){
-				//Append to list
-				// skeleton_list.push_back(skel_to_update);
-				env->addSkeleton(skel_to_update)
+				//Adding new skeleton to the world env
+				env->addSkeleton(skel_to_update);
 			}
 
 		}
 
 	}
+
 	if(!any_valid){
-		dtwarn<< "[AprilTagsModule::detectObjects] No marker up-to-date with timestamp parameter\n";
+		dtwarn << "[AprilTagsModule::detectObjects] No marker up-to-date with timestamp parameter\n";
 		return false;
 	}
 
