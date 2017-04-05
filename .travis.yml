@@ -8,6 +8,7 @@ cache:
 - apt
 # Install test fixture dependencies.
 before_install:
+- sudo apt-get -y install clang-format-3.8
 - mkdir -p "${HOME}/workspace/src"
 - cd "${HOME}/workspace"
 - git clone https://github.com/personalrobotics/pr-cleanroom.git scripts
