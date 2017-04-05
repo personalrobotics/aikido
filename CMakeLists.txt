@@ -135,12 +135,13 @@ initialize_component_helpers(aikido)
 include(CMakePackageConfigHelpers)
 include(FindPkgConfig)
 
-find_package(Boost COMPONENTS filesystem)
-include_directories(${Boost_INCLUDE_DIRS})
+find_package(Boost REQUIRED COMPONENTS filesystem)
 
-# TODO: utils-urdf should only be required for aikido::perception.
-find_package(DART 6.1.0 REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
-include_directories(${DART_INCLUDE_DIRS})
+find_package(DART 6.1.0 REQUIRED
+  COMPONENTS optimizer-nlopt
+  OPTIONAL_COMPONENTS utils-urdf
+  CONFIG
+)
 
 #==============================================================================
 # Compiler settings

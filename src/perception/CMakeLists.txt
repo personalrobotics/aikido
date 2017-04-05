@@ -1,6 +1,12 @@
 #==============================================================================
 # Dependencies
 #
+if(NOT DART_utils-urdf_FOUND)
+  message(STATUS "Looking for DART COMPONENT: dart-utils-urdf - NOT found, "
+      "to use perception, please install dart-utils-urdf")
+  return()
+endif()
+
 pkg_check_modules(YAMLCPP QUIET yaml-cpp)
 aikido_check_package(YAMLCPP "perception" "yaml-cpp")
 
@@ -36,21 +42,25 @@ set(sources
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_perception" SYSTEM
   PUBLIC
+    ${DART_INCLUDE_DIRS}
     ${YAMLCPP_INCLUDE_DIRS}
     ${geometry_msgs_INCLUDE_DIRS}
     ${roscpp_INCLUDE_DIRS}
+    ${std_msgs_INCLUDE_DIRS}
     ${tf_INCLUDE_DIRS}
   PRIVATE
     ${visualization_msgs_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_perception"
-  ${DART_LIBRARIES}
-  ${YAMLCPP_LIBRARIES}
-  ${geometry_msgs_LIBRARIES}
-  ${roscpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${visualization_msgs_LIBRARIES}
-  ${tf_LIBRARIES}
+  PUBLIC
+    ${DART_LIBRARIES}
+    ${YAMLCPP_LIBRARIES}
+    ${geometry_msgs_LIBRARIES}
+    ${roscpp_LIBRARIES}
+    ${std_msgs_LIBRARIES}
+    ${tf_LIBRARIES}
+  PRIVATE
+    ${visualization_msgs_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}

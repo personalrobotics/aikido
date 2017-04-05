@@ -5,8 +5,8 @@ add_subdirectory("rviz")
 add_subdirectory("statespace")
 add_subdirectory("util")
 add_subdirectory("distance")   # Dependencies: statespace
-add_subdirectory("trajectory") # Dependencies: statespace
+add_subdirectory("trajectory") # Dependencies: statespace, util
 add_subdirectory("constraint") # Dependencies: statespace, util
-add_subdirectory("planner")    # Dependencies: external, statespace, trajectory
+add_subdirectory("planner")    # Dependencies: external, statespace, trajectory, constraint, distance, util
 add_subdirectory("control")    # Dependencies: statespace, trajectory
 #add_subdirectory("python")     # Dependencies: everything

@@ -7,12 +7,9 @@ set(sources
 
 add_library("${PROJECT_NAME}_control" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_control"
-  "${PROJECT_NAME}_statespace"
-  "${PROJECT_NAME}_trajectory"
-  ${DART_LIBRARIES}
-)
-target_compile_options("${PROJECT_NAME}_control"
-  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+  PUBLIC
+    "${PROJECT_NAME}_statespace"
+    "${PROJECT_NAME}_trajectory"
 )
 
 add_component(${PROJECT_NAME} control)

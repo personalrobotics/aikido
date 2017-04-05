@@ -2,14 +2,12 @@ set(sources SnapPlanner.cpp)
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_planner"
-  "${PROJECT_NAME}_constraint"
-  "${PROJECT_NAME}_distance"
-  "${PROJECT_NAME}_trajectory"
-  "${PROJECT_NAME}_statespace"
-  "${PROJECT_NAME}_util"
-)
-target_compile_options("${PROJECT_NAME}_planner"
-  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+  PUBLIC
+    "${PROJECT_NAME}_constraint"
+    "${PROJECT_NAME}_distance"
+    "${PROJECT_NAME}_trajectory"
+    "${PROJECT_NAME}_statespace"
+    "${PROJECT_NAME}_util"
 )
 
 add_component(${PROJECT_NAME} planner)

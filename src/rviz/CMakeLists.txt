@@ -42,6 +42,8 @@ add_library("${PROJECT_NAME}_rviz" SHARED
 )
 target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
   PUBLIC
+    ${Boost_INCLUDE_DIRS}
+    ${DART_INCLUDE_DIRS}
     ${interactive_markers_INCLUDE_DIRS}
     ${geometry_msgs_INCLUDE_DIRS}
     ${std_msgs_INCLUDE_DIRS}
@@ -50,14 +52,15 @@ target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
     ${roscpp_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_rviz"
-  ${Boost_filesystem_LIBRARIES}
-  ${DART_LIBRARIES}
-  ${geometry_msgs_LIBRARIES}
-  ${interactive_markers_LIBRARIES}
-  ${libmicrohttpd_LIBRARIES}
-  ${roscpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${visualization_msgs_LIBRARIES}
+  PUBLIC
+    ${Boost_filesystem_LIBRARIES}
+    ${DART_LIBRARIES}
+    ${geometry_msgs_LIBRARIES}
+    ${interactive_markers_LIBRARIES}
+    ${libmicrohttpd_LIBRARIES}
+    ${roscpp_LIBRARIES}
+    ${std_msgs_LIBRARIES}
+    ${visualization_msgs_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_rviz"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}

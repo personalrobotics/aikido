@@ -9,9 +9,6 @@ target_link_libraries("${PROJECT_NAME}_planner_parabolic"
   PRIVATE
     "${PROJECT_NAME}_external_hauserparabolicsmoother"
 )
-target_compile_options("${PROJECT_NAME}_planner_parabolic"
-  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
-)
 
 add_component(${PROJECT_NAME} planner_parabolic)
 add_component_targets(${PROJECT_NAME} planner_parabolic "${PROJECT_NAME}_planner_parabolic")
