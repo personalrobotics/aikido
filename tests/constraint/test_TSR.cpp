@@ -18,7 +18,7 @@ using dart::common::make_unique;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 
-static Eigen::Vector6d getPose(Eigen::Isometry3d isometry)
+static inline Eigen::Vector6d getPose(Eigen::Isometry3d isometry)
 {
   Eigen::Vector6d pose;
   pose.topRows(3) = isometry.translation(); 
@@ -26,7 +26,7 @@ static Eigen::Vector6d getPose(Eigen::Isometry3d isometry)
   return pose; 
 }
 
-static std::unique_ptr<DefaultRNG> make_rng()
+static inline std::unique_ptr<DefaultRNG> make_rng()
 {
   return make_unique<RNGWrapper<std::default_random_engine>>(0);
 }

@@ -207,8 +207,6 @@ TEST_F(BarrettFingerPositionCommandExecutorTest, execute_WaitOnFuture_CommandExe
 
   double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
 
-  double startproximal = mBn2->getParentJoint()->getDof(0)->getPosition();
-  double startDistal = mBn3->getParentJoint()->getDof(0)->getPosition();
   double goalProximal = mPosition;
   double goalDistal = mPosition*mimicRatio;
 
@@ -255,8 +253,6 @@ TEST_F(BarrettFingerPositionCommandExecutorTest,
   }while(status != std::future_status::ready);
 
   future.wait();
-
-  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
 
   double proximalExpected = 0.56548; // Value made by visual inspection
   double proximalActual = mBn2->getParentJoint()->getDof(0)->getPosition();

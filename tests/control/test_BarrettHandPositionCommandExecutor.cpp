@@ -245,22 +245,7 @@ TEST_F(BarrettHandPositionCommandExecutorTest,
   BarrettHandPositionCommandExecutor executor(
     mPositionExecutors, mSpreadExecutor);
 
-  double startPrimalDofValues[3];
-  double startDistalDofValues[3];
-  double startSpread = mFingerChains[0]->getDof(0)->getPosition();
   double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
-
-  for(int i = 0 ; i < 2; ++i)
-  {
-    startPrimalDofValues[i] = mFingerChains[i]->getDof(1)->getPosition();
-  }
-  startPrimalDofValues[2] = mFingerChains[2]->getDof(0)->getPosition();
-
-  for(int i = 0 ; i < 2; ++i)
-  {
-    startDistalDofValues[i] = mFingerChains[i]->getDof(2)->getPosition();
-  }
-  startDistalDofValues[2] = mFingerChains[2]->getDof(1)->getPosition();
 
   // Execute trajectory
   auto future = executor.execute(mPositions, mCollideWith);
@@ -361,7 +346,6 @@ TEST_F(BarrettHandPositionCommandExecutorTest,
 
   double primal = mFingerChains[0]->getDof(1)->getPosition();
   double distal = mFingerChains[0]->getDof(2)->getPosition();
-  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
 
   // Values made by visual inspection
   EXPECT_NEAR(0.56548, primal, eps);
