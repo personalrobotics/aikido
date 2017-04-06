@@ -15,6 +15,8 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
 
+#include <ompl/geometric/PathSimplifier.h>
+
 namespace aikido {
 namespace planner {
 namespace ompl {
@@ -240,6 +242,41 @@ trajectory::InterpolatedPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
                              statespace::StateSpacePtr _sspace,
                              statespace::InterpolatorPtr _interpolator,
                              double _maxPlanTime);
+
+
+/// Take in an aikido trajectory and simplify it using OMPL methods
+/// \param _statespace The StateSpace that the planner must plan within
+/// \param _interpolator An Interpolator defined on the StateSpace. This is used
+/// to interpolate between two points within the space.
+/// \param _dmetric A valid distance metric defined on the StateSpace
+/// \param _sampler A Sampleable that can sample states from the
+/// StateSpace. Warning: Many OMPL planners internally assume this sampler
+/// samples uniformly. Care should be taken when using a non-uniform sampler.
+/// \param _validityConstraint A constraint used to test validity during
+/// planning. This should include collision checking and any other constraints
+/// that must be satisfied for a state to be considered valid.
+/// \param _boundsConstraint A constraint used to determine whether states
+/// encountered during planning fall within any bounds specified on the
+/// StateSpace. In addition to the _validityConstraint, this must also be
+/// satsified for a state to be considered valid.
+/// \param _boundsProjector A Projectable that projects a state back within
+/// valid bounds defined on the StateSpace
+/// \param _maxPlanTime The maximum time to allow the planner to search for a
+/// solution
+/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
+/// validity checking two successive points on a tree extension
+/// \param _originalTraj The untimed trajectory obtained from the planner, 
+/// needs simplifying.
+trajectory::InterpolatedPtr pathSimplifier(statespace::StateSpacePtr _stateSpace,
+                                           statespace::InterpolatorPtr _interpolator,
+                                           distance::DistanceMetricPtr _dmetric,
+                                           constraint::SampleablePtr _sampler,
+                                           constraint::TestablePtr _validityConstraint,
+                                           constraint::TestablePtr _boundsConstraint,
+                                           constraint::ProjectablePtr _boundsProjector,
+                                           double _maxPlanTime, double _maxDistanceBtwValidityChecks,
+                                           trajectory::InterpolatedPtr _originalTraj);
+
 
 } // namespace ompl
 } // namespace planner

@@ -317,6 +317,57 @@ trajectory::InterpolatedPtr planCRRTConnect(
                   std::move(_interpolator), _maxPlanTime);
 }
 
+//=============================================================================
+trajectory::InterpolatedPtr pathSimplifier(statespace::StateSpacePtr _stateSpace,
+                                           statespace::InterpolatorPtr _interpolator,
+                                           distance::DistanceMetricPtr _dmetric,
+                                           constraint::SampleablePtr _sampler,
+                                           constraint::TestablePtr _validityConstraint,
+                                           constraint::TestablePtr _boundsConstraint,
+                                           constraint::ProjectablePtr _boundsProjector,
+                                           double _maxPlanTime, double _maxDistanceBtwValidityChecks,
+                                           trajectory::InterpolatedPtr _originalTraj)
+{
+
+// Step 1: Generate the space information of OMPL type
+auto si = getSpaceInformation(
+      _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
+      std::move(_validityConstraint), std::move(_boundsConstraint),
+      std::move(_boundsProjector), _maxDistanceBtwProjections);
+
+// Step 2: Convert the AIKIDO trajectory to Geometric Path 
+::ompl::geometric::PathGeometric *path = new ::ompl::geometric::PathGeometric(si);
+
+for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx) 
+{
+      const auto *st =
+          static_cast<::ompl::base::State *>(
+              _originalTraj->getWaypoint(idx));
+      // Arbitrary timing
+      path->append(st);
 }
+
+// Step 3: Use the OMPL methods to simplify the path
+// auto simplifier = ompl::geometric::PathSimplifier(si);
+// simplifier.simplifyMax(path); // Is this right?
+
+// Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory -> Use from planOMPL
+auto shortenedTraj = std::make_shared<trajectory::Interpolated>(
+        std::move(_stateSpace), std::move(_interpolator));
+
+for (size_t idx = 0; idx < omplTraj->getStateCount(); ++idx) 
+{
+      const auto *st =
+          static_cast<GeometricStateSpace::StateType *>(
+              path->getState(idx));
+      // Arbitrary timing
+      shortenedTraj->addWaypoint(idx, st->mState);
 }
+
+    return shortenedTraj;
 }
+
+//=============================================================================
+} // ns aikido
+} // ns planner
+} // ns ompl
