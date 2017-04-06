@@ -14,6 +14,7 @@
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
+#include <ompl/base/ScopedState.h>
 
 #include <ompl/geometric/PathSimplifier.h>
 
@@ -275,6 +276,7 @@ trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
                                            constraint::TestablePtr _boundsConstraint,
                                            constraint::ProjectablePtr _boundsProjector,
                                            double _maxPlanTime, double _maxDistanceBtwValidityChecks,
+                                           double _maxDistanceBtwProjections,
                                            trajectory::InterpolatedPtr _originalTraj);
 
 

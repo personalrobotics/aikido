@@ -326,6 +326,7 @@ trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
                                            constraint::TestablePtr _boundsConstraint,
                                            constraint::ProjectablePtr _boundsProjector,
                                            double _maxPlanTime, double _maxDistanceBtwValidityChecks,
+                                           double _maxDistanceBtwProjections,
                                            trajectory::InterpolatedPtr _originalTraj)
 {
 
@@ -343,13 +344,17 @@ for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx)
       const auto *st =
           static_cast<::ompl::base::State *>(
               _originalTraj->getWaypoint(idx));
-      // Arbitrary timing
-      path->append(st);
+      // // Arbitrary timing
+      // path->append(st);
+      // ::ompl::base::ScopedState<::ompl::base::StateSpace> wayPointOMPL(si);
+      // wayPointOMPL = _originalTraj->getWaypoint(idx);
+      // path->append(wayPointOMPL.get());
 }
 
 // Step 3: Use the OMPL methods to simplify the path
-simplifier.reset(new PathSimplifier(si));
-bool const shortened = simplifier->shortcutPath(path, 1, 1, 1.0, 0.005);
+::ompl::geometric::PathSimplifierPtr simplifier;
+simplifier.reset(new ::ompl::geometric::PathSimplifier(si));
+bool const shortened = simplifier->shortcutPath(*path, 1, 1, 1.0, 0.005);
 
 // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory -> Use from planOMPL
 auto returnTraj = std::make_shared<trajectory::Interpolated>(
