@@ -12,14 +12,19 @@ namespace util {
 /// ExecutorThread is a wrapper of std::thread that calls a callback
 /// periodically.
 ///
+/// If you want to let ExecutorThread calls multiple callbacks then consider
+/// using ExecutorMultiplexer.
+///
 /// \code
 /// ExecutorThread exec(
-///     []() { std::cout << "running\n";}, std::chrono::nanoseconds(1));
+///     []() { std::cout << "running...\n"; }, std::chrono::milliseconds(10));
 ///
 /// // thread is running
 ///
-/// exec.stop();
+/// // The destructor of ExecutorThread stops the thread.
 /// \endcode
+///
+/// \sa ExecutorMultiplexer
 class ExecutorThread final
 {
 public:

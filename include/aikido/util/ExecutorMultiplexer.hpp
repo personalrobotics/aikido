@@ -8,7 +8,12 @@
 namespace aikido {
 namespace util {
 
-/// ExecutorMultiplexer stores callbacks and calls them in order of they added.
+/// Combine multiple executors (i.e. no argument callbacks) into one executor.
+///
+/// This helper class allows one ExecutorThread to call multiple executors by
+/// sequentially calling the callbacks added to this class.
+///
+/// \sa ExecutorThread
 class ExecutorMultiplexer final
 {
 public:
@@ -18,7 +23,11 @@ public:
   /// Default destructor.
   ~ExecutorMultiplexer() = default;
 
-  /// Adds callback. The added callbacks will be called order of they added.
+  /// Adds a callback. The added callbacks will be called by operator().
+  ///
+  /// The order of callback calling is implementation detail that is subject to
+  /// change.
+  ///
   /// \param[in] callback Any callable object that doesn't return and take any
   /// parameters.
   void addCallback(std::function<void ()> callback);

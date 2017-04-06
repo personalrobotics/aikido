@@ -48,6 +48,9 @@ TEST(ExecutorThread, ExceptionThrownByCallback)
   ExecutorThread exec(
       []() { throw std::exception(); }, std::chrono::milliseconds(1));
 
+  // Assumed that the 3 second sleep is essentially a timeout for the test. If
+  // this is not the case, either increase the sleep time or remove this test
+  // (unless there is a better test for this).
   std::this_thread::sleep_for(std::chrono::seconds(3));
 
   EXPECT_TRUE(!exec.isRunning());
