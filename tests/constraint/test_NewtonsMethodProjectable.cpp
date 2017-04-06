@@ -11,7 +11,8 @@
 using aikido::constraint::NewtonsMethodProjectable;
 using aikido::constraint::Satisfied;
 using aikido::constraint::TSR;
-using aikido::statespace::Rn;
+using aikido::statespace::R1;
+using aikido::statespace::R3;
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNullDifferentiable)
 {
@@ -21,7 +22,7 @@ TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNullDifferentiable)
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnBadToleranceDimension)
 {
-  auto ss = std::make_shared<Rn>(3);
+  auto ss = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>({0.1}), 1, 1e-4),
@@ -30,7 +31,7 @@ TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnBadToleranceDimension)
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeTolerance)
 {
-  auto ss = std::make_shared<Rn>(3);
+  auto ss = std::make_shared<R3>();
   auto constraint =
       std::make_shared<PolynomialConstraint>(Eigen::Vector3d(1, 2, 3));
   EXPECT_THROW(
@@ -40,7 +41,7 @@ TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeTolerance)
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeIteration)
 {
-  auto ss = std::make_shared<Rn>(3);
+  auto ss = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>(), 0, 1e-4),
@@ -53,7 +54,7 @@ TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeIteration)
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeStepsize)
 {
-  auto ss = std::make_shared<Rn>(3);
+  auto ss = std::make_shared<R3>(3);
   auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>(), 1, 0),
@@ -81,7 +82,7 @@ TEST(NewtonsMethodProjectable, ProjectPolynomialFirstOrder)
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  Rn rvss(1);
+  R1 rvss;
   auto s1 = rvss.createState();
   s1.setValue(v);
 
@@ -106,7 +107,7 @@ TEST(NewtonsMethodProjectable, ProjectPolynomialSecondOrder)
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  Rn rvss(1);
+  R1 rvss;
   auto seedState = rvss.createState();
   seedState.setValue(v);
 

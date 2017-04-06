@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-using aikido::statespace::Rn;
+using aikido::statespace::R1;
 
 TEST(PolynomialConstraint, Constructor)
 {
@@ -19,7 +19,7 @@ TEST(PolynomialConstraint, GetValue)
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  Rn rvss(1);
+  R1 rvss;
   auto s1 = rvss.createState();
   s1.setValue(v);
 
@@ -38,7 +38,7 @@ TEST(PolynomialConstraint, GetJacobian)
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  Rn rvss(1);
+  R1 rvss;
   auto s1 = rvss.createState();
   s1.setValue(v);
 

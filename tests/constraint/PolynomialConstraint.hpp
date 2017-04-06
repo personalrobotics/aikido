@@ -4,16 +4,14 @@
 #include <aikido/constraint/Differentiable.hpp>
 #include <aikido/statespace/Rn.hpp>
 
-
+template <int N>
 class PolynomialConstraint: public aikido::constraint::Differentiable
 {
 public:
   /// a0 + a1*x + a2*x^2 + ... + aN*x^N = 0.
   /// Last element (aN) should be non-zero.
-  explicit PolynomialConstraint(Eigen::VectorXd _coeffs);
-
   PolynomialConstraint(Eigen::VectorXd _coeffs, 
-    std::shared_ptr<aikido::statespace::Rn> _space);
+    std::shared_ptr<aikido::statespace::Rn<N>> _space);
 
   // Documentation inherited.
   size_t getConstraintDimension() const override;
@@ -40,5 +38,6 @@ private:
   std::shared_ptr<aikido::statespace::Rn> mStateSpace;
 };
 
+#include "PolynomialConstraint-impl.hpp"
 
 #endif

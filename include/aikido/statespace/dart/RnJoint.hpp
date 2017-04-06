@@ -15,18 +15,26 @@ namespace dart {
 /// best modelled as having an SE(3) state space. If you are not sure what type
 /// of \c JointStateSpace to for a \c Joint you most likely should use
 /// the \c createJointStateSpace helper function.
+template <int N>
 class RnJoint
-  : public Rn
+  : public Rn<N>
   , public JointStateSpace
-  , public std::enable_shared_from_this<RnJoint>
+  , public std::enable_shared_from_this<RnJoint<N>>
 {
 public:
-  using Rn::State;
+  static constexpr int Dimension = N;
+
+  using Rn<Dimension>::State;
+
+  using VectorNd = typename Rn<Dimension>::VectorNd;
+
+  using DartJoint
+      = ::dart::dynamics::GenericJoint<::dart::math::RealVectorSpace<N>>;
 
   /// Create a real vector state space for \c _joint.
   ///
   /// \param _joint joint to create a state space for
-  explicit RnJoint(::dart::dynamics::Joint* _joint);
+  explicit RnJoint(DartJoint* _joint);
 
   // Documentation inherited.
   void convertPositionsToState(
@@ -39,8 +47,16 @@ public:
     Eigen::VectorXd& _positions) const override;
 };
 
+using R0Joint = RnJoint<0>;
+using R1Joint = RnJoint<1>;
+using R2Joint = RnJoint<2>;
+using R3Joint = RnJoint<3>;
+using R6Joint = RnJoint<6>;
+
 } // namespace dart
 } // namespace statespace
 } // namespace aikido
+
+#include "aikido/statespace/dart/detail/RnJoint-impl.hpp"
 
 #endif // ifndef AIKIDO_STATESPACE_REALVECTORJOINTSTATESPACE_HPP_

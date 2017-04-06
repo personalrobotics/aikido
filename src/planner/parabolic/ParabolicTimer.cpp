@@ -60,10 +60,39 @@ void evaluateAtTime(
 
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
-  if (dynamic_cast<const Rn*>(_stateSpace) != nullptr)
+  // TODO(JS): Generalize Rn<N> for arbitrary N.
+  if (dynamic_cast<const Rn<0>*>(_stateSpace) != nullptr)
+  {
     return true;
+  }
+  else if (dynamic_cast<const Rn<1>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const Rn<2>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const Rn<3>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const Rn<4>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const Rn<5>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const Rn<6>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
   else if (dynamic_cast<const SO2*>(_stateSpace) != nullptr)
+  {
     return true;
+  }
   else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
   {
     for (size_t isubspace = 0; isubspace < space->getNumSubspaces(); ++isubspace)
@@ -74,7 +103,9 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
     return true;
   }
   else
+  {
     return false;
+  }
 }
 
 } // namespace

@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/Rn.hpp>
 
-using aikido::statespace::Rn;
+using aikido::statespace::R3;
+using R4 = aikido::statespace::Rn<4>;
 
 TEST(Rn, Compose)
 {
-  Rn rvss(3);
+  R3 rvss;
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -21,7 +22,7 @@ TEST(Rn, Compose)
 
 TEST(Rn, Identity)
 {
-  Rn rvss(3);
+  R3 rvss;
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -37,7 +38,7 @@ TEST(Rn, Identity)
 
 TEST(Rn, Inverse)
 {
-  Rn rvss(3);
+  R3 rvss;
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -55,7 +56,7 @@ TEST(Rn, Inverse)
 
 TEST(Rn, ExpMap)
 {
-  Rn rvss(3);
+  R3 rvss;
 
   auto out = rvss.createState();
   rvss.expMap(Eigen::Vector3d(1, 2, 3), out);
@@ -65,7 +66,7 @@ TEST(Rn, ExpMap)
 
 TEST(Rn, LogMap)
 {
-  Rn rvss(3);
+  R3 rvss;
 
   auto state = rvss.createState();
   rvss.setValue(state, Eigen::Vector3d(1, 2, 3));
@@ -81,7 +82,7 @@ TEST(Rn, LogMap)
 
 TEST(Rn, CopyState)
 {
-  Rn rvss(4);
+  R4 rvss;
   auto source = rvss.createState();
   auto dest = rvss.createState();
   source.setValue(Eigen::Vector4d(0, 1, 2, 3));
@@ -91,7 +92,7 @@ TEST(Rn, CopyState)
 
 TEST(Rn, PrintState)
 {
-  Rn rvss(4);
+  R4 rvss;
   auto source = rvss.createState();
   source.setValue(Eigen::Vector4d(0, 1, 2, 3));
   rvss.print(source, std::cout);

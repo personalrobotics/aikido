@@ -19,7 +19,7 @@ using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::Satisfied;
-using aikido::statespace::dart::RnJoint;
+using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
 using aikido::statespace::dart::SO3Joint;
 using aikido::util::RNGWrapper;
@@ -50,19 +50,18 @@ protected:
     mJoint->setPositionLowerLimit(0, -1.);
     mJoint->setPositionUpperLimit(0, 2.);
 
-    mStateSpace = std::make_shared<RnJoint>(mJoint);
+    mStateSpace = std::make_shared<R1Joint>(mJoint);
   }
 
   SkeletonPtr mSkeleton;
   RevoluteJoint* mJoint;
-  std::shared_ptr<RnJoint> mStateSpace;
+  std::shared_ptr<R1Joint> mStateSpace;
 };
 
 //=============================================================================
 TEST_F(RnJointHelpersTests, createTestableBoundsFor)
 {
-  auto constraint = createTestableBoundsFor<RnJoint>(
-    mStateSpace);
+  auto constraint = createTestableBoundsFor<R1Joint>(mStateSpace);
   auto state = mStateSpace->createState();
 
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
@@ -87,10 +86,8 @@ TEST_F(RnJointHelpersTests, createTestableBoundsFor)
 //=============================================================================
 TEST_F(RnJointHelpersTests, createProjectableBounds)
 {
-  auto testableConstraint
-    = createTestableBoundsFor<RnJoint>(mStateSpace);
-  auto projectableConstraint
-    = createProjectableBoundsFor<RnJoint>(mStateSpace);
+  auto testableConstraint = createTestableBoundsFor<R1Joint>(mStateSpace);
+  auto projectableConstraint = createProjectableBoundsFor<R1Joint>(mStateSpace);
 
   auto inState = mStateSpace->createState();
   auto outState = mStateSpace->createState();
@@ -124,7 +121,7 @@ TEST_F(RnJointHelpersTests, createProjectableBounds)
 TEST_F(RnJointHelpersTests, createDifferentiableBounds)
 {
   const auto differentiableConstraint
-    = createDifferentiableBoundsFor<RnJoint>(mStateSpace);
+    = createDifferentiableBoundsFor<R1Joint>(mStateSpace);
 
   EXPECT_EQ(mStateSpace, differentiableConstraint->getStateSpace());
 
@@ -158,10 +155,8 @@ TEST_F(RnJointHelpersTests, createDifferentiableBounds)
 TEST_F(RnJointHelpersTests, createSampleableBounds)
 {
   auto rng = make_unique<RNGWrapper<std::default_random_engine>>(0);
-  const auto testableConstraint
-    = createTestableBoundsFor<RnJoint>(mStateSpace);
-  const auto sampleableConstraint
-    = createSampleableBoundsFor<RnJoint>(
+  const auto testableConstraint = createTestableBoundsFor<R1Joint>(mStateSpace);
+  const auto sampleableConstraint = createSampleableBoundsFor<R1Joint>(
         mStateSpace, std::move(rng));
   ASSERT_TRUE(!!sampleableConstraint);
   EXPECT_EQ(mStateSpace, sampleableConstraint->getStateSpace());

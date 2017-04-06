@@ -11,6 +11,7 @@ namespace constraint {
 
 /// A BoxConstraint on RealVectorStates.
 /// For each dimension, this constraint has lowerLimit and upperLimit. 
+template <int N>
 class RnBoxConstraint
   : public constraint::Differentiable
   , public constraint::Projectable
@@ -21,6 +22,8 @@ public:
   using constraint::Projectable::project;
   using constraint::Differentiable::getValueAndJacobian;
 
+  using VectorNd = Eigen::Matrix<double, N, 1>;
+
   /// Constructor.
   /// \param _space Space in which this constraint operates.
   /// \param _rng Random number generator to be used for sampling.
@@ -29,10 +32,10 @@ public:
   /// \param _upperLimits Upper limits.
   ///        The length of this vector should match the dimension of _space. 
   RnBoxConstraint(
-    std::shared_ptr<statespace::Rn> _space,
+    std::shared_ptr<statespace::Rn<N>> _space,
     std::unique_ptr<util::RNG> _rng,
-    const Eigen::VectorXd& _lowerLimits,
-    const Eigen::VectorXd& _upperLimits);
+    const VectorNd& _lowerLimits,
+    const VectorNd& _upperLimits);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -72,14 +75,21 @@ public:
   const Eigen::VectorXd& getUpperLimits() const;
 
 private:
-  std::shared_ptr<statespace::Rn> mSpace;
+  std::shared_ptr<statespace::Rn<N>> mSpace;
   std::unique_ptr<util::RNG> mRng;
-  Eigen::VectorXd mLowerLimits;
-  Eigen::VectorXd mUpperLimits;
+  VectorNd mLowerLimits;
+  VectorNd mUpperLimits;
 };
 
+using R0BoxConstraint = RnBoxConstraint<0>;
+using R1BoxConstraint = RnBoxConstraint<1>;
+using R2BoxConstraint = RnBoxConstraint<2>;
+using R3BoxConstraint = RnBoxConstraint<3>;
+using R6BoxConstraint = RnBoxConstraint<6>;
 
 } // namespace constraint
 } // namespace aikido
+
+#include "aikido/constraint/uniform/detail/RnBoxConstraint-impl.hpp"
 
 #endif // AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_

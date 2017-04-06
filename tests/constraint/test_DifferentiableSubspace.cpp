@@ -10,7 +10,7 @@ using aikido::constraint::DifferentiableSubspace;
 using aikido::constraint::Satisfied;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
-using aikido::statespace::Rn;
+using aikido::statespace::R3;
 
 class DifferentiableSubspaceTest : public testing::Test
 {
@@ -41,7 +41,7 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullStateSpace)
 TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullConstraint)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv = std::make_shared<Rn>(3);
+  auto rv = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(rv);
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
@@ -52,7 +52,7 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullConstraint)
 TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnInvalidIndex)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv = std::make_shared<Rn>(3);
+  auto rv = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(rv);
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
@@ -64,7 +64,7 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnInvalidIndex)
 TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnMismatchStateSpace)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv = std::make_shared<Rn>(3);
+  auto rv = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(rv);
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));

@@ -7,11 +7,11 @@
 
 using aikido::constraint::TestableIntersection;
 using aikido::constraint::Testable;
-using aikido::statespace::Rn;
+using aikido::statespace::R0;
 
 TEST(ConjuntionConstraintTest, ThrowOnNullStateSpace)
 {
-  auto ss = std::make_shared<Rn>(0);
+  auto ss = std::make_shared<R0>();
   auto pc = std::make_shared<PassingConstraint>(ss);
   EXPECT_THROW(
       TestableIntersection(
@@ -21,7 +21,7 @@ TEST(ConjuntionConstraintTest, ThrowOnNullStateSpace)
 
 TEST(TestableIntersectionTest, ReturnCorrectStateSpace)
 {
-  auto ss = std::make_shared<Rn>(0);
+  auto ss = std::make_shared<R0>();
   auto pc = std::make_shared<PassingConstraint>(ss);
   TestableIntersection satisfiedConstraint{
       ss, std::vector<std::shared_ptr<Testable>>({pc, pc})};
@@ -30,7 +30,7 @@ TEST(TestableIntersectionTest, ReturnCorrectStateSpace)
 
 TEST(TestableIntersectionTest, IsSatisfiedReturnsConjuctionOfAllConstraints)
 {
-  auto ss = std::make_shared<Rn>(0);
+  auto ss = std::make_shared<R0>();
   auto pc = std::make_shared<PassingConstraint>(ss);
   auto fc = std::make_shared<FailingConstraint>(ss);
 
@@ -53,14 +53,14 @@ TEST(TestableIntersectionTest, IsSatisfiedReturnsConjuctionOfAllConstraints)
 
 TEST(TestableIntersectionTest, ReturnsTrueIfNoConstraints)
 {
-  auto ss = std::make_shared<Rn>(0);
+  auto ss = std::make_shared<R0>();
   TestableIntersection cc{ss};
   EXPECT_TRUE(cc.isSatisfied(nullptr));
 }
 
 TEST(TestableIntersectionTest, AddConstraintAppendsInitialConstraints)
 {
-  auto ss = std::make_shared<Rn>(0);
+  auto ss = std::make_shared<R0>();
   auto pc = std::make_shared<PassingConstraint>(ss);
   auto fc = std::make_shared<FailingConstraint>(ss);
   TestableIntersection originallyPassingC{
@@ -79,7 +79,7 @@ TEST(TestableIntersectionTest, AddConstraintAppendsInitialConstraints)
 
 TEST(TestableIntersectionTest, ThrowIfDifferentStateSpacesOnConstruction)
 {
-  auto ss1 = std::make_shared<Rn>(0);
+  auto ss1 = std::make_shared<R0>();
   auto ss2 = std::make_shared<aikido::statespace::SO2>();
   auto ss2C = std::make_shared<PassingConstraint>(ss2);
   auto avoidMacro = [&]() {
@@ -92,7 +92,7 @@ TEST(TestableIntersectionTest, ThrowIfDifferentStateSpacesOnConstruction)
 
 TEST(TestableIntersectionTest, ThrowIfDifferentStateSpaceConstraintAdded)
 {
-  auto ss1 = std::make_shared<Rn>(0);
+  auto ss1 = std::make_shared<R0>();
   auto ss2 = std::make_shared<aikido::statespace::SO2>();
   auto ss2C = std::make_shared<PassingConstraint>(ss2);
   TestableIntersection cc{ss1};

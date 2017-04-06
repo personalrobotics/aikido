@@ -9,13 +9,13 @@ namespace aikido
 namespace distance
 {
 /// Implements a Euclidean distance metric
+template <int N>
 class RnEuclidean : public DistanceMetric
 {
 public:
   /// Constructor.
   /// \param _space The Rn this metric operates on
-  explicit RnEuclidean(
-      std::shared_ptr<statespace::Rn> _space);
+  explicit RnEuclidean(std::shared_ptr<statespace::Rn<N>> _space);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
@@ -27,9 +27,18 @@ public:
                   const statespace::StateSpace::State* _state2) const override;
 
 private:
-  std::shared_ptr<statespace::Rn> mStateSpace;
+  std::shared_ptr<statespace::Rn<N>> mStateSpace;
 };
-}
-}
+
+using R0Euclidean = RnEuclidean<0>;
+using R1Euclidean = RnEuclidean<1>;
+using R2Euclidean = RnEuclidean<2>;
+using R3Euclidean = RnEuclidean<3>;
+using R6Euclidean = RnEuclidean<6>;
+
+} // namespace distance
+} // namespace aikido
+
+#include "aikido/distance/detail/RnEuclidean-impl.hpp"
 
 #endif

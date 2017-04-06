@@ -10,7 +10,7 @@ namespace dart {
 /// \c Weld for DART \c WeldJoint. This class treats the
 /// joint's positions as a real vector space.
 class WeldJoint
-  : public Rn
+  : public R0
   , public JointStateSpace
   , public std::enable_shared_from_this<WeldJoint>
 {
