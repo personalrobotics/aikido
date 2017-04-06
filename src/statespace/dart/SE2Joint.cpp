@@ -8,7 +8,6 @@ namespace dart {
 SE2Joint::SE2Joint(::dart::dynamics::PlanarJoint* _joint)
   : SE2()
   , JointStateSpace(_joint)
-  
 {
 }
 
