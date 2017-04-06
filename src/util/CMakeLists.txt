@@ -9,6 +9,8 @@ find_package(TinyXML2 REQUIRED)
 #
 set(sources
   CatkinResourceRetriever.cpp
+  ExecutorMultiplexer.cpp
+  ExecutorThread.cpp
   KinBodyParser.cpp
   PseudoInverse.cpp
   RNG.cpp
