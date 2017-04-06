@@ -318,7 +318,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
 }
 
 //=============================================================================
-trajectory::InterpolatedPtr pathSimplifier(statespace::StateSpacePtr _stateSpace,
+trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
                                            statespace::InterpolatorPtr _interpolator,
                                            distance::DistanceMetricPtr _dmetric,
                                            constraint::SampleablePtr _sampler,

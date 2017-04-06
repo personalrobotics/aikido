@@ -267,7 +267,7 @@ trajectory::InterpolatedPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
 /// validity checking two successive points on a tree extension
 /// \param _originalTraj The untimed trajectory obtained from the planner, 
 /// needs simplifying.
-trajectory::InterpolatedPtr pathSimplifier(statespace::StateSpacePtr _stateSpace,
+trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
                                            statespace::InterpolatorPtr _interpolator,
                                            distance::DistanceMetricPtr _dmetric,
                                            constraint::SampleablePtr _sampler,
