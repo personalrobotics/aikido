@@ -3,7 +3,8 @@
 
 //=============================================================================
 template <int N>
-PolynomialConstraint<N>::PolynomialConstraint(Eigen::VectorXd _coeffs,
+PolynomialConstraint<N>::PolynomialConstraint(
+  const Eigen::VectorXd& _coeffs,
   std::shared_ptr<aikido::statespace::Rn<N>> _space)
 : mCoeffs(_coeffs)
 , mStateSpace(std::move(_space))
@@ -30,7 +31,7 @@ void PolynomialConstraint<N>::getValue(
     const aikido::statespace::StateSpace::State* _s,
     Eigen::VectorXd& _out) const
 {
-  using State = aikido::statespace::Rn<N>::State;
+  using State = typename aikido::statespace::Rn<N>::State;
   auto s = static_cast<const State*>(_s);
 
   double x = mStateSpace->getValue(s)(0);
@@ -49,7 +50,7 @@ void PolynomialConstraint<N>::getJacobian(
     const aikido::statespace::StateSpace::State* _s,
     Eigen::MatrixXd& _out) const
 {
-  using State = aikido::statespace::Rn<N>::State;
+  using State = typename aikido::statespace::Rn<N>::State;
   auto s = static_cast<const State*>(_s);
 
   Eigen::VectorXd derivCoeffs(mCoeffs.rows()-1);

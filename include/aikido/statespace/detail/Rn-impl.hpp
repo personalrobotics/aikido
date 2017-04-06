@@ -82,7 +82,7 @@ Eigen::Map<typename Rn<N>::VectorNd> Rn<N>::getMutableValue(State *_state) const
   auto valueBuffer =
       reinterpret_cast<double *>(reinterpret_cast<unsigned char *>(_state));
 
-  return Eigen::Map<typename Rn<N>::VectorNd>(valueBuffer, mDimension);
+  return Eigen::Map<typename Rn<N>::VectorNd>(valueBuffer, N);
 }
 
 //=============================================================================
@@ -93,7 +93,7 @@ Eigen::Map<const typename Rn<N>::VectorNd> Rn<N>::getValue(
   auto valueBuffer = reinterpret_cast<const double *>(
       reinterpret_cast<const unsigned char *>(_state));
 
-  return Eigen::Map<const typename Rn<N>::VectorNd>(valueBuffer, mDimension);
+  return Eigen::Map<const typename Rn<N>::VectorNd>(valueBuffer, N);
 }
 
 //=============================================================================
@@ -102,9 +102,9 @@ void Rn<N>::setValue(
     State *_state, const typename Rn<N>::VectorNd &_value) const
 {
   // TODO: Skip this check in release mode.
-  if (_value.size() != mDimension) {
+  if (_value.size() != N) {
     std::stringstream msg;
-    msg << "Value has incorrect size: expected " << mDimension << ", got "
+    msg << "Value has incorrect size: expected " << N << ", got "
         << _value.size() << ".";
     throw std::invalid_argument(msg.str());
   }
@@ -116,7 +116,7 @@ void Rn<N>::setValue(
 template <int N>
 size_t Rn<N>::getStateSizeInBytes() const
 {
-  return mDimension * sizeof(double);
+  return N * sizeof(double);
 }
 
 //=============================================================================
@@ -156,7 +156,7 @@ void Rn<N>::compose(const StateSpace::State *_state1,
 template <int N>
 size_t Rn<N>::getDimension() const
 {
-  return mDimension;
+  return N;
 }
 
 //=============================================================================
@@ -196,9 +196,9 @@ template <int N>
 void Rn<N>::expMap(const Eigen::VectorXd &_tangent, StateSpace::State *_out) const
 {
   // TODO: Skip this check in release mode.
-  if (_tangent.size() != mDimension) {
+  if (_tangent.size() != N) {
     std::stringstream msg;
-    msg << "Tangent vector has incorrect size: expected " << mDimension
+    msg << "Tangent vector has incorrect size: expected " << N
         << ", got " << _tangent.size() << ".";
     throw std::invalid_argument(msg.str());
   }
@@ -211,8 +211,8 @@ void Rn<N>::expMap(const Eigen::VectorXd &_tangent, StateSpace::State *_out) con
 template <int N>
 void Rn<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd &_tangent) const
 {
-  if (_tangent.size() != mDimension) {
-    _tangent.resize(mDimension);
+  if (_tangent.size() != N) {
+    _tangent.resize(N);
   }
 
   auto in = static_cast<const State *>(_in);

@@ -117,8 +117,6 @@ private:
   /// \param _state element of this state space
   /// \return mutable reference to real vector stored in \c _state
   Eigen::Map<VectorNd> getMutableValue(State *_state) const;
-
-  int mDimension;
 };
 
 using R0 = Rn<0>;

@@ -28,11 +28,11 @@ TEST(RnConstantSamplerTests, ConstructorThrowsForNullStateSpace)
 template <int N>
 void testConstructorThrowsForWrongSizeValue()
 {
-  EXPECT_THROW({
+  EXPECT_DEATH({
     constraint::RnConstantSampler<N>(
         std::make_shared<statespace::Rn<N>>(),
-        Eigen::VectorXd(N+1));
-  }, std::invalid_argument);
+        Eigen::VectorXd::Zero(N+1));
+  }, ".*Invalid sizes when resizing a matrix or array..*");
 }
 
 //==============================================================================

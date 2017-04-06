@@ -31,9 +31,8 @@ TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnBadToleranceDimension)
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeTolerance)
 {
-  auto ss = std::make_shared<R3>();
   auto constraint =
-      std::make_shared<PolynomialConstraint>(Eigen::Vector3d(1, 2, 3));
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(1, 2, 3));
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>({-0.1}), 1, 1e-4),
       std::invalid_argument);
@@ -54,7 +53,7 @@ TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeIteration)
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeStepsize)
 {
-  auto ss = std::make_shared<R3>(3);
+  auto ss = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>(), 1, 0),
@@ -69,14 +68,14 @@ TEST(NewtonsMethodProjectable, Constructor)
 {
   // Constraint: x^2 - 1 = 0.
   NewtonsMethodProjectable projector(
-      std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1)),
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(-1, 0, 1)),
       std::vector<double>({0.1}), 10, 1e-4);
 }
 
 TEST(NewtonsMethodProjectable, ProjectPolynomialFirstOrder)
 {
   NewtonsMethodProjectable projector(
-      std::make_shared<PolynomialConstraint>(Eigen::Vector2d(1, 2)),
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector2d(1, 2)),
       std::vector<double>({0.1}), 1, 1e-4);
 
   Eigen::VectorXd v(1);
@@ -100,7 +99,7 @@ TEST(NewtonsMethodProjectable, ProjectPolynomialSecondOrder)
 { 
   // Constraint: x^2 - 1 = 0.
   NewtonsMethodProjectable projector(
-      std::make_shared<PolynomialConstraint>(Eigen::Vector3d(-1, 0, 1)),
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(-1, 0, 1)),
       std::vector<double>({1e-6}), 10, 1e-8);
 
   // Project x = -2. Should get -1 as projected solution.
