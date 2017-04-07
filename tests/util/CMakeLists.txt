@@ -31,6 +31,9 @@ target_compile_definitions(test_CatkinResourceRetriever_catkin_build
 #==============================================================================
 # Miscellaneous
 #
+aikido_add_test(test_Executor test_Executor.cpp)
+target_link_libraries(test_Executor "${PROJECT_NAME}_util")
+
 aikido_add_test(test_KinBodyParser test_KinBodyParser.cpp)
 target_link_libraries(test_KinBodyParser "${PROJECT_NAME}_util")
 target_compile_definitions(test_KinBodyParser
@@ -53,4 +56,3 @@ target_link_libraries(test_SplineProblem "${PROJECT_NAME}_util")
 
 aikido_add_test(test_string test_string.cpp)
 target_link_libraries(test_string "${PROJECT_NAME}_util")
-
