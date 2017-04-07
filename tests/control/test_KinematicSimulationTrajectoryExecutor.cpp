@@ -155,13 +155,19 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajectoryIsAlreadyRun
 
   auto future = executor.execute(mTraj);
   
-  // Executor cannot not immediately execute the next one.
-  EXPECT_THROW(executor.execute(mTraj), std::runtime_error);
+  // Executor possibly not able to immediately execute the next one.
+  try
+  {
+    executor.execute(mTraj);
+  }
+  catch (const std::runtime_error& e)
+  {
+    EXPECT_EQ(std::string(e.what()), "Another trajectory in execution.");
+  };
 
   future.wait();
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
-
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajectoryFinished_DoesNotThrow)
 {
