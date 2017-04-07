@@ -18,6 +18,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
 
   add_compile_options(-Wall)
+  add_compile_options(-Wpedantic)
   if(TREAT_WARNINGS_AS_ERRORS)
     add_compile_options(-Werror)
   endif()
