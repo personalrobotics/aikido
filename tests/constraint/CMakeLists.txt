@@ -53,6 +53,11 @@ aikido_add_test(test_RnBoxConstraint
 target_link_libraries(test_RnBoxConstraint
   "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
 
+aikido_add_test(test_RnConstantSampler
+  test_RnConstantSampler.cpp)
+target_link_libraries(test_RnConstantSampler
+  "${PROJECT_NAME}_constraint" "${PROJECT_NAME}_distance")
+
 aikido_add_test(test_SO2UniformSampler
   test_SO2UniformSampler.cpp)
 target_link_libraries(test_SO2UniformSampler
