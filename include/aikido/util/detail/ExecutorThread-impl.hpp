@@ -6,7 +6,7 @@ namespace util {
 //==============================================================================
 template <typename Duration>
 ExecutorThread::ExecutorThread(
-    std::function<void ()> callback, const Duration& period)
+    std::function<void()> callback, const Duration& period)
   : mCallback{std::move(callback)},
     mPeriod{std::chrono::duration_cast<std::chrono::milliseconds>(period)},
     mIsRunning{true},

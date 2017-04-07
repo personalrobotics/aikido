@@ -33,7 +33,7 @@ public:
   /// \param[in] callback Callback to be repeatedly executed by the thread.
   /// \param[in] period The period of calling the callback.
   template <typename Duration>
-  ExecutorThread(std::function<void ()> callback, const Duration& period);
+  ExecutorThread(std::function<void()> callback, const Duration& period);
 
   /// Default destructor. The thread stops as ExecutorThread is destructed.
   ~ExecutorThread();
@@ -51,7 +51,7 @@ private:
 
 private:
   /// Callback to be periodically executed by the thread.
-  std::function<void ()> mCallback;
+  std::function<void()> mCallback;
 
   /// The callback is called in this period.
   std::chrono::milliseconds mPeriod;

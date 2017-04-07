@@ -6,7 +6,7 @@ namespace aikido {
 namespace util {
 
 //=============================================================================
-void ExecutorMultiplexer::addCallback(std::function<void ()> callback)
+void ExecutorMultiplexer::addCallback(std::function<void()> callback)
 {
   std::lock_guard<std::mutex> lock{mMutex};
   DART_UNUSED(lock);
