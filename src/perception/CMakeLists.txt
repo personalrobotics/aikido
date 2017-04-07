@@ -2,7 +2,7 @@
 # Dependencies
 #
 if(NOT DART_utils-urdf_FOUND)
-  message(STATUS "Looking for DART COMPONENT: dart-utils-urdf - NOT found, "
+  message(STATUS "Looking for DART component 'dart-utils-urdf' - NOT found, "
       "to use perception, please install dart-utils-urdf")
   return()
 endif()
