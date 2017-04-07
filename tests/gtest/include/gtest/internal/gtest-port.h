@@ -198,6 +198,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #ifndef _WIN32_WCE
 # include <sys/types.h>
 # include <sys/stat.h>
@@ -1646,7 +1647,7 @@ typedef __int64 BiggestInt;
 #else
 # define GTEST_PATH_SEP_ "/"
 # define GTEST_HAS_ALT_PATH_SEP_ 0
-typedef long long BiggestInt;  // NOLINT
+typedef int64_t BiggestInt;  // NOLINT
 #endif  // GTEST_OS_WINDOWS
 
 // Utilities for char.
@@ -1891,8 +1892,8 @@ class TypeWithSize<8> {
   typedef __int64 Int;
   typedef unsigned __int64 UInt;
 #else
-  typedef long long Int;  // NOLINT
-  typedef unsigned long long UInt;  // NOLINT
+  typedef int64_t Int;  // NOLINT
+  typedef uint64_t UInt;  // NOLINT
 #endif  // GTEST_OS_WINDOWS
 };
 

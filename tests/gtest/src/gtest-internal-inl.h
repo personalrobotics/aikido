@@ -1020,7 +1020,7 @@ bool ParseNaturalNumber(const ::std::string& str, Integer* number) {
 
 # else
 
-  typedef unsigned long long BiggestConvertible;  // NOLINT
+  typedef uint64_t BiggestConvertible;  // NOLINT
   const BiggestConvertible parsed = strtoull(str.c_str(), &end, 10);
 
 # endif  // GTEST_OS_WINDOWS && !defined(__GNUC__)
