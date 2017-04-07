@@ -23,13 +23,12 @@ protected:
 
     RevoluteJoint::Properties jointProperties;
     jointProperties.mName = "Joint1";
-    jointProperties.mDofNames[0] = "DegreeOfFreedom1";
-
-    BodyNode::Properties bodyNodeProperties;
-    bodyNodeProperties.mName = "BodyNode1";
+    
+    BodyNode::Properties bnProperties;
+    bnProperties.mName = "BodyNode1";
 
     mSkeleton->createJointAndBodyNodePair<
-      RevoluteJoint, BodyNode>(nullptr, jointProperties, bodyNodeProperties);
+      RevoluteJoint, BodyNode>(nullptr, jointProperties, bnProperties);
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton);
 
     // Create a two-waypoint trajectory for mSkeleton.
@@ -44,11 +43,52 @@ protected:
     auto& waypoint2 = mTwoWaypointMessage.points[1];
     waypoint2.time_from_start = ros::Duration{1.};
     waypoint2.positions.assign({2.});
+
+    // 2-Joint skeleton
+    mSkeleton2Joints = dart::dynamics::Skeleton::create("2JointSkeleton");
+    
+    RevoluteJoint::Properties jointProperties1;
+    jointProperties1.mName = "Joint1";
+    
+    RevoluteJoint::Properties jointProperties2;
+    jointProperties2.mName = "Joint2";
+
+    BodyNode::Properties bnProperties1;
+    bnProperties1.mName = "BodyNode1";
+
+    BodyNode::Properties bnProperties2;
+    bnProperties2.mName = "BodyNode2";
+
+    auto bn1 = mSkeleton2Joints->createJointAndBodyNodePair<
+      RevoluteJoint, BodyNode>(nullptr, jointProperties1, bnProperties1).second;
+    mSkeleton2Joints->createJointAndBodyNodePair<
+      RevoluteJoint, BodyNode>(bn1, jointProperties2, bnProperties2);
+    mStateSpace2Joints = std::make_shared<MetaSkeletonStateSpace>(mSkeleton2Joints);
+
+    // Create a two-waypoint trajectory for mSkeleton2Joints,
+    // with different ordering of joints.
+    mTwoWaypointMessage2Joints = trajectory_msgs::JointTrajectory{};
+    mTwoWaypointMessage2Joints.joint_names.emplace_back(jointProperties2.mName);
+    mTwoWaypointMessage2Joints.joint_names.emplace_back(jointProperties1.mName);
+    mTwoWaypointMessage2Joints.points.resize(2);
+
+    auto& waypoint21 = mTwoWaypointMessage2Joints.points[0];
+    waypoint21.time_from_start = ros::Duration{0.};
+    waypoint21.positions.assign({1., 2.});
+
+    auto& waypoint22 = mTwoWaypointMessage2Joints.points[1];
+    waypoint22.time_from_start = ros::Duration{1.};
+    waypoint22.positions.assign({2., 3.});
   }
 
   SkeletonPtr mSkeleton;
   std::shared_ptr<MetaSkeletonStateSpace> mStateSpace;
   trajectory_msgs::JointTrajectory mTwoWaypointMessage;
+  
+
+  SkeletonPtr mSkeleton2Joints;
+  std::shared_ptr<MetaSkeletonStateSpace> mStateSpace2Joints;
+  trajectory_msgs::JointTrajectory mTwoWaypointMessage2Joints;
 };
 
 TEST_F(ConvertJointTrajectoryTests, StateSpaceIsNull_Throws)
@@ -201,4 +241,35 @@ TEST_F(ConvertJointTrajectoryTests, QuinticTrajectory)
 
   trajectory->evaluateDerivative(1., 2, values);
   EXPECT_EIGEN_EQUAL(make_vector(6.), values, kTolerance);
+}
+
+TEST_F(ConvertJointTrajectoryTests, LinearTrajectoryWithDifferentOrdering)
+{
+  const auto linearTwoWaypointMessage = mTwoWaypointMessage2Joints;
+  const auto trajectory = convertJointTrajectory(
+    mStateSpace2Joints, linearTwoWaypointMessage);
+
+  ASSERT_TRUE(!!trajectory);
+  ASSERT_DOUBLE_EQ(0., trajectory->getStartTime());
+  ASSERT_DOUBLE_EQ(1., trajectory->getEndTime());
+  EXPECT_DOUBLE_EQ(1., trajectory->getDuration());
+  EXPECT_EQ(1, trajectory->getNumSegments());
+  EXPECT_EQ(1, trajectory->getNumDerivatives());
+
+  auto state = mStateSpace2Joints->createState();
+  Eigen::VectorXd values;
+
+  trajectory->evaluate(0., state);
+  mStateSpace2Joints->convertStateToPositions(state, values);
+  EXPECT_EIGEN_EQUAL(make_vector(2., 1.), values, kTolerance);
+
+  trajectory->evaluate(1., state);
+  mStateSpace2Joints->convertStateToPositions(state, values);
+  EXPECT_EIGEN_EQUAL(make_vector(3., 2.), values, kTolerance);
+
+  trajectory->evaluateDerivative(0.5, 1, values);
+  EXPECT_EIGEN_EQUAL(make_vector(1., 1.), values, kTolerance);
+
+  trajectory->evaluateDerivative(0.5, 2, values);
+  EXPECT_EIGEN_EQUAL(make_vector(0., 0.), values, kTolerance);
 }

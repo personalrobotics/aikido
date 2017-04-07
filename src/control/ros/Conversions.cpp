@@ -176,8 +176,8 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   for (size_t i = 0; i < jointTrajectory.joint_names.size(); ++i)
   {
     std::string joint_name = jointTrajectory.joint_names[i];
-
     bool found_match = false;
+
     for (size_t j = 0; j < space->getNumSubspaces(); ++j)
     {
       auto joint = space->getJointSpace(j)->getJoint();
@@ -196,15 +196,15 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
         found_match = true;
         break;
       }
-      // Check that there is a mapping for every joint.
-      if (!found_match)
-      {
-        std::stringstream message;
-        message << joint_name << " does not have a matching joint in _space.";
-        throw std::invalid_argument{message.str()};
-      }
     }
-    
+
+    // Check that there is a mapping for every joint.
+    if (!found_match)
+    {
+      std::stringstream message;
+      message << joint_name << " does not have a matching joint in space.";
+      throw std::invalid_argument{message.str()};
+    }
   }
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
@@ -212,7 +212,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   extractJointTrajectoryPoint(jointTrajectory, 0, numControlledJoints,
     &currPosition, true, &currVelocity, false, &currAcceleration, false);
 
-  // To be used for reordering to match _space's subspace order.
+  // To be used for reordering to match space's subspace order.
   Eigen::VectorXd currPositionMSSS;
   Eigen::MatrixXd segmentCoefficientsMSSS;
 
@@ -264,8 +264,8 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
       &currPositionMSSS, &segmentCoefficientsMSSS);
 
     // Add a segment to the trajectory.
-    space->convertPositionsToState(currPosition, currState);
-    trajectory->addSegment(segmentCoefficients, segmentDuration, currState);
+    space->convertPositionsToState(currPositionMSSS, currState);
+    trajectory->addSegment(segmentCoefficientsMSSS, segmentDuration, currState);
 
     // Advance to the next segment.
     currPosition = nextPosition;
