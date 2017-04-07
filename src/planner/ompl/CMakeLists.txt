@@ -36,6 +36,9 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
     "${PROJECT_NAME}_trajectory"
     ${OMPL_LIBRARIES}
 )
+target_compile_options("${PROJECT_NAME}_planner_ompl"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+)
 
 add_component(${PROJECT_NAME} planner_ompl)
 add_component_targets(${PROJECT_NAME} planner_ompl "${PROJECT_NAME}_planner_ompl")
