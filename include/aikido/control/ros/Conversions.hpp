@@ -16,8 +16,8 @@ namespace ros {
 /// \return Spline trajectory.
 std::unique_ptr<aikido::trajectory::Spline> convertJointTrajectory(
   const std::shared_ptr<
-    aikido::statespace::dart::MetaSkeletonStateSpace>& _space,
-  const trajectory_msgs::JointTrajectory& _jointTrajectory);
+    aikido::statespace::dart::MetaSkeletonStateSpace>& space,
+  const trajectory_msgs::JointTrajectory& jointTrajectory);
 
 } // namespace ros
 } // namespace control

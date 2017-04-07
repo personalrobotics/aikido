@@ -2,6 +2,7 @@
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/util/Spline.hpp>
 #include <dart/dynamics/Joint.hpp>
+#include <map>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
@@ -109,65 +110,113 @@ void extractJointTrajectoryPoint(
   }
 }
 
+// The rows of vector and matrix will be reordered using permutationMatrix
+void reorder(const Eigen::MatrixXd& permutationMatrix,
+  const Eigen::VectorXd& inVector,
+  const Eigen::MatrixXd& inMatrix,
+  Eigen::VectorXd* outVector,
+  Eigen::MatrixXd* outMatrix)
+{
+  *outVector = permutationMatrix*inVector;
+  *outMatrix = permutationMatrix*inMatrix;
+}
+
+// Convert the mapping to a permutation matrix for matrix operation
+void convertToPermutationMatrix(const std::map<size_t, size_t>& map,
+  Eigen::MatrixXd* permutationMatrix)
+{
+  *permutationMatrix = Eigen::MatrixXd::Zero(map.size(), map.size());
+  for(auto it = map.begin(); it != map.end(); ++it)
+  {
+    (*permutationMatrix)(it->second, it->first) = 1.0;
+  }
+}
+
 } // namespace
 
 //=============================================================================
 std::unique_ptr<SplineTrajectory> convertJointTrajectory(
-  const std::shared_ptr<MetaSkeletonStateSpace>& _space,
-  const trajectory_msgs::JointTrajectory& _jointTrajectory)
+  const std::shared_ptr<MetaSkeletonStateSpace>& space,
+  const trajectory_msgs::JointTrajectory& jointTrajectory)
 {
-  if (!_space)
+  if (!space)
     throw std::invalid_argument{"StateSpace must be non-null."};
 
-  const auto numControlledJoints = _space->getNumSubspaces();
-  if (_jointTrajectory.joint_names.size() != numControlledJoints)
+  const auto numControlledJoints = space->getNumSubspaces();
+  if (jointTrajectory.joint_names.size() != numControlledJoints)
   {
     std::stringstream message;
     message << "Incorrect number of joints: expected "
         << numControlledJoints << ", got "
-        << _jointTrajectory.joint_names.size() << ".";
+        << jointTrajectory.joint_names.size() << ".";
     throw std::invalid_argument{message.str()};
   }
 
   // Check that all joints are single DOF.
-  for (size_t i = 0; i < _space->getNumSubspaces(); ++i)
+  for (size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
-    auto n = _space->getJointSpace(i)->getJoint()->getNumDofs();
+    auto n = space->getJointSpace(i)->getJoint()->getNumDofs();
     if (n != 1)
     {
       std::stringstream message;
-      message << "[Conversion] Expected 1 dof. Joint "
-      << i << " has " << n << " dofs.";
+      message << "Expected 1 dof. Joint " << i << " has " << n << " dofs.";
       throw std::invalid_argument{message.str()};
     }
   }
 
-  if (_jointTrajectory.points.size() < 2)
+  if (jointTrajectory.points.size() < 2)
   {
     throw std::invalid_argument{
       "Trajectory must contain two or more waypoints."};
   }
 
-  // Check whether joint names match between _space and _jointTrajectory.
-  for (size_t i = 0; i < _jointTrajectory.joint_names.size(); ++i)
+  // Map joint indices between jointTrajectory and space subspaces.
+  std::map<size_t, size_t> rosJointToMSSSJoint;
+
+  for (size_t i = 0; i < jointTrajectory.joint_names.size(); ++i)
   {
-    auto joint = _space->getJointSpace(i)->getJoint();
-    if (_jointTrajectory.joint_names[i] != joint->getName())
+    std::string joint_name = jointTrajectory.joint_names[i];
+
+    bool found_match = false;
+    for (size_t j = 0; j < space->getNumSubspaces(); ++j)
     {
-      std::stringstream message;
-      message << "Unknown joint name: expected "
-          << joint->getName() << ", got "
-          << _jointTrajectory.joint_names[i] << ".";
-      throw std::invalid_argument{message.str()};
+      auto joint = space->getJointSpace(j)->getJoint();
+      if (joint_name == joint->getName())
+      {
+        // Check that the mapping is unique.
+        auto search = rosJointToMSSSJoint.find(i);
+        if (search != rosJointToMSSSJoint.end())
+        {
+          std::stringstream message;
+          message << "Both subspace[" << search->second << "] and ["
+            << j << "] map to joint " << i << " in jointTrajectory.";
+          throw std::invalid_argument{message.str()};
+        }
+        rosJointToMSSSJoint.emplace(std::make_pair(i, j));
+        found_match = true;
+        break;
+      }
+      // Check that there is a mapping for every joint.
+      if (!found_match)
+      {
+        std::stringstream message;
+        message << joint_name << " does not have a matching joint in _space.";
+        throw std::invalid_argument{message.str()};
+      }
     }
+    
   }
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
   Eigen::VectorXd currPosition, currVelocity, currAcceleration;
-  extractJointTrajectoryPoint(_jointTrajectory, 0, numControlledJoints,
+  extractJointTrajectoryPoint(jointTrajectory, 0, numControlledJoints,
     &currPosition, true, &currVelocity, false, &currAcceleration, false);
 
-  const auto& firstWaypoint = _jointTrajectory.points.front();
+  // To be used for reordering to match _space's subspace order.
+  Eigen::VectorXd currPositionMSSS;
+  Eigen::MatrixXd segmentCoefficientsMSSS;
+
+  const auto& firstWaypoint = jointTrajectory.points.front();
   auto currTimeFromStart = firstWaypoint.time_from_start.toSec();
 
   const auto isPositionRequired = true;
@@ -188,14 +237,16 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     numCoefficients = 2; // linear
 
   // Convert the ROS trajectory message to an Aikido spline.
-  std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{_space}};
-  auto currState = _space->createState();
+  std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{space}};
+  auto currState = space->createState();
 
-  const auto& waypoints = _jointTrajectory.points;
+  Eigen::MatrixXd conversionPermutation;
+  convertToPermutationMatrix(rosJointToMSSSJoint, &conversionPermutation);
+  const auto& waypoints = jointTrajectory.points;
   for (size_t iwaypoint = 1; iwaypoint < waypoints.size(); ++iwaypoint)
   {
     Eigen::VectorXd nextPosition, nextVelocity, nextAcceleration;
-    extractJointTrajectoryPoint(_jointTrajectory, iwaypoint, numControlledJoints,
+    extractJointTrajectoryPoint(jointTrajectory, iwaypoint, numControlledJoints,
       &nextPosition, isPositionRequired,
       &nextVelocity, isVelocityRequired,
       &nextAcceleration, isAccelerationRequired);
@@ -208,8 +259,12 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
       segmentDuration, nextPosition - currPosition, nextVelocity, nextAcceleration,
       numCoefficients);
 
+    // Reorder the positions and coefficients using rosJointToMSSSJoint.
+    reorder(conversionPermutation, currPosition, segmentCoefficients,
+      &currPositionMSSS, &segmentCoefficientsMSSS);
+
     // Add a segment to the trajectory.
-    _space->convertPositionsToState(currPosition, currState);
+    space->convertPositionsToState(currPosition, currState);
     trajectory->addSegment(segmentCoefficients, segmentDuration, currState);
 
     // Advance to the next segment.

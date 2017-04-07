@@ -34,7 +34,7 @@ protected:
 
     // Create a two-waypoint trajectory for mSkeleton.
     mTwoWaypointMessage = trajectory_msgs::JointTrajectory{};
-    mTwoWaypointMessage.joint_names.emplace_back(jointProperties.mDofNames[0]);
+    mTwoWaypointMessage.joint_names.emplace_back(jointProperties.mName);
     mTwoWaypointMessage.points.resize(2);
 
     auto& waypoint1 = mTwoWaypointMessage.points[0];
@@ -80,7 +80,7 @@ TEST_F(ConvertJointTrajectoryTests, LessThanTwoWaypoints_Throws)
 
 TEST_F(ConvertJointTrajectoryTests, IncorrectNumberOfJoints_Throws)
 {
-  mTwoWaypointMessage.joint_names.emplace_back("DegreeOfFreedom1");
+  mTwoWaypointMessage.joint_names.emplace_back("Joint1");
 
   EXPECT_THROW({
     convertJointTrajectory(mStateSpace, mTwoWaypointMessage);
@@ -89,7 +89,7 @@ TEST_F(ConvertJointTrajectoryTests, IncorrectNumberOfJoints_Throws)
 
 TEST_F(ConvertJointTrajectoryTests, TrajectoryHasUnknownJoint_Throws)
 {
-  mTwoWaypointMessage.joint_names[0] = "MissingDegreeOfFreedom";
+  mTwoWaypointMessage.joint_names[0] = "MissingJoint";
 
   EXPECT_THROW({
     convertJointTrajectory(mStateSpace, mTwoWaypointMessage);
