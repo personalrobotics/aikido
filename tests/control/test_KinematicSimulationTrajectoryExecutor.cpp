@@ -163,9 +163,6 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajectoryIsAlreadyRun
   catch (const std::runtime_error& e)
   {
     EXPECT_EQ(std::string(e.what()), "Another trajectory in execution.");
-
-    // It could not have finished the trajectory execution yet.
-    EXPECT_NE(mSkeleton->getDof(0)->getPosition(), 1.0);
   };
 
   future.wait();
