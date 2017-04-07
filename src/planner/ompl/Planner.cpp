@@ -336,19 +336,19 @@ auto si = getSpaceInformation(
       std::move(_validityConstraint), std::move(_boundsConstraint),
       std::move(_boundsProjector), _maxDistanceBtwProjections);
 
+// Get the state space
+auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
+      si->getStateSpace());
+
+
 // Step 2: Convert the AIKIDO trajectory to Geometric Path 
 ::ompl::geometric::PathGeometric *path = new ::ompl::geometric::PathGeometric(si);
 
 for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx) 
 {
-      const auto *st =
-          static_cast<::ompl::base::State *>(
-              _originalTraj->getWaypoint(idx));
-      // // Arbitrary timing
-      // path->append(st);
-      // ::ompl::base::ScopedState<::ompl::base::StateSpace> wayPointOMPL(si);
-      // wayPointOMPL = _originalTraj->getWaypoint(idx);
-      // path->append(wayPointOMPL.get());
+      auto ompl_state = sspace->allocState(_originalTraj->getWaypoint(idx));
+      path->append(ompl_state);
+      sspace->freeState(ompl_state);
 }
 
 // Step 3: Use the OMPL methods to simplify the path
