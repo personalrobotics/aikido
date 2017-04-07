@@ -26,7 +26,9 @@ set(sources
 
 add_library("${PROJECT_NAME}_planner_ompl" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_planner_ompl" SYSTEM
-  PUBLIC ${OMPL_INCLUDE_DIRS}
+  PUBLIC
+    ${DART_INCLUDE_DIRS}
+    ${OMPL_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_planner_ompl"
   PUBLIC
@@ -34,6 +36,7 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
     "${PROJECT_NAME}_distance"
     "${PROJECT_NAME}_statespace"
     "${PROJECT_NAME}_trajectory"
+    ${DART_LIBRARIES}
     ${OMPL_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_planner_ompl"

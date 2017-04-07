@@ -42,6 +42,7 @@ set(sources
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_perception" SYSTEM
   PUBLIC
+    ${Boost_INCLUDE_DIRS}
     ${DART_INCLUDE_DIRS}
     ${YAMLCPP_INCLUDE_DIRS}
     ${geometry_msgs_INCLUDE_DIRS}

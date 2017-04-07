@@ -28,7 +28,9 @@ set(sources
 
 add_library("${PROJECT_NAME}_constraint" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_constraint"
-  PUBLIC ${DART_INCLUDE_DIRS}
+  PUBLIC
+    ${Boost_INCLUDE_DIRS}
+    ${DART_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_constraint"
   PUBLIC

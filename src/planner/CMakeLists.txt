@@ -25,5 +25,5 @@ add_component_dependencies(${PROJECT_NAME} planner
 
 coveralls_add_sources(${sources})
 
-add_subdirectory("ompl")
-add_subdirectory("parabolic")
+add_subdirectory("ompl")      # dart, ompl
+add_subdirectory("parabolic") # dart

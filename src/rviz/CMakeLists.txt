@@ -22,7 +22,7 @@ find_package(std_msgs QUIET)
 aikido_check_package(std_msgs "rviz" "std_msgs")
 
 find_package(visualization_msgs QUIET)
-aikido_check_package(visualization_msgs "rviz" "std_msgs")
+aikido_check_package(visualization_msgs "rviz" "visualization_msgs")
 
 pkg_check_modules(libmicrohttpd QUIET libmicrohttpd)
 aikido_check_package(libmicrohttpd "rviz" "libmicrohttpd")
@@ -53,7 +53,7 @@ target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
 )
 target_link_libraries("${PROJECT_NAME}_rviz"
   PUBLIC
-    ${Boost_filesystem_LIBRARIES}
+    ${Boost_FILESYSTEM_LIBRARY}
     ${DART_LIBRARIES}
     ${geometry_msgs_LIBRARIES}
     ${interactive_markers_LIBRARIES}
