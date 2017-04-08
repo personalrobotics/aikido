@@ -2,6 +2,7 @@
 #include "../StateValidityChecker.hpp"
 #include "../GoalRegion.hpp"
 #include "../../../trajectory/Interpolated.hpp"
+#include "../../../planner/ompl/BackwardCompatibility.hpp"
 #include <ompl/geometric/PathGeometric.h>
 
 namespace aikido {
@@ -29,8 +30,8 @@ trajectory::InterpolatedPtr planOMPL(
       std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
 
   // Start and states
-  auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
-  auto sspace = boost::static_pointer_cast<GeometricStateSpace>(
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
       si->getStateSpace());
   auto start = sspace->allocState(_start);
   auto goal = sspace->allocState(_goal);
@@ -41,7 +42,7 @@ trajectory::InterpolatedPtr planOMPL(
   sspace->freeState(start);
   sspace->freeState(goal);
 
-  auto planner = boost::make_shared<PlannerType>(si);
+  auto planner = ompl_make_shared<PlannerType>(si);
   return planOMPL(planner, pdef, std::move(_stateSpace),
                   std::move(_interpolator), _maxPlanTime);
 }
@@ -83,18 +84,18 @@ trajectory::InterpolatedPtr planOMPL(
       std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
 
   // Set the start and goal
-  auto pdef = boost::make_shared<::ompl::base::ProblemDefinition>(si);
-  auto sspace = boost::static_pointer_cast<GeometricStateSpace>(
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
       si->getStateSpace());
   auto start = sspace->allocState(_start);
   pdef->addStartState(start); // copies
   sspace->freeState(start);
 
-  auto goalRegion = boost::make_shared<GoalRegion>(
+  auto goalRegion = ompl_make_shared<GoalRegion>(
       si, std::move(_goalTestable), _goalSampler->createSampleGenerator());
   pdef->setGoal(goalRegion);
 
-  auto planner = boost::make_shared<PlannerType>(si);
+  auto planner = ompl_make_shared<PlannerType>(si);
   return planOMPL(planner, pdef, std::move(_stateSpace),
                   std::move(_interpolator), _maxPlanTime);
 }

@@ -38,6 +38,7 @@ add_library("${PROJECT_NAME}_rviz" SHARED
   ShapeFrameMarker.cpp
   SkeletonMarker.cpp
   shape_conversions.cpp
+  TSRMarker.cpp
 )
 target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
   PUBLIC
@@ -57,6 +58,9 @@ target_link_libraries("${PROJECT_NAME}_rviz"
   ${roscpp_LIBRARIES}
   ${std_msgs_LIBRARIES}
   ${visualization_msgs_LIBRARIES}
+)
+target_compile_options("${PROJECT_NAME}_rviz"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
 add_component(${PROJECT_NAME} rviz)

@@ -5,6 +5,7 @@
 #include <ompl/geometric/planners/PlannerIncludes.h>
 #include <ompl/datastructures/NearestNeighbors.h>
 
+#include "../../planner/ompl/BackwardCompatibility.hpp"
 #include "../../constraint/Projectable.hpp"
 
 namespace aikido {
@@ -52,7 +53,7 @@ public:
 
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
-  virtual void clear(void) override;
+  void clear(void) override;
 
   /// Set the goal bias. In the process of randomly selecting states in the
   /// state space to attempt to go towards, the algorithm may in fact choose the
@@ -147,7 +148,7 @@ protected:
 
 
   /// A nearest-neighbor datastructure representing a tree of motions */
-  using TreeData = boost::shared_ptr<::ompl::NearestNeighbors<Motion *>>;
+  using TreeData = ompl_shared_ptr<::ompl::NearestNeighbors<Motion *>>;
 
   /// A nearest-neighbors datastructure containing the tree of motions
   TreeData mStartTree;
