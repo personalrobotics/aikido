@@ -156,13 +156,13 @@ add_custom_target(headers SOURCES ${aikido_headers})
 add_subdirectory("src")
 
 enable_testing()
-# add_subdirectory("tests" EXCLUDE_FROM_ALL)
+add_subdirectory("tests" EXCLUDE_FROM_ALL)
 
 # Targets to mimic a Catkin package. "tests" builds tests and "test" (or
 # "run_tests") runs them.
-# get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
-# add_custom_target(tests DEPENDS ${all_tests})
-# add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
+add_custom_target(tests DEPENDS ${all_tests})
+add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
 
 #==============================================================================
 # Doxygen.

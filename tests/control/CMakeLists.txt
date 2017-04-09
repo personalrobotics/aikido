@@ -22,3 +22,6 @@ aikido_add_test(test_BarrettHandPositionCommandExecutor
 
 target_link_libraries(test_BarrettHandPositionCommandExecutor
   "${PROJECT_NAME}_control")
+
+add_subdirectory("ros")
+

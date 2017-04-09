@@ -6,42 +6,55 @@
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
-#include <dart/dart.hpp>
 #include <aikido/control/TrajectoryExecutor.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Trajectory.hpp>
-
-// actionlib and DART both #define this macro.
-#undef DEPRECATED
 #include <actionlib/client/action_client.h>
-#undef DEPRECATED
 
 namespace aikido {
 namespace control {
 namespace ros {
 
+/// This class sends trajectory commands to ROS server.
 class RosTrajectoryExecutor : public aikido::control::TrajectoryExecutor
 {
 public:
+  /// Constructor.
+  /// \param[in] space Space in which trajectries operate.
+  /// \param[in] node ROS node handle for action client.
+  /// \param[in] serverName Name of the server to send traejctory to.
+  /// \param[in] timestep Step size for interpolating trajectories.
+  /// \param[in] goalTimeTolerance
+  /// \param[in] indexMap Joint index mapping from statespace to ros trajectory.
+  /// \param[in] connectionTimeout Timeout for server connection.
+  /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosTrajectoryExecutor(
-    ::dart::dynamics::MetaSkeletonPtr skeleton, 
+    statespace::dart::MetaSkeletonStateSpacePtr space,
     ::ros::NodeHandle node,
     const std::string& serverName,
     double timestep,
     double goalTimeTolerance,
+    const std::map<size_t, size_t>& jointIndexMap,
     std::chrono::milliseconds connectionTimeout
       = std::chrono::milliseconds{1000},
-    std::chrono::milliseconds connectionPollingRate
+    std::chrono::milliseconds connectionPollingPeriod
       = std::chrono::milliseconds{20}
   );
 
   virtual ~RosTrajectoryExecutor();
 
-  std::future<void> execute(trajectory::TrajectoryPtr _traj) override;
+  /// Sends trajectory to ROS server for execution.
+  /// \param[in] traj Trajecotry to be executed.
+  std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
+  /// Sends trajectory to ROS server for execution.
+  /// \param[in] traj Trajectrory to be executed.
+  /// \param[in] startTime Start time for the trajectory.
   std::future<void> execute(
-    trajectory::TrajectoryPtr _traj, const ::ros::Time& _startTime);
+    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime);
 
-  /// Simulates mTraj. To be executed on a separate thread.
+  /// To be executed on a separate thread.
+  /// Regularly checks for the completion of a sent trajectory.
   void spin();
 
 private:
@@ -51,19 +64,21 @@ private:
 
   bool waitForServer();
 
-  void transitionCallback(GoalHandle _handle);
+  void transitionCallback(GoalHandle handle);
 
+  statespace::dart::MetaSkeletonStateSpacePtr mSpace;
   ::ros::NodeHandle mNode;
   ::ros::CallbackQueue mCallbackQueue;
   TrajectoryActionClient mClient;
   TrajectoryActionClient::GoalHandle mGoalHandle;
 
-  ::dart::dynamics::MetaSkeletonPtr mSkeleton;
+  std::map<size_t, size_t> mJointIndexMap;
+
   double mTimestep;
   double mGoalTimeTolerance;
 
   std::chrono::milliseconds mConnectionTimeout;
-  std::chrono::milliseconds mConnectionPollingRate;
+  std::chrono::milliseconds mConnectionPollingPeriod;
 
   bool mInProgress;
   std::promise<void> mPromise;
@@ -77,3 +92,4 @@ private:
 } // namespace aikido
 
 #endif // ifndef AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTOR_HPP_
+
