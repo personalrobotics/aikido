@@ -1,9 +1,9 @@
 #ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
 #define AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include <dart/common/ResourceRetriever.hpp>
-#include <unordered_map>
 
 namespace aikido {
 namespace util {

@@ -83,7 +83,6 @@ function(format_add_sources)
         " '${source_abs}'. This should never happen. Did you recently delete"
         " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
     endif()
-    message(STATUS "FILES: ${source_abs}")
   endforeach()
 endfunction()
 
@@ -287,6 +286,9 @@ find_program(
   CLANG_FORMAT_EXECUTABLE
   NAMES clang-format-3.8
 )
+# We only support one specific ClangFormat version because different versions
+# result in different code formatting with the same configuration. ClangFormat
+# 3.8 is chosen since it's the latest version supported by Ubuntu Trusty.
 
 if (CLANG_FORMAT_EXECUTABLE)
   get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)

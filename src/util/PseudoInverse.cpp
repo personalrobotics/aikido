@@ -8,11 +8,8 @@
 namespace aikido {
 namespace util {
 
-Eigen::MatrixXd pseudoinverse(const Eigen::MatrixXd& mat)
+Eigen::MatrixXd pseudoinverse(const Eigen::MatrixXd& mat, double eps)
 {
-
-  double eps = 1e-6;
-
   if (mat.rows() == mat.cols() && mat.determinant() > eps)
     return mat.inverse();
 

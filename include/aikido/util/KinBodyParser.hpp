@@ -16,9 +16,9 @@ namespace util {
 /// kinbody - attributes: name
 ///   body - attributes: name
 ///     geom - attributes: name, type* (none, box, sphere, trimesh, cylinder),
-///     render
+///            render
 ///       data* (or collision) - file* scale [for trimesh] (see below for the
-///       detail)
+///                              detail)
 ///       extents* - 3 float [for box]
 ///       height* - float [for cylinder]
 ///       radius* - float [for cylinder and sphere]

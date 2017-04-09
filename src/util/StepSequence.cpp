@@ -7,13 +7,14 @@ namespace util {
 StepSequence::StepSequence(
     const double _stepSize,
     const bool _includeEndpoints,
-    const double _startPoint,
-    const double _endPoint)
+    double _startPoint,
+    double _endPoint)
   : mStepSize(_stepSize),
     mStartPoint(_startPoint),
     mEndPoint(_endPoint),
     mIncludeEndpoints(_includeEndpoints)
 {
+  // Do nothing
 }
 
 double StepSequence::operator[](int n)

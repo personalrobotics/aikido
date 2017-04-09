@@ -23,7 +23,7 @@ std::vector<std::unique_ptr<util::RNG>> splitEngine(
   std::vector<util::RNG::result_type> improvedSeeds(_numOutputs);
   seqSeeds.generate(std::begin(improvedSeeds), std::end(improvedSeeds));
 
-  // Create the
+  // Create the random number generators of the same type as the input _engine.
   std::vector<std::unique_ptr<util::RNG>> output;
   output.reserve(_numOutputs);
 

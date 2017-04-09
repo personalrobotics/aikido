@@ -45,7 +45,7 @@ ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 # sort headers by main include file (implicit priority 0),
 # then project and private includes, then system headers
 IncludeCategories:
-  - Regex:     '^<([a-z]+)>'
+  - Regex:     '^<([a-z|_]+)>'
     Priority:  1
   - Regex:     '^(<|")aikido/'
     Priority:  3

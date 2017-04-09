@@ -22,8 +22,8 @@ public:
   StepSequence(
       const double _stepSize,
       const bool _includeEndpoints = true,
-      const double _startPoint = 0.0,
-      const double _endPoint = 1.0);
+      double _startPoint = 0.0,
+      double _endPoint = 1.0);
 
   const_iterator begin();
   const_iterator end();
