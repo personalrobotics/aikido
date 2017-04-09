@@ -56,4 +56,4 @@ private:
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_EXECUTORMULTIPLEXER_HPP_
+#endif // AIKIDO_UTIL_EXECUTORMULTIPLEXER_HPP_

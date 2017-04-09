@@ -95,4 +95,4 @@ private:
 } // namespace util
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_UTIL_VANDERCORPUT_HPP_

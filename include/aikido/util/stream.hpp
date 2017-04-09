@@ -1,5 +1,6 @@
 #ifndef AIKIDO_UTIL_STREAM_HPP_
 #define AIKIDO_UTIL_STREAM_HPP_
+
 #include <iostream>
 #include <dart/collision/collision.hpp>
 
@@ -37,4 +38,4 @@ std::ostream& operator<<(
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_STREAM_HPP_
+#endif // AIKIDO_UTIL_STREAM_HPP_

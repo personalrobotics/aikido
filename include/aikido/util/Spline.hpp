@@ -163,7 +163,7 @@ private:
   SolutionMatrices mSolution;
 
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign);
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign)
 };
 
 /// Utility for fitting splines given constraints on function value, derivative
@@ -329,7 +329,7 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(
       CoefficientMatrix::NeedsToAlign || TimeVector::NeedsToAlign
       || ProblemMatrix::NeedsToAlign
-      || ProblemVector::NeedsToAlign);
+      || ProblemVector::NeedsToAlign)
 };
 
 } // namespace util

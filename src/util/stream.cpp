@@ -3,6 +3,7 @@
 namespace aikido {
 namespace util {
 
+//==============================================================================
 void printCollisionObject(
     const dart::collision::CollisionObject& collisionObject,
     std::ostream& stream)
@@ -22,6 +23,7 @@ void printCollisionObject(
   }
 }
 
+//==============================================================================
 void printCollisionResult(
     const dart::collision::CollisionResult& collisionReport,
     std::ostream& stream)
@@ -54,6 +56,7 @@ void printCollisionResult(
 
 namespace operators {
 
+//==============================================================================
 std::ostream& operator<<(
     std::ostream& stream,
     const dart::collision::CollisionObject& collisionObject)
@@ -62,6 +65,7 @@ std::ostream& operator<<(
   return stream;
 }
 
+//==============================================================================
 std::ostream& operator<<(
     std::ostream& stream,
     const dart::collision::CollisionResult& collisionResult)

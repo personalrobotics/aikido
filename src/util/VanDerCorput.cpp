@@ -4,7 +4,9 @@
 #include <cmath>
 #include <stdexcept>
 
-using namespace aikido::util;
+namespace aikido {
+namespace util {
+
 using std::pair;
 
 //=============================================================================
@@ -168,3 +170,6 @@ bool VanDerCorput::const_iterator::equal(
 {
   return other.mN == mN && other.mSeq == mSeq;
 }
+
+} // namespace util
+} // namespace aikido

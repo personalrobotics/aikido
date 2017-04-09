@@ -1,3 +1,5 @@
+#include <aikido/util/CatkinResourceRetriever.hpp>
+
 #include <fstream>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
@@ -6,7 +8,6 @@
 #include <dart/common/LocalResourceRetriever.hpp>
 #include <dart/common/Uri.hpp>
 #include <tinyxml2.h>
-#include <aikido/util/CatkinResourceRetriever.hpp>
 
 static const std::string CATKIN_MARKER(".catkin");
 
@@ -16,6 +17,7 @@ namespace aikido {
 namespace util {
 namespace {
 
+//==============================================================================
 std::string getPackageNameFromXML(const std::string& _path)
 {
   using tinyxml2::XMLHandle;
@@ -60,6 +62,7 @@ std::string getPackageNameFromXML(const std::string& _path)
   return package_name;
 }
 
+//==============================================================================
 void searchForPackages(
     const boost::filesystem::path& _packagePath,
     std::unordered_map<std::string, std::string>& _packageMap)
@@ -119,18 +122,22 @@ void searchForPackages(
 
 } // namespace
 
+//==============================================================================
 CatkinResourceRetriever::CatkinResourceRetriever()
   : CatkinResourceRetriever(
         std::make_shared<dart::common::LocalResourceRetriever>())
 {
 }
 
+//==============================================================================
 CatkinResourceRetriever::CatkinResourceRetriever(
     const dart::common::ResourceRetrieverPtr& _delegate)
   : mDelegate(_delegate), mWorkspaces(getWorkspaces())
 {
+  // Do nothing
 }
 
+//==============================================================================
 bool CatkinResourceRetriever::exists(const Uri& _uri)
 {
   const Uri resolvedUri = resolvePackageUri(_uri);
@@ -140,6 +147,7 @@ bool CatkinResourceRetriever::exists(const Uri& _uri)
     return false;
 }
 
+//==============================================================================
 dart::common::ResourcePtr CatkinResourceRetriever::retrieve(const Uri& _uri)
 {
   const Uri resolvedUri = resolvePackageUri(_uri);
@@ -149,6 +157,7 @@ dart::common::ResourcePtr CatkinResourceRetriever::retrieve(const Uri& _uri)
     return nullptr;
 }
 
+//==============================================================================
 auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
 {
   using dart::common::ResourcePtr;
@@ -226,6 +235,7 @@ auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
   return workspaces;
 }
 
+//==============================================================================
 Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
 {
   using boost::filesystem::path;

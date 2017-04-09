@@ -16,4 +16,4 @@ Eigen::MatrixXd pseudoinverse(const Eigen::MatrixXd& mat, double eps = 1e-6);
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_PSEUDOINVERSE_HPP_
+#endif // AIKIDO_UTIL_PSEUDOINVERSE_HPP_

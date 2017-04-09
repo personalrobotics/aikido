@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STEPSEQUENCE_HPP_
-#define AIKIDO_STEPSEQUENCE_HPP_
+#ifndef AIKIDO_UTIL_STEPSEQUENCE_HPP_
+#define AIKIDO_UTIL_STEPSEQUENCE_HPP_
 
 #include <cassert>
 #include <limits>
@@ -8,6 +8,7 @@
 
 namespace aikido {
 namespace util {
+
 /// An iterator that returns a sequence of numbers between 0 and 1 stepping at a
 /// fixed stepsize
 class StepSequence
@@ -56,7 +57,7 @@ public:
   bool equal(const StepSequence::const_iterator& other) const;
 
 private:
-  friend StepSequence;
+  friend class StepSequence;
 
   const_iterator(StepSequence* seq, int step) : mSeq(seq), mStep(step)
   {
@@ -68,6 +69,7 @@ private:
   double mValue;
 };
 
-} // util
-} // aikido
-#endif
+} // namespace util
+} // namespace aikido
+
+#endif // AIKIDO_UTIL_STEPSEQUENCE_HPP_

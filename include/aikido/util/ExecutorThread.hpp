@@ -68,4 +68,4 @@ private:
 
 #include <aikido/util/detail/ExecutorThread-impl.hpp>
 
-#endif // ifndef AIKIDO_UTIL_EXECUTORTHREAD_HPP_
+#endif // AIKIDO_UTIL_EXECUTORTHREAD_HPP_

@@ -1,5 +1,6 @@
 #ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
 #define AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -51,4 +52,4 @@ private:
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
+#endif // AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
