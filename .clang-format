@@ -45,13 +45,13 @@ ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 # sort headers by main include file (implicit priority 0),
 # then project and private includes, then system headers
 IncludeCategories:
-  - Regex:     '^<([a-z|_]+)>'
+  - Regex:     '^<([a-z|_]+)>' # standard library headers
     Priority:  1
-  - Regex:     '^(<|")aikido/'
+  - Regex:     '^(<|")aikido/' # Aikido headers
     Priority:  3
-  - Regex:     '^(<[a-z]+)'
+  - Regex:     '^(<[a-z]+)'    # dependency headers
     Priority:  2
-  - Regex:     '^".*'
+  - Regex:     '^".*'          # headers relative to this project
     Priority:  4
 IndentCaseLabels: true
 IndentFunctionDeclarationAfterType: false
