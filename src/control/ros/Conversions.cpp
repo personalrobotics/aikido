@@ -394,7 +394,6 @@ const trajectory_msgs::JointTrajectory convertTrajectoryToRosTrajectory(
       throw std::invalid_argument{message.str()};
     }
 
-
     if (it->second > numJoints) 
     {
       std::stringstream message;
