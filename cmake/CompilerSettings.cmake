@@ -19,7 +19,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
   add_compile_options(-Wall)
   add_compile_options(-Wpedantic)
-  add_compile_options(-Wno-variadic-macros)
   if(TREAT_WARNINGS_AS_ERRORS)
     add_compile_options(-Werror)
   endif()

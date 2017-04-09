@@ -90,7 +90,7 @@ void Interpolated::evaluate(double _t, State *_state) const
 void Interpolated::evaluateDerivative(double _t, int _derivative,
   Eigen::VectorXd& _tangentVector ) const
 {
-  if (_derivative == 0) // Invalid
+  if (_derivative == 0)
     throw std::invalid_argument(
         "0th derivative not available. Use evaluate(t, state)."); 
 
