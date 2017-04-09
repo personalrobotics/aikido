@@ -136,6 +136,46 @@ TEST_F(ConvertJointTrajectoryTests, TrajectoryHasUnknownJoint_Throws)
   }, std::invalid_argument);
 }
 
+TEST_F(ConvertJointTrajectoryTests,
+    StateSpaceHasMultipleJointsWithSameName_Throws)
+{
+  using dart::dynamics::BodyNode;
+  using dart::dynamics::RevoluteJoint;
+
+  // Create 2 skeletons with same joint names.
+  auto skeleton1 = dart::dynamics::Skeleton::create();
+
+  RevoluteJoint::Properties jointProperties;
+  jointProperties.mName = "Joint1";
+
+  skeleton1->createJointAndBodyNodePair<
+      RevoluteJoint>(nullptr, jointProperties);
+
+  auto skeleton2 = dart::dynamics::Skeleton::create();
+  skeleton2->createJointAndBodyNodePair<
+    RevoluteJoint>(nullptr, jointProperties);
+
+  auto groupSkeleton = dart::dynamics::Group::create();
+  groupSkeleton->addJoint(skeleton1->getJoint(0));
+  groupSkeleton->addJoint(skeleton2->getJoint(0));
+  auto space = std::make_shared<MetaSkeletonStateSpace>(groupSkeleton);
+
+  EXPECT_THROW({
+    convertJointTrajectory(space, mTwoWaypointMessage2Joints);
+  }, std::invalid_argument);
+}
+
+
+TEST_F(ConvertJointTrajectoryTests, StateSpaceHasUnknownJoint_Throws)
+{
+  mSkeleton->getJoint(0)->setName("MissingJoint");
+
+  EXPECT_THROW({
+    convertJointTrajectory(mStateSpace, mTwoWaypointMessage);
+  }, std::invalid_argument);
+}
+
+
 TEST_F(ConvertJointTrajectoryTests, LinearTrajectory)
 {
   const auto linearTwoWaypointMessage = mTwoWaypointMessage;
@@ -243,7 +283,7 @@ TEST_F(ConvertJointTrajectoryTests, QuinticTrajectory)
   EXPECT_EIGEN_EQUAL(make_vector(6.), values, kTolerance);
 }
 
-TEST_F(ConvertJointTrajectoryTests, LinearTrajectoryWithDifferentOrdering)
+TEST_F(ConvertJointTrajectoryTests, DifferentOrdering)
 {
   const auto linearTwoWaypointMessage = mTwoWaypointMessage2Joints;
   const auto trajectory = convertJointTrajectory(
@@ -273,3 +313,11 @@ TEST_F(ConvertJointTrajectoryTests, LinearTrajectoryWithDifferentOrdering)
   trajectory->evaluateDerivative(0.5, 2, values);
   EXPECT_EIGEN_EQUAL(make_vector(0., 0.), values, kTolerance);
 }
+
+TEST_F(ConvertJointTrajectoryTests, StateSpaceMissingJoint_Throws)
+{
+  EXPECT_THROW({
+    convertJointTrajectory(mStateSpace, mTwoWaypointMessage2Joints);
+  }, std::invalid_argument);
+}
+

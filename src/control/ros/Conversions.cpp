@@ -1,16 +1,23 @@
 #include <sstream>
 #include <aikido/control/ros/Conversions.hpp>
+#include <aikido/statespace/dart/RnJoint.hpp>
+#include <aikido/statespace/dart/SO2Joint.hpp>
 #include <aikido/util/Spline.hpp>
 #include <dart/dynamics/Joint.hpp>
 #include <map>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
+using aikido::statespace::dart::RnJoint;
+using aikido::statespace::dart::SO2Joint;
 
 namespace aikido {
 namespace control {
 namespace ros {
 namespace {
+
+void reorder(std::map<size_t, size_t> indexMap,
+  const Eigen::VectorXd& inVector, Eigen::VectorXd* outVector);
 
 //=============================================================================
 void checkVector(
@@ -89,18 +96,27 @@ void extractJointTrajectoryPoint(
   size_t _index, size_t _numDofs,
   Eigen::VectorXd* _positions, bool _positionsRequired,
   Eigen::VectorXd* _velocities, bool _velocitiesRequired,
-  Eigen::VectorXd* _accelerations, bool _accelerationsRequired)
+  Eigen::VectorXd* _accelerations, bool _accelerationsRequired,
+  std::map<size_t, size_t> indexMap)
 {
   const auto& waypoint = _trajectory.points[_index];
 
   try
   {
+    Eigen::VectorXd trajPos, trajVel, trajAccel;
     checkVector("positions", waypoint.positions, _numDofs,
-      _positionsRequired, _positions);
+      _positionsRequired, &trajPos);
     checkVector("velocities", waypoint.velocities, _numDofs,
-      _velocitiesRequired, _velocities);
+      _velocitiesRequired, &trajVel);
     checkVector("accelerations", waypoint.accelerations, _numDofs,
-      _accelerationsRequired, _accelerations);
+      _accelerationsRequired, &trajAccel);
+
+    if ( trajPos.size() > 0 )
+      reorder(indexMap, trajPos, _positions);
+    if ( trajVel.size() > 0 )
+      reorder(indexMap, trajVel, _velocities);
+    if ( trajAccel.size() > 0 )
+      reorder(indexMap, trajAccel, _accelerations);
   }
   catch (const std::invalid_argument& e)
   {
@@ -110,26 +126,29 @@ void extractJointTrajectoryPoint(
   }
 }
 
-// The rows of vector and matrix will be reordered using permutationMatrix
-void reorder(const Eigen::MatrixXd& permutationMatrix,
-  const Eigen::VectorXd& inVector,
-  const Eigen::MatrixXd& inMatrix,
-  Eigen::VectorXd* outVector,
-  Eigen::MatrixXd* outMatrix)
+//=============================================================================
+// The rows of inVector is reordered in outVector.
+void reorder(std::map<size_t, size_t> indexMap,
+  const Eigen::VectorXd& inVector, Eigen::VectorXd* outVector)
 {
-  *outVector = permutationMatrix*inVector;
-  *outMatrix = permutationMatrix*inMatrix;
+  *outVector = Eigen::VectorXd::Zero(inVector.size());
+  for (auto it = indexMap.begin(); it != indexMap.end(); ++it)
+  {
+    (*outVector)(it->second) = inVector(it->first);
+  }
 }
 
-// Convert the mapping to a permutation matrix for matrix operation
-void convertToPermutationMatrix(const std::map<size_t, size_t>& map,
-  Eigen::MatrixXd* permutationMatrix)
+//=============================================================================
+dart::dynamics::Joint* findJointByName(
+    dart::dynamics::MetaSkeleton* metaSkeleton, const std::string& jointName)
 {
-  *permutationMatrix = Eigen::MatrixXd::Zero(map.size(), map.size());
-  for(auto it = map.begin(); it != map.end(); ++it)
+  for (size_t i = 0; i < metaSkeleton->getNumJoints(); ++i)
   {
-    (*permutationMatrix)(it->second, it->first) = 1.0;
+    if (metaSkeleton->getJoint(i)->getName() == jointName)
+      return metaSkeleton->getJoint(i);
   }
+
+  return nullptr;
 }
 
 } // namespace
@@ -155,11 +174,18 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   // Check that all joints are single DOF.
   for (size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
-    auto n = space->getJointSpace(i)->getJoint()->getNumDofs();
-    if (n != 1)
+    auto joint = space->getJointSpace(i)->getJoint();
+    auto jointSpace = space->getSubspace(i);
+    auto rnJoint = dynamic_cast<RnJoint*>(jointSpace.get());
+    auto so2Joint = dynamic_cast<SO2Joint*>(jointSpace.get());
+
+    if (joint->getNumDofs() != 1 || (!rnJoint && !so2Joint))
     {
       std::stringstream message;
-      message << "Expected 1 dof. Joint " << i << " has " << n << " dofs.";
+      message << "Only single-DOF RnJoint and SO2Joint are supported. Joint "
+        << joint->getName() << "(index: " << i << ") is a "
+        << joint->getType() << " with "
+        << joint->getNumDofs() << " DOFs.";
       throw std::invalid_argument{message.str()};
     }
   }
@@ -171,50 +197,34 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   }
 
   // Map joint indices between jointTrajectory and space subspaces.
-  std::map<size_t, size_t> rosJointToMSSSJoint;
+  std::map<size_t, size_t> rosJointToMetaSkeletonJoint;
+
+  auto metaSkeleton = space->getMetaSkeleton();
 
   for (size_t i = 0; i < jointTrajectory.joint_names.size(); ++i)
   {
-    std::string joint_name = jointTrajectory.joint_names[i];
-    bool found_match = false;
+    std::string jointName = jointTrajectory.joint_names[i];
+    auto joint = findJointByName(metaSkeleton.get(), jointName);
 
-    for (size_t j = 0; j < space->getNumSubspaces(); ++j)
-    {
-      auto joint = space->getJointSpace(j)->getJoint();
-      if (joint_name == joint->getName())
-      {
-        // Check that the mapping is unique.
-        auto search = rosJointToMSSSJoint.find(i);
-        if (search != rosJointToMSSSJoint.end())
-        {
-          std::stringstream message;
-          message << "Both subspace[" << search->second << "] and ["
-            << j << "] map to joint " << i << " in jointTrajectory.";
-          throw std::invalid_argument{message.str()};
-        }
-        rosJointToMSSSJoint.emplace(std::make_pair(i, j));
-        found_match = true;
-        break;
-      }
-    }
-
-    // Check that there is a mapping for every joint.
-    if (!found_match)
+    if (!joint)
     {
       std::stringstream message;
-      message << joint_name << " does not have a matching joint in space.";
+      message << "Joint " << jointName << " (index: " << i << ")"
+        << " does not exist in metaSkeleton.";
       throw std::invalid_argument{message.str()};
     }
+    auto index = metaSkeleton->getIndexOf(joint);
+    assert(index != dart::dynamics::INVALID_INDEX);
+
+    rosJointToMetaSkeletonJoint.emplace(std::make_pair(i, index));
+
   }
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
   Eigen::VectorXd currPosition, currVelocity, currAcceleration;
   extractJointTrajectoryPoint(jointTrajectory, 0, numControlledJoints,
-    &currPosition, true, &currVelocity, false, &currAcceleration, false);
-
-  // To be used for reordering to match space's subspace order.
-  Eigen::VectorXd currPositionMSSS;
-  Eigen::MatrixXd segmentCoefficientsMSSS;
+    &currPosition, true, &currVelocity, false, &currAcceleration, false,
+    rosJointToMetaSkeletonJoint);
 
   const auto& firstWaypoint = jointTrajectory.points.front();
   auto currTimeFromStart = firstWaypoint.time_from_start.toSec();
@@ -240,8 +250,6 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{space}};
   auto currState = space->createState();
 
-  Eigen::MatrixXd conversionPermutation;
-  convertToPermutationMatrix(rosJointToMSSSJoint, &conversionPermutation);
   const auto& waypoints = jointTrajectory.points;
   for (size_t iwaypoint = 1; iwaypoint < waypoints.size(); ++iwaypoint)
   {
@@ -249,7 +257,8 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     extractJointTrajectoryPoint(jointTrajectory, iwaypoint, numControlledJoints,
       &nextPosition, isPositionRequired,
       &nextVelocity, isVelocityRequired,
-      &nextAcceleration, isAccelerationRequired);
+      &nextAcceleration, isAccelerationRequired,
+      rosJointToMetaSkeletonJoint);
 
     // Compute spline coefficients for this polynomial segment.
     const auto nextTimeFromStart = waypoints[iwaypoint].time_from_start.toSec();
@@ -259,13 +268,9 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
       segmentDuration, nextPosition - currPosition, nextVelocity, nextAcceleration,
       numCoefficients);
 
-    // Reorder the positions and coefficients using rosJointToMSSSJoint.
-    reorder(conversionPermutation, currPosition, segmentCoefficients,
-      &currPositionMSSS, &segmentCoefficientsMSSS);
-
     // Add a segment to the trajectory.
-    space->convertPositionsToState(currPositionMSSS, currState);
-    trajectory->addSegment(segmentCoefficientsMSSS, segmentDuration, currState);
+    space->convertPositionsToState(currPosition, currState);
+    trajectory->addSegment(segmentCoefficients, segmentDuration, currState);
 
     // Advance to the next segment.
     currPosition = nextPosition;

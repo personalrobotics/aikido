@@ -4,3 +4,4 @@ if(TARGET "${PROJECT_NAME}_control_ros")
   target_link_libraries(test_Conversions
     "${PROJECT_NAME}_control_ros")
 endif()
+

@@ -9,9 +9,10 @@ namespace aikido {
 namespace control {
 namespace ros {
 
-/// Converts a ROS JointTrajectory into an aikido's Spline Trajectory.
-/// This method only handles single-dof joints.
+/// Converts a ROS JointTrajectory into an aikido's Spline trajectory.
+/// This method only handles single-DOF joints.
 /// \param[in] _space MetaSkeletonStateSpace for Spline trajectory.
+//              Subspaces must be either 1D RnJoint or SO2Joint.
 /// \param[in] _jointTrajectory ROS JointTrajectory to be converted.
 /// \return Spline trajectory.
 std::unique_ptr<aikido::trajectory::Spline> convertJointTrajectory(
