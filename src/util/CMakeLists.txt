@@ -9,11 +9,15 @@ find_package(TinyXML2 REQUIRED)
 #
 set(sources
   CatkinResourceRetriever.cpp
+  ExecutorMultiplexer.cpp
+  ExecutorThread.cpp
+  KinBodyParser.cpp
   PseudoInverse.cpp
-  VanDerCorput.cpp
-  StepSequence.cpp
   RNG.cpp
+  StepSequence.cpp
   stream.cpp
+  string.cpp
+  VanDerCorput.cpp
 )
 
 add_library("${PROJECT_NAME}_util" SHARED ${sources})
@@ -25,6 +29,9 @@ target_link_libraries("${PROJECT_NAME}_util"
   ${Boost_FILESYSTEM_LIBRARY}
   ${DART_LIBRARIES}
   ${TinyXML2_LIBRARIES}
+)
+target_compile_options("${PROJECT_NAME}_util"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
 add_component(${PROJECT_NAME} util)

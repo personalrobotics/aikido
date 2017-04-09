@@ -34,7 +34,7 @@ public:
     const std::string& serverName,
     double timestep,
     double goalTimeTolerance,
-    const std::map<size_t, size_t>& jointIndexMap,
+    const std::map<std::string, size_t>& jointIndexMap,
     std::chrono::milliseconds connectionTimeout
       = std::chrono::milliseconds{1000},
     std::chrono::milliseconds connectionPollingPeriod
@@ -72,7 +72,7 @@ private:
   TrajectoryActionClient mClient;
   TrajectoryActionClient::GoalHandle mGoalHandle;
 
-  std::map<size_t, size_t> mJointIndexMap;
+  std::map<std::string, size_t> mJointIndexMap;
 
   double mTimestep;
   double mGoalTimeTolerance;

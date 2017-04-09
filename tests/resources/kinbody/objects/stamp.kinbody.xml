@@ -1,0 +1,14 @@
+<KinBody name="stamp">
+  <Body type="static" name="stamp">
+    <Translation>0 0 0</Translation>
+    <Geom type="cylinder">
+        <rotationaxis>1 0 0 0</rotationaxis>
+        <radius>0.02</radius>
+        <height>0.20</height>
+        <diffuseColor>0.45 0.25 0.05</diffuseColor>
+    </Geom>
+  </Body>
+</KinBody>
+
+
+

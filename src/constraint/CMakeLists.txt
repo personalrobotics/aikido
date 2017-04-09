@@ -1,5 +1,6 @@
 set(sources
   uniform/RnBoxConstraint.cpp
+  uniform/RnConstantSampler.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
   CartesianProductProjectable.cpp
@@ -30,6 +31,9 @@ target_link_libraries("${PROJECT_NAME}_constraint"
   "${PROJECT_NAME}_statespace"
   "${PROJECT_NAME}_util"
   ${DART_LIBRARIES}
+)
+target_compile_options("${PROJECT_NAME}_constraint"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
 add_component(${PROJECT_NAME} constraint)

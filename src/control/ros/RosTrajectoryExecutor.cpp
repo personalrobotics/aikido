@@ -52,7 +52,7 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
       const std::string& serverName,
       double timestep,
       double goalTimeTolerance,
-      const std::map<size_t, size_t>& jointIndexMap,
+      const std::map<std::string, size_t>& jointIndexMap,
       std::chrono::milliseconds connectionTimeout,
       std::chrono::milliseconds connectionPollingPeriod)
   : mSpace{std::move(space)}

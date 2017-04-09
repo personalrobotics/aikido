@@ -1,38 +1,53 @@
-#ifndef AIKIDO_RVIZ_INTERACTIVEMARKERVIEWER_H_
-#define AIKIDO_RVIZ_INTERACTIVEMARKERVIEWER_H_
+#ifndef AIKIDO_RVIZ_INTERACTIVEMARKERVIEWER_HPP_
+#define AIKIDO_RVIZ_INTERACTIVEMARKERVIEWER_HPP_
+
 #include <atomic>
 #include <set>
 #include <thread>
+
 #include <ros/ros.h>
 #include <dart/dynamics/Frame.hpp>
 #include <dart/dynamics/SmartPointer.hpp>
 #include <interactive_markers/interactive_marker_server.h>
-#include "SmartPointers.hpp"
+
+#include <aikido/constraint/TSR.hpp>
+#include <aikido/rviz/SmartPointers.hpp>
+#include <aikido/rviz/TSRMarker.hpp>
 
 namespace aikido {
 namespace rviz {
 
-class InteractiveMarkerViewer {
+class InteractiveMarkerViewer
+{
 public:
-  InteractiveMarkerViewer(std::string const &topicNamespace);
+  InteractiveMarkerViewer(const std::string& topicNamespace);
   virtual ~InteractiveMarkerViewer();
 
-  InteractiveMarkerViewer(InteractiveMarkerViewer const &) = delete;
-  InteractiveMarkerViewer(InteractiveMarkerViewer const &&) = delete;
-  InteractiveMarkerViewer &operator=(InteractiveMarkerViewer const &) = delete;
+  InteractiveMarkerViewer(const InteractiveMarkerViewer&) = delete;
+  InteractiveMarkerViewer(const InteractiveMarkerViewer&&) = delete;
+  InteractiveMarkerViewer &operator=(const InteractiveMarkerViewer&) = delete;
 
-  interactive_markers::InteractiveMarkerServer &marker_server();
+  interactive_markers::InteractiveMarkerServer& marker_server();
 
-  SkeletonMarkerPtr addSkeleton(dart::dynamics::SkeletonPtr const &skeleton);
+  SkeletonMarkerPtr addSkeleton(const dart::dynamics::SkeletonPtr& skeleton);
 
   FrameMarkerPtr addFrame(
-    dart::dynamics::Frame *frame, double length = 0.25,
+    dart::dynamics::Frame* frame, double length = 0.25,
     double thickness = 0.02, double alpha = 1.0);
 
   SkeletonMarkerPtr CreateSkeletonMarker(
-    dart::dynamics::SkeletonPtr const &skeleton);
+    const dart::dynamics::SkeletonPtr& skeleton);
 
-  void setAutoUpdate(bool _flag);
+  /// Visualizes a TSR.
+  /// \param tsr TSR constraint
+  /// \param nSamples Max number of samples to be used in visualization
+  /// \param basename Basename for markers
+  /// \return TSRMarkerPtr contains sampled frames of TSR.
+  TSRMarkerPtr addTSRMarker(
+    const aikido::constraint::TSR& tsr,
+    int nSamples = 10, const std::string& basename = "");
+
+  void setAutoUpdate(bool flag);
   void update();
 
 private:
