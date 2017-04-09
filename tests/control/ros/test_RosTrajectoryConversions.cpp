@@ -225,6 +225,7 @@ TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, DifferentOrdering)
                     rosTrajectory.points[i].positions[1]), kTolerance);
   }
 
-  ASSERT_DOUBLE_EQ(mTimestep*(rosTrajectory.points.size()-1), mTrajectory->getEndTime());
+  ASSERT_DOUBLE_EQ(mTimestep*(rosTrajectory.points.size()-1),
+      mTrajectory->getEndTime());
 }
 
