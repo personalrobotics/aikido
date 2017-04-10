@@ -35,10 +35,16 @@ protected:
     auto boxNode = mBox->createJointAndBodyNodePair<FreeJoint>().second;
     Eigen::Vector3d boxSize(0.5, 0.5, 0.5);
     std::shared_ptr<BoxShape> boxShape(new BoxShape(boxSize));
+    boxNode->createShapeNodeWith<
+        VisualAspect, CollisionAspect, DynamicsAspect>(boxShape);
+
 
     // Set shapes on the bodies.
     Eigen::Vector3d shape(0.2, 0.2, 0.7);
     std::shared_ptr<BoxShape> box(new BoxShape(shape));
+    bn1->createShapeNodeWith<
+        VisualAspect, CollisionAspect, DynamicsAspect>(box);
+
 
     // Add skeleton to world
     mCollisionDetector = FCLCollisionDetector::create();
