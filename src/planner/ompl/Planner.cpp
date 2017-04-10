@@ -325,8 +325,8 @@ trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
                                            constraint::TestablePtr _validityConstraint,
                                            constraint::TestablePtr _boundsConstraint,
                                            constraint::ProjectablePtr _boundsProjector,
-                                           double _maxPlanTime, double _maxDistanceBtwValidityChecks,
-                                           double _maxDistanceBtwProjections,
+                                           double _maxPlanTime, 
+                                           double _maxDistanceBtwValidityChecks,
                                            trajectory::InterpolatedPtr _originalTraj)
 {
 
@@ -334,7 +334,7 @@ trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
 auto si = getSpaceInformation(
       _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
       std::move(_validityConstraint), std::move(_boundsConstraint),
-      std::move(_boundsProjector), _maxDistanceBtwProjections);
+      std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
 
 // Get the state space
 auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
