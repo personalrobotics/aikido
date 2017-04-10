@@ -17,8 +17,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
   set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
 
-  add_compile_options(-Wall -Wextra)
-  add_compile_options(-Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic)
   if(TREAT_WARNINGS_AS_ERRORS)
     add_compile_options(-Werror)
   endif()
@@ -35,6 +34,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 
   set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
 
+  add_compile_options(-Wall -Wextra -Wpedantic)
   add_compile_options(-Wall)
   if(TREAT_WARNINGS_AS_ERRORS)
     add_compile_options(-Werror)
@@ -52,6 +52,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
 
   set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
 
+  add_compile_options(-Wall -Wextra -Wpedantic)
   add_compile_options(-Wall)
   if(TREAT_WARNINGS_AS_ERRORS)
     add_compile_options(-Werror)
