@@ -10,8 +10,8 @@ namespace rviz {
 
 struct BinaryResource {
   BinaryResource()
-    : mData(nullptr)
-    , mSize(0)
+    : mSize(0)
+    , mData(nullptr)
   {
   }
 
