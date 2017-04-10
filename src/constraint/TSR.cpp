@@ -321,8 +321,8 @@ std::vector<ConstraintType> TSR::getConstraintTypes() const
 }
 
 //=============================================================================
-bool TSR::project(const statespace::StateSpace::State* _s,
-  statespace::StateSpace::State* _out) const
+bool TSR::project(const statespace::StateSpace::State* /*_s*/,
+  statespace::StateSpace::State* /*_out*/) const
 {
   // TODO 
   return false;
