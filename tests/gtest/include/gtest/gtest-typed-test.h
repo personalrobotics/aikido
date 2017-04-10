@@ -242,7 +242,7 @@ INSTANTIATE_TYPED_TEST_CASE_P(My, FooTest, MyTypes);
   } \
   static const char* const GTEST_REGISTERED_TEST_NAMES_(CaseName) = \
       GTEST_TYPED_TEST_CASE_P_STATE_(CaseName).VerifyRegisteredTestNames(\
-          __FILE__, __LINE__, ##__VA_ARGS__)
+          __FILE__, __LINE__, #__VA_ARGS__)
 
 // The 'Types' template argument below must have spaces around it
 // since some compilers may choke on '>>' when passing a template
