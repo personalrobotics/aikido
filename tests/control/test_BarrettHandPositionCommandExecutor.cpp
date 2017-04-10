@@ -136,7 +136,7 @@ public:
   /// \param transform pose of ball
   /// \param collisionDetector CollisionDetector to create CollisionGroup with
   BodyNodePtr createBall(Eigen::Isometry3d transform,
-    ::dart::collision::CollisionDetectorPtr collisionDetector)
+    ::dart::collision::CollisionDetectorPtr /*collisionDetector*/)
   {
     std::shared_ptr<EllipsoidShape> ballShape(
       new EllipsoidShape(Eigen::Vector3d(0.1, 0.1, 0.1)));
