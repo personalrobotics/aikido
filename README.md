@@ -31,7 +31,7 @@ Once the dependencies are installed, you can build AIKIDO using [CMake]:
 ```shell
 $ mkdir build
 $ cd build
-$ cmake ..
+$ cmake -DCMAKE_PREFIX_PATH=/opt/ros/indigo ..
 $ make
 $ sudo make install
 ```
