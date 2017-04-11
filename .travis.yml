@@ -38,5 +38,5 @@ after_script:
   - ./scripts/view-all-results.sh test_results
 
 after_failure: 
-  - cat Testing/Temporary/LastTest.log
-  - cat Testing/Temporary/LastTestsFailed.log
+  - cat ./build/aikido/Testing/Temporary/LastTest.log
+  - cat ./build/aikido/Testing/Temporary/LastTestsFailed.log
