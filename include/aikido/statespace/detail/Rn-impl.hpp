@@ -5,25 +5,42 @@
 namespace aikido {
 namespace statespace {
 
+//==============================================================================
+extern template
+class R<0>;
+
+extern template
+class R<1>;
+
+extern template
+class R<2>;
+
+extern template
+class R<3>;
+
+extern template
+class R<6>;
+
+//==============================================================================
 /// \c StateHandle for a \c Rn. The template parameter is
 /// necessary to support both \c const and non-<tt>const</tt> states.
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
 class RealVectorStateHandle 
-  : public statespace::StateHandle<Rn<_QualifiedState::Dimension>, _QualifiedState>
+  : public statespace::StateHandle<R<_QualifiedState::Dimension>, _QualifiedState>
 {
 public:
   static constexpr int Dimension = _QualifiedState::Dimension;
 
-  using VectorNd = typename Rn<Dimension>::VectorNd;
+  using VectorNd = typename R<Dimension>::VectorNd;
 
   using typename statespace::StateHandle<
-  Rn<Dimension>, _QualifiedState>::State;
+  R<Dimension>, _QualifiedState>::State;
   using typename statespace::StateHandle<
-    Rn<Dimension>, _QualifiedState>::StateSpace;
+    R<Dimension>, _QualifiedState>::StateSpace;
   using typename statespace::StateHandle<
-    Rn<Dimension>, _QualifiedState>::QualifiedState;
+    R<Dimension>, _QualifiedState>::QualifiedState;
 
   using ValueType = std::conditional<std::is_const<QualifiedState>::value,
     const VectorNd, VectorNd>;
@@ -63,43 +80,43 @@ public:
 
 //=============================================================================
 template <int N>
-Rn<N>::Rn()
+R<N>::R()
 {
   // Do nothing
 }
 
 //=============================================================================
 template <int N>
-auto Rn<N>::createState() const -> ScopedState
+auto R<N>::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
 //=============================================================================
 template <int N>
-Eigen::Map<typename Rn<N>::VectorNd> Rn<N>::getMutableValue(State *_state) const
+Eigen::Map<typename R<N>::VectorNd> R<N>::getMutableValue(State *_state) const
 {
   auto valueBuffer =
       reinterpret_cast<double *>(reinterpret_cast<unsigned char *>(_state));
 
-  return Eigen::Map<typename Rn<N>::VectorNd>(valueBuffer, N);
+  return Eigen::Map<typename R<N>::VectorNd>(valueBuffer, N);
 }
 
 //=============================================================================
 template <int N>
-Eigen::Map<const typename Rn<N>::VectorNd> Rn<N>::getValue(
+Eigen::Map<const typename R<N>::VectorNd> R<N>::getValue(
     const State *_state) const
 {
   auto valueBuffer = reinterpret_cast<const double *>(
       reinterpret_cast<const unsigned char *>(_state));
 
-  return Eigen::Map<const typename Rn<N>::VectorNd>(valueBuffer, N);
+  return Eigen::Map<const typename R<N>::VectorNd>(valueBuffer, N);
 }
 
 //=============================================================================
 template <int N>
-void Rn<N>::setValue(
-    State *_state, const typename Rn<N>::VectorNd &_value) const
+void R<N>::setValue(
+    State *_state, const typename R<N>::VectorNd &_value) const
 {
   // TODO: Skip this check in release mode.
   if (_value.size() != N) {
@@ -114,14 +131,14 @@ void Rn<N>::setValue(
 
 //=============================================================================
 template <int N>
-size_t Rn<N>::getStateSizeInBytes() const
+size_t R<N>::getStateSizeInBytes() const
 {
   return N * sizeof(double);
 }
 
 //=============================================================================
 template <int N>
-StateSpace::State *Rn<N>::allocateStateInBuffer(void *_buffer) const
+StateSpace::State *R<N>::allocateStateInBuffer(void *_buffer) const
 {
   auto state = reinterpret_cast<State *>(_buffer);
   getMutableValue(state).setZero();
@@ -130,14 +147,14 @@ StateSpace::State *Rn<N>::allocateStateInBuffer(void *_buffer) const
 
 //=============================================================================
 template <int N>
-void Rn<N>::freeStateInBuffer(StateSpace::State */*_state*/) const
+void R<N>::freeStateInBuffer(StateSpace::State */*_state*/) const
 {
   // Do nothing.
 }
 
 //=============================================================================
 template <int N>
-void Rn<N>::compose(const StateSpace::State *_state1,
+void R<N>::compose(const StateSpace::State *_state1,
                  const StateSpace::State *_state2,
                  StateSpace::State *_out) const
 {
@@ -154,14 +171,14 @@ void Rn<N>::compose(const StateSpace::State *_state1,
 
 //=============================================================================
 template <int N>
-size_t Rn<N>::getDimension() const
+size_t R<N>::getDimension() const
 {
   return N;
 }
 
 //=============================================================================
 template <int N>
-void Rn<N>::getIdentity(StateSpace::State *_out) const
+void R<N>::getIdentity(StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
   setValue(out, VectorNd::Zero());
@@ -169,7 +186,7 @@ void Rn<N>::getIdentity(StateSpace::State *_out) const
 
 //=============================================================================
 template <int N>
-void Rn<N>::getInverse(const StateSpace::State *_in, StateSpace::State *_out) const
+void R<N>::getInverse(const StateSpace::State *_in, StateSpace::State *_out) const
 {
   // TODO: Disable this in release mode.
   if (_out == _in)
@@ -183,7 +200,7 @@ void Rn<N>::getInverse(const StateSpace::State *_in, StateSpace::State *_out) co
 
 //=============================================================================
 template <int N>
-void Rn<N>::copyState(
+void R<N>::copyState(
     const StateSpace::State *_source, StateSpace::State *_destination) const
 {
   auto destination = static_cast<State *>(_destination);
@@ -193,7 +210,7 @@ void Rn<N>::copyState(
 
 //=============================================================================
 template <int N>
-void Rn<N>::expMap(const Eigen::VectorXd &_tangent, StateSpace::State *_out) const
+void R<N>::expMap(const Eigen::VectorXd &_tangent, StateSpace::State *_out) const
 {
   // TODO: Skip this check in release mode.
   if (_tangent.size() != N) {
@@ -209,7 +226,7 @@ void Rn<N>::expMap(const Eigen::VectorXd &_tangent, StateSpace::State *_out) con
 
 //=============================================================================
 template <int N>
-void Rn<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd &_tangent) const
+void R<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd &_tangent) const
 {
   if (_tangent.size() != N) {
     _tangent.resize(N);
@@ -221,7 +238,7 @@ void Rn<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd &_tangent) cons
 
 //=============================================================================
 template <int N>
-void Rn<N>::print(const StateSpace::State *_state, std::ostream &_os) const
+void R<N>::print(const StateSpace::State *_state, std::ostream &_os) const
 {
     auto val = getValue(static_cast<const State*>(_state));
 

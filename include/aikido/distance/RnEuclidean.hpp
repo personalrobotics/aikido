@@ -15,7 +15,7 @@ class RnEuclidean : public DistanceMetric
 public:
   /// Constructor.
   /// \param _space The Rn this metric operates on
-  explicit RnEuclidean(std::shared_ptr<statespace::Rn<N>> _space);
+  explicit RnEuclidean(std::shared_ptr<statespace::R<N>> _space);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
@@ -27,7 +27,7 @@ public:
                   const statespace::StateSpace::State* _state2) const override;
 
 private:
-  std::shared_ptr<statespace::Rn<N>> mStateSpace;
+  std::shared_ptr<statespace::R<N>> mStateSpace;
 };
 
 using R0Euclidean = RnEuclidean<0>;

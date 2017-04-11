@@ -2,6 +2,7 @@
 #include <dart/dart.hpp>
 #include <aikido/constraint/uniform/RnConstantSampler.hpp>
 #include <aikido/constraint/uniform/RnConstantSampler.hpp>
+#include "eigen_tests.hpp"
 
 using namespace aikido;
 
@@ -54,13 +55,14 @@ void testSampleGenerator()
   auto value = Eigen::Matrix<double, N, 1>::Zero();
   EXPECT_EQ(value.size(), N);
 
-  auto stateSpace = std::make_shared<statespace::Rn<N>>();
+  auto stateSpace = std::make_shared<statespace::R<N>>();
   EXPECT_EQ(stateSpace->getDimension(), N);
 
   auto sampler
       = std::make_shared<constraint::RnConstantSampler<N>>(stateSpace, value);
   EXPECT_EQ(sampler->getStateSpace(), stateSpace);
-  EXPECT_EQ(sampler->getConstantValue(), value);
+  EXPECT_TRUE(
+      tests::CompareEigenMatrices(sampler->getConstantValue(), value, 1e-6));
 
   auto generator = sampler->createSampleGenerator();
   EXPECT_EQ(generator->getStateSpace(), stateSpace);
@@ -74,17 +76,15 @@ void testSampleGenerator()
     auto state = stateSpace->createState();
     EXPECT_TRUE(generator->sample(state));
 
-    EXPECT_EQ(state.getValue(), sampler->getConstantValue());
+    EXPECT_TRUE(tests::CompareEigenMatrices(
+        state.getValue(), sampler->getConstantValue(), 1e-6));
   }
 }
 
 //==============================================================================
 TEST(RnConstantSamplerTests, SampleGenerator)
 {
-  // Disabled because it's unable to check equality of two zero-sized vectors
-  // (Eigen::Matrix<double, 0, 1>). Please remove this if this not true.
-  //testSampleGenerator<0>();
-
+  testSampleGenerator<0>();
   testSampleGenerator<1>();
   testSampleGenerator<2>();
   testSampleGenerator<3>();

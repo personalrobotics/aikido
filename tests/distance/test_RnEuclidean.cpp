@@ -6,7 +6,7 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
-using R4 = Rn<4>;
+using R4 = R<4>;
 using R4Euclidean = RnEuclidean<4>;
 
 TEST(RnEuclidean, ThrowsOnNullStateSpace)

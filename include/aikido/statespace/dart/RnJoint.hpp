@@ -2,6 +2,7 @@
 #define AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
 #include "../Rn.hpp"
 #include "JointStateSpace.hpp"
+#include "aikido/statespace/detail/RnTraits.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -17,19 +18,18 @@ namespace dart {
 /// the \c createJointStateSpace helper function.
 template <int N>
 class RnJoint
-  : public Rn<N>
+  : public R<N>
   , public JointStateSpace
   , public std::enable_shared_from_this<RnJoint<N>>
 {
 public:
   static constexpr int Dimension = N;
 
-  using Rn<Dimension>::State;
+  using R<Dimension>::State;
 
-  using VectorNd = typename Rn<Dimension>::VectorNd;
+  using VectorNd = typename R<Dimension>::VectorNd;
 
-  using DartJoint
-      = ::dart::dynamics::GenericJoint<::dart::math::RealVectorSpace<N>>;
+  using DartJoint = typename detail::RnTraits<N>::DartJoint;
 
   /// Create a real vector state space for \c _joint.
   ///

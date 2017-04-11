@@ -18,7 +18,7 @@ public:
   /// \param _space Space in which this constraint operates.
   /// \param _value Value to return when sampled.
   RnConstantSampler(
-    std::shared_ptr<statespace::Rn<N>> _space, const VectorNd& _value);
+    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -31,7 +31,7 @@ public:
   const VectorNd& getConstantValue() const;
 
 private:
-  std::shared_ptr<statespace::Rn<N>> mSpace;
+  std::shared_ptr<statespace::R<N>> mSpace;
   VectorNd mValue;
 };
 

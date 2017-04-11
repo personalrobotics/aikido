@@ -12,7 +12,7 @@
 using Eigen::Vector2d;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::Rn;
+using aikido::statespace::R;
 using aikido::statespace::SO2;
 using aikido::statespace::StateSpace;
 using dart::common::make_unique;
@@ -61,31 +61,31 @@ void evaluateAtTime(
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
   // TODO(JS): Generalize Rn<N> for arbitrary N.
-  if (dynamic_cast<const Rn<0>*>(_stateSpace) != nullptr)
+  if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
   {
     return true;
   }
-  else if (dynamic_cast<const Rn<1>*>(_stateSpace) != nullptr)
+  else if (dynamic_cast<const R<1>*>(_stateSpace) != nullptr)
   {
     return true;
   }
-  else if (dynamic_cast<const Rn<2>*>(_stateSpace) != nullptr)
+  else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
   {
     return true;
   }
-  else if (dynamic_cast<const Rn<3>*>(_stateSpace) != nullptr)
+  else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
   {
     return true;
   }
-  else if (dynamic_cast<const Rn<4>*>(_stateSpace) != nullptr)
+  else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
   {
     return true;
   }
-  else if (dynamic_cast<const Rn<5>*>(_stateSpace) != nullptr)
+  else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
   {
     return true;
   }
-  else if (dynamic_cast<const Rn<6>*>(_stateSpace) != nullptr)
+  else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
   {
     return true;
   }

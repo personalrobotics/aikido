@@ -14,7 +14,7 @@ class RealVectorStateHandle;
 /// Represents a n-dimensional real vector space with vector addition as the
 /// group operation.
 template <int N>
-class Rn : public virtual StateSpace
+class R : public virtual StateSpace
 {
 public:
   /// Point in a \c Rn.
@@ -27,7 +27,7 @@ public:
     State() = default;
     ~State() = default;
 
-    friend class Rn<N>;
+    friend class R<N>;
   };
 
   /// Dimension of the space
@@ -42,7 +42,7 @@ public:
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   /// Constructs a \c _dimension dimensional real vector space.
-  Rn();
+  R();
 
   /// Helper function to create a \c ScopedState.
   ///
@@ -119,11 +119,11 @@ private:
   Eigen::Map<VectorNd> getMutableValue(State *_state) const;
 };
 
-using R0 = Rn<0>;
-using R1 = Rn<1>;
-using R2 = Rn<2>;
-using R3 = Rn<3>;
-using R6 = Rn<6>;
+using R0 = R<0>;
+using R1 = R<1>;
+using R2 = R<2>;
+using R3 = R<3>;
+using R6 = R<6>;
 
 } // namespace statespace
 } // namespace aikido

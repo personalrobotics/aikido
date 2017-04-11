@@ -7,6 +7,22 @@
 namespace aikido {
 namespace constraint {
 
+//=============================================================================
+extern template
+class RnConstantSampler<0>;
+
+extern template
+class RnConstantSampler<1>;
+
+extern template
+class RnConstantSampler<2>;
+
+extern template
+class RnConstantSampler<3>;
+
+extern template
+class RnConstantSampler<6>;
+
 namespace {
 
 //=============================================================================
@@ -17,7 +33,7 @@ public:
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
   RnConstantSamplerSampleGenerator(
-    std::shared_ptr<statespace::Rn<N>> _space, const VectorNd& _value);
+    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
 
   statespace::StateSpacePtr getStateSpace() const override;
 
@@ -28,14 +44,14 @@ public:
   bool canSample() const override;
 
 private:
-  std::shared_ptr<statespace::Rn<N>> mSpace;
+  std::shared_ptr<statespace::R<N>> mSpace;
   VectorNd mValue;
 };
 
 //=============================================================================
 template <int N>
 RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
-      std::shared_ptr<statespace::Rn<N>> _space,
+      std::shared_ptr<statespace::R<N>> _space,
       const VectorNd& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
@@ -56,7 +72,7 @@ template <int N>
 bool RnConstantSamplerSampleGenerator<N>::sample(
     statespace::StateSpace::State* _state)
 {
-  mSpace->setValue(static_cast<typename statespace::Rn<N>::State*>(_state), mValue);
+  mSpace->setValue(static_cast<typename statespace::R<N>::State*>(_state), mValue);
 
   return true;
 }
@@ -80,7 +96,7 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
 //=============================================================================
 template <int N>
 RnConstantSampler<N>::RnConstantSampler(
-    std::shared_ptr<statespace::Rn<N>> _space, const VectorNd& _value)
+    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
 {

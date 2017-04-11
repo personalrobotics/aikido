@@ -2,7 +2,7 @@
 #include <aikido/statespace/Rn.hpp>
 
 using aikido::statespace::R3;
-using R4 = aikido::statespace::Rn<4>;
+using R4 = aikido::statespace::R<4>;
 
 TEST(Rn, Compose)
 {

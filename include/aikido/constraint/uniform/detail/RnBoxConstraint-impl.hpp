@@ -7,6 +7,22 @@ namespace constraint {
 
 using constraint::ConstraintType;
 
+//==============================================================================
+extern template
+class RnBoxConstraint<0>;
+
+extern template
+class RnBoxConstraint<1>;
+
+extern template
+class RnBoxConstraint<2>;
+
+extern template
+class RnBoxConstraint<3>;
+
+extern template
+class RnBoxConstraint<6>;
+
 //=============================================================================
 template <int N>
 class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
@@ -22,12 +38,12 @@ public:
 
 private:
   RnBoxConstraintSampleGenerator(
-    std::shared_ptr<statespace::Rn<N>> _space,
+    std::shared_ptr<statespace::R<N>> _space,
     std::unique_ptr<util::RNG> _rng,
     const Eigen::VectorXd& _lowerLimits,
     const Eigen::VectorXd& _upperLimits);
 
-  std::shared_ptr<statespace::Rn<N>> mSpace;
+  std::shared_ptr<statespace::R<N>> mSpace;
   std::unique_ptr<util::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
 
@@ -37,7 +53,7 @@ private:
 //=============================================================================
 template <int N>
 RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
-      std::shared_ptr<statespace::Rn<N>> _space,
+      std::shared_ptr<statespace::R<N>> _space,
       std::unique_ptr<util::RNG> _rng,
       const Eigen::VectorXd& _lowerLimits,
       const Eigen::VectorXd& _upperLimits)
@@ -69,7 +85,7 @@ bool RnBoxConstraintSampleGenerator<N>::sample(
   for (size_t i = 0; i < value.size(); ++i)
     value[i] = mDistributions[i](*mRng);
 
-  mSpace->setValue(static_cast<typename statespace::Rn<N>::State*>(_state), value);
+  mSpace->setValue(static_cast<typename statespace::R<N>::State*>(_state), value);
 
   return true;
 }
@@ -90,7 +106,7 @@ bool RnBoxConstraintSampleGenerator<N>::canSample() const
 
 //=============================================================================
 template <int N>
-RnBoxConstraint<N>::RnBoxConstraint(std::shared_ptr<statespace::Rn<N>> _space,
+RnBoxConstraint<N>::RnBoxConstraint(std::shared_ptr<statespace::R<N>> _space,
       std::unique_ptr<util::RNG> _rng,
       const VectorNd& _lowerLimits,
       const VectorNd& _upperLimits)
@@ -162,7 +178,7 @@ bool RnBoxConstraint<N>::isSatisfied(
         const statespace::StateSpace::State* state) const
 {
   const auto value = mSpace->getValue(
-    static_cast<const typename statespace::Rn<N>::State*>(state));
+    static_cast<const typename statespace::R<N>::State*>(state));
 
   for (size_t i = 0; i < value.size(); ++i)
   {
@@ -179,7 +195,7 @@ bool RnBoxConstraint<N>::project(
   statespace::StateSpace::State* _out) const
 {
   Eigen::VectorXd value = mSpace->getValue(
-    static_cast<const typename statespace::Rn<N>::State*>(_s));
+    static_cast<const typename statespace::R<N>::State*>(_s));
 
   for (size_t i = 0; i < value.size(); ++i)
   {
@@ -190,7 +206,7 @@ bool RnBoxConstraint<N>::project(
   }
 
   mSpace->setValue(
-    static_cast<typename statespace::Rn<N>::State*>(_out), value);
+    static_cast<typename statespace::R<N>::State*>(_out), value);
 
   return true;
 }
@@ -202,7 +218,7 @@ void RnBoxConstraint<N>::getValue(
   Eigen::VectorXd& _out) const
 {
   auto stateValue = mSpace->getValue(
-    static_cast<const typename statespace::Rn<N>::State*>(_s));
+    static_cast<const typename statespace::R<N>::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
   _out.resize(dimension);
@@ -225,7 +241,7 @@ void RnBoxConstraint<N>::getJacobian(
   Eigen::MatrixXd& _out) const
 {
   auto stateValue = mSpace->getValue(
-    static_cast<const typename statespace::Rn<N>::State*>(_s));
+    static_cast<const typename statespace::R<N>::State*>(_s));
 
   const size_t dimension = mSpace->getDimension();
   _out = Eigen::MatrixXd::Zero(dimension, dimension);
@@ -267,14 +283,14 @@ std::unique_ptr<constraint::SampleGenerator>
 
 //=============================================================================
 template <int N>
-const Eigen::VectorXd& RnBoxConstraint<N>::getLowerLimits() const
+auto RnBoxConstraint<N>::getLowerLimits() const -> const VectorNd&
 {
   return mLowerLimits;
 }
 
 //=============================================================================
 template <int N>
-const Eigen::VectorXd& RnBoxConstraint<N>::getUpperLimits() const
+auto RnBoxConstraint<N>::getUpperLimits() const -> const VectorNd&
 {
   return mUpperLimits;
 }

@@ -15,7 +15,7 @@ class WeldJoint
   , public std::enable_shared_from_this<WeldJoint>
 {
 public:
-  using Rn::State;
+  using R::State;
 
   /// Create a real vector state space for \c _joint.
   ///
