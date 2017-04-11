@@ -76,7 +76,6 @@ bool NewtonsMethodProjectable::project(
   statespace::StateSpace::State* _out) const
 {
   using StateSpace = statespace::StateSpace;
-  using State = StateSpace::State;
 
   int iteration = 0;
 

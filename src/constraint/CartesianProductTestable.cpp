@@ -17,7 +17,7 @@ CartesianProductTestable::CartesianProductTestable(
   if (!mStateSpace)
     throw std::invalid_argument("_stateSpace is nullptr.");
 
-  for(int i = 0; i < mConstraints.size(); ++i)
+  for(size_t i = 0; i < mConstraints.size(); ++i)
   {
     if (!mConstraints[i])
     {

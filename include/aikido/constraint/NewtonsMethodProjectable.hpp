@@ -38,10 +38,10 @@ public:
 
 private:
   DifferentiablePtr mDifferentiable;
-  statespace::StateSpacePtr mStateSpace;
-  int mMaxIteration;
   std::vector<double> mTolerance;
+  int mMaxIteration;
   double mMinStepSize;
+  statespace::StateSpacePtr mStateSpace;
 
   bool contains(const statespace::StateSpace::State* _s) const;
 };

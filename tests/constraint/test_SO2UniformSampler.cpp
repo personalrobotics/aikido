@@ -26,7 +26,7 @@ protected:
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
-    for (int i = 0; i < NUM_TARGETS; ++i)
+    for (size_t i = 0; i < NUM_TARGETS; ++i)
     {
       const double angle = (2 * M_PI * i) / NUM_TARGETS;
 

@@ -32,7 +32,7 @@ std::vector<constraint::ConstraintType> Satisfied
 
 //=============================================================================
 bool Satisfied::isSatisfied(
-  const statespace::StateSpace::State* state) const
+  const statespace::StateSpace::State* /*state*/) const
 {
   return true;
 }
@@ -48,14 +48,14 @@ bool Satisfied::project(
 
 //=============================================================================
 void Satisfied::getValue(
-  const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
+  const statespace::StateSpace::State* /*_s*/, Eigen::VectorXd& _out) const
 {
   _out = Eigen::Matrix<double, 0, 1>();
 }
 
 //=============================================================================
 void Satisfied::getJacobian(
-  const statespace::StateSpace::State* _s,
+  const statespace::StateSpace::State* /*_s*/,
   Eigen::MatrixXd& _out) const
 {
   _out = Eigen::Matrix<double, 0, 0>();

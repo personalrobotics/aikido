@@ -13,8 +13,8 @@ namespace dart {
 
 //=============================================================================
 SO3Joint::SO3Joint(::dart::dynamics::BallJoint* _joint)
-  : JointStateSpace(_joint)
-  , SO3()
+  : SO3()
+  , JointStateSpace(_joint)
 {
 }
 
