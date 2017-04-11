@@ -43,7 +43,6 @@ TEST_F(InterpolatedTest, AddWaypoint)
 
 TEST_F(InterpolatedTest, EvaluatePt)
 {
-  using StateType = R2::State;
   auto istate = rvss->createState();
   
   // Point before first time on traj
@@ -70,8 +69,6 @@ TEST_F(InterpolatedTest, EvaluatePt)
 
 TEST_F(InterpolatedTest, EvaluateDerivative)
 {
-  using StateType = R2::State;
-
   Eigen::VectorXd tangentVector;
 
   EXPECT_THROW(traj->evaluateDerivative(1.5, 0, tangentVector), std::invalid_argument);

@@ -50,14 +50,9 @@ void PolynomialConstraint<N>::getJacobian(
     const aikido::statespace::StateSpace::State* _s,
     Eigen::MatrixXd& _out) const
 {
-  using State = typename aikido::statespace::Rn<N>::State;
-  auto s = static_cast<const State*>(_s);
-
   Eigen::VectorXd derivCoeffs(mCoeffs.rows()-1);
   for(int i = 0; i < derivCoeffs.rows(); i++)
-  {
     derivCoeffs(i) = mCoeffs(i+1)*(i+1);
-  }
 
   PolynomialConstraint derivPoly(derivCoeffs);
 

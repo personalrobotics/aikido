@@ -29,7 +29,7 @@ using aikido::constraint::createProjectableBoundsFor;
 using aikido::constraint::createTestableBoundsFor;
 using aikido::constraint::createSampleableBoundsFor;
 
-static Vector1d make_vector(double _x)
+static inline Vector1d make_vector(double _x)
 {
   Vector1d matrix;
   matrix(0, 0) = _x;

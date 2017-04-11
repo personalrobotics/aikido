@@ -16,8 +16,6 @@ inline void deserialize(
 {
     typedef Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols> MatrixType;
     typedef typename MatrixType::Index Index;
-    typedef typename MatrixType::Scalar Scalar;
-
 
     using boost::format;
     using boost::str;

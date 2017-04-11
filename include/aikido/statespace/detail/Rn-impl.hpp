@@ -130,7 +130,7 @@ StateSpace::State *Rn<N>::allocateStateInBuffer(void *_buffer) const
 
 //=============================================================================
 template <int N>
-void Rn<N>::freeStateInBuffer(StateSpace::State *_state) const
+void Rn<N>::freeStateInBuffer(StateSpace::State */*_state*/) const
 {
   // Do nothing.
 }

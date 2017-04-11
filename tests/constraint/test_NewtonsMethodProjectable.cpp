@@ -190,8 +190,6 @@ TEST(NewtonsMethodProjectable, ProjectTSRRotation)
   auto space = tsr->getSE3();
   auto seedState = space->createState();
 
-  Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
-
   NewtonsMethodProjectable projector(tsr, std::vector<double>(6, 1e-4), 1000, 1e-8);
 
   auto out = space->createState();

@@ -29,7 +29,7 @@ ParabolicRamp::Vector toVector(const Eigen::VectorXd& _x)
 {
   ParabolicRamp::Vector output(_x.size());
 
-  for (size_t i = 0; i < _x.size(); ++i)
+  for (int i = 0; i < _x.size(); ++i)
     output[i] = _x[i];
 
   return output;
@@ -132,10 +132,10 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  if (_maxVelocity.size() != dimension)
+  if (static_cast<size_t>(_maxVelocity.size()) != dimension)
     throw std::invalid_argument("Velocity limits have wrong dimension.");
 
-  if (_maxAcceleration.size() != dimension)
+  if (static_cast<size_t>(_maxAcceleration.size()) != dimension)
     throw std::invalid_argument("Acceleration limits have wrong dimension.");
 
   for (size_t i = 0; i < dimension; ++i)
