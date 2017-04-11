@@ -324,8 +324,7 @@ trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
                                            constraint::SampleablePtr _sampler,
                                            constraint::TestablePtr _validityConstraint,
                                            constraint::TestablePtr _boundsConstraint,
-                                           constraint::ProjectablePtr _boundsProjector,
-                                           double _maxPlanTime, 
+                                           constraint::ProjectablePtr _boundsProjector, 
                                            double _maxDistanceBtwValidityChecks,
                                            trajectory::InterpolatedPtr _originalTraj)
 {
