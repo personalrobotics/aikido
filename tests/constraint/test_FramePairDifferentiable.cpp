@@ -143,7 +143,6 @@ TEST_F(FramePairDifferentiableTest, Value)
 
   tsr->mBw = Bw;
 
-  Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
   adaptor.getValue(state, value);
   
   Eigen::VectorXd expected(Eigen::VectorXd::Zero(6));

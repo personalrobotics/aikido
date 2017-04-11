@@ -193,7 +193,7 @@ void DynamicPath::SetMilestones(const vector<Vector>& x)
       ramps[i].x1 = x[i+1];
       ramps[i].dx0 = zero;
       ramps[i].dx1 = zero;
-      bool res=ramps[i].SolveMinTimeLinear(accMax,velMax);
+      bool res = ramps[i].SolveMinTimeLinear(accMax,velMax);
       PARABOLIC_RAMP_ASSERT(res);
     }
   }

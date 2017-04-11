@@ -26,9 +26,9 @@ ShapeFrameMarker::ShapeFrameMarker(
       InteractiveMarkerServer *markerServer,
       const std::string &name,
       ShapeFrame const *shapeFrame)
-  : mShapeFrame(shapeFrame)
-  , mResourceServer(resourceServer)
+  : mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
+  , mShapeFrame(shapeFrame)
   , mExists(false)
   , mForceUpdate(true)
   , mVersion()

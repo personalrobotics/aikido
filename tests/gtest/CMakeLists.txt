@@ -52,7 +52,7 @@ include(cmake/internal_utils.cmake)
 config_compiler_and_linker()  # Defined in internal_utils.cmake.
 
 # Where Google Test's .h files can be found.
-include_directories(
+include_directories(SYSTEM
   ${gtest_SOURCE_DIR}/include
   ${gtest_SOURCE_DIR})
 
@@ -68,6 +68,7 @@ link_directories(${gtest_BINARY_DIR}/src)
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
+target_include_directories(gtest PUBLIC "${gtest_SOURCE_DIR}/include")
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
 
