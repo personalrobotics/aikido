@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/util/StepSequence.hpp>
 
 using aikido::util::StepSequence;
@@ -65,6 +66,7 @@ TEST(StepSequence, IteratorStop)
   size_t count = 0;
   StepSequence seq(0.3, true);
   for (double v : seq) {
+    DART_UNUSED(v);
     count++;
   }
 
@@ -76,6 +78,7 @@ TEST(StepSequence, IteratorStopAlternateRange)
   size_t count = 0;
   StepSequence seq(0.3, true, 3, 3.7);
   for (double v : seq) {
+    DART_UNUSED(v);
     count++;
   }
 

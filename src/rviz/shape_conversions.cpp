@@ -94,7 +94,7 @@ bool convertAssimpMeshToROSTriangleList(
 }
 
 bool convertShape(BoxShape const &shape, Marker *marker,
-                  ResourceServer *resourceManager)
+                  ResourceServer */*resourceManager*/)
 {
   marker->type = Marker::CUBE;
   marker->pose.orientation.w = 1.;
@@ -103,7 +103,7 @@ bool convertShape(BoxShape const &shape, Marker *marker,
 }
 
 bool convertShape(CylinderShape const &shape, Marker *marker,
-                  ResourceServer *resourceManager)
+                  ResourceServer */*resourceManager*/)
 {
   marker->type = Marker::CYLINDER;
   marker->pose.orientation.w = 1.;
@@ -114,7 +114,7 @@ bool convertShape(CylinderShape const &shape, Marker *marker,
 }
 
 bool convertShape(EllipsoidShape const &shape, Marker *marker,
-                  ResourceServer *resourceManager)
+                  ResourceServer */*resourceManager*/)
 {
   marker->type = Marker::SPHERE;
   marker->pose.orientation.w = 1.;
@@ -123,7 +123,7 @@ bool convertShape(EllipsoidShape const &shape, Marker *marker,
 }
 
 bool convertShape(LineSegmentShape const &shape, Marker *marker,
-                  ResourceServer *resourceManager)
+                  ResourceServer */*resourceManager*/)
 {
   std::vector<Eigen::Vector3d> const &vertices = shape.getVertices();
   std::vector<Eigen::Vector2i, Eigen::aligned_allocator<Eigen::Vector2i> >
@@ -151,7 +151,7 @@ bool convertShape(LineSegmentShape const &shape, Marker *marker,
 }
 
 bool convertShape(MeshShape const &shape, Marker *marker,
-                  ResourceServer *resourceManager)
+                  ResourceServer */*resourceManager*/)
 {
   marker->pose.orientation.w = 1.;
   marker->scale = convertEigenToROSVector3(shape.getScale());
@@ -182,7 +182,7 @@ bool convertShape(MeshShape const &shape, Marker *marker,
 }
 
 bool convertShape(PlaneShape const &shape, Marker *marker,
-                  ResourceServer *resourceManager, double width)
+                  ResourceServer */*resourceManager*/, double width)
 {
   static Eigen::Matrix<double, 3, 6> const points = (
     Eigen::Matrix<double, 6, 3>() <<
@@ -210,14 +210,14 @@ bool convertShape(PlaneShape const &shape, Marker *marker,
   Eigen::MatrixXd const transformedPoints = frame * points;
   marker->points.resize(transformedPoints.cols());
 
-  for (size_t i = 0; i < transformedPoints.cols(); ++i) {
+  for (auto i = 0u; i < static_cast<std::size_t>(transformedPoints.cols()); ++i)
     marker->points[i] = convertEigenToROSPoint(transformedPoints.col(i));
-  }
+
   return true;
 }
 
 bool convertShape(SoftMeshShape const &shape, Marker *marker,
-                  ResourceServer *resourceManager)
+                  ResourceServer */*resourceManager*/)
 {
   marker->type = Marker::TRIANGLE_LIST;
   marker->pose.orientation.w = 1.;

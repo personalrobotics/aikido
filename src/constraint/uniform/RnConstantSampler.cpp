@@ -80,7 +80,7 @@ RnConstantSampler::RnConstantSampler(
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
 
-  if (mSpace->getDimension() != mValue.size())
+  if (mSpace->getDimension() != static_cast<std::size_t>(mValue.size()))
   {
     std::stringstream msg;
     msg << "Value has incorrect dimension: expected "
