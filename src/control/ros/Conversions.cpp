@@ -139,16 +139,21 @@ void reorder(std::map<size_t, size_t> indexMap,
 }
 
 //=============================================================================
-dart::dynamics::Joint* findJointByName(
-    dart::dynamics::MetaSkeleton* metaSkeleton, const std::string& jointName)
+std::vector<const dart::dynamics::Joint*> findJointByName(
+  const dart::dynamics::MetaSkeleton& metaSkeleton,
+  const std::string& jointName)
 {
-  for (size_t i = 0; i < metaSkeleton->getNumJoints(); ++i)
+  std::vector<const dart::dynamics::Joint*> joints;
+
+  for (size_t i = 0; i < metaSkeleton.getNumJoints(); ++i)
   {
-    if (metaSkeleton->getJoint(i)->getName() == jointName)
-      return metaSkeleton->getJoint(i);
+    if (metaSkeleton.getJoint(i)->getName() == jointName)
+    {
+      joints.emplace_back(metaSkeleton.getJoint(i));
+    }
   }
 
-  return nullptr;
+  return joints;
 }
 
 } // namespace
@@ -171,7 +176,26 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     throw std::invalid_argument{message.str()};
   }
 
-  // Check that all joints are single DOF.
+  // Check that the names in jointTrajectory are unique.
+  std::vector<std::string> joint_names;
+  joint_names.reserve(numControlledJoints);
+  for (size_t i = 0; i < numControlledJoints; ++i)
+  {
+    joint_names.emplace_back(jointTrajectory.joint_names[i]);
+  }
+  std::sort(joint_names.begin(), joint_names.end());
+  for (size_t i = 0; i < numControlledJoints - 1; ++i)
+  {
+    if (joint_names[i] == joint_names[i+1])
+    {
+      std::stringstream message;
+      message << "JointTrajectory has multiple joints with same name ["
+        << joint_names[i] << "].";
+      throw std::invalid_argument{message.str()};
+    }
+  }
+
+  // Check that all joints are single-DOF RnJoint or SO2JOint state spaces.
   for (size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
     auto joint = space->getJointSpace(i)->getJoint();
@@ -200,24 +224,34 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   std::map<size_t, size_t> rosJointToMetaSkeletonJoint;
 
   auto metaSkeleton = space->getMetaSkeleton();
+  auto nJoints = jointTrajectory.joint_names.size();
 
-  for (size_t i = 0; i < jointTrajectory.joint_names.size(); ++i)
+  for (size_t trajIndex = 0; trajIndex < nJoints; ++trajIndex)
   {
-    std::string jointName = jointTrajectory.joint_names[i];
-    auto joint = findJointByName(metaSkeleton.get(), jointName);
+    const auto& jointName = jointTrajectory.joint_names[trajIndex];
+    auto joints = findJointByName(*metaSkeleton, jointName);
 
-    if (!joint)
+    if (joints.size() == 0)
     {
       std::stringstream message;
-      message << "Joint " << jointName << " (index: " << i << ")"
+      message << "Joint " << jointName << " (index: " << trajIndex << ")"
         << " does not exist in metaSkeleton.";
       throw std::invalid_argument{message.str()};
     }
-    auto index = metaSkeleton->getIndexOf(joint);
-    assert(index != dart::dynamics::INVALID_INDEX);
+    else if  (joints.size() > 1)
+    {
+      std::stringstream message;
+      message << "Multiple (" << joints.size()
+        << ") joints have the same name [" << jointName << "].";
+      throw std::invalid_argument{message.str()};
+    }
 
-    rosJointToMetaSkeletonJoint.emplace(std::make_pair(i, index));
+    auto joint = joints[0];
+    auto metaSkeletonIndex = metaSkeleton->getIndexOf(joint);
+    assert(metaSkeletonIndex != dart::dynamics::INVALID_INDEX);
 
+    rosJointToMetaSkeletonJoint.emplace(
+      std::make_pair(trajIndex, metaSkeletonIndex));
   }
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
