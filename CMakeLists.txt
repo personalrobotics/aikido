@@ -160,7 +160,6 @@ include(CompilerSettings)
 #==============================================================================
 # Libraries and unit tests.
 #
-
 configure_file(
   ${CMAKE_MODULE_PATH}/version.hpp.in
   ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp

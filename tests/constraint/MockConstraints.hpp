@@ -14,7 +14,7 @@ public:
   }
 
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* state) const override
+      const aikido::statespace::StateSpace::State* /*state*/) const override
   {
     return true;
   }
@@ -39,7 +39,7 @@ public:
   }
 
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* state) const override
+      const aikido::statespace::StateSpace::State* /*state*/) const override
   {
     return false;
   }

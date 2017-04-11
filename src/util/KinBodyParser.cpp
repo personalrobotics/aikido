@@ -60,8 +60,7 @@ void readGeom(
 dart::common::ResourceRetrieverPtr getRetriever(
     const dart::common::ResourceRetrieverPtr& retriever);
 
-tinyxml2::XMLElement* transformElementNamesToLowerCases(
-    tinyxml2::XMLDocument& doc);
+void transformElementNamesToLowerCases(tinyxml2::XMLDocument& doc);
 
 } // anonymous namespace
 
@@ -579,8 +578,7 @@ void transformElementNamesToLowerCasesRecurse(tinyxml2::XMLElement* ele)
 }
 
 //==============================================================================
-tinyxml2::XMLElement* transformElementNamesToLowerCases(
-    tinyxml2::XMLDocument& doc)
+void transformElementNamesToLowerCases(tinyxml2::XMLDocument& doc)
 {
   auto firstEle = doc.FirstChildElement();
   if (firstEle)

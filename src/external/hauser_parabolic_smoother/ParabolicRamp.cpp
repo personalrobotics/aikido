@@ -142,7 +142,7 @@ void TestRamps(const char* fn)
   while(LoadRamp(f,ramp.x0,ramp.dx0,ramp.x1,ramp.dx1,a,v,t)) {
     if(t < 0) {
       PARABOLIC_RAMP_ASSERT( a >= 0 && v >= 0);
-      bool res=ramp.SolveMinTime(a,v);
+      bool res = ramp.SolveMinTime(a,v);
       PARABOLIC_RAMP_PLOG("Result %d: t=%g\n",(int)res,ramp.ttotal);
     }
     else if(a < 0) {
