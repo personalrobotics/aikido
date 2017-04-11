@@ -101,6 +101,5 @@ TEST(SE2, PrintState)
 {
   SE2 se2;
   auto state = se2.createState();
-  Eigen::Isometry2d pose1 = Eigen::Isometry2d::Identity();
   se2.print(state, std::cout);
 }

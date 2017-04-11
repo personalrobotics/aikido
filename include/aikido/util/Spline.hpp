@@ -163,7 +163,7 @@ private:
   SolutionMatrices mSolution;
 
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign);
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign) 
 };
 
 
@@ -330,7 +330,7 @@ public:
     || TimeVector::NeedsToAlign
     || ProblemMatrix::NeedsToAlign
     || ProblemVector::NeedsToAlign
-  );
+  ) 
 };
 
 } // namespace util
