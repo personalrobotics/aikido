@@ -14,11 +14,13 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
   ::dart::dynamics::SkeletonPtr _skeleton,
   std::chrono::milliseconds _period)
 : mSkeleton(std::move(_skeleton))
-, mSpinMutex()
-, mRunning(true)
 , mPromise(nullptr)
 , mTraj(nullptr)
 , mPeriod(_period)
+, mSpinMutex()
+, mRunning(true)
+
+
 {
   using std::chrono::duration;
   using std::chrono::duration_cast;

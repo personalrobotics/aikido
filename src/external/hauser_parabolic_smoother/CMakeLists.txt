@@ -11,4 +11,5 @@ set_target_properties("${PROJECT_NAME}_external_hauserparabolicsmoother"
 )
 target_compile_options("${PROJECT_NAME}_external_hauserparabolicsmoother"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+  PRIVATE -w
 )

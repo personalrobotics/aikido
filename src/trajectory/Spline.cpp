@@ -28,7 +28,7 @@ void Spline::addSegment(const Eigen::MatrixXd& _coefficients,
   if (_duration <= 0.)
     throw std::invalid_argument("Duration must be positive.");
 
-  if (_coefficients.rows() != mStateSpace->getDimension())
+  if (static_cast<size_t>(_coefficients.rows()) != mStateSpace->getDimension()) 
     throw std::invalid_argument("Incorrect number of dimensions.");
 
   if (_coefficients.cols() < 1)
@@ -192,7 +192,7 @@ Eigen::VectorXd Spline::evaluatePolynomial(
 
   Eigen::VectorXd outputVector(numOutputs);
 
-  for (size_t ioutput = 0; ioutput < numOutputs; ++ioutput)
+  for (int ioutput = 0; ioutput < numOutputs; ++ioutput)
     outputVector[ioutput] = _coefficients.row(ioutput).dot(evaluationVector);
 
   return outputVector;
