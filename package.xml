@@ -14,6 +14,7 @@
   <depend>ompl</depend>
   <depend>python</depend>
   <depend>tinyxml2</depend>
+  <depend>yaml-cpp</depend>
   <doc_depend>doxygen</doc_depend>
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>

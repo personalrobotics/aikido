@@ -1,0 +1,15 @@
+<KinBody name="bowl">
+  <Body type="static" name="bowl">
+    <Geom type="trimesh">
+      <Render>bowl.stl</Render>
+      <Data>bowl.stl</Data>
+    </Geom>      
+  </Body>
+  <orcdchomp>
+    <spheres>
+      <sphere link="bowl" pos=" 0.0 0.0 0.0365124978125 " radius="0.0628754198551" />
+      <sphere link="bowl" pos=" 0.0 0.0 0.109537493438 " radius="0.0628754198551" />
+      <sphere link="bowl" pos=" 0.0 0.0 0.182562489063 " radius="0.0628754198551" />
+    </spheres>
+  </orcdchomp>  
+</KinBody>

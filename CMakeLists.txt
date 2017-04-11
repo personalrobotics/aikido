@@ -1,6 +1,14 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
 # CMake 2.8.11 or above is required for target_include_directories.
 cmake_minimum_required(VERSION 2.8.12)
+
+# Set the CMAKE_CXX_COMPILER_ID variable to AppleClang instead of Clang.
+# AppleClang and Clang have different version number. This was introduced in
+# CMake 3.0.
+if(POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW)
+endif()
+
 project(aikido)
 
 # If you change the version, please update the <version> tag in package.xml.
@@ -21,6 +29,7 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
+option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 
 #==============================================================================
 # Coveralls Setup
@@ -134,11 +143,15 @@ find_package(DART 6.1.0 REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
 include_directories(${DART_INCLUDE_DIRS})
 
 #==============================================================================
+# Compiler settings
+#
+# CompilerSettings optionally requires a custon CMake option
+# TREAT_WARNINGS_AS_ERRORS.
+include(CompilerSettings)
+
+#==============================================================================
 # Libraries and unit tests.
 #
-# TODO: Add this to each target's DEFINITIONS property.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 configure_file(
   ${CMAKE_MODULE_PATH}/version.hpp.in
   ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp

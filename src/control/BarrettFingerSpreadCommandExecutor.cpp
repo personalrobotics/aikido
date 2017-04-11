@@ -34,7 +34,7 @@ BarrettFingerSpreadCommandExecutor::BarrettFingerSpreadCommandExecutor(
     }
 
     const auto numDofs = mFingers[i]->getNumDofs();
-    if (_spread >= numDofs)
+    if (static_cast<size_t>(_spread) >= numDofs)
       throw std::invalid_argument("Finger does not have spread dof.");
 
     mSpreadDofs.push_back(mFingers[i]->getDof(_spread));

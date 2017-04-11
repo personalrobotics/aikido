@@ -7,8 +7,7 @@ namespace constraint {
 using constraint::ConstraintType;
 
 //=============================================================================
-class RnBoxConstraintSampleGenerator
-  : public constraint::SampleGenerator
+class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
 public:
   statespace::StateSpacePtr getStateSpace() const override;
@@ -62,7 +61,7 @@ bool RnBoxConstraintSampleGenerator::sample(
 {
   Eigen::VectorXd value(mDistributions.size());
 
-  for (size_t i = 0; i < value.size(); ++i)
+  for (int i = 0; i < value.size(); ++i) 
     value[i] = mDistributions[i](*mRng);
 
   mSpace->setValue(static_cast<statespace::Rn::State*>(_state), value);
@@ -99,7 +98,7 @@ RnBoxConstraint
 
   const auto dimension = mSpace->getDimension();
 
-  if (mLowerLimits.size() != dimension)
+  if (static_cast<size_t>(mLowerLimits.size()) != dimension) 
   {
     std::stringstream msg;
     msg << "Lower limits have incorrect dimension: expected "
@@ -107,7 +106,7 @@ RnBoxConstraint
     throw std::invalid_argument(msg.str());
   }
 
-  if (mUpperLimits.size() != dimension)
+  if (static_cast<size_t>(mUpperLimits.size()) != dimension)
   {
     std::stringstream msg;
     msg << "Upper limits have incorrect dimension: expected "
@@ -154,7 +153,7 @@ bool RnBoxConstraint::isSatisfied(const statespace::StateSpace::State* state) co
   const auto value = mSpace->getValue(
     static_cast<const statespace::Rn::State*>(state));
 
-  for (size_t i = 0; i < value.size(); ++i)
+  for (int i = 0; i < value.size(); ++i)
   {
     if (value[i] < mLowerLimits[i] || value[i] > mUpperLimits[i])
       return false;
@@ -170,7 +169,7 @@ bool RnBoxConstraint::project(
   Eigen::VectorXd value = mSpace->getValue(
     static_cast<const statespace::Rn::State*>(_s));
 
-  for (size_t i = 0; i < value.size(); ++i)
+  for (int i = 0; i < value.size(); ++i)
   {
     if (value[i] < mLowerLimits[i])
       value[i] = mLowerLimits[i];
@@ -218,7 +217,7 @@ void RnBoxConstraint::getJacobian(
   const size_t dimension = mSpace->getDimension();
   _out = Eigen::MatrixXd::Zero(dimension, dimension);
 
-  for (size_t i = 0; i < _out.rows(); ++i)
+  for (int i = 0; i < _out.rows(); ++i)
   {
     if (stateValue[i] < mLowerLimits[i])
       _out(i, i) = -1.;
@@ -253,13 +252,13 @@ std::unique_ptr<constraint::SampleGenerator>
 }
 
 //=============================================================================
-Eigen::VectorXd RnBoxConstraint::getLowerLimits()
+const Eigen::VectorXd& RnBoxConstraint::getLowerLimits() const
 {
   return mLowerLimits;
 }
 
 //=============================================================================
-Eigen::VectorXd RnBoxConstraint::getUpperLimits()
+const Eigen::VectorXd& RnBoxConstraint::getUpperLimits() const
 {
   return mUpperLimits;
 }

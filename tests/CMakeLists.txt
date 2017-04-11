@@ -1,6 +1,5 @@
 # GTest setup.
 add_subdirectory(gtest)
-include_directories("${gtest_SOURCE_DIR}/include")
 
 # Add helper scripts to the include path.
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
