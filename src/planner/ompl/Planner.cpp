@@ -353,21 +353,29 @@ for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx)
 // Step 3: Use the OMPL methods to simplify the path
 ::ompl::geometric::PathSimplifierPtr simplifier;
 simplifier.reset(new ::ompl::geometric::PathSimplifier(si));
-bool const shortened = simplifier->shortcutPath(*path, 1, 1, 1.0, 0.005);
+bool const shortened = simplifier->shortcutPath(*path, 1, 1, 1.0, 0.005); 
 
-// Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory -> Use from planOMPL
-auto returnTraj = std::make_shared<trajectory::Interpolated>(
+// Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
+if(shortened)
+{
+  auto returnTraj = std::make_shared<trajectory::Interpolated>(
         std::move(_stateSpace), std::move(_interpolator));
 
-for (size_t idx = 0; idx < path->getStateCount(); ++idx) 
-{
-      const auto *st =
-          static_cast<GeometricStateSpace::StateType *>(
-              path->getState(idx));
-      // Arbitrary timing
-      returnTraj->addWaypoint(idx, st->mState);
+  for (size_t idx = 0; idx < path->getStateCount(); ++idx) 
+  {
+        const auto *st =
+            static_cast<GeometricStateSpace::StateType *>(
+                path->getState(idx));
+        // Arbitrary timing
+        returnTraj->addWaypoint(idx, st->mState);
+  }
+  return returnTraj;  
 }
-    return returnTraj;
+else
+{
+  return _originalTraj;
+}
+
 }
 
 //=============================================================================
