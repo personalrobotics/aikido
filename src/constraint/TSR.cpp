@@ -80,11 +80,11 @@ public:
 //=============================================================================
 TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
          const Eigen::Matrix<double, 6, 2>& _Bw, const Eigen::Isometry3d& _Tw_e)
-    : mRng(std::move(_rng))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(_T0_w)
+    : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
+    , mRng(std::move(_rng))
+    , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
@@ -92,34 +92,34 @@ TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
 //=============================================================================
 TSR::TSR(const Eigen::Isometry3d& _T0_w, const Eigen::Matrix<double, 6, 2>& _Bw,
          const Eigen::Isometry3d& _Tw_e)
-    : mRng(std::unique_ptr<util::RNG>(
-          new util::RNGWrapper<std::default_random_engine>(0)))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(_T0_w)
+    : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
+    , mRng(std::unique_ptr<util::RNG>(
+          new util::RNGWrapper<std::default_random_engine>(0)))
+    , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
 
 //=============================================================================
 TSR::TSR(const TSR& other)
-    : mRng(std::move(other.mRng->clone()))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(other.mT0_w)
-    , mTw_e(other.mTw_e)
+    : mT0_w(other.mT0_w)
     , mBw(other.mBw)
+    , mTw_e(other.mTw_e)
+    , mRng(std::move(other.mRng->clone()))
+    , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
 
 //=============================================================================
 TSR::TSR(TSR&& other)
-    : mRng(std::move(other.mRng))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(other.mT0_w)
-    , mTw_e(other.mTw_e)
+    : mT0_w(other.mT0_w)
     , mBw(other.mBw)
+    , mTw_e(other.mTw_e)
+    , mRng(std::move(other.mRng))
+    , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
@@ -127,10 +127,11 @@ TSR::TSR(TSR&& other)
 //=============================================================================
 TSR& TSR::operator=(const TSR& other)
 {
-  mRng = std::move(other.mRng->clone());
+  
   mT0_w = other.mT0_w;
-  mTw_e = other.mTw_e;
   mBw = other.mBw;
+  mTw_e = other.mTw_e;
+  mRng = std::move(other.mRng->clone());
 
   // Intentionally don't assign StateSpace.
 
@@ -140,11 +141,11 @@ TSR& TSR::operator=(const TSR& other)
 //=============================================================================
 TSR& TSR::operator=(TSR&& other)
 {
+  mT0_w = std::move(other.mT0_w);
+  mBw = std::move(other.mBw);
+  mTw_e = std::move(other.mTw_e);
   mRng = std::move(other.mRng);
   mStateSpace = std::move(other.mStateSpace);
-  mT0_w = std::move(other.mT0_w);
-  mTw_e = std::move(other.mTw_e);
-  mBw = std::move(other.mBw);
 
   return *this;
 }
@@ -320,8 +321,8 @@ std::vector<ConstraintType> TSR::getConstraintTypes() const
 }
 
 //=============================================================================
-bool TSR::project(const statespace::StateSpace::State* _s,
-  statespace::StateSpace::State* _out) const
+bool TSR::project(const statespace::StateSpace::State* /*_s*/,
+  statespace::StateSpace::State* /*_out*/) const
 {
   // TODO 
   return false;

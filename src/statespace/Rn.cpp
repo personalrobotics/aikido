@@ -67,7 +67,7 @@ StateSpace::State *Rn::allocateStateInBuffer(
 }
 
 //=============================================================================
-void Rn::freeStateInBuffer(StateSpace::State *_state) const
+void Rn::freeStateInBuffer(StateSpace::State */*_state*/) const
 {
   // Do nothing.
 }

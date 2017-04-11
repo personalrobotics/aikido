@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/util/VanDerCorput.hpp>
 
 using aikido::util::VanDerCorput;
@@ -164,7 +165,6 @@ TEST(VanDerCorput, Iterable)
   EXPECT_NO_THROW({
     for (VanDerCorput::const_iterator itr = vdc.begin(); itr != vdc.end();
          ++itr) {
-      const double val = *itr;
       ++iterations;
     }
   });
@@ -177,6 +177,7 @@ TEST(VanDerCorput, ForEachIterable)
   int iterations = 0;
   EXPECT_NO_THROW({
     for (double d : vdc) {
+      DART_UNUSED(d);
       ++iterations;
     }
   });

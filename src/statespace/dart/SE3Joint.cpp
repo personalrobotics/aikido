@@ -6,8 +6,8 @@ namespace dart {
 
 //=============================================================================
 SE3Joint::SE3Joint(::dart::dynamics::FreeJoint* _joint)
-  : JointStateSpace(_joint)
-  , SE3()
+  : SE3()
+  , JointStateSpace(_joint)
 {
 }
 
