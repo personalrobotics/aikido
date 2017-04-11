@@ -1,7 +1,7 @@
 namespace aikido {
 namespace util {
 
-//=============================================================================
+//==============================================================================
 template <class Pointee>
 struct DynamicCastFactory_shared_ptr
 {
@@ -14,7 +14,7 @@ struct DynamicCastFactory_shared_ptr
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <class Pointee>
 struct DynamicCastFactory_raw_ptr
 {
@@ -27,7 +27,7 @@ struct DynamicCastFactory_raw_ptr
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <
   template <class> class Factory,
   template <class> class Pointer,
@@ -44,6 +44,7 @@ struct DynamicCastFactory<
   }
 };
 
+//==============================================================================
 template <
   template <class> class Factory,
   template <class> class Pointer,
@@ -69,6 +70,6 @@ struct DynamicCastFactory<
           std::move(_base), std::forward<Parameters>(_params)...);
   }
 };
-  
+
 } // namespace util
 } // namespace aikido

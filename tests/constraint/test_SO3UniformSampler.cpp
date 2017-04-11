@@ -28,9 +28,9 @@ protected:
 
     mTargets.clear();
 
-    for (int i = 0; i < NUM_AXIS_TARGETS; ++i)
-    for (int j = 0; j < NUM_AXIS_TARGETS; ++j)
-    for (int k = 0; k < NUM_AXIS_TARGETS; ++k)
+    for (size_t i = 0; i < NUM_AXIS_TARGETS; ++i)
+    for (size_t j = 0; j < NUM_AXIS_TARGETS; ++j)
+    for (size_t k = 0; k < NUM_AXIS_TARGETS; ++k)
     {
       const auto angle1 = (2. * M_PI * i) / NUM_AXIS_TARGETS;
       const auto angle2 = (2. * M_PI * j) / NUM_AXIS_TARGETS;
