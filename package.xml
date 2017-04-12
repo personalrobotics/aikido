@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>aikido</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>description</description>
   <maintainer email="mkoval@cs.cmu.edu">Michael Koval</maintainer>
   <maintainer email="pkv@cs.cmu.edu">Pras Velagapudi</maintainer>
@@ -14,6 +14,7 @@
   <depend>ompl</depend>
   <depend>python</depend>
   <depend>tinyxml2</depend>
+  <depend>yaml-cpp</depend>
   <doc_depend>doxygen</doc_depend>
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>

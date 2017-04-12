@@ -1,12 +1,20 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
 # CMake 2.8.11 or above is required for target_include_directories.
 cmake_minimum_required(VERSION 2.8.12)
+
+# Set the CMAKE_CXX_COMPILER_ID variable to AppleClang instead of Clang.
+# AppleClang and Clang have different version number. This was introduced in
+# CMake 3.0.
+if(POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW)
+endif()
+
 project(aikido)
 
 # If you change the version, please update the <version> tag in package.xml.
 set(AIKIDO_MAJOR_VERSION "0")
 set(AIKIDO_MINOR_VERSION "0")
-set(AIKIDO_PATCH_VERSION "1")
+set(AIKIDO_PATCH_VERSION "2")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
@@ -14,7 +22,6 @@ list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 #==============================================================================
 # Configuration Options
 #
-
 set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
@@ -22,6 +29,7 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 option(COVERALLS "Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
+option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 
 #==============================================================================
 # Coveralls Setup
@@ -50,6 +58,29 @@ if(COVERALLS)
   include(Coveralls)
   coveralls_turn_on_coverage()
 endif()
+
+#==============================================================================
+# Automatic code formatting setup
+#
+define_property(GLOBAL PROPERTY CODE_FORMATTING_SOURCES
+  BRIEF_DOCS "Source files that are automatically formatted by clang-format."
+  FULL_DOCS "Source files that are automatically formatted by clang-format."
+)
+
+function(format_add_sources)
+  foreach(source ${ARGN})
+    get_filename_component(source_abs
+      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    if(EXISTS "${source_abs}")
+      set_property(GLOBAL APPEND PROPERTY CODE_FORMATTING_SOURCES "${source_abs}")
+    else()
+      message(FATAL_ERROR
+        "Source file '${source}' does not exist at absolute path"
+        " '${source_abs}'. This should never happen. Did you recently delete"
+        " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
+    endif()
+  endforeach()
+endfunction()
 
 #==============================================================================
 # Helper functions.
@@ -112,11 +143,15 @@ find_package(DART 6.1.0 REQUIRED COMPONENTS optimizer-nlopt utils-urdf CONFIG)
 include_directories(${DART_INCLUDE_DIRS})
 
 #==============================================================================
+# Compiler settings
+#
+# CompilerSettings optionally requires a custon CMake option
+# TREAT_WARNINGS_AS_ERRORS.
+include(CompilerSettings)
+
+#==============================================================================
 # Libraries and unit tests.
 #
-# TODO: Add this to each target's DEFINITIONS property.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 configure_file(
   ${CMAKE_MODULE_PATH}/version.hpp.in
   ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
@@ -233,6 +268,48 @@ if(COVERALLS)
 
   coveralls_setup("${sources}" ${COVERALLS_UPLOAD}
     "${PROJECT_SOURCE_DIR}/cmake")
+endif()
+
+#===============================================================================
+# Automatic code formatting using clang-format.
+#
+find_program(
+  CLANG_FORMAT_EXECUTABLE
+  NAMES clang-format clang-format-3.9 clang-format-3.8
+)
+
+if (CLANG_FORMAT_EXECUTABLE)
+  get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)
+  list(LENGTH formatting_files formatting_files_length)
+
+  if (formatting_files)
+    add_custom_target(format
+        COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of"
+            "${formatting_files_length} files... "
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
+        COMMAND ${CMAKE_COMMAND} -E echo "Done."
+        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+    add_custom_target(check-format
+        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of
+            ${formatting_files_length} files... "
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_code_format.sh
+            ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
+        COMMAND ${CMAKE_COMMAND} -E echo "Done."
+        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+  else()
+    add_custom_target(format
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to format code style."
+    )
+    add_custom_target(check-format
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to check code style."
+    )
+  endif()
+else()
+  message(STATUS "Looking for clang-format - NOT found, please install clang-format to enable automatic code formatting")
 endif()
 
 #==============================================================================

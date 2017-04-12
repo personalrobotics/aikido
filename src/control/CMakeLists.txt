@@ -11,6 +11,9 @@ target_link_libraries("${PROJECT_NAME}_control"
   "${PROJECT_NAME}_trajectory"
   ${DART_LIBRARIES}
 )
+target_compile_options("${PROJECT_NAME}_control"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+)
 
 add_component(${PROJECT_NAME} control)
 add_component_targets(${PROJECT_NAME} control "${PROJECT_NAME}_control")

@@ -286,7 +286,7 @@ void ResourceServer::resourceReaderFreeCallback(void *cls)
 
 int ResourceServer::processConnection(
   void *cls, struct MHD_Connection *connection, char const *url,
-  char const *method, char const *version, char const *upload_data,
+  char const *method, char const */*version*/, char const */*upload_data*/,
   long unsigned int *upload_data_size, void **ptr)
 {
   static int headerReceived = 0;

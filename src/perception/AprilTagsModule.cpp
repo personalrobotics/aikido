@@ -22,12 +22,12 @@ namespace perception{
 AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic, std::shared_ptr<AprilTagsDatabase> configData,
 								  const dart::common::ResourceRetrieverPtr resourceRetriever,	
 								  std::string referenceFrameId, dart::dynamics::Frame* referenceLink):
-		mNode(std::move(node)),
 		mMarkerTopic(std::move(markerTopic)),
-		mConfigData(std::move(configData)),
-		mResourceRetriever(std::move(resourceRetriever)),
 		mReferenceFrameId(std::move(referenceFrameId)),
+		mResourceRetriever(std::move(resourceRetriever)),
 		mReferenceLink(std::move(referenceLink)),
+		mConfigData(std::move(configData)),
+		mNode(std::move(node)),
 		mListener(mNode)
 {
 }

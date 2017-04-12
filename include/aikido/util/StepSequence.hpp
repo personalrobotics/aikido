@@ -54,7 +54,7 @@ public:
   bool equal(const StepSequence::const_iterator &other) const;
 
 private:
-  friend StepSequence;
+  friend class StepSequence;
 
   const_iterator(StepSequence *seq, int step)
       : mSeq(seq)
