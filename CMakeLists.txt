@@ -69,8 +69,12 @@ define_property(GLOBAL PROPERTY CODE_FORMATTING_SOURCES
 
 function(format_add_sources)
   foreach(source ${ARGN})
-    get_filename_component(source_abs
-      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    if(IS_ABSOLUTE "${source}")
+      set(source_abs "${source}")
+    else()
+      get_filename_component(source_abs
+        "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
+    endif()
     if(EXISTS "${source_abs}")
       set_property(GLOBAL APPEND PROPERTY CODE_FORMATTING_SOURCES "${source_abs}")
     else()
@@ -81,6 +85,10 @@ function(format_add_sources)
     endif()
   endforeach()
 endfunction()
+
+# TODO: Temporarily split header list per subdirectories.
+file(GLOB_RECURSE headers_util "${CMAKE_SOURCE_DIR}/include/aikido/util/*.hpp")
+format_add_sources(${headers_util})
 
 #==============================================================================
 # Helper functions.
@@ -275,8 +283,11 @@ endif()
 #
 find_program(
   CLANG_FORMAT_EXECUTABLE
-  NAMES clang-format clang-format-3.9 clang-format-3.8
+  NAMES clang-format-3.8
 )
+# We only support one specific ClangFormat version because different versions
+# result in different code formatting with the same configuration. ClangFormat
+# 3.8 is chosen since it's the latest version supported by Ubuntu Trusty.
 
 if (CLANG_FORMAT_EXECUTABLE)
   get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)
@@ -292,9 +303,9 @@ if (CLANG_FORMAT_EXECUTABLE)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
     add_custom_target(check-format
-        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of
-            ${formatting_files_length} files... "
-        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_code_format.sh
+        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of"
+            "${formatting_files_length} files... "
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_format.sh
             ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
         COMMAND ${CMAKE_COMMAND} -E echo "Done."
         DEPENDS ${CLANG_FORMAT_EXECUTABLE}

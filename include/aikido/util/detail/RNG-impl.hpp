@@ -17,15 +17,13 @@ constexpr auto RNG::max() -> result_type
 
 //=============================================================================
 template <class T>
-RNGWrapper<T>::RNGWrapper(const T& _rng)
-  : mRng(_rng)
+RNGWrapper<T>::RNGWrapper(const T& _rng) : mRng(_rng)
 {
 }
 
 //=============================================================================
 template <class T>
-RNGWrapper<T>::RNGWrapper(result_type _seed)
-  : mRng(_seed)
+RNGWrapper<T>::RNGWrapper(result_type _seed) : mRng(_seed)
 {
 }
 
@@ -76,7 +74,7 @@ std::unique_ptr<RNG> RNGWrapper<T>::clone(result_type _seed) const
 //=============================================================================
 template <class Engine, class Scalar, class Quaternion>
 Quaternion sampleQuaternion(
-  Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution)
+    Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution)
 {
   assert(_distribution.a() == 0.);
   assert(_distribution.b() == 1.);
@@ -86,10 +84,10 @@ Quaternion sampleQuaternion(
   const double u3 = _distribution(_engine);
 
   return Quaternion(
-    std::sqrt(1. - u1) * std::sin(2. * M_PI * u2),
-    std::sqrt(1. - u1) * std::cos(2. * M_PI * u2),
-    std::sqrt(u1) * std::sin(2. * M_PI * u3),
-    std::sqrt(u1) * std::cos(2. * M_PI * u3));
+      std::sqrt(1. - u1) * std::sin(2. * M_PI * u2),
+      std::sqrt(1. - u1) * std::cos(2. * M_PI * u2),
+      std::sqrt(u1) * std::sin(2. * M_PI * u3),
+      std::sqrt(u1) * std::cos(2. * M_PI * u3));
 }
 
 } // namespace util
