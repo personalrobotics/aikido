@@ -1,4 +1,4 @@
-#include <aikido/control/BarrettHandPositionCommandExecutor.hpp>
+#include <aikido/control/SimBarrettHandPositionCommandExecutor.hpp>
 #include <thread>
 #include <exception>
 #include <stdexcept>
@@ -6,15 +6,17 @@
 namespace aikido{
 namespace control{
 
-constexpr std::chrono::milliseconds BarrettHandPositionCommandExecutor::kWaitPeriod;
+constexpr std::chrono::milliseconds SimBarrettHandPositionCommandExecutor::kWaitPeriod;
 
 //=============================================================================
-BarrettHandPositionCommandExecutor::BarrettHandPositionCommandExecutor(
-  std::array<BarrettFingerPositionCommandExecutorPtr, 3> _positionCommandExecutors,
-  BarrettFingerSpreadCommandExecutorPtr _spreadCommandExecutor) 
+SimBarrettHandPositionCommandExecutor::SimBarrettHandPositionCommandExecutor(
+  std::array<SimBarrettFingerPositionCommandExecutorPtr, 3> _positionCommandExecutors,
+  SimBarrettFingerSpreadCommandExecutorPtr _spreadCommandExecutor,
+  ::dart::collision::CollisionGroupPtr _collideWith)
 : mPositionCommandExecutors(std::move(_positionCommandExecutors))
 , mSpreadCommandExecutor(std::move(_spreadCommandExecutor))
 , mInExecution(false)
+, mCollideWith(std::move(_collideWith))
 {
   for(int i=0; i < kNumPositionExecutor; ++i)
   {
@@ -27,26 +29,25 @@ BarrettHandPositionCommandExecutor::BarrettHandPositionCommandExecutor(
   }
 
   if (!mSpreadCommandExecutor)
-    throw std::invalid_argument("SpreadCommandExecutor is null.");  
+    throw std::invalid_argument("SpreadCommandExecutor is null.");
+
+  if (!mCollideWith)
+    throw std::invalid_argument("CollideWith is null.");
+
 }
 
 //=============================================================================
-std::future<void> BarrettHandPositionCommandExecutor::execute(
-  Eigen::Matrix<double, 4, 1> _positions,
-  ::dart::collision::CollisionGroupPtr _collideWith)
+std::future<void> SimBarrettHandPositionCommandExecutor::execute(
+  Eigen::Matrix<double, 4, 1> _positions)
 {
-  if (!_collideWith)
-    throw std::invalid_argument("CollideWith is null.");
-
   std::lock_guard<std::mutex> lockSpin(mMutex);
-  
+
   if (mInExecution)
     throw std::runtime_error("Another command in execution.");
 
   mPromise.reset(new std::promise<void>());
-  mProximalGoalPositions = _positions.topRows(3); 
+  mProximalGoalPositions = _positions.topRows(3);
   mSpreadGoalPosition = _positions(3);
-  mCollideWith = _collideWith;
   mInExecution = true;
   mFingerFutures.clear();
 
@@ -54,20 +55,20 @@ std::future<void> BarrettHandPositionCommandExecutor::execute(
   for(int i=0; i < kNumPositionExecutor; ++i)
     mFingerFutures.emplace_back(
       mPositionCommandExecutors[i]->execute(
-        mProximalGoalPositions(i), mCollideWith));
-  
+        mProximalGoalPositions(i)));
+
   mFingerFutures.emplace_back(
     mSpreadCommandExecutor->execute(
-      mSpreadGoalPosition, mCollideWith));
+      mSpreadGoalPosition));
 
   return mPromise->get_future();
 
 }
 
 //=============================================================================
-void BarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
+void SimBarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
 {
-  using std::chrono::milliseconds; 
+  using std::chrono::milliseconds;
 
   std::lock_guard<std::mutex> lock(mMutex);
 
@@ -100,7 +101,7 @@ void BarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
       catch (...){
         expr = std::current_exception();
         break;
-      }  
+      }
     }
   }
 
@@ -108,7 +109,7 @@ void BarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
   if (expr || allFingersCompleted)
   {
     if (expr)
-      mPromise->set_exception(expr);  
+      mPromise->set_exception(expr);
     else if (allFingersCompleted)
       mPromise->set_value();
 
@@ -124,5 +125,18 @@ void BarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
 
 }
 
+//=============================================================================
+bool SimBarrettHandPositionCommandExecutor::setCollideWith(
+  ::dart::collision::CollisionGroupPtr collideWith)
+{
+  std::lock_guard<std::mutex> lockSpin(mMutex);
+
+  if (mInExecution)
+    return false;
+
+  mCollideWith = collideWith;
+  return true;
 }
-}
+
+} // control
+} // aikido

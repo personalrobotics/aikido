@@ -4,17 +4,17 @@ target_link_libraries(test_KinematicSimulationTrajectoryExecutor
   "${PROJECT_NAME}_control")
 
 aikido_add_test(test_BarrettFingerSpreadCommandExecutor
-  test_BarrettFingerSpreadCommandExecutor.cpp)
+  test_SimBarrettFingerSpreadCommandExecutor.cpp)
 target_link_libraries(test_BarrettFingerSpreadCommandExecutor
   "${PROJECT_NAME}_control")
 
 aikido_add_test(test_BarrettFingerPositionCommandExecutor
-  test_BarrettFingerPositionCommandExecutor.cpp)
+  test_SimBarrettFingerPositionCommandExecutor.cpp)
 target_link_libraries(test_BarrettFingerPositionCommandExecutor
   "${PROJECT_NAME}_control")
 
 aikido_add_test(test_BarrettHandPositionCommandExecutor
-  test_BarrettHandPositionCommandExecutor.cpp)
+  test_SimBarrettHandPositionCommandExecutor.cpp)
 target_link_libraries(test_BarrettHandPositionCommandExecutor
   "${PROJECT_NAME}_control")
 

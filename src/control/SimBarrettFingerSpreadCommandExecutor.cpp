@@ -1,4 +1,4 @@
-#include <aikido/control/BarrettFingerSpreadCommandExecutor.hpp>
+#include <aikido/control/SimBarrettFingerSpreadCommandExecutor.hpp>
 #include <thread>
 #include <exception>
 
@@ -6,29 +6,31 @@ namespace aikido{
 namespace control{
 
 //=============================================================================
-BarrettFingerSpreadCommandExecutor::BarrettFingerSpreadCommandExecutor(
-  std::array<::dart::dynamics::ChainPtr, 2> _fingers, int _spread, 
+SimBarrettFingerSpreadCommandExecutor::SimBarrettFingerSpreadCommandExecutor(
+  std::array<::dart::dynamics::ChainPtr, 2> _fingers, int _spread,
   ::dart::collision::CollisionDetectorPtr _collisionDetector,
+  ::dart::collision::CollisionGroupPtr _collideWith,
   ::dart::collision::CollisionOption _collisionOptions)
 : mFingers(std::move(_fingers))
 , mCollisionDetector(std::move(_collisionDetector))
+, mCollideWith(std::move(_collideWith))
 , mCollisionOptions(std::move(_collisionOptions))
 , mInExecution(false)
 {
   if (mFingers.size() != kNumFingers)
   {
-    std::stringstream msg; 
+    std::stringstream msg;
     msg << "Expecting " << kNumFingers << " fingers;"
-    << "got << " << mFingers.size() << "."; 
+    << "got << " << mFingers.size() << ".";
     throw std::invalid_argument(msg.str());
   }
-  
+
   mSpreadDofs.reserve(kNumFingers);
   for (int i=0; i < kNumFingers; ++i)
   {
     if(!mFingers[i])
     {
-      std::stringstream msg; 
+      std::stringstream msg;
       msg << i << "th finger is null.";
       throw std::invalid_argument(msg.str());
     }
@@ -62,40 +64,39 @@ BarrettFingerSpreadCommandExecutor::BarrettFingerSpreadCommandExecutor(
     auto limits = mSpreadDofs[i]->getPositionLimits();
     if (std::abs(limits.first - mDofLimits.first) > kDofTolerance)
     {
-      std::stringstream msg; 
-      msg << "LowerJointLimit for the fingers should be the same. " 
+      std::stringstream msg;
+      msg << "LowerJointLimit for the fingers should be the same. "
       << "Expecting " << mDofLimits.first << "; got " << limits.first;
       throw std::invalid_argument(msg.str());
-    }  
+    }
 
     if (std::abs(limits.second - mDofLimits.second) > kDofTolerance)
     {
-      std::stringstream msg; 
-      msg << "UpperJointLimit for the fingers should be the same. " 
+      std::stringstream msg;
+      msg << "UpperJointLimit for the fingers should be the same. "
       << "Expecting " << mDofLimits.second << "; got " << limits.second;
       throw std::invalid_argument(msg.str());
-    }  
+    }
   }
+
+  if (!mCollideWith)
+    throw std::invalid_argument("CollideWith is null.");
 }
 
 //=============================================================================
-std::future<void> BarrettFingerSpreadCommandExecutor::execute(
-  double _goalPosition,
-  ::dart::collision::CollisionGroupPtr _collideWith)
+std::future<void> SimBarrettFingerSpreadCommandExecutor::execute(
+  double _goalPosition)
 {
-  if (!_collideWith)
-    throw std::invalid_argument("CollideWith is null.");
-
   for(int i=0; i < kNumFingers; ++i)
   {
     if (!mFingers[i]->isAssembled())
     {
-      std::stringstream msg; 
+      std::stringstream msg;
       msg << i << "th finger is no longer linked.";
-      throw std::runtime_error(msg.str());  
+      throw std::runtime_error(msg.str());
     }
   }
-  
+
   {
     std::lock_guard<std::mutex> lock(mMutex);
 
@@ -111,7 +112,6 @@ std::future<void> BarrettFingerSpreadCommandExecutor::execute(
     else
       mGoalPosition = _goalPosition;
 
-    mCollideWith = _collideWith;
     mInExecution = true;
 
     return mPromise->get_future();
@@ -119,16 +119,16 @@ std::future<void> BarrettFingerSpreadCommandExecutor::execute(
 }
 
 //=============================================================================
-void BarrettFingerSpreadCommandExecutor::step(double _timeSincePreviousCall)
+void SimBarrettFingerSpreadCommandExecutor::step(double _timeSincePreviousCall)
 {
-  using std::chrono::milliseconds; 
+  using std::chrono::milliseconds;
 
   // Terminate the thread if mRunning is false.
   std::lock_guard<std::mutex> lock(mMutex);
 
   if (!mInExecution)
     return;
-  
+
   // Current spread. Check that all spreads have same values.
   double spread = mSpreadDofs[0]->getPosition();
   for(int i=1; i < kNumFingers; ++i)
@@ -136,8 +136,8 @@ void BarrettFingerSpreadCommandExecutor::step(double _timeSincePreviousCall)
     double _spread = mSpreadDofs[i]->getPosition();
     if (std::abs(spread - _spread) > kDofTolerance)
     {
-      std::stringstream msg; 
-      msg << i << "th finger dof value not equal to 0th finger dof. " 
+      std::stringstream msg;
+      msg << i << "th finger dof value not equal to 0th finger dof. "
       << "Expecting " << spread << ", got " << _spread;
       auto expr = std::make_exception_ptr(std::runtime_error(msg.str()));
       mPromise->set_exception(expr);
@@ -145,8 +145,8 @@ void BarrettFingerSpreadCommandExecutor::step(double _timeSincePreviousCall)
       return;
     }
   }
-  
-  // Check collision 
+
+  // Check collision
   ::dart::collision::CollisionResult collisionResult;
   bool collision = mCollisionDetector->collide(
     mSpreadCollisionGroup.get(), mCollideWith.get(),
@@ -159,18 +159,33 @@ void BarrettFingerSpreadCommandExecutor::step(double _timeSincePreviousCall)
     mInExecution = false;
     return;
   }
-  
+
   // Move spread
   double newSpread;
   if (spread > mGoalPosition)
-    newSpread = std::max(mGoalPosition, spread + -kDofVelocity*_timeSincePreviousCall);
+    newSpread = std::max(mGoalPosition,
+      spread + -kDofVelocity*_timeSincePreviousCall);
   else
-    newSpread = std::min(mGoalPosition, spread + kDofVelocity*_timeSincePreviousCall);
-  
+    newSpread = std::min(mGoalPosition,
+      spread + kDofVelocity*_timeSincePreviousCall);
+
   for (auto spreadDof: mSpreadDofs)
     spreadDof->setPosition(newSpread);
 
 }
 
+//=============================================================================
+bool SimBarrettFingerSpreadCommandExecutor::setCollideWith(
+  ::dart::collision::CollisionGroupPtr collideWith)
+{
+  std::lock_guard<std::mutex> lockSpin(mMutex);
+
+  if (mInExecution)
+    return false;
+
+  mCollideWith = collideWith;
+  return true;
 }
-}
+
+} // control
+} // aikido

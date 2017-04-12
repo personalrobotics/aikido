@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <aikido/control/BarrettFingerPositionCommandExecutor.hpp>
+#include <aikido/control/SimBarrettFingerPositionCommandExecutor.hpp>
 #include <dart/dart.hpp>
 #include <chrono>
 
-using aikido::control::BarrettFingerPositionCommandExecutor;
+using aikido::control::SimBarrettFingerPositionCommandExecutor;
 using ::dart::dynamics::Chain;
 using ::dart::dynamics::ChainPtr;
 using ::dart::dynamics::Skeleton;
@@ -22,7 +22,7 @@ static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
   return properties;
 }
 
-class BarrettFingerPositionCommandExecutorTest : public testing::Test
+class SimBarrettFingerPositionCommandExecutorTest : public testing::Test
 {
 public:
 
@@ -70,7 +70,7 @@ public:
     mBn2 = mFinger->createJointAndBodyNodePair<RevoluteJoint>(
       mBn1, properties2, create_BodyNodeProperties("proximal")).second;
     mBn2->getParentJoint()->setPositionUpperLimit(0, M_PI);
-    mBn2->getParentJoint()->setPositionLowerLimit(0, -M_PI);    
+    mBn2->getParentJoint()->setPositionLowerLimit(0, -M_PI);
     setGeometry(mBn2);
 
     // distal joint
@@ -81,7 +81,7 @@ public:
     mBn3 = mFinger->createJointAndBodyNodePair<RevoluteJoint>(
       mBn2, properties3, create_BodyNodeProperties("distal")).second;
     mBn3->getParentJoint()->setPositionUpperLimit(0, M_PI);
-    mBn3->getParentJoint()->setPositionLowerLimit(0, -M_PI);    
+    mBn3->getParentJoint()->setPositionLowerLimit(0, -M_PI);
     setGeometry(mBn3);
 
     return Chain::create(mBn1, mBn3, Chain::IncludeBoth);
@@ -105,7 +105,7 @@ public:
       fingerShape);
     mBn1->getParentJoint()->setTransformFromParentBodyNode(transform);
     mBn1->getParentJoint()->setPositionUpperLimit(0, M_PI);
-    mBn1->getParentJoint()->setPositionLowerLimit(0, -M_PI);    
+    mBn1->getParentJoint()->setPositionLowerLimit(0, -M_PI);
 
     setGeometry(mBn1);
 
@@ -118,7 +118,7 @@ public:
       mBn1, properties3, create_BodyNodeProperties("distal")).second;
     setGeometry(mBn2);
     mBn2->getParentJoint()->setPositionUpperLimit(0, M_PI);
-    mBn2->getParentJoint()->setPositionLowerLimit(0, -M_PI);    
+    mBn2->getParentJoint()->setPositionLowerLimit(0, -M_PI);
 
     return Chain::create(mBn1, mBn2, Chain::IncludeBoth);
   }
@@ -130,7 +130,7 @@ public:
   {
     std::shared_ptr<EllipsoidShape> ballShape(
       new EllipsoidShape(Eigen::Vector3d(0.1, 0.1, 0.1)));
-    
+
     auto skeleton = Skeleton::create("Ball");
     auto ballBody = skeleton->createJointAndBodyNodePair<FreeJoint>(
       nullptr).second;
@@ -149,7 +149,7 @@ public:
     // CollisionDetector
     mCollisionDetector = FCLCollisionDetector::create();
     mCollideWith = mCollisionDetector->createCollisionGroupAsSharedPtr();
- 
+
     mPosition = 1;
     mProximalDof = 1;
     mDistalDof = 2;
@@ -171,46 +171,46 @@ protected:
 };
 
 
-TEST_F(BarrettFingerPositionCommandExecutorTest, constructor_NullChain_Throws)
+TEST_F(SimBarrettFingerPositionCommandExecutorTest, constructor_NullChain_Throws)
 {
-  EXPECT_THROW(BarrettFingerPositionCommandExecutor executor(
-    nullptr, mProximalDof, mDistalDof, mCollisionDetector),
+  EXPECT_THROW(SimBarrettFingerPositionCommandExecutor executor(
+    nullptr, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith),
     std::invalid_argument);
 }
 
-TEST_F(BarrettFingerPositionCommandExecutorTest, constructor)
+TEST_F(SimBarrettFingerPositionCommandExecutorTest, constructor)
 {
-  EXPECT_NO_THROW(BarrettFingerPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector));
+  EXPECT_NO_THROW(SimBarrettFingerPositionCommandExecutor executor(
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith));
 }
 
-TEST_F(BarrettFingerPositionCommandExecutorTest, constructor_Nonexistingproximal_throws)
+TEST_F(SimBarrettFingerPositionCommandExecutorTest, constructor_Nonexistingproximal_throws)
 {
   int proximalDof = 3;
-  EXPECT_THROW(BarrettFingerPositionCommandExecutor executor(
-    mFingerChain, proximalDof, mDistalDof, mCollisionDetector),
+  EXPECT_THROW(SimBarrettFingerPositionCommandExecutor executor(
+    mFingerChain, proximalDof, mDistalDof, mCollisionDetector, mCollideWith),
     std::invalid_argument);
 }
 
-TEST_F(BarrettFingerPositionCommandExecutorTest, constructor_NonexistingDistal_throws)
+TEST_F(SimBarrettFingerPositionCommandExecutorTest, constructor_NonexistingDistal_throws)
 {
   int distalDof = 3;
-  EXPECT_THROW(BarrettFingerPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, distalDof, mCollisionDetector),
+  EXPECT_THROW(SimBarrettFingerPositionCommandExecutor executor(
+    mFingerChain, mProximalDof, distalDof, mCollisionDetector, mCollideWith),
     std::invalid_argument);
 }
 
-TEST_F(BarrettFingerPositionCommandExecutorTest, execute_WaitOnFuture_CommandExecuted)
+TEST_F(SimBarrettFingerPositionCommandExecutorTest, execute_WaitOnFuture_CommandExecuted)
 {
-  BarrettFingerPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector);
+  SimBarrettFingerPositionCommandExecutor executor(
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith);
 
-  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
+  double mimicRatio = SimBarrettFingerPositionCommandExecutor::getMimicRatio();
 
   double goalProximal = mPosition;
   double goalDistal = mPosition*mimicRatio;
 
-  auto future = executor.execute(mPosition, mCollideWith);
+  auto future = executor.execute(mPosition);
 
   std::future_status status;
   auto stepTime = std::chrono::milliseconds(1);
@@ -227,21 +227,21 @@ TEST_F(BarrettFingerPositionCommandExecutorTest, execute_WaitOnFuture_CommandExe
   EXPECT_NEAR(goalDistal, mBn3->getParentJoint()->getDof(0)->getPosition(), eps);
 }
 
-TEST_F(BarrettFingerPositionCommandExecutorTest, 
+TEST_F(SimBarrettFingerPositionCommandExecutorTest,
   execute_proximalStopsAtCollsionDistalContinuesUntilCollision)
 {
   // Collision obstacle
   Eigen::Isometry3d transform(Eigen::Isometry3d::Identity());
   transform.translation() = Eigen::Vector3d(0.3, 0, 0.3);
   auto ball = createBall(transform, mCollisionDetector);
-  auto collideWith = mCollisionDetector->createCollisionGroup(ball);
+  auto collideWith = mCollisionDetector->createCollisionGroupAsSharedPtr(ball);
 
   double goal = M_PI;
 
-  BarrettFingerPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector);
+  SimBarrettFingerPositionCommandExecutor executor(
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, collideWith);
 
-  auto future = executor.execute(goal, std::move(collideWith));
+  auto future = executor.execute(goal);
 
   std::future_status status;
   auto stepTime = std::chrono::milliseconds(1);
@@ -264,21 +264,21 @@ TEST_F(BarrettFingerPositionCommandExecutorTest,
 }
 
 
-TEST_F(BarrettFingerPositionCommandExecutorTest, execute_DistalStopsAtCollsionProximalAlsoStops)
+TEST_F(SimBarrettFingerPositionCommandExecutorTest, execute_DistalStopsAtCollsionProximalAlsoStops)
 {
   // Collision object
   Eigen::Isometry3d transform(Eigen::Isometry3d::Identity());
   transform.translation() = Eigen::Vector3d(1.3, 0, 1.3);
   auto ball = createBall(transform, mCollisionDetector);
-  auto collideWith = mCollisionDetector->createCollisionGroup(ball);
+  auto collideWith = mCollisionDetector->createCollisionGroupAsSharedPtr(ball);
 
   // Executor
-  BarrettFingerPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector);
+  SimBarrettFingerPositionCommandExecutor executor(
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, collideWith);
   double goal = M_PI/4;
 
   // Execute
-  auto future = executor.execute(goal, std::move(collideWith));
+  auto future = executor.execute(goal);
   std::future_status status;
   auto stepTime = std::chrono::milliseconds(1);
   double stepTimeCount = stepTime.count();
@@ -290,7 +290,7 @@ TEST_F(BarrettFingerPositionCommandExecutorTest, execute_DistalStopsAtCollsionPr
 
   future.wait();
 
-  double mimicRatio = BarrettFingerPositionCommandExecutor::getMimicRatio();
+  double mimicRatio = SimBarrettFingerPositionCommandExecutor::getMimicRatio();
 
   // Values made by visual inspection
   double distalExpected = 0.21312;

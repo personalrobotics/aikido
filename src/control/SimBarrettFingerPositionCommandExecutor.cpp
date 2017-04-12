@@ -1,18 +1,20 @@
-#include <aikido/control/BarrettFingerPositionCommandExecutor.hpp>
+#include <aikido/control/SimBarrettFingerPositionCommandExecutor.hpp>
 #include <thread>
 
 namespace aikido{
 namespace control{
 
 //=============================================================================
-BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
+SimBarrettFingerPositionCommandExecutor::SimBarrettFingerPositionCommandExecutor(
   ::dart::dynamics::ChainPtr _finger, int _proximal, int _distal,
   ::dart::collision::CollisionDetectorPtr _collisionDetector,
+  ::dart::collision::CollisionGroupPtr _collideWith,
   ::dart::collision::CollisionOption _collisionOptions)
 : mFinger(std::move(_finger))
 , mProximalDof(nullptr)
 , mDistalDof(nullptr)
 , mCollisionDetector(std::move(_collisionDetector))
+, mCollideWith(std::move(_collideWith))
 , mCollisionOptions(std::move(_collisionOptions))
 , mInExecution(false)
 {
@@ -39,6 +41,10 @@ BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
   if (!mCollisionDetector)
     throw std::invalid_argument("CollisionDetctor is null.");
 
+  if (!mCollideWith)
+    throw std::invalid_argument("CollideWith is null.");
+
+
   mProximalCollisionGroup = mCollisionDetector->createCollisionGroup(
       mProximalDof->getChildBodyNode());
 
@@ -50,18 +56,15 @@ BarrettFingerPositionCommandExecutor::BarrettFingerPositionCommandExecutor(
 }
 
 //=============================================================================
-double BarrettFingerPositionCommandExecutor::getMimicRatio() 
+double SimBarrettFingerPositionCommandExecutor::getMimicRatio()
 {
   return kMimicRatio;
 }
 
 //=============================================================================
-std::future<void> BarrettFingerPositionCommandExecutor::execute(
-  double _goalPosition, ::dart::collision::CollisionGroupPtr _collideWith)
+std::future<void> SimBarrettFingerPositionCommandExecutor::execute(
+  double _goalPosition)
 {
-  if (!_collideWith)
-    throw std::invalid_argument("CollideWith is null.");
-
   if (!mFinger->isAssembled())
     throw std::runtime_error("Finger is disassembled.");
 
@@ -72,7 +75,6 @@ std::future<void> BarrettFingerPositionCommandExecutor::execute(
       throw std::runtime_error("Another command in execution.");
 
     mPromise.reset(new std::promise<void>());
-    mCollideWith = _collideWith;
     mInExecution = true;
     mDistalOnly = false;
 
@@ -89,22 +91,23 @@ std::future<void> BarrettFingerPositionCommandExecutor::execute(
 }
 
 //=============================================================================
-void BarrettFingerPositionCommandExecutor::terminate()
+void SimBarrettFingerPositionCommandExecutor::terminate()
 {
   mPromise->set_value();
   mInExecution = false;
   mCollideWith.reset();
 }
+
 //=============================================================================
-void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
+void SimBarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
 {
-  using std::chrono::milliseconds; 
+  using std::chrono::milliseconds;
 
   std::lock_guard<std::mutex> lock(mMutex);
 
   if (!mInExecution)
     return;
-    
+
   double distalPosition = mDistalDof->getPosition();
   double proximalPosition = mProximalDof->getPosition();
 
@@ -153,7 +156,7 @@ void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
   if (mDistalOnly)
     return;
 
-  // Check proximal collision 
+  // Check proximal collision
   bool proximalCollision = mCollisionDetector->collide(
     mProximalCollisionGroup.get(), mCollideWith.get(),
     mCollisionOptions, &collisionResult);
@@ -193,5 +196,18 @@ void BarrettFingerPositionCommandExecutor::step(double _timeSincePreviousCall)
   }
 }
 
+//=============================================================================
+bool SimBarrettFingerPositionCommandExecutor::setCollideWith(
+  ::dart::collision::CollisionGroupPtr collideWith)
+{
+  std::lock_guard<std::mutex> lockSpin(mMutex);
+
+  if (mInExecution)
+    return false;
+
+  mCollideWith = collideWith;
+  return true;
 }
-}
+
+} // control
+} // aikido
