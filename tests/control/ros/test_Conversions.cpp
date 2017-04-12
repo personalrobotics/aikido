@@ -136,36 +136,6 @@ TEST_F(ConvertJointTrajectoryTests, TrajectoryHasUnknownJoint_Throws)
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertJointTrajectoryTests,
-    StateSpaceHasMultipleJointsWithSameName_Throws)
-{
-  using dart::dynamics::BodyNode;
-  using dart::dynamics::RevoluteJoint;
-
-  // Create 2 skeletons with same joint names.
-  auto skeleton1 = dart::dynamics::Skeleton::create();
-
-  RevoluteJoint::Properties jointProperties;
-  jointProperties.mName = "Joint1";
-
-  skeleton1->createJointAndBodyNodePair<
-      RevoluteJoint>(nullptr, jointProperties);
-
-  auto skeleton2 = dart::dynamics::Skeleton::create();
-  skeleton2->createJointAndBodyNodePair<
-    RevoluteJoint>(nullptr, jointProperties);
-
-  auto groupSkeleton = dart::dynamics::Group::create();
-  groupSkeleton->addJoint(skeleton1->getJoint(0));
-  groupSkeleton->addJoint(skeleton2->getJoint(0));
-  auto space = std::make_shared<MetaSkeletonStateSpace>(groupSkeleton);
-
-  EXPECT_THROW({
-    convertJointTrajectory(space, mTwoWaypointMessage2Joints);
-  }, std::invalid_argument);
-}
-
-
 TEST_F(ConvertJointTrajectoryTests, StateSpaceHasUnknownJoint_Throws)
 {
   mSkeleton->getJoint(0)->setName("MissingJoint");
@@ -283,11 +253,10 @@ TEST_F(ConvertJointTrajectoryTests, QuinticTrajectory)
   EXPECT_EIGEN_EQUAL(make_vector(6.), values, kTolerance);
 }
 
-TEST_F(ConvertJointTrajectoryTests, DifferentOrdering)
+TEST_F(ConvertJointTrajectoryTests, DifferentOrderingOfJoints)
 {
-  const auto linearTwoWaypointMessage = mTwoWaypointMessage2Joints;
   const auto trajectory = convertJointTrajectory(
-    mStateSpace2Joints, linearTwoWaypointMessage);
+    mStateSpace2Joints, mTwoWaypointMessage2Joints);
 
   ASSERT_TRUE(!!trajectory);
   ASSERT_DOUBLE_EQ(0., trajectory->getStartTime());
@@ -321,3 +290,52 @@ TEST_F(ConvertJointTrajectoryTests, StateSpaceMissingJoint_Throws)
   }, std::invalid_argument);
 }
 
+TEST_F(ConvertJointTrajectoryTests,
+  JointTrajectoryHasMultipleJointsWithSameName_Throws)
+{
+  auto trajectory = trajectory_msgs::JointTrajectory{};
+  trajectory.joint_names.emplace_back("Joint1");
+  trajectory.joint_names.emplace_back("Joint1");
+  trajectory.points.resize(2);
+
+  auto& waypoint1 = trajectory.points[0];
+  waypoint1.time_from_start = ros::Duration{0.};
+  waypoint1.positions.assign({1., 2.});
+
+  auto& waypoint2 = trajectory.points[1];
+  waypoint2.time_from_start = ros::Duration{1.};
+  waypoint2.positions.assign({2., 3.});
+
+  EXPECT_THROW({
+    convertJointTrajectory(mStateSpace2Joints, trajectory);
+  }, std::invalid_argument);
+}
+
+TEST_F(ConvertJointTrajectoryTests,
+    StateSpaceHasMultipleJointsWithSameName_Throws)
+{
+  using dart::dynamics::BodyNode;
+  using dart::dynamics::RevoluteJoint;
+
+  // Create 2 skeletons with same joint names.
+  auto skeleton1 = dart::dynamics::Skeleton::create();
+
+  RevoluteJoint::Properties jointProperties;
+  jointProperties.mName = "Joint1";
+
+  skeleton1->createJointAndBodyNodePair<
+      RevoluteJoint>(nullptr, jointProperties);
+
+  auto skeleton2 = dart::dynamics::Skeleton::create();
+  skeleton2->createJointAndBodyNodePair<
+    RevoluteJoint>(nullptr, jointProperties);
+
+  auto groupSkeleton = dart::dynamics::Group::create();
+  groupSkeleton->addJoint(skeleton1->getJoint(0));
+  groupSkeleton->addJoint(skeleton2->getJoint(0));
+  auto space = std::make_shared<MetaSkeletonStateSpace>(groupSkeleton);
+
+  EXPECT_THROW({
+    convertJointTrajectory(space, mTwoWaypointMessage2Joints);
+  }, std::invalid_argument);
+}
