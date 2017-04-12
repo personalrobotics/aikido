@@ -14,17 +14,28 @@ namespace ros {
 class RosJointStateClient
 {
 public:
+  /// Constructor.
+  /// \param _skeleton Skeleton to read JointState updates for.
+  /// \param _nodeHandle ROS node.
+  /// \param _topicName Name of topic to subscribe to for JointState updates.
   RosJointStateClient(
     dart::dynamics::SkeletonPtr _skeleton,
     ::ros::NodeHandle _nodeHandle,
     const std::string& _topicName,
     size_t capacity);
 
+  /// Call all callbacks in mCallbackQueue.
   void spin();
 
+  /// Returns the last position of each joint.
+  /// \param _metaSkeleton Skeleton to read DOFs from.
   Eigen::VectorXd getLatestPosition(
     const dart::dynamics::MetaSkeleton& _metaSkeleton) const;
 
+  // TODO: implement
+  // getPositionAtTime(const MetaSkeleton&, const ros::Time&, bool)
+  // that interpolates position at the specified time, optionally blocking for
+  // new data.
 private:
   struct JointStateRecord
   {
@@ -34,6 +45,8 @@ private:
     double mPosition;
   };
 
+  /// Callback to add a new JointState to mBuffer
+  /// \param _jointState New JointState to add to mBuffer
   void jointStateCallback(const sensor_msgs::JointState& _jointState);
 
   mutable std::mutex mMutex;

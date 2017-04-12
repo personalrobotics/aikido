@@ -93,6 +93,10 @@ void RosJointStateClient::jointStateCallback(
     JointStateRecord record;
     record.mStamp = _jointState.header.stamp;
     record.mPosition = _jointState.position[i];
+
+    // TODO: check that the data in buffer is sequential, i.e. that we did not
+    // receive JointState messages out of order. It's probably safe to ignore
+    // the message (and print a warning!) if this occurs.
     buffer.push_back(record);
   }
 }
