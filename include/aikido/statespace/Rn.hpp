@@ -12,7 +12,7 @@ template <class>
 class RStateHandle;
 
 /// Represents a N-dimensional real vector space with vector addition as the
-/// group operation. The dimension is unchangeable.
+/// group operation. \c N must be non-negative.
 template <int N>
 class R : public virtual StateSpace
 {
@@ -41,13 +41,25 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
-  /// Constructs a real vector space. If N is Eigen::Dynamic (i.e., -1), this
-  /// state space becomes a dynamic size real vector space; if N is a
-  /// non-negative, then this state space becomes a \c N dimensional fixed size
-  /// real vector space.
+  /// Constructs a \c N dimensional real vector space.
+  ///
+  /// If the dimension is known in compile time, it is recommended to use this
+  /// constructor over R(int) because this constructor uses fixed size Eigen
+  /// objects to represent the state data internally, which is generally
+  /// faster than using dynamic size Eigen objects.
+  ///
+  /// \c N must be non-negative. If \c N is Eigen::Dynamic (i.e., -1), the
+  /// dimension is zero.
+  ///
+  /// \sa R(int)
   R();
 
-  /// Constructs a \c dimension dimensional dynamic size real vector space.
+  /// Constructs a \c dimension dimensional real vector space.
+  ///
+  /// This constructor must be used only when N is Eigen::Dynamic (i.e., -1).
+  /// Otherwise, throws an std::invalid_argument exception.
+  ///
+  /// \sa R()
   explicit R(int dimension);
 
   /// Helper function to create a \c ScopedState.
