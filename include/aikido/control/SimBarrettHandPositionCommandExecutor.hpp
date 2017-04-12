@@ -44,7 +44,7 @@ public:
   ///        the fingers will move only upto the limit.
   /// \return Future which becomes available when the execution completes.
   std::future<void> execute(
-    Eigen::Matrix<double, 4, 1> _goalPositions);
+    Eigen::Matrix<double, 4, 1> _goalPositions) override;
 
   /// Calls step method of finger executors.
   /// If multiple threads are accessing this function or skeleton associated
