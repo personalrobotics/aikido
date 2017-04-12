@@ -200,7 +200,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     if (joint->getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
       std::stringstream message;
-      message << "Only single-DOF RnJoint and SO2Joint are supported. Joint "
+      message << "Only R1Joint and SO2Joint are supported. Joint "
         << joint->getName() << "(index: " << i << ") is a "
         << joint->getType() << " with "
         << joint->getNumDofs() << " DOFs.";
