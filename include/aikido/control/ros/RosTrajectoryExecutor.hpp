@@ -72,8 +72,6 @@ private:
   TrajectoryActionClient mClient;
   TrajectoryActionClient::GoalHandle mGoalHandle;
 
-  std::map<std::string, size_t> mJointIndexMap;
-
   double mTimestep;
   double mGoalTimeTolerance;
 
@@ -83,6 +81,7 @@ private:
   bool mInProgress;
   std::promise<void> mPromise;
   trajectory::TrajectoryPtr mTrajectory;
+  std::map<std::string, size_t> mJointIndexMap;
 
   std::mutex mMutex;
 };

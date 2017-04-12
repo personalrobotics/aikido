@@ -2,7 +2,6 @@
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
 #include <aikido/control/ros/Conversions.hpp>
-#include <aikido/util/Spline.hpp>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/util/Spline.hpp>
 #include <dart/dynamics/Joint.hpp>
@@ -138,11 +137,12 @@ void extractTrajectoryPoint(
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
   
-  Eigen::VectorXd tangentVector, jointTangentVector;
+  Eigen::VectorXd tangentVector;
+  Eigen::VectorXd jointTangentVector;
   auto state = space->createState();
   trajectory->evaluate(timeAbsolute, state);
   space->logMap(state, tangentVector);
-  assert(tangentVector.size() == numDofs);
+  assert(tangentVector.size() == space->getDimension());
 
   // Reorder tangentVectoraccording to the index mapping
   reorder(indexMap, tangentVector, &jointTangentVector);
@@ -154,14 +154,14 @@ void extractTrajectoryPoint(
   assert(0 <= numDerivatives && numDerivatives <= 2);
   const std::array<std::vector<double>*, 2> derivatives{
     &waypoint.velocities, &waypoint.accelerations};
-  for (int iderivative = 1; iderivative <= numDerivatives; ++iderivative)
+  for (int iDerivative = 1; iDerivative <= numDerivatives; ++iDerivative)
   {
-    trajectory->evaluateDerivative(timeAbsolute, iderivative, tangentVector);
+    trajectory->evaluateDerivative(timeAbsolute, iDerivative, tangentVector);
     assert(tangentVector.size() == numDofs);
 
     // Reorder according to the index mapping
     reorder(indexMap, tangentVector, &jointTangentVector);
-    derivatives[iderivative - 1]->assign(jointTangentVector.data(),
+    derivatives[iDerivative - 1]->assign(jointTangentVector.data(),
       jointTangentVector.data() + jointTangentVector.size());
   }
 }
@@ -171,10 +171,10 @@ void extractTrajectoryPoint(
 void reorder(std::map<size_t, size_t> indexMap,
   const Eigen::VectorXd& inVector, Eigen::VectorXd* outVector)
 {
-  *outVector = Eigen::VectorXd::Zero(inVector.size());
-  for (auto it = indexMap.begin(); it != indexMap.end(); ++it)
-    (*outVector)(it->second) = inVector(it->first);
-  
+  assert(outVector != nullptr);
+  outVector->resize(inVector.size());
+  for (auto index : indexMap)
+    (*outVector)[index.second] = inVector[index.first];
 }
 
 //=============================================================================
@@ -193,7 +193,7 @@ dart::dynamics::Joint* findJointByName(
 } // namespace
 
 //=============================================================================
-std::unique_ptr<SplineTrajectory> convertJointTrajectory(
+std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   const std::shared_ptr<MetaSkeletonStateSpace>& space,
   const trajectory_msgs::JointTrajectory& jointTrajectory)
 {
@@ -290,17 +290,19 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   auto currState = space->createState();
 
   const auto& waypoints = jointTrajectory.points;
-  for (size_t iwaypoint = 1; iwaypoint < waypoints.size(); ++iwaypoint)
+  for (size_t iWaypoint = 1; iWaypoint < waypoints.size(); ++iWaypoint)
   {
-    Eigen::VectorXd nextPosition, nextVelocity, nextAcceleration;
-    extractJointTrajectoryPoint(jointTrajectory, iwaypoint, numControlledJoints,
+    Eigen::VectorXd nextPosition;
+    Eigen::VectorXd nextVelocity;
+    Eigen::VectorXd nextAcceleration;
+    extractJointTrajectoryPoint(jointTrajectory, iWaypoint, numControlledJoints,
       &nextPosition, isPositionRequired,
       &nextVelocity, isVelocityRequired,
       &nextAcceleration, isAccelerationRequired,
       rosJointToMetaSkeletonJoint);
 
     // Compute spline coefficients for this polynomial segment.
-    const auto nextTimeFromStart = waypoints[iwaypoint].time_from_start.toSec();
+    const auto nextTimeFromStart = waypoints[iWaypoint].time_from_start.toSec();
     const auto segmentDuration = nextTimeFromStart - currTimeFromStart;
     const auto segmentCoefficients = fitPolynomial(
       0., Eigen::VectorXd::Zero(numControlledJoints), currVelocity, currAcceleration,
@@ -318,11 +320,11 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     currTimeFromStart = nextTimeFromStart;
   }
 
-  return std::move(trajectory);
+  return trajectory;
 }
 
 //=============================================================================
-const trajectory_msgs::JointTrajectory convertTrajectoryToRosTrajectory(
+trajectory_msgs::JointTrajectory toRosJointTrajectory(
   const aikido::trajectory::TrajectoryPtr& trajectory,
   const std::map<std::string, size_t>& indexMap, double timestep)
 {
@@ -356,7 +358,7 @@ const trajectory_msgs::JointTrajectory convertTrajectoryToRosTrajectory(
     }
 
     // For RnJoint, supports only 1D.
-    if (rnJoint && rnJoint->getDimension() > 1)
+    if (rnJoint && rnJoint->getDimension() != 1)
     {
       std::stringstream message;
       message << "RnJoint must be 1D. Joint "

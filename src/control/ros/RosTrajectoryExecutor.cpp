@@ -95,7 +95,7 @@ std::future<void> RosTrajectoryExecutor::execute(
 std::future<void> RosTrajectoryExecutor::execute(
   trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
 {
-  using aikido::control::ros::convertTrajectoryToRosTrajectory;
+  using aikido::control::ros::toRosJointTrajectory;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
   if (!traj)
@@ -122,7 +122,7 @@ std::future<void> RosTrajectoryExecutor::execute(
   goal.goal_time_tolerance = ::ros::Duration(mGoalTimeTolerance);
 
   // Convert the Aikido trajectory into a ROS JointTrajectory.
-  goal.trajectory = convertTrajectoryToRosTrajectory(
+  goal.trajectory = toRosJointTrajectory(
     traj, mJointIndexMap, mTimestep);
 
   if (!waitForServer())

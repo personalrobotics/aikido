@@ -16,14 +16,14 @@ RosTrajectoryExecutionException::RosTrajectoryExecutionException(
   actionlib::TerminalState terminalState)
 : std::runtime_error(what)
 {
-};
+}
 
 RosTrajectoryExecutionException::RosTrajectoryExecutionException(
   const std::string& what,
   int result)
 : std::runtime_error(what)
 {
-};
+}
 
 } // namespace ros
 } // namespace control

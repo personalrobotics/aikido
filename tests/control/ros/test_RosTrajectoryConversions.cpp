@@ -11,7 +11,7 @@ using dart::dynamics::BodyNode;
 using dart::dynamics::RevoluteJoint;
 using dart::dynamics::BallJoint;
 using aikido::trajectory::Spline;
-using aikido::control::ros::convertTrajectoryToRosTrajectory;
+using aikido::control::ros::toRosJointTrajectory;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::tests::make_vector;
@@ -19,7 +19,7 @@ using aikido::tests::make_vector;
 static const double kTolerance{1e-6};
 
 // TODO: We might want to merge this with test_Conversions.cpp
-class ConvertTrajectoryToRosJointTrajectoryTests : public testing::Test
+class ToRosJointTrajectoryTests : public testing::Test
 {
 protected:
   void SetUp() override
@@ -86,38 +86,38 @@ protected:
   std::map<std::string, size_t> mIndexMap2DOF;
 };
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, TrajectoryIsNull_Throws)
+TEST_F(ToRosJointTrajectoryTests, TrajectoryIsNull_Throws)
 {
   EXPECT_THROW({
-    convertTrajectoryToRosTrajectory(nullptr, mIndexMap, mTimestep);
+    toRosJointTrajectory(nullptr, mIndexMap, mTimestep);
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, TimestepIsZero_Throws)
+TEST_F(ToRosJointTrajectoryTests, TimestepIsZero_Throws)
 {
   EXPECT_THROW({
-    convertTrajectoryToRosTrajectory(mTrajectory, mIndexMap, 0.0);
+    toRosJointTrajectory(mTrajectory, mIndexMap, 0.0);
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, TimestepIsNegative_Throws)
+TEST_F(ToRosJointTrajectoryTests, TimestepIsNegative_Throws)
 {
   EXPECT_THROW({
-    convertTrajectoryToRosTrajectory(mTrajectory, mIndexMap, -0.1);
+    toRosJointTrajectory(mTrajectory, mIndexMap, -0.1);
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests,
+TEST_F(ToRosJointTrajectoryTests,
     NonExistingJointInIndexMap_Throws)
 {
   std::map<std::string, size_t> indexMap;
   indexMap.insert(std::make_pair("Joint0", 0));
   EXPECT_THROW({
-    convertTrajectoryToRosTrajectory(mTrajectory, indexMap, mTimestep);
+    toRosJointTrajectory(mTrajectory, indexMap, mTimestep);
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests,
+TEST_F(ToRosJointTrajectoryTests,
     IndexMapHasDuplicateElements_Throws)
 {
   std::map<std::string, size_t> indexMap;
@@ -125,19 +125,19 @@ TEST_F(ConvertTrajectoryToRosJointTrajectoryTests,
   indexMap.insert(std::make_pair("Joint2", 0));
 
   EXPECT_THROW({
-    convertTrajectoryToRosTrajectory(mTrajectory2DOF, indexMap, mTimestep);
+    toRosJointTrajectory(mTrajectory2DOF, indexMap, mTimestep);
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, EmptyIndexMap_Throws)
+TEST_F(ToRosJointTrajectoryTests, EmptyIndexMap_Throws)
 {
   std::map<std::string, size_t> indexMap;
   EXPECT_THROW({
-    convertTrajectoryToRosTrajectory(mTrajectory, indexMap, mTimestep);
+    toRosJointTrajectory(mTrajectory, indexMap, mTimestep);
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, SkeletonHasUnsupportedJoint_Throws)
+TEST_F(ToRosJointTrajectoryTests, SkeletonHasUnsupportedJoint_Throws)
 {
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<BallJoint>();
@@ -145,13 +145,13 @@ TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, SkeletonHasUnsupportedJoint_T
 
   auto trajectory = std::make_shared<Spline>(space, 0.0);
   EXPECT_THROW({
-    convertTrajectoryToRosTrajectory(trajectory, mIndexMap, mTimestep);
+    toRosJointTrajectory(trajectory, mIndexMap, mTimestep);
   }, std::invalid_argument);
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints)
+TEST_F(ToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints)
 {
-  auto rosTrajectory = convertTrajectoryToRosTrajectory(
+  auto rosTrajectory = toRosJointTrajectory(
       mTrajectory, mIndexMap, mTimestep);
 
   for (auto it = mIndexMap.begin(); it != mIndexMap.end(); ++it)
@@ -175,7 +175,7 @@ TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints
       mTrajectory->getEndTime());
 
   double timestep = 0.01;
-  auto rosTrajectory2 = convertTrajectoryToRosTrajectory(
+  auto rosTrajectory2 = toRosJointTrajectory(
       mTrajectory, mIndexMap, timestep);
   
   EXPECT_EQ(11, rosTrajectory2.points.size());
@@ -200,9 +200,9 @@ TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints
 
 }
 
-TEST_F(ConvertTrajectoryToRosJointTrajectoryTests, DifferentOrdering)
+TEST_F(ToRosJointTrajectoryTests, DifferentOrdering)
 {
-  auto rosTrajectory = convertTrajectoryToRosTrajectory(
+  auto rosTrajectory = toRosJointTrajectory(
       mTrajectory2DOF, mIndexMap2DOF, mTimestep);
 
   for (auto it = mIndexMap.begin(); it != mIndexMap.end(); ++it)
