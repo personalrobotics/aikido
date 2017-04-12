@@ -20,10 +20,10 @@ VanDerCorput::VanDerCorput(
     const bool includeStartpoint,
     const bool includeEndpoint,
     const double minResolution)
-  : mSpan(span),
-    mIncludeStartpoint(includeStartpoint),
-    mIncludeEndpoint(includeEndpoint),
-    mMinResolution(minResolution)
+  : mSpan(span)
+  , mIncludeStartpoint(includeStartpoint)
+  , mIncludeEndpoint(includeEndpoint)
+  , mMinResolution(minResolution)
 {
   mMinResolution
       = std::max(mMinResolution, std::numeric_limits<double>::epsilon());

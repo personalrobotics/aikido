@@ -243,17 +243,17 @@ template <class Scalar,
 SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     SplineProblem(
         const TimeVector& _times, Index _numCoefficients, Index _numOutputs)
-  : mNumKnots(_times.size()),
-    mNumSegments(std::max<Index>(mNumKnots - 1, 0)),
-    mNumCoefficients(_numCoefficients),
-    mNumOutputs(_numOutputs),
-    mDimension(mNumSegments * _numCoefficients),
-    mCoefficientMatrix(createCoefficientMatrix(mNumCoefficients)),
-    mRowIndex(0),
-    mTimes(_times),
-    mA(mDimension, mDimension),
-    mB(mDimension, _numOutputs),
-    mSolution(mNumSegments, SolutionMatrix(_numOutputs, _numCoefficients))
+  : mNumKnots(_times.size())
+  , mNumSegments(std::max<Index>(mNumKnots - 1, 0))
+  , mNumCoefficients(_numCoefficients)
+  , mNumOutputs(_numOutputs)
+  , mDimension(mNumSegments * _numCoefficients)
+  , mCoefficientMatrix(createCoefficientMatrix(mNumCoefficients))
+  , mRowIndex(0)
+  , mTimes(_times)
+  , mA(mDimension, mDimension)
+  , mB(mDimension, _numOutputs)
+  , mSolution(mNumSegments, SolutionMatrix(_numOutputs, _numCoefficients))
 {
   mA.setZero();
   mB.setZero();

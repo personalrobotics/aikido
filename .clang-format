@@ -31,7 +31,7 @@ BraceWrapping:
 BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializersBeforeComma: true
 ColumnLimit:     80
 CommentPragmas:  ''
 ConstructorInitializerAllOnOneLineOrOnePerLine: true

@@ -12,10 +12,10 @@ StepSequence::StepSequence(
     const bool _includeEndpoints,
     double _startPoint,
     double _endPoint)
-  : mStepSize(_stepSize),
-    mStartPoint(_startPoint),
-    mEndPoint(_endPoint),
-    mIncludeEndpoints(_includeEndpoints)
+  : mStepSize(_stepSize)
+  , mStartPoint(_startPoint)
+  , mEndPoint(_endPoint)
+  , mIncludeEndpoints(_includeEndpoints)
 {
   // Do nothing
 }
