@@ -419,38 +419,50 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   // Assign joint names
   std::map<size_t, size_t> orderMap;
 
-  for (auto it = indexMap.begin(); it != indexMap.end(); ++it)
+  for (auto trajToRosTrajPair : indexMap)
   {
-    auto joint = findJointByName(metaSkeleton.get(), it->first);
-    if (!joint)
+    auto joints = findJointByName(*metaSkeleton, trajToRosTrajPair.first);
+    if (joints.size() == 0)
     {
       std::stringstream message;
-      message << "Skeleton does not have joint[" << it->first
+      message << "Metaskeleton does not have joint[" << trajToRosTrajPair.first
         << "], given by indexMap.";
       throw std::invalid_argument{message.str()};
     }
-
-    if (it->second > numJoints) 
+    else if (joints.size() > 1)
     {
       std::stringstream message;
-      message << "Skeleton has " << numJoints << " joints, but "
-        << "indexMap maps " << it->first << " to joint " << it->second;
+      message << "Metaskeleton has multiple joints with same name ["
+        << trajToRosTrajPair.first << "].";
+      throw std::invalid_argument{message.str()};
+    }
+    auto joint = joints[0];
+
+    if (trajToRosTrajPair.second > numJoints)
+    {
+      std::stringstream message;
+      message << "Metaskeleton has " << numJoints << " joints, but "
+        << "indexMap maps " << trajToRosTrajPair.first
+        << " to joint " << trajToRosTrajPair.second;
       throw std::invalid_argument{message.str()};
     }
 
-    if (jointTrajectory.joint_names[it->second] != "")
+    if (jointTrajectory.joint_names[trajToRosTrajPair.second] != "")
     {
       std::stringstream message;
-      message << jointTrajectory.joint_names[it->second] << " and " <<
-        it->first << " map to the same " << it->second << " joint.";
+      message << jointTrajectory.joint_names[trajToRosTrajPair.second]
+        << " and " << trajToRosTrajPair.first << " map to the same "
+        << trajToRosTrajPair.second << " joint.";
       throw std::invalid_argument{message.str()};
     }
 
-    jointTrajectory.joint_names[it->second] = it->first;
+    jointTrajectory.joint_names[trajToRosTrajPair.second]
+      = trajToRosTrajPair.first;
 
-    auto index = metaSkeleton->getIndexOf(joint);
-    assert(index != dart::dynamics::INVALID_INDEX);
-    orderMap.emplace(std::make_pair(index, it->second));
+    auto metaSkeletonIndex = metaSkeleton->getIndexOf(joint);
+    assert(metaSkeletonIndex != dart::dynamics::INVALID_INDEX);
+    orderMap.emplace(std::make_pair(metaSkeletonIndex,
+      trajToRosTrajPair.second));
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory

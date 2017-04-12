@@ -12,9 +12,9 @@ namespace ros {
 
 /// Converts a ROS JointTrajectory into an aikido's Spline trajectory.
 /// This method only handles single-DOF joints.
-/// \param[in] _space MetaSkeletonStateSpace for Spline trajectory.
+/// \param[in] space MetaSkeletonStateSpace for Spline trajectory.
 //              Subspaces must be either 1D RnJoint or SO2Joint.
-/// \param[in] _jointTrajectory ROS JointTrajectory to be converted.
+/// \param[in] jointTrajectory ROS JointTrajectory to be converted.
 /// \return Spline trajectory.
 std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
   const std::shared_ptr<
@@ -23,9 +23,9 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 
 /// Converts Aikido Trajectory to ROS JointTrajectory.
 /// Supports only 1D RnJoints and SO2Joints.
-/// \_param[in] trajectory Aikido trajectory to be converted.
-/// \_param[in] indexMap Mapping between trajectory's joints and ros joints.
-/// \_param[in] timestep Timestep between two consecutive waypoints.
+/// \param[in] trajectory Aikido trajectory to be converted.
+/// \param[in] indexMap Mapping between trajectory's joints and ros joints.
+/// \param[in] timestep Timestep between two consecutive waypoints.
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
   const aikido::trajectory::TrajectoryPtr& trajectory,
   const std::map<std::string, size_t>& indexMap, double timestep);
@@ -35,4 +35,3 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 } // namespace aikido
 
 #endif // ifndef AIKIDO_CONTROL_ROS_CONVERSIONS_HPP_
-
