@@ -8,7 +8,7 @@
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
-using aikido::statespace::dart::RnJoint;
+using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
 
 namespace aikido {
@@ -189,15 +189,15 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     throw std::invalid_argument{message.str()};
   }
 
-  // Check that all joints are single-DOF RnJoint or SO2JOint state spaces.
+  // Check that all joints are R1Joint or SO2JOint state spaces.
   for (size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
     auto joint = space->getJointSpace(i)->getJoint();
     auto jointSpace = space->getSubspace(i);
-    auto rnJoint = dynamic_cast<RnJoint*>(jointSpace.get());
+    auto r1Joint = dynamic_cast<R1Joint*>(jointSpace.get());
     auto so2Joint = dynamic_cast<SO2Joint*>(jointSpace.get());
 
-    if (joint->getNumDofs() != 1 || (!rnJoint && !so2Joint))
+    if (joint->getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
       std::stringstream message;
       message << "Only single-DOF RnJoint and SO2Joint are supported. Joint "
