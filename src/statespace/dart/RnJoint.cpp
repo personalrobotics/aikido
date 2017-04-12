@@ -5,19 +5,19 @@ namespace statespace {
 namespace dart {
 
 template
-class RnJoint<0>;
+class RJoint<0>;
 
 template
-class RnJoint<1>;
+class RJoint<1>;
 
 template
-class RnJoint<2>;
+class RJoint<2>;
 
 template
-class RnJoint<3>;
+class RJoint<3>;
 
 template
-class RnJoint<6>;
+class RJoint<6>;
 
 } // namespace dart
 } // namespace statespace

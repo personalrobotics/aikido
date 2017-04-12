@@ -5,26 +5,26 @@ namespace distance {
 
 //==============================================================================
 extern template
-class RnEuclidean<0>;
+class REuclidean<0>;
 
 extern template
-class RnEuclidean<1>;
+class REuclidean<1>;
 
 extern template
-class RnEuclidean<2>;
+class REuclidean<2>;
 
 extern template
-class RnEuclidean<3>;
+class REuclidean<3>;
 
 extern template
-class RnEuclidean<6>;
+class REuclidean<6>;
 
 extern template
-class RnEuclidean<Eigen::Dynamic>;
+class REuclidean<Eigen::Dynamic>;
 
 //=============================================================================
 template <int N>
-RnEuclidean<N>::RnEuclidean(std::shared_ptr<statespace::R<N>> _space)
+REuclidean<N>::REuclidean(std::shared_ptr<statespace::R<N>> _space)
     : mStateSpace(std::move(_space))
 {
   if (mStateSpace == nullptr) {
@@ -34,14 +34,14 @@ RnEuclidean<N>::RnEuclidean(std::shared_ptr<statespace::R<N>> _space)
 
 //=============================================================================
 template <int N>
-statespace::StateSpacePtr RnEuclidean<N>::getStateSpace() const
+statespace::StateSpacePtr REuclidean<N>::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //=============================================================================
 template <int N>
-double RnEuclidean<N>::distance(
+double REuclidean<N>::distance(
     const statespace::StateSpace::State* _state1,
     const statespace::StateSpace::State* _state2) const
 {

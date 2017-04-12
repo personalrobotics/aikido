@@ -9,7 +9,7 @@ namespace constraint {
 /// ConstantSampler for RealVectorStates.
 /// Stub sampler for WeldJoint or any fixed constant state space.
 template <int N>
-class RnConstantSampler : public constraint::Sampleable
+class RConstantSampler : public constraint::Sampleable
 {
 public:
   using Vectord = Eigen::Matrix<double, N, 1>;
@@ -17,7 +17,7 @@ public:
   /// Constructor.
   /// \param _space Space in which this constraint operates.
   /// \param _value Value to return when sampled.
-  RnConstantSampler(
+  RConstantSampler(
     std::shared_ptr<statespace::R<N>> _space, const Vectord& _value);
 
   // Documentation inherited.
@@ -35,12 +35,12 @@ private:
   Vectord mValue;
 };
 
-using R0ConstantSampler = RnConstantSampler<0>;
-using R1ConstantSampler = RnConstantSampler<1>;
-using R2ConstantSampler = RnConstantSampler<2>;
-using R3ConstantSampler = RnConstantSampler<3>;
-using R6ConstantSampler = RnConstantSampler<6>;
-using RxConstantSampler = RnConstantSampler<Eigen::Dynamic>;
+using R0ConstantSampler = RConstantSampler<0>;
+using R1ConstantSampler = RConstantSampler<1>;
+using R2ConstantSampler = RConstantSampler<2>;
+using R3ConstantSampler = RConstantSampler<3>;
+using R6ConstantSampler = RConstantSampler<6>;
+using RnConstantSampler = RConstantSampler<Eigen::Dynamic>;
 
 } // namespace constraint
 } // namespace aikido

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/Rn.hpp>
 
-using aikido::statespace::Rx;
+using aikido::statespace::Rn;
 using aikido::statespace::R3;
 using R4 = aikido::statespace::R<4>;
 
@@ -25,7 +25,7 @@ TEST(Rn, ComposeR3)
 //==============================================================================
 TEST(Rn, ComposeRx)
 {
-  Rx rvss(3);
+  Rn rvss(3);
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -59,7 +59,7 @@ TEST(Rn, IdentityR3)
 //==============================================================================
 TEST(Rn, IdentityRx)
 {
-  Rx rvss(3);
+  Rn rvss(3);
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -95,7 +95,7 @@ TEST(Rn, InverseR3)
 //==============================================================================
 TEST(Rn, InverseRx)
 {
-  Rx rvss(3);
+  Rn rvss(3);
 
   auto s1 = rvss.createState();
   s1.setValue(Eigen::Vector3d(1, 2, 3));
@@ -125,7 +125,7 @@ TEST(Rn, ExpMapR3)
 //==============================================================================
 TEST(Rn, ExpMapRx)
 {
-  Rx rvss(3);
+  Rn rvss(3);
 
   auto out = rvss.createState();
   rvss.expMap(Eigen::Vector3d(1, 2, 3), out);
@@ -153,7 +153,7 @@ TEST(Rn, LogMapR3)
 //==============================================================================
 TEST(Rn, LogMapRx)
 {
-  Rx rvss(3);
+  Rn rvss(3);
 
   auto state = rvss.createState();
   rvss.setValue(state, Eigen::Vector3d(1, 2, 3));
@@ -181,7 +181,7 @@ TEST(Rn, CopyStateR4)
 //==============================================================================
 TEST(Rn, CopyStateRx)
 {
-  Rx rvss(4);
+  Rn rvss(4);
   auto source = rvss.createState();
   auto dest = rvss.createState();
   source.setValue(Eigen::Vector4d(0, 1, 2, 3));
@@ -201,7 +201,7 @@ TEST(Rn, PrintStateR4)
 //==============================================================================
 TEST(Rn, PrintStateRx)
 {
-  Rx rvss(4);
+  Rn rvss(4);
   auto source = rvss.createState();
   source.setValue(Eigen::Vector4d(0, 1, 2, 3));
   rvss.print(source, std::cout);

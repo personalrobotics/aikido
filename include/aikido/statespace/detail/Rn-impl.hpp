@@ -85,26 +85,32 @@ public:
 template <int N>
 R<N>::R()
 {
-  static_assert(N > -2,
+  static_assert(N >= 0 || N == Eigen::Dynamic,
       "Invalid dimension. The dimension should be non-negative.");
 
   if (N == Eigen::Dynamic)
-    mDimension = 0;
+  {
+    std::stringstream msg;
+    msg << "Invalid template parameter. Either pass a non-negative dimension "
+        << "as the template parameter (e.g., R<3>()).";
+    throw std::invalid_argument(msg.str());
+  }
 }
 
 //=============================================================================
 template <int N>
 R<N>::R(int dimension) : mDimension(dimension)
 {
-  static_assert(N > -2,
-      "Invalid dimension. The dimension should be either -1 for dynamic size "
-      "state space or non-negative for fixed size state space.");
+  static_assert(N >= 0 || N == Eigen::Dynamic,
+      "Invalid dimension. The dimension should be non-negative.");
 
-  if (N != Eigen::Dynamic)
+  if (N != Eigen::Dynamic && N != dimension)
   {
     std::stringstream msg;
-    msg << "Invalid constructor. You called a constructor for fixed size "
-        << "state space on dynamic size state space.";
+    msg << "Invalid dimension argument. Either pass Eigen::Dynamic as the "
+        << "template parameter (e.g., Rn(3)) or pass the same dimension with "
+        << "the template parameter as the constructor parameter "
+        << "(e.g., R<3>(3)).";
     throw std::invalid_argument(msg.str());
   }
 }

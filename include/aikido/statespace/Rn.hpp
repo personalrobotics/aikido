@@ -41,16 +41,17 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
-  /// Constructs a \c N dimensional real vector space.
+  /// Constructs a \c N dimensional real vector space only when the dimension is
+  /// can be known in compile time.
   ///
   /// If the dimension is known in compile time, it is recommended to use this
   /// constructor over R(int) because this constructor uses fixed size Eigen
   /// objects to represent the state data internally, which is generally
   /// faster than using dynamic size Eigen objects.
   ///
-  /// \c N must be non-negative. If \c N is Eigen::Dynamic (i.e., -1), the
-  /// dimension is zero.
+  /// \c N must be non-negative and not Eigen::Dynamic.
   ///
+  /// \throw std::invalid_argument when N is Eigen::Dynamic.
   /// \sa R(int)
   R();
 
@@ -59,6 +60,10 @@ public:
   /// This constructor must be used only when N is Eigen::Dynamic (i.e., -1).
   /// Otherwise, throws an std::invalid_argument exception.
   ///
+  /// \c N must be non-negative and not Eigen::Dynamic.
+  ///
+  /// \throw std::invalid_argument when \c N is not Eigen::Dynamic and
+  /// \c dimension is not the same with \c N.
   /// \sa R()
   explicit R(int dimension);
 
@@ -149,7 +154,7 @@ using R1 = R<1>;
 using R2 = R<2>;
 using R3 = R<3>;
 using R6 = R<6>;
-using Rx = R<Eigen::Dynamic>;
+using Rn = R<Eigen::Dynamic>;
 
 } // namespace statespace
 } // namespace aikido

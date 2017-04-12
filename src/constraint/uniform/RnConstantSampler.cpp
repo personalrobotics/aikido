@@ -4,22 +4,22 @@ namespace aikido {
 namespace constraint {
 
 template
-class RnConstantSampler<0>;
+class RConstantSampler<0>;
 
 template
-class RnConstantSampler<1>;
+class RConstantSampler<1>;
 
 template
-class RnConstantSampler<2>;
+class RConstantSampler<2>;
 
 template
-class RnConstantSampler<3>;
+class RConstantSampler<3>;
 
 template
-class RnConstantSampler<6>;
+class RConstantSampler<6>;
 
 template
-class RnConstantSampler<Eigen::Dynamic>;
+class RConstantSampler<Eigen::Dynamic>;
 
 } // namespace constraint
 } // namespace aikido

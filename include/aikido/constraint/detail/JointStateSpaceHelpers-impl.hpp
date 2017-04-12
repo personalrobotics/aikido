@@ -84,13 +84,13 @@ struct createSampleableFor_impl { };
 //=============================================================================
 template <int N, class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
-  std::shared_ptr<statespace::dart::RnJoint<N>> _stateSpace,
+  std::shared_ptr<statespace::dart::RJoint<N>> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
-    return dart::common::make_unique<RnBoxConstraint<N>>(
+    return dart::common::make_unique<RBoxConstraint<N>>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
   else
@@ -100,9 +100,9 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 
 //=============================================================================
 template <int N>
-struct createDifferentiableFor_impl<statespace::dart::RnJoint<N>>
+struct createDifferentiableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint<N>;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
@@ -113,9 +113,9 @@ struct createDifferentiableFor_impl<statespace::dart::RnJoint<N>>
 
 //=============================================================================
 template <int N>
-struct createTestableFor_impl<statespace::dart::RnJoint<N>>
+struct createTestableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint<N>;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
@@ -127,9 +127,9 @@ struct createTestableFor_impl<statespace::dart::RnJoint<N>>
 
 //=============================================================================
 template <int N>
-struct createProjectableFor_impl<statespace::dart::RnJoint<N>>
+struct createProjectableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint<N>;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
@@ -141,9 +141,9 @@ struct createProjectableFor_impl<statespace::dart::RnJoint<N>>
 
 //=============================================================================
 template <int N>
-struct createSampleableFor_impl<statespace::dart::RnJoint<N>>
+struct createSampleableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint<N>;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
@@ -152,7 +152,7 @@ struct createSampleableFor_impl<statespace::dart::RnJoint<N>>
     const auto joint = _stateSpace->getJoint();
 
     if (isLimited(joint))
-      return dart::common::make_unique<RnBoxConstraint<N>>(
+      return dart::common::make_unique<RBoxConstraint<N>>(
         std::move(_stateSpace), std::move(_rng),
         getPositionLowerLimits(joint), getPositionUpperLimits(joint));
     else

@@ -4,22 +4,22 @@ namespace aikido {
 namespace constraint {
 
 template
-class RnBoxConstraint<0>;
+class RBoxConstraint<0>;
 
 template
-class RnBoxConstraint<1>;
+class RBoxConstraint<1>;
 
 template
-class RnBoxConstraint<2>;
+class RBoxConstraint<2>;
 
 template
-class RnBoxConstraint<3>;
+class RBoxConstraint<3>;
 
 template
-class RnBoxConstraint<6>;
+class RBoxConstraint<6>;
 
 template
-class RnBoxConstraint<Eigen::Dynamic>;
+class RBoxConstraint<Eigen::Dynamic>;
 
 } // namespace statespace
 } // namespace aikido

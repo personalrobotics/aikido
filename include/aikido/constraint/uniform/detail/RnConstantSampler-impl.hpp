@@ -9,22 +9,22 @@ namespace constraint {
 
 //=============================================================================
 extern template
-class RnConstantSampler<0>;
+class RConstantSampler<0>;
 
 extern template
-class RnConstantSampler<1>;
+class RConstantSampler<1>;
 
 extern template
-class RnConstantSampler<2>;
+class RConstantSampler<2>;
 
 extern template
-class RnConstantSampler<3>;
+class RConstantSampler<3>;
 
 extern template
-class RnConstantSampler<6>;
+class RConstantSampler<6>;
 
 extern template
-class RnConstantSampler<Eigen::Dynamic>;
+class RConstantSampler<Eigen::Dynamic>;
 
 namespace {
 
@@ -98,7 +98,7 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
 
 //=============================================================================
 template <int N>
-RnConstantSampler<N>::RnConstantSampler(
+RConstantSampler<N>::RConstantSampler(
     std::shared_ptr<statespace::R<N>> _space, const Vectord& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
@@ -117,7 +117,7 @@ RnConstantSampler<N>::RnConstantSampler(
 
 //=============================================================================
 template <int N>
-statespace::StateSpacePtr RnConstantSampler<N>::getStateSpace() const
+statespace::StateSpacePtr RConstantSampler<N>::getStateSpace() const
 {
   return mSpace;
 }
@@ -125,7 +125,7 @@ statespace::StateSpacePtr RnConstantSampler<N>::getStateSpace() const
 //=============================================================================
 template <int N>
 std::unique_ptr<constraint::SampleGenerator>
-  RnConstantSampler<N>::createSampleGenerator() const
+  RConstantSampler<N>::createSampleGenerator() const
 {
   return dart::common::make_unique<RnConstantSamplerSampleGenerator<N>>(
       mSpace, mValue);
@@ -133,8 +133,8 @@ std::unique_ptr<constraint::SampleGenerator>
 
 //=============================================================================
 template <int N>
-const typename RnConstantSampler<N>::Vectord&
-RnConstantSampler<N>::getConstantValue() const
+const typename RConstantSampler<N>::Vectord&
+RConstantSampler<N>::getConstantValue() const
 {
   return mValue;
 }

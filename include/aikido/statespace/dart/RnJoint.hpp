@@ -17,10 +17,10 @@ namespace dart {
 /// of \c JointStateSpace to for a \c Joint you most likely should use
 /// the \c createJointStateSpace helper function.
 template <int N>
-class RnJoint
+class RJoint
   : public R<N>
   , public JointStateSpace
-  , public std::enable_shared_from_this<RnJoint<N>>
+  , public std::enable_shared_from_this<RJoint<N>>
 {
 public:
   static constexpr int DimensionAtCompileTime = N;
@@ -34,7 +34,7 @@ public:
   /// Create a real vector state space for \c _joint.
   ///
   /// \param _joint joint to create a state space for
-  explicit RnJoint(DartJoint* _joint);
+  explicit RJoint(DartJoint* _joint);
 
   // Documentation inherited.
   void convertPositionsToState(
@@ -47,11 +47,11 @@ public:
     Eigen::VectorXd& _positions) const override;
 };
 
-using R0Joint = RnJoint<0>;
-using R1Joint = RnJoint<1>;
-using R2Joint = RnJoint<2>;
-using R3Joint = RnJoint<3>;
-using R6Joint = RnJoint<6>;
+using R0Joint = RJoint<0>;
+using R1Joint = RJoint<1>;
+using R2Joint = RJoint<2>;
+using R3Joint = RJoint<3>;
+using R6Joint = RJoint<6>;
 
 } // namespace dart
 } // namespace statespace

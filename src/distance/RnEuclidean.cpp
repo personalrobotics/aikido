@@ -4,22 +4,22 @@ namespace aikido {
 namespace distance {
 
 template
-class RnEuclidean<0>;
+class REuclidean<0>;
 
 template
-class RnEuclidean<1>;
+class REuclidean<1>;
 
 template
-class RnEuclidean<2>;
+class REuclidean<2>;
 
 template
-class RnEuclidean<3>;
+class REuclidean<3>;
 
 template
-class RnEuclidean<6>;
+class REuclidean<6>;
 
 template
-class RnEuclidean<Eigen::Dynamic>;
+class REuclidean<Eigen::Dynamic>;
 
 } // namespace distance
 } // namespace aikido

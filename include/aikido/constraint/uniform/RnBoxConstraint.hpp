@@ -12,7 +12,7 @@ namespace constraint {
 /// A BoxConstraint on RealVectorStates.
 /// For each dimension, this constraint has lowerLimit and upperLimit. 
 template <int N>
-class RnBoxConstraint
+class RBoxConstraint
   : public constraint::Differentiable
   , public constraint::Projectable
   , public constraint::Sampleable
@@ -31,7 +31,7 @@ public:
   ///        The length of this vector should match the dimension of _space.
   /// \param _upperLimits Upper limits.
   ///        The length of this vector should match the dimension of _space. 
-  RnBoxConstraint(
+  RBoxConstraint(
     std::shared_ptr<statespace::R<N>> _space,
     std::unique_ptr<util::RNG> _rng,
     const Vectord& _lowerLimits,
@@ -81,12 +81,12 @@ private:
   Vectord mUpperLimits;
 };
 
-using R0BoxConstraint = RnBoxConstraint<0>;
-using R1BoxConstraint = RnBoxConstraint<1>;
-using R2BoxConstraint = RnBoxConstraint<2>;
-using R3BoxConstraint = RnBoxConstraint<3>;
-using R6BoxConstraint = RnBoxConstraint<6>;
-using RxBoxConstraint = RnBoxConstraint<Eigen::Dynamic>;
+using R0BoxConstraint = RBoxConstraint<0>;
+using R1BoxConstraint = RBoxConstraint<1>;
+using R2BoxConstraint = RBoxConstraint<2>;
+using R3BoxConstraint = RBoxConstraint<3>;
+using R6BoxConstraint = RBoxConstraint<6>;
+using RnBoxConstraint = RBoxConstraint<Eigen::Dynamic>;
 
 } // namespace constraint
 } // namespace aikido

@@ -6,23 +6,23 @@ namespace dart {
 
 //==============================================================================
 extern template
-class RnJoint<0>;
+class RJoint<0>;
 
 extern template
-class RnJoint<1>;
+class RJoint<1>;
 
 extern template
-class RnJoint<2>;
+class RJoint<2>;
 
 extern template
-class RnJoint<3>;
+class RJoint<3>;
 
 extern template
-class RnJoint<6>;
+class RJoint<6>;
 
 //=============================================================================
 template <int N>
-RnJoint<N>::RnJoint(typename RnJoint<N>::DartJoint* _joint)
+RJoint<N>::RJoint(typename RJoint<N>::DartJoint* _joint)
   : R<N>(), JointStateSpace(_joint)
 {
   static_assert(N != Eigen::Dynamic,
@@ -31,7 +31,7 @@ RnJoint<N>::RnJoint(typename RnJoint<N>::DartJoint* _joint)
 
 //=============================================================================
 template <int N>
-void RnJoint<N>::convertPositionsToState(
+void RJoint<N>::convertPositionsToState(
   const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   this->setValue(static_cast<typename R<N>::State*>(_state), _positions);
@@ -39,7 +39,7 @@ void RnJoint<N>::convertPositionsToState(
 
 //=============================================================================
 template <int N>
-void RnJoint<N>::convertStateToPositions(
+void RJoint<N>::convertStateToPositions(
   const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   _positions = this->getValue(
