@@ -9,19 +9,19 @@ namespace statespace {
 
 // Defined in detail/Rn-impl.hpp
 template <class>
-class RealVectorStateHandle;
+class RStateHandle;
 
-/// Represents a n-dimensional real vector space with vector addition as the
-/// group operation.
+/// Represents a N-dimensional real vector space with vector addition as the
+/// group operation. The dimension is unchangeable.
 template <int N>
 class R : public virtual StateSpace
 {
 public:
-  /// Point in a \c Rn.
+  /// Point in a \c R<N>.
   class State : public StateSpace::State
   {
   public:
-    static constexpr int Dimension = N;
+    static constexpr int DimensionAtCompileTime = N;
 
   protected:
     State() = default;
@@ -31,18 +31,24 @@ public:
   };
 
   /// Dimension of the space
-  static constexpr int Dimension = N;
+  static constexpr int DimensionAtCompileTime = N;
 
-  using VectorNd = Eigen::Matrix<double, N, 1>;
+  using Vectord = Eigen::Matrix<double, N, 1>;
 
-  using StateHandle = RealVectorStateHandle<State>;
-  using StateHandleConst = RealVectorStateHandle<const State>;
+  using StateHandle = RStateHandle<State>;
+  using StateHandleConst = RStateHandle<const State>;
 
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
-  /// Constructs a \c _dimension dimensional real vector space.
+  /// Constructs a real vector space. If N is Eigen::Dynamic (i.e., -1), this
+  /// state space becomes a dynamic size real vector space; if N is a
+  /// non-negative, then this state space becomes a \c N dimensional fixed size
+  /// real vector space.
   R();
+
+  /// Constructs a \c dimension dimensional dynamic size real vector space.
+  explicit R(int dimension);
 
   /// Helper function to create a \c ScopedState.
   ///
@@ -53,13 +59,13 @@ public:
   ///
   /// \param _state a \c State in this state space
   /// \return real vector represented by \c _state
-  Eigen::Map<const VectorNd> getValue(const State *_state) const;
+  Eigen::Map<const Vectord> getValue(const State *_state) const;
 
   /// Sets the real vector stored in a \c State.
   ///
   /// \param _state a \c State in this state space
   /// \param _value real vector to store in \c _state
-  void setValue(State *_state, const VectorNd &_value) const;
+  void setValue(State *_state, const Vectord &_value) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
@@ -95,7 +101,7 @@ public:
   ///
   /// \param _tangent element of the tangent space
   /// \param[out] _out corresponding element of the Lie group
-  void expMap(const Eigen::VectorXd &_tangent,
+  void expMap(const Eigen::VectorXd& _tangent,
               StateSpace::State *_out) const override;
 
   /// Log mapping of Lie group element to a Lie algebra element. This is simply
@@ -104,7 +110,7 @@ public:
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
   void logMap(const StateSpace::State *_in,
-              Eigen::VectorXd &_tangent) const override;
+              Eigen::VectorXd& _tangent) const override;
 
   /// Print the n-dimensional vector represented by the state
   /// Format: [x_1, x_2, ..., x_n]
@@ -116,7 +122,14 @@ private:
   ///
   /// \param _state element of this state space
   /// \return mutable reference to real vector stored in \c _state
-  Eigen::Map<VectorNd> getMutableValue(State *_state) const;
+  Eigen::Map<Vectord> getMutableValue(State *_state) const;
+
+  /// Dimension of the real vector space. Note that this value is only used for
+  /// dynamic sized vector space (the dimension is changable).
+  ///
+  /// \warning Don't use this variable directly. Use getDimension() instead.
+  /// \sa getDimension().
+  int mDimension;
 };
 
 using R0 = R<0>;
@@ -124,6 +137,7 @@ using R1 = R<1>;
 using R2 = R<2>;
 using R3 = R<3>;
 using R6 = R<6>;
+using Rx = R<Eigen::Dynamic>;
 
 } // namespace statespace
 } // namespace aikido

@@ -23,11 +23,11 @@ class RnJoint
   , public std::enable_shared_from_this<RnJoint<N>>
 {
 public:
-  static constexpr int Dimension = N;
+  static constexpr int DimensionAtCompileTime = N;
 
-  using R<Dimension>::State;
+  using R<DimensionAtCompileTime>::State;
 
-  using VectorNd = typename R<Dimension>::VectorNd;
+  using Vectord = typename R<DimensionAtCompileTime>::Vectord;
 
   using DartJoint = typename detail::RnTraits<N>::DartJoint;
 

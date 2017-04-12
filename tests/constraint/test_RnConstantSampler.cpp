@@ -32,7 +32,7 @@ void testConstructorThrowsForWrongSizeValue()
 #ifndef NDEBUG // debug mode
   EXPECT_DEATH({
     constraint::RnConstantSampler<N>(
-        std::make_shared<statespace::Rn<N>>(),
+        std::make_shared<statespace::R<N>>(),
         Eigen::VectorXd::Zero(N+1));
   }, ".*Invalid sizes when resizing a matrix or array..*");
 #endif

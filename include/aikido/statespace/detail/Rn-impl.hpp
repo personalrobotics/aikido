@@ -21,32 +21,35 @@ class R<3>;
 extern template
 class R<6>;
 
+extern template
+class R<Eigen::Dynamic>;
+
 //==============================================================================
 /// \c StateHandle for a \c Rn. The template parameter is
 /// necessary to support both \c const and non-<tt>const</tt> states.
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
-class RealVectorStateHandle 
-  : public statespace::StateHandle<R<_QualifiedState::Dimension>, _QualifiedState>
+class RStateHandle
+  : public statespace::StateHandle<R<_QualifiedState::DimensionAtCompileTime>, _QualifiedState>
 {
 public:
-  static constexpr int Dimension = _QualifiedState::Dimension;
+  static constexpr int DimensionAtCompileTime = _QualifiedState::DimensionAtCompileTime;
 
-  using VectorNd = typename R<Dimension>::VectorNd;
+  using Vectord = typename R<DimensionAtCompileTime>::Vectord;
 
   using typename statespace::StateHandle<
-  R<Dimension>, _QualifiedState>::State;
+  R<DimensionAtCompileTime>, _QualifiedState>::State;
   using typename statespace::StateHandle<
-    R<Dimension>, _QualifiedState>::StateSpace;
+    R<DimensionAtCompileTime>, _QualifiedState>::StateSpace;
   using typename statespace::StateHandle<
-    R<Dimension>, _QualifiedState>::QualifiedState;
+    R<DimensionAtCompileTime>, _QualifiedState>::QualifiedState;
 
   using ValueType = std::conditional<std::is_const<QualifiedState>::value,
-    const VectorNd, VectorNd>;
+    const Vectord, Vectord>;
 
   /// Construct and initialize to \c nullptr.
-  RealVectorStateHandle()
+  RStateHandle()
   {
     // Do nothing
   }
@@ -55,7 +58,7 @@ public:
   ///
   /// \param _space state space that created \c _state
   /// \param _state state created by \c _space
-  RealVectorStateHandle(const StateSpace* _space, QualifiedState* _state)
+  RStateHandle(const StateSpace* _space, QualifiedState* _state)
     : statespace::StateHandle<StateSpace, QualifiedState>(_space, _state)
   {
     // Do nothing
@@ -64,7 +67,7 @@ public:
   /// Gets the real vector stored in this state.
   ///
   /// \return real vector stored in this state
-  Eigen::Map<const VectorNd> getValue()
+  Eigen::Map<const Vectord> getValue()
   {
     return this->getStateSpace()->getValue(this->getState());
   }
@@ -72,7 +75,7 @@ public:
   /// Sets the real vector stored in this state.
   ///
   /// \param _value real vector to store in \c _state
-  void setValue(const VectorNd& _value)
+  void setValue(const Vectord& _value)
   {
     return this->getStateSpace()->setValue(this->getState(), _value);
   }
@@ -82,7 +85,28 @@ public:
 template <int N>
 R<N>::R()
 {
-  // Do nothing
+  static_assert(N > -2,
+      "Invalid dimension. The dimension should be non-negative.");
+
+  if (N == Eigen::Dynamic)
+    mDimension = 0;
+}
+
+//=============================================================================
+template <int N>
+R<N>::R(int dimension) : mDimension(dimension)
+{
+  static_assert(N > -2,
+      "Invalid dimension. The dimension should be either -1 for dynamic size "
+      "state space or non-negative for fixed size state space.");
+
+  if (N != Eigen::Dynamic)
+  {
+    std::stringstream msg;
+    msg << "Invalid constructor. You called a constructor for fixed size "
+        << "state space on dynamic size state space.";
+    throw std::invalid_argument(msg.str());
+  }
 }
 
 //=============================================================================
@@ -94,34 +118,32 @@ auto R<N>::createState() const -> ScopedState
 
 //=============================================================================
 template <int N>
-Eigen::Map<typename R<N>::VectorNd> R<N>::getMutableValue(State *_state) const
+auto R<N>::getMutableValue(State *_state) const -> Eigen::Map<Vectord>
 {
   auto valueBuffer =
       reinterpret_cast<double *>(reinterpret_cast<unsigned char *>(_state));
 
-  return Eigen::Map<typename R<N>::VectorNd>(valueBuffer, N);
+  return Eigen::Map<Vectord>(valueBuffer, getDimension());
 }
 
 //=============================================================================
 template <int N>
-Eigen::Map<const typename R<N>::VectorNd> R<N>::getValue(
-    const State *_state) const
+auto R<N>::getValue(const State *_state) const -> Eigen::Map<const Vectord>
 {
   auto valueBuffer = reinterpret_cast<const double *>(
       reinterpret_cast<const unsigned char *>(_state));
 
-  return Eigen::Map<const typename R<N>::VectorNd>(valueBuffer, N);
+  return Eigen::Map<const Vectord>(valueBuffer, getDimension());
 }
 
 //=============================================================================
 template <int N>
-void R<N>::setValue(
-    State *_state, const typename R<N>::VectorNd &_value) const
+void R<N>::setValue(State *_state, const typename R<N>::Vectord &_value) const
 {
   // TODO: Skip this check in release mode.
-  if (_value.size() != N) {
+  if (_value.size() != getDimension()) {
     std::stringstream msg;
-    msg << "Value has incorrect size: expected " << N << ", got "
+    msg << "Value has incorrect size: expected " << getDimension() << ", got "
         << _value.size() << ".";
     throw std::invalid_argument(msg.str());
   }
@@ -133,7 +155,7 @@ void R<N>::setValue(
 template <int N>
 size_t R<N>::getStateSizeInBytes() const
 {
-  return N * sizeof(double);
+  return getDimension() * sizeof(double);
 }
 
 //=============================================================================
@@ -173,7 +195,10 @@ void R<N>::compose(const StateSpace::State *_state1,
 template <int N>
 size_t R<N>::getDimension() const
 {
-  return N;
+  if (N == Eigen::Dynamic)
+    return mDimension;
+  else
+    return N;
 }
 
 //=============================================================================
@@ -181,7 +206,8 @@ template <int N>
 void R<N>::getIdentity(StateSpace::State *_out) const
 {
   auto out = static_cast<State *>(_out);
-  setValue(out, VectorNd::Zero());
+
+  setValue(out, Vectord::Zero(getDimension()));
 }
 
 //=============================================================================
@@ -210,12 +236,12 @@ void R<N>::copyState(
 
 //=============================================================================
 template <int N>
-void R<N>::expMap(const Eigen::VectorXd &_tangent, StateSpace::State *_out) const
+void R<N>::expMap(const Eigen::VectorXd&_tangent, StateSpace::State *_out) const
 {
   // TODO: Skip this check in release mode.
-  if (_tangent.size() != N) {
+  if (_tangent.size() != getDimension()) {
     std::stringstream msg;
-    msg << "Tangent vector has incorrect size: expected " << N
+    msg << "Tangent vector has incorrect size: expected " << getDimension()
         << ", got " << _tangent.size() << ".";
     throw std::invalid_argument(msg.str());
   }
@@ -226,11 +252,10 @@ void R<N>::expMap(const Eigen::VectorXd &_tangent, StateSpace::State *_out) cons
 
 //=============================================================================
 template <int N>
-void R<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd &_tangent) const
+void R<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd& _tangent) const
 {
-  if (_tangent.size() != N) {
-    _tangent.resize(N);
-  }
+  if (_tangent.size() != getDimension())
+    _tangent.resize(getDimension());
 
   auto in = static_cast<const State *>(_in);
   _tangent = getValue(in);
@@ -240,10 +265,10 @@ void R<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd &_tangent) const
 template <int N>
 void R<N>::print(const StateSpace::State *_state, std::ostream &_os) const
 {
-    auto val = getValue(static_cast<const State*>(_state));
+  auto val = getValue(static_cast<const State*>(_state));
 
-    Eigen::IOFormat cleanFmt(3, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
-    _os << val.format(cleanFmt);
+  Eigen::IOFormat cleanFmt(3, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
+  _os << val.format(cleanFmt);
 }
 
 } // namespace statespace

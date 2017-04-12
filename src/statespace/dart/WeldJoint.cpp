@@ -22,7 +22,7 @@ void WeldJoint::convertPositionsToState(
 void WeldJoint::convertStateToPositions(
   const StateSpace::State* /*_state*/, Eigen::VectorXd& _positions) const
 {
-  _positions.resize(Dimension);
+  _positions.resize(DimensionAtCompileTime);
 }
 
 } // namespace dart

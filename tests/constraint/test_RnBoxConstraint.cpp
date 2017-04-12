@@ -32,21 +32,20 @@ protected:
     mLowerLimits = Vector2d(-1., 1.);
     mUpperLimits = Vector2d( 1., 2.);
 
-    mGoodValues = {
-      Vector2d(-0.9, 1.1),
-      Vector2d( 0.0, 1.5),
-      Vector2d( 0.9, 1.9)
-    };
-    mBadValues = {
-      Vector2d(-1.1, 1.5),
-      Vector2d( 1.1, 1.5),
-      Vector2d( 0.0, 0.9),
-      Vector2d( 0.0, 2.1),
-      Vector2d(-1.1, 0.9),
-      Vector2d(-1.1, 2.1),
-      Vector2d( 1.1, 0.9),
-      Vector2d( 1.1, 2.1)
-    };
+    mGoodValues.resize(3);
+    mGoodValues[0] = Vector2d(-0.9, 1.1);
+    mGoodValues[1] = Vector2d( 0.0, 1.5);
+    mGoodValues[2] = Vector2d( 0.9, 1.9);
+
+    mBadValues.resize(8);
+    mBadValues[0] = Vector2d(-1.1, 1.5);
+    mBadValues[1] = Vector2d( 1.1, 1.5);
+    mBadValues[2] = Vector2d( 0.0, 0.9);
+    mBadValues[3] = Vector2d( 0.0, 2.1);
+    mBadValues[4] = Vector2d(-1.1, 0.9);
+    mBadValues[5] = Vector2d(-1.1, 2.1);
+    mBadValues[6] = Vector2d( 1.1, 0.9);
+    mBadValues[7] = Vector2d( 1.1, 2.1);
 
     mTargets.clear();
     mTargets.reserve(NUM_X_TARGETS * NUM_Y_TARGETS);
