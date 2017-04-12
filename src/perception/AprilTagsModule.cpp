@@ -67,7 +67,7 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::D
 		std::string skel_name;
 		Eigen::Isometry3d skel_offset;
 		dart::common::Uri skel_resource;
-
+		ros::Time t = ros::Time(0);
 		//check if tag name is in database
 		if (mConfigData->getTagNameOffset(tag_name,skel_name,skel_resource,skel_offset))
 		{
@@ -81,10 +81,10 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::D
 
 			try{
 				mListener.waitForTransform(mReferenceFrameId,detection_frame,
-					marker_stamp,timeout);
+					t,timeout);
 
 				mListener.lookupTransform(mReferenceFrameId,detection_frame,
-					marker_stamp, transform);
+					t, transform);
 			}
 			catch(const tf::ExtrapolationException& ex){
 				dtwarn<< "[AprilTagsModule::detectObjects] TF timestamp is out-of-date compared to marker timestamp " << ex.what();
@@ -98,7 +98,6 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::D
 			//Compose to get actual skeleton pose
 			Eigen::Isometry3d temp_pose = frame_pose * marker_pose;
 			Eigen::Isometry3d skel_pose = temp_pose * skel_offset;
-
 			Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
 			skel_pose = link_offset * skel_pose;
 
@@ -111,11 +110,13 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::D
 
 			//Search the enviornment for skeleton
 			dart::dynamics::SkeletonPtr skel_to_update;
+
 			dart::dynamics::SkeletonPtr env_skeleton = 
 				env -> getSkeleton(skel_name);
-			
+				
 			if(env_skeleton == NULL){
 				// Getting the model for the new object
+				std::cout << "getting new thing" << std::endl;
 				is_new_skel = true;
 				dart::utils::DartLoader urdfLoader;
 				skel_to_update = 
@@ -156,6 +157,7 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::D
 			if(is_new_skel){
 				//Adding new skeleton to the world env
 				env->addSkeleton(skel_to_update);
+				std::cout << "added new thing" << std::endl;
 			}
 
 		}
