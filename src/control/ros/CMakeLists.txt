@@ -17,6 +17,7 @@ aikido_check_package(trajectory_msgs "aikido::control::ros" "trajectory_msgs")
 # Libraries
 #
 set(sources
+  Conversions.cpp
   RosJointStateClient.cpp
 )
 
@@ -28,6 +29,7 @@ target_include_directories("${PROJECT_NAME}_control_ros" SYSTEM
     ${roscpp_INCLUDE_DIRS}
     ${trajectory_msgs_INCLUDE_DIRS}
 )
+
 target_link_libraries("${PROJECT_NAME}_control_ros"
   "${PROJECT_NAME}_control"
   "${PROJECT_NAME}_statespace"
