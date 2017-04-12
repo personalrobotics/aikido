@@ -23,6 +23,9 @@ class RnBoxConstraint<3>;
 extern template
 class RnBoxConstraint<6>;
 
+extern template
+class RnBoxConstraint<Eigen::Dynamic>;
+
 //=============================================================================
 template <int N>
 class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator

@@ -18,5 +18,8 @@ class RnBoxConstraint<3>;
 template
 class RnBoxConstraint<6>;
 
+template
+class RnBoxConstraint<Eigen::Dynamic>;
+
 } // namespace statespace
 } // namespace aikido

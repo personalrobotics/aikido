@@ -19,6 +19,9 @@ class RnEuclidean<3>;
 extern template
 class RnEuclidean<6>;
 
+extern template
+class RnEuclidean<Eigen::Dynamic>;
+
 //=============================================================================
 template <int N>
 RnEuclidean<N>::RnEuclidean(std::shared_ptr<statespace::R<N>> _space)

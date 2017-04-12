@@ -35,6 +35,7 @@ using R1Euclidean = RnEuclidean<1>;
 using R2Euclidean = RnEuclidean<2>;
 using R3Euclidean = RnEuclidean<3>;
 using R6Euclidean = RnEuclidean<6>;
+using RxEuclidean = RnEuclidean<Eigen::Dynamic>;
 
 } // namespace distance
 } // namespace aikido

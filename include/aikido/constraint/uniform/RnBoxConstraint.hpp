@@ -86,6 +86,7 @@ using R1BoxConstraint = RnBoxConstraint<1>;
 using R2BoxConstraint = RnBoxConstraint<2>;
 using R3BoxConstraint = RnBoxConstraint<3>;
 using R6BoxConstraint = RnBoxConstraint<6>;
+using RxBoxConstraint = RnBoxConstraint<Eigen::Dynamic>;
 
 } // namespace constraint
 } // namespace aikido

@@ -23,6 +23,7 @@ TEST(RnConstantSamplerTests, ConstructorThrowsForNullStateSpace)
   testConstructorThrowsForNullStateSpace<2>();
   testConstructorThrowsForNullStateSpace<3>();
   testConstructorThrowsForNullStateSpace<6>();
+  testConstructorThrowsForNullStateSpace<Eigen::Dynamic>();
 }
 
 //==============================================================================
@@ -30,12 +31,24 @@ template <int N>
 void testConstructorThrowsForWrongSizeValue()
 {
 #ifndef NDEBUG // debug mode
-  EXPECT_DEATH({
-    constraint::RnConstantSampler<N>(
-        std::make_shared<statespace::R<N>>(),
-        Eigen::VectorXd::Zero(N+1));
-  }, ".*Invalid sizes when resizing a matrix or array..*");
+  if (N != Eigen::Dynamic)
+  {
+    EXPECT_DEATH({
+      constraint::RnConstantSampler<N>(
+          std::make_shared<statespace::R<N>>(),
+          Eigen::VectorXd::Zero(N+1));
+    }, ".*Invalid sizes when resizing a matrix or array..*");
+  }
 #endif
+
+  if (N == Eigen::Dynamic)
+  {
+    EXPECT_THROW({
+      constraint::RnConstantSampler<N>(
+          std::make_shared<statespace::R<N>>(),
+          Eigen::VectorXd::Zero(4));
+    }, std::invalid_argument);
+  }
 }
 
 //==============================================================================
@@ -46,17 +59,30 @@ TEST(RnConstantSamplerTests, ConstructorThrowsForWrongSizeValue)
   testConstructorThrowsForWrongSizeValue<2>();
   testConstructorThrowsForWrongSizeValue<3>();
   testConstructorThrowsForWrongSizeValue<6>();
+  testConstructorThrowsForWrongSizeValue<Eigen::Dynamic>();
 }
 
 //==============================================================================
 template <int N>
 void testSampleGenerator()
 {
-  auto value = Eigen::Matrix<double, N, 1>::Zero();
-  EXPECT_EQ(value.size(), N);
+  Eigen::VectorXd value;
+  if (N == Eigen::Dynamic)
+  {
+    value = Eigen::VectorXd::Random(0);
+    EXPECT_EQ(value.size(), 0);
+  }
+  else
+  {
+    value = Eigen::VectorXd::Random(N);
+    EXPECT_EQ(value.size(), N);
+  }
 
   auto stateSpace = std::make_shared<statespace::R<N>>();
-  EXPECT_EQ(stateSpace->getDimension(), N);
+  if (N == Eigen::Dynamic)
+    EXPECT_EQ(stateSpace->getDimension(), 0);
+  else
+    EXPECT_EQ(stateSpace->getDimension(), N);
 
   auto sampler
       = std::make_shared<constraint::RnConstantSampler<N>>(stateSpace, value);
@@ -89,4 +115,5 @@ TEST(RnConstantSamplerTests, SampleGenerator)
   testSampleGenerator<2>();
   testSampleGenerator<3>();
   testSampleGenerator<6>();
+  testSampleGenerator<Eigen::Dynamic>();
 }

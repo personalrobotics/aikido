@@ -25,7 +25,8 @@ template <int N>
 RnJoint<N>::RnJoint(typename RnJoint<N>::DartJoint* _joint)
   : R<N>(), JointStateSpace(_joint)
 {
-  // Do nothing
+  static_assert(N != Eigen::Dynamic,
+      "Invalid dimension. Dynamic size dimension is not supported by RnJoint");
 }
 
 //=============================================================================

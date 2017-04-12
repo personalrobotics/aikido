@@ -18,5 +18,8 @@ class RnEuclidean<3>;
 template
 class RnEuclidean<6>;
 
+template
+class RnEuclidean<Eigen::Dynamic>;
+
 } // namespace distance
 } // namespace aikido

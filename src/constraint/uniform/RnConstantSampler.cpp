@@ -18,5 +18,8 @@ class RnConstantSampler<3>;
 template
 class RnConstantSampler<6>;
 
+template
+class RnConstantSampler<Eigen::Dynamic>;
+
 } // namespace constraint
 } // namespace aikido

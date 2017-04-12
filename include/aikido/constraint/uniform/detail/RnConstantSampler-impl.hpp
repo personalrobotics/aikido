@@ -23,6 +23,9 @@ class RnConstantSampler<3>;
 extern template
 class RnConstantSampler<6>;
 
+extern template
+class RnConstantSampler<Eigen::Dynamic>;
+
 namespace {
 
 //=============================================================================
@@ -96,12 +99,20 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
 //=============================================================================
 template <int N>
 RnConstantSampler<N>::RnConstantSampler(
-    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
+    std::shared_ptr<statespace::R<N>> _space, const Vectord& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
 {
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
+
+  if (mSpace->getDimension() != static_cast<std::size_t>(mValue.size()))
+  {
+    std::stringstream msg;
+    msg << "Value has incorrect dimension: expected "
+        << mSpace->getDimension() << ", got " << mValue.size() << ".";
+    throw std::invalid_argument(msg.str());
+  }
 }
 
 //=============================================================================
@@ -122,7 +133,7 @@ std::unique_ptr<constraint::SampleGenerator>
 
 //=============================================================================
 template <int N>
-const typename RnConstantSampler<N>::VectorNd&
+const typename RnConstantSampler<N>::Vectord&
 RnConstantSampler<N>::getConstantValue() const
 {
   return mValue;
