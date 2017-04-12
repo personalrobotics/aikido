@@ -111,8 +111,8 @@ bool RnBoxConstraintSampleGenerator<N>::canSample() const
 template <int N>
 RnBoxConstraint<N>::RnBoxConstraint(std::shared_ptr<statespace::R<N>> _space,
       std::unique_ptr<util::RNG> _rng,
-      const VectorNd& _lowerLimits,
-      const VectorNd& _upperLimits)
+      const Vectord& _lowerLimits,
+      const Vectord& _upperLimits)
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
   , mLowerLimits(_lowerLimits)
@@ -286,14 +286,14 @@ std::unique_ptr<constraint::SampleGenerator>
 
 //=============================================================================
 template <int N>
-auto RnBoxConstraint<N>::getLowerLimits() const -> const VectorNd&
+auto RnBoxConstraint<N>::getLowerLimits() const -> const Vectord&
 {
   return mLowerLimits;
 }
 
 //=============================================================================
 template <int N>
-auto RnBoxConstraint<N>::getUpperLimits() const -> const VectorNd&
+auto RnBoxConstraint<N>::getUpperLimits() const -> const Vectord&
 {
   return mUpperLimits;
 }
