@@ -12,7 +12,7 @@ template <class>
 class RStateHandle;
 
 /// Represents a N-dimensional real vector space with vector addition as the
-/// group operation. \c N must be non-negative.
+/// group operation. \c N should be either non-negative or Eigen::Dynamic.
 template <int N>
 class R : public virtual StateSpace
 {
