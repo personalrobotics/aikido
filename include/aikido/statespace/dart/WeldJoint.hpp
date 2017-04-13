@@ -9,10 +9,9 @@ namespace dart {
 
 /// \c Weld for DART \c WeldJoint. This class treats the
 /// joint's positions as a real vector space.
-class WeldJoint
-  : public R0
-  , public JointStateSpace
-  , public std::enable_shared_from_this<WeldJoint>
+class WeldJoint : public R0,
+                  public JointStateSpace,
+                  public std::enable_shared_from_this<WeldJoint>
 {
 public:
   using R::State;
@@ -24,13 +23,13 @@ public:
 
   // Documentation inherited.
   void convertPositionsToState(
-    const Eigen::VectorXd& _positions,
-    StateSpace::State* _state) const override;
+      const Eigen::VectorXd& _positions,
+      StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-    const StateSpace::State* _state,
-    Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* _state,
+      Eigen::VectorXd& _positions) const override;
 };
 
 } // namespace dart

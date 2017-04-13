@@ -1,8 +1,8 @@
 #ifndef AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
+#include "aikido/statespace/detail/RnTraits.hpp"
 #include "../Rn.hpp"
 #include "JointStateSpace.hpp"
-#include "aikido/statespace/detail/RnTraits.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -17,10 +17,9 @@ namespace dart {
 /// of \c JointStateSpace to for a \c Joint you most likely should use
 /// the \c createJointStateSpace helper function.
 template <int N>
-class RJoint
-  : public R<N>
-  , public JointStateSpace
-  , public std::enable_shared_from_this<RJoint<N>>
+class RJoint : public R<N>,
+               public JointStateSpace,
+               public std::enable_shared_from_this<RJoint<N>>
 {
 public:
   static constexpr int DimensionAtCompileTime = N;
@@ -38,13 +37,13 @@ public:
 
   // Documentation inherited.
   void convertPositionsToState(
-    const Eigen::VectorXd& _positions,
-    StateSpace::State* _state) const override;
+      const Eigen::VectorXd& _positions,
+      StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-    const StateSpace::State* _state,
-    Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* _state,
+      Eigen::VectorXd& _positions) const override;
 };
 
 using R0Joint = RJoint<0>;

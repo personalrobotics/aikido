@@ -6,16 +6,12 @@ namespace statespace {
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
-class SE3StateHandle
-  : public statespace::StateHandle<SE3, _QualifiedState>
+class SE3StateHandle : public statespace::StateHandle<SE3, _QualifiedState>
 {
 public:
-  using typename statespace::StateHandle<
-    SE3, _QualifiedState>::State;
-  using typename statespace::StateHandle<
-    SE3, _QualifiedState>::StateSpace;
-  using typename statespace::StateHandle<
-    SE3, _QualifiedState>::QualifiedState;
+  using typename statespace::StateHandle<SE3, _QualifiedState>::State;
+  using typename statespace::StateHandle<SE3, _QualifiedState>::StateSpace;
+  using typename statespace::StateHandle<SE3, _QualifiedState>::QualifiedState;
 
   /// Construct and initialize to \c nullptr.
   SE3StateHandle()
@@ -41,7 +37,7 @@ public:
 
   /// Gets value as an Eigen transformation object.
   ///
-  /// \return Eigen trasnformation 
+  /// \return Eigen trasnformation
   void setIsometry(const Eigen::Isometry3d& _transform) const
   {
     return this->getStateSpace()->setIsometry(this->getState(), _transform);

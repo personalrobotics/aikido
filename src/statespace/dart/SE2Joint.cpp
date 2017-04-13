@@ -6,14 +6,13 @@ namespace dart {
 
 //=============================================================================
 SE2Joint::SE2Joint(::dart::dynamics::PlanarJoint* _joint)
-  : SE2()
-  , JointStateSpace(_joint)
+  : SE2(), JointStateSpace(_joint)
 {
 }
 
 //=============================================================================
 void SE2Joint::convertPositionsToState(
-  const Eigen::VectorXd& _positions, StateSpace::State* _state) const
+    const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
   Isometry2d pose = Isometry2d::Identity();
   pose.rotate(Eigen::Rotation2Dd(_positions[2]));
@@ -24,8 +23,7 @@ void SE2Joint::convertPositionsToState(
 
 //=============================================================================
 void SE2Joint::convertStateToPositions(
-  const StateSpace::State* _state,
-  Eigen::VectorXd& _positions) const
+    const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   auto pose = getIsometry(static_cast<const SE2::State*>(_state));
 

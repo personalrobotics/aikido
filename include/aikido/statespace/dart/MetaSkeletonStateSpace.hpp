@@ -38,7 +38,7 @@ public:
   /// \return state space corresponding to \c _joint
   template <class Space = JointStateSpace>
   std::shared_ptr<Space> getJointSpace(
-    const ::dart::dynamics::Joint* _joint) const;
+      const ::dart::dynamics::Joint* _joint) const;
 
   /// Gets the subspace corresponding to joint with index \c _index.
   ///
@@ -54,15 +54,15 @@ public:
   /// \param _positions input DART \c MetaSkeleton positions
   /// \param[out] _state output state
   void convertPositionsToState(
-    const Eigen::VectorXd& _positions, State* _state) const;
+      const Eigen::VectorXd& _positions, State* _state) const;
 
   /// Converts a \c State in this state space to DART \c MetaSkeleton
   /// positions, e.g. that may be passed to \c setPositions.
   ///
-  /// \param _state input state 
+  /// \param _state input state
   /// \param[out] _positions output DART \c MetaSkeleton positions
   void convertStateToPositions(
-    const State* _state, Eigen::VectorXd& _positions) const;
+      const State* _state, Eigen::VectorXd& _positions) const;
 
   /// Gets the positions of the \c MetaSkeleton and store them in \c _state.
   ///

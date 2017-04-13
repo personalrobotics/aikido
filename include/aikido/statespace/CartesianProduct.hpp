@@ -1,8 +1,8 @@
 #ifndef AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
 #include <vector>
-#include "StateSpace.hpp"
 #include "ScopedState.hpp"
+#include "StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -12,9 +12,8 @@ template <class>
 class CompoundStateHandle;
 
 /// Represents the Cartesian product of other <tt>StateSpace</tt>s.
-class CartesianProduct
-  : public std::enable_shared_from_this<CartesianProduct>
-  , public virtual StateSpace
+class CartesianProduct : public std::enable_shared_from_this<CartesianProduct>,
+                         public virtual StateSpace
 {
 public:
   /// A tuple of states where the i-th state is from the i-th subspace.
@@ -62,7 +61,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
-  typename Space::State *getSubState(State *_state, size_t _index) const;
+  typename Space::State* getSubState(State* _state, size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index. This
   /// is an overload for when \c _state is \c const.
@@ -72,8 +71,8 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
-  const typename Space::State *getSubState(
-    const State *_state, size_t _index) const;
+  const typename Space::State* getSubState(
+      const State* _state, size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index and
   /// wraps it in a \c Space::StateHandle helper class.
@@ -84,7 +83,7 @@ public:
   /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::StateHandle getSubStateHandle(
-    State *_state, size_t _index) const;
+      State* _state, size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index and
   /// wraps it in a \c Space::ConstStateHandle helper class. This is an
@@ -96,36 +95,37 @@ public:
   /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::StateHandleConst getSubStateHandle(
-      const State *_state, size_t _index) const;
+      const State* _state, size_t _index) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
-  StateSpace::State *allocateStateInBuffer(void *_buffer) const override;
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
 
   // Documentation inherited.
-  void freeStateInBuffer(StateSpace::State *_state) const override;
+  void freeStateInBuffer(StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void compose(const StateSpace::State *_state1,
-               const StateSpace::State *_state2,
-               StateSpace::State *_out) const override;
+  void compose(
+      const StateSpace::State* _state1,
+      const StateSpace::State* _state2,
+      StateSpace::State* _out) const override;
 
   // Documentation inherited
-  void getIdentity(StateSpace::State *_state) const override;
+  void getIdentity(StateSpace::State* _state) const override;
 
   // Documentation inherited
-  void getInverse(const StateSpace::State *_in,
-                  StateSpace::State *_out) const override;
+  void getInverse(
+      const StateSpace::State* _in, StateSpace::State* _out) const override;
 
   // Documentation inherited
   size_t getDimension() const override;
 
   // Documentation inherited
   void copyState(
-    const StateSpace::State *_source,
-    StateSpace::State *_destination) const override;
+      const StateSpace::State* _source,
+      StateSpace::State* _destination) const override;
 
   /// Exponential mapping of Lie algebra element to a Lie group element. The
   /// tangent space is parameterized by stacking the tangent vector of each
@@ -134,7 +134,7 @@ public:
   /// \param _tangent element of the tangent space
   /// \param[out] _out corresponding element of the Lie group
   void expMap(
-    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
+      const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
   /// Log mapping of Lie group element to a Lie algebra element. The tangent
   /// space is parameterized by stacking the tangent vector of each subspace
@@ -142,14 +142,14 @@ public:
   ///
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
-  void logMap(const StateSpace::State *_in,
-              Eigen::VectorXd &_tangent) const override;
+  void logMap(
+      const StateSpace::State* _in, Eigen::VectorXd& _tangent) const override;
 
   /// Print the contents of each substate contained in the state
   /// as a list with each substate enclosed in brackets and including its
   /// index
   /// Format: [0: ...] [1: ...] ... [n: ...]
-  void print(const StateSpace::State *_state, std::ostream &_os) const override;
+  void print(const StateSpace::State* _state, std::ostream& _os) const override;
 
 private:
   std::vector<StateSpacePtr> mSubspaces;
@@ -157,8 +157,8 @@ private:
   size_t mSizeInBytes;
 };
 
-}  // namespace statespace
-}  // namespace aikido
+} // namespace statespace
+} // namespace aikido
 
 #include "detail/CartesianProduct-impl.hpp"
 

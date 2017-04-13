@@ -10,7 +10,7 @@ auto StateSpace::createState() const -> ScopedState
 }
 
 //=============================================================================
-void StateSpace::compose(State *_state1, const State *_state2)
+void StateSpace::compose(State* _state1, const State* _state2)
 {
   auto tempState = createState();
   compose(_state1, _state2, tempState);
@@ -18,7 +18,7 @@ void StateSpace::compose(State *_state1, const State *_state2)
 }
 
 //=============================================================================
-void StateSpace::getInverse(State *_state) const
+void StateSpace::getInverse(State* _state) const
 {
   auto tempState = createState();
   getInverse(_state, tempState);
