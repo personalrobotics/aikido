@@ -70,3 +70,5 @@ add_component(${PROJECT_NAME} rviz)
 add_component_targets(${PROJECT_NAME} rviz "${PROJECT_NAME}_rviz")
 
 # Intentionally omit tests for or_rviz. It's not clear how to test a viewer.
+
+format_add_sources(${sources})

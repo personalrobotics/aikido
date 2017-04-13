@@ -10,39 +10,40 @@
 namespace aikido {
 namespace rviz {
 
-class BodyNodeMarker {
+class BodyNodeMarker
+{
 public:
   BodyNodeMarker(
-    ResourceServer *resourceServer,
-    interactive_markers::InteractiveMarkerServer *markerServer,
-    dart::dynamics::WeakBodyNodePtr const &bodyNode);
+      ResourceServer* resourceServer,
+      interactive_markers::InteractiveMarkerServer* markerServer,
+      dart::dynamics::WeakBodyNodePtr const& bodyNode);
 
-  BodyNodeMarker(BodyNodeMarker const &) = delete;
-  BodyNodeMarker &operator=(BodyNodeMarker const &) = delete;
+  BodyNodeMarker(BodyNodeMarker const&) = delete;
+  BodyNodeMarker& operator=(BodyNodeMarker const&) = delete;
 
   virtual ~BodyNodeMarker() = default;
 
   bool update();
 
-  void SetColor(Eigen::Vector4d const &color);
+  void SetColor(Eigen::Vector4d const& color);
   void ResetColor();
 
 private:
-  using ShapeFrameMarkerMap = std::map<
-    const dart::dynamics::ShapeNode *, std::unique_ptr<ShapeFrameMarker>>;
+  using ShapeFrameMarkerMap = std::map<const dart::dynamics::ShapeNode*,
+                                       std::unique_ptr<ShapeFrameMarker>>;
 
   dart::dynamics::WeakBodyNodePtr mBodyNode;
   dart::common::Connection mOnStructuralChange;
 
-  ResourceServer *mResourceServer;
-  interactive_markers::InteractiveMarkerServer *mMarkerServer;
+  ResourceServer* mResourceServer;
+  interactive_markers::InteractiveMarkerServer* mMarkerServer;
   visualization_msgs::InteractiveMarker mInteractiveMarker;
-  visualization_msgs::InteractiveMarkerControl *mVisualControl;
+  visualization_msgs::InteractiveMarkerControl* mVisualControl;
 
   std::string mName;
   ShapeFrameMarkerMap mShapeFrameMarkers;
 
-  std::string getName(dart::dynamics::BodyNode const &bodyNode);
+  std::string getName(dart::dynamics::BodyNode const& bodyNode);
 };
 
 } // namespace rviz

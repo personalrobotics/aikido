@@ -11,30 +11,30 @@
 namespace aikido {
 namespace rviz {
 
-class SkeletonMarker {
+class SkeletonMarker
+{
 public:
   SkeletonMarker(
-    ResourceServer *resourceServer,
-    interactive_markers::InteractiveMarkerServer *markerServer,
-    dart::dynamics::WeakSkeletonPtr const &skeleton);
+      ResourceServer* resourceServer,
+      interactive_markers::InteractiveMarkerServer* markerServer,
+      dart::dynamics::WeakSkeletonPtr const& skeleton);
 
   dart::dynamics::SkeletonPtr getSkeleton() const;
   std::vector<BodyNodeMarkerPtr> bodynode_markers() const;
 
   bool update();
 
-  BodyNodeMarkerPtr GetBodyNodeMarker(
-    dart::dynamics::BodyNode const *bodynode);
+  BodyNodeMarkerPtr GetBodyNodeMarker(dart::dynamics::BodyNode const* bodynode);
 
-  void SetColor(Eigen::Vector4d const &color);
+  void SetColor(Eigen::Vector4d const& color);
   void ResetColor();
 
 private:
   dart::dynamics::WeakSkeletonPtr mSkeleton;
-  ResourceServer *mResourceServer;
-  interactive_markers::InteractiveMarkerServer *mMarkerServer;
-  std::unordered_map<dart::dynamics::BodyNode const *,
-                     BodyNodeMarkerPtr> mBodyNodeMarkers;
+  ResourceServer* mResourceServer;
+  interactive_markers::InteractiveMarkerServer* mMarkerServer;
+  std::unordered_map<dart::dynamics::BodyNode const*, BodyNodeMarkerPtr>
+      mBodyNodeMarkers;
 
   bool mHasColor;
   Eigen::Vector4d mColor;

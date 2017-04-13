@@ -88,7 +88,9 @@ endfunction()
 
 # TODO: Temporarily split header list per subdirectories.
 file(GLOB_RECURSE headers_util "${CMAKE_SOURCE_DIR}/include/aikido/util/*.hpp")
+file(GLOB_RECURSE headers_rviz "${CMAKE_SOURCE_DIR}/include/aikido/rviz/*.hpp")
 format_add_sources(${headers_util})
+format_add_sources(${headers_rviz})
 
 #==============================================================================
 # Helper functions.

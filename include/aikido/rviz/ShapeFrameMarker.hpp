@@ -14,28 +14,28 @@ class ShapeFrameMarker
 {
 public:
   ShapeFrameMarker(
-    ResourceServer *resourceServer,
-    interactive_markers::InteractiveMarkerServer *markerServer,
-    const std::string &name,
-    const dart::dynamics::ShapeFrame *shapeFrame);
+      ResourceServer* resourceServer,
+      interactive_markers::InteractiveMarkerServer* markerServer,
+      const std::string& name,
+      const dart::dynamics::ShapeFrame* shapeFrame);
 
-  ShapeFrameMarker(ShapeFrameMarker const &) = delete;
-  ShapeFrameMarker &operator=(ShapeFrameMarker const &) = delete;
+  ShapeFrameMarker(ShapeFrameMarker const&) = delete;
+  ShapeFrameMarker& operator=(ShapeFrameMarker const&) = delete;
 
   virtual ~ShapeFrameMarker();
 
   bool update();
 
-  void SetColor(Eigen::Vector4d const &color);
+  void SetColor(Eigen::Vector4d const& color);
   void ResetColor();
 
 private:
-  ResourceServer *mResourceServer;
-  interactive_markers::InteractiveMarkerServer *mMarkerServer;
+  ResourceServer* mResourceServer;
+  interactive_markers::InteractiveMarkerServer* mMarkerServer;
   visualization_msgs::InteractiveMarker mInteractiveMarker;
-  visualization_msgs::InteractiveMarkerControl *mVisualControl;
+  visualization_msgs::InteractiveMarkerControl* mVisualControl;
 
-  const dart::dynamics::ShapeFrame *mShapeFrame;
+  const dart::dynamics::ShapeFrame* mShapeFrame;
 
   bool mExists;
   bool mForceUpdate;

@@ -49,7 +49,7 @@ IncludeCategories:
     Priority:  1
   - Regex:     '^(<|")aikido/' # Aikido headers
     Priority:  3
-  - Regex:     '^(<[a-z]+)'    # dependency headers
+  - Regex:     '^(<[A-z]+)'    # dependency headers
     Priority:  2
   - Regex:     '^".*'          # headers relative to this project
     Priority:  4
