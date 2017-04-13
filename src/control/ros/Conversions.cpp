@@ -355,7 +355,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 {
   using statespace::dart::MetaSkeletonStateSpace;
   using statespace::dart::SO2Joint;
-  using statespace::dart::RnJoint;
+  using statespace::dart::R1Joint;
 
   if (!trajectory)
     throw std::invalid_argument("Trajectory is null.");
@@ -373,8 +373,8 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 
   for (size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
-    // Supports only RnJoints and SO2Joints.
-    auto rnJoint = std::dynamic_pointer_cast<RnJoint>(space->getSubspace(i));
+    // Supports only R1Joints and SO2Joints.
+    auto rnJoint = std::dynamic_pointer_cast<R1Joint>(space->getSubspace(i));
     auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(space->getSubspace(i));
     if (!rnJoint && !so2Joint)
     {
