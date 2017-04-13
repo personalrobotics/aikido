@@ -87,7 +87,9 @@ function(format_add_sources)
 endfunction()
 
 # TODO: Temporarily split header list per subdirectories.
+file(GLOB_RECURSE headers_perception "${CMAKE_SOURCE_DIR}/include/aikido/perception/*.hpp")
 file(GLOB_RECURSE headers_util "${CMAKE_SOURCE_DIR}/include/aikido/util/*.hpp")
+format_add_sources(${headers_perception})
 format_add_sources(${headers_util})
 
 #==============================================================================
