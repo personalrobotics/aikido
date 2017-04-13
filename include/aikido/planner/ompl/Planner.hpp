@@ -42,8 +42,7 @@ namespace ompl {
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
-/// between
-/// validity checking two successive points on a tree extension
+/// between validity checking two successive points on a tree extension
 template <class PlannerType>
 trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,
@@ -84,8 +83,7 @@ trajectory::InterpolatedPtr planOMPL(
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
-/// between
-/// validity checking two successive points on a tree extension
+/// between validity checking two successive points on a tree extension
 template <class PlannerType>
 trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,
@@ -222,8 +220,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
 /// \param _boundsProjector A Projectable that projects a state back within
 /// valid bounds defined on the StateSpace
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
-/// between
-/// validity checking two successive points on a tree extension
+/// between validity checking two successive points on a tree extension
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
