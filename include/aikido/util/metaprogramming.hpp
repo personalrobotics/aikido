@@ -1,5 +1,6 @@
 #ifndef AIKIDO_UTIL_METAPROGRAMMING_HPP_
 #define AIKIDO_UTIL_METAPROGRAMMING_HPP_
+
 #include <memory>
 
 namespace aikido {
@@ -9,7 +10,9 @@ namespace util {
 ///
 /// \tparam Types... list of types
 template <class... Types>
-class type_list {};
+class type_list
+{
+};
 
 /// Call a template factory function based on runtime type of the first
 /// argument to a function. This class has a \c create function that takes
@@ -36,12 +39,13 @@ class type_list {};
 /// \tparam Pointer pointer type information
 /// \tparam BaseParameter base class
 /// \tparam TypeList \c type_list of subclasses of \c BaseParameter
-template <
-  template <class> class Factory,
-  template <class> class Pointer,
-  class BaseParameter,
-  class TypeList>
-struct DynamicCastFactory {};
+template <template <class> class Factory,
+          template <class> class Pointer,
+          class BaseParameter,
+          class TypeList>
+struct DynamicCastFactory
+{
+};
 
 /// Helper template class necessary to use \c std::shared_ptr as the pointer
 /// type in \c DynamicCastFactory.
@@ -62,4 +66,4 @@ struct DynamicCastFactory_raw_ptr;
 
 #include "detail/metaprogramming-impl.hpp"
 
-#endif // ifndef AIKIDO_UTIL_METAPROGRAMMING_HPP_
+#endif // AIKIDO_UTIL_METAPROGRAMMING_HPP_

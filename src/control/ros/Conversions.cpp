@@ -9,7 +9,7 @@
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
-using aikido::statespace::dart::RnJoint;
+using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
 
 namespace aikido {
@@ -167,6 +167,7 @@ void reorder(std::map<size_t, size_t> indexMap,
   const Eigen::VectorXd& inVector, Eigen::VectorXd* outVector)
 {
   assert(outVector != nullptr);
+  assert(indexMap.size() == static_cast<std::size_t>(inVector.size()));
   outVector->resize(inVector.size());
   for (auto index : indexMap)
     (*outVector)[index.second] = inVector[index.first];
@@ -182,9 +183,7 @@ std::vector<const dart::dynamics::Joint*> findJointByName(
   for (size_t i = 0; i < metaSkeleton.getNumJoints(); ++i)
   {
     if (metaSkeleton.getJoint(i)->getName() == jointName)
-    {
       joints.emplace_back(metaSkeleton.getJoint(i));
-    }
   }
 
   return joints;
@@ -214,9 +213,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   std::vector<std::string> joint_names;
   joint_names.reserve(numControlledJoints);
   for (size_t i = 0; i < numControlledJoints; ++i)
-  {
     joint_names.emplace_back(jointTrajectory.joint_names[i]);
-  }
   std::sort(joint_names.begin(), joint_names.end());
   for (size_t i = 0; i < numControlledJoints - 1; ++i)
   {
@@ -229,18 +226,18 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     }
   }
 
-  // Check that all joints are single-DOF RnJoint or SO2JOint state spaces.
+  // Check that all joints are R1Joint or SO2JOint state spaces.
   for (size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
     auto joint = space->getJointSpace(i)->getJoint();
     auto jointSpace = space->getSubspace(i);
-    auto rnJoint = dynamic_cast<RnJoint*>(jointSpace.get());
+    auto r1Joint = dynamic_cast<R1Joint*>(jointSpace.get());
     auto so2Joint = dynamic_cast<SO2Joint*>(jointSpace.get());
 
-    if (joint->getNumDofs() != 1 || (!rnJoint && !so2Joint))
+    if (joint->getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
       std::stringstream message;
-      message << "Only single-DOF RnJoint and SO2Joint are supported. Joint "
+      message << "Only R1Joint and SO2Joint are supported. Joint "
         << joint->getName() << "(index: " << i << ") is a "
         << joint->getType() << " with "
         << joint->getNumDofs() << " DOFs.";
@@ -434,4 +431,3 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 } // namespace ros
 } // namespace control
 } // namespace aikido
-

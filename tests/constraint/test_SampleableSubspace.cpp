@@ -13,8 +13,8 @@ using aikido::constraint::SampleablePtr;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::constraint::SO2Sampleable;
-using aikido::statespace::Rn;
-using aikido::constraint::RnBoxConstraint;
+using aikido::statespace::R3;
+using aikido::constraint::R3BoxConstraint;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
 
@@ -24,13 +24,13 @@ public:
   virtual void SetUp()
   {
     // Subspaces
-    rvss = std::make_shared<Rn>(3);
+    rvss = std::make_shared<R3>();
     so2 = std::make_shared<SO2>();
 
     // Constraints
     auto rng = std::unique_ptr<RNG>(
       new RNGWrapper<std::default_random_engine>(0));
-    rvSampler = std::make_shared<RnBoxConstraint>(
+    rvSampler = std::make_shared<R3BoxConstraint>(
       rvss, rng->clone(), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(1, 1, 1));
     so2Sampler = std::make_shared<SO2Sampleable>(
       so2, rng->clone());
@@ -43,9 +43,9 @@ public:
 
   std::shared_ptr<CartesianProduct> cs;
   std::vector<SampleablePtr> sampleables;
-  std::shared_ptr<Rn> rvss;
+  std::shared_ptr<R3> rvss;
   std::shared_ptr<SO2> so2;
-  std::shared_ptr<RnBoxConstraint> rvSampler;
+  std::shared_ptr<R3BoxConstraint> rvSampler;
   std::shared_ptr<SO2Sampleable> so2Sampler;
 
 };

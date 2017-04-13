@@ -1,5 +1,4 @@
 #include <aikido/statespace/SO3.hpp>
-#include <boost/math/constants/constants.hpp>
 #include <dart/math/Geometry.hpp>
 #include <iostream>
 

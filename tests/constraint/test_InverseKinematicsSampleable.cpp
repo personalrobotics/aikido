@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 #include "MockConstraints.hpp"
 
-using aikido::statespace::Rn;
+using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::InverseKinematicsSampleable;
 using aikido::constraint::CyclicSampleable;
@@ -164,13 +164,13 @@ TEST_F(InverseKinematicsSampleableTest, ConstructorThrowsOnInvalidSeed)
 {
   // Invalid statespace for seed constraint.
   Eigen::Vector2d v(1,0);
-  Rn rvss(2);
+  R2 rvss;
   auto seedStateInvalid = rvss.createState();
   seedStateInvalid.setValue(v);
 
   std::shared_ptr<FiniteSampleable> invalid_seed_constraint( 
     new FiniteSampleable(
-      std::make_shared<Rn>(rvss), seedStateInvalid));
+      std::make_shared<R2>(rvss), seedStateInvalid));
 
   EXPECT_THROW(InverseKinematicsSampleable(mStateSpace1, mTsr,
     invalid_seed_constraint, mInverseKinematics1, 1),
