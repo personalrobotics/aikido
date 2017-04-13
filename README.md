@@ -29,11 +29,11 @@ $ brew install aikido0
 #### Build from source (Standalone)
 To build ROS-dependent AIKIDO components, necessary environment variables need to be set. The default would be sourcing ROS's `setup.bash` as
 ```bash
-source /opt/ros/indigo/setup.bash
+$ source /opt/ros/indigo/setup.bash
 ```
 If you want to build AIKIDO upon your newer version of ROS packages, then source `setup.bash` in your workspace as
 ```bash
-source /path/to/your/workspace/devel/setup.bash
+$ source /path/to/your/workspace/devel/setup.bash
 ```
 
 Once the dependencies are installed, you can build AIKIDO using [CMake]:
