@@ -1,12 +1,13 @@
+#include <aikido/util/CatkinResourceRetriever.hpp>
+
 #include <fstream>
 #include <iostream>
-#include <tinyxml2.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <dart/common/Console.hpp>
-#include <dart/common/Uri.hpp>
 #include <dart/common/LocalResourceRetriever.hpp>
-#include <aikido/util/CatkinResourceRetriever.hpp>
+#include <dart/common/Uri.hpp>
+#include <tinyxml2.h>
 
 static const std::string CATKIN_MARKER(".catkin");
 
@@ -16,6 +17,7 @@ namespace aikido {
 namespace util {
 namespace {
 
+//==============================================================================
 std::string getPackageNameFromXML(const std::string& _path)
 {
   using tinyxml2::XMLHandle;
@@ -60,8 +62,10 @@ std::string getPackageNameFromXML(const std::string& _path)
   return package_name;
 }
 
-void searchForPackages(const boost::filesystem::path& _packagePath,
-  std::unordered_map<std::string, std::string>& _packageMap)
+//==============================================================================
+void searchForPackages(
+    const boost::filesystem::path& _packagePath,
+    std::unordered_map<std::string, std::string>& _packageMap)
 {
   using boost::filesystem::directory_iterator;
   using boost::filesystem::path;
@@ -77,17 +81,17 @@ void searchForPackages(const boost::filesystem::path& _packagePath,
   const path package_xml_path = _packagePath / "package.xml";
   if (exists(package_xml_path))
   {
-    const std::string package_name = getPackageNameFromXML(
-      package_xml_path.string());
+    const std::string package_name
+        = getPackageNameFromXML(package_xml_path.string());
     if (!package_name.empty())
     {
       const auto result = _packageMap.insert(
-        std::make_pair(package_name, _packagePath.string()));
+          std::make_pair(package_name, _packagePath.string()));
       if (!result.second)
       {
         dtwarn << "[CatkinResourceRetriever] Found two package.xml"
-                  " files for package '" << package_name << "': '"
-               << result.first->second << "' and '"
+                  " files for package '"
+               << package_name << "': '" << result.first->second << "' and '"
                << _packagePath << "'.\n";
       }
       return; // Don't search for packages inside packages.
@@ -102,7 +106,7 @@ void searchForPackages(const boost::filesystem::path& _packagePath,
   {
     boost::system::error_code status_error;
     const file_status status = it->status(status_error);
-    if (status_error) 
+    if (status_error)
     {
       dtwarn << "[CatkinResourceRetriever] Failed recursing into directory '"
              << it->path() << "'.\n";
@@ -118,43 +122,48 @@ void searchForPackages(const boost::filesystem::path& _packagePath,
 
 } // namespace
 
+//==============================================================================
 CatkinResourceRetriever::CatkinResourceRetriever()
   : CatkinResourceRetriever(
-      std::make_shared<dart::common::LocalResourceRetriever>())
+        std::make_shared<dart::common::LocalResourceRetriever>())
 {
 }
 
+//==============================================================================
 CatkinResourceRetriever::CatkinResourceRetriever(
-      const dart::common::ResourceRetrieverPtr& _delegate)
-  : mDelegate(_delegate)
-  , mWorkspaces(getWorkspaces())
+    const dart::common::ResourceRetrieverPtr& _delegate)
+  : mDelegate(_delegate), mWorkspaces(getWorkspaces())
 {
+  // Do nothing
 }
 
+//==============================================================================
 bool CatkinResourceRetriever::exists(const Uri& _uri)
 {
   const Uri resolvedUri = resolvePackageUri(_uri);
-  if(resolvedUri.mPath)
+  if (resolvedUri.mPath)
     return mDelegate->exists(resolvedUri);
   else
     return false;
 }
 
+//==============================================================================
 dart::common::ResourcePtr CatkinResourceRetriever::retrieve(const Uri& _uri)
-{ 
+{
   const Uri resolvedUri = resolvePackageUri(_uri);
-  if(resolvedUri.mPath)
+  if (resolvedUri.mPath)
     return mDelegate->retrieve(resolvedUri);
   else
     return nullptr;
 }
 
+//==============================================================================
 auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
 {
   using dart::common::ResourcePtr;
   using boost::filesystem::path;
 
-  const char *cmake_prefix_path = std::getenv("CMAKE_PREFIX_PATH");
+  const char* cmake_prefix_path = std::getenv("CMAKE_PREFIX_PATH");
   if (!cmake_prefix_path)
   {
     dtwarn << "[CatkinResourceRetriever::getWorkspaces] The CMAKE_PREFIX_PATH"
@@ -178,8 +187,8 @@ auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
       continue;
 
     const Uri workspace_uri = Uri::createFromPath(workspace_path + "/");
-    const Uri marker_uri = Uri::createFromRelativeUri(
-      workspace_uri, CATKIN_MARKER);
+    const Uri marker_uri
+        = Uri::createFromRelativeUri(workspace_uri, CATKIN_MARKER);
 
     // Skip non-Catkin workspaces by checking for the marker file. We do this
     // before reading the file because there is no way to differentiate between
@@ -212,10 +221,12 @@ auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
     }
     else
     {
-      dtwarn << "[CatkinResourceRetriever::getWorkspaces] Failed reading package"
-                " source directories from the marker file '"
-             << marker_uri.getFilesystemPath() << "'. Resources in the source"
-                " space of this workspace will not resolve.\n";
+      dtwarn
+          << "[CatkinResourceRetriever::getWorkspaces] Failed reading package"
+             " source directories from the marker file '"
+          << marker_uri.getFilesystemPath()
+          << "'. Resources in the source"
+             " space of this workspace will not resolve.\n";
     }
 
     workspaces.push_back(workspace);
@@ -224,17 +235,18 @@ auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
   return workspaces;
 }
 
+//==============================================================================
 Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
 {
   using boost::filesystem::path;
 
-  if(!_uri.mScheme || *_uri.mScheme != "package")
+  if (!_uri.mScheme || *_uri.mScheme != "package")
     return Uri();
 
-  if(!_uri.mAuthority)
+  if (!_uri.mAuthority)
   {
-    dtwarn << "Failed extracting package name from URI '"
-           << _uri.toString() << ".\n";
+    dtwarn << "Failed extracting package name from URI '" << _uri.toString()
+           << ".\n";
     return Uri();
   }
 
@@ -252,7 +264,7 @@ Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
     // First check the 'devel' or 'install' space.
     const path develPath = path(workspace.mPath) / "share" / packageName;
     const Uri resourceDevelUri = Uri::createFromRelativeUri(
-      Uri::createFromPath(develPath.string() + "/"), relativePath);
+        Uri::createFromPath(develPath.string() + "/"), relativePath);
 
     if (mDelegate->exists(resourceDevelUri))
       return resourceDevelUri;
@@ -262,7 +274,7 @@ Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
     if (it != std::end(workspace.mSourceMap))
     {
       const Uri resourceSourceUri = Uri::createFromRelativeUri(
-        Uri::createFromPath(it->second + "/"), relativePath);
+          Uri::createFromPath(it->second + "/"), relativePath);
 
       if (mDelegate->exists(resourceSourceUri))
         return resourceSourceUri;

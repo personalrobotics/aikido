@@ -3,16 +3,16 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <memory>
 #include <random>
-#include <cstdint>
 #include <Eigen/Geometry>
 
 namespace aikido {
 namespace util {
 
 /// Default number of seeds to by \c splitEngine to seed new engines.
-constexpr int NUM_DEFAULT_SEEDS { 100 };
+constexpr int NUM_DEFAULT_SEEDS{100};
 
 /// Implementation of the C++11 "random engine" concept that uses virtual
 /// function calls to erase the type of the underlying random engine.
@@ -24,7 +24,7 @@ public:
   /// Number of bits the generated numbers should have. Derived types are
   /// responsible for providing numbers in this range, if necessary, by
   /// wrapping their engine in a std::independent_bits_engine.
-  static constexpr std::size_t NUM_BITS { 32 };
+  static constexpr std::size_t NUM_BITS{32};
 
   virtual ~RNG() = default;
 
@@ -60,7 +60,6 @@ public:
   virtual std::unique_ptr<RNG> clone(result_type _seed) const = 0;
 };
 
-
 /// Concrete implementation of the RNG type erasure class.
 ///
 /// \tparam type of random engine to wrap
@@ -69,8 +68,8 @@ class RNGWrapper : virtual public RNG
 {
 public:
   using RNG::result_type;
-  using engine_type = std::independent_bits_engine<
-    T, RNG::NUM_BITS, result_type>;
+  using engine_type
+      = std::independent_bits_engine<T, RNG::NUM_BITS, result_type>;
 
   /// Constructs a random engine with a default seed.
   RNGWrapper() = default;
@@ -102,7 +101,7 @@ public:
 
   // Documentation inherited.
   void discard(unsigned long long _z) override;
-  
+
   // Documentation inherited.
   std::unique_ptr<RNG> clone() const override;
 
@@ -113,7 +112,6 @@ private:
   engine_type mRng;
 };
 
-
 /// Sample a unit quaternion uniformly at random. This function requires that
 /// the provided std::uniform_real_distribution has bounds of [ 0, 1 ].
 ///
@@ -123,11 +121,11 @@ private:
 /// \param _engine random engine
 /// \param _distribution uniform distribution over the range [ 0, 1 ]
 /// \return sampled unit quaternion
-template <
-  class Engine, class Scalar, class Quaternion = Eigen::Quaternion<Scalar>>
+template <class Engine,
+          class Scalar,
+          class Quaternion = Eigen::Quaternion<Scalar>>
 Quaternion sampleQuaternion(
-  Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution);
-
+    Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution);
 
 /// Deterministically create different \c _numOutputs random number generators
 /// of the same type as the input \c _engine. This is implemented by using
@@ -139,7 +137,7 @@ Quaternion sampleQuaternion(
 /// \param _numSeeds number of seeds to use for initialization
 /// \return new random number generators
 std::vector<std::unique_ptr<util::RNG>> splitEngine(
-  RNG& _engine, size_t _numOutputs, size_t _numSeeds = NUM_DEFAULT_SEEDS);
+    RNG& _engine, size_t _numOutputs, size_t _numSeeds = NUM_DEFAULT_SEEDS);
 
 } // namespace util
 } // namespace aikido

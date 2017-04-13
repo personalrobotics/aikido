@@ -1,5 +1,6 @@
-#include <iostream>
 #include <aikido/util/ExecutorThread.hpp>
+
+#include <iostream>
 
 namespace aikido {
 namespace util {
