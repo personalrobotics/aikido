@@ -17,8 +17,8 @@ namespace perception {
 Eigen::Isometry3d convertROSPoseToEigen(geometry_msgs::Pose const& p);
 
 /// Convert a time-stamped ROS transform to a 4 x 4 pose matrix
-/// \param[in] t the time-stamped ROS transform (position + quaternion)
-/// \return the 4 x 4 homogeneous matrix corresponding to the time-stamped
+/// \param[in] t The time-stamped ROS transform (position + quaternion)
+/// \return The 4 x 4 homogeneous matrix corresponding to the time-stamped
 /// transform
 Eigen::Isometry3d convertStampedTransformToEigen(tf::StampedTransform const& t);
 

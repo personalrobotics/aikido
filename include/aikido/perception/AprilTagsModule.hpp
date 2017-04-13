@@ -32,14 +32,14 @@ public:
   /// configuration information related to tags and obtains the desired
   /// transformation frame for the object pose.
   ///
-  ///	\param[in] node the node handle to be passed to the detector
-  ///	\param[in] markerTopic the name of the topic on which april tags
+  ///	\param[in] node The node handle to be passed to the detector
+  ///	\param[in] markerTopic The name of the topic on which april tags
   /// information is being published
-  ///	\param[in] configData the pointer to some configuration data loader
-  ///	\param[in] resourceRetriever a DART retriever for resources related to
+  ///	\param[in] configData The pointer to some configuration data loader
+  ///	\param[in] resourceRetriever A DART retriever for resources related to
   /// config files and models and so on
-  ///	\param[in] destinationFrame the desired TF for the detections
-  ///	\param[in] referenceLink a link on the robot with respect to which the
+  ///	\param[in] destinationFrame The desired TF for the detections
+  ///	\param[in] referenceLink A link on the robot with respect to which the
   /// pose is transformed
   AprilTagsModule(
       ros::NodeHandle node,

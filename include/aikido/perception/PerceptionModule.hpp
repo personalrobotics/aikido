@@ -25,7 +25,7 @@ public:
   /// \param[in] timestamp Only detections more recent than this timestamp will
   /// be accepted. A timestamp of 0 greedily takes the first available message,
   /// and is the default behaviour.
-  /// \return bool Returns \c false if no detection observed, or if none of the
+  /// \return Returns \c false if no detection observed, or if none of the
   /// detections has a more recent timestamp than the parameter. Returns \c true
   /// otherwise.
   virtual bool detectObjects(

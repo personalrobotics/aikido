@@ -21,13 +21,13 @@ public:
   /// the resource file for the body and the relative offset between the tag
   /// position and object origin.
   ///
-  /// \param[in] _tagName the ID of the tag to look up
-  /// \param[out] body_name the name of the object associated with the tag
-  /// \param[out] body_resource the resource that points to the URDF file of the
+  /// \param[in] _tagName The ID of the tag to look up
+  /// \param[out] body_name The name of the object associated with the tag
+  /// \param[out] body_resource The resource that points to the URDF file of the
   /// object
-  /// \param[out] body_offset the relative transform between the tag and the
+  /// \param[out] body_offset The relative transform between the tag and the
   /// object it is attached to
-  /// \return bool indicates success in obtaining all information, else failure
+  /// \return Indicates success in obtaining all information, else failure
   virtual bool getTagNameOffset(
       const std::string& _tagName,
       std::string& body_name,
