@@ -21,7 +21,7 @@ TEST(WeightedDistance, ThrowsOnNullStateSpace)
 
 TEST(WeightedDistance, ThrowsOnNullMetric){
   auto so2 = std::make_shared<SO2>();
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
 
@@ -29,13 +29,13 @@ TEST(WeightedDistance, ThrowsOnNullMetric){
 
   std::vector<DistanceMetricPtr> dmetrics = {
       std::make_shared<SO2Angular>(so2),
-      std::make_shared<RnEuclidean>(rv3), nullptr};
+      std::make_shared<R3Euclidean>(rv3), nullptr};
 
   EXPECT_THROW(Weighted(space, dmetrics), std::invalid_argument);
 
   std::vector<std::pair<DistanceMetricPtr, double>> dmetrics2 = {
       std::make_pair(std::make_shared<SO2Angular>(so2), 1),
-      std::make_pair(std::make_shared<RnEuclidean>(rv3), 1),
+      std::make_pair(std::make_shared<R3Euclidean>(rv3), 1),
       std::make_pair(nullptr, 1)};
   EXPECT_THROW(Weighted(space, dmetrics2),
                 std::invalid_argument);
@@ -44,7 +44,7 @@ TEST(WeightedDistance, ThrowsOnNullMetric){
 TEST(WeightedDistance, ThrowsOnMissingMetric)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
@@ -52,14 +52,14 @@ TEST(WeightedDistance, ThrowsOnMissingMetric)
 
   std::vector<DistanceMetricPtr> dmetrics = {
       std::make_shared<SO2Angular>(so2),
-              std::make_shared<RnEuclidean>(rv3)
+              std::make_shared<R3Euclidean>(rv3)
   };
 
   EXPECT_THROW(Weighted(space, dmetrics), std::invalid_argument);
 
   std::vector<std::pair<DistanceMetricPtr,double>> dmetrics2 = {
       std::make_pair(std::make_shared<SO2Angular>(so2), 1),
-      std::make_pair(std::make_shared<RnEuclidean>(rv3), 1)
+      std::make_pair(std::make_shared<R3Euclidean>(rv3), 1)
   };
   EXPECT_THROW(Weighted(space, dmetrics2), std::invalid_argument);
 }
@@ -67,14 +67,14 @@ TEST(WeightedDistance, ThrowsOnMissingMetric)
 TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
   EXPECT_THROW(Weighted(
-                    space, {std::make_shared<RnEuclidean>(rv3),
+                    space, {std::make_shared<R3Euclidean>(rv3),
                             std::make_shared<SO2Angular>(so2),
                             std::make_shared<SO3Angular>(so3)}),
                 std::invalid_argument);
@@ -82,7 +82,7 @@ TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
   EXPECT_THROW(
       Weighted(
           space,
-          {std::make_pair(std::make_shared<RnEuclidean>(rv3), 2),
+          {std::make_pair(std::make_shared<R3Euclidean>(rv3), 2),
            std::make_pair(std::make_shared<SO2Angular>(so2), 1),
            std::make_pair(std::make_shared<SO3Angular>(so3), 3)}),
       std::invalid_argument);
@@ -91,7 +91,7 @@ TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
 TEST(WeightedDistance, ThrowsOnNegativeWeights)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
 
@@ -100,7 +100,7 @@ TEST(WeightedDistance, ThrowsOnNegativeWeights)
       Weighted(
           space,
           {std::make_pair(std::make_shared<SO2Angular>(so2), -1),
-           std::make_pair(std::make_shared<RnEuclidean>(rv3), 2),
+           std::make_pair(std::make_shared<R3Euclidean>(rv3), 2),
            std::make_pair(std::make_shared<SO3Angular>(so3), 3)}),
       std::invalid_argument);
 }
@@ -108,7 +108,7 @@ TEST(WeightedDistance, ThrowsOnNegativeWeights)
 TEST(WeightedDistance, StateSpaceEquality)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
@@ -116,13 +116,13 @@ TEST(WeightedDistance, StateSpaceEquality)
 
   Weighted dmetric(
       space, {std::make_shared<SO2Angular>(so2),
-              std::make_shared<RnEuclidean>(rv3),
+              std::make_shared<R3Euclidean>(rv3),
               std::make_shared<SO3Angular>(so3)});
   EXPECT_EQ(space, dmetric.getStateSpace());
 
   Weighted dmetric2(
       space, {std::make_pair(std::make_shared<SO2Angular>(so2), 1),
-              std::make_pair(std::make_shared<RnEuclidean>(rv3), 2),
+              std::make_pair(std::make_shared<R3Euclidean>(rv3), 2),
               std::make_pair(std::make_shared<SO3Angular>(so3), 3)});
   EXPECT_EQ(space, dmetric2.getStateSpace());
 }
@@ -130,7 +130,7 @@ TEST(WeightedDistance, StateSpaceEquality)
 TEST(WeightedDistance, DistanceUnitWeights)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
@@ -138,7 +138,7 @@ TEST(WeightedDistance, DistanceUnitWeights)
 
   Weighted dmetric(
       space, {std::make_shared<SO2Angular>(so2),
-              std::make_shared<RnEuclidean>(rv3),
+              std::make_shared<R3Euclidean>(rv3),
               std::make_shared<SO3Angular>(so3)});
 
   auto state1 = space->createState();
@@ -154,11 +154,11 @@ TEST(WeightedDistance, DistanceUnitWeights)
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
   state1.getSubStateHandle<SO2>(0).setAngle(angle1);
-  state1.getSubStateHandle<Rn>(1).setValue(rv1);
+  state1.getSubStateHandle<R3>(1).setValue(rv1);
   state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
   state2.getSubStateHandle<SO2>(0).setAngle(angle2);
-  state2.getSubStateHandle<Rn>(1).setValue(rv2);
+  state2.getSubStateHandle<R3>(1).setValue(rv2);
   state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 
   auto vdiff = Eigen::Vector3d(2, 2, 2);
@@ -168,7 +168,7 @@ TEST(WeightedDistance, DistanceUnitWeights)
 TEST(WeightedDistance, DistanceCustomWeights)
 {
   auto so2 = std::make_shared<SO2>();
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
   std::vector<std::shared_ptr<StateSpace> > spaces = {so2, rv3, so3};
 
@@ -176,7 +176,7 @@ TEST(WeightedDistance, DistanceCustomWeights)
 
   Weighted dmetric(
       space, {std::make_pair(std::make_shared<SO2Angular>(so2), 2),
-              std::make_pair(std::make_shared<RnEuclidean>(rv3), 3),
+              std::make_pair(std::make_shared<R3Euclidean>(rv3), 3),
               std::make_pair(std::make_shared<SO3Angular>(so3), 4)});
 
   auto state1 = space->createState();
@@ -192,11 +192,11 @@ TEST(WeightedDistance, DistanceCustomWeights)
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
   state1.getSubStateHandle<SO2>(0).setAngle(angle1);
-  state1.getSubStateHandle<Rn>(1).setValue(rv1);
+  state1.getSubStateHandle<R3>(1).setValue(rv1);
   state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
   state2.getSubStateHandle<SO2>(0).setAngle(angle2);
-  state2.getSubStateHandle<Rn>(1).setValue(rv2);
+  state2.getSubStateHandle<R3>(1).setValue(rv2);
   state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 
   auto vdiff = Eigen::Vector3d(2, 2, 2);

@@ -11,7 +11,7 @@ using Eigen::Vector3d;
 using aikido::trajectory::Interpolated;
 using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::Rn;
+using aikido::statespace::R2;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
@@ -22,7 +22,7 @@ class ParabolicTimerTests : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<Rn>(2);
+    mStateSpace = std::make_shared<R2>();
     mMaxVelocity = Eigen::Vector2d(1., 1.);
     mMaxAcceleration = Eigen::Vector2d(2., 2.);
 
@@ -39,7 +39,7 @@ protected:
     mStraightLine->addWaypoint(1., state);
   }
 
-  std::shared_ptr<Rn> mStateSpace;
+  std::shared_ptr<R2> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
 
@@ -322,18 +322,18 @@ TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
 {
   auto stateSpace = std::make_shared<CartesianProduct>(
     std::vector<StateSpacePtr> {
-      std::make_shared<Rn>(2),
+      std::make_shared<R2>(),
       std::make_shared<SO2>(),
     });
   auto state = stateSpace->createState();
 
   Interpolated inputTrajectory(stateSpace, mInterpolator);
 
-  state.getSubStateHandle<Rn>(0).setValue(Vector2d::Zero());
+  state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
   state.getSubStateHandle<SO2>(1).setAngle(0.);
   inputTrajectory.addWaypoint(0., state);
 
-  state.getSubStateHandle<Rn>(0).setValue(Vector2d::Zero());
+  state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
   state.getSubStateHandle<SO2>(1).setAngle(M_PI_2);
   inputTrajectory.addWaypoint(1., state);
 

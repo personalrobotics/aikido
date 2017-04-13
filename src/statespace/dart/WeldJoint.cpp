@@ -5,10 +5,8 @@ namespace statespace {
 namespace dart {
 
 //=============================================================================
-WeldJoint::WeldJoint(
-      ::dart::dynamics::WeldJoint* _joint)
-  : Rn(_joint->getNumDofs())
-  , JointStateSpace(_joint)
+WeldJoint::WeldJoint(::dart::dynamics::WeldJoint* _joint)
+  : R0(), JointStateSpace(_joint)
 {
   // Do nothing.
 }
@@ -24,7 +22,7 @@ void WeldJoint::convertPositionsToState(
 void WeldJoint::convertStateToPositions(
   const StateSpace::State* /*_state*/, Eigen::VectorXd& _positions) const
 {
-  _positions.resize(0);
+  _positions.resize(DimensionAtCompileTime);
 }
 
 } // namespace dart
