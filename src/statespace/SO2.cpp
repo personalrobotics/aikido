@@ -1,5 +1,4 @@
 #include <aikido/statespace/SO2.hpp>
-#include <boost/math/constants/constants.hpp>
 
 namespace aikido
 {
