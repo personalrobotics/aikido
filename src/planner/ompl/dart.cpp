@@ -1,9 +1,9 @@
-#include <aikido/planner/ompl/dart.hpp>
+#include <aikido/constraint/JointStateSpaceHelpers.hpp>
+#include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
+#include <aikido/planner/ompl/dart.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/distance/defaults.hpp>
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 
 namespace aikido {
 namespace planner {
@@ -19,7 +19,8 @@ namespace ompl {
   auto dmetric = distance::createDistanceMetric(_stateSpace);
 
   // State sampler
-  auto sampler = constraint::createSampleableBounds(_stateSpace, std::move(_rng));
+  auto sampler
+      = constraint::createSampleableBounds(_stateSpace, std::move(_rng));
 
   // Bounds constraint
   auto boundsConstraint = constraint::createTestableBounds(_stateSpace);
@@ -28,15 +29,18 @@ namespace ompl {
   auto boundsProjection = constraint::createProjectableBounds(_stateSpace);
 
   // Interpolator
-  auto interpolator =
-      std::make_shared<statespace::GeodesicInterpolator>(_stateSpace);
+  auto interpolator
+      = std::make_shared<statespace::GeodesicInterpolator>(_stateSpace);
 
-  return getSpaceInformation(std::move(_stateSpace), std::move(interpolator),
-                             std::move(dmetric), std::move(sampler),
-                             std::move(_validityConstraint),
-                             std::move(boundsConstraint),
-                             std::move(boundsProjection),
-                             _maxDistanceBtwValidityChecks);
+  return getSpaceInformation(
+      std::move(_stateSpace),
+      std::move(interpolator),
+      std::move(dmetric),
+      std::move(sampler),
+      std::move(_validityConstraint),
+      std::move(boundsConstraint),
+      std::move(boundsProjection),
+      _maxDistanceBtwValidityChecks);
 }
 }
 }
