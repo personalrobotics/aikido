@@ -4,12 +4,11 @@ namespace ompl {
 
 //=============================================================================
 template <template <typename T> class NN>
-void CRRTConnect::setNearestNeighbors(void)
+void CRRTConnect::setNearestNeighbors()
 {
-  mStartTree.reset(new NN<CRRT::Motion *>());
-  mGoalTree.reset(new NN<CRRT::Motion *>());
+  mStartTree.reset(new NN<CRRT::Motion*>());
+  mGoalTree.reset(new NN<CRRT::Motion*>());
 }
-
 }
 }
 }

@@ -2,11 +2,11 @@
 #define AIKIDO_PLANNER_OMPL_CRRT_HPP_
 
 #include <ompl/base/Planner.h>
-#include <ompl/geometric/planners/PlannerIncludes.h>
 #include <ompl/datastructures/NearestNeighbors.h>
+#include <ompl/geometric/planners/PlannerIncludes.h>
 
-#include "../../planner/ompl/BackwardCompatibility.hpp"
 #include "../../constraint/Projectable.hpp"
+#include "../../planner/ompl/BackwardCompatibility.hpp"
 
 namespace aikido {
 namespace planner {
@@ -17,22 +17,22 @@ class CRRT : public ::ompl::base::Planner
 public:
   /// Constructor
   /// \param _si Information about the planning space
-  CRRT(const ::ompl::base::SpaceInformationPtr &_si);
+  CRRT(const ::ompl::base::SpaceInformationPtr& _si);
 
   /// Constructor
   /// \param _si Information about the planning space
   /// \param _name A name for this planner
-  CRRT(const ::ompl::base::SpaceInformationPtr &_si, const std::string &name);
+  CRRT(const ::ompl::base::SpaceInformationPtr& _si, const std::string& name);
 
   /// Destructor
-  virtual ~CRRT(void);
+  virtual ~CRRT();
 
   /// Get information about the current run of the motion planner. Repeated
   /// calls to this function will update data (only additions are made). This is
   /// useful to see what changed in the exploration datastructure, between calls
   /// to solve(), for example (without calling clear() in between).
   /// \param[out] data Data about the current run of the motion planner
-  void getPlannerData(::ompl::base::PlannerData &_data) const override;
+  void getPlannerData(::ompl::base::PlannerData& _data) const override;
 
   /// Function that can solve the motion planning problem. This function can be
   /// called multiple times on the same problem, without calling clear() in
@@ -45,7 +45,7 @@ public:
   /// true.
   /// \param ptc Conditions for terminating planning before a solution is found
   ::ompl::base::PlannerStatus solve(
-      const ::ompl::base::PlannerTerminationCondition &_ptc) override;
+      const ::ompl::base::PlannerTerminationCondition& _ptc) override;
 
   /// Solve the motion planning problem in the given time
   /// \param solveTime The maximum allowable time to solve the planning problem
@@ -53,7 +53,7 @@ public:
 
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
-  void clear(void) override;
+  void clear() override;
 
   /// Set the goal bias. In the process of randomly selecting states in the
   /// state space to attempt to go towards, the algorithm may in fact choose the
@@ -64,7 +64,7 @@ public:
   void setGoalBias(double _goalBias);
 
   /// Get the goal bias the planner is using
-  double getGoalBias(void) const;
+  double getGoalBias() const;
 
   /// Set the range the planner is supposed to use. This parameter greatly
   /// influences the runtime of the algorithm. It represents the maximum length
@@ -74,14 +74,13 @@ public:
   void setRange(double _distance);
 
   /// Get the range the planner is using
-  double getRange(void) const;
+  double getRange() const;
 
   /// Set a projectable constraint to be applied throughout the trajectory.
   /// The projection is applied at the resolution set via
   /// setProjectionResolution
   /// \param _projectable The constraint
-  void setPathConstraint(
-      constraint::ProjectablePtr _projectable);
+  void setPathConstraint(constraint::ProjectablePtr _projectable);
 
   /// Set the resolution for the projection. During tree extension, a projection
   /// back to the constraint will be performed after any step larger than this
@@ -93,7 +92,7 @@ public:
   /// Get the resolution for the projection. During tree extension, a
   /// projection back to the constraint will be performed after any step
   /// larger than this distance.
-  double getProjectionResolution(void) const;
+  double getProjectionResolution() const;
 
   /// Set the minimum distance between two states for them to be considered
   /// "equivalent". This is used during extension to determine if a projection
@@ -105,16 +104,16 @@ public:
   /// "equivalent". This is used during extension to determine if a projection
   /// is near enough the previous projection to say progress is no longer being
   /// made and quit extending.
-  double getMinStateDifference(void) const;
+  double getMinStateDifference() const;
 
   /// Set a nearest neighbors data structure
   template <template <typename T> class NN>
-  void setNearestNeighbors(void);
+  void setNearestNeighbors();
 
   /// Perform extra configuration steps, if needed. This call will also issue a
   /// call to ompl::base::SpaceInformation::setup() if needed. This must be
   /// called before solving.
-  void setup(void) override;
+  void setup() override;
 
 protected:
   /// Representation of a node in the tree. Contains the state at the node and a
@@ -123,14 +122,23 @@ protected:
   {
   public:
     /// Constructor. Sets state and parent to null ptr.
-    Motion(void) : state(nullptr), parent(nullptr) {}
+    Motion() : state(nullptr), parent(nullptr)
+    {
+      // Do nothing
+    }
 
     /// Constructor that allocates memory for the state
-    Motion(const ::ompl::base::SpaceInformationPtr &_si)
-        : state(_si->allocState()), parent(nullptr) {}
+    Motion(const ::ompl::base::SpaceInformationPtr& _si)
+      : state(_si->allocState()), parent(nullptr)
+    {
+      // Do nothing
+    }
 
     /// Destructor
-    ~Motion(void) {}
+    ~Motion()
+    {
+      // Do nothing
+    }
 
     /// The state contained in this node
     ::ompl::base::State* state;
@@ -140,15 +148,14 @@ protected:
   };
 
   /// Free the memory allocated by this planner
-  virtual void freeMemory(void);
+  virtual void freeMemory();
 
   /// Compute distance between motions (actually distance between contained
   /// states
-  double distanceFunction(const Motion *a, const Motion *b) const;
-
+  double distanceFunction(const Motion* a, const Motion* b) const;
 
   /// A nearest-neighbor datastructure representing a tree of motions */
-  using TreeData = ompl_shared_ptr<::ompl::NearestNeighbors<Motion *>>;
+  using TreeData = ompl_shared_ptr<::ompl::NearestNeighbors<Motion*>>;
 
   /// A nearest-neighbors datastructure containing the tree of motions
   TreeData mStartTree;
@@ -167,10 +174,16 @@ protected:
   /// \param[out] True if the extension reached the goal.
   /// \return fmotion If returnlast is true, the last node on the extension,
   /// otherwise the closest node along the extension to the goal
-  Motion *constrainedExtend(
-      const ::ompl::base::PlannerTerminationCondition &ptc, TreeData &tree,
-      Motion *nmotion, ::ompl::base::State *gstate, ::ompl::base::State *xstate,
-      ::ompl::base::Goal *goal, bool returnlast, double &dist, bool &foundgoal);
+  Motion* constrainedExtend(
+      const ::ompl::base::PlannerTerminationCondition& ptc,
+      TreeData& tree,
+      Motion* nmotion,
+      ::ompl::base::State* gstate,
+      ::ompl::base::State* xstate,
+      ::ompl::base::Goal* goal,
+      bool returnlast,
+      double& dist,
+      bool& foundgoal);
 
   /// State sampler
   ::ompl::base::StateSamplerPtr mSampler;
@@ -187,7 +200,7 @@ protected:
   ::ompl::RNG mRng;
 
   /// The most recent goal motion.  Used for PlannerData computation
-  Motion *mLastGoalMotion;
+  Motion* mLastGoalMotion;
 
   /// The constraint that must be satisfied throughout the trajectory
   constraint::ProjectablePtr mCons;

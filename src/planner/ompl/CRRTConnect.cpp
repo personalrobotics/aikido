@@ -25,13 +25,13 @@ CRRTConnect::CRRTConnect(const ::ompl::base::SpaceInformationPtr& _si)
 }
 
 //=============================================================================
-CRRTConnect::~CRRTConnect(void)
+CRRTConnect::~CRRTConnect()
 {
   clear();
 }
 
 //=============================================================================
-void CRRTConnect::setup(void)
+void CRRTConnect::setup()
 {
   Planner::setup();
   ::ompl::tools::SelfConfig sc(si_, getName());
@@ -57,7 +57,7 @@ void CRRTConnect::setup(void)
 }
 
 //=============================================================================
-void CRRTConnect::freeMemory(void)
+void CRRTConnect::freeMemory()
 {
   CRRT::freeMemory();
 
@@ -75,7 +75,7 @@ void CRRTConnect::freeMemory(void)
 }
 
 //=============================================================================
-void CRRTConnect::clear(void)
+void CRRTConnect::clear()
 {
   CRRT::clear();
   if (mGoalTree)

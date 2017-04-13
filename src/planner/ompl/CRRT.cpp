@@ -54,7 +54,7 @@ CRRT::CRRT(
 }
 
 //=============================================================================
-CRRT::~CRRT(void)
+CRRT::~CRRT()
 {
   clear();
 }
@@ -84,7 +84,7 @@ void CRRT::getPlannerData(::ompl::base::PlannerData& _data) const
 }
 
 //=============================================================================
-void CRRT::clear(void)
+void CRRT::clear()
 {
   ::ompl::base::Planner::clear();
   mSampler.reset();
@@ -144,7 +144,7 @@ void CRRT::setProjectionResolution(double _resolution)
 }
 
 //=============================================================================
-double CRRT::getProjectionResolution(void) const
+double CRRT::getProjectionResolution() const
 {
   return mMaxStepsize;
 }
@@ -156,13 +156,13 @@ void CRRT::setMinStateDifference(double _mindist)
 }
 
 //=============================================================================
-double CRRT::getMinStateDifference(void) const
+double CRRT::getMinStateDifference() const
 {
   return mMinStepsize;
 }
 
 //=============================================================================
-void CRRT::setup(void)
+void CRRT::setup()
 {
   ::ompl::base::Planner::setup();
   ::ompl::tools::SelfConfig sc(si_, getName());
@@ -180,7 +180,7 @@ void CRRT::setup(void)
 }
 
 //=============================================================================
-void CRRT::freeMemory(void)
+void CRRT::freeMemory()
 {
   if (mStartTree)
   {
