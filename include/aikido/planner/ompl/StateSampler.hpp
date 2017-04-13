@@ -43,8 +43,9 @@ public:
 private:
   std::unique_ptr<aikido::constraint::SampleGenerator> mGenerator;
 };
-}
-}
-}
+
+} // ompl
+} // namespace planner
+} // namespace aikido
 
 #endif

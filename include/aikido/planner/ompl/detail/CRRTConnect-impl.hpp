@@ -9,6 +9,7 @@ void CRRTConnect::setNearestNeighbors()
   mStartTree.reset(new NN<CRRT::Motion*>());
   mGoalTree.reset(new NN<CRRT::Motion*>());
 }
-}
-}
-}
+
+} // ompl
+} // namespace planner
+} // namespace aikido

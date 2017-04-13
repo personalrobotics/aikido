@@ -123,6 +123,7 @@ trajectory::InterpolatedPtr planOMPL(
       std::move(_interpolator),
       _maxPlanTime);
 }
+
 } // namespace ompl
 } // namespace planner
 } // namespace aikido

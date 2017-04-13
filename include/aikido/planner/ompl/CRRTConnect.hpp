@@ -9,6 +9,7 @@
 namespace aikido {
 namespace planner {
 namespace ompl {
+
 /// Implements a bi-direction constrained RRT planner
 class CRRTConnect : public CRRT
 {
@@ -78,6 +79,7 @@ protected:
   /// PlannerData computation
   std::pair<::ompl::base::State*, ::ompl::base::State*> mConnectionPoint;
 };
+
 } // namespace ompl
 } // namespace planner
 } // namespace aikido

@@ -34,8 +34,9 @@ public:
 private:
   constraint::TestablePtr mConstraint;
 };
-}
-}
-}
+
+} // ompl
+} // namespace planner
+} // namespace aikido
 
 #endif

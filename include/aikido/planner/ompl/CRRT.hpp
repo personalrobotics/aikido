@@ -11,6 +11,7 @@
 namespace aikido {
 namespace planner {
 namespace ompl {
+
 /// Implements a constrained RRT planner
 class CRRT : public ::ompl::base::Planner
 {
@@ -212,6 +213,7 @@ protected:
   /// when projection is no longer making progress during an extension.
   double mMinStepsize;
 };
+
 } // namespace ompl
 } // namespace planner
 } // namespace aikido

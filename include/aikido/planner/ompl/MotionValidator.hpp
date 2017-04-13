@@ -6,6 +6,7 @@
 namespace aikido {
 namespace planner {
 namespace ompl {
+
 /// Implement an OMPL MotionValidator.  This class checks the validity
 ///  of path segments between states.
 class MotionValidator : public ::ompl::base::MotionValidator
@@ -45,7 +46,9 @@ public:
 private:
   double mSequenceResolution;
 };
-}
-}
-}
+
+} // ompl
+} // namespace planner
+} // namespace aikido
+
 #endif
