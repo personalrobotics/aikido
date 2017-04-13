@@ -33,7 +33,7 @@ AprilTagsModule::AprilTagsModule( ros::NodeHandle node, std::string markerTopic,
 }
 
 //================================================================================================================================
-bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::Duration timeout, ros::Time timestamp)
+bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr& env, ros::Duration timeout, ros::Time timestamp)
 {
 	bool any_valid = false;
 	tf::TransformListener listener(mNode);
@@ -43,8 +43,8 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::D
  			= ros::topic::waitForMessage<visualization_msgs::MarkerArray>(mMarkerTopic,mNode,timeout);
 
  	// Making sure the Apriltag Message is non empty
- 	if(marker_message == NULL){
- 		dtwarn<<"[AprilTagsModule::detectObjects] NULL Marker Message "<<mMarkerTopic<< std::endl;
+ 	if(marker_message == nullptr){
+ 		dtwarn<<"[AprilTagsModule::detectObjects] nullptr Marker Message "<<mMarkerTopic<< std::endl;
  		return false;
  	}
 
@@ -114,7 +114,7 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr env, ros::D
 			dart::dynamics::SkeletonPtr env_skeleton = 
 				env -> getSkeleton(skel_name);
 				
-			if(env_skeleton == NULL){
+			if(env_skeleton == nullptr){
 				// Getting the model for the new object
 				std::cout << "getting new thing" << std::endl;
 				is_new_skel = true;

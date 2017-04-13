@@ -43,7 +43,7 @@ public:
 	virtual ~AprilTagsModule() = default;
 
 	// Documentation inherited
-	bool detectObjects(dart::simulation::WorldPtr env, 
+  bool detectObjects(const dart::simulation::WorldPtr& env,
 					   ros::Duration timeout = ros::Duration(0.0), 
 					   ros::Time timestamp=ros::Time(0.0)) override; 
 
