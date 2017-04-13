@@ -17,6 +17,8 @@ public:
   /// \return Future which becomes available when the execution completes.
   virtual std::future<void> execute(
     Eigen::Matrix<double, 4, 1> goalPositions) = 0;
+
+  virtual void step(double timeSincePreviousCall) = 0;
 };
 
 using BarrettHandPositionCommandExecutorPtr = std::shared_ptr<BarrettHandPositionCommandExecutor>;

@@ -19,7 +19,7 @@ namespace control {
 /// Position command executor for simulating BarrettHand fingers.
 /// Assumes that fingers are underactuated: proximal joint is actuated
 /// and distal joint moves with certain mimic ratio until collision.
-class SimBarrettHandPositionCommandExecutor : BarrettHandPositionCommandExecutor
+class SimBarrettHandPositionCommandExecutor : public BarrettHandPositionCommandExecutor
 {
 public:
   /// Constructor.
@@ -51,7 +51,7 @@ public:
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.
   /// \param _timeSincePreviousCall Time since previous call.
-  void step(double _timeSincePreviousCall);
+  void step(double _timeSincePreviousCall) override;
 
   /// Resets CollisionGroup to check collision with fingers.
   /// \param _collideWith CollisionGroup to check collision with fingers.
