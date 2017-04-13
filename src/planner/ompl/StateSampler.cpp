@@ -53,6 +53,7 @@ void StateSampler::sampleGaussian(
 {
   throw std::runtime_error("sampleGaussian not implemented");
 }
-}
-}
-}
+
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

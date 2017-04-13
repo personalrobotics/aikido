@@ -34,6 +34,7 @@ bool StateValidityChecker::isValid(const ::ompl::base::State* _state) const
 
   return mConstraint->isSatisfied(st->mState);
 }
-}
-}
-}
+
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

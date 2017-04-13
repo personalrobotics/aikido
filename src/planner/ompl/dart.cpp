@@ -8,6 +8,7 @@
 namespace aikido {
 namespace planner {
 namespace ompl {
+
 ::ompl::base::SpaceInformationPtr createSpaceInformation(
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     constraint::TestablePtr _validityConstraint,
@@ -42,6 +43,7 @@ namespace ompl {
       std::move(boundsProjection),
       _maxDistanceBtwValidityChecks);
 }
-}
-}
-}
+
+} // namespace ompl
+} // namespace planner
+} // namespace aikido
