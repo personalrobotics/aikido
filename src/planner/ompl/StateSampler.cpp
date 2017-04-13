@@ -40,7 +40,7 @@ void StateSampler::sampleUniform(::ompl::base::State* _state)
 void StateSampler::sampleUniformNear(
     ::ompl::base::State* /*_state*/,
     const ::ompl::base::State* /*_near*/,
-    const double /*_distance*/)
+    double /*_distance*/)
 {
   throw std::runtime_error("sampleUniformNear not implemented.");
 }
@@ -49,7 +49,7 @@ void StateSampler::sampleUniformNear(
 void StateSampler::sampleGaussian(
     ::ompl::base::State* /*_state*/,
     const ::ompl::base::State* /*_mean*/,
-    const double /*_stdDev*/)
+    double /*_stdDev*/)
 {
   throw std::runtime_error("sampleGaussian not implemented");
 }

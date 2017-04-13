@@ -115,7 +115,7 @@ public:
   void interpolate(
       const ::ompl::base::State* _from,
       const ::ompl::base::State* _to,
-      const double _t,
+      double _t,
       ::ompl::base::State* _state) const override;
 
   /// Allocate an instance of the state sampler for this space.

@@ -8,7 +8,7 @@ namespace planner {
 namespace ompl {
 MotionValidator::MotionValidator(
     const ::ompl::base::SpaceInformationPtr& _si,
-    const double& _maxDistBtwValidityChecks)
+    double _maxDistBtwValidityChecks)
   : ::ompl::base::MotionValidator(_si)
   , mSequenceResolution(_maxDistBtwValidityChecks)
 {

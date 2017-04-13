@@ -20,7 +20,7 @@ public:
   /// segment checked for validity
   MotionValidator(
       const ::ompl::base::SpaceInformationPtr& _si,
-      const double& _maxDistBtwValidityChecks);
+      double _maxDistBtwValidityChecks);
 
   /// Check if the path between two states, _s1 and _s2, is valid.  This
   /// function assumes _s1 is valid.

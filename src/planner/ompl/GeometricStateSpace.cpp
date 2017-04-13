@@ -185,7 +185,7 @@ bool GeometricStateSpace::equalStates(
 void GeometricStateSpace::interpolate(
     const ::ompl::base::State* _from,
     const ::ompl::base::State* _to,
-    const double _t,
+    double _t,
     ::ompl::base::State* _state) const
 {
   auto from = static_cast<const StateType*>(_from);
