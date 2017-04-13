@@ -10,22 +10,23 @@ namespace control {
 namespace ros {
 
 //=============================================================================
-
 RosTrajectoryExecutionException::RosTrajectoryExecutionException(
   const std::string& what,
-  actionlib::TerminalState terminalState)
+  actionlib::TerminalState /*terminalState*/)
 : std::runtime_error(what)
 {
+  // Do nothing
 }
 
+//=============================================================================
 RosTrajectoryExecutionException::RosTrajectoryExecutionException(
   const std::string& what,
-  int result)
+  int /*result*/)
 : std::runtime_error(what)
 {
+  // Do nothing
 }
 
 } // namespace ros
 } // namespace control
 } // namespace aikido
-
