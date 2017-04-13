@@ -29,7 +29,7 @@ public:
   /// detections has a more recent timestamp than the parameter. Returns \c true
   /// otherwise.
   virtual bool detectObjects(
-      dart::simulation::WorldPtr env,
+      const dart::simulation::WorldPtr& env,
       ros::Duration timeout,
       ros::Time timestamp)
       = 0;

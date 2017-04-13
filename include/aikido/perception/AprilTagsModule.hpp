@@ -53,7 +53,7 @@ public:
 
   // Documentation inherited
   bool detectObjects(
-      dart::simulation::WorldPtr env,
+      const dart::simulation::WorldPtr& env,
       ros::Duration timeout = ros::Duration(0.0),
       ros::Time timestamp = ros::Time(0.0)) override;
 

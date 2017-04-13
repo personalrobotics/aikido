@@ -3,8 +3,6 @@
 #include <yaml-cpp/exceptions.h>
 #include <aikido/perception/YamlAprilTagsDatabase.hpp>
 
-using namespace std;
-
 namespace aikido {
 namespace perception {
 

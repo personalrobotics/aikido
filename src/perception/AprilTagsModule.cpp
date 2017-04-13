@@ -38,7 +38,7 @@ AprilTagsModule::AprilTagsModule(
 
 //==============================================================================
 bool AprilTagsModule::detectObjects(
-    const dart::simulation::WorldPtr env,
+    const dart::simulation::WorldPtr& env,
     ros::Duration timeout,
     ros::Time timestamp)
 {
@@ -51,9 +51,9 @@ bool AprilTagsModule::detectObjects(
           mMarkerTopic, mNode, timeout);
 
   // Making sure the Apriltag Message is non empty
-  if (marker_message == NULL)
+  if (marker_message == nullptr)
   {
-    dtwarn << "[AprilTagsModule::detectObjects] NULL Marker Message "
+    dtwarn << "[AprilTagsModule::detectObjects] nullptr Marker Message "
            << mMarkerTopic << std::endl;
     return false;
   }
@@ -131,7 +131,7 @@ bool AprilTagsModule::detectObjects(
 
       dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skel_name);
 
-      if (env_skeleton == NULL)
+      if (env_skeleton == nullptr)
       {
         // Getting the model for the new object
         std::cout << "getting new thing" << std::endl;
