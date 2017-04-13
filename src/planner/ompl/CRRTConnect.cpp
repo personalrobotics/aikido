@@ -65,7 +65,7 @@ void CRRTConnect::freeMemory()
   {
     std::vector<Motion*> motions;
     mGoalTree->list(motions);
-    for (unsigned int i = 0; i < motions.size(); ++i)
+    for (std::size_t i = 0; i < motions.size(); ++i)
     {
       if (motions[i]->state)
         si_->freeState(motions[i]->state);
@@ -134,7 +134,7 @@ double CRRTConnect::getConnectionRadius() const
   // Extra state used during tree extensions
   ::ompl::base::State* xstate = si_->allocState();
 
-  Motion* rmotion = new Motion(si_);
+  auto rmotion = std::unique_ptr<Motion>(new Motion(si_));
   ::ompl::base::State* rstate = rmotion->state;
 
   bool startTree = true;
@@ -170,7 +170,7 @@ double CRRTConnect::getConnectionRadius() const
       continue;
 
     // Find closest state in tree
-    Motion* nmotion = tree->nearest(rmotion);
+    Motion* nmotion = tree->nearest(rmotion.get());
 
     // Grow one tree toward the random sample
     double bestdist = std::numeric_limits<double>::infinity();
@@ -247,15 +247,14 @@ double CRRTConnect::getConnectionRadius() const
           continue;
       }
 
-      ::ompl::geometric::PathGeometric* path
-          = new ::ompl::geometric::PathGeometric(si_);
+      auto path = ompl_make_shared<::ompl::geometric::PathGeometric>(si_);
       path->getStates().reserve(mpath1.size() + mpath2.size());
       for (int i = mpath1.size() - 1; i >= 0; --i)
         path->append(mpath1[i]->state);
-      for (unsigned int i = 0; i < mpath2.size(); ++i)
+      for (std::size_t i = 0; i < mpath2.size(); ++i)
         path->append(mpath2[i]->state);
 
-      pdef_->addSolutionPath(::ompl::base::PathPtr(path), false, 0.0);
+      pdef_->addSolutionPath(path, false, 0.0);
       solved = true;
       break;
     }
@@ -263,7 +262,6 @@ double CRRTConnect::getConnectionRadius() const
 
   si_->freeState(xstate);
   si_->freeState(rstate);
-  delete rmotion;
 
   return solved ? ::ompl::base::PlannerStatus::EXACT_SOLUTION
                 : ::ompl::base::PlannerStatus::TIMEOUT;
@@ -278,7 +276,7 @@ void CRRTConnect::getPlannerData(::ompl::base::PlannerData& data) const
   if (mStartTree)
     mStartTree->list(motions);
 
-  for (unsigned int i = 0; i < motions.size(); ++i)
+  for (std::size_t i = 0; i < motions.size(); ++i)
   {
     if (motions[i]->parent == NULL)
       data.addStartVertex(
@@ -295,7 +293,7 @@ void CRRTConnect::getPlannerData(::ompl::base::PlannerData& data) const
   if (mGoalTree)
     mGoalTree->list(motions);
 
-  for (unsigned int i = 0; i < motions.size(); ++i)
+  for (std::size_t i = 0; i < motions.size(); ++i)
   {
     if (motions[i]->parent == NULL)
       data.addGoalVertex(::ompl::base::PlannerDataVertex(motions[i]->state, 2));

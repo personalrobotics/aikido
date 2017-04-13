@@ -40,7 +40,7 @@ CRRT::CRRT(
   Planner::declareParam<double>(
       "goal_bias", this, &CRRT::setGoalBias, &CRRT::getGoalBias, "0.:.05:1.");
   Planner::declareParam<double>(
-      "proj_res",
+      "projection_resolution",
       this,
       &CRRT::setProjectionResolution,
       &CRRT::getProjectionResolution,
@@ -72,7 +72,7 @@ void CRRT::getPlannerData(::ompl::base::PlannerData& _data) const
     _data.addGoalVertex(
         ::ompl::base::PlannerDataVertex(mLastGoalMotion->state));
 
-  for (unsigned int i = 0; i < motions.size(); ++i)
+  for (std::size_t i = 0; i < motions.size(); ++i)
   {
     if (motions[i]->parent == nullptr)
       _data.addStartVertex(::ompl::base::PlannerDataVertex(motions[i]->state));
@@ -186,7 +186,7 @@ void CRRT::freeMemory()
   {
     std::vector<Motion*> motions;
     mStartTree->list(motions);
-    for (unsigned int i = 0; i < motions.size(); ++i)
+    for (std::size_t i = 0; i < motions.size(); ++i)
     {
       if (motions[i]->state)
       {
@@ -224,7 +224,7 @@ void CRRT::freeMemory()
   Motion* solution = nullptr;
   Motion* approxsol = nullptr;
   double approxdif = std::numeric_limits<double>::infinity();
-  Motion* rmotion = new Motion(si_);
+  auto rmotion = std::unique_ptr<Motion>(new Motion(si_));
   ::ompl::base::State* rstate = rmotion->state;
   ::ompl::base::State* xstate = si_->allocState(); /* temp state */
 
@@ -245,7 +245,7 @@ void CRRT::freeMemory()
     }
 
     /* find closest state in the tree */
-    Motion* nmotion = mStartTree->nearest(rmotion);
+    Motion* nmotion = mStartTree->nearest(rmotion.get());
 
     /* Perform a constrained extension */
     double bestdist = std::numeric_limits<double>::infinity();
@@ -292,18 +292,16 @@ void CRRT::freeMemory()
     }
 
     /* set the solution path */
-    ::ompl::geometric::PathGeometric* path
-        = new ::ompl::geometric::PathGeometric(si_);
+    auto path = ompl_make_shared<::ompl::geometric::PathGeometric>(si_);
     for (int i = mpath.size() - 1; i >= 0; --i)
       path->append(mpath[i]->state);
-    pdef_->addSolutionPath(::ompl::base::PathPtr(path), approximate, approxdif);
+    pdef_->addSolutionPath(path, approximate, approxdif);
     solved = true;
   }
 
   si_->freeState(xstate);
   if (rmotion->state)
     si_->freeState(rmotion->state);
-  delete rmotion;
 
   return ::ompl::base::PlannerStatus(solved, approximate);
 }

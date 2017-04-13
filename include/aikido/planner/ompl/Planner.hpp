@@ -128,8 +128,8 @@ trajectory::InterpolatedPtr planOMPL(
 /// \param _maxExtensionDistance The maximum distance to extend the tree on
 ///  a single extension
 /// \param _maxDistanceBtwProjections The maximum distance (under dmetric)
-/// between
-/// projecting and validity checking two successive points on a tree extension
+/// between projecting and validity checking two successive points on a tree
+/// extension
 /// \param _minStepsize The minimum distance between two states for the them to
 /// be considered "different"
 trajectory::InterpolatedPtr planCRRT(
@@ -178,8 +178,8 @@ trajectory::InterpolatedPtr planCRRT(
 /// \param _maxExtensionDistance The maximum distance to extend the tree on
 ///  a single extension
 /// \param _maxDistanceBtwProjections The maximum distance (under dmetric)
-/// between
-/// projecting and validity checking two successive points on a tree extension
+/// between projecting and validity checking two successive points on a tree
+/// extension
 /// \param _minTreeConnectionDistance The minumum distance between the start and
 /// goal tree to consider them connected
 /// \param _minStepsize The minimum distance between two states for the them to
