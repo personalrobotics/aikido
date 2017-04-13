@@ -5,9 +5,9 @@ set(sources
 
 add_library("${PROJECT_NAME}_trajectory" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_trajectory"
-  "${PROJECT_NAME}_statespace"
-  "${PROJECT_NAME}_util"
-  ${DART_LIBRARIES}
+  PUBLIC
+    "${PROJECT_NAME}_statespace"
+    "${PROJECT_NAME}_util"
 )
 target_compile_options("${PROJECT_NAME}_trajectory"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}

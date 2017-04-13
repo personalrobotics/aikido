@@ -19,8 +19,11 @@ set(sources
 )
 
 add_library("${PROJECT_NAME}_statespace" SHARED ${sources})
+target_include_directories("${PROJECT_NAME}_statespace"
+  PUBLIC ${DART_INCLUDE_DIRS}
+)
 target_link_libraries("${PROJECT_NAME}_statespace"
-  ${DART_LIBRARIES}
+  PUBLIC ${DART_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_statespace"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
