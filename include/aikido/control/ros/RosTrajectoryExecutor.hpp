@@ -25,20 +25,17 @@ public:
   /// \param[in] serverName Name of the server to send traejctory to.
   /// \param[in] timestep Step size for interpolating trajectories.
   /// \param[in] goalTimeTolerance
-  /// \param[in] indexMap Joint index mapping from statespace to ros trajectory.
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
+  template <typename DurationA, typename DurationB>
   RosTrajectoryExecutor(
     statespace::dart::MetaSkeletonStateSpacePtr space,
     ::ros::NodeHandle node,
     const std::string& serverName,
     double timestep,
     double goalTimeTolerance,
-    const std::map<std::string, size_t>& jointIndexMap,
-    std::chrono::milliseconds connectionTimeout
-      = std::chrono::milliseconds{1000},
-    std::chrono::milliseconds connectionPollingPeriod
-      = std::chrono::milliseconds{20}
+    const DurationA& connectionTimeout = std::chrono::milliseconds{1000},
+    const DurationB& connectionPollingPeriod = std::chrono::milliseconds{20}
   );
 
   virtual ~RosTrajectoryExecutor();
@@ -81,7 +78,6 @@ private:
   bool mInProgress;
   std::promise<void> mPromise;
   trajectory::TrajectoryPtr mTrajectory;
-  std::map<std::string, size_t> mJointIndexMap;
 
   std::mutex mMutex;
 };

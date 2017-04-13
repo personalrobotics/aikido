@@ -24,11 +24,9 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 /// Converts Aikido Trajectory to ROS JointTrajectory.
 /// Supports only 1D RnJoints and SO2Joints.
 /// \param[in] trajectory Aikido trajectory to be converted.
-/// \param[in] indexMap Mapping between trajectory's joints and ros joints.
 /// \param[in] timestep Timestep between two consecutive waypoints.
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
-  const aikido::trajectory::TrajectoryPtr& trajectory,
-  const std::map<std::string, size_t>& indexMap, double timestep);
+  const aikido::trajectory::TrajectoryPtr& trajectory, double timestep);
 
 } // namespace ros
 } // namespace control

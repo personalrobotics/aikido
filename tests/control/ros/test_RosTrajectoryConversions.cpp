@@ -42,9 +42,6 @@ protected:
     // Timestep
     mTimestep = 0.1;
 
-    // indexMap
-    mIndexMap.insert(std::make_pair("Joint1", 0));
-
     // Create a 2-DOF skeleton.
     auto skeleton2 = Skeleton::create();
     RevoluteJoint::Properties jointProperties;
@@ -70,9 +67,6 @@ protected:
     coeffs2 << 3., 1.,
                1., 1.;
     mTrajectory2DOF->addSegment(coeffs2, 0.1, startState2DOF);
-    mIndexMap2DOF.insert(std::make_pair("Joint1", 0));
-    mIndexMap2DOF.insert(std::make_pair("Joint2", 1));
-
   }
 
   std::shared_ptr<Spline> mTrajectory;
@@ -82,58 +76,26 @@ protected:
   MetaSkeletonStateSpacePtr mStateSpace2DOF;
 
   double mTimestep;
-  std::map<std::string, size_t> mIndexMap;
-  std::map<std::string, size_t> mIndexMap2DOF;
 };
 
 TEST_F(ToRosJointTrajectoryTests, TrajectoryIsNull_Throws)
 {
   EXPECT_THROW({
-    toRosJointTrajectory(nullptr, mIndexMap, mTimestep);
+    toRosJointTrajectory(nullptr, mTimestep);
   }, std::invalid_argument);
 }
 
 TEST_F(ToRosJointTrajectoryTests, TimestepIsZero_Throws)
 {
   EXPECT_THROW({
-    toRosJointTrajectory(mTrajectory, mIndexMap, 0.0);
+    toRosJointTrajectory(mTrajectory, 0.0);
   }, std::invalid_argument);
 }
 
 TEST_F(ToRosJointTrajectoryTests, TimestepIsNegative_Throws)
 {
   EXPECT_THROW({
-    toRosJointTrajectory(mTrajectory, mIndexMap, -0.1);
-  }, std::invalid_argument);
-}
-
-TEST_F(ToRosJointTrajectoryTests,
-    NonExistingJointInIndexMap_Throws)
-{
-  std::map<std::string, size_t> indexMap;
-  indexMap.insert(std::make_pair("Joint0", 0));
-  EXPECT_THROW({
-    toRosJointTrajectory(mTrajectory, indexMap, mTimestep);
-  }, std::invalid_argument);
-}
-
-TEST_F(ToRosJointTrajectoryTests,
-    IndexMapHasDuplicateElements_Throws)
-{
-  std::map<std::string, size_t> indexMap;
-  indexMap.insert(std::make_pair("Joint1", 0));
-  indexMap.insert(std::make_pair("Joint2", 0));
-
-  EXPECT_THROW({
-    toRosJointTrajectory(mTrajectory2DOF, indexMap, mTimestep);
-  }, std::invalid_argument);
-}
-
-TEST_F(ToRosJointTrajectoryTests, EmptyIndexMap_Throws)
-{
-  std::map<std::string, size_t> indexMap;
-  EXPECT_THROW({
-    toRosJointTrajectory(mTrajectory, indexMap, mTimestep);
+    toRosJointTrajectory(mTrajectory, -0.1);
   }, std::invalid_argument);
 }
 
@@ -145,17 +107,14 @@ TEST_F(ToRosJointTrajectoryTests, SkeletonHasUnsupportedJoint_Throws)
 
   auto trajectory = std::make_shared<Spline>(space, 0.0);
   EXPECT_THROW({
-    toRosJointTrajectory(trajectory, mIndexMap, mTimestep);
+    toRosJointTrajectory(trajectory, mTimestep);
   }, std::invalid_argument);
 }
 
 TEST_F(ToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints)
 {
   auto rosTrajectory = toRosJointTrajectory(
-      mTrajectory, mIndexMap, mTimestep);
-
-  for (auto it = mIndexMap.begin(); it != mIndexMap.end(); ++it)
-    EXPECT_EQ(it->first, rosTrajectory.joint_names[it->second]);
+      mTrajectory, mTimestep);
 
   EXPECT_EQ(2, rosTrajectory.points.size());
   for (int i = 0; i < 2; ++i)
@@ -174,9 +133,10 @@ TEST_F(ToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints)
   ASSERT_DOUBLE_EQ(mTimestep*(rosTrajectory.points.size()-1),
       mTrajectory->getEndTime());
 
+  // Finer timesteps
   double timestep = 0.01;
   auto rosTrajectory2 = toRosJointTrajectory(
-      mTrajectory, mIndexMap, timestep);
+      mTrajectory, timestep);
   
   EXPECT_EQ(11, rosTrajectory2.points.size());
   for (int i = 0; i < 11; ++i)
@@ -191,41 +151,8 @@ TEST_F(ToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints)
     mStateSpace->convertStateToPositions(state, values);
     EXPECT_EIGEN_EQUAL(values,
         make_vector(rosTrajectory2.points[i].positions[0]), kTolerance);
-
-    for (auto it = mIndexMap.begin(); it != mIndexMap.end(); ++it)
-      EXPECT_EQ(it->first, rosTrajectory2.joint_names[it->second]);
   }
   ASSERT_DOUBLE_EQ(timestep*(rosTrajectory2.points.size()-1),
       mTrajectory->getEndTime());
 
 }
-
-TEST_F(ToRosJointTrajectoryTests, DifferentOrdering)
-{
-  auto rosTrajectory = toRosJointTrajectory(
-      mTrajectory2DOF, mIndexMap2DOF, mTimestep);
-
-  for (auto it = mIndexMap.begin(); it != mIndexMap.end(); ++it)
-    EXPECT_EQ(it->first, rosTrajectory.joint_names[it->second]);
-
-  EXPECT_EQ(2, rosTrajectory.points.size());
-  for (int i = 0; i < 2; ++i)
-  {
-    ASSERT_DOUBLE_EQ(mTimestep*i,
-        rosTrajectory.points[i].time_from_start.toSec());
-
-    auto state = mStateSpace2DOF->createState();
-    Eigen::VectorXd values;
-
-    mTrajectory2DOF->evaluate(mTimestep*i, state);
-    mStateSpace2DOF->convertStateToPositions(state, values);
-
-    EXPECT_EIGEN_EQUAL(values,
-        make_vector(rosTrajectory.points[i].positions[0],
-                    rosTrajectory.points[i].positions[1]), kTolerance);
-  }
-
-  ASSERT_DOUBLE_EQ(mTimestep*(rosTrajectory.points.size()-1),
-      mTrajectory->getEndTime());
-}
-

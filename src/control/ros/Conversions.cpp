@@ -131,25 +131,22 @@ void extractJointTrajectoryPoint(
 void extractTrajectoryPoint(
   const std::shared_ptr<MetaSkeletonStateSpace>& space,
   const aikido::trajectory::TrajectoryPtr& trajectory,
-  double timeFromStart, const std::map<size_t, size_t>& indexMap,
-  trajectory_msgs::JointTrajectoryPoint& waypoint)
+  double timeFromStart, trajectory_msgs::JointTrajectoryPoint& waypoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
-  
+  const int numDof = space->getDimension();
+
   Eigen::VectorXd tangentVector;
-  Eigen::VectorXd jointTangentVector;
   auto state = space->createState();
   trajectory->evaluate(timeAbsolute, state);
   space->logMap(state, tangentVector);
-  assert(tangentVector.size() == space->getDimension());
 
-  // Reorder tangentVectoraccording to the index mapping
-  reorder(indexMap, tangentVector, &jointTangentVector);
+  assert(tangentVector.size() == numDof);
 
   waypoint.time_from_start = ::ros::Duration(timeFromStart);
-  waypoint.positions.assign(jointTangentVector.data(),
-    jointTangentVector.data() + jointTangentVector.size());
+  waypoint.positions.assign(tangentVector.data(),
+    tangentVector.data() + tangentVector.size());
 
   assert(0 <= numDerivatives && numDerivatives <= 2);
   const std::array<std::vector<double>*, 2> derivatives{
@@ -157,12 +154,10 @@ void extractTrajectoryPoint(
   for (int iDerivative = 1; iDerivative <= numDerivatives; ++iDerivative)
   {
     trajectory->evaluateDerivative(timeAbsolute, iDerivative, tangentVector);
-    assert(tangentVector.size() == numDofs);
+    assert(tangentVector.size() == numDof);
 
-    // Reorder according to the index mapping
-    reorder(indexMap, tangentVector, &jointTangentVector);
-    derivatives[iDerivative - 1]->assign(jointTangentVector.data(),
-      jointTangentVector.data() + jointTangentVector.size());
+    derivatives[iDerivative - 1]->assign(tangentVector.data(),
+      tangentVector.data() + tangentVector.size());
   }
 }
 
@@ -359,8 +354,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
 
 //=============================================================================
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
-  const aikido::trajectory::TrajectoryPtr& trajectory,
-  const std::map<std::string, size_t>& indexMap, double timestep)
+  const aikido::trajectory::TrajectoryPtr& trajectory, double timestep)
 {
   using statespace::dart::MetaSkeletonStateSpace;
   using statespace::dart::SO2Joint;
@@ -406,63 +400,21 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   const auto numWaypoints = timeSequence.getMaxSteps();
   const auto metaSkeleton = space->getMetaSkeleton();
   trajectory_msgs::JointTrajectory jointTrajectory;
-  jointTrajectory.joint_names.resize(numJoints);
+  jointTrajectory.joint_names.reserve(numJoints);
 
-  if (indexMap.size() != numJoints)
+  for (size_t i = 0; i < numJoints; ++i)
   {
-    std::stringstream message;
-    message << "Trajectory's skeleton has " << numJoints << " joints, but "
-      << "indexMap has " << indexMap.size() << " elements.";
-    throw std::invalid_argument{message.str()};
-  }
-
-  // Assign joint names
-  std::map<size_t, size_t> orderMap;
-
-  for (auto trajToRosTrajPair : indexMap)
-  {
-    auto joints = findJointByName(*metaSkeleton, trajToRosTrajPair.first);
-    if (joints.size() == 0)
-    {
-      std::stringstream message;
-      message << "Metaskeleton does not have joint[" << trajToRosTrajPair.first
-        << "], given by indexMap.";
-      throw std::invalid_argument{message.str()};
-    }
-    else if (joints.size() > 1)
+    const auto joint = space->getJointSpace(i)->getJoint();
+    const auto jointName = joint->getName();
+    auto joints = findJointByName(*metaSkeleton, jointName);
+    if (joints.size() > 1)
     {
       std::stringstream message;
       message << "Metaskeleton has multiple joints with same name ["
-        << trajToRosTrajPair.first << "].";
+        << jointName << "].";
       throw std::invalid_argument{message.str()};
     }
-    auto joint = joints[0];
-
-    if (trajToRosTrajPair.second > numJoints)
-    {
-      std::stringstream message;
-      message << "Metaskeleton has " << numJoints << " joints, but "
-        << "indexMap maps " << trajToRosTrajPair.first
-        << " to joint " << trajToRosTrajPair.second;
-      throw std::invalid_argument{message.str()};
-    }
-
-    if (jointTrajectory.joint_names[trajToRosTrajPair.second] != "")
-    {
-      std::stringstream message;
-      message << jointTrajectory.joint_names[trajToRosTrajPair.second]
-        << " and " << trajToRosTrajPair.first << " map to the same "
-        << trajToRosTrajPair.second << " joint.";
-      throw std::invalid_argument{message.str()};
-    }
-
-    jointTrajectory.joint_names[trajToRosTrajPair.second]
-      = trajToRosTrajPair.first;
-
-    auto metaSkeletonIndex = metaSkeleton->getIndexOf(joint);
-    assert(metaSkeletonIndex != dart::dynamics::INVALID_INDEX);
-    orderMap.emplace(std::make_pair(metaSkeletonIndex,
-      trajToRosTrajPair.second));
+    jointTrajectory.joint_names.emplace_back(jointName);
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
@@ -471,8 +423,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
 
-    extractTrajectoryPoint(
-      space, trajectory, timeFromStart, orderMap, waypoint);
+    extractTrajectoryPoint(space, trajectory, timeFromStart, waypoint);
 
     jointTrajectory.points.emplace_back(waypoint);
   }

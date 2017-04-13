@@ -11,6 +11,8 @@ namespace control {
 namespace ros {
 namespace {
 
+using std::chrono::milliseconds;
+
 //=============================================================================
 std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 {
@@ -46,25 +48,26 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 } // namespace
 
 //=============================================================================
+template <typename DurationA, typename DurationB>
 RosTrajectoryExecutor::RosTrajectoryExecutor(
       statespace::dart::MetaSkeletonStateSpacePtr space,
       ::ros::NodeHandle node,
       const std::string& serverName,
       double timestep,
       double goalTimeTolerance,
-      const std::map<std::string, size_t>& jointIndexMap,
-      std::chrono::milliseconds connectionTimeout,
-      std::chrono::milliseconds connectionPollingPeriod)
+      const DurationA& connectionTimeout,
+      const DurationB& connectionPollingPeriod)
   : mSpace{std::move(space)}
   , mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mTimestep{timestep}
   , mGoalTimeTolerance{goalTimeTolerance}
-  , mConnectionTimeout{connectionTimeout}
-  , mConnectionPollingPeriod{connectionPollingPeriod}
+  , mConnectionTimeout{
+    std::chrono::duration_cast<milliseconds>(connectionTimeout)}
+  , mConnectionPollingPeriod{
+    std::chrono::duration_cast<milliseconds>(connectionPollingPeriod)}
   , mInProgress{false}
-  , mJointIndexMap(jointIndexMap)
 {
   if (!mSpace)
     throw std::invalid_argument("Space is null.");
@@ -123,7 +126,7 @@ std::future<void> RosTrajectoryExecutor::execute(
 
   // Convert the Aikido trajectory into a ROS JointTrajectory.
   goal.trajectory = toRosJointTrajectory(
-    traj, mJointIndexMap, mTimestep);
+    traj, mTimestep);
 
   if (!waitForServer())
     throw std::runtime_error("Unable to connect to action server.");
