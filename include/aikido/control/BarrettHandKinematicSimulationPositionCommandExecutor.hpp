@@ -1,8 +1,8 @@
-#ifndef AIKIDO_CONTROL_SIMBARRETTHANDPOSITIONCOMANDEXECUTOR_HPP_
-#define AIKIDO_CONTROL_SIMBARRETTHANDPOSITIONCOMANDEXECUTOR_HPP_
-#include <aikido/control/BarrettHandPositionCommandExecutor.hpp>
-#include <aikido/control/SimBarrettFingerPositionCommandExecutor.hpp>
-#include <aikido/control/SimBarrettFingerSpreadCommandExecutor.hpp>
+#ifndef AIKIDO_CONTROL_BARRETTHANDKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
+#define AIKIDO_CONTROL_BARRETTHANDKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
+#include <aikido/control/PositionCommandExecutor.hpp>
+#include <aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp>
+#include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
 #include <dart/collision/CollisionDetector.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/collision/CollisionGroup.hpp>
@@ -19,21 +19,26 @@ namespace control {
 /// Position command executor for simulating BarrettHand fingers.
 /// Assumes that fingers are underactuated: proximal joint is actuated
 /// and distal joint moves with certain mimic ratio until collision.
-class SimBarrettHandPositionCommandExecutor : public BarrettHandPositionCommandExecutor
+class BarrettHandKinematicSimulationPositionCommandExecutor
+: public PositionCommandExecutor
 {
 public:
   /// Constructor.
-  /// \param _positionCommandExecutors 3 executors to control
+  /// \param[in] positionCommandExecutors 3 executors to control
   ///        proximal and distal joints of the fingers. The first two fingers
   ///        should have (spread, proximal, distal) joints.
   ///        Third finger should have 2 joints (proximal, distal).
-  /// \param _spreadCommandExecutor Executors to control
+  /// \param[in] spreadCommandExecutor Executors to control
   ///        spreads of the fingers.
-  /// \param _collideWith CollisionGroup to check collision with fingers.
-  SimBarrettHandPositionCommandExecutor(
-    std::array<SimBarrettFingerPositionCommandExecutorPtr, 3> _positionCommandExecutors,
-    SimBarrettFingerSpreadCommandExecutorPtr _spreadCommandExecutor,
-    ::dart::collision::CollisionGroupPtr _collideWith);
+  /// \param[in] timeSincePreviousCall Time interval to be used in step().
+  /// \param[in] collideWith CollisionGroup to check collision with fingers.
+  BarrettHandKinematicSimulationPositionCommandExecutor(
+    const std::array<
+      BarrettFingerKinematicSimulationPositionCommandExecutorPtr, 3>& positionCommandExecutors,
+    BarrettFingerKinematicSimulationSpreadCommandExecutorPtr spreadCommandExecutor,
+    ::dart::collision::CollisionGroupPtr collideWith,
+    std::chrono::milliseconds timeSincePreviousCall
+      = std::chrono::milliseconds(1));
 
   /// Set relevant variables for moving fingers.
   /// In order to move the fingers, step method should be called multiple times
@@ -43,15 +48,10 @@ public:
   ///        for spread. If _positions are above/below joint limits,
   ///        the fingers will move only upto the limit.
   /// \return Future which becomes available when the execution completes.
-  std::future<void> execute(
-    Eigen::Matrix<double, 4, 1> _goalPositions) override;
+  std::future<void> execute(Eigen::VectorXd goalPositions) override;
 
-  /// Calls step method of finger executors.
-  /// If multiple threads are accessing this function or skeleton associated
-  /// with this executor, it is necessary to lock the skeleton before
-  /// calling this method.
-  /// \param _timeSincePreviousCall Time since previous call.
-  void step(double _timeSincePreviousCall) override;
+  // Documentation inherited.
+  void step() override;
 
   /// Resets CollisionGroup to check collision with fingers.
   /// \param _collideWith CollisionGroup to check collision with fingers.
@@ -65,8 +65,8 @@ private:
   constexpr static auto kWaitPeriod = std::chrono::milliseconds(1);
 
   /// Executor for proximal and distal joints.
-  std::array<SimBarrettFingerPositionCommandExecutorPtr, 3> mPositionCommandExecutors;
-  SimBarrettFingerSpreadCommandExecutorPtr mSpreadCommandExecutor;
+  std::array<BarrettFingerKinematicSimulationPositionCommandExecutorPtr, 3> mPositionCommandExecutors;
+  BarrettFingerKinematicSimulationSpreadCommandExecutorPtr mSpreadCommandExecutor;
 
   std::unique_ptr<std::promise<void>> mPromise;
 
@@ -85,9 +85,11 @@ private:
 
   ::dart::collision::CollisionGroupPtr mCollideWith;
 
+  std::chrono::milliseconds mTimeSincePreviousCall;
 };
 
-using SimBarrettHandPositionCommandExecutorPtr = std::shared_ptr<SimBarrettHandPositionCommandExecutor>;
+using BarrettHandKinematicSimulationPositionCommandExecutorPtr =
+  std::shared_ptr<BarrettHandKinematicSimulationPositionCommandExecutor>;
 
 
 } // control
