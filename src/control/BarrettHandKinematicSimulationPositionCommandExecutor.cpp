@@ -55,8 +55,8 @@ std::future<void> BarrettHandKinematicSimulationPositionCommandExecutor
   }
 
   mPromise.reset(new std::promise<void>());
-  mProximalGoalPositions = goalPositions.topRows(3);
-  mSpreadGoalPosition = goalPositions(3);
+  mProximalGoalPositions = goalPositions.head<3>();
+  mSpreadGoalPosition = goalPositions[3];
   mInExecution = true;
   mLastExecutionTime = std::chrono::system_clock::now();
   mFingerFutures.clear();

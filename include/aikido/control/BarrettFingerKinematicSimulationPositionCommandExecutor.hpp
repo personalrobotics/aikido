@@ -51,7 +51,7 @@ public:
   /// \return mimic ratio.
   constexpr static double getMimicRatio() { return kMimicRatio; };
 
-  /// Moves the joints of the finger by dofVelocity*timeSIncePreviousCall
+  /// Moves the joints of the finger by dofVelocity*timeSincePreviousCall
   /// until execute's goalPosition by primary dof or collision is detected.
   /// If proximal link is in collision, distal link moves until
   /// mimicRatio*goalPosition. If distal link is in collision, execution stops.
@@ -68,7 +68,7 @@ public:
 
 private:
   constexpr static double kMimicRatio = 0.333;
-  constexpr static double kProximalSpeed = 0.1;
+  constexpr static double kProximalSpeed = 1;
   constexpr static double kDistalSpeed = kProximalSpeed*kMimicRatio;
 
   /// If (current dof - goalPosition) execution terminates.

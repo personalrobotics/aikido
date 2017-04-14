@@ -53,7 +53,7 @@ public:
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
-  constexpr static double kDofSpeed = 0.1;
+  constexpr static double kDofSpeed = 1;
 
   /// If (current dof - goalPosition) execution terminates.
   constexpr static double kTolerance = 1e-3;
