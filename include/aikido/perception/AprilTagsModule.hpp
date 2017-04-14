@@ -43,8 +43,9 @@ public:
 	virtual ~AprilTagsModule() = default;
 
 	// Documentation inherited
-	bool detectObjects(std::vector<dart::dynamics::SkeletonPtr>& skeleton_list, ros::Duration timeout = ros::Duration(0.0), ros::Time timestamp=ros::Time(0.0)) override; 
-
+  bool detectObjects(const dart::simulation::WorldPtr& env,
+					   ros::Duration timeout = ros::Duration(0.0), 
+					   ros::Time timestamp=ros::Time(0.0)) override; 
 
 private:
 	///The name of the ROS topic to read marker info from

@@ -16,10 +16,10 @@ constexpr int VanDerCorput::MAX;
 
 //=============================================================================
 VanDerCorput::VanDerCorput(
-    const double span,
-    const bool includeStartpoint,
-    const bool includeEndpoint,
-    const double minResolution)
+    double span,
+    bool includeStartpoint,
+    bool includeEndpoint,
+    double minResolution)
   : mSpan(span)
   , mIncludeStartpoint(includeStartpoint)
   , mIncludeEndpoint(includeEndpoint)
