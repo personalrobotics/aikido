@@ -23,14 +23,11 @@ public:
   /// \param[in] fingers 2 fingers to be controlled by this Executor.
   /// \param[in] spread Index of spread dof
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
-  /// \param[in] timeSincePreviousCall Time interval to be used in step().
   /// \param[in] collisionOptions Default is (enableContact=false, binaryCheck=true,
   ///        maxNumContacts = 1.)
   BarrettFingerKinematicSimulationSpreadCommandExecutor(
     std::array<::dart::dynamics::ChainPtr, 2> fingers, size_t spread,
     ::dart::collision::CollisionGroupPtr collideWith,
-    std::chrono::milliseconds timeSincePreviousCall
-      = std::chrono::milliseconds(1000),
     ::dart::collision::CollisionOption collisionOptions
       = ::dart::collision::CollisionOption(false, 1));
 
@@ -46,7 +43,9 @@ public:
   /// If multiple threads are accessing this function or the skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.
-  void step();
+  /// \param[in] timeSincePreviousCall Time interval to take.
+  void step(const std::chrono::milliseconds& timeSincePreviousCall);
+
 
   /// Resets CollisionGroup to check collision.
   /// \param collideWith CollisionGroup to check collision with fingers.
@@ -54,7 +53,7 @@ public:
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
-  constexpr static double kDofSpeed = 0.01;
+  constexpr static double kDofSpeed = 0.1;
 
   /// If (current dof - goalPosition) execution terminates.
   constexpr static double kTolerance = 1e-3;
@@ -86,8 +85,6 @@ private:
 
   /// Desired end spread value
   double mGoalPosition;
-
-  std::chrono::milliseconds mTimeSincePreviousCall;
 };
 
 using BarrettFingerKinematicSimulationSpreadCommandExecutorPtr 

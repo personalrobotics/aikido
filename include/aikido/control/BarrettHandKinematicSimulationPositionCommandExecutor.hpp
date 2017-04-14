@@ -30,15 +30,12 @@ public:
   ///        Third finger should have 2 joints (proximal, distal).
   /// \param[in] spreadCommandExecutor Executors to control
   ///        spreads of the fingers.
-  /// \param[in] timeSincePreviousCall Time interval to be used in step().
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
   BarrettHandKinematicSimulationPositionCommandExecutor(
     const std::array<
       BarrettFingerKinematicSimulationPositionCommandExecutorPtr, 3>& positionCommandExecutors,
     BarrettFingerKinematicSimulationSpreadCommandExecutorPtr spreadCommandExecutor,
-    ::dart::collision::CollisionGroupPtr collideWith,
-    std::chrono::milliseconds timeSincePreviousCall
-      = std::chrono::milliseconds(1));
+    ::dart::collision::CollisionGroupPtr collideWith);
 
   /// Set relevant variables for moving fingers.
   /// In order to move the fingers, step method should be called multiple times
@@ -48,7 +45,7 @@ public:
   ///        for spread. If _positions are above/below joint limits,
   ///        the fingers will move only upto the limit.
   /// \return Future which becomes available when the execution completes.
-  std::future<void> execute(Eigen::VectorXd goalPositions) override;
+  std::future<void> execute(const Eigen::VectorXd& goalPositions) override;
 
   // Documentation inherited.
   void step() override;
@@ -85,7 +82,7 @@ private:
 
   ::dart::collision::CollisionGroupPtr mCollideWith;
 
-  std::chrono::milliseconds mTimeSincePreviousCall;
+  std::chrono::system_clock::time_point mLastExecutionTime;
 };
 
 using BarrettHandKinematicSimulationPositionCommandExecutorPtr =

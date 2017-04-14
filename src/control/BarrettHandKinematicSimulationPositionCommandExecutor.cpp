@@ -1,4 +1,4 @@
-#include <aikido/control/SimBarrettHandPositionCommandExecutor.hpp>
+#include <aikido/control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp>
 #include <thread>
 #include <exception>
 #include <stdexcept>
@@ -6,17 +6,18 @@
 namespace aikido{
 namespace control{
 
-constexpr std::chrono::milliseconds SimBarrettHandPositionCommandExecutor::kWaitPeriod;
+constexpr std::chrono::milliseconds BarrettHandKinematicSimulationPositionCommandExecutor::kWaitPeriod;
 
 //=============================================================================
-SimBarrettHandPositionCommandExecutor::SimBarrettHandPositionCommandExecutor(
-  std::array<SimBarrettFingerPositionCommandExecutorPtr, 3> _positionCommandExecutors,
-  SimBarrettFingerSpreadCommandExecutorPtr _spreadCommandExecutor,
-  ::dart::collision::CollisionGroupPtr _collideWith)
-: mPositionCommandExecutors(std::move(_positionCommandExecutors))
-, mSpreadCommandExecutor(std::move(_spreadCommandExecutor))
+BarrettHandKinematicSimulationPositionCommandExecutor
+::BarrettHandKinematicSimulationPositionCommandExecutor(
+  const std::array<BarrettFingerKinematicSimulationPositionCommandExecutorPtr, 3>& positionCommandExecutors,
+  BarrettFingerKinematicSimulationSpreadCommandExecutorPtr spreadCommandExecutor,
+  ::dart::collision::CollisionGroupPtr collideWith)
+: mPositionCommandExecutors(std::move(positionCommandExecutors))
+, mSpreadCommandExecutor(std::move(spreadCommandExecutor))
 , mInExecution(false)
-, mCollideWith(std::move(_collideWith))
+, mCollideWith(std::move(collideWith))
 {
   for(int i=0; i < kNumPositionExecutor; ++i)
   {
@@ -37,18 +38,27 @@ SimBarrettHandPositionCommandExecutor::SimBarrettHandPositionCommandExecutor(
 }
 
 //=============================================================================
-std::future<void> SimBarrettHandPositionCommandExecutor::execute(
-  Eigen::Matrix<double, 4, 1> _positions)
+std::future<void> BarrettHandKinematicSimulationPositionCommandExecutor
+  ::execute(const Eigen::VectorXd& goalPositions)
 {
   std::lock_guard<std::mutex> lockSpin(mMutex);
 
   if (mInExecution)
     throw std::runtime_error("Another command in execution.");
 
+  if (goalPositions.size() != 4)
+  {
+    std::stringstream message;
+    message << "GoalPositions must have 4 elements, but ["
+      << goalPositions.size() << "] given.";
+    throw std::invalid_argument(message.str());
+  }
+
   mPromise.reset(new std::promise<void>());
-  mProximalGoalPositions = _positions.topRows(3);
-  mSpreadGoalPosition = _positions(3);
+  mProximalGoalPositions = goalPositions.topRows(3);
+  mSpreadGoalPosition = goalPositions(3);
   mInExecution = true;
+  mLastExecutionTime = std::chrono::system_clock::now();
   mFingerFutures.clear();
 
   mFingerFutures.reserve(kNumPositionExecutor + kNumSpreadExecutor);
@@ -66,11 +76,14 @@ std::future<void> SimBarrettHandPositionCommandExecutor::execute(
 }
 
 //=============================================================================
-void SimBarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
+void BarrettHandKinematicSimulationPositionCommandExecutor::step()
 {
-  using std::chrono::milliseconds;
+  using namespace std::chrono;
 
   std::lock_guard<std::mutex> lock(mMutex);
+
+  auto timeSincePreviousCall = system_clock::now() - mLastExecutionTime;
+  mLastExecutionTime = system_clock::now();
 
   if (!mInExecution)
     return;
@@ -118,15 +131,16 @@ void SimBarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
   }
 
   // Call the finger executors' step function.
+  auto period = duration_cast<milliseconds>(timeSincePreviousCall);
   for(int i=0; i < kNumPositionExecutor; ++i)
-    mPositionCommandExecutors[i]->step(_timeSincePreviousCall);
+    mPositionCommandExecutors[i]->step(period);
 
-  mSpreadCommandExecutor->step(_timeSincePreviousCall);
+  mSpreadCommandExecutor->step(period);
 
 }
 
 //=============================================================================
-bool SimBarrettHandPositionCommandExecutor::setCollideWith(
+bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
   ::dart::collision::CollisionGroupPtr collideWith)
 {
   std::lock_guard<std::mutex> lockSpin(mMutex);

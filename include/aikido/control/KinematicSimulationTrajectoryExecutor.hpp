@@ -20,16 +20,13 @@ public:
   /// Constructor.
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
-  /// \param executionCycle Sets the cycle period of the execution thread.
-  template <typename Duration>
   KinematicSimulationTrajectoryExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton, 
-    const Duration& executionCycle = std::chrono::milliseconds{1000});
+    ::dart::dynamics::SkeletonPtr skeleton);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
-  /// Execute traj and set future upon completion. 
-  /// \param traj Trajectory to be executed. Its StateSpace should be a 
+  /// Execute traj and set future upon completion.
+  /// \param traj Trajectory to be executed. Its StateSpace should be a
   ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton 
   ///        should be all in skeleton passed to the constructor.
   /// \return future<void> for trajectory execution. If trajectory terminates
@@ -46,16 +43,12 @@ private:
   ::dart::dynamics::SkeletonPtr mSkeleton;
   std::unique_ptr<std::promise<void>> mPromise;
   trajectory::TrajectoryPtr mTraj; 
-  
-  /// step()'s trajectory execution cycle.
-  const std::chrono::milliseconds mExecutionCycle;
 
-  /// Time past since beginning of current trajectory's execution
-  std::chrono::milliseconds mTimeSinceBeginning;
+  std::chrono::system_clock::time_point mExecutionStartTime;
 
   /// Manages access on mTraj, mPromise, mInExecution
   std::mutex mMutex;
- 
+
   bool mInExecution;
 
 };

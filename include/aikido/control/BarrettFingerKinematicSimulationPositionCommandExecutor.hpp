@@ -28,15 +28,12 @@ public:
   /// \param[in] proximal Index of proximal dof
   /// \param[in] distal Index of distal dof
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
-  /// \param[in] timeSincePreviousCall Time interval to be used in step().
   /// \param[in] collisionOptions Default is (enableContact=false, binaryCheck=true,
   ///        maxNumContacts = 1.)
   ///        See dart/collison/Option.h for more information
   BarrettFingerKinematicSimulationPositionCommandExecutor(
     ::dart::dynamics::ChainPtr finger, size_t proximal, size_t distal,
     ::dart::collision::CollisionGroupPtr collideWith,
-    std::chrono::milliseconds timeSincePreviousCall
-      = std::chrono::milliseconds(100),
     ::dart::collision::CollisionOption collisionOptions
       = ::dart::collision::CollisionOption(false, 1));
 
@@ -61,7 +58,8 @@ public:
   /// If multiple threads are accessing this function or skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.
-  void step();
+  /// \param[in] timeSincePreviousCall Time interval to take.
+  void step(const std::chrono::milliseconds& timeSincePreviousCall);
 
   /// Resets CollisionGroup to check collision with fingers.
   /// \param _collideWith CollisionGroup to check collision with fingers.
@@ -70,7 +68,7 @@ public:
 
 private:
   constexpr static double kMimicRatio = 0.333;
-  constexpr static double kProximalSpeed = 0.01;
+  constexpr static double kProximalSpeed = 0.1;
   constexpr static double kDistalSpeed = kProximalSpeed*kMimicRatio;
 
   /// If (current dof - goalPosition) execution terminates.
@@ -96,8 +94,6 @@ private:
 
   /// Flag for indicating execution of a command.
   bool mInExecution;
-
-  std::chrono::milliseconds mTimeSincePreviousCall;
 
   /// Control access to mPromise, mInExecution, mGoalPosition, mDistalOnly,
   /// mCollideWith

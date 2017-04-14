@@ -1,8 +1,8 @@
 set(sources
   KinematicSimulationTrajectoryExecutor.cpp
-  SimBarrettHandPositionCommandExecutor.cpp
-  SimBarrettFingerPositionCommandExecutor.cpp
-  SimBarrettFingerSpreadCommandExecutor.cpp
+  BarrettHandKinematicSimulationPositionCommandExecutor.cpp
+  BarrettFingerKinematicSimulationPositionCommandExecutor.cpp
+  BarrettFingerKinematicSimulationSpreadCommandExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control" SHARED ${sources})
