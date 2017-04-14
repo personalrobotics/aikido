@@ -326,6 +326,8 @@ trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
                                            constraint::TestablePtr _boundsConstraint,
                                            constraint::ProjectablePtr _boundsProjector, 
                                            double _maxDistanceBtwValidityChecks,
+                                           double _timeout, size_t _maxEmptySteps,
+                                           double _rangeRatio, double _snapToVertex,
                                            trajectory::InterpolatedPtr _originalTraj)
 {
 
@@ -353,28 +355,35 @@ for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx)
 // Step 3: Use the OMPL methods to simplify the path
 ::ompl::geometric::PathSimplifierPtr simplifier;
 simplifier.reset(new ::ompl::geometric::PathSimplifier(si));
-bool const shortened = simplifier->shortcutPath(*path, 1, 1, 1.0, 0.005); 
+
+// Set the parameters for termination of simplification process
+::ompl::time::point const time_before = ::ompl::time::now();
+::ompl::time::point time_current;
+::ompl::time::duration const time_limit = ::ompl::time::seconds(_timeout);
+double empty_steps = 0;
+
+do 
+{
+
+  bool const shortened = simplifier->shortcutPath(*path, 1, _maxEmptySteps, _rangeRatio, _snapToVertex);
+  empty_steps += !shortened;
+  time_current = ::ompl::time::now();
+
+} while(time_current - time_before <= time_limit && empty_steps <= _maxEmptySteps);
 
 // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
-if(shortened)
-{
-  auto returnTraj = std::make_shared<trajectory::Interpolated>(
-        std::move(_stateSpace), std::move(_interpolator));
+auto returnTraj = std::make_shared<trajectory::Interpolated>(
+      std::move(_stateSpace), std::move(_interpolator));
 
-  for (size_t idx = 0; idx < path->getStateCount(); ++idx) 
-  {
-        const auto *st =
-            static_cast<GeometricStateSpace::StateType *>(
-                path->getState(idx));
-        // Arbitrary timing
-        returnTraj->addWaypoint(idx, st->mState);
-  }
-  return returnTraj;  
-}
-else
+for (size_t idx = 0; idx < path->getStateCount(); ++idx) 
 {
-  return _originalTraj;
+      const auto *st =
+          static_cast<GeometricStateSpace::StateType *>(
+              path->getState(idx));
+      // Arbitrary timing
+      returnTraj->addWaypoint(idx, st->mState);
 }
+return returnTraj;  
 
 }
 
