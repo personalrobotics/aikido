@@ -27,10 +27,16 @@ set(sources
 )
 
 add_library("${PROJECT_NAME}_constraint" SHARED ${sources})
+target_include_directories("${PROJECT_NAME}_constraint"
+  PUBLIC
+    ${Boost_INCLUDE_DIRS}
+    ${DART_INCLUDE_DIRS}
+)
 target_link_libraries("${PROJECT_NAME}_constraint"
-  "${PROJECT_NAME}_statespace"
-  "${PROJECT_NAME}_util"
-  ${DART_LIBRARIES}
+  PUBLIC
+    "${PROJECT_NAME}_statespace"
+    "${PROJECT_NAME}_util"
+    ${DART_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_constraint"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}

@@ -15,6 +15,10 @@
   <depend>python</depend>
   <depend>tinyxml2</depend>
   <depend>yaml-cpp</depend>
+  <depend>actionlib</depend>
+  <depend>control_msgs</depend>
+  <depend>libmicrohttpd</depend>
+  <depend>interactive_markers</depend>
   <doc_depend>doxygen</doc_depend>
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>
@@ -23,6 +27,7 @@
   <!-- This is required by REP-136. -->
   <exec_depend>catkin</exec_depend>
   <buildtool_depend>cmake</buildtool_depend>
+  <buildtool_depend>clang-format-3.8</buildtool_depend>
   <export>
     <build_type>cmake</build_type>
   </export>

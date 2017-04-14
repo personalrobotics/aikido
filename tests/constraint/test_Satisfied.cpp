@@ -2,7 +2,7 @@
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 
-using aikido::statespace::Rn;
+using aikido::statespace::R2;
 using aikido::constraint::Satisfied;
 using Eigen::Vector2d;
 using Eigen::Matrix2d;
@@ -12,10 +12,10 @@ class SatisfiedTests : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<Rn>(2);
+    mStateSpace = std::make_shared<R2>();
   }
 
-  std::shared_ptr<Rn> mStateSpace;
+  std::shared_ptr<R2> mStateSpace;
 };
 
 TEST_F(SatisfiedTests, constructor_StateSpaceIsNull_Throws)
