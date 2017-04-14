@@ -4,17 +4,14 @@
 find_package(trajectory_msgs QUIET)
 aikido_check_package(trajectory_msgs "aikido::control::ros" "trajectory_msgs")
 
-# TODO: Workaround because find_package(actionlib) imports "tests" and "run_tests"
-# targets that conflict with the targets defined by Aikido.
-find_path(actionlib_INCLUDE_DIRS actionlib PATHS "/opt/ros/indigo/include")
-find_library(actionlib_LIBRARIES actionlib PATHS "/opt/ros/indigo/lib")
-evaluate_condition(actionlib_FOUND actionlib_INCLUDE_DIRS AND actionlib_LIBRARIES)
-#find_package(actionlib QUIET)
+# Note: Intentionally use "Module" mode because the config file imports "gtest",
+# "tests", and "run_tests" that conflict with the targets defined by Aikido.
+find_package(actionlib QUIET MODULE)
 aikido_check_package(actionlib "aikido::control::ros" "actionlib")
 
-find_path(control_msgs_INCLUDE_DIRS control_msgs PATHS "/opt/ros/indigo/include")
-#find_library(control_msgs_LIBRARIES control_msgs PATHS "/opt/ros/indigo/lib")
-evaluate_condition(control_msgs_FOUND control_msgs_INCLUDE_DIRS)
+# Note: Intentionally use "Module" mode because the config file imports "gtest",
+# "tests", and "run_tests" that conflict with the targets defined by Aikido.
+find_package(control_msgs QUIET MODULE)
 aikido_check_package(control_msgs "aikido::control::ros" "control_msgs")
 
 find_package(roscpp QUIET)
