@@ -2,8 +2,8 @@
 #define AIKIDO_UTIL_SPLINE_HPP_
 
 #include <cstddef>
-#include <vector>
 #include <memory>
+#include <vector>
 #include <Eigen/Core>
 #include <Eigen/QR>
 #include <Eigen/Sparse>
@@ -28,37 +28,36 @@ namespace util {
 /// \tparam _NumCoefficients number of polynomial coefficients, or \c Dynamic
 /// \tparam _NumOutputs number of outputs, or \c Dynamic
 /// \tparam _NumKnots number of knots, or \c Dynamic
-template <
-  class _Scalar = double,
-  class _Index = int,
-  _Index _NumCoefficients = Eigen::Dynamic,
-  _Index _NumOutputs = Eigen::Dynamic,
-  _Index _NumKnots = Eigen::Dynamic>
+template <class _Scalar = double,
+          class _Index = int,
+          _Index _NumCoefficients = Eigen::Dynamic,
+          _Index _NumOutputs = Eigen::Dynamic,
+          _Index _NumKnots = Eigen::Dynamic>
 class SplineND
 {
 public:
   using Scalar = _Scalar;
   using Index = _Index;
-  
+
   static constexpr Index NumCoefficientsAtCompileTime = _NumCoefficients;
   static constexpr Index NumOutputsAtCompileTime = _NumOutputs;
-  static constexpr Index NumKnotsAtCompileTime= _NumKnots;
+  static constexpr Index NumKnotsAtCompileTime = _NumKnots;
   static constexpr Index NumSegmentsAtCompileTime
-    = (_NumKnots != Eigen::Dynamic)
-      ? (NumKnotsAtCompileTime - 1)
-      : Eigen::Dynamic;
+      = (_NumKnots != Eigen::Dynamic) ? (NumKnotsAtCompileTime - 1)
+                                      : Eigen::Dynamic;
   static constexpr Index DimensionAtCompileTime
-    = (NumSegmentsAtCompileTime != Eigen::Dynamic
-        && _NumCoefficients != Eigen::Dynamic)
-      ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
-      : Eigen::Dynamic;
+      = (NumSegmentsAtCompileTime != Eigen::Dynamic
+         && _NumCoefficients != Eigen::Dynamic)
+            ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
+            : Eigen::Dynamic;
 
   using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
-  using SolutionMatrix = Eigen::Matrix<
-    Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
+  using SolutionMatrix = Eigen::Matrix<Scalar,
+                                       NumOutputsAtCompileTime,
+                                       NumCoefficientsAtCompileTime>;
   using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
-  using SolutionMatrices = std::vector<SolutionMatrix,
-    Eigen::aligned_allocator<SolutionMatrix> >;
+  using SolutionMatrices
+      = std::vector<SolutionMatrix, Eigen::aligned_allocator<SolutionMatrix> >;
 
   /// Constructs an empty spline.
   SplineND() = default;
@@ -73,15 +72,15 @@ public:
   /// \param _times times of knot points, must be monotone increasing
   /// \param _solution list of polynomial coefficients for each segment
   SplineND(
-    const TimeVector& _times,
-    const std::vector<SolutionMatrix,
-      Eigen::aligned_allocator<SolutionMatrix> > &_solution);
+      const TimeVector& _times,
+      const std::vector<SolutionMatrix,
+                        Eigen::aligned_allocator<SolutionMatrix> >& _solution);
 
   // Default copy and move semantics.
   SplineND(SplineND&& _other) = default;
   SplineND(const SplineND& _other) = default;
-  SplineND& operator =(SplineND&& _other) = default;
-  SplineND& operator =(const SplineND& _other) = default;
+  SplineND& operator=(SplineND&& _other) = default;
+  SplineND& operator=(const SplineND& _other) = default;
 
   /// Sets the time of the \c _index-th knot point. Times must remain monotone
   /// after performing this operation.
@@ -94,23 +93,23 @@ public:
   ///
   /// \param _index index of a knot point.
   /// \param _t new times, must be monotone increasing
-  void setTimes(TimeVector &&_t);
+  void setTimes(TimeVector&& _t);
 
   /// Sets the times of all knot points.
   ///
   /// \param _index index of a knot point.
   /// \param _t new times, must be monotone increasing
-  void setTimes(const TimeVector &_t);
+  void setTimes(const TimeVector& _t);
 
   /// Gets times of all knot points.
   ///
   /// \return times of knot points
-  const TimeVector &getTimes() const;
+  const TimeVector& getTimes() const;
 
   /// Gets polynomial coefficients for all segments.
   ///
   /// \return polynomial coefficients
-  const SolutionMatrices &getCoefficients() const;
+  const SolutionMatrices& getCoefficients() const;
 
   /// Gets the number of knot points.
   ///
@@ -154,18 +153,18 @@ public:
   OutputVector evaluate(Scalar _t, Index _derivative = 0) const;
 
 private:
-  using CoefficientVector = Eigen::Matrix<
-    Scalar, NumCoefficientsAtCompileTime, 1>;
-  using CoefficientMatrix = Eigen::Matrix<
-    Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
+  using CoefficientVector
+      = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
+  using CoefficientMatrix = Eigen::Matrix<Scalar,
+                                          NumCoefficientsAtCompileTime,
+                                          NumCoefficientsAtCompileTime>;
 
   TimeVector mTimes;
   SolutionMatrices mSolution;
 
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign);
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(TimeVector::NeedsToAlign)
 };
-
 
 /// Utility for fitting splines given constraints on function value, derivative
 /// value, and continuity. This class is intended to be used by calling methods
@@ -182,12 +181,11 @@ public:
 /// \tparam _NumCoefficients number of polynomial coefficients, or \c Dynamic
 /// \tparam _NumOutputs number of outputs, or \c Dynamic
 /// \tparam _NumKnots number of knots, or \c Dynamic
-template <
-  class _Scalar = double,
-  class _Index = int,
-  _Index _NumCoefficients = Eigen::Dynamic,
-  _Index _NumOutputs = Eigen::Dynamic,
-  _Index _NumKnots = Eigen::Dynamic>
+template <class _Scalar = double,
+          class _Index = int,
+          _Index _NumCoefficients = Eigen::Dynamic,
+          _Index _NumOutputs = Eigen::Dynamic,
+          _Index _NumKnots = Eigen::Dynamic>
 class SplineProblem
 {
 public:
@@ -196,32 +194,34 @@ public:
 
   static constexpr Index NumCoefficientsAtCompileTime = _NumCoefficients;
   static constexpr Index NumOutputsAtCompileTime = _NumOutputs;
-  static constexpr Index NumKnotsAtCompileTime= _NumKnots;
+  static constexpr Index NumKnotsAtCompileTime = _NumKnots;
   static constexpr Index NumSegmentsAtCompileTime
-    = (_NumKnots != Eigen::Dynamic)
-      ? (NumKnotsAtCompileTime - 1)
-      : Eigen::Dynamic;
+      = (_NumKnots != Eigen::Dynamic) ? (NumKnotsAtCompileTime - 1)
+                                      : Eigen::Dynamic;
   static constexpr Index DimensionAtCompileTime
-    = (NumSegmentsAtCompileTime != Eigen::Dynamic
-          && _NumCoefficients != Eigen::Dynamic)
-      ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
-      : Eigen::Dynamic;
+      = (NumSegmentsAtCompileTime != Eigen::Dynamic
+         && _NumCoefficients != Eigen::Dynamic)
+            ? (NumSegmentsAtCompileTime * NumCoefficientsAtCompileTime)
+            : Eigen::Dynamic;
 
   using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
   using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
-  using OutputMatrix = Eigen::Matrix<
-    Scalar, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime>;
-  using CoefficientVector = Eigen::Matrix<
-    Scalar, NumCoefficientsAtCompileTime, 1>;
-  using CoefficientMatrix = Eigen::Matrix<
-    Scalar, NumCoefficientsAtCompileTime, NumCoefficientsAtCompileTime>;
+  using OutputMatrix = Eigen::Matrix<Scalar,
+                                     NumCoefficientsAtCompileTime,
+                                     NumOutputsAtCompileTime>;
+  using CoefficientVector
+      = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
+  using CoefficientMatrix = Eigen::Matrix<Scalar,
+                                          NumCoefficientsAtCompileTime,
+                                          NumCoefficientsAtCompileTime>;
   using ProblemMatrix = Eigen::SparseMatrix<Scalar, 0, Index>;
-  using ProblemVector = Eigen::Matrix<
-    Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime>;
-  using SolutionMatrix = Eigen::Matrix<
-    Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
-  using Spline = SplineND<
-    Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>;
+  using ProblemVector
+      = Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime>;
+  using SolutionMatrix = Eigen::Matrix<Scalar,
+                                       NumOutputsAtCompileTime,
+                                       NumCoefficientsAtCompileTime>;
+  using Spline
+      = SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>;
 
   /// Constructs a spline fitting problem with the knot points at the specified
   /// times. This overload is only supported if \c _NumCoefficients and
@@ -244,15 +244,15 @@ public:
   /// \param _numCoefficients number of polynomial coefficients
   /// \param _numOutputs number of outputs
   SplineProblem(
-    const TimeVector& _times, Index _numCoefficients, Index _numOutputs);
+      const TimeVector& _times, Index _numCoefficients, Index _numOutputs);
 
   // Default copy and move semantics.
   SplineProblem(SplineProblem&& _other) = default;
   SplineProblem(const SplineProblem& _other) = default;
-  SplineProblem& operator =(SplineProblem&& _other) = default;
-  SplineProblem& operator =(const SplineProblem& _other) = default;
+  SplineProblem& operator=(SplineProblem&& _other) = default;
+  SplineProblem& operator=(const SplineProblem& _other) = default;
 
-  /// Creates a vector of the form [ 1, t, t^2, ... t^_n ] 
+  /// Creates a vector of the form [ 1, t, t^2, ... t^_n ]
   static CoefficientVector createTimeVector(Scalar _t, Index _i, Index _n);
 
   /// Creates the \c _n by \c _n matrix of derivative coefficients for a
@@ -273,7 +273,7 @@ public:
   /// \param _derivative order of derivative to constraint
   /// \param _value desired value of that knot point's derivative
   void addConstantConstraint(
-    Index _knot, Index _derivative, const OutputVector& _value);
+      Index _knot, Index _derivative, const OutputVector& _value);
 
   /// Adds a continuity constraint on the \c _derivative-th order derivative at
   /// knot point \c _knot. This operation is only defined for interior knot
@@ -283,7 +283,7 @@ public:
   /// \param _derivative order of derivative to constraint
   void addContinuityConstraint(Index _knot, Index _derivative);
 
-  /// Fit a spline given the constraints on added to this object. The behavior 
+  /// Fit a spline given the constraints on added to this object. The behavior
   /// of this function is undefined if the problem is over or
   /// under-constrained. To avoid this, be sure to only add
   /// (num coefficients) * (num knots - 1) constraints to this class.
@@ -322,15 +322,14 @@ private:
   ProblemVector mB;
 
   std::vector<SolutionMatrix,
-    Eigen::aligned_allocator<SolutionMatrix> > mSolution; // length _NumSegments
+              Eigen::aligned_allocator<SolutionMatrix> >
+      mSolution; // length _NumSegments
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(
-       CoefficientMatrix::NeedsToAlign
-    || TimeVector::NeedsToAlign
-    || ProblemMatrix::NeedsToAlign
-    || ProblemVector::NeedsToAlign
-  );
+      CoefficientMatrix::NeedsToAlign || TimeVector::NeedsToAlign
+      || ProblemMatrix::NeedsToAlign
+      || ProblemVector::NeedsToAlign)
 };
 
 } // namespace util

@@ -8,15 +8,6 @@ using boost::str;
 namespace aikido {
 namespace rviz {
 
-static geometry_msgs::Point makePoint(double x, double y, double z)
-{
-  geometry_msgs::Point point;
-  point.x = x;
-  point.y = y;
-  point.z = z;
-  return point;
-}
-
 static std_msgs::ColorRGBA makeColorRGBA(double r, double g, double b,
                                          double a = 1.)
 {
@@ -56,8 +47,6 @@ FrameMarker::FrameMarker(
   , mFrame(frame)
 {
   using visualization_msgs::InteractiveMarkerControl;
-
-  static geometry_msgs::Point const origin = makePoint(0, 0, 0);
 
   mInteractiveMarker.header.frame_id = "map";
   mInteractiveMarker.name = str(format("Frame[%s]") % frame->getName());

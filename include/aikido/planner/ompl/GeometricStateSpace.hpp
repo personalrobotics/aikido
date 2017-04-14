@@ -8,6 +8,7 @@
 #include "../../distance/DistanceMetric.hpp"
 #include "../../statespace/StateSpace.hpp"
 #include "../../statespace/GeodesicInterpolator.hpp"
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 
 namespace aikido {
 namespace planner {
@@ -64,8 +65,12 @@ public:
   /// For unbounded state spaces, this function can return infinity.
   double getMaximumExtent() const override;
 
+#if OMPL_VERSION_AT_LEAST(1,0,0)
   /// Get a measure of the space.
   double getMeasure() const override;
+#else
+  double getMeasure() const;
+#endif
 
   /// Bring the state within the bounds of the state space using the
   /// boundsProjection defined in the constructor.

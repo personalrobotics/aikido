@@ -79,7 +79,7 @@ void BarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
   std::exception_ptr expr;
   bool allFingersCompleted = true;
 
-  for(int i = 0; i < mFingerFutures.size(); ++i)
+  for(size_t i = 0; i < mFingerFutures.size(); ++i)
   {
     // Check the status of each finger
     auto status = mFingerFutures[i].wait_for(kWaitPeriod);
@@ -92,7 +92,7 @@ void BarrettHandPositionCommandExecutor::step(double _timeSincePreviousCall)
 
   if (allFingersCompleted)
   {
-    for(int i = 0; i < mFingerFutures.size(); ++i)
+    for(size_t i = 0; i < mFingerFutures.size(); ++i)
     {
       try{
         mFingerFutures[i].get();

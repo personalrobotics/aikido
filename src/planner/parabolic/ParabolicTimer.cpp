@@ -12,7 +12,7 @@
 using Eigen::Vector2d;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::Rn;
+using aikido::statespace::R;
 using aikido::statespace::SO2;
 using aikido::statespace::StateSpace;
 using dart::common::make_unique;
@@ -29,7 +29,7 @@ ParabolicRamp::Vector toVector(const Eigen::VectorXd& _x)
 {
   ParabolicRamp::Vector output(_x.size());
 
-  for (size_t i = 0; i < _x.size(); ++i)
+  for (int i = 0; i < _x.size(); ++i)
     output[i] = _x[i];
 
   return output;
@@ -60,10 +60,39 @@ void evaluateAtTime(
 
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
-  if (dynamic_cast<const Rn*>(_stateSpace) != nullptr)
+  // TODO(JS): Generalize Rn<N> for arbitrary N.
+  if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
+  {
     return true;
+  }
+  else if (dynamic_cast<const R<1>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
   else if (dynamic_cast<const SO2*>(_stateSpace) != nullptr)
+  {
     return true;
+  }
   else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
   {
     for (size_t isubspace = 0; isubspace < space->getNumSubspaces(); ++isubspace)
@@ -74,7 +103,9 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
     return true;
   }
   else
+  {
     return false;
+  }
 }
 
 } // namespace
@@ -101,10 +132,10 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  if (_maxVelocity.size() != dimension)
+  if (static_cast<size_t>(_maxVelocity.size()) != dimension)
     throw std::invalid_argument("Velocity limits have wrong dimension.");
 
-  if (_maxAcceleration.size() != dimension)
+  if (static_cast<size_t>(_maxAcceleration.size()) != dimension)
     throw std::invalid_argument("Acceleration limits have wrong dimension.");
 
   for (size_t i = 0; i < dimension; ++i)

@@ -5,17 +5,17 @@
 #include "PolynomialConstraint.hpp"
 
 using aikido::constraint::DifferentiablePtr;
-using aikido::statespace::Rn;
+using aikido::statespace::R1;
 
 TEST(Differentiable, GetValueAndJacobianDefault)
 {
 
-  PolynomialConstraint p(Eigen::Vector3d(1,2,3));
+  PolynomialConstraint<1> p(Eigen::Vector3d(1,2,3));
 
   Eigen::VectorXd v(1);
   v(0) = -2;
 
-  Rn rvss(1);
+  R1 rvss;
   auto s1 = rvss.createState();
   s1.setValue(v);
 

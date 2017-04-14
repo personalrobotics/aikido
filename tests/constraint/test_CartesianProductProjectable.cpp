@@ -8,8 +8,10 @@
 using aikido::constraint::CartesianProductProjectable;
 using aikido::constraint::ProjectablePtr;
 using aikido::statespace::CartesianProduct;
-using aikido::statespace::Rn;
-using aikido::constraint::RnBoxConstraint;
+using aikido::statespace::R2;
+using aikido::statespace::R3;
+using aikido::constraint::R2BoxConstraint;
+using aikido::constraint::R3BoxConstraint;
 
 class CartesianProductProjectableTest : public testing::Test
 {
@@ -17,13 +19,13 @@ public:
   virtual void SetUp()
   {
     // Subspaces
-    rvss1 = std::make_shared<Rn>(3);
-    rvss2 = std::make_shared<Rn>(2);
+    rvss1 = std::make_shared<R3>();
+    rvss2 = std::make_shared<R2>();
 
     // Constraints
-    rvBox1 = std::make_shared<RnBoxConstraint>(
+    rvBox1 = std::make_shared<R3BoxConstraint>(
       rvss1, nullptr, Eigen::Vector3d(1, 1, 1), Eigen::Vector3d(2, 1, 1));
-    rvBox2 = std::make_shared<RnBoxConstraint>(
+    rvBox2 = std::make_shared<R2BoxConstraint>(
       rvss2, nullptr, Eigen::Vector2d(1, 1), Eigen::Vector2d(2, 2));
 
     projectables.push_back(rvBox1);
@@ -35,8 +37,10 @@ public:
 
   std::shared_ptr<CartesianProduct> cs;
   std::vector<ProjectablePtr> projectables;
-  std::shared_ptr<Rn> rvss1, rvss2;
-  std::shared_ptr<RnBoxConstraint> rvBox1, rvBox2;
+  std::shared_ptr<R3> rvss1;
+  std::shared_ptr<R2> rvss2;
+  std::shared_ptr<R3BoxConstraint> rvBox1;
+  std::shared_ptr<R2BoxConstraint> rvBox2;
 
 };
 
@@ -83,17 +87,17 @@ TEST_F(CartesianProductProjectableTest, ProjectsToCorrectValues)
   auto ps = std::make_shared<CartesianProductProjectable>(cs, projectables);
 
   auto state = cs->createState();
-  auto subState = cs->getSubStateHandle<Rn>(state, 0);
+  auto subState = cs->getSubStateHandle<R3>(state, 0);
   subState.setValue(Eigen::Vector3d(-1, -1, -1));
 
   auto out = cs->createState();
 
   EXPECT_TRUE(ps->project(state, out));
 
-  auto outSubState1 = cs->getSubStateHandle<Rn>(out, 0);
+  auto outSubState1 = cs->getSubStateHandle<R3>(out, 0);
   EXPECT_TRUE(outSubState1.getValue().isApprox(Eigen::Vector3d(1, 1, 1)));
 
-  auto outSubState2 = cs->getSubStateHandle<Rn>(out, 1);
+  auto outSubState2 = cs->getSubStateHandle<R2>(out, 1);
   EXPECT_TRUE(outSubState2.getValue().isApprox(Eigen::Vector2d(1, 1)));
 }
 

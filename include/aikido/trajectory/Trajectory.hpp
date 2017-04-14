@@ -1,6 +1,6 @@
 #ifndef AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
-#include <boost/shared_ptr.hpp>
+
 #include <Eigen/Core>
 #include "../statespace/StateSpace.hpp"
 

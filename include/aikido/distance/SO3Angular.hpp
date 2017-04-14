@@ -29,6 +29,6 @@ public:
 private:
   std::shared_ptr<statespace::SO3> mStateSpace;
 };
-};
+}
 }
 #endif
