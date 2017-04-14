@@ -10,6 +10,6 @@ void CRRTConnect::setNearestNeighbors()
   mGoalTree.reset(new NN<CRRT::Motion*>());
 }
 
-} // ompl
+} // namespace ompl
 } // namespace planner
 } // namespace aikido

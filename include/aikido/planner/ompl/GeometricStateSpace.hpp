@@ -148,7 +148,7 @@ private:
 
 using GeometricStateSpacePtr = std::shared_ptr<GeometricStateSpace>;
 
-} // ompl
+} // namespace ompl
 } // namespace planner
 } // namespace aikido
 

@@ -47,7 +47,7 @@ private:
   double mSequenceResolution;
 };
 
-} // ompl
+} // namespace ompl
 } // namespace planner
 } // namespace aikido
 
