@@ -1,6 +1,15 @@
 #==============================================================================
 # Dependencies
 #
+find_package(actionlib QUIET)
+aikido_check_package(actionlib "aikido::control::ros" "actionlib")
+
+find_package(control_msgs QUIET)
+aikido_check_package(control_msgs "aikido::control::ros" "control_msgs")
+
+find_package(roscpp QUIET)
+aikido_check_package(roscpp "aikido::control::ros" "roscpp")
+
 find_package(trajectory_msgs QUIET)
 aikido_check_package(trajectory_msgs "aikido::control::ros" "trajectory_msgs")
 
@@ -24,11 +33,15 @@ set(sources
   RosTrajectoryExecutor.cpp
   RosTrajectoryExecutionException.cpp
   Conversions.cpp
+  RosJointStateClient.cpp
 )
 
 add_library("${PROJECT_NAME}_control_ros" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_control_ros" SYSTEM
   PUBLIC
+    ${actionlib_INCLUDE_DIRS}
+    ${control_msgs_INCLUDE_DIRS}
+    ${roscpp_INCLUDE_DIRS}
     ${trajectory_msgs_INCLUDE_DIRS}
     ${actionlib_INCLUDE_DIRS}
     ${control_msgs_INCLUDE_DIRS}
@@ -40,6 +53,9 @@ target_link_libraries("${PROJECT_NAME}_control_ros"
   "${PROJECT_NAME}_statespace"
   "${PROJECT_NAME}_trajectory"
   ${DART_LIBRARIES}
+  ${actionlib_LIBRARIES}
+  ${control_msgs_LIBRARIES}
+  ${roscpp_LIBRARIES}
   ${trajectory_msgs_LIBRARIES}
   ${actionlib_LIBRARIES}
   ${control_msgs_LIBRARIES}
