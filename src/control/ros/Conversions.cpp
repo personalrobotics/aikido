@@ -136,6 +136,7 @@ void extractTrajectoryPoint(
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
   const int numDof = space->getDimension();
+  DART_UNUSED(numDof);
 
   Eigen::VectorXd tangentVector;
   auto state = space->createState();
