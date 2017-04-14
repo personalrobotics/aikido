@@ -3,14 +3,16 @@
 
 #include <string>
 
-namespace aikido
+namespace aikido {
+namespace planner {
+
+struct PlanningResult
 {
-namespace planner
-{
-struct PlanningResult {
   // TODO fill out
   std::string message;
 };
-}
-}
-#endif  // AIKIDO_PLANNER_PLANNINGRESULT_HPP_
+
+} // namespace planner
+} // namespace aikido
+
+#endif // AIKIDO_PLANNER_PLANNINGRESULT_HPP_
