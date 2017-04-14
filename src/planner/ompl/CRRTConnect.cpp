@@ -225,7 +225,7 @@ double CRRTConnect::getConnectionRadius() const
       /* construct the solution path */
       Motion* solution = startMotion;
       std::vector<Motion*> mpath1;
-      while (solution != NULL)
+      while (solution != nullptr)
       {
         mpath1.push_back(solution);
         solution = solution->parent;
@@ -233,7 +233,7 @@ double CRRTConnect::getConnectionRadius() const
 
       solution = goalMotion;
       std::vector<Motion*> mpath2;
-      while (solution != NULL)
+      while (solution != nullptr)
       {
         mpath2.push_back(solution);
         solution = solution->parent;
@@ -278,7 +278,7 @@ void CRRTConnect::getPlannerData(::ompl::base::PlannerData& data) const
 
   for (std::size_t i = 0; i < motions.size(); ++i)
   {
-    if (motions[i]->parent == NULL)
+    if (motions[i]->parent == nullptr)
       data.addStartVertex(
           ::ompl::base::PlannerDataVertex(motions[i]->state, 1));
     else
@@ -295,8 +295,10 @@ void CRRTConnect::getPlannerData(::ompl::base::PlannerData& data) const
 
   for (std::size_t i = 0; i < motions.size(); ++i)
   {
-    if (motions[i]->parent == NULL)
+    if (motions[i]->parent == nullptr)
+    {
       data.addGoalVertex(::ompl::base::PlannerDataVertex(motions[i]->state, 2));
+    }
     else
     {
       // The edges in the goal tree are reversed to be consistent with start
@@ -312,6 +314,7 @@ void CRRTConnect::getPlannerData(::ompl::base::PlannerData& data) const
       data.vertexIndex(mConnectionPoint.first),
       data.vertexIndex(mConnectionPoint.second));
 }
-}
-}
-}
+
+} // namespace ompl
+} // namespace planner
+} // namespace aikido
