@@ -111,13 +111,7 @@ namespace YAML {
 namespace detail {
 
 template <typename MatrixType, bool IsVectorAtCompileTime>
-struct encode_impl
-{
-  static Node encode(MatrixType const& matrix)
-  {
-    assert(false && "Unknown MatrixType.");
-  }
-};
+struct encode_impl {};
 
 template <typename MatrixType>
 struct encode_impl<MatrixType, true>

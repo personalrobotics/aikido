@@ -1,7 +1,8 @@
 #include <sstream>
-#include <aikido/control/ros/Conversions.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
+#include <aikido/control/ros/Conversions.hpp>
+#include <aikido/util/StepSequence.hpp>
 #include <aikido/util/Spline.hpp>
 #include <dart/dynamics/Joint.hpp>
 #include <map>
@@ -127,15 +128,50 @@ void extractJointTrajectoryPoint(
 }
 
 //=============================================================================
+void extractTrajectoryPoint(
+  const std::shared_ptr<MetaSkeletonStateSpace>& space,
+  const aikido::trajectory::TrajectoryPtr& trajectory,
+  double timeFromStart, trajectory_msgs::JointTrajectoryPoint& waypoint)
+{
+  const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
+  const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
+  const int numDof = space->getDimension();
+  DART_UNUSED(numDof);
+
+  Eigen::VectorXd tangentVector;
+  auto state = space->createState();
+  trajectory->evaluate(timeAbsolute, state);
+  space->logMap(state, tangentVector);
+
+  assert(tangentVector.size() == numDof);
+
+  waypoint.time_from_start = ::ros::Duration(timeFromStart);
+  waypoint.positions.assign(tangentVector.data(),
+    tangentVector.data() + tangentVector.size());
+
+  assert(0 <= numDerivatives && numDerivatives <= 2);
+  const std::array<std::vector<double>*, 2> derivatives{
+    &waypoint.velocities, &waypoint.accelerations};
+  for (int iDerivative = 1; iDerivative <= numDerivatives; ++iDerivative)
+  {
+    trajectory->evaluateDerivative(timeAbsolute, iDerivative, tangentVector);
+    assert(tangentVector.size() == numDof);
+
+    derivatives[iDerivative - 1]->assign(tangentVector.data(),
+      tangentVector.data() + tangentVector.size());
+  }
+}
+
+//=============================================================================
 // The rows of inVector is reordered in outVector.
 void reorder(std::map<size_t, size_t> indexMap,
   const Eigen::VectorXd& inVector, Eigen::VectorXd* outVector)
 {
-  *outVector = Eigen::VectorXd::Zero(inVector.size());
-  for (auto it = indexMap.begin(); it != indexMap.end(); ++it)
-  {
-    (*outVector)(it->second) = inVector(it->first);
-  }
+  assert(outVector != nullptr);
+  assert(indexMap.size() == static_cast<std::size_t>(inVector.size()));
+  outVector->resize(inVector.size());
+  for (auto index : indexMap)
+    (*outVector)[index.second] = inVector[index.first];
 }
 
 //=============================================================================
@@ -147,11 +183,8 @@ std::vector<const dart::dynamics::Joint*> findJointByName(
 
   for (size_t i = 0; i < metaSkeleton.getNumJoints(); ++i)
   {
-    auto joint = metaSkeleton.getJoint(i);
-    if (joint->getName() == jointName)
-    {
+    if (metaSkeleton.getJoint(i)->getName() == jointName)
       joints.emplace_back(metaSkeleton.getJoint(i));
-    }
   }
 
   return joints;
@@ -160,7 +193,7 @@ std::vector<const dart::dynamics::Joint*> findJointByName(
 } // namespace
 
 //=============================================================================
-std::unique_ptr<SplineTrajectory> convertJointTrajectory(
+std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   const std::shared_ptr<MetaSkeletonStateSpace>& space,
   const trajectory_msgs::JointTrajectory& jointTrajectory)
 {
@@ -178,15 +211,20 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   }
 
   // Check that the names in jointTrajectory are unique.
-  auto joint_names = jointTrajectory.joint_names;
+  std::vector<std::string> joint_names;
+  joint_names.reserve(numControlledJoints);
+  for (size_t i = 0; i < numControlledJoints; ++i)
+    joint_names.emplace_back(jointTrajectory.joint_names[i]);
   std::sort(joint_names.begin(), joint_names.end());
-  auto duplicate_it = std::adjacent_find(std::begin(joint_names), std::end(joint_names));
-  if (duplicate_it != std::end(joint_names))
+  for (size_t i = 0; i < numControlledJoints - 1; ++i)
   {
-    std::stringstream message;
-    message << "JointTrajectory has multiple joints with same name ["
-      << *duplicate_it << "].";
-    throw std::invalid_argument{message.str()};
+    if (joint_names[i] == joint_names[i+1])
+    {
+      std::stringstream message;
+      message << "JointTrajectory has multiple joints with same name ["
+        << joint_names[i] << "].";
+      throw std::invalid_argument{message.str()};
+    }
   }
 
   // Check that all joints are R1Joint or SO2JOint state spaces.
@@ -220,24 +258,23 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   auto metaSkeleton = space->getMetaSkeleton();
   auto nJoints = jointTrajectory.joint_names.size();
 
-  for (size_t trajJointIndex = 0; trajJointIndex < nJoints; ++trajJointIndex)
+  for (size_t trajIndex = 0; trajIndex < nJoints; ++trajIndex)
   {
-    const auto& jointName = jointTrajectory.joint_names[trajJointIndex];
+    const auto& jointName = jointTrajectory.joint_names[trajIndex];
     auto joints = findJointByName(*metaSkeleton, jointName);
 
-    if (joints.empty())
+    if (joints.size() == 0)
     {
       std::stringstream message;
-      message << "Joint " << jointName << " (trajectory index: "
-        << trajJointIndex << ")" << " does not exist in MetaSkeleton.";
+      message << "Joint " << jointName << " (index: " << trajIndex << ")"
+        << " does not exist in metaSkeleton.";
       throw std::invalid_argument{message.str()};
     }
     else if  (joints.size() > 1)
     {
       std::stringstream message;
       message << "Multiple (" << joints.size()
-        << ") joints have the same name [" << jointName << "] "
-        << "in the JointTrajectory.";
+        << ") joints have the same name [" << jointName << "].";
       throw std::invalid_argument{message.str()};
     }
 
@@ -246,7 +283,7 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     assert(metaSkeletonIndex != dart::dynamics::INVALID_INDEX);
 
     rosJointToMetaSkeletonJoint.emplace(
-      std::make_pair(trajJointIndex, metaSkeletonIndex));
+      std::make_pair(trajIndex, metaSkeletonIndex));
   }
 
   // Extract the first waypoint to infer the dimensionality of the trajectory.
@@ -280,17 +317,19 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
   auto currState = space->createState();
 
   const auto& waypoints = jointTrajectory.points;
-  for (size_t iwaypoint = 1; iwaypoint < waypoints.size(); ++iwaypoint)
+  for (size_t iWaypoint = 1; iWaypoint < waypoints.size(); ++iWaypoint)
   {
-    Eigen::VectorXd nextPosition, nextVelocity, nextAcceleration;
-    extractJointTrajectoryPoint(jointTrajectory, iwaypoint, numControlledJoints,
+    Eigen::VectorXd nextPosition;
+    Eigen::VectorXd nextVelocity;
+    Eigen::VectorXd nextAcceleration;
+    extractJointTrajectoryPoint(jointTrajectory, iWaypoint, numControlledJoints,
       &nextPosition, isPositionRequired,
       &nextVelocity, isVelocityRequired,
       &nextAcceleration, isAccelerationRequired,
       rosJointToMetaSkeletonJoint);
 
     // Compute spline coefficients for this polynomial segment.
-    const auto nextTimeFromStart = waypoints[iwaypoint].time_from_start.toSec();
+    const auto nextTimeFromStart = waypoints[iWaypoint].time_from_start.toSec();
     const auto segmentDuration = nextTimeFromStart - currTimeFromStart;
     const auto segmentCoefficients = fitPolynomial(
       0., Eigen::VectorXd::Zero(numControlledJoints), currVelocity, currAcceleration,
@@ -308,10 +347,88 @@ std::unique_ptr<SplineTrajectory> convertJointTrajectory(
     currTimeFromStart = nextTimeFromStart;
   }
 
-  return std::move(trajectory);
+  return trajectory;
+}
+
+//=============================================================================
+trajectory_msgs::JointTrajectory toRosJointTrajectory(
+  const aikido::trajectory::TrajectoryPtr& trajectory, double timestep)
+{
+  using statespace::dart::MetaSkeletonStateSpace;
+  using statespace::dart::SO2Joint;
+  using statespace::dart::R1Joint;
+
+  if (!trajectory)
+    throw std::invalid_argument("Trajectory is null.");
+
+  if (timestep <= 0)
+    throw std::invalid_argument("Timestep must be positive.");
+
+  const auto space = std::dynamic_pointer_cast<
+    MetaSkeletonStateSpace>(trajectory->getStateSpace());
+  if (!space)
+  {
+    throw std::invalid_argument(
+      "Trajectory is not in a MetaSkeletonStateSpace.");
+  }
+
+  for (size_t i = 0; i < space->getNumSubspaces(); ++i)
+  {
+    // Supports only R1Joints and SO2Joints.
+    auto rnJoint = std::dynamic_pointer_cast<R1Joint>(space->getSubspace(i));
+    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(space->getSubspace(i));
+    if (!rnJoint && !so2Joint)
+    {
+      throw std::invalid_argument(
+        "MetaSkeletonStateSpace must contain only RnJonts and SO2Joints.");
+    }
+
+    // For RnJoint, supports only 1D.
+    if (rnJoint && rnJoint->getDimension() != 1)
+    {
+      std::stringstream message;
+      message << "RnJoint must be 1D. Joint "
+        << i << " has " << rnJoint->getDimension() << " dimensions.";
+      throw std::invalid_argument{message.str()};
+    }
+  }
+
+  util::StepSequence timeSequence{timestep, true, 0., trajectory->getDuration()};
+  const auto numJoints = space->getNumSubspaces();
+  const auto numWaypoints = timeSequence.getMaxSteps();
+  const auto metaSkeleton = space->getMetaSkeleton();
+  trajectory_msgs::JointTrajectory jointTrajectory;
+  jointTrajectory.joint_names.reserve(numJoints);
+
+  for (size_t i = 0; i < numJoints; ++i)
+  {
+    const auto joint = space->getJointSpace(i)->getJoint();
+    const auto jointName = joint->getName();
+    auto joints = findJointByName(*metaSkeleton, jointName);
+    if (joints.size() > 1)
+    {
+      std::stringstream message;
+      message << "Metaskeleton has multiple joints with same name ["
+        << jointName << "].";
+      throw std::invalid_argument{message.str()};
+    }
+    jointTrajectory.joint_names.emplace_back(jointName);
+  }
+
+  // Evaluate trajectory at each timestep and insert it into jointTrajectory
+  jointTrajectory.points.reserve(numWaypoints);
+  for (const auto timeFromStart : timeSequence)
+  {
+    trajectory_msgs::JointTrajectoryPoint waypoint;
+
+    extractTrajectoryPoint(space, trajectory, timeFromStart, waypoint);
+
+    jointTrajectory.points.emplace_back(waypoint);
+  }
+
+  return jointTrajectory;
 }
 
 } // namespace ros
 } // namespace control
 } // namespace aikido
-
