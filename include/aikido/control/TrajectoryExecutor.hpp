@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONTROL_TRAJECTORYEXECUTOR_HPP_
 #define AIKIDO_CONTROL_TRAJECTORYEXECUTOR_HPP_
 #include "TrajectoryResult.hpp"
-#include "../trajectory/Trajectory.hpp"
+#include <aikido/trajectory/Trajectory.hpp>
 #include <future>
 
 namespace aikido {
