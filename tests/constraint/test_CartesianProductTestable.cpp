@@ -11,10 +11,10 @@ using aikido::constraint::CartesianProductTestable;
 using aikido::constraint::Satisfied;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
-using aikido::statespace::Rn;
+using aikido::statespace::R3;
 using aikido::constraint::TestablePtr;
 using aikido::constraint::Testable;
-using aikido::constraint::RnBoxConstraint;
+using aikido::constraint::R3BoxConstraint;
 
 class CartesianProductTestableTest : public testing::Test
 {
@@ -22,11 +22,11 @@ public:
   virtual void SetUp()
   {
     // Subspaces
-    rvss = std::make_shared<Rn>(3);
+    rvss = std::make_shared<R3>();
     so2 = std::make_shared<SO2>();
 
     // Constraints
-    auto rvBox = std::make_shared<RnBoxConstraint>(
+    auto rvBox = std::make_shared<R3BoxConstraint>(
       rvss, nullptr, Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(1, 1, 1));
     satisfied = std::make_shared<Satisfied>(so2);
 
@@ -42,7 +42,7 @@ public:
   std::shared_ptr<CartesianProductTestable> ts;
   std::vector<TestablePtr> testables;
   std::shared_ptr<Satisfied> satisfied;
-  std::shared_ptr<Rn> rvss;
+  std::shared_ptr<R3> rvss;
   std::shared_ptr<SO2> so2;
 
 };
@@ -92,7 +92,7 @@ TEST_F(CartesianProductTestableTest, IsSastisfiedReturnsTrue)
 TEST_F(CartesianProductTestableTest, IsSastisfiedReturnsFalse)
 {
   auto state = cs->createState();
-  auto subState = cs->getSubStateHandle<Rn>(state, 0);
+  auto subState = cs->getSubStateHandle<R3>(state, 0);
 
   subState.setValue(Eigen::Vector3d(0, -1, 0));
 
