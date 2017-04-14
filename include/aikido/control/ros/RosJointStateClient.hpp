@@ -11,6 +11,8 @@ namespace aikido {
 namespace control {
 namespace ros {
 
+/// Client that listens for JointState messages for each skeleton joint and
+/// provides a method for extracting the most recent position of each joint.
 class RosJointStateClient
 {
 public:
@@ -18,17 +20,19 @@ public:
   /// \param _skeleton Skeleton to read JointState updates for.
   /// \param _nodeHandle ROS node.
   /// \param _topicName Name of topic to subscribe to for JointState updates.
+  /// \param _capacity Number of JointStateRecords that are saved per joint.
   RosJointStateClient(
     dart::dynamics::SkeletonPtr _skeleton,
     ::ros::NodeHandle _nodeHandle,
     const std::string& _topicName,
     size_t capacity);
 
-  /// Call all callbacks in mCallbackQueue.
+  /// Update mBuffer with any JointState messages that have been received.
   void spin();
 
-  /// Returns the last position of each joint.
+  /// Returns the most recent position of each joint in _metaSkeleton.
   /// \param _metaSkeleton Skeleton to read DOFs from.
+  /// \return vector of positions for each DOF
   Eigen::VectorXd getLatestPosition(
     const dart::dynamics::MetaSkeleton& _metaSkeleton) const;
 

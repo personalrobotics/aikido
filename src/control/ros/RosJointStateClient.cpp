@@ -13,7 +13,7 @@ RosJointStateClient::RosJointStateClient(
   : mSkeleton{std::move(_skeleton)}
   , mBuffer{}
   , mCapacity{capacity}
-  , mCallbackQueue{} // Must be before mNodeHandle for order of destruction.
+  , mCallbackQueue{} // Must be after mNodeHandle for order of destruction.
   , mNodeHandle{std::move(_nodeHandle)}
 {
   if (!mSkeleton)
@@ -89,6 +89,16 @@ void RosJointStateClient::jointStateCallback(
     const auto result = mBuffer.emplace(_jointState.name[i],
       boost::circular_buffer<JointStateRecord>{mCapacity});
     auto& buffer = result.first->second;
+
+    if (_jointState.header.stamp < buffer.back().mStamp)
+    {
+      // Ignore out of order JointState message.
+      ROS_WARN_STREAM("Ignoring out of order message: received timestamp of "
+                      << _jointState.header.stamp << " is before previously "
+                      << "received timestamp of " << buffer.back().mStamp);
+
+      continue;
+    }
 
     JointStateRecord record;
     record.mStamp = _jointState.header.stamp;
