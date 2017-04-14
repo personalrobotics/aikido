@@ -24,11 +24,51 @@ struct createDistanceMetricFor_impl {};
 
 //=============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::Rn>
+struct createDistanceMetricFor_impl<statespace::R0>
 {
-  static Ptr create(std::shared_ptr<statespace::Rn> _sspace)
+  static Ptr create(std::shared_ptr<statespace::R0> _sspace)
   {
-    return make_unique<RnEuclidean>(std::move(_sspace));
+    return make_unique<R0Euclidean>(std::move(_sspace));
+  }
+};
+
+//=============================================================================
+template <>
+struct createDistanceMetricFor_impl<statespace::R1>
+{
+  static Ptr create(std::shared_ptr<statespace::R1> _sspace)
+  {
+    return make_unique<R1Euclidean>(std::move(_sspace));
+  }
+};
+
+//=============================================================================
+template <>
+struct createDistanceMetricFor_impl<statespace::R2>
+{
+  static Ptr create(std::shared_ptr<statespace::R2> _sspace)
+  {
+    return make_unique<R2Euclidean>(std::move(_sspace));
+  }
+};
+
+//=============================================================================
+template <>
+struct createDistanceMetricFor_impl<statespace::R3>
+{
+  static Ptr create(std::shared_ptr<statespace::R3> _sspace)
+  {
+    return make_unique<R3Euclidean>(std::move(_sspace));
+  }
+};
+
+//=============================================================================
+template <>
+struct createDistanceMetricFor_impl<statespace::R6>
+{
+  static Ptr create(std::shared_ptr<statespace::R6> _sspace)
+  {
+    return make_unique<R6Euclidean>(std::move(_sspace));
   }
 };
 
@@ -91,7 +131,11 @@ struct createDistanceMetricFor_impl<statespace::SE2>
 //=============================================================================
 using SupportedStateSpaces = util::type_list<
     statespace::CartesianProduct,
-    statespace::Rn,
+    statespace::R0,
+    statespace::R1,
+    statespace::R2,
+    statespace::R3,
+    statespace::R6,
     statespace::SO2,
     statespace::SO3,
     statespace::SE2

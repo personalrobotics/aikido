@@ -1,5 +1,4 @@
 #include <aikido/distance/SO2Angular.hpp>
-#include <boost/math/constants/constants.hpp>
 
 namespace aikido {
 namespace distance {

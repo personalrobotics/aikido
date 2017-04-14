@@ -58,7 +58,11 @@ inline Eigen::VectorXd getPositionUpperLimits(
 
 //=============================================================================
 using JointStateSpaceTypeList = util::type_list<
-  statespace::dart::RnJoint,
+  statespace::dart::R0Joint,
+  statespace::dart::R1Joint,
+  statespace::dart::R2Joint,
+  statespace::dart::R3Joint,
+  statespace::dart::R6Joint,
   statespace::dart::SO2Joint,
   statespace::dart::SO3Joint,
   statespace::dart::SE2Joint,
@@ -80,15 +84,15 @@ template <class T>
 struct createSampleableFor_impl { };
 
 //=============================================================================
-template <class OutputConstraint>
+template <int N, class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
-  std::shared_ptr<statespace::dart::RnJoint> _stateSpace,
+  std::shared_ptr<statespace::dart::RJoint<N>> _stateSpace,
   std::unique_ptr<util::RNG> _rng)
 {
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
-    return dart::common::make_unique<RnBoxConstraint>(
+    return dart::common::make_unique<RBoxConstraint<N>>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
   else
@@ -97,51 +101,51 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 }
 
 //=============================================================================
-template <>
-struct createDifferentiableFor_impl<statespace::dart::RnJoint>
+template <int N>
+struct createDifferentiableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
-    return createBoxConstraint<Differentiable>(std::move(_stateSpace), nullptr);
+    return createBoxConstraint<N, Differentiable>(std::move(_stateSpace), nullptr);
   }
 };
 
 //=============================================================================
-template <>
-struct createTestableFor_impl<statespace::dart::RnJoint>
+template <int N>
+struct createTestableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
-    return createBoxConstraint<Testable>(
+    return createBoxConstraint<N, Testable>(
       std::move(_stateSpace), nullptr);
   }
 };
 
 //=============================================================================
-template <>
-struct createProjectableFor_impl<statespace::dart::RnJoint>
+template <int N>
+struct createProjectableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
-    return createBoxConstraint<Projectable>(
+    return createBoxConstraint<N, Projectable>(
       std::move(_stateSpace), nullptr);
   }
 };
 
 //=============================================================================
-template <>
-struct createSampleableFor_impl<statespace::dart::RnJoint>
+template <int N>
+struct createSampleableFor_impl<statespace::dart::RJoint<N>>
 {
-  using StateSpace = statespace::dart::RnJoint;
+  using StateSpace = statespace::dart::RJoint<N>;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
@@ -150,7 +154,7 @@ struct createSampleableFor_impl<statespace::dart::RnJoint>
     const auto joint = _stateSpace->getJoint();
 
     if (isLimited(joint))
-      return dart::common::make_unique<RnBoxConstraint>(
+      return dart::common::make_unique<RBoxConstraint<N>>(
         std::move(_stateSpace), std::move(_rng),
         getPositionLowerLimits(joint), getPositionUpperLimits(joint));
     else
@@ -510,7 +514,7 @@ struct createSampleableFor_impl<statespace::dart::WeldJoint>
     const auto joint = _stateSpace->getJoint();
     Eigen::VectorXd positions = joint->getPositions();
 
-    return dart::common::make_unique<RnConstantSampler>(
+    return dart::common::make_unique<R0ConstantSampler>(
         std::move(_stateSpace), positions);
   }
 };

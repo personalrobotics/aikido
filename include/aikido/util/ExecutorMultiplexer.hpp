@@ -30,7 +30,7 @@ public:
   ///
   /// \param[in] callback Any callable object that doesn't return and take any
   /// parameters.
-  void addCallback(std::function<void ()> callback);
+  void addCallback(std::function<void()> callback);
 
   /// Removes all the added callbacks.
   void removeAllCallbacks();
@@ -42,7 +42,7 @@ public:
   std::size_t getNumCallbacks() const;
 
   /// Executes all the added callbacked in order of they added.
-  void operator ()();
+  void operator()();
 
 private:
   /// Mutex for the list of callbacks. The array of callbacks will be locked
@@ -50,10 +50,10 @@ private:
   std::mutex mMutex;
 
   /// Array of callbacks.
-  std::vector<std::function<void ()>> mCallbacks;
+  std::vector<std::function<void()>> mCallbacks;
 };
 
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_EXECUTORMULTIPLEXER_HPP_
+#endif // AIKIDO_UTIL_EXECUTORMULTIPLEXER_HPP_

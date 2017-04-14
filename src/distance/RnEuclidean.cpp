@@ -3,33 +3,23 @@
 namespace aikido {
 namespace distance {
 
-//=============================================================================
-RnEuclidean::RnEuclidean(
-    std::shared_ptr<statespace::Rn> _space)
-    : mStateSpace(std::move(_space))
-{
-  if (mStateSpace == nullptr) {
-    throw std::invalid_argument("Rn is nullptr.");
-  }
-}
+template
+class REuclidean<0>;
 
-//=============================================================================
-statespace::StateSpacePtr RnEuclidean::getStateSpace() const
-{
-  return mStateSpace;
-}
+template
+class REuclidean<1>;
 
-//=============================================================================
-double RnEuclidean::distance(
-    const statespace::StateSpace::State* _state1,
-    const statespace::StateSpace::State* _state2) const
-{
-  auto v1 = mStateSpace->getValue(
-      static_cast<const statespace::Rn::State*>(_state1));
-  auto v2 = mStateSpace->getValue(
-      static_cast<const statespace::Rn::State*>(_state2));
-  return (v2 - v1).norm();
-}
+template
+class REuclidean<2>;
 
-}
-}
+template
+class REuclidean<3>;
+
+template
+class REuclidean<6>;
+
+template
+class REuclidean<Eigen::Dynamic>;
+
+} // namespace distance
+} // namespace aikido

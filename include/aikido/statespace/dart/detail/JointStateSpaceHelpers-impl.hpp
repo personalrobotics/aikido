@@ -29,7 +29,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
     if (_joint->isCyclic(0))
        return make_unique<SO2Joint>(_joint);
     else
-       return make_unique<RnJoint>(_joint);
+       return make_unique<R1Joint>(_joint);
   }
 };
 
@@ -39,7 +39,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
 {
   static Ptr create(::dart::dynamics::PrismaticJoint* _joint)
   {
-    return make_unique<RnJoint>(_joint);
+    return make_unique<R1Joint>(_joint);
   }
 };
 
@@ -49,7 +49,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
 {
   static Ptr create(::dart::dynamics::TranslationalJoint* _joint)
   {
-    return make_unique<RnJoint>(_joint);
+    return make_unique<R3Joint>(_joint);
   }
 };
 

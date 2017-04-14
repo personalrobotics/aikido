@@ -28,46 +28,48 @@ struct DynamicCastFactory_raw_ptr
 };
 
 //==============================================================================
-template <
-  template <class> class Factory,
-  template <class> class Pointer,
-  class BaseParameter>
-struct DynamicCastFactory<
-  Factory, Pointer, BaseParameter, util::type_list<>>
+template <template <class> class Factory,
+          template <class> class Pointer,
+          class BaseParameter>
+struct DynamicCastFactory<Factory, Pointer, BaseParameter, util::type_list<>>
 {
   template <class... Parameters>
   static std::nullptr_t create(
-    typename Pointer<BaseParameter>::type /* unused */,
-    Parameters&&... /* unused */)
+      typename Pointer<BaseParameter>::type /* unused */,
+      Parameters&&... /* unused */)
   {
     return nullptr;
   }
 };
 
 //==============================================================================
-template <
-  template <class> class Factory,
-  template <class> class Pointer,
-  class BaseParameter,
-  class Arg,
-  class... Args>
-struct DynamicCastFactory<
-  Factory, Pointer, BaseParameter, util::type_list<Arg, Args...>>
+template <template <class> class Factory,
+          template <class> class Pointer,
+          class BaseParameter,
+          class Arg,
+          class... Args>
+struct DynamicCastFactory<Factory,
+                          Pointer,
+                          BaseParameter,
+                          util::type_list<Arg, Args...>>
 {
   template <class... Parameters>
-  static auto create(typename Pointer<BaseParameter>::type _base,
-                     Parameters&&... _params)
-    -> decltype(Factory<Arg>::create(
-         Pointer<BaseParameter>::template cast<Arg>(_base),
-         std::forward<Parameters>(_params)...))
+  static auto create(
+      typename Pointer<BaseParameter>::type _base, Parameters&&... _params)
+      -> decltype(
+          Factory<Arg>::create(
+              Pointer<BaseParameter>::template cast<Arg>(_base),
+              std::forward<Parameters>(_params)...))
   {
     if (auto derived = Pointer<BaseParameter>::template cast<Arg>(_base))
       return Factory<Arg>::create(
-        std::move(derived), std::forward<Parameters>(_params)...);
+          std::move(derived), std::forward<Parameters>(_params)...);
     else
-      return DynamicCastFactory<
-        Factory, Pointer, BaseParameter, util::type_list<Args...>>::create(
-          std::move(_base), std::forward<Parameters>(_params)...);
+      return DynamicCastFactory<Factory,
+                                Pointer,
+                                BaseParameter,
+                                util::type_list<Args...>>::
+          create(std::move(_base), std::forward<Parameters>(_params)...);
   }
 };
 

@@ -1,8 +1,8 @@
 #ifndef AIKIDO_UTIL_STRING_HPP_
 #define AIKIDO_UTIL_STRING_HPP_
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace aikido {
 namespace util {
@@ -30,4 +30,4 @@ std::vector<std::string> split(
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_STRING_HPP_
+#endif // AIKIDO_UTIL_STRING_HPP_
