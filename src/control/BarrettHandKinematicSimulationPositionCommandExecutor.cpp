@@ -46,9 +46,11 @@ BarrettHandKinematicSimulationPositionCommandExecutor
                 << " does not match CollisionGroup's CollisionDetector of type "
                 << mCollideWith->getCollisionDetector()->getType() << std::endl;
 
-      std::cerr << "[BarrettHandKinematicSimulationPositionCommandExecutor] "
-                << "Creating empty CollisionGroup." << std::endl;
-      mCollideWith = mCollisionDetector->createCollisionGroup();
+      ::dart::collision::CollisionGroupPtr newCollideWith =
+          mCollisionDetector->createCollisionGroup();
+      for (auto i = 0u; i < mCollideWith->getNumShapeFrames(); ++i)
+        newCollideWith->addShapeFrame(mCollideWith->getShapeFrame(i));
+      mCollideWith = std::move(newCollideWith);
     }
   }
   else if (mCollisionDetector && !mCollideWith)
