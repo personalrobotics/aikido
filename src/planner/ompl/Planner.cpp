@@ -399,31 +399,31 @@ std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statesp
         si->getStateSpace());
 
   // Step 2: Convert the AIKIDO trajectory to Geometric Path 
-  ::ompl::geometric::PathGeometric *path = new ::ompl::geometric::PathGeometric(si);
+  ::ompl::geometric::PathGeometric path {si};
 
   for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx) 
   {
         auto ompl_state = sspace->allocState(_originalTraj->getWaypoint(idx));
-        path->append(ompl_state);
+        path.append(ompl_state);
         sspace->freeState(ompl_state);
   }
 
   // Step 3: Use the OMPL methods to simplify the path
-  ::ompl::geometric::PathSimplifier simplifier = ::ompl::geometric::PathSimplifier(si);
+  ::ompl::geometric::PathSimplifier simplifier {si};
 
   // Flag for user to know if shorten was successful
   bool shorten_success = false;
 
   // Set the parameters for termination of simplification process
-  ::ompl::time::point const time_before = ::ompl::time::now();
-  ::ompl::time::point time_current;
-  ::ompl::time::duration const time_limit = ::ompl::time::seconds(_timeout);
+  std::chrono::system_clock::time_point const time_before = std::chrono::system_clock::now(); 
+  std::chrono::system_clock::time_point time_current;
+  std::chrono::duration<double> const time_limit = std::chrono::duration<double>(_timeout); 
   double empty_steps = 0;
   
   do 
   {
 
-    bool const shortened = simplifier.shortcutPath(*path, 1, _maxEmptySteps, 1.0, 0.0);
+    bool const shortened = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
     empty_steps = (empty_steps + !shortened)*!shortened; // Increment only if shorten fails consecutively
     time_current = ::ompl::time::now();
     shorten_success = shorten_success || shortened; // TODO: There should be a better way to do this.
@@ -434,18 +434,17 @@ std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statesp
   auto returnTraj = dart::common::make_unique<trajectory::Interpolated>(
         std::move(_stateSpace), std::move(_interpolator));
 
-  for (size_t idx = 0; idx < path->getStateCount(); ++idx) 
+  for (size_t idx = 0; idx < path.getStateCount(); ++idx) 
   {
         const auto *st =
             static_cast<GeometricStateSpace::StateType *>(
-                path->getState(idx));
+                path.getState(idx));
         // Arbitrary timing
         returnTraj->addWaypoint(idx, st->mState);
   }
 
   std::pair <std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
-  returnPair = std::make_pair(std::move(returnTraj),shorten_success); 
-  return returnPair;
+  return std::make_pair(std::move(returnTraj),shorten_success); 
 
 }
 //=============================================================================
