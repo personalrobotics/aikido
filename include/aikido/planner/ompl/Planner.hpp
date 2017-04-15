@@ -20,8 +20,6 @@
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/base/ScopedState.h>
 
-// #include <ompl/util/Time.h>
-
 #include <ompl/geometric/PathSimplifier.h>
 
 namespace aikido {
