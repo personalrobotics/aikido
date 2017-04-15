@@ -6,6 +6,7 @@
 namespace aikido {
 namespace planner {
 namespace ompl {
+
 /// Implement an OMPL MotionValidator.  This class checks the validity
 ///  of path segments between states.
 class MotionValidator : public ::ompl::base::MotionValidator
@@ -17,15 +18,17 @@ public:
   /// \param _maxDistBtwValidityChecks The maximum distance (under the distance
   /// metric defined on the planning StateSpace) between two points on the
   /// segment checked for validity
-  MotionValidator(const ::ompl::base::SpaceInformationPtr& _si,
-                  const double& _maxDistBtwValidityChecks);
+  MotionValidator(
+      const ::ompl::base::SpaceInformationPtr& _si,
+      double _maxDistBtwValidityChecks);
 
   /// Check if the path between two states, _s1 and _s2, is valid.  This
   /// function assumes _s1 is valid.
   /// \param _s1 The state at the start of the segment
   /// \param _s2 The state at the end of the segment
-  bool checkMotion(const ::ompl::base::State* _s1,
-                   const ::ompl::base::State* _s2) const override;
+  bool checkMotion(
+      const ::ompl::base::State* _s1,
+      const ::ompl::base::State* _s2) const override;
 
   // Check if the path between two states is valid. Also compute the last state
   // that was valid and the time of that state.  The time is used to
@@ -36,13 +39,16 @@ public:
   /// \param[out] _lastValid The last valid state on the segment and the segment
   /// time of that state (between 0 and 1)
   bool checkMotion(
-      const ::ompl::base::State* _s1, const ::ompl::base::State* _s2,
+      const ::ompl::base::State* _s1,
+      const ::ompl::base::State* _s2,
       std::pair<::ompl::base::State*, double>& _lastValid) const override;
 
 private:
-    double mSequenceResolution;
+  double mSequenceResolution;
 };
-}
-}
-}
+
+} // namespace ompl
+} // namespace planner
+} // namespace aikido
+
 #endif

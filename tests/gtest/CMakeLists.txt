@@ -68,7 +68,7 @@ link_directories(${gtest_BINARY_DIR}/src)
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
-target_include_directories(gtest PUBLIC "${gtest_SOURCE_DIR}/include")
+target_include_directories(gtest SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
 
