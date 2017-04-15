@@ -1,8 +1,9 @@
 #ifndef AIKIDO_PLANNER_PARABOLIC_PARABOLICTIMER_HPP_
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICTIMER_HPP_
+
+#include <Eigen/Dense>
 #include "../../trajectory/Interpolated.hpp"
 #include "../../trajectory/Spline.hpp"
-#include <Eigen/Dense>
 
 namespace aikido {
 namespace planner {
