@@ -24,20 +24,15 @@ class BarrettHandKinematicSimulationPositionCommandExecutor
 {
 public:
   /// Constructor.
-  /// \param[in] positionCommandExecutors 3 executors to control
-  ///        proximal and distal joints of the fingers. The first two fingers
-  ///        should have (spread, proximal, distal) joints.
-  ///        Third finger should have 2 joints (proximal, distal).
-  /// \param[in] spreadCommandExecutor Executors to control
-  ///        spreads of the fingers.
+  /// \param[in] prefix String (either "/right/" or "/left/") to specify hand
+  /// \param[in] robot Robot to construct executor for
   /// \param[in] collisionDetector CollisionDetector to check collision with fingers.
   ///        If nullptr, default to FCLCollisionDetector.
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
   ///        If nullptr, default to empty CollisionGroup
   BarrettHandKinematicSimulationPositionCommandExecutor(
-    const std::array<
-      BarrettFingerKinematicSimulationPositionCommandExecutorPtr, 3>& positionCommandExecutors,
-    BarrettFingerKinematicSimulationSpreadCommandExecutorPtr spreadCommandExecutor,
+    const std::string &prefix,
+    dart::dynamics::SkeletonPtr robot,
     ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
     ::dart::collision::CollisionGroupPtr collideWith = nullptr);
 
@@ -60,13 +55,17 @@ public:
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
+  void setupExecutors(
+    const std::string& prefix,
+    dart::dynamics::SkeletonPtr robot);
 
   constexpr static int kNumPositionExecutor = 3;
   constexpr static int kNumSpreadExecutor = 1;
   constexpr static auto kWaitPeriod = std::chrono::milliseconds(1);
 
   /// Executor for proximal and distal joints.
-  std::array<BarrettFingerKinematicSimulationPositionCommandExecutorPtr, 3> mPositionCommandExecutors;
+  std::array<BarrettFingerKinematicSimulationPositionCommandExecutorPtr,
+             kNumPositionExecutor> mPositionCommandExecutors;
   BarrettFingerKinematicSimulationSpreadCommandExecutorPtr mSpreadCommandExecutor;
 
   std::unique_ptr<std::promise<void>> mPromise;
