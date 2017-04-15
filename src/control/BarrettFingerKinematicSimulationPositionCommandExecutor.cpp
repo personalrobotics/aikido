@@ -121,15 +121,17 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::terminate()
 }
 
 //=============================================================================
-void BarrettFingerKinematicSimulationPositionCommandExecutor::step(
- const std::chrono::milliseconds& timeSincePreviousCall)
+void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 {
-  auto period = std::chrono::duration<double>(
-    timeSincePreviousCall).count();
+  using namespace std::chrono;
 
   std::lock_guard<std::mutex> lock(mMutex);
 
-  if (!mInExecution)
+  auto timeSincePreviousCall = system_clock::now() - mTimeOfPreviousCall;
+  mTimeOfPreviousCall = system_clock::now();
+  auto period = duration<double>(timeSincePreviousCall).count();
+
+ if (!mInExecution)
     return;
 
   double distalPosition = mDistalDof->getPosition();

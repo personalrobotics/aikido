@@ -148,14 +148,16 @@ std::future<void> BarrettFingerKinematicSimulationSpreadCommandExecutor::execute
 }
 
 //=============================================================================
-void BarrettFingerKinematicSimulationSpreadCommandExecutor::step(
-  const std::chrono::milliseconds& timeSincePreviousCall)
+void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
 {
-  auto period = std::chrono::duration<double>(
-    timeSincePreviousCall).count();
+  using namespace std::chrono;
 
   // Terminate the thread if mRunning is false.
   std::lock_guard<std::mutex> lock(mMutex);
+
+  auto timeSincePreviousCall = system_clock::now() - mTimeOfPreviousCall;
+  mTimeOfPreviousCall = system_clock::now();
+  auto period = duration<double>(timeSincePreviousCall).count();
 
   if (!mInExecution)
     return;

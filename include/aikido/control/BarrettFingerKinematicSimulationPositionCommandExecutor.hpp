@@ -62,8 +62,7 @@ public:
   /// If multiple threads are accessing this function or skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.
-  /// \param[in] timeSincePreviousCall Time interval to take.
-  void step(const std::chrono::milliseconds& timeSincePreviousCall);
+  void step();
 
   /// Resets CollisionGroup to check collision with fingers.
   /// \param _collideWith CollisionGroup to check collision with fingers.
@@ -98,6 +97,9 @@ private:
 
   /// Flag for indicating execution of a command.
   bool mInExecution;
+
+  /// Time that step was last called.
+  std::chrono::system_clock::time_point mTimeOfPreviousCall;
 
   /// Control access to mPromise, mInExecution, mGoalPosition, mDistalOnly,
   /// mCollideWith

@@ -129,7 +129,6 @@ std::future<void> BarrettHandKinematicSimulationPositionCommandExecutor
   mProximalGoalPositions = goalPositions.head<3>();
   mSpreadGoalPosition = goalPositions[3];
   mInExecution = true;
-  mLastExecutionTime = std::chrono::system_clock::now();
   mFingerFutures.clear();
 
   mFingerFutures.reserve(kNumPositionExecutor + kNumSpreadExecutor);
@@ -149,12 +148,7 @@ std::future<void> BarrettHandKinematicSimulationPositionCommandExecutor
 //=============================================================================
 void BarrettHandKinematicSimulationPositionCommandExecutor::step()
 {
-  using namespace std::chrono;
-
   std::lock_guard<std::mutex> lock(mMutex);
-
-  auto timeSincePreviousCall = system_clock::now() - mLastExecutionTime;
-  mLastExecutionTime = system_clock::now();
 
   if (!mInExecution)
     return;
@@ -202,11 +196,10 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
   }
 
   // Call the finger executors' step function.
-  auto period = duration_cast<milliseconds>(timeSincePreviousCall);
   for(int i=0; i < kNumPositionExecutor; ++i)
-    mPositionCommandExecutors[i]->step(period);
+    mPositionCommandExecutors[i]->step();
 
-  mSpreadCommandExecutor->step(period);
+  mSpreadCommandExecutor->step();
 
 }
 

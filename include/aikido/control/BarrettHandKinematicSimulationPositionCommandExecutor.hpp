@@ -84,8 +84,6 @@ private:
 
   ::dart::collision::CollisionDetectorPtr mCollisionDetector;
   ::dart::collision::CollisionGroupPtr mCollideWith;
-
-  std::chrono::system_clock::time_point mLastExecutionTime;
 };
 
 using BarrettHandKinematicSimulationPositionCommandExecutorPtr =
