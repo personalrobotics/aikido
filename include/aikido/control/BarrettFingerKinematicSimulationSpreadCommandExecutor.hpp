@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONSPREADCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONSPREADCOMMANDEXECUTOR_HPP_
+#include <aikido/control/PositionCommandExecutor.hpp>
 #include <dart/collision/CollisionDetector.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/collision/CollisionGroup.hpp>
@@ -17,6 +18,7 @@ namespace control {
 /// It moves two finger spreads simultaneously to certain goal value;
 /// it will stop prematurely if joint limit is reached or collision is detected.
 class BarrettFingerKinematicSimulationSpreadCommandExecutor
+: public PositionCommandExecutor
 {
 public:
   /// Constructor.
@@ -35,19 +37,19 @@ public:
     ::dart::collision::CollisionOption collisionOptions
       = ::dart::collision::CollisionOption(false, 1));
 
-  /// Sets variables to move the spread joint by goalPosition,
-  /// joint limit has reached, or until collision is detected.
-  /// Must call step function after this for actual execution.
+  /// Move the spread joint by goalPosition until goalPosition or
+  /// joint limits are reached, or until collision is detected.
+  /// Call step after this for actual execution until future returns.
   /// \param goalPosition Desired angle of spread joint.
   /// \return future which becomes available when the execution completes.
-  std::future<void> execute(double goalPosition);
+  std::future<void> execute(const Eigen::VectorXd& goalPosition) override;
 
   /// Moves the joint of the finger by fixed speed*timeSincePreviousCall
   /// until execute's goalPosition by spread dof or collision is detected.
   /// If multiple threads are accessing this function or the skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.
-  void step();
+  void step() override;
 
   /// Resets CollisionGroup to check collision.
   /// \param collideWith CollisionGroup to check collision with fingers.

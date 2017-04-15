@@ -110,7 +110,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
 
 //=============================================================================
 std::future<void> BarrettHandKinematicSimulationPositionCommandExecutor
-  ::execute(const Eigen::VectorXd& goalPositions)
+::execute(const Eigen::VectorXd& goalPositions)
 {
   std::lock_guard<std::mutex> lockSpin(mMutex);
 
@@ -127,15 +127,15 @@ std::future<void> BarrettHandKinematicSimulationPositionCommandExecutor
 
   mPromise.reset(new std::promise<void>());
   mProximalGoalPositions = goalPositions.head<3>();
-  mSpreadGoalPosition = goalPositions[3];
+  mSpreadGoalPosition = goalPositions.row(3);
   mInExecution = true;
   mFingerFutures.clear();
 
   mFingerFutures.reserve(kNumPositionExecutor + kNumSpreadExecutor);
-  for(int i=0; i < kNumPositionExecutor; ++i)
+  for(size_t i = 0; i < kNumPositionExecutor; ++i)
     mFingerFutures.emplace_back(
       mPositionCommandExecutors[i]->execute(
-        mProximalGoalPositions(i)));
+        mProximalGoalPositions.row(i)));
 
   mFingerFutures.emplace_back(
     mSpreadCommandExecutor->execute(

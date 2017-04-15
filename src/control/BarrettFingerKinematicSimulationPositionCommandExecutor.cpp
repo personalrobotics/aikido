@@ -86,13 +86,14 @@ BarrettFingerKinematicSimulationPositionCommandExecutor
 
 //=============================================================================
 std::future<void> BarrettFingerKinematicSimulationPositionCommandExecutor
-::execute(double goalPosition)
+::execute(const Eigen::VectorXd& goalPosition)
 {
   if (!mFinger->isAssembled())
     throw std::runtime_error("Finger is disassembled.");
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
+    double goalPositionValue = goalPosition[0];
 
     if (mInExecution)
       throw std::runtime_error("Another command in execution.");
@@ -102,12 +103,12 @@ std::future<void> BarrettFingerKinematicSimulationPositionCommandExecutor
     mDistalOnly = false;
 
     // Set mProximalGoalPosition.
-    if (goalPosition < mProximalLimits.first)
+    if (goalPositionValue < mProximalLimits.first)
       mProximalGoalPosition = mProximalLimits.first;
-    else if (goalPosition > mProximalLimits.second)
+    else if (goalPositionValue > mProximalLimits.second)
       mProximalGoalPosition = mProximalLimits.second;
     else
-      mProximalGoalPosition = goalPosition;
+      mProximalGoalPosition = goalPositionValue;
 
     return mPromise->get_future();
   }

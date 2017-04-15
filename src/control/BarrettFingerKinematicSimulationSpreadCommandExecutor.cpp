@@ -113,10 +113,10 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSim
 }
 
 //=============================================================================
-std::future<void> BarrettFingerKinematicSimulationSpreadCommandExecutor::execute(
-  double goalPosition)
+std::future<void> BarrettFingerKinematicSimulationSpreadCommandExecutor
+::execute(const Eigen::VectorXd& goalPosition)
 {
-  for(size_t i = 0; i < kNumFingers; ++i)
+  for (size_t i = 0; i < kNumFingers; ++i)
   {
     if (!mFingers[i]->isAssembled())
     {
@@ -128,18 +128,19 @@ std::future<void> BarrettFingerKinematicSimulationSpreadCommandExecutor::execute
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
+    double goalPositionValue = goalPosition[0];
 
     if (mInExecution)
       throw std::runtime_error("Another command in execution.");
 
     mPromise.reset(new std::promise<void>());
 
-    if (goalPosition < mDofLimits.first)
+    if (goalPositionValue < mDofLimits.first)
       mGoalPosition = mDofLimits.first;
-    else if (goalPosition > mDofLimits.second)
+    else if (goalPositionValue > mDofLimits.second)
       mGoalPosition = mDofLimits.second;
     else
-      mGoalPosition = goalPosition;
+      mGoalPosition = goalPositionValue;
 
     mInExecution = true;
 

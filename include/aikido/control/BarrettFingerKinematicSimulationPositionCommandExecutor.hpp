@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
+#include <aikido/control/PositionCommandExecutor.hpp>
 #include <dart/collision/CollisionDetector.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/collision/CollisionGroup.hpp>
@@ -21,6 +22,7 @@ namespace control {
 /// When collision is detected on the proximal link, the distal link moves
 /// until it reaches joint limit or until distal collision is detected.
 class BarrettFingerKinematicSimulationPositionCommandExecutor
+: public PositionCommandExecutor
 {
 public:
   /// Constructor.
@@ -41,13 +43,13 @@ public:
     ::dart::collision::CollisionOption collisionOptions
       = ::dart::collision::CollisionOption(false, 1));
 
-  /// Sets variables to move the finger joints.
-  /// proximal dof moves to goalPosition, joint limit, or until collision.
-  /// Step method should be called multiple times until future returns.
+  /// Open/close fingers to goal configuration.
+  /// Proximal dof moves to goalPosition, joint limit, or until collision.
   /// Distal dof follows with mimic ratio.
+  /// Call step after this for actual execution until future returns.
   /// \param goalPosition Desired angle of proximal joint.
   /// \return future Becomes available when the execution completes.
-  std::future<void> execute(double goalPosition);
+  std::future<void> execute(const Eigen::VectorXd& goalPosition) override;
 
   /// Returns mimic ratio, i.e. how much the distal joint moves relative to
   /// the proximal joint. The joint movements follow
@@ -62,7 +64,7 @@ public:
   /// If multiple threads are accessing this function or skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.
-  void step();
+  void step() override;
 
   /// Resets CollisionGroup to check collision with fingers.
   /// \param _collideWith CollisionGroup to check collision with fingers.
@@ -71,7 +73,8 @@ public:
 
 private:
   constexpr static double kMimicRatio = 0.333;
-  constexpr static double kProximalSpeed = 1;
+  // TODO: read velocity limit from herb_description
+  constexpr static double kProximalSpeed = 2.0;
   constexpr static double kDistalSpeed = kProximalSpeed*kMimicRatio;
 
   /// If (current dof - goalPosition) execution terminates.
