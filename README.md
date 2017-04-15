@@ -43,7 +43,7 @@ components, it is also possible to build those components in a standalone
 build. To do so, source the `setup.bash` file in your Catkin workspace before
 running the above commands, e.g.:
 ```shell
-. /path/to/my/workspace/devel/setup.bash
+. /path/to/my/workspace/setup.bash
 ```
 
 #### Build from source (Catkin)
