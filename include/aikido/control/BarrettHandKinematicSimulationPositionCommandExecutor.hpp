@@ -30,12 +30,16 @@ public:
   ///        Third finger should have 2 joints (proximal, distal).
   /// \param[in] spreadCommandExecutor Executors to control
   ///        spreads of the fingers.
+  /// \param[in] collisionDetector CollisionDetector to check collision with fingers.
+  ///        If nullptr, default to FCLCollisionDetector.
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
+  ///        If nullptr, default to empty CollisionGroup
   BarrettHandKinematicSimulationPositionCommandExecutor(
     const std::array<
       BarrettFingerKinematicSimulationPositionCommandExecutorPtr, 3>& positionCommandExecutors,
     BarrettFingerKinematicSimulationSpreadCommandExecutorPtr spreadCommandExecutor,
-    ::dart::collision::CollisionGroupPtr collideWith);
+    ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
+    ::dart::collision::CollisionGroupPtr collideWith = nullptr);
 
   /// Set relevant variables for moving fingers.
   /// In order to move the fingers, step method should be called multiple times
@@ -80,6 +84,7 @@ private:
   Eigen::Vector3d mProximalGoalPositions;
   double mSpreadGoalPosition;
 
+  ::dart::collision::CollisionDetectorPtr mCollisionDetector;
   ::dart::collision::CollisionGroupPtr mCollideWith;
 
   std::chrono::system_clock::time_point mLastExecutionTime;

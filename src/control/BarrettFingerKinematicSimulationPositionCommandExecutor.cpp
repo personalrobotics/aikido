@@ -40,24 +40,35 @@ BarrettFingerKinematicSimulationPositionCommandExecutor
   if (!mDistalDof)
     throw std::invalid_argument("Finger does not have distal dof.");
 
-  // Default mCollisionDetector to FCL collision detector
-  if (!mCollisionDetector)
-    mCollisionDetector = dart::collision::FCLCollisionDetector::create();
-
-  // Default mCollideWith to empty collision group. If a collision group is
-  // given and its collision detector does not match mCollisionDetector, set the
-  // collision group to an empty collision group.
-  if (!mCollideWith ||
-      mCollisionDetector != mCollideWith->getCollisionDetector())
+  if (mCollisionDetector && mCollideWith)
   {
-    if (mCollideWith)
+    // If a collision group is given and its collision detector does not match
+    // mCollisionDetector, set the collision group to an empty collision group.
+    if (mCollisionDetector != mCollideWith->getCollisionDetector())
+    {
       std::cerr << "[BarrettFingerKinematicSimulationPositionCommandExecutor] "
-                << "CollisionDetector of type" << mCollisionDetector->getType()
+                << "CollisionDetector of type " << mCollisionDetector->getType()
                 << " does not match CollisionGroup's CollisionDetector of type "
                 << mCollideWith->getCollisionDetector()->getType() << std::endl;
 
-    std::cerr << "[BarrettFingerKinematicSimulationPositionCommandExecutor] "
-              << "Creating empty CollisionGroup." << std::endl;
+      std::cerr << "[BarrettFingerKinematicSimulationPositionCommandExecutor] "
+                << "Creating empty CollisionGroup." << std::endl;
+      mCollideWith = mCollisionDetector->createCollisionGroup();
+    }
+  }
+  else if (mCollisionDetector && !mCollideWith)
+  {
+    mCollideWith = mCollisionDetector->createCollisionGroup();
+  }
+  else if (!mCollisionDetector && mCollideWith)
+  {
+    mCollisionDetector = mCollideWith->getCollisionDetector();
+  }
+  else
+  {
+    // Default mCollisionDetector to FCL collision detector and mCollideWith to
+    // empty collision group.
+    mCollisionDetector = dart::collision::FCLCollisionDetector::create();
     mCollideWith = mCollisionDetector->createCollisionGroup();
   }
 
