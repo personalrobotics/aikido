@@ -17,7 +17,7 @@ SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::SplineND(
                       Eigen::aligned_allocator<SolutionMatrix> >& _solution)
   : mTimes(_times), mSolution(_solution)
 {
-  if (mTimes.size() != mSolution.size() + 1)
+  if (static_cast<std::size_t>(mTimes.size()) != mSolution.size() + 1u)
     throw std::invalid_argument("Mismatch in argument length.");
 
   if (!std::is_sorted(mTimes.data(), mTimes.data() + mTimes.size()))

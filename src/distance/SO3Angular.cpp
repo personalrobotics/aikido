@@ -4,11 +4,11 @@ namespace aikido {
 namespace distance {
 
 //=============================================================================
-SO3Angular::SO3Angular(
-    std::shared_ptr<statespace::SO3> _space)
-    : mStateSpace(std::move(_space))
+SO3Angular::SO3Angular(std::shared_ptr<statespace::SO3> _space)
+  : mStateSpace(std::move(_space))
 {
-  if (mStateSpace == nullptr) {
+  if (mStateSpace == nullptr)
+  {
     throw std::invalid_argument("SO3 is nullptr.");
   }
 }
@@ -26,9 +26,9 @@ double SO3Angular::distance(
 {
   auto state1 = static_cast<const statespace::SO3::State*>(_state1);
   auto state2 = static_cast<const statespace::SO3::State*>(_state2);
-  return mStateSpace->getQuaternion(state1)
-      .angularDistance(mStateSpace->getQuaternion(state2));
+  return mStateSpace->getQuaternion(state1).angularDistance(
+      mStateSpace->getQuaternion(state2));
 }
 
-}
-}
+} // namespace distance
+} // namespace aikido

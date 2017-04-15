@@ -8,8 +8,8 @@ namespace util {
 
 //==============================================================================
 StepSequence::StepSequence(
-    const double _stepSize,
-    const bool _includeEndpoints,
+    double _stepSize,
+    bool _includeEndpoints,
     double _startPoint,
     double _endPoint)
   : mStepSize(_stepSize)
