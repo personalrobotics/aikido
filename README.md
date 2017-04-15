@@ -27,7 +27,6 @@ $ brew install aikido0
 ```
 
 #### Build from source (Standalone)
-
 Once the dependencies are installed, you can build AIKIDO using [CMake]:
 ```shell
 $ mkdir build
