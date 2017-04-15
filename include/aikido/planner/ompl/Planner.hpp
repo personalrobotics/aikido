@@ -3,6 +3,8 @@
 
 
 #include <utility>  // std::pair
+#include <chrono>   
+
 #include "../../constraint/Projectable.hpp"
 #include "../../constraint/Sampleable.hpp"
 #include "../../constraint/Testable.hpp"
@@ -18,7 +20,7 @@
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/base/ScopedState.h>
 
-#include <ompl/util/Time.h>
+// #include <ompl/util/Time.h>
 
 #include <ompl/geometric/PathSimplifier.h>
 
@@ -308,14 +310,6 @@ std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statesp
                                                         double _maxDistanceBtwValidityChecks,
                                                         double _timeout, size_t _maxEmptySteps,
                                                         trajectory::InterpolatedPtr _originalTraj);
-
-
-namespace{
-    std::unique_ptr<trajectory::Interpolated> aikido2ompl(::ompl::geometric::PathGeometric *path, 
-                                                    statespace::StateSpacePtr _stateSpace,
-                                                    statespace::InterpolatorPtr _interpolator);
-} // namespace
-
 
 } // namespace ompl
 } // namespace planner
