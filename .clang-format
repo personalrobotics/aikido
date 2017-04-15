@@ -1,8 +1,8 @@
 ---
 BasedOnStyle:  Google
 AccessModifierOffset: -2
-AlignAfterOpenBracket: Align
-AlignEscapedNewlinesLeft: true
+AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlinesLeft: false
 AlignOperands:   true
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: true
@@ -28,9 +28,9 @@ BraceWrapping:
   BeforeCatch:     true
   BeforeElse:      true
   IndentBraces:    false
-BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Custom
-BreakBeforeTernaryOperators: false
+BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: true
 ColumnLimit:     80
 CommentPragmas:  ''
@@ -45,12 +45,14 @@ ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 # sort headers by main include file (implicit priority 0),
 # then project and private includes, then system headers
 IncludeCategories:
-  - Regex:     '.*'
+  - Regex:     '^<([a-z|_]+)>' # standard library headers
     Priority:  1
-  - Regex:     '^(<|"(gtest|isl|json)/)'
-    Priority:  2
-  - Regex:     '^<([a-z]+)>'
+  - Regex:     '^(<|")aikido/' # Aikido headers
     Priority:  3
+  - Regex:     '^(<[A-z]+)'    # dependency headers
+    Priority:  2
+  - Regex:     '^".*'          # headers relative to this project
+    Priority:  4
 IndentCaseLabels: true
 IndentFunctionDeclarationAfterType: false
 IndentWidth:     2
@@ -74,7 +76,7 @@ SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 2
+SpacesBeforeTrailingComments: 1
 SpacesInAngles: false
 SpacesInContainerLiterals: true
 SpacesInCStyleCastParentheses: false

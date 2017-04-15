@@ -1,24 +1,24 @@
 #include <cassert>
 #include <set>
-#include <aikido/util/Spline.hpp>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
-#include <dart/common/StlHelpers.hpp>
+#include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
 
 using Eigen::Vector2d;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::Rn;
+using aikido::statespace::R;
 using aikido::statespace::SO2;
 using aikido::statespace::StateSpace;
 using dart::common::make_unique;
 
 using CubicSplineProblem
-  = aikido::util::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+    = aikido::util::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
 
 namespace aikido {
 namespace planner {
@@ -46,8 +46,10 @@ Eigen::VectorXd toEigen(const ParabolicRamp::Vector& _x)
 }
 
 void evaluateAtTime(
-  ParabolicRamp::DynamicPath& _path, double _t, Eigen::VectorXd& _position,
-  Eigen::VectorXd& _velocity)
+    ParabolicRamp::DynamicPath& _path,
+    double _t,
+    Eigen::VectorXd& _position,
+    Eigen::VectorXd& _velocity)
 {
   ParabolicRamp::Vector positionVector;
   _path.Evaluate(_t, positionVector);
@@ -60,13 +62,43 @@ void evaluateAtTime(
 
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
-  if (dynamic_cast<const Rn*>(_stateSpace) != nullptr)
+  // TODO(JS): Generalize Rn<N> for arbitrary N.
+  if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
+  {
     return true;
+  }
+  else if (dynamic_cast<const R<1>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
   else if (dynamic_cast<const SO2*>(_stateSpace) != nullptr)
+  {
     return true;
+  }
   else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
   {
-    for (size_t isubspace = 0; isubspace < space->getNumSubspaces(); ++isubspace)
+    for (size_t isubspace = 0; isubspace < space->getNumSubspaces();
+         ++isubspace)
     {
       if (!checkStateSpace(space->getSubspace<>(isubspace).get()))
         return false;
@@ -74,15 +106,17 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
     return true;
   }
   else
+  {
     return false;
+  }
 }
 
 } // namespace
 
 std::unique_ptr<trajectory::Spline> computeParabolicTiming(
-  const trajectory::Interpolated& _inputTrajectory,
-  const Eigen::VectorXd& _maxVelocity,
-  const Eigen::VectorXd& _maxAcceleration)
+    const trajectory::Interpolated& _inputTrajectory,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
@@ -90,13 +124,13 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
 
   if (!checkStateSpace(stateSpace.get()))
     throw std::invalid_argument(
-      "computeParabolicTiming only supports Rn, "
-      "SO2, and CartesianProducts consisting of those types.");
+        "computeParabolicTiming only supports Rn, "
+        "SO2, and CartesianProducts consisting of those types.");
 
   const auto interpolator = _inputTrajectory.getInterpolator();
   if (dynamic_cast<const GeodesicInterpolator*>(interpolator.get()) == nullptr)
     throw std::invalid_argument(
-      "computeParabolicTiming only supports geodesic interpolation.");
+        "computeParabolicTiming only supports geodesic interpolation.");
 
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
@@ -130,7 +164,7 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
   stateSpace->getInverse(startState, startStateInverse);
 
   const auto relativeState = stateSpace->createState();
-  Eigen::VectorXd tangentVector; 
+  Eigen::VectorXd tangentVector;
 
   for (size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
@@ -173,7 +207,7 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
   evaluateAtTime(dynamicPath, timePrev, positionPrev, velocityPrev);
 
   auto outputTrajectory = make_unique<trajectory::Spline>(
-    stateSpace, timePrev + _inputTrajectory.getStartTime());
+      stateSpace, timePrev + _inputTrajectory.getStartTime());
   auto segmentStartState = stateSpace->createState();
 
   for (const auto timeCurr : transitionTimes)
@@ -201,7 +235,7 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
     assert(spline.getCoefficients().size() == 1);
     const auto& coefficients = spline.getCoefficients().front();
     outputTrajectory->addSegment(
-      coefficients, timeCurr - timePrev, segmentStartState);
+        coefficients, timeCurr - timePrev, segmentStartState);
 
     timePrev = timeCurr;
     positionPrev = positionCurr;

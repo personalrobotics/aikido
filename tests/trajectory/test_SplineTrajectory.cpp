@@ -14,10 +14,9 @@ class SplineTest : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<Rn>(2);
+    mStateSpace = std::make_shared<R2>();
 
-    mStartState = static_cast<Rn::State*>(
-      mStateSpace->allocateState());
+    mStartState = static_cast<R2::State*>(mStateSpace->allocateState());
     mStateSpace->setValue(mStartState, START_VALUE);
   }
 
@@ -26,8 +25,8 @@ protected:
     mStateSpace->freeState(mStartState);
   }
 
-  std::shared_ptr<Rn> mStateSpace;
-  Rn::State* mStartState;
+  std::shared_ptr<R2> mStateSpace;
+  R2::State* mStartState;
   std::shared_ptr<Spline> mTrajectory;
 };
 
