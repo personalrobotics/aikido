@@ -429,6 +429,36 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   return jointTrajectory;
 }
 
+//=============================================================================
+sensor_msgs::JointState toJointState(
+  const Eigen::VectorXd& goalPositions, const std::vector<std::string> jointNames)
+{
+  if (goalPositions.size() != jointNames.size())
+  {
+    std::stringstream message;
+    message << "The size of goalPositions must be the same as jointNames!" ;
+    throw std::invalid_argument(message.str());
+  }
+
+  sensor_msgs::JointState jointState;
+
+  const auto numJoints = jointNames.size();
+
+  jointState.name.reserve(numJoints);
+  jointState.position.reserve(numJoints);
+
+  for (size_t i = 0; i < numJoints ; ++i)
+  {
+    jointState.name.emplace_back(jointNames[i]);
+    jointState.position.emplace_back(goalPositions[i]);
+  }
+
+  return jointState;
+
+}
+
+
+
 } // namespace ros
 } // namespace control
 } // namespace aikido
