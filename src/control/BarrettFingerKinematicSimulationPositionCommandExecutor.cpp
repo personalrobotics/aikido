@@ -105,7 +105,6 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::terminate()
 {
   mPromise->set_value();
   mInExecution = false;
-  mCollideWith.reset();
 }
 
 //=============================================================================
