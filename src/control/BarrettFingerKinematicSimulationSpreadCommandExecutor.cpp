@@ -214,7 +214,8 @@ bool BarrettFingerKinematicSimulationSpreadCommandExecutor::setCollideWith(
   if (mInExecution)
     return false;
 
-  mCollideWith = collideWith;
+  mCollideWith = std::move(collideWith);
+  mCollisionDetector = mCollideWith->getCollisionDetector();
   return true;
 }
 
