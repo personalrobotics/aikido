@@ -1,4 +1,5 @@
 #include <aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp>
+#include <dart/collision/fcl/FCLCollisionDetector.hpp>
 #include <thread>
 
 namespace aikido{
@@ -8,11 +9,13 @@ namespace control{
 BarrettFingerKinematicSimulationPositionCommandExecutor
 ::BarrettFingerKinematicSimulationPositionCommandExecutor(
   ::dart::dynamics::ChainPtr finger, size_t proximal, size_t distal,
+  ::dart::collision::CollisionDetectorPtr collisionDetector,
   ::dart::collision::CollisionGroupPtr collideWith,
   ::dart::collision::CollisionOption collisionOptions)
 : mFinger(std::move(finger))
 , mProximalDof(nullptr)
 , mDistalDof(nullptr)
+, mCollisionDetector(std::move(collisionDetector))
 , mCollideWith(std::move(collideWith))
 , mCollisionOptions(std::move(collisionOptions))
 , mInExecution(false)
@@ -37,10 +40,26 @@ BarrettFingerKinematicSimulationPositionCommandExecutor
   if (!mDistalDof)
     throw std::invalid_argument("Finger does not have distal dof.");
 
-  if (!mCollideWith)
-    throw std::invalid_argument("CollideWith is null.");
+  // Default mCollisionDetector to FCL collision detector
+  if (!mCollisionDetector)
+    mCollisionDetector = dart::collision::FCLCollisionDetector::create();
 
-  mCollisionDetector = mCollideWith->getCollisionDetector();
+  // Default mCollideWith to empty collision group. If a collision group is
+  // given and its collision detector does not match mCollisionDetector, set the
+  // collision group to an empty collision group.
+  if (!mCollideWith ||
+      mCollisionDetector != mCollideWith->getCollisionDetector())
+  {
+    if (mCollideWith)
+      std::cerr << "[BarrettFingerKinematicSimulationPositionCommandExecutor] "
+                << "CollisionDetector of type" << mCollisionDetector->getType()
+                << " does not match CollisionGroup's CollisionDetector of type "
+                << mCollideWith->getCollisionDetector()->getType() << std::endl;
+
+    std::cerr << "[BarrettFingerKinematicSimulationPositionCommandExecutor] "
+              << "Creating empty CollisionGroup." << std::endl;
+    mCollideWith = mCollisionDetector->createCollisionGroup();
+  }
 
   mProximalCollisionGroup = mCollisionDetector->createCollisionGroup(
       mProximalDof->getChildBodyNode());

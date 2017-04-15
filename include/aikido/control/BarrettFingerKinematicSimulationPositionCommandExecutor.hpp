@@ -27,13 +27,17 @@ public:
   /// \param[in] finger Finger to be controlled by this Executor.
   /// \param[in] proximal Index of proximal dof
   /// \param[in] distal Index of distal dof
+  /// \param[in] collisionDetector CollisionDetector to check collision with fingers.
+  ///        If nullptr, default to FCLCollisionDetector.
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
+  ///        If nullptr, default to empty CollisionGroup.
   /// \param[in] collisionOptions Default is (enableContact=false, binaryCheck=true,
   ///        maxNumContacts = 1.)
   ///        See dart/collison/Option.h for more information
   BarrettFingerKinematicSimulationPositionCommandExecutor(
     ::dart::dynamics::ChainPtr finger, size_t proximal, size_t distal,
-    ::dart::collision::CollisionGroupPtr collideWith,
+    ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
+    ::dart::collision::CollisionGroupPtr collideWith = nullptr,
     ::dart::collision::CollisionOption collisionOptions
       = ::dart::collision::CollisionOption(false, 1));
 
@@ -49,7 +53,7 @@ public:
   /// the proximal joint. The joint movements follow
   /// this ratio only when both joints are moving.
   /// \return mimic ratio.
-  constexpr static double getMimicRatio() { return kMimicRatio; };
+  constexpr static double getMimicRatio() { return kMimicRatio; }
 
   /// Moves the joints of the finger by dofVelocity*timeSincePreviousCall
   /// until execute's goalPosition by primary dof or collision is detected.
