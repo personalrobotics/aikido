@@ -22,12 +22,16 @@ public:
   /// Constructor.
   /// \param[in] fingers 2 fingers to be controlled by this Executor.
   /// \param[in] spread Index of spread dof
+  /// \param[in] collisionDetector CollisionDetector to check collision with fingers.
+  ///        If nullptr, default to FCLCollisionDetector.
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
+  ///        If nullptr, default to empty CollisionGroup
   /// \param[in] collisionOptions Default is (enableContact=false, binaryCheck=true,
   ///        maxNumContacts = 1.)
   BarrettFingerKinematicSimulationSpreadCommandExecutor(
     std::array<::dart::dynamics::ChainPtr, 2> fingers, size_t spread,
-    ::dart::collision::CollisionGroupPtr collideWith,
+    ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
+    ::dart::collision::CollisionGroupPtr collideWith = nullptr,
     ::dart::collision::CollisionOption collisionOptions
       = ::dart::collision::CollisionOption(false, 1));
 

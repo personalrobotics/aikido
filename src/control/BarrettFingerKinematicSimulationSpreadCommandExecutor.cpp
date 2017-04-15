@@ -1,4 +1,5 @@
 #include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
+#include <dart/collision/fcl/FCLCollisionDetector.hpp>
 #include <thread>
 #include <exception>
 
@@ -8,9 +9,11 @@ namespace control{
 //=============================================================================
 BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSimulationSpreadCommandExecutor(
   std::array<::dart::dynamics::ChainPtr, 2> fingers, size_t spread,
+  ::dart::collision::CollisionDetectorPtr collisionDetector,
   ::dart::collision::CollisionGroupPtr collideWith,
   ::dart::collision::CollisionOption collisionOptions)
 : mFingers(std::move(fingers))
+, mCollisionDetector(std::move(collisionDetector))
 , mCollideWith(std::move(collideWith))
 , mCollisionOptions(std::move(collisionOptions))
 , mInExecution(false)
@@ -45,15 +48,45 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSim
     }
   }
 
-  if (!mCollideWith)
-    throw std::invalid_argument("CollideWith is null.");
-  mCollisionDetector = mCollideWith->getCollisionDetector();
+  if (mCollisionDetector && mCollideWith)
+  {
+    // If a collision group is given and its collision detector does not match
+    // mCollisionDetector, set the collision group to an empty collision group.
+    if (mCollisionDetector != mCollideWith->getCollisionDetector())
+    {
+      std::cerr << "[BarrettHandKinematicSimulationPositionCommandExecutor] "
+                << "CollisionDetector of type " << mCollisionDetector->getType()
+                << " does not match CollisionGroup's CollisionDetector of type "
+                << mCollideWith->getCollisionDetector()->getType() << std::endl;
+
+      ::dart::collision::CollisionGroupPtr newCollideWith =
+          mCollisionDetector->createCollisionGroup();
+      for (auto i = 0u; i < mCollideWith->getNumShapeFrames(); ++i)
+        newCollideWith->addShapeFrame(mCollideWith->getShapeFrame(i));
+      mCollideWith = std::move(newCollideWith);
+    }
+  }
+  else if (mCollisionDetector && !mCollideWith)
+  {
+    mCollideWith = mCollisionDetector->createCollisionGroup();
+  }
+  else if (!mCollisionDetector && mCollideWith)
+  {
+    mCollisionDetector = mCollideWith->getCollisionDetector();
+  }
+  else
+  {
+    // Default mCollisionDetector to FCL collision detector and mCollideWith to
+    // empty collision group.
+    mCollisionDetector = dart::collision::FCLCollisionDetector::create();
+    mCollideWith = mCollisionDetector->createCollisionGroup();
+  }
 
   mSpreadCollisionGroup = mCollisionDetector->createCollisionGroup();
   for (auto finger: mFingers)
   {
     for (auto body: finger->getBodyNodes())
-    mSpreadCollisionGroup->addShapeFramesOf(body);
+      mSpreadCollisionGroup->addShapeFramesOf(body);
   }
 
   mDofLimits = mSpreadDofs[0]->getPositionLimits();
