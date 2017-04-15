@@ -5,6 +5,8 @@
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
 
+#include <dart/dart.hpp>
+
 namespace aikido {
 namespace planner {
 namespace ompl {
@@ -318,75 +320,78 @@ trajectory::InterpolatedPtr planCRRTConnect(
 }
 
 //=============================================================================
-trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
-                                           statespace::InterpolatorPtr _interpolator,
-                                           distance::DistanceMetricPtr _dmetric,
-                                           constraint::SampleablePtr _sampler,
-                                           constraint::TestablePtr _validityConstraint,
-                                           constraint::TestablePtr _boundsConstraint,
-                                           constraint::ProjectablePtr _boundsProjector, 
-                                           double _maxDistanceBtwValidityChecks,
-                                           double _timeout, size_t _maxEmptySteps,
-                                           double _rangeRatio, double _snapToVertex,
-                                           trajectory::InterpolatedPtr _originalTraj)
+std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statespace::StateSpacePtr _stateSpace,
+                                                                    statespace::InterpolatorPtr _interpolator,
+                                                                    distance::DistanceMetricPtr _dmetric,
+                                                                    constraint::SampleablePtr _sampler,
+                                                                    constraint::TestablePtr _validityConstraint,
+                                                                    constraint::TestablePtr _boundsConstraint,
+                                                                    constraint::ProjectablePtr _boundsProjector, 
+                                                                    double _maxDistanceBtwValidityChecks,
+                                                                    double _timeout, size_t _maxEmptySteps,
+                                                                    trajectory::InterpolatedPtr _originalTraj)
 {
 
-// Step 1: Generate the space information of OMPL type
-auto si = getSpaceInformation(
-      _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
-      std::move(_validityConstraint), std::move(_boundsConstraint),
-      std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
+  // Step 1: Generate the space information of OMPL type
+  auto si = getSpaceInformation(
+        _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
+        std::move(_validityConstraint), std::move(_boundsConstraint),
+        std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
 
-// Get the state space
-auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
-      si->getStateSpace());
+  // Get the state space
+  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
+        si->getStateSpace());
 
+  // Step 2: Convert the AIKIDO trajectory to Geometric Path 
+  ::ompl::geometric::PathGeometric *path = new ::ompl::geometric::PathGeometric(si);
 
-// Step 2: Convert the AIKIDO trajectory to Geometric Path 
-::ompl::geometric::PathGeometric *path = new ::ompl::geometric::PathGeometric(si);
+  for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx) 
+  {
+        auto ompl_state = sspace->allocState(_originalTraj->getWaypoint(idx));
+        path->append(ompl_state);
+        sspace->freeState(ompl_state);
+  }
 
-for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx) 
-{
-      auto ompl_state = sspace->allocState(_originalTraj->getWaypoint(idx));
-      path->append(ompl_state);
-      sspace->freeState(ompl_state);
+  // Step 3: Use the OMPL methods to simplify the path
+  ::ompl::geometric::PathSimplifier simplifier = ::ompl::geometric::PathSimplifier(si);
+
+  // Flag for user to know if shorten was successful
+  bool shorten_success = false;
+
+  // Set the parameters for termination of simplification process
+  ::ompl::time::point const time_before = ::ompl::time::now();
+  ::ompl::time::point time_current;
+  ::ompl::time::duration const time_limit = ::ompl::time::seconds(_timeout);
+  double empty_steps = 0;
+  
+  do 
+  {
+
+    bool const shortened = simplifier.shortcutPath(*path, 1, _maxEmptySteps, 1.0, 0.0);
+    empty_steps = (empty_steps + !shortened)*!shortened; // Increment only if shorten fails consecutively
+    time_current = ::ompl::time::now();
+    shorten_success = shorten_success || shortened; // TODO: There should be a better way to do this.
+
+  } while(time_current - time_before <= time_limit && empty_steps <= _maxEmptySteps);
+
+  // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
+  auto returnTraj = dart::common::make_unique<trajectory::Interpolated>(
+        std::move(_stateSpace), std::move(_interpolator));
+
+  for (size_t idx = 0; idx < path->getStateCount(); ++idx) 
+  {
+        const auto *st =
+            static_cast<GeometricStateSpace::StateType *>(
+                path->getState(idx));
+        // Arbitrary timing
+        returnTraj->addWaypoint(idx, st->mState);
+  }
+
+  std::pair <std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
+  returnPair = std::make_pair(std::move(returnTraj),shorten_success); 
+  return returnPair;
+
 }
-
-// Step 3: Use the OMPL methods to simplify the path
-::ompl::geometric::PathSimplifierPtr simplifier;
-simplifier.reset(new ::ompl::geometric::PathSimplifier(si));
-
-// Set the parameters for termination of simplification process
-::ompl::time::point const time_before = ::ompl::time::now();
-::ompl::time::point time_current;
-::ompl::time::duration const time_limit = ::ompl::time::seconds(_timeout);
-double empty_steps = 0;
-
-do 
-{
-
-  bool const shortened = simplifier->shortcutPath(*path, 1, _maxEmptySteps, _rangeRatio, _snapToVertex);
-  empty_steps += !shortened;
-  time_current = ::ompl::time::now();
-
-} while(time_current - time_before <= time_limit && empty_steps <= _maxEmptySteps);
-
-// Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
-auto returnTraj = std::make_shared<trajectory::Interpolated>(
-      std::move(_stateSpace), std::move(_interpolator));
-
-for (size_t idx = 0; idx < path->getStateCount(); ++idx) 
-{
-      const auto *st =
-          static_cast<GeometricStateSpace::StateType *>(
-              path->getState(idx));
-      // Arbitrary timing
-      returnTraj->addWaypoint(idx, st->mState);
-}
-return returnTraj;  
-
-}
-
 //=============================================================================
 } // ns aikido
 } // ns planner

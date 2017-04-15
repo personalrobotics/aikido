@@ -1,6 +1,8 @@
 #ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
 #define AIKIDO_OMPL_OMPLPLANNER_HPP_
 
+#include <utility>  // std::pair
+
 #include "../../distance/DistanceMetric.hpp"
 #include "../../statespace/StateSpace.hpp"
 #include "../../statespace/Interpolator.hpp"
@@ -275,17 +277,23 @@ trajectory::InterpolatedPtr planOMPL(const ::ompl::base::PlannerPtr &_planner,
 /// to a state on original path
 /// \param _originalTraj The untimed trajectory obtained from the planner, 
 /// needs simplifying.
-trajectory::InterpolatedPtr simplifyOMPL(statespace::StateSpacePtr _stateSpace,
-                                           statespace::InterpolatorPtr _interpolator,
-                                           distance::DistanceMetricPtr _dmetric,
-                                           constraint::SampleablePtr _sampler,
-                                           constraint::TestablePtr _validityConstraint,
-                                           constraint::TestablePtr _boundsConstraint,
-                                           constraint::ProjectablePtr _boundsProjector,
-                                           double _maxDistanceBtwValidityChecks,
-                                           double _timeout, size_t _maxEmptySteps,
-                                           double _rangeRatio, double _snapToVertex,
-                                           trajectory::InterpolatedPtr _originalTraj);
+std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statespace::StateSpacePtr _stateSpace,
+                                                        statespace::InterpolatorPtr _interpolator,
+                                                        distance::DistanceMetricPtr _dmetric,
+                                                        constraint::SampleablePtr _sampler,
+                                                        constraint::TestablePtr _validityConstraint,
+                                                        constraint::TestablePtr _boundsConstraint,
+                                                        constraint::ProjectablePtr _boundsProjector,
+                                                        double _maxDistanceBtwValidityChecks,
+                                                        double _timeout, size_t _maxEmptySteps,
+                                                        trajectory::InterpolatedPtr _originalTraj);
+
+
+namespace{
+    std::unique_ptr<trajectory::Interpolated> aikido2ompl(::ompl::geometric::PathGeometric *path, 
+                                                    statespace::StateSpacePtr _stateSpace,
+                                                    statespace::InterpolatorPtr _interpolator);
+} // namespace
 
 
 } // namespace ompl
