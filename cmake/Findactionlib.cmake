@@ -13,7 +13,7 @@ find_package(PkgConfig QUIET REQUIRED)
 
 # Check to see if pkgconfig is installed.
 set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
-pkg_check_modules(PC_actionlib actionlib QUIET REQUIRED)
+pkg_check_modules(PC_actionlib actionlib QUIET)
 
 # Include directories
 find_path(actionlib_INCLUDE_DIRS
