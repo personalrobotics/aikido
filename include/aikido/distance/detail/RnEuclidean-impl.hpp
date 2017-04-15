@@ -4,30 +4,25 @@ namespace aikido {
 namespace distance {
 
 //==============================================================================
-extern template
-class REuclidean<0>;
+extern template class REuclidean<0>;
 
-extern template
-class REuclidean<1>;
+extern template class REuclidean<1>;
 
-extern template
-class REuclidean<2>;
+extern template class REuclidean<2>;
 
-extern template
-class REuclidean<3>;
+extern template class REuclidean<3>;
 
-extern template
-class REuclidean<6>;
+extern template class REuclidean<6>;
 
-extern template
-class REuclidean<Eigen::Dynamic>;
+extern template class REuclidean<Eigen::Dynamic>;
 
 //=============================================================================
 template <int N>
 REuclidean<N>::REuclidean(std::shared_ptr<statespace::R<N>> _space)
-    : mStateSpace(std::move(_space))
+  : mStateSpace(std::move(_space))
 {
-  if (mStateSpace == nullptr) {
+  if (mStateSpace == nullptr)
+  {
     throw std::invalid_argument("Rn is nullptr.");
   }
 }
