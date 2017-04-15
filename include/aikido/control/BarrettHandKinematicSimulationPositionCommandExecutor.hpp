@@ -36,13 +36,12 @@ public:
     ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
     ::dart::collision::CollisionGroupPtr collideWith = nullptr);
 
-  /// Set relevant variables for moving fingers.
-  /// In order to move the fingers, step method should be called multiple times
-  /// until future returns.
+  /// Move fingers to a goal configuration. In order to actually move the
+  /// fingers, step method should be called multiple times until future returns.
   /// \param _goalPositions End dof pose for proximal joints and spread.
   ///        First 3 should be for proximal joints, the last element should be
   ///        for spread. If _positions are above/below joint limits,
-  ///        the fingers will move only upto the limit.
+  ///        the fingers will move only up to the limit.
   /// \return Future which becomes available when the execution completes.
   std::future<void> execute(const Eigen::VectorXd& goalPositions) override;
 
