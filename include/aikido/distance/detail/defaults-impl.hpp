@@ -1,13 +1,13 @@
-#include "../Weighted.hpp"
-#include "../SO2Angular.hpp"
-#include "../SO3Angular.hpp"
-#include "../RnEuclidean.hpp"
+#include <dart/common/StlHelpers.hpp>
+#include "../../statespace/CartesianProduct.hpp"
+#include "../../statespace/Rn.hpp"
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
-#include "../../statespace/Rn.hpp"
-#include "../../statespace/CartesianProduct.hpp"
 #include "../../util/metaprogramming.hpp"
-#include <dart/common/StlHelpers.hpp>
+#include "../RnEuclidean.hpp"
+#include "../SO2Angular.hpp"
+#include "../SO3Angular.hpp"
+#include "../Weighted.hpp"
 
 namespace aikido {
 namespace distance {
@@ -18,7 +18,9 @@ using Ptr = std::unique_ptr<DistanceMetric>;
 
 //=============================================================================
 template <class Space>
-struct createDistanceMetricFor_impl {};
+struct createDistanceMetricFor_impl
+{
+};
 
 //=============================================================================
 template <>
@@ -110,22 +112,19 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
       metrics.emplace_back(std::move(metric));
     }
 
-    return make_unique<Weighted>(
-      std::move(_sspace), std::move(metrics));
+    return make_unique<Weighted>(std::move(_sspace), std::move(metrics));
   }
 };
 
 //=============================================================================
-using SupportedStateSpaces = util::type_list<
-    statespace::CartesianProduct,
-    statespace::R0,
-    statespace::R1,
-    statespace::R2,
-    statespace::R3,
-    statespace::R6,
-    statespace::SO2,
-    statespace::SO3
-  >;
+using SupportedStateSpaces = util::type_list<statespace::CartesianProduct,
+                                             statespace::R0,
+                                             statespace::R1,
+                                             statespace::R2,
+                                             statespace::R3,
+                                             statespace::R6,
+                                             statespace::SO2,
+                                             statespace::SO3>;
 
 } // namespace detail
 
@@ -137,8 +136,8 @@ std::unique_ptr<DistanceMetric> createDistanceMetricFor(
   if (_sspace == nullptr)
     throw std::invalid_argument("_sspace is null.");
 
-  return detail::createDistanceMetricFor_impl<Space>
-    ::create(std::move(_sspace));
+  return detail::createDistanceMetricFor_impl<Space>::create(
+      std::move(_sspace));
 }
 
 } // namespace distance

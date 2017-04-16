@@ -21,8 +21,8 @@ public:
   /// will be the end point, even if it is at less than stepSize from the second
   /// to last point.
   StepSequence(
-      const double _stepSize,
-      const bool _includeEndpoints = true,
+      double _stepSize,
+      bool _includeEndpoints = true,
       double _startPoint = 0.0,
       double _endPoint = 1.0);
 

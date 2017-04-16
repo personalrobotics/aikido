@@ -71,7 +71,7 @@ private:
     bool operator<(const Waypoint &rhs) const;
 
     /// Comparator to allow sorting waypoints based on time
-    bool operator<(const double &rhs) const;
+    bool operator<(double rhs) const;
 
     double t;
     aikido::statespace::StateSpace::State *state;
