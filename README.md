@@ -36,6 +36,15 @@ $ make
 $ sudo make install
 ```
 
+Aikido includes several optional components that depend on [ROS]. While we
+suggest building Aikido in a Catkin workspace (see below) to enable the ROS
+components, it is also possible to build those components in a standalone
+build. To do so, source the `setup.bash` file in your Catkin workspace before
+running the above commands, e.g.:
+```shell
+. /path/to/my/workspace/setup.bash
+```
+
 #### Build from source (Catkin)
 It is also possible to build AIKIDO as a [third-party package][REP-136] inside a
 [Catkin workspace][Catkin Workspaces]. To do so, clone AIKIDO into your Catkin
