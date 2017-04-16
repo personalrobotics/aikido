@@ -111,7 +111,10 @@ namespace YAML {
 namespace detail {
 
 template <typename MatrixType, bool IsVectorAtCompileTime>
-struct encode_impl {};
+struct encode_impl
+{
+  // Nothing defined. This class should be always specialized.
+};
 
 template <typename MatrixType>
 struct encode_impl<MatrixType, true>
