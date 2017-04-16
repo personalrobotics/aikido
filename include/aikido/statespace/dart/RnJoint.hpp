@@ -1,6 +1,7 @@
 #ifndef AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
-#include "aikido/statespace/detail/RnTraits.hpp"
+
+#include "aikido/statespace/dart/detail/RnJointTraits.hpp"
 #include "../Rn.hpp"
 #include "JointStateSpace.hpp"
 
@@ -28,7 +29,7 @@ public:
 
   using Vectord = typename R<DimensionAtCompileTime>::Vectord;
 
-  using DartJoint = typename detail::RnTraits<N>::DartJoint;
+  using DartJoint = typename detail::RJointTraits<N>::DartJoint;
 
   /// Create a real vector state space for \c _joint.
   ///
