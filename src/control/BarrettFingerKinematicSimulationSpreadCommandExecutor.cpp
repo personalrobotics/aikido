@@ -134,6 +134,7 @@ std::future<void> BarrettFingerKinematicSimulationSpreadCommandExecutor
       throw std::runtime_error("Another command in execution.");
 
     mPromise.reset(new std::promise<void>());
+    mTimeOfPreviousCall = std::chrono::system_clock::now();
 
     if (goalPositionValue < mDofLimits.first)
       mGoalPosition = mDofLimits.first;

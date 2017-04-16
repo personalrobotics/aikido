@@ -101,6 +101,7 @@ std::future<void> BarrettFingerKinematicSimulationPositionCommandExecutor
     mPromise.reset(new std::promise<void>());
     mInExecution = true;
     mDistalOnly = false;
+    mTimeOfPreviousCall = std::chrono::system_clock::now();
 
     // Set mProximalGoalPosition.
     if (goalPositionValue < mProximalLimits.first)
