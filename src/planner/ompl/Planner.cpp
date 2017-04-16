@@ -393,20 +393,9 @@ std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statesp
         _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
         std::move(_validityConstraint), std::move(_boundsConstraint),
         std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
-
-  // Get the state space
-  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
-        si->getStateSpace());
-
-  // Step 2: Convert the AIKIDO trajectory to Geometric Path 
-  ::ompl::geometric::PathGeometric path {si};
-
-  for (size_t idx = 0; idx < _originalTraj->getNumWaypoints(); ++idx) 
-  {
-        auto ompl_state = sspace->allocState(_originalTraj->getWaypoint(idx));
-        path.append(ompl_state);
-        sspace->freeState(ompl_state);
-  }
+  
+  // Step 2: Convert AIKIDO Interpolated Trajectory to OMPL path 
+  auto path = toOMPLTrajectory(_originalTraj, si);
 
   // Step 3: Use the OMPL methods to simplify the path
   ::ompl::geometric::PathSimplifier simplifier {si};
@@ -431,23 +420,54 @@ std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statesp
   } while(time_current - time_before <= time_limit && empty_steps <= _maxEmptySteps);
 
   // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
-  auto returnTraj = dart::common::make_unique<trajectory::Interpolated>(
-        std::move(_stateSpace), std::move(_interpolator));
+  auto returnTraj = toInterpolatedTrajectory(&path, _stateSpace, _interpolator);
 
-  for (size_t idx = 0; idx < path.getStateCount(); ++idx) 
-  {
-        const auto *st =
-            static_cast<GeometricStateSpace::StateType *>(
-                path.getState(idx));
-        // Arbitrary timing
-        returnTraj->addWaypoint(idx, st->mState);
-  }
-
+  // Step 5: Return trajectory and notify user if shortening was successful
   std::pair <std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
   return std::make_pair(std::move(returnTraj),shorten_success); 
 
 }
 //=============================================================================
+
+// Following are helper functions. Might want to move them elsewhere for generic use
+
+::ompl::geometric::PathGeometric toOMPLTrajectory(trajectory::InterpolatedPtr _interpolatedTraj,
+                                                  ::ompl::base::SpaceInformationPtr _si
+                                                  )
+{
+  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
+        _si->getStateSpace());
+
+  ::ompl::geometric::PathGeometric returnPath {_si};
+
+  for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx) 
+  {
+        auto ompl_state = sspace->allocState(_interpolatedTraj->getWaypoint(idx));
+        returnPath.append(ompl_state);
+        sspace->freeState(ompl_state);
+  }
+  return returnPath;
+}
+
+std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(::ompl::geometric::PathGeometric *_path,
+                                                                  statespace::StateSpacePtr _stateSpace,
+                                                                  statespace::InterpolatorPtr _interpolator)
+{
+  auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
+        std::move(_stateSpace), std::move(_interpolator));
+
+  for (size_t idx = 0; idx < _path->getStateCount(); ++idx) 
+  {
+        const auto *st =
+            static_cast<GeometricStateSpace::StateType *>(
+                _path->getState(idx));
+        // Arbitrary timing
+        returnInterpolated->addWaypoint(idx, st->mState);
+  }
+  return returnInterpolated;
+}
+//=============================================================================
+
 } // ns aikido
 } // ns planner
 } // ns ompl
