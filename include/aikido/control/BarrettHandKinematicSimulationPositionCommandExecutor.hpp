@@ -24,15 +24,15 @@ class BarrettHandKinematicSimulationPositionCommandExecutor
 {
 public:
   /// Constructor.
-  /// \param[in] prefix String (either "/right/" or "/left/") to specify hand
   /// \param[in] robot Robot to construct executor for
+  /// \param[in] prefix String (either "/right/" or "/left/") to specify hand
   /// \param[in] collisionDetector CollisionDetector to check collision with fingers.
   ///        If nullptr, default to FCLCollisionDetector.
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
   ///        If nullptr, default to empty CollisionGroup
   BarrettHandKinematicSimulationPositionCommandExecutor(
-    const std::string &prefix,
     dart::dynamics::SkeletonPtr robot,
+    const std::string &prefix,
     ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
     ::dart::collision::CollisionGroupPtr collideWith = nullptr);
 
@@ -54,9 +54,12 @@ public:
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
+  /// Set up mPositionCommandExecutors and mSpreadCommandExecutor.
+  /// \param[in] robot Robot to construct hand executor for
+  /// \param[in] prefix String (either "/right/" or "/left/") to specify hand
   void setupExecutors(
-    const std::string& prefix,
-    dart::dynamics::SkeletonPtr robot);
+    dart::dynamics::SkeletonPtr robot,
+    const std::string& prefix);
 
   constexpr static int kNumPositionExecutor = 3;
   constexpr static int kNumSpreadExecutor = 1;

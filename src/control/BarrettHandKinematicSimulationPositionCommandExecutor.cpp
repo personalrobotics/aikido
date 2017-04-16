@@ -12,8 +12,8 @@ constexpr std::chrono::milliseconds BarrettHandKinematicSimulationPositionComman
 //=============================================================================
 BarrettHandKinematicSimulationPositionCommandExecutor
 ::BarrettHandKinematicSimulationPositionCommandExecutor(
-  const std::string& prefix,
   dart::dynamics::SkeletonPtr robot,
+  const std::string& prefix,
   ::dart::collision::CollisionDetectorPtr collisionDetector,
   ::dart::collision::CollisionGroupPtr collideWith)
 : mInExecution(false)
@@ -54,13 +54,13 @@ BarrettHandKinematicSimulationPositionCommandExecutor
     mCollideWith = mCollisionDetector->createCollisionGroup();
   }
 
-  setupExecutors(prefix, std::move(robot));
+  setupExecutors(std::move(robot), prefix);
 }
 
 //=============================================================================
 void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
-  const std::string& prefix,
-  dart::dynamics::SkeletonPtr robot)
+  dart::dynamics::SkeletonPtr robot,
+  const std::string& prefix)
 {
   using dart::dynamics::Chain;
   using dart::dynamics::ChainPtr;
