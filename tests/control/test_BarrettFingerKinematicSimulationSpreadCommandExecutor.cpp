@@ -16,6 +16,8 @@ using namespace dart::dynamics;
 using namespace dart::collision;
 using namespace dart::simulation;
 
+using Vector1d = Eigen::Matrix<double, 1, 1>;
+
 static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
 {
   BodyNode::Properties properties;
@@ -127,7 +129,7 @@ public:
     mCollisionDetector = FCLCollisionDetector::create();
     mCollideWith = mCollisionDetector->createCollisionGroupAsSharedPtr();
 
-    mPosition = 1;
+    mPosition << 1;
     mSpreadDof = 0;
   }
 
@@ -138,7 +140,7 @@ protected:
   CollisionDetectorPtr mCollisionDetector;
   CollisionGroupPtr mCollideWith;
 
-  double mPosition;
+  Vector1d mPosition;
   int mSpreadDof;
   static constexpr double eps = 2e-1;
 };
@@ -146,36 +148,42 @@ protected:
 TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, constructor)
 {
   EXPECT_NO_THROW(BarrettFingerKinematicSimulationSpreadCommandExecutor(
-    mFingerChains, mSpreadDof, mCollideWith));
+    mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith));
 }
 
 TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, constructor_NonexistingSpread_throws)
 {
   int spreadDof = 3;
   EXPECT_THROW(BarrettFingerKinematicSimulationSpreadCommandExecutor(
-    mFingerChains, spreadDof, mCollideWith),
+    mFingerChains, spreadDof, mCollisionDetector, mCollideWith),
     std::invalid_argument);
 }
 
-TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, constructor_NullCollideWith_throws)
+TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, constructor_NullCollideWith_default)
 {
-  int spreadDof = 3;
-  EXPECT_THROW(BarrettFingerKinematicSimulationSpreadCommandExecutor(
-    mFingerChains, spreadDof, nullptr),
-    std::invalid_argument);
+  int spreadDof = 0;
+  EXPECT_NO_THROW(BarrettFingerKinematicSimulationSpreadCommandExecutor(
+                    mFingerChains, spreadDof, mCollisionDetector, nullptr));
+}
+
+TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, constructor_NullCollisionDetector_default)
+{
+  int spreadDof = 0;
+  EXPECT_NO_THROW(BarrettFingerKinematicSimulationSpreadCommandExecutor(
+    mFingerChains, spreadDof, nullptr, mCollideWith));
 }
 
 TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, execute_WaitOnFuture_CommandExecuted)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-    mFingerChains, mSpreadDof, mCollideWith);
+    mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
   auto future = executor.execute(mPosition);
   std::future_status status;
 
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   } while(status != std::future_status::ready);
 
@@ -185,7 +193,7 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, execute_WaitOn
   {
     auto dof = finger->getBodyNode(0)->getParentJoint()->getDof(mSpreadDof);
     double spread = dof->getPosition();
-    EXPECT_NEAR(mPosition, spread, eps);
+    EXPECT_NEAR(mPosition[0], spread, eps);
   }
 }
 
@@ -200,16 +208,17 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
   mCollideWith = mCollisionDetector->createCollisionGroup(ball);
 
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-    mFingerChains, mSpreadDof, mCollideWith);
+    mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
-  double goal = 1.0;
+  Vector1d goal;
+  goal << 1.0;
   auto future = executor.execute(goal);
 
   std::future_status status;
 
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
@@ -235,16 +244,17 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
   mCollideWith = mCollisionDetector->createCollisionGroup(ball);
 
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-    mFingerChains, mSpreadDof, mCollideWith);
+    mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
-  double goal = 1.0;
+  Vector1d goal;
+  goal << 1.0;
   auto future = executor.execute(goal);
 
   std::future_status status;
 
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
@@ -263,19 +273,20 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
   execute_ThrowsWhenFingerSpreadValuesDiffer)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-    mFingerChains, mSpreadDof, mCollideWith);
+    mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
   mFingerChains[0]->getBodyNode(0)->getParentJoint()->getDof(0)->setPosition(0);
   mFingerChains[1]->getBodyNode(0)->getParentJoint()->getDof(0)->setPosition(M_PI/4);
 
-  double goal = M_PI*0.5;
+  Vector1d goal;
+  goal << M_PI*0.5;
   auto future = executor.execute(goal);
 
   std::future_status status;
 
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
@@ -286,15 +297,16 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
   execute_GoalAboveUpperLimitStopsAtUpperJointLimit)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-    mFingerChains, mSpreadDof, mCollideWith);
+    mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
-  double goal = M_PI*1.5;
+  Vector1d goal;
+  goal << M_PI*1.5;
   auto future = executor.execute(goal);
 
   std::future_status status;
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
@@ -314,15 +326,16 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
   execute_GoalBelowLowerLimitStopsAtLowerJointLimit)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-    mFingerChains, mSpreadDof, mCollideWith);
+    mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
-  double goal = -M_PI*0.5;
+  Vector1d goal;
+  goal << -M_PI*0.5;
   auto future = executor.execute(goal);
 
   std::future_status status;
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
@@ -337,4 +350,3 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
     EXPECT_NEAR(expected, spread, eps);
   }
 }
-

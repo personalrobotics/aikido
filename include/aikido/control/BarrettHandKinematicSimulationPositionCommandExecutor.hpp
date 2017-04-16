@@ -13,6 +13,8 @@
 #include <mutex>
 #include <chrono>
 
+using Vector1d = Eigen::Matrix<double, 1, 1>;
+
 namespace aikido {
 namespace control {
 
@@ -83,7 +85,7 @@ private:
 
   /// Values for executing a position and spread command.
   Eigen::Vector3d mProximalGoalPositions;
-  Eigen::Matrix<double, 1, 1> mSpreadGoalPosition; // Vector1d is not defined
+  Vector1d mSpreadGoalPosition;
 
   ::dart::collision::CollisionDetectorPtr mCollisionDetector;
   ::dart::collision::CollisionGroupPtr mCollideWith;

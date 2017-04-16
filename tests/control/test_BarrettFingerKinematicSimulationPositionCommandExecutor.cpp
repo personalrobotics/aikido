@@ -15,6 +15,8 @@ using ::dart::dynamics::RevoluteJoint;
 using namespace dart::dynamics;
 using namespace dart::collision;
 
+using Vector1d = Eigen::Matrix<double, 1, 1>;
+
 static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
 {
   BodyNode::Properties properties;
@@ -153,7 +155,7 @@ public:
     mCollisionDetector = FCLCollisionDetector::create();
     mCollideWith = mCollisionDetector->createCollisionGroupAsSharedPtr();
 
-    mPosition = 1;
+    mPosition << 1;
     mProximalDof = 1;
     mDistalDof = 2;
   }
@@ -169,7 +171,7 @@ protected:
   CollisionDetectorPtr mCollisionDetector;
   CollisionGroupPtr mCollideWith;
 
-  double mPosition;
+  Vector1d mPosition;
   static constexpr double eps = 1e-2;
 };
 
@@ -178,7 +180,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
   constructor_NullChain_Throws)
 {
   EXPECT_THROW(BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-    nullptr, mProximalDof, mDistalDof, mCollideWith),
+    nullptr, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith),
     std::invalid_argument);
 }
 
@@ -186,7 +188,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
   constructor_Passes)
 {
   EXPECT_NO_THROW(BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, mCollideWith));
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith));
 }
 
 TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
@@ -194,7 +196,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
 {
   int proximalDof = 3;
   EXPECT_THROW(BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-    mFingerChain, proximalDof, mDistalDof, mCollideWith),
+    mFingerChain, proximalDof, mDistalDof, mCollisionDetector, mCollideWith),
     std::invalid_argument);
 }
 
@@ -203,7 +205,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
 {
   int distalDof = 3;
   EXPECT_THROW(BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, distalDof, mCollideWith),
+    mFingerChain, mProximalDof, distalDof, mCollisionDetector, mCollideWith),
     std::invalid_argument);
 }
 
@@ -211,12 +213,12 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
   execute_WaitOnFuture_CommandExecuted)
 {
   BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, mCollideWith);
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith);
 
   double mimicRatio = BarrettFingerKinematicSimulationPositionCommandExecutor::getMimicRatio();
 
-  double goalProximal = mPosition;
-  double goalDistal = mPosition*mimicRatio;
+  double goalProximal = mPosition[0];
+  double goalDistal = mPosition[0]*mimicRatio;
 
   auto future = executor.execute(mPosition);
 
@@ -224,7 +226,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
 
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
@@ -243,10 +245,11 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
   auto ball = createBall(transform, mCollisionDetector);
   auto collideWith = mCollisionDetector->createCollisionGroupAsSharedPtr(ball);
 
-  double goal = M_PI;
+  Vector1d goal;
+  goal << M_PI;
 
   BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, collideWith);
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, collideWith);
 
   auto future = executor.execute(goal);
 
@@ -254,7 +257,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
 
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
@@ -281,8 +284,9 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
 
   // Executor
   BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-    mFingerChain, mProximalDof, mDistalDof, collideWith);
-  double goal = M_PI/4;
+    mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, collideWith);
+  Vector1d goal;
+  goal << M_PI/4;
 
   // Execute
   auto future = executor.execute(goal);
@@ -290,7 +294,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
 
   do
   {
-    executor.step(stepTime);
+    executor.step();
     status = future.wait_for(waitTime);
   }while(status != std::future_status::ready);
 
