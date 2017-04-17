@@ -1,3 +1,7 @@
+if(NOT TARGET "${PROJECT_NAME}_planner_ompl")
+  return()
+endif()
+
 aikido_add_test(test_GeometricStateSpace test_GeometricStateSpace.cpp)
 target_link_libraries(test_GeometricStateSpace
   "${PROJECT_NAME}_distance"
