@@ -34,7 +34,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 /// \param[in] jointNames The corresponding names of the joints
 /// \return The JointState message object
 sensor_msgs::JointState toJointState(
-  const Eigen::VectorXd& goalPositions, const std::vector<std::string> jointNames);
+  const Eigen::VectorXd& goalPositions, const std::vector<std::string>& jointNames);
 
 
 } // namespace ros
