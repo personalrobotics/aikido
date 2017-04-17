@@ -1,0 +1,75 @@
+// Assume it has 4 positions
+#ifndef AIKIDO_CONTROL_ROS_ROSPOSITIONCOMMANDEXECUTOR_HPP_
+#define AIKIDO_CONTROL_ROS_ROSPOSITIONCOMMANDEXECUTOR_HPP_
+#include <chrono>
+#include <future>
+#include <mutex>
+#include <ros/ros.h>
+#include <ros/callback_queue.h>
+#include <sensor_msgs/JointState.h>
+#include <pr_control_msgs/SetPositionAction.h>
+#include <actionlib/client/action_client.h>
+#include <aikido/control/PositionCommandExecutor.hpp>
+#include <Eigen/Dense>
+
+namespace aikido{
+namespace control {
+namespace ros {
+
+/// This class sends commands for the hand position to the ROS server
+class RosPositionCommandExecutor : public aikido::control::PositionCommandExecutor
+{
+public:
+  /// Constructor
+  /// \param[in] node ROS node handle for action client.
+  /// \param[in] serverName Name of the server to send traejctory to.
+  /// \param[in] connectionTimeout Timeout for server connection.
+  /// \param[in] connectionPollingPeriod Polling period for server connection.
+  RosPositionCommandExecutor(
+    ::ros::NodeHandle node,
+    const std::string& serverName,
+    const std::vector<std::string>& jointNames,
+    const std::chrono::milliseconds connectionTimeout = std::chrono::milliseconds{1000},
+    const std::chrono::milliseconds connectionPollingPeriod = std::chrono::milliseconds{20}
+  );
+
+  virtual ~RosPositionCommandExecutor();
+
+  /// Sends positions to ROS server for execution.
+  /// \param[in] goalPositions Vector of 3 finger positions and 1 spread position
+  /// \param[in] jointNames Vector of 4 joint names for fingers
+  std::future<void> execute(const Eigen::VectorXd& goalPositions) override;
+
+
+  void step() override;
+
+private:
+  using RosPositionActionClient
+    = actionlib::ActionClient<pr_control_msgs::SetPositionAction>;
+  using GoalHandle = RosPositionActionClient::GoalHandle;
+
+  bool waitForServer();
+
+  void transitionCallback(GoalHandle handle);
+
+  ::ros::NodeHandle mNode;
+  ::ros::CallbackQueue mCallbackQueue;
+  RosPositionActionClient mClient;
+  RosPositionActionClient::GoalHandle mGoalHandle;
+
+  std::chrono::milliseconds mConnectionTimeout;
+  std::chrono::milliseconds mConnectionPollingPeriod;
+
+  bool mInProgress;
+  std::promise<void> mPromise;
+  Eigen::VectorXd mGoalPositions;
+  std::vector<std::string> mJointNames;
+
+  std::mutex mMutex;
+};
+    
+} // namespace ros
+} // namespace control
+} // namespace aikido
+
+#endif // ifndef AIKIDO_CONTROL_ROS_ROSPOSITIONCOMMANDEXECUTOR_HPP_
