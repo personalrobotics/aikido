@@ -48,7 +48,7 @@ FrameMarker::FrameMarker(
 {
   using visualization_msgs::InteractiveMarkerControl;
 
-  mInteractiveMarker.header.frame_id = "map";
+  mInteractiveMarker.header.frame_id = "base_footprint";
   mInteractiveMarker.name = str(format("Frame[%s]") % frame->getName());
   mInteractiveMarker.pose.orientation.w = 1;
   mInteractiveMarker.scale = 1;
