@@ -311,13 +311,13 @@ std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statesp
 
 
 ::ompl::geometric::PathGeometric toOMPLTrajectory(trajectory::InterpolatedPtr _interpolatedTraj,
-                                                  ::ompl::base::SpaceInformationPtr _si
-                                                  );
+                                                  ::ompl::base::SpaceInformationPtr _si);
 
 
-std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(::ompl::geometric::PathGeometric const *_path,
+std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(::ompl::geometric::PathGeometric *_path,
                                                                   statespace::StateSpacePtr _stateSpace,
                                                                   statespace::InterpolatorPtr _interpolator);
+
 
 } // namespace ompl
 } // namespace planner
