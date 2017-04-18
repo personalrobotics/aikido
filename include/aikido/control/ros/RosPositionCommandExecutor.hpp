@@ -1,4 +1,3 @@
-// Assume it has 4 positions
 #ifndef AIKIDO_CONTROL_ROS_ROSPOSITIONCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_ROS_ROSPOSITIONCOMMANDEXECUTOR_HPP_
 #include <chrono>
@@ -22,22 +21,22 @@ class RosPositionCommandExecutor : public aikido::control::PositionCommandExecut
 public:
   /// Constructor
   /// \param[in] node ROS node handle for action client.
-  /// \param[in] serverName Name of the server to send traejctory to.
+  /// \param[in] serverName Name of the server to send trajectory to.
+  /// \param[in] The names of the joints to set position targets for
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosPositionCommandExecutor(
     ::ros::NodeHandle node,
     const std::string& serverName,
     const std::vector<std::string>& jointNames,
-    const std::chrono::milliseconds connectionTimeout = std::chrono::milliseconds{1000},
-    const std::chrono::milliseconds connectionPollingPeriod = std::chrono::milliseconds{20}
+    std::chrono::milliseconds connectionTimeout = std::chrono::milliseconds{1000},
+    std::chrono::milliseconds connectionPollingPeriod = std::chrono::milliseconds{20}
   );
 
   virtual ~RosPositionCommandExecutor();
 
   /// Sends positions to ROS server for execution.
-  /// \param[in] goalPositions Vector of 3 finger positions and 1 spread position
-  /// \param[in] jointNames Vector of 4 joint names for fingers
+  /// \param[in] goalPositions Vector of target positions for each joint
   std::future<void> execute(const Eigen::VectorXd& goalPositions) override;
 
 

@@ -29,7 +29,6 @@ RosPositionCommandExecutor::RosPositionCommandExecutor(
 RosPositionCommandExecutor::~RosPositionCommandExecutor()
 {
   // Do nothing.
-  // TODO: Should we wait for the current trajectory to finish executing?
 }
 
 //=============================================================================
