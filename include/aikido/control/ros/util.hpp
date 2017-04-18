@@ -1,7 +1,6 @@
 #ifndef AIKIDO_CONTROL_ROS_UTIL_HPP_
 #define AIKIDO_CONTROL_ROS_UTIL_HPP_
 #include <chrono>
-#include <mutex>
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
 #include <actionlib/client/action_client.h>
@@ -15,30 +14,13 @@ bool waitForActionServer(
   actionlib::ActionClient<ActionSpec>& actionClient,
   ::ros::CallbackQueue& callbackQueue,
   TimeoutDuration timeoutDuration = std::chrono::milliseconds{ 1000 },
-  PeriodDuration periodDuration = std::chrono::milliseconds{ 10 }
-)
-{
-  using Clock = std::chrono::steady_clock;
+  PeriodDuration periodDuration = std::chrono::milliseconds{ 10 } );
 
-  const auto startTime = Clock::now();
-  const auto endTime = startTime + timeoutDuration;
-  auto currentTime = startTime + periodDuration;
-
-  while(currentTime < endTime)
-  {
-    callbackQueue.callAvailable();
-
-    // TODO : Is this thread safe?
-    if (actionClient.isServerConnected())
-      return true;
-
-    currentTime += periodDuration;
-    std::this_thread::sleep_until(currentTime);
-  }
-}
 
 } // namespace ros
 } // namespace control
 } // namespace aikido
+
+#include "detail/util-impl.hpp"
 
 #endif // AIKIDO_CONTROL_ROS_UTIL_HPP_
