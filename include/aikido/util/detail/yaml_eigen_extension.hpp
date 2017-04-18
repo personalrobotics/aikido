@@ -1,8 +1,7 @@
 #ifndef AIKIDO_UTIL_DETAIL_YAMLEIGENEXTENSION_HPP_
 #define AIKIDO_UTIL_DETAIL_YAMLEIGENEXTENSION_HPP_
 
-#include <boost/format.hpp>
-#include <boost/make_shared.hpp>
+#include <sstream>
 #include <yaml-cpp/yaml.h>
 #include <Eigen/Dense>
 
@@ -21,12 +20,10 @@ void deserialize(
     YAML::Node const& node,
     Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>& matrix)
 {
-  typedef Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>
-      MatrixType;
-  typedef typename MatrixType::Index Index;
+  using MatrixType
+      = Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>;
+  using Index = typename MatrixType::Index;
 
-  using boost::format;
-  using boost::str;
   using std::runtime_error;
 
   if (node.Type() != YAML::NodeType::Sequence)
@@ -36,19 +33,17 @@ void deserialize(
   if (MatrixType::RowsAtCompileTime != Eigen::Dynamic
       && rows != MatrixType::RowsAtCompileTime)
   {
-    throw runtime_error(
-        str(format("Matrix has incorrect number of rows: expected %d; got %d.")
-            % MatrixType::RowsAtCompileTime
-            % rows));
+    std::stringstream ss;
+    ss << "Matrix has incorrect number of rows: expected "
+       << MatrixType::RowsAtCompileTime << "; got " << rows << ".";
+    throw runtime_error(ss.str());
   }
 
   if (node.Tag() == "Vector" || node.Tag() == "!Vector")
   {
     matrix.resize(rows, 1);
     for (Index i = 0; i < rows; ++i)
-    {
       matrix(i, 0) = node[i].template as<_Scalar>();
-    }
   }
   else if (node.Tag() == "Matrix" || node.Tag() == "!Matrix")
   {
@@ -57,11 +52,10 @@ void deserialize(
     if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
         && cols != MatrixType::ColsAtCompileTime)
     {
-      throw runtime_error(
-          str(format(
-                  "Matrix has incorrect number of cols: expected %d; got %d.")
-              % MatrixType::ColsAtCompileTime
-              % cols));
+      std::stringstream ss;
+      ss << "Matrix has incorrect number of cols: expected "
+         << MatrixType::ColsAtCompileTime << "; got " << cols << ".";
+      throw runtime_error(ss.str());
     }
 
     matrix.resize(rows, cols);
@@ -70,15 +64,16 @@ void deserialize(
     {
       if (node[r].Type() != YAML::NodeType::Sequence)
       {
-        throw runtime_error(
-            str(format("Row %d of the matrix must be a sequence.") % r));
+        std::stringstream ss;
+        ss << "Row " << r << " of the matrix must be a sequence.";
+        throw runtime_error(ss.str());
       }
       else if (node[r].size() != cols)
       {
-        throw runtime_error(
-            boost::str(
-                format("Expected row %d to have %d columns; got %d.") % r % cols
-                % node[r].size()));
+        std::stringstream ss;
+        ss << "Expected row " << r << " to have " << cols << " columns; got "
+           << node[r].size() << ".";
+        throw runtime_error(ss.str());
       }
 
       for (Index c = 0; c < cols; ++c)
@@ -87,8 +82,9 @@ void deserialize(
   }
   else
   {
-    throw runtime_error(
-        str(format("Unknown type of matrix '%s'.") % node.Tag()));
+    std::stringstream ss;
+    ss << "Unknown type of matrix '" << node.Tag() << "'.";
+    throw runtime_error(ss.str());
   }
 }
 
@@ -99,13 +95,6 @@ void deserialize(
     Eigen::Transform<_Scalar, Dim, Mode, _Options>& pose)
 {
   deserialize(node, pose.matrix());
-}
-
-//==============================================================================
-template <class T>
-bool has_child(YAML::Node const& node, T const& key)
-{
-  return node[key].IsDefined();
 }
 
 } // namespace detail
@@ -119,10 +108,7 @@ namespace detail {
 template <typename MatrixType, bool IsVectorAtCompileTime>
 struct encode_impl
 {
-  static Node encode(MatrixType const& matrix)
-  {
-    assert(false && "Unknown MatrixType.");
-  }
+  // Nothing defined. This class should be always specialized.
 };
 
 //==============================================================================
@@ -131,15 +117,14 @@ struct encode_impl<MatrixType, true>
 {
   static Node encode(MatrixType const& matrix)
   {
-    typedef typename MatrixType::Index Index;
+    using Index = typename MatrixType::Index;
 
     Node node;
     node.SetTag("Vector");
 
     for (Index i = 0; i < matrix.size(); ++i)
-    {
       node.push_back(Node(matrix[i]));
-    }
+
     return node;
   }
 };
@@ -150,7 +135,7 @@ struct encode_impl<MatrixType, false>
 {
   static Node encode(MatrixType const& matrix)
   {
-    typedef typename MatrixType::Index Index;
+    using Index = typename MatrixType::Index;
 
     Node node;
     node.SetTag("Matrix");
@@ -160,27 +145,25 @@ struct encode_impl<MatrixType, false>
       Node row(NodeType::Sequence);
 
       for (Index c = 0; c < matrix.cols(); ++c)
-      {
         row.push_back(matrix(r, c));
-      }
 
       node.push_back(row);
     }
+
     return node;
   }
 };
 
-} // detail
+} // namespace detail
 
 //==============================================================================
 template <typename _Scalar, int _Dim, int _Mode, int _Options>
 struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options> >
 {
-  typedef Eigen::Matrix<_Scalar, _Dim, _Mode, _Options> MatrixType;
+  using MatrixType = Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>;
 
   static Node encode(MatrixType const& matrix)
   {
-    YAML::Node node(NodeType::Sequence);
     return detail::encode_impl<MatrixType, MatrixType::IsVectorAtCompileTime>::
         encode(matrix);
   }
@@ -209,8 +192,8 @@ struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options> >
 template <typename _Scalar, int _Dim, int _Mode, int _Options>
 struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options> >
 {
-  typedef Eigen::Transform<_Scalar, _Dim, _Mode, _Options> TransformType;
-  typedef typename TransformType::MatrixType MatrixType;
+  using TransformType = Eigen::Transform<_Scalar, _Dim, _Mode, _Options>;
+  using MatrixType = typename TransformType::MatrixType;
 
   static Node encode(TransformType const& transform)
   {
@@ -222,13 +205,6 @@ struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options> >
     return convert<MatrixType>::decode(node, transform.matrix());
   }
 };
-
-//==============================================================================
-template <class T>
-void operator>>(Node const& node, T& value)
-{
-  value = node.as<T>();
-}
 
 } // namespace YAML
 
