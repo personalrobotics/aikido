@@ -414,7 +414,7 @@ std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statesp
 
     bool const shortened = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
     empty_steps = (empty_steps + !shortened)*!shortened; // Increment only if shorten fails consecutively
-    time_current = ::ompl::time::now();
+    time_current = std::chrono::system_clock::now();
     shorten_success = shorten_success || shortened; // TODO: There should be a better way to do this.
 
   } while(time_current - time_before <= time_limit && empty_steps <= _maxEmptySteps);
