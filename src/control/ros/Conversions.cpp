@@ -431,13 +431,13 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 
 //=============================================================================
 sensor_msgs::JointState toJointState(
-  const Eigen::VectorXd& goalPositions, const std::vector<std::string>& jointNames)
+  const Eigen::VectorXd& goalPositions, std::vector<std::string> jointNames)
 {
   if (goalPositions.size() != jointNames.size())
   {
     std::stringstream message;
     message << "The size of goalPositions ("<<goalPositions.size()<<
-      ") must be the same as jointNames ("<<jointNames.size()<<"!" ;
+      ") must be the same as jointNames ("<<jointNames.size()<<")!" ;
     throw std::invalid_argument(message.str());
   }
 
