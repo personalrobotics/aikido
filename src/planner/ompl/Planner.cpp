@@ -468,6 +468,6 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(::ompl::geome
 }
 //=============================================================================
 
-} // ns aikido
-} // ns planner
 } // ns ompl
+} // ns planner
+} // ns aikido
