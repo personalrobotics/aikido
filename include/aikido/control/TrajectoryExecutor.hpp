@@ -13,10 +13,13 @@ public:
 
   virtual ~TrajectoryExecutor() = default;
 
-  /// Execute _traj and set future upon completion.
-  /// \param _traj Trajectory to be executed.
+  /// Execute traj and set future upon completion.
+  /// \param traj Trajectory to be executed.
   virtual std::future<void> execute(
     trajectory::TrajectoryPtr _traj) = 0;
+
+  /// Executes one step.
+  virtual void step() = 0;
 };
 
 using TrajectoryExecutorPtr = std::shared_ptr<TrajectoryExecutor>;

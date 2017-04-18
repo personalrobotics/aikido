@@ -20,6 +20,8 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
+const static std::chrono::milliseconds stepTime{100};
+
 class KinematicSimulationTrajectoryExecutorTest : public testing::Test
 {
 public:
@@ -62,8 +64,6 @@ public:
     mTraj->addWaypoint(0, s1);
     mTraj->addWaypoint(1, s2);
 
-    mPeriod = std::chrono::milliseconds(1);
-
   }
 
 protected:
@@ -73,50 +73,32 @@ protected:
   std::shared_ptr<Interpolator> interpolator;
   std::shared_ptr<Interpolated> mTraj;
 
-  std::chrono::milliseconds mPeriod;
-
   BodyNodePtr bn1;
 
 };
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
 {
-  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr, mPeriod),
+  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(nullptr),
     std::invalid_argument);
 }
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor)
+TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_Passes)
 {
   EXPECT_NO_THROW(
-    KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod));
+    KinematicSimulationTrajectoryExecutor executor(mSkeleton));
 }
-
-TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_ZeroPeriod_Throws)
-{
-  std::chrono::milliseconds period(0);
-  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(mSkeleton, period),
-    std::invalid_argument);
-}
-
-
-TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_NegativePeriod_Throws)
-{
-  std::chrono::milliseconds period(-3);
-  EXPECT_THROW(KinematicSimulationTrajectoryExecutor(mSkeleton, period),
-    std::invalid_argument);
-}
-
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_NullTrajectory_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
   EXPECT_THROW(executor.execute(nullptr), std::invalid_argument);
 }
 
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_NonMetaSkeletonStateSpace_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   auto space = std::make_shared<SO2>();
   auto interpolator = std::make_shared<GeodesicInterpolator>(space);
@@ -129,61 +111,84 @@ TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajWithUncontrolledDo
 {
   auto skeleton = Skeleton::create("Skeleton");
 
-  KinematicSimulationTrajectoryExecutor executor(skeleton, mPeriod);
+  KinematicSimulationTrajectoryExecutor executor(skeleton);
   EXPECT_THROW(executor.execute(mTraj), std::invalid_argument);
 }
 
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_WaitOnFuture_TrajectoryWasExecuted)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
 
-  future.wait();
+  std::future_status status;
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while(status != std::future_status::ready);
+
+  future.get();
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajectoryIsAlreadyRunning_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-  
-  // Executor possibly not able to immediately execute the next one.
-  try
-  {
-    executor.execute(mTraj);
-  }
-  catch (const std::runtime_error& e)
-  {
-    EXPECT_EQ(std::string(e.what()), "Another trajectory in execution.");
-  };
 
-  future.wait();
+  EXPECT_THROW(executor.execute(mTraj), std::runtime_error);
+  std::future_status status;
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while(status != std::future_status::ready);
+
+  future.get();
+
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_TrajectoryFinished_DoesNotThrow)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, mPeriod);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
   
   auto future = executor.execute(mTraj);
-  future.wait();
+
+  std::future_status status;
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while(status != std::future_status::ready);
+
+  future.get();
+
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 
   mSkeleton->getDof(0)->setPosition(-1.0);
-  
+
   // Execute second traj.
   future = executor.execute(mTraj);
-  future.wait();
+
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while(status != std::future_status::ready);
+
+  future.get();
+
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 
 }
