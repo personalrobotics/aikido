@@ -116,6 +116,7 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr& env, ros::
 				
 			if(env_skeleton == nullptr){
 				// Getting the model for the new object
+				std::cout << "getting new thing" << std::endl;
 				is_new_skel = true;
 				dart::utils::DartLoader urdfLoader;
 				skel_to_update = 
@@ -156,6 +157,7 @@ bool AprilTagsModule::detectObjects(const dart::simulation::WorldPtr& env, ros::
 			if(is_new_skel){
 				//Adding new skeleton to the world env
 				env->addSkeleton(skel_to_update);
+				std::cout << "added new thing" << std::endl;
 			}
 
 		}

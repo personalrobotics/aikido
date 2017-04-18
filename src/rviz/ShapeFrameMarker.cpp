@@ -38,7 +38,7 @@ ShapeFrameMarker::ShapeFrameMarker(
   using std::placeholders::_1;
   using std::placeholders::_2;
 
-  mInteractiveMarker.header.frame_id = "base_footprint";
+  mInteractiveMarker.header.frame_id = "map";
   mInteractiveMarker.scale = 1.;
   mInteractiveMarker.controls.resize(1);
   mInteractiveMarker.name = name;
