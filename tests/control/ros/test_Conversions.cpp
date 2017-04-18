@@ -4,7 +4,7 @@
 #include "eigen_tests.hpp"
 
 using dart::dynamics::SkeletonPtr;
-using aikido::control::ros::convertJointTrajectory;
+using aikido::control::ros::toSplineJointTrajectory;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::tests::make_vector;
 
@@ -94,7 +94,7 @@ protected:
 TEST_F(ConvertJointTrajectoryTests, StateSpaceIsNull_Throws)
 {
   EXPECT_THROW({
-    convertJointTrajectory(nullptr, mTwoWaypointMessage);
+    toSplineJointTrajectory(nullptr, mTwoWaypointMessage);
   }, std::invalid_argument);
 }
 
@@ -104,7 +104,7 @@ TEST_F(ConvertJointTrajectoryTests, NoWaypoints_Throws)
   zeroWaypointMessage.points.clear();
 
   EXPECT_THROW({
-    convertJointTrajectory(mStateSpace, zeroWaypointMessage);
+    toSplineJointTrajectory(mStateSpace, zeroWaypointMessage);
   }, std::invalid_argument);
 }
 
@@ -114,7 +114,7 @@ TEST_F(ConvertJointTrajectoryTests, LessThanTwoWaypoints_Throws)
   oneWaypointMessage.points.resize(1);
 
   EXPECT_THROW({
-    convertJointTrajectory(mStateSpace, oneWaypointMessage);
+    toSplineJointTrajectory(mStateSpace, oneWaypointMessage);
   }, std::invalid_argument);
 }
 
@@ -123,7 +123,7 @@ TEST_F(ConvertJointTrajectoryTests, IncorrectNumberOfJoints_Throws)
   mTwoWaypointMessage.joint_names.emplace_back("Joint1");
 
   EXPECT_THROW({
-    convertJointTrajectory(mStateSpace, mTwoWaypointMessage);
+    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage);
   }, std::invalid_argument);
 }
 
@@ -132,7 +132,7 @@ TEST_F(ConvertJointTrajectoryTests, TrajectoryHasUnknownJoint_Throws)
   mTwoWaypointMessage.joint_names[0] = "MissingJoint";
 
   EXPECT_THROW({
-    convertJointTrajectory(mStateSpace, mTwoWaypointMessage);
+    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage);
   }, std::invalid_argument);
 }
 
@@ -141,7 +141,7 @@ TEST_F(ConvertJointTrajectoryTests, StateSpaceHasUnknownJoint_Throws)
   mSkeleton->getJoint(0)->setName("MissingJoint");
 
   EXPECT_THROW({
-    convertJointTrajectory(mStateSpace, mTwoWaypointMessage);
+    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage);
   }, std::invalid_argument);
 }
 
@@ -149,7 +149,7 @@ TEST_F(ConvertJointTrajectoryTests, StateSpaceHasUnknownJoint_Throws)
 TEST_F(ConvertJointTrajectoryTests, LinearTrajectory)
 {
   const auto linearTwoWaypointMessage = mTwoWaypointMessage;
-  const auto trajectory = convertJointTrajectory(
+  const auto trajectory = toSplineJointTrajectory(
     mStateSpace, linearTwoWaypointMessage);
 
   ASSERT_TRUE(!!trajectory);
@@ -183,7 +183,7 @@ TEST_F(ConvertJointTrajectoryTests, CubicTrajectory)
   cubicTwoWaypointMessage.points[0].velocities.assign({3.});
   cubicTwoWaypointMessage.points[1].velocities.assign({4.});
 
-  const auto trajectory = convertJointTrajectory(
+  const auto trajectory = toSplineJointTrajectory(
     mStateSpace, cubicTwoWaypointMessage);
 
   ASSERT_TRUE(!!trajectory);
@@ -219,7 +219,7 @@ TEST_F(ConvertJointTrajectoryTests, QuinticTrajectory)
   quinticTwoWaypointMessage.points[1].velocities.assign({4.});
   quinticTwoWaypointMessage.points[1].accelerations.assign({6.});
 
-  const auto trajectory = convertJointTrajectory(
+  const auto trajectory = toSplineJointTrajectory(
     mStateSpace, quinticTwoWaypointMessage);
 
   ASSERT_TRUE(!!trajectory);
@@ -255,7 +255,7 @@ TEST_F(ConvertJointTrajectoryTests, QuinticTrajectory)
 
 TEST_F(ConvertJointTrajectoryTests, DifferentOrderingOfJoints)
 {
-  const auto trajectory = convertJointTrajectory(
+  const auto trajectory = toSplineJointTrajectory(
     mStateSpace2Joints, mTwoWaypointMessage2Joints);
 
   ASSERT_TRUE(!!trajectory);
@@ -286,7 +286,7 @@ TEST_F(ConvertJointTrajectoryTests, DifferentOrderingOfJoints)
 TEST_F(ConvertJointTrajectoryTests, StateSpaceMissingJoint_Throws)
 {
   EXPECT_THROW({
-    convertJointTrajectory(mStateSpace, mTwoWaypointMessage2Joints);
+    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage2Joints);
   }, std::invalid_argument);
 }
 
@@ -307,7 +307,7 @@ TEST_F(ConvertJointTrajectoryTests,
   waypoint2.positions.assign({2., 3.});
 
   EXPECT_THROW({
-    convertJointTrajectory(mStateSpace2Joints, trajectory);
+    toSplineJointTrajectory(mStateSpace2Joints, trajectory);
   }, std::invalid_argument);
 }
 
@@ -336,6 +336,6 @@ TEST_F(ConvertJointTrajectoryTests,
   auto space = std::make_shared<MetaSkeletonStateSpace>(groupSkeleton);
 
   EXPECT_THROW({
-    convertJointTrajectory(space, mTwoWaypointMessage2Joints);
+    toSplineJointTrajectory(space, mTwoWaypointMessage2Joints);
   }, std::invalid_argument);
 }

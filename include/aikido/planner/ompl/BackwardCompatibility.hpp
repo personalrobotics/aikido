@@ -7,6 +7,8 @@
 
 #include <ompl/config.h>
 
+// clang-format off
+
 #define OMPL_VERSION_AT_LEAST(x,y,z) \
   (OMPL_MAJOR_VERSION > x || (OMPL_MAJOR_VERSION >= x && \
   (OMPL_MINOR_VERSION > y || (OMPL_MINOR_VERSION >= y && \
@@ -25,7 +27,9 @@
   (OMPL_MAJOR_VERSION < x || (OMPL_MAJOR_VERSION <= x && \
   (OMPL_MINOR_VERSION < y || (OMPL_MINOR_VERSION <= y))))
 
-#if OMPL_VERSION_AT_LEAST(1,2,0)
+// clang-format on
+
+#if OMPL_VERSION_AT_LEAST(1, 2, 0)
 #include <memory>
 #else
 #include <boost/smart_ptr.hpp>
@@ -36,7 +40,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-#if OMPL_VERSION_AT_LEAST(1,2,0)
+#if OMPL_VERSION_AT_LEAST(1, 2, 0)
 
 #define OMPL_PLACEHOLDER(ph) std::placeholders::ph
 
@@ -66,7 +70,7 @@ ompl_shared_ptr<T> ompl_static_pointer_cast(const ompl_shared_ptr<U>& r)
 
 template <class F, class... Args>
 auto ompl_bind(F&& f, Args&&... args)
--> decltype(std::bind(std::forward<F>(f), std::forward<Args>(args)...))
+    -> decltype(std::bind(std::forward<F>(f), std::forward<Args>(args)...))
 {
   return std::bind(std::forward<F>(f), std::forward<Args>(args)...);
 }
@@ -101,7 +105,7 @@ ompl_shared_ptr<T> ompl_static_pointer_cast(const ompl_shared_ptr<U>& r)
 
 template <class F, class... Args>
 auto ompl_bind(F&& f, Args&&... args)
--> decltype(boost::bind(std::forward<F>(f), std::forward<Args>(args)...))
+    -> decltype(boost::bind(std::forward<F>(f), std::forward<Args>(args)...))
 {
   return boost::bind(std::forward<F>(f), std::forward<Args>(args)...);
 }

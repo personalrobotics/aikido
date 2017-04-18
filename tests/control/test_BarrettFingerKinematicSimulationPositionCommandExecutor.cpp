@@ -263,7 +263,7 @@ TEST_F(BarrettFingerKinematicSimulationPositionCommandExecutorTest,
 
   future.wait();
 
-  double proximalExpected = 0.56548; // Value made by visual inspection
+  double proximalExpected = 0.55087; // Value made by visual inspection
   double proximalActual = mBn2->getParentJoint()->getDof(0)->getPosition();
   double distalExpected = 2.81718;
   double distalActual = mBn3->getParentJoint()->getDof(0)->getPosition();
