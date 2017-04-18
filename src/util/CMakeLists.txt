@@ -4,6 +4,8 @@
 # TODO: Move CatkinResourceRetriever into a separate, optional component.
 find_package(TinyXML2 REQUIRED)
 
+pkg_check_modules(YAMLCPP REQUIRED)
+
 #==============================================================================
 # Libraries
 #
@@ -25,6 +27,7 @@ target_include_directories("${PROJECT_NAME}_util" SYSTEM
   PUBLIC
     ${Boost_INCLUDE_DIRS}
     ${DART_INCLUDE_DIRS}
+    ${YAMLCPP_INCLUDE_DIRS}
   PRIVATE
     ${TinyXML2_INCLUDE_DIRS}
 )
@@ -32,6 +35,7 @@ target_link_libraries("${PROJECT_NAME}_util"
   PUBLIC
     ${Boost_FILESYSTEM_LIBRARY}
     ${DART_LIBRARIES}
+    ${YAMLCPP_LIBRARIES}
   PRIVATE
     ${TinyXML2_LIBRARIES}
 )
