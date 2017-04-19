@@ -3,7 +3,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "aikido/util/detail/yaml_eigen_extension.hpp"
+#include "aikido/util/detail/yaml_extension.hpp"
 // The above header allows extended value types for yaml-cpp.
 //
 // Supported types:
