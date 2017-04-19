@@ -12,7 +12,6 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
-using Rn = aikido::statespace::Rn;
 using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::CRRT;
 using aikido::planner::ompl::CRRTConnect;
@@ -23,13 +22,11 @@ TEST_F(PlannerTest, PlanToConfiguration)
   Eigen::Vector3d goalPose(5, 5, 0);
 
   auto startState = stateSpace->createState();
-  auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+  auto subState1 = stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   auto goalState = stateSpace->createState();
-  auto subState2 =
-      stateSpace->getSubStateHandle<Rn>(goalState, 0);
+  auto subState2 = stateSpace->getSubStateHandle<R3>(goalState, 0);
   subState2.setValue(goalPose);
 
   // Plan
@@ -41,12 +38,12 @@ TEST_F(PlannerTest, PlanToConfiguration)
   // Check the first waypoint
   auto s0 = stateSpace->createState();
   traj->evaluate(0, s0);
-  auto r0 = s0.getSubStateHandle<Rn>(0);
+  auto r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
   // Check the last waypoint
   traj->evaluate(traj->getDuration(), s0);
-  r0 = s0.getSubStateHandle<Rn>(0);
+  r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 }
 
@@ -55,13 +52,12 @@ TEST_F(PlannerTest, PlanToGoalRegion)
   auto startState = stateSpace->createState();
   Eigen::Vector3d startPose(-5, -5, 0);
 
-  auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+  auto subState1 = stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   auto boxConstraint =
-      std::make_shared<aikido::constraint::RnBoxConstraint>(
-          stateSpace->getSubspace<Rn>(0), make_rng(),
+      std::make_shared<aikido::constraint::R3BoxConstraint>(
+          stateSpace->getSubspace<R3>(0), make_rng(),
           Eigen::Vector3d(4, 4, 0), Eigen::Vector3d(5, 5, 0));
   std::vector<std::shared_ptr<aikido::constraint::Sampleable>>
       sConstraints;
@@ -85,7 +81,7 @@ TEST_F(PlannerTest, PlanToGoalRegion)
   // Check the first waypoint
   auto s0 = stateSpace->createState();
   traj->evaluate(0, s0);
-  auto r0 = s0.getSubStateHandle<Rn>(0);
+  auto r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
   // Check the last waypoint
@@ -100,12 +96,12 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
 
   auto startState = stateSpace->createState();
   auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+      stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   auto boxConstraint =
-      std::make_shared<aikido::constraint::RnBoxConstraint>(
-          stateSpace->getSubspace<Rn>(0), make_rng(),
+      std::make_shared<aikido::constraint::R3BoxConstraint>(
+          stateSpace->getSubspace<R3>(0), make_rng(),
           Eigen::Vector3d(constraintVal-1, 4, 0), Eigen::Vector3d(constraintVal+1, 5, 0));
   std::vector<std::shared_ptr<aikido::constraint::Sampleable>>
       sConstraints;
@@ -134,7 +130,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
   // Check the first waypoint
   auto s0 = stateSpace->createState();
   traj->evaluate(0, s0);
-  auto r0 = s0.getSubStateHandle<Rn>(0);
+  auto r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
   // Check the last waypoint
@@ -157,12 +153,12 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
 
   auto startState = stateSpace->createState();
   auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+      stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   auto boxConstraint =
-      std::make_shared<aikido::constraint::RnBoxConstraint>(
-          stateSpace->getSubspace<Rn>(0), make_rng(),
+      std::make_shared<aikido::constraint::R3BoxConstraint>(
+          stateSpace->getSubspace<R3>(0), make_rng(),
           Eigen::Vector3d(constraintVal-1, 4, 0), Eigen::Vector3d(constraintVal+1, 5, 0));
   std::vector<std::shared_ptr<aikido::constraint::Sampleable>>
       sConstraints;
@@ -192,7 +188,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
   // Check the first waypoint
   auto s0 = stateSpace->createState();
   traj->evaluate(0, s0);
-  auto r0 = s0.getSubStateHandle<Rn>(0);
+  auto r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
   // Check the last waypoint
@@ -214,7 +210,7 @@ TEST_F(PlannerTest, PlanThrowsOnNullGoalTestable)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+      stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   // Easiest sampleable to get
@@ -236,7 +232,7 @@ TEST_F(PlannerTest, PlanThrowsOnGoalTestableMismatch)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+      stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   // Easiest sampleable to get
@@ -263,7 +259,7 @@ TEST_F(PlannerTest, PlanThrowsOnNullGoalSampler)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+      stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   // Dummy testable
@@ -284,7 +280,7 @@ TEST_F(PlannerTest, PlanThrowsOnGoalSamplerMismatch)
   Eigen::Vector3d startPose(-5, -5, 0);
 
   auto subState1 =
-      stateSpace->getSubStateHandle<Rn>(startState, 0);
+      stateSpace->getSubStateHandle<R3>(startState, 0);
   subState1.setValue(startPose);
 
   // Easiest sampleable to get
