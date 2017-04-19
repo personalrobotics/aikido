@@ -1,9 +1,8 @@
 #ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
 #define AIKIDO_OMPL_OMPLPLANNER_HPP_
 
-
-#include <utility>  // std::pair
-#include <chrono>   
+#include <chrono>
+#include <utility> // std::pair
 
 #include "../../constraint/Projectable.hpp"
 #include "../../constraint/Sampleable.hpp"
@@ -16,9 +15,9 @@
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
+#include <ompl/base/ScopedState.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
-#include <ompl/base/ScopedState.h>
 
 #include <ompl/geometric/PathSimplifier.h>
 
@@ -269,7 +268,6 @@ trajectory::InterpolatedPtr planOMPL(
     statespace::InterpolatorPtr _interpolator,
     double _maxPlanTime);
 
-
 /// Take in an aikido trajectory and simplify it using OMPL methods
 /// \param _statespace The StateSpace that the planner must plan within
 /// \param _interpolator An Interpolator defined on the StateSpace. This is used
@@ -287,37 +285,44 @@ trajectory::InterpolatedPtr planOMPL(
 /// satsified for a state to be considered valid.
 /// \param _boundsProjector A Projectable that projects a state back within
 /// valid bounds defined on the StateSpace
-/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric) between
+/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
+/// between
 /// validity checking two successive points on a tree extension
-/// \param _timeout Timeout, in seconds, after which the simplifier terminates to return possibly shortened path 
-/// \param _maxEmptySteps Maximum number of consecutive failed attempts at shortening before the 
-/// simplification process terminates. Set to 0 for default equal to number of states in the path
-/// \param _rangeRatio Maximum distance between states a connection is attempted, 
-/// as a fraction relative to the total length of the path 
-/// \param _snapToVertex Threshold distance for snapping a state on shortened path
+/// \param _timeout Timeout, in seconds, after which the simplifier terminates
+/// to return possibly shortened path
+/// \param _maxEmptySteps Maximum number of consecutive failed attempts at
+/// shortening before the
+/// simplification process terminates. Set to 0 for default equal to number of
+/// states in the path
+/// \param _rangeRatio Maximum distance between states a connection is
+/// attempted,
+/// as a fraction relative to the total length of the path
+/// \param _snapToVertex Threshold distance for snapping a state on shortened
+/// path
 /// to a state on original path
-/// \param _originalTraj The untimed trajectory obtained from the planner, 
+/// \param _originalTraj The untimed trajectory obtained from the planner,
 /// needs simplifying.
-std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statespace::StateSpacePtr _stateSpace,
-                                                        statespace::InterpolatorPtr _interpolator,
-                                                        distance::DistanceMetricPtr _dmetric,
-                                                        constraint::SampleablePtr _sampler,
-                                                        constraint::TestablePtr _validityConstraint,
-                                                        constraint::TestablePtr _boundsConstraint,
-                                                        constraint::ProjectablePtr _boundsProjector,
-                                                        double _maxDistanceBtwValidityChecks,
-                                                        double _timeout, size_t _maxEmptySteps,
-                                                        trajectory::InterpolatedPtr _originalTraj);
+std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwValidityChecks,
+    double _timeout,
+    size_t _maxEmptySteps,
+    trajectory::InterpolatedPtr _originalTraj);
 
+::ompl::geometric::PathGeometric toOMPLTrajectory(
+    trajectory::InterpolatedPtr _interpolatedTraj,
+    ::ompl::base::SpaceInformationPtr _si);
 
-::ompl::geometric::PathGeometric toOMPLTrajectory(trajectory::InterpolatedPtr _interpolatedTraj,
-                                                  ::ompl::base::SpaceInformationPtr _si);
-
-
-std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(::ompl::geometric::PathGeometric *_path,
-                                                                  statespace::StateSpacePtr _stateSpace,
-                                                                  statespace::InterpolatorPtr _interpolator);
-
+std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
+    ::ompl::geometric::PathGeometric* _path,
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator);
 
 } // namespace ompl
 } // namespace planner
