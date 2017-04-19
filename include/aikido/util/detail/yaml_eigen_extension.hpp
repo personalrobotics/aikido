@@ -2,12 +2,11 @@
 #define AIKIDO_UTIL_DETAIL_YAMLEIGENEXTENSION_HPP_
 
 #include <sstream>
+#include <unordered_map>
 #include <Eigen/Dense>
 #include <yaml-cpp/yaml.h>
 
-namespace aikido {
-namespace util {
-namespace detail {
+namespace {
 
 //==============================================================================
 template <class _Scalar,
@@ -97,13 +96,6 @@ void deserialize(
   deserialize(node, pose.matrix());
 }
 
-} // namespace detail
-} // namespace util
-} // namespace aikido
-
-namespace YAML {
-namespace detail {
-
 //==============================================================================
 template <typename MatrixType, bool IsVectorAtCompileTime>
 struct encode_impl
@@ -115,15 +107,15 @@ struct encode_impl
 template <typename MatrixType>
 struct encode_impl<MatrixType, true>
 {
-  static Node encode(const MatrixType& matrix)
+  static YAML::Node encode(const MatrixType& matrix)
   {
     using Index = typename MatrixType::Index;
 
-    Node node;
+    YAML::Node node;
     node.SetTag("Vector");
 
     for (Index i = 0; i < matrix.size(); ++i)
-      node.push_back(Node(matrix[i]));
+      node.push_back(YAML::Node(matrix[i]));
 
     return node;
   }
@@ -133,16 +125,16 @@ struct encode_impl<MatrixType, true>
 template <typename MatrixType>
 struct encode_impl<MatrixType, false>
 {
-  static Node encode(const MatrixType& matrix)
+  static YAML::Node encode(const MatrixType& matrix)
   {
     using Index = typename MatrixType::Index;
 
-    Node node;
+    YAML::Node node;
     node.SetTag("Matrix");
 
     for (Index r = 0; r < matrix.rows(); ++r)
     {
-      Node row(NodeType::Sequence);
+      YAML::Node row(YAML::NodeType::Sequence);
 
       for (Index c = 0; c < matrix.cols(); ++c)
         row.push_back(matrix(r, c));
@@ -154,31 +146,31 @@ struct encode_impl<MatrixType, false>
   }
 };
 
-} // namespace detail
+} // namespace (anonymous)
+
+namespace YAML {
 
 //==============================================================================
 template <typename _Scalar, int _Dim, int _Mode, int _Options>
-struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options> >
+struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>>
 {
   using MatrixType = Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>;
 
   static Node encode(const MatrixType& matrix)
   {
-    return detail::encode_impl<MatrixType, MatrixType::IsVectorAtCompileTime>::
-        encode(matrix);
+    return encode_impl<MatrixType, MatrixType::IsVectorAtCompileTime>::encode(
+        matrix);
   }
 
   static bool decode(
       const YAML::Node& node,
       Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>& matrix)
   {
-    aikido::util::detail::deserialize(node, matrix);
-
     if (node.Tag() == "Vector" || node.Tag() == "!Vector"
         || node.Tag() == "Matrix"
         || node.Tag() == "!Matrix")
     {
-      aikido::util::detail::deserialize(node, matrix);
+      deserialize(node, matrix);
       return true;
     }
     else
@@ -190,7 +182,7 @@ struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options> >
 
 //==============================================================================
 template <typename _Scalar, int _Dim, int _Mode, int _Options>
-struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options> >
+struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options>>
 {
   using TransformType = Eigen::Transform<_Scalar, _Dim, _Mode, _Options>;
   using MatrixType = typename TransformType::MatrixType;
@@ -203,6 +195,35 @@ struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options> >
   static bool decode(const Node& node, TransformType& transform)
   {
     return convert<MatrixType>::decode(node, transform.matrix());
+  }
+};
+
+//==============================================================================
+template <typename K, typename V>
+struct convert<std::unordered_map<K, V>>
+{
+  using UnorderedMap = std::unordered_map<K, V>;
+
+  static Node encode(const UnorderedMap& map)
+  {
+    Node node(NodeType::Map);
+
+    for (const auto& it : map)
+      node.force_insert(it.first, it.second);
+
+    return node;
+  }
+
+  static bool decode(const Node& node, UnorderedMap& map)
+  {
+    if (!node.IsMap())
+      return false;
+
+    map.clear();
+    for (const auto& it : node)
+      map[it.first.as<K>()] = it.second.as<V>();
+
+    return true;
   }
 };
 
