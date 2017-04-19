@@ -376,93 +376,107 @@ trajectory::InterpolatedPtr planCRRTConnect(
 }
 
 //=============================================================================
-std::pair <std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(statespace::StateSpacePtr _stateSpace,
-                                                                    statespace::InterpolatorPtr _interpolator,
-                                                                    distance::DistanceMetricPtr _dmetric,
-                                                                    constraint::SampleablePtr _sampler,
-                                                                    constraint::TestablePtr _validityConstraint,
-                                                                    constraint::TestablePtr _boundsConstraint,
-                                                                    constraint::ProjectablePtr _boundsProjector, 
-                                                                    double _maxDistanceBtwValidityChecks,
-                                                                    double _timeout, size_t _maxEmptySteps,
-                                                                    trajectory::InterpolatedPtr _originalTraj)
+std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwValidityChecks,
+    double _timeout,
+    size_t _maxEmptySteps,
+    trajectory::InterpolatedPtr _originalTraj)
 {
 
   // Step 1: Generate the space information of OMPL type
   auto si = getSpaceInformation(
-        _stateSpace, _interpolator, std::move(_dmetric), std::move(_sampler),
-        std::move(_validityConstraint), std::move(_boundsConstraint),
-        std::move(_boundsProjector), _maxDistanceBtwValidityChecks);
-  
-  // Step 2: Convert AIKIDO Interpolated Trajectory to OMPL path 
+      _stateSpace,
+      _interpolator,
+      std::move(_dmetric),
+      std::move(_sampler),
+      std::move(_validityConstraint),
+      std::move(_boundsConstraint),
+      std::move(_boundsProjector),
+      _maxDistanceBtwValidityChecks);
+
+  // Step 2: Convert AIKIDO Interpolated Trajectory to OMPL path
   auto path = toOMPLTrajectory(_originalTraj, si);
 
   // Step 3: Use the OMPL methods to simplify the path
-  ::ompl::geometric::PathSimplifier simplifier {si};
+  ::ompl::geometric::PathSimplifier simplifier{si};
 
   // Flag for user to know if shorten was successful
   bool shorten_success = false;
 
   // Set the parameters for termination of simplification process
-  std::chrono::system_clock::time_point const time_before = std::chrono::system_clock::now(); 
+  std::chrono::system_clock::time_point const time_before
+      = std::chrono::system_clock::now();
   std::chrono::system_clock::time_point time_current;
-  std::chrono::duration<double> const time_limit = std::chrono::duration<double>(_timeout); 
+  std::chrono::duration<double> const time_limit
+      = std::chrono::duration<double>(_timeout);
   double empty_steps = 0;
-  
-  do 
+
+  do
   {
 
-    bool const shortened = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
-    empty_steps = (empty_steps + !shortened)*!shortened; // Increment only if shorten fails consecutively
+    bool const shortened
+        = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
+    empty_steps = (empty_steps + !shortened)
+                  * !shortened; // Increment only if shorten fails consecutively
     time_current = std::chrono::system_clock::now();
-    shorten_success = shorten_success || shortened; // TODO: There should be a better way to do this.
+    shorten_success
+        = shorten_success
+          || shortened; // TODO: There should be a better way to do this.
 
-  } while(time_current - time_before <= time_limit && empty_steps <= _maxEmptySteps);
+  } while (time_current - time_before <= time_limit
+           && empty_steps <= _maxEmptySteps);
 
   // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
   auto returnTraj = toInterpolatedTrajectory(&path, _stateSpace, _interpolator);
 
   // Step 5: Return trajectory and notify user if shortening was successful
-  std::pair <std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
-  return std::make_pair(std::move(returnTraj),shorten_success); 
-
+  std::pair<std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
+  return std::make_pair(std::move(returnTraj), shorten_success);
 }
 //=============================================================================
 
-// Following are helper functions. Might want to move them elsewhere for generic use
+// Following are helper functions. Might want to move them elsewhere for generic
+// use
 
-::ompl::geometric::PathGeometric toOMPLTrajectory(trajectory::InterpolatedPtr _interpolatedTraj,
-                                                  ::ompl::base::SpaceInformationPtr _si
-                                                  )
+::ompl::geometric::PathGeometric toOMPLTrajectory(
+    trajectory::InterpolatedPtr _interpolatedTraj,
+    ::ompl::base::SpaceInformationPtr _si)
 {
-  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(
-        _si->getStateSpace());
+  auto sspace
+      = ompl_static_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
 
-  ::ompl::geometric::PathGeometric returnPath {_si};
+  ::ompl::geometric::PathGeometric returnPath{_si};
 
-  for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx) 
+  for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx)
   {
-        auto ompl_state = sspace->allocState(_interpolatedTraj->getWaypoint(idx));
-        returnPath.append(ompl_state);
-        sspace->freeState(ompl_state);
+    auto ompl_state = sspace->allocState(_interpolatedTraj->getWaypoint(idx));
+    returnPath.append(ompl_state);
+    sspace->freeState(ompl_state);
   }
   return returnPath;
 }
 
-std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(::ompl::geometric::PathGeometric *_path,
-                                                                  statespace::StateSpacePtr _stateSpace,
-                                                                  statespace::InterpolatorPtr _interpolator)
+std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
+    ::ompl::geometric::PathGeometric* _path,
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator)
 {
   auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
-        std::move(_stateSpace), std::move(_interpolator));
+      std::move(_stateSpace), std::move(_interpolator));
 
-  for (size_t idx = 0; idx < _path->getStateCount(); ++idx) 
+  for (size_t idx = 0; idx < _path->getStateCount(); ++idx)
   {
-        const auto *st =
-            static_cast<GeometricStateSpace::StateType *>(
-                _path->getState(idx));
-        // Arbitrary timing
-        returnInterpolated->addWaypoint(idx, st->mState);
+    const auto* st
+        = static_cast<GeometricStateSpace::StateType*>(_path->getState(idx));
+    // Arbitrary timing
+    returnInterpolated->addWaypoint(idx, st->mState);
   }
   return returnInterpolated;
 }
