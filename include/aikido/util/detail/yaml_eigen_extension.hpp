@@ -15,7 +15,7 @@ template <class _Scalar,
           int _Options,
           int _MaxRows,
           int _MaxCols>
-void deserialize(
+void decode(
     const YAML::Node& node,
     Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>& matrix)
 {
@@ -85,15 +85,6 @@ void deserialize(
     ss << "Unknown type of matrix '" << node.Tag() << "'.";
     throw runtime_error(ss.str());
   }
-}
-
-//==============================================================================
-template <class _Scalar, int Dim, int Mode, int _Options>
-void deserialize(
-    const YAML::Node& node,
-    Eigen::Transform<_Scalar, Dim, Mode, _Options>& pose)
-{
-  deserialize(node, pose.matrix());
 }
 
 //==============================================================================
@@ -170,7 +161,7 @@ struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>>
         || node.Tag() == "Matrix"
         || node.Tag() == "!Matrix")
     {
-      deserialize(node, matrix);
+      ::decode(node, matrix);
       return true;
     }
     else
