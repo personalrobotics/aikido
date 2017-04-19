@@ -9,6 +9,8 @@
 namespace {
 
 //==============================================================================
+// Reads a YAML::Node that encodes a vector or a matrix; and stores it into
+// `matrix`. If `matrix` is dynamic size Eigen object, resizes it accordingly.
 template <class _Scalar,
           int _Rows,
           int _Cols,
@@ -92,9 +94,16 @@ template <typename MatrixType, bool IsVectorAtCompileTime>
 struct encode_impl
 {
   // Nothing defined. This class should be always specialized.
+
+  // The reason this exists is so we can use template specialization to switch
+  // between serializing vectors and serializing matrices based on the
+  // IsVectorAtCompileTime flag. This is a "nice to have" that lets us generate
+  // !Vector [1, 2, 3] instead of the syntactic travesty like
+  // !Matrix [[1], [2] ,[3]] when serializing an Eigen vector.
 };
 
 //==============================================================================
+// Specialization for vector type
 template <typename MatrixType>
 struct encode_impl<MatrixType, true>
 {
@@ -113,6 +122,7 @@ struct encode_impl<MatrixType, true>
 };
 
 //==============================================================================
+// Specialization for matrix type
 template <typename MatrixType>
 struct encode_impl<MatrixType, false>
 {
