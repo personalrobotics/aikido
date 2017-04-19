@@ -4,7 +4,7 @@
 # TODO: Move CatkinResourceRetriever into a separate, optional component.
 find_package(TinyXML2 REQUIRED)
 
-pkg_check_modules(YAMLCPP REQUIRED)
+find_package(YamlCpp REQUIRED)
 
 #==============================================================================
 # Libraries
