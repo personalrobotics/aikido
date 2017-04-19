@@ -57,5 +57,5 @@ target_link_libraries(test_SplineProblem "${PROJECT_NAME}_util")
 aikido_add_test(test_string test_string.cpp)
 target_link_libraries(test_string "${PROJECT_NAME}_util")
 
-aikido_add_test(test_yaml_eigen_extension test_yaml_eigen_extension.cpp)
-target_link_libraries(test_yaml_eigen_extension "${PROJECT_NAME}_util")
+aikido_add_test(test_yaml_extension test_yaml_extension.cpp)
+target_link_libraries(test_yaml_extension "${PROJECT_NAME}_util")
