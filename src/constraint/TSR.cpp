@@ -415,6 +415,17 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
+//=============================================================================
+double TSR::getSatisfiableTolerance()
+{
+  return mSatisfiableTolerance;
+}
+   
+//=============================================================================
+void TSR::setSatisfiableTolerance(const double satisfiableTolerance)
+{
+  mSatisfiableTolerance = satisfiableTolerance;
+}
 
 //=============================================================================
 bool TSRSampleGenerator::canSample() const
@@ -437,6 +448,7 @@ int TSRSampleGenerator::getNumSamples() const
 
   return NO_LIMIT;
 }
+
 } // namespace constraint
 } // namespace aikido
 

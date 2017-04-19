@@ -114,6 +114,10 @@ public:
   bool project(const statespace::StateSpace::State* _s,
       statespace::StateSpace::State* _out) const override;
 
+  double getSatisfiableTolerance();
+   
+  void setSatisfiableTolerance(const double satisfiableTolerance);
+
   /// Transformation from origin frame into the TSR frame "w".
   /// "w" is usually centered at the origin of an object held by the hand
   ///  or at a location on an object that is useful for grasping.
@@ -126,10 +130,10 @@ public:
   /// This often represent an offset from "w" to the origin of the end-effector.
   Eigen::Isometry3d mTw_e;
 
-  /// Tolerance for checking satisfiability
-  double mSatisfiableTolerance;
 
 private:
+  /// Tolerance for checking satisfiability
+  double mSatisfiableTolerance;
   std::unique_ptr<util::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
 };
