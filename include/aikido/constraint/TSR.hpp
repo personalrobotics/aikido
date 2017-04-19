@@ -45,7 +45,7 @@ public:
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
-      const double& _satisfiableTolerance = 1e-6);
+      const double _satisfiableTolerance = 1e-6);
 
 
   /// Constructor with default random seed generator.
@@ -59,7 +59,7 @@ public:
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
-      const double& _satisfiableTolerance = 1e-6);
+      const double _satisfiableTolerance = 1e-6);
 
   TSR(const TSR& other);
   TSR(TSR&& other);
@@ -132,7 +132,6 @@ public:
 private:
   std::unique_ptr<util::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
-
 };
 
 using TSRPtr = std::shared_ptr<TSR>;
