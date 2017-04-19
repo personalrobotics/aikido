@@ -2,8 +2,8 @@
 #define AIKIDO_UTIL_DETAIL_YAMLEIGENEXTENSION_HPP_
 
 #include <sstream>
-#include <yaml-cpp/yaml.h>
 #include <Eigen/Dense>
+#include <yaml-cpp/yaml.h>
 
 namespace aikido {
 namespace util {
@@ -17,7 +17,7 @@ template <class _Scalar,
           int _MaxRows,
           int _MaxCols>
 void deserialize(
-    YAML::Node const& node,
+    const YAML::Node& node,
     Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>& matrix)
 {
   using MatrixType
@@ -91,7 +91,7 @@ void deserialize(
 //==============================================================================
 template <class _Scalar, int Dim, int Mode, int _Options>
 void deserialize(
-    YAML::Node const& node,
+    const YAML::Node& node,
     Eigen::Transform<_Scalar, Dim, Mode, _Options>& pose)
 {
   deserialize(node, pose.matrix());
@@ -115,7 +115,7 @@ struct encode_impl
 template <typename MatrixType>
 struct encode_impl<MatrixType, true>
 {
-  static Node encode(MatrixType const& matrix)
+  static Node encode(const MatrixType& matrix)
   {
     using Index = typename MatrixType::Index;
 
@@ -133,7 +133,7 @@ struct encode_impl<MatrixType, true>
 template <typename MatrixType>
 struct encode_impl<MatrixType, false>
 {
-  static Node encode(MatrixType const& matrix)
+  static Node encode(const MatrixType& matrix)
   {
     using Index = typename MatrixType::Index;
 
@@ -162,14 +162,14 @@ struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options> >
 {
   using MatrixType = Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>;
 
-  static Node encode(MatrixType const& matrix)
+  static Node encode(const MatrixType& matrix)
   {
     return detail::encode_impl<MatrixType, MatrixType::IsVectorAtCompileTime>::
         encode(matrix);
   }
 
   static bool decode(
-      YAML::Node const& node,
+      const YAML::Node& node,
       Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>& matrix)
   {
     aikido::util::detail::deserialize(node, matrix);
@@ -195,12 +195,12 @@ struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options> >
   using TransformType = Eigen::Transform<_Scalar, _Dim, _Mode, _Options>;
   using MatrixType = typename TransformType::MatrixType;
 
-  static Node encode(TransformType const& transform)
+  static Node encode(const TransformType& transform)
   {
     return convert<MatrixType>::encode(transform.matrix());
   }
 
-  static bool decode(Node const& node, TransformType& transform)
+  static bool decode(const Node& node, TransformType& transform)
   {
     return convert<MatrixType>::decode(node, transform.matrix());
   }
