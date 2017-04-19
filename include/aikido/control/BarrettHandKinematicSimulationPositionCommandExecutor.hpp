@@ -47,7 +47,9 @@ public:
   /// \return Future which becomes available when the execution completes.
   std::future<void> execute(const Eigen::VectorXd& goalPositions) override;
 
-  // Documentation inherited.
+  /// If multiple threads are accessing this function or the skeleton associated
+  /// with this executor, it is necessary to lock the skeleton before
+  /// calling this method.
   void step() override;
 
   /// Resets CollisionGroup to check collision with fingers.
