@@ -47,7 +47,7 @@ void deserialize(
   }
   else if (node.Tag() == "Matrix" || node.Tag() == "!Matrix")
   {
-    Index const cols = node[0].size();
+    const auto cols = node[0].size();
 
     if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
         && cols != MatrixType::ColsAtCompileTime)
@@ -60,7 +60,7 @@ void deserialize(
 
     matrix.resize(rows, cols);
 
-    for (Index r = 0; r < node.size(); ++r)
+    for (auto r = 0u; r < node.size(); ++r)
     {
       if (node[r].Type() != YAML::NodeType::Sequence)
       {
@@ -76,7 +76,7 @@ void deserialize(
         throw runtime_error(ss.str());
       }
 
-      for (Index c = 0; c < cols; ++c)
+      for (auto c = 0u; c < cols; ++c)
         matrix(r, c) = node[r][c].template as<_Scalar>();
     }
   }
