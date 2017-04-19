@@ -28,7 +28,7 @@ void decode(
   if (node.Type() != YAML::NodeType::Sequence)
     throw runtime_error("Matrix or vector must be a sequence.");
 
-  Index const rows = node.size();
+  const Index rows = node.size();
   if (MatrixType::RowsAtCompileTime != Eigen::Dynamic
       && rows != MatrixType::RowsAtCompileTime)
   {
@@ -142,6 +142,9 @@ struct encode_impl<MatrixType, false>
 namespace YAML {
 
 //==============================================================================
+// Specialization for Eigen::Matrix<...>. This enables to use YAML::Node
+// with std::unordered_map as `Node(Eigen::Matrix3d::Identity())` and
+// `node.as<Eigen::Matrix3d>()`.
 template <typename _Scalar, int _Dim, int _Mode, int _Options>
 struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>>
 {
@@ -172,6 +175,9 @@ struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>>
 };
 
 //==============================================================================
+// Specialization for Eigen::Isometry<...>. This enables to use YAML::Node
+// with std::unordered_map as `Node(Eigen::Isometry3d::Identity())` and
+// `node.as<Eigen::Isometry3d>()`.
 template <typename _Scalar, int _Dim, int _Mode, int _Options>
 struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options>>
 {
@@ -190,10 +196,17 @@ struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options>>
 };
 
 //==============================================================================
-template <typename K, typename V>
-struct convert<std::unordered_map<K, V>>
+// Specialization for std::unordered_map<...>. This enables to use YAML::Node
+// with std::unordered_map as `Node(std::unorderd_map<...>())` and
+// `node.as<std::unordered_map<...>>()`.
+template <typename _Key,
+          typename _Tp,
+          typename _Hash,
+          typename _Pred,
+          typename _Alloc>
+struct convert<std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>>
 {
-  using UnorderedMap = std::unordered_map<K, V>;
+  using UnorderedMap = std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>;
 
   static Node encode(const UnorderedMap& map)
   {
@@ -212,7 +225,7 @@ struct convert<std::unordered_map<K, V>>
 
     map.clear();
     for (const auto& it : node)
-      map[it.first.as<K>()] = it.second.as<V>();
+      map[it.first.as<_Key>()] = it.second.as<_Tp>();
 
     return true;
   }
