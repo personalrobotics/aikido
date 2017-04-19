@@ -286,20 +286,15 @@ trajectory::InterpolatedPtr planOMPL(
 /// \param _boundsProjector A Projectable that projects a state back within
 /// valid bounds defined on the StateSpace
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
-/// between
-/// validity checking two successive points on a tree extension
+/// between validity checking two successive points on a tree extension
 /// \param _timeout Timeout, in seconds, after which the simplifier terminates
 /// to return possibly shortened path
-/// \param _maxEmptySteps Maximum number of consecutive failed attempts at
-/// shortening before the
-/// simplification process terminates. Set to 0 for default equal to number of
-/// states in the path
-/// \param _rangeRatio Maximum distance between states a connection is
-/// attempted,
+/// \param _maxEmptySteps Maximum number of consecutive failed attempts at shortening 
+/// before simplification terminates. Default 0, equal to number of states in the path
+/// \param _rangeRatio Maximum distance between states a connection is attempted,
 /// as a fraction relative to the total length of the path
 /// \param _snapToVertex Threshold distance for snapping a state on shortened
-/// path
-/// to a state on original path
+/// path to a state on original path
 /// \param _originalTraj The untimed trajectory obtained from the planner,
 /// needs simplifying.
 std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
