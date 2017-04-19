@@ -42,13 +42,15 @@ static void CreateAxis(
 FrameMarker::FrameMarker(
       interactive_markers::InteractiveMarkerServer *markerServer,
       dart::dynamics::Frame *frame,
+      const std::string& frameId,
       double length, double thickness, double alpha)
   : mMarkerServer(markerServer)
   , mFrame(frame)
+  , mFrameId(frameId)
 {
   using visualization_msgs::InteractiveMarkerControl;
 
-  mInteractiveMarker.header.frame_id = "base_footprint";
+  mInteractiveMarker.header.frame_id = mFrameId;
   mInteractiveMarker.name = str(format("Frame[%s]") % frame->getName());
   mInteractiveMarker.pose.orientation.w = 1;
   mInteractiveMarker.scale = 1;

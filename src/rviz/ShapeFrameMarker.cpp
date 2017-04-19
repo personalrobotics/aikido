@@ -25,7 +25,8 @@ ShapeFrameMarker::ShapeFrameMarker(
       ResourceServer *resourceServer,
       InteractiveMarkerServer *markerServer,
       const std::string &name,
-      ShapeFrame const *shapeFrame)
+      ShapeFrame const *shapeFrame,
+      const std::string &frameId)
   : mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
   , mShapeFrame(shapeFrame)
@@ -34,11 +35,12 @@ ShapeFrameMarker::ShapeFrameMarker(
   , mVersion()
   , mShowVisual(true)
   , mShowCollision(false)
+  , mFrameId(frameId)
 {
   using std::placeholders::_1;
   using std::placeholders::_2;
 
-  mInteractiveMarker.header.frame_id = "base_footprint";
+  mInteractiveMarker.header.frame_id = mFrameId;
   mInteractiveMarker.scale = 1.;
   mInteractiveMarker.controls.resize(1);
   mInteractiveMarker.name = name;
