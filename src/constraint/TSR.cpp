@@ -80,11 +80,11 @@ public:
 //=============================================================================
 TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
          const Eigen::Matrix<double, 6, 2>& _Bw, const Eigen::Isometry3d& _Tw_e,
-         const double _satisfiableTolerance)
+         const double _testableTolerance)
     : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
-    , mSatisfiableTolerance(_satisfiableTolerance)
+    , mTestableTolerance(_testableTolerance)
     , mRng(std::move(_rng))
     , mStateSpace(std::make_shared<SE3>())
 {
@@ -93,11 +93,11 @@ TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
 
 //=============================================================================
 TSR::TSR(const Eigen::Isometry3d& _T0_w, const Eigen::Matrix<double, 6, 2>& _Bw,
-         const Eigen::Isometry3d& _Tw_e, const double _satisfiableTolerance)
+         const Eigen::Isometry3d& _Tw_e, const double _testableTolerance)
     : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
-    , mSatisfiableTolerance(_satisfiableTolerance)
+    , mTestableTolerance(_testableTolerance)
     , mRng(std::unique_ptr<util::RNG>(
           new util::RNGWrapper<std::default_random_engine>(0)))
     , mStateSpace(std::make_shared<SE3>())
@@ -110,7 +110,7 @@ TSR::TSR(const TSR& other)
     : mT0_w(other.mT0_w)
     , mBw(other.mBw)
     , mTw_e(other.mTw_e)
-    , mSatisfiableTolerance(other.mSatisfiableTolerance)
+    , mTestableTolerance(other.mTestableTolerance)
     , mRng(std::move(other.mRng->clone()))
     , mStateSpace(std::make_shared<SE3>())
 {
@@ -122,7 +122,7 @@ TSR::TSR(TSR&& other)
     : mT0_w(other.mT0_w)
     , mBw(other.mBw)
     , mTw_e(other.mTw_e)
-    , mSatisfiableTolerance(other.mSatisfiableTolerance)
+    , mTestableTolerance(other.mTestableTolerance)
     , mRng(std::move(other.mRng))
     , mStateSpace(std::make_shared<SE3>())
 {
@@ -136,7 +136,7 @@ TSR& TSR::operator=(const TSR& other)
   mT0_w = other.mT0_w;
   mBw = other.mBw;
   mTw_e = other.mTw_e;
-  mSatisfiableTolerance = other.mSatisfiableTolerance;
+  mTestableTolerance = other.mTestableTolerance;
   mRng = std::move(other.mRng->clone());
 
   // Intentionally don't assign StateSpace.
@@ -150,7 +150,7 @@ TSR& TSR::operator=(TSR&& other)
   mT0_w = std::move(other.mT0_w);
   mBw = std::move(other.mBw);
   mTw_e = std::move(other.mTw_e);
-  mSatisfiableTolerance = other.mSatisfiableTolerance;
+  mTestableTolerance = other.mTestableTolerance;
   mRng = std::move(other.mRng);
   mStateSpace = std::move(other.mStateSpace);
 
@@ -199,7 +199,7 @@ bool TSR::isSatisfied(const statespace::StateSpace::State* _s) const
 {
   Eigen::VectorXd dist;
   getValue(_s, dist);
-  return dist.norm() < mSatisfiableTolerance;
+  return dist.norm() < mTestableTolerance;
 }
 
 //=============================================================================
@@ -416,15 +416,15 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
 }
 
 //=============================================================================
-double TSR::getSatisfiableTolerance()
+double TSR::getTestableTolerance()
 {
-  return mSatisfiableTolerance;
+  return mTestableTolerance;
 }
    
 //=============================================================================
-void TSR::setSatisfiableTolerance(const double _satisfiableTolerance)
+void TSR::setTestableTolerance(const double _testableTolerance)
 {
-  mSatisfiableTolerance = _satisfiableTolerance;
+  mTestableTolerance = _testableTolerance;
 }
 
 //=============================================================================

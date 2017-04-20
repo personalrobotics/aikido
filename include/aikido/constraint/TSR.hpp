@@ -45,7 +45,7 @@ public:
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
-      const double _satisfiableTolerance = 1e-6);
+      const double _testableTolerance = 1e-6);
 
 
   /// Constructor with default random seed generator.
@@ -59,7 +59,7 @@ public:
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
-      const double _satisfiableTolerance = 1e-6);
+      const double _testableTolerance = 1e-6);
 
   TSR(const TSR& other);
   TSR(TSR&& other);
@@ -114,13 +114,13 @@ public:
   bool project(const statespace::StateSpace::State* _s,
       statespace::StateSpace::State* _out) const override;
 
-  /// Get the staisfiable tolerance for isSatisfiable.
-  /// \param[out] _out Satisfialble tolerance, double.
-  double getSatisfiableTolerance();
+  /// Get the testable tolerance used in isSatisfiable.
+  /// \param[out] _out Testable tolerance, double.
+  double getTestableTolerance();
   
-  /// Set the staisfiable tolerance for isSatisfiable.
-  /// \param _satisfiableTolerance Satisfiable tolerance to set.
-  void setSatisfiableTolerance(const double _satisfiableTolerance);
+  /// Set the testable tolerance used in isSatisfiable.
+  /// \param _testableTolerance Testable tolerance to set.
+  void setTestableTolerance(const double _testableTolerance);
 
   /// Transformation from origin frame into the TSR frame "w".
   /// "w" is usually centered at the origin of an object held by the hand
@@ -134,10 +134,9 @@ public:
   /// This often represent an offset from "w" to the origin of the end-effector.
   Eigen::Isometry3d mTw_e;
 
-
 private:
-  /// Tolerance for checking satisfiability
-  double mSatisfiableTolerance;
+  /// Tolerance used in isSatisfied as a testable
+  double mTestableTolerance;
   std::unique_ptr<util::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
 };
