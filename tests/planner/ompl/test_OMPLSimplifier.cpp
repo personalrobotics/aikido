@@ -7,9 +7,15 @@
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
+#include <aikido/planner/ompl/CRRT.hpp>
+#include <aikido/planner/ompl/CRRTConnect.hpp>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
+
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
+using aikido::planner::ompl::CRRT;
+using aikido::planner::ompl::CRRTConnect;
 
 TEST_F(SimplifierTest, EndPointCheck)
 {
