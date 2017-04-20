@@ -114,9 +114,13 @@ public:
   bool project(const statespace::StateSpace::State* _s,
       statespace::StateSpace::State* _out) const override;
 
+  /// Get the staisfiable tolerance for isSatisfiable.
+  /// \param[out] _out Satisfialble tolerance, double.
   double getSatisfiableTolerance();
-   
-  void setSatisfiableTolerance(const double satisfiableTolerance);
+  
+  /// Set the staisfiable tolerance for isSatisfiable.
+  /// \param _satisfiableTolerance Satisfiable tolerance to set.
+  void setSatisfiableTolerance(const double _satisfiableTolerance);
 
   /// Transformation from origin frame into the TSR frame "w".
   /// "w" is usually centered at the origin of an object held by the hand

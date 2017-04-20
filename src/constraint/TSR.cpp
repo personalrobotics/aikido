@@ -422,9 +422,9 @@ double TSR::getSatisfiableTolerance()
 }
    
 //=============================================================================
-void TSR::setSatisfiableTolerance(const double satisfiableTolerance)
+void TSR::setSatisfiableTolerance(const double _satisfiableTolerance)
 {
-  mSatisfiableTolerance = satisfiableTolerance;
+  mSatisfiableTolerance = _satisfiableTolerance;
 }
 
 //=============================================================================
