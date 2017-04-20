@@ -11,7 +11,6 @@
 #include <aikido/planner/ompl/CRRTConnect.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
-
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::CRRT;
@@ -50,7 +49,7 @@ TEST_F(SimplifierTest, EndPointCheck)
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
   // Check the last waypoint
-  simplifiedTraj->evaluate(traj->getDuration(), s0);
+  simplifiedTraj->evaluate(originalTraj->getDuration(), s0);
   r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 }
