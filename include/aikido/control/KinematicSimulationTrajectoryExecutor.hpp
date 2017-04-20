@@ -35,6 +35,8 @@ public:
   std::future<void> execute(
     trajectory::TrajectoryPtr traj) override;
 
+  /// \copydoc PositionCommandExecutor::step()
+  ///
   /// If multiple threads are accessing this function or the skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.

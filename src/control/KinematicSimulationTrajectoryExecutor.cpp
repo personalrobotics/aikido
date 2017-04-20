@@ -105,8 +105,9 @@ void KinematicSimulationTrajectoryExecutor::step()
     mInExecution = false;
   }
 
+  using seconds = std::chrono::duration<float>;
   auto timeSinceBeginning = system_clock::now() - mExecutionStartTime;
-  auto t = duration<double>(timeSinceBeginning).count();
+  auto tsec = duration_cast<seconds>(timeSinceBeginning).count();
 
   // Can't do static here because MetaSkeletonStateSpace inherits
   // CartesianProduct which inherits virtual StateSpace
@@ -115,12 +116,12 @@ void KinematicSimulationTrajectoryExecutor::step()
   auto metaSkeleton = space->getMetaSkeleton();
   auto state = space->createState();
 
-  mTraj->evaluate(t, state);
+  mTraj->evaluate(tsec, state);
 
   space->setState(state);
 
   // Check if trajectory has completed.
-  bool const is_done = (t >= mTraj->getEndTime());
+  bool const is_done = (tsec >= mTraj->getEndTime());
   if (is_done) {
     mTraj.reset();
     mPromise->set_value();
