@@ -105,7 +105,7 @@ void KinematicSimulationTrajectoryExecutor::step()
     mInExecution = false;
   }
 
-  using seconds = std::chrono::duration<float>;
+  using seconds = std::chrono::duration<double>;
   auto timeSinceBeginning = system_clock::now() - mExecutionStartTime;
   auto tsec = duration_cast<seconds>(timeSinceBeginning).count();
 
