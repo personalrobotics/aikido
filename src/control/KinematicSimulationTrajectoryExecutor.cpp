@@ -127,7 +127,6 @@ void KinematicSimulationTrajectoryExecutor::step()
     mPromise->set_value();
     mInExecution = false;
   }
-
 }
 
 }
