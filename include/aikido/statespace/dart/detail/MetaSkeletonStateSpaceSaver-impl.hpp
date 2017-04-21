@@ -1,16 +1,18 @@
 namespace aikido {
 namespace statespace {
+namespace dart {
 
-StateSpaceStateSaver::StateSpaceStateSaver(MetaSkeletonStateSpacePtr _space)
+MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(MetaSkeletonStateSpacePtr _space)
 : mSpace(std::move(_space))
 , mPositions(mSpace->getMetaSkeleton()->getPositions())
 {
 }
 
-StateSpaceStateSaver::~StateSpaceStateSaver()
+MetaSkeletonStateSpaceSaver::~MetaSkeletonStateSpaceSaver()
 {
   mSpace->getMetaSkeleton()->setPositions(mPositions);
 }
 
+} // namespace dart
 } // namespace statespace
 } // namespace aikido
