@@ -15,7 +15,9 @@ namespace aikido{
 namespace control {
 namespace ros {
 
-/// This class sends commands for the hand position to the ROS server
+/// This class uses actionlib to command an action of the type
+/// pr_control_msgs/SetPosition. It specifies a set of target
+/// positions and sends it to the ROS server for execution 
 class RosPositionCommandExecutor : public aikido::control::PositionCommandExecutor
 {
 public:
@@ -28,7 +30,7 @@ public:
   RosPositionCommandExecutor(
     ::ros::NodeHandle node,
     const std::string& serverName,
-    const std::vector<std::string>& jointNames,
+    std::vector<std::string> jointNames,
     std::chrono::milliseconds connectionTimeout = std::chrono::milliseconds{1000},
     std::chrono::milliseconds connectionPollingPeriod = std::chrono::milliseconds{20}
   );
