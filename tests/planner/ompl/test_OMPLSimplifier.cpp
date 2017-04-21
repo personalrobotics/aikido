@@ -65,7 +65,7 @@ TEST_F(SimplifierTest, StartAndEndStatesUnchanged)
   r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 
-// Test that the simplification process returns the right notification to user
+// Test that the boolean returned is in agreement with shortening process
 //=============================================================================
   double trajDistance = 0.0;
   for(size_t i = 0; i < traj->getDuration()-1; ++i)
@@ -98,5 +98,4 @@ TEST_F(SimplifierTest, StartAndEndStatesUnchanged)
   simplifiedTrajDistance = simplifiedTrajDistance / (simplifiedTraj->getDuration());
 
   EXPECT_TRUE(shorten_success == ( simplifiedTrajDistance < trajDistance ));  
-  // EXPECT_TRUE(pow(startPose[0],2) == 25);
 }

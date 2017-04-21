@@ -289,10 +289,11 @@ trajectory::InterpolatedPtr planOMPL(
 /// between validity checking two successive points on a tree extension
 /// \param _timeout Timeout, in seconds, after which the simplifier terminates
 /// to return possibly shortened path
-/// \param _maxEmptySteps Maximum number of consecutive failed attempts at shortening 
-/// before simplification terminates. Default 0, equal to number of states in the path
-/// \param _rangeRatio Maximum distance between states a connection is attempted,
-/// as a fraction relative to the total length of the path
+/// \param _maxEmptySteps Maximum number of consecutive failed attempts at
+/// shortening before simplification terminates. Default 0, equal to number
+/// of states in the path
+/// \param _rangeRatio Maximum distance between states a connection is
+/// attempted, as a fraction relative to the total length of the path
 /// \param _snapToVertex Threshold distance for snapping a state on shortened
 /// path to a state on original path
 /// \param _originalTraj The untimed trajectory obtained from the planner,
