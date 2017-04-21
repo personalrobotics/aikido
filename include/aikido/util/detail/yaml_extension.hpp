@@ -3,91 +3,11 @@
 
 #include <sstream>
 #include <unordered_map>
+#include <dart/common/StlHelpers.hpp>
 #include <Eigen/Dense>
 #include <yaml-cpp/yaml.h>
 
 namespace {
-
-//==============================================================================
-// Reads a YAML::Node that encodes a vector or a matrix; and stores it into
-// `matrix`. If `matrix` is dynamic size Eigen object, resizes it accordingly.
-template <class _Scalar,
-          int _Rows,
-          int _Cols,
-          int _Options,
-          int _MaxRows,
-          int _MaxCols>
-void decode(
-    const YAML::Node& node,
-    Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>& matrix)
-{
-  using MatrixType
-      = Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>;
-  using Index = typename MatrixType::Index;
-
-  using std::runtime_error;
-
-  if (node.Type() != YAML::NodeType::Sequence)
-    throw runtime_error("Matrix or vector must be a sequence.");
-
-  const Index rows = node.size();
-  if (MatrixType::RowsAtCompileTime != Eigen::Dynamic
-      && rows != MatrixType::RowsAtCompileTime)
-  {
-    std::stringstream ss;
-    ss << "Matrix has incorrect number of rows: expected "
-       << MatrixType::RowsAtCompileTime << "; got " << rows << ".";
-    throw runtime_error(ss.str());
-  }
-
-  if (node.Tag() == "Vector" || node.Tag() == "!Vector")
-  {
-    matrix.resize(rows, 1);
-    for (Index i = 0; i < rows; ++i)
-      matrix(i, 0) = node[i].template as<_Scalar>();
-  }
-  else if (node.Tag() == "Matrix" || node.Tag() == "!Matrix")
-  {
-    const auto cols = node[0].size();
-
-    if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
-        && cols != MatrixType::ColsAtCompileTime)
-    {
-      std::stringstream ss;
-      ss << "Matrix has incorrect number of cols: expected "
-         << MatrixType::ColsAtCompileTime << "; got " << cols << ".";
-      throw runtime_error(ss.str());
-    }
-
-    matrix.resize(rows, cols);
-
-    for (auto r = 0u; r < node.size(); ++r)
-    {
-      if (node[r].Type() != YAML::NodeType::Sequence)
-      {
-        std::stringstream ss;
-        ss << "Row " << r << " of the matrix must be a sequence.";
-        throw runtime_error(ss.str());
-      }
-      else if (node[r].size() != cols)
-      {
-        std::stringstream ss;
-        ss << "Expected row " << r << " to have " << cols << " columns; got "
-           << node[r].size() << ".";
-        throw runtime_error(ss.str());
-      }
-
-      for (auto c = 0u; c < cols; ++c)
-        matrix(r, c) = node[r][c].template as<_Scalar>();
-    }
-  }
-  else
-  {
-    std::stringstream ss;
-    ss << "Unknown type of matrix '" << node.Tag() << "'.";
-    throw runtime_error(ss.str());
-  }
-}
 
 //==============================================================================
 template <typename MatrixType, bool IsVectorAtCompileTime>
@@ -112,7 +32,7 @@ struct encode_impl<MatrixType, true>
     using Index = typename MatrixType::Index;
 
     YAML::Node node;
-    node.SetTag("Vector");
+    node.SetTag("!Vector");
 
     for (Index i = 0; i < matrix.size(); ++i)
       node.push_back(YAML::Node(matrix[i]));
@@ -131,7 +51,7 @@ struct encode_impl<MatrixType, false>
     using Index = typename MatrixType::Index;
 
     YAML::Node node;
-    node.SetTag("Matrix");
+    node.SetTag("!Matrix");
 
     for (Index r = 0; r < matrix.rows(); ++r)
     {
@@ -147,6 +67,16 @@ struct encode_impl<MatrixType, false>
   }
 };
 
+YAML::Mark getMark(const YAML::Node& node)
+{
+#ifdef YAMLCPP_NODE_HAS_MARK
+  return node.Mark();
+#else
+  DART_UNUSED(node);
+  return YAML::Mark::null_mark();
+#endif
+}
+
 } // namespace (anonymous)
 
 namespace YAML {
@@ -155,10 +85,18 @@ namespace YAML {
 // Specialization for Eigen::Matrix<...>. This enables to use YAML::Node
 // with std::unordered_map as `Node(Eigen::Matrix3d::Identity())` and
 // `node.as<Eigen::Matrix3d>()`.
-template <typename _Scalar, int _Dim, int _Mode, int _Options>
-struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>>
+template <typename _Scalar,
+          int _Rows,
+          int _Cols,
+          int _Options,
+          int _MaxRows,
+          int _MaxCols>
+struct convert<Eigen::
+                   Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>>
 {
-  using MatrixType = Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>;
+  using MatrixType
+      = Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>;
+  using Index = typename MatrixType::Index;
 
   static Node encode(const MatrixType& matrix)
   {
@@ -166,21 +104,76 @@ struct convert<Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>>
         matrix);
   }
 
-  static bool decode(
-      const YAML::Node& node,
-      Eigen::Matrix<_Scalar, _Dim, _Mode, _Options>& matrix)
+  /// Reads a YAML::Node that encodes a vector or a matrix; and stores it into
+  /// `matrix`. If `matrix` is dynamic size Eigen object, resizes it
+  /// accordingly.
+  static bool decode(const YAML::Node& node, MatrixType& matrix)
   {
-    if (node.Tag() == "Vector" || node.Tag() == "!Vector"
-        || node.Tag() == "Matrix"
-        || node.Tag() == "!Matrix")
+    if (node.Type() != YAML::NodeType::Sequence)
     {
-      ::decode(node, matrix);
-      return true;
+      throw YAML::RepresentationException(
+          getMark(node), "Matrix or vector must be a sequence.");
+    }
+
+    const Index rows = node.size();
+    if (MatrixType::RowsAtCompileTime != Eigen::Dynamic
+        && rows != MatrixType::RowsAtCompileTime)
+    {
+      std::stringstream ss;
+      ss << "Matrix has incorrect number of rows: expected "
+         << MatrixType::RowsAtCompileTime << "; got " << rows << ".";
+      throw YAML::RepresentationException(getMark(node), ss.str());
+    }
+
+    if (node.Tag() == "!Vector")
+    {
+      matrix.resize(rows, 1);
+      for (Index i = 0; i < rows; ++i)
+        matrix(i, 0) = node[i].template as<_Scalar>();
+    }
+    else if (node.Tag() == "!Matrix")
+    {
+      const auto cols = node[0].size();
+
+      if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
+          && cols != MatrixType::ColsAtCompileTime)
+      {
+        std::stringstream ss;
+        ss << "Matrix has incorrect number of cols: expected "
+           << MatrixType::ColsAtCompileTime << "; got " << cols << ".";
+        throw YAML::RepresentationException(getMark(node), ss.str());
+      }
+
+      matrix.resize(rows, cols);
+
+      for (auto r = 0u; r < node.size(); ++r)
+      {
+        if (node[r].Type() != YAML::NodeType::Sequence)
+        {
+          std::stringstream ss;
+          ss << "Row " << r << " of the matrix must be a sequence.";
+          throw YAML::RepresentationException(getMark(node), ss.str());
+        }
+        else if (node[r].size() != cols)
+        {
+          std::stringstream ss;
+          ss << "Expected row " << r << " to have " << cols << " columns; got "
+             << node[r].size() << ".";
+          throw YAML::RepresentationException(getMark(node), ss.str());
+        }
+
+        for (auto c = 0u; c < cols; ++c)
+          matrix(r, c) = node[r][c].template as<_Scalar>();
+      }
     }
     else
     {
-      return false;
+      std::stringstream ss;
+      ss << "Unknown type of matrix '" << node.Tag() << "'.";
+      throw YAML::RepresentationException(getMark(node), ss.str());
     }
+
+    return true;
   }
 };
 
@@ -234,6 +227,8 @@ struct convert<std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>>
       return false;
 
     map.clear();
+    map.reserve(node.size());
+
     for (const auto& it : node)
       map[it.first.as<_Key>()] = it.second.as<_Tp>();
 

@@ -5,6 +5,7 @@
 #  YAMLCPP_INCLUDE_DIRS - The yaml-cpp include directories
 #  YAMLCPP_LIBRARIES - The libraries needed to use yaml-cpp
 #  YAMLCPP_DEFINITIONS - Compiler switches required for using yaml-cpp
+#  YAMLCPP_VERSION - The version of yaml-cpp
 #
 # By default, the dynamic libraries of yaml-cpp will be found. To find the
 # static ones instead, set the YAMLCPP_STATIC_LIBRARY variable to TRUE before
@@ -37,6 +38,8 @@ find_library(YAMLCPP_LIBRARY NAMES ${YAMLCPP_STATIC} yaml-cpp
 
 set(YAMLCPP_LIBRARIES ${YAMLCPP_LIBRARY})
 set(YAMLCPP_INCLUDE_DIRS ${YAMLCPP_INCLUDE_DIR})
+
+set(YAMLCPP_VERSION ${PC_YAMLCPP_VERSION})
 
 # Handle the QUIETLY and REQUIRED arguments and set YAMLCPP_FOUND to TRUE
 # if all listed variables are TRUE.

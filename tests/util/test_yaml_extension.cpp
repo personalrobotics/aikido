@@ -2,6 +2,18 @@
 #include <aikido/util/yaml.hpp>
 
 //==============================================================================
+TEST(YamlEigenExtension, Errors)
+{
+  std::string notSequential = "name: PRL";
+  EXPECT_THROW(YAML::Load(notSequential)["name"].as<Eigen::VectorXd>(),
+      YAML::RepresentationException);
+
+  std::string incorrectSize = "vector: [1, 2, 3]";
+  EXPECT_THROW(YAML::Load(incorrectSize)["vector"].as<Eigen::Vector2d>(),
+      YAML::RepresentationException);
+}
+
+//==============================================================================
 TEST(YamlEigenExtension, LoadVectorMatrix3dIsometry3d)
 {
   std::string yamlString
