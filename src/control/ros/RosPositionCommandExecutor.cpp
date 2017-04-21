@@ -12,13 +12,13 @@ using std::chrono::milliseconds;
 RosPositionCommandExecutor::RosPositionCommandExecutor(
       ::ros::NodeHandle node,
       const std::string& serverName,
-      const std::vector<std::string>& jointNames,
+      std::vector<std::string> jointNames,
       const std::chrono::milliseconds connectionTimeout,
       const std::chrono::milliseconds connectionPollingPeriod)
   : mNode(std::move(node))
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
-  , mJointNames{jointNames}
+  , mJointNames(std::move(jointNames))
   , mConnectionTimeout{connectionTimeout}
   , mConnectionPollingPeriod{connectionPollingPeriod}
   , mInProgress{false}
