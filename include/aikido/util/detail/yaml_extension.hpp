@@ -3,8 +3,8 @@
 
 #include <sstream>
 #include <unordered_map>
-#include <dart/common/StlHelpers.hpp>
 #include <Eigen/Dense>
+#include <dart/common/StlHelpers.hpp>
 #include <yaml-cpp/yaml.h>
 
 namespace {
