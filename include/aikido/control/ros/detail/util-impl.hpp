@@ -33,6 +33,8 @@ bool waitForActionServer(
     currentTime += periodDuration;
     std::this_thread::sleep_until(currentTime);
   }
+
+  return false;
 }
 
 } // namespace ros

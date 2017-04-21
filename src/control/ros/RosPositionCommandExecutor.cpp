@@ -18,11 +18,12 @@ RosPositionCommandExecutor::RosPositionCommandExecutor(
   : mNode(std::move(node))
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
-  , mJointNames(std::move(jointNames))
   , mConnectionTimeout{connectionTimeout}
   , mConnectionPollingPeriod{connectionPollingPeriod}
   , mInProgress{false}
+  , mJointNames(std::move(jointNames))
 {
+  // Do nothing.
 }
 
 //=============================================================================
@@ -69,17 +70,13 @@ std::future<void> RosPositionCommandExecutor::execute(const Eigen::VectorXd& goa
 //=============================================================================
 void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
 {
-
-  using actionlib::TerminalState;
-  using Result = pr_control_msgs::SetPositionResult;
-
   if (handle.getCommState() == actionlib::CommState::DONE)
   {
     std::stringstream message;
     bool isSuccessful = true;
 
     const auto terminalState = handle.getTerminalState();
-    if (terminalState != TerminalState::SUCCEEDED)
+    if (terminalState != actionlib::TerminalState::SUCCEEDED)
     {
       message << "Action " << terminalState.toString();
 

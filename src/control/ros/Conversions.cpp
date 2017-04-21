@@ -431,7 +431,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 
 //=============================================================================
 sensor_msgs::JointState positionsToJointState(
-  const Eigen::VectorXd& goalPositions, std::vector<std::string> jointNames)
+  const Eigen::VectorXd& goalPositions, const std::vector<std::string>& jointNames)
 {
   if ((size_t)goalPositions.size() != jointNames.size())
   {
