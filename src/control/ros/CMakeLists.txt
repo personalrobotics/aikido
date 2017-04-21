@@ -1,12 +1,6 @@
 #==============================================================================
 # Dependencies
 #
-find_package(actionlib QUIET)
-aikido_check_package(actionlib "aikido::control::ros" "actionlib")
-
-find_package(control_msgs QUIET)
-aikido_check_package(control_msgs "aikido::control::ros" "control_msgs")
-
 find_package(roscpp QUIET)
 aikido_check_package(roscpp "aikido::control::ros" "roscpp")
 
@@ -22,9 +16,6 @@ aikido_check_package(actionlib "aikido::control::ros" "actionlib")
 # "tests", and "run_tests" that conflict with the targets defined by Aikido.
 find_package(control_msgs QUIET MODULE)
 aikido_check_package(control_msgs "aikido::control::ros" "control_msgs")
-
-find_package(roscpp QUIET)
-aikido_check_package(roscpp "aikido::control::ros" "roscpp")
 
 # Note: Intentionally use "Module" mode because the config file imports "gtest",
 # "tests", and "run_tests" that conflict with the targets defined by Aikido.
