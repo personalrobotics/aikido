@@ -20,7 +20,7 @@ bool waitForActionServer(
 
   const auto startTime = Clock::now();
   const auto endTime = startTime + timeoutDuration;
-  auto currentTime = startTime + periodDuration;
+  auto currentTime = startTime;
 
   while(currentTime < endTime)
   {
