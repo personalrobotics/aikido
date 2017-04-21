@@ -37,8 +37,8 @@ std::future<void> RosPositionCommandExecutor::execute(const Eigen::VectorXd& goa
   pr_control_msgs::SetPositionGoal goal;
 
   // Convert goal positions and joint names to jointstate
-  // Will check for size matching in the toJointState function
-  goal.command = toJointState(goalPositions,mJointNames);
+  // Will check for size matching in the positionsToJointState function
+  goal.command = positionsToJointState(goalPositions,mJointNames);
 
   bool waitForServer = waitForActionServer<
                         pr_control_msgs::SetPositionAction,

@@ -33,7 +33,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 /// \param[in] goalPositions The required positions for the fingers
 /// \param[in] jointNames The corresponding names of the joints
 /// \return The JointState message object
-sensor_msgs::JointState toJointState(
+sensor_msgs::JointState positionsToJointState(
   const Eigen::VectorXd& goalPositions, const std::vector<std::string>& jointNames);
 
 
