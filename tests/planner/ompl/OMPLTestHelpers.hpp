@@ -1,6 +1,8 @@
 #ifndef AIKIDO_TESTS_OMPL_OMPLTESTHELPERS_HPP_
 #define AIKIDO_TESTS_OMPL_OMPLTESTHELPERS_HPP_
 
+#include <math.h>
+
 #include <gtest/gtest.h>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
