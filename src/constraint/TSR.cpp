@@ -80,7 +80,7 @@ public:
 //=============================================================================
 TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
          const Eigen::Matrix<double, 6, 2>& _Bw, const Eigen::Isometry3d& _Tw_e,
-         const double _testableTolerance)
+         double _testableTolerance)
     : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
@@ -93,7 +93,7 @@ TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
 
 //=============================================================================
 TSR::TSR(const Eigen::Isometry3d& _T0_w, const Eigen::Matrix<double, 6, 2>& _Bw,
-         const Eigen::Isometry3d& _Tw_e, const double _testableTolerance)
+         const Eigen::Isometry3d& _Tw_e, double _testableTolerance)
     : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
@@ -422,7 +422,7 @@ double TSR::getTestableTolerance()
 }
    
 //=============================================================================
-void TSR::setTestableTolerance(const double _testableTolerance)
+void TSR::setTestableTolerance(double _testableTolerance)
 {
   mTestableTolerance = _testableTolerance;
 }
