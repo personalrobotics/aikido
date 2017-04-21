@@ -17,6 +17,9 @@ target_link_libraries(test_OMPLPlanner "${PROJECT_NAME}_planner_ompl")
 aikido_add_test(test_OMPLSimplifier test_OMPLSimplifier.cpp)
 target_link_libraries(test_OMPLSimplifier "${PROJECT_NAME}_planner_ompl")
 
+aikido_add_test(test_TrajectoryConversions test_TrajectoryConversions.cpp)
+target_link_libraries(test_TrajectoryConversions "${PROJECT_NAME}_planner_ompl")
+
 aikido_add_test(test_StateSampler test_StateSampler.cpp)
 target_link_libraries(test_StateSampler "${PROJECT_NAME}_planner_ompl")
 
