@@ -1,12 +1,6 @@
 #==============================================================================
 # Dependencies
 #
-find_package(actionlib QUIET)
-aikido_check_package(actionlib "aikido::control::ros" "actionlib")
-
-find_package(control_msgs QUIET)
-aikido_check_package(control_msgs "aikido::control::ros" "control_msgs")
-
 find_package(roscpp QUIET)
 aikido_check_package(roscpp "aikido::control::ros" "roscpp")
 
@@ -23,8 +17,10 @@ aikido_check_package(actionlib "aikido::control::ros" "actionlib")
 find_package(control_msgs QUIET MODULE)
 aikido_check_package(control_msgs "aikido::control::ros" "control_msgs")
 
-find_package(roscpp QUIET)
-aikido_check_package(roscpp "aikido::control::ros" "roscpp")
+# Note: Intentionally use "Module" mode because the config file imports "gtest",
+# "tests", and "run_tests" that conflict with the targets defined by Aikido.
+find_package(pr_control_msgs QUIET MODULE)
+aikido_check_package(pr_control_msgs "aikido::control::ros" "pr_control_msgs")
 
 #==============================================================================
 # Libraries
@@ -34,6 +30,7 @@ set(sources
   RosTrajectoryExecutionException.cpp
   Conversions.cpp
   RosJointStateClient.cpp
+  RosPositionCommandExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control_ros" SHARED ${sources})
@@ -46,6 +43,7 @@ target_include_directories("${PROJECT_NAME}_control_ros" SYSTEM
     ${actionlib_INCLUDE_DIRS}
     ${control_msgs_INCLUDE_DIRS}
     ${roscpp_INCLUDE_DIRS}
+    ${pr_control_msgs_INCLUDE_DIRS}
 )
 
 target_link_libraries("${PROJECT_NAME}_control_ros"
