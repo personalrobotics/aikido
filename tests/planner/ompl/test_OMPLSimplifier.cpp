@@ -17,7 +17,7 @@ using aikido::planner::ompl::CRRT;
 using aikido::planner::ompl::CRRTConnect;
 
 
-TEST_F(SimplifierTest, StartAndEndStatesUnchanged)
+TEST_F(SimplifierTest, EndPointCheckShortenVerify)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
@@ -67,35 +67,36 @@ TEST_F(SimplifierTest, StartAndEndStatesUnchanged)
 
 // Test that the boolean returned is in agreement with shortening process
 //=============================================================================
+  auto stateCurrent = stateSpace->createState();
+  auto stateNext = stateSpace->createState();
+
   double trajDistance = 0.0;
-  for(size_t i = 0; i < traj->getDuration()-1; ++i)
+  for(size_t i = 0; i < traj->getDuration(); ++i)
   {
-    traj->evaluate(i, s0);
-    r0 = s0.getSubStateHandle<R3>(0);
-    auto currentState = r0.getValue();
+    traj->evaluate(i, stateCurrent);
+    auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
+    auto currentState = rCurrent.getValue();
+    
+    traj->evaluate(i+1, stateNext);
+    auto rNext = stateNext.getSubStateHandle<R3>(0);
+    auto nextState = rNext.getValue();
 
-    traj->evaluate(i+1, s0);
-    r0 = s0.getSubStateHandle<R3>(0);
-    auto nextState = r0.getValue();
-
-    trajDistance += pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2);
+    trajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
   }
-  trajDistance = trajDistance / (traj -> getDuration());
 
   double simplifiedTrajDistance = 0.0;
-  for(size_t i = 0; i < simplifiedTraj->getDuration()-1; ++i)
+  for(size_t i = 0; i < simplifiedTraj->getDuration(); ++i)
   {
-    simplifiedTraj->evaluate(i, s0);
-    r0 = s0.getSubStateHandle<R3>(0);
-    auto currentState = r0.getValue();
+    simplifiedTraj->evaluate(i, stateCurrent);
+    auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
+    auto currentState = rCurrent.getValue();
 
-    simplifiedTraj->evaluate(i+1, s0);
-    r0 = s0.getSubStateHandle<R3>(0);
-    auto nextState = r0.getValue();
+    simplifiedTraj->evaluate(i+1, stateNext);
+    auto rNext = stateNext.getSubStateHandle<R3>(0);
+    auto nextState = rNext.getValue();
 
-    simplifiedTrajDistance += pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2);
+    simplifiedTrajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
   }
-  simplifiedTrajDistance = simplifiedTrajDistance / (simplifiedTraj->getDuration());
 
   EXPECT_TRUE(shorten_success == ( simplifiedTrajDistance < trajDistance ));  
 }
