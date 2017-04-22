@@ -59,7 +59,7 @@ TEST_F(PlannerTest, TrajectoryConversionsTest)
       traj, si);
 
   auto interpolatedTraj = aikido::planner::ompl::toInterpolatedTrajectory(
-    &omplTraj, stateSpace, interpolator);
+    omplTraj, stateSpace, interpolator);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();

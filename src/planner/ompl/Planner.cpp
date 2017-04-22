@@ -434,7 +434,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
            && empty_steps <= _maxEmptySteps);
 
   // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
-  auto returnTraj = toInterpolatedTrajectory(&path, _stateSpace, _interpolator);
+  auto returnTraj = toInterpolatedTrajectory(path, _stateSpace, _interpolator);
 
   // Step 5: Return trajectory and notify user if shortening was successful
   std::pair<std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
@@ -464,17 +464,17 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 }
 
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
-    ::ompl::geometric::PathGeometric* _path,
+    const ::ompl::geometric::PathGeometric &_path,
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator)
 {
   auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
       std::move(_stateSpace), std::move(_interpolator));
 
-  for (size_t idx = 0; idx < _path->getStateCount(); ++idx)
+  for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {
     const auto* st
-        = static_cast<GeometricStateSpace::StateType*>(_path->getState(idx));
+        = static_cast<const GeometricStateSpace::StateType*>(_path.getState(idx));
     // Arbitrary timing
     returnInterpolated->addWaypoint(idx, st->mState);
   }
