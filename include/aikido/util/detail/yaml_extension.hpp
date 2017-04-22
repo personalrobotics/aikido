@@ -7,7 +7,9 @@
 #include <dart/common/StlHelpers.hpp>
 #include <yaml-cpp/yaml.h>
 
-namespace {
+namespace aikido {
+namespace util {
+namespace detail {
 
 //==============================================================================
 template <typename MatrixType, bool IsVectorAtCompileTime>
@@ -77,7 +79,9 @@ YAML::Mark getMark(const YAML::Node& node)
 #endif
 }
 
-} // namespace (anonymous)
+} // namespace detail
+} // namespace util
+} // namespace aikido
 
 namespace YAML {
 
@@ -100,6 +104,7 @@ struct convert<Eigen::
 
   static Node encode(const MatrixType& matrix)
   {
+    using aikido::util::detail::encode_impl;
     return encode_impl<MatrixType, MatrixType::IsVectorAtCompileTime>::encode(
         matrix);
   }
@@ -109,6 +114,8 @@ struct convert<Eigen::
   /// accordingly.
   static bool decode(const YAML::Node& node, MatrixType& matrix)
   {
+    using aikido::util::detail::getMark;
+
     if (node.Type() != YAML::NodeType::Sequence)
     {
       throw YAML::RepresentationException(
