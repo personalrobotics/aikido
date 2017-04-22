@@ -446,7 +446,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 // use
 
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
-    const trajectory::InterpolatedPtr &_interpolatedTraj,
+    const trajectory::InterpolatedPtr& _interpolatedTraj,
     ::ompl::base::SpaceInformationPtr _si)
 {
   auto sspace
@@ -464,7 +464,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 }
 
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
-    const ::ompl::geometric::PathGeometric &_path,
+    const ::ompl::geometric::PathGeometric& _path,
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator)
 {
@@ -473,8 +473,8 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
 
   for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {
-    const auto* st
-        = static_cast<const GeometricStateSpace::StateType*>(_path.getState(idx));
+    const auto* st = static_cast<const GeometricStateSpace::StateType*>(
+        _path.getState(idx));
     // Arbitrary timing
     returnInterpolated->addWaypoint(idx, st->mState);
   }
