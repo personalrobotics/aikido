@@ -69,7 +69,7 @@ struct encode_impl<MatrixType, false>
   }
 };
 
-YAML::Mark getMark(const YAML::Node& node)
+inline YAML::Mark getMark(const YAML::Node& node)
 {
 #ifdef YAMLCPP_NODE_HAS_MARK
   return node.Mark();
