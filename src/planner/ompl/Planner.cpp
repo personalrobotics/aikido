@@ -446,13 +446,13 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 // use
 
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
-    trajectory::InterpolatedPtr _interpolatedTraj,
+    const trajectory::InterpolatedPtr &_interpolatedTraj,
     ::ompl::base::SpaceInformationPtr _si)
 {
   auto sspace
       = ompl_static_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
 
-  ::ompl::geometric::PathGeometric returnPath{_si};
+  ::ompl::geometric::PathGeometric returnPath{std::move(_si)};
 
   for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx)
   {
