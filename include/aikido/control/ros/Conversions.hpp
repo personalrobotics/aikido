@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <trajectory_msgs/JointTrajectory.h>
+#include <sensor_msgs/JointState.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -27,6 +28,14 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 /// \param[in] timestep Timestep between two consecutive waypoints.
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
   const aikido::trajectory::TrajectoryPtr& trajectory, double timestep);
+
+/// Converts Eigen VectorXd and joint names to JointState
+/// \param[in] goalPositions The required positions for the fingers
+/// \param[in] jointNames The corresponding names of the joints
+/// \return The JointState message object
+sensor_msgs::JointState positionsToJointState(
+  const Eigen::VectorXd& goalPositions, const std::vector<std::string>& jointNames);
+
 
 } // namespace ros
 } // namespace control
