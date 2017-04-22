@@ -81,7 +81,7 @@ TEST_F(PlannerTest, TrajectoryConversionsTest)
   r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 
-  // Get Duration
+  // Check Duration
   EXPECT_TRUE(traj->getDuration() == interpolatedTraj->getDuration());
 
   // Match every point
