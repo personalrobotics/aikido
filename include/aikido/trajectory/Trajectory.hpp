@@ -50,8 +50,8 @@ public:
   /// function is implementation-defined if \c _t is not between
   /// \c getStartTime() and \c getEndTime().
   ///
-  /// \param _t time parameter (in seconds)
-  /// \param[out] _state output state of the trajectory at time \c _t (seconds)
+  /// \param _t time parameter
+  /// \param[out] _state output state of the trajectory at time \c _t
   virtual void evaluate(double _t,
     statespace::StateSpace::State *_state) const = 0;
 

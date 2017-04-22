@@ -105,9 +105,9 @@ void KinematicSimulationTrajectoryExecutor::step()
     mInExecution = false;
   }
 
-  using seconds = std::chrono::duration<double>;
   auto timeSinceBeginning = system_clock::now() - mExecutionStartTime;
-  auto tsec = duration_cast<seconds>(timeSinceBeginning).count();
+  auto tsec = duration_cast<std::chrono::duration<double>>(
+    timeSinceBeginning).count();
 
   // Can't do static here because MetaSkeletonStateSpace inherits
   // CartesianProduct which inherits virtual StateSpace
