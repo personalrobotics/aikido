@@ -389,6 +389,15 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj)
 {
+  if (_timeout < 0)
+  {
+    throw std::invalid_argument("Timeout must be >= 0");
+  }
+
+  if (_maxEmptySteps < 0)
+  {
+    throw std::invalid_argument("Max empty steps must be >= 0");
+  }
 
   // Step 1: Generate the space information of OMPL type
   auto si = getSpaceInformation(
@@ -423,12 +432,13 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
     bool const shortened
         = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
-    empty_steps = (empty_steps + !shortened)
-                  * !shortened; // Increment only if shorten fails consecutively
+    if(shortened) 
+      empty_steps = 0;
+    else
+      empty_steps += 1;
+    
     time_current = std::chrono::system_clock::now();
-    shorten_success
-        = shorten_success
-          || shortened; // TODO: There should be a better way to do this.
+    shorten_success = shorten_success || shortened;
 
   } while (time_current - time_before <= time_limit
            && empty_steps <= _maxEmptySteps);
@@ -446,7 +456,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 // use
 
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
-    const trajectory::InterpolatedPtr &_interpolatedTraj,
+    const trajectory::InterpolatedPtr& _interpolatedTraj,
     ::ompl::base::SpaceInformationPtr _si)
 {
   auto sspace
@@ -464,7 +474,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 }
 
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
-    const ::ompl::geometric::PathGeometric &_path,
+    const ::ompl::geometric::PathGeometric& _path,
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator)
 {
@@ -473,8 +483,8 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
 
   for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {
-    const auto* st
-        = static_cast<const GeometricStateSpace::StateType*>(_path.getState(idx));
+    const auto* st = static_cast<const GeometricStateSpace::StateType*>(
+        _path.getState(idx));
     // Arbitrary timing
     returnInterpolated->addWaypoint(idx, st->mState);
   }
