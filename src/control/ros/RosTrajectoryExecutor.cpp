@@ -49,15 +49,13 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 
 //=============================================================================
 RosTrajectoryExecutor::RosTrajectoryExecutor(
-      statespace::dart::MetaSkeletonStateSpacePtr space,
       ::ros::NodeHandle node,
       const std::string& serverName,
       double timestep,
       double goalTimeTolerance,
       const std::chrono::milliseconds& connectionTimeout,
       const std::chrono::milliseconds& connectionPollingPeriod)
-  : mSpace{std::move(space)}
-  , mNode{std::move(node)}
+  : mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mTimestep{timestep}
@@ -66,9 +64,6 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
   , mConnectionPollingPeriod{connectionPollingPeriod}
   , mInProgress{false}
 {
-  if (!mSpace)
-    throw std::invalid_argument("Space is null.");
-
   if (mTimestep <= 0)
     throw std::invalid_argument("Timestep must be positive.");
 
@@ -107,12 +102,6 @@ std::future<void> RosTrajectoryExecutor::execute(
   {
     throw std::invalid_argument(
       "Trajectory is not in a MetaSkeletonStateSpace.");
-  }
-
-  if (space != mSpace)
-  {
-    throw std::invalid_argument(
-      "Trajectory is not in the same StateSpace as this RosTrajectoryExecutor.");
   }
 
   // Setup the goal properties.
