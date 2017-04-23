@@ -10,6 +10,11 @@ MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(MetaSkeletonStateSpaceP
 
 MetaSkeletonStateSpaceSaver::~MetaSkeletonStateSpaceSaver()
 {
+  if (mPositions.size() != mSpace->getMetaSkeleton().getNumDofs())
+  {
+    dtwarn << "[MetaSkeletonStateSpaceSaver] The number of DOFs in the "
+           << "MetaSkeleton does not match the saved state.";
+  }
   mSpace->getMetaSkeleton()->setPositions(mPositions);
 }
 
