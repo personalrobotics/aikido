@@ -77,6 +77,9 @@ inline YAML::Mark getMark(const YAML::Node& node)
   DART_UNUSED(node);
   return YAML::Mark::null_mark();
 #endif
+  // We need this because Node::Mark() was introduced since yaml-cpp 0.5.3.
+  // By using null_mark(), the error message wouldn't tell the exact location
+  // (i.e., line number and column in the yaml file) where the error occurred.
 }
 
 } // namespace detail
