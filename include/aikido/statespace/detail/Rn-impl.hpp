@@ -147,7 +147,7 @@ template <int N>
 void R<N>::setValue(State *_state, const typename R<N>::Vectord &_value) const
 {
   // TODO: Skip this check in release mode.
-  if (_value.size() != getDimension()) {
+  if (static_cast<std::size_t>(_value.size()) != getDimension()) {
     std::stringstream msg;
     msg << "Value has incorrect size: expected " << getDimension() << ", got "
         << _value.size() << ".";
@@ -245,7 +245,7 @@ template <int N>
 void R<N>::expMap(const Eigen::VectorXd&_tangent, StateSpace::State *_out) const
 {
   // TODO: Skip this check in release mode.
-  if (_tangent.size() != getDimension()) {
+  if (static_cast<std::size_t>(_tangent.size()) != getDimension()) {
     std::stringstream msg;
     msg << "Tangent vector has incorrect size: expected " << getDimension()
         << ", got " << _tangent.size() << ".";
@@ -260,7 +260,7 @@ void R<N>::expMap(const Eigen::VectorXd&_tangent, StateSpace::State *_out) const
 template <int N>
 void R<N>::logMap(const StateSpace::State *_in, Eigen::VectorXd& _tangent) const
 {
-  if (_tangent.size() != getDimension())
+  if (static_cast<std::size_t>(_tangent.size()) != getDimension())
     _tangent.resize(getDimension());
 
   auto in = static_cast<const State *>(_in);
