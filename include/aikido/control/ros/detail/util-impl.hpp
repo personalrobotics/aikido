@@ -1,8 +1,8 @@
 #include <chrono>
 #include <mutex>
-#include <ros/ros.h>
-#include <ros/callback_queue.h>
 #include <actionlib/client/action_client.h>
+#include <ros/callback_queue.h>
+#include <ros/ros.h>
 
 namespace aikido {
 namespace control {
@@ -10,10 +10,10 @@ namespace ros {
 
 template <class ActionSpec, class TimeoutDuration, class PeriodDuration>
 bool waitForActionServer(
-  actionlib::ActionClient<ActionSpec>& actionClient,
-  ::ros::CallbackQueue& callbackQueue,
-  TimeoutDuration timeoutDuration,
-  PeriodDuration periodDuration)
+    actionlib::ActionClient<ActionSpec>& actionClient,
+    ::ros::CallbackQueue& callbackQueue,
+    TimeoutDuration timeoutDuration,
+    PeriodDuration periodDuration)
 {
   using Clock = std::chrono::steady_clock;
 
@@ -21,7 +21,7 @@ bool waitForActionServer(
   const auto endTime = startTime + timeoutDuration;
   auto currentTime = startTime;
 
-  while(currentTime < endTime)
+  while (currentTime < endTime)
   {
     callbackQueue.callAvailable();
 

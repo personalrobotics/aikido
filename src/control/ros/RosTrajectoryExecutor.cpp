@@ -1,6 +1,6 @@
 #include <aikido/control/ros/Conversions.hpp>
-#include <aikido/control/ros/RosTrajectoryExecutor.hpp>
 #include <aikido/control/ros/RosTrajectoryExecutionException.hpp>
+#include <aikido/control/ros/RosTrajectoryExecutor.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
@@ -49,13 +49,13 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 
 //=============================================================================
 RosTrajectoryExecutor::RosTrajectoryExecutor(
-      statespace::dart::MetaSkeletonStateSpacePtr space,
-      ::ros::NodeHandle node,
-      const std::string& serverName,
-      double timestep,
-      double goalTimeTolerance,
-      const std::chrono::milliseconds& connectionTimeout,
-      const std::chrono::milliseconds& connectionPollingPeriod)
+    statespace::dart::MetaSkeletonStateSpacePtr space,
+    ::ros::NodeHandle node,
+    const std::string& serverName,
+    double timestep,
+    double goalTimeTolerance,
+    const std::chrono::milliseconds& connectionTimeout,
+    const std::chrono::milliseconds& connectionPollingPeriod)
   : mSpace{std::move(space)}
   , mNode{std::move(node)}
   , mCallbackQueue{}
@@ -84,8 +84,7 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 }
 
 //=============================================================================
-std::future<void> RosTrajectoryExecutor::execute(
-  trajectory::TrajectoryPtr traj)
+std::future<void> RosTrajectoryExecutor::execute(trajectory::TrajectoryPtr traj)
 {
   static const ::ros::Time invalidTime;
   return execute(traj, invalidTime);
@@ -93,7 +92,7 @@ std::future<void> RosTrajectoryExecutor::execute(
 
 //=============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
-  trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
+    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
 {
   using aikido::control::ros::toRosJointTrajectory;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -101,18 +100,19 @@ std::future<void> RosTrajectoryExecutor::execute(
   if (!traj)
     throw std::invalid_argument("Trajectory is null.");
 
-  const auto space = std::dynamic_pointer_cast<
-    MetaSkeletonStateSpace>(traj->getStateSpace());
+  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+      traj->getStateSpace());
   if (!space)
   {
     throw std::invalid_argument(
-      "Trajectory is not in a MetaSkeletonStateSpace.");
+        "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
   if (space != mSpace)
   {
     throw std::invalid_argument(
-      "Trajectory is not in the same StateSpace as this RosTrajectoryExecutor.");
+        "Trajectory is not in the same StateSpace as this "
+        "RosTrajectoryExecutor.");
   }
 
   // Setup the goal properties.
@@ -122,8 +122,7 @@ std::future<void> RosTrajectoryExecutor::execute(
   goal.goal_time_tolerance = ::ros::Duration(mGoalTimeTolerance);
 
   // Convert the Aikido trajectory into a ROS JointTrajectory.
-  goal.trajectory = toRosJointTrajectory(
-    traj, mTimestep);
+  goal.trajectory = toRosJointTrajectory(traj, mTimestep);
 
   if (!waitForServer())
     throw std::runtime_error("Unable to connect to action server.");
@@ -137,8 +136,9 @@ std::future<void> RosTrajectoryExecutor::execute(
 
     mPromise = std::promise<void>();
     mInProgress = true;
-    mGoalHandle = mClient.sendGoal(goal, 
-      boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
+    mGoalHandle = mClient.sendGoal(
+        goal,
+        boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
 
     return mPromise.get_future();
   }
@@ -175,7 +175,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
 
   using actionlib::TerminalState;
   using Result = control_msgs::FollowJointTrajectoryResult;
-  
+
   if (handle.getCommState() == actionlib::CommState::DONE)
   {
     std::stringstream message;
@@ -193,8 +193,8 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
         message << " (" << terminalMessage << ")";
 
       mPromise.set_exception(
-        std::make_exception_ptr(
-          RosTrajectoryExecutionException(message.str(), terminalState)));
+          std::make_exception_ptr(
+              RosTrajectoryExecutionException(message.str(), terminalState)));
 
       isSuccessful = false;
     }
@@ -209,13 +209,15 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
     if (result && result->error_code != Result::SUCCESSFUL)
     {
       message << ": "
-        << getFollowJointTrajectoryErrorMessage(result->error_code);
+              << getFollowJointTrajectoryErrorMessage(result->error_code);
 
       if (!result->error_string.empty())
         message << " (" << result->error_string << ")";
 
-      mPromise.set_exception(std::make_exception_ptr(
-        RosTrajectoryExecutionException(message.str(), result->error_code)));
+      mPromise.set_exception(
+          std::make_exception_ptr(
+              RosTrajectoryExecutionException(
+                  message.str(), result->error_code)));
 
       isSuccessful = false;
     }
@@ -238,7 +240,7 @@ void RosTrajectoryExecutor::step()
   if (!::ros::ok() && mInProgress)
   {
     mPromise.set_exception(
-      std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
+        std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
     mInProgress = false;
   }
 }
@@ -246,4 +248,3 @@ void RosTrajectoryExecutor::step()
 } // namespace ros
 } // namespace control
 } // namespace aikido
-

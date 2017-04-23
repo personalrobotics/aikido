@@ -14,8 +14,7 @@ public:
 
 using TrajectoryResultPtr = std::shared_ptr<TrajectoryResult>;
 
-
 } // control
 } // aikido
 
-#endif 
+#endif

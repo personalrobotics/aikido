@@ -3,13 +3,13 @@
 #include <chrono>
 #include <future>
 #include <mutex>
-#include <ros/ros.h>
-#include <ros/callback_queue.h>
+#include <actionlib/client/action_client.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
+#include <ros/callback_queue.h>
+#include <ros/ros.h>
 #include <aikido/control/TrajectoryExecutor.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Trajectory.hpp>
-#include <actionlib/client/action_client.h>
 
 namespace aikido {
 namespace control {
@@ -28,16 +28,15 @@ public:
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosTrajectoryExecutor(
-    statespace::dart::MetaSkeletonStateSpacePtr space,
-    ::ros::NodeHandle node,
-    const std::string& serverName,
-    double timestep,
-    double goalTimeTolerance,
-    const std::chrono::milliseconds& connectionTimeout
+      statespace::dart::MetaSkeletonStateSpacePtr space,
+      ::ros::NodeHandle node,
+      const std::string& serverName,
+      double timestep,
+      double goalTimeTolerance,
+      const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
-    const std::chrono::milliseconds& connectionPollingPeriod
-      = std::chrono::milliseconds{20}
-  );
+      const std::chrono::milliseconds& connectionPollingPeriod
+      = std::chrono::milliseconds{20});
 
   virtual ~RosTrajectoryExecutor();
 
@@ -49,7 +48,7 @@ public:
   /// \param[in] traj Trajectrory to be executed.
   /// \param[in] startTime Start time for the trajectory.
   std::future<void> execute(
-    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime);
+      trajectory::TrajectoryPtr traj, const ::ros::Time& startTime);
 
   /// \copydoc TrajectoryExecutor::step()
   ///
@@ -59,7 +58,7 @@ public:
 
 private:
   using TrajectoryActionClient
-    = actionlib::ActionClient<control_msgs::FollowJointTrajectoryAction>;
+      = actionlib::ActionClient<control_msgs::FollowJointTrajectoryAction>;
   using GoalHandle = TrajectoryActionClient::GoalHandle;
 
   bool waitForServer();
@@ -90,4 +89,3 @@ private:
 } // namespace aikido
 
 #endif // ifndef AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTOR_HPP_
-

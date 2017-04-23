@@ -1,30 +1,33 @@
-#include <aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp>
-#include <dart/collision/fcl/FCLCollisionDetector.hpp>
 #include <thread>
+#include <dart/collision/fcl/FCLCollisionDetector.hpp>
+#include <aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp>
 
-namespace aikido{
-namespace control{
+namespace aikido {
+namespace control {
 
 //=============================================================================
-BarrettFingerKinematicSimulationPositionCommandExecutor
-::BarrettFingerKinematicSimulationPositionCommandExecutor(
-  ::dart::dynamics::ChainPtr finger, size_t proximal, size_t distal,
-  ::dart::collision::CollisionDetectorPtr collisionDetector,
-  ::dart::collision::CollisionGroupPtr collideWith,
-  ::dart::collision::CollisionOption collisionOptions)
-: mFinger(std::move(finger))
-, mProximalDof(nullptr)
-, mDistalDof(nullptr)
-, mCollisionDetector(std::move(collisionDetector))
-, mCollideWith(std::move(collideWith))
-, mCollisionOptions(std::move(collisionOptions))
-, mInExecution(false)
+BarrettFingerKinematicSimulationPositionCommandExecutor::
+    BarrettFingerKinematicSimulationPositionCommandExecutor(
+        ::dart::dynamics::ChainPtr finger,
+        size_t proximal,
+        size_t distal,
+        ::dart::collision::CollisionDetectorPtr collisionDetector,
+        ::dart::collision::CollisionGroupPtr collideWith,
+        ::dart::collision::CollisionOption collisionOptions)
+  : mFinger(std::move(finger))
+  , mProximalDof(nullptr)
+  , mDistalDof(nullptr)
+  , mCollisionDetector(std::move(collisionDetector))
+  , mCollideWith(std::move(collideWith))
+  , mCollisionOptions(std::move(collisionOptions))
+  , mInExecution(false)
 {
   if (!mFinger)
     throw std::invalid_argument("Finger is null.");
 
   if (proximal == distal)
-    throw std::invalid_argument("proximal and distal dofs should be different.");
+    throw std::invalid_argument(
+        "proximal and distal dofs should be different.");
 
   const auto numDofs = mFinger->getNumDofs();
 
@@ -51,8 +54,8 @@ BarrettFingerKinematicSimulationPositionCommandExecutor
                 << " does not match CollisionGroup's CollisionDetector of type "
                 << mCollideWith->getCollisionDetector()->getType() << std::endl;
 
-      ::dart::collision::CollisionGroupPtr newCollideWith =
-          mCollisionDetector->createCollisionGroup();
+      ::dart::collision::CollisionGroupPtr newCollideWith
+          = mCollisionDetector->createCollisionGroup();
       for (auto i = 0u; i < mCollideWith->getNumShapeFrames(); ++i)
         newCollideWith->addShapeFrame(mCollideWith->getShapeFrame(i));
       mCollideWith = std::move(newCollideWith);
@@ -85,8 +88,9 @@ BarrettFingerKinematicSimulationPositionCommandExecutor
 }
 
 //=============================================================================
-std::future<void> BarrettFingerKinematicSimulationPositionCommandExecutor
-::execute(const Eigen::VectorXd& goalPosition)
+std::future<void>
+BarrettFingerKinematicSimulationPositionCommandExecutor::execute(
+    const Eigen::VectorXd& goalPosition)
 {
   if (!mFinger->isAssembled())
     throw std::runtime_error("Finger is disassembled.");
@@ -133,7 +137,7 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
   mTimeOfPreviousCall = system_clock::now();
   auto period = duration<double>(timeSincePreviousCall).count();
 
- if (!mInExecution)
+  if (!mInExecution)
     return;
 
   double distalPosition = mDistalDof->getPosition();
@@ -141,8 +145,10 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 
   // Check distal collision
   bool distalCollision = mCollisionDetector->collide(
-    mDistalCollisionGroup.get(), mCollideWith.get(),
-    mCollisionOptions, nullptr);
+      mDistalCollisionGroup.get(),
+      mCollideWith.get(),
+      mCollisionOptions,
+      nullptr);
 
   if (distalCollision)
   {
@@ -155,7 +161,7 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 
   if (proximalPosition < mProximalGoalPosition)
   {
-    newDistal = distalPosition + period*kDistalSpeed;
+    newDistal = distalPosition + period * kDistalSpeed;
     if (mDistalLimits.second <= newDistal)
     {
       newDistal = mDistalLimits.second;
@@ -164,7 +170,7 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
   }
   else
   {
-    newDistal = distalPosition - period*kDistalSpeed;
+    newDistal = distalPosition - period * kDistalSpeed;
     if (mDistalLimits.first >= newDistal)
     {
       newDistal = mDistalLimits.first;
@@ -185,10 +191,13 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 
   // Check proximal collision
   bool proximalCollision = mCollisionDetector->collide(
-    mProximalCollisionGroup.get(), mCollideWith.get(),
-    mCollisionOptions, nullptr);
+      mProximalCollisionGroup.get(),
+      mCollideWith.get(),
+      mCollisionOptions,
+      nullptr);
 
-  if (proximalCollision){
+  if (proximalCollision)
+  {
     mDistalOnly = true;
     return;
   }
@@ -197,7 +206,7 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
   bool proximalGoalReached = false;
   if (proximalPosition < mProximalGoalPosition)
   {
-    newProximal = proximalPosition + period*kProximalSpeed;
+    newProximal = proximalPosition + period * kProximalSpeed;
     if (mProximalGoalPosition <= newProximal)
     {
       newProximal = mProximalGoalPosition;
@@ -206,7 +215,7 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
   }
   else
   {
-    newProximal = proximalPosition - period*kProximalSpeed;
+    newProximal = proximalPosition - period * kProximalSpeed;
     if (mProximalGoalPosition >= newProximal)
     {
       newProximal = mProximalGoalPosition;
@@ -220,12 +229,11 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
     terminate();
     return;
   }
-
 }
 
 //=============================================================================
 bool BarrettFingerKinematicSimulationPositionCommandExecutor::setCollideWith(
-  ::dart::collision::CollisionGroupPtr collideWith)
+    ::dart::collision::CollisionGroupPtr collideWith)
 {
   std::lock_guard<std::mutex> lockSpin(mMutex);
 
