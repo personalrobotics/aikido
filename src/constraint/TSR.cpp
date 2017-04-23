@@ -79,10 +79,12 @@ public:
 
 //=============================================================================
 TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
-         const Eigen::Matrix<double, 6, 2>& _Bw, const Eigen::Isometry3d& _Tw_e)
+         const Eigen::Matrix<double, 6, 2>& _Bw, const Eigen::Isometry3d& _Tw_e,
+         double _testableTolerance)
     : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
+    , mTestableTolerance(_testableTolerance)
     , mRng(std::move(_rng))
     , mStateSpace(std::make_shared<SE3>())
 {
@@ -91,10 +93,11 @@ TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
 
 //=============================================================================
 TSR::TSR(const Eigen::Isometry3d& _T0_w, const Eigen::Matrix<double, 6, 2>& _Bw,
-         const Eigen::Isometry3d& _Tw_e)
+         const Eigen::Isometry3d& _Tw_e, double _testableTolerance)
     : mT0_w(_T0_w)
     , mBw(_Bw)
     , mTw_e(_Tw_e)
+    , mTestableTolerance(_testableTolerance)
     , mRng(std::unique_ptr<util::RNG>(
           new util::RNGWrapper<std::default_random_engine>(0)))
     , mStateSpace(std::make_shared<SE3>())
@@ -107,6 +110,7 @@ TSR::TSR(const TSR& other)
     : mT0_w(other.mT0_w)
     , mBw(other.mBw)
     , mTw_e(other.mTw_e)
+    , mTestableTolerance(other.mTestableTolerance)
     , mRng(std::move(other.mRng->clone()))
     , mStateSpace(std::make_shared<SE3>())
 {
@@ -118,6 +122,7 @@ TSR::TSR(TSR&& other)
     : mT0_w(other.mT0_w)
     , mBw(other.mBw)
     , mTw_e(other.mTw_e)
+    , mTestableTolerance(other.mTestableTolerance)
     , mRng(std::move(other.mRng))
     , mStateSpace(std::make_shared<SE3>())
 {
@@ -131,6 +136,7 @@ TSR& TSR::operator=(const TSR& other)
   mT0_w = other.mT0_w;
   mBw = other.mBw;
   mTw_e = other.mTw_e;
+  mTestableTolerance = other.mTestableTolerance;
   mRng = std::move(other.mRng->clone());
 
   // Intentionally don't assign StateSpace.
@@ -144,6 +150,7 @@ TSR& TSR::operator=(TSR&& other)
   mT0_w = std::move(other.mT0_w);
   mBw = std::move(other.mBw);
   mTw_e = std::move(other.mTw_e);
+  mTestableTolerance = other.mTestableTolerance;
   mRng = std::move(other.mRng);
   mStateSpace = std::move(other.mStateSpace);
 
@@ -190,10 +197,9 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 //=============================================================================
 bool TSR::isSatisfied(const statespace::StateSpace::State* _s) const
 {
-  static constexpr double eps = 1e-6;
   Eigen::VectorXd dist;
   getValue(_s, dist);
-  return dist.norm() < eps;
+  return dist.norm() < mTestableTolerance;
 }
 
 //=============================================================================
@@ -409,6 +415,17 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
+//=============================================================================
+double TSR::getTestableTolerance()
+{
+  return mTestableTolerance;
+}
+   
+//=============================================================================
+void TSR::setTestableTolerance(double _testableTolerance)
+{
+  mTestableTolerance = _testableTolerance;
+}
 
 //=============================================================================
 bool TSRSampleGenerator::canSample() const
@@ -431,6 +448,7 @@ int TSRSampleGenerator::getNumSamples() const
 
   return NO_LIMIT;
 }
+
 } // namespace constraint
 } // namespace aikido
 
