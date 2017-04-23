@@ -3,6 +3,7 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ompl/CRRT.hpp>
 #include <aikido/planner/ompl/CRRTConnect.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
@@ -15,6 +16,39 @@ using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::CRRT;
 using aikido::planner::ompl::CRRTConnect;
+
+namespace {
+
+  template <typename T>
+  double computeTrajLength(T& traj,
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+      aikido::distance::DistanceMetricPtr& dmetric)
+  {
+    auto stateCurrent = stateSpace->createState();
+    auto stateNext = stateSpace->createState();
+
+    double trajDistance = 0.0;
+    
+    for(size_t i = 0; i < traj->getDuration(); ++i)
+    {
+      traj->evaluate(i, stateCurrent);
+      auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
+      auto currentState = rCurrent.getValue();
+      
+      traj->evaluate(i+1, stateNext);
+      auto rNext = stateNext.getSubStateHandle<R3>(0);
+      auto nextState = rNext.getValue();
+
+      trajDistance += dmetric->distance(stateCurrent, stateNext);
+    }
+
+    return trajDistance;
+  }
+
+  // aikido::trajectory::InterpolatedPtr planTrajectoryForTest(aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+  //     )
+
+} // nampespace
 
 TEST_F(SimplifierTest, EndPointsRemainUnchanged)
 {
@@ -106,46 +140,17 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
 // Test that the boolean returned is in agreement with shortening process
 //=============================================================================
   aikido::distance::DistanceMetricPtr Ddmetric = aikido::distance::createDistanceMetric(stateSpace);
+  double trajDistance = computeTrajLength<aikido::trajectory::InterpolatedPtr>(traj, stateSpace, Ddmetric);
+  double simplifiedTrajDistance = computeTrajLength<std::unique_ptr<aikido::trajectory::Interpolated>>(simplifiedTraj, stateSpace, Ddmetric);
 
-  auto stateCurrent = stateSpace->createState();
-  auto stateNext = stateSpace->createState();
-
-  double trajDistance = 0.0;
-  for(size_t i = 0; i < traj->getDuration(); ++i)
-  {
-    traj->evaluate(i, stateCurrent);
-    auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
-    auto currentState = rCurrent.getValue();
-    
-    traj->evaluate(i+1, stateNext);
-    auto rNext = stateNext.getSubStateHandle<R3>(0);
-    auto nextState = rNext.getValue();
-
-    trajDistance += Ddmetric->distance(stateCurrent, stateNext);
-  }
-
-  double simplifiedTrajDistance = 0.0;
-  for(size_t i = 0; i < simplifiedTraj->getDuration(); ++i)
-  {
-    simplifiedTraj->evaluate(i, stateCurrent);
-    auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
-    auto currentState = rCurrent.getValue();
-
-    simplifiedTraj->evaluate(i+1, stateNext);
-    auto rNext = stateNext.getSubStateHandle<R3>(0);
-    auto nextState = rNext.getValue();
-
-    simplifiedTrajDistance += Ddmetric->distance(stateCurrent, stateNext);
-  }
-
-  EXPECT_TRUE(shorten_success);  
+  EXPECT_TRUE(shorten_success == (simplifiedTrajDistance < trajDistance));  
 }
 
 TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
 {
 
-  Eigen::Vector3d startPose(-5, 0, 0);
-  Eigen::Vector3d goalPose(5, 0, 0);
+  Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d goalPose(5, 5, 0);
 
   auto startState = stateSpace->createState();
   auto subState1 = stateSpace->getSubStateHandle<R3>(startState, 0);
@@ -176,42 +181,6 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
       0.1, 5.0, 10, traj);
   auto simplifiedTraj = std::move(simplifiedPair.first);
   bool shorten_success = simplifiedPair.second;
-
-
-// Test that the boolean returned is in agreement with shortening process
-//=============================================================================
-  aikido::distance::DistanceMetricPtr Ddmetric = aikido::distance::createDistanceMetric(stateSpace);
-
-  auto stateCurrent = stateSpace->createState();
-  auto stateNext = stateSpace->createState();
-
-  double trajDistance = 0.0;
-  for(size_t i = 0; i < traj->getDuration(); ++i)
-  {
-    traj->evaluate(i, stateCurrent);
-    auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
-    auto currentState = rCurrent.getValue();
-    
-    traj->evaluate(i+1, stateNext);
-    auto rNext = stateNext.getSubStateHandle<R3>(0);
-    auto nextState = rNext.getValue();
-
-    trajDistance += Ddmetric->distance(stateCurrent, stateNext);
-  }
-
-  double simplifiedTrajDistance = 0.0;
-  for(size_t i = 0; i < simplifiedTraj->getDuration(); ++i)
-  {
-    simplifiedTraj->evaluate(i, stateCurrent);
-    auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
-    auto currentState = rCurrent.getValue();
-
-    simplifiedTraj->evaluate(i+1, stateNext);
-    auto rNext = stateNext.getSubStateHandle<R3>(0);
-    auto nextState = rNext.getValue();
-
-    simplifiedTrajDistance += Ddmetric->distance(stateCurrent, stateNext);
-  }
-
+  
   EXPECT_TRUE(!shorten_success);  
 }
