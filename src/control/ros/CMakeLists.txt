@@ -47,6 +47,7 @@ target_include_directories("${PROJECT_NAME}_control_ros" SYSTEM
 )
 
 target_link_libraries("${PROJECT_NAME}_control_ros"
+  PUBLIC
   "${PROJECT_NAME}_control"
   "${PROJECT_NAME}_statespace"
   "${PROJECT_NAME}_trajectory"
