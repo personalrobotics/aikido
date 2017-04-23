@@ -389,6 +389,15 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj)
 {
+  if (_timeout < 0)
+  {
+    throw std::invalid_argument("Timeout must be >= 0");
+  }
+
+  if (_maxEmptySteps < 0)
+  {
+    throw std::invalid_argument("Max empty steps must be >= 0");
+  }
 
   // Step 1: Generate the space information of OMPL type
   auto si = getSpaceInformation(
@@ -423,12 +432,13 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
     bool const shortened
         = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
-    empty_steps = (empty_steps + !shortened)
-                  * !shortened; // Increment only if shorten fails consecutively
+    if(shortened) 
+      empty_steps = 0;
+    else
+      empty_steps += 1;
+    
     time_current = std::chrono::system_clock::now();
-    shorten_success
-        = shorten_success
-          || shortened; // TODO: There should be a better way to do this.
+    shorten_success = shorten_success || shortened;
 
   } while (time_current - time_before <= time_limit
            && empty_steps <= _maxEmptySteps);
