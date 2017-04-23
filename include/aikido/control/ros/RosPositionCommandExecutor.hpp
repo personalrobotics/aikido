@@ -41,7 +41,10 @@ public:
   /// \param[in] goalPositions Vector of target positions for each joint
   std::future<void> execute(const Eigen::VectorXd& goalPositions) override;
 
-
+  /// \copydoc PositionCommandExecutor::step()
+  ///
+  /// To be executed on a separate thread.
+  /// Regularly checks for the completion of a sent trajectory.
   void step() override;
 
 private:
