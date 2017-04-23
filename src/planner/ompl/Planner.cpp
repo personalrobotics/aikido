@@ -394,11 +394,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     throw std::invalid_argument("Timeout must be >= 0");
   }
 
-  if (_maxEmptySteps < 0)
-  {
-    throw std::invalid_argument("Max empty steps must be >= 0");
-  }
-
   // Step 1: Generate the space information of OMPL type
   auto si = getSpaceInformation(
       _stateSpace,
