@@ -49,12 +49,12 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 
 //=============================================================================
 RosTrajectoryExecutor::RosTrajectoryExecutor(
-      ::ros::NodeHandle node,
-      const std::string& serverName,
-      double timestep,
-      double goalTimeTolerance,
-      const std::chrono::milliseconds& connectionTimeout,
-      const std::chrono::milliseconds& connectionPollingPeriod)
+    ::ros::NodeHandle node,
+    const std::string& serverName,
+    double timestep,
+    double goalTimeTolerance,
+    const std::chrono::milliseconds& connectionTimeout,
+    const std::chrono::milliseconds& connectionPollingPeriod)
   : mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}

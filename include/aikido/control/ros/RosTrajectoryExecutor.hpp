@@ -28,11 +28,11 @@ public:
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosTrajectoryExecutor(
-    ::ros::NodeHandle node,
-    const std::string& serverName,
-    double timestep,
-    double goalTimeTolerance,
-    const std::chrono::milliseconds& connectionTimeout
+      ::ros::NodeHandle node,
+      const std::string& serverName,
+      double timestep,
+      double goalTimeTolerance,
+      const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
       const std::chrono::milliseconds& connectionPollingPeriod
       = std::chrono::milliseconds{20});
