@@ -48,25 +48,22 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 } // namespace
 
 //=============================================================================
-template <typename DurationA, typename DurationB>
 RosTrajectoryExecutor::RosTrajectoryExecutor(
       statespace::dart::MetaSkeletonStateSpacePtr space,
       ::ros::NodeHandle node,
       const std::string& serverName,
       double timestep,
       double goalTimeTolerance,
-      const DurationA& connectionTimeout,
-      const DurationB& connectionPollingPeriod)
+      const std::chrono::milliseconds& connectionTimeout,
+      const std::chrono::milliseconds& connectionPollingPeriod)
   : mSpace{std::move(space)}
   , mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mTimestep{timestep}
   , mGoalTimeTolerance{goalTimeTolerance}
-  , mConnectionTimeout{
-    std::chrono::duration_cast<milliseconds>(connectionTimeout)}
-  , mConnectionPollingPeriod{
-    std::chrono::duration_cast<milliseconds>(connectionPollingPeriod)}
+  , mConnectionTimeout{connectionTimeout}
+  , mConnectionPollingPeriod{connectionPollingPeriod}
   , mInProgress{false}
 {
   if (!mSpace)
@@ -231,7 +228,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
 }
 
 //=============================================================================
-void RosTrajectoryExecutor::spin()
+void RosTrajectoryExecutor::step()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.

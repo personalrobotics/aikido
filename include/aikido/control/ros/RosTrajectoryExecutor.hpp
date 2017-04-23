@@ -27,15 +27,16 @@ public:
   /// \param[in] goalTimeTolerance
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
-  template <typename DurationA, typename DurationB>
   RosTrajectoryExecutor(
     statespace::dart::MetaSkeletonStateSpacePtr space,
     ::ros::NodeHandle node,
     const std::string& serverName,
     double timestep,
     double goalTimeTolerance,
-    const DurationA& connectionTimeout = std::chrono::milliseconds{1000},
-    const DurationB& connectionPollingPeriod = std::chrono::milliseconds{20}
+    const std::chrono::milliseconds& connectionTimeout
+      = std::chrono::milliseconds{1000},
+    const std::chrono::milliseconds& connectionPollingPeriod
+      = std::chrono::milliseconds{20}
   );
 
   virtual ~RosTrajectoryExecutor();
@@ -50,9 +51,11 @@ public:
   std::future<void> execute(
     trajectory::TrajectoryPtr traj, const ::ros::Time& startTime);
 
+  /// \copydoc TrajectoryExecutor::step()
+  ///
   /// To be executed on a separate thread.
   /// Regularly checks for the completion of a sent trajectory.
-  void spin();
+  void step() override;
 
 private:
   using TrajectoryActionClient
