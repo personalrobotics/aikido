@@ -98,7 +98,6 @@ TEST_F(SimplifierTest, EndPointsRemainUnchanged)
 
   // Simplification results
   auto simplifiedTraj = std::move(simplifiedPair.first);
-  bool shorten_success = simplifiedPair.second;
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
