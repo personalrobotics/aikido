@@ -31,14 +31,8 @@ namespace {
     
     for(size_t i = 0; i < traj->getDuration(); ++i)
     {
-      traj->evaluate(i, stateCurrent);
-      auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
-      auto currentState = rCurrent.getValue();
-      
+      traj->evaluate(i, stateCurrent);   
       traj->evaluate(i+1, stateNext);
-      auto rNext = stateNext.getSubStateHandle<R3>(0);
-      auto nextState = rNext.getValue();
-
       trajDistance += dmetric->distance(stateCurrent, stateNext);
     }
 
@@ -190,7 +184,6 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
       stateSpace, interpolator, std::move(_dmetric), std::move(_sampler), 
       std::move(_collConstraint), std::move(_boundsConstraint), std::move(_boundsProjection),
       0.1, 5.0, 10, traj);
-  auto simplifiedTraj = std::move(simplifiedPair.first);
   bool shorten_success = simplifiedPair.second;
   
   EXPECT_TRUE(!shorten_success);  
