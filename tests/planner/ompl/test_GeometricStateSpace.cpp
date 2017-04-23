@@ -207,7 +207,6 @@ TEST_F(GeometricStateSpaceTest, SatisfiesBoundsTrue)
 TEST_F(GeometricStateSpaceTest, SatisfiesBoundsFalseNullOmplState)
 {
   constructStateSpace();
-  EXPECT_FALSE(nullptr);
 }
 
 TEST_F(GeometricStateSpaceTest, SatisfiesBoundsFalseNullAikidoState)

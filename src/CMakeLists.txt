@@ -3,10 +3,10 @@
 
 add_subdirectory("external/hauser_parabolic_smoother")
 
-add_subdirectory("perception") # boost, dart, yaml-cpp, geometry_msgs, roscpp, std_msgs, visualization_msgs
+add_subdirectory("util")       # boost, dart, tinyxml2, yaml-cpp
 add_subdirectory("rviz")       # boost, dart, roscpp, geometry_msgs, interactive_markers, std_msgs, visualization_msgs, libmicrohttpd
 add_subdirectory("statespace") # dart
-add_subdirectory("util")       # boost, dart, tinyxml2
+add_subdirectory("perception") # [util], boost, dart, yaml-cpp, geometry_msgs, roscpp, std_msgs, visualization_msgs
 add_subdirectory("distance")   # [statespace], dart
 add_subdirectory("trajectory") # [statespace], [util]
 add_subdirectory("constraint") # [statespace], [util]
