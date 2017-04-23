@@ -5,9 +5,8 @@
 #include <Eigen/Geometry>
 #include <dart/common/LocalResourceRetriever.hpp>
 #include <dart/dart.hpp>
-#include <yaml-cpp/yaml.h>
-#include <aikido/perception/eigen_yaml.hpp>
 #include <aikido/util/CatkinResourceRetriever.hpp>
+#include <aikido/util/yaml.hpp>
 #include "AprilTagsDatabase.hpp"
 
 namespace aikido {

@@ -8,10 +8,10 @@
 #include <ros/ros.h>
 #include <ros/single_subscriber_publisher.h>
 #include <tf/transform_listener.h>
-#include <yaml-cpp/yaml.h>
 #include <aikido/perception/AprilTagsDatabase.hpp>
 #include <aikido/perception/PerceptionModule.hpp>
 #include <aikido/util/CatkinResourceRetriever.hpp>
+#include <aikido/util/yaml.hpp>
 
 namespace aikido {
 namespace perception {

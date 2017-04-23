@@ -50,7 +50,6 @@ bool YamlAprilTagsDatabase::getTagNameOffset(
   YAML::Node name_offset = mTagData[_tagName];
   if (name_offset)
   {
-
     // Convert resource field
     try
     {
