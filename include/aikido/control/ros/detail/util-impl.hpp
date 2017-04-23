@@ -12,9 +12,8 @@ template <class ActionSpec, class TimeoutDuration, class PeriodDuration>
 bool waitForActionServer(
   actionlib::ActionClient<ActionSpec>& actionClient,
   ::ros::CallbackQueue& callbackQueue,
-  TimeoutDuration timeoutDuration = std::chrono::milliseconds{ 1000 },
-  PeriodDuration periodDuration = std::chrono::milliseconds{ 10 }
-)
+  TimeoutDuration timeoutDuration,
+  PeriodDuration periodDuration)
 {
   using Clock = std::chrono::steady_clock;
 
