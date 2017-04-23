@@ -50,7 +50,8 @@ namespace {
 
 }
 
-TEST_F(PlannerTest, DurationRemainsUnchanged)
+// Test if the durations of the two trajectories remains constant
+TEST_F(PlannerTest, OMPLDurationRemainsUnchanged)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
@@ -87,8 +88,97 @@ TEST_F(PlannerTest, DurationRemainsUnchanged)
 
 }
 
+// Tests that toOMPLTrajectory function does not alter the waypoints 
+TEST_F(PlannerTest, OMPLStatesRemainUnchaged)
+{
+  Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d goalPose(5, 5, 0);
 
-TEST_F(PlannerTest, StatesRemainUnchaged)
+  // Original Trajectory
+  auto traj = planTrajForTest(stateSpace, interpolator, dmetric, sampler, collConstraint, 
+      boundsConstraint, boundsProjection, startPose, goalPose);
+
+  // Setup
+  aikido::distance::DistanceMetricPtr _dmetric = aikido::distance::createDistanceMetric(stateSpace);
+  aikido::constraint::SampleablePtr _sampler = aikido::constraint::createSampleableBounds(stateSpace, make_rng()); 
+  aikido::constraint::ProjectablePtr _boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
+  aikido::constraint::TestablePtr _boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
+  aikido::constraint::TestablePtr _collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
+        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
+        Eigen::Vector3d(0.1, 0.1, 0.1));
+
+  // Get the ompl state space
+  auto si = getSpaceInformation(
+      stateSpace,
+      interpolator,
+      std::move(_dmetric),
+      std::move(_sampler),
+      std::move(_collConstraint),
+      std::move(_boundsConstraint),
+      std::move(_boundsProjection),
+      0.1);
+
+  auto omplTraj = aikido::planner::ompl::toOMPLTrajectory(
+      traj, si);
+  
+  // Match every point
+  auto s0 = stateSpace->createState();
+  for(size_t idx = 0; idx < traj->getDuration(); ++idx)
+  {
+    traj->evaluate(idx, s0);
+    auto r0 = s0.getSubStateHandle<R3>(0);
+    auto stateInterpolated = r0.getValue();
+
+    auto state = omplTraj.getState(idx);
+    auto stateOMPL = getTranslationalState(stateSpace, state);
+    
+    EXPECT_TRUE(stateInterpolated.isApprox(stateOMPL));
+  }
+}
+
+
+// Tests that toInterpolatedTrajectory function does not alter the duration
+TEST_F(PlannerTest, InterpolatedDurationRemainsUnchaged)
+{
+  Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d goalPose(5, 5, 0);
+
+  // Original Trajectory
+  auto traj = planTrajForTest(stateSpace, interpolator, dmetric, sampler, collConstraint, 
+      boundsConstraint, boundsProjection, startPose, goalPose);
+
+  // Setup
+  aikido::distance::DistanceMetricPtr _dmetric = aikido::distance::createDistanceMetric(stateSpace);
+  aikido::constraint::SampleablePtr _sampler = aikido::constraint::createSampleableBounds(stateSpace, make_rng()); 
+  aikido::constraint::ProjectablePtr _boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
+  aikido::constraint::TestablePtr _boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
+  aikido::constraint::TestablePtr _collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
+        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
+        Eigen::Vector3d(0.1, 0.1, 0.1));
+
+  // Get the ompl state space
+  auto si = getSpaceInformation(
+      stateSpace,
+      interpolator,
+      std::move(_dmetric),
+      std::move(_sampler),
+      std::move(_collConstraint),
+      std::move(_boundsConstraint),
+      std::move(_boundsProjection),
+      0.1);
+
+  auto omplTraj = aikido::planner::ompl::toOMPLTrajectory(
+      traj, si);
+
+  auto interpolatedTraj = aikido::planner::ompl::toInterpolatedTrajectory(
+  omplTraj, stateSpace, interpolator);
+
+  EXPECT_TRUE(omplTraj.getStateCount() == (interpolatedTraj->getDuration()+1));
+}
+
+
+// Tests that toInterpolatedTrajectory function does not alter the waypoints
+TEST_F(PlannerTest, InterpolatedStatesRemainUnchaged)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
@@ -125,18 +215,16 @@ TEST_F(PlannerTest, StatesRemainUnchaged)
 
   // Match every point
   auto s0 = stateSpace->createState();
-  auto s1 = stateSpace->createState();
-  for(size_t idx = 0; idx < traj->getDuration(); ++idx)
+  for(size_t idx = 0; idx < interpolatedTraj->getDuration(); ++idx)
   {
-    traj->evaluate(idx, s0);
+    interpolatedTraj->evaluate(idx, s0);
     auto r0 = s0.getSubStateHandle<R3>(0);
-    auto stateBefore = r0.getValue();
+    auto stateInterpolated = r0.getValue();
 
-    interpolatedTraj->evaluate(idx, s1);
-    auto r1 = s1.getSubStateHandle<R3>(0);
-    auto stateAfter = r1.getValue();
-
-    EXPECT_TRUE(stateBefore.isApprox(stateAfter));
+    auto state = omplTraj.getState(idx);
+    auto stateOMPL = getTranslationalState(stateSpace, state);
+    
+    EXPECT_TRUE(stateInterpolated.isApprox(stateOMPL));
   }
 
 }
