@@ -105,6 +105,8 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
 
 // Test that the boolean returned is in agreement with shortening process
 //=============================================================================
+  aikido::distance::DistanceMetricPtr Ddmetric = aikido::distance::createDistanceMetric(stateSpace);
+
   auto stateCurrent = stateSpace->createState();
   auto stateNext = stateSpace->createState();
 
@@ -119,8 +121,7 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
     auto rNext = stateNext.getSubStateHandle<R3>(0);
     auto nextState = rNext.getValue();
 
-    trajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
-    // trajDistance += _dmetric->distance(stateCurrent, stateNext);
+    trajDistance += Ddmetric->distance(stateCurrent, stateNext);
   }
 
   double simplifiedTrajDistance = 0.0;
@@ -134,8 +135,7 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
     auto rNext = stateNext.getSubStateHandle<R3>(0);
     auto nextState = rNext.getValue();
 
-    simplifiedTrajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
-    // simplifiedTrajDistance += _dmetric->distance(stateCurrent, stateNext);
+    simplifiedTrajDistance += Ddmetric->distance(stateCurrent, stateNext);
   }
 
   EXPECT_TRUE(shorten_success);  
@@ -180,6 +180,8 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
 
 // Test that the boolean returned is in agreement with shortening process
 //=============================================================================
+  aikido::distance::DistanceMetricPtr Ddmetric = aikido::distance::createDistanceMetric(stateSpace);
+
   auto stateCurrent = stateSpace->createState();
   auto stateNext = stateSpace->createState();
 
@@ -189,14 +191,12 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
     traj->evaluate(i, stateCurrent);
     auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
     auto currentState = rCurrent.getValue();
-    std::cout << currentState[0] << "  " << currentState[1] << "  " << std::endl;
     
     traj->evaluate(i+1, stateNext);
     auto rNext = stateNext.getSubStateHandle<R3>(0);
     auto nextState = rNext.getValue();
-    std::cout << nextState[0] << "  " << nextState[1] << "  " << std::endl;
 
-    trajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
+    trajDistance += Ddmetric->distance(stateCurrent, stateNext);
   }
 
   double simplifiedTrajDistance = 0.0;
@@ -205,14 +205,12 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
     simplifiedTraj->evaluate(i, stateCurrent);
     auto rCurrent = stateCurrent.getSubStateHandle<R3>(0);
     auto currentState = rCurrent.getValue();
-    std::cout << currentState[0] << "  " << currentState[1] << "  " << std::endl;
 
     simplifiedTraj->evaluate(i+1, stateNext);
     auto rNext = stateNext.getSubStateHandle<R3>(0);
     auto nextState = rNext.getValue();
-    std::cout << nextState[0] << "  " << nextState[1] << "  " << std::endl;
 
-    simplifiedTrajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
+    simplifiedTrajDistance += Ddmetric->distance(stateCurrent, stateNext);
   }
 
   EXPECT_TRUE(!shorten_success);  
