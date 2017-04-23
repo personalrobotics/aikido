@@ -119,7 +119,8 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
     auto rNext = stateNext.getSubStateHandle<R3>(0);
     auto nextState = rNext.getValue();
 
-    trajDistance += _dmetric->distance(stateCurrent, stateNext);
+    trajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
+    // trajDistance += _dmetric->distance(stateCurrent, stateNext);
   }
 
   double simplifiedTrajDistance = 0.0;
@@ -133,7 +134,8 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
     auto rNext = stateNext.getSubStateHandle<R3>(0);
     auto nextState = rNext.getValue();
 
-    simplifiedTrajDistance += _dmetric->distance(stateCurrent, stateNext);
+    simplifiedTrajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
+    // simplifiedTrajDistance += _dmetric->distance(stateCurrent, stateNext);
   }
 
   EXPECT_TRUE(shorten_success);  
@@ -194,7 +196,7 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
     auto nextState = rNext.getValue();
     std::cout << nextState[0] << "  " << nextState[1] << "  " << std::endl;
 
-    trajDistance += _dmetric->distance(stateCurrent, stateNext);
+    trajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
   }
 
   double simplifiedTrajDistance = 0.0;
@@ -210,7 +212,7 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
     auto nextState = rNext.getValue();
     std::cout << nextState[0] << "  " << nextState[1] << "  " << std::endl;
 
-    simplifiedTrajDistance += _dmetric->distance(stateCurrent, stateNext);
+    simplifiedTrajDistance += sqrt(pow(nextState[0] - currentState[0], 2) + pow(nextState[1] - currentState[1], 2) + pow(nextState[2] - currentState[2], 2));
   }
 
   EXPECT_TRUE(!shorten_success);  
