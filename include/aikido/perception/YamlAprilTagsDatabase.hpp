@@ -2,8 +2,8 @@
 #define AIKIDO_PERCEPTION_YAML_APRILTAGS_DATABASE_H
 
 #include "yaml-cpp/yaml.h"
-#include <aikido/perception/eigen_yaml.hpp>
 #include <aikido/util/CatkinResourceRetriever.hpp>
+#include <aikido/util/yaml.hpp>
 #include <dart/common/LocalResourceRetriever.hpp>
 #include <dart/dart.hpp>
 #include <Eigen/Geometry>
