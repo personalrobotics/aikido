@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_TRAJECTORYEXECUTOR_HPP_
 #define AIKIDO_CONTROL_TRAJECTORYEXECUTOR_HPP_
+
 #include <future>
 #include <aikido/trajectory/Trajectory.hpp>
 #include "TrajectoryResult.hpp"
@@ -22,7 +23,7 @@ public:
 
 using TrajectoryExecutorPtr = std::shared_ptr<TrajectoryExecutor>;
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif

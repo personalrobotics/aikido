@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_BARRETTHANDKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETTHANDKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
+
 #include <chrono>
 #include <future>
 #include <mutex>
@@ -100,7 +101,7 @@ private:
 using BarrettHandKinematicSimulationPositionCommandExecutorPtr
     = std::shared_ptr<BarrettHandKinematicSimulationPositionCommandExecutor>;
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif

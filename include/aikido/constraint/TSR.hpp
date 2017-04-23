@@ -145,7 +145,7 @@ private:
 
 using TSRPtr = std::shared_ptr<TSR>;
 
-}  // namespace constraint
-}  // namespace aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif  // AIKIDO_CONSTRAINT_TSR_H_

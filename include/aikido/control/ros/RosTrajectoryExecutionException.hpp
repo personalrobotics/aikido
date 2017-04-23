@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTIONEXCEPTION_HPP_
 #define AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTIONEXCEPTION_HPP_
+
 #include <exception>
 #include <actionlib/client/action_client.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
@@ -21,8 +22,8 @@ public:
   virtual ~RosTrajectoryExecutionException() = default;
 };
 
-} // ros
-} // control
-} // aikido
+} // namespace ros
+} // namespace control
+} // namespace aikido
 
 #endif

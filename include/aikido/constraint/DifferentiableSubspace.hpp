@@ -51,7 +51,7 @@ private:
   size_t mIndex;
 };
 
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif // AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_

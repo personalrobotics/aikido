@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_POSITIONCOMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_POSITIONCOMANDEXECUTOR_HPP_
+
 #include <future>
 #include <Eigen/Dense>
 
@@ -27,7 +28,7 @@ public:
 
 using PositionCommandExecutorPtr = std::shared_ptr<PositionCommandExecutor>;
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif

@@ -133,5 +133,6 @@ void KinematicSimulationTrajectoryExecutor::step()
     mInExecution = false;
   }
 }
-}
-}
+
+} // namespace control
+} // namespace aikido

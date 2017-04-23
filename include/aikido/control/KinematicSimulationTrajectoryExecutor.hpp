@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_KINEMATICSIMULATIONTRAJECTORYEXECUTOR_HPP_
 #define AIKIDO_CONTROL_KINEMATICSIMULATIONTRAJECTORYEXECUTOR_HPP_
+
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Trajectory.hpp>
 #include "TrajectoryExecutor.hpp"
@@ -53,7 +54,7 @@ private:
   bool mInExecution;
 };
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif

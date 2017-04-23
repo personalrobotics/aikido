@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONSPREADCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONSPREADCOMMANDEXECUTOR_HPP_
+
 #include <chrono>
 #include <condition_variable>
 #include <future>
@@ -100,7 +101,7 @@ private:
 using BarrettFingerKinematicSimulationSpreadCommandExecutorPtr
     = std::shared_ptr<BarrettFingerKinematicSimulationSpreadCommandExecutor>;
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif

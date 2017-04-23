@@ -221,5 +221,5 @@ bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
   return true;
 }
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
