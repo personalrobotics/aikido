@@ -21,7 +21,6 @@ class RosTrajectoryExecutor : public aikido::control::TrajectoryExecutor
 {
 public:
   /// Constructor.
-  /// \param[in] space Space in which trajectries operate.
   /// \param[in] node ROS node handle for action client.
   /// \param[in] serverName Name of the server to send traejctory to.
   /// \param[in] timestep Step size for interpolating trajectories.
@@ -29,12 +28,11 @@ public:
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosTrajectoryExecutor(
-      statespace::dart::MetaSkeletonStateSpacePtr space,
-      ::ros::NodeHandle node,
-      const std::string& serverName,
-      double timestep,
-      double goalTimeTolerance,
-      const std::chrono::milliseconds& connectionTimeout
+    ::ros::NodeHandle node,
+    const std::string& serverName,
+    double timestep,
+    double goalTimeTolerance,
+    const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
       const std::chrono::milliseconds& connectionPollingPeriod
       = std::chrono::milliseconds{20});
@@ -66,7 +64,6 @@ private:
 
   void transitionCallback(GoalHandle handle);
 
-  statespace::dart::MetaSkeletonStateSpacePtr mSpace;
   ::ros::NodeHandle mNode;
   ::ros::CallbackQueue mCallbackQueue;
   TrajectoryActionClient mClient;
