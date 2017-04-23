@@ -2,9 +2,10 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(MetaSkeletonStateSpacePtr _space)
-: mSpace(std::move(_space))
-, mPositions(mSpace->getMetaSkeleton()->getPositions())
+MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(
+    MetaSkeletonStateSpacePtr _space)
+  : mSpace(std::move(_space))
+  , mPositions(mSpace->getMetaSkeleton()->getPositions())
 {
 }
 

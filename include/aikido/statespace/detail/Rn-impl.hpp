@@ -146,7 +146,7 @@ template <int N>
 void R<N>::setValue(State* _state, const typename R<N>::Vectord& _value) const
 {
   // TODO: Skip this check in release mode.
-  if (static_cast<std::size_t>(_value.size()) != getDimension()) 
+  if (static_cast<std::size_t>(_value.size()) != getDimension())
   {
     std::stringstream msg;
     msg << "Value has incorrect size: expected " << getDimension() << ", got "
