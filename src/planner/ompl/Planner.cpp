@@ -420,7 +420,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   std::chrono::system_clock::time_point time_current;
   std::chrono::duration<double> const time_limit
       = std::chrono::duration<double>(_timeout);
-  int empty_steps = 0;
+  size_t empty_steps = 0;
 
   do
   {
@@ -450,6 +450,25 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 // Following are helper functions. Might want to move them elsewhere for generic
 // use
 
+// ::ompl::geometric::PathGeometric toOMPLTrajectory(
+//     const trajectory::InterpolatedPtr& _interpolatedTraj,
+//     GeometricStateSpacePtr _sspace)
+// {
+//   auto sspace
+//       = ompl_static_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
+
+//   ::ompl::geometric::PathGeometric returnPath{std::move(_si)};
+
+//   for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx)
+//   {
+//     auto ompl_state = sspace->allocState(_interpolatedTraj->getWaypoint(idx));
+//     returnPath.append(ompl_state);
+//     sspace->freeState(ompl_state);
+//   }
+//   return returnPath;
+// }
+
+
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
     const trajectory::InterpolatedPtr& _interpolatedTraj,
     ::ompl::base::SpaceInformationPtr _si)
@@ -468,6 +487,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   return returnPath;
 }
 
+
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
     statespace::InterpolatorPtr _interpolator)
@@ -477,8 +497,12 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
 
   for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {
+    // Note that following static_cast is guaranteed to be safe because 
+    // GeometricPath defines a path through a GeometricStateSpace, which
+    // always contains GeometricStateSpace::StateType states
     const auto* st = static_cast<const GeometricStateSpace::StateType*>(
         _path.getState(idx));
+
     // Arbitrary timing
     returnInterpolated->addWaypoint(idx, st->mState);
   }

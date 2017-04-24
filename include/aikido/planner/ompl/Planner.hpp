@@ -12,6 +12,7 @@
 #include "../../statespace/Interpolator.hpp"
 #include "../../statespace/StateSpace.hpp"
 #include "../../trajectory/Interpolated.hpp"
+#include "../../planner/ompl/GeometricStateSpace.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -310,6 +311,10 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     double _timeout,
     size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj);
+
+// ::ompl::geometric::PathGeometric toOMPLTrajectory(
+//     const trajectory::InterpolatedPtr& _interpolatedTraj,
+//     GeometricStateSpacePtr _sspace);
 
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
     const trajectory::InterpolatedPtr& _interpolatedTraj,
