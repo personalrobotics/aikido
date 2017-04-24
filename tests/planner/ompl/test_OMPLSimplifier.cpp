@@ -12,6 +12,9 @@
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <dart/dart.hpp>
+#include "eigen_tests.hpp"
+
+static const double eigenTolerance{1e-6};
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
@@ -102,12 +105,12 @@ TEST_F(SimplifierTest, EndPointsRemainUnchanged)
   auto s0 = stateSpace->createState();
   simplifiedTraj->evaluate(0, s0);
   auto r0 = s0.getSubStateHandle<R3>(0);
-  EXPECT_TRUE(r0.getValue().isApprox(startPose));
+  EXPECT_EIGEN_EQUAL(r0.getValue(), startPose, eigenTolerance);
 
   // Check the last waypoint
   simplifiedTraj->evaluate(simplifiedTraj->getDuration(), s0);
   r0 = s0.getSubStateHandle<R3>(0);
-  EXPECT_TRUE(r0.getValue().isApprox(goalPose));
+  EXPECT_EIGEN_EQUAL(r0.getValue(), goalPose, eigenTolerance);
 
 }
 
