@@ -11,6 +11,7 @@
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <dart/dart.hpp>
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
@@ -20,7 +21,7 @@ using aikido::planner::ompl::CRRTConnect;
 namespace {
 
   template <typename T>
-  double computeTrajLength(T& traj,
+  double computeTrajLength(const T& traj,
       aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
       aikido::distance::DistanceMetricPtr& dmetric)
   {
@@ -29,25 +30,26 @@ namespace {
 
     double trajDistance = 0.0;
     
-    for(size_t i = 0; i < traj->getDuration(); ++i)
+    if(traj->getNumWaypoints())
     {
-      traj->evaluate(i, stateCurrent);   
-      traj->evaluate(i+1, stateNext);
-      trajDistance += dmetric->distance(stateCurrent, stateNext);
+      for(size_t i = 0; i < traj->getNumWaypoints() - 1; ++i)
+      {
+        traj->evaluate(i, stateCurrent);   
+        traj->evaluate(i+1, stateNext);
+        trajDistance += dmetric->distance(stateCurrent, stateNext);
+      }  
     }
+    
 
     return trajDistance;
   }
 
-  aikido::trajectory::InterpolatedPtr planTrajForTest(
+  aikido::trajectory::InterpolatedPtr constructTrajectory(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-      aikido::statespace::InterpolatorPtr& _interpolator,
-      aikido::distance::DistanceMetricPtr& _dmetric,
-      aikido::constraint::SampleablePtr& _sampler,
-      aikido::constraint::TestablePtr& _collConstraint,
-      aikido::constraint::TestablePtr& _boundsConstraint,
-      aikido::constraint::ProjectablePtr& _boundsProjection,
-      Eigen::Vector3d _startPose, Eigen::Vector3d _goalPose          
+      aikido::statespace::InterpolatorPtr _interpolator,
+      const Eigen::Vector3d& _startPose,
+      const Eigen::Vector3d& _midwayPose, 
+      const Eigen::Vector3d& _goalPose          
     )
   {
 
@@ -55,18 +57,23 @@ namespace {
     auto subState1 = _stateSpace->getSubStateHandle<R3>(startState, 0);
     subState1.setValue(_startPose);
 
+    auto midwayState = _stateSpace->createState();
+    auto subState2 = _stateSpace->getSubStateHandle<R3>(midwayState, 0);
+    subState2.setValue(_midwayPose);
+
     auto goalState = _stateSpace->createState();
-    auto subState2 = _stateSpace->getSubStateHandle<R3>(goalState, 0);
-    subState2.setValue(_goalPose);
+    auto subState3 = _stateSpace->getSubStateHandle<R3>(goalState, 0);
+    subState3.setValue(_goalPose);
 
-    // Plan
-    auto traj = aikido::planner::ompl::planOMPL<ompl::geometric::RRTConnect>(
-        startState, goalState, _stateSpace, _interpolator, std::move(_dmetric),
-        std::move(_sampler), std::move(_collConstraint),
-        std::move(_boundsConstraint), std::move(_boundsProjection), 5.0, 0.1);
+    // Construct Trajectory
+    auto returnInterpolated = std::make_shared<aikido::trajectory::Interpolated>(
+        std::move(_stateSpace), std::move(_interpolator));
 
-    return traj;
+    returnInterpolated->addWaypoint(0, startState);
+    returnInterpolated->addWaypoint(1, midwayState);
+    returnInterpolated->addWaypoint(2, goalState);
 
+    return returnInterpolated;
   }
 
 } // nampespace
@@ -76,21 +83,13 @@ namespace {
 TEST_F(SimplifierTest, EndPointsRemainUnchanged)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d midwayPose(0, -2, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
 
-  // Original Trajectory
-  auto traj = planTrajForTest(stateSpace, interpolator, dmetric, sampler, collConstraint, 
-      boundsConstraint, boundsProjection, startPose, goalPose);
+  // Construct a test trajectory
+  auto traj = constructTrajectory(stateSpace, interpolator, startPose, midwayPose, goalPose);
 
-  // Setup for simplification
-  aikido::distance::DistanceMetricPtr dmetric = aikido::distance::createDistanceMetric(stateSpace);
-  aikido::constraint::SampleablePtr sampler = aikido::constraint::createSampleableBounds(stateSpace, make_rng()); 
-  aikido::constraint::ProjectablePtr boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
-  aikido::constraint::TestablePtr boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
-  aikido::constraint::TestablePtr collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
-        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
-        Eigen::Vector3d(0.1, 0.1, 0.1));
-
+  // Simplify the trajectory
   auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
       stateSpace, interpolator, std::move(dmetric), std::move(sampler), 
       std::move(collConstraint), std::move(boundsConstraint), std::move(boundsProjection),
@@ -118,34 +117,27 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
 {
 
   Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d midwayPose(0, -2, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
 
-  auto traj = planTrajForTest(stateSpace, interpolator, dmetric, sampler, collConstraint, 
-      boundsConstraint, boundsProjection, startPose, goalPose);
+  // Construct a test trajectory
+  auto traj = constructTrajectory(stateSpace, interpolator, startPose, midwayPose, goalPose);
 
-  // Setup for simplification
-  aikido::distance::DistanceMetricPtr dmetric = aikido::distance::createDistanceMetric(stateSpace);
-  aikido::constraint::SampleablePtr sampler = aikido::constraint::createSampleableBounds(stateSpace, make_rng()); 
-  aikido::constraint::ProjectablePtr boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
-  aikido::constraint::TestablePtr boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
-  aikido::constraint::TestablePtr collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
-        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
-        Eigen::Vector3d(0.1, 0.1, 0.1));
-
+  // Simplify the trajectory 
   auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
       stateSpace, interpolator, std::move(dmetric), std::move(sampler), 
       std::move(collConstraint), std::move(boundsConstraint), std::move(boundsProjection),
-      0.1, 5.0, 10, traj);
+      0.1, 20.0, 20, traj);
 
   // Simplification results
   auto simplifiedTraj = std::move(simplifiedPair.first);
   bool shorten_success = simplifiedPair.second;
 
-  aikido::distance::DistanceMetricPtr Ddmetric = aikido::distance::createDistanceMetric(stateSpace);
-  double trajDistance = computeTrajLength<aikido::trajectory::InterpolatedPtr>(traj, stateSpace, Ddmetric);
-  double simplifiedTrajDistance = computeTrajLength<std::unique_ptr<aikido::trajectory::Interpolated>>(simplifiedTraj, stateSpace, Ddmetric);
+  aikido::distance::DistanceMetricPtr dmetric = aikido::distance::createDistanceMetric(stateSpace);
+  double trajDistance = computeTrajLength<aikido::trajectory::InterpolatedPtr>(traj, stateSpace, dmetric);
+  double simplifiedTrajDistance = computeTrajLength<std::unique_ptr<aikido::trajectory::Interpolated>>(simplifiedTraj, stateSpace, dmetric);
 
-  EXPECT_TRUE(shorten_success == (simplifiedTrajDistance < trajDistance));  
+  EXPECT_TRUE(shorten_success);  
 }
 
 
@@ -154,36 +146,18 @@ TEST_F(SimplifierTest, ShortenTwoWayPointTraj)
 {
 
   Eigen::Vector3d startPose(-5, -5, 0);
+  Eigen::Vector3d midwayPose(0, 0, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
 
-  auto startState = stateSpace->createState();
-  auto subState1 = stateSpace->getSubStateHandle<R3>(startState, 0);
-  subState1.setValue(startPose);
+  // Construct a test trajectory
+  auto traj = constructTrajectory(stateSpace, interpolator, startPose, midwayPose, goalPose);
 
-  auto goalState = stateSpace->createState();
-  auto subState2 = stateSpace->getSubStateHandle<R3>(goalState, 0);
-  subState2.setValue(goalPose);
-
-  auto traj = std::make_shared<aikido::trajectory::Interpolated>(
-        stateSpace, interpolator);
-
-  traj->addWaypoint(0, startState);
-  traj->addWaypoint(1, goalState);
-
-  // TODO: unique pointers are lost. Is there a better way to go about this?
-  aikido::distance::DistanceMetricPtr _dmetric = aikido::distance::createDistanceMetric(stateSpace);
-  aikido::constraint::SampleablePtr _sampler = aikido::constraint::createSampleableBounds(stateSpace, make_rng()); 
-  aikido::constraint::ProjectablePtr _boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
-  aikido::constraint::TestablePtr _boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
-  aikido::constraint::TestablePtr _collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
-        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
-        Eigen::Vector3d(0.1, 0.1, 0.1));  
-
+  // Simplify the trajectory 
   auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
-      stateSpace, interpolator, std::move(_dmetric), std::move(_sampler), 
-      std::move(_collConstraint), std::move(_boundsConstraint), std::move(_boundsProjection),
-      0.1, 5.0, 10, traj);
+      stateSpace, interpolator, std::move(dmetric), std::move(sampler), 
+      std::move(collConstraint), std::move(boundsConstraint), std::move(boundsProjection),
+      0.1, 20.0, 20, traj);
+
   bool shorten_success = simplifiedPair.second;
-  
   EXPECT_TRUE(!shorten_success);  
 }
