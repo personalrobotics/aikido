@@ -135,7 +135,8 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
   double trajDistance = computeTrajLength<aikido::trajectory::InterpolatedPtr>(traj, stateSpace, dmetric);
   double simplifiedTrajDistance = computeTrajLength<std::unique_ptr<aikido::trajectory::Interpolated>>(simplifiedTraj, stateSpace, dmetric);
 
-  EXPECT_TRUE(shorten_success);  
+  EXPECT_TRUE(shorten_success);
+  EXPECT_TRUE(simplifiedTrajDistance < trajDistance);  // Redundant
 }
 
 
