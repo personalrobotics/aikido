@@ -312,14 +312,27 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj);
 
+// /// Take an interpolated trajectory and convert it into OMPL geometric path
+// /// \param _interpolatedTraj the interpolated trajectory to be converted
+// /// \param _sspace Geometric Statespace Pointer.
+// /// returns the corresponding OMPL geometric path
 // ::ompl::geometric::PathGeometric toOMPLTrajectory(
 //     const trajectory::InterpolatedPtr& _interpolatedTraj,
 //     GeometricStateSpacePtr _sspace);
 
+/// Take an interpolated trajectory and convert it into OMPL geometric path
+/// \param _interpolatedTraj the interpolated trajectory to be converted
+/// \param _sspace The space information pointer.
+/// returns the corresponding OMPL geometric path
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
     const trajectory::InterpolatedPtr& _interpolatedTraj,
     ::ompl::base::SpaceInformationPtr _si);
 
+/// Take an OMPL geometric path and convert it into an interpolated trajectory
+/// \param _path The OMPL geometric path
+/// \param _interpolator An Interpolator defined on the StateSpace. This is used
+/// to interpolate between two points within the space.
+/// returns the corresponding interpolated trajectory
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
     statespace::InterpolatorPtr _interpolator);
