@@ -171,7 +171,7 @@ TEST_F(PlannerTest, InterpolatedDurationRemainsUnchaged)
       traj, si);
 
   auto interpolatedTraj = aikido::planner::ompl::toInterpolatedTrajectory(
-  omplTraj, stateSpace, interpolator);
+  omplTraj, interpolator);
 
   EXPECT_TRUE(omplTraj.getStateCount() == (interpolatedTraj->getDuration()+1));
 }
@@ -211,7 +211,7 @@ TEST_F(PlannerTest, InterpolatedStatesRemainUnchaged)
       traj, si);
 
   auto interpolatedTraj = aikido::planner::ompl::toInterpolatedTrajectory(
-  omplTraj, stateSpace, interpolator);
+  omplTraj, interpolator);
 
   // Match every point
   auto s0 = stateSpace->createState();

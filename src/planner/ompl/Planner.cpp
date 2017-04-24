@@ -420,7 +420,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   std::chrono::system_clock::time_point time_current;
   std::chrono::duration<double> const time_limit
       = std::chrono::duration<double>(_timeout);
-  double empty_steps = 0;
+  int empty_steps = 0;
 
   do
   {
@@ -439,7 +439,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
            && empty_steps <= _maxEmptySteps);
 
   // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
-  auto returnTraj = toInterpolatedTrajectory(path, _stateSpace, _interpolator);
+  auto returnTraj = toInterpolatedTrajectory(path, _interpolator);
 
   // Step 5: Return trajectory and notify user if shortening was successful
   std::pair<std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
@@ -470,11 +470,10 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
-    statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator)
 {
   auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
-      std::move(_stateSpace), std::move(_interpolator));
+      std::move(_interpolator->getStateSpace()), std::move(_interpolator));
 
   for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {

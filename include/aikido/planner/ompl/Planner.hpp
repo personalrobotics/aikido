@@ -317,7 +317,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
-    statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator);
 
 } // namespace ompl
