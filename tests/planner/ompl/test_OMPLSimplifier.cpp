@@ -1,8 +1,6 @@
 #include "OMPLTestHelpers.hpp"
 #include "../../constraint/MockConstraints.hpp"
 #include <aikido/planner/ompl/Planner.hpp>
-#include <aikido/planner/ompl/CRRT.hpp>
-#include <aikido/planner/ompl/CRRTConnect.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
@@ -10,7 +8,6 @@
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <dart/dart.hpp>
 #include "eigen_tests.hpp"
 
@@ -18,8 +15,6 @@ static const double eigenTolerance{1e-6};
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
-using aikido::planner::ompl::CRRT;
-using aikido::planner::ompl::CRRTConnect;
 
 namespace {
 
