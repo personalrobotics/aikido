@@ -9,10 +9,10 @@
 #include "../../constraint/Testable.hpp"
 #include "../../distance/DistanceMetric.hpp"
 #include "../../planner/ompl/BackwardCompatibility.hpp"
+#include "../../planner/ompl/GeometricStateSpace.hpp"
 #include "../../statespace/Interpolator.hpp"
 #include "../../statespace/StateSpace.hpp"
 #include "../../trajectory/Interpolated.hpp"
-#include "../../planner/ompl/GeometricStateSpace.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -311,7 +311,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     double _timeout,
     size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj);
-
 
 /// Take an interpolated trajectory and convert it into OMPL geometric path
 /// \param _interpolatedTraj the interpolated trajectory to be converted

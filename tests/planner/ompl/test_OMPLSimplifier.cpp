@@ -18,8 +18,7 @@ using aikido::planner::ompl::getSpaceInformation;
 
 namespace {
 
-  template <typename T>
-  double computeTrajLength(const T& traj,
+  double computeTrajLength(const aikido::trajectory::Interpolated& traj,
       aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
       aikido::distance::DistanceMetricPtr& dmetric)
   {
@@ -28,12 +27,12 @@ namespace {
 
     double trajDistance = 0.0;
     
-    if(traj->getNumWaypoints())
+    if(traj.getNumWaypoints())
     {
-      for(size_t i = 0; i < traj->getNumWaypoints() - 1; ++i)
+      for(size_t i = 0; i < traj.getNumWaypoints() - 1; ++i)
       {
-        traj->evaluate(i, stateCurrent);   
-        traj->evaluate(i+1, stateNext);
+        traj.evaluate(i, stateCurrent);   
+        traj.evaluate(i+1, stateNext);
         trajDistance += dmetric->distance(stateCurrent, stateNext);
       }  
     }
@@ -132,8 +131,8 @@ TEST_F(SimplifierTest, ShortenThreeWayPointTraj)
   bool shorten_success = simplifiedPair.second;
 
   aikido::distance::DistanceMetricPtr dmetric = aikido::distance::createDistanceMetric(stateSpace);
-  double trajDistance = computeTrajLength<aikido::trajectory::InterpolatedPtr>(traj, stateSpace, dmetric);
-  double simplifiedTrajDistance = computeTrajLength<std::unique_ptr<aikido::trajectory::Interpolated>>(simplifiedTraj, stateSpace, dmetric);
+  double trajDistance = computeTrajLength(*traj, stateSpace, dmetric);
+  double simplifiedTrajDistance = computeTrajLength(*simplifiedTraj, stateSpace, dmetric);
 
   EXPECT_TRUE(shorten_success);
   EXPECT_TRUE(simplifiedTrajDistance < trajDistance);  // Redundant

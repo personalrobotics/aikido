@@ -454,7 +454,13 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     ::ompl::base::SpaceInformationPtr _si)
 {
   auto sspace
-      = ompl_static_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
+      = ompl_dynamic_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
+
+  if(!sspace)
+  {
+    throw std::invalid_argument(
+        "GeometricStateSpace Required");
+  }
 
   ::ompl::geometric::PathGeometric returnPath{std::move(_si)};
 
