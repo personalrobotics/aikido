@@ -427,11 +427,11 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
     bool const shortened
         = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
-    if(shortened) 
+    if (shortened)
       empty_steps = 0;
     else
       empty_steps += 1;
-    
+
     time_current = std::chrono::system_clock::now();
     shorten_success = shorten_success || shortened;
 
@@ -447,7 +447,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 }
 //=============================================================================
 
-// Following are helper functions. 
+// Following are helper functions.
 
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
     const trajectory::InterpolatedPtr& _interpolatedTraj,
@@ -456,10 +456,9 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   auto sspace
       = ompl_dynamic_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
 
-  if(!sspace)
+  if (!sspace)
   {
-    throw std::invalid_argument(
-        "GeometricStateSpace Required");
+    throw std::invalid_argument("GeometricStateSpace Required");
   }
 
   ::ompl::geometric::PathGeometric returnPath{std::move(_si)};
@@ -473,7 +472,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   return returnPath;
 }
 
-
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
     statespace::InterpolatorPtr _interpolator)
@@ -483,7 +481,7 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
 
   for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {
-    // Note that following static_cast is guaranteed to be safe because 
+    // Note that following static_cast is guaranteed to be safe because
     // GeometricPath defines a path through a GeometricStateSpace, which
     // always contains GeometricStateSpace::StateType states
     const auto* st = static_cast<const GeometricStateSpace::StateType*>(
