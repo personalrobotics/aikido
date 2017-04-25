@@ -7,9 +7,6 @@ if(NOT DART_utils-urdf_FOUND)
   return()
 endif()
 
-pkg_check_modules(YAMLCPP QUIET yaml-cpp)
-aikido_check_package(YAMLCPP "perception" "yaml-cpp")
-
 find_package(geometry_msgs QUIET)
 aikido_check_package(geometry_msgs "perception" "geometry_msgs")
 
@@ -44,7 +41,6 @@ target_include_directories("${PROJECT_NAME}_perception" SYSTEM
   PUBLIC
     ${Boost_INCLUDE_DIRS}
     ${DART_INCLUDE_DIRS}
-    ${YAMLCPP_INCLUDE_DIRS}
     ${geometry_msgs_INCLUDE_DIRS}
     ${roscpp_INCLUDE_DIRS}
     ${std_msgs_INCLUDE_DIRS}
@@ -54,8 +50,8 @@ target_include_directories("${PROJECT_NAME}_perception" SYSTEM
 )
 target_link_libraries("${PROJECT_NAME}_perception"
   PUBLIC
+    "${PROJECT_NAME}_util"
     ${DART_LIBRARIES}
-    ${YAMLCPP_LIBRARIES}
     ${geometry_msgs_LIBRARIES}
     ${roscpp_LIBRARIES}
     ${std_msgs_LIBRARIES}
