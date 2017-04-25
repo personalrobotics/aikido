@@ -312,13 +312,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj);
 
-// /// Take an interpolated trajectory and convert it into OMPL geometric path
-// /// \param _interpolatedTraj the interpolated trajectory to be converted
-// /// \param _sspace Geometric Statespace Pointer.
-// /// returns the corresponding OMPL geometric path
-// ::ompl::geometric::PathGeometric toOMPLTrajectory(
-//     const trajectory::InterpolatedPtr& _interpolatedTraj,
-//     GeometricStateSpacePtr _sspace);
 
 /// Take an interpolated trajectory and convert it into OMPL geometric path
 /// \param _interpolatedTraj the interpolated trajectory to be converted

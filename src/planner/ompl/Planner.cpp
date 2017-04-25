@@ -447,27 +447,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 }
 //=============================================================================
 
-// Following are helper functions. Might want to move them elsewhere for generic
-// use
-
-// ::ompl::geometric::PathGeometric toOMPLTrajectory(
-//     const trajectory::InterpolatedPtr& _interpolatedTraj,
-//     GeometricStateSpacePtr _sspace)
-// {
-//   auto sspace
-//       = ompl_static_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
-
-//   ::ompl::geometric::PathGeometric returnPath{std::move(_si)};
-
-//   for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx)
-//   {
-//     auto ompl_state = sspace->allocState(_interpolatedTraj->getWaypoint(idx));
-//     returnPath.append(ompl_state);
-//     sspace->freeState(ompl_state);
-//   }
-//   return returnPath;
-// }
-
+// Following are helper functions. 
 
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
     const trajectory::InterpolatedPtr& _interpolatedTraj,
