@@ -17,7 +17,8 @@ public:
     ResourceServer *resourceServer,
     interactive_markers::InteractiveMarkerServer *markerServer,
     const std::string &name,
-    const dart::dynamics::ShapeFrame *shapeFrame);
+    const dart::dynamics::ShapeFrame *shapeFrame,
+    const std::string &frameId);
 
   ShapeFrameMarker(ShapeFrameMarker const &) = delete;
   ShapeFrameMarker &operator=(ShapeFrameMarker const &) = delete;
@@ -34,6 +35,7 @@ private:
   interactive_markers::InteractiveMarkerServer *mMarkerServer;
   visualization_msgs::InteractiveMarker mInteractiveMarker;
   visualization_msgs::InteractiveMarkerControl *mVisualControl;
+  std::string mFrameId;
 
   const dart::dynamics::ShapeFrame *mShapeFrame;
 
