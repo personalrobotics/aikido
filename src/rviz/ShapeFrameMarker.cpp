@@ -30,12 +30,12 @@ ShapeFrameMarker::ShapeFrameMarker(
   : mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
   , mShapeFrame(shapeFrame)
+  , mFrameId(frameId)
   , mExists(false)
   , mForceUpdate(true)
   , mVersion()
   , mShowVisual(true)
   , mShowCollision(false)
-  , mFrameId(frameId)
 {
   using std::placeholders::_1;
   using std::placeholders::_2;

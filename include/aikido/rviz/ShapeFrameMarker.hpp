@@ -35,10 +35,10 @@ private:
   interactive_markers::InteractiveMarkerServer *mMarkerServer;
   visualization_msgs::InteractiveMarker mInteractiveMarker;
   visualization_msgs::InteractiveMarkerControl *mVisualControl;
-  std::string mFrameId;
 
   const dart::dynamics::ShapeFrame *mShapeFrame;
-
+  std::string mFrameId;
+  
   bool mExists;
   bool mForceUpdate;
   size_t mVersion;
