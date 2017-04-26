@@ -1,9 +1,9 @@
+#include <Eigen/StdVector>
 #include <assimp/cexport.h>
 #include <boost/filesystem.hpp>
-#include <Eigen/StdVector>
 #include <dart/dynamics/dynamics.hpp>
-#include <aikido/rviz/shape_conversions.hpp>
 #include <aikido/rviz/ResourceServer.hpp>
+#include <aikido/rviz/shape_conversions.hpp>
 
 using dart::dynamics::Shape;
 using dart::dynamics::BoxShape;
@@ -18,7 +18,7 @@ using visualization_msgs::Marker;
 namespace aikido {
 namespace rviz {
 
-geometry_msgs::Point convertEigenToROSPoint(Eigen::Vector3d const &v)
+geometry_msgs::Point convertEigenToROSPoint(Eigen::Vector3d const& v)
 {
   geometry_msgs::Point v_ros;
   v_ros.x = v[0];
@@ -27,7 +27,7 @@ geometry_msgs::Point convertEigenToROSPoint(Eigen::Vector3d const &v)
   return v_ros;
 }
 
-geometry_msgs::Vector3 convertEigenToROSVector3(Eigen::Vector3d const &v)
+geometry_msgs::Vector3 convertEigenToROSVector3(Eigen::Vector3d const& v)
 {
   geometry_msgs::Vector3 v_ros;
   v_ros.x = v[0];
@@ -36,7 +36,7 @@ geometry_msgs::Vector3 convertEigenToROSVector3(Eigen::Vector3d const &v)
   return v_ros;
 }
 
-std_msgs::ColorRGBA convertEigenToROSColorRGBA(Eigen::Vector4d const &v)
+std_msgs::ColorRGBA convertEigenToROSColorRGBA(Eigen::Vector4d const& v)
 {
   std_msgs::ColorRGBA v_ros;
   v_ros.r = v[0];
@@ -46,7 +46,8 @@ std_msgs::ColorRGBA convertEigenToROSColorRGBA(Eigen::Vector4d const &v)
   return v_ros;
 }
 
-geometry_msgs::Quaternion convertEigenToROSQuaternion(Eigen::Quaterniond const &v)
+geometry_msgs::Quaternion convertEigenToROSQuaternion(
+    Eigen::Quaterniond const& v)
 {
   geometry_msgs::Quaternion v_ros;
   v_ros.w = v.w();
@@ -56,7 +57,7 @@ geometry_msgs::Quaternion convertEigenToROSQuaternion(Eigen::Quaterniond const &
   return v_ros;
 }
 
-geometry_msgs::Pose convertEigenToROSPose(Eigen::Isometry3d const &v)
+geometry_msgs::Pose convertEigenToROSPose(Eigen::Isometry3d const& v)
 {
   Eigen::Quaterniond const quaternion(v.rotation());
 
@@ -67,20 +68,23 @@ geometry_msgs::Pose convertEigenToROSPose(Eigen::Isometry3d const &v)
 }
 
 bool convertAssimpMeshToROSTriangleList(
-  aiMesh const &mesh, std::vector<geometry_msgs::Point> *triangle_list)
+    aiMesh const& mesh, std::vector<geometry_msgs::Point>* triangle_list)
 {
   triangle_list->reserve(triangle_list->size() + 3 * mesh.mNumFaces);
 
-  for (unsigned int iface = 0; iface < mesh.mNumFaces; ++iface) {
-    aiFace const &face = mesh.mFaces[iface];
+  for (unsigned int iface = 0; iface < mesh.mNumFaces; ++iface)
+  {
+    aiFace const& face = mesh.mFaces[iface];
 
-    if (face.mNumIndices != 3) {
+    if (face.mNumIndices != 3)
+    {
       return false;
     }
 
-    for (unsigned int i = 0; i < 3; ++i) {
+    for (unsigned int i = 0; i < 3; ++i)
+    {
       unsigned int ivertex = face.mIndices[i];
-      aiVector3D const &vertex = mesh.mVertices[ivertex];
+      aiVector3D const& vertex = mesh.mVertices[ivertex];
 
       geometry_msgs::Point ros_vertex;
       ros_vertex.x = vertex.x;
@@ -93,8 +97,8 @@ bool convertAssimpMeshToROSTriangleList(
   return true;
 }
 
-bool convertShape(BoxShape const &shape, Marker *marker,
-                  ResourceServer */*resourceManager*/)
+bool convertShape(
+    BoxShape const& shape, Marker* marker, ResourceServer* /*resourceManager*/)
 {
   marker->type = Marker::CUBE;
   marker->pose.orientation.w = 1.;
@@ -102,8 +106,10 @@ bool convertShape(BoxShape const &shape, Marker *marker,
   return true;
 }
 
-bool convertShape(CylinderShape const &shape, Marker *marker,
-                  ResourceServer */*resourceManager*/)
+bool convertShape(
+    CylinderShape const& shape,
+    Marker* marker,
+    ResourceServer* /*resourceManager*/)
 {
   marker->type = Marker::CYLINDER;
   marker->pose.orientation.w = 1.;
@@ -113,8 +119,10 @@ bool convertShape(CylinderShape const &shape, Marker *marker,
   return true;
 }
 
-bool convertShape(EllipsoidShape const &shape, Marker *marker,
-                  ResourceServer */*resourceManager*/)
+bool convertShape(
+    EllipsoidShape const& shape,
+    Marker* marker,
+    ResourceServer* /*resourceManager*/)
 {
   marker->type = Marker::SPHERE;
   marker->pose.orientation.w = 1.;
@@ -122,43 +130,49 @@ bool convertShape(EllipsoidShape const &shape, Marker *marker,
   return true;
 }
 
-bool convertShape(LineSegmentShape const &shape, Marker *marker,
-                  ResourceServer */*resourceManager*/)
+bool convertShape(
+    LineSegmentShape const& shape,
+    Marker* marker,
+    ResourceServer* /*resourceManager*/)
 {
-  std::vector<Eigen::Vector3d> const &vertices = shape.getVertices();
-  std::vector<Eigen::Vector2i, Eigen::aligned_allocator<Eigen::Vector2i> >
-    const &connections = shape.getConnections();
+  std::vector<Eigen::Vector3d> const& vertices = shape.getVertices();
+  std::vector<Eigen::Vector2i,
+              Eigen::aligned_allocator<Eigen::Vector2i> > const& connections
+      = shape.getConnections();
 
   marker->type = Marker::LINE_STRIP;
   marker->pose.orientation.w = 1.;
   marker->scale.x = shape.getThickness();
   marker->points.reserve(2 * connections.size());
 
-  for (Eigen::Vector2i const &connection : connections) {
-    size_t const &i1 = connection[0];
-    size_t const &i2 = connection[1];
+  for (Eigen::Vector2i const& connection : connections)
+  {
+    size_t const& i1 = connection[0];
+    size_t const& i2 = connection[1];
 
-    if (i1 >= connections.size() || i2 >= connections.size()) {
+    if (i1 >= connections.size() || i2 >= connections.size())
+    {
       return false;
     }
 
-    Eigen::Vector3d const &p1 = vertices[i1];
-    Eigen::Vector3d const &p2 = vertices[i2];
+    Eigen::Vector3d const& p1 = vertices[i1];
+    Eigen::Vector3d const& p2 = vertices[i2];
     marker->points.push_back(convertEigenToROSPoint(p1));
     marker->points.push_back(convertEigenToROSPoint(p2));
   }
   return true;
 }
 
-bool convertShape(MeshShape const &shape, Marker *marker,
-                  ResourceServer */*resourceManager*/)
+bool convertShape(
+    MeshShape const& shape, Marker* marker, ResourceServer* /*resourceManager*/)
 {
   marker->pose.orientation.w = 1.;
   marker->scale = convertEigenToROSVector3(shape.getScale());
 
-  aiScene const *scene = shape.getMesh();
-  std::string const &meshUri = shape.getMeshUri();
-  if (!meshUri.empty()) {
+  aiScene const* scene = shape.getMesh();
+  std::string const& meshUri = shape.getMeshUri();
+  if (!meshUri.empty())
+  {
     marker->type = Marker::MESH_RESOURCE;
     marker->mesh_resource = meshUri;
     marker->mesh_use_embedded_materials = true;
@@ -166,12 +180,15 @@ bool convertShape(MeshShape const &shape, Marker *marker,
   }
 
   // Fall back on publishing the mesh as a TRIANGLE_LIST.
-  if (scene) {
+  if (scene)
+  {
     marker->type = Marker::TRIANGLE_LIST;
 
-    for (unsigned int imesh = 0; imesh < scene->mNumMeshes; ++imesh) {
-      if (!convertAssimpMeshToROSTriangleList(*scene->mMeshes[imesh],
-                                              &marker->points)) {
+    for (unsigned int imesh = 0; imesh < scene->mNumMeshes; ++imesh)
+    {
+      if (!convertAssimpMeshToROSTriangleList(
+              *scene->mMeshes[imesh], &marker->points))
+      {
         return false;
       }
     }
@@ -181,22 +198,37 @@ bool convertShape(MeshShape const &shape, Marker *marker,
   return false; // Everything failed!
 }
 
-bool convertShape(PlaneShape const &shape, Marker *marker,
-                  ResourceServer */*resourceManager*/, double width)
+bool convertShape(
+    PlaneShape const& shape,
+    Marker* marker,
+    ResourceServer* /*resourceManager*/,
+    double width)
 {
-  static Eigen::Matrix<double, 3, 6> const points = (
-    Eigen::Matrix<double, 6, 3>() <<
-      -0.5, -0.5, 0,
-       0.5,  0.5, 0,
-      -0.5,  0.5, 0,
-      -0.5, -0.5, 0,
-       0.5, -0.5, 0,
-       0.5,  0.5, 0
-  ).finished().transpose();
+  static Eigen::Matrix<double, 3, 6> const points
+      = (Eigen::Matrix<double, 6, 3>() << -0.5,
+         -0.5,
+         0,
+         0.5,
+         0.5,
+         0,
+         -0.5,
+         0.5,
+         0,
+         -0.5,
+         -0.5,
+         0,
+         0.5,
+         -0.5,
+         0,
+         0.5,
+         0.5,
+         0)
+            .finished()
+            .transpose();
 
   marker->type = Marker::TRIANGLE_LIST;
 
-  Eigen::Vector3d const &normal = shape.getNormal();
+  Eigen::Vector3d const& normal = shape.getNormal();
   double const offset = shape.getOffset();
 
   // Constructing a frame on the plane at the point closest to the origin.
@@ -216,42 +248,48 @@ bool convertShape(PlaneShape const &shape, Marker *marker,
   return true;
 }
 
-bool convertShape(SoftMeshShape const &shape, Marker *marker,
-                  ResourceServer */*resourceManager*/)
+bool convertShape(
+    SoftMeshShape const& shape,
+    Marker* marker,
+    ResourceServer* /*resourceManager*/)
 {
   marker->type = Marker::TRIANGLE_LIST;
   marker->pose.orientation.w = 1.;
 
-  aiMesh const *mesh = shape.getAssimpMesh();
-  if (mesh) {
+  aiMesh const* mesh = shape.getAssimpMesh();
+  if (mesh)
+  {
     return convertAssimpMeshToROSTriangleList(*mesh, &marker->points);
-  } else {
+  }
+  else
+  {
     return false;
   }
 }
 
-bool convertShape(Shape const &shape, Marker *marker, ResourceServer *rm)
+bool convertShape(Shape const& shape, Marker* marker, ResourceServer* rm)
 {
   if (shape.is<BoxShape>())
-    return convertShape(dynamic_cast<BoxShape const &>(shape), marker, rm);
+    return convertShape(dynamic_cast<BoxShape const&>(shape), marker, rm);
 
   else if (shape.is<EllipsoidShape>())
-    return convertShape(dynamic_cast<EllipsoidShape const &>(shape), marker, rm);
+    return convertShape(dynamic_cast<EllipsoidShape const&>(shape), marker, rm);
 
   else if (shape.is<CylinderShape>())
-    return convertShape(dynamic_cast<CylinderShape const &>(shape), marker, rm);
+    return convertShape(dynamic_cast<CylinderShape const&>(shape), marker, rm);
 
   else if (shape.is<LineSegmentShape>())
-    return convertShape(dynamic_cast<LineSegmentShape const &>(shape), marker, rm);
+    return convertShape(
+        dynamic_cast<LineSegmentShape const&>(shape), marker, rm);
 
   else if (shape.is<MeshShape>())
-    return convertShape(dynamic_cast<MeshShape const &>(shape), marker, rm);
+    return convertShape(dynamic_cast<MeshShape const&>(shape), marker, rm);
 
   else if (shape.is<PlaneShape>())
-    return convertShape(dynamic_cast<PlaneShape const &>(shape), marker, rm);
+    return convertShape(dynamic_cast<PlaneShape const&>(shape), marker, rm);
 
   else if (shape.is<SoftMeshShape>())
-    return convertShape(dynamic_cast<SoftMeshShape const &>(shape), marker, rm);
+    return convertShape(dynamic_cast<SoftMeshShape const&>(shape), marker, rm);
 
   else
     return false;

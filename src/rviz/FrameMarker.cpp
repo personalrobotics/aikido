@@ -1,6 +1,6 @@
 #include <boost/format.hpp>
-#include <aikido/rviz/shape_conversions.hpp>
 #include <aikido/rviz/FrameMarker.hpp>
+#include <aikido/rviz/shape_conversions.hpp>
 
 using boost::format;
 using boost::str;
@@ -8,8 +8,8 @@ using boost::str;
 namespace aikido {
 namespace rviz {
 
-static std_msgs::ColorRGBA makeColorRGBA(double r, double g, double b,
-                                         double a = 1.)
+static std_msgs::ColorRGBA makeColorRGBA(
+    double r, double g, double b, double a = 1.)
 {
   std_msgs::ColorRGBA color;
   color.r = r;
@@ -20,8 +20,10 @@ static std_msgs::ColorRGBA makeColorRGBA(double r, double g, double b,
 }
 
 static void CreateAxis(
-  Eigen::Vector3d const &axis, double length, double thickness,
-  visualization_msgs::Marker *marker)
+    Eigen::Vector3d const& axis,
+    double length,
+    double thickness,
+    visualization_msgs::Marker* marker)
 {
   // Orient the desired axis along the z-axis, which is the axis of the
   // cylinder in RViz.
@@ -40,13 +42,13 @@ static void CreateAxis(
 }
 
 FrameMarker::FrameMarker(
-      interactive_markers::InteractiveMarkerServer *markerServer,
-      dart::dynamics::Frame *frame,
-      const std::string& frameId,
-      double length, double thickness, double alpha)
-  : mMarkerServer(markerServer)
-  , mFrame(frame)
-  , mFrameId(frameId)
+    interactive_markers::InteractiveMarkerServer* markerServer,
+    dart::dynamics::Frame* frame,
+    const std::string& frameId,
+    double length,
+    double thickness,
+    double alpha)
+  : mMarkerServer(markerServer), mFrame(frame), mFrameId(frameId)
 {
   using visualization_msgs::InteractiveMarkerControl;
 
@@ -56,7 +58,7 @@ FrameMarker::FrameMarker(
   mInteractiveMarker.scale = 1;
 
   mInteractiveMarker.controls.resize(1);
-  InteractiveMarkerControl &control = mInteractiveMarker.controls.front();
+  InteractiveMarkerControl& control = mInteractiveMarker.controls.front();
   control.orientation.w = 1;
   control.orientation_mode = InteractiveMarkerControl::INHERIT;
   control.interaction_mode = InteractiveMarkerControl::NONE;
@@ -81,8 +83,8 @@ FrameMarker::~FrameMarker()
 
 void FrameMarker::update()
 {
-  mMarkerServer->setPose(mInteractiveMarker.name,
-    convertEigenToROSPose(mFrame->getTransform()));
+  mMarkerServer->setPose(
+      mInteractiveMarker.name, convertEigenToROSPose(mFrame->getTransform()));
 }
 
 } // namespace rviz

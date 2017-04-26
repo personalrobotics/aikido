@@ -22,11 +22,11 @@ static const Eigen::Vector4d DEFAULT_COLOR(0.5, 0.5, 1., 1.);
 } // namespace
 
 ShapeFrameMarker::ShapeFrameMarker(
-      ResourceServer *resourceServer,
-      InteractiveMarkerServer *markerServer,
-      const std::string &name,
-      ShapeFrame const *shapeFrame,
-      const std::string &frameId)
+    ResourceServer* resourceServer,
+    InteractiveMarkerServer* markerServer,
+    const std::string& name,
+    ShapeFrame const* shapeFrame,
+    const std::string& frameId)
   : mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
   , mShapeFrame(shapeFrame)
@@ -52,12 +52,13 @@ ShapeFrameMarker::ShapeFrameMarker(
 
 ShapeFrameMarker::~ShapeFrameMarker()
 {
-  if (mExists) {
+  if (mExists)
+  {
     mMarkerServer->erase(mInteractiveMarker.name);
   }
 }
 
-void ShapeFrameMarker::SetColor(Eigen::Vector4d const &color)
+void ShapeFrameMarker::SetColor(Eigen::Vector4d const& color)
 {
   mForceUpdate = !(mColor && color == *mColor);
   mColor.reset(color);
@@ -71,15 +72,17 @@ void ShapeFrameMarker::ResetColor()
 
 bool ShapeFrameMarker::update()
 {
-  mInteractiveMarker.pose = convertEigenToROSPose(
-    mShapeFrame->getWorldTransform());
+  mInteractiveMarker.pose
+      = convertEigenToROSPose(mShapeFrame->getWorldTransform());
 
   // Incrementally update the pose if nothing else have changed.
   const size_t newVersion = mShapeFrame->getVersion();
   const bool do_update = mForceUpdate || newVersion != mVersion;
 
-  if (!do_update) {
-    if (mExists) {
+  if (!do_update)
+  {
+    if (mExists)
+    {
       mMarkerServer->setPose(mInteractiveMarker.name, mInteractiveMarker.pose);
     }
 
@@ -91,20 +94,23 @@ bool ShapeFrameMarker::update()
 
   // Otherwise, create a new marker.
   const ConstShapePtr shape = mShapeFrame->getShape();
-  const VisualAspect *visualAspect = mShapeFrame->getVisualAspect();
-  const CollisionAspect *collisionAspect = mShapeFrame->getCollisionAspect();
+  const VisualAspect* visualAspect = mShapeFrame->getVisualAspect();
+  const CollisionAspect* collisionAspect = mShapeFrame->getCollisionAspect();
 
   const bool showVisual
-    = mShowVisual && visualAspect && !visualAspect->isHidden();
+      = mShowVisual && visualAspect && !visualAspect->isHidden();
   const bool showCollision
-    = mShowCollision && collisionAspect && collisionAspect->isCollidable();
-  
-  if (showVisual || showCollision) {
+      = mShowCollision && collisionAspect && collisionAspect->isCollidable();
+
+  if (showVisual || showCollision)
+  {
     mVisualControl->markers.resize(1);
     Marker& marker = mVisualControl->markers.front();
 
-    if (!convertShape(*shape, &marker, mResourceServer)) {
-      if (mExists) {
+    if (!convertShape(*shape, &marker, mResourceServer))
+    {
+      if (mExists)
+      {
         mMarkerServer->erase(mInteractiveMarker.name);
         mExists = false;
       }
@@ -115,19 +121,27 @@ bool ShapeFrameMarker::update()
       return false;
     }
 
-    if (mColor) {
+    if (mColor)
+    {
       marker.color = convertEigenToROSColorRGBA(*mColor);
-    } else if (showVisual) {
+    }
+    else if (showVisual)
+    {
       // TODO: Temporary workaround because there is no way to distiniguish
       // between the default color assigned by DART and a color explicitly
       // assigned by a user, e.g. in the model file.
       if (visualAspect->getRGBA() == DEFAULT_COLOR)
-        marker.color = convertEigenToROSColorRGBA(Eigen::Vector4d::Constant(1.));
+        marker.color
+            = convertEigenToROSColorRGBA(Eigen::Vector4d::Constant(1.));
       else
         marker.color = convertEigenToROSColorRGBA(visualAspect->getRGBA());
-    } else if (showCollision) {
+    }
+    else if (showCollision)
+    {
       marker.color = convertEigenToROSColorRGBA(COLLISION_COLOR);
-    } else {
+    }
+    else
+    {
       assert(false && "This should never happen.");
     }
   }

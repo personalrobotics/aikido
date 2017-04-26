@@ -1,7 +1,7 @@
-#include <aikido/rviz/InteractiveMarkerViewer.hpp>
-#include <dart/dart.hpp>
 #include <dart/common/StlHelpers.hpp>
+#include <dart/dart.hpp>
 #include <aikido/rviz/FrameMarker.hpp>
+#include <aikido/rviz/InteractiveMarkerViewer.hpp>
 #include <aikido/rviz/SkeletonMarker.hpp>
 
 using dart::dynamics::Skeleton;
@@ -13,10 +13,10 @@ namespace rviz {
 
 InteractiveMarkerViewer::InteractiveMarkerViewer(
     const std::string& topicNamespace, const std::string& frameId)
-  : mMarkerServer(topicNamespace, "", true),
-    mRunning(false),
-    mUpdating(false),
-    mFrameId(frameId)
+  : mMarkerServer(topicNamespace, "", true)
+  , mRunning(false)
+  , mUpdating(false)
+  , mFrameId(frameId)
 {
 }
 
@@ -41,19 +41,19 @@ SkeletonMarkerPtr InteractiveMarkerViewer::addSkeleton(
 }
 
 FrameMarkerPtr InteractiveMarkerViewer::addFrame(
-  dart::dynamics::Frame *frame, double length, double thickness, double alpha)
+    dart::dynamics::Frame* frame, double length, double thickness, double alpha)
 {
   std::lock_guard<std::mutex> lock(mMutex);
   const FrameMarkerPtr marker = std::make_shared<FrameMarker>(
-    &mMarkerServer, frame, mFrameId, length, thickness, alpha);
+      &mMarkerServer, frame, mFrameId, length, thickness, alpha);
   mFrameMarkers.insert(marker);
   return marker;
 }
 
 TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
-  const aikido::constraint::TSR& tsr,
-  int nSamples,
-  const std::string& basename)
+    const aikido::constraint::TSR& tsr,
+    int nSamples,
+    const std::string& basename)
 {
   using dart::dynamics::Frame;
   using dart::dynamics::SimpleFrame;
@@ -62,7 +62,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
   auto sampler = tsr.createSampleGenerator();
   auto state = tsr.getSE3()->createState();
 
-  std::string name; 
+  std::string name;
   if (basename.empty())
   {
     std::ostringstream ost;
@@ -77,7 +77,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
   std::vector<std::unique_ptr<SimpleFrame>> tsrFrames;
   tsrFrames.reserve(nSamples);
 
-  for(int i = 0; i < nSamples && sampler->canSample(); ++i)
+  for (int i = 0; i < nSamples && sampler->canSample(); ++i)
   {
     auto sampled = sampler->sample(state);
     assert(sampled);
@@ -87,7 +87,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     ss << "TSRMarker[" << name << "].frame[" << i << "]";
 
     auto tsrFrame = dart::common::make_unique<SimpleFrame>(
-      Frame::World(), ss.str(), state.getIsometry());
+        Frame::World(), ss.str(), state.getIsometry());
     addFrame(tsrFrame.get());
     tsrFrames.emplace_back(std::move(tsrFrame));
   }
@@ -96,14 +96,12 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
   return tsrMarker;
 }
 
-
 SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
-  const SkeletonPtr& skeleton, const std::string& frameId)
+    const SkeletonPtr& skeleton, const std::string& frameId)
 {
   return std::make_shared<SkeletonMarker>(
-    nullptr, &mMarkerServer, skeleton, frameId);
+      nullptr, &mMarkerServer, skeleton, frameId);
 }
-
 
 void InteractiveMarkerViewer::setAutoUpdate(bool flag)
 {
@@ -131,7 +129,8 @@ void InteractiveMarkerViewer::update()
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
-  for (auto it = std::begin(mSkeletonMarkers); it != std::end(mSkeletonMarkers); )
+  for (auto it = std::begin(mSkeletonMarkers);
+       it != std::end(mSkeletonMarkers);)
   {
     const dart::dynamics::SkeletonPtr skeleton = (*it)->getSkeleton();
 
@@ -152,7 +151,8 @@ void InteractiveMarkerViewer::update()
   }
 
   // TODO: Merge this into a unified update loop.
-  for (const FrameMarkerPtr& marker : mFrameMarkers) {
+  for (const FrameMarkerPtr& marker : mFrameMarkers)
+  {
     marker->update();
   }
 

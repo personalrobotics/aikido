@@ -9,10 +9,11 @@ using aikido::rviz::BodyNodeMarkerPtr;
 using aikido::rviz::SkeletonMarker;
 using interactive_markers::InteractiveMarkerServer;
 
-SkeletonMarker::SkeletonMarker(ResourceServer *resourceServer,
-                               InteractiveMarkerServer *markerServer,
-                               WeakSkeletonPtr const &skeleton,
-                               const std::string &frameId)
+SkeletonMarker::SkeletonMarker(
+    ResourceServer* resourceServer,
+    InteractiveMarkerServer* markerServer,
+    WeakSkeletonPtr const& skeleton,
+    const std::string& frameId)
   : mSkeleton(skeleton)
   , mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
@@ -29,19 +30,22 @@ dart::dynamics::SkeletonPtr SkeletonMarker::getSkeleton() const
 bool SkeletonMarker::update()
 {
   SkeletonPtr const skeleton = mSkeleton.lock();
-  if (!skeleton) {
+  if (!skeleton)
+  {
     return false;
   }
 
-  for (BodyNode *const bodyNode : skeleton->getBodyNodes()) {
+  for (BodyNode* const bodyNode : skeleton->getBodyNodes())
+  {
     // Lazily create a BodyNodeMarker.
     auto result = mBodyNodeMarkers.insert(
-      std::make_pair(bodyNode, BodyNodeMarkerPtr()));
-    BodyNodeMarkerPtr &bodyNodeMarker = result.first->second;
+        std::make_pair(bodyNode, BodyNodeMarkerPtr()));
+    BodyNodeMarkerPtr& bodyNodeMarker = result.first->second;
 
-    if (result.second) {
+    if (result.second)
+    {
       bodyNodeMarker = std::make_shared<BodyNodeMarker>(
-        mResourceServer, mMarkerServer, WeakBodyNodePtr(bodyNode), mFrameId);
+          mResourceServer, mMarkerServer, WeakBodyNodePtr(bodyNode), mFrameId);
 
       if (mHasColor)
         bodyNodeMarker->SetColor(mColor);
@@ -49,7 +53,8 @@ bool SkeletonMarker::update()
 
     // Update the BodyNodeMarker. If update() returns false, then the BodyNode
     // was deleted.
-    if (!bodyNodeMarker->update()) {
+    if (!bodyNodeMarker->update())
+    {
       mBodyNodeMarkers.erase(result.first);
     }
   }
@@ -57,7 +62,7 @@ bool SkeletonMarker::update()
 }
 
 BodyNodeMarkerPtr SkeletonMarker::GetBodyNodeMarker(
-  dart::dynamics::BodyNode const *bodynode)
+    dart::dynamics::BodyNode const* bodynode)
 {
   const auto it = mBodyNodeMarkers.find(bodynode);
   if (it != std::end(mBodyNodeMarkers))
@@ -66,12 +71,13 @@ BodyNodeMarkerPtr SkeletonMarker::GetBodyNodeMarker(
     throw std::runtime_error("There is no marker for this BodyNode.");
 }
 
-void SkeletonMarker::SetColor(Eigen::Vector4d const &color)
+void SkeletonMarker::SetColor(Eigen::Vector4d const& color)
 {
   mColor = color;
   mHasColor = true;
 
-  for (auto const &it : mBodyNodeMarkers) {
+  for (auto const& it : mBodyNodeMarkers)
+  {
     it.second->SetColor(color);
   }
 }
@@ -80,7 +86,8 @@ void SkeletonMarker::ResetColor()
 {
   mHasColor = false;
 
-  for (auto const &it : mBodyNodeMarkers) {
+  for (auto const& it : mBodyNodeMarkers)
+  {
     it.second->ResetColor();
   }
 }
@@ -90,7 +97,8 @@ std::vector<BodyNodeMarkerPtr> SkeletonMarker::bodynode_markers() const
   std::vector<BodyNodeMarkerPtr> bodynode_markers;
   bodynode_markers.reserve(mBodyNodeMarkers.size());
 
-  for (auto const &it : mBodyNodeMarkers) {
+  for (auto const& it : mBodyNodeMarkers)
+  {
     bodynode_markers.push_back(it.second);
   }
 
