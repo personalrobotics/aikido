@@ -5,6 +5,8 @@
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
 
+#include <dart/dart.hpp>
+
 namespace aikido {
 namespace planner {
 namespace ompl {
@@ -372,6 +374,126 @@ trajectory::InterpolatedPtr planCRRTConnect(
       std::move(_interpolator),
       _maxPlanTime);
 }
+
+//=============================================================================
+std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwValidityChecks,
+    double _timeout,
+    size_t _maxEmptySteps,
+    trajectory::InterpolatedPtr _originalTraj)
+{
+  if (_timeout < 0)
+  {
+    throw std::invalid_argument("Timeout must be >= 0");
+  }
+
+  // Step 1: Generate the space information of OMPL type
+  auto si = getSpaceInformation(
+      _stateSpace,
+      _interpolator,
+      std::move(_dmetric),
+      std::move(_sampler),
+      std::move(_validityConstraint),
+      std::move(_boundsConstraint),
+      std::move(_boundsProjector),
+      _maxDistanceBtwValidityChecks);
+
+  // Step 2: Convert AIKIDO Interpolated Trajectory to OMPL path
+  auto path = toOMPLTrajectory(_originalTraj, si);
+
+  // Step 3: Use the OMPL methods to simplify the path
+  ::ompl::geometric::PathSimplifier simplifier{si};
+
+  // Flag for user to know if shorten was successful
+  bool shorten_success = false;
+
+  // Set the parameters for termination of simplification process
+  std::chrono::system_clock::time_point const time_before
+      = std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point time_current;
+  std::chrono::duration<double> const time_limit
+      = std::chrono::duration<double>(_timeout);
+  size_t empty_steps = 0;
+
+  do
+  {
+
+    bool const shortened
+        = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
+    if (shortened)
+      empty_steps = 0;
+    else
+      empty_steps += 1;
+
+    time_current = std::chrono::system_clock::now();
+    shorten_success = shorten_success || shortened;
+
+  } while (time_current - time_before <= time_limit
+           && empty_steps <= _maxEmptySteps);
+
+  // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
+  auto returnTraj = toInterpolatedTrajectory(path, _interpolator);
+
+  // Step 5: Return trajectory and notify user if shortening was successful
+  std::pair<std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
+  return std::make_pair(std::move(returnTraj), shorten_success);
 }
+//=============================================================================
+
+// Following are helper functions.
+
+::ompl::geometric::PathGeometric toOMPLTrajectory(
+    const trajectory::InterpolatedPtr& _interpolatedTraj,
+    ::ompl::base::SpaceInformationPtr _si)
+{
+  auto sspace
+      = ompl_dynamic_pointer_cast<GeometricStateSpace>(_si->getStateSpace());
+
+  if (!sspace)
+  {
+    throw std::invalid_argument("GeometricStateSpace Required");
+  }
+
+  ::ompl::geometric::PathGeometric returnPath{std::move(_si)};
+
+  for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx)
+  {
+    auto ompl_state = sspace->allocState(_interpolatedTraj->getWaypoint(idx));
+    returnPath.append(ompl_state);
+    sspace->freeState(ompl_state);
+  }
+  return returnPath;
 }
+
+std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
+    const ::ompl::geometric::PathGeometric& _path,
+    statespace::InterpolatorPtr _interpolator)
+{
+  auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
+      std::move(_interpolator->getStateSpace()), std::move(_interpolator));
+
+  for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
+  {
+    // Note that following static_cast is guaranteed to be safe because
+    // GeometricPath defines a path through a GeometricStateSpace, which
+    // always contains GeometricStateSpace::StateType states
+    const auto* st = static_cast<const GeometricStateSpace::StateType*>(
+        _path.getState(idx));
+
+    // Arbitrary timing
+    returnInterpolated->addWaypoint(idx, st->mState);
+  }
+  return returnInterpolated;
 }
+//=============================================================================
+
+} // ns ompl
+} // ns planner
+} // ns aikido
