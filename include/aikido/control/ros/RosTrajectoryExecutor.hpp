@@ -60,8 +60,6 @@ private:
     = actionlib::ActionClient<control_msgs::FollowJointTrajectoryAction>;
   using GoalHandle = TrajectoryActionClient::GoalHandle;
 
-  bool waitForServer();
-
   void transitionCallback(GoalHandle handle);
 
   ::ros::NodeHandle mNode;
