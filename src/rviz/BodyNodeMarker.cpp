@@ -1,6 +1,7 @@
+#include <aikido/rviz/BodyNodeMarker.hpp>
+
 #include <sstream>
 #include <unordered_set>
-#include <aikido/rviz/BodyNodeMarker.hpp>
 #include <aikido/rviz/shape_conversions.hpp>
 
 using dart::dynamics::BodyNode;
@@ -9,13 +10,17 @@ using dart::dynamics::ConstBodyNodePtr;
 using dart::dynamics::WeakBodyNodePtr;
 using dart::dynamics::ShapeFrame;
 using dart::dynamics::ShapeNode;
-using aikido::rviz::BodyNodeMarker;
+
 using interactive_markers::InteractiveMarkerServer;
 
+namespace aikido {
+namespace rviz {
+
+//==============================================================================
 BodyNodeMarker::BodyNodeMarker(
     ResourceServer* resourceServer,
     InteractiveMarkerServer* markerServer,
-    WeakBodyNodePtr const& bodyNodeWeak,
+    const WeakBodyNodePtr& bodyNodeWeak,
     const std::string& frameId)
   : mBodyNode(bodyNodeWeak)
   , mResourceServer(resourceServer)
@@ -25,20 +30,17 @@ BodyNodeMarker::BodyNodeMarker(
   // Register callbacks on BodyNode changes.
   BodyNodePtr const bodyNode = mBodyNode.lock();
   if (bodyNode)
-  {
     mName = getName(*bodyNode);
-  }
 
   // TODO: Rename the marker if the BodyNode changes name.
 }
 
+//==============================================================================
 bool BodyNodeMarker::update()
 {
   ConstBodyNodePtr const bodyNode = mBodyNode.lock();
   if (!bodyNode)
-  {
     return false;
-  }
 
   // Match the ShapeNodes attached to the BodyNode against the list of
   // ShapeFrameMarkers that already exist.
@@ -96,21 +98,27 @@ bool BodyNodeMarker::update()
   return does_exist;
 }
 
-void BodyNodeMarker::SetColor(Eigen::Vector4d const& color)
+//==============================================================================
+void BodyNodeMarker::SetColor(const Eigen::Vector4d& color)
 {
   for (const auto& it : mShapeFrameMarkers)
     it.second->SetColor(color);
 }
 
+//==============================================================================
 void BodyNodeMarker::ResetColor()
 {
   for (const auto& it : mShapeFrameMarkers)
     it.second->ResetColor();
 }
 
-std::string BodyNodeMarker::getName(BodyNode const& bodyNode)
+//==============================================================================
+std::string BodyNodeMarker::getName(const BodyNode& bodyNode)
 {
   std::stringstream ss;
   ss << bodyNode.getSkeleton()->getName() << ":" << bodyNode.getName();
   return ss.str();
 }
+
+} // namespace rviz
+} // namespace aikido

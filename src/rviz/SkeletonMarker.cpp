@@ -9,10 +9,14 @@ using aikido::rviz::BodyNodeMarkerPtr;
 using aikido::rviz::SkeletonMarker;
 using interactive_markers::InteractiveMarkerServer;
 
+namespace aikido {
+namespace rviz {
+
+//==============================================================================
 SkeletonMarker::SkeletonMarker(
     ResourceServer* resourceServer,
     InteractiveMarkerServer* markerServer,
-    WeakSkeletonPtr const& skeleton,
+    const WeakSkeletonPtr& skeleton,
     const std::string& frameId)
   : mSkeleton(skeleton)
   , mResourceServer(resourceServer)
@@ -20,20 +24,21 @@ SkeletonMarker::SkeletonMarker(
   , mHasColor(false)
   , mFrameId(frameId)
 {
+  // Do nothing
 }
 
+//==============================================================================
 dart::dynamics::SkeletonPtr SkeletonMarker::getSkeleton() const
 {
   return mSkeleton.lock();
 }
 
+//==============================================================================
 bool SkeletonMarker::update()
 {
   SkeletonPtr const skeleton = mSkeleton.lock();
   if (!skeleton)
-  {
     return false;
-  }
 
   for (BodyNode* const bodyNode : skeleton->getBodyNodes())
   {
@@ -54,13 +59,12 @@ bool SkeletonMarker::update()
     // Update the BodyNodeMarker. If update() returns false, then the BodyNode
     // was deleted.
     if (!bodyNodeMarker->update())
-    {
       mBodyNodeMarkers.erase(result.first);
-    }
   }
   return true;
 }
 
+//==============================================================================
 BodyNodeMarkerPtr SkeletonMarker::GetBodyNodeMarker(
     dart::dynamics::BodyNode const* bodynode)
 {
@@ -71,36 +75,36 @@ BodyNodeMarkerPtr SkeletonMarker::GetBodyNodeMarker(
     throw std::runtime_error("There is no marker for this BodyNode.");
 }
 
-void SkeletonMarker::SetColor(Eigen::Vector4d const& color)
+//==============================================================================
+void SkeletonMarker::SetColor(const Eigen::Vector4d& color)
 {
   mColor = color;
   mHasColor = true;
 
-  for (auto const& it : mBodyNodeMarkers)
-  {
+  for (const auto& it : mBodyNodeMarkers)
     it.second->SetColor(color);
-  }
 }
 
+//==============================================================================
 void SkeletonMarker::ResetColor()
 {
   mHasColor = false;
 
-  for (auto const& it : mBodyNodeMarkers)
-  {
+  for (const auto& it : mBodyNodeMarkers)
     it.second->ResetColor();
-  }
 }
 
+//==============================================================================
 std::vector<BodyNodeMarkerPtr> SkeletonMarker::bodynode_markers() const
 {
   std::vector<BodyNodeMarkerPtr> bodynode_markers;
   bodynode_markers.reserve(mBodyNodeMarkers.size());
 
-  for (auto const& it : mBodyNodeMarkers)
-  {
+  for (const auto& it : mBodyNodeMarkers)
     bodynode_markers.push_back(it.second);
-  }
 
   return bodynode_markers;
 }
+
+} // namespace rviz
+} // namespace aikido

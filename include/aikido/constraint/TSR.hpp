@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_TSR_H_
-#define AIKIDO_CONSTRAINT_TSR_H_
+#ifndef AIKIDO_CONSTRAINT_TSR_HPP_
+#define AIKIDO_CONSTRAINT_TSR_HPP_
 
 #include "Sampleable.hpp"
 #include "../statespace/SE3.hpp"
@@ -148,4 +148,4 @@ using TSRPtr = std::shared_ptr<TSR>;
 }  // namespace constraint
 }  // namespace aikido
 
-#endif  // AIKIDO_CONSTRAINT_TSR_H_
+#endif  // AIKIDO_CONSTRAINT_TSR_HPP_

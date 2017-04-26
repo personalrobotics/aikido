@@ -1,8 +1,9 @@
+#include <aikido/rviz/ShapeFrameMarker.hpp>
+
 #include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include <aikido/rviz/ResourceServer.hpp>
-#include <aikido/rviz/ShapeFrameMarker.hpp>
 #include <aikido/rviz/shape_conversions.hpp>
 
 using interactive_markers::InteractiveMarkerServer;
@@ -12,7 +13,9 @@ using dart::dynamics::CollisionAspect;
 using dart::dynamics::VisualAspect;
 using dart::dynamics::ShapeFrame;
 using dart::dynamics::ConstShapePtr;
-using aikido::rviz::ShapeFrameMarker;
+
+namespace aikido {
+namespace rviz {
 
 namespace {
 
@@ -21,6 +24,7 @@ static const Eigen::Vector4d DEFAULT_COLOR(0.5, 0.5, 1., 1.);
 
 } // namespace
 
+//==============================================================================
 ShapeFrameMarker::ShapeFrameMarker(
     ResourceServer* resourceServer,
     InteractiveMarkerServer* markerServer,
@@ -50,26 +54,28 @@ ShapeFrameMarker::ShapeFrameMarker(
   mVisualControl->always_visible = true;
 }
 
+//==============================================================================
 ShapeFrameMarker::~ShapeFrameMarker()
 {
   if (mExists)
-  {
     mMarkerServer->erase(mInteractiveMarker.name);
-  }
 }
 
-void ShapeFrameMarker::SetColor(Eigen::Vector4d const& color)
+//==============================================================================
+void ShapeFrameMarker::SetColor(const Eigen::Vector4d& color)
 {
   mForceUpdate = !(mColor && color == *mColor);
   mColor.reset(color);
 }
 
+//==============================================================================
 void ShapeFrameMarker::ResetColor()
 {
   mForceUpdate = !!mColor;
   mColor.reset();
 }
 
+//==============================================================================
 bool ShapeFrameMarker::update()
 {
   mInteractiveMarker.pose
@@ -82,9 +88,7 @@ bool ShapeFrameMarker::update()
   if (!do_update)
   {
     if (mExists)
-    {
       mMarkerServer->setPose(mInteractiveMarker.name, mInteractiveMarker.pose);
-    }
 
     return mExists;
   }
@@ -154,3 +158,6 @@ bool ShapeFrameMarker::update()
   mExists = true;
   return true;
 }
+
+} // namespace rviz
+} // namespace aikido

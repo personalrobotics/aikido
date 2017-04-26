@@ -1,5 +1,5 @@
-#ifndef AIKIDO_RVIZ_SHAPEFRAMEMARKER_H_
-#define AIKIDO_RVIZ_SHAPEFRAMEMARKER_H_
+#ifndef AIKIDO_RVIZ_SHAPEFRAMEMARKER_HPP_
+#define AIKIDO_RVIZ_SHAPEFRAMEMARKER_HPP_
 
 #include <boost/optional.hpp>
 #include <dart/dynamics/dynamics.hpp>

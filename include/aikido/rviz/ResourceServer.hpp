@@ -1,5 +1,6 @@
-#ifndef AIKIDO_RVIZ_RESOURCESERVER_H_
-#define AIKIDO_RVIZ_RESOURCESERVER_H_
+#ifndef AIKIDO_RVIZ_RESOURCESERVER_HPP_
+#define AIKIDO_RVIZ_RESOURCESERVER_HPP_
+
 #include <mutex>
 #include <unordered_map>
 #include <dart/dynamics/dynamics.hpp>

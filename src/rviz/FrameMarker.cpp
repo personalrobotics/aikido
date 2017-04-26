@@ -1,5 +1,6 @@
-#include <boost/format.hpp>
 #include <aikido/rviz/FrameMarker.hpp>
+
+#include <boost/format.hpp>
 #include <aikido/rviz/shape_conversions.hpp>
 
 using boost::format;
@@ -8,6 +9,7 @@ using boost::str;
 namespace aikido {
 namespace rviz {
 
+//==============================================================================
 static std_msgs::ColorRGBA makeColorRGBA(
     double r, double g, double b, double a = 1.)
 {
@@ -19,8 +21,9 @@ static std_msgs::ColorRGBA makeColorRGBA(
   return color;
 }
 
+//==============================================================================
 static void CreateAxis(
-    Eigen::Vector3d const& axis,
+    const Eigen::Vector3d& axis,
     double length,
     double thickness,
     visualization_msgs::Marker* marker)
@@ -41,6 +44,7 @@ static void CreateAxis(
   marker->pose = convertEigenToROSPose(pose);
 }
 
+//==============================================================================
 FrameMarker::FrameMarker(
     interactive_markers::InteractiveMarkerServer* markerServer,
     dart::dynamics::Frame* frame,
@@ -76,11 +80,13 @@ FrameMarker::FrameMarker(
   update();
 }
 
+//==============================================================================
 FrameMarker::~FrameMarker()
 {
   mMarkerServer->erase(mInteractiveMarker.name);
 }
 
+//==============================================================================
 void FrameMarker::update()
 {
   mMarkerServer->setPose(

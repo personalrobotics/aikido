@@ -1,7 +1,8 @@
+#include <aikido/rviz/InteractiveMarkerViewer.hpp>
+
 #include <dart/common/StlHelpers.hpp>
 #include <dart/dart.hpp>
 #include <aikido/rviz/FrameMarker.hpp>
-#include <aikido/rviz/InteractiveMarkerViewer.hpp>
 #include <aikido/rviz/SkeletonMarker.hpp>
 
 using dart::dynamics::Skeleton;
@@ -11,6 +12,7 @@ using interactive_markers::InteractiveMarkerServer;
 namespace aikido {
 namespace rviz {
 
+//==============================================================================
 InteractiveMarkerViewer::InteractiveMarkerViewer(
     const std::string& topicNamespace, const std::string& frameId)
   : mMarkerServer(topicNamespace, "", true)
@@ -18,19 +20,23 @@ InteractiveMarkerViewer::InteractiveMarkerViewer(
   , mUpdating(false)
   , mFrameId(frameId)
 {
+  // Do nothing
 }
 
+//==============================================================================
 InteractiveMarkerViewer::~InteractiveMarkerViewer()
 {
   mRunning.store(false, std::memory_order_release);
   mThread.join();
 }
 
+//==============================================================================
 InteractiveMarkerServer& InteractiveMarkerViewer::marker_server()
 {
   return mMarkerServer;
 }
 
+//==============================================================================
 SkeletonMarkerPtr InteractiveMarkerViewer::addSkeleton(
     const SkeletonPtr& skeleton)
 {
@@ -40,6 +46,7 @@ SkeletonMarkerPtr InteractiveMarkerViewer::addSkeleton(
   return marker;
 }
 
+//==============================================================================
 FrameMarkerPtr InteractiveMarkerViewer::addFrame(
     dart::dynamics::Frame* frame, double length, double thickness, double alpha)
 {
@@ -50,6 +57,7 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrame(
   return marker;
 }
 
+//==============================================================================
 TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     const aikido::constraint::TSR& tsr,
     int nSamples,
@@ -96,6 +104,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
   return tsrMarker;
 }
 
+//==============================================================================
 SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
     const SkeletonPtr& skeleton, const std::string& frameId)
 {
@@ -103,6 +112,7 @@ SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
       nullptr, &mMarkerServer, skeleton, frameId);
 }
 
+//==============================================================================
 void InteractiveMarkerViewer::setAutoUpdate(bool flag)
 {
   mUpdating.store(flag, std::memory_order_release);
@@ -112,6 +122,7 @@ void InteractiveMarkerViewer::setAutoUpdate(bool flag)
     mThread = std::thread(&InteractiveMarkerViewer::autoUpdate, this);
 }
 
+//==============================================================================
 void InteractiveMarkerViewer::autoUpdate()
 {
   ros::Rate rate(30);
@@ -125,6 +136,7 @@ void InteractiveMarkerViewer::autoUpdate()
   mRunning.store(false);
 }
 
+//==============================================================================
 void InteractiveMarkerViewer::update()
 {
   std::lock_guard<std::mutex> lock(mMutex);
@@ -152,9 +164,7 @@ void InteractiveMarkerViewer::update()
 
   // TODO: Merge this into a unified update loop.
   for (const FrameMarkerPtr& marker : mFrameMarkers)
-  {
     marker->update();
-  }
 
   mMarkerServer.applyChanges();
 }

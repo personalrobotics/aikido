@@ -30,7 +30,7 @@ aikido_check_package(libmicrohttpd "rviz" "libmicrohttpd")
 #==============================================================================
 # Libraries
 #
-add_library("${PROJECT_NAME}_rviz" SHARED
+set(sources
   BodyNodeMarker.cpp
   FrameMarker.cpp
   InteractiveMarkerViewer.cpp
@@ -40,6 +40,8 @@ add_library("${PROJECT_NAME}_rviz" SHARED
   shape_conversions.cpp
   TSRMarker.cpp
 )
+
+add_library("${PROJECT_NAME}_rviz" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
   PUBLIC
     ${Boost_INCLUDE_DIRS}

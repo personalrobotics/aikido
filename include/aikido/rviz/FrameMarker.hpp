@@ -1,5 +1,6 @@
-#ifndef AIKIDO_RVIZ_FRAMEMARKER_H_
-#define AIKIDO_RVIZ_FRAMEMARKER_H_
+#ifndef AIKIDO_RVIZ_FRAMEMARKER_HPP_
+#define AIKIDO_RVIZ_FRAMEMARKER_HPP_
+
 #include <memory>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
@@ -40,4 +41,4 @@ private:
 } // namespace rviz
 } // namespace aikido
 
-#endif // ifndef AIKIDO_RVIZ_FRAMEMARKER_H_
+#endif // ifndef AIKIDO_RVIZ_FRAMEMARKER_HPP_

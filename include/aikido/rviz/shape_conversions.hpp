@@ -1,5 +1,5 @@
-#ifndef AIKIDO_RVIZ_SHAPE_CONVERSIONS_H_
-#define AIKIDO_RVIZ_SHAPE_CONVERSIONS_H_
+#ifndef AIKIDO_RVIZ_SHAPE_CONVERSIONS_HPP_
+#define AIKIDO_RVIZ_SHAPE_CONVERSIONS_HPP_
 
 #include <Eigen/Dense>
 #include <geometry_msgs/Point.h>

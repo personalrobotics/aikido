@@ -1,3 +1,5 @@
+#include <aikido/rviz/ResourceServer.hpp>
+
 #include <fstream>
 #include <assimp/cexport.h>
 #include <assimp/version.h>
@@ -5,13 +7,14 @@
 #include <netinet/in.h>
 #include <ros/network.h>
 #include <sys/socket.h>
-#include <aikido/rviz/ResourceServer.hpp>
 
-using aikido::rviz::ResourceServer;
+namespace aikido {
+namespace rviz {
 
+//==============================================================================
 static void getTextures(
-    aiScene const& scene,
-    std::string const& scenePath,
+    const aiScene& scene,
+    const std::string& scenePath,
     std::vector<std::pair<std::string, std::string> >* textures)
 {
   using boost::filesystem::path;
@@ -32,18 +35,16 @@ static void getTextures(
       aiTextureType_UNKNOWN};
 
   if (scenePath.empty())
-  {
     return;
-  }
 
   path const basePath = path(scenePath).parent_path();
 
   for (unsigned int imesh = 0; imesh < scene.mNumMeshes; ++imesh)
   {
-    aiMesh const& mesh = *scene.mMeshes[imesh];
-    aiMaterial const& material = *scene.mMaterials[mesh.mMaterialIndex];
+    const aiMesh& mesh = *scene.mMeshes[imesh];
+    const aiMaterial& material = *scene.mMaterials[mesh.mMaterialIndex];
 
-    for (aiTextureType const& textureType : materialTypes)
+    for (const aiTextureType& textureType : materialTypes)
     {
       unsigned int numTextures = material.GetTextureCount(textureType);
 
@@ -62,32 +63,36 @@ static void getTextures(
   }
 }
 
+//==============================================================================
 ResourceServer::ResourceServer()
   : mDaemon(nullptr), mHost(ros::network::getHost()), mPort(0)
 {
+  // Do nothing
 }
 
+//==============================================================================
 ResourceServer::~ResourceServer()
 {
   stop();
 }
 
+//==============================================================================
 bool ResourceServer::isRunning() const
 {
   return !!mDaemon;
 }
 
+//==============================================================================
 unsigned short ResourceServer::getPort() const
 {
   return mPort;
 }
 
+//==============================================================================
 bool ResourceServer::start(unsigned short port)
 {
   if (mDaemon)
-  {
     return false;
-  }
 
   // Pass zero to start on an arbitrary port.
   mDaemon = MHD_start_daemon(
@@ -151,12 +156,11 @@ bool ResourceServer::start(unsigned short port)
   }
 }
 
+//==============================================================================
 bool ResourceServer::stop()
 {
   if (!mDaemon)
-  {
     return false;
-  }
 
   MHD_stop_daemon(mDaemon);
 
@@ -165,17 +169,16 @@ bool ResourceServer::stop()
   return true;
 }
 
+//==============================================================================
 std::string ResourceServer::addMesh(
-    aiScene const& inputScene, std::string const& scenePath)
+    const aiScene& inputScene, const std::string& scenePath)
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
   // Return the existing mesh. Otherwise, we'll export a fresh copy.
   auto const sceneIt = mScenes.find(&inputScene);
   if (sceneIt != std::end(mScenes))
-  {
     return getMeshURI(sceneIt->second);
-  }
 
   // Handle a scaling bug in Assimp < 3.1.
   aiScene const* scene = &inputScene;
@@ -197,9 +200,7 @@ std::string ResourceServer::addMesh(
   aiExportDataBlob const* sceneBlob = aiExportSceneToBlob(scene, "collada", 0);
 
   if (scene != &inputScene)
-  {
     delete scene;
-  }
 
   if (sceneBlob->name.length != 0 || sceneBlob->next != nullptr)
   {
@@ -220,17 +221,15 @@ std::string ResourceServer::addMesh(
   std::vector<std::pair<std::string, std::string> > texturePaths;
   getTextures(inputScene, scenePath, &texturePaths);
 
-  for (std::pair<std::string, std::string> const& textureIt : texturePaths)
+  for (const std::pair<std::string, std::string>& textureIt : texturePaths)
   {
-    std::string const& relativePath = textureIt.first;
-    std::string const& absolutePath = textureIt.second;
+    const std::string& relativePath = textureIt.first;
+    const std::string& absolutePath = textureIt.second;
 
     // Check if the texture is already loaded.
     auto const resourceIt = mResources.find(absolutePath);
     if (resourceIt != std::end(mResources) && resourceIt->second.lock())
-    {
       continue;
-    }
 
     // Load the texture from disk.
     std::ifstream textureStream(absolutePath.c_str(), std::ios::binary);
@@ -260,8 +259,9 @@ std::string ResourceServer::addMesh(
   return getMeshURI(sceneResource);
 }
 
+//==============================================================================
 std::string ResourceServer::getMeshURI(
-    MeshResourcePtr const& meshResource) const
+    const MeshResourcePtr& meshResource) const
 {
   assert(!!meshResource);
 
@@ -276,16 +276,18 @@ std::string ResourceServer::getMeshURI(
   return ss.str();
 }
 
+//==============================================================================
 bool ResourceServer::hasBuggyAssimp()
 {
   // Assimp has a buggy export in < 3.1
   return (aiGetVersionMajor() <= 3 || aiGetVersionMinor() < 1);
 }
 
+//==============================================================================
 int ResourceServer::queueHttpError(
     struct MHD_Connection* connection,
     unsigned int code,
-    std::string const& message)
+    const std::string& message)
 {
   struct MHD_Response* response = MHD_create_response_from_buffer(
       message.size(),
@@ -296,25 +298,26 @@ int ResourceServer::queueHttpError(
   return result;
 }
 
+//==============================================================================
 ssize_t ResourceServer::resourceReaderCallback(
     void* cls, uint64_t pos, char* buf, size_t max)
 {
   auto resourceRequest = reinterpret_cast<ResourceRequest*>(cls);
 
   if (pos + max > resourceRequest->resource->mSize)
-  {
     return MHD_CONTENT_READER_END_WITH_ERROR;
-  }
 
   memcpy(buf, resourceRequest->resource->mData + pos, max);
   return max;
 }
 
+//==============================================================================
 void ResourceServer::resourceReaderFreeCallback(void* cls)
 {
   delete reinterpret_cast<ResourceRequest*>(cls);
 }
 
+//==============================================================================
 int ResourceServer::processConnection(
     void* cls,
     struct MHD_Connection* connection,
@@ -388,3 +391,6 @@ int ResourceServer::processConnection(
 
   return result;
 }
+
+} // namespace rviz
+} // namespace aikido

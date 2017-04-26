@@ -1,5 +1,6 @@
-#ifndef AIKIDO_RVIZ_SKELETONMARKER_H_
-#define AIKIDO_RVIZ_SKELETONMARKER_H_
+#ifndef AIKIDO_RVIZ_SKELETONMARKER_HPP_
+#define AIKIDO_RVIZ_SKELETONMARKER_HPP_
+
 #include <unordered_map>
 #include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
