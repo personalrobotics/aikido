@@ -20,6 +20,7 @@ public:
   FrameMarker(
     interactive_markers::InteractiveMarkerServer *markerServer,
     dart::dynamics::Frame *frame,
+    const std::string& frameId,
     double length = 0.25,
     double thickness = 0.02,
     double alpha = 1.0);
@@ -32,6 +33,7 @@ private:
   visualization_msgs::InteractiveMarker mInteractiveMarker;
 
   dart::dynamics::Frame *mFrame;
+  std::string mFrameId;
 };
 
 } // namespace rviz

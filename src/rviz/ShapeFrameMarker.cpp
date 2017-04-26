@@ -25,10 +25,12 @@ ShapeFrameMarker::ShapeFrameMarker(
       ResourceServer *resourceServer,
       InteractiveMarkerServer *markerServer,
       const std::string &name,
-      ShapeFrame const *shapeFrame)
+      ShapeFrame const *shapeFrame,
+      const std::string &frameId)
   : mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
   , mShapeFrame(shapeFrame)
+  , mFrameId(frameId)
   , mExists(false)
   , mForceUpdate(true)
   , mVersion()
@@ -38,7 +40,7 @@ ShapeFrameMarker::ShapeFrameMarker(
   using std::placeholders::_1;
   using std::placeholders::_2;
 
-  mInteractiveMarker.header.frame_id = "map";
+  mInteractiveMarker.header.frame_id = mFrameId;
   mInteractiveMarker.scale = 1.;
   mInteractiveMarker.controls.resize(1);
   mInteractiveMarker.name = name;
