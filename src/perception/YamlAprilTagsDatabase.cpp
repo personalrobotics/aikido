@@ -1,7 +1,8 @@
+#include <aikido/perception/YamlAprilTagsDatabase.hpp>
+
 #include <dart/common/Console.hpp>
 #include <dart/common/LocalResourceRetriever.hpp>
 #include <yaml-cpp/exceptions.h>
-#include <aikido/perception/YamlAprilTagsDatabase.hpp>
 
 namespace aikido {
 namespace perception {

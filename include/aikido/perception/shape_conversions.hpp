@@ -8,7 +8,6 @@
 #include <tf/transform_listener.h>
 
 namespace aikido {
-
 namespace perception {
 
 /// Convert a ROS Pose (position + quaternion) to a 4 x 4 pose matrix

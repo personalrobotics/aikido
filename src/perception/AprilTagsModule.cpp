@@ -1,3 +1,5 @@
+#include <aikido/perception/AprilTagsModule.hpp>
+
 #include <stdexcept>
 #include <utility>
 #include <Eigen/Geometry>
@@ -11,7 +13,6 @@
 #include <tf/LinearMath/Vector3.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <aikido/perception/AprilTagsModule.hpp>
 #include <aikido/perception/shape_conversions.hpp>
 
 namespace aikido {
@@ -85,6 +86,7 @@ bool AprilTagsModule::detectObjects(
     if (mConfigData->getTagNameOffset(
             tag_name, skel_name, skel_resource, skel_offset))
     {
+
       // Get orientation of marker
       Eigen::Isometry3d marker_pose
           = aikido::perception::convertROSPoseToEigen(marker_transform.pose);
@@ -134,7 +136,6 @@ bool AprilTagsModule::detectObjects(
       if (env_skeleton == nullptr)
       {
         // Getting the model for the new object
-        std::cout << "getting new thing" << std::endl;
         is_new_skel = true;
         dart::utils::DartLoader urdfLoader;
         skel_to_update
@@ -151,6 +152,7 @@ bool AprilTagsModule::detectObjects(
       }
       else
       {
+        //
         is_new_skel = false;
         skel_to_update = env_skeleton;
       }
@@ -187,7 +189,6 @@ bool AprilTagsModule::detectObjects(
       {
         // Adding new skeleton to the world env
         env->addSkeleton(skel_to_update);
-        std::cout << "added new thing" << std::endl;
       }
     }
   }

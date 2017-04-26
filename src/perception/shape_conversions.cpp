@@ -1,10 +1,11 @@
-#include <dart/common/Console.hpp>
 #include <aikido/perception/shape_conversions.hpp>
+
+#include <dart/common/Console.hpp>
 
 namespace aikido {
 namespace perception {
 
-//===============================================================================================
+//==============================================================================
 Eigen::Isometry3d convertROSPoseToEigen(geometry_msgs::Pose const& p)
 {
   Eigen::Quaterniond eigen_quat(
@@ -18,7 +19,7 @@ Eigen::Isometry3d convertROSPoseToEigen(geometry_msgs::Pose const& p)
   return eigen_pose;
 }
 
-//===============================================================================================
+//==============================================================================
 Eigen::Isometry3d convertStampedTransformToEigen(tf::StampedTransform const& t)
 {
   tf::Quaternion tf_quat(t.getRotation());

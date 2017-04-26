@@ -296,4 +296,48 @@ public:
   aikido::constraint::TestablePtr boundsConstraint;
   aikido::constraint::TestablePtr collConstraint;
 };
+
+
+class SimplifierTest : public ::testing::Test
+{
+public:
+  virtual void SetUp()
+  {
+    using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
+
+    // Create robot
+    robot = createTranslationalRobot();
+
+    stateSpace = std::make_shared<StateSpace>(robot);
+    interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(stateSpace);
+
+    // Collision constraint
+    collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
+        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
+        Eigen::Vector3d(0.1, 0.1, 0.1));
+
+    // Distance metric
+    dmetric = aikido::distance::createDistanceMetric(stateSpace);
+
+    // Sampler
+    sampler =
+        aikido::constraint::createSampleableBounds(stateSpace, make_rng());
+
+    // Projectable constraint
+    boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
+
+    // Joint limits
+    boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
+  }
+
+  dart::dynamics::SkeletonPtr robot;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace;
+  aikido::statespace::InterpolatorPtr interpolator;
+  aikido::distance::DistanceMetricPtr dmetric;
+  aikido::constraint::SampleablePtr sampler;
+  aikido::constraint::ProjectablePtr boundsProjection;
+  aikido::constraint::TestablePtr boundsConstraint;
+  aikido::constraint::TestablePtr collConstraint;
+};
+
 #endif
