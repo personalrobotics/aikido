@@ -1,19 +1,26 @@
 #ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
 #define AIKIDO_OMPL_OMPLPLANNER_HPP_
 
+#include <chrono>
+#include <utility> // std::pair
+
 #include "../../constraint/Projectable.hpp"
 #include "../../constraint/Sampleable.hpp"
 #include "../../constraint/Testable.hpp"
 #include "../../distance/DistanceMetric.hpp"
 #include "../../planner/ompl/BackwardCompatibility.hpp"
+#include "../../planner/ompl/GeometricStateSpace.hpp"
 #include "../../statespace/Interpolator.hpp"
 #include "../../statespace/StateSpace.hpp"
 #include "../../trajectory/Interpolated.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
+#include <ompl/base/ScopedState.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
+
+#include <ompl/geometric/PathSimplifier.h>
 
 namespace aikido {
 namespace planner {
@@ -261,6 +268,66 @@ trajectory::InterpolatedPtr planOMPL(
     statespace::StateSpacePtr _sspace,
     statespace::InterpolatorPtr _interpolator,
     double _maxPlanTime);
+
+/// Take in an aikido trajectory and simplify it using OMPL methods
+/// \param _statespace The StateSpace that the planner must plan within
+/// \param _interpolator An Interpolator defined on the StateSpace. This is used
+/// to interpolate between two points within the space.
+/// \param _dmetric A valid distance metric defined on the StateSpace
+/// \param _sampler A Sampleable that can sample states from the
+/// StateSpace. Warning: Many OMPL planners internally assume this sampler
+/// samples uniformly. Care should be taken when using a non-uniform sampler.
+/// \param _validityConstraint A constraint used to test validity during
+/// planning. This should include collision checking and any other constraints
+/// that must be satisfied for a state to be considered valid.
+/// \param _boundsConstraint A constraint used to determine whether states
+/// encountered during planning fall within any bounds specified on the
+/// StateSpace. In addition to the _validityConstraint, this must also be
+/// satsified for a state to be considered valid.
+/// \param _boundsProjector A Projectable that projects a state back within
+/// valid bounds defined on the StateSpace
+/// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
+/// between validity checking two successive points on a tree extension
+/// \param _timeout Timeout, in seconds, after which the simplifier terminates
+/// to return possibly shortened path
+/// \param _maxEmptySteps Maximum number of consecutive failed attempts at
+/// shortening before simplification terminates. Default 0, equal to number
+/// of states in the path
+/// \param _rangeRatio Maximum distance between states a connection is
+/// attempted, as a fraction relative to the total length of the path
+/// \param _snapToVertex Threshold distance for snapping a state on shortened
+/// path to a state on original path
+/// \param _originalTraj The untimed trajectory obtained from the planner,
+/// needs simplifying.
+std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwValidityChecks,
+    double _timeout,
+    size_t _maxEmptySteps,
+    trajectory::InterpolatedPtr _originalTraj);
+
+/// Take an interpolated trajectory and convert it into OMPL geometric path
+/// \param _interpolatedTraj the interpolated trajectory to be converted
+/// \param _sspace The space information pointer.
+/// returns the corresponding OMPL geometric path
+::ompl::geometric::PathGeometric toOMPLTrajectory(
+    const trajectory::InterpolatedPtr& _interpolatedTraj,
+    ::ompl::base::SpaceInformationPtr _si);
+
+/// Take an OMPL geometric path and convert it into an interpolated trajectory
+/// \param _path The OMPL geometric path
+/// \param _interpolator An Interpolator defined on the StateSpace. This is used
+/// to interpolate between two points within the space.
+/// returns the corresponding interpolated trajectory
+std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
+    const ::ompl::geometric::PathGeometric& _path,
+    statespace::InterpolatorPtr _interpolator);
 
 } // namespace ompl
 } // namespace planner

@@ -14,10 +14,12 @@ using interactive_markers::InteractiveMarkerServer;
 
 BodyNodeMarker::BodyNodeMarker(ResourceServer *resourceServer,
                                InteractiveMarkerServer *markerServer,
-                               WeakBodyNodePtr const &bodyNodeWeak)
+                               WeakBodyNodePtr const &bodyNodeWeak,
+                               const std::string &frameId)
   : mBodyNode(bodyNodeWeak)
   , mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
+  , mFrameId(frameId)
 {
   // Register callbacks on BodyNode changes.
   BodyNodePtr const bodyNode = mBodyNode.lock();
@@ -66,7 +68,7 @@ bool BodyNodeMarker::update()
 
     mShapeFrameMarkers.emplace(shapeNode, std::unique_ptr<ShapeFrameMarker>(
       new ShapeFrameMarker(mResourceServer, mMarkerServer, shapeNodeName.str(),
-        shapeNode)));
+        shapeNode, mFrameId)));
   }
 
   // Update all of the ShapeFrameMarkers.

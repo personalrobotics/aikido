@@ -16,7 +16,8 @@ public:
   BodyNodeMarker(
       ResourceServer* resourceServer,
       interactive_markers::InteractiveMarkerServer* markerServer,
-      dart::dynamics::WeakBodyNodePtr const& bodyNode);
+      dart::dynamics::WeakBodyNodePtr const& bodyNode,
+      const std::string& frameId);
 
   BodyNodeMarker(BodyNodeMarker const&) = delete;
   BodyNodeMarker& operator=(BodyNodeMarker const&) = delete;
@@ -39,6 +40,7 @@ private:
   interactive_markers::InteractiveMarkerServer* mMarkerServer;
   visualization_msgs::InteractiveMarker mInteractiveMarker;
   visualization_msgs::InteractiveMarkerControl* mVisualControl;
+  std::string mFrameId;
 
   std::string mName;
   ShapeFrameMarkerMap mShapeFrameMarkers;

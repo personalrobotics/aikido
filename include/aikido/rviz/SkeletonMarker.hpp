@@ -17,7 +17,8 @@ public:
   SkeletonMarker(
       ResourceServer* resourceServer,
       interactive_markers::InteractiveMarkerServer* markerServer,
-      dart::dynamics::WeakSkeletonPtr const& skeleton);
+      dart::dynamics::WeakSkeletonPtr const& skeleton,
+      const std::string& frameId);
 
   dart::dynamics::SkeletonPtr getSkeleton() const;
   std::vector<BodyNodeMarkerPtr> bodynode_markers() const;
@@ -37,6 +38,7 @@ private:
       mBodyNodeMarkers;
 
   bool mHasColor;
+  std::string mFrameId;
   Eigen::Vector4d mColor;
 };
 

@@ -20,7 +20,8 @@ namespace rviz {
 class InteractiveMarkerViewer
 {
 public:
-  InteractiveMarkerViewer(const std::string& topicNamespace);
+  InteractiveMarkerViewer(
+      const std::string& topicNamespace, const std::string& frameId);
   virtual ~InteractiveMarkerViewer();
 
   InteractiveMarkerViewer(const InteractiveMarkerViewer&) = delete;
@@ -38,7 +39,7 @@ public:
       double alpha = 1.0);
 
   SkeletonMarkerPtr CreateSkeletonMarker(
-      const dart::dynamics::SkeletonPtr& skeleton);
+      const dart::dynamics::SkeletonPtr& skeleton, const std::string& frameId);
 
   /// Visualizes a TSR.
   /// \param tsr TSR constraint
@@ -65,6 +66,8 @@ private:
   std::atomic_bool mUpdating;
   std::mutex mMutex;
   std::thread mThread;
+
+  std::string mFrameId;
 };
 
 } // namespace rviz
