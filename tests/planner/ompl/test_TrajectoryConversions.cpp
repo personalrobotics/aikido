@@ -52,7 +52,7 @@ namespace {
 }
 
 // Test if the durations of the two trajectories remains constant
-TEST_F(PlannerTest, OMPLDurationRemainsUnchanged)
+TEST_F(PlannerTest, OMPLNumWaypointsUnchanged)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d midwayPose(0, -2, 0);
@@ -103,6 +103,9 @@ TEST_F(PlannerTest, OMPLStatesRemainUnchaged)
   auto omplTraj = aikido::planner::ompl::toOMPLTrajectory(
       traj, si);
   
+  // Ensure equal waypoints 
+  ASSERT_TRUE(traj->getNumWaypoints() == omplTraj.getStateCount());
+
   // Match every point
   for(size_t idx = 0; idx < traj->getNumWaypoints(); ++idx)
   {
@@ -119,7 +122,7 @@ TEST_F(PlannerTest, OMPLStatesRemainUnchaged)
 
 
 // Tests that toInterpolatedTrajectory function does not alter the duration
-TEST_F(PlannerTest, InterpolatedDurationRemainsUnchaged)
+TEST_F(PlannerTest, InterpolatedNumWaypointsUnchaged)
 {
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d midwayPose(0, -2, 0);
@@ -175,6 +178,9 @@ TEST_F(PlannerTest, InterpolatedStatesRemainUnchaged)
 
   auto interpolatedTraj = aikido::planner::ompl::toInterpolatedTrajectory(
   omplTraj, interpolator);
+
+  // Ensure equal waypoints 
+  ASSERT_TRUE(interpolatedTraj->getNumWaypoints() == omplTraj.getStateCount());
 
   // Match every point
   for(size_t idx = 0; idx < interpolatedTraj->getNumWaypoints(); ++idx)
