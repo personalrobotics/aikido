@@ -50,8 +50,8 @@ class ResourceServer
 {
 public:
   ResourceServer();
-  ResourceServer(ResourceServer const& other) = delete;
-  ResourceServer& operator=(ResourceServer const& other) = delete;
+  ResourceServer(const ResourceServer& other) = delete;
+  ResourceServer& operator=(const ResourceServer& other) = delete;
 
   virtual ~ResourceServer();
 
@@ -61,7 +61,7 @@ public:
   bool start(unsigned short port = 0);
   bool stop();
 
-  std::string addMesh(aiScene const& scene, std::string const& scenePath);
+  std::string addMesh(const aiScene& scene, const std::string& scenePath);
 
 private:
   typedef std::shared_ptr<MeshResource> MeshResourcePtr;
@@ -81,7 +81,7 @@ private:
   static int queueHttpError(
       struct MHD_Connection* connection,
       unsigned int code,
-      std::string const& message);
+      const std::string& message);
 
   static ssize_t resourceReaderCallback(
       void* cls, uint64_t pos, char* buf, size_t max);
@@ -98,7 +98,7 @@ private:
       long unsigned int* upload_data_size,
       void** ptr);
 
-  std::string getMeshURI(MeshResourcePtr const& meshResource) const;
+  std::string getMeshURI(const MeshResourcePtr& meshResource) const;
 };
 
 } // namespace rviz

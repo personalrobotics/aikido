@@ -80,7 +80,7 @@ int StepSequence::getMaxSteps() const
 }
 
 //==============================================================================
-double const& StepSequence::const_iterator::dereference() const
+double StepSequence::const_iterator::dereference() const
 {
   return mValue;
 }

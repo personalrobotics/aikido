@@ -48,7 +48,7 @@ class StepSequence::const_iterator
 {
 public:
   /// Return the value of the iterator
-  double const& dereference() const;
+  double dereference() const;
 
   /// Increment the sequence
   void increment();

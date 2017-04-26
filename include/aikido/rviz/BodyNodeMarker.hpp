@@ -16,17 +16,17 @@ public:
   BodyNodeMarker(
       ResourceServer* resourceServer,
       interactive_markers::InteractiveMarkerServer* markerServer,
-      dart::dynamics::WeakBodyNodePtr const& bodyNode,
+      const dart::dynamics::WeakBodyNodePtr& bodyNode,
       const std::string& frameId);
 
-  BodyNodeMarker(BodyNodeMarker const&) = delete;
-  BodyNodeMarker& operator=(BodyNodeMarker const&) = delete;
+  BodyNodeMarker(const BodyNodeMarker&) = delete;
+  BodyNodeMarker& operator=(const BodyNodeMarker&) = delete;
 
   virtual ~BodyNodeMarker() = default;
 
   bool update();
 
-  void SetColor(Eigen::Vector4d const& color);
+  void SetColor(const Eigen::Vector4d& color);
   void ResetColor();
 
 private:
@@ -45,7 +45,7 @@ private:
   std::string mName;
   ShapeFrameMarkerMap mShapeFrameMarkers;
 
-  std::string getName(dart::dynamics::BodyNode const& bodyNode);
+  std::string getName(const dart::dynamics::BodyNode& bodyNode);
 };
 
 } // namespace rviz

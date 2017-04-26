@@ -28,47 +28,47 @@ class SoftMeshShape;
 namespace aikido {
 namespace rviz {
 
-geometry_msgs::Point convertEigenToROSPoint(Eigen::Vector3d const& v);
-geometry_msgs::Vector3 convertEigenToROSVector3(Eigen::Vector3d const& v);
+geometry_msgs::Point convertEigenToROSPoint(const Eigen::Vector3d& v);
+geometry_msgs::Vector3 convertEigenToROSVector3(const Eigen::Vector3d& v);
 geometry_msgs::Quaternion convertEigenToROSQuaternion(
-    Eigen::Quaterniond const& v);
-geometry_msgs::Pose convertEigenToROSPose(Eigen::Isometry3d const& v);
-std_msgs::ColorRGBA convertEigenToROSColorRGBA(Eigen::Vector4d const& v);
+    const Eigen::Quaterniond& v);
+geometry_msgs::Pose convertEigenToROSPose(const Eigen::Isometry3d& v);
+std_msgs::ColorRGBA convertEigenToROSColorRGBA(const Eigen::Vector4d& v);
 
 bool convertAssimpMeshToROSTriangleList(
-    aiMesh const& mesh, std::vector<geometry_msgs::Point>* triangle_list);
+    const aiMesh& mesh, std::vector<geometry_msgs::Point>* triangle_list);
 
 bool convertShape(
-    dart::dynamics::Shape const& shape,
+    const dart::dynamics::Shape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager);
 bool convertShape(
-    dart::dynamics::BoxShape const& shape,
+    const dart::dynamics::BoxShape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager);
 bool convertShape(
-    dart::dynamics::CylinderShape const& shape,
+    const dart::dynamics::CylinderShape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager);
 bool convertShape(
-    dart::dynamics::EllipsoidShape const& shape,
+    const dart::dynamics::EllipsoidShape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager);
 bool convertShape(
-    dart::dynamics::LineSegmentShape const& shape,
+    const dart::dynamics::LineSegmentShape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager);
 bool convertShape(
-    dart::dynamics::MeshShape const& shape,
+    const dart::dynamics::MeshShape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager);
 bool convertShape(
-    dart::dynamics::PlaneShape const& shape,
+    const dart::dynamics::PlaneShape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager,
     double width = 100.0);
 bool convertShape(
-    dart::dynamics::SoftMeshShape const& shape,
+    const dart::dynamics::SoftMeshShape& shape,
     visualization_msgs::Marker* marker,
     ResourceServer* resourceManager);
 

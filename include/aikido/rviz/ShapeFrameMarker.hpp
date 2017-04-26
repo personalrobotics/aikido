@@ -20,14 +20,14 @@ public:
       const dart::dynamics::ShapeFrame* shapeFrame,
       const std::string& frameId);
 
-  ShapeFrameMarker(ShapeFrameMarker const&) = delete;
-  ShapeFrameMarker& operator=(ShapeFrameMarker const&) = delete;
+  ShapeFrameMarker(const ShapeFrameMarker&) = delete;
+  ShapeFrameMarker& operator=(const ShapeFrameMarker&) = delete;
 
   virtual ~ShapeFrameMarker();
 
   bool update();
 
-  void SetColor(Eigen::Vector4d const& color);
+  void SetColor(const Eigen::Vector4d& color);
   void ResetColor();
 
 private:

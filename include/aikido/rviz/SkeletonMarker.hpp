@@ -17,7 +17,7 @@ public:
   SkeletonMarker(
       ResourceServer* resourceServer,
       interactive_markers::InteractiveMarkerServer* markerServer,
-      dart::dynamics::WeakSkeletonPtr const& skeleton,
+      const dart::dynamics::WeakSkeletonPtr& skeleton,
       const std::string& frameId);
 
   dart::dynamics::SkeletonPtr getSkeleton() const;
@@ -27,7 +27,7 @@ public:
 
   BodyNodeMarkerPtr GetBodyNodeMarker(dart::dynamics::BodyNode const* bodynode);
 
-  void SetColor(Eigen::Vector4d const& color);
+  void SetColor(const Eigen::Vector4d& color);
   void ResetColor();
 
 private:
