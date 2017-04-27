@@ -1,17 +1,19 @@
 #ifndef AIKIDO_UTIL_COMPILER_HPP_
 #define AIKIDO_UTIL_COMPILER_HPP_
 
+// clang-format off
+
 #if defined(__GNUC__) || defined(__GNUG__)
 
 #define AIKIDO_COMPILER_GCC 1
 #define AIKIDO_COMPILER_GCC_VERSION_AT_LEAST(x, y, z)                          \
   (__GNUC__ > x || (__GNUC__ >= x                                              \
-                    && (__GNUC_MINOR__ > y || (__GNUC_MINOR__ >= y             \
-                                               && __GNUC_PATCHLEVEL__ >= z))))
+  && (__GNUC_MINOR__ > y || (__GNUC_MINOR__ >= y                               \
+  && __GNUC_PATCHLEVEL__ >= z))))
 #define AIKIDO_COMPILER_GCC_VERSION_AT_MOST(x, y, z)                           \
   (__GNUC__ < x || (__GNUC__ <= x                                              \
-                    && (__GNUC_MINOR__ < y || (__GNUC_MINOR__ <= y             \
-                                               && __GNUC_PATCHLEVEL__ <= z))))
+  && (__GNUC_MINOR__ < y || (__GNUC_MINOR__ <= y                               \
+  && __GNUC_PATCHLEVEL__ <= z))))
 #define AIKIDO_COMPILER_CLANG 0
 #define AIKIDO_COMPILER_MSVC 0
 
@@ -32,5 +34,7 @@
 #define AIKIDO_COMPILER_MSVC 1
 
 #endif
+
+// clang-format on
 
 #endif // AIKIDO_UTIL_COMPILER_HPP_
