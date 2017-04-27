@@ -17,7 +17,7 @@ pkg_check_modules(PC_pr_control_msgs pr_control_msgs QUIET)
 # Include directories
 find_path(pr_control_msgs_INCLUDE_DIRS
   NAMES pr_control_msgs/TriggerResult.h
-  HINTS ${PC_pr_control_msgs_LIBRARY_DIRS}
+  HINTS ${PC_pr_control_msgs_INCLUDE_DIRS}
 )
 
 # Version
