@@ -217,7 +217,15 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
   aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
+// It seems GCC 4.8.4 has a bug of -Wmaybe-uninitialized. This suppressions
+// can be removed once we drop support GCC 4.8.4.
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN
+#endif
     traj->evaluate(t, s0);
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
+#endif
     EXPECT_TRUE(trajConstraint->isSatisfied(s0));
   }
 }
