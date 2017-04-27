@@ -1,6 +1,8 @@
+#include <aikido/control/ros/RosTrajectoryExecutor.hpp>
+
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/control/ros/RosTrajectoryExecutionException.hpp>
-#include <aikido/control/ros/RosTrajectoryExecutor.hpp>
+#include <aikido/control/ros/util.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
@@ -112,7 +114,16 @@ std::future<void> RosTrajectoryExecutor::execute(
   // Convert the Aikido trajectory into a ROS JointTrajectory.
   goal.trajectory = toRosJointTrajectory(traj, mTimestep);
 
-  if (!waitForServer())
+  bool waitForServer
+      = waitForActionServer<control_msgs::FollowJointTrajectoryAction,
+                            std::chrono::milliseconds,
+                            std::chrono::milliseconds>(
+          mClient,
+          mCallbackQueue,
+          mConnectionTimeout,
+          mConnectionPollingPeriod);
+
+  if (!waitForServer)
     throw std::runtime_error("Unable to connect to action server.");
 
   {
@@ -130,30 +141,6 @@ std::future<void> RosTrajectoryExecutor::execute(
 
     return mPromise.get_future();
   }
-}
-
-//=============================================================================
-bool RosTrajectoryExecutor::waitForServer()
-{
-  using Clock = std::chrono::steady_clock;
-
-  const auto startTime = Clock::now();
-  const auto endTime = startTime + mConnectionTimeout;
-  auto currentTime = startTime + mConnectionPollingPeriod;
-
-  while (currentTime < endTime)
-  {
-    mCallbackQueue.callAvailable();
-
-    // TODO: Is this thread safe?
-    if (mClient.isServerConnected())
-      return true;
-
-    currentTime += mConnectionPollingPeriod;
-    std::this_thread::sleep_until(currentTime);
-  }
-
-  return false;
 }
 
 //=============================================================================

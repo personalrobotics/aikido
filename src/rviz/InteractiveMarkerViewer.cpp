@@ -12,10 +12,11 @@ namespace aikido {
 namespace rviz {
 
 InteractiveMarkerViewer::InteractiveMarkerViewer(
-    const std::string& topicNamespace)
+    const std::string& topicNamespace, const std::string& frameId)
   : mMarkerServer(topicNamespace, "", true),
     mRunning(false),
-    mUpdating(false)
+    mUpdating(false),
+    mFrameId(frameId)
 {
 }
 
@@ -34,7 +35,7 @@ SkeletonMarkerPtr InteractiveMarkerViewer::addSkeleton(
     const SkeletonPtr& skeleton)
 {
   std::lock_guard<std::mutex> lock(mMutex);
-  const SkeletonMarkerPtr marker = CreateSkeletonMarker(skeleton);
+  const SkeletonMarkerPtr marker = CreateSkeletonMarker(skeleton, mFrameId);
   mSkeletonMarkers.insert(marker);
   return marker;
 }
@@ -44,7 +45,7 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrame(
 {
   std::lock_guard<std::mutex> lock(mMutex);
   const FrameMarkerPtr marker = std::make_shared<FrameMarker>(
-    &mMarkerServer, frame, length, thickness, alpha);
+    &mMarkerServer, frame, mFrameId, length, thickness, alpha);
   mFrameMarkers.insert(marker);
   return marker;
 }
@@ -97,10 +98,12 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
 
 
 SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
-  const SkeletonPtr& skeleton)
+  const SkeletonPtr& skeleton, const std::string& frameId)
 {
-  return std::make_shared<SkeletonMarker>(nullptr, &mMarkerServer, skeleton);
+  return std::make_shared<SkeletonMarker>(
+    nullptr, &mMarkerServer, skeleton, frameId);
 }
+
 
 void InteractiveMarkerViewer::setAutoUpdate(bool flag)
 {

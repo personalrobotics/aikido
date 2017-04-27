@@ -11,11 +11,13 @@ using interactive_markers::InteractiveMarkerServer;
 
 SkeletonMarker::SkeletonMarker(ResourceServer *resourceServer,
                                InteractiveMarkerServer *markerServer,
-                               WeakSkeletonPtr const &skeleton)
+                               WeakSkeletonPtr const &skeleton,
+                               const std::string &frameId)
   : mSkeleton(skeleton)
   , mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
   , mHasColor(false)
+  , mFrameId(frameId)
 {
 }
 
@@ -39,7 +41,7 @@ bool SkeletonMarker::update()
 
     if (result.second) {
       bodyNodeMarker = std::make_shared<BodyNodeMarker>(
-        mResourceServer, mMarkerServer, WeakBodyNodePtr(bodyNode));
+        mResourceServer, mMarkerServer, WeakBodyNodePtr(bodyNode), mFrameId);
 
       if (mHasColor)
         bodyNodeMarker->SetColor(mColor);
