@@ -8,5 +8,5 @@
 ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTREAT_WARNINGS_AS_ERRORS=ON -DCOVERALLS=$COVERALLS --make-args tests -- aikido
 
 # Run tests and measure test coverage if COVERALLS is on.
-if [ $COVERALLS = ON ]; then . "/scripts/internal-run.sh make -C build/aikido coveralls"; else . "/scripts/internal-run.sh make -C build/aikido test"; fi
+if [ $COVERALLS = ON ]; then ./scripts/internal-run.sh make -C build/aikido coveralls; else ./scripts/internal-run.sh make -C build/aikido test; fi
 

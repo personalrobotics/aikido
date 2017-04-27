@@ -44,7 +44,7 @@ script:
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then . "${TRAVIS_BUILD_DIR}/ci/script_macos.sh"; fi
 
 after_script:
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "scripts/view-all-results.sh test_results"; fi
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./scripts/view-all-results.sh test_results; fi
 
 after_failure:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then cat ./build/aikido/Testing/Temporary/LastTest.log; fi
