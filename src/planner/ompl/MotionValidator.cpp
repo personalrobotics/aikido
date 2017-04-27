@@ -1,7 +1,10 @@
-#include <ompl/base/SpaceInformation.h>
 #include <aikido/planner/ompl/MotionValidator.hpp>
+
+#include <ompl/base/SpaceInformation.h>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/util/VanDerCorput.hpp>
+#include <aikido/util/compiler.hpp>
+#include <aikido/util/warning.hpp>
 
 namespace aikido {
 namespace planner {
@@ -70,7 +73,14 @@ bool MotionValidator::checkMotion(
   double lastValidTime = 0.0;
   for (double t : seq)
   {
+// clang-format off
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4, 8, 4)
+    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN // GCC 4.8.4
+#endif
     stateSpace->interpolate(_s1, _s2, t, iState);
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4, 8, 4)
+    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
+#endif // clang-format on
     if (!si_->isValid(iState))
     {
       valid = false;

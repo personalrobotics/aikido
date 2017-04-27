@@ -1,11 +1,14 @@
+#include <aikido/control/ros/Conversions.hpp>
+
 #include <sstream>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
-#include <aikido/control/ros/Conversions.hpp>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/util/Spline.hpp>
 #include <dart/dynamics/Joint.hpp>
 #include <map>
+#include <aikido/util/compiler.hpp>
+#include <aikido/util/warning.hpp>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
@@ -134,7 +137,14 @@ void extractTrajectoryPoint(
   double timeFromStart, trajectory_msgs::JointTrajectoryPoint& waypoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
+  // clang-format off
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN // GCC 4.8.4
+#endif
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
+#endif // clang-format on
   const int numDof = space->getDimension();
   DART_UNUSED(numDof);
 
