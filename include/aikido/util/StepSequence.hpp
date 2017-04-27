@@ -43,7 +43,7 @@ private:
 
 class StepSequence::const_iterator
     : public boost::iterator_facade<StepSequence::const_iterator,
-                                    const double,
+                                    double,
                                     boost::forward_traversal_tag,
                                     double>
 {
@@ -60,10 +60,7 @@ public:
 private:
   friend class StepSequence;
 
-  const_iterator(StepSequence* seq, int step) : mSeq(seq), mStep(step)
-  {
-    mValue = (*mSeq)[mStep];
-  }
+  const_iterator(StepSequence* seq, int step);
 
   StepSequence* mSeq;
   int mStep;

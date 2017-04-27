@@ -7,8 +7,6 @@
 #include <aikido/util/Spline.hpp>
 #include <dart/dynamics/Joint.hpp>
 #include <map>
-#include <aikido/util/compiler.hpp>
-#include <aikido/util/warning.hpp>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;

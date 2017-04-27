@@ -3,8 +3,6 @@
 #include <ompl/base/SpaceInformation.h>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/util/VanDerCorput.hpp>
-#include <aikido/util/compiler.hpp>
-#include <aikido/util/warning.hpp>
 
 namespace aikido {
 namespace planner {

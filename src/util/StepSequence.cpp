@@ -99,5 +99,12 @@ bool StepSequence::const_iterator::equal(
   return other.mStep == mStep && other.mSeq == mSeq;
 }
 
+//==============================================================================
+StepSequence::const_iterator::const_iterator(StepSequence* seq, int step)
+  : mSeq(seq), mStep(step)
+{
+  mValue = (*mSeq)[mStep];
+}
+
 } // namespace utils
 } // namespace aikido

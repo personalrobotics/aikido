@@ -7,9 +7,7 @@
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/util/compiler.hpp>
 #include <aikido/util/StepSequence.hpp>
-#include <aikido/util/warning.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
