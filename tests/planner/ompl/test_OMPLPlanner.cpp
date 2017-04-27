@@ -143,15 +143,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
   aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
-// It seems GCC has a bug of -Wmaybe-uninitialized. This suppression can be
-// removed once we GCC fixes the bug.
-#if AIKIDO_COMPILER_GCC
-    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN
-#endif
     traj->evaluate(t, s0);
-#if AIKIDO_COMPILER_GCC
-    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
-#endif
     EXPECT_TRUE(trajConstraint->isSatisfied(s0));
   }
 }
@@ -197,15 +189,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
-// It seems GCC has a bug of -Wmaybe-uninitialized. This suppression can be
-// removed once we GCC fixes the bug.
-#if AIKIDO_COMPILER_GCC
-  AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN
-#endif
   traj->evaluate(0, s0);
-#if AIKIDO_COMPILER_GCC
-  AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
-#endif
   auto r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
@@ -217,15 +201,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
   aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
-// It seems GCC has a bug of -Wmaybe-uninitialized. This suppression can be
-// removed once we GCC fixes the bug.
-#if AIKIDO_COMPILER_GCC
-    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN
-#endif
     traj->evaluate(t, s0);
-#if AIKIDO_COMPILER_GCC
-    AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
-#endif
     EXPECT_TRUE(trajConstraint->isSatisfied(s0));
   }
 }

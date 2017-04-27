@@ -44,7 +44,8 @@ private:
 class StepSequence::const_iterator
     : public boost::iterator_facade<StepSequence::const_iterator,
                                     const double,
-                                    boost::forward_traversal_tag>
+                                    boost::forward_traversal_tag,
+                                    double>
 {
 public:
   /// Return the value of the iterator

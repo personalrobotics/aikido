@@ -137,15 +137,7 @@ void extractTrajectoryPoint(
   double timeFromStart, trajectory_msgs::JointTrajectoryPoint& waypoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
-// It seems GCC has a bug of -Wmaybe-uninitialized. This suppression can be
-// removed once we GCC fixes the bug.
-#if AIKIDO_COMPILER_GCC
-  AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN
-#endif
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
-#if AIKIDO_COMPILER_GCC
-  AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
-#endif
   const int numDof = space->getDimension();
   DART_UNUSED(numDof);
 
