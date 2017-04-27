@@ -7,7 +7,9 @@
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
+#include <aikido/util/compiler.hpp>
 #include <aikido/util/StepSequence.hpp>
+#include <aikido/util/warning.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
@@ -141,7 +143,14 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
   aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
+  // clang-format off
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN // GCC 4.8.4
+#endif
     traj->evaluate(t, s0);
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
+#endif // clang-format on
     EXPECT_TRUE(trajConstraint->isSatisfied(s0));
   }
 }
@@ -187,7 +196,14 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();
+  // clang-format off
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN // GCC 4.8.4
+#endif
   traj->evaluate(0, s0);
+#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4,8,4)
+AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
+#endif // clang-format on
   auto r0 = s0.getSubStateHandle<R3>(0);
   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
