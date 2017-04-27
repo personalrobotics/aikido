@@ -17,6 +17,7 @@ using aikido::rviz::ShapeFrameMarker;
 namespace {
 
 static const Eigen::Vector4d COLLISION_COLOR(1., 0., 0., 0.5);
+static const Eigen::Vector4d DEFAULT_COLOR(0.5, 0.5, 1., 1.);
 
 } // namespace
 
@@ -24,21 +25,22 @@ ShapeFrameMarker::ShapeFrameMarker(
       ResourceServer *resourceServer,
       InteractiveMarkerServer *markerServer,
       const std::string &name,
-      ShapeFrame const *shapeFrame)
-  : mShapeFrame(shapeFrame)
-  , mResourceServer(resourceServer)
+      ShapeFrame const *shapeFrame,
+      const std::string &frameId)
+  : mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
+  , mShapeFrame(shapeFrame)
+  , mFrameId(frameId)
   , mExists(false)
   , mForceUpdate(true)
   , mVersion()
   , mShowVisual(true)
   , mShowCollision(false)
-  , mColor()
 {
   using std::placeholders::_1;
   using std::placeholders::_2;
 
-  mInteractiveMarker.header.frame_id = "map";
+  mInteractiveMarker.header.frame_id = mFrameId;
   mInteractiveMarker.scale = 1.;
   mInteractiveMarker.controls.resize(1);
   mInteractiveMarker.name = name;
@@ -116,7 +118,13 @@ bool ShapeFrameMarker::update()
     if (mColor) {
       marker.color = convertEigenToROSColorRGBA(*mColor);
     } else if (showVisual) {
-      marker.color = convertEigenToROSColorRGBA(visualAspect->getRGBA());
+      // TODO: Temporary workaround because there is no way to distiniguish
+      // between the default color assigned by DART and a color explicitly
+      // assigned by a user, e.g. in the model file.
+      if (visualAspect->getRGBA() == DEFAULT_COLOR)
+        marker.color = convertEigenToROSColorRGBA(Eigen::Vector4d::Constant(1.));
+      else
+        marker.color = convertEigenToROSColorRGBA(visualAspect->getRGBA());
     } else if (showCollision) {
       marker.color = convertEigenToROSColorRGBA(COLLISION_COLOR);
     } else {

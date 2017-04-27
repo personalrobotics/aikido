@@ -9,3 +9,7 @@ target_include_directories("${PROJECT_NAME}_external_hauserparabolicsmoother"
 set_target_properties("${PROJECT_NAME}_external_hauserparabolicsmoother"
   PROPERTIES POSITION_INDEPENDENT_CODE TRUE
 )
+target_compile_options("${PROJECT_NAME}_external_hauserparabolicsmoother"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+  PRIVATE -w
+)

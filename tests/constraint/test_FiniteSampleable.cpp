@@ -5,14 +5,15 @@
 
 #include <gtest/gtest.h>
 
-using aikido::statespace::Rn;
+using aikido::statespace::R1;
+using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
 
 TEST(FiniteSampleableTest, ConstructorThrowsOnNullStateSpace)
 {
-  Rn rvss(1);
+  R1 rvss;
   auto s1 = rvss.createState();
   s1.setValue(aikido::tests::make_vector(5));
 
@@ -26,21 +27,21 @@ TEST(FiniteSampleableTest, ConstructorThrowsOnNullStateSpace)
 
 TEST(FiniteSampleableTest, ConstructorThrowsOnNullState)
 {
-  auto rvss = std::make_shared<Rn>(1);
-  Rn::State* st = 0;
+  auto rvss = std::make_shared<R1>();
+  R1::State* st = 0;
 
   EXPECT_THROW(FiniteSampleable(rvss, st), std::invalid_argument);
 }
 
 TEST(FiniteSampleableTest, ConstructorThrowsOnEmptyStates)
 {
-  auto rvss = std::make_shared<Rn>(1);
+  auto rvss = std::make_shared<R1>();
   std::vector<const aikido::statespace::StateSpace::State*> states;
   EXPECT_THROW(FiniteSampleable(rvss, states), std::invalid_argument);
 }
 
 TEST(FiniteSampleableTest, StateSpaceMatch){
-  auto rvss = std::make_shared<Rn>(1);
+  auto rvss = std::make_shared<R1>();
   Eigen::VectorXd v = aikido::tests::make_vector(-2);
   auto s1 = rvss->createState();
   s1.setValue(v);
@@ -53,13 +54,12 @@ TEST(FiniteSampleableTest, SingleSampleGenerator)
   // Single-sample.
   Eigen::VectorXd v = aikido::tests::make_vector(-2);
 
-  Rn rvss(1);
+  R1 rvss;
   auto s1 = rvss.createState();
   s1.setValue(v);
 
   // Single-sample constraint.
-  FiniteSampleable constraint(
-  	std::make_shared<Rn>(rvss), s1);
+  FiniteSampleable constraint(std::make_shared<R1>(rvss), s1);
 
   // Single-sample-generator.
   std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
@@ -89,7 +89,7 @@ TEST(FiniteSampleableTest, FiniteSampleGenerator)
   expected.push_back(v1);
   expected.push_back(v2);
 
-  Rn rvss(2);
+  R2 rvss;
   auto s1 = rvss.createState();
   s1.setValue(v1);
 
@@ -101,8 +101,7 @@ TEST(FiniteSampleableTest, FiniteSampleGenerator)
   states.push_back(s2);
 
   // Finite-sample-constraint.
-  FiniteSampleable constraint(
-    std::make_shared<Rn>(rvss), states);
+  FiniteSampleable constraint(std::make_shared<R2>(rvss), states);
 
   // Finite-sample generator.
   std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();

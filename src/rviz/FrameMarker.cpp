@@ -8,15 +8,6 @@ using boost::str;
 namespace aikido {
 namespace rviz {
 
-static geometry_msgs::Point makePoint(double x, double y, double z)
-{
-  geometry_msgs::Point point;
-  point.x = x;
-  point.y = y;
-  point.z = z;
-  return point;
-}
-
 static std_msgs::ColorRGBA makeColorRGBA(double r, double g, double b,
                                          double a = 1.)
 {
@@ -51,15 +42,15 @@ static void CreateAxis(
 FrameMarker::FrameMarker(
       interactive_markers::InteractiveMarkerServer *markerServer,
       dart::dynamics::Frame *frame,
+      const std::string& frameId,
       double length, double thickness, double alpha)
   : mMarkerServer(markerServer)
   , mFrame(frame)
+  , mFrameId(frameId)
 {
   using visualization_msgs::InteractiveMarkerControl;
 
-  static geometry_msgs::Point const origin = makePoint(0, 0, 0);
-
-  mInteractiveMarker.header.frame_id = "map";
+  mInteractiveMarker.header.frame_id = mFrameId;
   mInteractiveMarker.name = str(format("Frame[%s]") % frame->getName());
   mInteractiveMarker.pose.orientation.w = 1;
   mInteractiveMarker.scale = 1;

@@ -14,7 +14,19 @@ AIKIDO depends on [CMake], [Boost], [DART] \(version 6.1 or above), [OMPL], and 
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
 make heavy use of C++11 and require a modern compiler.
 
-### Installation (Standalone)
+### Installation
+
+#### Install on macOS using [Homebrew]
+```shell
+# install Homebrew package manager
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# add Homebrew tap for Personal Robotics Lab software
+$ brew tap personalrobotics/tap
+# install Aikido
+$ brew install aikido0
+```
+
+#### Build from source (Standalone)
 Once the dependencies are installed, you can build AIKIDO using [CMake]:
 ```shell
 $ mkdir build
@@ -24,7 +36,16 @@ $ make
 $ sudo make install
 ```
 
-### Installation (Catkin)
+Aikido includes several optional components that depend on [ROS]. While we
+suggest building Aikido in a Catkin workspace (see below) to enable the ROS
+components, it is also possible to build those components in a standalone
+build. To do so, source the `setup.bash` file in your Catkin workspace before
+running the above commands, e.g.:
+```shell
+$ . /path/to/my/workspace/setup.bash
+```
+
+#### Build from source (Catkin)
 It is also possible to build AIKIDO as a [third-party package][REP-136] inside a
 [Catkin workspace][Catkin Workspaces]. To do so, clone AIKIDO into your Catkin
 workspace and use the `catkin build` command like normal.
@@ -33,6 +54,9 @@ If you are using the older `catkin_make` command, then you must build your works
 with `catkin_make_isolated`. This may dramatically increase your build time, so we
 *strongly recommend* that you use `catkin build`, which is provided by the
 [`catkin_tools` package][Catkin Tools], if possible.
+
+### Code Style
+Please follow the [Aikido code style](https://github.com/personalrobotics/aikido/blob/master/STYLE.md) when you making a contribution.
 
 ### License
 Aikido is licensed under a BSD license. See [LICENSE](./LICENSE) for more
@@ -65,3 +89,4 @@ for making changes to DART to better support Aikido.
 [REP-136]: http://www.ros.org/reps/rep-0136.html
 [Catkin Workspaces]: http://wiki.ros.org/catkin/workspaces
 [Catkin Tools]: http://catkin-tools.readthedocs.org/en/latest/
+[Homebrew]: https://brew.sh/

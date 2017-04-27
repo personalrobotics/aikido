@@ -1,24 +1,22 @@
 aikido_add_test(test_KinematicSimulationTrajectoryExecutor
   test_KinematicSimulationTrajectoryExecutor.cpp)
-
 target_link_libraries(test_KinematicSimulationTrajectoryExecutor
   "${PROJECT_NAME}_control")
 
-aikido_add_test(test_BarrettFingerSpreadCommandExecutor
-  test_BarrettFingerSpreadCommandExecutor.cpp)
-
-target_link_libraries(test_BarrettFingerSpreadCommandExecutor
+aikido_add_test(test_BarrettFingerKinematicSimulationPositionCommandExecutor
+  test_BarrettFingerKinematicSimulationPositionCommandExecutor.cpp)
+target_link_libraries(test_BarrettFingerKinematicSimulationPositionCommandExecutor
   "${PROJECT_NAME}_control")
 
-
-aikido_add_test(test_BarrettFingerPositionCommandExecutor
-  test_BarrettFingerPositionCommandExecutor.cpp)
-
-target_link_libraries(test_BarrettFingerPositionCommandExecutor
+aikido_add_test(test_BarrettFingerKinematicSimulationSpreadCommandExecutor
+  test_BarrettFingerKinematicSimulationSpreadCommandExecutor.cpp)
+target_link_libraries(test_BarrettFingerKinematicSimulationSpreadCommandExecutor
   "${PROJECT_NAME}_control")
 
-aikido_add_test(test_BarrettHandPositionCommandExecutor
-  test_BarrettHandPositionCommandExecutor.cpp)
-
-target_link_libraries(test_BarrettHandPositionCommandExecutor
+aikido_add_test(test_BarrettHandKinematicSimulationPositionCommandExecutor
+  test_BarrettHandKinematicSimulationPositionCommandExecutor.cpp)
+target_link_libraries(test_BarrettHandKinematicSimulationPositionCommandExecutor
   "${PROJECT_NAME}_control")
+
+add_subdirectory("ros")
+

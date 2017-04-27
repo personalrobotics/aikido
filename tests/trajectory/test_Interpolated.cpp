@@ -12,7 +12,7 @@ class InterpolatedTest : public ::testing::Test
 public:
   void SetUp()
   {
-    rvss = make_shared<Rn>(2);
+    rvss = make_shared<R2>();
     interpolator = make_shared<GeodesicInterpolator>(rvss);
 
     auto s1 = rvss->createState();
@@ -28,7 +28,7 @@ public:
     traj->addWaypoint(7, s3);
   }
 
-  shared_ptr<Rn> rvss;
+  shared_ptr<R2> rvss;
   shared_ptr<Interpolator> interpolator;
   shared_ptr<Interpolated> traj;
 };
@@ -43,7 +43,6 @@ TEST_F(InterpolatedTest, AddWaypoint)
 
 TEST_F(InterpolatedTest, EvaluatePt)
 {
-  using StateType = Rn::State;
   auto istate = rvss->createState();
   
   // Point before first time on traj
@@ -70,8 +69,6 @@ TEST_F(InterpolatedTest, EvaluatePt)
 
 TEST_F(InterpolatedTest, EvaluateDerivative)
 {
-  using StateType = Rn::State;
-
   Eigen::VectorXd tangentVector;
 
   EXPECT_THROW(traj->evaluateDerivative(1.5, 0, tangentVector), std::invalid_argument);

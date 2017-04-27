@@ -22,7 +22,7 @@ find_package(std_msgs QUIET)
 aikido_check_package(std_msgs "rviz" "std_msgs")
 
 find_package(visualization_msgs QUIET)
-aikido_check_package(visualization_msgs "rviz" "std_msgs")
+aikido_check_package(visualization_msgs "rviz" "visualization_msgs")
 
 pkg_check_modules(libmicrohttpd QUIET libmicrohttpd)
 aikido_check_package(libmicrohttpd "rviz" "libmicrohttpd")
@@ -38,9 +38,12 @@ add_library("${PROJECT_NAME}_rviz" SHARED
   ShapeFrameMarker.cpp
   SkeletonMarker.cpp
   shape_conversions.cpp
+  TSRMarker.cpp
 )
 target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
   PUBLIC
+    ${Boost_INCLUDE_DIRS}
+    ${DART_INCLUDE_DIRS}
     ${interactive_markers_INCLUDE_DIRS}
     ${geometry_msgs_INCLUDE_DIRS}
     ${std_msgs_INCLUDE_DIRS}
@@ -49,14 +52,18 @@ target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
     ${roscpp_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_rviz"
-  ${Boost_filesystem_LIBRARIES}
-  ${DART_LIBRARIES}
-  ${geometry_msgs_LIBRARIES}
-  ${interactive_markers_LIBRARIES}
-  ${libmicrohttpd_LIBRARIES}
-  ${roscpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${visualization_msgs_LIBRARIES}
+  PUBLIC
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${DART_LIBRARIES}
+    ${geometry_msgs_LIBRARIES}
+    ${interactive_markers_LIBRARIES}
+    ${libmicrohttpd_LIBRARIES}
+    ${roscpp_LIBRARIES}
+    ${std_msgs_LIBRARIES}
+    ${visualization_msgs_LIBRARIES}
+)
+target_compile_options("${PROJECT_NAME}_rviz"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
 add_component(${PROJECT_NAME} rviz)

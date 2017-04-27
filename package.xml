@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>aikido</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>description</description>
   <maintainer email="mkoval@cs.cmu.edu">Michael Koval</maintainer>
   <maintainer email="pkv@cs.cmu.edu">Pras Velagapudi</maintainer>
@@ -14,6 +14,12 @@
   <depend>ompl</depend>
   <depend>python</depend>
   <depend>tinyxml2</depend>
+  <depend>yaml-cpp</depend>
+  <depend>actionlib</depend>
+  <depend>control_msgs</depend>
+  <depend>libmicrohttpd</depend>
+  <depend>interactive_markers</depend>
+  <depend>pr_control_msgs</depend>
   <doc_depend>doxygen</doc_depend>
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>
@@ -22,6 +28,7 @@
   <!-- This is required by REP-136. -->
   <exec_depend>catkin</exec_depend>
   <buildtool_depend>cmake</buildtool_depend>
+  <buildtool_depend>clang-format-3.8</buildtool_depend>
   <export>
     <build_type>cmake</build_type>
   </export>

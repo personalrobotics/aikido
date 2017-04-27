@@ -40,11 +40,13 @@ public:
   ///        bound rotation following Roll-Pitch-Yaw convention.
   ///        _Bw(i, 0) should be less than or equal to _Bw(i, 1).
   /// \param _Tw_e end-effector offset transform in the coordinates of w
+  /// \param _testableTolerance tolerance used in isSatisfiable as testable
   TSR(std::unique_ptr<util::RNG> _rng,
       const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
-      const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity());
+      const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
+      double _testableTolerance = 1e-6);
 
 
   /// Constructor with default random seed generator.
@@ -54,10 +56,12 @@ public:
   ///        bound rotation following Roll-Pitch-Yaw convention.
   ///        _Bw(i, 0) should be less than or equal to _Bw(i, 1).
   /// \param _Tw_e end-effector offset transform in the coordinates of w
+  /// \param _testableTolerance tolerance used in isSatisfiable as testable
   TSR(const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
       const Eigen::Matrix<double, 6, 2>& _Bw =
           Eigen::Matrix<double, 6, 2>::Zero(),
-      const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity());
+      const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
+      double _testableTolerance = 1e-6);
 
   TSR(const TSR& other);
   TSR(TSR&& other);
@@ -112,6 +116,14 @@ public:
   bool project(const statespace::StateSpace::State* _s,
       statespace::StateSpace::State* _out) const override;
 
+  /// Get the testable tolerance used in isSatisfiable.
+  /// \param[out] _out Testable tolerance, double.
+  double getTestableTolerance();
+  
+  /// Set the testable tolerance used in isSatisfiable.
+  /// \param _testableTolerance Testable tolerance to set.
+  void setTestableTolerance(double _testableTolerance);
+
   /// Transformation from origin frame into the TSR frame "w".
   /// "w" is usually centered at the origin of an object held by the hand
   ///  or at a location on an object that is useful for grasping.
@@ -125,6 +137,8 @@ public:
   Eigen::Isometry3d mTw_e;
 
 private:
+  /// Tolerance used in isSatisfied as a testable
+  double mTestableTolerance;
   std::unique_ptr<util::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
 };

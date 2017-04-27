@@ -13,13 +13,13 @@ using aikido::constraint::RejectionSampleable;
 using aikido::constraint::TestablePtr;
 using aikido::constraint::SampleablePtr;
 
-using aikido::statespace::Rn;
+using aikido::statespace::R1;
 
 class RejectionSampleableTest : public testing::Test
 {
 public:
   virtual void SetUp(){
-    mStateSpace = std::make_shared<Rn>(1);
+    mStateSpace = std::make_shared<R1>();
 
     std::vector<const aikido::statespace::StateSpace::State*> states;
     auto s1 = mStateSpace->createState();
@@ -37,7 +37,7 @@ public:
 protected:
   TestablePtr mPassing, mFailing;
   SampleablePtr mSampleable;
-  std::shared_ptr<Rn> mStateSpace;
+  std::shared_ptr<R1> mStateSpace;
 
 };
 
@@ -65,7 +65,7 @@ TEST_F(RejectionSampleableTest, ConstructorThrowsOnNullTestable)
 
 TEST_F(RejectionSampleableTest, ConstructorThrowsOnNonMatchingStateSpaceSampleable)
 {
-  auto ss =  std::make_shared<Rn>(1);
+  auto ss =  std::make_shared<R1>();
 
   auto s1 = ss->createState();
   s1.setValue(aikido::tests::make_vector(0));
@@ -77,7 +77,7 @@ TEST_F(RejectionSampleableTest, ConstructorThrowsOnNonMatchingStateSpaceSampleab
 
 TEST_F(RejectionSampleableTest, ConstructorThrowsOnNonMatchingStateSpaceTestable)
 {
-  auto ss =  std::make_shared<Rn>(1);
+  auto ss =  std::make_shared<R1>();
   auto testable = std::make_shared<PassingConstraint>(ss);
 
   EXPECT_THROW(RejectionSampleable(mStateSpace, mSampleable, testable, 1),

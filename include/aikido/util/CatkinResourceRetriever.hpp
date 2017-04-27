@@ -1,5 +1,6 @@
 #ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
 #define AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -24,7 +25,7 @@ public:
   ///
   /// \param _delegate resource retriever to retrieve 'file://' URIs
   explicit CatkinResourceRetriever(
-    const dart::common::ResourceRetrieverPtr& _delegate);
+      const dart::common::ResourceRetrieverPtr& _delegate);
 
   virtual ~CatkinResourceRetriever() = default;
 
@@ -32,11 +33,11 @@ public:
   bool exists(const dart::common::Uri& _uri) override;
 
   // Documentation inherited.
-  dart::common::ResourcePtr retrieve(
-    const dart::common::Uri& _uri) override;
+  dart::common::ResourcePtr retrieve(const dart::common::Uri& _uri) override;
 
 private:
-  struct Workspace {
+  struct Workspace
+  {
     std::string mPath;
     std::unordered_map<std::string, std::string> mSourceMap;
   };
@@ -51,4 +52,4 @@ private:
 } // namespace util
 } // namespace aikido
 
-#endif // ifndef AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_
+#endif // AIKIDO_UTIL_CATKINRESOURCERETRIEVER_HPP_

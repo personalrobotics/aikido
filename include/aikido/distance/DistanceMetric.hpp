@@ -3,10 +3,9 @@
 
 #include "../statespace/StateSpace.hpp"
 
-namespace aikido
-{
-namespace distance
-{
+namespace aikido {
+namespace distance {
+
 /// Implements a distance metric defined on a StateSpace
 class DistanceMetric
 {
@@ -29,6 +28,8 @@ public:
 };
 
 using DistanceMetricPtr = std::shared_ptr<DistanceMetric>;
-}
-}
+
+} // namespace distance
+} // namespace aikido
+
 #endif

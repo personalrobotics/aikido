@@ -5,6 +5,7 @@
 #include "../SO3Joint.hpp"
 #include "../SE2Joint.hpp"
 #include "../SE3Joint.hpp"
+#include "../WeldJoint.hpp"
 #include "../../../util/metaprogramming.hpp"
 
 namespace aikido {
@@ -28,7 +29,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
     if (_joint->isCyclic(0))
        return make_unique<SO2Joint>(_joint);
     else
-       return make_unique<RnJoint>(_joint);
+       return make_unique<R1Joint>(_joint);
   }
 };
 
@@ -38,7 +39,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
 {
   static Ptr create(::dart::dynamics::PrismaticJoint* _joint)
   {
-    return make_unique<RnJoint>(_joint);
+    return make_unique<R1Joint>(_joint);
   }
 };
 
@@ -48,7 +49,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
 {
   static Ptr create(::dart::dynamics::TranslationalJoint* _joint)
   {
-    return make_unique<RnJoint>(_joint);
+    return make_unique<R3Joint>(_joint);
   }
 };
 
@@ -83,15 +84,25 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
 };
 
 //=============================================================================
+template <>
+struct createJointStateSpaceFor_impl<::dart::dynamics::WeldJoint>
+{
+  static Ptr create(::dart::dynamics::WeldJoint* _joint)
+  {
+    return make_unique<WeldJoint>(_joint);
+  }
+};
+
+//=============================================================================
 using SupportedJoints = util::type_list<
   ::dart::dynamics::BallJoint,
   ::dart::dynamics::FreeJoint,
   ::dart::dynamics::PlanarJoint,
   ::dart::dynamics::PrismaticJoint,
   ::dart::dynamics::RevoluteJoint,
-  ::dart::dynamics::TranslationalJoint
+  ::dart::dynamics::TranslationalJoint,
+  ::dart::dynamics::WeldJoint
   // TODO: Support ScrewJoint.
-  // TODO: Support WeldJoint.
   // TODO: Support UniversalJoint.
   // TODO: Support EulerJoint.
 >;
