@@ -73,13 +73,13 @@ bool MotionValidator::checkMotion(
   double lastValidTime = 0.0;
   for (double t : seq)
   {
-// It seems GCC 4.8.4 has a bug of -Wmaybe-uninitialized. This suppressions
-// can be removed once we drop support GCC 4.8.4.
-#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4, 8, 4)
+// It seems GCC has a bug of -Wmaybe-uninitialized. This suppression can be
+// removed once we GCC fixes the bug.
+#if AIKIDO_COMPILER_GCC
     AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_BEGIN
 #endif
     stateSpace->interpolate(_s1, _s2, t, iState);
-#if AIKIDO_COMPILER_GCC && AIKIDO_COMPILER_GCC_VERSION_AT_MOST(4, 8, 4)
+#if AIKIDO_COMPILER_GCC
     AIKIDO_SUPPRESS_MAYBEUNINITIALIZED_END
 #endif
     if (!si_->isValid(iState))
