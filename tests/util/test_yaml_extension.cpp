@@ -4,12 +4,45 @@
 //==============================================================================
 TEST(YamlEigenExtension, Errors)
 {
-  std::string notSequential = "name: PRL";
-  EXPECT_THROW(YAML::Load(notSequential)["name"].as<Eigen::VectorXd>(),
+  using Vector1d = Eigen::Matrix<double, 1, 1>;
+
+  std::string empty = "name:";
+  EXPECT_THROW(YAML::Load(empty)["name"].as<Eigen::VectorXd>(),
       YAML::RepresentationException);
 
-  std::string incorrectSize = "vector: [1, 2, 3]";
-  EXPECT_THROW(YAML::Load(incorrectSize)["vector"].as<Eigen::Vector2d>(),
+  std::string notSequential1 = "name: PRL";
+  EXPECT_THROW(YAML::Load(notSequential1)["name"].as<Eigen::VectorXd>(),
+      YAML::RepresentationException);
+
+  std::string null = "name: []";
+  EXPECT_THROW(YAML::Load(null)["name"].as<Eigen::VectorXd>(),
+      YAML::RepresentationException);
+
+  std::string map = "status: {left: ok, right: bad}";
+  EXPECT_THROW(YAML::Load(map)["status"].as<Eigen::VectorXd>(),
+      YAML::RepresentationException);
+
+  std::string scalar = "scalar: 1";
+  EXPECT_THROW(YAML::Load(scalar)["scalar"].as<Vector1d>(),
+      YAML::RepresentationException);
+
+  std::string vector1 = "vector: [1]";
+  EXPECT_NO_THROW(YAML::Load(vector1)["vector"].as<Vector1d>());
+
+  std::string incorrectSize1 = "vector: [1, 2, 3]";
+  EXPECT_THROW(YAML::Load(incorrectSize1)["vector"].as<Eigen::Vector2d>(),
+      YAML::RepresentationException);
+
+  std::string incorrectSize2 = "matrix: [[1, 2], [3, 4], [5, 6]]";
+  EXPECT_THROW(YAML::Load(incorrectSize2)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
+
+  std::string notMatrix1 = "matrix: [[1, 2, 3], [1, 2, 3], 1]";
+  EXPECT_THROW(YAML::Load(notMatrix1)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
+
+  std::string notMatrix2 = "matrix: [[1, 2, 3], [1, 2, 3], [1, 2]]";
+  EXPECT_THROW(YAML::Load(notMatrix2)["matrix"].as<Eigen::Matrix3d>(),
       YAML::RepresentationException);
 }
 
@@ -147,7 +180,7 @@ TEST(YamlEigenExtension, AprilTagInJSON)
         "        -0.09054787493933,                                    \n"
         "        -0.99586861832219,                                    \n"
         "        0.14460904118031                                      \n"
-        "        ]                                                     \n"
+        "      ]                                                       \n"
         "      ,                                                       \n"
         "      [                                                       \n"
         "        -0.9999766064057,                                     \n"
@@ -174,8 +207,8 @@ TEST(YamlEigenExtension, AprilTagInJSON)
         "}                                                             \n";
 
   auto root = YAML::Load(jsonString);
-  auto tag124 = root["tag124"]["offset"].as<Eigen::Isometry3d>();
 
+  auto tag124 = root["tag124"]["offset"].as<Eigen::Isometry3d>();
   Eigen::Isometry3d expectedTag124 = Eigen::Isometry3d::Identity();
   expectedTag124.linear()
       << -0.0068393994632501, -0.09054787493933   , -0.99586861832219  ,
