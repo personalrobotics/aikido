@@ -17,16 +17,16 @@ TEST(YamlEigenExtension, Errors)
 TEST(YamlEigenExtension, LoadVectorMatrix3dIsometry3d)
 {
   std::string yamlString
-      = "closed: !Vector [2.443, 2.443, 2.443, 0.0]            \n"
-        "relative_pose: !Matrix                                \n"
-        "- [1.0, 0.0, 0.0]                                     \n"
-        "- [0.0, 1.0, 0.0]                                     \n"
-        "- [0.0, 0.0, 1.0]                                     \n"
-        "absolute_pose: !Matrix                                \n"
-        "- [1.0, 0.0, 0.0, 0.0]                                \n"
-        "- [0.0, 1.0, 0.0, 0.0]                                \n"
-        "- [0.0, 0.0, 1.0, 0.0]                                \n"
-        "- [0.0, 0.0, 0.0, 1.0]                                \n";
+      = "closed: [2.443, 2.443, 2.443, 0.0] \n"
+        "relative_pose:                     \n"
+        "- [1.0, 0.0, 0.0]                  \n"
+        "- [0.0, 1.0, 0.0]                  \n"
+        "- [0.0, 0.0, 1.0]                  \n"
+        "absolute_pose:                     \n"
+        "- [1.0, 0.0, 0.0, 0.0]             \n"
+        "- [0.0, 1.0, 0.0, 0.0]             \n"
+        "- [0.0, 0.0, 1.0, 0.0]             \n"
+        "- [0.0, 0.0, 0.0, 1.0]             \n";
 
   auto root = YAML::Load(yamlString);
   auto closed = root["closed"].as<Eigen::VectorXd>();
@@ -82,7 +82,7 @@ TEST(YamlEigenExtension, TsrTransforms)
       = "---                                              \n"
         "# BH280 endeffector frame to palm offset = 0.18 m\n"
         "left:                                            \n"
-        "  default: !Matrix &left_default                 \n"
+        "  default: &left_default                         \n"
         "    [[0., 0., 1., 0.],                           \n"
         "     [1., 0., 0., 0.],                           \n"
         "     [0., 1., 0., .18],                          \n"
@@ -90,7 +90,7 @@ TEST(YamlEigenExtension, TsrTransforms)
         "  cylinder: *left_default                        \n"
         "# BH282 endeffector frame to palm offset = ?     \n"
         "right:                                           \n"
-        "  default: !Matrix &right_default                \n"
+        "  default: &right_default                        \n"
         "    [[0., 0., 1., 0.],                           \n"
         "     [1., 0., 0., 0.],                           \n"
         "     [0., 1., 0., .18],                          \n"
@@ -130,4 +130,57 @@ TEST(YamlEigenExtension, TsrTransforms)
 
   auto right_cylinder = left["cylinder"];
   EXPECT_TRUE(right_cylinder.matrix().isApprox(expectedRightDefault.matrix()));
+}
+
+//==============================================================================
+TEST(YamlEigenExtension, AprilTagInJSON)
+{
+  std::string jsonString
+      = "{                                                                         \n"
+        "  \"tag124\": {                                                           \n"
+        "    \"resource\": \"package://pr_ordata/data/objects/plastic_glass.urdf\",\n"
+        "    \"name\": \"plastic_glass\",                                          \n"
+        "    \"offset\": [                                                         \n"
+        "      [                                                                   \n"
+        "        -0.0068393994632501,                                              \n"
+        "        -0.09054787493933,                                                \n"
+        "        -0.99586861832219,                                                \n"
+        "        0.14460904118031                                                  \n"
+        "        ]                                                                 \n"
+        "      ,                                                                   \n"
+        "      [                                                                   \n"
+        "        -0.9999766064057,                                                 \n"
+        "        0.00052349074982687,                                              \n"
+        "        0.0068200145734176,                                               \n"
+        "        -0.00097599685803373                                              \n"
+        "        ]                                                                 \n"
+        "      ,                                                                   \n"
+        "      [                                                                   \n"
+        "        -9.6209816943679e-5,                                              \n"
+        "        0.99589196617977,                                                 \n"
+        "        -0.090549337061432,                                               \n"
+        "        -0.033644917605727                                                \n"
+        "      ]                                                                   \n"
+        "      ,                                                                   \n"
+        "      [                                                                   \n"
+        "        0,                                                                \n"
+        "        0,                                                                \n"
+        "        0,                                                                \n"
+        "        1                                                                 \n"
+        "      ]                                                                   \n"
+        "    ]                                                                     \n"
+        "  }                                                                       \n"
+        "}                                                                         \n";
+
+  auto root = YAML::Load(jsonString);
+  auto tag124 = root["tag124"]["offset"].as<Eigen::Isometry3d>();
+
+  Eigen::Isometry3d expectedTag124 = Eigen::Isometry3d::Identity();
+  expectedTag124.linear()
+      << -0.0068393994632501, -0.09054787493933    , -0.99586861832219,
+         -0.9999766064057  ,  0.00052349074982687,  0.0068200145734176  ,
+         -9.6209816943679e-5,  0.99589196617977 , -0.090549337061432 ;
+  expectedTag124.translation()
+      << 0.14460904118031  , -0.00097599685803373, -0.033644917605727;
+  EXPECT_TRUE(tag124.matrix().isApprox(expectedTag124.matrix()));
 }
