@@ -17,7 +17,7 @@ pkg_check_modules(PC_interactive_markers interactive_markers QUIET)
 
 # Include directories
 find_path(interactive_markers_INCLUDE_DIRS
-  NAMES interactive_markeres/interactive_marker_client.h
+  NAMES interactive_markers/interactive_marker_client.h
   HINTS ${PC_tf_INCLUDE_DIRS}
 )
 
