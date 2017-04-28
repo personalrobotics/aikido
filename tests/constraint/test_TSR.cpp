@@ -17,11 +17,6 @@ using dart::common::make_unique;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
-static inline std::unique_ptr<DefaultRNG> make_rng()
-{
-  return make_unique<RNGWrapper<std::default_random_engine>>(0);
-}
-
 TEST(TSR, InitializesToIdentity)
 {
   TSR tsr;
@@ -468,6 +463,3 @@ TEST(TSR, getSE3EqualToGetStateSpace)
 
   EXPECT_EQ(se3space, space);
 }
-
-
-
