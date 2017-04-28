@@ -77,7 +77,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
     throw std::runtime_error(message.str());
   }
 
-  const auto fingerChains = std::array<ChainPtr, 3> {
+  const auto fingerChains = std::array<ChainPtr, 3> {{
     Chain::create(robot->getBodyNode(prefix + "finger0_0"), // finger0Spread
                   robot->getBodyNode(prefix + "finger0_2"), // finger0Distal
                   Chain::IncludeBoth),
@@ -87,19 +87,19 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
     Chain::create(robot->getBodyNode(prefix + "finger2_1"), // finger2Primal
                   robot->getBodyNode(prefix + "finger2_2"), // finger2Distal
                   Chain::IncludeBoth),
-  };
+  }};
 
-  const auto spreadFingers = std::array<ChainPtr, 2> {
+  const auto spreadFingers = std::array<ChainPtr, 2>{{
     fingerChains[0],
     fingerChains[1]
-  };
+  }};
 
   size_t spreadDof = 0;
   mSpreadCommandExecutor = std::make_shared<FingerSpreadCommandExecutor>(
     spreadFingers, spreadDof, mCollisionDetector, mCollideWith);
 
-  constexpr auto primalDof = std::array<size_t, 3> {1, 1, 0};
-  constexpr auto distalDof = std::array<size_t, 3> {2, 2, 1};
+  constexpr auto primalDof = std::array<size_t, 3> {{1, 1, 0}};
+  constexpr auto distalDof = std::array<size_t, 3> {{2, 2, 1}};
   for (size_t i = 0; i < fingerChains.size(); ++i)
   {
     mPositionCommandExecutors[i] = std::make_shared<FingerPositionCommandExecutor>(

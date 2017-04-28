@@ -477,7 +477,7 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     statespace::InterpolatorPtr _interpolator)
 {
   auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
-      std::move(_interpolator->getStateSpace()), std::move(_interpolator));
+      _interpolator->getStateSpace(), std::move(_interpolator));
 
   for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {
