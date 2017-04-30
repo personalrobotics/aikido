@@ -33,7 +33,7 @@ trajectory::InterpolatedPtr planSnap(
     if (!constraint->isSatisfied(testState))
     {
       planningResult.message = "Collision detected";
-      return returnTraj;
+      return nullptr;
     }
   }
 
