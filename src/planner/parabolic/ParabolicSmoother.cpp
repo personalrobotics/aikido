@@ -26,7 +26,8 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
                                             _useVelocity);
   ParabolicRamp::DynamicPath dynamicPath;
 
-  convertToDynamicPath(_inputTrajectory, dynamicPath);
+  double startTime = 0.0;
+  convertToDynamicPath(_inputTrajectory, dynamicPath, startTime);
 
   // Apply the adjoint limits
   dynamicPath.Init(toVector(_maxVelocity), toVector(_maxAcceleration));
@@ -34,7 +35,7 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
   parabolicSmoother.doShortcut(dynamicPath);
 
   aikido::trajectory::Spline* outputTrajectory =
-            convertToSpline(dynamicPath, stateSpace);
+            convertToSpline(dynamicPath, startTime, stateSpace);
 
   return std::unique_ptr<aikido::trajectory::Spline>(outputTrajectory);
 }
@@ -58,7 +59,8 @@ std::unique_ptr<trajectory::Spline> doBlend(
                                             _blendIterations);
   ParabolicRamp::DynamicPath dynamicPath;
 
-  convertToDynamicPath(_inputTrajectory, dynamicPath);
+  double startTime = 0.0;
+  convertToDynamicPath(_inputTrajectory, dynamicPath, startTime);
 
   // Apply the adjoint limits
   dynamicPath.Init(toVector(_maxVelocity), toVector(_maxAcceleration));
@@ -66,7 +68,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
   parabolicSmoother.doBlend(dynamicPath);
 
   aikido::trajectory::Spline* outputTrajectory =
-              convertToSpline(dynamicPath, stateSpace);
+              convertToSpline(dynamicPath, startTime, stateSpace);
 
   return std::unique_ptr<aikido::trajectory::Spline>(outputTrajectory);
 }
@@ -89,7 +91,8 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
                                             _blendIterations);
   ParabolicRamp::DynamicPath dynamicPath;
 
-  convertToDynamicPath(_inputTrajectory, dynamicPath);
+  double startTime = 0.0;
+  convertToDynamicPath(_inputTrajectory, dynamicPath, startTime);
 
   // Apply the adjoint limits
   dynamicPath.Init(toVector(_maxVelocity), toVector(_maxAcceleration));
@@ -98,7 +101,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
   parabolicSmoother.doBlend(dynamicPath);
 
   aikido::trajectory::Spline* outputTrajectory =
-                convertToSpline(dynamicPath, stateSpace);
+                convertToSpline(dynamicPath, startTime, stateSpace);
 
   return std::unique_ptr<aikido::trajectory::Spline>(outputTrajectory);
 }
