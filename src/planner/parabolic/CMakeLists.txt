@@ -1,4 +1,7 @@
-set(sources ParabolicTimer.cpp)
+set(sources ParabolicTimer.cpp
+            ParabolicSmoother.cpp
+            ParabolicUtil.cpp
+            HauserParabolicSmoother.cpp)
 
 add_library("${PROJECT_NAME}_planner_parabolic" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_planner_parabolic" SYSTEM
@@ -21,6 +24,7 @@ add_component(${PROJECT_NAME} planner_parabolic)
 add_component_targets(${PROJECT_NAME} planner_parabolic "${PROJECT_NAME}_planner_parabolic")
 add_component_dependencies(${PROJECT_NAME} planner_parabolic
   planner
+  constraint
   statespace
   trajectory
   util

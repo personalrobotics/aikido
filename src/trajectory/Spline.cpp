@@ -198,5 +198,48 @@ Eigen::VectorXd Spline::evaluatePolynomial(
   return outputVector;
 }
 
+//=============================================================================
+const size_t Spline::getNumWaypoints() const
+{
+    return getNumSegments() + 1;
+}
+
+//=============================================================================
+statespace::StateSpace::State* Spline::getWaypoint(size_t _index) const
+{
+  if (_index < getNumWaypoints())
+  {
+    if (_index < getNumSegments())
+    {
+      return mSegments[_index].mStartState;
+    }
+    else
+    {
+      statespace::StateSpace::State* endState = getStateSpace()->createState();
+      evaluate(getEndTime(), endState);
+      return endState;
+    }
+  }
+  else
+    throw std::domain_error("Waypoint index is out of bounds.");
+}
+
+//=============================================================================
+void Spline::getWaypointDerivative(size_t _index, int _derivative,
+                                   Eigen::VectorXd& _tangentVector) const
+{
+  if (_index < getNumSegments())
+  {
+    double waypointTime = mStartTime;
+    for(size_t i=0;i<_index-1;++i)
+    {
+      waypointTime += mSegments[_index].mDuration;
+    }
+    evaluateDerivative(waypointTime, _derivative, _tangentVector);
+  }
+  else
+     throw std::domain_error("Waypoint index is out of bounds.");
+}
+
 } // namespace trajectory
 } // namespace aikido
