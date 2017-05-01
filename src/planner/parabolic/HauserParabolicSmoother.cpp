@@ -65,15 +65,15 @@ HauserParabolicSmoother::HauserParabolicSmoother(aikido::constraint::TestablePtr
 }
 
 
-bool HauserParabolicSmoother::doShortcut(ParabolicRamp::DynamicPath& dynamicPath)
+bool HauserParabolicSmoother::doShortcut(ParabolicRamp::DynamicPath* dynamicPath)
 {
     std::chrono::time_point<std::chrono::system_clock> startTime, currentTime;
     startTime = std::chrono::system_clock::now();
     double elapsedTime = -1;
 
-    while (elapsedTime < timelimit_ && dynamicPath.ramps.size() > 3)
+    while (elapsedTime < timelimit_ && dynamicPath->ramps.size() > 3)
     {
-        dynamicPath.Shortcut(1, feasibilityChecker_);
+        dynamicPath->Shortcut(1, feasibilityChecker_);
 
         currentTime = std::chrono::system_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -84,13 +84,13 @@ bool HauserParabolicSmoother::doShortcut(ParabolicRamp::DynamicPath& dynamicPath
 }
 
 
-bool HauserParabolicSmoother::doBlend(ParabolicRamp::DynamicPath& dynamicPath)
+bool HauserParabolicSmoother::doBlend(ParabolicRamp::DynamicPath* dynamicPath)
 {
     // Mark all of the ramps in the initial trajectory as "original". We'll
     // only try to blend transitions between these ramps.
-    for(unsigned int i=0;i<dynamicPath.ramps.size();++i)
+    for(unsigned int i=0;i<dynamicPath->ramps.size();++i)
     {
-        dynamicPath.ramps[i].blendAttempts = 0;
+        dynamicPath->ramps[i].blendAttempts = 0;
     }
 
     double dtShortcut = blendRadius_;
@@ -104,17 +104,17 @@ bool HauserParabolicSmoother::doBlend(ParabolicRamp::DynamicPath& dynamicPath)
     return true;
 }
 
-bool HauserParabolicSmoother::tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
+bool HauserParabolicSmoother::tryBlend(ParabolicRamp::DynamicPath* dynamicPath,
                                        int attempt, double dtShortcut)
 {
-    size_t const numRamps = dynamicPath.ramps.size();
-    double const tMax = dynamicPath.GetTotalTime();
+    size_t const numRamps = dynamicPath->ramps.size();
+    double const tMax = dynamicPath->GetTotalTime();
     double t = 0;
 
     for (size_t iwaypoint = 0; iwaypoint < numRamps - 1; ++iwaypoint)
     {
         ParabolicRamp::ParabolicRampND &rampNd
-                = dynamicPath.ramps[iwaypoint];
+                = dynamicPath->ramps[iwaypoint];
         t += rampNd.endTime;
 
         if (needsBlend(rampNd) && rampNd.blendAttempts == attempt)
@@ -122,7 +122,7 @@ bool HauserParabolicSmoother::tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
             double const t1 = std::max(t - dtShortcut, - ParabolicRamp::EpsilonT);
             double const t2 = std::min(t + dtShortcut, tMax + ParabolicRamp::EpsilonT);
 
-            bool const success = dynamicPath.TryShortcut(t1, t2, feasibilityChecker_);
+            bool const success = dynamicPath->TryShortcut(t1, t2, feasibilityChecker_);
 
             if (success)
             {

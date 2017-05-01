@@ -34,12 +34,12 @@ public:
                             double tolerance = 1e-2);
 
 
-    bool doShortcut(ParabolicRamp::DynamicPath& dynamicPath);
+    bool doShortcut(ParabolicRamp::DynamicPath* dynamicPath);
 
-    bool doBlend(ParabolicRamp::DynamicPath& dynamicPath);
+    bool doBlend(ParabolicRamp::DynamicPath* dynamicPath);
 
 protected:
-    bool tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
+    bool tryBlend(ParabolicRamp::DynamicPath* dynamicPath,
                   int attempt, double dtShortcut);
 
 
