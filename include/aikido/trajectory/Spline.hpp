@@ -99,6 +99,13 @@ public:
   void evaluateDerivative(double _t, int _derivative,
     Eigen::VectorXd& _tangentVector ) const override;
 
+  const size_t getNumWaypoints() const;
+
+  statespace::StateSpace::State* getWaypoint(size_t _index) const;
+
+  void getWaypointDerivative(size_t _index, int _derivative,
+    Eigen::VectorXd&_tangentVector) const;
+
 private:
   struct PolynomialSegment
   {

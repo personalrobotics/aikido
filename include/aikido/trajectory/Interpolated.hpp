@@ -32,6 +32,8 @@ public:
   /// \return state of the waypoint at index \c _index
   const statespace::StateSpace::State* getWaypoint(size_t _index) const;
 
+  const double getWaypointTime(size_t _index) const;
+
   /// Gets the number of waypoints.
   size_t getNumWaypoints() const;
 

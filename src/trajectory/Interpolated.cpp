@@ -152,6 +152,15 @@ const statespace::StateSpace::State* Interpolated::getWaypoint(
 }
 
 //=============================================================================
+const double Interpolated::getWaypointTime(size_t _index) const
+{
+  if (_index < mWaypoints.size())
+    return mWaypoints[_index].t;
+  else
+    throw std::domain_error("Waypoint index is out of bounds.");
+}
+
+//=============================================================================
 size_t Interpolated::getNumWaypoints() const
 {
   return mWaypoints.size();
