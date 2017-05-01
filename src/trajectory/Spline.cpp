@@ -205,20 +205,24 @@ size_t Spline::getNumWaypoints() const
 }
 
 //=============================================================================
-statespace::StateSpace::State* Spline::getWaypoint(size_t _index) const
+double Spline::getWaypointTime(size_t _index) const
+{
+  double waypointTime = mStartTime;
+
+  for(size_t i=0;i<_index;++i)
+  {
+    waypointTime += mSegments[i].mDuration;
+  }
+  return waypointTime;
+}
+
+//=============================================================================
+void Spline::getWaypoint(size_t _index, statespace::StateSpace::State* state) const
 {
   if (_index < getNumWaypoints())
   {
-    if (_index < getNumSegments())
-    {
-      return mSegments[_index].mStartState;
-    }
-    else
-    {
-      statespace::StateSpace::State* endState = getStateSpace()->createState();
-      evaluate(getEndTime(), endState);
-      return endState;
-    }
+    double waypointTime = getWaypointTime(_index);
+    evaluate(waypointTime, state);
   }
   else
     throw std::domain_error("Waypoint index is out of bounds.");
@@ -230,11 +234,7 @@ void Spline::getWaypointDerivative(size_t _index, int _derivative,
 {
   if (_index < getNumSegments())
   {
-    double waypointTime = mStartTime;
-    for(size_t i=0;i<_index-1;++i)
-    {
-      waypointTime += mSegments[_index].mDuration;
-    }
+    double waypointTime = getWaypointTime(_index);
     evaluateDerivative(waypointTime, _derivative, _tangentVector);
   }
   else

@@ -101,7 +101,9 @@ public:
 
   size_t getNumWaypoints() const;
 
-  statespace::StateSpace::State* getWaypoint(size_t _index) const;
+  void getWaypoint(size_t _index, statespace::StateSpace::State* state) const;
+
+  double getWaypointTime(size_t _index) const;
 
   void getWaypointDerivative(size_t _index, int _derivative,
     Eigen::VectorXd&_tangentVector) const;

@@ -139,7 +139,7 @@ aikido::trajectory::Spline* convertToSpline(
   auto outputTrajectory = new aikido::trajectory::Spline(
       stateSpace, _inputTrajectory.getStartTime());
 
-  Eigen::VectorXd currentVec, nextVec;
+  Eigen::VectorXd currentVec, nextVec, currentVelocity, nextVelocity;
 
   for (size_t iwaypoint = 0; iwaypoint < numWaypoints-1; ++iwaypoint)
   {
@@ -151,12 +151,17 @@ aikido::trajectory::Spline* convertToSpline(
     stateSpace->logMap(currentState, currentVec);
     stateSpace->logMap(nextState, nextVec);
 
+    _inputTrajectory.evaluateDerivative(currentTime, 1, currentVelocity);
+    _inputTrajectory.evaluateDerivative(nextTime, 1, nextVelocity);
+
     // Compute the spline coefficients for this segment of the trajectory. Each
     // segment is expressed in the tangent space of the previous segment.
     // TODO: We should apply the adjoint transform to velocity.
     CubicSplineProblem problem(Vector2d(0, nextTime - currentTime), 4, dimension);
     problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
+    problem.addConstantConstraint(0, 1, currentVelocity);
     problem.addConstantConstraint(1, 0, nextVec - currentVec);
+    problem.addConstantConstraint(1, 1, nextVelocity);
     const auto spline = problem.fit();
 
     assert(spline.getCoefficients().size() == 1);
@@ -170,6 +175,7 @@ aikido::trajectory::Spline* convertToSpline(
 
 aikido::trajectory::Spline* convertToSpline(
         ParabolicRamp::DynamicPath& _inputPath,
+        double _startTime,
         aikido::statespace::StateSpacePtr _stateSpace)
 {
   const auto dimension = _stateSpace->getDimension();
@@ -201,15 +207,9 @@ aikido::trajectory::Spline* convertToSpline(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(_inputPath, timePrev, positionPrev, velocityPrev);
 
-  // TODO: assume _inputPath start time is 0
   auto _outputTrajectory = new aikido::trajectory::Spline(_stateSpace,
-                                                          timePrev + 0.0);
+                                                          timePrev + _startTime);
   auto segmentStartState = _stateSpace->createState();
-  auto relativeState = _stateSpace->createState();
-  auto startState = _stateSpace->createState();
-  ParabolicRamp::Vector startVec;
-  _inputPath.Evaluate(0,startVec);
-  _stateSpace->expMap( toEigen( startVec ), startState );
 
   for (const auto timeCurr : transitionTimes)
   {
@@ -229,8 +229,8 @@ aikido::trajectory::Spline* convertToSpline(
     // Forward-integrate the trajectory from the start in one step. This should
     // prevent accumulation of numerical error over long trajectories. Note
     // that this is only possible in real vector spaces and SO(2).
-    _stateSpace->expMap(positionPrev, relativeState);
-    _stateSpace->compose(startState, relativeState, segmentStartState);
+    //_stateSpace->expMap(positionPrev, relativeState);
+    _stateSpace->expMap(positionPrev, segmentStartState);
 
     // Add the ramp to the output trajectory.
     assert(spline.getCoefficients().size() == 1);
@@ -247,31 +247,29 @@ aikido::trajectory::Spline* convertToSpline(
 }
 
 void convertToDynamicPath(aikido::trajectory::Spline* _inputTrajectory,
-                          ParabolicRamp::DynamicPath& _outputPath)
+                          ParabolicRamp::DynamicPath& _outputPath,
+                          double& _startTime)
 {
   const auto stateSpace = _inputTrajectory->getStateSpace();
-  //const auto dimension = stateSpace->getDimension();
   const auto numWaypoints = _inputTrajectory->getNumWaypoints();
 
   std::vector<ParabolicRamp::Vector> milestones;
   milestones.reserve(numWaypoints);
 
-  const auto startState = _inputTrajectory->getWaypoint(0);
-  const auto startStateInverse = stateSpace->createState();
-  stateSpace->getInverse(startState, startStateInverse);
-
-  const auto relativeState = stateSpace->createState();
   Eigen::VectorXd tangentVector;
 
   for (size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
-     const auto currentState = _inputTrajectory->getWaypoint(iwaypoint);
-     stateSpace->compose(startStateInverse, currentState, relativeState);
-     stateSpace->logMap(relativeState, tangentVector);
+     auto currentState = stateSpace->createState();
+     _inputTrajectory->getWaypoint(iwaypoint, currentState);
+
+     stateSpace->logMap(currentState, tangentVector);
      milestones.emplace_back(toVector(tangentVector));
   }
 
   _outputPath.SetMilestones(milestones);
+
+  _startTime = _inputTrajectory->getStartTime();
 }
 
 } // namespace parabolic

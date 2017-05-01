@@ -46,13 +46,15 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   }
 
   ParabolicRamp::DynamicPath dynamicPath;
-
-  convertToDynamicPath(_inputTrajectory, dynamicPath);
-
   // Apply the adjoint limits
   dynamicPath.Init(toVector(_maxVelocity), toVector(_maxAcceleration));
 
-  aikido::trajectory::Spline* timedTrajectory = convertToSpline(dynamicPath, stateSpace);
+  double startTime = 0.0;
+  convertToDynamicPath(_inputTrajectory, dynamicPath, startTime);
+
+  aikido::trajectory::Spline* timedTrajectory = convertToSpline(dynamicPath,
+                                                                startTime,
+                                                                stateSpace);
   std::unique_ptr<aikido::trajectory::Spline> outputTrajectory(timedTrajectory);
   return outputTrajectory;
 }
@@ -62,10 +64,10 @@ std::unique_ptr<trajectory::Spline> computeParabolicTiming(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration)
 {
-    aikido::trajectory::Spline* spline = convertToSpline(_inputTrajectory);
-    std::unique_ptr<trajectory::Spline> timedSpline =
-            computeParabolicTiming(spline, _maxVelocity, _maxAcceleration);
-    return timedSpline;
+  aikido::trajectory::Spline* spline = convertToSpline(_inputTrajectory);
+  std::unique_ptr<trajectory::Spline> timedSpline =
+          computeParabolicTiming(spline, _maxVelocity, _maxAcceleration);
+  return timedSpline;
 }
 
 

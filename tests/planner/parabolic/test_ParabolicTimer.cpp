@@ -114,7 +114,7 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
   auto timedTrajectory = computeParabolicTiming(
     inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
-  timedTrajectory->evaluate(1., state);
+  timedTrajectory->evaluate(1., state);  
   EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(2., state);
@@ -281,7 +281,10 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
   auto stateSpace = std::make_shared<SO3>();
   auto state = stateSpace->createState();
 
-  Interpolated inputTrajectory(stateSpace, mInterpolator);
+  std::shared_ptr<GeodesicInterpolator> interpolator =
+  std::make_shared<GeodesicInterpolator>(stateSpace);
+
+  Interpolated inputTrajectory(stateSpace, interpolator);
 
   state.setQuaternion(Eigen::Quaterniond::Identity());
   inputTrajectory.addWaypoint(0., state);
@@ -302,7 +305,10 @@ TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
     std::vector<StateSpacePtr> { std::make_shared<SO3>() });
   auto state = stateSpace->createState();
 
-  Interpolated inputTrajectory(stateSpace, mInterpolator);
+  std::shared_ptr<GeodesicInterpolator> interpolator =
+  std::make_shared<GeodesicInterpolator>(stateSpace);
+
+  Interpolated inputTrajectory(stateSpace, interpolator);
 
   state.getSubStateHandle<SO3>(0).setQuaternion(
     Eigen::Quaterniond::Identity());
@@ -327,7 +333,10 @@ TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
     });
   auto state = stateSpace->createState();
 
-  Interpolated inputTrajectory(stateSpace, mInterpolator);
+  std::shared_ptr<GeodesicInterpolator> interpolator =
+  std::make_shared<GeodesicInterpolator>(stateSpace);
+
+  Interpolated inputTrajectory(stateSpace, interpolator);
 
   state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
   state.getSubStateHandle<SO2>(1).setAngle(0.);

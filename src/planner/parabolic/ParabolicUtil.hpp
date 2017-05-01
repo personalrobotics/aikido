@@ -26,10 +26,12 @@ aikido::trajectory::Spline* convertToSpline(
 
 aikido::trajectory::Spline* convertToSpline(
         ParabolicRamp::DynamicPath& _inputPath,
+        double _startTime,
         aikido::statespace::StateSpacePtr _stateSpace);
 
 void convertToDynamicPath(aikido::trajectory::Spline* _inputTrajectory,
-                          ParabolicRamp::DynamicPath& _outputPath);
+                          ParabolicRamp::DynamicPath& _outputPath,
+                          double& _startTime);
 
 
 } // namespace parabolic
