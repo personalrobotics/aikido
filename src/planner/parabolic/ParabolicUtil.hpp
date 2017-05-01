@@ -21,17 +21,19 @@ void evaluateAtTime(ParabolicRamp::DynamicPath& _path, double _t,
 
 bool checkStateSpace(const aikido::statespace::StateSpace* _stateSpace);
 
-aikido::trajectory::Spline* convertToSpline(
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const aikido::trajectory::Interpolated& _inputTrajectory);
 
-aikido::trajectory::Spline* convertToSpline(
-        ParabolicRamp::DynamicPath& _inputPath,
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+        ParabolicRamp::DynamicPath* _inputPath,
         double _startTime,
         aikido::statespace::StateSpacePtr _stateSpace);
 
-void convertToDynamicPath(aikido::trajectory::Spline* _inputTrajectory,
-                          ParabolicRamp::DynamicPath& _outputPath,
-                          double& _startTime);
+std::unique_ptr<ParabolicRamp::DynamicPath>
+    convertToDynamicPath(aikido::trajectory::Spline* _inputTrajectory,
+                         double& _startTime,
+                         const Eigen::VectorXd& _maxVelocity,
+                         const Eigen::VectorXd& _maxAcceleration);
 
 
 } // namespace parabolic

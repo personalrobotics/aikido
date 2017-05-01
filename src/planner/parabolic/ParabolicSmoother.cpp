@@ -24,20 +24,17 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
   HauserParabolicSmoother parabolicSmoother(_feasibilityCheck,
                                             _timelimit,
                                             _useVelocity);
-  ParabolicRamp::DynamicPath dynamicPath;
 
   double startTime = 0.0;
-  convertToDynamicPath(_inputTrajectory, dynamicPath, startTime);
+  auto dynamicPath = convertToDynamicPath(_inputTrajectory, startTime,
+                                          _maxVelocity, _maxAcceleration);
 
-  // Apply the adjoint limits
-  dynamicPath.Init(toVector(_maxVelocity), toVector(_maxAcceleration));
+  parabolicSmoother.doShortcut(dynamicPath.get());
 
-  parabolicSmoother.doShortcut(dynamicPath);
+  auto outputTrajectory =
+            convertToSpline(dynamicPath.get(), startTime, stateSpace);
 
-  aikido::trajectory::Spline* outputTrajectory =
-            convertToSpline(dynamicPath, startTime, stateSpace);
-
-  return std::unique_ptr<aikido::trajectory::Spline>(outputTrajectory);
+  return outputTrajectory;
 }
 
 
@@ -57,20 +54,16 @@ std::unique_ptr<trajectory::Spline> doBlend(
                                             _useVelocity,
                                             _blendRadius,
                                             _blendIterations);
-  ParabolicRamp::DynamicPath dynamicPath;
-
   double startTime = 0.0;
-  convertToDynamicPath(_inputTrajectory, dynamicPath, startTime);
+  auto dynamicPath = convertToDynamicPath(_inputTrajectory, startTime,
+                                          _maxVelocity, _maxAcceleration);
 
-  // Apply the adjoint limits
-  dynamicPath.Init(toVector(_maxVelocity), toVector(_maxAcceleration));
+  parabolicSmoother.doBlend(dynamicPath.get());
 
-  parabolicSmoother.doBlend(dynamicPath);
+  auto outputTrajectory =
+              convertToSpline(dynamicPath.get(), startTime, stateSpace);
 
-  aikido::trajectory::Spline* outputTrajectory =
-              convertToSpline(dynamicPath, startTime, stateSpace);
-
-  return std::unique_ptr<aikido::trajectory::Spline>(outputTrajectory);
+  return outputTrajectory;
 }
 
 std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
@@ -89,21 +82,18 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
                                             _useVelocity,
                                             _blendRadius,
                                             _blendIterations);
-  ParabolicRamp::DynamicPath dynamicPath;
 
   double startTime = 0.0;
-  convertToDynamicPath(_inputTrajectory, dynamicPath, startTime);
+  auto dynamicPath = convertToDynamicPath(_inputTrajectory, startTime,
+                                          _maxVelocity, _maxAcceleration);
 
-  // Apply the adjoint limits
-  dynamicPath.Init(toVector(_maxVelocity), toVector(_maxAcceleration));
+  parabolicSmoother.doShortcut(dynamicPath.get());
+  parabolicSmoother.doBlend(dynamicPath.get());
 
-  parabolicSmoother.doShortcut(dynamicPath);
-  parabolicSmoother.doBlend(dynamicPath);
+  auto outputTrajectory =
+                convertToSpline(dynamicPath.get(), startTime, stateSpace);
 
-  aikido::trajectory::Spline* outputTrajectory =
-                convertToSpline(dynamicPath, startTime, stateSpace);
-
-  return std::unique_ptr<aikido::trajectory::Spline>(outputTrajectory);
+  return outputTrajectory;
 }
 
 
