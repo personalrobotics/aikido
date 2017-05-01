@@ -250,7 +250,7 @@ void convertToDynamicPath(aikido::trajectory::Spline* _inputTrajectory,
                           ParabolicRamp::DynamicPath& _outputPath)
 {
   const auto stateSpace = _inputTrajectory->getStateSpace();
-  const auto dimension = stateSpace->getDimension();
+  //const auto dimension = stateSpace->getDimension();
   const auto numWaypoints = _inputTrajectory->getNumWaypoints();
 
   std::vector<ParabolicRamp::Vector> milestones;

@@ -152,7 +152,7 @@ const statespace::StateSpace::State* Interpolated::getWaypoint(
 }
 
 //=============================================================================
-const double Interpolated::getWaypointTime(size_t _index) const
+double Interpolated::getWaypointTime(size_t _index) const
 {
   if (_index < mWaypoints.size())
     return mWaypoints[_index].t;

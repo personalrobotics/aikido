@@ -199,7 +199,7 @@ Eigen::VectorXd Spline::evaluatePolynomial(
 }
 
 //=============================================================================
-const size_t Spline::getNumWaypoints() const
+size_t Spline::getNumWaypoints() const
 {
     return getNumSegments() + 1;
 }

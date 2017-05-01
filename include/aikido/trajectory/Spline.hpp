@@ -99,7 +99,7 @@ public:
   void evaluateDerivative(double _t, int _derivative,
     Eigen::VectorXd& _tangentVector ) const override;
 
-  const size_t getNumWaypoints() const;
+  size_t getNumWaypoints() const;
 
   statespace::StateSpace::State* getWaypoint(size_t _index) const;
 

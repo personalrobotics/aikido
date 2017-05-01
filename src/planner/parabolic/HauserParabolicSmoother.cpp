@@ -54,10 +54,10 @@ HauserParabolicSmoother::HauserParabolicSmoother(aikido::constraint::TestablePtr
                                                  double blendRadius,
                                                  int blendIterations,
                                                  double tolerance)
-    : blendRadius_(0.5),
-      blendIterations_(4),
-      timelimit_(3.0),
-      useVelocity_(true),
+    : blendRadius_(blendRadius),
+      blendIterations_(blendIterations),
+      timelimit_(timelimit),
+      useVelocity_(useVelocity),
       tolerance_(tolerance),
       feasibilityChecker_(new SmootherFeasibilityChecker(testable),
                           static_cast<ParabolicRamp::Real>(tolerance_))
