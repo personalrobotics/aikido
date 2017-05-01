@@ -131,13 +131,7 @@ struct convert<Eigen::
       throw YAML::RepresentationException(getMark(node), ss.str());
     }
 
-    if (node[0].Type() == YAML::NodeType::Scalar)
-    {
-      matrix.resize(rows, 1);
-      for (Index i = 0; i < rows; ++i)
-        matrix(i, 0) = node[i].template as<_Scalar>();
-    }
-    else if (node[0].Type() == YAML::NodeType::Sequence)
+    if (node[0].Type() == YAML::NodeType::Sequence)
     {
       const auto cols = node[0].size();
 
@@ -150,7 +144,10 @@ struct convert<Eigen::
         throw YAML::RepresentationException(getMark(node), ss.str());
       }
 
-      matrix.resize(rows, cols);
+      if (cols == 0u)
+        matrix.resize(0, 0);
+      else
+        matrix.resize(rows, cols);
 
       for (auto r = 0u; r < node.size(); ++r)
       {
@@ -169,7 +166,42 @@ struct convert<Eigen::
         }
 
         for (auto c = 0u; c < cols; ++c)
+        {
+          if (node[r][c].Type() != YAML::NodeType::Scalar)
+          {
+            std::stringstream ss;
+            ss << "Matrix has a non-scalar element at (" << r << ", " << c
+               << ") component (1-based numbering).";
+            throw YAML::RepresentationException(getMark(node), ss.str());
+          }
+
           matrix(r, c) = node[r][c].template as<_Scalar>();
+        }
+      }
+    }
+    else if (node.size() >= 0u)
+    {
+      if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
+          && 1 != MatrixType::ColsAtCompileTime)
+      {
+        std::stringstream ss;
+        ss << "Matrix has incorrect number of cols: expected "
+           << MatrixType::ColsAtCompileTime << "; got " << 1 << ".";
+        throw YAML::RepresentationException(getMark(node), ss.str());
+      }
+
+      matrix.resize(rows, 1);
+      for (Index i = 0; i < rows; ++i)
+      {
+        if (node[i].Type() != YAML::NodeType::Scalar)
+        {
+          std::stringstream ss;
+          ss << "Vector has a non-scalar element at the " << i + 1
+             << "-th component (1-based numbering).";
+          throw YAML::RepresentationException(getMark(node), ss.str());
+        }
+
+        matrix(i, 0) = node[i].template as<_Scalar>();
       }
     }
     else

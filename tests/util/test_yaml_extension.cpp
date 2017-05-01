@@ -2,48 +2,107 @@
 #include <aikido/util/yaml.hpp>
 
 //==============================================================================
-TEST(YamlEigenExtension, Errors)
+TEST(YamlEigenExtension, Validity)
 {
   using Vector1d = Eigen::Matrix<double, 1, 1>;
+  using Matrix1d = Eigen::Matrix<double, 1, 1>;
 
-  std::string empty = "name:";
-  EXPECT_THROW(YAML::Load(empty)["name"].as<Eigen::VectorXd>(),
+  std::string empty = "empty:";
+  EXPECT_THROW(YAML::Load(empty)["empty"].as<Eigen::VectorXd>(),
       YAML::RepresentationException);
 
-  std::string notSequential1 = "name: PRL";
-  EXPECT_THROW(YAML::Load(notSequential1)["name"].as<Eigen::VectorXd>(),
+  std::string map = "map: {left: ok, right: bad}";
+  EXPECT_THROW(YAML::Load(map)["map"].as<Eigen::VectorXd>(),
       YAML::RepresentationException);
 
-  std::string null = "name: []";
-  EXPECT_THROW(YAML::Load(null)["name"].as<Eigen::VectorXd>(),
-      YAML::RepresentationException);
+  std::string zeroSizedVector = "vector: []";
+  auto zeroVec = YAML::Load(zeroSizedVector)["vector"].as<Eigen::VectorXd>();
+  EXPECT_NO_THROW(zeroVec);
+  EXPECT_EQ(zeroVec.size(), 0);
 
-  std::string map = "status: {left: ok, right: bad}";
-  EXPECT_THROW(YAML::Load(map)["status"].as<Eigen::VectorXd>(),
-      YAML::RepresentationException);
+  std::string zeroSizedMatrix1 = "matrix: [[]]";
+  auto zeroMat1 = YAML::Load(zeroSizedMatrix1)["matrix"].as<Eigen::MatrixXd>();
+  EXPECT_NO_THROW(zeroMat1);
+  EXPECT_EQ(zeroMat1.rows(), 0);
+  EXPECT_EQ(zeroMat1.cols(), 0);
 
-  std::string scalar = "scalar: 1";
-  EXPECT_THROW(YAML::Load(scalar)["scalar"].as<Vector1d>(),
-      YAML::RepresentationException);
+  std::string zeroSizedMatrix2 = "matrix: [[], []]";
+  auto zeroMat2 = YAML::Load(zeroSizedMatrix2)["matrix"].as<Eigen::MatrixXd>();
+  EXPECT_NO_THROW(zeroMat2);
+  EXPECT_EQ(zeroMat2.rows(), 0);
+  EXPECT_EQ(zeroMat2.cols(), 0);
 
   std::string vector1 = "vector: [1]";
   EXPECT_NO_THROW(YAML::Load(vector1)["vector"].as<Vector1d>());
 
-  std::string incorrectSize1 = "vector: [1, 2, 3]";
-  EXPECT_THROW(YAML::Load(incorrectSize1)["vector"].as<Eigen::Vector2d>(),
+  std::string matrix1 = "matrix: [[1]]";
+  EXPECT_NO_THROW(YAML::Load(matrix1)["matrix"].as<Matrix1d>());
+
+  std::string incorrectVectorSize = "vector: [1, 2, 3]";
+  EXPECT_THROW(YAML::Load(incorrectVectorSize)["vector"].as<Eigen::Vector4d>(),
       YAML::RepresentationException);
 
-  std::string incorrectSize2 = "matrix: [[1, 2], [3, 4], [5, 6]]";
-  EXPECT_THROW(YAML::Load(incorrectSize2)["matrix"].as<Eigen::Matrix3d>(),
+  std::string incorrectMatrixRowSize
+      = "matrix: [[1, 2, 3], [4, 5, 6]]";
+  EXPECT_THROW(YAML::Load(incorrectMatrixRowSize)["matrix"].as<
+      Eigen::Matrix3d>(), YAML::RepresentationException);
+
+  std::string incorrectMatrixColSize
+      = "matrix: [[1, 2], [3, 4], [5, 6]]";
+  EXPECT_THROW(YAML::Load(incorrectMatrixColSize)["matrix"].as<
+      Eigen::Matrix3d>(), YAML::RepresentationException);
+
+  std::string incorrectMatrixSize1
+      = "matrix: [[1, 2, 3], [1, 2, 3], [1, 2]]";
+  EXPECT_THROW(YAML::Load(incorrectMatrixSize1)["matrix"].as<
+      Eigen::Matrix3d>(), YAML::RepresentationException);
+
+  std::string incorrectMatrixSize2
+      = "matrix: [1, 2, 3]";
+  EXPECT_THROW(YAML::Load(incorrectMatrixSize2)["matrix"].as<
+      Eigen::Matrix3d>(), YAML::RepresentationException);
+
+  std::string inconsistentMatrixRowSize1
+      = "matrix: [[1, 2, 3], [4, 5, 6], [7, 8]]";
+  EXPECT_THROW(YAML::Load(inconsistentMatrixRowSize1)["matrix"].as<
+      Eigen::MatrixXd>(), YAML::RepresentationException);
+
+  std::string inconsistentMatrixRowSize2
+      = "matrix: [[], [1], [2]]";
+  EXPECT_THROW(YAML::Load(inconsistentMatrixRowSize2)["matrix"].as<
+      Eigen::MatrixXd>(), YAML::RepresentationException);
+
+  std::string notSequenceInVector = "vector: 1";
+  EXPECT_THROW(YAML::Load(notSequenceInVector)["vector"].as<Vector1d>(),
       YAML::RepresentationException);
 
-  std::string notMatrix1 = "matrix: [[1, 2, 3], [1, 2, 3], 1]";
-  EXPECT_THROW(YAML::Load(notMatrix1)["matrix"].as<Eigen::Matrix3d>(),
+  std::string notSequenceInMatrix1 = "matrix: [1, 2, 3]";
+  EXPECT_THROW(YAML::Load(notSequenceInMatrix1)["matrix"].as<Eigen::Matrix3d>(),
       YAML::RepresentationException);
 
-  std::string notMatrix2 = "matrix: [[1, 2, 3], [1, 2, 3], [1, 2]]";
-  EXPECT_THROW(YAML::Load(notMatrix2)["matrix"].as<Eigen::Matrix3d>(),
+  std::string notSequenceInMatrix2 = "matrix: [[1, 2, 3], [1, 2, 3], 1]";
+  EXPECT_THROW(YAML::Load(notSequenceInMatrix2)["matrix"].as<Eigen::Matrix3d>(),
       YAML::RepresentationException);
+
+  std::string notScalarElementInVector1
+      = "vector: [1, 2, [3]]";
+  EXPECT_THROW(YAML::Load(notScalarElementInVector1)["vector"].as<
+      Eigen::Vector3d>(), YAML::RepresentationException);
+
+  std::string notScalarElementInVector2
+      = "vector: [1, 2, []]";
+  EXPECT_THROW(YAML::Load(notScalarElementInVector2)["vector"].as<
+      Eigen::Vector3d>(), YAML::RepresentationException);
+
+  std::string notScalarElementInMatrix1
+      = "matrix: [[1, 2, 3], [[1, 2], 2, 3], [1, 2, 3]]";
+  EXPECT_THROW(YAML::Load(notScalarElementInMatrix1)["matrix"].as<
+      Eigen::Matrix3d>(), YAML::RepresentationException);
+
+  std::string notScalarElementInMatrix2
+      = "matrix: [[1, 2, 3], [[], 2, 3], [1, 2, 3]]";
+  EXPECT_THROW(YAML::Load(notScalarElementInMatrix2)["matrix"].as<
+      Eigen::Matrix3d>(), YAML::RepresentationException);
 }
 
 //==============================================================================
@@ -169,52 +228,22 @@ TEST(YamlEigenExtension, TsrTransforms)
 TEST(YamlEigenExtension, AprilTagInJSON)
 {
   std::string jsonString
-      = "{                                                             \n"
-        "  \"tag124\": {                                               \n"
-        "    \"resource\":                                             \n"
-        "      \"package://pr_ordata/data/objects/plastic_glass.urdf\",\n"
-        "    \"name\": \"plastic_glass\",                              \n"
-        "    \"offset\": [                                             \n"
-        "      [                                                       \n"
-        "        -0.0068393994632501,                                  \n"
-        "        -0.09054787493933,                                    \n"
-        "        -0.99586861832219,                                    \n"
-        "        0.14460904118031                                      \n"
-        "      ]                                                       \n"
-        "      ,                                                       \n"
-        "      [                                                       \n"
-        "        -0.9999766064057,                                     \n"
-        "        0.00052349074982687,                                  \n"
-        "        0.0068200145734176,                                   \n"
-        "        -0.00097599685803373                                  \n"
-        "        ]                                                     \n"
-        "      ,                                                       \n"
-        "      [                                                       \n"
-        "        -9.6209816943679e-5,                                  \n"
-        "        0.99589196617977,                                     \n"
-        "        -0.090549337061432,                                   \n"
-        "        -0.033644917605727                                    \n"
-        "      ]                                                       \n"
-        "      ,                                                       \n"
-        "      [                                                       \n"
-        "        0,                                                    \n"
-        "        0,                                                    \n"
-        "        0,                                                    \n"
-        "        1                                                     \n"
-        "      ]                                                       \n"
-        "    ]                                                         \n"
-        "  }                                                           \n"
-        "}                                                             \n";
+      = "{                                     \n"
+        "  \"tag124\": {                       \n"
+        "    \"name\": \"test_object\",        \n"
+        "    \"package://pr_ordata/test.urdf\",\n"
+        "    \"offset\":                       \n"
+        "      [[ 1, 0, 0, 1 ],                \n"
+        "       [ 0, 1, 0, 2 ],                \n"
+        "       [ 0, 0, 1, 3 ],                \n"
+        "       [ 0, 0, 0, 1 ]]                \n"
+        "  }                                   \n"
+        "}                                     \n";
 
   auto root = YAML::Load(jsonString);
 
   auto tag124 = root["tag124"]["offset"].as<Eigen::Isometry3d>();
   Eigen::Isometry3d expectedTag124 = Eigen::Isometry3d::Identity();
-  expectedTag124.linear()
-      << -0.0068393994632501, -0.09054787493933   , -0.99586861832219  ,
-         -0.9999766064057   ,  0.00052349074982687,  0.0068200145734176,
-         -9.6209816943679e-5,  0.99589196617977   , -0.090549337061432 ;
-  expectedTag124.translation()
-      << 0.14460904118031, -0.00097599685803373, -0.033644917605727;
+  expectedTag124.translation() << 1, 2, 3;
   EXPECT_TRUE(tag124.matrix().isApprox(expectedTag124.matrix()));
 }
