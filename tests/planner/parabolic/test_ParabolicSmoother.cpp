@@ -4,6 +4,7 @@
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
+#include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 
 using Eigen::Vector2d;
