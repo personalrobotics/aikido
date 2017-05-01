@@ -99,6 +99,16 @@ void Interpolated::evaluateDerivative(double _t, int _derivative,
     _tangentVector.resize(mStateSpace->getDimension());
     _tangentVector.setZero();
   }
+  
+  // When _t equals to start time
+  if(_t == mWaypoints[0].t)
+  {
+    const auto segmentTime = mWaypoints[1].t - mWaypoints[0].t;
+    mInterpolator->getDerivative(mWaypoints[0].state, mWaypoints[1].state, 
+      _derivative, 1.0, _tangentVector);
+    _tangentVector /= segmentTime;
+    return;
+  }
 
   // Compute the interpolated state at time t
   auto iPt = mStateSpace->createState();
