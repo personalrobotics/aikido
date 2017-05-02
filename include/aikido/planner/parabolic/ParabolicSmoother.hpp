@@ -10,10 +10,9 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
-static const double DEFAULT_TIMELIMT = 3.0;
-static const bool DEFAULT_USE_VELOCITY = true;
-static const double DEFAULT_BLEND_RADIUS = 0.5;
-static const int DEFAULT_BLEND_ITERATIONS = 4;
+constexpr double DEFAULT_TIMELIMT = 3.0;
+constexpr double DEFAULT_BLEND_RADIUS = 0.5;
+constexpr int DEFAULT_BLEND_ITERATIONS = 4;
 
 /// Smooth a trajectory and apply shortcut
 /// \param _inputTrajectory input piecewise Geodesic trajectory
@@ -21,33 +20,49 @@ static const int DEFAULT_BLEND_ITERATIONS = 4;
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \param _timelimit The maximum time to allow for doing shortcut
-/// \param _useVelocity whether velocity is considered in shortcut
+/// (unit in second)
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doShortcut(
-    const trajectory::Interpolated& _inputTrajectory,
-    const aikido::constraint::TestablePtr _feasibilityCheck,
+    const trajectory::Spline& _inputTrajectory,
+    aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration,
+    const Eigen::VectorXd& _maxAcceleration,    
     double _timelimit = DEFAULT_TIMELIMT,
-    bool _useVelocity = DEFAULT_USE_VELOCITY);
+    aikido::util::RNG::result_type _rngSeed = std::random_device{}());
 
-/// Smooth a trajectory and apply blend
+/// Blend around waypoints in a trajectory using parabolic splines.
+///
+/// This function smooths `_inputTrajectory` by blending around
+/// waypoints that have zero velocity using the following algorithm:
+///
+/// while _inputTrajectory has a waypoint with zero velocity:
+/// - Construct the time-optimal parabolic spline from the state of the
+///  trajectory at time `t - _blendRadius` to the state of the trajectory
+///  at time `t + _blendRadius`.
+/// - Check the validity of the segment against _feasabilityCheck.
+/// - If the segment is valid, replace the portion of the trajectory between
+///  times `t - _blendRadius` and `t + _blendRadius` with the segment.
+///
+/// If blending with _blendRadius fails to remove all waypoints with zero
+/// velocity, the process described above repeats with half the initial
+/// _blendRadius. Halving occurs _blendIteration times, with the final
+/// iteration using a blend radius of
+/// _blendRadius / std::pow(2, _blendIterations - 1).
 /// \param _inputTrajectory input piecewise Geodesic trajectory
 /// \param _feasibilityCheck Check whether a position is feasible
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \param _timelimit The maximum time to allow for doing shortcut
-/// \param _useVelocity whether velocity is considered in shortcut
+/// (unit in second)
 /// \param _blendRadius the radius used in doing blend
 /// \param _blendIterations the maximum iteration number in doing blend
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doBlend(
-    const trajectory::Interpolated& _inputTrajectory,
-    const aikido::constraint::TestablePtr _feasibilityCheck,
+    const trajectory::Spline& _inputTrajectory,
+    aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
     double _timelimit = DEFAULT_TIMELIMT,
-    bool _useVelocity = DEFAULT_USE_VELOCITY,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS);
 
@@ -57,75 +72,20 @@ std::unique_ptr<trajectory::Spline> doBlend(
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \param _timelimit The maximum time to allow for doing shortcut
-/// \param _useVelocity whether velocity is considered in shortcut
+/// (unit in second)
 /// \param _blendRadius the radius used in doing blend
 /// \param _blendIterations the maximum iteration number in doing blend
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
-    const trajectory::Interpolated& _inputTrajectory,
-    const aikido::constraint::TestablePtr _feasibilityCheck,
+    const trajectory::Spline& _inputTrajectory,
+    aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
     double _timelimit = DEFAULT_TIMELIMT,
-    bool _useVelocity = DEFAULT_USE_VELOCITY,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
-    int _blendIterations = DEFAULT_BLEND_ITERATIONS);
-
-/// Smooth a trajectory and apply shortcut
-/// \param _inputTrajectory input piecewise Geodesic trajectory
-/// \param _feasibilityCheck Check whether a position is feasible
-/// \param _maxVelocity maximum velocity for each dimension
-/// \param _maxAcceleration maximum acceleration for each dimension
-/// \param _timelimit The maximum time to allow for doing shortcut
-/// \param _useVelocity whether velocity is considered in shortcut
-/// \return smoothed trajectory that satisfies acceleration constraints
-std::unique_ptr<trajectory::Spline> doShortcut(
-    const trajectory::Spline* _inputTrajectory,
-    const aikido::constraint::TestablePtr _feasibilityCheck,
-    const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration,
-    double _timelimit = DEFAULT_TIMELIMT,
-    bool _useVelocity = DEFAULT_USE_VELOCITY);
-
-/// Smooth a trajectory and apply blend
-/// \param _inputTrajectory input piecewise Geodesic trajectory
-/// \param _feasibilityCheck Check whether a position is feasible
-/// \param _maxVelocity maximum velocity for each dimension
-/// \param _maxAcceleration maximum acceleration for each dimension
-/// \param _timelimit The maximum time to allow for doing shortcut
-/// \param _useVelocity whether velocity is considered in shortcut
-/// \param _blendRadius the radius used in doing blend
-/// \param _blendIterations the maximum iteration number in doing blend
-/// \return smoothed trajectory that satisfies acceleration constraints
-std::unique_ptr<trajectory::Spline> doBlend(
-    const trajectory::Spline* _inputTrajectory,
-    const aikido::constraint::TestablePtr _feasibilityCheck,
-    const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration,
-    double _timelimit = DEFAULT_TIMELIMT,
-    bool _useVelocity = DEFAULT_USE_VELOCITY,
-    double _blendRadius = DEFAULT_BLEND_RADIUS,
-    int _blendIterations = DEFAULT_BLEND_ITERATIONS);
-
-/// Smooth a trajectory and apply shortcut and blend
-/// \param _inputTrajectory input piecewise Geodesic trajectory
-/// \param _feasibilityCheck Check whether a position is feasible
-/// \param _maxVelocity maximum velocity for each dimension
-/// \param _maxAcceleration maximum acceleration for each dimension
-/// \param _timelimit The maximum time to allow for doing shortcut
-/// \param _useVelocity whether velocity is considered in shortcut
-/// \param _blendRadius the radius used in doing blend
-/// \param _blendIterations the maximum iteration number in doing blend
-/// \return smoothed trajectory that satisfies acceleration constraints
-std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
-    const trajectory::Spline* _inputTrajectory,
-    const aikido::constraint::TestablePtr _feasibilityCheck,
-    const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration,
-    double _timelimit = DEFAULT_TIMELIMT,
-    bool _useVelocity = DEFAULT_USE_VELOCITY,
-    double _blendRadius = DEFAULT_BLEND_RADIUS,
-    int _blendIterations = DEFAULT_BLEND_ITERATIONS);
+    int _blendIterations = DEFAULT_BLEND_ITERATIONS,
+    aikido::util::RNG::result_type _rngSeed = std::random_device{}()
+    );
 
 } // namespace parabolic
 } // namespace planner
