@@ -9,13 +9,14 @@
 using Eigen::Vector2d;
 using Eigen::Vector3d;
 using aikido::trajectory::Interpolated;
-using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R2;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
+using aikido::planner::parabolic::computeParabolicTiming;
+using aikido::planner::parabolic::convertToSpline;
 
 class ParabolicTimerTests : public ::testing::Test
 {
@@ -51,48 +52,46 @@ TEST_F(ParabolicTimerTests, InputTrajectoryIsEmpty_Throws)
 {
   Interpolated emptyTrajectory(mStateSpace, mInterpolator);
 
-  EXPECT_THROW({
-    computeParabolicTiming(emptyTrajectory, mMaxVelocity, mMaxAcceleration);
-  }, std::invalid_argument);
+  EXPECT_THROW({convertToSpline(emptyTrajectory);}, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxVelocityIsZero_Throws)
 {
   Vector2d zeroMaxVelocity(1., 0.);
-
+  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *mStraightLine, zeroMaxVelocity, mMaxAcceleration);
+      *splineTrajectory.get(), zeroMaxVelocity, mMaxAcceleration);
   }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxVelocityIsNegative_Throws)
 {
   Vector2d negativeMaxVelocity(1., -1);
-
+  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *mStraightLine, negativeMaxVelocity, mMaxAcceleration);
+      *splineTrajectory.get(), negativeMaxVelocity, mMaxAcceleration);
   }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxAccelerationIsZero_Throws)
 {
   Vector2d zeroMaxAcceleration(1., 0.);
-
+  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *mStraightLine, mMaxVelocity, zeroMaxAcceleration);
+      *splineTrajectory.get(), mMaxVelocity, zeroMaxAcceleration);
   }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxAccelerationIsNegative_Throws)
 {
   Vector2d negativeMaxAcceleration(1., -1);
-
+  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *mStraightLine, mMaxVelocity, negativeMaxAcceleration);
+      *splineTrajectory.get(), mMaxVelocity, negativeMaxAcceleration);
   }, std::invalid_argument);
 }
 
@@ -111,8 +110,9 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
   state.setValue(Vector2d(2., 3.));
   inputTrajectory.addWaypoint(3., state);
 
+  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
+    *splineTrajectory.get(), Vector2d::Constant(2.), Vector2d::Constant(1.));
 
   timedTrajectory->evaluate(1., state);  
   EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
@@ -141,8 +141,9 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
   state.setValue(Vector2d(2., 3.));
   inputTrajectory.addWaypoint(2., state);
 
+  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
+    *splineTrajectory.get(), Vector2d::Constant(2.), Vector2d::Constant(1.));
 
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
@@ -194,8 +195,9 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
   state.setValue(Vector2d(3., 4.));
   inputTrajectory.addWaypoint(2., state);
 
+  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d::Constant(1.), Vector2d::Constant(1.));
+    *splineTrajectory.get(), Vector2d::Constant(1.), Vector2d::Constant(1.));
 
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
@@ -268,8 +270,9 @@ TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
   state.setValue(Vector2d(3., 4.));
   inputTrajectory.addWaypoint(2., state);
 
+  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
+    *splineTrajectory.get(), Vector2d(1., 2.), Vector2d(1., 1.));
 
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   EXPECT_EQ(3, timedTrajectory->getNumSegments());
@@ -293,10 +296,7 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
     Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
   inputTrajectory.addWaypoint(1., state);
 
-  EXPECT_THROW({
-    computeParabolicTiming(
-      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
-  }, std::invalid_argument);
+  EXPECT_THROW({convertToSpline(inputTrajectory);}, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
@@ -318,10 +318,7 @@ TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
     Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
   inputTrajectory.addWaypoint(1., state);
 
-  EXPECT_THROW({
-    computeParabolicTiming(
-      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
-  }, std::invalid_argument);
+  EXPECT_THROW({convertToSpline(inputTrajectory);}, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
@@ -346,9 +343,10 @@ TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
   state.getSubStateHandle<SO2>(1).setAngle(M_PI_2);
   inputTrajectory.addWaypoint(1., state);
 
+  auto splineTrajectory = convertToSpline(inputTrajectory);
   EXPECT_NO_THROW({
     computeParabolicTiming(
-      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
+      *splineTrajectory.get(), Vector3d::Ones(), Vector3d::Ones());
   });
 
 }

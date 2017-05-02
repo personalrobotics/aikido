@@ -11,38 +11,25 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
-class SmootherFeasibilityChecker : public ParabolicRamp::FeasibilityCheckerBase
-{
-public:
-    SmootherFeasibilityChecker(aikido::constraint::TestablePtr testable);
-
-    virtual bool ConfigFeasible(ParabolicRamp::Vector const &x);
-    virtual bool SegmentFeasible(ParabolicRamp::Vector const &a,
-                                 ParabolicRamp::Vector const &b);
-private:
-    aikido::constraint::TestablePtr testable_;
-};
+class SmootherFeasibilityCheckerBase;
 
 class HauserParabolicSmoother
 {
 public:
     HauserParabolicSmoother(aikido::constraint::TestablePtr testable,
                             double timelimit = 3.0,
-                            bool useVelocity = true,
                             double blendRadius = 0.5,
                             int blendIterations = 4,
                             double tolerance = 1e-2);
 
+    bool doShortcut(ParabolicRamp::DynamicPath& dynamicPath,
+                    aikido::util::RNG::result_type _rngSeed = std::random_device{}());
 
-    bool doShortcut(ParabolicRamp::DynamicPath* dynamicPath);
-
-    bool doBlend(ParabolicRamp::DynamicPath* dynamicPath);
+    bool doBlend(ParabolicRamp::DynamicPath& dynamicPath);
 
 protected:
-    bool tryBlend(ParabolicRamp::DynamicPath* dynamicPath,
+    bool tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
                   int attempt, double dtShortcut);
-
-
 
     bool needsBlend(ParabolicRamp::ParabolicRampND const &rampNd);
 
@@ -50,10 +37,10 @@ private:
     double blendRadius_;
     int    blendIterations_;
     double timelimit_;
-    bool useVelocity_;
     double tolerance_;
 
-    ParabolicRamp::RampFeasibilityChecker feasibilityChecker_;
+    std::shared_ptr<SmootherFeasibilityCheckerBase>        checkerBase_;
+    std::shared_ptr<ParabolicRamp::RampFeasibilityChecker> feasibilityChecker_;
 };
 
 } // namespace parabolic

@@ -232,7 +232,7 @@ void Spline::getWaypoint(size_t _index, statespace::StateSpace::State* state) co
 void Spline::getWaypointDerivative(size_t _index, int _derivative,
                                    Eigen::VectorXd& _tangentVector) const
 {
-  if (_index < getNumSegments())
+  if (_index < getNumWaypoints())
   {
     double waypointTime = getWaypointTime(_index);
     evaluateDerivative(waypointTime, _derivative, _tangentVector);

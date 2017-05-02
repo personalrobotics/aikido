@@ -79,11 +79,11 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 
 
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
-      const aikido::trajectory::Spline* _inputTrajectory,
+      const aikido::trajectory::Spline& _inputTrajectory,
       const Eigen::VectorXd& _maxVelocity,
       const Eigen::VectorXd& _maxAcceleration)
 {
-  const auto stateSpace = _inputTrajectory->getStateSpace();
+  const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
 
   if (static_cast<size_t>(_maxVelocity.size()) != dimension)
@@ -105,25 +105,14 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
       throw std::invalid_argument("Acceleration limits must be finite.");
   }
 
-  double startTime = 0.0;
-  auto dynamicPath = convertToDynamicPath(_inputTrajectory, startTime,
-                                          _maxVelocity, _maxAcceleration);
+  double startTime = _inputTrajectory.getStartTime();
+  auto dynamicPath = convertToDynamicPath(_inputTrajectory,
+                                          _maxVelocity,
+                                          _maxAcceleration);
 
-  auto outputTrajectory = convertToSpline(dynamicPath.get(), startTime, stateSpace);
+  auto outputTrajectory = convertToSpline(*dynamicPath.get(), startTime, stateSpace);
   return outputTrajectory;
 }
-
-std::unique_ptr<trajectory::Spline> computeParabolicTiming(
-    const trajectory::Interpolated& _inputTrajectory,
-    const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration)
-{
-  auto spline = convertToSpline(_inputTrajectory);
-  std::unique_ptr<trajectory::Spline> timedSpline =
-          computeParabolicTiming(spline.get(), _maxVelocity, _maxAcceleration);
-  return timedSpline;
-}
-
 
 } // namespace parabolic
 } // namespace planner

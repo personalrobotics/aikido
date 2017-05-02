@@ -100,6 +100,7 @@ public:
     Eigen::VectorXd& _tangentVector ) const override;
 
   /// Gets the number of waypoints.
+  /// \return The number of waypoints
   size_t getNumWaypoints() const;
 
   /// Gets a waypoint.

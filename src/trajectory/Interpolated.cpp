@@ -100,7 +100,6 @@ void Interpolated::evaluateDerivative(double _t, int _derivative,
     _tangentVector.setZero();
   }
 
-  //if(_t==getStartTime())
   if(_t==mWaypoints[0].t)
   {
       const auto segmentTime = mWaypoints[1].t - mWaypoints[0].t;
