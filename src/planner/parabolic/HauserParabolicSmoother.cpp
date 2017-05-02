@@ -1,7 +1,7 @@
 #include <chrono>
 #include <cmath>
 #include "HauserParabolicSmoother.hpp"
-#include <aikido/planner/parabolic/detail/ParabolicUtil.hpp>
+#include "ParabolicUtil.hpp"
 #include "Config.h"
 
 using namespace ParabolicRamp;

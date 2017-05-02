@@ -13,7 +13,7 @@
 #include <aikido/trajectory/Spline.hpp>
 #include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
-#include <aikido/planner/parabolic/detail/ParabolicUtil.hpp>
+#include "ParabolicUtil.hpp"
 
 using Eigen::Vector2d;
 using aikido::statespace::CartesianProduct;

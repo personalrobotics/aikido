@@ -4,7 +4,7 @@
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
-#include <aikido/planner/parabolic/detail/ParabolicUtil.hpp>
+#include "ParabolicUtil.hpp"
 #include "HauserParabolicSmoother.hpp"
 
 
