@@ -1,7 +1,7 @@
 #include <chrono>
 #include <cmath>
 #include "HauserParabolicSmoother.hpp"
-#include "ParabolicUtil.hpp"
+#include <aikido/planner/parabolic/detail/ParabolicUtil.hpp>
 #include "Config.h"
 
 using namespace ParabolicRamp;
@@ -35,7 +35,7 @@ bool SmootherFeasibilityChecker::SegmentFeasible(ParabolicRamp::Vector const &a,
    double resolution = 1e-2;
    double stepNum = deltaVec.norm() / resolution;
    double stepLen = 1.0/stepNum;
-   for(int i=0.0;i<=1;i+=stepLen)
+   for(double i=0.0;i<=1.;i+=stepLen)
    {
        Eigen::VectorXd newVec = eigA + i * deltaVec;
        auto newState = stateSpace->createState();
