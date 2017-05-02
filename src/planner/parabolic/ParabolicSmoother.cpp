@@ -4,7 +4,7 @@
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
-#include "ParabolicUtil.hpp"
+#include <aikido/planner/parabolic/detail/ParabolicUtil.hpp>
 #include "HauserParabolicSmoother.hpp"
 
 
@@ -12,8 +12,56 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
+std::unique_ptr<trajectory::Spline> doShortcut(
+    const trajectory::Interpolated& _inputTrajectory,
+    const aikido::constraint::TestablePtr _feasibilityCheck,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration,
+    double _timelimit,
+    bool _useVelocity)
+{
+  auto spline = convertToSpline(_inputTrajectory);
+  return doShortcut(spline.get(), _feasibilityCheck,
+                    _maxVelocity, _maxAcceleration,
+                    _timelimit, _useVelocity);
+}
+
+std::unique_ptr<trajectory::Spline> doBlend(
+    const trajectory::Interpolated& _inputTrajectory,
+    const aikido::constraint::TestablePtr _feasibilityCheck,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration,
+    double _timelimit,
+    bool _useVelocity,
+    double _blendRadius,
+    int _blendIterations)
+{
+  auto spline = convertToSpline(_inputTrajectory);
+  return doBlend(spline.get(), _feasibilityCheck,
+                 _maxVelocity, _maxAcceleration,
+                 _timelimit, _useVelocity,
+                 _blendRadius, _blendIterations);
+}
+
+std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
+    const trajectory::Interpolated& _inputTrajectory,
+    const aikido::constraint::TestablePtr _feasibilityCheck,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration,
+    double _timelimit,
+    bool _useVelocity,
+    double _blendRadius,
+    int _blendIterations)
+{
+  auto spline = convertToSpline(_inputTrajectory);
+  return doShortcutAndBlend(spline.get(), _feasibilityCheck,
+                            _maxVelocity, _maxAcceleration,
+                            _timelimit, _useVelocity,
+                            _blendRadius, _blendIterations);
+}
+
 std::unique_ptr<aikido::trajectory::Spline> doShortcut(
-    aikido::trajectory::Spline* _inputTrajectory,
+    const aikido::trajectory::Spline* _inputTrajectory,
     const aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
@@ -39,7 +87,7 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
 
 
 std::unique_ptr<trajectory::Spline> doBlend(
-    trajectory::Spline* _inputTrajectory,
+    const trajectory::Spline* _inputTrajectory,
     const aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
@@ -67,7 +115,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
 }
 
 std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
-    trajectory::Spline* _inputTrajectory,
+    const trajectory::Spline* _inputTrajectory,
     const aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,

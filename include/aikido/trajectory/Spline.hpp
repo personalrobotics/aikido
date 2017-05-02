@@ -99,12 +99,25 @@ public:
   void evaluateDerivative(double _t, int _derivative,
     Eigen::VectorXd& _tangentVector ) const override;
 
+  /// Gets the number of waypoints.
   size_t getNumWaypoints() const;
 
+  /// Gets a waypoint.
+  ///
+  /// \param _index waypoint index
+  /// \return state of the waypoint at index \c _index
   void getWaypoint(size_t _index, statespace::StateSpace::State* state) const;
 
+  /// Gets the time of a waypoint.
+  /// \param _index waypoint index
+  /// \return time of the waypoint at index \c _index
   double getWaypointTime(size_t _index) const;
 
+  /// Gets the derivative of a waypoint.
+  /// \param _index waypoint index
+  /// \param _derivative order of derivative
+  /// \param[out] _tangentVector output tangent vector in the local frame at
+  /// index \c _index
   void getWaypointDerivative(size_t _index, int _derivative,
     Eigen::VectorXd&_tangentVector) const;
 

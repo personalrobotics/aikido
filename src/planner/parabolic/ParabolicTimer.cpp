@@ -4,6 +4,7 @@
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/util/Spline.hpp>
+#include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
 
@@ -17,9 +18,68 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+    const aikido::trajectory::Interpolated& _inputTrajectory)
+{
+  using aikido::statespace::GeodesicInterpolator;
+
+  const auto stateSpace = _inputTrajectory.getStateSpace();
+  const auto dimension = stateSpace->getDimension();
+  const auto numWaypoints = _inputTrajectory.getNumWaypoints();
+
+  if (!checkStateSpace(stateSpace.get()))
+    throw std::invalid_argument(
+        "computeParabolicTiming only supports Rn, "
+        "SO2, and CartesianProducts consisting of those types.");
+
+  const auto interpolator = _inputTrajectory.getInterpolator();
+  if (dynamic_cast<const GeodesicInterpolator*>(interpolator.get()) == nullptr)
+    throw std::invalid_argument(
+        "computeParabolicTiming only supports geodesic interpolation.");
+
+  if (numWaypoints == 0)
+    throw std::invalid_argument("Trajectory is empty.");
+
+  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(
+      stateSpace, _inputTrajectory.getStartTime());
+
+  Eigen::VectorXd currentVec, nextVec, currentVelocity, nextVelocity;
+
+  for (size_t iwaypoint = 0; iwaypoint < numWaypoints-1; ++iwaypoint)
+  {
+    const auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
+    double currentTime = _inputTrajectory.getWaypointTime(iwaypoint);
+    const auto nextState = _inputTrajectory.getWaypoint(iwaypoint+1);
+    double nextTime = _inputTrajectory.getWaypointTime(iwaypoint+1);
+
+    stateSpace->logMap(currentState, currentVec);
+    stateSpace->logMap(nextState, nextVec);
+
+    _inputTrajectory.evaluateDerivative(currentTime, 1, currentVelocity);
+    _inputTrajectory.evaluateDerivative(nextTime, 1, nextVelocity);
+
+    // Compute the spline coefficients for this segment of the trajectory. Each
+    // segment is expressed in the tangent space of the previous segment.
+    // TODO: We should apply the adjoint transform to velocity.
+    CubicSplineProblem problem(Vector2d(0, nextTime - currentTime), 4, dimension);
+    problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
+    problem.addConstantConstraint(0, 1, currentVelocity);
+    problem.addConstantConstraint(1, 0, nextVec - currentVec);
+    problem.addConstantConstraint(1, 1, nextVelocity);
+    const auto spline = problem.fit();
+
+    assert(spline.getCoefficients().size() == 1);
+    const auto& coefficients = spline.getCoefficients().front();
+    outputTrajectory->addSegment(
+        coefficients, nextTime - currentTime, currentState);
+  }
+
+  return outputTrajectory;
+}
+
 
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
-      aikido::trajectory::Spline* _inputTrajectory,
+      const aikido::trajectory::Spline* _inputTrajectory,
       const Eigen::VectorXd& _maxVelocity,
       const Eigen::VectorXd& _maxAcceleration)
 {
