@@ -33,8 +33,8 @@ protected:
   void SetUp() override
   {
     mStateSpace = std::make_shared<R2>();
-    mMaxVelocity = Eigen::Vector2d(1., 1.);
-    mMaxAcceleration = Eigen::Vector2d(2., 2.);
+    mMaxVelocity = Eigen::Vector2d(20., 20.);
+    mMaxAcceleration = Eigen::Vector2d(10., 10.);
 
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
     mStraightLine = std::make_shared<Interpolated>(
@@ -57,20 +57,20 @@ protected:
             (mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
-    Vector2d p1(1., 1.), p2(2., 1.), p3(2., 2.),
-            p4(3., 2.), p5(3., 3.), p6(4.,3.);
+    Vector2d p1(1., 1.), p2(2., 1.2), p3(2.2, 2.),
+            p4(3., 2.2), p5(3.2, 3.), p6(4.,3.2);
     state.setValue(p1);
     mNonStraightLine->addWaypoint(0., state);
     state.setValue(p2);
-    mNonStraightLine->addWaypoint(0.25, state);
-    state.setValue(p3);
-    mNonStraightLine->addWaypoint(0.5, state);
-    state.setValue(p4);
-    mNonStraightLine->addWaypoint(0.75, state);
-    state.setValue(p5);
     mNonStraightLine->addWaypoint(1., state);
+    state.setValue(p3);
+    mNonStraightLine->addWaypoint(2., state);
+    state.setValue(p4);
+    mNonStraightLine->addWaypoint(3., state);
+    state.setValue(p5);
+    mNonStraightLine->addWaypoint(4., state);
     state.setValue(p6);
-    mNonStraightLine->addWaypoint(1.25, state);
+    mNonStraightLine->addWaypoint(5, state);
 
     double length = (p2-p1).norm() + (p3-p2).norm()
             + (p4-p3).norm() + (p5-p4).norm()
@@ -103,12 +103,12 @@ protected:
   std::shared_ptr<Interpolated> mStraightLine;
   std::shared_ptr<Interpolated> mNonStraightLine;
   double mNonStraightLineLength;
+  double mTimelimit = 1.0;
   const double mTolerance = 1e-5;
 };
 
 TEST_F(ParabolicSmootherTests, convertInterpolatedToSpline)
 {
-
     auto spline = convertToSpline(*mStraightLine.get());
 
     auto splineState = mStateSpace->createState();
@@ -140,11 +140,8 @@ TEST_F(ParabolicSmootherTests, doShortcut)
            std::make_shared<Satisfied>(mStateSpace);
 
    auto splineTrajectory = convertToSpline(*mNonStraightLine.get());
-   double timelimit = 10.0;
    auto smoothedTrajectory = doShortcut(*splineTrajectory.get(),
-       testable, mMaxVelocity, mMaxAcceleration, timelimit);
-
-   double shortenLength = getLength(smoothedTrajectory.get());
+       testable, mMaxVelocity, mMaxAcceleration, mTimelimit);
 
    // Position.
    auto state = mStateSpace->createState();
@@ -158,21 +155,25 @@ TEST_F(ParabolicSmootherTests, doShortcut)
    mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
    EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
 
+   double shortenLength = getLength(smoothedTrajectory.get());
    EXPECT_TRUE(shortenLength < mNonStraightLineLength);
+
+   double originTime = mNonStraightLine->getDuration();
+   double shortenTime = smoothedTrajectory->getDuration();
+   EXPECT_TRUE(shortenTime<originTime);
 }
 
 TEST_F(ParabolicSmootherTests, doBlend)
 {
-   Eigen::Vector2d maxVelocity(10., 10.), maxAcceleration(20., 20.);
    std::shared_ptr<Satisfied> testable =
            std::make_shared<Satisfied>(mStateSpace);
 
    auto splineTrajectory = convertToSpline(*mNonStraightLine.get());
-   double timelimit = 10.0;
    double blendRadius = 0.5;
-   int blendIterations = 10;
-   auto smoothedTrajectory = doBlend(*splineTrajectory.get(),
-       testable, maxVelocity, maxAcceleration, timelimit, blendRadius, blendIterations);
+   int blendIterations = 100;
+   auto smoothedTrajectory = doBlend(
+               *splineTrajectory.get(), testable,
+               mMaxVelocity, mMaxAcceleration, blendRadius, blendIterations);
 
    // Position.
    auto state = mStateSpace->createState();
@@ -185,6 +186,9 @@ TEST_F(ParabolicSmootherTests, doBlend)
    auto goalState = mStateSpace->createState();
    mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
    EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
+
+   double shortenLength = getLength(smoothedTrajectory.get());
+   EXPECT_TRUE(shortenLength < mNonStraightLineLength);
 
    double originTime = mNonStraightLine->getDuration();
    double shortenTime = smoothedTrajectory->getDuration();
@@ -193,20 +197,15 @@ TEST_F(ParabolicSmootherTests, doBlend)
 
 TEST_F(ParabolicSmootherTests, doShortcutAndBlend)
 {
-   Eigen::Vector2d maxVelocity(10., 10.), maxAcceleration(20., 20.);
-
     std::shared_ptr<Satisfied> testable =
            std::make_shared<Satisfied>(mStateSpace);
 
    auto splineTrajectory = convertToSpline(*mNonStraightLine.get());
-   double timelimit = 10.0;
    double blendRadius = 0.5;
-   int blendIterations = 10;
+   int blendIterations = 100;
    auto smoothedTrajectory = doShortcutAndBlend(*splineTrajectory.get(),
-       testable, maxVelocity, maxAcceleration, timelimit,
+       testable, mMaxVelocity, mMaxAcceleration, mTimelimit,
        blendRadius, blendIterations);
-
-   double shortenLength = getLength(smoothedTrajectory.get());
 
    // Position.
    auto state = mStateSpace->createState();
@@ -220,6 +219,7 @@ TEST_F(ParabolicSmootherTests, doShortcutAndBlend)
    mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
    EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
 
+   double shortenLength = getLength(smoothedTrajectory.get());
    EXPECT_TRUE(shortenLength < mNonStraightLineLength);
 
    double originTime = mNonStraightLine->getDuration();

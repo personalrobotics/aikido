@@ -187,7 +187,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<ParabolicRamp::DynamicPath>
     convertToDynamicPath(const aikido::trajectory::Spline& _inputTrajectory,
                          const Eigen::VectorXd& _maxVelocity,
-                         const Eigen::VectorXd& _maxAcceleration)
+                         const Eigen::VectorXd& _maxAcceleration,
+                         bool _useVelocity)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
@@ -213,8 +214,12 @@ std::unique_ptr<ParabolicRamp::DynamicPath>
 
   auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
-  //outputPath->SetMilestones(milestones, velocities);
-  outputPath->SetMilestones(milestones);
+  if(_useVelocity)
+    outputPath->SetMilestones(milestones, velocities);
+  else
+    outputPath->SetMilestones(milestones);
+  if(!outputPath->IsValid())
+      throw std::runtime_error("Converted DynamicPath is not valid");
   return outputPath;
 }
 

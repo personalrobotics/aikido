@@ -59,7 +59,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<ParabolicRamp::DynamicPath>
     convertToDynamicPath(const aikido::trajectory::Spline& _inputTrajectory,
                          const Eigen::VectorXd& _maxVelocity,
-                         const Eigen::VectorXd& _maxAcceleration);
+                         const Eigen::VectorXd& _maxAcceleration,
+                         bool _useVelocity = true);
 
 
 } // namespace parabolic

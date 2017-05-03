@@ -10,9 +10,11 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
-constexpr double DEFAULT_TIMELIMT = 3.0;
+constexpr double DEFAULT_TIMELIMT  = 3.0;
 constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
+constexpr double DEFAULT_TOLERANCE = 1e-3;
+
 
 /// Smooth a trajectory and apply shortcut
 /// \param _inputTrajectory input piecewise Geodesic trajectory
@@ -28,6 +30,7 @@ std::unique_ptr<trajectory::Spline> doShortcut(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,    
     double _timelimit = DEFAULT_TIMELIMT,
+    double _tolerance = DEFAULT_TOLERANCE,
     aikido::util::RNG::result_type _rngSeed = std::random_device{}());
 
 /// Blend around waypoints in a trajectory using parabolic splines.
@@ -62,9 +65,9 @@ std::unique_ptr<trajectory::Spline> doBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    double _timelimit = DEFAULT_TIMELIMT,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
-    int _blendIterations = DEFAULT_BLEND_ITERATIONS);
+    int _blendIterations = DEFAULT_BLEND_ITERATIONS,
+    double _tolerance = DEFAULT_TOLERANCE);
 
 /// Smooth a trajectory and apply shortcut and blend
 /// \param _inputTrajectory input piecewise Geodesic trajectory
@@ -84,6 +87,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     double _timelimit = DEFAULT_TIMELIMT,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
+    double _tolerance = DEFAULT_TOLERANCE,
     aikido::util::RNG::result_type _rngSeed = std::random_device{}()
     );
 
