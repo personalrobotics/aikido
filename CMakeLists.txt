@@ -97,14 +97,6 @@ format_add_sources(${headers_distance})
 #==============================================================================
 # Helper functions.
 #
-function(evaluate_condition output_variable)
-  if(${ARGN})
-    set("${output_variable}" TRUE PARENT_SCOPE)
-  else()
-    set("${output_variable}" FALSE PARENT_SCOPE)
-  endif()
-endfunction()
-
 function(aikido_space_delimit output_variable input_list)
   set(accumulator)
   foreach(input_element ${input_list})
