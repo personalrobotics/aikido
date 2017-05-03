@@ -67,7 +67,7 @@ public:
     Eigen::VectorXd& _tangentVector ) const override;
 
 private:
-  /// Waypint in the trajectory.
+  /// Waypoint in the trajectory.
   struct Waypoint
   {
     Waypoint(double _t, aikido::statespace::StateSpace::State *_state);

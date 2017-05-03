@@ -101,5 +101,5 @@ TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
   auto traj = planSnap(stateSpace, *startState, *goalState, interpolator,
     failingConstraint, planningResult);
-  EXPECT_EQ(0, traj->getNumWaypoints());  // TODO boost::optional
+  EXPECT_EQ(nullptr, traj);
 }
