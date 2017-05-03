@@ -2,7 +2,7 @@
 #include <cmath>
 #include <aikido/util/VanDerCorput.hpp>
 #include "HauserMath.h"
-#include "HauserParabolicSmoother.hpp"
+#include "HauserParabolicSmootherHelpers.hpp"
 #include "ParabolicUtil.hpp"
 #include "Config.h"
 
@@ -11,6 +11,9 @@ using namespace ParabolicRamp;
 namespace aikido {
 namespace planner {
 namespace parabolic {
+namespace hauserParabolicSmoother {
+
+static constexpr double CHECK_RESOLUTION = 1e-3;
 
 class RampRandomGenerator : public RandomNumberGeneratorBase
 {
@@ -25,12 +28,11 @@ public:
     std::uniform_real_distribution<>       distribution_;
 };
 
-
 class SmootherFeasibilityCheckerBase : public ParabolicRamp::FeasibilityCheckerBase
 {
 public:
     SmootherFeasibilityCheckerBase(aikido::constraint::TestablePtr testable,
-                                   double checkResolution = 0.2)
+                                   double checkResolution = CHECK_RESOLUTION)
         : testable_(std::move(testable)),
           checkResolution_(checkResolution)
     {
@@ -79,81 +81,25 @@ private:
     std::shared_ptr<aikido::statespace::GeodesicInterpolator> interpolator_;
 };
 
-HauserParabolicSmoother::HauserParabolicSmoother(aikido::constraint::TestablePtr testable,
-                                                 double timelimit,
-                                                 double blendRadius,
-                                                 int blendIterations,
-                                                 double tolerance)
-    : blendRadius_(blendRadius),
-      blendIterations_(blendIterations),
-      timelimit_(timelimit*1e3),
-      tolerance_(tolerance)
+bool needsBlend(ParabolicRamp::ParabolicRampND const &rampNd)
 {
-    if(timelimit_ < 0.0)
-      throw std::runtime_error("Timelimit should be non-negative");
-    if(blendIterations_ <= 0)
-      throw std::runtime_error("Blend iterations should be positive");
-    if(blendRadius_ <= 0.0)
-      throw std::runtime_error("Blend radius should be positive");
-    if(tolerance_ < 0.0)
-      throw std::runtime_error("Tolerance should be non-negative");
-
-    checkerBase_ = std::make_shared<SmootherFeasibilityCheckerBase>(testable);
-    feasibilityChecker_ = std::make_shared<ParabolicRamp::RampFeasibilityChecker>
-            (checkerBase_.get(), static_cast<ParabolicRamp::Real>(tolerance_));
-}
-
-
-bool HauserParabolicSmoother::doShortcut(ParabolicRamp::DynamicPath& dynamicPath,
-                                         aikido::util::RNG::result_type _rngSeed)
-{
-    std::chrono::time_point<std::chrono::system_clock> startTime, currentTime;
-    startTime = std::chrono::system_clock::now();
-    double elapsedTime = 0;
-
-    RampRandomGenerator* rndGnr= new RampRandomGenerator(_rngSeed);
-
-    while (elapsedTime < timelimit_ && dynamicPath.ramps.size() > 3)
+    for (size_t idof = 0; idof < rampNd.dx1.size(); ++idof)
     {
-        dynamicPath.Shortcut(1, *feasibilityChecker_, rndGnr);
-
-        currentTime = std::chrono::system_clock::now();
-        elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
-            currentTime - startTime).count();
+        if (std::fabs(rampNd.dx1[idof]) > ParabolicRamp::EpsilonV)
+        {
+            return false;
+        }
     }
     return true;
 }
 
-
-bool HauserParabolicSmoother::doBlend(ParabolicRamp::DynamicPath& dynamicPath)
-{
-    // Mark all of the ramps in the initial trajectory as "original". We'll
-    // only try to blend transitions between these ramps.
-    for(unsigned int i=0;i<dynamicPath.ramps.size();++i)
-    {
-        dynamicPath.ramps[i].blendAttempts = 0;
-    }
-
-    double dtShortcut = blendRadius_;
-
-    // tryBlend always starts at the beginning of the trajectory.
-    // Without this bookkeeping, tryBlend would could any blend that fails multiple times.
-    for (int attempt = 0; attempt < blendIterations_; ++attempt)
-    {
-        while (tryBlend(dynamicPath, attempt, dtShortcut));
-
-        dtShortcut /= 2.;
-    }
-    return true;
-}
-
-bool HauserParabolicSmoother::tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
-                                       int attempt, double dtShortcut)
+bool tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
+              ParabolicRamp::RampFeasibilityChecker feasibilityChecker,
+              int attempt, double dtShortcut)
 {
     // blending can completely remove waypoints from the trajectory in the case
     // that two waypoints are closer than _blendRadius together - which means
     // that waypoint indicies can change between iterations of the algorithm.
-
     size_t const numRamps = dynamicPath.ramps.size();
     double const tMax = dynamicPath.GetTotalTime();
     double t = 0;
@@ -168,7 +114,7 @@ bool HauserParabolicSmoother::tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
             double const t1 = std::max(t - dtShortcut, - ParabolicRamp::EpsilonT);
             double const t2 = std::min(t + dtShortcut, tMax + ParabolicRamp::EpsilonT);
 
-            bool const success = dynamicPath.TryShortcut(t1, t2, *feasibilityChecker_.get());
+            bool const success = dynamicPath.TryShortcut(t1, t2, feasibilityChecker);
 
             if (success)
             {
@@ -182,18 +128,71 @@ bool HauserParabolicSmoother::tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
     return false;
 }
 
-bool HauserParabolicSmoother::needsBlend(ParabolicRamp::ParabolicRampND const &rampNd)
+bool doShortcut(ParabolicRamp::DynamicPath& dynamicPath,
+                aikido::constraint::TestablePtr testable,
+                double timelimit, double tolerance,
+                aikido::util::RNG::result_type rngSeed)
 {
-    for (size_t idof = 0; idof < rampNd.dx1.size(); ++idof)
+    if(timelimit < 0.0)
+      throw std::runtime_error("Timelimit should be non-negative");
+    if(tolerance < 0.0)
+      throw std::runtime_error("Tolerance should be non-negative");
+
+    SmootherFeasibilityCheckerBase base(testable);
+    ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
+    RampRandomGenerator rndGnr(rngSeed);
+
+    std::chrono::time_point<std::chrono::system_clock> startTime, currentTime;
+    startTime = std::chrono::system_clock::now();
+    double elapsedTime = 0;
+
+    while (elapsedTime < timelimit && dynamicPath.ramps.size() > 3)
     {
-        if (std::fabs(rampNd.dx1[idof]) > ParabolicRamp::EpsilonV)
-        {
-            return false;
-        }
+        dynamicPath.Shortcut(1, feasibilityChecker);
+        //dynamicPath.Shortcut(1, feasibilityChecker, &rndGnr);
+
+        currentTime = std::chrono::system_clock::now();
+        elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(
+            currentTime - startTime).count();
     }
     return true;
 }
 
+
+bool doBlend(ParabolicRamp::DynamicPath& dynamicPath,
+             aikido::constraint::TestablePtr testable,
+             double tolerance, double blendRadius, int blendIterations)
+{
+    if(blendIterations <= 0)
+      throw std::runtime_error("Blend iterations should be positive");
+    if(blendRadius <= 0.0)
+      throw std::runtime_error("Blend radius should be positive");
+
+    SmootherFeasibilityCheckerBase base(testable);
+    ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
+
+    // Mark all of the ramps in the initial trajectory as "original". We'll
+    // only try to blend transitions between these ramps.
+    for(unsigned int i=0;i<dynamicPath.ramps.size();++i)
+    {
+        dynamicPath.ramps[i].blendAttempts = 0;
+    }
+
+    double dtShortcut = blendRadius;
+
+    // tryBlend always starts at the beginning of the trajectory.
+    // Without this bookkeeping, tryBlend would could any blend that fails multiple times.
+    for (int attempt = 0; attempt < blendIterations; ++attempt)
+    {
+        while (tryBlend(dynamicPath, feasibilityChecker, attempt, dtShortcut));
+
+        dtShortcut /= 2.;
+    }
+    return true;
+}
+
+
+} // namespace hauserParabolicSmoother
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido

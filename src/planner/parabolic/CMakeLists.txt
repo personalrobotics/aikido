@@ -1,7 +1,7 @@
 set(sources ParabolicTimer.cpp
             ParabolicSmoother.cpp
             ParabolicUtil.cpp
-            HauserParabolicSmoother.cpp)
+            HauserParabolicSmootherHelpers.cpp)
 
 add_library("${PROJECT_NAME}_planner_parabolic" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_planner_parabolic" SYSTEM

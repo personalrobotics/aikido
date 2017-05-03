@@ -5,7 +5,7 @@
 #include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
-#include "HauserParabolicSmoother.hpp"
+#include "HauserParabolicSmootherHelpers.hpp"
 
 namespace aikido {
 namespace planner {
@@ -17,18 +17,21 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
     double _timelimit,
+    double _tolerance,
     aikido::util::RNG::result_type _rngSeed)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
-  HauserParabolicSmoother parabolicSmoother(_feasibilityCheck,
-                                            _timelimit);
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = convertToDynamicPath(_inputTrajectory,
                                           _maxVelocity,
                                           _maxAcceleration);
 
-  parabolicSmoother.doShortcut(*dynamicPath.get(), _rngSeed);
+  hauserParabolicSmoother::doShortcut(*dynamicPath.get(),
+                               _feasibilityCheck,
+                               _timelimit,
+                               _tolerance,
+                               _rngSeed);
 
   auto outputTrajectory =
             convertToSpline(*dynamicPath.get(), startTime, stateSpace);
@@ -41,22 +44,20 @@ std::unique_ptr<trajectory::Spline> doBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    double _timelimit,
-    double _blendRadius,
-    int _blendIterations)
+    double _blendRadius, int _blendIterations, double _tolerance)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
-  HauserParabolicSmoother parabolicSmoother(_feasibilityCheck,
-                                            _timelimit,
-                                            _blendRadius,
-                                            _blendIterations);
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = convertToDynamicPath(_inputTrajectory,
                                           _maxVelocity,
-                                          _maxAcceleration);
+                                          _maxAcceleration,
+                                          false);
 
-  parabolicSmoother.doBlend(*dynamicPath.get());
+  hauserParabolicSmoother::doBlend(*dynamicPath.get(),
+                                   _feasibilityCheck,
+                                   _tolerance, _blendRadius,
+                                   _blendIterations);
 
   auto outputTrajectory =
               convertToSpline(*dynamicPath.get(), startTime, stateSpace);
@@ -72,21 +73,26 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     double _timelimit,
     double _blendRadius,
     int _blendIterations,
+    double _tolerance,
     aikido::util::RNG::result_type _rngSeed)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
-  HauserParabolicSmoother parabolicSmoother(_feasibilityCheck,
-                                            _timelimit,
-                                            _blendRadius,
-                                            _blendIterations);
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = convertToDynamicPath(_inputTrajectory,
                                           _maxVelocity,
                                           _maxAcceleration);
 
-  parabolicSmoother.doShortcut(*dynamicPath.get(), _rngSeed);
-  parabolicSmoother.doBlend(*dynamicPath.get());
+  hauserParabolicSmoother::doShortcut(*dynamicPath.get(),
+                               _feasibilityCheck,
+                               _timelimit,
+                               _tolerance,
+                               _rngSeed);
+
+  hauserParabolicSmoother::doBlend(*dynamicPath.get(),
+                                   _feasibilityCheck,
+                                   _tolerance, _blendRadius,
+                                   _blendIterations);
 
   auto outputTrajectory =
                 convertToSpline(*dynamicPath.get(), startTime, stateSpace);
