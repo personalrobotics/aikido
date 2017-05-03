@@ -15,14 +15,29 @@ constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
 constexpr double DEFAULT_TOLERANCE = 1e-3;
 
-
-/// Smooth a trajectory and apply shortcut
+/// Shortcut waypoints in a trajectory using parabolic splines.
+///
+/// This function smooths `_inputTrajectory' by iteratively sampling
+/// two waypoints in a trajectory and trying to find a shortcut using
+/// the following algorithm:
+///
+/// while _timelimit is not out:
+/// - Randomly sample two times uniformly at random.
+/// - Find two waypoints according two times in _inputTrajectory.
+/// - Attempt to connect the two waypoints with a time-optimal parabolic
+/// spline.
+///
+/// _rngSeed is used in the random generator for sampling times.
 /// \param _inputTrajectory input piecewise Geodesic trajectory
 /// \param _feasibilityCheck Check whether a position is feasible
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \param _timelimit The maximum time to allow for doing shortcut
-/// (unit in second)
+/// \param _tolerance this tolerance is used in a piecewise linear 
+/// discretization that deviates no more than \c _tolerance 
+/// from the parabolic ramp along any axis, and then checks for
+/// configuration and segment feasibility along that piecewise linear path.
+/// \_rngSeed seed used by a random generator for sampling time in shortcut.
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doShortcut(
     const trajectory::Spline& _inputTrajectory,
@@ -55,10 +70,12 @@ std::unique_ptr<trajectory::Spline> doShortcut(
 /// \param _feasibilityCheck Check whether a position is feasible
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
-/// \param _timelimit The maximum time to allow for doing shortcut
-/// (unit in second)
 /// \param _blendRadius the radius used in doing blend
 /// \param _blendIterations the maximum iteration number in doing blend
+/// \param _tolerance this tolerance is used in a piecewise linear 
+/// discretization that deviates no more than \c _tolerance 
+/// from the parabolic ramp along any axis, and then checks for
+/// configuration and segment feasibility along that piecewise linear path.
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doBlend(
     const trajectory::Spline& _inputTrajectory,
@@ -69,7 +86,11 @@ std::unique_ptr<trajectory::Spline> doBlend(
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
     double _tolerance = DEFAULT_TOLERANCE);
 
-/// Smooth a trajectory and apply shortcut and blend
+/// Shortcut and blends waypoints in a trajectory using parabolic splines.
+///
+/// This function smooths `_inputTrajectory' by firstly applying shortcut
+/// to _inputTrajectory and then using blend to remove segments that have
+/// zero velocities.
 /// \param _inputTrajectory input piecewise Geodesic trajectory
 /// \param _feasibilityCheck Check whether a position is feasible
 /// \param _maxVelocity maximum velocity for each dimension
@@ -78,6 +99,11 @@ std::unique_ptr<trajectory::Spline> doBlend(
 /// (unit in second)
 /// \param _blendRadius the radius used in doing blend
 /// \param _blendIterations the maximum iteration number in doing blend
+/// \param _tolerance this tolerance is used in a piecewise linear 
+/// discretization that deviates no more than \c _tolerance 
+/// from the parabolic ramp along any axis, and then checks for
+/// configuration and segment feasibility along that piecewise linear path.
+/// \_rngSeed seed used by a random generator for sampling time in shortcut.
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     const trajectory::Spline& _inputTrajectory,
