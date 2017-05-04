@@ -4,8 +4,8 @@
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
-#include "ParabolicUtil.hpp"
 #include "HauserParabolicSmootherHelpers.hpp"
+#include "ParabolicUtil.hpp"
 
 namespace aikido {
 namespace planner {
@@ -19,25 +19,23 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
     aikido::util::RNG& _rng,
     double _timelimit,
     double _checkResolution,
-    double _tolerance
-    )
+    double _tolerance)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath = convertToDynamicPath(_inputTrajectory,
-                                          _maxVelocity,
-                                          _maxAcceleration);
+  auto dynamicPath
+      = convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
 
-  detail::doShortcut(*dynamicPath,
-                     _feasibilityCheck,
-                     _timelimit,
-                     _checkResolution,
-                     _tolerance,
-                     _rng);
+  detail::doShortcut(
+      *dynamicPath,
+      _feasibilityCheck,
+      _timelimit,
+      _checkResolution,
+      _tolerance,
+      _rng);
 
-  auto outputTrajectory =
-            convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory = convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -47,26 +45,26 @@ std::unique_ptr<trajectory::Spline> doBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    double _blendRadius, int _blendIterations,
-    double _checkResolution, double _tolerance)
+    double _blendRadius,
+    int _blendIterations,
+    double _checkResolution,
+    double _tolerance)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath = convertToDynamicPath(_inputTrajectory,
-                                          _maxVelocity,
-                                          _maxAcceleration,
-                                          false);
+  auto dynamicPath = convertToDynamicPath(
+      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
 
-  detail::doBlend(*dynamicPath,
-                  _feasibilityCheck,
-                  _blendRadius,
-                  _blendIterations,
-                  _checkResolution,
-                  _tolerance);
+  detail::doBlend(
+      *dynamicPath,
+      _feasibilityCheck,
+      _blendRadius,
+      _blendIterations,
+      _checkResolution,
+      _tolerance);
 
-  auto outputTrajectory =
-              convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory = convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -81,36 +79,34 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     double _blendRadius,
     int _blendIterations,
     double _checkResolution,
-    double _tolerance
-    )
+    double _tolerance)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath = convertToDynamicPath(_inputTrajectory,
-                                          _maxVelocity,
-                                          _maxAcceleration);
+  auto dynamicPath
+      = convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
 
-  detail::doShortcut(*dynamicPath,
-                     _feasibilityCheck,
-                               _timelimit,
-                               _checkResolution,
-                               _tolerance,
-                               _rng);
+  detail::doShortcut(
+      *dynamicPath,
+      _feasibilityCheck,
+      _timelimit,
+      _checkResolution,
+      _tolerance,
+      _rng);
 
-  detail::doBlend(*dynamicPath,
-                  _feasibilityCheck,
-                  _blendRadius,
-                  _blendIterations,
-                  _checkResolution,
-                  _tolerance);
+  detail::doBlend(
+      *dynamicPath,
+      _feasibilityCheck,
+      _blendRadius,
+      _blendIterations,
+      _checkResolution,
+      _tolerance);
 
-  auto outputTrajectory =
-                convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory = convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
-
 
 } // namespace parabolic
 } // namespace planner

@@ -1,10 +1,11 @@
 #ifndef PARABOLIC_UTIL_HPP_
 #define PARABOLIC_UTIL_HPP_
 
+#include "ParabolicUtil.hpp"
 #include <cassert>
 #include <set>
-#include <dart/dart.hpp>
 #include <dart/common/StlHelpers.hpp>
+#include <dart/dart.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
@@ -13,7 +14,6 @@
 #include <aikido/trajectory/Spline.hpp>
 #include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
-#include "ParabolicUtil.hpp"
 
 using Eigen::Vector2d;
 using aikido::statespace::CartesianProduct;
@@ -120,9 +120,9 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 }
 
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-        const ParabolicRamp::DynamicPath& _inputPath,
-        double _startTime,
-        aikido::statespace::StateSpacePtr _stateSpace)
+    const ParabolicRamp::DynamicPath& _inputPath,
+    double _startTime,
+    aikido::statespace::StateSpacePtr _stateSpace)
 {
   const auto dimension = _stateSpace->getDimension();
 
@@ -133,14 +133,14 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 
   for (const auto& rampNd : _inputPath.ramps)
   {
-     for (const auto& ramp1d : rampNd.ramps)
-     {
-       transitionTimes.insert(t + ramp1d.tswitch1);
-       transitionTimes.insert(t + ramp1d.tswitch2);
-     }
+    for (const auto& ramp1d : rampNd.ramps)
+    {
+      transitionTimes.insert(t + ramp1d.tswitch1);
+      transitionTimes.insert(t + ramp1d.tswitch2);
+    }
 
-     t += rampNd.endTime;
-     transitionTimes.insert(t);
+    t += rampNd.endTime;
+    transitionTimes.insert(t);
   }
 
   // Convert the output to a spline with a knot at each transition time.
@@ -152,8 +152,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(_inputPath, timePrev, positionPrev, velocityPrev);
 
-  auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(_stateSpace,
-                                                          timePrev + _startTime);
+  auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(
+      _stateSpace, timePrev + _startTime);
   auto segmentStartState = _stateSpace->createState();
 
   for (const auto timeCurr : transitionTimes)
@@ -174,7 +174,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     assert(spline.getCoefficients().size() == 1);
     const auto& coefficients = spline.getCoefficients().front();
     _outputTrajectory->addSegment(
-      coefficients, timeCurr - timePrev, segmentStartState);
+        coefficients, timeCurr - timePrev, segmentStartState);
 
     timePrev = timeCurr;
     positionPrev = positionCurr;
@@ -184,11 +184,11 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   return _outputTrajectory;
 }
 
-std::unique_ptr<ParabolicRamp::DynamicPath>
-    convertToDynamicPath(const aikido::trajectory::Spline& _inputTrajectory,
-                         const Eigen::VectorXd& _maxVelocity,
-                         const Eigen::VectorXd& _maxAcceleration,
-                         bool _useVelocity)
+std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
+    const aikido::trajectory::Spline& _inputTrajectory,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration,
+    bool _useVelocity)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
@@ -202,24 +202,24 @@ std::unique_ptr<ParabolicRamp::DynamicPath>
 
   for (size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
-     auto currentState = stateSpace->createState();
-     _inputTrajectory.getWaypoint(iwaypoint, currentState);
+    auto currentState = stateSpace->createState();
+    _inputTrajectory.getWaypoint(iwaypoint, currentState);
 
-     stateSpace->logMap(currentState, currVec);
-     milestones.emplace_back(toVector(currVec));
+    stateSpace->logMap(currentState, currVec);
+    milestones.emplace_back(toVector(currVec));
 
-     _inputTrajectory.getWaypointDerivative(iwaypoint, 1, tangentVector);
-     velocities.emplace_back(toVector(tangentVector));
+    _inputTrajectory.getWaypointDerivative(iwaypoint, 1, tangentVector);
+    velocities.emplace_back(toVector(tangentVector));
   }
 
   auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
-  if(_useVelocity)
+  if (_useVelocity)
     outputPath->SetMilestones(milestones, velocities);
   else
     outputPath->SetMilestones(milestones);
-  if(!outputPath->IsValid())
-      throw std::runtime_error("Converted DynamicPath is not valid");
+  if (!outputPath->IsValid())
+    throw std::runtime_error("Converted DynamicPath is not valid");
   return outputPath;
 }
 
