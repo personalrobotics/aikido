@@ -88,11 +88,13 @@ endfunction()
 
 # TODO: Temporarily split header list per subdirectories.
 file(GLOB_RECURSE headers_statespace "${CMAKE_SOURCE_DIR}/include/aikido/statespace/*.hpp")
+file(GLOB_RECURSE headers_perception "${CMAKE_SOURCE_DIR}/include/aikido/perception/*.hpp")
 file(GLOB_RECURSE headers_planner "${CMAKE_SOURCE_DIR}/include/aikido/planner/*.hpp")
 file(GLOB_RECURSE headers_util "${CMAKE_SOURCE_DIR}/include/aikido/util/*.hpp")
 file(GLOB_RECURSE headers_distance "${CMAKE_SOURCE_DIR}/include/aikido/distance/*.hpp")
 file(GLOB_RECURSE headers_distance "${CMAKE_SOURCE_DIR}/include/aikido/control/*.hpp")
 format_add_sources(${headers_statespace})
+format_add_sources(${headers_perception})
 format_add_sources(${headers_planner})
 format_add_sources(${headers_util})
 format_add_sources(${headers_distance})
@@ -101,14 +103,6 @@ format_add_sources(${headers_control})
 #==============================================================================
 # Helper functions.
 #
-function(evaluate_condition output_variable)
-  if(${ARGN})
-    set("${output_variable}" TRUE PARENT_SCOPE)
-  else()
-    set("${output_variable}" FALSE PARENT_SCOPE)
-  endif()
-endfunction()
-
 function(aikido_space_delimit output_variable input_list)
   set(accumulator)
   foreach(input_element ${input_list})
