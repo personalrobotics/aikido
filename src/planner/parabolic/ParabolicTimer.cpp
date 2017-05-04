@@ -2,9 +2,9 @@
 #include <set>
 #include <dart/common/StlHelpers.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
+#include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/util/Spline.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
 
@@ -45,12 +45,12 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 
   Eigen::VectorXd currentVec, nextVec, currentVelocity, nextVelocity;
 
-  for (size_t iwaypoint = 0; iwaypoint < numWaypoints-1; ++iwaypoint)
+  for (size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
   {
     const auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
     double currentTime = _inputTrajectory.getWaypointTime(iwaypoint);
-    const auto nextState = _inputTrajectory.getWaypoint(iwaypoint+1);
-    double nextTime = _inputTrajectory.getWaypointTime(iwaypoint+1);
+    const auto nextState = _inputTrajectory.getWaypoint(iwaypoint + 1);
+    double nextTime = _inputTrajectory.getWaypointTime(iwaypoint + 1);
 
     stateSpace->logMap(currentState, currentVec);
     stateSpace->logMap(nextState, nextVec);
@@ -58,8 +58,9 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     _inputTrajectory.evaluateDerivative(currentTime, 1, currentVelocity);
     _inputTrajectory.evaluateDerivative(nextTime, 1, nextVelocity);
 
-    // Compute the spline coefficients for this segment of the trajectory. 
-    CubicSplineProblem problem(Vector2d(0, nextTime - currentTime), 4, dimension);
+    // Compute the spline coefficients for this segment of the trajectory.
+    CubicSplineProblem problem(
+        Vector2d(0, nextTime - currentTime), 4, dimension);
     problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
     problem.addConstantConstraint(0, 1, currentVelocity);
     problem.addConstantConstraint(1, 0, nextVec - currentVec);
@@ -75,11 +76,10 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   return outputTrajectory;
 }
 
-
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
-      const aikido::trajectory::Spline& _inputTrajectory,
-      const Eigen::VectorXd& _maxVelocity,
-      const Eigen::VectorXd& _maxAcceleration)
+    const aikido::trajectory::Spline& _inputTrajectory,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
@@ -104,12 +104,11 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   }
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath = convertToDynamicPath(_inputTrajectory,
-                                          _maxVelocity,
-                                          _maxAcceleration,
-                                          false);
+  auto dynamicPath = convertToDynamicPath(
+      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
 
-  auto outputTrajectory = convertToSpline(*dynamicPath.get(), startTime, stateSpace);
+  auto outputTrajectory
+      = convertToSpline(*dynamicPath.get(), startTime, stateSpace);
   return outputTrajectory;
 }
 

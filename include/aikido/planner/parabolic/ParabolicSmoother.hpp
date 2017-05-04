@@ -2,15 +2,15 @@
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICSMOOTHER_HPP_
 
 #include <Eigen/Dense>
+#include "aikido/constraint/Testable.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
-#include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {
 namespace parabolic {
 
-constexpr double DEFAULT_TIMELIMT  = 3.0;
+constexpr double DEFAULT_TIMELIMT = 3.0;
 constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
 constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
@@ -38,8 +38,8 @@ constexpr double DEFAULT_TOLERANCE = 1e-3;
 /// \param _timelimit The maximum time to allow for doing shortcut
 /// \param _checkResolution the resolution in discretizing a segment in
 /// checking the feasibility of the segment
-/// \param _tolerance this tolerance is used in a piecewise linear 
-/// discretization that deviates no more than \c _tolerance 
+/// \param _tolerance this tolerance is used in a piecewise linear
+/// discretization that deviates no more than \c _tolerance
 /// from the parabolic ramp along any axis, and then checks for
 /// configuration and segment feasibility along that piecewise linear path.
 /// \_rngSeed seed used by a random generator for sampling time in shortcut.
@@ -52,8 +52,7 @@ std::unique_ptr<trajectory::Spline> doShortcut(
     aikido::util::RNG& _rngSeed,
     double _timelimit = DEFAULT_TIMELIMT,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
-    double _tolerance = DEFAULT_TOLERANCE
-    );
+    double _tolerance = DEFAULT_TOLERANCE);
 
 /// Blend around waypoints in a trajectory using parabolic splines.
 ///
@@ -81,8 +80,8 @@ std::unique_ptr<trajectory::Spline> doShortcut(
 /// \param _blendIterations the maximum iteration number in doing blend
 /// \param _checkResolution the resolution in discretizing a segment in
 /// checking the feasibility of the segment
-/// \param _tolerance this tolerance is used in a piecewise linear 
-/// discretization that deviates no more than \c _tolerance 
+/// \param _tolerance this tolerance is used in a piecewise linear
+/// discretization that deviates no more than \c _tolerance
 /// from the parabolic ramp along any axis, and then checks for
 /// configuration and segment feasibility along that piecewise linear path.
 /// \return smoothed trajectory that satisfies acceleration constraints
@@ -113,8 +112,8 @@ std::unique_ptr<trajectory::Spline> doBlend(
 /// \param _blendIterations the maximum iteration number in doing blend
 /// \param _checkResolution the resolution in discretizing a segment in
 /// checking the feasibility of the segment
-/// \param _tolerance this tolerance is used in a piecewise linear 
-/// discretization that deviates no more than \c _tolerance 
+/// \param _tolerance this tolerance is used in a piecewise linear
+/// discretization that deviates no more than \c _tolerance
 /// from the parabolic ramp along any axis, and then checks for
 /// configuration and segment feasibility along that piecewise linear path.
 /// \_rngSeed seed used by a random generator for sampling time in shortcut.
@@ -129,8 +128,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
-    double _tolerance = DEFAULT_TOLERANCE
-    );
+    double _tolerance = DEFAULT_TOLERANCE);
 
 } // namespace parabolic
 } // namespace planner
