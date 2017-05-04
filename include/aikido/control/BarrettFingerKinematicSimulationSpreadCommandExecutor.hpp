@@ -1,15 +1,16 @@
 #ifndef AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONSPREADCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETFINGERKINEMATICSIMULATIONSPREADCOMMANDEXECUTOR_HPP_
-#include <aikido/control/PositionCommandExecutor.hpp>
-#include <dart/collision/CollisionDetector.hpp>
-#include <dart/collision/CollisionOption.hpp>
-#include <dart/collision/CollisionGroup.hpp>
-#include <dart/collision/CollisionFilter.hpp>
-#include <dart/dynamics/dynamics.hpp>
+
+#include <chrono>
+#include <condition_variable>
 #include <future>
 #include <mutex>
-#include <condition_variable>
-#include <chrono>
+#include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/CollisionFilter.hpp>
+#include <dart/collision/CollisionGroup.hpp>
+#include <dart/collision/CollisionOption.hpp>
+#include <dart/dynamics/dynamics.hpp>
+#include <aikido/control/PositionCommandExecutor.hpp>
 
 namespace aikido {
 namespace control {
@@ -18,23 +19,26 @@ namespace control {
 /// It moves two finger spreads simultaneously to certain goal value;
 /// it will stop prematurely if joint limit is reached or collision is detected.
 class BarrettFingerKinematicSimulationSpreadCommandExecutor
-: public PositionCommandExecutor
+    : public PositionCommandExecutor
 {
 public:
   /// Constructor.
   /// \param[in] fingers 2 fingers to be controlled by this Executor.
   /// \param[in] spread Index of spread dof
-  /// \param[in] collisionDetector CollisionDetector to check collision with fingers.
+  /// \param[in] collisionDetector CollisionDetector to check collision with
+  /// fingers.
   ///        If nullptr, default to FCLCollisionDetector.
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
   ///        If nullptr, default to empty CollisionGroup
-  /// \param[in] collisionOptions Default is (enableContact=false, binaryCheck=true,
+  /// \param[in] collisionOptions Default is (enableContact=false,
+  /// binaryCheck=true,
   ///        maxNumContacts = 1.)
   BarrettFingerKinematicSimulationSpreadCommandExecutor(
-    std::array<::dart::dynamics::ChainPtr, 2> fingers, size_t spread,
-    ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
-    ::dart::collision::CollisionGroupPtr collideWith = nullptr,
-    ::dart::collision::CollisionOption collisionOptions
+      std::array<::dart::dynamics::ChainPtr, 2> fingers,
+      size_t spread,
+      ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
+      ::dart::collision::CollisionGroupPtr collideWith = nullptr,
+      ::dart::collision::CollisionOption collisionOptions
       = ::dart::collision::CollisionOption(false, 1));
 
   /// Move the spread joint by goalPosition until goalPosition or
@@ -94,10 +98,10 @@ private:
   double mGoalPosition;
 };
 
-using BarrettFingerKinematicSimulationSpreadCommandExecutorPtr 
-  = std::shared_ptr<BarrettFingerKinematicSimulationSpreadCommandExecutor>;
+using BarrettFingerKinematicSimulationSpreadCommandExecutorPtr
+    = std::shared_ptr<BarrettFingerKinematicSimulationSpreadCommandExecutor>;
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif

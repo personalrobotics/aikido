@@ -23,7 +23,7 @@ public:
 
 using TestablePtr = std::shared_ptr<Testable>;
 
-}  // constraint
-}  // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif  // AIKIDO_CONSTRAINT_TESTABLE_HPP_

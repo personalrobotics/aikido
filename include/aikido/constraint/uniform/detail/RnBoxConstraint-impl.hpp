@@ -86,7 +86,7 @@ bool RnBoxConstraintSampleGenerator<N>::sample(
 {
   Vectord value(mDistributions.size());
 
-  for (size_t i = 0; i < static_cast<std::size_t>(value.size()); ++i)
+  for (auto i = 0; i < value.size(); ++i)
     value[i] = mDistributions[i](*mRng);
 
   mSpace->setValue(static_cast<typename statespace::R<N>::State*>(_state), value);
@@ -184,7 +184,7 @@ bool RBoxConstraint<N>::isSatisfied(
   const auto value = mSpace->getValue(
     static_cast<const typename statespace::R<N>::State*>(state));
 
-  for (size_t i = 0; i < static_cast<std::size_t>(value.size()); ++i)
+  for (auto i = 0; i < value.size(); ++i)
   {
     if (value[i] < mLowerLimits[i] || value[i] > mUpperLimits[i])
       return false;
@@ -201,7 +201,7 @@ bool RBoxConstraint<N>::project(
   Vectord value = mSpace->getValue(
     static_cast<const typename statespace::R<N>::State*>(_s));
 
-  for (size_t i = 0; i < static_cast<std::size_t>(value.size()); ++i)
+  for (auto i = 0; i < value.size(); ++i)
   {
     if (value[i] < mLowerLimits[i])
       value[i] = mLowerLimits[i];
@@ -250,7 +250,7 @@ void RBoxConstraint<N>::getJacobian(
   const size_t dimension = mSpace->getDimension();
   _out = Eigen::MatrixXd::Zero(dimension, dimension);
 
-  for (size_t i = 0; i < static_cast<std::size_t>(_out.rows()); ++i)
+  for (auto i = 0; i < _out.rows(); ++i)
   {
     if (stateValue[i] < mLowerLimits[i])
       _out(i, i) = -1.;
