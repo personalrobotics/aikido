@@ -16,9 +16,11 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
+    aikido::util::RNG& _rng,
     double _timelimit,
-    double _tolerance,
-    aikido::util::RNG::result_type _rngSeed)
+    double _checkResolution,
+    double _tolerance
+    )
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
@@ -27,14 +29,15 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
                                           _maxVelocity,
                                           _maxAcceleration);
 
-  hauserParabolicSmoother::doShortcut(*dynamicPath.get(),
-                               _feasibilityCheck,
-                               _timelimit,
-                               _tolerance,
-                               _rngSeed);
+  detail::doShortcut(*dynamicPath,
+                     _feasibilityCheck,
+                     _timelimit,
+                     _checkResolution,
+                     _tolerance,
+                     _rng);
 
   auto outputTrajectory =
-            convertToSpline(*dynamicPath.get(), startTime, stateSpace);
+            convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -44,7 +47,8 @@ std::unique_ptr<trajectory::Spline> doBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    double _blendRadius, int _blendIterations, double _tolerance)
+    double _blendRadius, int _blendIterations,
+    double _checkResolution, double _tolerance)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
@@ -54,13 +58,15 @@ std::unique_ptr<trajectory::Spline> doBlend(
                                           _maxAcceleration,
                                           false);
 
-  hauserParabolicSmoother::doBlend(*dynamicPath.get(),
-                                   _feasibilityCheck,
-                                   _tolerance, _blendRadius,
-                                   _blendIterations);
+  detail::doBlend(*dynamicPath,
+                  _feasibilityCheck,
+                  _blendRadius,
+                  _blendIterations,
+                  _checkResolution,
+                  _tolerance);
 
   auto outputTrajectory =
-              convertToSpline(*dynamicPath.get(), startTime, stateSpace);
+              convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -70,11 +76,13 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
+    aikido::util::RNG& _rng,
     double _timelimit,
     double _blendRadius,
     int _blendIterations,
-    double _tolerance,
-    aikido::util::RNG::result_type _rngSeed)
+    double _checkResolution,
+    double _tolerance
+    )
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
@@ -83,19 +91,22 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
                                           _maxVelocity,
                                           _maxAcceleration);
 
-  hauserParabolicSmoother::doShortcut(*dynamicPath.get(),
-                               _feasibilityCheck,
+  detail::doShortcut(*dynamicPath,
+                     _feasibilityCheck,
                                _timelimit,
+                               _checkResolution,
                                _tolerance,
-                               _rngSeed);
+                               _rng);
 
-  hauserParabolicSmoother::doBlend(*dynamicPath.get(),
-                                   _feasibilityCheck,
-                                   _tolerance, _blendRadius,
-                                   _blendIterations);
+  detail::doBlend(*dynamicPath,
+                  _feasibilityCheck,
+                  _blendRadius,
+                  _blendIterations,
+                  _checkResolution,
+                  _tolerance);
 
   auto outputTrajectory =
-                convertToSpline(*dynamicPath.get(), startTime, stateSpace);
+                convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }

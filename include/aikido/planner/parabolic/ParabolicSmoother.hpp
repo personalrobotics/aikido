@@ -13,6 +13,7 @@ namespace parabolic {
 constexpr double DEFAULT_TIMELIMT  = 3.0;
 constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
+constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
 constexpr double DEFAULT_TOLERANCE = 1e-3;
 
 /// Shortcut waypoints in a trajectory using parabolic splines.
@@ -23,9 +24,11 @@ constexpr double DEFAULT_TOLERANCE = 1e-3;
 ///
 /// while _timelimit is not out:
 /// - Randomly sample two times uniformly at random.
-/// - Find two waypoints according two times in _inputTrajectory.
-/// - Attempt to connect the two waypoints with a time-optimal parabolic
+/// - Find two points according two times in _inputTrajectory.
+/// - Attempt to connect the two points with a time-optimal parabolic
 /// spline.
+///   The feasibility of the spline is evaluated using
+/// \c _feasibilityCheck .
 ///
 /// _rngSeed is used in the random generator for sampling times.
 /// \param _inputTrajectory input piecewise Geodesic trajectory
@@ -33,6 +36,8 @@ constexpr double DEFAULT_TOLERANCE = 1e-3;
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \param _timelimit The maximum time to allow for doing shortcut
+/// \param _checkResolution the resolution in discretizing a segment in
+/// checking the feasibility of the segment
 /// \param _tolerance this tolerance is used in a piecewise linear 
 /// discretization that deviates no more than \c _tolerance 
 /// from the parabolic ramp along any axis, and then checks for
@@ -43,10 +48,12 @@ std::unique_ptr<trajectory::Spline> doShortcut(
     const trajectory::Spline& _inputTrajectory,
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration,    
+    const Eigen::VectorXd& _maxAcceleration,
+    aikido::util::RNG& _rngSeed,
     double _timelimit = DEFAULT_TIMELIMT,
-    double _tolerance = DEFAULT_TOLERANCE,
-    aikido::util::RNG::result_type _rngSeed = std::random_device{}());
+    double _checkResolution = DEFAULT_CHECK_RESOLUTION,
+    double _tolerance = DEFAULT_TOLERANCE
+    );
 
 /// Blend around waypoints in a trajectory using parabolic splines.
 ///
@@ -72,6 +79,8 @@ std::unique_ptr<trajectory::Spline> doShortcut(
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \param _blendRadius the radius used in doing blend
 /// \param _blendIterations the maximum iteration number in doing blend
+/// \param _checkResolution the resolution in discretizing a segment in
+/// checking the feasibility of the segment
 /// \param _tolerance this tolerance is used in a piecewise linear 
 /// discretization that deviates no more than \c _tolerance 
 /// from the parabolic ramp along any axis, and then checks for
@@ -84,6 +93,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
     const Eigen::VectorXd& _maxAcceleration,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
+    double _checkResolution = DEFAULT_CHECK_RESOLUTION,
     double _tolerance = DEFAULT_TOLERANCE);
 
 /// Shortcut and blends waypoints in a trajectory using parabolic splines.
@@ -91,6 +101,8 @@ std::unique_ptr<trajectory::Spline> doBlend(
 /// This function smooths `_inputTrajectory' by firstly applying shortcut
 /// to _inputTrajectory and then using blend to remove segments that have
 /// zero velocities.
+/// Calling this function is more efficienct than calling those two
+/// functions in sequence because it avoids duplicated effort.
 /// \param _inputTrajectory input piecewise Geodesic trajectory
 /// \param _feasibilityCheck Check whether a position is feasible
 /// \param _maxVelocity maximum velocity for each dimension
@@ -99,6 +111,8 @@ std::unique_ptr<trajectory::Spline> doBlend(
 /// (unit in second)
 /// \param _blendRadius the radius used in doing blend
 /// \param _blendIterations the maximum iteration number in doing blend
+/// \param _checkResolution the resolution in discretizing a segment in
+/// checking the feasibility of the segment
 /// \param _tolerance this tolerance is used in a piecewise linear 
 /// discretization that deviates no more than \c _tolerance 
 /// from the parabolic ramp along any axis, and then checks for
@@ -110,11 +124,12 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
+    aikido::util::RNG& _rng,
     double _timelimit = DEFAULT_TIMELIMT,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
-    double _tolerance = DEFAULT_TOLERANCE,
-    aikido::util::RNG::result_type _rngSeed = std::random_device{}()
+    double _checkResolution = DEFAULT_CHECK_RESOLUTION,
+    double _tolerance = DEFAULT_TOLERANCE
     );
 
 } // namespace parabolic

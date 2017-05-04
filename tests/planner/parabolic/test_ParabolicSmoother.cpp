@@ -32,6 +32,7 @@ public:
 protected:
   void SetUp() override
   {
+    mRng = aikido::util::RNGWrapper<std::mt19937>( std::random_device{}() );
     mStateSpace = std::make_shared<R2>();
     mMaxVelocity = Eigen::Vector2d(20., 20.);
     mMaxAcceleration = Eigen::Vector2d(10., 10.);
@@ -95,6 +96,7 @@ protected:
     return length;
   }
 
+  aikido::util::RNGWrapper<std::mt19937> mRng;
   std::shared_ptr<R2> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
@@ -102,6 +104,7 @@ protected:
   std::shared_ptr<GeodesicInterpolator> mInterpolator;
   std::shared_ptr<Interpolated> mStraightLine;
   std::shared_ptr<Interpolated> mNonStraightLine;
+
   double mNonStraightLineLength;
   double mTimelimit = 1.0;
   const double mTolerance = 1e-5;
@@ -141,7 +144,7 @@ TEST_F(ParabolicSmootherTests, doShortcut)
 
    auto splineTrajectory = convertToSpline(*mNonStraightLine.get());
    auto smoothedTrajectory = doShortcut(*splineTrajectory.get(),
-       testable, mMaxVelocity, mMaxAcceleration, mTimelimit);
+       testable, mMaxVelocity, mMaxAcceleration, mRng, mTimelimit);
 
    // Position.
    auto state = mStateSpace->createState();
@@ -204,7 +207,7 @@ TEST_F(ParabolicSmootherTests, doShortcutAndBlend)
    double blendRadius = 0.5;
    int blendIterations = 100;
    auto smoothedTrajectory = doShortcutAndBlend(*splineTrajectory.get(),
-       testable, mMaxVelocity, mMaxAcceleration, mTimelimit,
+       testable, mMaxVelocity, mMaxAcceleration, mRng, mTimelimit,
        blendRadius, blendIterations);
 
    // Position.
