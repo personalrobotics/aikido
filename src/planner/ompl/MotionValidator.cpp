@@ -1,5 +1,6 @@
-#include <ompl/base/SpaceInformation.h>
 #include <aikido/planner/ompl/MotionValidator.hpp>
+
+#include <ompl/base/SpaceInformation.h>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/util/VanDerCorput.hpp>
 

@@ -7,7 +7,7 @@
 // class X
 #define AIKIDO_DEFINE_SHARED_PTR(X)                                            \
   class X;                                                                     \
-  using X##Ptr      = std::shared_ptr<X>;                                      \
+  using X##Ptr = std::shared_ptr<X>;                                           \
   using X##ConstPtr = std::shared_ptr<const X>;
 
 namespace aikido {

@@ -1,5 +1,5 @@
-#ifndef AIKIDO_STATESPACE_RNBOXCONSTRAINT_H_
-#define AIKIDO_STATESPACE_RNBOXCONSTRAINT_H_
+#ifndef AIKIDO_STATESPACE_RNBOXCONSTRAINT_HPP_
+#define AIKIDO_STATESPACE_RNBOXCONSTRAINT_HPP_
 #include "../../statespace/Rn.hpp"
 #include "../Differentiable.hpp"
 #include "../Projectable.hpp"
@@ -93,4 +93,4 @@ using RnBoxConstraint = RBoxConstraint<Eigen::Dynamic>;
 
 #include "aikido/constraint/uniform/detail/RnBoxConstraint-impl.hpp"
 
-#endif // AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_H_
+#endif // AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_HPP_
