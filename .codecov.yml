@@ -1,0 +1,8 @@
+coverage:
+  fixes:
+    - "src/::"  # reduce root "src/aikido/" => "aikido/"
+  ignore:
+    - "devel"
+    - "src/aikido/src/external"
+    - "src/aikido/tests"
+
