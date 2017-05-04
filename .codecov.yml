@@ -1,0 +1,2 @@
+fixes:
+  - "src/::"        # reduce root e.g., "src/aikido/" => "aikido/"
