@@ -18,7 +18,7 @@ pkg_check_modules(PC_actionlib actionlib QUIET)
 # Include directories
 find_path(actionlib_INCLUDE_DIRS
   NAMES actionlib/action_definition.h
-  HINTS ${PC_actionlib_LIBRARY_DIRS}
+  HINTS ${PC_actionlib_INCLUDE_DIRS}
 )
 
 # Libraries
