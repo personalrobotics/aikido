@@ -106,7 +106,7 @@ protected:
   std::shared_ptr<Interpolated> mNonStraightLine;
 
   double mNonStraightLineLength;
-  double mTimelimit = 1.0;
+  double mTimelimit = 60.0;
   const double mTolerance = 1e-5;
 };
 
