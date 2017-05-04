@@ -1,7 +1,7 @@
 #ifndef AIKIDO_STATESPACE_GEODESICINTERPOLATOR_HPP_
 #define AIKIDO_STATESPACE_GEODESICINTERPOLATOR_HPP_
-#include "StateSpace.hpp"
 #include "Interpolator.hpp"
+#include "StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -35,20 +35,22 @@ public:
   /// \param _from start state in \c getStateSpace()
   /// \return tangent vector that defines the geodesic
   Eigen::VectorXd getTangentVector(
-    const statespace::StateSpace::State* _from,
-    const statespace::StateSpace::State* _to) const;
+      const statespace::StateSpace::State* _from,
+      const statespace::StateSpace::State* _to) const;
 
   // Documentation inherited.
   void interpolate(
-    const statespace::StateSpace::State* _from,
-    const statespace::StateSpace::State* _to, double _alpha,
-    statespace::StateSpace::State* _state) const override;
+      const statespace::StateSpace::State* _from,
+      const statespace::StateSpace::State* _to,
+      double _alpha,
+      statespace::StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void getDerivative(
       const statespace::StateSpace::State* _from,
       const statespace::StateSpace::State* _to,
-      size_t _derivative, double _alpha,
+      size_t _derivative,
+      double _alpha,
       Eigen::VectorXd& _tangentVector) const override;
 
 private:
