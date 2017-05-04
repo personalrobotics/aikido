@@ -6,16 +6,12 @@ namespace statespace {
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
-class SO3StateHandle
-  : public statespace::StateHandle<SO3, _QualifiedState>
+class SO3StateHandle : public statespace::StateHandle<SO3, _QualifiedState>
 {
 public:
-  using typename statespace::StateHandle<
-    SO3, _QualifiedState>::State;
-  using typename statespace::StateHandle<
-    SO3, _QualifiedState>::StateSpace;
-  using typename statespace::StateHandle<
-    SO3, _QualifiedState>::QualifiedState;
+  using typename statespace::StateHandle<SO3, _QualifiedState>::State;
+  using typename statespace::StateHandle<SO3, _QualifiedState>::StateSpace;
+  using typename statespace::StateHandle<SO3, _QualifiedState>::QualifiedState;
 
   using Quaternion = typename State::Quaternion;
 

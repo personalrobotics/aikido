@@ -4,17 +4,15 @@ namespace statespace {
 //=============================================================================
 template <class _StateSpace, class _QualifiedState>
 StateHandle<_StateSpace, _QualifiedState>::StateHandle()
-  : mSpace(nullptr)
-  , mState(nullptr)
+  : mSpace(nullptr), mState(nullptr)
 {
 }
 
 //=============================================================================
 template <class _StateSpace, class _QualifiedState>
 StateHandle<_StateSpace, _QualifiedState>::StateHandle(
-      const StateSpace* _space, QualifiedState* _state)
-  : mSpace(_space)
-  , mState(_state)
+    const StateSpace* _space, QualifiedState* _state)
+  : mSpace(_space), mState(_state)
 {
 }
 
@@ -36,7 +34,7 @@ void StateHandle<_StateSpace, _QualifiedState>::reset()
 //=============================================================================
 template <class _StateSpace, class _QualifiedState>
 void StateHandle<_StateSpace, _QualifiedState>::reset(
-  const StateSpace* _space, QualifiedState* _state)
+    const StateSpace* _space, QualifiedState* _state)
 {
   mSpace = _space;
   mState = _state;
@@ -45,7 +43,7 @@ void StateHandle<_StateSpace, _QualifiedState>::reset(
 //=============================================================================
 template <class _StateSpace, class _QualifiedState>
 auto StateHandle<_StateSpace, _QualifiedState>::getState() const
-  -> QualifiedState*
+    -> QualifiedState*
 {
   return mState;
 }
@@ -53,7 +51,7 @@ auto StateHandle<_StateSpace, _QualifiedState>::getState() const
 //=============================================================================
 template <class _StateSpace, class _QualifiedState>
 auto StateHandle<_StateSpace, _QualifiedState>::getStateSpace() const
-  -> const StateSpace* 
+    -> const StateSpace*
 {
   return mSpace;
 }

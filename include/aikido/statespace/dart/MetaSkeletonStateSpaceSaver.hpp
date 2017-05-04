@@ -11,7 +11,6 @@ namespace dart {
 class MetaSkeletonStateSpaceSaver
 {
 public:
-
   /// Construct a MetaSkeletonStateSpaceSaver and save the current state of the
   /// \c MetaSkeletonStateSpace. This state will be restored when
   /// MetaSkeletonStateSpaceSaver is destructed.
@@ -23,10 +22,12 @@ public:
 
   // MetaSkeletonStateSpaceSaver is uncopyable, must use std::move
   MetaSkeletonStateSpaceSaver(const MetaSkeletonStateSpaceSaver&) = delete;
-  MetaSkeletonStateSpaceSaver& operator =(const MetaSkeletonStateSpaceSaver&) = delete;
+  MetaSkeletonStateSpaceSaver& operator=(const MetaSkeletonStateSpaceSaver&)
+      = delete;
 
   MetaSkeletonStateSpaceSaver(MetaSkeletonStateSpaceSaver&&) = default;
-  MetaSkeletonStateSpaceSaver& operator =(MetaSkeletonStateSpaceSaver&&) = default;
+  MetaSkeletonStateSpaceSaver& operator=(MetaSkeletonStateSpaceSaver&&)
+      = default;
 
 private:
   MetaSkeletonStateSpacePtr mSpace;
