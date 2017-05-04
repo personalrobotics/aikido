@@ -79,5 +79,5 @@ void  DifferentiableSubspace::getValueAndJacobian(
   return mConstraint->getValueAndJacobian(substate, _val, _jac);
 }
 
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido

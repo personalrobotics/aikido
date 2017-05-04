@@ -1,5 +1,5 @@
-#include <aikido/control/ros/RosPositionCommandExecutor.hpp>
 #include <aikido/control/ros/Conversions.hpp>
+#include <aikido/control/ros/RosPositionCommandExecutor.hpp>
 #include <aikido/control/ros/util.hpp>
 
 namespace aikido {
@@ -10,11 +10,11 @@ using std::chrono::milliseconds;
 
 //=============================================================================
 RosPositionCommandExecutor::RosPositionCommandExecutor(
-      ::ros::NodeHandle node,
-      const std::string& serverName,
-      std::vector<std::string> jointNames,
-      const std::chrono::milliseconds connectionTimeout,
-      const std::chrono::milliseconds connectionPollingPeriod)
+    ::ros::NodeHandle node,
+    const std::string& serverName,
+    std::vector<std::string> jointNames,
+    const std::chrono::milliseconds connectionTimeout,
+    const std::chrono::milliseconds connectionPollingPeriod)
   : mNode(std::move(node))
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
@@ -33,19 +33,19 @@ RosPositionCommandExecutor::~RosPositionCommandExecutor()
 }
 
 //=============================================================================
-std::future<void> RosPositionCommandExecutor::execute(const Eigen::VectorXd& goalPositions)
+std::future<void> RosPositionCommandExecutor::execute(
+    const Eigen::VectorXd& goalPositions)
 {
   pr_control_msgs::SetPositionGoal goal;
 
   // Convert goal positions and joint names to jointstate
   // Will check for size matching in the positionsToJointState function
-  goal.command = positionsToJointState(goalPositions,mJointNames);
+  goal.command = positionsToJointState(goalPositions, mJointNames);
 
-  bool waitForServer = waitForActionServer<
-                        pr_control_msgs::SetPositionAction,
-                        std::chrono::milliseconds,
-                        std::chrono::milliseconds>
-                        (mClient, mCallbackQueue, mConnectionTimeout, mConnectionPollingPeriod);
+  bool waitForServer = waitForActionServer<pr_control_msgs::SetPositionAction,
+                                           std::chrono::milliseconds,
+                                           std::chrono::milliseconds>(
+      mClient, mCallbackQueue, mConnectionTimeout, mConnectionPollingPeriod);
 
   if (!waitForServer)
     throw std::runtime_error("Unable to connect to action server.");
@@ -59,12 +59,12 @@ std::future<void> RosPositionCommandExecutor::execute(const Eigen::VectorXd& goa
 
     mPromise = std::promise<void>();
     mInProgress = true;
-    mGoalHandle = mClient.sendGoal(goal, 
-      boost::bind(&RosPositionCommandExecutor::transitionCallback, this, _1));
+    mGoalHandle = mClient.sendGoal(
+        goal,
+        boost::bind(&RosPositionCommandExecutor::transitionCallback, this, _1));
 
     return mPromise.get_future();
   }
-
 }
 
 //=============================================================================
@@ -84,12 +84,13 @@ void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
       if (!terminalMessage.empty())
         message << " (" << terminalMessage << ")";
 
-      mPromise.set_exception(std::make_exception_ptr(
-          std::runtime_error(message.str())));
+      mPromise.set_exception(
+          std::make_exception_ptr(std::runtime_error(message.str())));
 
       isSuccessful = false;
     }
-    else{
+    else
+    {
       message << "Execution failed.";
     }
 
@@ -99,8 +100,8 @@ void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
       if (!result->message.empty())
         message << " (" << result->message << ")";
 
-      mPromise.set_exception(std::make_exception_ptr(
-          std::runtime_error(message.str())));
+      mPromise.set_exception(
+          std::make_exception_ptr(std::runtime_error(message.str())));
 
       isSuccessful = false;
     }
@@ -109,7 +110,6 @@ void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
       mPromise.set_value();
 
     mInProgress = false;
-
   }
 }
 
@@ -124,11 +124,10 @@ void RosPositionCommandExecutor::step()
   if (!::ros::ok() && mInProgress)
   {
     mPromise.set_exception(
-      std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
+        std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
     mInProgress = false;
   }
 }
-
 
 } // namespace ros
 } // namespace control
