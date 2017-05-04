@@ -11,62 +11,45 @@ using namespace ParabolicRamp;
 namespace aikido {
 namespace planner {
 namespace parabolic {
-namespace hauserParabolicSmoother {
-
-static constexpr double CHECK_RESOLUTION = 1e-3;
-
-class RampRandomGenerator : public RandomNumberGeneratorBase
-{
-public:
-    RampRandomGenerator(aikido::util::RNG::result_type _rngSeed)
-        : rng_(_rngSeed), distribution_(0.0, 1.0)
-    {
-    }
-
-    virtual Real Rand() { return distribution_(rng_); }
-    aikido::util::RNGWrapper<std::mt19937> rng_;
-    std::uniform_real_distribution<>       distribution_;
-};
+namespace detail {
 
 class SmootherFeasibilityCheckerBase : public ParabolicRamp::FeasibilityCheckerBase
 {
 public:
     SmootherFeasibilityCheckerBase(aikido::constraint::TestablePtr testable,
-                                   double checkResolution = CHECK_RESOLUTION)
-        : testable_(std::move(testable)),
-          checkResolution_(checkResolution)
+                                   double checkResolution)
+        : testable_(std::move(testable)),          
+          checkResolution_(checkResolution),
+          statespace_(testable_->getStateSpace()),
+          interpolator_(statespace_)
     {
-      interpolator_ = std::make_shared<aikido::statespace::GeodesicInterpolator>
-              (testable_->getStateSpace());
     }
 
     virtual bool ConfigFeasible(ParabolicRamp::Vector const &x)
     {
-      statespace::StateSpacePtr stateSpace = testable_->getStateSpace();
       Eigen::VectorXd eigX = toEigen(x);
-      auto state = stateSpace->createState();
-      stateSpace->expMap(eigX, state);
+      auto state = statespace_->createState();
+      statespace_->expMap(eigX, state);
       return testable_->isSatisfied(state);
     }
 
     virtual bool SegmentFeasible(ParabolicRamp::Vector const &a,
                                  ParabolicRamp::Vector const &b)
     {
-       statespace::StateSpacePtr stateSpace = testable_->getStateSpace();
        Eigen::VectorXd eigA = toEigen(a);
        Eigen::VectorXd eigB = toEigen(b);
 
-       auto testState = stateSpace->createState();
-       auto startState = stateSpace->createState();
-       auto goalState = stateSpace->createState();
-       stateSpace->expMap(eigA, startState);
-       stateSpace->expMap(eigB, goalState);
+       auto testState = statespace_->createState();
+       auto startState = statespace_->createState();
+       auto goalState = statespace_->createState();
+       statespace_->expMap(eigA, startState);
+       statespace_->expMap(eigB, goalState);
 
-       aikido::util::VanDerCorput vdc{1, true, true, checkResolution_};
+       aikido::util::VanDerCorput vdc{1, false, false, checkResolution_};
 
        for (const auto alpha : vdc)
        {
-         interpolator_->interpolate(startState, goalState, alpha, testState);
+         interpolator_.interpolate(startState, goalState, alpha, testState);
          if (!testable_->isSatisfied(testState))
          {
            return false;
@@ -76,9 +59,10 @@ public:
     }
 
 private:
-    aikido::constraint::TestablePtr                           testable_;
-    double                                                    checkResolution_;
-    std::shared_ptr<aikido::statespace::GeodesicInterpolator> interpolator_;
+    aikido::constraint::TestablePtr          testable_;
+    double                                   checkResolution_;
+    aikido::statespace::StateSpacePtr        statespace_;
+    aikido::statespace::GeodesicInterpolator interpolator_;
 };
 
 bool needsBlend(ParabolicRamp::ParabolicRampND const &rampNd)
@@ -94,7 +78,7 @@ bool needsBlend(ParabolicRamp::ParabolicRampND const &rampNd)
 }
 
 bool tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
-              ParabolicRamp::RampFeasibilityChecker feasibilityChecker,
+              ParabolicRamp::RampFeasibilityChecker& feasibilityChecker,
               int attempt, double dtShortcut)
 {
     // blending can completely remove waypoints from the trajectory in the case
@@ -130,17 +114,17 @@ bool tryBlend(ParabolicRamp::DynamicPath& dynamicPath,
 
 bool doShortcut(ParabolicRamp::DynamicPath& dynamicPath,
                 aikido::constraint::TestablePtr testable,
-                double timelimit, double tolerance,
-                aikido::util::RNG::result_type rngSeed)
+                double timelimit,
+                double checkResolution, double tolerance,
+                aikido::util::RNG& rng)
 {
     if(timelimit < 0.0)
       throw std::runtime_error("Timelimit should be non-negative");
     if(tolerance < 0.0)
       throw std::runtime_error("Tolerance should be non-negative");
 
-    SmootherFeasibilityCheckerBase base(testable);
+    SmootherFeasibilityCheckerBase base(testable, checkResolution);
     ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
-    RampRandomGenerator rndGnr(rngSeed);
 
     std::chrono::time_point<std::chrono::system_clock> startTime, currentTime;
     startTime = std::chrono::system_clock::now();
@@ -148,8 +132,10 @@ bool doShortcut(ParabolicRamp::DynamicPath& dynamicPath,
 
     while (elapsedTime < timelimit && dynamicPath.ramps.size() > 3)
     {
-        dynamicPath.Shortcut(1, feasibilityChecker);
-        //dynamicPath.Shortcut(1, feasibilityChecker, &rndGnr);
+        std::uniform_real_distribution<> dist(0.0, dynamicPath.GetTotalTime());
+        double t1 = dist(rng);
+        double t2 = dist(rng);
+        dynamicPath.TryShortcut(t1, t2, feasibilityChecker);
 
         currentTime = std::chrono::system_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(
@@ -161,14 +147,15 @@ bool doShortcut(ParabolicRamp::DynamicPath& dynamicPath,
 
 bool doBlend(ParabolicRamp::DynamicPath& dynamicPath,
              aikido::constraint::TestablePtr testable,
-             double tolerance, double blendRadius, int blendIterations)
+             double blendRadius, int blendIterations,
+             double checkResolution, double tolerance)
 {
     if(blendIterations <= 0)
       throw std::runtime_error("Blend iterations should be positive");
     if(blendRadius <= 0.0)
       throw std::runtime_error("Blend radius should be positive");
 
-    SmootherFeasibilityCheckerBase base(testable);
+    SmootherFeasibilityCheckerBase base(testable, checkResolution);
     ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
 
     // Mark all of the ramps in the initial trajectory as "original". We'll
@@ -192,7 +179,7 @@ bool doBlend(ParabolicRamp::DynamicPath& dynamicPath,
 }
 
 
-} // namespace hauserParabolicSmoother
+} // namespace detail
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido

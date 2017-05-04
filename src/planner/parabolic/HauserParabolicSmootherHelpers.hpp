@@ -10,20 +10,20 @@
 namespace aikido {
 namespace planner {
 namespace parabolic {
-namespace hauserParabolicSmoother {
+namespace detail {
 
   bool doShortcut(ParabolicRamp::DynamicPath& dynamicPath,
                   aikido::constraint::TestablePtr testable,
-                  double timelimit, double tolerance,
-                  aikido::util::RNG::result_type rngSeed =
-                      std::random_device{}());
+                  double timelimit,
+                  double checkResolution, double tolerance,
+                  aikido::util::RNG& rng);
 
   bool doBlend(ParabolicRamp::DynamicPath& dynamicPath,
                aikido::constraint::TestablePtr testable,
-               double tolerance, double blendRadius,
-               int blendIterations);
+               double blendRadius, int blendIterations,
+               double checkResolution, double tolerance);
 
-} // namespace hauserParabolicSmoother
+} // namespace detail
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido

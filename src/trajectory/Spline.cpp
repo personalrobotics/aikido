@@ -209,6 +209,9 @@ double Spline::getWaypointTime(size_t _index) const
 {
   double waypointTime = mStartTime;
 
+  if (_index >= getNumWaypoints())
+      throw std::domain_error("Waypoint index is out of bounds.");
+
   for(size_t i=0;i<_index;++i)
   {
     waypointTime += mSegments[i].mDuration;

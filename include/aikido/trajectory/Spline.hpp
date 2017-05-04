@@ -106,7 +106,7 @@ public:
   /// Gets a waypoint.
   ///
   /// \param _index waypoint index
-  /// \return state of the waypoint at index \c _index
+  /// \param[out] state of the waypoint at index \c _index
   void getWaypoint(size_t _index, statespace::StateSpace::State* state) const;
 
   /// Gets the time of a waypoint.
