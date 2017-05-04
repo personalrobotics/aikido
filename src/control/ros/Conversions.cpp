@@ -1,7 +1,8 @@
+#include <aikido/control/ros/Conversions.hpp>
+
 #include <sstream>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
-#include <aikido/control/ros/Conversions.hpp>
 #include <aikido/util/StepSequence.hpp>
 #include <aikido/util/Spline.hpp>
 #include <dart/dynamics/Joint.hpp>

@@ -69,4 +69,4 @@ private:
 } // namespace constraint
 } // namespace aikido
 
-#endif // ifndef AIKIDO_CONSTRAINT_SATISFIED_H_
+#endif // ifndef AIKIDO_CONSTRAINT_SATISFIED_HPP_
