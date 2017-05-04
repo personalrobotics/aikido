@@ -19,39 +19,40 @@ class SmootherFeasibilityCheckerBase
 public:
   SmootherFeasibilityCheckerBase(
       aikido::constraint::TestablePtr testable, double checkResolution)
-    : testable_(std::move(testable))
-    , checkResolution_(checkResolution)
-    , statespace_(testable_->getStateSpace())
-    , interpolator_(statespace_)
+    : mTestable(std::move(testable))
+    , mCheckResolution(checkResolution)
+    , mStateSpace(mTestable->getStateSpace())
+    , mInterpolator(mStateSpace)
   {
+    //Do nothing
   }
 
-  virtual bool ConfigFeasible(ParabolicRamp::Vector const& x)
+  bool ConfigFeasible(const ParabolicRamp::Vector& x) override
   {
     Eigen::VectorXd eigX = toEigen(x);
-    auto state = statespace_->createState();
-    statespace_->expMap(eigX, state);
-    return testable_->isSatisfied(state);
+    auto state = mStateSpace->createState();
+    mStateSpace->expMap(eigX, state);
+    return mTestable->isSatisfied(state);
   }
 
-  virtual bool SegmentFeasible(
-      ParabolicRamp::Vector const& a, ParabolicRamp::Vector const& b)
+  bool SegmentFeasible(const ParabolicRamp::Vector& a, 
+                       const ParabolicRamp::Vector& b) override
   {
     Eigen::VectorXd eigA = toEigen(a);
     Eigen::VectorXd eigB = toEigen(b);
 
-    auto testState = statespace_->createState();
-    auto startState = statespace_->createState();
-    auto goalState = statespace_->createState();
-    statespace_->expMap(eigA, startState);
-    statespace_->expMap(eigB, goalState);
+    auto testState = mStateSpace->createState();
+    auto startState = mStateSpace->createState();
+    auto goalState = mStateSpace->createState();
+    mStateSpace->expMap(eigA, startState);
+    mStateSpace->expMap(eigB, goalState);
 
-    aikido::util::VanDerCorput vdc{1, false, false, checkResolution_};
+    aikido::util::VanDerCorput vdc{1, false, false, mCheckResolution};
 
     for (const auto alpha : vdc)
     {
-      interpolator_.interpolate(startState, goalState, alpha, testState);
-      if (!testable_->isSatisfied(testState))
+      mInterpolator.interpolate(startState, goalState, alpha, testState);
+      if (!mTestable->isSatisfied(testState))
       {
         return false;
       }
@@ -60,13 +61,13 @@ public:
   }
 
 private:
-  aikido::constraint::TestablePtr testable_;
-  double checkResolution_;
-  aikido::statespace::StateSpacePtr statespace_;
-  aikido::statespace::GeodesicInterpolator interpolator_;
+  aikido::constraint::TestablePtr mTestable;
+  double mCheckResolution;
+  aikido::statespace::StateSpacePtr mStateSpace;
+  aikido::statespace::GeodesicInterpolator mInterpolator;
 };
 
-bool needsBlend(ParabolicRamp::ParabolicRampND const& rampNd)
+bool needsBlend(const ParabolicRamp::ParabolicRampND& rampNd)
 {
   for (size_t idof = 0; idof < rampNd.dx1.size(); ++idof)
   {
@@ -87,8 +88,8 @@ bool tryBlend(
   // blending can completely remove waypoints from the trajectory in the case
   // that two waypoints are closer than _blendRadius together - which means
   // that waypoint indicies can change between iterations of the algorithm.
-  size_t const numRamps = dynamicPath.ramps.size();
-  double const tMax = dynamicPath.GetTotalTime();
+  const size_t numRamps = dynamicPath.ramps.size();
+  const double tMax = dynamicPath.GetTotalTime();
   double t = 0;
 
   for (size_t iRamp = 0; iRamp < numRamps - 1; ++iRamp)
@@ -98,11 +99,11 @@ bool tryBlend(
 
     if (needsBlend(rampNd) && rampNd.blendAttempts == attempt)
     {
-      double const t1 = std::max(t - dtShortcut, -ParabolicRamp::EpsilonT);
-      double const t2
+      const double t1 = std::max(t - dtShortcut, -ParabolicRamp::EpsilonT);
+      const double t2
           = std::min(t + dtShortcut, tMax + ParabolicRamp::EpsilonT);
 
-      bool const success = dynamicPath.TryShortcut(t1, t2, feasibilityChecker);
+      const bool success = dynamicPath.TryShortcut(t1, t2, feasibilityChecker);
 
       if (success)
       {
