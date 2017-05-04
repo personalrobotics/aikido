@@ -1,24 +1,26 @@
 #ifndef AIKIDO_CONTROL_ROS_ROSPOSITIONCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_ROS_ROSPOSITIONCOMMANDEXECUTOR_HPP_
+
 #include <chrono>
 #include <future>
 #include <mutex>
-#include <ros/ros.h>
-#include <ros/callback_queue.h>
-#include <sensor_msgs/JointState.h>
-#include <pr_control_msgs/SetPositionAction.h>
-#include <actionlib/client/action_client.h>
-#include <aikido/control/PositionCommandExecutor.hpp>
 #include <Eigen/Dense>
+#include <actionlib/client/action_client.h>
+#include <pr_control_msgs/SetPositionAction.h>
+#include <ros/callback_queue.h>
+#include <ros/ros.h>
+#include <sensor_msgs/JointState.h>
+#include <aikido/control/PositionCommandExecutor.hpp>
 
-namespace aikido{
+namespace aikido {
 namespace control {
 namespace ros {
 
 /// This class uses actionlib to command an action of the type
 /// pr_control_msgs/SetPosition. It specifies a set of target
-/// positions and sends it to the ROS server for execution 
-class RosPositionCommandExecutor : public aikido::control::PositionCommandExecutor
+/// positions and sends it to the ROS server for execution
+class RosPositionCommandExecutor
+    : public aikido::control::PositionCommandExecutor
 {
 public:
   /// Constructor
@@ -28,12 +30,13 @@ public:
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosPositionCommandExecutor(
-    ::ros::NodeHandle node,
-    const std::string& serverName,
-    std::vector<std::string> jointNames,
-    std::chrono::milliseconds connectionTimeout = std::chrono::milliseconds{1000},
-    std::chrono::milliseconds connectionPollingPeriod = std::chrono::milliseconds{20}
-  );
+      ::ros::NodeHandle node,
+      const std::string& serverName,
+      std::vector<std::string> jointNames,
+      std::chrono::milliseconds connectionTimeout
+      = std::chrono::milliseconds{1000},
+      std::chrono::milliseconds connectionPollingPeriod
+      = std::chrono::milliseconds{20});
 
   virtual ~RosPositionCommandExecutor();
 
@@ -49,7 +52,7 @@ public:
 
 private:
   using RosPositionActionClient
-    = actionlib::ActionClient<pr_control_msgs::SetPositionAction>;
+      = actionlib::ActionClient<pr_control_msgs::SetPositionAction>;
   using GoalHandle = RosPositionActionClient::GoalHandle;
 
   bool waitForServer();
@@ -71,7 +74,7 @@ private:
 
   std::mutex mMutex;
 };
-    
+
 } // namespace ros
 } // namespace control
 } // namespace aikido

@@ -43,7 +43,7 @@ private:
 
 using TestableIntersectionPtr = std::shared_ptr<TestableIntersection>;
 
-}  // constraint
-}  // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif  // AIKIDO_CONSTRAINT_TESTABLEINTERSECTION_HPP_

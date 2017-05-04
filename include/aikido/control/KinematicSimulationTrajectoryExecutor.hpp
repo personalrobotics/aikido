@@ -1,12 +1,13 @@
 #ifndef AIKIDO_CONTROL_KINEMATICSIMULATIONTRAJECTORYEXECUTOR_HPP_
 #define AIKIDO_CONTROL_KINEMATICSIMULATIONTRAJECTORYEXECUTOR_HPP_
-#include "TrajectoryExecutor.hpp"
-#include <aikido/trajectory/Trajectory.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/trajectory/Trajectory.hpp>
+#include "TrajectoryExecutor.hpp"
+
+#include <condition_variable>
 #include <future>
 #include <mutex>
-#include <condition_variable>
 
 namespace aikido {
 namespace control {
@@ -20,20 +21,18 @@ public:
   /// Constructor.
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
-  KinematicSimulationTrajectoryExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton);
+  KinematicSimulationTrajectoryExecutor(::dart::dynamics::SkeletonPtr skeleton);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
   /// Execute traj and set future upon completion.
   /// \param traj Trajectory to be executed. Its StateSpace should be a
-  ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton 
+  ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton
   ///        should be all in skeleton passed to the constructor.
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   /// \throws invalid_argument if traj is invalid.
-  std::future<void> execute(
-    trajectory::TrajectoryPtr traj) override;
+  std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
   /// \copydoc PositionCommandExecutor::step()
   ///
@@ -43,10 +42,9 @@ public:
   void step() override;
 
 private:
-
   ::dart::dynamics::SkeletonPtr mSkeleton;
   std::unique_ptr<std::promise<void>> mPromise;
-  trajectory::TrajectoryPtr mTraj; 
+  trajectory::TrajectoryPtr mTraj;
 
   std::chrono::system_clock::time_point mExecutionStartTime;
 
@@ -54,10 +52,9 @@ private:
   std::mutex mMutex;
 
   bool mInExecution;
-
 };
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif
