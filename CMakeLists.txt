@@ -87,9 +87,11 @@ function(format_add_sources)
 endfunction()
 
 # TODO: Temporarily split header list per subdirectories.
+file(GLOB_RECURSE headers_perception "${CMAKE_SOURCE_DIR}/include/aikido/perception/*.hpp")
 file(GLOB_RECURSE headers_planner "${CMAKE_SOURCE_DIR}/include/aikido/planner/*.hpp")
 file(GLOB_RECURSE headers_util "${CMAKE_SOURCE_DIR}/include/aikido/util/*.hpp")
 file(GLOB_RECURSE headers_distance "${CMAKE_SOURCE_DIR}/include/aikido/distance/*.hpp")
+format_add_sources(${headers_perception})
 format_add_sources(${headers_planner})
 format_add_sources(${headers_util})
 format_add_sources(${headers_distance})

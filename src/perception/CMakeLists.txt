@@ -64,3 +64,4 @@ add_component(${PROJECT_NAME} perception)
 add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")
 
 coveralls_add_sources(${sources})
+format_add_sources(${sources})
