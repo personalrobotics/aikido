@@ -75,6 +75,7 @@ private:
 
 using NonCollidingPtr = std::shared_ptr<NonColliding>;
 
-}  // constraint
-}  // aikido
+} // namespace constraint
+} // namespace aikido
+
 #endif  // AIKIDO_CONSTRAINT_NONCOLLIDING_HPP_

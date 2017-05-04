@@ -12,7 +12,7 @@ class TSRMarker
 {
 public:
   explicit TSRMarker(
-    std::vector<std::unique_ptr<dart::dynamics::SimpleFrame>> tsrFrames);
+      std::vector<std::unique_ptr<dart::dynamics::SimpleFrame>> tsrFrames);
   virtual ~TSRMarker() = default;
 
 private:

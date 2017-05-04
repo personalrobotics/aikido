@@ -2,8 +2,8 @@
 #define AIKIDO_STATESPACE_SO2STATESPACE_HPP_
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include "StateSpace.hpp"
 #include "ScopedState.hpp"
+#include "StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -105,47 +105,48 @@ public:
   void freeStateInBuffer(StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void compose(const StateSpace::State* _state1,
-               const StateSpace::State* _state2,
-               StateSpace::State* _out) const override;
+  void compose(
+      const StateSpace::State* _state1,
+      const StateSpace::State* _state2,
+      StateSpace::State* _out) const override;
 
   // Documentation inherited.
   void getIdentity(StateSpace::State* _out) const override;
 
   // Documentation inherited.
-  void getInverse(const StateSpace::State *_in,
-                  StateSpace::State *_out) const override;
+  void getInverse(
+      const StateSpace::State* _in, StateSpace::State* _out) const override;
 
   // Documentation inherited.
   size_t getDimension() const override;
 
   // Documentation inherited.
   void copyState(
-    const StateSpace::State *_source,
-    StateSpace::State *_destination) const override;
+      const StateSpace::State* _source,
+      StateSpace::State* _destination) const override;
 
   /// Exponential mapping of Lie algebra element to a Lie group element. The
   /// tangent space is parameterized a rotation angle.
   ///
   /// \param _tangent element of the tangent space
   /// \param[out] _out corresponding element of the Lie group
-  void expMap(const Eigen::VectorXd& _tangent,
-              StateSpace::State* _out) const override;
+  void expMap(
+      const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
   /// Log mapping of Lie group element to a Lie algebra element. The tangent
   /// space is parameterized as a rotation angle.
   ///
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
-  void logMap(const StateSpace::State *_in,
-              Eigen::VectorXd &_tangent) const override;
+  void logMap(
+      const StateSpace::State* _in, Eigen::VectorXd& _tangent) const override;
 
   /// Print the angle represented by the state
-  void print(const StateSpace::State *_state, std::ostream &_os) const override;
+  void print(const StateSpace::State* _state, std::ostream& _os) const override;
 };
 
-}  // namespace statespace
-}  // namespace aikido
+} // namespace statespace
+} // namespace aikido
 
 #include "detail/SO2-impl.hpp"
 

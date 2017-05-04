@@ -1,12 +1,12 @@
 #include <memory>
 #include <dart/common/StlHelpers.hpp>
+#include "../../../util/metaprogramming.hpp"
 #include "../RnJoint.hpp"
-#include "../SO2Joint.hpp"
-#include "../SO3Joint.hpp"
 #include "../SE2Joint.hpp"
 #include "../SE3Joint.hpp"
+#include "../SO2Joint.hpp"
+#include "../SO3Joint.hpp"
 #include "../WeldJoint.hpp"
-#include "../../../util/metaprogramming.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -18,7 +18,9 @@ using Ptr = std::unique_ptr<JointStateSpace>;
 
 //=============================================================================
 template <class JointType>
-struct createJointStateSpaceFor_impl {};
+struct createJointStateSpaceFor_impl
+{
+};
 
 //=============================================================================
 template <>
@@ -27,9 +29,9 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
   static Ptr create(::dart::dynamics::RevoluteJoint* _joint)
   {
     if (_joint->isCyclic(0))
-       return make_unique<SO2Joint>(_joint);
+      return make_unique<SO2Joint>(_joint);
     else
-       return make_unique<R1Joint>(_joint);
+      return make_unique<R1Joint>(_joint);
   }
 };
 
@@ -94,18 +96,17 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::WeldJoint>
 };
 
 //=============================================================================
-using SupportedJoints = util::type_list<
-  ::dart::dynamics::BallJoint,
-  ::dart::dynamics::FreeJoint,
-  ::dart::dynamics::PlanarJoint,
-  ::dart::dynamics::PrismaticJoint,
-  ::dart::dynamics::RevoluteJoint,
-  ::dart::dynamics::TranslationalJoint,
-  ::dart::dynamics::WeldJoint
-  // TODO: Support ScrewJoint.
-  // TODO: Support UniversalJoint.
-  // TODO: Support EulerJoint.
->;
+using SupportedJoints = util::type_list<::dart::dynamics::BallJoint,
+                                        ::dart::dynamics::FreeJoint,
+                                        ::dart::dynamics::PlanarJoint,
+                                        ::dart::dynamics::PrismaticJoint,
+                                        ::dart::dynamics::RevoluteJoint,
+                                        ::dart::dynamics::TranslationalJoint,
+                                        ::dart::dynamics::WeldJoint
+                                        // TODO: Support ScrewJoint.
+                                        // TODO: Support UniversalJoint.
+                                        // TODO: Support EulerJoint.
+                                        >;
 
 } // namespace detail
 

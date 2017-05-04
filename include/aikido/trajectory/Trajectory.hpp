@@ -71,7 +71,7 @@ public:
 using TrajectoryPtr = std::shared_ptr<Trajectory>;
 using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
 
-}  // namespace trajectory
-}  // namespace aikido
+} // namespace trajectory
+} // namespace aikido
 
 #endif  // ifndef AIKIDO_TRAJECTORY_TRAJECTORY_HPP_

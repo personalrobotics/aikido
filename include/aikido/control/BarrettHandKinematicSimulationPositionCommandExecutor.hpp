@@ -1,17 +1,18 @@
 #ifndef AIKIDO_CONTROL_BARRETTHANDKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_BARRETTHANDKINEMATICSIMULATIONPOSITIONCOMMANDEXECUTOR_HPP_
-#include <aikido/control/PositionCommandExecutor.hpp>
-#include <aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp>
-#include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
-#include <dart/collision/CollisionDetector.hpp>
-#include <dart/collision/CollisionOption.hpp>
-#include <dart/collision/CollisionGroup.hpp>
-#include <dart/collision/CollisionFilter.hpp>
-#include <dart/dynamics/dynamics.hpp>
-#include <Eigen/Dense>
+
+#include <chrono>
 #include <future>
 #include <mutex>
-#include <chrono>
+#include <Eigen/Dense>
+#include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/CollisionFilter.hpp>
+#include <dart/collision/CollisionGroup.hpp>
+#include <dart/collision/CollisionOption.hpp>
+#include <dart/dynamics/dynamics.hpp>
+#include <aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp>
+#include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
+#include <aikido/control/PositionCommandExecutor.hpp>
 
 using Vector1d = Eigen::Matrix<double, 1, 1>;
 
@@ -22,21 +23,22 @@ namespace control {
 /// Assumes that fingers are underactuated: proximal joint is actuated
 /// and distal joint moves with certain mimic ratio until collision.
 class BarrettHandKinematicSimulationPositionCommandExecutor
-: public PositionCommandExecutor
+    : public PositionCommandExecutor
 {
 public:
   /// Constructor.
   /// \param[in] robot Robot to construct executor for
   /// \param[in] prefix String (either "/right/" or "/left/") to specify hand
-  /// \param[in] collisionDetector CollisionDetector to check collision with fingers.
+  /// \param[in] collisionDetector CollisionDetector to check collision with
+  /// fingers.
   ///        If nullptr, default to FCLCollisionDetector.
   /// \param[in] collideWith CollisionGroup to check collision with fingers.
   ///        If nullptr, default to empty CollisionGroup
   BarrettHandKinematicSimulationPositionCommandExecutor(
-    dart::dynamics::SkeletonPtr robot,
-    const std::string &prefix,
-    ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
-    ::dart::collision::CollisionGroupPtr collideWith = nullptr);
+      dart::dynamics::SkeletonPtr robot,
+      const std::string& prefix,
+      ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
+      ::dart::collision::CollisionGroupPtr collideWith = nullptr);
 
   /// Move fingers to a goal configuration. In order to actually move the
   /// fingers, step method should be called multiple times until future returns.
@@ -64,8 +66,7 @@ private:
   /// \param[in] robot Robot to construct hand executor for
   /// \param[in] prefix String (either "/right/" or "/left/") to specify hand
   void setupExecutors(
-    dart::dynamics::SkeletonPtr robot,
-    const std::string& prefix);
+      dart::dynamics::SkeletonPtr robot, const std::string& prefix);
 
   constexpr static int kNumPositionExecutor = 3;
   constexpr static int kNumSpreadExecutor = 1;
@@ -73,8 +74,10 @@ private:
 
   /// Executor for proximal and distal joints.
   std::array<BarrettFingerKinematicSimulationPositionCommandExecutorPtr,
-             kNumPositionExecutor> mPositionCommandExecutors;
-  BarrettFingerKinematicSimulationSpreadCommandExecutorPtr mSpreadCommandExecutor;
+             kNumPositionExecutor>
+      mPositionCommandExecutors;
+  BarrettFingerKinematicSimulationSpreadCommandExecutorPtr
+      mSpreadCommandExecutor;
 
   std::unique_ptr<std::promise<void>> mPromise;
 
@@ -95,11 +98,10 @@ private:
   ::dart::collision::CollisionGroupPtr mCollideWith;
 };
 
-using BarrettHandKinematicSimulationPositionCommandExecutorPtr =
-  std::shared_ptr<BarrettHandKinematicSimulationPositionCommandExecutor>;
+using BarrettHandKinematicSimulationPositionCommandExecutorPtr
+    = std::shared_ptr<BarrettHandKinematicSimulationPositionCommandExecutor>;
 
-
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido
 
 #endif

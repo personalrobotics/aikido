@@ -1,35 +1,37 @@
-#include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
-#include <dart/collision/fcl/FCLCollisionDetector.hpp>
-#include <thread>
 #include <exception>
+#include <thread>
+#include <dart/collision/fcl/FCLCollisionDetector.hpp>
+#include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
 
-namespace aikido{
-namespace control{
+namespace aikido {
+namespace control {
 
 //=============================================================================
-BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSimulationSpreadCommandExecutor(
-  std::array<::dart::dynamics::ChainPtr, 2> fingers, size_t spread,
-  ::dart::collision::CollisionDetectorPtr collisionDetector,
-  ::dart::collision::CollisionGroupPtr collideWith,
-  ::dart::collision::CollisionOption collisionOptions)
-: mFingers(std::move(fingers))
-, mCollisionDetector(std::move(collisionDetector))
-, mCollideWith(std::move(collideWith))
-, mCollisionOptions(std::move(collisionOptions))
-, mInExecution(false)
+BarrettFingerKinematicSimulationSpreadCommandExecutor::
+    BarrettFingerKinematicSimulationSpreadCommandExecutor(
+        std::array<::dart::dynamics::ChainPtr, 2> fingers,
+        size_t spread,
+        ::dart::collision::CollisionDetectorPtr collisionDetector,
+        ::dart::collision::CollisionGroupPtr collideWith,
+        ::dart::collision::CollisionOption collisionOptions)
+  : mFingers(std::move(fingers))
+  , mCollisionDetector(std::move(collisionDetector))
+  , mCollideWith(std::move(collideWith))
+  , mCollisionOptions(std::move(collisionOptions))
+  , mInExecution(false)
 {
   if (mFingers.size() != kNumFingers)
   {
     std::stringstream msg;
     msg << "Expecting " << kNumFingers << " fingers;"
-    << "got << " << mFingers.size() << ".";
+        << "got << " << mFingers.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
   mSpreadDofs.reserve(kNumFingers);
-  for (int i=0; i < kNumFingers; ++i)
+  for (int i = 0; i < kNumFingers; ++i)
   {
-    if(!mFingers[i])
+    if (!mFingers[i])
     {
       std::stringstream msg;
       msg << i << "th finger is null.";
@@ -41,7 +43,8 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSim
       throw std::invalid_argument("Finger does not have spread dof.");
 
     mSpreadDofs.push_back(mFingers[i]->getDof(spread));
-    if (!mSpreadDofs[i]){
+    if (!mSpreadDofs[i])
+    {
       std::stringstream msg;
       msg << i << "th finger does not have spread dof.";
       throw std::invalid_argument(msg.str());
@@ -59,8 +62,8 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSim
                 << " does not match CollisionGroup's CollisionDetector of type "
                 << mCollideWith->getCollisionDetector()->getType() << std::endl;
 
-      ::dart::collision::CollisionGroupPtr newCollideWith =
-          mCollisionDetector->createCollisionGroup();
+      ::dart::collision::CollisionGroupPtr newCollideWith
+          = mCollisionDetector->createCollisionGroup();
       for (auto i = 0u; i < mCollideWith->getNumShapeFrames(); ++i)
         newCollideWith->addShapeFrame(mCollideWith->getShapeFrame(i));
       mCollideWith = std::move(newCollideWith);
@@ -83,9 +86,9 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSim
   }
 
   mSpreadCollisionGroup = mCollisionDetector->createCollisionGroup();
-  for (auto finger: mFingers)
+  for (auto finger : mFingers)
   {
-    for (auto body: finger->getBodyNodes())
+    for (auto body : finger->getBodyNodes())
       mSpreadCollisionGroup->addShapeFramesOf(body);
   }
 
@@ -98,7 +101,7 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSim
     {
       std::stringstream msg;
       msg << "LowerJointLimit for the fingers should be the same. "
-      << "Expecting " << mDofLimits.first << "; got " << limits.first;
+          << "Expecting " << mDofLimits.first << "; got " << limits.first;
       throw std::invalid_argument(msg.str());
     }
 
@@ -106,15 +109,16 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::BarrettFingerKinematicSim
     {
       std::stringstream msg;
       msg << "UpperJointLimit for the fingers should be the same. "
-      << "Expecting " << mDofLimits.second << "; got " << limits.second;
+          << "Expecting " << mDofLimits.second << "; got " << limits.second;
       throw std::invalid_argument(msg.str());
     }
   }
 }
 
 //=============================================================================
-std::future<void> BarrettFingerKinematicSimulationSpreadCommandExecutor
-::execute(const Eigen::VectorXd& goalPosition)
+std::future<void>
+BarrettFingerKinematicSimulationSpreadCommandExecutor::execute(
+    const Eigen::VectorXd& goalPosition)
 {
   for (size_t i = 0; i < kNumFingers; ++i)
   {
@@ -166,14 +170,14 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
 
   // Current spread. Check that all spreads have same values.
   double spread = mSpreadDofs[0]->getPosition();
-  for(size_t i = 1; i < kNumFingers; ++i)
+  for (size_t i = 1; i < kNumFingers; ++i)
   {
     double _spread = mSpreadDofs[i]->getPosition();
     if (std::abs(spread - _spread) > kDofTolerance)
     {
       std::stringstream msg;
       msg << i << "th finger dof value not equal to 0th finger dof. "
-      << "Expecting " << spread << ", got " << spread;
+          << "Expecting " << spread << ", got " << spread;
       auto expr = std::make_exception_ptr(std::runtime_error(msg.str()));
       mPromise->set_exception(expr);
       mInExecution = false;
@@ -183,8 +187,10 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
 
   // Check collision
   bool collision = mCollisionDetector->collide(
-    mSpreadCollisionGroup.get(), mCollideWith.get(),
-    mCollisionOptions, nullptr);
+      mSpreadCollisionGroup.get(),
+      mCollideWith.get(),
+      mCollisionOptions,
+      nullptr);
 
   // Termination condition
   if (collision || std::abs(spread - mGoalPosition) < kTolerance)
@@ -197,19 +203,17 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
   // Move spread
   double newSpread;
   if (spread > mGoalPosition)
-    newSpread = std::max(mGoalPosition,
-      spread + -kDofSpeed*period);
+    newSpread = std::max(mGoalPosition, spread + -kDofSpeed * period);
   else
-    newSpread = std::min(mGoalPosition,
-      spread + kDofSpeed*period);
+    newSpread = std::min(mGoalPosition, spread + kDofSpeed * period);
 
-  for (auto spreadDof: mSpreadDofs)
+  for (auto spreadDof : mSpreadDofs)
     spreadDof->setPosition(newSpread);
 }
 
 //=============================================================================
 bool BarrettFingerKinematicSimulationSpreadCommandExecutor::setCollideWith(
-  ::dart::collision::CollisionGroupPtr collideWith)
+    ::dart::collision::CollisionGroupPtr collideWith)
 {
   std::lock_guard<std::mutex> lockSpin(mMutex);
 
@@ -221,5 +225,5 @@ bool BarrettFingerKinematicSimulationSpreadCommandExecutor::setCollideWith(
   return true;
 }
 
-} // control
-} // aikido
+} // namespace control
+} // namespace aikido

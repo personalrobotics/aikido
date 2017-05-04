@@ -1,10 +1,11 @@
 #ifndef AIKIDO_CONTROL_ROS_ROSJOINTSTATECLIENT_HPP_
 #define AIKIDO_CONTROL_ROS_ROSJOINTSTATECLIENT_HPP_
+
 #include <string>
 #include <boost/circular_buffer.hpp>
 #include <dart/dynamics/dynamics.hpp>
-#include <ros/ros.h>
 #include <ros/callback_queue.h>
+#include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 
 namespace aikido {
@@ -22,10 +23,10 @@ public:
   /// \param _topicName Name of topic to subscribe to for JointState updates.
   /// \param _capacity Number of JointStateRecords that are saved per joint.
   RosJointStateClient(
-    dart::dynamics::SkeletonPtr _skeleton,
-    ::ros::NodeHandle _nodeHandle,
-    const std::string& _topicName,
-    size_t capacity);
+      dart::dynamics::SkeletonPtr _skeleton,
+      ::ros::NodeHandle _nodeHandle,
+      const std::string& _topicName,
+      size_t capacity);
 
   /// Update mBuffer with any JointState messages that have been received.
   void spin();
@@ -34,7 +35,7 @@ public:
   /// \param _metaSkeleton Skeleton to read DOFs from.
   /// \return vector of positions for each DOF
   Eigen::VectorXd getLatestPosition(
-    const dart::dynamics::MetaSkeleton& _metaSkeleton) const;
+      const dart::dynamics::MetaSkeleton& _metaSkeleton) const;
 
   // TODO: implement
   // getPositionAtTime(const MetaSkeleton&, const ros::Time&, bool)
@@ -43,7 +44,10 @@ public:
 private:
   struct JointStateRecord
   {
-    inline bool isValid() const { return mStamp.isValid(); }
+    inline bool isValid() const
+    {
+      return mStamp.isValid();
+    }
 
     ::ros::Time mStamp;
     double mPosition;
@@ -56,8 +60,8 @@ private:
   mutable std::mutex mMutex;
 
   dart::dynamics::SkeletonPtr mSkeleton;
-  std::unordered_map<std::string,
-    boost::circular_buffer<JointStateRecord>> mBuffer;
+  std::unordered_map<std::string, boost::circular_buffer<JointStateRecord>>
+      mBuffer;
   size_t mCapacity;
 
   ::ros::CallbackQueue mCallbackQueue;
