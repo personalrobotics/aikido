@@ -1,5 +1,5 @@
-#ifndef AIKIDO_RVIZ_SHAPEFRAMEMARKER_H_
-#define AIKIDO_RVIZ_SHAPEFRAMEMARKER_H_
+#ifndef AIKIDO_RVIZ_SHAPEFRAMEMARKER_HPP_
+#define AIKIDO_RVIZ_SHAPEFRAMEMARKER_HPP_
 
 #include <boost/optional.hpp>
 #include <dart/dynamics/dynamics.hpp>
@@ -14,31 +14,31 @@ class ShapeFrameMarker
 {
 public:
   ShapeFrameMarker(
-    ResourceServer *resourceServer,
-    interactive_markers::InteractiveMarkerServer *markerServer,
-    const std::string &name,
-    const dart::dynamics::ShapeFrame *shapeFrame,
-    const std::string &frameId);
+      ResourceServer* resourceServer,
+      interactive_markers::InteractiveMarkerServer* markerServer,
+      const std::string& name,
+      const dart::dynamics::ShapeFrame* shapeFrame,
+      const std::string& frameId);
 
-  ShapeFrameMarker(ShapeFrameMarker const &) = delete;
-  ShapeFrameMarker &operator=(ShapeFrameMarker const &) = delete;
+  ShapeFrameMarker(const ShapeFrameMarker&) = delete;
+  ShapeFrameMarker& operator=(const ShapeFrameMarker&) = delete;
 
   virtual ~ShapeFrameMarker();
 
   bool update();
 
-  void SetColor(Eigen::Vector4d const &color);
+  void SetColor(const Eigen::Vector4d& color);
   void ResetColor();
 
 private:
-  ResourceServer *mResourceServer;
-  interactive_markers::InteractiveMarkerServer *mMarkerServer;
+  ResourceServer* mResourceServer;
+  interactive_markers::InteractiveMarkerServer* mMarkerServer;
   visualization_msgs::InteractiveMarker mInteractiveMarker;
-  visualization_msgs::InteractiveMarkerControl *mVisualControl;
+  visualization_msgs::InteractiveMarkerControl* mVisualControl;
 
-  const dart::dynamics::ShapeFrame *mShapeFrame;
+  const dart::dynamics::ShapeFrame* mShapeFrame;
   std::string mFrameId;
-  
+
   bool mExists;
   bool mForceUpdate;
   size_t mVersion;

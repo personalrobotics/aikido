@@ -1,3 +1,5 @@
+#include <aikido/control/ros/Conversions.hpp>
+
 #include <map>
 #include <sstream>
 #include <dart/dynamics/Joint.hpp>

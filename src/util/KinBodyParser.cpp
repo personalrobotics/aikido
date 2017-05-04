@@ -96,7 +96,7 @@ dart::dynamics::SkeletonPtr readKinbody(
   {
     dart::utils::openXMLFile(kinBodyDoc, kinBodyUri, retriever);
   }
-  catch (std::exception const& e)
+  catch (const std::exception& e)
   {
     dtwarn << "[KinBodyParser] Failed to load '" << kinBodyUri.toString()
            << "'. Reason: " << e.what() << ". Returning nullptr.\n";
