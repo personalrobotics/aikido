@@ -58,9 +58,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     _inputTrajectory.evaluateDerivative(currentTime, 1, currentVelocity);
     _inputTrajectory.evaluateDerivative(nextTime, 1, nextVelocity);
 
-    // Compute the spline coefficients for this segment of the trajectory. Each
-    // segment is expressed in the tangent space of the previous segment.
-    // TODO: We should apply the adjoint transform to velocity.
+    // Compute the spline coefficients for this segment of the trajectory. 
     CubicSplineProblem problem(Vector2d(0, nextTime - currentTime), 4, dimension);
     problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
     problem.addConstantConstraint(0, 1, currentVelocity);
