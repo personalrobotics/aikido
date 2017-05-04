@@ -281,9 +281,6 @@ if(COVERALLS)
 
   list(LENGTH sources sources_length)
   message(STATUS "Running Coveralls on ${sources_length} source files.")
-
-#  coveralls_setup("${sources}" ${COVERALLS_UPLOAD}
-#    "${PROJECT_SOURCE_DIR}/cmake")
 endif()
 
 #===============================================================================
