@@ -31,10 +31,12 @@ script:
   - ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
   # Manually run Aikido's tests; they are not run automatically because it is not a Catkin package.
   - ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args tests test -- aikido
-  # Rebuild Aikido in debug mode with coveralls enabled to measure test coverage.
+  # Rebuild Aikido in debug mode with codecov enabled to measure test coverage.
   - ./scripts/internal-run.sh catkin clean -y aikido
   - ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON -DCOVERALLS=ON -- --make-args all tests -- aikido
-  - ./scripts/internal-run.sh make -C build/aikido coveralls
+  - ./scripts/internal-run.sh make -C build/aikido aikido_coverage
+  # Uploading report to CodeCov
+  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
 
 after_script:
   - ./scripts/view-all-results.sh test_results

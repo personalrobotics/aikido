@@ -26,8 +26,10 @@ set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
-option(COVERALLS "Enable coveralls support" OFF)
-option(COVERALLS_UPLOAD "Upload coveralls JSON output" ON)
+option(COVERALLS "[DEPRECATED] Enable coveralls support" OFF)
+option(COVERALLS_UPLOAD "[DEPRECATED] Upload coveralls JSON output" ON)
+option(CODECOV "Enable codecov support" OFF)
+set(CODECOV ${COVERALLS})
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
 option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 
@@ -55,8 +57,11 @@ function(coveralls_add_sources)
 endfunction()
 
 if(COVERALLS)
-  include(Coveralls)
-  coveralls_turn_on_coverage()
+  include(CodeCoverage)
+  setup_target_for_coverage(${PROJECT_NAME}_coverage ctest coverage)
+  set(CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage"
+  )
 endif()
 
 #==============================================================================
@@ -277,8 +282,8 @@ if(COVERALLS)
   list(LENGTH sources sources_length)
   message(STATUS "Running Coveralls on ${sources_length} source files.")
 
-  coveralls_setup("${sources}" ${COVERALLS_UPLOAD}
-    "${PROJECT_SOURCE_DIR}/cmake")
+#  coveralls_setup("${sources}" ${COVERALLS_UPLOAD}
+#    "${PROJECT_SOURCE_DIR}/cmake")
 endif()
 
 #===============================================================================
