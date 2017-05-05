@@ -27,9 +27,6 @@ set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
 option(CODECOV "Enable codecov support" OFF)
-option(COVERALLS "[DEPRECATED] Enable coveralls support" OFF)
-option(COVERALLS_UPLOAD "[DEPRECATED] Upload coveralls JSON output" ON)
-set(CODECOV ${COVERALLS}) # Deprecated
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
 option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 
