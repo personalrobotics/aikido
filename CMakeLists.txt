@@ -75,12 +75,14 @@ file(GLOB_RECURSE headers_planner "${CMAKE_SOURCE_DIR}/include/aikido/planner/*.
 file(GLOB_RECURSE headers_util "${CMAKE_SOURCE_DIR}/include/aikido/util/*.hpp")
 file(GLOB_RECURSE headers_rviz "${CMAKE_SOURCE_DIR}/include/aikido/rviz/*.hpp")
 file(GLOB_RECURSE headers_distance "${CMAKE_SOURCE_DIR}/include/aikido/distance/*.hpp")
+file(GLOB_RECURSE headers_distance "${CMAKE_SOURCE_DIR}/include/aikido/control/*.hpp")
 format_add_sources(${headers_statespace})
 format_add_sources(${headers_perception})
 format_add_sources(${headers_planner})
 format_add_sources(${headers_util})
 format_add_sources(${headers_rviz})
 format_add_sources(${headers_distance})
+format_add_sources(${headers_control})
 
 #==============================================================================
 # Helper functions.

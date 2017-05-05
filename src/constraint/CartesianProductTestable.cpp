@@ -66,5 +66,5 @@ bool CartesianProductTestable::isSatisfied(
   return true;
 }
 
-}  // namespace constraint
-}  // namespace aikido
+} // namespace constraint
+} // namespace aikido

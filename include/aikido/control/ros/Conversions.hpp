@@ -2,8 +2,8 @@
 #define AIKIDO_CONTROL_ROS_CONVERSIONS_HPP_
 
 #include <memory>
-#include <trajectory_msgs/JointTrajectory.h>
 #include <sensor_msgs/JointState.h>
+#include <trajectory_msgs/JointTrajectory.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -18,24 +18,24 @@ namespace ros {
 /// \param[in] jointTrajectory ROS JointTrajectory to be converted.
 /// \return Spline trajectory.
 std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
-  const std::shared_ptr<
-    aikido::statespace::dart::MetaSkeletonStateSpace>& space,
-  const trajectory_msgs::JointTrajectory& jointTrajectory);
+    const std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace>&
+        space,
+    const trajectory_msgs::JointTrajectory& jointTrajectory);
 
 /// Converts Aikido Trajectory to ROS JointTrajectory.
 /// Supports only 1D RnJoints and SO2Joints.
 /// \param[in] trajectory Aikido trajectory to be converted.
 /// \param[in] timestep Timestep between two consecutive waypoints.
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
-  const aikido::trajectory::TrajectoryPtr& trajectory, double timestep);
+    const aikido::trajectory::TrajectoryPtr& trajectory, double timestep);
 
 /// Converts Eigen VectorXd and joint names to JointState
 /// \param[in] goalPositions The required positions for the fingers
 /// \param[in] jointNames The corresponding names of the joints
 /// \return The JointState message object
 sensor_msgs::JointState positionsToJointState(
-  const Eigen::VectorXd& goalPositions, const std::vector<std::string>& jointNames);
-
+    const Eigen::VectorXd& goalPositions,
+    const std::vector<std::string>& jointNames);
 
 } // namespace ros
 } // namespace control

@@ -72,7 +72,7 @@ private:
 };
 
 
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif
