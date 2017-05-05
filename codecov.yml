@@ -5,6 +5,5 @@ coverage:
     - "src/aikido::"  # reduce root "src/aikido/" => "/"
   ignore:
     - "devel"
-    - "src/aikido/src/external"
-    - "src/aikido/tests"
-
+    - "src/external"
+    - "tests"
