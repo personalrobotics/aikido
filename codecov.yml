@@ -7,3 +7,6 @@ coverage:
     - "devel"
     - "src/external"
     - "tests"
+comment:
+  layout: "diff, flags, files"
+  
