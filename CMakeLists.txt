@@ -26,37 +26,17 @@ set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 
+option(CODECOV "Enable codecov support" OFF)
 option(COVERALLS "[DEPRECATED] Enable coveralls support" OFF)
 option(COVERALLS_UPLOAD "[DEPRECATED] Upload coveralls JSON output" ON)
-option(CODECOV "Enable codecov support" OFF)
-set(CODECOV ${COVERALLS})
+set(CODECOV ${COVERALLS}) # Deprecated
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
 option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 
 #==============================================================================
-# Coveralls Setup
+# codecov Setup
 #
-define_property(GLOBAL PROPERTY COVERALLS_SOURCES
-  BRIEF_DOCS "Source files that Coveralls evaluates for test coverage."
-  FULL_DOCS "Source files that Coveralls evaluates for test coverage."
-)
-
-function(coveralls_add_sources)
-  foreach(source ${ARGN})
-    get_filename_component(source_abs
-      "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
-    if(EXISTS "${source_abs}")
-      set_property(GLOBAL APPEND PROPERTY COVERALLS_SOURCES "${source_abs}")
-    else()
-      message(FATAL_ERROR
-        "Source file '${source}' does not exist at absolute path"
-        " '${source_abs}'. This should never happen. Did you recently delete"
-        " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
-    endif()
-  endforeach()
-endfunction()
-
-if(COVERALLS)
+if(CODECOV)
   include(CodeCoverage)
   setup_target_for_coverage(${PROJECT_NAME}_coverage ctest coverage)
   set(CMAKE_CXX_FLAGS
@@ -271,16 +251,6 @@ if(${DOXYGEN_FOUND})
 else()
   message(STATUS "Looking for Doxygen - NOT found, to generate API"
                  " documentation, please install Doxygen")
-endif()
-
-#==============================================================================
-# Coveralls.
-#
-if(COVERALLS)
-  get_property(sources GLOBAL PROPERTY COVERALLS_SOURCES)
-
-  list(LENGTH sources sources_length)
-  message(STATUS "Running Coveralls on ${sources_length} source files.")
 endif()
 
 #===============================================================================

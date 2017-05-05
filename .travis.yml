@@ -33,7 +33,7 @@ script:
   - ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args tests test -- aikido
   # Rebuild Aikido in debug mode with codecov enabled to measure test coverage.
   - ./scripts/internal-run.sh catkin clean -y aikido
-  - ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON -DCOVERALLS=ON -- --make-args all tests -- aikido
+  - ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON -DCODECOV=ON -- --make-args all tests -- aikido
   - ./scripts/internal-run.sh make -C build/aikido aikido_coverage
   # Uploading report to CodeCov
   - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
