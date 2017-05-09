@@ -35,7 +35,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
     const Eigen::VectorXd& _maxAcceleration);
 
 /// Convert an interpolated trajectory to a spline trajectory
-/// This function requires the \c _inputTrajectory to use a 
+/// This function requires the \c _inputTrajectory to use a
 /// \c GeodesicInterpolator.
 /// So the conversion exactly preserves the geometric path
 /// \param _inputTrajectory interpolated trajectory

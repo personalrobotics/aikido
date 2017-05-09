@@ -24,7 +24,7 @@ public:
     , mStateSpace(mTestable->getStateSpace())
     , mInterpolator(mStateSpace)
   {
-    //Do nothing
+    // Do nothing
   }
 
   bool ConfigFeasible(const ParabolicRamp::Vector& x) override
@@ -35,8 +35,8 @@ public:
     return mTestable->isSatisfied(state);
   }
 
-  bool SegmentFeasible(const ParabolicRamp::Vector& a, 
-                       const ParabolicRamp::Vector& b) override
+  bool SegmentFeasible(
+      const ParabolicRamp::Vector& a, const ParabolicRamp::Vector& b) override
   {
     Eigen::VectorXd eigA = toEigen(a);
     Eigen::VectorXd eigB = toEigen(b);
