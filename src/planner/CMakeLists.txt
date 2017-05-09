@@ -1,4 +1,6 @@
-set(sources SnapPlanner.cpp)
+set(sources 
+  SnapPlanner.cpp
+  VectorFieldPlanner.cpp)
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_planner"
