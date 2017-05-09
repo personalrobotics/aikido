@@ -62,7 +62,6 @@ std::unique_ptr<ParabolicRamp::DynamicPath>
                          const Eigen::VectorXd& _maxAcceleration,
                          bool _useVelocity = true);
 
-
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido

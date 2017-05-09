@@ -2,7 +2,6 @@
 #include <set>
 #include <dart/common/StlHelpers.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
