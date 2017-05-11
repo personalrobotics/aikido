@@ -30,8 +30,8 @@ public:
   StateHandle(const StateHandle&) = default;
   StateHandle(StateHandle&&) = default;
 
-  StateHandle& operator =(StateHandle&&) = default;
-  StateHandle& operator =(const StateHandle&) = default;
+  StateHandle& operator=(StateHandle&&) = default;
+  StateHandle& operator=(const StateHandle&) = default;
 
   /// Implicitly convert to a \c State pointer.
   operator QualifiedState*() const;

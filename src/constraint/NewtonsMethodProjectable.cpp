@@ -122,5 +122,5 @@ statespace::StateSpacePtr NewtonsMethodProjectable::getStateSpace() const
 }
 
 
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido

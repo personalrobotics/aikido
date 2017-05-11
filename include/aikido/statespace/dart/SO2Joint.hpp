@@ -9,10 +9,9 @@ namespace dart {
 
 /// \c SO2 for a DART \c SingleDofJoint. This class does not support
 /// position limits.
-class SO2Joint
-  : public SO2
-  , public JointStateSpace
-  , public std::enable_shared_from_this<SO2Joint>
+class SO2Joint : public SO2,
+                 public JointStateSpace,
+                 public std::enable_shared_from_this<SO2Joint>
 {
 public:
   using SO2::State;
@@ -21,17 +20,18 @@ public:
   /// position limits.
   ///
   /// \param _joint joint to create a state space for
-  explicit SO2Joint(::dart::dynamics::GenericJoint<::dart::math::R1Space>* _joint);
+  explicit SO2Joint(
+      ::dart::dynamics::GenericJoint<::dart::math::R1Space>* _joint);
 
   // Documentation inherited.
   void convertPositionsToState(
-    const Eigen::VectorXd& _positions,
-    StateSpace::State* _state) const override;
+      const Eigen::VectorXd& _positions,
+      StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-    const StateSpace::State* _state,
-    Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* _state,
+      Eigen::VectorXd& _positions) const override;
 };
 
 } // namespace dart

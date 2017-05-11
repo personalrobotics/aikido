@@ -6,10 +6,10 @@ namespace ros {
 
 //=============================================================================
 RosJointStateClient::RosJointStateClient(
-      dart::dynamics::SkeletonPtr _skeleton,
-      ::ros::NodeHandle _nodeHandle,
-      const std::string& _topicName,
-      size_t capacity)
+    dart::dynamics::SkeletonPtr _skeleton,
+    ::ros::NodeHandle _nodeHandle,
+    const std::string& _topicName,
+    size_t capacity)
   : mSkeleton{std::move(_skeleton)}
   , mBuffer{}
   , mCapacity{capacity}
@@ -23,8 +23,8 @@ RosJointStateClient::RosJointStateClient(
     throw std::invalid_argument("Capacity must be positive.");
 
   mNodeHandle.setCallbackQueue(&mCallbackQueue);
-  mSubscriber = mNodeHandle.subscribe(_topicName, 1,
-    &RosJointStateClient::jointStateCallback, this);
+  mSubscriber = mNodeHandle.subscribe(
+      _topicName, 1, &RosJointStateClient::jointStateCallback, this);
 }
 
 //=============================================================================
@@ -38,7 +38,7 @@ void RosJointStateClient::spin()
 
 //=============================================================================
 Eigen::VectorXd RosJointStateClient::getLatestPosition(
-  const dart::dynamics::MetaSkeleton& _metaSkeleton) const
+    const dart::dynamics::MetaSkeleton& _metaSkeleton) const
 {
   std::lock_guard<std::mutex> bufferLock{mMutex};
   Eigen::VectorXd position(_metaSkeleton.getNumDofs());
@@ -71,31 +71,38 @@ Eigen::VectorXd RosJointStateClient::getLatestPosition(
 
 //=============================================================================
 void RosJointStateClient::jointStateCallback(
-  const sensor_msgs::JointState& _jointState)
+    const sensor_msgs::JointState& _jointState)
 {
   // This method assumes that mSkeleton->getMutex() and mMutex are locked.
 
   if (_jointState.position.size() != _jointState.name.size())
   {
-    ROS_WARN_STREAM("Incorrect number of positions: expected "
-      << _jointState.name.size() << ", got "
-      << _jointState.position.size() << ".");
+    ROS_WARN_STREAM(
+        "Incorrect number of positions: expected "
+        << _jointState.name.size()
+        << ", got "
+        << _jointState.position.size()
+        << ".");
     return;
   }
   // TODO: Also check for velocities.
 
   for (size_t i = 0; i < _jointState.name.size(); ++i)
   {
-    const auto result = mBuffer.emplace(_jointState.name[i],
-      boost::circular_buffer<JointStateRecord>{mCapacity});
+    const auto result = mBuffer.emplace(
+        _jointState.name[i],
+        boost::circular_buffer<JointStateRecord>{mCapacity});
     auto& buffer = result.first->second;
 
     if (_jointState.header.stamp < buffer.back().mStamp)
     {
       // Ignore out of order JointState message.
-      ROS_WARN_STREAM("Ignoring out of order message: received timestamp of "
-                      << _jointState.header.stamp << " is before previously "
-                      << "received timestamp of " << buffer.back().mStamp);
+      ROS_WARN_STREAM(
+          "Ignoring out of order message: received timestamp of "
+          << _jointState.header.stamp
+          << " is before previously "
+          << "received timestamp of "
+          << buffer.back().mStamp);
 
       continue;
     }

@@ -13,14 +13,14 @@ WeldJoint::WeldJoint(::dart::dynamics::WeldJoint* _joint)
 
 //=============================================================================
 void WeldJoint::convertPositionsToState(
-  const Eigen::VectorXd& /*_positions*/, StateSpace::State* /*_state*/) const
+    const Eigen::VectorXd& /*_positions*/, StateSpace::State* /*_state*/) const
 {
   // Do nothing since the dimension is zero.
 }
 
 //=============================================================================
 void WeldJoint::convertStateToPositions(
-  const StateSpace::State* /*_state*/, Eigen::VectorXd& _positions) const
+    const StateSpace::State* /*_state*/, Eigen::VectorXd& _positions) const
 {
   _positions.resize(DimensionAtCompileTime);
 }
@@ -28,4 +28,3 @@ void WeldJoint::convertStateToPositions(
 } // namespace dart
 } // namespace statespace
 } // namespace aikido
-
