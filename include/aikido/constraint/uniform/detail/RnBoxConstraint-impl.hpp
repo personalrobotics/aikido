@@ -31,7 +31,7 @@ template <int N>
 class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
 public:
-  using Vectord = Eigen::Matrix<double, N, 1>;
+  using VectorNd = Eigen::Matrix<double, N, 1>;
 
   statespace::StateSpacePtr getStateSpace() const override;
 
@@ -44,8 +44,8 @@ public:
 private:
   RnBoxConstraintSampleGenerator(std::shared_ptr<statespace::R<N>> _space,
     std::unique_ptr<util::RNG> _rng,
-    const Vectord& _lowerLimits,
-    const Vectord& _upperLimits);
+    const VectorNd& _lowerLimits,
+    const VectorNd& _upperLimits);
 
   std::shared_ptr<statespace::R<N>> mSpace;
   std::unique_ptr<util::RNG> mRng;
@@ -59,8 +59,8 @@ template <int N>
 RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
       std::shared_ptr<statespace::R<N>> _space,
       std::unique_ptr<util::RNG> _rng,
-      const Vectord& _lowerLimits,
-      const Vectord& _upperLimits)
+      const VectorNd& _lowerLimits,
+      const VectorNd& _upperLimits)
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
 {
@@ -84,7 +84,7 @@ template <int N>
 bool RnBoxConstraintSampleGenerator<N>::sample(
   statespace::StateSpace::State* _state)
 {
-  Vectord value(mDistributions.size());
+  VectorNd value(mDistributions.size());
 
   for (auto i = 0; i < value.size(); ++i)
     value[i] = mDistributions[i](*mRng);
@@ -112,8 +112,8 @@ bool RnBoxConstraintSampleGenerator<N>::canSample() const
 template <int N>
 RBoxConstraint<N>::RBoxConstraint(std::shared_ptr<statespace::R<N>> _space,
       std::unique_ptr<util::RNG> _rng,
-      const Vectord& _lowerLimits,
-      const Vectord& _upperLimits)
+      const VectorNd& _lowerLimits,
+      const VectorNd& _upperLimits)
   : mSpace(std::move(_space))
   , mRng(std::move(_rng))
   , mLowerLimits(_lowerLimits)
@@ -198,7 +198,7 @@ bool RBoxConstraint<N>::project(
   const statespace::StateSpace::State* _s,
   statespace::StateSpace::State* _out) const
 {
-  Vectord value = mSpace->getValue(
+  VectorNd value = mSpace->getValue(
     static_cast<const typename statespace::R<N>::State*>(_s));
 
   for (auto i = 0; i < value.size(); ++i)
@@ -287,14 +287,14 @@ std::unique_ptr<constraint::SampleGenerator>
 
 //=============================================================================
 template <int N>
-auto RBoxConstraint<N>::getLowerLimits() const -> const Vectord&
+auto RBoxConstraint<N>::getLowerLimits() const -> const VectorNd&
 {
   return mLowerLimits;
 }
 
 //=============================================================================
 template <int N>
-auto RBoxConstraint<N>::getUpperLimits() const -> const Vectord&
+auto RBoxConstraint<N>::getUpperLimits() const -> const VectorNd&
 {
   return mUpperLimits;
 }

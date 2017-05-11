@@ -22,7 +22,7 @@ public:
   using constraint::Projectable::project;
   using constraint::Differentiable::getValueAndJacobian;
 
-  using Vectord = Eigen::Matrix<double, N, 1>;
+  using VectorNd = Eigen::Matrix<double, N, 1>;
 
   /// Constructor.
   /// \param _space Space in which this constraint operates.
@@ -34,8 +34,8 @@ public:
   RBoxConstraint(
     std::shared_ptr<statespace::R<N>> _space,
     std::unique_ptr<util::RNG> _rng,
-    const Vectord& _lowerLimits,
-    const Vectord& _upperLimits);
+    const VectorNd& _lowerLimits,
+    const VectorNd& _upperLimits);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -69,16 +69,16 @@ public:
     createSampleGenerator() const override;
 
   /// Returns lower limits of this constraint.
-  auto getLowerLimits() const -> const Vectord&;
+  auto getLowerLimits() const -> const VectorNd&;
 
   /// Returns upper limits of this constraint.
-  auto getUpperLimits() const -> const Vectord&;
+  auto getUpperLimits() const -> const VectorNd&;
 
 private:
   std::shared_ptr<statespace::R<N>> mSpace;
   std::unique_ptr<util::RNG> mRng;
-  Vectord mLowerLimits;
-  Vectord mUpperLimits;
+  VectorNd mLowerLimits;
+  VectorNd mUpperLimits;
 };
 
 using R0BoxConstraint = RBoxConstraint<0>;
