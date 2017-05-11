@@ -45,5 +45,3 @@ target_compile_options("${PROJECT_NAME}_constraint"
 add_component(${PROJECT_NAME} constraint)
 add_component_targets(${PROJECT_NAME} constraint "${PROJECT_NAME}_constraint")
 add_component_dependencies(${PROJECT_NAME} constraint statespace util)
-
-coveralls_add_sources(${sources})

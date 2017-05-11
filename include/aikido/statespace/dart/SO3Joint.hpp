@@ -9,10 +9,9 @@ namespace dart {
 
 /// \c SO3 for a DART \c BallJoint. This class does not support
 /// position limits.
-class SO3Joint
-  : public SO3
-  , public JointStateSpace
-  , public std::enable_shared_from_this<SO3Joint>
+class SO3Joint : public SO3,
+                 public JointStateSpace,
+                 public std::enable_shared_from_this<SO3Joint>
 {
 public:
   using SO3::State;
@@ -25,13 +24,13 @@ public:
 
   // Documentation inherited.
   void convertPositionsToState(
-    const Eigen::VectorXd& _positions,
-    StateSpace::State* _state) const override;
+      const Eigen::VectorXd& _positions,
+      StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-    const StateSpace::State* _state,
-    Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* _state,
+      Eigen::VectorXd& _positions) const override;
 };
 
 } // namespace dart

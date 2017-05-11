@@ -7,7 +7,7 @@ ScopedState<_Handle>::ScopedState(const StateSpace* _space)
   this->mSpace = _space;
   mBuffer.reset(new char[_space->getStateSizeInBytes()]);
   this->mState = static_cast<ScopedState::State*>(
-    _space->allocateStateInBuffer(mBuffer.get()));
+      _space->allocateStateInBuffer(mBuffer.get()));
 }
 
 template <class _Handle>

@@ -32,7 +32,7 @@ public:
 
 using ProjectablePtr = std::shared_ptr<Projectable>;
 
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif

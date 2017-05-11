@@ -32,4 +32,4 @@ target_compile_options("${PROJECT_NAME}_statespace"
 add_component(${PROJECT_NAME} statespace)
 add_component_targets(${PROJECT_NAME} statespace "${PROJECT_NAME}_statespace")
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})

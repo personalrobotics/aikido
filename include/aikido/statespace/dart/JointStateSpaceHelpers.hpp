@@ -23,7 +23,7 @@ std::unique_ptr<JointStateSpace> createJointStateSpaceFor(JointType* _joint);
 /// \param _joint joint to create a state space for
 /// \return state space of \c _joint
 std::unique_ptr<JointStateSpace> createJointStateSpace(
-  ::dart::dynamics::Joint* _joint);
+    ::dart::dynamics::Joint* _joint);
 
 } // namespace dart
 } // namespace statespace
