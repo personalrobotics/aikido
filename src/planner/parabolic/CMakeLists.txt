@@ -26,5 +26,4 @@ add_component_dependencies(${PROJECT_NAME} planner_parabolic
   util
 )
 
-coveralls_add_sources(${sources})
 format_add_sources(${sources})
