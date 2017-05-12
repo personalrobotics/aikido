@@ -30,13 +30,12 @@ namespace parabolic {
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \return time optimal trajectory that satisfies acceleration constraints
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
-    const aikido::trajectory::Spline& _inputTrajectory,
+    const aikido::trajectory::Interpolated& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration);
 
-/// Convert an interpolated trajectory to a spline trajectory
-/// This function requires the \c _inputTrajectory to use a
-/// \c GeodesicInterpolator.
+/// Convert an interpolated trajectory to a piecewise linear spline trajectory
+/// This function requires the \c _inputTrajectory to use a \c GeodesicInterpolator.
 /// So the conversion exactly preserves the geometric path
 /// \param _inputTrajectory interpolated trajectory
 /// \return a spline trajectory

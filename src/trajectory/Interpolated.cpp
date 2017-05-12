@@ -100,17 +100,6 @@ void Interpolated::evaluateDerivative(double _t, int _derivative,
     _tangentVector.setZero();
   }
 
-  if(_t==mWaypoints[0].t)
-  {
-      const auto segmentTime = mWaypoints[1].t - mWaypoints[0].t;
-      const auto alpha = (mWaypoints[1].t - mWaypoints[0].t) / segmentTime;
-
-      mInterpolator->getDerivative(mWaypoints[0].state, mWaypoints[1].state,
-              _derivative, alpha, _tangentVector);
-      _tangentVector /= segmentTime;
-      return;
-  }
-
   // Compute the interpolated state at time t
   auto iPt = mStateSpace->createState();
   evaluate(_t, iPt);
@@ -166,7 +155,6 @@ const statespace::StateSpace::State* Interpolated::getWaypoint(
 double Interpolated::getWaypointTime(size_t _index) const
 {
   if (_index < mWaypoints.size())
-    //return getStartTime() + mWaypoints[_index].t;
     return mWaypoints[_index].t;
   else
     throw std::domain_error("Waypoint index is out of bounds.");

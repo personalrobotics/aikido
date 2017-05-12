@@ -10,8 +10,8 @@
 using Eigen::Vector2d;
 using dart::common::make_unique;
 
-using CubicSplineProblem
-    = aikido::util::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+using LinearSplineProblem
+    = aikido::util::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
 
 namespace aikido {
 namespace planner {
@@ -22,11 +22,17 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 {
   using aikido::statespace::GeodesicInterpolator;
 
+  if(nullptr==dynamic_cast<GeodesicInterpolator*>(_inputTrajectory.getInterpolator().get()))
+  {
+      throw std::invalid_argument(
+        "The interpolator of _inputTrajectory should be a GeodesicInterpolator");
+  }
+
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
 
-  if (!checkStateSpace(stateSpace.get()))
+  if (!detail::checkStateSpace(stateSpace.get()))
     throw std::invalid_argument(
         "computeParabolicTiming only supports Rn, "
         "SO2, and CartesianProducts consisting of those types.");
@@ -42,8 +48,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   auto outputTrajectory = make_unique<aikido::trajectory::Spline>(
       stateSpace, _inputTrajectory.getStartTime());
 
-  Eigen::VectorXd currentVec, nextVec, currentVelocity, nextVelocity;
-
+  Eigen::VectorXd currentVec, nextVec;
   for (size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
   {
     const auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
@@ -54,16 +59,11 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     stateSpace->logMap(currentState, currentVec);
     stateSpace->logMap(nextState, nextVec);
 
-    _inputTrajectory.evaluateDerivative(currentTime, 1, currentVelocity);
-    _inputTrajectory.evaluateDerivative(nextTime, 1, nextVelocity);
-
     // Compute the spline coefficients for this segment of the trajectory.
-    CubicSplineProblem problem(
-        Vector2d(0, nextTime - currentTime), 4, dimension);
+    LinearSplineProblem problem(
+        Vector2d(0, nextTime - currentTime), 2, dimension);
     problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
-    problem.addConstantConstraint(0, 1, currentVelocity);
     problem.addConstantConstraint(1, 0, nextVec - currentVec);
-    problem.addConstantConstraint(1, 1, nextVelocity);
     const auto spline = problem.fit();
 
     assert(spline.getCoefficients().size() == 1);
@@ -76,7 +76,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 }
 
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
-    const aikido::trajectory::Spline& _inputTrajectory,
+    const aikido::trajectory::Interpolated& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration)
 {
@@ -103,11 +103,11 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   }
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath = convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
+  auto dynamicPath = detail::convertToDynamicPath(
+      _inputTrajectory, _maxVelocity, _maxAcceleration);
 
   auto outputTrajectory
-      = convertToSpline(*dynamicPath.get(), startTime, stateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
   return outputTrajectory;
 }
 

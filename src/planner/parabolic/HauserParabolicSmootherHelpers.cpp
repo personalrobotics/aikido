@@ -47,6 +47,8 @@ public:
     mStateSpace->expMap(eigA, startState);
     mStateSpace->expMap(eigB, goalState);
 
+    // both ends of the segment have already been checked by calling ConfigFeasible(),
+    // thus it is no longer needed to check in SegmentFeasible()
     aikido::util::VanDerCorput vdc{1, false, false, mCheckResolution};
 
     for (const auto alpha : vdc)
@@ -128,30 +130,34 @@ bool doShortcut(
     aikido::util::RNG& rng)
 {
   if (timelimit < 0.0)
-    throw std::runtime_error("Timelimit should be non-negative");
+    throw std::invalid_argument("Timelimit should be non-negative");
+  if (checkResolution <= 0.0)
+    throw std::invalid_argument("Check resolution should be positive");
   if (tolerance < 0.0)
-    throw std::runtime_error("Tolerance should be non-negative");
+    throw std::invalid_argument("Tolerance should be non-negative");
 
   SmootherFeasibilityCheckerBase base(testable, checkResolution);
   ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
 
-  std::chrono::time_point<std::chrono::system_clock> startTime, currentTime;
-  startTime = std::chrono::system_clock::now();
+  std::chrono::time_point<std::chrono::system_clock> startTime
+    = std::chrono::system_clock::now();
   double elapsedTime = 0;
 
+  bool success = false;
   while (elapsedTime < timelimit && dynamicPath.ramps.size() > 3)
   {
     std::uniform_real_distribution<> dist(0.0, dynamicPath.GetTotalTime());
     double t1 = dist(rng);
     double t2 = dist(rng);
-    dynamicPath.TryShortcut(t1, t2, feasibilityChecker);
+    if(dynamicPath.TryShortcut(t1, t2, feasibilityChecker))
+    {
+      success = true;
+    }
 
-    currentTime = std::chrono::system_clock::now();
     elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(
-                      currentTime - startTime)
-                      .count();
+      std::chrono::system_clock::now() - startTime).count();
   }
-  return true;
+  return success;
 }
 
 bool doBlend(
@@ -163,9 +169,13 @@ bool doBlend(
     double tolerance)
 {
   if (blendIterations <= 0)
-    throw std::runtime_error("Blend iterations should be positive");
+    throw std::invalid_argument("Blend iterations should be positive");
   if (blendRadius <= 0.0)
-    throw std::runtime_error("Blend radius should be positive");
+    throw std::invalid_argument("Blend radius should be positive");
+  if (checkResolution <= 0.0)
+    throw std::invalid_argument("Check resolution should be positive");
+  if (tolerance < 0.0)
+    throw std::invalid_argument("Tolerance should be non-negative");
 
   SmootherFeasibilityCheckerBase base(testable, checkResolution);
   ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
@@ -182,10 +192,15 @@ bool doBlend(
   // tryBlend always starts at the beginning of the trajectory.
   // Without this bookkeeping, tryBlend would could any blend that fails
   // multiple times.
+  // We continue to call tryBlend() in a loop until it finds nothing left
+  // to blend.
   for (int attempt = 0; attempt < blendIterations; ++attempt)
   {
-    while (tryBlend(dynamicPath, feasibilityChecker, attempt, dtShortcut))
-      ;
+    bool noMoreBlending = true;
+    do
+    {
+      noMoreBlending = tryBlend(dynamicPath, feasibilityChecker, attempt, dtShortcut);
+    }while(noMoreBlending);
 
     dtShortcut /= 2.;
   }

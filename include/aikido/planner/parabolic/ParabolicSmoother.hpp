@@ -30,11 +30,11 @@ constexpr double DEFAULT_TOLERANCE = 1e-3;
 ///   The feasibility of the spline is evaluated using
 /// \c _feasibilityCheck .
 ///
-/// _rngSeed is used in the random generator for sampling times.
 /// \param _inputTrajectory input piecewise Geodesic trajectory
 /// \param _feasibilityCheck Check whether a position is feasible
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
+/// \param _rng A random generator for sampling time in shortcut.
 /// \param _timelimit The maximum time to allow for doing shortcut
 /// \param _checkResolution the resolution in discretizing a segment in
 /// checking the feasibility of the segment
@@ -42,14 +42,13 @@ constexpr double DEFAULT_TOLERANCE = 1e-3;
 /// discretization that deviates no more than \c _tolerance
 /// from the parabolic ramp along any axis, and then checks for
 /// configuration and segment feasibility along that piecewise linear path.
-/// \_rngSeed seed used by a random generator for sampling time in shortcut.
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doShortcut(
     const trajectory::Spline& _inputTrajectory,
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    aikido::util::RNG& _rngSeed,
+    aikido::util::RNG& _rng,
     double _timelimit = DEFAULT_TIMELIMT,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
     double _tolerance = DEFAULT_TOLERANCE);
@@ -106,6 +105,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
 /// \param _feasibilityCheck Check whether a position is feasible
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
+/// \param _rng A random generator for sampling time in shortcut.
 /// \param _timelimit The maximum time to allow for doing shortcut
 /// (unit in second)
 /// \param _blendRadius the radius used in doing blend
@@ -116,7 +116,6 @@ std::unique_ptr<trajectory::Spline> doBlend(
 /// discretization that deviates no more than \c _tolerance
 /// from the parabolic ramp along any axis, and then checks for
 /// configuration and segment feasibility along that piecewise linear path.
-/// \_rngSeed seed used by a random generator for sampling time in shortcut.
 /// \return smoothed trajectory that satisfies acceleration constraints
 std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     const trajectory::Spline& _inputTrajectory,

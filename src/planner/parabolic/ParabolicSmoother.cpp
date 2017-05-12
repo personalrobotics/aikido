@@ -25,7 +25,7 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath
-      = convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
+      = detail::convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
 
   detail::doShortcut(
       *dynamicPath,
@@ -35,7 +35,7 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
       _tolerance,
       _rng);
 
-  auto outputTrajectory = convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -53,8 +53,8 @@ std::unique_ptr<trajectory::Spline> doBlend(
   auto stateSpace = _inputTrajectory.getStateSpace();
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath = convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
+  auto dynamicPath = detail::convertToDynamicPath(
+      _inputTrajectory, _maxVelocity, _maxAcceleration);
 
   detail::doBlend(
       *dynamicPath,
@@ -64,7 +64,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
       _checkResolution,
       _tolerance);
 
-  auto outputTrajectory = convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -85,7 +85,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath
-      = convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
+      = detail::convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
 
   detail::doShortcut(
       *dynamicPath,
@@ -103,7 +103,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
       _checkResolution,
       _tolerance);
 
-  auto outputTrajectory = convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }

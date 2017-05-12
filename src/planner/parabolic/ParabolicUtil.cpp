@@ -28,6 +28,7 @@ using CubicSplineProblem
 namespace aikido {
 namespace planner {
 namespace parabolic {
+namespace detail {
 
 ParabolicRamp::Vector toVector(const Eigen::VectorXd& _x)
 {
@@ -187,8 +188,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     const aikido::trajectory::Spline& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration,
-    bool _useVelocity)
+    const Eigen::VectorXd& _maxAcceleration)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
@@ -214,15 +214,43 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
-  if (_useVelocity)
-    outputPath->SetMilestones(milestones, velocities);
-  else
-    outputPath->SetMilestones(milestones);
+  outputPath->SetMilestones(milestones, velocities);
   if (!outputPath->IsValid())
     throw std::runtime_error("Converted DynamicPath is not valid");
   return outputPath;
 }
 
+std::unique_ptr<ParabolicRamp::DynamicPath>
+    convertToDynamicPath(const aikido::trajectory::Interpolated& _inputTrajectory,
+                         const Eigen::VectorXd& _maxVelocity,
+                         const Eigen::VectorXd& _maxAcceleration)
+{
+  const auto stateSpace = _inputTrajectory.getStateSpace();
+  const auto numWaypoints = _inputTrajectory.getNumWaypoints();
+
+  std::vector<ParabolicRamp::Vector> milestones;
+  std::vector<ParabolicRamp::Vector> velocities;
+  milestones.reserve(numWaypoints);
+  velocities.reserve(numWaypoints);
+
+  Eigen::VectorXd currVec;
+
+  for (size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
+  {
+    auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
+    stateSpace->logMap(currentState, currVec);
+    milestones.emplace_back(toVector(currVec));
+  }
+
+  auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
+  outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
+  outputPath->SetMilestones(milestones);
+  if (!outputPath->IsValid())
+    throw std::runtime_error("Converted DynamicPath is not valid");
+  return outputPath;
+}
+
+} // namespace detail
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido

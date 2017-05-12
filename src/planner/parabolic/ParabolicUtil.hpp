@@ -11,6 +11,7 @@
 namespace aikido {
 namespace planner {
 namespace parabolic {
+namespace detail {
 
 /// Convert a Eigen vector to a ParabolicRamp vector
 /// \param _x an Eigen vector
@@ -59,9 +60,18 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<ParabolicRamp::DynamicPath>
     convertToDynamicPath(const aikido::trajectory::Spline& _inputTrajectory,
                          const Eigen::VectorXd& _maxVelocity,
-                         const Eigen::VectorXd& _maxAcceleration,
-                         bool _useVelocity = true);
+                         const Eigen::VectorXd& _maxAcceleration);
 
+/// Convert an interpolated trajectory to a dynamic path
+/// \param _inputTrajectory a spline trajectory
+/// \param[out] _startTime the start time of the interploated trajectory
+/// \return a dynamic path
+std::unique_ptr<ParabolicRamp::DynamicPath>
+    convertToDynamicPath(const aikido::trajectory::Interpolated& _inputTrajectory,
+                         const Eigen::VectorXd& _maxVelocity,
+                         const Eigen::VectorXd& _maxAcceleration);
+
+} // namespace detail
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido

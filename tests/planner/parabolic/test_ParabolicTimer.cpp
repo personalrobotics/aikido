@@ -58,40 +58,36 @@ TEST_F(ParabolicTimerTests, InputTrajectoryIsEmpty_Throws)
 TEST_F(ParabolicTimerTests, MaxVelocityIsZero_Throws)
 {
   Vector2d zeroMaxVelocity(1., 0.);
-  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *splineTrajectory.get(), zeroMaxVelocity, mMaxAcceleration);
+      *mStraightLine, zeroMaxVelocity, mMaxAcceleration);
   }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxVelocityIsNegative_Throws)
 {
   Vector2d negativeMaxVelocity(1., -1);
-  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *splineTrajectory.get(), negativeMaxVelocity, mMaxAcceleration);
+      *mStraightLine, negativeMaxVelocity, mMaxAcceleration);
   }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxAccelerationIsZero_Throws)
 {
   Vector2d zeroMaxAcceleration(1., 0.);
-  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *splineTrajectory.get(), mMaxVelocity, zeroMaxAcceleration);
+      *mStraightLine, mMaxVelocity, zeroMaxAcceleration);
   }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxAccelerationIsNegative_Throws)
 {
   Vector2d negativeMaxAcceleration(1., -1);
-  auto splineTrajectory = convertToSpline(*mStraightLine);
   EXPECT_THROW({
     computeParabolicTiming(
-      *splineTrajectory.get(), mMaxVelocity, negativeMaxAcceleration);
+      *mStraightLine, mMaxVelocity, negativeMaxAcceleration);
   }, std::invalid_argument);
 }
 
@@ -110,9 +106,8 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
   state.setValue(Vector2d(2., 3.));
   inputTrajectory.addWaypoint(3., state);
 
-  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    *splineTrajectory.get(), Vector2d::Constant(2.), Vector2d::Constant(1.));
+    inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
   timedTrajectory->evaluate(1., state);  
   EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
@@ -141,9 +136,8 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
   state.setValue(Vector2d(2., 3.));
   inputTrajectory.addWaypoint(2., state);
 
-  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    *splineTrajectory.get(), Vector2d::Constant(2.), Vector2d::Constant(1.));
+    inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
@@ -195,9 +189,8 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
   state.setValue(Vector2d(3., 4.));
   inputTrajectory.addWaypoint(2., state);
 
-  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    *splineTrajectory.get(), Vector2d::Constant(1.), Vector2d::Constant(1.));
+    inputTrajectory, Vector2d::Constant(1.), Vector2d::Constant(1.));
 
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
@@ -270,9 +263,8 @@ TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
   state.setValue(Vector2d(3., 4.));
   inputTrajectory.addWaypoint(2., state);
 
-  auto splineTrajectory = convertToSpline(inputTrajectory);
   auto timedTrajectory = computeParabolicTiming(
-    *splineTrajectory.get(), Vector2d(1., 2.), Vector2d(1., 1.));
+    inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
 
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   EXPECT_EQ(3, timedTrajectory->getNumSegments());
@@ -343,10 +335,9 @@ TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
   state.getSubStateHandle<SO2>(1).setAngle(M_PI_2);
   inputTrajectory.addWaypoint(1., state);
 
-  auto splineTrajectory = convertToSpline(inputTrajectory);
   EXPECT_NO_THROW({
     computeParabolicTiming(
-      *splineTrajectory.get(), Vector3d::Ones(), Vector3d::Ones());
+      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
   });
 
 }

@@ -20,6 +20,7 @@ using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
 using aikido::constraint::Satisfied;
+using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::planner::parabolic::convertToSpline;
 using aikido::planner::parabolic::doShortcut;
 using aikido::planner::parabolic::doBlend;
@@ -32,24 +33,33 @@ public:
 protected:
   void SetUp() override
   {
-    mRng = aikido::util::RNGWrapper<std::mt19937>( std::random_device{}() );
+    mRng = aikido::util::RNGWrapper<std::mt19937>( 0 );
     mStateSpace = std::make_shared<R2>();
     mMaxVelocity = Eigen::Vector2d(20., 20.);
     mMaxAcceleration = Eigen::Vector2d(10., 10.);
 
+
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
-    mStraightLine = std::make_shared<Interpolated>(
-      mStateSpace, mInterpolator);
 
-    auto state = mStateSpace->createState();
-
-    state.setValue(Vector2d(1., 2.));
-    mStraightLine->addWaypoint(0., state);
-
-    state.setValue(Vector2d(3., 4.));
-    mStraightLine->addWaypoint(1., state);
-
+    mStraightLineLength = initStraightLine();
     mNonStraightLineLength = initNonStraightLine();
+    mNonStraightLineWithNonZeroStartTimeLength =
+      initNonStraightLineWithNonZeroStartTime();
+  }
+
+  double initStraightLine()
+  {
+      mStraightLine = std::make_shared<Interpolated>(
+        mStateSpace, mInterpolator);
+
+      auto state = mStateSpace->createState();
+      Vector2d p1(1., 2.), p2(3., 4.);
+      state.setValue(p1);
+      mStraightLine->addWaypoint(0., state);
+      state.setValue(p2);
+      mStraightLine->addWaypoint(1., state);
+
+      return (p2-p1).norm();
   }
 
   double initNonStraightLine()
@@ -79,16 +89,40 @@ protected:
     return length;
   }
 
+  double initNonStraightLineWithNonZeroStartTime()
+  {
+    mNonStraightLineWithNonZeroStartTime = std::make_shared<Interpolated>
+            (mStateSpace, mInterpolator);
+
+    auto state = mStateSpace->createState();
+    Vector2d p1(1., 1.), p2(2., 1.2), p3(2.2, 2.),
+            p4(3., 2.2), p5(3.2, 3.);
+    state.setValue(p1);
+    mNonStraightLineWithNonZeroStartTime->addWaypoint(1.2, state);
+    state.setValue(p2);
+    mNonStraightLineWithNonZeroStartTime->addWaypoint(2.3, state);
+    state.setValue(p3);
+    mNonStraightLineWithNonZeroStartTime->addWaypoint(3.4, state);
+    state.setValue(p4);
+    mNonStraightLineWithNonZeroStartTime->addWaypoint(4.5, state);
+    state.setValue(p5);
+    mNonStraightLineWithNonZeroStartTime->addWaypoint(5.5, state);
+
+    double length = (p2-p1).norm() + (p3-p2).norm()
+            + (p4-p3).norm() + (p5-p4).norm();
+    return length;
+  }
+
   double getLength(aikido::trajectory::Spline* spline)
   {
     double length = 0.0;
     auto currState = mStateSpace->createState();
     auto nextState = mStateSpace->createState();
     Eigen::VectorXd currVec, nextVec;
-    for(size_t i=0; i<spline->getNumWaypoints()-1;++i)
+    for(size_t i=1; i<spline->getNumWaypoints();++i)
     {
-      spline->getWaypoint(i, currState);
-      spline->getWaypoint(i+1, nextState);
+      spline->getWaypoint(i-1, currState);
+      spline->getWaypoint(i, nextState);
       mStateSpace->logMap(currState, currVec);
       mStateSpace->logMap(nextState, nextVec);
       length += (nextVec-currVec).norm();
@@ -104,15 +138,18 @@ protected:
   std::shared_ptr<GeodesicInterpolator> mInterpolator;
   std::shared_ptr<Interpolated> mStraightLine;
   std::shared_ptr<Interpolated> mNonStraightLine;
+  std::shared_ptr<Interpolated> mNonStraightLineWithNonZeroStartTime;
 
+  double mStraightLineLength;
   double mNonStraightLineLength;
+  double mNonStraightLineWithNonZeroStartTimeLength;
   double mTimelimit = 60.0;
   const double mTolerance = 1e-5;
 };
 
-TEST_F(ParabolicSmootherTests, convertInterpolatedToSpline)
+TEST_F(ParabolicSmootherTests, convertStraightInterpolatedToSpline)
 {
-    auto spline = convertToSpline(*mStraightLine.get());
+    auto spline = convertToSpline(*mStraightLine);
 
     auto splineState = mStateSpace->createState();
     auto interpolatedState = mStateSpace->createState();
@@ -125,15 +162,57 @@ TEST_F(ParabolicSmootherTests, convertInterpolatedToSpline)
                                    spline->getEndTime());
     for(double t : seq)
     {
-        spline->evaluate(t, splineState);
-        mStraightLine->evaluate(t, interpolatedState);
-        mStateSpace->logMap(splineState, splineVec);
-        mStateSpace->logMap(interpolatedState, interpolatedVec);
-        EXPECT_EIGEN_EQUAL(splineVec, interpolatedVec, mTolerance);
+      spline->evaluate(t, splineState);
+      mStraightLine->evaluate(t, interpolatedState);
+      mStateSpace->logMap(splineState, splineVec);
+      mStateSpace->logMap(interpolatedState, interpolatedVec);
+      EXPECT_EIGEN_EQUAL(splineVec, interpolatedVec, mTolerance);
+    }
+}
 
-        spline->evaluateDerivative(t, 1, splineTangent);
-        mStraightLine->evaluateDerivative(t, 1, interpolatedTangent);
-        EXPECT_EIGEN_EQUAL(splineTangent, interpolatedTangent, mTolerance);
+TEST_F(ParabolicSmootherTests, convertNonStraightInterpolatedToSpline)
+{
+  auto spline = convertToSpline(*mNonStraightLine);
+
+  auto splineState = mStateSpace->createState();
+  auto interpolatedState = mStateSpace->createState();
+  Eigen::VectorXd splineVec, interpolatedVec;
+  Eigen::VectorXd splineTangent, interpolatedTangent;
+
+  const double stepSize = 1e-3;
+  aikido::util::StepSequence seq(stepSize, true,
+                                 spline->getStartTime(),
+                                 spline->getEndTime());
+  for(double t : seq)
+  {
+    spline->evaluate(t, splineState);
+    mNonStraightLine->evaluate(t, interpolatedState);
+    mStateSpace->logMap(splineState, splineVec);
+    mStateSpace->logMap(interpolatedState, interpolatedVec);
+    EXPECT_EIGEN_EQUAL(splineVec, interpolatedVec, mTolerance);
+  }
+}
+
+TEST_F(ParabolicSmootherTests, convertNonStraightInterolatedWithNonZeroStartTimeToSpline)
+{
+    auto spline = convertToSpline(*mNonStraightLineWithNonZeroStartTime);
+
+    auto splineState = mStateSpace->createState();
+    auto interpolatedState = mStateSpace->createState();
+    Eigen::VectorXd splineVec, interpolatedVec;
+    Eigen::VectorXd splineTangent, interpolatedTangent;
+
+    const double stepSize = 1e-3;
+    aikido::util::StepSequence seq(stepSize, true,
+                                   spline->getStartTime(),
+                                   spline->getEndTime());
+    for(double t : seq)
+    {
+      spline->evaluate(t, splineState);
+      mNonStraightLineWithNonZeroStartTime->evaluate(t, interpolatedState);
+      mStateSpace->logMap(splineState, splineVec);
+      mStateSpace->logMap(interpolatedState, interpolatedVec);
+      EXPECT_EIGEN_EQUAL(splineVec, interpolatedVec, mTolerance);
     }
 }
 
@@ -142,7 +221,8 @@ TEST_F(ParabolicSmootherTests, doShortcut)
    std::shared_ptr<Satisfied> testable =
            std::make_shared<Satisfied>(mStateSpace);
 
-   auto splineTrajectory = convertToSpline(*mNonStraightLine.get());
+   auto splineTrajectory = computeParabolicTiming(*mNonStraightLine,
+       mMaxVelocity, mMaxAcceleration);
    auto smoothedTrajectory = doShortcut(*splineTrajectory.get(),
        testable, mMaxVelocity, mMaxAcceleration, mRng, mTimelimit);
 
@@ -171,7 +251,8 @@ TEST_F(ParabolicSmootherTests, doBlend)
    std::shared_ptr<Satisfied> testable =
            std::make_shared<Satisfied>(mStateSpace);
 
-   auto splineTrajectory = convertToSpline(*mNonStraightLine.get());
+   auto splineTrajectory = computeParabolicTiming(*mNonStraightLine,
+       mMaxVelocity, mMaxAcceleration);
    double blendRadius = 0.5;
    int blendIterations = 100;
    auto smoothedTrajectory = doBlend(
@@ -203,7 +284,8 @@ TEST_F(ParabolicSmootherTests, doShortcutAndBlend)
     std::shared_ptr<Satisfied> testable =
            std::make_shared<Satisfied>(mStateSpace);
 
-   auto splineTrajectory = convertToSpline(*mNonStraightLine.get());
+   auto splineTrajectory = computeParabolicTiming(*mNonStraightLine,
+       mMaxVelocity, mMaxAcceleration);
    double blendRadius = 0.5;
    int blendIterations = 100;
    auto smoothedTrajectory = doShortcutAndBlend(*splineTrajectory.get(),
