@@ -24,8 +24,8 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
   auto stateSpace = _inputTrajectory.getStateSpace();
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath
-      = detail::convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
+  auto dynamicPath = detail::convertToDynamicPath(
+      _inputTrajectory, _maxVelocity, _maxAcceleration);
 
   detail::doShortcut(
       *dynamicPath,
@@ -35,7 +35,8 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
       _tolerance,
       _rng);
 
-  auto outputTrajectory = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory
+      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -64,7 +65,8 @@ std::unique_ptr<trajectory::Spline> doBlend(
       _checkResolution,
       _tolerance);
 
-  auto outputTrajectory = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory
+      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -84,8 +86,8 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
   auto stateSpace = _inputTrajectory.getStateSpace();
 
   double startTime = _inputTrajectory.getStartTime();
-  auto dynamicPath
-      = detail::convertToDynamicPath(_inputTrajectory, _maxVelocity, _maxAcceleration);
+  auto dynamicPath = detail::convertToDynamicPath(
+      _inputTrajectory, _maxVelocity, _maxAcceleration);
 
   detail::doShortcut(
       *dynamicPath,
@@ -103,7 +105,8 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
       _checkResolution,
       _tolerance);
 
-  auto outputTrajectory = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+  auto outputTrajectory
+      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }

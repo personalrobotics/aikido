@@ -220,10 +220,10 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   return outputPath;
 }
 
-std::unique_ptr<ParabolicRamp::DynamicPath>
-    convertToDynamicPath(const aikido::trajectory::Interpolated& _inputTrajectory,
-                         const Eigen::VectorXd& _maxVelocity,
-                         const Eigen::VectorXd& _maxAcceleration)
+std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
+    const aikido::trajectory::Interpolated& _inputTrajectory,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();

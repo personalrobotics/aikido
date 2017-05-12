@@ -47,7 +47,8 @@ public:
     mStateSpace->expMap(eigA, startState);
     mStateSpace->expMap(eigB, goalState);
 
-    // both ends of the segment have already been checked by calling ConfigFeasible(),
+    // both ends of the segment have already been checked by calling
+    // ConfigFeasible(),
     // thus it is no longer needed to check in SegmentFeasible()
     aikido::util::VanDerCorput vdc{1, false, false, mCheckResolution};
 
@@ -140,7 +141,7 @@ bool doShortcut(
   ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
 
   std::chrono::time_point<std::chrono::system_clock> startTime
-    = std::chrono::system_clock::now();
+      = std::chrono::system_clock::now();
   double elapsedTime = 0;
 
   bool success = false;
@@ -149,13 +150,14 @@ bool doShortcut(
     std::uniform_real_distribution<> dist(0.0, dynamicPath.GetTotalTime());
     double t1 = dist(rng);
     double t2 = dist(rng);
-    if(dynamicPath.TryShortcut(t1, t2, feasibilityChecker))
+    if (dynamicPath.TryShortcut(t1, t2, feasibilityChecker))
     {
       success = true;
     }
 
     elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(
-      std::chrono::system_clock::now() - startTime).count();
+                      std::chrono::system_clock::now() - startTime)
+                      .count();
   }
   return success;
 }
@@ -199,8 +201,9 @@ bool doBlend(
     bool noMoreBlending = true;
     do
     {
-      noMoreBlending = tryBlend(dynamicPath, feasibilityChecker, attempt, dtShortcut);
-    }while(noMoreBlending);
+      noMoreBlending
+          = tryBlend(dynamicPath, feasibilityChecker, attempt, dtShortcut);
+    } while (noMoreBlending);
 
     dtShortcut /= 2.;
   }
