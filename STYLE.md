@@ -151,16 +151,24 @@ int ExampleClass::exampleMethod(int _A, int _B, int *_out) const
 
 ### Autoformatting using ClangFormat
 
-You can automatically format the entire Aikido code using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) through CMake. Make sure `clang-format 3.8` or `3.9` is installed. Then execute the following commands:
+You can automatically format the entire Aikido code using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) through CMake. Make sure `clang-format 3.8` is installed.
+
+#### Using CMake
+
 ```bash
 $ cd to/aikido/root/
 $ mkdir build
 $ cd build
-$ make format
+$ make check-format # to check the code without formatting
+$ make format       # to format the code
 ```
-If you only want to check the style without formatting the code, execute:
+
+#### Using catkin
+
 ```bash
-$ make check-format
+$ cd to/your/catkin/workspace/
+$ catkin build aikido --no-deps --make-args format       # to format the code
+$ catkin build aikido --no-deps --make-args check-format # to check the code without formatting
 ```
 
 ## Python Style
