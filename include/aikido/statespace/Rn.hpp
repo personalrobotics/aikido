@@ -33,7 +33,7 @@ public:
   /// Dimension of the space
   static constexpr int DimensionAtCompileTime = N;
 
-  using Vectord = Eigen::Matrix<double, N, 1>;
+  using VectorNd = Eigen::Matrix<double, N, 1>;
 
   using StateHandle = RStateHandle<State>;
   using StateHandleConst = RStateHandle<const State>;
@@ -76,13 +76,13 @@ public:
   ///
   /// \param _state a \c State in this state space
   /// \return real vector represented by \c _state
-  Eigen::Map<const Vectord> getValue(const State* _state) const;
+  Eigen::Map<const VectorNd> getValue(const State* _state) const;
 
   /// Sets the real vector stored in a \c State.
   ///
   /// \param _state a \c State in this state space
   /// \param _value real vector to store in \c _state
-  void setValue(State* _state, const Vectord& _value) const;
+  void setValue(State* _state, const VectorNd& _value) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
@@ -140,7 +140,7 @@ private:
   ///
   /// \param _state element of this state space
   /// \return mutable reference to real vector stored in \c _state
-  Eigen::Map<Vectord> getMutableValue(State* _state) const;
+  Eigen::Map<VectorNd> getMutableValue(State* _state) const;
 
   /// Dimension of the real vector space. Note that this value is only used for
   /// dynamic sized vector space (the dimension is changable).
