@@ -27,7 +27,7 @@ public:
 
   using typename R<DimensionAtCompileTime>::State;
 
-  using Vectord = typename R<DimensionAtCompileTime>::Vectord;
+  using VectorNd = typename R<DimensionAtCompileTime>::VectorNd;
 
   using DartJoint = typename detail::RJointTraits<N>::DartJoint;
 
