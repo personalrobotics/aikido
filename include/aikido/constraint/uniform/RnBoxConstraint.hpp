@@ -10,13 +10,12 @@ namespace aikido {
 namespace constraint {
 
 /// A BoxConstraint on RealVectorStates.
-/// For each dimension, this constraint has lowerLimit and upperLimit. 
+/// For each dimension, this constraint has lowerLimit and upperLimit.
 template <int N>
-class RBoxConstraint
-  : public constraint::Differentiable
-  , public constraint::Projectable
-  , public constraint::Sampleable
-  , public constraint::Testable
+class RBoxConstraint : public constraint::Differentiable,
+                       public constraint::Projectable,
+                       public constraint::Sampleable,
+                       public constraint::Testable
 {
 public:
   using constraint::Projectable::project;
@@ -30,12 +29,12 @@ public:
   /// \param _lowerLimits Lower limits on the states.
   ///        The length of this vector should match the dimension of _space.
   /// \param _upperLimits Upper limits.
-  ///        The length of this vector should match the dimension of _space. 
+  ///        The length of this vector should match the dimension of _space.
   RBoxConstraint(
-    std::shared_ptr<statespace::R<N>> _space,
-    std::unique_ptr<util::RNG> _rng,
-    const VectorNd& _lowerLimits,
-    const VectorNd& _upperLimits);
+      std::shared_ptr<statespace::R<N>> _space,
+      std::unique_ptr<util::RNG> _rng,
+      const VectorNd& _lowerLimits,
+      const VectorNd& _upperLimits);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -51,22 +50,21 @@ public:
 
   // Documentation inherited.
   bool project(
-    const statespace::StateSpace::State* _s,
-    statespace::StateSpace::State* _out) const override;
+      const statespace::StateSpace::State* _s,
+      statespace::StateSpace::State* _out) const override;
 
   // Documentation inherited.
-  void getValue(
-    const statespace::StateSpace::State* _s,
-    Eigen::VectorXd& _out) const override;
+  void getValue(const statespace::StateSpace::State* _s, Eigen::VectorXd& _out)
+      const override;
 
   // Documentation inherited.
   void getJacobian(
-    const statespace::StateSpace::State* _s,
-    Eigen::MatrixXd& _out) const override;
-  
+      const statespace::StateSpace::State* _s,
+      Eigen::MatrixXd& _out) const override;
+
   // Documentation inherited.
-  std::unique_ptr<constraint::SampleGenerator>
-    createSampleGenerator() const override;
+  std::unique_ptr<constraint::SampleGenerator> createSampleGenerator()
+      const override;
 
   /// Returns lower limits of this constraint.
   auto getLowerLimits() const -> const VectorNd&;

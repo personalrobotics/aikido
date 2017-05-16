@@ -9,11 +9,11 @@ using State = aikido::statespace::StateSpace::State;
 
 //=============================================================================
 Interpolated::Interpolated(
-      aikido::statespace::StateSpacePtr _sspace,
-      aikido::statespace::InterpolatorPtr _interpolator)
-  : mStateSpace(std::move(_sspace))
-  , mInterpolator(std::move(_interpolator))
+    aikido::statespace::StateSpacePtr _sspace,
+    aikido::statespace::InterpolatorPtr _interpolator)
+  : mStateSpace(std::move(_sspace)), mInterpolator(std::move(_interpolator))
 {
+  // Do nothing
 }
 
 //=============================================================================
@@ -62,37 +62,45 @@ double Interpolated::getDuration() const
 }
 
 //=============================================================================
-void Interpolated::evaluate(double _t, State *_state) const
+void Interpolated::evaluate(double _t, State* _state) const
 {
   if (mWaypoints.empty())
     throw std::invalid_argument(
         "Requested trajectory point from an empty trajectory");
 
-  try {
+  try
+  {
     int idx = getWaypointIndexAfterTime(_t);
-    if (idx == 0) {
+    if (idx == 0)
+    {
       // Time before beginning of trajectory - return first waypoint
       mStateSpace->copyState(mWaypoints[0].state, _state);
-    } else {
+    }
+    else
+    {
       Waypoint currentWpt = mWaypoints[idx];
       Waypoint prevWpt = mWaypoints[idx - 1];
       mInterpolator->interpolate(
-        prevWpt.state, currentWpt.state,
-        (_t - prevWpt.t) / (currentWpt.t - prevWpt.t), _state);
+          prevWpt.state,
+          currentWpt.state,
+          (_t - prevWpt.t) / (currentWpt.t - prevWpt.t),
+          _state);
     }
-  } catch (const std::domain_error& e) {
+  }
+  catch (const std::domain_error& e)
+  {
     // Time past end of trajectory - return last waypoint
     mStateSpace->copyState(mWaypoints.back().state, _state);
   }
 }
 
 //=============================================================================
-void Interpolated::evaluateDerivative(double _t, int _derivative,
-  Eigen::VectorXd& _tangentVector ) const
+void Interpolated::evaluateDerivative(
+    double _t, int _derivative, Eigen::VectorXd& _tangentVector) const
 {
   if (_derivative == 0)
     throw std::invalid_argument(
-        "0th derivative not available. Use evaluate(t, state)."); 
+        "0th derivative not available. Use evaluate(t, state).");
 
   if (static_cast<size_t>(_derivative) > mInterpolator->getNumDerivatives())
   {
@@ -117,8 +125,11 @@ void Interpolated::evaluateDerivative(double _t, int _derivative,
     const auto alpha = (_t - mWaypoints[idx - 1].t) / segmentTime;
 
     mInterpolator->getDerivative(
-      mWaypoints[idx - 1].state, mWaypoints[idx].state, _derivative, alpha,
-      _tangentVector);
+        mWaypoints[idx - 1].state,
+        mWaypoints[idx].state,
+        _derivative,
+        alpha,
+        _tangentVector);
 
     _tangentVector /= segmentTime;
   }
@@ -131,9 +142,9 @@ void Interpolated::evaluateDerivative(double _t, int _derivative,
 }
 
 //=============================================================================
-void Interpolated::addWaypoint(double _t, const State *_state)
+void Interpolated::addWaypoint(double _t, const State* _state)
 {
-  State *state = mStateSpace->allocateState();
+  State* state = mStateSpace->allocateState();
   mStateSpace->copyState(_state, state);
 
   // Maintain a sorted list of waypoints
@@ -143,7 +154,7 @@ void Interpolated::addWaypoint(double _t, const State *_state)
 
 //=============================================================================
 const statespace::StateSpace::State* Interpolated::getWaypoint(
-  size_t _index) const
+    size_t _index) const
 {
   if (_index < mWaypoints.size())
     return mWaypoints[_index].state;
@@ -170,7 +181,8 @@ size_t Interpolated::getNumWaypoints() const
 int Interpolated::getWaypointIndexAfterTime(double _t) const
 {
   auto it = std::lower_bound(mWaypoints.begin(), mWaypoints.end(), _t);
-  if (it == mWaypoints.end()) {
+  if (it == mWaypoints.end())
+  {
     throw std::domain_error(
         "_t is larger than the time value on the last waypoint.");
   }
@@ -180,23 +192,22 @@ int Interpolated::getWaypointIndexAfterTime(double _t) const
 
 //=============================================================================
 Interpolated::Waypoint::Waypoint(
-      double _t, aikido::statespace::StateSpace::State *_state)
-  : t(_t)
-  , state(_state)
+    double _t, aikido::statespace::StateSpace::State* _state)
+  : t(_t), state(_state)
 {
 }
 
 //=============================================================================
-bool Interpolated::Waypoint::operator <(const Waypoint &rhs) const
+bool Interpolated::Waypoint::operator<(const Waypoint& rhs) const
 {
   return t < rhs.t;
 }
 
 //=============================================================================
-bool Interpolated::Waypoint::operator <(double rhs) const
+bool Interpolated::Waypoint::operator<(double rhs) const
 {
   return t < rhs;
 }
 
-}
-}
+} // namespace trajectory
+} // namespace aikido

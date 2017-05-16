@@ -8,23 +8,17 @@ namespace aikido {
 namespace constraint {
 
 //=============================================================================
-extern template
-class RConstantSampler<0>;
+extern template class RConstantSampler<0>;
 
-extern template
-class RConstantSampler<1>;
+extern template class RConstantSampler<1>;
 
-extern template
-class RConstantSampler<2>;
+extern template class RConstantSampler<2>;
 
-extern template
-class RConstantSampler<3>;
+extern template class RConstantSampler<3>;
 
-extern template
-class RConstantSampler<6>;
+extern template class RConstantSampler<6>;
 
-extern template
-class RConstantSampler<Eigen::Dynamic>;
+extern template class RConstantSampler<Eigen::Dynamic>;
 
 namespace {
 
@@ -36,7 +30,7 @@ public:
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
   RnConstantSamplerSampleGenerator(
-    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
+      std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
 
   statespace::StateSpacePtr getStateSpace() const override;
 
@@ -54,18 +48,16 @@ private:
 //=============================================================================
 template <int N>
 RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
-      std::shared_ptr<statespace::R<N>> _space,
-      const VectorNd& _value)
-  : mSpace(std::move(_space))
-  , mValue(_value)
+    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
+  : mSpace(std::move(_space)), mValue(_value)
 {
   // Do nothing
 }
 
 //=============================================================================
 template <int N>
-statespace::StateSpacePtr
-RnConstantSamplerSampleGenerator<N>::getStateSpace() const
+statespace::StateSpacePtr RnConstantSamplerSampleGenerator<N>::getStateSpace()
+    const
 {
   return mSpace;
 }
@@ -75,7 +67,8 @@ template <int N>
 bool RnConstantSamplerSampleGenerator<N>::sample(
     statespace::StateSpace::State* _state)
 {
-  mSpace->setValue(static_cast<typename statespace::R<N>::State*>(_state), mValue);
+  mSpace->setValue(
+      static_cast<typename statespace::R<N>::State*>(_state), mValue);
 
   return true;
 }
@@ -100,8 +93,7 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
 template <int N>
 RConstantSampler<N>::RConstantSampler(
     std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
-  : mSpace(std::move(_space))
-  , mValue(_value)
+  : mSpace(std::move(_space)), mValue(_value)
 {
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
@@ -109,8 +101,8 @@ RConstantSampler<N>::RConstantSampler(
   if (mSpace->getDimension() != static_cast<std::size_t>(mValue.size()))
   {
     std::stringstream msg;
-    msg << "Value has incorrect dimension: expected "
-        << mSpace->getDimension() << ", got " << mValue.size() << ".";
+    msg << "Value has incorrect dimension: expected " << mSpace->getDimension()
+        << ", got " << mValue.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 }
@@ -125,7 +117,7 @@ statespace::StateSpacePtr RConstantSampler<N>::getStateSpace() const
 //=============================================================================
 template <int N>
 std::unique_ptr<constraint::SampleGenerator>
-  RConstantSampler<N>::createSampleGenerator() const
+RConstantSampler<N>::createSampleGenerator() const
 {
   return dart::common::make_unique<RnConstantSamplerSampleGenerator<N>>(
       mSpace, mValue);

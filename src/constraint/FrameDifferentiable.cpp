@@ -4,15 +4,14 @@
 namespace aikido {
 namespace constraint {
 
-
 //=============================================================================
 FrameDifferentiable::FrameDifferentiable(
-  statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-  dart::dynamics::ConstJacobianNodePtr _jacobianNode,
-  DifferentiablePtr _poseConstraint)
-: mJacobianNode(std::move(_jacobianNode))
-, mPoseConstraint(std::move(_poseConstraint))
-, mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::ConstJacobianNodePtr _jacobianNode,
+    DifferentiablePtr _poseConstraint)
+  : mJacobianNode(std::move(_jacobianNode))
+  , mPoseConstraint(std::move(_poseConstraint))
+  , mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
 {
   if (!mPoseConstraint)
     throw std::invalid_argument("_poseConstraint is nullptr.");
@@ -25,8 +24,7 @@ FrameDifferentiable::FrameDifferentiable(
 
   using SE3 = statespace::SE3;
 
-  auto space = dynamic_cast<SE3*>(
-    mPoseConstraint->getStateSpace().get());
+  auto space = dynamic_cast<SE3*>(mPoseConstraint->getStateSpace().get());
 
   if (!space)
     throw std::invalid_argument("_poseConstraint is not in SE3.");
@@ -34,9 +32,12 @@ FrameDifferentiable::FrameDifferentiable(
   mMetaSkeleton = mMetaSkeletonStateSpace->getMetaSkeleton();
 
   if (!mMetaSkeleton)
-    throw std::invalid_argument("_metaSkeletonStateSpace does not have skeleton.");
+  {
+    throw std::invalid_argument(
+        "_metaSkeletonStateSpace does not have skeleton.");
+  }
 
-  // TODO: If possible, check that _frame is influenced by at least 
+  // TODO: If possible, check that _frame is influenced by at least
   // one DegreeOfFreedom in the _stateSpace's Skeleton.
 }
 
@@ -48,26 +49,23 @@ size_t FrameDifferentiable::getConstraintDimension() const
 
 //=============================================================================
 void FrameDifferentiable::getValue(
-  const statespace::StateSpace::State* _s,
-  Eigen::VectorXd& _out) const
+    const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
 
   auto state = static_cast<const State*>(_s);
-  
+
   mMetaSkeletonStateSpace->setState(state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
 
   mPoseConstraint->getValue(&bodyPose, _out);
-
 }
 
 //=============================================================================
 void FrameDifferentiable::getJacobian(
-  const statespace::StateSpace::State* _s,
-  Eigen::MatrixXd& _out) const
+    const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
@@ -78,7 +76,7 @@ void FrameDifferentiable::getJacobian(
   mMetaSkeletonStateSpace->setState(state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
- 
+
   // m x 6 matrix, Jacobian of constraints w.r.t. SE3 pose (se3 tangent vector)
   // where the tangent vector is expressed in world frame.
   Eigen::MatrixXd constraintJac;
@@ -88,14 +86,14 @@ void FrameDifferentiable::getJacobian(
   Eigen::MatrixXd skeletonJac = mMetaSkeleton->getWorldJacobian(mJacobianNode);
 
   // m x numDofs, Jacobian of pose w.r.t. generalized coordinates.
-  _out = constraintJac*skeletonJac;
-
+  _out = constraintJac * skeletonJac;
 }
 
 //=============================================================================
 void FrameDifferentiable::getValueAndJacobian(
-  const statespace::StateSpace::State* _s,
-  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _val,
+    Eigen::MatrixXd& _jac) const
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
@@ -108,7 +106,7 @@ void FrameDifferentiable::getValueAndJacobian(
   SE3State bodyPose(mJacobianNode->getTransform());
 
   mPoseConstraint->getValue(&bodyPose, _val);
- 
+
   // m x 6 matrix, Jacobian of constraints w.r.t. SE3 pose (se3 tangent vector)
   // where the tangent vector is expressed in world frame.
   Eigen::MatrixXd constraintJac;
@@ -118,7 +116,7 @@ void FrameDifferentiable::getValueAndJacobian(
   Eigen::MatrixXd skeletonJac = mMetaSkeleton->getWorldJacobian(mJacobianNode);
 
   // m x numDofs, Jacobian of pose w.r.t. generalized coordinates.
-  _jac = constraintJac*skeletonJac;
+  _jac = constraintJac * skeletonJac;
 }
 
 //=============================================================================
@@ -127,12 +125,11 @@ std::vector<ConstraintType> FrameDifferentiable::getConstraintTypes() const
   return mPoseConstraint->getConstraintTypes();
 }
 
-
 //=============================================================================
 statespace::StateSpacePtr FrameDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }
 
-}
-}
+} // namespace constraint
+} // namespace aikido

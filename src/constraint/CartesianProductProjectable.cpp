@@ -6,10 +6,9 @@ namespace constraint {
 
 //=============================================================================
 CartesianProductProjectable::CartesianProductProjectable(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-      std::vector<ProjectablePtr> _constraints)
-: mStateSpace(std::move(_stateSpace))
-, mConstraints(std::move(_constraints))
+    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+    std::vector<ProjectablePtr> _constraints)
+  : mStateSpace(std::move(_stateSpace)), mConstraints(std::move(_constraints))
 {
   if (!mStateSpace)
     throw std::invalid_argument("CartesianProduct is nullptr.");
@@ -48,8 +47,9 @@ statespace::StateSpacePtr CartesianProductProjectable::getStateSpace() const
 }
 
 //=============================================================================
-bool CartesianProductProjectable::project(const statespace::StateSpace::State* _s,
-  statespace::StateSpace::State* _out) const
+bool CartesianProductProjectable::project(
+    const statespace::StateSpace::State* _s,
+    statespace::StateSpace::State* _out) const
 {
   auto s = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto out = static_cast<statespace::CartesianProduct::State*>(_out);

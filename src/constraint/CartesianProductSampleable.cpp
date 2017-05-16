@@ -11,11 +11,11 @@ class SubspaceSampleGenerator : public SampleGenerator
 {
 public:
   SubspaceSampleGenerator(
-        std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-        std::vector<std::unique_ptr<SampleGenerator>> _generators)
-    : mStateSpace(std::move(_stateSpace))
-    , mGenerators(std::move(_generators))
+      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+      std::vector<std::unique_ptr<SampleGenerator>> _generators)
+    : mStateSpace(std::move(_stateSpace)), mGenerators(std::move(_generators))
   {
+    // Do nothing
   }
 
   statespace::StateSpacePtr getStateSpace() const override
@@ -75,20 +75,19 @@ private:
 
 //=============================================================================
 CartesianProductSampleable::CartesianProductSampleable(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-      std::vector<std::shared_ptr<Sampleable>> _constraints)
-  : mStateSpace(std::move(_stateSpace))
-  , mConstraints(std::move(_constraints))
+    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+    std::vector<std::shared_ptr<Sampleable>> _constraints)
+  : mStateSpace(std::move(_stateSpace)), mConstraints(std::move(_constraints))
 {
-  if(!mStateSpace)
+  if (!mStateSpace)
     throw std::invalid_argument("_stateSpace is nullptr.");
 
   if (mConstraints.size() != mStateSpace->getNumSubspaces())
   {
     std::stringstream msg;
     msg << "Mismatch between size of CartesianProduct and the number of"
-        << " constraints: " << mStateSpace->getNumSubspaces() << " != "
-        << mConstraints.size() << ".";
+        << " constraints: " << mStateSpace->getNumSubspaces()
+        << " != " << mConstraints.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
@@ -100,7 +99,7 @@ CartesianProductSampleable::CartesianProductSampleable(
       msg << "Constraint " << i << " is null.";
       throw std::invalid_argument(msg.str());
     }
-    
+
     if (mConstraints[i]->getStateSpace() != mStateSpace->getSubspace<>(i))
     {
       std::stringstream msg;
@@ -117,8 +116,8 @@ statespace::StateSpacePtr CartesianProductSampleable::getStateSpace() const
 }
 
 //=============================================================================
-std::unique_ptr<SampleGenerator> CartesianProductSampleable
-  ::createSampleGenerator() const
+std::unique_ptr<SampleGenerator>
+CartesianProductSampleable::createSampleGenerator() const
 {
   std::vector<std::unique_ptr<SampleGenerator>> generators;
   generators.reserve(mStateSpace->getNumSubspaces());
@@ -127,7 +126,7 @@ std::unique_ptr<SampleGenerator> CartesianProductSampleable
     generators.emplace_back(constraint->createSampleGenerator());
 
   return make_unique<SubspaceSampleGenerator>(
-    mStateSpace, std::move(generators));
+      mStateSpace, std::move(generators));
 }
 
 } // namespace constraint

@@ -20,7 +20,8 @@ class SampleGenerator;
 /// samples. For that reason, you should be careful to use the same
 /// SampleGenerator when obtaining a sequence of samples to avoid
 /// re-sampling the beginning of the same deterministic sequence repeatedly.
-class Sampleable {
+class Sampleable
+{
 public:
   virtual ~Sampleable() = default;
 
@@ -31,13 +32,13 @@ public:
   virtual std::unique_ptr<SampleGenerator> createSampleGenerator() const = 0;
 };
 
-
 /// Generator for drawing samples from a Sampleable. This object
 /// may represent both finite and inifinite sets of samples, as indicated by
 /// the return value of getNumSamples(). Note that this value provides only an
 /// upper bound on the number of samples available: sample() may transiently
 /// fail, i.e. return false, at any point before then.
-class SampleGenerator {
+class SampleGenerator
+{
 public:
   virtual ~SampleGenerator() = default;
 

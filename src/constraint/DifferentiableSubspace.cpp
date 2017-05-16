@@ -6,8 +6,9 @@ namespace constraint {
 
 //=============================================================================
 DifferentiableSubspace::DifferentiableSubspace(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-      DifferentiablePtr _constraint, size_t _index)
+    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+    DifferentiablePtr _constraint,
+    size_t _index)
   : mStateSpace(std::move(_stateSpace))
   , mConstraint(std::move(_constraint))
   , mIndex(_index)
@@ -27,8 +28,10 @@ DifferentiableSubspace::DifferentiableSubspace(
   }
 
   if (mConstraint->getStateSpace() != mStateSpace->getSubspace<>(mIndex))
+  {
     throw std::invalid_argument(
-      "Constraint does not apply to the specified Subspace.");
+        "Constraint does not apply to the specified Subspace.");
+  }
 }
 
 //=============================================================================
@@ -51,8 +54,7 @@ size_t DifferentiableSubspace::getConstraintDimension() const
 
 //=============================================================================
 void DifferentiableSubspace::getValue(
-  const statespace::StateSpace::State* _s,
-  Eigen::VectorXd& _out) const
+    const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
@@ -61,8 +63,7 @@ void DifferentiableSubspace::getValue(
 
 //=============================================================================
 void DifferentiableSubspace::getJacobian(
-  const statespace::StateSpace::State* _s,
-  Eigen::MatrixXd& _out) const
+    const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);
@@ -70,9 +71,10 @@ void DifferentiableSubspace::getJacobian(
 }
 
 //=============================================================================
-void  DifferentiableSubspace::getValueAndJacobian(
-  const statespace::StateSpace::State* _s,
-  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
+void DifferentiableSubspace::getValueAndJacobian(
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _val,
+    Eigen::MatrixXd& _jac) const
 {
   auto state = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto substate = mStateSpace->getSubState<>(state, mIndex);

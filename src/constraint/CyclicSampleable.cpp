@@ -1,27 +1,26 @@
 #include <aikido/constraint/CyclicSampleable.hpp>
+
 #include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
 namespace constraint {
 
-
 // For internal use only.
 class FiniteCyclicSampleGenerator : public SampleGenerator
 {
 public:
-
-  FiniteCyclicSampleGenerator(
-    std::unique_ptr<SampleGenerator> _generator);
+  FiniteCyclicSampleGenerator(std::unique_ptr<SampleGenerator> _generator);
 
   FiniteCyclicSampleGenerator(const FiniteCyclicSampleGenerator&) = delete;
   FiniteCyclicSampleGenerator(FiniteCyclicSampleGenerator&& other) = delete;
 
   FiniteCyclicSampleGenerator& operator=(
-    const FiniteCyclicSampleGenerator& other) = delete;
-  FiniteCyclicSampleGenerator& operator=(
-    FiniteCyclicSampleGenerator&& other) = delete;
+      const FiniteCyclicSampleGenerator& other)
+      = delete;
+  FiniteCyclicSampleGenerator& operator=(FiniteCyclicSampleGenerator&& other)
+      = delete;
 
-  virtual ~FiniteCyclicSampleGenerator(); 
+  virtual ~FiniteCyclicSampleGenerator();
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -36,7 +35,6 @@ public:
   bool canSample() const override;
 
 private:
-
   statespace::StateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
   std::unique_ptr<SampleGenerator> mGenerator;
@@ -47,20 +45,19 @@ private:
 };
 
 //=============================================================================
- FiniteCyclicSampleGenerator::FiniteCyclicSampleGenerator(
-  std::unique_ptr<SampleGenerator> _generator)
-: mGenerator(std::move(_generator))
-, mIndex(0)
+FiniteCyclicSampleGenerator::FiniteCyclicSampleGenerator(
+    std::unique_ptr<SampleGenerator> _generator)
+  : mGenerator(std::move(_generator)), mIndex(0)
 {
   if (!mGenerator)
     throw std::invalid_argument("SampleGenerator is nullptr.");
 
   mNumSamples = mGenerator->getNumSamples();
 
-  if(mNumSamples == SampleGenerator::NO_LIMIT)
+  if (mNumSamples == SampleGenerator::NO_LIMIT)
     throw std::invalid_argument("SampleGenerator is not finite.");
 
-  if(mNumSamples == 0)
+  if (mNumSamples == 0)
     throw std::invalid_argument("SampleGenerator has 0 samples.");
 
   mStates.reserve(mNumSamples);
@@ -73,10 +70,8 @@ FiniteCyclicSampleGenerator::~FiniteCyclicSampleGenerator()
 {
   auto space = mGenerator->getStateSpace();
 
-  for (auto state: mStates)
-  {
+  for (auto state : mStates)
     space->freeState(state);
-  }
 }
 
 //=============================================================================
@@ -88,10 +83,11 @@ statespace::StateSpacePtr FiniteCyclicSampleGenerator::getStateSpace() const
 //=============================================================================
 bool FiniteCyclicSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
-  if (mGenerator->canSample()){
+  if (mGenerator->canSample())
+  {
     // Generate a sample.
     bool success = mGenerator->sample(_state);
-    
+
     if (!success || !_state)
       return false;
 
@@ -130,9 +126,8 @@ bool FiniteCyclicSampleGenerator::canSample() const
 }
 
 //=============================================================================
-CyclicSampleable::CyclicSampleable(
-  SampleablePtr _sampleable)
-: mSampleable(std::move(_sampleable))
+CyclicSampleable::CyclicSampleable(SampleablePtr _sampleable)
+  : mSampleable(std::move(_sampleable))
 {
   if (!mSampleable)
     throw std::invalid_argument("Sampleable is nullptr.");
@@ -143,8 +138,10 @@ CyclicSampleable::CyclicSampleable(
     throw std::invalid_argument("Sampleable is not finite.");
 
   if (numSamples == 0)
+  {
     throw std::invalid_argument(
-      "Sampleable's SampleGenerator produces 0 sample.");
+        "Sampleable's SampleGenerator produces 0 sample.");
+  }
 
   mStateSpace = mSampleable->getStateSpace();
 }
@@ -159,9 +156,8 @@ statespace::StateSpacePtr CyclicSampleable::getStateSpace() const
 std::unique_ptr<SampleGenerator> CyclicSampleable::createSampleGenerator() const
 {
   return dart::common::make_unique<FiniteCyclicSampleGenerator>(
-    mSampleable->createSampleGenerator());
+      mSampleable->createSampleGenerator());
 }
 
-}
-}
-
+} // namespace constraint
+} // namespace aikido

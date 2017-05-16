@@ -1,8 +1,8 @@
 #ifndef AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_
 #define AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_
 
-#include "Trajectory.hpp"
 #include "../statespace/GeodesicInterpolator.hpp"
+#include "Trajectory.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -16,15 +16,15 @@ public:
   /// \param _stateSpace state space this trajectory is defined in
   /// \param _interpolator interpolator used to interpolate between waypoints
   Interpolated(
-    aikido::statespace::StateSpacePtr _sspace,
-    aikido::statespace::InterpolatorPtr _interpolator);
+      aikido::statespace::StateSpacePtr _sspace,
+      aikido::statespace::InterpolatorPtr _interpolator);
 
   /// Add a waypoint to the trajectory at the given time.
   ///
   /// \param _t time of the waypoint
   /// \param _state state at the waypoint
-  void addWaypoint(double _t,
-                   const aikido::statespace::StateSpace::State *_state);
+  void addWaypoint(
+      double _t, const aikido::statespace::StateSpace::State* _state);
 
   /// Gets a waypoint.
   ///
@@ -59,27 +59,29 @@ public:
   double getDuration() const override;
 
   // Documentation inherited
-  void evaluate(double _t,
-    statespace::StateSpace::State *_state) const override;
+  void evaluate(
+      double _t, statespace::StateSpace::State* _state) const override;
 
   // Documentation inherited
-  void evaluateDerivative(double _t, int _derivative,
-    Eigen::VectorXd& _tangentVector ) const override;
+  void evaluateDerivative(
+      double _t,
+      int _derivative,
+      Eigen::VectorXd& _tangentVector) const override;
 
 private:
   /// Waypoint in the trajectory.
   struct Waypoint
   {
-    Waypoint(double _t, aikido::statespace::StateSpace::State *_state);
+    Waypoint(double _t, aikido::statespace::StateSpace::State* _state);
 
     /// Comparator to allow sorting waypoints based on time
-    bool operator<(const Waypoint &rhs) const;
+    bool operator<(const Waypoint& rhs) const;
 
     /// Comparator to allow sorting waypoints based on time
     bool operator<(double rhs) const;
 
     double t;
-    aikido::statespace::StateSpace::State *state;
+    aikido::statespace::StateSpace::State* state;
   };
 
   /// Get the index of the first waypoint whose time value is larger than _t.
