@@ -316,8 +316,8 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   if (isLimited(joint))
     return dart::common::make_unique<SE2BoxConstraint>(
       std::move(_stateSpace), std::move(_rng),
-      getPositionLowerLimits(joint).topRows(2),
-      getPositionUpperLimits(joint).topRows(2));
+      getPositionLowerLimits(joint).head<2>(),
+      getPositionUpperLimits(joint).head<2>());
   else
     return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
@@ -403,8 +403,8 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
     {
       return dart::common::make_unique<SE2BoxConstraint>(
         std::move(stateSpace), std::move(rng),
-        getPositionLowerLimits(joint).topRows(2),
-        getPositionUpperLimits(joint).topRows(2));
+        getPositionLowerLimits(joint).head<2>(),
+        getPositionUpperLimits(joint).head<2>());
     }
   }
 };

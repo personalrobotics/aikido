@@ -133,7 +133,7 @@ void SO3::expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
   }
 
   Eigen::Vector6d tangent(Eigen::Vector6d::Zero());
-  tangent.topRows(3) = _tangent;
+  tangent.head<3>() = _tangent;
 
   Eigen::Isometry3d transform = dart::math::expMap(tangent);
   out->setQuaternion(Quaternion(transform.rotation()));

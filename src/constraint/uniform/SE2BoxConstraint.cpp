@@ -98,8 +98,8 @@ SE2BoxConstraint
 {
   mLowerLimits[0] = -M_PI;
   mUpperLimits[0] = M_PI;
-  mLowerLimits.bottomRows(2) = _lowerLimits;
-  mUpperLimits.bottomRows(2) = _upperLimits;
+  mLowerLimits.tail<2>() = _lowerLimits;
+  mUpperLimits.tail<2>() = _upperLimits;
 
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
@@ -126,7 +126,7 @@ SE2BoxConstraint
     {
       std::stringstream msg;
       msg << "Unable to sample from StateSpace because lower limit exeeds"
-             " upper limit on dimension " << i << ": "
+          << " upper limit on dimension " << i << ": "
           << mLowerLimits[i] << " > " << mUpperLimits[i] << ".";
       throw std::invalid_argument(msg.str());
     }
@@ -200,17 +200,13 @@ std::unique_ptr<constraint::SampleGenerator>
 //=============================================================================
 Eigen::Vector2d SE2BoxConstraint::getLowerLimits()
 {
-  Eigen::Vector2d lowerLimits;
-  lowerLimits << mLowerLimits[1], mLowerLimits[2];
-  return lowerLimits;
+  return mLowerLimits.tail<2>();
 }
 
 //=============================================================================
 Eigen::Vector2d SE2BoxConstraint::getUpperLimits()
 {
-  Eigen::Vector2d upperLimits;
-  upperLimits << mUpperLimits[1], mUpperLimits[2];
-  return upperLimits;
+  return mUpperLimits.tail<2>();
 }
 
 } // namespace statespace
