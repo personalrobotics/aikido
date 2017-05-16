@@ -91,12 +91,16 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
+  {
     return dart::common::make_unique<RBoxConstraint<N>>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
+  }
   else
+  {
     return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
+  }
 }
 
 //=============================================================================
@@ -343,8 +347,10 @@ struct createTestableFor_impl<statespace::dart::SE2Joint>
   {
     auto joint = _stateSpace->getJoint();
     if (joint->hasPositionLimit(2))
+    {
       throw std::invalid_argument(
         "Rotational component of SE2Joint must not have limits.");
+    }
 
     return createBoxConstraint<Testable>(
       std::move(_stateSpace), nullptr);
@@ -362,8 +368,10 @@ struct createProjectableFor_impl<statespace::dart::SE2Joint>
   {
     auto joint = _stateSpace->getJoint();
     if (joint->hasPositionLimit(2))
+    {
       throw std::invalid_argument(
         "Rotational component of SE2Joint must not have limits.");
+    }
 
     return createBoxConstraint<Projectable>(
       std::move(_stateSpace), nullptr);

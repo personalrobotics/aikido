@@ -146,7 +146,7 @@ RBoxConstraint<N>::RBoxConstraint(std::shared_ptr<statespace::R<N>> _space,
     {
       std::stringstream msg;
       msg << "Unable to sample from StateSpace because lower limit exeeds"
-             " upper limit on dimension " << i << ": "
+          << " upper limit on dimension " << i << ": "
           << mLowerLimits[i] << " > " << mUpperLimits[i] << ".";
       throw std::invalid_argument(msg.str());
     }
