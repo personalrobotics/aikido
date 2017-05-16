@@ -20,8 +20,8 @@ struct encode_impl
   // The reason this exists is so we can use template specialization to switch
   // between serializing vectors and serializing matrices based on the
   // IsVectorAtCompileTime flag. This is a "nice to have" that lets us generate
-  // !Vector [1, 2, 3] instead of the syntactic travesty like
-  // !Matrix [[1], [2] ,[3]] when serializing an Eigen vector.
+  // [1, 2, 3] instead of the syntactic travesty like [[1], [2] ,[3]] when
+  // serializing an Eigen vector.
 };
 
 //==============================================================================
@@ -34,8 +34,6 @@ struct encode_impl<MatrixType, true>
     using Index = typename MatrixType::Index;
 
     YAML::Node node;
-    node.SetTag("!Vector");
-
     for (Index i = 0; i < matrix.size(); ++i)
       node.push_back(YAML::Node(matrix[i]));
 
@@ -53,8 +51,6 @@ struct encode_impl<MatrixType, false>
     using Index = typename MatrixType::Index;
 
     YAML::Node node;
-    node.SetTag("!Matrix");
-
     for (Index r = 0; r < matrix.rows(); ++r)
     {
       YAML::Node row(YAML::NodeType::Sequence);
@@ -135,13 +131,7 @@ struct convert<Eigen::
       throw YAML::RepresentationException(getMark(node), ss.str());
     }
 
-    if (node.Tag() == "!Vector")
-    {
-      matrix.resize(rows, 1);
-      for (Index i = 0; i < rows; ++i)
-        matrix(i, 0) = node[i].template as<_Scalar>();
-    }
-    else if (node.Tag() == "!Matrix")
+    if (node[0].Type() == YAML::NodeType::Sequence)
     {
       const auto cols = node[0].size();
 
@@ -154,7 +144,10 @@ struct convert<Eigen::
         throw YAML::RepresentationException(getMark(node), ss.str());
       }
 
-      matrix.resize(rows, cols);
+      if (cols == 0u)
+        matrix.resize(0, 0);
+      else
+        matrix.resize(rows, cols);
 
       for (auto r = 0u; r < node.size(); ++r)
       {
@@ -173,7 +166,42 @@ struct convert<Eigen::
         }
 
         for (auto c = 0u; c < cols; ++c)
+        {
+          if (node[r][c].Type() != YAML::NodeType::Scalar)
+          {
+            std::stringstream ss;
+            ss << "Matrix has a non-scalar element at (" << r << ", " << c
+               << ") component (1-based numbering).";
+            throw YAML::RepresentationException(getMark(node), ss.str());
+          }
+
           matrix(r, c) = node[r][c].template as<_Scalar>();
+        }
+      }
+    }
+    else if (node.size() >= 0u)
+    {
+      if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
+          && 1 != MatrixType::ColsAtCompileTime)
+      {
+        std::stringstream ss;
+        ss << "Matrix has incorrect number of cols: expected "
+           << MatrixType::ColsAtCompileTime << "; got " << 1 << ".";
+        throw YAML::RepresentationException(getMark(node), ss.str());
+      }
+
+      matrix.resize(rows, 1);
+      for (Index i = 0; i < rows; ++i)
+      {
+        if (node[i].Type() != YAML::NodeType::Scalar)
+        {
+          std::stringstream ss;
+          ss << "Vector has a non-scalar element at the " << i + 1
+             << "-th component (1-based numbering).";
+          throw YAML::RepresentationException(getMark(node), ss.str());
+        }
+
+        matrix(i, 0) = node[i].template as<_Scalar>();
       }
     }
     else
