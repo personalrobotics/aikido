@@ -1,67 +1,54 @@
 #include <chrono>
 #include <thread>
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 #include <aikido/statespace/SO2.hpp>
-#include <dart/common/StlHelpers.hpp>
 
 using aikido::statespace::SO2;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::seconds;
 
-namespace aikido{
-namespace control{
+namespace aikido {
+namespace control {
 
 //=============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
-  ::dart::dynamics::SkeletonPtr _skeleton,
-  std::chrono::milliseconds _period)
-: mSkeleton(std::move(_skeleton))
-, mPromise(nullptr)
-, mTraj(nullptr)
-, mPeriod(_period)
-, mSpinMutex()
-, mRunning(true)
-
-
+    ::dart::dynamics::SkeletonPtr skeleton)
+  : mSkeleton(std::move(skeleton))
+  , mPromise(nullptr)
+  , mTraj(nullptr)
+  , mMutex()
+  , mInExecution(false)
 {
-  using std::chrono::duration;
-  using std::chrono::duration_cast;
-  using std::chrono::milliseconds;
-
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
-
-  if (mPeriod.count() <= 0)
-    throw std::invalid_argument("Period must be positive.");
-
-  mThread = std::thread(&KinematicSimulationTrajectoryExecutor::spin, this);
 }
 
 //=============================================================================
 KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 {
   {
-    std::lock_guard<std::mutex> lockSpin(mSpinMutex);
-    mRunning = false;
+    std::lock_guard<std::mutex> lockSpin(mMutex);
+    mInExecution = false;
   }
-  mCv.notify_one();
-  
-  mThread.join();
 }
 
 //=============================================================================
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
-  trajectory::TrajectoryPtr _traj)
+    trajectory::TrajectoryPtr traj)
 {
-  using statespace::dart::MetaSkeletonStateSpace;
-
-  if (!_traj)
+  if (!traj)
     throw std::invalid_argument("Traj is null.");
 
-  auto space = std::dynamic_pointer_cast<
-    MetaSkeletonStateSpace>(_traj->getStateSpace());
+  auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+      traj->getStateSpace());
 
   if (!space)
-    throw std::invalid_argument("Trajectory does not operate in this Executor's"
-      " MetaSkeletonStateSpace.");
+    throw std::invalid_argument(
+        "Trajectory does not operate in this Executor's"
+        " MetaSkeletonStateSpace.");
 
   auto metaSkeleton = space->getMetaSkeleton();
 
@@ -69,13 +56,13 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
   std::unique_lock<std::mutex> skeleton_lock(mSkeleton->getMutex());
   for (auto dof : metaSkeleton->getDofs())
   {
-    auto name = dof->getName();    
+    auto name = dof->getName();
     auto dof_in_skeleton = mSkeleton->getDof(name);
 
-    if (!dof_in_skeleton){
+    if (!dof_in_skeleton)
+    {
       std::stringstream msg;
-      msg << "_traj contrains dof [" << name 
-      << "], which is not in mSkeleton.";
+      msg << "traj contrains dof [" << name << "], which is not in mSkeleton.";
 
       throw std::invalid_argument(msg.str());
     }
@@ -83,86 +70,69 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
   skeleton_lock.unlock();
 
   {
-    std::lock_guard<std::mutex> lockSpin(mSpinMutex);
+    std::lock_guard<std::mutex> lockSpin(mMutex);
 
     if (mTraj)
       throw std::runtime_error("Another trajectory in execution.");
 
     mPromise.reset(new std::promise<void>());
-    mTraj = _traj;  
+    mTraj = traj;
+    mInExecution = true;
+    mExecutionStartTime = std::chrono::system_clock::now();
   }
-  mCv.notify_one();
-  
-  return mPromise->get_future();
 
+  return mPromise->get_future();
 }
 
 //=============================================================================
-void KinematicSimulationTrajectoryExecutor::spin()
+void KinematicSimulationTrajectoryExecutor::step()
 {
-  using std::chrono::duration;
-  using std::chrono::duration_cast;
-  using statespace::dart::MetaSkeletonStateSpace;
-  using dart::common::make_unique;
-  using std::chrono::system_clock;
+  using namespace std::chrono;
+  std::lock_guard<std::mutex> lock(mMutex);
 
-  system_clock::time_point startTime;
-  bool trajInExecution = false; 
+  if (!mInExecution && !mTraj)
+    return;
 
-  while(true)
+  if (!mInExecution && mTraj)
   {
-    // Terminate the thread if mRunning is false.
-    std::unique_lock<std::mutex> lockSpin(mSpinMutex);
-    mCv.wait(lockSpin, [&] {
-      // Reset startTime at the beginning of mTraj's execution.
-      if (!trajInExecution && this->mTraj)
-      {
-        startTime = system_clock::now();
-        trajInExecution = true;
-      }
-      
-      return this->mTraj || !mRunning; 
-    }); 
+    mPromise->set_exception(
+        std::make_exception_ptr(
+            std::runtime_error("Trajectory terminated while in execution.")));
+    mTraj.reset();
+  }
+  else if (mInExecution && !mTraj)
+  {
+    mPromise->set_exception(
+        std::make_exception_ptr(
+            std::runtime_error(
+                "Set for execution but no trajectory is provided.")));
+    mInExecution = false;
+  }
 
-    if (!mRunning)
-    {
-      if (this->mTraj){
-        mPromise->set_exception(std::make_exception_ptr(
-          std::runtime_error("Trajectory terminated while in execution.")));
-        this->mTraj.reset();
-      }
-      break;
-    }
-    
-    // Can't do static here because MetaSkeletonStateSpace inherits 
-    // CartesianProduct which inherits virtual StateSpace 
-    auto space = std::dynamic_pointer_cast<
-      MetaSkeletonStateSpace>(mTraj->getStateSpace());
-    auto metaSkeleton = space->getMetaSkeleton();
-    auto state = space->createState();
+  auto timeSinceBeginning = system_clock::now() - mExecutionStartTime;
+  auto tsec = duration_cast<std::chrono::duration<double>>(timeSinceBeginning)
+                  .count();
 
-    // Get current time on mTraj.
-    system_clock::time_point const now = system_clock::now();
-    double t = duration_cast<duration<double> >(now - startTime).count();
+  // Can't do static here because MetaSkeletonStateSpace inherits
+  // CartesianProduct which inherits virtual StateSpace
+  auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+      mTraj->getStateSpace());
+  auto metaSkeleton = space->getMetaSkeleton();
+  auto state = space->createState();
 
-    mTraj->evaluate(t, state);
+  mTraj->evaluate(tsec, state);
 
-    // Lock the skeleton, set state.
-    std::unique_lock<std::mutex> skeleton_lock(mSkeleton->getMutex());
-    space->setState(state);
-    skeleton_lock.unlock();
+  space->setState(state);
 
-    // Check if trajectory has completed.
-    bool const is_done = (t >= mTraj->getEndTime());
-    if (is_done) {
-      mTraj.reset();
-      mPromise->set_value();
-      trajInExecution = false;
-    } 
-
-    std::this_thread::sleep_until(now + mPeriod);
+  // Check if trajectory has completed.
+  bool const is_done = (tsec >= mTraj->getEndTime());
+  if (is_done)
+  {
+    mTraj.reset();
+    mPromise->set_value();
+    mInExecution = false;
   }
 }
 
-}
-}
+} // namespace control
+} // namespace aikido

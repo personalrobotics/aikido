@@ -1,8 +1,8 @@
 set(sources
   KinematicSimulationTrajectoryExecutor.cpp
-  BarrettHandPositionCommandExecutor.cpp
-  BarrettFingerPositionCommandExecutor.cpp
-  BarrettFingerSpreadCommandExecutor.cpp
+  BarrettHandKinematicSimulationPositionCommandExecutor.cpp
+  BarrettFingerKinematicSimulationPositionCommandExecutor.cpp
+  BarrettFingerKinematicSimulationSpreadCommandExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control" SHARED ${sources})
@@ -23,6 +23,6 @@ add_component(${PROJECT_NAME} control)
 add_component_targets(${PROJECT_NAME} control "${PROJECT_NAME}_control")
 add_component_dependencies(${PROJECT_NAME} control statespace trajectory)
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})
 
 add_subdirectory("ros") # Dependencies: control, statespace, trajectory

@@ -46,7 +46,7 @@ private:
   int mMaxTrialPerSample;
 };
 
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif 

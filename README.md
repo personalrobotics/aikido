@@ -1,4 +1,4 @@
-# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.org/personalrobotics/aikido.svg?branch=master)](https://travis-ci.org/personalrobotics/aikido) [![Coverage Status](https://coveralls.io/repos/github/personalrobotics/aikido/badge.svg?branch=master)](https://coveralls.io/github/personalrobotics/aikido?branch=master)
+# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.org/personalrobotics/aikido.svg?branch=master)](https://travis-ci.org/personalrobotics/aikido) [![codecov](https://codecov.io/gh/personalrobotics/aikido/branch/master/graph/badge.svg)](https://codecov.io/gh/personalrobotics/aikido)
 
 > :warning: **Warning:** AIKIDO is under heavy development. These instructions are
 > primarily for reference by the developers.
@@ -34,6 +34,15 @@ $ cd build
 $ cmake ..
 $ make
 $ sudo make install
+```
+
+Aikido includes several optional components that depend on [ROS]. While we
+suggest building Aikido in a Catkin workspace (see below) to enable the ROS
+components, it is also possible to build those components in a standalone
+build. To do so, source the `setup.bash` file in your Catkin workspace before
+running the above commands, e.g.:
+```shell
+$ . /path/to/my/workspace/setup.bash
 ```
 
 #### Build from source (Catkin)

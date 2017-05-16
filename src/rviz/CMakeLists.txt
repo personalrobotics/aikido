@@ -7,15 +7,9 @@ aikido_check_package(roscpp "rviz" "roscpp")
 find_package(geometry_msgs QUIET)
 aikido_check_package(geometry_msgs "rviz" "geometry_msgs")
 
-# TODO: Workaround because find_package(interactive_markers) imports "tests"
-# and "run_tests" targets that conflict with the targets defined by Aikido.
-find_path(interactive_markers_INCLUDE_DIRS interactive_markers
-  PATHS "/opt/ros/indigo/include"
-  PATH_SUFFIXES "interactive_markeres/interactive_marker_client.h")
-find_library(interactive_markers_LIBRARIES interactive_markers
-  PATHS "/opt/ros/indigo/lib")
-evaluate_condition(interactive_markers_FOUND
-  interactive_markers_INCLUDE_DIRS AND interactive_markers_LIBRARIES)
+# Note: Intentionally use "Module" mode because the config file imports "gtest",
+# "tests", and "run_tests" that conflict with the targets defined by Aikido.
+find_package(interactive_markers QUIET MODULE)
 aikido_check_package(interactive_markers "rviz" "interactive_markers")
 
 find_package(std_msgs QUIET)
@@ -30,7 +24,7 @@ aikido_check_package(libmicrohttpd "rviz" "libmicrohttpd")
 #==============================================================================
 # Libraries
 #
-add_library("${PROJECT_NAME}_rviz" SHARED
+set(sources
   BodyNodeMarker.cpp
   FrameMarker.cpp
   InteractiveMarkerViewer.cpp
@@ -40,6 +34,8 @@ add_library("${PROJECT_NAME}_rviz" SHARED
   shape_conversions.cpp
   TSRMarker.cpp
 )
+
+add_library("${PROJECT_NAME}_rviz" SHARED ${sources})
 target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
   PUBLIC
     ${Boost_INCLUDE_DIRS}
@@ -70,3 +66,5 @@ add_component(${PROJECT_NAME} rviz)
 add_component_targets(${PROJECT_NAME} rviz "${PROJECT_NAME}_rviz")
 
 # Intentionally omit tests for or_rviz. It's not clear how to test a viewer.
+
+format_add_sources(${sources})

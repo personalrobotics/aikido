@@ -33,10 +33,10 @@ template <int N>
 class RnConstantSamplerSampleGenerator : public constraint::SampleGenerator
 {
 public:
-  using Vectord = Eigen::Matrix<double, N, 1>;
+  using VectorNd = Eigen::Matrix<double, N, 1>;
 
   RnConstantSamplerSampleGenerator(
-    std::shared_ptr<statespace::R<N>> _space, const Vectord& _value);
+    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
 
   statespace::StateSpacePtr getStateSpace() const override;
 
@@ -48,14 +48,14 @@ public:
 
 private:
   std::shared_ptr<statespace::R<N>> mSpace;
-  Vectord mValue;
+  VectorNd mValue;
 };
 
 //=============================================================================
 template <int N>
 RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
       std::shared_ptr<statespace::R<N>> _space,
-      const Vectord& _value)
+      const VectorNd& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
 {
@@ -99,7 +99,7 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
 //=============================================================================
 template <int N>
 RConstantSampler<N>::RConstantSampler(
-    std::shared_ptr<statespace::R<N>> _space, const Vectord& _value)
+    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
   : mSpace(std::move(_space))
   , mValue(_value)
 {
@@ -133,7 +133,7 @@ std::unique_ptr<constraint::SampleGenerator>
 
 //=============================================================================
 template <int N>
-const typename RConstantSampler<N>::Vectord&
+const typename RConstantSampler<N>::VectorNd&
 RConstantSampler<N>::getConstantValue() const
 {
   return mValue;

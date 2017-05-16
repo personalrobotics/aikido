@@ -32,6 +32,11 @@ public:
   /// \return state of the waypoint at index \c _index
   const statespace::StateSpace::State* getWaypoint(size_t _index) const;
 
+  /// Gets the time of a waypoint.
+  /// \param _index waypoint index
+  /// \return time of the waypoint at index \c _index
+  double getWaypointTime(size_t _index) const;
+
   /// Gets the number of waypoints.
   size_t getNumWaypoints() const;
 
@@ -62,7 +67,7 @@ public:
     Eigen::VectorXd& _tangentVector ) const override;
 
 private:
-  /// Waypint in the trajectory.
+  /// Waypoint in the trajectory.
   struct Waypoint
   {
     Waypoint(double _t, aikido::statespace::StateSpace::State *_state);
@@ -71,7 +76,7 @@ private:
     bool operator<(const Waypoint &rhs) const;
 
     /// Comparator to allow sorting waypoints based on time
-    bool operator<(const double &rhs) const;
+    bool operator<(double rhs) const;
 
     double t;
     aikido::statespace::StateSpace::State *state;

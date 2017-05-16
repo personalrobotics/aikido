@@ -33,7 +33,7 @@ private:
   std::vector<TestablePtr> mConstraints;
 };
 
-}  // namespace constraint
-}  // namespace aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif  // define AIKIDO_CONSTRAINT_SAMPLEABLESUBSPACE_HPP_

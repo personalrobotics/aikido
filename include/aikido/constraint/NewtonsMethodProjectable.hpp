@@ -46,8 +46,7 @@ private:
   bool contains(const statespace::StateSpace::State* _s) const;
 };
 
-
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif

@@ -22,17 +22,17 @@ public:
   /// Construct a \c ScopedState by allocating a new state in \c _space. This
   /// state will be freed when \c ScopedState is destructed.
   ///
-  /// \param _space state 
+  /// \param _space state
   explicit ScopedState(const StateSpace* _space);
 
   virtual ~ScopedState();
 
   // ScopedState is uncopyable, must use std::move
   ScopedState(const ScopedState&) = delete;
-  ScopedState& operator =(const ScopedState&) = delete;
+  ScopedState& operator=(const ScopedState&) = delete;
 
   ScopedState(ScopedState&&) = default;
-  ScopedState& operator =(ScopedState&&) = default;
+  ScopedState& operator=(ScopedState&&) = default;
 
 private:
   std::unique_ptr<char[]> mBuffer;

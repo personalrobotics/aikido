@@ -6,16 +6,12 @@ namespace statespace {
 ///
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
-class SE2StateHandle
-  : public statespace::StateHandle<SE2, _QualifiedState>
+class SE2StateHandle : public statespace::StateHandle<SE2, _QualifiedState>
 {
 public:
-  using typename statespace::StateHandle<
-    SE2, _QualifiedState>::State;
-  using typename statespace::StateHandle<
-    SE2, _QualifiedState>::StateSpace;
-  using typename statespace::StateHandle<
-    SE2, _QualifiedState>::QualifiedState;
+  using typename statespace::StateHandle<SE2, _QualifiedState>::State;
+  using typename statespace::StateHandle<SE2, _QualifiedState>::StateSpace;
+  using typename statespace::StateHandle<SE2, _QualifiedState>::QualifiedState;
 
   /// Construct and initialize to \c nullptr.
   SE2StateHandle()

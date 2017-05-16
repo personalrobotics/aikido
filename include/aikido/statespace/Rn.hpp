@@ -1,8 +1,8 @@
 #ifndef AIKIDO_STATESPACE_REALVECTORSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_REALVECTORSTATESPACE_HPP_
 #include <Eigen/Core>
-#include "StateSpace.hpp"
 #include "ScopedState.hpp"
+#include "StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -33,7 +33,7 @@ public:
   /// Dimension of the space
   static constexpr int DimensionAtCompileTime = N;
 
-  using Vectord = Eigen::Matrix<double, N, 1>;
+  using VectorNd = Eigen::Matrix<double, N, 1>;
 
   using StateHandle = RStateHandle<State>;
   using StateHandleConst = RStateHandle<const State>;
@@ -76,62 +76,63 @@ public:
   ///
   /// \param _state a \c State in this state space
   /// \return real vector represented by \c _state
-  Eigen::Map<const Vectord> getValue(const State *_state) const;
+  Eigen::Map<const VectorNd> getValue(const State* _state) const;
 
   /// Sets the real vector stored in a \c State.
   ///
   /// \param _state a \c State in this state space
   /// \param _value real vector to store in \c _state
-  void setValue(State *_state, const Vectord &_value) const;
+  void setValue(State* _state, const VectorNd& _value) const;
 
   // Documentation inherited.
   size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
-  StateSpace::State *allocateStateInBuffer(void *_buffer) const override;
+  StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
 
   // Documentation inherited.
-  void freeStateInBuffer(StateSpace::State *_state) const override;
+  void freeStateInBuffer(StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void compose(const StateSpace::State *_state1,
-               const StateSpace::State *_state2,
-               StateSpace::State *_out) const override;
+  void compose(
+      const StateSpace::State* _state1,
+      const StateSpace::State* _state2,
+      StateSpace::State* _out) const override;
 
   // Documentation inherited
-  void getIdentity(StateSpace::State *_out) const override;
+  void getIdentity(StateSpace::State* _out) const override;
 
   // Documentation inherited
-  void getInverse(const StateSpace::State *_in,
-                  StateSpace::State *_out) const override;
+  void getInverse(
+      const StateSpace::State* _in, StateSpace::State* _out) const override;
 
   // Documentation inherited
   size_t getDimension() const override;
 
   // Documentation inherited
   void copyState(
-    const StateSpace::State *_source,
-    StateSpace::State *_destination) const override;
+      const StateSpace::State* _source,
+      StateSpace::State* _destination) const override;
 
   /// Exponential mapping of Lie algebra element to a Lie group element. This
   /// is simply the identity transformation on a real vector space.
   ///
   /// \param _tangent element of the tangent space
   /// \param[out] _out corresponding element of the Lie group
-  void expMap(const Eigen::VectorXd& _tangent,
-              StateSpace::State *_out) const override;
+  void expMap(
+      const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
   /// Log mapping of Lie group element to a Lie algebra element. This is simply
   /// an identity transformation on a real vector space.
   ///
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
-  void logMap(const StateSpace::State *_in,
-              Eigen::VectorXd& _tangent) const override;
+  void logMap(
+      const StateSpace::State* _in, Eigen::VectorXd& _tangent) const override;
 
   /// Print the n-dimensional vector represented by the state
   /// Format: [x_1, x_2, ..., x_n]
-  void print(const StateSpace::State *_state, std::ostream &_os) const override;
+  void print(const StateSpace::State* _state, std::ostream& _os) const override;
 
 private:
   /// Gets the mutable value stored in a Rn::State. This is
@@ -139,7 +140,7 @@ private:
   ///
   /// \param _state element of this state space
   /// \return mutable reference to real vector stored in \c _state
-  Eigen::Map<Vectord> getMutableValue(State *_state) const;
+  Eigen::Map<VectorNd> getMutableValue(State* _state) const;
 
   /// Dimension of the real vector space. Note that this value is only used for
   /// dynamic sized vector space (the dimension is changable).

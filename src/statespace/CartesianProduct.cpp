@@ -1,10 +1,8 @@
-#include <aikido/statespace/CartesianProduct.hpp>
 #include <iostream>
+#include <aikido/statespace/CartesianProduct.hpp>
 
-namespace aikido
-{
-namespace statespace
-{
+namespace aikido {
+namespace statespace {
 
 //=============================================================================
 CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
@@ -18,7 +16,8 @@ CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
       throw std::invalid_argument("Subspace is null.");
   }
 
-  if (!mSubspaces.empty()) {
+  if (!mSubspaces.empty())
+  {
     for (size_t i = 1; i < mSubspaces.size(); ++i)
       mOffsets[i] = mOffsets[i - 1] + mSubspaces[i - 1]->getStateSizeInBytes();
 
@@ -33,16 +32,21 @@ auto CartesianProduct::createState() const -> ScopedState
 }
 
 //=============================================================================
-size_t CartesianProduct::getNumSubspaces() const { return mSubspaces.size(); }
-
-//=============================================================================
-size_t CartesianProduct::getStateSizeInBytes() const { return mSizeInBytes; }
-
-//=============================================================================
-StateSpace::State *CartesianProduct::allocateStateInBuffer(
-    void *_buffer) const
+size_t CartesianProduct::getNumSubspaces() const
 {
-  auto state = reinterpret_cast<State *>(_buffer);
+  return mSubspaces.size();
+}
+
+//=============================================================================
+size_t CartesianProduct::getStateSizeInBytes() const
+{
+  return mSizeInBytes;
+}
+
+//=============================================================================
+StateSpace::State* CartesianProduct::allocateStateInBuffer(void* _buffer) const
+{
+  auto state = reinterpret_cast<State*>(_buffer);
 
   for (size_t i = 0; i < mSubspaces.size(); ++i)
     mSubspaces[i]->allocateStateInBuffer(getSubState<>(state, i));
@@ -51,55 +55,61 @@ StateSpace::State *CartesianProduct::allocateStateInBuffer(
 }
 
 //=============================================================================
-void CartesianProduct::freeStateInBuffer(StateSpace::State *_state) const
+void CartesianProduct::freeStateInBuffer(StateSpace::State* _state) const
 {
-  auto state = static_cast<State *>(_state);
+  auto state = static_cast<State*>(_state);
 
   for (size_t i = mSubspaces.size(); i > 0; --i)
     mSubspaces[i - 1]->freeStateInBuffer(getSubState<>(state, i - 1));
 }
 
 //=============================================================================
-void CartesianProduct::compose(const StateSpace::State *_state1,
-                                 const StateSpace::State *_state2,
-                                 StateSpace::State *_out) const
+void CartesianProduct::compose(
+    const StateSpace::State* _state1,
+    const StateSpace::State* _state2,
+    StateSpace::State* _out) const
 {
   // TODO: Disable this in release mode.
   if (_state1 == _out || _state2 == _out)
     throw std::invalid_argument("Output aliases input.");
 
-  auto state1 = static_cast<const State *>(_state1);
-  auto state2 = static_cast<const State *>(_state2);
-  auto out = static_cast<State *>(_out);
+  auto state1 = static_cast<const State*>(_state1);
+  auto state2 = static_cast<const State*>(_state2);
+  auto out = static_cast<State*>(_out);
 
-  for (size_t i = 0; i < mSubspaces.size(); ++i) {
-    mSubspaces[i]->compose(getSubState<>(state1, i), getSubState<>(state2, i),
-                           getSubState<>(out, i));
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
+    mSubspaces[i]->compose(
+        getSubState<>(state1, i),
+        getSubState<>(state2, i),
+        getSubState<>(out, i));
   }
 }
 
 //=============================================================================
-void CartesianProduct::getIdentity(StateSpace::State *_out) const
+void CartesianProduct::getIdentity(StateSpace::State* _out) const
 {
-  auto state = static_cast<State *>(_out);
+  auto state = static_cast<State*>(_out);
 
-  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
     mSubspaces[i]->getIdentity(getSubState<>(state, i));
   }
 }
 
 //=============================================================================
-void CartesianProduct::getInverse(const StateSpace::State *_in,
-                                    StateSpace::State *_out) const
+void CartesianProduct::getInverse(
+    const StateSpace::State* _in, StateSpace::State* _out) const
 {
   // TODO: Disable this in release mode.
   if (_out == _in)
     throw std::invalid_argument("Output aliases input.");
 
-  auto in = static_cast<const State *>(_in);
-  auto out = static_cast<State *>(_out);
+  auto in = static_cast<const State*>(_in);
+  auto out = static_cast<State*>(_out);
 
-  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
     mSubspaces[i]->getInverse(getSubState<>(in, i), getSubState<>(out, i));
   }
 }
@@ -108,7 +118,8 @@ void CartesianProduct::getInverse(const StateSpace::State *_in,
 size_t CartesianProduct::getDimension() const
 {
   size_t dim = 0;
-  for (auto const &sspace : mSubspaces) {
+  for (auto const& sspace : mSubspaces)
+  {
     dim += sspace->getDimension();
   }
   return dim;
@@ -116,25 +127,27 @@ size_t CartesianProduct::getDimension() const
 
 //=============================================================================
 void CartesianProduct::copyState(
-  const StateSpace::State *_source, StateSpace::State *_destination) const
+    const StateSpace::State* _source, StateSpace::State* _destination) const
 {
-  auto destination = static_cast<State *>(_destination);
-  auto source = static_cast<const State *>(_source);
-  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+  auto destination = static_cast<State*>(_destination);
+  auto source = static_cast<const State*>(_source);
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
     mSubspaces[i]->copyState(
-      getSubState<>(source, i), getSubState<>(destination, i));
+        getSubState<>(source, i), getSubState<>(destination, i));
   }
 }
 
 //=============================================================================
-void CartesianProduct::expMap(const Eigen::VectorXd &_tangent,
-                                StateSpace::State *_out) const
+void CartesianProduct::expMap(
+    const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
-  auto out = static_cast<State *>(_out);
+  auto out = static_cast<State*>(_out);
   auto dimension = getDimension();
 
   // TODO: Skip these checks in release mode.
-  if (static_cast<size_t>(_tangent.rows()) != dimension) {   
+  if (static_cast<size_t>(_tangent.rows()) != dimension)
+  {
     std::stringstream msg;
     msg << "_tangent has incorrect size: expected " << dimension << ", got "
         << _tangent.rows() << ".\n";
@@ -142,28 +155,31 @@ void CartesianProduct::expMap(const Eigen::VectorXd &_tangent,
   }
 
   int index = 0;
-  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
     auto dim = mSubspaces[i]->getDimension();
-    mSubspaces[i]->expMap(_tangent.block(index, 0, dim, 1),
-                          getSubState<>(out, i));
+    mSubspaces[i]->expMap(
+        _tangent.block(index, 0, dim, 1), getSubState<>(out, i));
     index += dim;
   }
 }
 
 //=============================================================================
-void CartesianProduct::logMap(const StateSpace::State *_in,
-                                Eigen::VectorXd &_tangent) const
+void CartesianProduct::logMap(
+    const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
 {
   auto dimension = getDimension();
 
-  if (static_cast<size_t>(_tangent.rows()) != dimension) {
+  if (static_cast<size_t>(_tangent.rows()) != dimension)
+  {
     _tangent.resize(dimension);
   }
 
-  auto in = static_cast<const State *>(_in);
+  auto in = static_cast<const State*>(_in);
 
   int index = 0;
-  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
     auto dim = mSubspaces[i]->getDimension();
     Eigen::VectorXd segment(dim);
     mSubspaces[i]->logMap(getSubState<>(in, i), segment);
@@ -175,16 +191,18 @@ void CartesianProduct::logMap(const StateSpace::State *_in,
 }
 
 //=============================================================================
-void CartesianProduct::print(const StateSpace::State *_state,
-                             std::ostream &_os) const {
+void CartesianProduct::print(
+    const StateSpace::State* _state, std::ostream& _os) const
+{
 
-  auto state = static_cast<const State *>(_state);
-  for (size_t i = 0; i < mSubspaces.size(); ++i) {
+  auto state = static_cast<const State*>(_state);
+  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  {
     _os << "[ " << i << ":";
     getSubspace<>(i)->print(getSubState<>(state, i), _os);
     _os << " ] ";
   }
 }
 
-}  // namespace statespace
-}  // namespace aikido
+} // namespace statespace
+} // namespace aikido

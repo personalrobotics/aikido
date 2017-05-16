@@ -21,8 +21,8 @@ public:
   /// will be the end point, even if it is at less than stepSize from the second
   /// to last point.
   StepSequence(
-      const double _stepSize,
-      const bool _includeEndpoints = true,
+      double _stepSize,
+      bool _includeEndpoints = true,
       double _startPoint = 0.0,
       double _endPoint = 1.0);
 
@@ -43,12 +43,13 @@ private:
 
 class StepSequence::const_iterator
     : public boost::iterator_facade<StepSequence::const_iterator,
-                                    const double,
-                                    boost::forward_traversal_tag>
+                                    double,
+                                    boost::forward_traversal_tag,
+                                    double>
 {
 public:
   /// Return the value of the iterator
-  double const& dereference() const;
+  double dereference() const;
 
   /// Increment the sequence
   void increment();
@@ -59,10 +60,7 @@ public:
 private:
   friend class StepSequence;
 
-  const_iterator(StepSequence* seq, int step) : mSeq(seq), mStep(step)
-  {
-    mValue = (*mSeq)[mStep];
-  }
+  const_iterator(StepSequence* seq, int step);
 
   StepSequence* mSeq;
   int mStep;

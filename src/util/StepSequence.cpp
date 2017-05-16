@@ -8,8 +8,8 @@ namespace util {
 
 //==============================================================================
 StepSequence::StepSequence(
-    const double _stepSize,
-    const bool _includeEndpoints,
+    double _stepSize,
+    bool _includeEndpoints,
     double _startPoint,
     double _endPoint)
   : mStepSize(_stepSize)
@@ -80,7 +80,7 @@ int StepSequence::getMaxSteps() const
 }
 
 //==============================================================================
-double const& StepSequence::const_iterator::dereference() const
+double StepSequence::const_iterator::dereference() const
 {
   return mValue;
 }
@@ -97,6 +97,13 @@ bool StepSequence::const_iterator::equal(
     const StepSequence::const_iterator& other) const
 {
   return other.mStep == mStep && other.mSeq == mSeq;
+}
+
+//==============================================================================
+StepSequence::const_iterator::const_iterator(StepSequence* seq, int step)
+  : mSeq(seq), mStep(step)
+{
+  mValue = (*mSeq)[mStep];
 }
 
 } // namespace utils

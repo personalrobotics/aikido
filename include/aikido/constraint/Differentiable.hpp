@@ -65,7 +65,7 @@ public:
 
 using DifferentiablePtr = std::shared_ptr<Differentiable>;
 
-} // constraint
-} // aikido
+} // namespace constraint
+} // namespace aikido
 
 #endif

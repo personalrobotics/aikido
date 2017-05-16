@@ -1,9 +1,9 @@
 #include <cassert>
 #include <sstream>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/dart/JointStateSpaceHelpers.hpp>
-#include <dart/common/StlHelpers.hpp>
 #include <dart/common/Console.hpp>
+#include <dart/common/StlHelpers.hpp>
+#include <aikido/statespace/dart/JointStateSpaceHelpers.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 using ::dart::dynamics::MetaSkeleton;
 using ::dart::dynamics::MetaSkeletonPtr;
@@ -54,7 +54,7 @@ T* isJointOfType(::dart::dynamics::Joint* _joint)
 
 //=============================================================================
 std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
-  MetaSkeleton& _metaskeleton)
+    MetaSkeleton& _metaskeleton)
 {
   std::vector<std::shared_ptr<JointStateSpace>> spaces;
   spaces.reserve(_metaskeleton.getNumJoints());
@@ -89,8 +89,8 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
 //=============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
   : CartesianProduct(
-      convertVectorType<JointStateSpacePtr, StateSpacePtr>(
-        createStateSpace(*_metaskeleton)))
+        convertVectorType<JointStateSpacePtr, StateSpacePtr>(
+            createStateSpace(*_metaskeleton)))
   , mMetaSkeleton(std::move(_metaskeleton))
 {
 }
@@ -103,9 +103,9 @@ MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 
 //=============================================================================
 void MetaSkeletonStateSpace::convertPositionsToState(
-  const Eigen::VectorXd& _positions, State* _state) const
+    const Eigen::VectorXd& _positions, State* _state) const
 {
-  if (static_cast<size_t>(_positions.size()) != mMetaSkeleton->getNumDofs()) 
+  if (static_cast<size_t>(_positions.size()) != mMetaSkeleton->getNumDofs())
     throw std::invalid_argument("Incorrect number of positions.");
 
   for (size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
@@ -123,7 +123,8 @@ void MetaSkeletonStateSpace::convertPositionsToState(
       const auto dofIndex = mMetaSkeleton->getIndexOf(dof, false);
       if (dofIndex == INVALID_INDEX)
         throw std::logic_error(
-          "DegreeOfFreedom is not in MetaSkeleton. This should never happen.");
+            "DegreeOfFreedom is not in MetaSkeleton. This should never "
+            "happen.");
 
       jointPositions[idof] = _positions[dofIndex];
     }
@@ -135,7 +136,7 @@ void MetaSkeletonStateSpace::convertPositionsToState(
 
 //=============================================================================
 void MetaSkeletonStateSpace::convertStateToPositions(
-  const State* _state, Eigen::VectorXd& _positions) const
+    const State* _state, Eigen::VectorXd& _positions) const
 {
   _positions.resize(mMetaSkeleton->getNumDofs());
 
@@ -149,13 +150,15 @@ void MetaSkeletonStateSpace::convertStateToPositions(
     subspace->convertStateToPositions(substate, jointPositions);
 
     // TODO: Find a more efficient way to do this mapping.
-    for (size_t idof = 0; idof < static_cast<size_t>(jointPositions.size()); ++idof) 
+    for (size_t idof = 0; idof < static_cast<size_t>(jointPositions.size());
+         ++idof)
     {
       const auto dof = joint->getDof(idof);
       const auto dofIndex = mMetaSkeleton->getIndexOf(dof, false);
       if (dofIndex == INVALID_INDEX)
         throw std::logic_error(
-          "DegreeOfFreedom is not in MetaSkeleton. This should never happen.");
+            "DegreeOfFreedom is not in MetaSkeleton. This should never "
+            "happen.");
 
       _positions[dofIndex] = jointPositions[idof];
     }
@@ -170,7 +173,7 @@ void MetaSkeletonStateSpace::getState(State* _state) const
 
 //=============================================================================
 auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
-  -> ScopedState
+    -> ScopedState
 {
   auto scopedState = createState();
   getState(scopedState.getState());

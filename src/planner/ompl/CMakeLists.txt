@@ -53,4 +53,4 @@ add_component_dependencies(${PROJECT_NAME} planner_ompl
   trajectory
 )
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})

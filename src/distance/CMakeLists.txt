@@ -24,4 +24,4 @@ add_component(${PROJECT_NAME} distance)
 add_component_targets(${PROJECT_NAME} distance "${PROJECT_NAME}_distance")
 add_component_dependencies(${PROJECT_NAME} distance statespace)
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})
