@@ -28,7 +28,7 @@ class FramePairDifferentiableTest : public ::testing::Test {
   protected:
     virtual void SetUp() {
 
-      tsr = Eigen::make_aligned_shared<TSR>(
+      tsr = dart::common::make_aligned_shared<TSR>(
         std::unique_ptr<RNG>(new RNGWrapper<std::default_random_engine>(0)));
 
       Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
