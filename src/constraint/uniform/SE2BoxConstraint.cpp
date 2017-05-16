@@ -41,9 +41,9 @@ SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
       std::unique_ptr<util::RNG> _rng,
       const Eigen::Vector3d& _lowerLimits,
       const Eigen::Vector3d& _upperLimits)
-  : mSpace(std::move(_space))
+  : mDimension(3)
+  , mSpace(std::move(_space))
   , mRng(std::move(_rng))
-  , mDimension(3)
 {
   mDistributions.reserve(mDimension);
 
@@ -64,7 +64,7 @@ bool SE2BoxConstraintSampleGenerator::sample(
 {
   Eigen::Vector3d tangent;
 
-  for (size_t i = 0; i < tangent.size(); ++i)
+  for (auto i = 0; i < tangent.size(); ++i)
     tangent[i] = mDistributions[i](*mRng);
 
   mSpace->expMap(tangent, static_cast<statespace::SE2::State*>(_state));
@@ -104,7 +104,7 @@ SE2BoxConstraint
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
 
-  if (mLowerLimits.size() != mDimension)
+  if (static_cast<std::size_t>(mLowerLimits.size()) != mDimension)
   {
     std::stringstream msg;
     msg << "Lower limits have incorrect dimension: expected "
@@ -112,7 +112,7 @@ SE2BoxConstraint
     throw std::invalid_argument(msg.str());
   }
 
-  if (mUpperLimits.size() != mDimension)
+  if (static_cast<std::size_t>(mUpperLimits.size()) != mDimension)
   {
     std::stringstream msg;
     msg << "Upper limits have incorrect dimension: expected "

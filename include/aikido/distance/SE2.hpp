@@ -30,6 +30,8 @@ public:
 private:
   std::shared_ptr<statespace::SE2> mStateSpace;
 };
-};
-}
+
+} // namespace distance
+} // namespace aikido
+
 #endif

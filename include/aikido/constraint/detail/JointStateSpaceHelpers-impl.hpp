@@ -340,7 +340,7 @@ struct createTestableFor_impl<statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Testable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     auto joint = _stateSpace->getJoint();
     if (joint->hasPositionLimit(2))
@@ -359,7 +359,7 @@ struct createProjectableFor_impl<statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Projectable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     auto joint = _stateSpace->getJoint();
     if (joint->hasPositionLimit(2))
@@ -379,20 +379,26 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-    StateSpacePtr /*_stateSpace*/, std::unique_ptr<util::RNG> /*_rng*/)
+    StateSpacePtr stateSpace, std::unique_ptr<util::RNG> rng)
   {
-    auto joint = _stateSpace->getJoint();
+    auto joint = stateSpace->getJoint();
     if (joint->hasPositionLimit(2))
+    {
       throw std::invalid_argument(
         "Rotational component of SE2Joint must not have limits.");
+    }
     else if (!joint->hasPositionLimit(1) && !joint->hasPositionLimit(2))
+    {
       throw std::runtime_error(
         "Unable to create Sampleable for unbounded SE2.");
+    }
     else
+    {
       return dart::common::make_unique<SE2BoxConstraint>(
-        std::move(_stateSpace), std::move(_rng),
+        std::move(stateSpace), std::move(rng),
         getPositionLowerLimits(joint).topRows(2),
         getPositionUpperLimits(joint).topRows(2));
+    }
   }
 };
 
