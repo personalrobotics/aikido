@@ -29,7 +29,6 @@ inline bool isLimited(const dart::dynamics::Joint* _joint)
   return false;
 }
 
-
 //=============================================================================
 inline Eigen::VectorXd getPositionLowerLimits(
   const dart::dynamics::Joint* _joint)

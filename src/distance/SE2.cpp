@@ -38,7 +38,7 @@ double SE2::distance(
   angleDiff = std::fmod(std::abs(angleDiff), 2.0 * M_PI);
   if (angleDiff > M_PI)
     angleDiff -= 2.0 * M_PI;
-  diff(0) = angleDiff;
+  diff[0] = angleDiff;
 
   // Difference between R^2 positions
   diff.tail<2>() = tangent1.tail<2>() - tangent2.tail<2>();

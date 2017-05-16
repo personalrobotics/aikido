@@ -140,9 +140,7 @@ void SE2::expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 void SE2::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
 {
   if (_tangent.rows() != 3)
-  {
     _tangent.resize(3);
-  }
 
   auto in = static_cast<const State*>(_in);
 

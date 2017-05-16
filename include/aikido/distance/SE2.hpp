@@ -6,6 +6,7 @@
 
 namespace aikido {
 namespace distance {
+
 /// Computes the shortest distance between two angles in SE2
 class SE2 : public DistanceMetric
 {

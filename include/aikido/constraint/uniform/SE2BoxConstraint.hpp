@@ -1,5 +1,6 @@
-#ifndef AIKIDO_STATESPACE_SE2BOXCONSTRAINT_H_
-#define AIKIDO_STATESPACE_SE2BOXCONSTRAINT_H_
+#ifndef AIKIDO_STATESPACE_SE2BOXCONSTRAINT_HPP_
+#define AIKIDO_STATESPACE_SE2BOXCONSTRAINT_HPP_
+
 #include "../../statespace/SE2.hpp"
 #include "../Differentiable.hpp"
 #include "../Projectable.hpp"
@@ -61,8 +62,7 @@ private:
   size_t mDimension;
 };
 
-
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_STATESPACE_SE2BOXCONSTRAINT_H_
+#endif // AIKIDO_STATESPACE_SE2BOXCONSTRAINT_HPP_
