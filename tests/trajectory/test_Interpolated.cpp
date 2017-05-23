@@ -73,6 +73,10 @@ TEST_F(InterpolatedTest, EvaluateDerivative)
 
   EXPECT_THROW(traj->evaluateDerivative(1.5, 0, tangentVector), std::invalid_argument);
 
+  // start time derivative
+  traj->evaluateDerivative(1., 1, tangentVector);
+  EXPECT_TRUE(tangentVector.isApprox(Eigen::Vector2d(1.5, 1.5)));
+
   traj->evaluateDerivative(1.5, 2, tangentVector);
   EXPECT_TRUE(tangentVector.isApprox(Eigen::Vector2d::Zero()));
 
