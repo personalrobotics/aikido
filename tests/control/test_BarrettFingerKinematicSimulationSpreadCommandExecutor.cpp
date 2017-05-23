@@ -25,7 +25,6 @@ static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
   return properties;
 }
 
-const static std::chrono::milliseconds stepTime{100};
 const static std::chrono::nanoseconds waitTime{1};
 
 class BarrettFingerKinematicSimulationSpreadCommandExecutorTest : public testing::Test
