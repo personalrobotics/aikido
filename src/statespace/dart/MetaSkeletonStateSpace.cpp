@@ -81,7 +81,7 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
     spaces.emplace_back(createJointStateSpace(joint).release());
   }
 
-  return std::move(spaces);
+  return spaces;
 }
 
 } // namespace
@@ -177,7 +177,8 @@ auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
 {
   auto scopedState = createState();
   getState(scopedState.getState());
-  return std::move(scopedState);
+
+  return scopedState;
 }
 
 //=============================================================================

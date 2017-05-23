@@ -23,7 +23,7 @@ public:
 
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
-  boost::shared_ptr<::ompl::base::SpaceInformation> si;
+  ::ompl::base::SpaceInformationPtr si;
 };
 
 TEST_F(GoalRegionTest, ThrowsOnNullSpaceInformation)
@@ -60,8 +60,7 @@ TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
 TEST_F(GoalRegionTest, DifferentSample)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  GoalRegion gr(si, std::move(testable),
-                std::move(sampler->createSampleGenerator()));
+  GoalRegion gr(si, std::move(testable), sampler->createSampleGenerator());
 
   auto state1 = si->allocState();
   auto state2 = si->allocState();
@@ -78,8 +77,7 @@ TEST_F(GoalRegionTest, DifferentSample)
 TEST_F(GoalRegionTest, ValidSample)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  GoalRegion gr(si, std::move(testable),
-                std::move(sampler->createSampleGenerator()));
+  GoalRegion gr(si, std::move(testable), sampler->createSampleGenerator());
 
   auto state1 = si->allocState();
 

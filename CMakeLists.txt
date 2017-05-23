@@ -9,6 +9,13 @@ if(POLICY CMP0025)
   cmake_policy(SET CMP0025 NEW)
 endif()
 
+# Use MACOSX_RPATH by default on OS X. This was added in CMake 2.8.12 and
+# became default in CMake 3.0. Explicitly setting this policy is necessary to
+# suppress a warning in CMake 3.0 and above.
+if(POLICY CMP0042)
+  cmake_policy(SET CMP0042 NEW)
+endif()
+
 project(aikido)
 
 # If you change the version, please update the <version> tag in package.xml.
