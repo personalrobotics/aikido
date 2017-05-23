@@ -76,9 +76,9 @@ TEST(SO3, LogMap)
   so3.logMap(state, out);
   EXPECT_TRUE(Eigen::Vector3d(0, 0, M_PI_2).isApprox(out));
 
-  so3.expMap(Eigen::Vector3d(M_PI, M_PI_2, M_PI / 5), state);
+  so3.expMap(Eigen::Vector3d(M_PI_2, M_PI_2, M_PI / 5), state);
   so3.logMap(state, out);
-  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI, M_PI_2, M_PI / 5)));
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI_2, M_PI_2, M_PI / 5)));
 }
 
 TEST(SO3, CopyState)

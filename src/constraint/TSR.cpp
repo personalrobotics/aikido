@@ -111,7 +111,7 @@ TSR::TSR(const TSR& other)
     , mBw(other.mBw)
     , mTw_e(other.mTw_e)
     , mTestableTolerance(other.mTestableTolerance)
-    , mRng(std::move(other.mRng->clone()))
+    , mRng(other.mRng->clone())
     , mStateSpace(std::make_shared<SE3>())
 {
   validate();
@@ -137,7 +137,7 @@ TSR& TSR::operator=(const TSR& other)
   mBw = other.mBw;
   mTw_e = other.mTw_e;
   mTestableTolerance = other.mTestableTolerance;
-  mRng = std::move(other.mRng->clone());
+  mRng = other.mRng->clone();
 
   // Intentionally don't assign StateSpace.
 

@@ -16,19 +16,19 @@ TEST(YamlEigenExtension, Validity)
       YAML::RepresentationException);
 
   std::string zeroSizedVector = "vector: []";
-  auto zeroVec = YAML::Load(zeroSizedVector)["vector"].as<Eigen::VectorXd>();
-  EXPECT_NO_THROW(zeroVec);
+  Eigen::VectorXd zeroVec;
+  EXPECT_NO_THROW(zeroVec = YAML::Load(zeroSizedVector)["vector"].as<Eigen::VectorXd>());
   EXPECT_EQ(zeroVec.size(), 0);
 
   std::string zeroSizedMatrix1 = "matrix: [[]]";
-  auto zeroMat1 = YAML::Load(zeroSizedMatrix1)["matrix"].as<Eigen::MatrixXd>();
-  EXPECT_NO_THROW(zeroMat1);
+  Eigen::MatrixXd zeroMat1;
+  EXPECT_NO_THROW(zeroMat1 = YAML::Load(zeroSizedMatrix1)["matrix"].as<Eigen::MatrixXd>());
   EXPECT_EQ(zeroMat1.rows(), 0);
   EXPECT_EQ(zeroMat1.cols(), 0);
 
   std::string zeroSizedMatrix2 = "matrix: [[], []]";
-  auto zeroMat2 = YAML::Load(zeroSizedMatrix2)["matrix"].as<Eigen::MatrixXd>();
-  EXPECT_NO_THROW(zeroMat2);
+  Eigen::MatrixXd zeroMat2;
+  EXPECT_NO_THROW(zeroMat2 = YAML::Load(zeroSizedMatrix2)["matrix"].as<Eigen::MatrixXd>());
   EXPECT_EQ(zeroMat2.rows(), 0);
   EXPECT_EQ(zeroMat2.cols(), 0);
 

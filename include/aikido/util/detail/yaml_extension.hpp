@@ -131,8 +131,10 @@ struct convert<Eigen::
       throw YAML::RepresentationException(getMark(node), ss.str());
     }
 
-    if (node[0].Type() == YAML::NodeType::Sequence)
+    if (node.size() > 0 && node[0].Type() == YAML::NodeType::Sequence)
     {
+      // Matrix case
+
       const auto cols = node[0].size();
 
       if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
@@ -179,8 +181,10 @@ struct convert<Eigen::
         }
       }
     }
-    else if (node.size() >= 0u)
+    else
     {
+      // Vector case
+
       if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
           && 1 != MatrixType::ColsAtCompileTime)
       {
@@ -203,12 +207,6 @@ struct convert<Eigen::
 
         matrix(i, 0) = node[i].template as<_Scalar>();
       }
-    }
-    else
-    {
-      std::stringstream ss;
-      ss << "Unknown type of matrix '" << node.Tag() << "'.";
-      throw YAML::RepresentationException(getMark(node), ss.str());
     }
 
     return true;

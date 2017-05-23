@@ -25,8 +25,6 @@ using namespace dart::dynamics;
 using namespace dart::collision;
 using namespace dart::simulation;
 
-const static std::chrono::milliseconds stepTime{100};
-
 static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
 {
   BodyNode::Properties properties;
