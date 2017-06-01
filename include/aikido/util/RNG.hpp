@@ -137,7 +137,7 @@ Quaternion sampleQuaternion(
 /// \param _numSeeds number of seeds to use for initialization
 /// \return new random number generators
 std::vector<std::unique_ptr<util::RNG>> splitEngine(
-    RNG& _engine, size_t _numOutputs, size_t _numSeeds = NUM_DEFAULT_SEEDS);
+    RNG& _engine, size_t _numOutputs = 1, size_t _numSeeds = NUM_DEFAULT_SEEDS);
 
 } // namespace util
 } // namespace aikido
