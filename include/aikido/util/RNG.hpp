@@ -11,7 +11,7 @@
 namespace aikido {
 namespace util {
 
-/// Default number of seeds to by \c splitEngine to seed new engines.
+/// Default number of seeds to by \c cloneRNGsFrom to seed new engines.
 constexpr int NUM_DEFAULT_SEEDS{100};
 
 /// Implementation of the C++11 "random engine" concept that uses virtual
@@ -136,8 +136,19 @@ Quaternion sampleQuaternion(
 /// \param _numOutputs number of RNGs to create
 /// \param _numSeeds number of seeds to use for initialization
 /// \return new random number generators
-std::vector<std::unique_ptr<util::RNG>> splitEngine(
-    RNG& _engine, size_t _numOutputs = 1, size_t _numSeeds = NUM_DEFAULT_SEEDS);
+std::vector<std::unique_ptr<util::RNG>> cloneRNGsFrom(
+    RNG& _engine, size_t _numOutputs, size_t _numSeeds = NUM_DEFAULT_SEEDS);
+
+/// Deterministically create a random number generator of the same type as the
+/// input \c _engine. This is implemented by using \c _engine to generate \c
+/// _numSeeds seeds, then using \c std::seed_seq to generate an uncorrelated
+/// seed to create the output engine.
+///
+/// \param _engine random engine
+/// \param _numSeeds number of seeds to use for initialization
+/// \return new random number generators
+std::vector<std::unique_ptr<util::RNG>> cloneRNGFrom(
+    RNG& _engine, size_t _numSeeds = NUM_DEFAULT_SEEDS);
 
 } // namespace util
 } // namespace aikido
