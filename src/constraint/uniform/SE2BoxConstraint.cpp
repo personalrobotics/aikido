@@ -125,7 +125,7 @@ SE2BoxConstraint
     if (mLowerLimits[i] > mUpperLimits[i])
     {
       std::stringstream msg;
-      msg << "Unable to sample from StateSpace because lower limit exeeds"
+      msg << "Unable to sample from StateSpace because lower limit exceeds"
           << " upper limit on dimension " << i << ": "
           << mLowerLimits[i] << " > " << mUpperLimits[i] << ".";
       throw std::invalid_argument(msg.str());
