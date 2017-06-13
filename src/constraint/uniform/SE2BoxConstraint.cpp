@@ -198,13 +198,13 @@ std::unique_ptr<constraint::SampleGenerator>
 }
 
 //=============================================================================
-Eigen::Vector2d SE2BoxConstraint::getLowerLimits()
+Eigen::Vector2d SE2BoxConstraint::getLowerLimits() const
 {
   return mLowerLimits.tail<2>();
 }
 
 //=============================================================================
-Eigen::Vector2d SE2BoxConstraint::getUpperLimits()
+Eigen::Vector2d SE2BoxConstraint::getUpperLimits() const
 {
   return mUpperLimits.tail<2>();
 }

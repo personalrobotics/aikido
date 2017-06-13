@@ -346,7 +346,7 @@ struct createTestableFor_impl<statespace::dart::SE2Joint>
   static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     auto joint = _stateSpace->getJoint();
-    if (joint->hasPositionLimit(2))
+    if (joint->hasPositionLimit(0))
     {
       throw std::invalid_argument(
         "Rotational component of SE2Joint must not have limits.");
@@ -367,7 +367,7 @@ struct createProjectableFor_impl<statespace::dart::SE2Joint>
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     auto joint = _stateSpace->getJoint();
-    if (joint->hasPositionLimit(2))
+    if (joint->hasPositionLimit(0))
     {
       throw std::invalid_argument(
         "Rotational component of SE2Joint must not have limits.");
@@ -389,12 +389,12 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
     StateSpacePtr stateSpace, std::unique_ptr<util::RNG> rng)
   {
     auto joint = stateSpace->getJoint();
-    if (joint->hasPositionLimit(2))
+    if (joint->hasPositionLimit(0))
     {
       throw std::invalid_argument(
         "Rotational component of SE2Joint must not have limits.");
     }
-    else if (!joint->hasPositionLimit(1) && !joint->hasPositionLimit(2))
+    else if (!(joint->hasPositionLimit(1) && joint->hasPositionLimit(2)))
     {
       throw std::runtime_error(
         "Unable to create Sampleable for unbounded SE2.");

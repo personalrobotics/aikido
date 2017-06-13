@@ -47,17 +47,24 @@ public:
   std::unique_ptr<constraint::SampleGenerator>
     createSampleGenerator() const override;
 
-  // Returns lower limits of this constraint.
-  Eigen::Vector2d getLowerLimits();
+  /// Returns lower limits of this constraint.
+  Eigen::Vector2d getLowerLimits() const;
 
-  // Returns upper limits of this constraint.
-  Eigen::Vector2d getUpperLimits();
+  /// Returns upper limits of this constraint.
+  Eigen::Vector2d getUpperLimits() const;
 
 private:
   std::shared_ptr<statespace::SE2> mSpace;
   std::unique_ptr<util::RNG> mRng;
+
+  /// Lower limits on the state. The first element encodes the rotational limit
+  /// and the last two elements encode the translational limits.
   Eigen::Vector3d mLowerLimits;
+
+  /// Upper limits on the state. The first element encodes the rotational limit
+  /// and the last two elements encode the translational limits.
   Eigen::Vector3d mUpperLimits;
+
   size_t mRnDimension;
   size_t mDimension;
 };
