@@ -108,7 +108,7 @@ SE2BoxConstraint
   {
     std::stringstream msg;
     msg << "Lower limits have incorrect dimension: expected "
-        << mRnDimension << ", got " << mLowerLimits.size() << ".";
+        << mDimension << ", got " << mLowerLimits.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
@@ -116,11 +116,11 @@ SE2BoxConstraint
   {
     std::stringstream msg;
     msg << "Upper limits have incorrect dimension: expected "
-        << mRnDimension << ", got " << mUpperLimits.size() << ".";
+        << mDimension << ", got " << mUpperLimits.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 1; i < 1 + mRnDimension; ++i)
+  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (mLowerLimits[i] > mUpperLimits[i])
     {
@@ -145,7 +145,7 @@ bool SE2BoxConstraint::isSatisfied(const statespace::StateSpace::State* _state) 
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(_state), tangent);
 
-  for (size_t i = 1; i < 1 + mRnDimension; ++i)
+  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (tangent[i] < mLowerLimits[i] || tangent[i] > mUpperLimits[i])
       return false;
@@ -161,7 +161,7 @@ bool SE2BoxConstraint::project(
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(_s), tangent);
 
-  for (size_t i = 1; i < 1 + mRnDimension; ++i)
+  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (tangent[i] < mLowerLimits[i])
       tangent[i] = mLowerLimits[i];
@@ -181,9 +181,9 @@ std::unique_ptr<constraint::SampleGenerator>
   if (!mRng)
     throw std::invalid_argument("mRng is null.");
 
-  for (size_t i = 1; i < 1 + mRnDimension; ++i)
+  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
-    if (!std::isfinite(mLowerLimits[i]) || !std::isfinite(mUpperLimits[i]))
+    if !(std::isfinite(mLowerLimits[i]) && std::isfinite(mUpperLimits[i]))
     {
       std::stringstream msg;
       msg << "Unable to sample from StateSpace because dimension "
