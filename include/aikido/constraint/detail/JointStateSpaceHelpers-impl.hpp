@@ -526,7 +526,7 @@ struct createSampleableFor_impl<statespace::dart::WeldJoint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-    StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> /*_rng*/)
+    StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     const auto joint = _stateSpace->getJoint();
     Eigen::VectorXd positions = joint->getPositions();
