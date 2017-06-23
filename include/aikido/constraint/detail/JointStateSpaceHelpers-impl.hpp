@@ -314,13 +314,17 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
+  {
     return dart::common::make_unique<SE2BoxConstraint>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint).tail<2>(),
       getPositionUpperLimits(joint).tail<2>());
+  }
   else
+  {
     return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
+  }
 }
 
 template <>
@@ -329,7 +333,7 @@ struct createDifferentiableFor_impl<statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Differentiable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
       "No DifferentiableConstraint is available for SE2Joint.");
@@ -416,7 +420,7 @@ struct createDifferentiableFor_impl<statespace::dart::SE3Joint>
   using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Differentiable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
       "No DifferentiableConstraint is available for SE3Joint.");
@@ -430,7 +434,7 @@ struct createTestableFor_impl<statespace::dart::SE3Joint>
   using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Testable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
       "No Testable is available for SE3Joint.");
@@ -444,7 +448,7 @@ struct createProjectableFor_impl<statespace::dart::SE3Joint>
   using StateSpace = statespace::dart::SE3Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Projectable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     throw std::runtime_error(
       "No Projectable is available for SE3Joint.");
@@ -459,7 +463,7 @@ struct createSampleableFor_impl<statespace::dart::SE3Joint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-    StateSpacePtr /*_stateSpace*/, std::unique_ptr<util::RNG> /*_rng*/)
+    StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
   {
     throw std::runtime_error(
       "No Sampleable is available for SE3Joint.");
@@ -470,7 +474,7 @@ struct createSampleableFor_impl<statespace::dart::SE3Joint>
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
   std::shared_ptr<statespace::dart::WeldJoint> _stateSpace,
-  std::unique_ptr<util::RNG> /*_rng*/)
+  std::unique_ptr<util::RNG> _rng)
 {
   return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
 }
