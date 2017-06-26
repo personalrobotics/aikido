@@ -11,11 +11,20 @@ namespace distance {
 class SE2 : public DistanceMetric
 {
 public:
+
   /// Constructor.
   /// \param _space The SE2 this distance metric operates on
+  /// The weights have been set to 1 as default
+  SE2(std::shared_ptr<statespace::SE2> _space);
+
+  /// Constructor.
+  /// \param _space The SE2 this distance metric operates on
+  /// \param _weights The weights over angular and translational distances
+  /// It is a vector of 2 elements, the first element corresponds to the weight
+  /// of angular distance and the second the weight for translational distance
   SE2(
     std::shared_ptr<statespace::SE2> _space,
-    std::vector<double> _weights);
+    Eigen::Vector2d _weights);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
@@ -30,7 +39,7 @@ public:
 
 private:
   std::shared_ptr<statespace::SE2> mStateSpace;
-  std::vector<double> mWeights;
+  Eigen::Vector2d mWeights;
 };
 
 } // namespace distance

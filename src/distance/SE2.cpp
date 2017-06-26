@@ -5,25 +5,30 @@ namespace aikido {
 namespace distance {
 
 //=============================================================================
+SE2::SE2(std::shared_ptr<statespace::SE2> _space)
+        : mStateSpace(std::move(_space))
+{
+  if (mStateSpace == nullptr)
+  {
+    throw std::invalid_argument("_space is nullptr.");
+  }
+  
+  mWeights[0] = 1.0;
+  mWeights[1] = 1.0;
+}
+
+
+//=============================================================================
 SE2::SE2(std::shared_ptr<statespace::SE2> _space,
-         std::vector<double> _weights)
+         Eigen::Vector2d _weights)
         : mStateSpace(std::move(_space)), mWeights(std::move(_weights))
 {
   if (mStateSpace == nullptr)
   {
     throw std::invalid_argument("_space is nullptr.");
   }
-  if (mWeights.size() != 2)
-  {
-    std::stringstream msg;
-    msg << "Must provide a weight for each subspace in the "
-           "Cartesian Semidirect Product. "
-        << " (subspaces = 2 [R^2, SO(2)]"
-        << " , weights = " << mWeights.size() << ")";
-    throw std::invalid_argument(msg.str());
-  }
 
-  for (size_t i = 0; i < mWeights.size(); ++i)
+  for (size_t i = 0; i < 2; ++i)
   {
     if (mWeights[i] < 0)
     {
