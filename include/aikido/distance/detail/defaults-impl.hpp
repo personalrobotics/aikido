@@ -7,7 +7,7 @@
 #include "../../statespace/SO3.hpp"
 #include "../../util/metaprogramming.hpp"
 #include "../RnEuclidean.hpp"
-#include "../SE2.hpp"
+#include "../SE2Weighted.hpp"
 #include "../SO2Angular.hpp"
 #include "../SO3Angular.hpp"
 #include "../Weighted.hpp"
@@ -126,7 +126,7 @@ struct createDistanceMetricFor_impl<statespace::SE2>
 {
   static Ptr create(std::shared_ptr<statespace::SE2> _sspace)
   {
-    return make_unique<SE2>(std::move(_sspace));
+    return make_unique<SE2Weighted>(std::move(_sspace));
   }
 };
 
