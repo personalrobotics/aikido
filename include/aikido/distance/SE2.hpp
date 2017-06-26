@@ -13,12 +13,14 @@ class SE2 : public DistanceMetric
 public:
   /// Constructor.
   /// \param _space The SE2 this distance metric operates on
-  explicit SE2(std::shared_ptr<statespace::SE2> _space);
+  SE2(
+    std::shared_ptr<statespace::SE2> _space,
+    std::vector<double> _weights);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Computes shortest distance between two SE2 states.
+  /// Computes weighted distance between two SE2 states.
 
   /// \param _state1 The first state (type: SE2::State)
   /// \param _state2 The second state (type: SE2::State)
@@ -28,6 +30,7 @@ public:
 
 private:
   std::shared_ptr<statespace::SE2> mStateSpace;
+  std::vector<double> mWeights;
 };
 
 } // namespace distance

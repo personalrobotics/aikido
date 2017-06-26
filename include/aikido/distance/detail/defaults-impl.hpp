@@ -126,7 +126,8 @@ struct createDistanceMetricFor_impl<statespace::SE2>
 {
   static Ptr create(std::shared_ptr<statespace::SE2> _sspace)
   {
-    return make_unique<SE2>(std::move(_sspace));
+    std::vector<double> weights;
+    return make_unique<SE2>(std::move(_sspace), std::move(weights));
   }
 };
 
