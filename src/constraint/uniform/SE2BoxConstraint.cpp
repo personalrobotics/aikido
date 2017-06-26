@@ -183,7 +183,7 @@ std::unique_ptr<constraint::SampleGenerator>
 
   for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
-    if !(std::isfinite(mLowerLimits[i]) && std::isfinite(mUpperLimits[i]))
+    if (!(std::isfinite(mLowerLimits[i]) && std::isfinite(mUpperLimits[i])))
     {
       std::stringstream msg;
       msg << "Unable to sample from StateSpace because dimension "

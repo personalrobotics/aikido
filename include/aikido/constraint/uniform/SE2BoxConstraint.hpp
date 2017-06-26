@@ -65,7 +65,7 @@ private:
   /// and the last two elements encode the translational limits.
   Eigen::Vector3d mUpperLimits;
 
-  // DOF of joint that have limits, in this case translational DOF.
+  // DOFs of joint that have limits, in this case translational DOFs.
   // TODO: Confirm this with Gilwoo
   size_t mRnDimension;
   // DOF of the joint
