@@ -33,7 +33,7 @@ void RosJointStateClient::spin()
   std::lock_guard<std::mutex> skeletonLock{mSkeleton->getMutex()};
   std::lock_guard<std::mutex> bufferLock{mMutex};
 
-  mCallbackQueue.callAvailable();
+  mCallbackQueue.callAvailable(::ros::WallDuration(1.0));
 }
 
 //=============================================================================
