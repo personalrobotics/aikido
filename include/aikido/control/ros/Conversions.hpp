@@ -16,11 +16,18 @@ namespace ros {
 /// \param[in] space MetaSkeletonStateSpace for Spline trajectory.
 //              Subspaces must be either R1Joint or SO2Joint.
 /// \param[in] jointTrajectory ROS JointTrajectory to be converted.
+/// \param[in] startPositions If empty, jointTrajectory must specify all joints
+///             in the space. If non-empty, jointTrajectory only needs to
+///             specify a subset of the joints in the space. The remaining
+///             unspecified joint positions are filled with the corresponding
+///             positions in startPositions, which must have the same size as
+///             the space. Velocities and accelerations are filled with zero.
 /// \return Spline trajectory.
 std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
     const std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace>&
         space,
-    const trajectory_msgs::JointTrajectory& jointTrajectory);
+    const trajectory_msgs::JointTrajectory& jointTrajectory,
+    const Eigen::VectorXd& startPositions);
 
 /// Converts Aikido Trajectory to ROS JointTrajectory.
 /// Supports only 1D RnJoints and SO2Joints.
