@@ -40,11 +40,11 @@ public:
   virtual ~RosTrajectoryExecutor();
 
   /// Sends trajectory to ROS server for execution.
-  /// \param[in] traj Trajecotry to be executed.
+  /// \param[in] traj Trajectory to be executed.
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
   /// Sends trajectory to ROS server for execution.
-  /// \param[in] traj Trajectrory to be executed.
+  /// \param[in] traj Trajectory to be executed.
   /// \param[in] startTime Start time for the trajectory.
   std::future<void> execute(
       trajectory::TrajectoryPtr traj, const ::ros::Time& startTime);
