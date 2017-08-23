@@ -349,7 +349,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
 
   // Add unspecified joint mappings to rosJointToMetaSkeletonJoint
   std::vector<size_t> unspecifiedMetaSkeletonJoints;
-  if (startPositions.size() == numControlledJoints && numTrajectoryJoints < numControlledJoints)
+  if (static_cast<std::size_t>(startPositions.size()) == numControlledJoints && numTrajectoryJoints < numControlledJoints)
   {
     for (size_t metaSkeletonIndex = 0; metaSkeletonIndex < numControlledJoints; ++metaSkeletonIndex)
     {
@@ -376,7 +376,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
       &currAcceleration,
       false,
       rosJointToMetaSkeletonJoint,
-      unspecifiedJoints,
+      unspecifiedMetaSkeletonJoints,
       startPositions);
 
   const auto& firstWaypoint = jointTrajectory.points.front();
@@ -420,7 +420,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
         &nextAcceleration,
         isAccelerationRequired,
         rosJointToMetaSkeletonJoint,
-        unspecifiedJoints,
+        unspecifiedMetaSkeletonJoints,
         startPositions);
 
     // Compute spline coefficients for this polynomial segment.
