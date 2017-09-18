@@ -136,7 +136,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
   const auto n = _metaSkeleton->getNumSubspaces();
 
   // Create a new RNG for each subspace.
-  auto engines = splitEngine(*_rng, n, util::NUM_DEFAULT_SEEDS);
+  auto engines = cloneRNGsFrom(*_rng, n, util::NUM_DEFAULT_SEEDS);
 
   std::vector<std::shared_ptr<Sampleable>> constraints;
   constraints.reserve(n);
