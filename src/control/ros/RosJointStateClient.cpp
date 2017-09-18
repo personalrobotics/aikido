@@ -94,7 +94,7 @@ void RosJointStateClient::jointStateCallback(
         boost::circular_buffer<JointStateRecord>{mCapacity});
     auto& buffer = result.first->second;
 
-    if (_jointState.header.stamp < buffer.back().mStamp)
+    if (!buffer.empty() && _jointState.header.stamp < buffer.back().mStamp)
     {
       // Ignore out of order JointState message.
       ROS_WARN_STREAM(
