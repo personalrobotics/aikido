@@ -1,5 +1,5 @@
-#ifndef AIKIDO_DISTANCE_SE2DISTANCEMETRIC_HPP_
-#define AIKIDO_DISTANCE_SE2DISTANCEMETRIC_HPP_
+#ifndef AIKIDO_DISTANCE_SE2WEIGHTED_HPP_
+#define AIKIDO_DISTANCE_SE2WEIGHTED_HPP_
 
 #include "../statespace/SE2.hpp"
 #include "DistanceMetric.hpp"
@@ -11,38 +11,37 @@ namespace distance {
 class SE2Weighted : public DistanceMetric
 {
 public:
-
   /// Constructor.
-  /// \param _space The SE2 this distance metric operates on
+  /// \param space The SE2 this distance metric operates on
   /// The weights have been set to 1 as default
-  SE2Weighted(std::shared_ptr<statespace::SE2> _space);
+  SE2Weighted(std::shared_ptr<statespace::SE2> space);
 
   /// Constructor.
-  /// \param _space The SE2 this distance metric operates on
-  /// \param _weights The weights over angular and translational distances
+  /// \param space The SE2 this distance metric operates on
+  /// \param weights The weights over angular and translational distances
   /// It is a vector of 2 elements, the first element corresponds to the weight
   /// of angular distance and the second the weight for translational distance
   SE2Weighted(
-    std::shared_ptr<statespace::SE2> _space,
-    Eigen::Vector2d _weights);
+    std::shared_ptr<statespace::SE2> space,
+    Eigen::Vector2d weights);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
 
   /// Computes weighted distance between two SE2 states.
-
-  /// \param _state1 The first state (type: SE2::State)
-  /// \param _state2 The second state (type: SE2::State)
+  /// \param state1 The first state (type: SE2::State)
+  /// \param state2 The second state (type: SE2::State)
   double distance(
-      const statespace::StateSpace::State* _state1,
-      const statespace::StateSpace::State* _state2) const override;
+      const statespace::StateSpace::State* state1,
+      const statespace::StateSpace::State* state2) const override;
 
 private:
   std::shared_ptr<statespace::SE2> mStateSpace;
+
   Eigen::Vector2d mWeights;
 };
 
 } // namespace distance
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_DISTANCE_SE2WEIGHTED_HPP_

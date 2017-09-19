@@ -327,6 +327,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   }
 }
 
+//=============================================================================
 template <>
 struct createDifferentiableFor_impl<statespace::dart::SE2Joint>
 {

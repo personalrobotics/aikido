@@ -5,8 +5,8 @@ namespace aikido {
 namespace distance {
 
 //=============================================================================
-SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> _space)
-        : mStateSpace(std::move(_space))
+SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space)
+        : mStateSpace(std::move(space))
 {
   if (mStateSpace == nullptr)
   {
@@ -19,9 +19,9 @@ SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> _space)
 
 
 //=============================================================================
-SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> _space,
-         Eigen::Vector2d _weights)
-        : mStateSpace(std::move(_space)), mWeights(std::move(_weights))
+SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space,
+         Eigen::Vector2d weights)
+        : mStateSpace(std::move(space)), mWeights(std::move(weights))
 {
   if (mStateSpace == nullptr)
   {
@@ -48,22 +48,22 @@ statespace::StateSpacePtr SE2Weighted::getStateSpace() const
 
 //=============================================================================
 double SE2Weighted::distance(
-    const aikido::statespace::StateSpace::State* _state1,
-    const aikido::statespace::StateSpace::State* _state2) const
+    const aikido::statespace::StateSpace::State* state1,
+    const aikido::statespace::StateSpace::State* state2) const
 {
   Eigen::VectorXd tangent1;
   mStateSpace->logMap(
-      static_cast<const statespace::SE2::State*>(_state1), tangent1);
+      static_cast<const statespace::SE2::State*>(state1), tangent1);
 
   Eigen::VectorXd tangent2;
   mStateSpace->logMap(
-      static_cast<const statespace::SE2::State*>(_state2), tangent2);
+      static_cast<const statespace::SE2::State*>(state2), tangent2);
 
   Eigen::Vector2d linearDistance;
   double angularDistance;
 
   // Difference between angles
-  angularDistance = tangent1(0) - tangent2(0);
+  angularDistance = tangent1[0] - tangent2[0];
   angularDistance = std::fmod(std::abs(angularDistance), 2.0 * M_PI);
   if (angularDistance > M_PI)
     angularDistance -= 2.0 * M_PI;

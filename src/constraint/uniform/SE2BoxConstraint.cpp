@@ -87,19 +87,19 @@ bool SE2BoxConstraintSampleGenerator::canSample() const
 //=============================================================================
 SE2BoxConstraint
   ::SE2BoxConstraint(
-      std::shared_ptr<statespace::SE2> _space,
-      std::unique_ptr<util::RNG> _rng,
-      const Eigen::Vector2d& _lowerLimits,
-      const Eigen::Vector2d& _upperLimits)
-  : mSpace(std::move(_space))
-  , mRng(std::move(_rng))
+      std::shared_ptr<statespace::SE2> space,
+      std::unique_ptr<util::RNG> rng,
+      const Eigen::Vector2d& lowerLimits,
+      const Eigen::Vector2d& upperLimits)
+  : mSpace(std::move(space))
+  , mRng(std::move(rng))
   , mRnDimension(2)
   , mDimension(3)
 {
   mLowerLimits[0] = -M_PI;
   mUpperLimits[0] = M_PI;
-  mLowerLimits.tail<2>() = _lowerLimits;
-  mUpperLimits.tail<2>() = _upperLimits;
+  mLowerLimits.tail<2>() = lowerLimits;
+  mUpperLimits.tail<2>() = upperLimits;
 
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
@@ -140,10 +140,10 @@ statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
 }
 
 //=============================================================================
-bool SE2BoxConstraint::isSatisfied(const statespace::StateSpace::State* _state) const
+bool SE2BoxConstraint::isSatisfied(const statespace::StateSpace::State* state) const
 {
   Eigen::VectorXd tangent;
-  mSpace->logMap(static_cast<const statespace::SE2::State*>(_state), tangent);
+  mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);
 
   for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
@@ -155,11 +155,11 @@ bool SE2BoxConstraint::isSatisfied(const statespace::StateSpace::State* _state) 
 
 //=============================================================================
 bool SE2BoxConstraint::project(
-  const statespace::StateSpace::State* _s,
-  statespace::StateSpace::State* _out) const
+  const statespace::StateSpace::State* s,
+  statespace::StateSpace::State* out) const
 {
   Eigen::VectorXd tangent;
-  mSpace->logMap(static_cast<const statespace::SE2::State*>(_s), tangent);
+  mSpace->logMap(static_cast<const statespace::SE2::State*>(s), tangent);
 
   for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
@@ -169,7 +169,7 @@ bool SE2BoxConstraint::project(
       tangent[i] = mUpperLimits[i];
   }
 
-  mSpace->expMap(tangent, static_cast<statespace::SE2::State*>(_out));
+  mSpace->expMap(tangent, static_cast<statespace::SE2::State*>(out));
 
   return true;
 }
