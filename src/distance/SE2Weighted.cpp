@@ -55,13 +55,16 @@ double SE2Weighted::distance(
   double angularDistance;
 
   // Difference between angles
-  angularDistance = tangent1[0] - tangent2[0];
+  angularDistance = tangent2[0] - tangent1[0];
   angularDistance = std::fmod(std::abs(angularDistance), 2.0 * M_PI);
   if (angularDistance > M_PI)
+  {
     angularDistance -= 2.0 * M_PI;
+    angularDistance = -angularDistance;
+  }
 
   // Difference between R^2 positions
-  linearDistance = tangent1.tail<2>() - tangent2.tail<2>();
+  linearDistance = tangent2.tail<2>() - tangent1.tail<2>();
 
   return mWeights[0]*angularDistance + mWeights[1]*(linearDistance.norm());
 }
