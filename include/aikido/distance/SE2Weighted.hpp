@@ -12,23 +12,26 @@ class SE2Weighted : public DistanceMetric
 {
 public:
   /// Constructor.
+  ///
   /// \param space The SE2 this distance metric operates on
   /// The weights have been set to 1 as default
   SE2Weighted(std::shared_ptr<statespace::SE2> space);
 
   /// Constructor.
-  /// \param space The SE2 this distance metric operates on
-  /// \param weights The weights over angular and translational distances
+  ///
   /// It is a vector of 2 elements, the first element corresponds to the weight
   /// of angular distance and the second the weight for translational distance
+  /// \param space The SE2 this distance metric operates on
+  /// \param weights The weights over angular and translational distances
   SE2Weighted(
     std::shared_ptr<statespace::SE2> space,
-    Eigen::Vector2d weights);
+    const Eigen::Vector2d& weights);
 
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
 
   /// Computes weighted distance between two SE2 states.
+  ///
   /// \param state1 The first state (type: SE2::State)
   /// \param state2 The second state (type: SE2::State)
   double distance(

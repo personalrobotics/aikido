@@ -6,31 +6,23 @@ namespace distance {
 
 //=============================================================================
 SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space)
-        : mStateSpace(std::move(space))
+  : mStateSpace(std::move(space)), mWeights(Eigen::Vector2d::Ones())
 {
   if (mStateSpace == nullptr)
-  {
-    throw std::invalid_argument("_space is nullptr.");
-  }
-  
-  mWeights[0] = 1.0;
-  mWeights[1] = 1.0;
+    throw std::invalid_argument("space is nullptr.");
 }
 
-
 //=============================================================================
-SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space,
-         Eigen::Vector2d weights)
-        : mStateSpace(std::move(space)), mWeights(std::move(weights))
+SE2Weighted::SE2Weighted(
+    std::shared_ptr<statespace::SE2> space, const Eigen::Vector2d& weights)
+  : mStateSpace(std::move(space)), mWeights(weights)
 {
   if (mStateSpace == nullptr)
-  {
-    throw std::invalid_argument("_space is nullptr.");
-  }
+    throw std::invalid_argument("space is nullptr.");
 
-  for (size_t i = 0; i < 2; ++i)
+  for (int i = 0; i < mWeights.size(); ++i)
   {
-    if (mWeights[i] < 0)
+    if (mWeights[i] < 0.0)
     {
       std::stringstream msg;
       msg << "The weight at position " << i

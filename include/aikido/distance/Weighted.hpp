@@ -7,13 +7,16 @@
 namespace aikido {
 namespace distance {
 
-/// Implements a distance metric on a CartesianProduct. This metric computes
-/// the weighted
-/// sum of distances on the individual components of the statespace.
+/// Implements a distance metric on a CartesianProduct.
+///
+/// This metric computes the weighted sum of distances on the individual
+/// components of the statespace.
 class Weighted : public DistanceMetric
 {
 public:
-  /// Constructor. Default the weights applied to each subspace to 1.
+  /// Constructor.
+  ///
+  /// Default the weights applied to each subspace to 1.
   /// \param _space The state space
   /// \param _metrics A vector containing one element for every component of the
   /// CartesianProduct
@@ -22,11 +25,12 @@ public:
       std::vector<DistanceMetricPtr> _metrics);
 
   /// Constructor.
-  /// \param _space The state space
-  /// \param _metrics A vector containing one element for every component of the
+  ///
   /// CartesianProduct. The first element of every pair in the vector is the
   /// metric and the second is the weight to be applied to the metric. The
   /// weights must all be positive.
+  /// \param _space The state space
+  /// \param _metrics A vector containing one element for every component of the
   Weighted(
       std::shared_ptr<statespace::CartesianProduct> _space,
       std::vector<std::pair<DistanceMetricPtr, double>> _metrics);
@@ -34,8 +38,9 @@ public:
   // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override;
 
-  /// Computes distance between two states as the weighted sum
-  ///  of distances between their matching subcomponents.
+  /// Computes distance between two states as the weighted sum of distances
+  /// between their matching subcomponents.
+  ///
   /// \param _state1 The first state (type CartesianProduct::State)
   /// \param _state2 The second state (type CartesianProduct::State)
   double distance(
