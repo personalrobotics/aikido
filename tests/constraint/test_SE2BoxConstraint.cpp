@@ -24,7 +24,7 @@ protected:
   static constexpr size_t NUM_X_TARGETS { 10 };
   static constexpr size_t NUM_Y_TARGETS { 10 };
   static constexpr size_t NUM_SAMPLES { 1000 };
-  static constexpr double DISTANCE_THRESHOLD { 0.15 };
+  static constexpr double DISTANCE_THRESHOLD { 0.8 };
 
   void SetUp() override
   {
