@@ -1,4 +1,4 @@
-#include <aikido/distance/Weighted.hpp>
+#include <aikido/distance/CartesianProductWeighted.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
@@ -9,17 +9,17 @@
 using namespace aikido::distance;
 using namespace aikido::statespace;
 
-TEST(WeightedDistance, ThrowsOnNullStateSpace)
+TEST(CartesianProductWeightedDistance, ThrowsOnNullStateSpace)
 {
   auto space = nullptr;
   std::vector<DistanceMetricPtr> empty;
-  EXPECT_THROW(Weighted(space, empty), std::invalid_argument);
+  EXPECT_THROW(CartesianProductWeighted(space, empty), std::invalid_argument);
 
   std::vector<std::pair<DistanceMetricPtr, double>> empty2;
-  EXPECT_THROW(Weighted(space, empty2), std::invalid_argument);
+  EXPECT_THROW(CartesianProductWeighted(space, empty2), std::invalid_argument);
 }
 
-TEST(WeightedDistance, ThrowsOnNullMetric){
+TEST(CartesianProductWeightedDistance, ThrowsOnNullMetric){
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
@@ -31,17 +31,17 @@ TEST(WeightedDistance, ThrowsOnNullMetric){
       std::make_shared<SO2Angular>(so2),
       std::make_shared<R3Euclidean>(rv3), nullptr};
 
-  EXPECT_THROW(Weighted(space, dmetrics), std::invalid_argument);
+  EXPECT_THROW(CartesianProductWeighted(space, dmetrics), std::invalid_argument);
 
   std::vector<std::pair<DistanceMetricPtr, double>> dmetrics2 = {
       std::make_pair(std::make_shared<SO2Angular>(so2), 1),
       std::make_pair(std::make_shared<R3Euclidean>(rv3), 1),
       std::make_pair(nullptr, 1)};
-  EXPECT_THROW(Weighted(space, dmetrics2),
+  EXPECT_THROW(CartesianProductWeighted(space, dmetrics2),
                 std::invalid_argument);
 }
 
-TEST(WeightedDistance, ThrowsOnMissingMetric)
+TEST(CartesianProductWeightedDistance, ThrowsOnMissingMetric)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
@@ -55,16 +55,16 @@ TEST(WeightedDistance, ThrowsOnMissingMetric)
               std::make_shared<R3Euclidean>(rv3)
   };
 
-  EXPECT_THROW(Weighted(space, dmetrics), std::invalid_argument);
+  EXPECT_THROW(CartesianProductWeighted(space, dmetrics), std::invalid_argument);
 
   std::vector<std::pair<DistanceMetricPtr,double>> dmetrics2 = {
       std::make_pair(std::make_shared<SO2Angular>(so2), 1),
       std::make_pair(std::make_shared<R3Euclidean>(rv3), 1)
   };
-  EXPECT_THROW(Weighted(space, dmetrics2), std::invalid_argument);
+  EXPECT_THROW(CartesianProductWeighted(space, dmetrics2), std::invalid_argument);
 }
 
-TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
+TEST(CartesianProductWeightedDistance, ThrowsOnMismatchMetricStatespace)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
@@ -73,14 +73,14 @@ TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
-  EXPECT_THROW(Weighted(
+  EXPECT_THROW(CartesianProductWeighted(
                     space, {std::make_shared<R3Euclidean>(rv3),
                             std::make_shared<SO2Angular>(so2),
                             std::make_shared<SO3Angular>(so3)}),
                 std::invalid_argument);
 
   EXPECT_THROW(
-      Weighted(
+      CartesianProductWeighted(
           space,
           {std::make_pair(std::make_shared<R3Euclidean>(rv3), 2),
            std::make_pair(std::make_shared<SO2Angular>(so2), 1),
@@ -88,7 +88,7 @@ TEST(WeightedDistance, ThrowsOnMismatchMetricStatespace)
       std::invalid_argument);
 }
 
-TEST(WeightedDistance, ThrowsOnNegativeWeights)
+TEST(CartesianProductWeightedDistance, ThrowsOnNegativeWeights)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
@@ -97,7 +97,7 @@ TEST(WeightedDistance, ThrowsOnNegativeWeights)
 
   auto space = std::make_shared<CartesianProduct>(spaces);
   EXPECT_THROW(
-      Weighted(
+      CartesianProductWeighted(
           space,
           {std::make_pair(std::make_shared<SO2Angular>(so2), -1),
            std::make_pair(std::make_shared<R3Euclidean>(rv3), 2),
@@ -105,7 +105,7 @@ TEST(WeightedDistance, ThrowsOnNegativeWeights)
       std::invalid_argument);
 }
 
-TEST(WeightedDistance, StateSpaceEquality)
+TEST(CartesianProductWeightedDistance, StateSpaceEquality)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
@@ -114,20 +114,20 @@ TEST(WeightedDistance, StateSpaceEquality)
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
-  Weighted dmetric(
+  CartesianProductWeighted dmetric(
       space, {std::make_shared<SO2Angular>(so2),
               std::make_shared<R3Euclidean>(rv3),
               std::make_shared<SO3Angular>(so3)});
   EXPECT_EQ(space, dmetric.getStateSpace());
 
-  Weighted dmetric2(
+  CartesianProductWeighted dmetric2(
       space, {std::make_pair(std::make_shared<SO2Angular>(so2), 1),
               std::make_pair(std::make_shared<R3Euclidean>(rv3), 2),
               std::make_pair(std::make_shared<SO3Angular>(so3), 3)});
   EXPECT_EQ(space, dmetric2.getStateSpace());
 }
 
-TEST(WeightedDistance, DistanceUnitWeights)
+TEST(CartesianProductWeightedDistance, DistanceUnitWeights)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
@@ -136,7 +136,7 @@ TEST(WeightedDistance, DistanceUnitWeights)
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
-  Weighted dmetric(
+  CartesianProductWeighted dmetric(
       space, {std::make_shared<SO2Angular>(so2),
               std::make_shared<R3Euclidean>(rv3),
               std::make_shared<SO3Angular>(so3)});
@@ -165,7 +165,7 @@ TEST(WeightedDistance, DistanceUnitWeights)
   EXPECT_DOUBLE_EQ(0.5 + 0.5 + vdiff.norm(), dmetric.distance(state1, state2));
 }
 
-TEST(WeightedDistance, DistanceCustomWeights)
+TEST(CartesianProductWeightedDistance, DistanceCustomWeights)
 {
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
@@ -174,7 +174,7 @@ TEST(WeightedDistance, DistanceCustomWeights)
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
-  Weighted dmetric(
+  CartesianProductWeighted dmetric(
       space, {std::make_pair(std::make_shared<SO2Angular>(so2), 2),
               std::make_pair(std::make_shared<R3Euclidean>(rv3), 3),
               std::make_pair(std::make_shared<SO3Angular>(so3), 4)});

@@ -1,5 +1,5 @@
 #include <aikido/distance/defaults.hpp>
-#include <aikido/distance/Weighted.hpp>
+#include <aikido/distance/CartesianProductWeighted.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
@@ -47,7 +47,7 @@ TEST(Defaults, CreateDistanceMetricFor)
   std::vector<StateSpacePtr> spaces({so2, rv3, so3});
   auto space = std::make_shared<CartesianProduct>(spaces);
   auto dmetric = createDistanceMetricFor<CartesianProduct>(space);
-  auto cmetric = dynamic_cast<Weighted*>(dmetric.get());
+  auto cmetric = dynamic_cast<CartesianProductWeighted*>(dmetric.get());
   EXPECT_TRUE(cmetric != nullptr);
 }
 
@@ -71,6 +71,6 @@ TEST(Defaults, CreateDistanceMetric)
   std::vector<StateSpacePtr> spaces({so2, rv3, so3});
   auto space = std::make_shared<CartesianProduct>(spaces);
   auto dmetric = createDistanceMetric(space);
-  auto cmetric = dynamic_cast<Weighted*>(dmetric.get());
+  auto cmetric = dynamic_cast<CartesianProductWeighted*>(dmetric.get());
   EXPECT_TRUE(cmetric != nullptr);
 }
