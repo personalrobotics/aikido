@@ -10,7 +10,9 @@
 #include "../SE2Weighted.hpp"
 #include "../SO2Angular.hpp"
 #include "../SO3Angular.hpp"
-#include "../Weighted.hpp"
+#include "../CartesianProductWeighted.hpp"
+// #include "../Weighted.hpp"
+
 
 namespace aikido {
 namespace distance {
@@ -116,7 +118,7 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
       metrics.emplace_back(std::move(metric));
     }
 
-    return make_unique<Weighted>(std::move(_sspace), std::move(metrics));
+    return make_unique<CartesianProductWeighted>(std::move(_sspace), std::move(metrics));
   }
 };
 
