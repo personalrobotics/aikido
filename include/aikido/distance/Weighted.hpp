@@ -5,4 +5,6 @@
 
 #warning Weighted is deprecated. Please use CartesianProductWeighted instead by including "CartesianProductWeighted".
 
+using Weighted = aikido::distance::CartesianProductWeighted;
+
 #endif
