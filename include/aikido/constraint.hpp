@@ -20,5 +20,6 @@
 #include "constraint/Testable.hpp"
 #include "constraint/TestableIntersection.hpp"
 #include "constraint/uniform/RnBoxConstraint.hpp"
+#include "constraint/uniform/SE2BoxConstraint.hpp"
 #include "constraint/uniform/SO2UniformSampler.hpp"
 #include "constraint/uniform/SO3UniformSampler.hpp"

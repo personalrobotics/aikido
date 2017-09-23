@@ -75,7 +75,7 @@ TEST(SE3, ExpMap)
 
   SE3 se3;
   Vector6d twist(Vector6d::Zero());
-  twist.bottomRows(3) = Eigen::Vector3d(1, 2, 3);
+  twist.tail<3>() = Eigen::Vector3d(1, 2, 3);
 
   se3.expMap(twist, &out);
 

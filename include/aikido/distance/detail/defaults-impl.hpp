@@ -1,13 +1,18 @@
 #include <dart/common/StlHelpers.hpp>
+
 #include "../../statespace/CartesianProduct.hpp"
 #include "../../statespace/Rn.hpp"
+#include "../../statespace/SE2.hpp"
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
 #include "../../util/metaprogramming.hpp"
 #include "../RnEuclidean.hpp"
+#include "../SE2Weighted.hpp"
 #include "../SO2Angular.hpp"
 #include "../SO3Angular.hpp"
-#include "../Weighted.hpp"
+#include "../CartesianProductWeighted.hpp"
+// #include "../Weighted.hpp"
+
 
 namespace aikido {
 namespace distance {
@@ -20,6 +25,7 @@ using Ptr = std::unique_ptr<DistanceMetric>;
 template <class Space>
 struct createDistanceMetricFor_impl
 {
+  // Nothing defined
 };
 
 //=============================================================================
@@ -112,7 +118,17 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
       metrics.emplace_back(std::move(metric));
     }
 
-    return make_unique<Weighted>(std::move(_sspace), std::move(metrics));
+    return make_unique<CartesianProductWeighted>(std::move(_sspace), std::move(metrics));
+  }
+};
+
+//=============================================================================
+template <>
+struct createDistanceMetricFor_impl<statespace::SE2>
+{
+  static Ptr create(std::shared_ptr<statespace::SE2> _sspace)
+  {
+    return make_unique<SE2Weighted>(std::move(_sspace));
   }
 };
 
@@ -124,7 +140,8 @@ using SupportedStateSpaces = util::type_list<statespace::CartesianProduct,
                                              statespace::R3,
                                              statespace::R6,
                                              statespace::SO2,
-                                             statespace::SO3>;
+                                             statespace::SO3,
+                                             statespace::SE2>;
 
 } // namespace detail
 

@@ -12,15 +12,16 @@
 
 using aikido::constraint::FramePairDifferentiable;
 using aikido::constraint::TSR;
-using dart::dynamics::BodyNodePtr;
-using dart::dynamics::SkeletonPtr;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using dart::dynamics::Skeleton;
-using aikido::statespace::SE3;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::SO2;
+using aikido::statespace::SE3;
 using aikido::util::RNG;
 using aikido::util::RNGWrapper;
+
+using dart::dynamics::BodyNodePtr;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 using dart::dynamics::FreeJoint;
 using dart::dynamics::BodyNode;
 
