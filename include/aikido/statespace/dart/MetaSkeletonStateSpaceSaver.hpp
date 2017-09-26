@@ -7,7 +7,7 @@ namespace statespace {
 namespace dart {
 
 /// RAII class to save and restore a MetaSkeletonStateSpace's state.
-/// FIXME: currently only saves position.
+/// FIXME: currently only saves position and joint limits.
 class MetaSkeletonStateSpaceSaver
 {
 public:
@@ -32,6 +32,8 @@ public:
 private:
   MetaSkeletonStateSpacePtr mSpace;
   Eigen::VectorXd mPositions;
+  Eigen::VectorXd mPositionLowerLimits;
+  Eigen::VectorXd mPositionUpperLimits;
 };
 
 } // namespace dart
