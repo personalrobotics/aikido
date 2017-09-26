@@ -16,7 +16,7 @@ MetaSkeletonStateSpaceSaver::~MetaSkeletonStateSpaceSaver()
   if (mPositions.size() != mSpace->getMetaSkeleton()->getNumDofs())
   {
     std::cerr << "[MetaSkeletonStateSpaceSaver] The number of DOFs in the "
-              << "MetaSkeleton does not match the saved state.";
+              << "MetaSkeleton does not match the saved position.";
   }
   if (mPositionLowerLimits.size() != mSpace->getMetaSkeleton()->getNumDofs())
   {
