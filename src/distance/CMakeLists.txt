@@ -2,7 +2,8 @@ set(sources
   SO2Angular.cpp
   RnEuclidean.cpp
   SO3Angular.cpp
-  Weighted.cpp
+  SE2Weighted.cpp
+  CartesianProductWeighted.cpp
   defaults.cpp
 )
 

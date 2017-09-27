@@ -8,6 +8,7 @@
 #include "../../statespace/dart/WeldJoint.hpp"
 #include "../../util/metaprogramming.hpp"
 #include "../uniform/RnBoxConstraint.hpp"
+#include "../uniform/SE2BoxConstraint.hpp"
 #include "../uniform/SO2UniformSampler.hpp"
 #include "../uniform/SO3UniformSampler.hpp"
 #include "../uniform/RnConstantSampler.hpp"
@@ -90,12 +91,16 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   const auto joint = _stateSpace->getJoint();
 
   if (isLimited(joint))
+  {
     return dart::common::make_unique<RBoxConstraint<N>>(
       std::move(_stateSpace), std::move(_rng),
       getPositionLowerLimits(joint), getPositionUpperLimits(joint));
+  }
   else
+  {
     return dart::common::make_unique<Satisfied>(
       std::move(_stateSpace));
+  }
 }
 
 //=============================================================================
@@ -301,6 +306,28 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
 };
 
 //=============================================================================
+template <class OutputConstraint>
+std::unique_ptr<OutputConstraint> createBoxConstraint(
+  std::shared_ptr<statespace::dart::SE2Joint> _stateSpace,
+  std::unique_ptr<util::RNG> _rng)
+{
+  const auto joint = _stateSpace->getJoint();
+
+  if (isLimited(joint))
+  {
+    return dart::common::make_unique<SE2BoxConstraint>(
+      std::move(_stateSpace), std::move(_rng),
+      getPositionLowerLimits(joint).tail<2>(),
+      getPositionUpperLimits(joint).tail<2>());
+  }
+  else
+  {
+    return dart::common::make_unique<Satisfied>(
+      std::move(_stateSpace));
+  }
+}
+
+//=============================================================================
 template <>
 struct createDifferentiableFor_impl<statespace::dart::SE2Joint>
 {
@@ -321,10 +348,17 @@ struct createTestableFor_impl<statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Testable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
-    throw std::runtime_error(
-      "No Testable is available for SE2Joint.");
+    auto joint = _stateSpace->getJoint();
+    if (joint->hasPositionLimit(0))
+    {
+      throw std::invalid_argument(
+        "Rotational component of SE2Joint must not have limits.");
+    }
+
+    return createBoxConstraint<Testable>(
+      std::move(_stateSpace), nullptr);
   }
 };
 
@@ -335,10 +369,17 @@ struct createProjectableFor_impl<statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-  static std::unique_ptr<Projectable> create(StateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
-    throw std::runtime_error(
-      "No Projectable is available for SE2Joint.");
+    auto joint = _stateSpace->getJoint();
+    if (joint->hasPositionLimit(0))
+    {
+      throw std::invalid_argument(
+        "Rotational component of SE2Joint must not have limits.");
+    }
+
+    return createBoxConstraint<Projectable>(
+      std::move(_stateSpace), nullptr);
   }
 };
 
@@ -350,10 +391,26 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-    StateSpacePtr /*_stateSpace*/, std::unique_ptr<util::RNG> /*_rng*/)
+    StateSpacePtr stateSpace, std::unique_ptr<util::RNG> rng)
   {
-    throw std::runtime_error(
-      "No Sampleable is available for SE2Joint.");
+    auto joint = stateSpace->getJoint();
+    if (joint->hasPositionLimit(0))
+    {
+      throw std::invalid_argument(
+        "Rotational component of SE2Joint must not have limits.");
+    }
+    else if (!(joint->hasPositionLimit(1) && joint->hasPositionLimit(2)))
+    {
+      throw std::runtime_error(
+        "Unable to create Sampleable for unbounded SE2.");
+    }
+    else
+    {
+      return dart::common::make_unique<SE2BoxConstraint>(
+        std::move(stateSpace), std::move(rng),
+        getPositionLowerLimits(joint).tail<2>(),
+        getPositionUpperLimits(joint).tail<2>());
+    }
   }
 };
 

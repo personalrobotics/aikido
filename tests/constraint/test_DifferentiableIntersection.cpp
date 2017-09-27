@@ -63,7 +63,6 @@ TEST(DifferentiableIntersection, getValue)
   EXPECT_TRUE(out.isApprox(expected));
 }
 
-
 TEST(DifferentiableIntersection, getJacobian)
 {
   std::vector<DifferentiablePtr> constraints;
@@ -172,5 +171,3 @@ TEST(DifferentiableIntersection, GetStateSpace)
 
   EXPECT_EQ(space, rvss);
 }
-
-
