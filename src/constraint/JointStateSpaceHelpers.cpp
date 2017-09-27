@@ -13,7 +13,7 @@ namespace constraint {
 
 using dart::common::make_unique;
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
     std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
@@ -24,7 +24,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
       create(std::move(_stateSpace));
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
@@ -52,7 +52,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   return make_unique<DifferentiableIntersection>(constraints, _metaSkeleton);
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Projectable> createProjectableBounds(
     std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
@@ -63,7 +63,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
       create(std::move(_stateSpace));
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Projectable> createProjectableBounds(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
@@ -84,7 +84,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Testable> createTestableBounds(
     std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
 {
@@ -95,7 +95,7 @@ std::unique_ptr<Testable> createTestableBounds(
       create(std::move(_stateSpace));
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Testable> createTestableBounds(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
 {
@@ -116,7 +116,7 @@ std::unique_ptr<Testable> createTestableBounds(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Sampleable> createSampleableBounds(
     std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
     std::unique_ptr<util::RNG> _rng)
@@ -128,7 +128,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
       create(std::move(_stateSpace), std::move(_rng));
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<Sampleable> createSampleableBounds(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
     std::unique_ptr<util::RNG> _rng)

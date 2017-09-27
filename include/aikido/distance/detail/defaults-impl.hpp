@@ -6,11 +6,11 @@
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
 #include "../../util/metaprogramming.hpp"
+#include "../CartesianProductWeighted.hpp"
 #include "../RnEuclidean.hpp"
-#include "../SE2.hpp"
+#include "../SE2Weighted.hpp"
 #include "../SO2Angular.hpp"
 #include "../SO3Angular.hpp"
-#include "../Weighted.hpp"
 
 namespace aikido {
 namespace distance {
@@ -19,14 +19,14 @@ namespace detail {
 using dart::common::make_unique;
 using Ptr = std::unique_ptr<DistanceMetric>;
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 struct createDistanceMetricFor_impl
 {
   // Nothing defined
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::R0>
 {
@@ -36,7 +36,7 @@ struct createDistanceMetricFor_impl<statespace::R0>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::R1>
 {
@@ -46,7 +46,7 @@ struct createDistanceMetricFor_impl<statespace::R1>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::R2>
 {
@@ -56,7 +56,7 @@ struct createDistanceMetricFor_impl<statespace::R2>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::R3>
 {
@@ -66,7 +66,7 @@ struct createDistanceMetricFor_impl<statespace::R3>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::R6>
 {
@@ -76,7 +76,7 @@ struct createDistanceMetricFor_impl<statespace::R6>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::SO2>
 {
@@ -86,7 +86,7 @@ struct createDistanceMetricFor_impl<statespace::SO2>
   }
 };
 
-//=============================================================================
+//===============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::SO3>
 {
@@ -96,7 +96,7 @@ struct createDistanceMetricFor_impl<statespace::SO3>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::CartesianProduct>
 {
@@ -116,21 +116,22 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
       metrics.emplace_back(std::move(metric));
     }
 
-    return make_unique<Weighted>(std::move(_sspace), std::move(metrics));
+    return make_unique<CartesianProductWeighted>(
+        std::move(_sspace), std::move(metrics));
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::SE2>
 {
   static Ptr create(std::shared_ptr<statespace::SE2> _sspace)
   {
-    return make_unique<SE2>(std::move(_sspace));
+    return make_unique<SE2Weighted>(std::move(_sspace));
   }
 };
 
-//=============================================================================
+//==============================================================================
 using SupportedStateSpaces = util::type_list<statespace::CartesianProduct,
                                              statespace::R0,
                                              statespace::R1,
@@ -143,7 +144,7 @@ using SupportedStateSpaces = util::type_list<statespace::CartesianProduct,
 
 } // namespace detail
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::unique_ptr<DistanceMetric> createDistanceMetricFor(
     std::shared_ptr<Space> _sspace)

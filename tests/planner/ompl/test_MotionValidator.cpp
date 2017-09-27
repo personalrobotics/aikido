@@ -29,7 +29,7 @@ public:
         std::make_shared<MockTranslationalRobotConstraint>(
             stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
             Eigen::Vector3d(0.1, 0.1, 0.1));
-    auto vchecker =
+    ::ompl::base::StateValidityCheckerPtr vchecker =
         ompl_make_shared<aikido::planner::ompl::StateValidityChecker>(
             si, mockCollisionConstraint);
     si->setStateValidityChecker(vchecker);

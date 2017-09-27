@@ -18,7 +18,7 @@ namespace aikido {
 namespace constraint {
 namespace detail {
 
-//=============================================================================
+//==============================================================================
 inline bool isLimited(const dart::dynamics::Joint* _joint)
 {
   for (size_t i = 0; i < _joint->getNumDofs(); ++i)
@@ -29,7 +29,7 @@ inline bool isLimited(const dart::dynamics::Joint* _joint)
   return false;
 }
 
-//=============================================================================
+//==============================================================================
 inline Eigen::VectorXd getPositionLowerLimits(
     const dart::dynamics::Joint* _joint)
 {
@@ -42,7 +42,7 @@ inline Eigen::VectorXd getPositionLowerLimits(
   return bounds;
 }
 
-//=============================================================================
+//==============================================================================
 inline Eigen::VectorXd getPositionUpperLimits(
     const dart::dynamics::Joint* _joint)
 {
@@ -55,7 +55,7 @@ inline Eigen::VectorXd getPositionUpperLimits(
   return bounds;
 }
 
-//=============================================================================
+//==============================================================================
 using JointStateSpaceTypeList = util::type_list<statespace::dart::R0Joint,
                                                 statespace::dart::R1Joint,
                                                 statespace::dart::R2Joint,
@@ -67,7 +67,7 @@ using JointStateSpaceTypeList = util::type_list<statespace::dart::R0Joint,
                                                 statespace::dart::SE3Joint,
                                                 statespace::dart::WeldJoint>;
 
-//=============================================================================
+//==============================================================================
 template <class T>
 struct createDifferentiableFor_impl
 {
@@ -92,7 +92,7 @@ struct createSampleableFor_impl
   // Nothing defined.
 };
 
-//=============================================================================
+//==============================================================================
 template <int N, class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<statespace::dart::RJoint<N>> _stateSpace,
@@ -114,7 +114,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   }
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 struct createDifferentiableFor_impl<statespace::dart::RJoint<N>>
 {
@@ -128,7 +128,7 @@ struct createDifferentiableFor_impl<statespace::dart::RJoint<N>>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <int N>
 struct createTestableFor_impl<statespace::dart::RJoint<N>>
 {
@@ -141,7 +141,7 @@ struct createTestableFor_impl<statespace::dart::RJoint<N>>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <int N>
 struct createProjectableFor_impl<statespace::dart::RJoint<N>>
 {
@@ -154,7 +154,7 @@ struct createProjectableFor_impl<statespace::dart::RJoint<N>>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <int N>
 struct createSampleableFor_impl<statespace::dart::RJoint<N>>
 {
@@ -181,7 +181,7 @@ struct createSampleableFor_impl<statespace::dart::RJoint<N>>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDifferentiableFor_impl<statespace::dart::SO2Joint>
 {
@@ -197,7 +197,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO2Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createTestableFor_impl<statespace::dart::SO2Joint>
 {
@@ -213,7 +213,7 @@ struct createTestableFor_impl<statespace::dart::SO2Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createProjectableFor_impl<statespace::dart::SO2Joint>
 {
@@ -229,7 +229,7 @@ struct createProjectableFor_impl<statespace::dart::SO2Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createSampleableFor_impl<statespace::dart::SO2Joint>
 {
@@ -247,7 +247,7 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDifferentiableFor_impl<statespace::dart::SO3Joint>
 {
@@ -263,7 +263,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createTestableFor_impl<statespace::dart::SO3Joint>
 {
@@ -279,7 +279,7 @@ struct createTestableFor_impl<statespace::dart::SO3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createProjectableFor_impl<statespace::dart::SO3Joint>
 {
@@ -295,7 +295,7 @@ struct createProjectableFor_impl<statespace::dart::SO3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createSampleableFor_impl<statespace::dart::SO3Joint>
 {
@@ -313,7 +313,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<statespace::dart::SE2Joint> _stateSpace,
@@ -326,8 +326,8 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
     return dart::common::make_unique<SE2BoxConstraint>(
         std::move(_stateSpace),
         std::move(_rng),
-        getPositionLowerLimits(joint).head<2>(),
-        getPositionUpperLimits(joint).head<2>());
+        getPositionLowerLimits(joint).tail<2>(),
+        getPositionUpperLimits(joint).tail<2>());
   }
   else
   {
@@ -335,6 +335,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   }
 }
 
+//==============================================================================
 template <>
 struct createDifferentiableFor_impl<statespace::dart::SE2Joint>
 {
@@ -348,7 +349,7 @@ struct createDifferentiableFor_impl<statespace::dart::SE2Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createTestableFor_impl<statespace::dart::SE2Joint>
 {
@@ -358,7 +359,7 @@ struct createTestableFor_impl<statespace::dart::SE2Joint>
   static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
     auto joint = _stateSpace->getJoint();
-    if (joint->hasPositionLimit(2))
+    if (joint->hasPositionLimit(0))
     {
       throw std::invalid_argument(
           "Rotational component of SE2Joint must not have limits.");
@@ -368,7 +369,7 @@ struct createTestableFor_impl<statespace::dart::SE2Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createProjectableFor_impl<statespace::dart::SE2Joint>
 {
@@ -378,7 +379,7 @@ struct createProjectableFor_impl<statespace::dart::SE2Joint>
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
     auto joint = _stateSpace->getJoint();
-    if (joint->hasPositionLimit(2))
+    if (joint->hasPositionLimit(0))
     {
       throw std::invalid_argument(
           "Rotational component of SE2Joint must not have limits.");
@@ -388,7 +389,7 @@ struct createProjectableFor_impl<statespace::dart::SE2Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createSampleableFor_impl<statespace::dart::SE2Joint>
 {
@@ -399,12 +400,12 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
       StateSpacePtr stateSpace, std::unique_ptr<util::RNG> rng)
   {
     auto joint = stateSpace->getJoint();
-    if (joint->hasPositionLimit(2))
+    if (joint->hasPositionLimit(0))
     {
       throw std::invalid_argument(
           "Rotational component of SE2Joint must not have limits.");
     }
-    else if (!joint->hasPositionLimit(1) && !joint->hasPositionLimit(2))
+    else if (!(joint->hasPositionLimit(1) && joint->hasPositionLimit(2)))
     {
       throw std::runtime_error(
           "Unable to create Sampleable for unbounded SE2.");
@@ -414,13 +415,13 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
       return dart::common::make_unique<SE2BoxConstraint>(
           std::move(stateSpace),
           std::move(rng),
-          getPositionLowerLimits(joint).head<2>(),
-          getPositionUpperLimits(joint).head<2>());
+          getPositionLowerLimits(joint).tail<2>(),
+          getPositionUpperLimits(joint).tail<2>());
     }
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDifferentiableFor_impl<statespace::dart::SE3Joint>
 {
@@ -434,7 +435,7 @@ struct createDifferentiableFor_impl<statespace::dart::SE3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createTestableFor_impl<statespace::dart::SE3Joint>
 {
@@ -447,7 +448,7 @@ struct createTestableFor_impl<statespace::dart::SE3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createProjectableFor_impl<statespace::dart::SE3Joint>
 {
@@ -460,7 +461,7 @@ struct createProjectableFor_impl<statespace::dart::SE3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createSampleableFor_impl<statespace::dart::SE3Joint>
 {
@@ -474,7 +475,7 @@ struct createSampleableFor_impl<statespace::dart::SE3Joint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<statespace::dart::WeldJoint> _stateSpace,
@@ -483,7 +484,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
 }
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createDifferentiableFor_impl<statespace::dart::WeldJoint>
 {
@@ -496,7 +497,7 @@ struct createDifferentiableFor_impl<statespace::dart::WeldJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createTestableFor_impl<statespace::dart::WeldJoint>
 {
@@ -509,7 +510,7 @@ struct createTestableFor_impl<statespace::dart::WeldJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createProjectableFor_impl<statespace::dart::WeldJoint>
 {
@@ -522,7 +523,7 @@ struct createProjectableFor_impl<statespace::dart::WeldJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createSampleableFor_impl<statespace::dart::WeldJoint>
 {
@@ -542,7 +543,7 @@ struct createSampleableFor_impl<statespace::dart::WeldJoint>
 
 } // namespace detail
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::unique_ptr<Differentiable> createDifferentiableBoundsFor(
     std::shared_ptr<Space> _stateSpace)
@@ -551,7 +552,7 @@ std::unique_ptr<Differentiable> createDifferentiableBoundsFor(
       std::move(_stateSpace));
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::unique_ptr<Projectable> createProjectableBoundsFor(
     std::shared_ptr<Space> _stateSpace)
@@ -560,7 +561,7 @@ std::unique_ptr<Projectable> createProjectableBoundsFor(
       std::move(_stateSpace));
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::unique_ptr<Testable> createTestableBoundsFor(
     std::shared_ptr<Space> _stateSpace)
@@ -568,7 +569,7 @@ std::unique_ptr<Testable> createTestableBoundsFor(
   return detail::createTestableFor_impl<Space>::create(std::move(_stateSpace));
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::unique_ptr<Sampleable> createSampleableBoundsFor(
     std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng)

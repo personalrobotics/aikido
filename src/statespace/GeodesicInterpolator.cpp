@@ -3,7 +3,7 @@
 namespace aikido {
 namespace statespace {
 
-//=============================================================================
+//==============================================================================
 GeodesicInterpolator::GeodesicInterpolator(
     statespace::StateSpacePtr _stateSpace)
   : mStateSpace(std::move(_stateSpace))
@@ -12,19 +12,19 @@ GeodesicInterpolator::GeodesicInterpolator(
     throw std::invalid_argument("StateSpace is null.");
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr GeodesicInterpolator::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 size_t GeodesicInterpolator::getNumDerivatives() const
 {
   return 1;
 }
 
-//=============================================================================
+//==============================================================================
 Eigen::VectorXd GeodesicInterpolator::getTangentVector(
     const statespace::StateSpace::State* _from,
     const statespace::StateSpace::State* _to) const
@@ -41,7 +41,7 @@ Eigen::VectorXd GeodesicInterpolator::getTangentVector(
   return tangentVector;
 }
 
-//=============================================================================
+//==============================================================================
 void GeodesicInterpolator::interpolate(
     const statespace::StateSpace::State* _from,
     const statespace::StateSpace::State* _to,
@@ -56,7 +56,7 @@ void GeodesicInterpolator::interpolate(
   mStateSpace->compose(_from, relativeState, _out);
 }
 
-//=============================================================================
+//==============================================================================
 void GeodesicInterpolator::getDerivative(
     const statespace::StateSpace::State* _from,
     const statespace::StateSpace::State* _to,

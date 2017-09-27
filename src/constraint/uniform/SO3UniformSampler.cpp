@@ -4,7 +4,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 class SO3UniformSampleGenerator : public constraint::SampleGenerator
 {
 public:
@@ -31,7 +31,7 @@ private:
   friend class SO3UniformSampler;
 };
 
-//=============================================================================
+//==============================================================================
 SO3UniformSampleGenerator::SO3UniformSampleGenerator(
     std::shared_ptr<statespace::SO3> _space, std::unique_ptr<util::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(0., 1.)
@@ -39,13 +39,13 @@ SO3UniformSampleGenerator::SO3UniformSampleGenerator(
   // Do nothing
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr SO3UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool SO3UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   mSpace->setQuaternion(
@@ -56,19 +56,19 @@ bool SO3UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int SO3UniformSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-//=============================================================================
+//==============================================================================
 bool SO3UniformSampleGenerator::canSample() const
 {
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 SO3UniformSampler::SO3UniformSampler(
     std::shared_ptr<statespace::SO3> _space, std::unique_ptr<util::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
@@ -80,13 +80,13 @@ SO3UniformSampler::SO3UniformSampler(
     throw std::invalid_argument("RNG is null.");
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr SO3UniformSampler::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<constraint::SampleGenerator>
 SO3UniformSampler::createSampleGenerator() const
 {

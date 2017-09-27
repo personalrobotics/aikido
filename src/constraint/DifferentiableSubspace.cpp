@@ -4,7 +4,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 DifferentiableSubspace::DifferentiableSubspace(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     DifferentiablePtr _constraint,
@@ -34,25 +34,25 @@ DifferentiableSubspace::DifferentiableSubspace(
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr DifferentiableSubspace::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<ConstraintType> DifferentiableSubspace::getConstraintTypes() const
 {
   return mConstraint->getConstraintTypes();
 }
 
-//=============================================================================
+//==============================================================================
 size_t DifferentiableSubspace::getConstraintDimension() const
 {
   return mConstraint->getConstraintDimension();
 }
 
-//=============================================================================
+//==============================================================================
 void DifferentiableSubspace::getValue(
     const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
@@ -61,7 +61,7 @@ void DifferentiableSubspace::getValue(
   mConstraint->getValue(substate, _out);
 }
 
-//=============================================================================
+//==============================================================================
 void DifferentiableSubspace::getJacobian(
     const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
@@ -70,7 +70,7 @@ void DifferentiableSubspace::getJacobian(
   return mConstraint->getJacobian(substate, _out);
 }
 
-//=============================================================================
+//==============================================================================
 void DifferentiableSubspace::getValueAndJacobian(
     const statespace::StateSpace::State* _s,
     Eigen::VectorXd& _val,

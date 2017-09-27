@@ -3,7 +3,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 FrameTestable::FrameTestable(
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     dart::dynamics::ConstJacobianNodePtr _frame,
@@ -32,7 +32,7 @@ FrameTestable::FrameTestable(
   // one DegreeOfFreedom in the _stateSpace's Skeleton.
 }
 
-//=============================================================================
+//==============================================================================
 bool FrameTestable::isSatisfied(
     const statespace::StateSpace::State* _state) const
 {
@@ -49,7 +49,7 @@ bool FrameTestable::isSatisfied(
   return mPoseConstraint->isSatisfied(st);
 }
 
-//=============================================================================
+//==============================================================================
 std::shared_ptr<statespace::StateSpace> FrameTestable::getStateSpace() const
 {
   return mStateSpace;

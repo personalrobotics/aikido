@@ -20,7 +20,7 @@ extern template class RBoxConstraint<6>;
 
 extern template class RBoxConstraint<Eigen::Dynamic>;
 
-//=============================================================================
+//==============================================================================
 template <int N>
 class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
@@ -49,7 +49,7 @@ private:
   friend class RBoxConstraint<N>;
 };
 
-//=============================================================================
+//==============================================================================
 template <int N>
 RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
     std::shared_ptr<statespace::R<N>> _space,
@@ -65,7 +65,7 @@ RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
     mDistributions.emplace_back(_lowerLimits[i], _upperLimits[i]);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 statespace::StateSpacePtr RnBoxConstraintSampleGenerator<N>::getStateSpace()
     const
@@ -73,7 +73,7 @@ statespace::StateSpacePtr RnBoxConstraintSampleGenerator<N>::getStateSpace()
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 bool RnBoxConstraintSampleGenerator<N>::sample(
     statespace::StateSpace::State* _state)
@@ -89,21 +89,21 @@ bool RnBoxConstraintSampleGenerator<N>::sample(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 int RnBoxConstraintSampleGenerator<N>::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 bool RnBoxConstraintSampleGenerator<N>::canSample() const
 {
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 RBoxConstraint<N>::RBoxConstraint(
     std::shared_ptr<statespace::R<N>> _space,
@@ -141,7 +141,7 @@ RBoxConstraint<N>::RBoxConstraint(
     if (mLowerLimits[i] > mUpperLimits[i])
     {
       std::stringstream msg;
-      msg << "Unable to sample from StateSpace because lower limit exeeds"
+      msg << "Unable to sample from StateSpace because lower limit exceeds"
           << " upper limit on dimension " << i << ": " << mLowerLimits[i]
           << " > " << mUpperLimits[i] << ".";
       throw std::invalid_argument(msg.str());
@@ -149,14 +149,14 @@ RBoxConstraint<N>::RBoxConstraint(
   }
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 statespace::StateSpacePtr RBoxConstraint<N>::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 size_t RBoxConstraint<N>::getConstraintDimension() const
 {
@@ -164,7 +164,7 @@ size_t RBoxConstraint<N>::getConstraintDimension() const
   return mSpace->getDimension();
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 std::vector<ConstraintType> RBoxConstraint<N>::getConstraintTypes() const
 {
@@ -172,7 +172,7 @@ std::vector<ConstraintType> RBoxConstraint<N>::getConstraintTypes() const
       mSpace->getDimension(), ConstraintType::INEQUALITY);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 bool RBoxConstraint<N>::isSatisfied(
     const statespace::StateSpace::State* state) const
@@ -188,7 +188,7 @@ bool RBoxConstraint<N>::isSatisfied(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 bool RBoxConstraint<N>::project(
     const statespace::StateSpace::State* _s,
@@ -210,7 +210,7 @@ bool RBoxConstraint<N>::project(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void RBoxConstraint<N>::getValue(
     const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
@@ -232,7 +232,7 @@ void RBoxConstraint<N>::getValue(
   }
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void RBoxConstraint<N>::getJacobian(
     const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
@@ -254,7 +254,7 @@ void RBoxConstraint<N>::getJacobian(
   }
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 std::unique_ptr<constraint::SampleGenerator>
 RBoxConstraint<N>::createSampleGenerator() const
@@ -278,14 +278,14 @@ RBoxConstraint<N>::createSampleGenerator() const
           mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 auto RBoxConstraint<N>::getLowerLimits() const -> const VectorNd&
 {
   return mLowerLimits;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 auto RBoxConstraint<N>::getUpperLimits() const -> const VectorNd&
 {

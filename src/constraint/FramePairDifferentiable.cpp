@@ -4,7 +4,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 FramePairDifferentiable::FramePairDifferentiable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode1,
@@ -46,13 +46,13 @@ FramePairDifferentiable::FramePairDifferentiable(
   // are influenced by at least one DegreeOfFreedom of _metaSkeletonStateSpace.
 }
 
-//=============================================================================
+//==============================================================================
 size_t FramePairDifferentiable::getConstraintDimension() const
 {
   return mRelPoseConstraint->getConstraintDimension();
 }
 
-//=============================================================================
+//==============================================================================
 void FramePairDifferentiable::getValue(
     const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
@@ -71,7 +71,7 @@ void FramePairDifferentiable::getValue(
   mRelPoseConstraint->getValue(&relativeTransform, _out);
 }
 
-//=============================================================================
+//==============================================================================
 void FramePairDifferentiable::getJacobian(
     const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
@@ -104,7 +104,7 @@ void FramePairDifferentiable::getJacobian(
   _out = constraintJac * skeletonJac;
 }
 
-//=============================================================================
+//==============================================================================
 void FramePairDifferentiable::getValueAndJacobian(
     const statespace::StateSpace::State* _s,
     Eigen::VectorXd& _val,
@@ -141,13 +141,13 @@ void FramePairDifferentiable::getValueAndJacobian(
   _jac = constraintJac * skeletonJac;
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<ConstraintType> FramePairDifferentiable::getConstraintTypes() const
 {
   return mRelPoseConstraint->getConstraintTypes();
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr FramePairDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;

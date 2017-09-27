@@ -7,7 +7,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 extern template class RConstantSampler<0>;
 
 extern template class RConstantSampler<1>;
@@ -22,7 +22,7 @@ extern template class RConstantSampler<Eigen::Dynamic>;
 
 namespace {
 
-//=============================================================================
+//==============================================================================
 template <int N>
 class RnConstantSamplerSampleGenerator : public constraint::SampleGenerator
 {
@@ -45,7 +45,7 @@ private:
   VectorNd mValue;
 };
 
-//=============================================================================
+//==============================================================================
 template <int N>
 RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
     std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
@@ -54,7 +54,7 @@ RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
   // Do nothing
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 statespace::StateSpacePtr RnConstantSamplerSampleGenerator<N>::getStateSpace()
     const
@@ -62,7 +62,7 @@ statespace::StateSpacePtr RnConstantSamplerSampleGenerator<N>::getStateSpace()
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 bool RnConstantSamplerSampleGenerator<N>::sample(
     statespace::StateSpace::State* _state)
@@ -73,14 +73,14 @@ bool RnConstantSamplerSampleGenerator<N>::sample(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 int RnConstantSamplerSampleGenerator<N>::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 bool RnConstantSamplerSampleGenerator<N>::canSample() const
 {
@@ -89,7 +89,7 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
 
 } // namespace anonymous
 
-//=============================================================================
+//==============================================================================
 template <int N>
 RConstantSampler<N>::RConstantSampler(
     std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
@@ -107,14 +107,14 @@ RConstantSampler<N>::RConstantSampler(
   }
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 statespace::StateSpacePtr RConstantSampler<N>::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 std::unique_ptr<constraint::SampleGenerator>
 RConstantSampler<N>::createSampleGenerator() const
@@ -123,7 +123,7 @@ RConstantSampler<N>::createSampleGenerator() const
       mSpace, mValue);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 const typename RConstantSampler<N>::VectorNd&
 RConstantSampler<N>::getConstantValue() const

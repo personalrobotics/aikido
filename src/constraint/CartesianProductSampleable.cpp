@@ -6,7 +6,7 @@ namespace constraint {
 
 using dart::common::make_unique;
 
-//=============================================================================
+//==============================================================================
 class SubspaceSampleGenerator : public SampleGenerator
 {
 public:
@@ -73,7 +73,7 @@ private:
   std::vector<std::unique_ptr<SampleGenerator>> mGenerators;
 };
 
-//=============================================================================
+//==============================================================================
 CartesianProductSampleable::CartesianProductSampleable(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     std::vector<std::shared_ptr<Sampleable>> _constraints)
@@ -109,13 +109,13 @@ CartesianProductSampleable::CartesianProductSampleable(
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr CartesianProductSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator>
 CartesianProductSampleable::createSampleGenerator() const
 {

@@ -3,65 +3,65 @@
 
 namespace aikido {
 namespace statespace {
-//=============================================================================
+//==============================================================================
 SE3::State::State() : mTransform(Isometry3d::Identity())
 {
 }
 
-//=============================================================================
+//==============================================================================
 SE3::State::State(const Isometry3d& _transform) : mTransform(_transform)
 {
 }
 
-//=============================================================================
+//==============================================================================
 auto SE3::State::getIsometry() const -> const Isometry3d&
 {
   return mTransform;
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::State::setIsometry(const Isometry3d& _transform)
 {
   mTransform = _transform;
 }
 
-//=============================================================================
+//==============================================================================
 auto SE3::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
-//=============================================================================
+//==============================================================================
 auto SE3::getIsometry(const State* _state) const -> const Isometry3d&
 {
   return _state->getIsometry();
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::setIsometry(State* _state, const Isometry3d& _transform) const
 {
   _state->setIsometry(_transform);
 }
 
-//=============================================================================
+//==============================================================================
 size_t SE3::getStateSizeInBytes() const
 {
   return sizeof(State);
 }
 
-//=============================================================================
+//==============================================================================
 StateSpace::State* SE3::allocateStateInBuffer(void* _buffer) const
 {
   return new (_buffer) State;
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::freeStateInBuffer(StateSpace::State* _state) const
 {
   static_cast<State*>(_state)->~State();
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::compose(
     const StateSpace::State* _state1,
     const StateSpace::State* _state2,
@@ -78,14 +78,14 @@ void SE3::compose(
   out->mTransform = state1->mTransform * state2->mTransform;
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::getIdentity(StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
   setIsometry(out, Isometry3d::Identity());
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::getInverse(
     const StateSpace::State* _in, StateSpace::State* _out) const
 {
@@ -98,13 +98,13 @@ void SE3::getInverse(
   setIsometry(out, getIsometry(in).inverse());
 }
 
-//=============================================================================
+//==============================================================================
 size_t SE3::getDimension() const
 {
   return 6;
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::copyState(
     const StateSpace::State* _source, StateSpace::State* _destination) const
 {
@@ -113,7 +113,7 @@ void SE3::copyState(
   setIsometry(dest, getIsometry(source));
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
@@ -131,7 +131,7 @@ void SE3::expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
   out->mTransform = transform;
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
 {
   // TODO: Skip these checks in release mode.
@@ -146,7 +146,7 @@ void SE3::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
   _tangent = dart::math::logMap(transform);
 }
 
-//=============================================================================
+//==============================================================================
 void SE3::print(const StateSpace::State* _state, std::ostream& _os) const
 {
   auto state = static_cast<const State*>(_state);

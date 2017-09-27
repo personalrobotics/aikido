@@ -45,7 +45,7 @@ private:
   friend class RejectionSampleable;
 };
 
-//=============================================================================
+//==============================================================================
 RejectionSampleable::RejectionSampleable(
     statespace::StateSpacePtr _stateSpace,
     SampleablePtr _sampleable,
@@ -83,13 +83,13 @@ RejectionSampleable::RejectionSampleable(
     throw std::invalid_argument("MaxNumTrialsPerSample is not positive.");
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr RejectionSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator> RejectionSampleable::createSampleGenerator()
     const
 {
@@ -98,7 +98,7 @@ std::unique_ptr<SampleGenerator> RejectionSampleable::createSampleGenerator()
       mStateSpace, std::move(sampler), mTestable, mMaxTrialPerSample);
 }
 
-//=============================================================================
+//==============================================================================
 RejectionSampler::RejectionSampler(
     statespace::StateSpacePtr _stateSpace,
     std::unique_ptr<SampleGenerator> _sampler,
@@ -122,13 +122,13 @@ RejectionSampler::RejectionSampler(
     throw std::invalid_argument("MaxNumTrialsPerSample is not positive.");
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr RejectionSampler::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool RejectionSampler::sample(statespace::StateSpace::State* _state)
 {
   if (!mSampler->canSample())
@@ -149,13 +149,13 @@ bool RejectionSampler::sample(statespace::StateSpace::State* _state)
   return false;
 }
 
-//=============================================================================
+//==============================================================================
 bool RejectionSampler::canSample() const
 {
   return mSampler->canSample();
 }
 
-//=============================================================================
+//==============================================================================
 int RejectionSampler::getNumSamples() const
 {
   return mSampler->getNumSamples();

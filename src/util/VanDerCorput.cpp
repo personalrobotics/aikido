@@ -9,12 +9,12 @@ namespace util {
 
 using std::pair;
 
-//=============================================================================
+//==============================================================================
 // Required for odr-use.
 constexpr int VanDerCorput::BASE;
 constexpr int VanDerCorput::MAX;
 
-//=============================================================================
+//==============================================================================
 VanDerCorput::VanDerCorput(
     double span,
     bool includeStartpoint,
@@ -29,7 +29,7 @@ VanDerCorput::VanDerCorput(
       = std::max(mMinResolution, std::numeric_limits<double>::epsilon());
 }
 
-//=============================================================================
+//==============================================================================
 pair<double, double> VanDerCorput::operator[](int n) const
 {
   pair<double, double> val_res;
@@ -82,7 +82,7 @@ pair<double, double> VanDerCorput::operator[](int n) const
   return val_res;
 }
 
-//=============================================================================
+//==============================================================================
 pair<double, double> VanDerCorput::computeVanDerCorput(int n) const
 {
   // range: [1,int_max]
@@ -117,14 +117,14 @@ pair<double, double> VanDerCorput::computeVanDerCorput(int n) const
   return std::make_pair(ret, resolution);
 }
 
-//=============================================================================
+//==============================================================================
 VanDerCorput::const_iterator VanDerCorput::begin() const
 {
   VanDerCorput::const_iterator itr{this};
   return itr;
 }
 
-//=============================================================================
+//==============================================================================
 VanDerCorput::const_iterator VanDerCorput::end() const
 {
   VanDerCorput::const_iterator itr{this};
@@ -132,7 +132,7 @@ VanDerCorput::const_iterator VanDerCorput::end() const
   return itr;
 }
 
-//=============================================================================
+//==============================================================================
 VanDerCorput::const_iterator::const_iterator(const VanDerCorput* seq)
   : mSeq(seq), mN(-1), mFinalIter(false)
 {
@@ -140,13 +140,13 @@ VanDerCorput::const_iterator::const_iterator(const VanDerCorput* seq)
   increment();
 }
 
-//=============================================================================
+//==============================================================================
 double VanDerCorput::const_iterator::dereference() const
 {
   return mCurr.first;
 }
 
-//=============================================================================
+//==============================================================================
 void VanDerCorput::const_iterator::increment()
 {
   if (mFinalIter)
@@ -164,7 +164,7 @@ void VanDerCorput::const_iterator::increment()
   }
 }
 
-//=============================================================================
+//==============================================================================
 bool VanDerCorput::const_iterator::equal(
     const VanDerCorput::const_iterator& other) const
 {

@@ -3,7 +3,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 void Differentiable::getValueAndJacobian(
     const statespace::StateSpace::State* _s,
     Eigen::VectorXd& _val,

@@ -8,7 +8,7 @@ namespace ros {
 
 using std::chrono::milliseconds;
 
-//=============================================================================
+//==============================================================================
 RosPositionCommandExecutor::RosPositionCommandExecutor(
     ::ros::NodeHandle node,
     const std::string& serverName,
@@ -26,13 +26,13 @@ RosPositionCommandExecutor::RosPositionCommandExecutor(
   // Do nothing.
 }
 
-//=============================================================================
+//==============================================================================
 RosPositionCommandExecutor::~RosPositionCommandExecutor()
 {
   // Do nothing.
 }
 
-//=============================================================================
+//==============================================================================
 std::future<void> RosPositionCommandExecutor::execute(
     const Eigen::VectorXd& goalPositions)
 {
@@ -67,7 +67,7 @@ std::future<void> RosPositionCommandExecutor::execute(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
 {
   if (handle.getCommState() == actionlib::CommState::DONE)
@@ -113,7 +113,7 @@ void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
   }
 }
 
-//=============================================================================
+//==============================================================================
 void RosPositionCommandExecutor::step()
 {
   std::lock_guard<std::mutex> lock(mMutex);

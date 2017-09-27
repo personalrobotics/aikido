@@ -44,7 +44,7 @@ private:
   friend class CyclicSampleable;
 };
 
-//=============================================================================
+//==============================================================================
 FiniteCyclicSampleGenerator::FiniteCyclicSampleGenerator(
     std::unique_ptr<SampleGenerator> _generator)
   : mGenerator(std::move(_generator)), mIndex(0)
@@ -65,7 +65,7 @@ FiniteCyclicSampleGenerator::FiniteCyclicSampleGenerator(
   mStateSpace = mGenerator->getStateSpace();
 }
 
-//=============================================================================
+//==============================================================================
 FiniteCyclicSampleGenerator::~FiniteCyclicSampleGenerator()
 {
   auto space = mGenerator->getStateSpace();
@@ -74,13 +74,13 @@ FiniteCyclicSampleGenerator::~FiniteCyclicSampleGenerator()
     space->freeState(state);
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr FiniteCyclicSampleGenerator::getStateSpace() const
 {
   return mGenerator->getStateSpace();
 }
 
-//=============================================================================
+//==============================================================================
 bool FiniteCyclicSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   if (mGenerator->canSample())
@@ -113,19 +113,19 @@ bool FiniteCyclicSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int FiniteCyclicSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-//=============================================================================
+//==============================================================================
 bool FiniteCyclicSampleGenerator::canSample() const
 {
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 CyclicSampleable::CyclicSampleable(SampleablePtr _sampleable)
   : mSampleable(std::move(_sampleable))
 {
@@ -146,13 +146,13 @@ CyclicSampleable::CyclicSampleable(SampleablePtr _sampleable)
   mStateSpace = mSampleable->getStateSpace();
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr CyclicSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator> CyclicSampleable::createSampleGenerator() const
 {
   return dart::common::make_unique<FiniteCyclicSampleGenerator>(

@@ -1,7 +1,7 @@
 #include "PolynomialConstraint.hpp"
 #include <memory>
 
-//=============================================================================
+//==============================================================================
 template <int N>
 PolynomialConstraint<N>::PolynomialConstraint(
   const Eigen::VectorXd& _coeffs,
@@ -18,14 +18,14 @@ PolynomialConstraint<N>::PolynomialConstraint(
     throw std::invalid_argument("StateSpace is null.");
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 size_t PolynomialConstraint<N>::getConstraintDimension() const
 {
   return 1;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void PolynomialConstraint<N>::getValue(
     const aikido::statespace::StateSpace::State* _s,
@@ -44,7 +44,7 @@ void PolynomialConstraint<N>::getValue(
   _out(0) = val;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void PolynomialConstraint<N>::getJacobian(
     const aikido::statespace::StateSpace::State* _s,
@@ -62,7 +62,7 @@ void PolynomialConstraint<N>::getJacobian(
   _out.col(0) = out;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 std::vector<aikido::constraint::ConstraintType>
 PolynomialConstraint<N>::getConstraintTypes() const
@@ -72,7 +72,7 @@ PolynomialConstraint<N>::getConstraintTypes() const
   return ctypes;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 aikido::statespace::StateSpacePtr PolynomialConstraint<N>::getStateSpace() const
 {

@@ -6,7 +6,7 @@ namespace constraint {
 
 using dart::common::make_unique;
 
-//=============================================================================
+//==============================================================================
 CartesianProductTestable::CartesianProductTestable(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     std::vector<std::shared_ptr<Testable>> _constraints)
@@ -45,13 +45,13 @@ CartesianProductTestable::CartesianProductTestable(
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr CartesianProductTestable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool CartesianProductTestable::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {

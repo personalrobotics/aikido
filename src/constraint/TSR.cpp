@@ -78,7 +78,7 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-//=============================================================================
+//==============================================================================
 TSR::TSR(
     std::unique_ptr<util::RNG> _rng,
     const Eigen::Isometry3d& _T0_w,
@@ -95,7 +95,7 @@ TSR::TSR(
   validate();
 }
 
-//=============================================================================
+//==============================================================================
 TSR::TSR(
     const Eigen::Isometry3d& _T0_w,
     const Eigen::Matrix<double, 6, 2>& _Bw,
@@ -113,7 +113,7 @@ TSR::TSR(
   validate();
 }
 
-//=============================================================================
+//==============================================================================
 TSR::TSR(const TSR& other)
   : mT0_w(other.mT0_w)
   , mBw(other.mBw)
@@ -125,7 +125,7 @@ TSR::TSR(const TSR& other)
   validate();
 }
 
-//=============================================================================
+//==============================================================================
 TSR::TSR(TSR&& other)
   : mT0_w(other.mT0_w)
   , mBw(other.mBw)
@@ -137,7 +137,7 @@ TSR::TSR(TSR&& other)
   validate();
 }
 
-//=============================================================================
+//==============================================================================
 TSR& TSR::operator=(const TSR& other)
 {
 
@@ -152,7 +152,7 @@ TSR& TSR::operator=(const TSR& other)
   return *this;
 }
 
-//=============================================================================
+//==============================================================================
 TSR& TSR::operator=(TSR&& other)
 {
   mT0_w = std::move(other.mT0_w);
@@ -165,19 +165,19 @@ TSR& TSR::operator=(TSR&& other)
   return *this;
 }
 
-//=============================================================================
+//==============================================================================
 std::shared_ptr<statespace::StateSpace> TSR::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::shared_ptr<statespace::SE3> TSR::getSE3() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 {
   validate();
@@ -209,7 +209,7 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
       new TSRSampleGenerator(mRng->clone(), mStateSpace, mT0_w, mBw, mTw_e));
 }
 
-//=============================================================================
+//==============================================================================
 bool TSR::isSatisfied(const statespace::StateSpace::State* _s) const
 {
   Eigen::VectorXd dist;
@@ -217,7 +217,7 @@ bool TSR::isSatisfied(const statespace::StateSpace::State* _s) const
   return dist.norm() < mTestableTolerance;
 }
 
-//=============================================================================
+//==============================================================================
 void TSR::validate() const
 {
   // Assertion checks for min, max on bounds
@@ -234,19 +234,19 @@ void TSR::validate() const
   }
 }
 
-//=============================================================================
+//==============================================================================
 void TSR::setRNG(std::unique_ptr<util::RNG> rng)
 {
   mRng = std::move(rng);
 }
 
-//=============================================================================
+//==============================================================================
 size_t TSR::getConstraintDimension() const
 {
   return 6;
 }
 
-//=============================================================================
+//==============================================================================
 void TSR::getValue(
     const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
@@ -306,7 +306,7 @@ void TSR::getValue(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void TSR::getJacobian(
     const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
@@ -348,13 +348,13 @@ void TSR::getJacobian(
   }
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<ConstraintType> TSR::getConstraintTypes() const
 {
   return std::vector<ConstraintType>(6, ConstraintType::INEQUALITY);
 }
 
-//=============================================================================
+//==============================================================================
 bool TSR::project(
     const statespace::StateSpace::State* /*_s*/,
     statespace::StateSpace::State* /*_out*/) const
@@ -363,7 +363,7 @@ bool TSR::project(
   return false;
 }
 
-//=============================================================================
+//==============================================================================
 TSRSampleGenerator::TSRSampleGenerator(
     std::unique_ptr<util::RNG> _rng,
     std::shared_ptr<SE3> _stateSpace,
@@ -389,13 +389,13 @@ TSRSampleGenerator::TSRSampleGenerator(
   mPointTSRSampled = false;
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr TSRSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   if (mPointTSR && mPointTSRSampled)
@@ -437,19 +437,19 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 double TSR::getTestableTolerance()
 {
   return mTestableTolerance;
 }
 
-//=============================================================================
+//==============================================================================
 void TSR::setTestableTolerance(double _testableTolerance)
 {
   mTestableTolerance = _testableTolerance;
 }
 
-//=============================================================================
+//==============================================================================
 bool TSRSampleGenerator::canSample() const
 {
   if (mPointTSR && mPointTSRSampled)
@@ -458,7 +458,7 @@ bool TSRSampleGenerator::canSample() const
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int TSRSampleGenerator::getNumSamples() const
 {
   if (mPointTSR && !mPointTSRSampled)

@@ -5,7 +5,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 TestableIntersection::TestableIntersection(
     statespace::StateSpacePtr _stateSpace,
     std::vector<std::shared_ptr<Testable>> _constraints)
@@ -18,7 +18,7 @@ TestableIntersection::TestableIntersection(
     testConstraintStateSpaceOrThrow(c);
 }
 
-//=============================================================================
+//==============================================================================
 bool TestableIntersection::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {
@@ -30,13 +30,13 @@ bool TestableIntersection::isSatisfied(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr TestableIntersection::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 void TestableIntersection::addConstraint(TestablePtr _constraint)
 {
   if (_constraint->getStateSpace() == mStateSpace)
@@ -50,7 +50,7 @@ void TestableIntersection::addConstraint(TestablePtr _constraint)
   }
 }
 
-//=============================================================================
+//==============================================================================
 void TestableIntersection::testConstraintStateSpaceOrThrow(
     const TestablePtr& constraint)
 {

@@ -5,7 +5,7 @@
 namespace aikido {
 namespace trajectory {
 
-//=============================================================================
+//==============================================================================
 Spline::Spline(statespace::StateSpacePtr _stateSpace, double _startTime)
   : mStateSpace(std::move(_stateSpace)), mStartTime(_startTime)
 {
@@ -13,14 +13,14 @@ Spline::Spline(statespace::StateSpacePtr _stateSpace, double _startTime)
     throw std::invalid_argument("StateSpace is null.");
 }
 
-//=============================================================================
+//==============================================================================
 Spline::~Spline()
 {
   for (const auto& segment : mSegments)
     mStateSpace->freeState(segment.mStartState);
 }
 
-//=============================================================================
+//==============================================================================
 void Spline::addSegment(
     const Eigen::MatrixXd& _coefficients,
     double _duration,
@@ -44,7 +44,7 @@ void Spline::addSegment(
   mSegments.emplace_back(std::move(segment));
 }
 
-//=============================================================================
+//==============================================================================
 void Spline::addSegment(const Eigen::MatrixXd& _coefficients, double _duration)
 {
   if (mSegments.empty())
@@ -60,19 +60,19 @@ void Spline::addSegment(const Eigen::MatrixXd& _coefficients, double _duration)
   addSegment(_coefficients, _duration, startState);
 }
 
-//=============================================================================
+//==============================================================================
 size_t Spline::getNumSegments() const
 {
   return mSegments.size();
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr Spline::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 size_t Spline::getNumDerivatives() const
 {
   size_t numDerivatives = 0;
@@ -86,19 +86,19 @@ size_t Spline::getNumDerivatives() const
   return numDerivatives;
 }
 
-//=============================================================================
+//==============================================================================
 double Spline::getStartTime() const
 {
   return mStartTime;
 }
 
-//=============================================================================
+//==============================================================================
 double Spline::getEndTime() const
 {
   return mStartTime + getDuration();
 }
 
-//=============================================================================
+//==============================================================================
 double Spline::getDuration() const
 {
   double duration = 0.;
@@ -109,7 +109,7 @@ double Spline::getDuration() const
   return duration;
 }
 
-//=============================================================================
+//==============================================================================
 void Spline::evaluate(double _t, statespace::StateSpace::State* _out) const
 {
   if (mSegments.empty())
@@ -129,7 +129,7 @@ void Spline::evaluate(double _t, statespace::StateSpace::State* _out) const
   mStateSpace->compose(_out, relativeState);
 }
 
-//=============================================================================
+//==============================================================================
 void Spline::evaluateDerivative(
     double _t, int _derivative, Eigen::VectorXd& _tangentVector) const
 {
@@ -157,7 +157,7 @@ void Spline::evaluateDerivative(
   }
 }
 
-//=============================================================================
+//==============================================================================
 std::pair<size_t, double> Spline::getSegmentForTime(double _t) const
 {
   auto segmentStartTime = mStartTime;
@@ -178,7 +178,7 @@ std::pair<size_t, double> Spline::getSegmentForTime(double _t) const
       mSegments.size() - 1, segmentStartTime - mSegments.back().mDuration);
 }
 
-//=============================================================================
+//==============================================================================
 Eigen::VectorXd Spline::evaluatePolynomial(
     const Eigen::MatrixXd& _coefficients, double _t, int _derivative)
 {
@@ -201,13 +201,13 @@ Eigen::VectorXd Spline::evaluatePolynomial(
   return outputVector;
 }
 
-//=============================================================================
+//==============================================================================
 size_t Spline::getNumWaypoints() const
 {
   return getNumSegments() + 1;
 }
 
-//=============================================================================
+//==============================================================================
 double Spline::getWaypointTime(size_t _index) const
 {
   double waypointTime = mStartTime;
@@ -221,7 +221,7 @@ double Spline::getWaypointTime(size_t _index) const
   return waypointTime;
 }
 
-//=============================================================================
+//==============================================================================
 void Spline::getWaypoint(
     size_t _index, statespace::StateSpace::State* state) const
 {
@@ -236,7 +236,7 @@ void Spline::getWaypoint(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void Spline::getWaypointDerivative(
     size_t _index, int _derivative, Eigen::VectorXd& _tangentVector) const
 {

@@ -54,7 +54,7 @@ private:
   friend class InverseKinematicsSampleable;
 };
 
-//=============================================================================
+//==============================================================================
 InverseKinematicsSampleable::InverseKinematicsSampleable(
     MetaSkeletonStateSpacePtr _stateSpace,
     SampleablePtr _poseConstraint,
@@ -106,13 +106,13 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
     throw std::invalid_argument("Maximum number of trials must be positive.");
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr InverseKinematicsSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator>
 InverseKinematicsSampleable::createSampleGenerator() const
 {
@@ -125,7 +125,7 @@ InverseKinematicsSampleable::createSampleGenerator() const
           mMaxNumTrials));
 }
 
-//=============================================================================
+//==============================================================================
 IkSampleGenerator::IkSampleGenerator(
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
@@ -169,13 +169,13 @@ IkSampleGenerator::IkSampleGenerator(
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr IkSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   if (!mSeedSampler->canSample() || !mPoseSampler->canSample())
@@ -211,13 +211,13 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
   return false;
 }
 
-//=============================================================================
+//==============================================================================
 bool IkSampleGenerator::canSample() const
 {
   return mSeedSampler->canSample() && mPoseSampler->canSample();
 }
 
-//=============================================================================
+//==============================================================================
 int IkSampleGenerator::getNumSamples() const
 {
   return std::min(mSeedSampler->getNumSamples(), mPoseSampler->getNumSamples());

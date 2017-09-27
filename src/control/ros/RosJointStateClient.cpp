@@ -4,7 +4,7 @@ namespace aikido {
 namespace control {
 namespace ros {
 
-//=============================================================================
+//==============================================================================
 RosJointStateClient::RosJointStateClient(
     dart::dynamics::SkeletonPtr _skeleton,
     ::ros::NodeHandle _nodeHandle,
@@ -27,7 +27,7 @@ RosJointStateClient::RosJointStateClient(
       _topicName, 1, &RosJointStateClient::jointStateCallback, this);
 }
 
-//=============================================================================
+//==============================================================================
 void RosJointStateClient::spin()
 {
   std::lock_guard<std::mutex> skeletonLock{mSkeleton->getMutex()};
@@ -36,7 +36,7 @@ void RosJointStateClient::spin()
   mCallbackQueue.callAvailable();
 }
 
-//=============================================================================
+//==============================================================================
 Eigen::VectorXd RosJointStateClient::getLatestPosition(
     const dart::dynamics::MetaSkeleton& _metaSkeleton) const
 {
@@ -69,7 +69,7 @@ Eigen::VectorXd RosJointStateClient::getLatestPosition(
   return position;
 }
 
-//=============================================================================
+//==============================================================================
 void RosJointStateClient::jointStateCallback(
     const sensor_msgs::JointState& _jointState)
 {

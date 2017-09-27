@@ -9,7 +9,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 NewtonsMethodProjectable::NewtonsMethodProjectable(
     DifferentiablePtr _differentiable,
     std::vector<double> _tolerance,
@@ -47,7 +47,7 @@ NewtonsMethodProjectable::NewtonsMethodProjectable(
   mStateSpace = mDifferentiable->getStateSpace();
 }
 
-//=============================================================================
+//==============================================================================
 bool NewtonsMethodProjectable::contains(
     const statespace::StateSpace::State* _s) const
 {
@@ -73,7 +73,7 @@ bool NewtonsMethodProjectable::contains(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 bool NewtonsMethodProjectable::project(
     const statespace::StateSpace::State* _s,
     statespace::StateSpace::State* _out) const
@@ -116,7 +116,7 @@ bool NewtonsMethodProjectable::project(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr NewtonsMethodProjectable::getStateSpace() const
 {
   return mDifferentiable->getStateSpace();

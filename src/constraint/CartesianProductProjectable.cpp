@@ -4,7 +4,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 CartesianProductProjectable::CartesianProductProjectable(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     std::vector<ProjectablePtr> _constraints)
@@ -40,13 +40,13 @@ CartesianProductProjectable::CartesianProductProjectable(
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr CartesianProductProjectable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool CartesianProductProjectable::project(
     const statespace::StateSpace::State* _s,
     statespace::StateSpace::State* _out) const

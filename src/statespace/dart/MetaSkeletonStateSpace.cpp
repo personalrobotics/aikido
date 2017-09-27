@@ -27,7 +27,7 @@ using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
 
 namespace {
 
-//=============================================================================
+//==============================================================================
 template <class Input, class Output>
 std::vector<Output> convertVectorType(const std::vector<Input>& _input)
 {
@@ -40,7 +40,7 @@ std::vector<Output> convertVectorType(const std::vector<Input>& _input)
   return std::move(output);
 }
 
-//=============================================================================
+//==============================================================================
 template <class T>
 T* isJointOfType(::dart::dynamics::Joint* _joint)
 {
@@ -52,7 +52,7 @@ T* isJointOfType(::dart::dynamics::Joint* _joint)
     return nullptr;
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
     MetaSkeleton& _metaskeleton)
 {
@@ -86,7 +86,7 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
 
 } // namespace
 
-//=============================================================================
+//==============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
   : CartesianProduct(
         convertVectorType<JointStateSpacePtr, StateSpacePtr>(
@@ -95,13 +95,13 @@ MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
 {
 }
 
-//=============================================================================
+//==============================================================================
 MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 {
   return mMetaSkeleton;
 }
 
-//=============================================================================
+//==============================================================================
 void MetaSkeletonStateSpace::convertPositionsToState(
     const Eigen::VectorXd& _positions, State* _state) const
 {
@@ -134,7 +134,7 @@ void MetaSkeletonStateSpace::convertPositionsToState(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void MetaSkeletonStateSpace::convertStateToPositions(
     const State* _state, Eigen::VectorXd& _positions) const
 {
@@ -165,13 +165,13 @@ void MetaSkeletonStateSpace::convertStateToPositions(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void MetaSkeletonStateSpace::getState(State* _state) const
 {
   convertPositionsToState(mMetaSkeleton->getPositions(), _state);
 }
 
-//=============================================================================
+//==============================================================================
 auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
     -> ScopedState
 {
@@ -181,7 +181,7 @@ auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
   return scopedState;
 }
 
-//=============================================================================
+//==============================================================================
 void MetaSkeletonStateSpace::setState(const State* _state)
 {
   Eigen::VectorXd positions;

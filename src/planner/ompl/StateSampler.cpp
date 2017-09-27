@@ -5,7 +5,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-//=============================================================================
+//==============================================================================
 StateSampler::StateSampler(
     const ::ompl::base::StateSpace* _space,
     std::unique_ptr<aikido::constraint::SampleGenerator> _generator)
@@ -22,7 +22,7 @@ StateSampler::StateSampler(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void StateSampler::sampleUniform(::ompl::base::State* _state)
 {
   auto state = static_cast<GeometricStateSpace::StateType*>(_state);
@@ -36,7 +36,7 @@ void StateSampler::sampleUniform(::ompl::base::State* _state)
   state->mValid = valid;
 }
 
-//=============================================================================
+//==============================================================================
 void StateSampler::sampleUniformNear(
     ::ompl::base::State* /*_state*/,
     const ::ompl::base::State* /*_near*/,
@@ -45,7 +45,7 @@ void StateSampler::sampleUniformNear(
   throw std::runtime_error("sampleUniformNear not implemented.");
 }
 
-//=============================================================================
+//==============================================================================
 void StateSampler::sampleGaussian(
     ::ompl::base::State* /*_state*/,
     const ::ompl::base::State* /*_mean*/,

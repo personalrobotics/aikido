@@ -3,7 +3,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 DifferentiableIntersection::DifferentiableIntersection(
     std::vector<DifferentiablePtr> _constraints,
     std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
@@ -30,7 +30,7 @@ DifferentiableIntersection::DifferentiableIntersection(
   }
 }
 
-//=============================================================================
+//==============================================================================
 size_t DifferentiableIntersection::getConstraintDimension() const
 {
   int dim = 0;
@@ -41,7 +41,7 @@ size_t DifferentiableIntersection::getConstraintDimension() const
   return dim;
 }
 
-//=============================================================================
+//==============================================================================
 void DifferentiableIntersection::getValue(
     const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
@@ -60,7 +60,7 @@ void DifferentiableIntersection::getValue(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void DifferentiableIntersection::getJacobian(
     const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
@@ -80,7 +80,7 @@ void DifferentiableIntersection::getJacobian(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void DifferentiableIntersection::getValueAndJacobian(
     const statespace::StateSpace::State* _s,
     Eigen::VectorXd& _val,
@@ -109,7 +109,7 @@ void DifferentiableIntersection::getValueAndJacobian(
   }
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<ConstraintType> DifferentiableIntersection::getConstraintTypes()
     const
 {
@@ -126,7 +126,7 @@ std::vector<ConstraintType> DifferentiableIntersection::getConstraintTypes()
   return constraintTypes;
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr DifferentiableIntersection::getStateSpace() const
 {
   return mStateSpace;

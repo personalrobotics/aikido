@@ -4,7 +4,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 class SO2UniformSampleGenerator : public constraint::SampleGenerator
 {
 public:
@@ -31,7 +31,7 @@ private:
   friend class SO2Sampleable;
 };
 
-//=============================================================================
+//==============================================================================
 SO2UniformSampleGenerator::SO2UniformSampleGenerator(
     std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(-M_PI, M_PI)
@@ -39,13 +39,13 @@ SO2UniformSampleGenerator::SO2UniformSampleGenerator(
   // Do nothing
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr SO2UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool SO2UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   const double angle = mDistribution(*mRng);
@@ -53,19 +53,19 @@ bool SO2UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int SO2UniformSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-//=============================================================================
+//==============================================================================
 bool SO2UniformSampleGenerator::canSample() const
 {
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 SO2Sampleable::SO2Sampleable(
     std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
@@ -77,13 +77,13 @@ SO2Sampleable::SO2Sampleable(
     throw std::invalid_argument("RNG is null.");
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr SO2Sampleable::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<constraint::SampleGenerator>
 SO2Sampleable::createSampleGenerator() const
 {

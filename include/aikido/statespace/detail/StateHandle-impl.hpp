@@ -1,14 +1,14 @@
 namespace aikido {
 namespace statespace {
 
-//=============================================================================
+//==============================================================================
 template <class _StateSpace, class _QualifiedState>
 StateHandle<_StateSpace, _QualifiedState>::StateHandle()
   : mSpace(nullptr), mState(nullptr)
 {
 }
 
-//=============================================================================
+//==============================================================================
 template <class _StateSpace, class _QualifiedState>
 StateHandle<_StateSpace, _QualifiedState>::StateHandle(
     const StateSpace* _space, QualifiedState* _state)
@@ -16,14 +16,14 @@ StateHandle<_StateSpace, _QualifiedState>::StateHandle(
 {
 }
 
-//=============================================================================
+//==============================================================================
 template <class _StateSpace, class _QualifiedState>
 StateHandle<_StateSpace, _QualifiedState>::operator QualifiedState*() const
 {
   return mState;
 }
 
-//=============================================================================
+//==============================================================================
 template <class _StateSpace, class _QualifiedState>
 void StateHandle<_StateSpace, _QualifiedState>::reset()
 {
@@ -31,7 +31,7 @@ void StateHandle<_StateSpace, _QualifiedState>::reset()
   mState = nullptr;
 }
 
-//=============================================================================
+//==============================================================================
 template <class _StateSpace, class _QualifiedState>
 void StateHandle<_StateSpace, _QualifiedState>::reset(
     const StateSpace* _space, QualifiedState* _state)
@@ -40,7 +40,7 @@ void StateHandle<_StateSpace, _QualifiedState>::reset(
   mState = _state;
 }
 
-//=============================================================================
+//==============================================================================
 template <class _StateSpace, class _QualifiedState>
 auto StateHandle<_StateSpace, _QualifiedState>::getState() const
     -> QualifiedState*
@@ -48,7 +48,7 @@ auto StateHandle<_StateSpace, _QualifiedState>::getState() const
   return mState;
 }
 
-//=============================================================================
+//==============================================================================
 template <class _StateSpace, class _QualifiedState>
 auto StateHandle<_StateSpace, _QualifiedState>::getStateSpace() const
     -> const StateSpace*

@@ -42,7 +42,7 @@ private:
   friend class FiniteSampleable;
 };
 
-//=============================================================================
+//==============================================================================
 FiniteSampleGenerator::FiniteSampleGenerator(
     statespace::StateSpacePtr _stateSpace,
     const std::vector<statespace::StateSpace::State*>& _states)
@@ -74,20 +74,20 @@ FiniteSampleGenerator::FiniteSampleGenerator(
   }
 }
 
-//=============================================================================
+//==============================================================================
 FiniteSampleGenerator::~FiniteSampleGenerator()
 {
   for (auto state : mStates)
     mStateSpace->freeState(state);
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr FiniteSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   if (mStates.size() <= static_cast<size_t>(mIndex))
@@ -99,19 +99,19 @@ bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int FiniteSampleGenerator::getNumSamples() const
 {
   return mStates.size() - mIndex;
 }
 
-//=============================================================================
+//==============================================================================
 bool FiniteSampleGenerator::canSample() const
 {
   return mStates.size() > static_cast<size_t>(mIndex);
 }
 
-//=============================================================================
+//==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
     const statespace::StateSpace::State* _state)
@@ -129,7 +129,7 @@ FiniteSampleable::FiniteSampleable(
   mStates.push_back(state);
 }
 
-//=============================================================================
+//==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
     const std::vector<const statespace::StateSpace::State*>& _states)
@@ -161,7 +161,7 @@ FiniteSampleable::FiniteSampleable(
   }
 }
 
-//=============================================================================
+//==============================================================================
 FiniteSampleable::~FiniteSampleable()
 {
   for (auto state : mStates)
@@ -170,13 +170,13 @@ FiniteSampleable::~FiniteSampleable()
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr FiniteSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator> FiniteSampleable::createSampleGenerator() const
 {
   return dart::common::make_unique<FiniteSampleGenerator>(mStateSpace, mStates);

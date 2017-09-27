@@ -7,7 +7,7 @@ using dart::collision::BodyNodeCollisionFilter;
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 NonColliding::NonColliding(
     statespace::dart::MetaSkeletonStateSpacePtr _statespace,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector)
@@ -20,7 +20,7 @@ NonColliding::NonColliding(
   // Do nothing
 }
 
-//=============================================================================
+//==============================================================================
 NonColliding::NonColliding(
     statespace::dart::MetaSkeletonStateSpacePtr _statespace,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
@@ -36,13 +36,13 @@ NonColliding::NonColliding(
     throw std::invalid_argument("_collisionDetector is nullptr.");
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr NonColliding::getStateSpace() const
 {
   return statespace;
 }
 
-//=============================================================================
+//==============================================================================
 bool NonColliding::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {
@@ -73,7 +73,7 @@ bool NonColliding::isSatisfied(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 void NonColliding::addPairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
@@ -81,7 +81,7 @@ void NonColliding::addPairwiseCheck(
   groupsToPairwiseCheck.emplace_back(std::move(_group1), std::move(_group2));
 }
 
-//=============================================================================
+//==============================================================================
 void NonColliding::addSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {

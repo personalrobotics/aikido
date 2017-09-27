@@ -7,7 +7,7 @@ namespace trajectory {
 
 using State = aikido::statespace::StateSpace::State;
 
-//=============================================================================
+//==============================================================================
 Interpolated::Interpolated(
     aikido::statespace::StateSpacePtr _sspace,
     aikido::statespace::InterpolatorPtr _interpolator)
@@ -16,25 +16,25 @@ Interpolated::Interpolated(
   // Do nothing
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr Interpolated::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 statespace::InterpolatorPtr Interpolated::getInterpolator() const
 {
   return mInterpolator;
 }
 
-//=============================================================================
+//==============================================================================
 size_t Interpolated::getNumDerivatives() const
 {
   return mInterpolator->getNumDerivatives();
 }
 
-//=============================================================================
+//==============================================================================
 double Interpolated::getStartTime() const
 {
   if (mWaypoints.empty())
@@ -43,7 +43,7 @@ double Interpolated::getStartTime() const
   return mWaypoints.front().t;
 }
 
-//=============================================================================
+//==============================================================================
 double Interpolated::getEndTime() const
 {
   if (mWaypoints.empty())
@@ -52,7 +52,7 @@ double Interpolated::getEndTime() const
   return mWaypoints.back().t;
 }
 
-//=============================================================================
+//==============================================================================
 double Interpolated::getDuration() const
 {
   if (!mWaypoints.empty())
@@ -61,7 +61,7 @@ double Interpolated::getDuration() const
     return 0.;
 }
 
-//=============================================================================
+//==============================================================================
 void Interpolated::evaluate(double _t, State* _state) const
 {
   if (mWaypoints.empty())
@@ -94,7 +94,7 @@ void Interpolated::evaluate(double _t, State* _state) const
   }
 }
 
-//=============================================================================
+//==============================================================================
 void Interpolated::evaluateDerivative(
     double _t, int _derivative, Eigen::VectorXd& _tangentVector) const
 {
@@ -141,7 +141,7 @@ void Interpolated::evaluateDerivative(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void Interpolated::addWaypoint(double _t, const State* _state)
 {
   State* state = mStateSpace->allocateState();
@@ -152,7 +152,7 @@ void Interpolated::addWaypoint(double _t, const State* _state)
   mWaypoints.insert(it, Waypoint(_t, state));
 }
 
-//=============================================================================
+//==============================================================================
 const statespace::StateSpace::State* Interpolated::getWaypoint(
     size_t _index) const
 {
@@ -162,7 +162,7 @@ const statespace::StateSpace::State* Interpolated::getWaypoint(
     throw std::domain_error("Waypoint index is out of bounds.");
 }
 
-//=============================================================================
+//==============================================================================
 double Interpolated::getWaypointTime(size_t _index) const
 {
   if (_index < mWaypoints.size())
@@ -171,13 +171,13 @@ double Interpolated::getWaypointTime(size_t _index) const
     throw std::domain_error("Waypoint index is out of bounds.");
 }
 
-//=============================================================================
+//==============================================================================
 size_t Interpolated::getNumWaypoints() const
 {
   return mWaypoints.size();
 }
 
-//=============================================================================
+//==============================================================================
 int Interpolated::getWaypointIndexAfterTime(double _t) const
 {
   auto it = std::lower_bound(mWaypoints.begin(), mWaypoints.end(), _t);
@@ -190,20 +190,20 @@ int Interpolated::getWaypointIndexAfterTime(double _t) const
   return std::distance(mWaypoints.begin(), it);
 }
 
-//=============================================================================
+//==============================================================================
 Interpolated::Waypoint::Waypoint(
     double _t, aikido::statespace::StateSpace::State* _state)
   : t(_t), state(_state)
 {
 }
 
-//=============================================================================
+//==============================================================================
 bool Interpolated::Waypoint::operator<(const Waypoint& rhs) const
 {
   return t < rhs.t;
 }
 
-//=============================================================================
+//==============================================================================
 bool Interpolated::Waypoint::operator<(double rhs) const
 {
   return t < rhs;
