@@ -86,7 +86,7 @@ struct createDistanceMetricFor_impl<statespace::SO2>
   }
 };
 
-//===============================================================================
+//==============================================================================
 template <>
 struct createDistanceMetricFor_impl<statespace::SO3>
 {
