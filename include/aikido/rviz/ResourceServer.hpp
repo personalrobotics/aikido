@@ -96,7 +96,7 @@ private:
       const char* method,
       const char* version,
       const char* upload_data,
-      long unsigned int* upload_data_size,
+      size_t* upload_data_size,
       void** ptr);
 
   std::string getMeshURI(const MeshResourcePtr& meshResource) const;
