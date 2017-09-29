@@ -47,7 +47,7 @@ target_include_directories("${PROJECT_NAME}_perception" SYSTEM
 )
 target_link_libraries("${PROJECT_NAME}_perception"
   PUBLIC
-    "${PROJECT_NAME}_util"
+    "${PROJECT_NAME}_io"
     ${DART_LIBRARIES}
     ${geometry_msgs_LIBRARIES}
     ${roscpp_LIBRARIES}
@@ -62,5 +62,6 @@ target_compile_options("${PROJECT_NAME}_perception"
 
 add_component(${PROJECT_NAME} perception)
 add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")
+add_component_dependencies(${PROJECT_NAME} perception io)
 
 format_add_sources(${sources})

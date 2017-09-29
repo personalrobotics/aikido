@@ -1,7 +1,7 @@
 #include "HauserParabolicSmootherHelpers.hpp"
 #include <chrono>
 #include <cmath>
-#include <aikido/util/VanDerCorput.hpp>
+#include <aikido/common/VanDerCorput.hpp>
 #include "Config.h"
 #include "HauserMath.h"
 #include "ParabolicUtil.hpp"
@@ -50,7 +50,7 @@ public:
     // both ends of the segment have already been checked by calling
     // ConfigFeasible(),
     // thus it is no longer needed to check in SegmentFeasible()
-    aikido::util::VanDerCorput vdc{1, false, false, mCheckResolution};
+    aikido::common::VanDerCorput vdc{1, false, false, mCheckResolution};
 
     for (const auto alpha : vdc)
     {
@@ -128,7 +128,7 @@ bool doShortcut(
     double timelimit,
     double checkResolution,
     double tolerance,
-    aikido::util::RNG& rng)
+    aikido::common::RNG& rng)
 {
   if (timelimit < 0.0)
     throw std::invalid_argument("Timelimit should be non-negative");

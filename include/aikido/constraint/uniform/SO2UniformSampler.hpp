@@ -17,7 +17,7 @@ public:
   /// \param _rng Random number generator which determines the sampling
   ///        sequence of this constraint's SampleGenerators.
   SO2Sampleable(
-      std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng);
+      std::shared_ptr<statespace::SO2> _space, std::unique_ptr<common::RNG> _rng);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -28,7 +28,7 @@ public:
 
 private:
   std::shared_ptr<statespace::SO2> mSpace;
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
 };
 
 } // namespace constraint

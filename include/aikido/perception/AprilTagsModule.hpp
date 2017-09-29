@@ -10,8 +10,8 @@
 #include <tf/transform_listener.h>
 #include <aikido/perception/AprilTagsDatabase.hpp>
 #include <aikido/perception/PerceptionModule.hpp>
-#include <aikido/util/CatkinResourceRetriever.hpp>
-#include <aikido/util/yaml.hpp>
+#include <aikido/common/CatkinResourceRetriever.hpp>
+#include <aikido/io/yaml.hpp>
 
 namespace aikido {
 namespace perception {

@@ -32,7 +32,7 @@ public:
   ///        The length of this vector should match the dimension of _space.
   RBoxConstraint(
       std::shared_ptr<statespace::R<N>> _space,
-      std::unique_ptr<util::RNG> _rng,
+      std::unique_ptr<common::RNG> _rng,
       const VectorNd& _lowerLimits,
       const VectorNd& _upperLimits);
 
@@ -74,7 +74,7 @@ public:
 
 private:
   std::shared_ptr<statespace::R<N>> mSpace;
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
   VectorNd mLowerLimits;
   VectorNd mUpperLimits;
 };

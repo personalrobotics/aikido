@@ -16,7 +16,7 @@ namespace detail {
                   aikido::constraint::TestablePtr testable,
                   double timelimit,
                   double checkResolution, double tolerance,
-                  aikido::util::RNG& rng);
+                  aikido::common::RNG& rng);
 
   bool doBlend(ParabolicRamp::DynamicPath& dynamicPath,
                aikido::constraint::TestablePtr testable,

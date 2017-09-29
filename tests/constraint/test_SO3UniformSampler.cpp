@@ -8,8 +8,8 @@ using aikido::statespace::SO3;
 using aikido::constraint::SO3UniformSampler;
 using aikido::constraint::SampleGenerator;
 using aikido::distance::SO3Angular;
-using aikido::util::RNG;
-using aikido::util::RNGWrapper;
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using dart::common::make_unique;
 using Eigen::Vector3d;
 

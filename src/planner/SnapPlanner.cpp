@@ -4,7 +4,7 @@
 #include <aikido/statespace/Interpolator.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/util/VanDerCorput.hpp>
+#include <aikido/common/VanDerCorput.hpp>
 
 namespace aikido {
 namespace planner {
@@ -22,7 +22,7 @@ trajectory::InterpolatedPtr planSnap(
     throw std::invalid_argument(
         "StateSpace of constraint not equal to StateSpace of planning space");
   }
-  aikido::util::VanDerCorput vdc{1, true, true, 0.02}; // TODO junk resolution
+  aikido::common::VanDerCorput vdc{1, true, true, 0.02}; // TODO junk resolution
   auto returnTraj
       = std::make_shared<trajectory::Interpolated>(stateSpace, interpolator);
   auto testState = stateSpace->createState();

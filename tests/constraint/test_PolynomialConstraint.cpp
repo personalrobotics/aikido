@@ -1,5 +1,5 @@
 #include "PolynomialConstraint.hpp"
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 

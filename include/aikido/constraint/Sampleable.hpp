@@ -6,7 +6,7 @@
 #include <boost/optional.hpp>
 
 #include "../statespace/StateSpace.hpp"
-#include "../util/RNG.hpp"
+#include "../common/RNG.hpp"
 
 namespace aikido {
 namespace constraint {

@@ -22,10 +22,10 @@ public:
 
 private:
   SO3UniformSampleGenerator(
-      std::shared_ptr<statespace::SO3> _space, std::unique_ptr<util::RNG> _rng);
+      std::shared_ptr<statespace::SO3> _space, std::unique_ptr<common::RNG> _rng);
 
   std::shared_ptr<statespace::SO3> mSpace;
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
   std::uniform_real_distribution<double> mDistribution;
 
   friend class SO3UniformSampler;
@@ -33,7 +33,7 @@ private:
 
 //==============================================================================
 SO3UniformSampleGenerator::SO3UniformSampleGenerator(
-    std::shared_ptr<statespace::SO3> _space, std::unique_ptr<util::RNG> _rng)
+    std::shared_ptr<statespace::SO3> _space, std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(0., 1.)
 {
   // Do nothing
@@ -50,7 +50,7 @@ bool SO3UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   mSpace->setQuaternion(
       static_cast<statespace::SO3::State*>(_state),
-      util::sampleQuaternion<util::RNG, double, statespace::SO3::Quaternion>(
+      common::sampleQuaternion<common::RNG, double, statespace::SO3::Quaternion>(
           *mRng, mDistribution));
 
   return true;
@@ -70,7 +70,7 @@ bool SO3UniformSampleGenerator::canSample() const
 
 //==============================================================================
 SO3UniformSampler::SO3UniformSampler(
-    std::shared_ptr<statespace::SO3> _space, std::unique_ptr<util::RNG> _rng)
+    std::shared_ptr<statespace::SO3> _space, std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   if (!mSpace)
