@@ -8,18 +8,16 @@ namespace constraint {
 
 /// Constraint that turns a finite sampleable constraint into
 /// a cyclic sampleable constraint.
-/// It's generator  will generate samples in the same order as 
+/// It's generator  will generate samples in the same order as
 /// the original sampleable constraint, but once the samples are exhausted,
-/// it will cycle through the samples, starting from the initial sample. 
-/// The original sampleable should be finite. 
+/// it will cycle through the samples, starting from the initial sample.
+/// The original sampleable should be finite.
 class CyclicSampleable : public Sampleable
 {
 public:
-
-	/// Constructor.
-	/// \param _sampleable Sampleable whose samples are to be iterated.
-  explicit CyclicSampleable(
-    SampleablePtr _sampleable);
+  /// Constructor.
+  /// \param _sampleable Sampleable whose samples are to be iterated.
+  explicit CyclicSampleable(SampleablePtr _sampleable);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -30,11 +28,9 @@ public:
 private:
   SampleablePtr mSampleable;
   statespace::StateSpacePtr mStateSpace;
-
 };
 
+} // namespace constraint
+} // namespace aikido
 
-}
-}
-
-#endif
+#endif // AIKIDO_CONSTRAINT_CYCLICSAMPLEABLE_HPP_

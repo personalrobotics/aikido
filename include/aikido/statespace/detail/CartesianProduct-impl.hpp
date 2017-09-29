@@ -58,7 +58,7 @@ public:
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::shared_ptr<Space> CartesianProduct::getSubspace(size_t _index) const
 {
@@ -80,7 +80,7 @@ std::shared_ptr<Space> CartesianProduct::getSubspace(size_t _index) const
   return space;
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 typename Space::State* CartesianProduct::getSubState(
     State* _state, size_t _index) const
@@ -92,7 +92,7 @@ typename Space::State* CartesianProduct::getSubState(
       reinterpret_cast<char*>(_state) + mOffsets[_index]);
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 const typename Space::State* CartesianProduct::getSubState(
     const State* _state, size_t _index) const
@@ -104,7 +104,7 @@ const typename Space::State* CartesianProduct::getSubState(
       reinterpret_cast<const char*>(_state) + mOffsets[_index]);
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 typename Space::StateHandle CartesianProduct::getSubStateHandle(
     State* _state, size_t _index) const
@@ -113,7 +113,7 @@ typename Space::StateHandle CartesianProduct::getSubStateHandle(
       getSubspace<Space>(_index).get(), getSubState<Space>(_state, _index));
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 typename Space::StateHandleConst CartesianProduct::getSubStateHandle(
     const State* _state, size_t _index) const

@@ -14,10 +14,9 @@ namespace constraint {
 ///
 /// This class does *not* allow constraint on rotation. For each dimension x and
 /// y, this constraint has lowerLimit and upperLimit.
-class SE2BoxConstraint
-  : public constraint::Projectable
-  , public constraint::Sampleable
-  , public constraint::Testable
+class SE2BoxConstraint : public constraint::Projectable,
+                         public constraint::Sampleable,
+                         public constraint::Testable
 {
 public:
   using constraint::Projectable::project;
@@ -28,10 +27,10 @@ public:
   /// \param lowerLimits Lower limits on the state, only on x and y.
   /// \param upperLimits Upper limits on the state, only on x and y.
   SE2BoxConstraint(
-    std::shared_ptr<statespace::SE2> space,
-    std::unique_ptr<util::RNG> rng,
-    const Eigen::Vector2d& lowerLimits,
-    const Eigen::Vector2d& upperLimits);
+      std::shared_ptr<statespace::SE2> space,
+      std::unique_ptr<util::RNG> rng,
+      const Eigen::Vector2d& lowerLimits,
+      const Eigen::Vector2d& upperLimits);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -41,12 +40,12 @@ public:
 
   // Documentation inherited.
   bool project(
-    const statespace::StateSpace::State* s,
-    statespace::StateSpace::State* out) const override;
+      const statespace::StateSpace::State* s,
+      statespace::StateSpace::State* out) const override;
 
   // Documentation inherited.
-  std::unique_ptr<constraint::SampleGenerator>
-    createSampleGenerator() const override;
+  std::unique_ptr<constraint::SampleGenerator> createSampleGenerator()
+      const override;
 
   /// Returns lower limits of this constraint.
   Eigen::Vector2d getLowerLimits() const;

@@ -1,5 +1,6 @@
-#include <stdexcept>
 #include <aikido/constraint/uniform/SE2BoxConstraint.hpp>
+
+#include <stdexcept>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/SO2.hpp>
 
@@ -8,9 +9,8 @@ namespace constraint {
 
 using constraint::ConstraintType;
 
-//=============================================================================
-class SE2BoxConstraintSampleGenerator
-  : public constraint::SampleGenerator
+//==============================================================================
+class SE2BoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
 public:
   statespace::StateSpacePtr getStateSpace() const override;
@@ -23,10 +23,10 @@ public:
 
 private:
   SE2BoxConstraintSampleGenerator(
-    std::shared_ptr<statespace::SE2> _space,
-    std::unique_ptr<util::RNG> _rng,
-    const Eigen::Vector3d& _lowerLimits,
-    const Eigen::Vector3d& _upperLimits);
+      std::shared_ptr<statespace::SE2> _space,
+      std::unique_ptr<util::RNG> _rng,
+      const Eigen::Vector3d& _lowerLimits,
+      const Eigen::Vector3d& _upperLimits);
 
   const size_t mDimension;
   std::shared_ptr<statespace::SE2> mSpace;
@@ -35,15 +35,13 @@ private:
   friend class SE2BoxConstraint;
 };
 
-//=============================================================================
+//==============================================================================
 SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
-      std::shared_ptr<statespace::SE2> _space,
-      std::unique_ptr<util::RNG> _rng,
-      const Eigen::Vector3d& _lowerLimits,
-      const Eigen::Vector3d& _upperLimits)
-  : mDimension(3)
-  , mSpace(std::move(_space))
-  , mRng(std::move(_rng))
+    std::shared_ptr<statespace::SE2> _space,
+    std::unique_ptr<util::RNG> _rng,
+    const Eigen::Vector3d& _lowerLimits,
+    const Eigen::Vector3d& _upperLimits)
+  : mDimension(3), mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   mDistributions.reserve(mDimension);
 
@@ -51,16 +49,15 @@ SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
     mDistributions.emplace_back(_lowerLimits[i], _upperLimits[i]);
 }
 
-//=============================================================================
-statespace::StateSpacePtr
-  SE2BoxConstraintSampleGenerator::getStateSpace() const
+//==============================================================================
+statespace::StateSpacePtr SE2BoxConstraintSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool SE2BoxConstraintSampleGenerator::sample(
-  statespace::StateSpace::State* _state)
+    statespace::StateSpace::State* _state)
 {
   Eigen::Vector3d tangent;
 
@@ -72,25 +69,24 @@ bool SE2BoxConstraintSampleGenerator::sample(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int SE2BoxConstraintSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-//=============================================================================
+//==============================================================================
 bool SE2BoxConstraintSampleGenerator::canSample() const
 {
   return true;
 }
 
-//=============================================================================
-SE2BoxConstraint
-  ::SE2BoxConstraint(
-      std::shared_ptr<statespace::SE2> space,
-      std::unique_ptr<util::RNG> rng,
-      const Eigen::Vector2d& lowerLimits,
-      const Eigen::Vector2d& upperLimits)
+//==============================================================================
+SE2BoxConstraint::SE2BoxConstraint(
+    std::shared_ptr<statespace::SE2> space,
+    std::unique_ptr<util::RNG> rng,
+    const Eigen::Vector2d& lowerLimits,
+    const Eigen::Vector2d& upperLimits)
   : mSpace(std::move(space))
   , mRng(std::move(rng))
   , mRnDimension(2)
@@ -107,16 +103,16 @@ SE2BoxConstraint
   if (static_cast<std::size_t>(mLowerLimits.size()) != mDimension)
   {
     std::stringstream msg;
-    msg << "Lower limits have incorrect dimension: expected "
-        << mDimension << ", got " << mLowerLimits.size() << ".";
+    msg << "Lower limits have incorrect dimension: expected " << mDimension
+        << ", got " << mLowerLimits.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
   if (static_cast<std::size_t>(mUpperLimits.size()) != mDimension)
   {
     std::stringstream msg;
-    msg << "Upper limits have incorrect dimension: expected "
-        << mDimension << ", got " << mUpperLimits.size() << ".";
+    msg << "Upper limits have incorrect dimension: expected " << mDimension
+        << ", got " << mUpperLimits.size() << ".";
     throw std::invalid_argument(msg.str());
   }
 
@@ -126,21 +122,22 @@ SE2BoxConstraint
     {
       std::stringstream msg;
       msg << "Unable to sample from StateSpace because lower limit exceeds"
-          << " upper limit on dimension " << i << ": "
-          << mLowerLimits[i] << " > " << mUpperLimits[i] << ".";
+          << " upper limit on dimension " << i << ": " << mLowerLimits[i]
+          << " > " << mUpperLimits[i] << ".";
       throw std::invalid_argument(msg.str());
     }
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
-bool SE2BoxConstraint::isSatisfied(const statespace::StateSpace::State* state) const
+//==============================================================================
+bool SE2BoxConstraint::isSatisfied(
+    const statespace::StateSpace::State* state) const
 {
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);
@@ -153,10 +150,10 @@ bool SE2BoxConstraint::isSatisfied(const statespace::StateSpace::State* state) c
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 bool SE2BoxConstraint::project(
-  const statespace::StateSpace::State* s,
-  statespace::StateSpace::State* out) const
+    const statespace::StateSpace::State* s,
+    statespace::StateSpace::State* out) const
 {
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(s), tangent);
@@ -174,9 +171,9 @@ bool SE2BoxConstraint::project(
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<constraint::SampleGenerator>
-  SE2BoxConstraint::createSampleGenerator() const
+SE2BoxConstraint::createSampleGenerator() const
 {
   if (!mRng)
     throw std::invalid_argument("mRng is null.");
@@ -186,24 +183,24 @@ std::unique_ptr<constraint::SampleGenerator>
     if (!(std::isfinite(mLowerLimits[i]) && std::isfinite(mUpperLimits[i])))
     {
       std::stringstream msg;
-      msg << "Unable to sample from StateSpace because dimension "
-          << i << " is unbounded.";
+      msg << "Unable to sample from StateSpace because dimension " << i
+          << " is unbounded.";
       throw std::runtime_error(msg.str());
     }
   }
 
   return std::unique_ptr<SE2BoxConstraintSampleGenerator>(
-    new SE2BoxConstraintSampleGenerator(
-      mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
+      new SE2BoxConstraintSampleGenerator(
+          mSpace, mRng->clone(), mLowerLimits, mUpperLimits));
 }
 
-//=============================================================================
+//==============================================================================
 Eigen::Vector2d SE2BoxConstraint::getLowerLimits() const
 {
   return mLowerLimits.tail<2>();
 }
 
-//=============================================================================
+//==============================================================================
 Eigen::Vector2d SE2BoxConstraint::getUpperLimits() const
 {
   return mUpperLimits.tail<2>();

@@ -9,7 +9,7 @@ namespace aikido {
 namespace control {
 namespace ros {
 
-//=============================================================================
+//==============================================================================
 RosTrajectoryExecutionException::RosTrajectoryExecutionException(
     const std::string& what, actionlib::TerminalState /*terminalState*/)
   : std::runtime_error(what)
@@ -17,7 +17,7 @@ RosTrajectoryExecutionException::RosTrajectoryExecutionException(
   // Do nothing
 }
 
-//=============================================================================
+//==============================================================================
 RosTrajectoryExecutionException::RosTrajectoryExecutionException(
     const std::string& what, int /*result*/)
   : std::runtime_error(what)

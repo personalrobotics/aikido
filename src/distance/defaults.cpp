@@ -3,7 +3,7 @@
 namespace aikido {
 namespace distance {
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<DistanceMetric> createDistanceMetric(
     statespace::StateSpacePtr _sspace)
 {

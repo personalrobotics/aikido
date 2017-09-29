@@ -4,7 +4,7 @@
 namespace aikido {
 namespace statespace {
 
-//=============================================================================
+//==============================================================================
 CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
   : mSubspaces(std::move(_subspaces))
   , mOffsets(mSubspaces.size(), 0u)
@@ -25,25 +25,25 @@ CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
   }
 }
 
-//=============================================================================
+//==============================================================================
 auto CartesianProduct::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
-//=============================================================================
+//==============================================================================
 size_t CartesianProduct::getNumSubspaces() const
 {
   return mSubspaces.size();
 }
 
-//=============================================================================
+//==============================================================================
 size_t CartesianProduct::getStateSizeInBytes() const
 {
   return mSizeInBytes;
 }
 
-//=============================================================================
+//==============================================================================
 StateSpace::State* CartesianProduct::allocateStateInBuffer(void* _buffer) const
 {
   auto state = reinterpret_cast<State*>(_buffer);
@@ -54,7 +54,7 @@ StateSpace::State* CartesianProduct::allocateStateInBuffer(void* _buffer) const
   return state;
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::freeStateInBuffer(StateSpace::State* _state) const
 {
   auto state = static_cast<State*>(_state);
@@ -63,7 +63,7 @@ void CartesianProduct::freeStateInBuffer(StateSpace::State* _state) const
     mSubspaces[i - 1]->freeStateInBuffer(getSubState<>(state, i - 1));
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::compose(
     const StateSpace::State* _state1,
     const StateSpace::State* _state2,
@@ -86,7 +86,7 @@ void CartesianProduct::compose(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::getIdentity(StateSpace::State* _out) const
 {
   auto state = static_cast<State*>(_out);
@@ -97,7 +97,7 @@ void CartesianProduct::getIdentity(StateSpace::State* _out) const
   }
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::getInverse(
     const StateSpace::State* _in, StateSpace::State* _out) const
 {
@@ -114,7 +114,7 @@ void CartesianProduct::getInverse(
   }
 }
 
-//=============================================================================
+//==============================================================================
 size_t CartesianProduct::getDimension() const
 {
   size_t dim = 0;
@@ -125,7 +125,7 @@ size_t CartesianProduct::getDimension() const
   return dim;
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::copyState(
     const StateSpace::State* _source, StateSpace::State* _destination) const
 {
@@ -138,7 +138,7 @@ void CartesianProduct::copyState(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::expMap(
     const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
@@ -164,7 +164,7 @@ void CartesianProduct::expMap(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::logMap(
     const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
 {
@@ -190,7 +190,7 @@ void CartesianProduct::logMap(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void CartesianProduct::print(
     const StateSpace::State* _state, std::ostream& _os) const
 {

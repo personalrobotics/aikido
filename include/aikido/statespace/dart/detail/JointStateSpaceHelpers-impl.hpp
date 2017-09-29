@@ -16,13 +16,13 @@ namespace detail {
 using ::dart::common::make_unique;
 using Ptr = std::unique_ptr<JointStateSpace>;
 
-//=============================================================================
+//==============================================================================
 template <class JointType>
 struct createJointStateSpaceFor_impl
 {
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
 {
@@ -35,7 +35,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
 {
@@ -45,7 +45,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
 {
@@ -55,7 +55,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createJointStateSpaceFor_impl<::dart::dynamics::BallJoint>
 {
@@ -65,7 +65,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::BallJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createJointStateSpaceFor_impl<::dart::dynamics::PlanarJoint>
 {
@@ -75,7 +75,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PlanarJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
 {
@@ -85,7 +85,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <>
 struct createJointStateSpaceFor_impl<::dart::dynamics::WeldJoint>
 {
@@ -95,7 +95,7 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::WeldJoint>
   }
 };
 
-//=============================================================================
+//==============================================================================
 using SupportedJoints = util::type_list<::dart::dynamics::BallJoint,
                                         ::dart::dynamics::FreeJoint,
                                         ::dart::dynamics::PlanarJoint,
@@ -110,7 +110,7 @@ using SupportedJoints = util::type_list<::dart::dynamics::BallJoint,
 
 } // namespace detail
 
-//=============================================================================
+//==============================================================================
 template <class JointType>
 std::unique_ptr<JointStateSpace> createJointStateSpaceFor(JointType* _joint)
 {

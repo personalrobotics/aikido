@@ -5,7 +5,7 @@
 namespace aikido {
 namespace control {
 
-//=============================================================================
+//==============================================================================
 BarrettFingerKinematicSimulationPositionCommandExecutor::
     BarrettFingerKinematicSimulationPositionCommandExecutor(
         ::dart::dynamics::ChainPtr finger,
@@ -87,7 +87,7 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::
   mDistalLimits = mDistalDof->getPositionLimits();
 }
 
-//=============================================================================
+//==============================================================================
 std::future<void>
 BarrettFingerKinematicSimulationPositionCommandExecutor::execute(
     const Eigen::VectorXd& goalPosition)
@@ -119,14 +119,14 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::execute(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void BarrettFingerKinematicSimulationPositionCommandExecutor::terminate()
 {
   mPromise->set_value();
   mInExecution = false;
 }
 
-//=============================================================================
+//==============================================================================
 void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 {
   using namespace std::chrono;
@@ -231,7 +231,7 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
   }
 }
 
-//=============================================================================
+//==============================================================================
 bool BarrettFingerKinematicSimulationPositionCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {

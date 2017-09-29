@@ -4,67 +4,67 @@
 
 namespace aikido {
 namespace statespace {
-//=============================================================================
+//==============================================================================
 SO3::SO3::State::State() : mValue(1., 0., 0., 0.)
 {
 }
 
-//=============================================================================
+//==============================================================================
 SO3::SO3::State::State(const Quaternion& _quaternion) : mValue(_quaternion)
 {
   // TODO: Check if normalized.
 }
 
-//=============================================================================
+//==============================================================================
 auto SO3::State::getQuaternion() const -> const Quaternion&
 {
   return mValue;
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::State::setQuaternion(const Quaternion& _quaternion)
 {
   // TODO: Check if normalized.
   mValue = _quaternion;
 }
 
-//=============================================================================
+//==============================================================================
 auto SO3::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
-//=============================================================================
+//==============================================================================
 auto SO3::getQuaternion(const State* _state) const -> const Quaternion&
 {
   return _state->mValue;
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::setQuaternion(State* _state, const Quaternion& _quaternion) const
 {
   _state->mValue = _quaternion;
 }
 
-//=============================================================================
+//==============================================================================
 size_t SO3::getStateSizeInBytes() const
 {
   return sizeof(State);
 }
 
-//=============================================================================
+//==============================================================================
 StateSpace::State* SO3::allocateStateInBuffer(void* _buffer) const
 {
   return new (_buffer) State;
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::freeStateInBuffer(StateSpace::State* _state) const
 {
   static_cast<State*>(_state)->~State();
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::compose(
     const StateSpace::State* _state1,
     const StateSpace::State* _state2,
@@ -81,14 +81,14 @@ void SO3::compose(
   out->mValue = state1->mValue * state2->mValue;
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::getIdentity(StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
   setQuaternion(out, Quaternion::Identity());
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::getInverse(
     const StateSpace::State* _in, StateSpace::State* _out) const
 {
@@ -102,13 +102,13 @@ void SO3::getInverse(
   setQuaternion(out, getQuaternion(in).inverse());
 }
 
-//=============================================================================
+//==============================================================================
 size_t SO3::getDimension() const
 {
   return 3;
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::copyState(
     const StateSpace::State* _source, StateSpace::State* _destination) const
 {
@@ -118,7 +118,7 @@ void SO3::copyState(
   setQuaternion(destination, getQuaternion(source));
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
@@ -139,7 +139,7 @@ void SO3::expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
   out->setQuaternion(Quaternion(transform.rotation()));
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
 {
   if (_tangent.rows() != 3)
@@ -153,7 +153,7 @@ void SO3::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
   _tangent = dart::math::logMap(rotMat);
 }
 
-//=============================================================================
+//==============================================================================
 void SO3::print(const StateSpace::State* _state, std::ostream& _os) const
 {
   auto state = static_cast<const State*>(_state);

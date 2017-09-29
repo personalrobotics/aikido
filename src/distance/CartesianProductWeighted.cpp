@@ -3,7 +3,7 @@
 namespace aikido {
 namespace distance {
 
-//=============================================================================
+//==============================================================================
 CartesianProductWeighted::CartesianProductWeighted(
     std::shared_ptr<statespace::CartesianProduct> _space,
     std::vector<DistanceMetricPtr> _metrics)
@@ -45,7 +45,7 @@ CartesianProductWeighted::CartesianProductWeighted(
   }
 }
 
-//=============================================================================
+//==============================================================================
 CartesianProductWeighted::CartesianProductWeighted(
     std::shared_ptr<statespace::CartesianProduct> _space,
     std::vector<std::pair<DistanceMetricPtr, double>> _metrics)
@@ -91,13 +91,13 @@ CartesianProductWeighted::CartesianProductWeighted(
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr CartesianProductWeighted::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 double CartesianProductWeighted::distance(
     const aikido::statespace::StateSpace::State* _state1,
     const aikido::statespace::StateSpace::State* _state2) const

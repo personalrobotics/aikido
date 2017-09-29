@@ -15,7 +15,7 @@ extern template class RJoint<3>;
 
 extern template class RJoint<6>;
 
-//=============================================================================
+//==============================================================================
 template <int N>
 RJoint<N>::RJoint(typename RJoint<N>::DartJoint* _joint)
   : R<N>(), JointStateSpace(_joint)
@@ -25,7 +25,7 @@ RJoint<N>::RJoint(typename RJoint<N>::DartJoint* _joint)
       "Invalid dimension. Dynamic size dimension is not supported by RnJoint");
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void RJoint<N>::convertPositionsToState(
     const Eigen::VectorXd& _positions, StateSpace::State* _state) const
@@ -33,7 +33,7 @@ void RJoint<N>::convertPositionsToState(
   this->setValue(static_cast<typename R<N>::State*>(_state), _positions);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void RJoint<N>::convertStateToPositions(
     const StateSpace::State* _state, Eigen::VectorXd& _positions) const

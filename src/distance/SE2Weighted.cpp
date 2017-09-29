@@ -4,7 +4,7 @@
 namespace aikido {
 namespace distance {
 
-//=============================================================================
+//==============================================================================
 SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space)
   : mStateSpace(std::move(space)), mWeights(Eigen::Vector2d::Ones())
 {
@@ -12,7 +12,7 @@ SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space)
     throw std::invalid_argument("space is nullptr.");
 }
 
-//=============================================================================
+//==============================================================================
 SE2Weighted::SE2Weighted(
     std::shared_ptr<statespace::SE2> space, const Eigen::Vector2d& weights)
   : mStateSpace(std::move(space)), mWeights(weights)
@@ -32,13 +32,13 @@ SE2Weighted::SE2Weighted(
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr SE2Weighted::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 double SE2Weighted::distance(
     const aikido::statespace::StateSpace::State* state1,
     const aikido::statespace::StateSpace::State* state2) const
@@ -58,13 +58,12 @@ double SE2Weighted::distance(
   angularDistance = tangent2[0] - tangent1[0];
   angularDistance = std::fmod(std::abs(angularDistance), 2.0 * M_PI);
   if (angularDistance > M_PI)
-    angularDistance = 2*M_PI - angularDistance;
-
+    angularDistance = 2 * M_PI - angularDistance;
 
   // Difference between R^2 positions
   linearDistance = tangent2.tail<2>() - tangent1.tail<2>();
 
-  return mWeights[0]*angularDistance + mWeights[1]*(linearDistance.norm());
+  return mWeights[0] * angularDistance + mWeights[1] * (linearDistance.norm());
 }
 
 } // namespace distance

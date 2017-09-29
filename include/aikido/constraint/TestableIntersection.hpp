@@ -1,9 +1,9 @@
 #ifndef AIKIDO_CONSTRAINT_TESTABLEINTERSECTION_HPP_
 #define AIKIDO_CONSTRAINT_TESTABLEINTERSECTION_HPP_
 
-#include "Testable.hpp"
 #include <memory>
 #include <vector>
+#include "Testable.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -18,13 +18,12 @@ public:
   /// \param statespace StateSpace this constraint operates in.
   /// \param constraints Set of constraints.
   TestableIntersection(
-    statespace::StateSpacePtr _stateSpace,
-    std::vector<TestablePtr> _constraints = 
-      std::vector<TestablePtr>());
+      statespace::StateSpacePtr _stateSpace,
+      std::vector<TestablePtr> _constraints = std::vector<TestablePtr>());
 
   // Documentation inherited.
   bool isSatisfied(
-    const aikido::statespace::StateSpace::State* state) const override;
+      const aikido::statespace::StateSpace::State* state) const override;
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -46,4 +45,4 @@ using TestableIntersectionPtr = std::shared_ptr<TestableIntersection>;
 } // namespace constraint
 } // namespace aikido
 
-#endif  // AIKIDO_CONSTRAINT_TESTABLEINTERSECTION_HPP_
+#endif // AIKIDO_CONSTRAINT_TESTABLEINTERSECTION_HPP_

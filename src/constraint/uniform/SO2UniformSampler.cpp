@@ -4,7 +4,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 class SO2UniformSampleGenerator : public constraint::SampleGenerator
 {
 public:
@@ -22,61 +22,53 @@ public:
 
 private:
   SO2UniformSampleGenerator(
-    std::shared_ptr<statespace::SO2> _space,
-    std::unique_ptr<util::RNG> _rng);
+      std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng);
 
   std::shared_ptr<statespace::SO2> mSpace;
   std::unique_ptr<util::RNG> mRng;
-  std::uniform_real_distribution<double> mDistribution; 
+  std::uniform_real_distribution<double> mDistribution;
 
   friend class SO2Sampleable;
 };
 
-//=============================================================================
+//==============================================================================
 SO2UniformSampleGenerator::SO2UniformSampleGenerator(
-      std::shared_ptr<statespace::SO2> _space,
-      std::unique_ptr<util::RNG> _rng)
-  : mSpace(std::move(_space))
-  , mRng(std::move(_rng))
-  , mDistribution(-M_PI, M_PI)
+    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng)
+  : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(-M_PI, M_PI)
 {
+  // Do nothing
 }
 
-//=============================================================================
-statespace::StateSpacePtr
-  SO2UniformSampleGenerator::getStateSpace() const
+//==============================================================================
+statespace::StateSpacePtr SO2UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
-bool SO2UniformSampleGenerator::sample(
-  statespace::StateSpace::State* _state)
+//==============================================================================
+bool SO2UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   const double angle = mDistribution(*mRng);
   mSpace->setAngle(static_cast<statespace::SO2::State*>(_state), angle);
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int SO2UniformSampleGenerator::getNumSamples() const
 {
   return NO_LIMIT;
 }
 
-//=============================================================================
+//==============================================================================
 bool SO2UniformSampleGenerator::canSample() const
 {
   return true;
 }
 
-//=============================================================================
-SO2Sampleable
-  ::SO2Sampleable(
-      std::shared_ptr<statespace::SO2> _space,
-      std::unique_ptr<util::RNG> _rng)
-  : mSpace(std::move(_space))
-  , mRng(std::move(_rng))
+//==============================================================================
+SO2Sampleable::SO2Sampleable(
+    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng)
+  : mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
@@ -85,20 +77,18 @@ SO2Sampleable
     throw std::invalid_argument("RNG is null.");
 }
 
-//=============================================================================
-statespace::StateSpacePtr SO2Sampleable
-  ::getStateSpace() const
+//==============================================================================
+statespace::StateSpacePtr SO2Sampleable::getStateSpace() const
 {
   return mSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<constraint::SampleGenerator>
-  SO2Sampleable::createSampleGenerator() const
+SO2Sampleable::createSampleGenerator() const
 {
   return std::unique_ptr<SO2UniformSampleGenerator>(
-    new SO2UniformSampleGenerator(
-      mSpace, mRng->clone()));
+      new SO2UniformSampleGenerator(mSpace, mRng->clone()));
 }
 
 } // namespace statespace

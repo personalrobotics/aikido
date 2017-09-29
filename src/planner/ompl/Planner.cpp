@@ -11,7 +11,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-//=============================================================================
+//==============================================================================
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
@@ -134,7 +134,7 @@ namespace ompl {
   return si;
 }
 
-//=============================================================================
+//==============================================================================
 ompl_shared_ptr<::ompl::base::GoalRegion> getGoalRegion(
     ::ompl::base::SpaceInformationPtr _si,
     constraint::TestablePtr _goalTestable,
@@ -160,7 +160,7 @@ ompl_shared_ptr<::ompl::base::GoalRegion> getGoalRegion(
       _si, std::move(_goalTestable), _goalSampler->createSampleGenerator());
 }
 
-//=============================================================================
+//==============================================================================
 trajectory::InterpolatedPtr planOMPL(
     const ::ompl::base::PlannerPtr& _planner,
     const ::ompl::base::ProblemDefinitionPtr& _pdef,
@@ -200,7 +200,7 @@ trajectory::InterpolatedPtr planOMPL(
   return nullptr;
 }
 
-//=============================================================================
+//==============================================================================
 trajectory::InterpolatedPtr planCRRT(
     const statespace::StateSpace::State* _start,
     constraint::TestablePtr _goalTestable,
@@ -284,7 +284,7 @@ trajectory::InterpolatedPtr planCRRT(
       _maxPlanTime);
 }
 
-//=============================================================================
+//==============================================================================
 trajectory::InterpolatedPtr planCRRTConnect(
     const statespace::StateSpace::State* _start,
     constraint::TestablePtr _goalTestable,
@@ -375,7 +375,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
       _maxPlanTime);
 }
 
-//=============================================================================
+//==============================================================================
 std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
@@ -445,7 +445,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   std::pair<std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
   return std::make_pair(std::move(returnTraj), shorten_success);
 }
-//=============================================================================
+//==============================================================================
 
 // Following are helper functions.
 
@@ -492,7 +492,7 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
   }
   return returnInterpolated;
 }
-//=============================================================================
+//==============================================================================
 
 } // ns ompl
 } // ns planner
