@@ -1,9 +1,7 @@
 #ifndef AIKIDO_UTIL_VANDERCORPUT_HPP_
 #define AIKIDO_UTIL_VANDERCORPUT_HPP_
 
-#include <cassert>
 #include <limits>
-#include <tuple>
 #include <boost/iterator/iterator_facade.hpp>
 
 namespace aikido {
@@ -50,6 +48,11 @@ public:
   ///
   /// \return pair of sample and maximum gap in samples
   std::pair<double, double> operator[](int n) const;
+
+  /// Returns the total length of sequence.
+  ///
+  /// \return Non-negative number of the tatal length of sequence.
+  size_t getLength() const;
 
 private:
   constexpr static int BASE{2};

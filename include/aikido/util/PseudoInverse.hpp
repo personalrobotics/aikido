@@ -1,7 +1,6 @@
 #ifndef AIKIDO_UTIL_PSEUDOINVERSE_HPP_
 #define AIKIDO_UTIL_PSEUDOINVERSE_HPP_
 
-#include <memory>
 #include <Eigen/Dense>
 
 namespace aikido {

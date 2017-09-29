@@ -1,6 +1,7 @@
 #include <aikido/util/VanDerCorput.hpp>
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <stdexcept>
 
@@ -80,6 +81,12 @@ pair<double, double> VanDerCorput::operator[](int n) const
 
   val_res.first *= mSpan;
   return val_res;
+}
+
+//==============================================================================
+size_t VanDerCorput::getLength() const
+{
+  return std::distance(begin(), end());
 }
 
 //==============================================================================
