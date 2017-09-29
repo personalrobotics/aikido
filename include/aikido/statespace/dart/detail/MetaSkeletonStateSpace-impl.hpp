@@ -2,7 +2,7 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
     const ::dart::dynamics::Joint* _joint) const
@@ -14,7 +14,7 @@ std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
   return getSubspace<Space>(index);
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
     size_t _index) const

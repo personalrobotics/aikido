@@ -1,9 +1,9 @@
 #ifndef AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLEABLE_HPP_
 #define AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLEABLE_HPP_
 
-#include "Sampleable.hpp"
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include <dart/dynamics/dynamics.hpp>
+#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "Sampleable.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -18,23 +18,22 @@ namespace constraint {
 class InverseKinematicsSampleable : public Sampleable
 {
 public:
-
   /// Constructor.
   /// \param _stateSpace StateSpace of a skeleton
   ///        one of whose frame is being constrained by _poseConstraint.
   /// \param _poseConstraint This samples poses for a frame in the skeleton.
   /// \param _seedConstraint This samples configurations for the skeleton.
   ///        These samples are used as seeds when solving inverse kinematics.
-  /// \param _inverseKinematics InverseKinematics solver for the pose being 
+  /// \param _inverseKinematics InverseKinematics solver for the pose being
   ///        sampled by _poseConstaint.
   /// \param _maxNumTrials Max number of trials for its sample generator
   ///        to retry sampling and finding an inverse kinematics solution.
   InverseKinematicsSampleable(
-    statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    SampleablePtr _poseConstraint,
-    SampleablePtr _seedConstraint,
-    dart::dynamics::InverseKinematicsPtr _inverseKinematics,
-    int _maxNumTrials);
+      statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      SampleablePtr _poseConstraint,
+      SampleablePtr _seedConstraint,
+      dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+      int _maxNumTrials);
 
   virtual ~InverseKinematicsSampleable() = default;
 
@@ -43,8 +42,7 @@ public:
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
-  
-  
+
 private:
   statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
   SampleablePtr mPoseConstraint;
@@ -53,7 +51,7 @@ private:
   int mMaxNumTrials;
 };
 
-} // namespace constraint 
+} // namespace constraint
 } // namespace aikido
 
 #endif // AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLE_HPP_

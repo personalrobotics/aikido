@@ -1,13 +1,13 @@
 #ifndef AIKIDO_CONSTRAINT_TSR_HPP_
 #define AIKIDO_CONSTRAINT_TSR_HPP_
 
-#include "Sampleable.hpp"
-#include "../statespace/SE3.hpp"
 #include <Eigen/Dense>
-#include "Projectable.hpp"
-#include "Differentiable.hpp"
-#include "Testable.hpp"
 #include <dart/math/MathTypes.hpp>
+#include "../statespace/SE3.hpp"
+#include "Differentiable.hpp"
+#include "Projectable.hpp"
+#include "Sampleable.hpp"
+#include "Testable.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -43,11 +43,10 @@ public:
   /// \param _testableTolerance tolerance used in isSatisfiable as testable
   TSR(std::unique_ptr<util::RNG> _rng,
       const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
-      const Eigen::Matrix<double, 6, 2>& _Bw =
-          Eigen::Matrix<double, 6, 2>::Zero(),
+      const Eigen::Matrix<double, 6, 2>& _Bw
+      = Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
       double _testableTolerance = 1e-6);
-
 
   /// Constructor with default random seed generator.
   /// \param _T0_w transform from the origin to the TSR frame w
@@ -58,8 +57,8 @@ public:
   /// \param _Tw_e end-effector offset transform in the coordinates of w
   /// \param _testableTolerance tolerance used in isSatisfiable as testable
   TSR(const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
-      const Eigen::Matrix<double, 6, 2>& _Bw =
-          Eigen::Matrix<double, 6, 2>::Zero(),
+      const Eigen::Matrix<double, 6, 2>& _Bw
+      = Eigen::Matrix<double, 6, 2>::Zero(),
       const Eigen::Isometry3d& _Tw_e = Eigen::Isometry3d::Identity(),
       double _testableTolerance = 1e-6);
 
@@ -94,9 +93,8 @@ public:
   size_t getConstraintDimension() const override;
 
   // Documentation inherited.
-  void getValue(
-    const statespace::StateSpace::State* _s,
-    Eigen::VectorXd& _out) const override;
+  void getValue(const statespace::StateSpace::State* _s, Eigen::VectorXd& _out)
+      const override;
 
   /// Jacobian of TSR with respect to the se(3) tangent vector of _s.
   /// The jacobian is w.r.t. the origin frame.
@@ -106,20 +104,21 @@ public:
   /// \param _s State to be evaluated at.
   /// \param[out] _out Jacobian, 6 x 6 matrix.
   void getJacobian(
-    const statespace::StateSpace::State* _s,
-    Eigen::MatrixXd& _out) const override;
+      const statespace::StateSpace::State* _s,
+      Eigen::MatrixXd& _out) const override;
 
   // Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  bool project(const statespace::StateSpace::State* _s,
+  bool project(
+      const statespace::StateSpace::State* _s,
       statespace::StateSpace::State* _out) const override;
 
   /// Get the testable tolerance used in isSatisfiable.
   /// \param[out] _out Testable tolerance, double.
   double getTestableTolerance();
-  
+
   /// Set the testable tolerance used in isSatisfiable.
   /// \param _testableTolerance Testable tolerance to set.
   void setTestableTolerance(double _testableTolerance);
@@ -148,4 +147,4 @@ using TSRPtr = std::shared_ptr<TSR>;
 } // namespace constraint
 } // namespace aikido
 
-#endif  // AIKIDO_CONSTRAINT_TSR_HPP_
+#endif // AIKIDO_CONSTRAINT_TSR_HPP_

@@ -5,7 +5,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-//=============================================================================
+//==============================================================================
 StateValidityChecker::StateValidityChecker(
     const ::ompl::base::SpaceInformationPtr& _si,
     constraint::TestablePtr _constraint)
@@ -22,7 +22,7 @@ StateValidityChecker::StateValidityChecker(
   }
 }
 
-//=============================================================================
+//==============================================================================
 bool StateValidityChecker::isValid(const ::ompl::base::State* _state) const
 {
   auto st = static_cast<const GeometricStateSpace::StateType*>(_state);

@@ -11,13 +11,13 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-//=============================================================================
+//==============================================================================
 SO3Joint::SO3Joint(::dart::dynamics::BallJoint* _joint)
   : SO3(), JointStateSpace(_joint)
 {
 }
 
-//=============================================================================
+//==============================================================================
 void SO3Joint::convertPositionsToState(
     const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
@@ -26,7 +26,7 @@ void SO3Joint::convertPositionsToState(
       SO3::Quaternion(BallJoint::convertToRotation(_positions)));
 }
 
-//=============================================================================
+//==============================================================================
 void SO3Joint::convertStateToPositions(
     const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {

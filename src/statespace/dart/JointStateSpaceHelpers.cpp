@@ -4,7 +4,7 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<JointStateSpace> createJointStateSpace(
     ::dart::dynamics::Joint* _joint)
 {

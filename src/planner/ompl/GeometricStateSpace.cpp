@@ -10,13 +10,13 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-//=============================================================================
+//==============================================================================
 GeometricStateSpace::StateType::StateType(statespace::StateSpace::State* _st)
   : mState(_st), mValid(true)
 {
 }
 
-//=============================================================================
+//==============================================================================
 GeometricStateSpace::GeometricStateSpace(
     statespace::StateSpacePtr _sspace,
     statespace::InterpolatorPtr _interpolator,
@@ -87,25 +87,25 @@ GeometricStateSpace::GeometricStateSpace(
   }
 }
 
-//=============================================================================
+//==============================================================================
 unsigned int GeometricStateSpace::getDimension() const
 {
   return mStateSpace->getDimension();
 }
 
-//=============================================================================
+//==============================================================================
 double GeometricStateSpace::getMaximumExtent() const
 {
   return std::numeric_limits<double>::infinity();
 }
 
-//=============================================================================
+//==============================================================================
 double GeometricStateSpace::getMeasure() const
 {
   throw std::runtime_error("getMeasure not implemented.");
 }
 
-//=============================================================================
+//==============================================================================
 void GeometricStateSpace::enforceBounds(::ompl::base::State* _state) const
 {
   auto state = static_cast<const StateType*>(_state);
@@ -120,7 +120,7 @@ void GeometricStateSpace::enforceBounds(::ompl::base::State* _state) const
   mStateSpace->copyState(temporaryState, state->mState);
 }
 
-//=============================================================================
+//==============================================================================
 bool GeometricStateSpace::satisfiesBounds(
     const ::ompl::base::State* _state) const
 {
@@ -133,7 +133,7 @@ bool GeometricStateSpace::satisfiesBounds(
   return mBoundsConstraint->isSatisfied(state->mState);
 }
 
-//=============================================================================
+//==============================================================================
 void GeometricStateSpace::copyState(
     ::ompl::base::State* _destination, const ::ompl::base::State* _source) const
 {
@@ -147,7 +147,7 @@ void GeometricStateSpace::copyState(
   dst->mValid = sst->mValid;
 }
 
-//=============================================================================
+//==============================================================================
 double GeometricStateSpace::distance(
     const ::ompl::base::State* _state1,
     const ::ompl::base::State* _state2) const
@@ -167,7 +167,7 @@ double GeometricStateSpace::distance(
   return mDistance->distance(state1->mState, state2->mState);
 }
 
-//=============================================================================
+//==============================================================================
 bool GeometricStateSpace::equalStates(
     const ::ompl::base::State* _state1,
     const ::ompl::base::State* _state2) const
@@ -181,7 +181,7 @@ bool GeometricStateSpace::equalStates(
   return dist < EQUALITY_EPSILON;
 }
 
-//=============================================================================
+//==============================================================================
 void GeometricStateSpace::interpolate(
     const ::ompl::base::State* _from,
     const ::ompl::base::State* _to,
@@ -205,7 +205,7 @@ void GeometricStateSpace::interpolate(
   mInterpolator->interpolate(from->mState, to->mState, _t, state->mState);
 }
 
-//=============================================================================
+//==============================================================================
 ::ompl::base::StateSamplerPtr GeometricStateSpace::allocDefaultStateSampler()
     const
 {
@@ -216,14 +216,14 @@ void GeometricStateSpace::interpolate(
   return stateSampler;
 }
 
-//=============================================================================
+//==============================================================================
 ::ompl::base::State* GeometricStateSpace::allocState() const
 {
   auto ast = mStateSpace->allocateState();
   return new StateType(ast);
 }
 
-//=============================================================================
+//==============================================================================
 ::ompl::base::State* GeometricStateSpace::allocState(
     const aikido::statespace::StateSpace::State* _state) const
 {
@@ -232,7 +232,7 @@ void GeometricStateSpace::interpolate(
   return new StateType(newState);
 }
 
-//=============================================================================
+//==============================================================================
 void GeometricStateSpace::freeState(::ompl::base::State* _state) const
 {
   if (_state != nullptr)
@@ -246,7 +246,7 @@ void GeometricStateSpace::freeState(::ompl::base::State* _state) const
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
 {
   return mStateSpace;

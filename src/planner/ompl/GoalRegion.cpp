@@ -5,7 +5,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-//=============================================================================
+//==============================================================================
 GoalRegion::GoalRegion(
     const ::ompl::base::SpaceInformationPtr& _si,
     constraint::TestablePtr _goalTestable,
@@ -36,7 +36,7 @@ GoalRegion::GoalRegion(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void GoalRegion::sampleGoal(::ompl::base::State* _state) const
 {
   auto state = static_cast<GeometricStateSpace::StateType*>(_state);
@@ -48,19 +48,19 @@ void GoalRegion::sampleGoal(::ompl::base::State* _state) const
   state->mValid = valid;
 }
 
-//=============================================================================
+//==============================================================================
 unsigned int GoalRegion::maxSampleCount() const
 {
   return mSampleGenerator->getNumSamples();
 }
 
-//=============================================================================
+//==============================================================================
 bool GoalRegion::couldSample() const
 {
   return mSampleGenerator->canSample();
 }
 
-//=============================================================================
+//==============================================================================
 double GoalRegion::distanceGoal(const ::ompl::base::State* _state) const
 {
   if (isSatisfied(_state))
@@ -70,7 +70,7 @@ double GoalRegion::distanceGoal(const ::ompl::base::State* _state) const
   return std::numeric_limits<double>::infinity();
 }
 
-//=============================================================================
+//==============================================================================
 bool GoalRegion::isSatisfied(const ::ompl::base::State* _state) const
 {
   auto state = static_cast<const GeometricStateSpace::StateType*>(_state);

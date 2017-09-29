@@ -16,3 +16,5 @@ target_compile_options("${PROJECT_NAME}_trajectory"
 add_component(${PROJECT_NAME} trajectory)
 add_component_targets(${PROJECT_NAME} trajectory "${PROJECT_NAME}_trajectory")
 add_component_dependencies(${PROJECT_NAME} trajectory statespace util)
+
+format_add_sources(${sources})

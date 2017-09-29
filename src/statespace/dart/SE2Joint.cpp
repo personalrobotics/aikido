@@ -4,13 +4,13 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-//=============================================================================
+//==============================================================================
 SE2Joint::SE2Joint(::dart::dynamics::PlanarJoint* _joint)
   : SE2(), JointStateSpace(_joint)
 {
 }
 
-//=============================================================================
+//==============================================================================
 void SE2Joint::convertPositionsToState(
     const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
@@ -21,7 +21,7 @@ void SE2Joint::convertPositionsToState(
   setIsometry(static_cast<SE2::State*>(_state), pose);
 }
 
-//=============================================================================
+//==============================================================================
 void SE2Joint::convertStateToPositions(
     const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {

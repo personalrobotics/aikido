@@ -24,7 +24,7 @@ void reorder(
     const Eigen::VectorXd& inVector,
     Eigen::VectorXd* outVector);
 
-//=============================================================================
+//==============================================================================
 void checkVector(
     const std::string& _name,
     const std::vector<double>& _values,
@@ -54,7 +54,7 @@ void checkVector(
         = Eigen::Map<const Eigen::VectorXd>(_values.data(), _values.size());
 }
 
-//=============================================================================
+//==============================================================================
 Eigen::MatrixXd fitPolynomial(
     double _currTime,
     const Eigen::VectorXd& _currPosition,
@@ -100,7 +100,7 @@ Eigen::MatrixXd fitPolynomial(
   return splineSegment.getCoefficients()[0];
 }
 
-//=============================================================================
+//==============================================================================
 void extractJointTrajectoryPoint(
     const trajectory_msgs::JointTrajectory& _trajectory,
     size_t _index,
@@ -152,7 +152,7 @@ void extractJointTrajectoryPoint(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void extractTrajectoryPoint(
     const std::shared_ptr<MetaSkeletonStateSpace>& space,
     const aikido::trajectory::TrajectoryPtr& trajectory,
@@ -188,7 +188,7 @@ void extractTrajectoryPoint(
   }
 }
 
-//=============================================================================
+//==============================================================================
 // The rows of inVector is reordered in outVector.
 void reorder(
     std::map<size_t, size_t> indexMap,
@@ -202,7 +202,7 @@ void reorder(
     (*outVector)[index.second] = inVector[index.first];
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<const dart::dynamics::Joint*> findJointByName(
     const dart::dynamics::MetaSkeleton& metaSkeleton,
     const std::string& jointName)
@@ -220,7 +220,7 @@ std::vector<const dart::dynamics::Joint*> findJointByName(
 
 } // namespace
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     const std::shared_ptr<MetaSkeletonStateSpace>& space,
     const trajectory_msgs::JointTrajectory& jointTrajectory)
@@ -397,7 +397,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   return trajectory;
 }
 
-//=============================================================================
+//==============================================================================
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
     const aikido::trajectory::TrajectoryPtr& trajectory, double timestep)
 {
@@ -477,7 +477,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   return jointTrajectory;
 }
 
-//=============================================================================
+//==============================================================================
 sensor_msgs::JointState positionsToJointState(
     const Eigen::VectorXd& goalPositions,
     const std::vector<std::string>& jointNames)

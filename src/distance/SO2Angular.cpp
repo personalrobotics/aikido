@@ -3,7 +3,7 @@
 namespace aikido {
 namespace distance {
 
-//=============================================================================
+//==============================================================================
 SO2Angular::SO2Angular(std::shared_ptr<statespace::SO2> _space)
   : mStateSpace(std::move(_space))
 {
@@ -13,13 +13,13 @@ SO2Angular::SO2Angular(std::shared_ptr<statespace::SO2> _space)
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr SO2Angular::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 double SO2Angular::distance(
     const aikido::statespace::StateSpace::State* _state1,
     const aikido::statespace::StateSpace::State* _state2) const

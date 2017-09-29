@@ -1,23 +1,22 @@
 #include <aikido/constraint/DifferentiableIntersection.hpp>
+
 namespace aikido {
 namespace constraint {
 
-
-//=============================================================================
+//==============================================================================
 DifferentiableIntersection::DifferentiableIntersection(
-  std::vector<DifferentiablePtr> _constraints,
-  std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
-: mConstraints(std::move(_constraints))
-, mStateSpace(std::move(_stateSpace))
+    std::vector<DifferentiablePtr> _constraints,
+    std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
+  : mConstraints(std::move(_constraints)), mStateSpace(std::move(_stateSpace))
 {
   if (mConstraints.size() == 0)
     throw std::invalid_argument("_constraints should not be empty.");
-  
+
   if (!mStateSpace)
     throw std::invalid_argument("_stateSpace is nullptr.");
 
   // TODO: This checks pointer equality.
-  for (auto constraint: mConstraints)
+  for (auto constraint : mConstraints)
   {
     if (!constraint)
       throw std::invalid_argument("_constraints constaints nullptr.");
@@ -31,31 +30,27 @@ DifferentiableIntersection::DifferentiableIntersection(
   }
 }
 
-
-//=============================================================================
+//==============================================================================
 size_t DifferentiableIntersection::getConstraintDimension() const
 {
   int dim = 0;
 
-  for (auto constraint: mConstraints)
-  {
+  for (auto constraint : mConstraints)
     dim += constraint->getConstraintDimension();
-  }
 
   return dim;
 }
 
-
-//=============================================================================
+//==============================================================================
 void DifferentiableIntersection::getValue(
-  const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const 
+    const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
   int dimension = getConstraintDimension();
-  
+
   _out.resize(dimension);
 
   int index = 0;
-  for (auto constraint: mConstraints)
+  for (auto constraint : mConstraints)
   {
     int dim = constraint->getConstraintDimension();
     Eigen::VectorXd out;
@@ -63,14 +58,11 @@ void DifferentiableIntersection::getValue(
     _out.segment(index, dim) = out;
     index += dim;
   }
-
 }
 
-
-//=============================================================================
+//==============================================================================
 void DifferentiableIntersection::getJacobian(
-  const statespace::StateSpace::State* _s,
-  Eigen::MatrixXd& _out) const
+    const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
   int constraintsDim = getConstraintDimension();
   int statesDim = mStateSpace->getDimension();
@@ -78,7 +70,7 @@ void DifferentiableIntersection::getJacobian(
   _out.resize(constraintsDim, statesDim);
 
   int index = 0;
-  for (auto constraint: mConstraints)
+  for (auto constraint : mConstraints)
   {
     Eigen::MatrixXd jac;
     constraint->getJacobian(_s, jac);
@@ -86,13 +78,13 @@ void DifferentiableIntersection::getJacobian(
 
     index += jac.rows();
   }
-
 }
 
-//=============================================================================
+//==============================================================================
 void DifferentiableIntersection::getValueAndJacobian(
-  const statespace::StateSpace::State* _s,
-  Eigen::VectorXd& _val, Eigen::MatrixXd& _jac) const
+    const statespace::StateSpace::State* _s,
+    Eigen::VectorXd& _val,
+    Eigen::MatrixXd& _jac) const
 {
   int constraintsDim = getConstraintDimension();
   int statesDim = mStateSpace->getDimension();
@@ -101,7 +93,7 @@ void DifferentiableIntersection::getValueAndJacobian(
   _jac.resize(constraintsDim, statesDim);
 
   int index = 0;
-  for (auto constraint: mConstraints)
+  for (auto constraint : mConstraints)
   {
     int constraintDim = constraint->getConstraintDimension();
 
@@ -117,30 +109,28 @@ void DifferentiableIntersection::getValueAndJacobian(
   }
 }
 
-
-//=============================================================================
-std::vector<ConstraintType> DifferentiableIntersection::getConstraintTypes() const
+//==============================================================================
+std::vector<ConstraintType> DifferentiableIntersection::getConstraintTypes()
+    const
 {
   std::vector<ConstraintType> constraintTypes;
   constraintTypes.reserve(mConstraints.size());
 
-  for (auto constraint: mConstraints)
+  for (auto constraint : mConstraints)
   {
     std::vector<ConstraintType> cTypes = constraint->getConstraintTypes();
     constraintTypes.insert(
-      std::end(constraintTypes),
-      std::begin(cTypes), std::end(cTypes));
+        std::end(constraintTypes), std::begin(cTypes), std::end(cTypes));
   }
 
   return constraintTypes;
 }
 
-
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr DifferentiableIntersection::getStateSpace() const
 {
   return mStateSpace;
 }
 
-}
-}
+} // namespace constraint
+} // namespace aikido
