@@ -26,6 +26,7 @@ check_cxx_source_compiles(
 # Libraries
 #
 set(sources
+  CatkinResourceRetriever.cpp
   KinBodyParser.cpp
 )
 

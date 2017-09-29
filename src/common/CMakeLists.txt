@@ -1,13 +1,10 @@
 #==============================================================================
 # Dependencies
-#
-# TODO: Move CatkinResourceRetriever into a separate, optional component.
 
 #==============================================================================
 # Libraries
 #
 set(sources
-  CatkinResourceRetriever.cpp
   ExecutorMultiplexer.cpp
   ExecutorThread.cpp
   PseudoInverse.cpp

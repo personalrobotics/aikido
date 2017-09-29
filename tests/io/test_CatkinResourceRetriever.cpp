@@ -1,11 +1,11 @@
 #include <cstdlib>
 #include <gtest/gtest.h>
-#include <aikido/common/CatkinResourceRetriever.hpp>
+#include <aikido/io/CatkinResourceRetriever.hpp>
 
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
-using aikido::common::CatkinResourceRetriever;
+using aikido::io::CatkinResourceRetriever;
 using dart::common::Uri;
 using dart::common::ResourcePtr;
 

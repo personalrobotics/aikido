@@ -8,7 +8,7 @@
 #include <ros/ros.h>
 #include <ros/single_subscriber_publisher.h>
 #include <tf/transform_listener.h>
-#include <aikido/common/CatkinResourceRetriever.hpp>
+#include <aikido/io/CatkinResourceRetriever.hpp>
 #include <aikido/io/yaml.hpp>
 #include <aikido/perception/AprilTagsDatabase.hpp>
 #include <aikido/perception/PerceptionModule.hpp>

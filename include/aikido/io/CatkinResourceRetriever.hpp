@@ -1,5 +1,5 @@
-#ifndef AIKIDO_COMMON_CATKINRESOURCERETRIEVER_HPP_
-#define AIKIDO_COMMON_CATKINRESOURCERETRIEVER_HPP_
+#ifndef AIKIDO_IO_CATKINRESOURCERETRIEVER_HPP_
+#define AIKIDO_IO_CATKINRESOURCERETRIEVER_HPP_
 
 #include <string>
 #include <unordered_map>
@@ -7,7 +7,7 @@
 #include <dart/common/ResourceRetriever.hpp>
 
 namespace aikido {
-namespace common {
+namespace io {
 
 /// Retreive resources specified by 'package://' URIs. This class resolves
 /// a 'package://' URI to a 'file://' URI using the same logic as
@@ -49,7 +49,7 @@ private:
   std::vector<Workspace> mWorkspaces;
 };
 
-} // namespace common
+} // namespace io
 } // namespace aikido
 
-#endif // AIKIDO_COMMON_CATKINRESOURCERETRIEVER_HPP_
+#endif // AIKIDO_IO_CATKINRESOURCERETRIEVER_HPP_

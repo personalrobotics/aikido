@@ -1,4 +1,4 @@
-#include <aikido/common/CatkinResourceRetriever.hpp>
+#include <aikido/io/CatkinResourceRetriever.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -14,7 +14,7 @@ static const std::string CATKIN_MARKER(".catkin");
 using dart::common::Uri;
 
 namespace aikido {
-namespace common {
+namespace io {
 namespace {
 
 //==============================================================================
@@ -284,5 +284,5 @@ Uri CatkinResourceRetriever::resolvePackageUri(const Uri& _uri) const
   return Uri();
 }
 
-} // namespace common
+} // namespace io
 } // namespace aikido
