@@ -1,6 +1,6 @@
+#include "common/RNG.hpp"
 #include "util/CatkinResourceRetriever.hpp"
 #include "util/PseudoInverse.hpp"
-#include "common/RNG.hpp"
 #include "util/Spline.hpp"
 #include "util/StepSequence.hpp"
 #include "util/VanDerCorput.hpp"

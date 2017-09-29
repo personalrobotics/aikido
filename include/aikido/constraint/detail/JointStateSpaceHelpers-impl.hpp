@@ -1,12 +1,12 @@
 #include <sstream>
 #include <dart/common/StlHelpers.hpp>
+#include "../../common/metaprogramming.hpp"
 #include "../../statespace/dart/RnJoint.hpp"
 #include "../../statespace/dart/SE2Joint.hpp"
 #include "../../statespace/dart/SE3Joint.hpp"
 #include "../../statespace/dart/SO2Joint.hpp"
 #include "../../statespace/dart/SO3Joint.hpp"
 #include "../../statespace/dart/WeldJoint.hpp"
-#include "../../common/metaprogramming.hpp"
 #include "../Satisfied.hpp"
 #include "../uniform/RnBoxConstraint.hpp"
 #include "../uniform/RnConstantSampler.hpp"
@@ -57,15 +57,15 @@ inline Eigen::VectorXd getPositionUpperLimits(
 
 //==============================================================================
 using JointStateSpaceTypeList = common::type_list<statespace::dart::R0Joint,
-                                                statespace::dart::R1Joint,
-                                                statespace::dart::R2Joint,
-                                                statespace::dart::R3Joint,
-                                                statespace::dart::R6Joint,
-                                                statespace::dart::SO2Joint,
-                                                statespace::dart::SO3Joint,
-                                                statespace::dart::SE2Joint,
-                                                statespace::dart::SE3Joint,
-                                                statespace::dart::WeldJoint>;
+                                                  statespace::dart::R1Joint,
+                                                  statespace::dart::R2Joint,
+                                                  statespace::dart::R3Joint,
+                                                  statespace::dart::R6Joint,
+                                                  statespace::dart::SO2Joint,
+                                                  statespace::dart::SO3Joint,
+                                                  statespace::dart::SE2Joint,
+                                                  statespace::dart::SE3Joint,
+                                                  statespace::dart::WeldJoint>;
 
 //==============================================================================
 template <class T>

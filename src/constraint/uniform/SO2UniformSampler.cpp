@@ -22,7 +22,8 @@ public:
 
 private:
   SO2UniformSampleGenerator(
-      std::shared_ptr<statespace::SO2> _space, std::unique_ptr<common::RNG> _rng);
+      std::shared_ptr<statespace::SO2> _space,
+      std::unique_ptr<common::RNG> _rng);
 
   std::shared_ptr<statespace::SO2> mSpace;
   std::unique_ptr<common::RNG> mRng;

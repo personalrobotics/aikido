@@ -1,8 +1,8 @@
 #include <cassert>
 #include <set>
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/common/Spline.hpp>
+#include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include "DynamicPath.h"
 #include "HauserParabolicSmootherHelpers.hpp"
 #include "ParabolicUtil.hpp"

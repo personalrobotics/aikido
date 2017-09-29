@@ -5,13 +5,13 @@
 
 #include <dart/common/StlHelpers.hpp>
 #include <dart/dart.hpp>
+#include <aikido/common/Spline.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
-#include <aikido/common/Spline.hpp>
 
 #include "DynamicPath.h"
 

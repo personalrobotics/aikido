@@ -30,9 +30,9 @@ bool MotionValidator::checkMotion(
 {
   double dist = si_->distance(_s1, _s2);
   aikido::common::VanDerCorput vdc{1,
-                                 true,
-                                 true, // include endpoints
-                                 mSequenceResolution / dist};
+                                   true,
+                                   true, // include endpoints
+                                   mSequenceResolution / dist};
 
   auto stateSpace = si_->getStateSpace();
   auto iState = stateSpace->allocState();

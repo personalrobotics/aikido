@@ -1,10 +1,10 @@
+#include <aikido/common/VanDerCorput.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
 #include <aikido/statespace/Interpolator.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/common/VanDerCorput.hpp>
 
 namespace aikido {
 namespace planner {

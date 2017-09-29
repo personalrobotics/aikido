@@ -11,9 +11,9 @@ std::unique_ptr<DistanceMetric> createDistanceMetric(
     throw std::invalid_argument("_sspace is null.");
 
   return common::DynamicCastFactory<detail::createDistanceMetricFor_impl,
-                                  common::DynamicCastFactory_shared_ptr,
-                                  statespace::StateSpace,
-                                  detail::SupportedStateSpaces>::
+                                    common::DynamicCastFactory_shared_ptr,
+                                    statespace::StateSpace,
+                                    detail::SupportedStateSpaces>::
       create(_sspace);
 }
 

@@ -5,8 +5,8 @@
 #include <memory>
 #include <boost/optional.hpp>
 
-#include "../statespace/StateSpace.hpp"
 #include "../common/RNG.hpp"
+#include "../statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace constraint {

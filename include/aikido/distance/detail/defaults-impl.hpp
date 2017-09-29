@@ -1,11 +1,11 @@
 #include <dart/common/StlHelpers.hpp>
 
+#include "../../common/metaprogramming.hpp"
 #include "../../statespace/CartesianProduct.hpp"
 #include "../../statespace/Rn.hpp"
 #include "../../statespace/SE2.hpp"
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
-#include "../../common/metaprogramming.hpp"
 #include "../CartesianProductWeighted.hpp"
 #include "../RnEuclidean.hpp"
 #include "../SE2Weighted.hpp"
@@ -133,14 +133,14 @@ struct createDistanceMetricFor_impl<statespace::SE2>
 
 //==============================================================================
 using SupportedStateSpaces = common::type_list<statespace::CartesianProduct,
-                                             statespace::R0,
-                                             statespace::R1,
-                                             statespace::R2,
-                                             statespace::R3,
-                                             statespace::R6,
-                                             statespace::SO2,
-                                             statespace::SO3,
-                                             statespace::SE2>;
+                                               statespace::R0,
+                                               statespace::R1,
+                                               statespace::R2,
+                                               statespace::R3,
+                                               statespace::R6,
+                                               statespace::SO2,
+                                               statespace::SO3,
+                                               statespace::SE2>;
 
 } // namespace detail
 
