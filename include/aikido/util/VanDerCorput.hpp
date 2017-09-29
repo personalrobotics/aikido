@@ -2,6 +2,7 @@
 #define AIKIDO_UTIL_VANDERCORPUT_HPP_
 
 #include <limits>
+#include <utility>
 #include <boost/iterator/iterator_facade.hpp>
 
 namespace aikido {
