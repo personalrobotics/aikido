@@ -1,8 +1,8 @@
 #include <cassert>
 #include <set>
 #include <dart/common/StlHelpers.hpp>
+#include <aikido/common/Spline.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
-#include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
 #include "HauserParabolicSmootherHelpers.hpp"
 #include "ParabolicUtil.hpp"
@@ -16,7 +16,7 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    aikido::util::RNG& _rng,
+    aikido::common::RNG& _rng,
     double _timelimit,
     double _checkResolution,
     double _tolerance)
@@ -76,7 +76,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    aikido::util::RNG& _rng,
+    aikido::common::RNG& _rng,
     double _timelimit,
     double _blendRadius,
     int _blendIterations,

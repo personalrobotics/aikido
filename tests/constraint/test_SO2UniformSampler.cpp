@@ -7,8 +7,8 @@
 using aikido::statespace::SO2;
 using aikido::constraint::SO2UniformSampler;
 using aikido::constraint::SampleGenerator;
-using aikido::util::RNG;
-using aikido::util::RNGWrapper;
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using aikido::distance::SO2Angular;
 using dart::common::make_unique;
 

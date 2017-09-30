@@ -6,7 +6,7 @@
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/Rn.hpp>
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 
 using aikido::constraint::CartesianProductSampleable;
 using aikido::constraint::SampleablePtr;
@@ -15,8 +15,8 @@ using aikido::statespace::SO2;
 using aikido::constraint::SO2UniformSampler;
 using aikido::statespace::R3;
 using aikido::constraint::R3BoxConstraint;
-using aikido::util::RNG;
-using aikido::util::RNGWrapper;
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 
 class CartesianProductSampleableTest : public testing::Test
 {

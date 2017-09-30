@@ -1,7 +1,7 @@
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/constraint/Differentiable.hpp>
 #include <aikido/statespace/SE3.hpp>
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include <dart/math/Geometry.hpp>
 #include <gtest/gtest.h>
@@ -11,8 +11,8 @@
 using aikido::constraint::TSR;
 using aikido::constraint::ConstraintType;
 using aikido::statespace::SE3;
-using aikido::util::RNGWrapper;
-using aikido::util::RNG;
+using aikido::common::RNGWrapper;
+using aikido::common::RNG;
 using dart::common::make_unique;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;

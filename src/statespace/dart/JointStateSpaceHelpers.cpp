@@ -9,10 +9,10 @@ std::unique_ptr<JointStateSpace> createJointStateSpace(
     ::dart::dynamics::Joint* _joint)
 {
   auto space
-      = util::DynamicCastFactory<detail::createJointStateSpaceFor_impl,
-                                 util::DynamicCastFactory_raw_ptr,
-                                 ::dart::dynamics::Joint,
-                                 detail::SupportedJoints>::create(_joint);
+      = common::DynamicCastFactory<detail::createJointStateSpaceFor_impl,
+                                   common::DynamicCastFactory_raw_ptr,
+                                   ::dart::dynamics::Joint,
+                                   detail::SupportedJoints>::create(_joint);
 
   if (!space)
   {

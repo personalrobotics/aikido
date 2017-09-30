@@ -4,7 +4,7 @@
 #include <iostream>
 #include <limits>
 #include <dart/math/Geometry.hpp>
-#include <aikido/util/PseudoInverse.hpp>
+#include <aikido/common/PseudoInverse.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -98,7 +98,7 @@ bool NewtonsMethodProjectable::project(
     mDifferentiable->getJacobian(_out, jac);
 
     // Minimization step in tangent space.
-    Eigen::VectorXd tangentStep = -1 * util::pseudoinverse(jac) * value;
+    Eigen::VectorXd tangentStep = -1 * common::pseudoinverse(jac) * value;
 
     // Break if tangent step is too small.
     if (tangentStep.maxCoeff() < mMinStepSize

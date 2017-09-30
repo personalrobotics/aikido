@@ -7,7 +7,7 @@
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/constraint/Satisfied.hpp>
-#include <aikido/util/StepSequence.hpp>
+#include <aikido/common/StepSequence.hpp>
 #include "eigen_tests.hpp"
 
 using Eigen::Vector2d;
@@ -33,7 +33,7 @@ public:
 protected:
   void SetUp() override
   {
-    mRng = aikido::util::RNGWrapper<std::mt19937>( 0 );
+    mRng = aikido::common::RNGWrapper<std::mt19937>( 0 );
     mStateSpace = std::make_shared<R2>();
     mMaxVelocity = Eigen::Vector2d(20., 20.);
     mMaxAcceleration = Eigen::Vector2d(10., 10.);
@@ -130,7 +130,7 @@ protected:
     return length;
   }
 
-  aikido::util::RNGWrapper<std::mt19937> mRng;
+  aikido::common::RNGWrapper<std::mt19937> mRng;
   std::shared_ptr<R2> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
@@ -157,7 +157,7 @@ TEST_F(ParabolicSmootherTests, convertStraightInterpolatedToSpline)
     Eigen::VectorXd splineTangent, interpolatedTangent;
 
     const double stepSize = 1e-3;
-    aikido::util::StepSequence seq(stepSize, true,
+    aikido::common::StepSequence seq(stepSize, true,
                                    spline->getStartTime(),
                                    spline->getEndTime());
     for(double t : seq)
@@ -180,7 +180,7 @@ TEST_F(ParabolicSmootherTests, convertNonStraightInterpolatedToSpline)
   Eigen::VectorXd splineTangent, interpolatedTangent;
 
   const double stepSize = 1e-3;
-  aikido::util::StepSequence seq(stepSize, true,
+  aikido::common::StepSequence seq(stepSize, true,
                                  spline->getStartTime(),
                                  spline->getEndTime());
   for(double t : seq)
@@ -203,7 +203,7 @@ TEST_F(ParabolicSmootherTests, convertNonStraightInterolatedWithNonZeroStartTime
     Eigen::VectorXd splineTangent, interpolatedTangent;
 
     const double stepSize = 1e-3;
-    aikido::util::StepSequence seq(stepSize, true,
+    aikido::common::StepSequence seq(stepSize, true,
                                    spline->getStartTime(),
                                    spline->getEndTime());
     for(double t : seq)

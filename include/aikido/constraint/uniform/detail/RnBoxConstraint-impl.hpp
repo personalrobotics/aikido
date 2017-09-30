@@ -38,12 +38,12 @@ public:
 private:
   RnBoxConstraintSampleGenerator(
       std::shared_ptr<statespace::R<N>> _space,
-      std::unique_ptr<util::RNG> _rng,
+      std::unique_ptr<common::RNG> _rng,
       const VectorNd& _lowerLimits,
       const VectorNd& _upperLimits);
 
   std::shared_ptr<statespace::R<N>> mSpace;
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
 
   friend class RBoxConstraint<N>;
@@ -53,7 +53,7 @@ private:
 template <int N>
 RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
     std::shared_ptr<statespace::R<N>> _space,
-    std::unique_ptr<util::RNG> _rng,
+    std::unique_ptr<common::RNG> _rng,
     const VectorNd& _lowerLimits,
     const VectorNd& _upperLimits)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
@@ -107,7 +107,7 @@ bool RnBoxConstraintSampleGenerator<N>::canSample() const
 template <int N>
 RBoxConstraint<N>::RBoxConstraint(
     std::shared_ptr<statespace::R<N>> _space,
-    std::unique_ptr<util::RNG> _rng,
+    std::unique_ptr<common::RNG> _rng,
     const VectorNd& _lowerLimits,
     const VectorNd& _upperLimits)
   : mSpace(std::move(_space))

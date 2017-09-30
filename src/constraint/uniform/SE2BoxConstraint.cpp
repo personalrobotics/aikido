@@ -24,13 +24,13 @@ public:
 private:
   SE2BoxConstraintSampleGenerator(
       std::shared_ptr<statespace::SE2> _space,
-      std::unique_ptr<util::RNG> _rng,
+      std::unique_ptr<common::RNG> _rng,
       const Eigen::Vector3d& _lowerLimits,
       const Eigen::Vector3d& _upperLimits);
 
   const size_t mDimension;
   std::shared_ptr<statespace::SE2> mSpace;
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
   friend class SE2BoxConstraint;
 };
@@ -38,7 +38,7 @@ private:
 //==============================================================================
 SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
     std::shared_ptr<statespace::SE2> _space,
-    std::unique_ptr<util::RNG> _rng,
+    std::unique_ptr<common::RNG> _rng,
     const Eigen::Vector3d& _lowerLimits,
     const Eigen::Vector3d& _upperLimits)
   : mDimension(3), mSpace(std::move(_space)), mRng(std::move(_rng))
@@ -84,7 +84,7 @@ bool SE2BoxConstraintSampleGenerator::canSample() const
 //==============================================================================
 SE2BoxConstraint::SE2BoxConstraint(
     std::shared_ptr<statespace::SE2> space,
-    std::unique_ptr<util::RNG> rng,
+    std::unique_ptr<common::RNG> rng,
     const Eigen::Vector2d& lowerLimits,
     const Eigen::Vector2d& upperLimits)
   : mSpace(std::move(space))

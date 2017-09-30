@@ -11,7 +11,7 @@ target_include_directories("${PROJECT_NAME}_planner_parabolic" SYSTEM
 target_link_libraries("${PROJECT_NAME}_planner_parabolic"
   PUBLIC
     "${PROJECT_NAME}_trajectory"
-    "${PROJECT_NAME}_util"
+    "${PROJECT_NAME}_common"
     "${PROJECT_NAME}_statespace"
     ${DART_LIBRARIES}
   PRIVATE
@@ -24,11 +24,11 @@ target_compile_options("${PROJECT_NAME}_planner_parabolic"
 add_component(${PROJECT_NAME} planner_parabolic)
 add_component_targets(${PROJECT_NAME} planner_parabolic "${PROJECT_NAME}_planner_parabolic")
 add_component_dependencies(${PROJECT_NAME} planner_parabolic
+  common
   planner
   constraint
   statespace
   trajectory
-  util
 )
 
 format_add_sources(${sources})

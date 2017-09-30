@@ -23,7 +23,7 @@ namespace ompl {
     statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     constraint::TestablePtr _validityConstraint,
     double _maxDistanceBtwValidityChecks,
-    std::unique_ptr<util::RNG> _rng);
+    std::unique_ptr<common::RNG> _rng);
 
 } // namespace ompl
 } // namespace planner

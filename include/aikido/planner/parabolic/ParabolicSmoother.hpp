@@ -48,7 +48,7 @@ std::unique_ptr<trajectory::Spline> doShortcut(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    aikido::util::RNG& _rng,
+    aikido::common::RNG& _rng,
     double _timelimit = DEFAULT_TIMELIMT,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
     double _tolerance = DEFAULT_TOLERANCE);
@@ -122,7 +122,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     aikido::constraint::TestablePtr _feasibilityCheck,
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
-    aikido::util::RNG& _rng,
+    aikido::common::RNG& _rng,
     double _timelimit = DEFAULT_TIMELIMT,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
