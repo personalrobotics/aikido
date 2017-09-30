@@ -32,9 +32,6 @@ private:
   std::unique_ptr<util::RNG> mRng;
 };
 
-using SO2Sampleable = SO2UniformSampler;
-// This should be removed in Aikido 1.0
-
 } // namespace constraint
 } // namespace aikido
 
