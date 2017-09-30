@@ -192,6 +192,7 @@ TEST(VanDerCorput, IterationEndsWhenMinimumResolutionReached)
     ++iterations;
   }
   EXPECT_EQ(1, iterations);
+  EXPECT_EQ(1, vdc_0_5.getLength());
 
   VanDerCorput vdc_0_25{1, false, false, 0.25};
   iterations = 0;
@@ -199,6 +200,7 @@ TEST(VanDerCorput, IterationEndsWhenMinimumResolutionReached)
     ++iterations;
   }
   EXPECT_EQ(3, iterations);
+  EXPECT_EQ(3, vdc_0_25.getLength());
 
   VanDerCorput vdc_0_125{1, false, false, 0.125};
   iterations = 0;
@@ -206,4 +208,5 @@ TEST(VanDerCorput, IterationEndsWhenMinimumResolutionReached)
     ++iterations;
   }
   EXPECT_EQ(7, iterations);
+  EXPECT_EQ(7, vdc_0_125.getLength());
 }
