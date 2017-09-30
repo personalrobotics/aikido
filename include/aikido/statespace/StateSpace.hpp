@@ -1,8 +1,9 @@
 #ifndef AIKIDO_STATESPACE_STATESPACE_HPP_
 #define AIKIDO_STATESPACE_STATESPACE_HPP_
+
 #include <memory>
 #include <Eigen/Dense>
-#include "../util/RNG.hpp"
+#include "../common/RNG.hpp"
 #include "ScopedState.hpp"
 
 namespace aikido {

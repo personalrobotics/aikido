@@ -5,7 +5,7 @@
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 
 
 #include <gtest/gtest.h>
@@ -17,8 +17,8 @@ using aikido::statespace::SE3;
 using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using aikido::util::RNG;
-using aikido::util::RNGWrapper;
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::FreeJoint;

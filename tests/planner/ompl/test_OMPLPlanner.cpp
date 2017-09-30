@@ -7,7 +7,7 @@
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/util/StepSequence.hpp>
+#include <aikido/common/StepSequence.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
@@ -139,7 +139,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
   EXPECT_TRUE(goalTestable->isSatisfied(s0));
 
   // Check all intermediate waypoints adhere to constraint
-  aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
+  aikido::common::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
     traj->evaluate(t, s0);
@@ -197,7 +197,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
   EXPECT_TRUE(goalTestable->isSatisfied(s0));
 
   // Check all intermediate waypoints adhere to constraint
-  aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
+  aikido::common::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
     traj->evaluate(t, s0);

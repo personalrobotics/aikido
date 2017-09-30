@@ -1,6 +1,6 @@
 #include <memory>
 #include <dart/common/StlHelpers.hpp>
-#include "../../../util/metaprogramming.hpp"
+#include "../../../common/metaprogramming.hpp"
 #include "../RnJoint.hpp"
 #include "../SE2Joint.hpp"
 #include "../SE3Joint.hpp"
@@ -96,17 +96,17 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::WeldJoint>
 };
 
 //==============================================================================
-using SupportedJoints = util::type_list<::dart::dynamics::BallJoint,
-                                        ::dart::dynamics::FreeJoint,
-                                        ::dart::dynamics::PlanarJoint,
-                                        ::dart::dynamics::PrismaticJoint,
-                                        ::dart::dynamics::RevoluteJoint,
-                                        ::dart::dynamics::TranslationalJoint,
-                                        ::dart::dynamics::WeldJoint
-                                        // TODO: Support ScrewJoint.
-                                        // TODO: Support UniversalJoint.
-                                        // TODO: Support EulerJoint.
-                                        >;
+using SupportedJoints = common::type_list<::dart::dynamics::BallJoint,
+                                          ::dart::dynamics::FreeJoint,
+                                          ::dart::dynamics::PlanarJoint,
+                                          ::dart::dynamics::PrismaticJoint,
+                                          ::dart::dynamics::RevoluteJoint,
+                                          ::dart::dynamics::TranslationalJoint,
+                                          ::dart::dynamics::WeldJoint
+                                          // TODO: Support ScrewJoint.
+                                          // TODO: Support UniversalJoint.
+                                          // TODO: Support EulerJoint.
+                                          >;
 
 } // namespace detail
 

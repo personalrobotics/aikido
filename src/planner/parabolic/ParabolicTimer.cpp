@@ -1,9 +1,9 @@
 #include <cassert>
 #include <set>
 #include <dart/common/StlHelpers.hpp>
+#include <aikido/common/Spline.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/util/Spline.hpp>
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
 
@@ -11,7 +11,7 @@ using Eigen::Vector2d;
 using dart::common::make_unique;
 
 using LinearSplineProblem
-    = aikido::util::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
+    = aikido::common::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
 
 namespace aikido {
 namespace planner {

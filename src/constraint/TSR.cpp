@@ -47,13 +47,13 @@ public:
 private:
   // For internal use only.
   TSRSampleGenerator(
-      std::unique_ptr<util::RNG> _rng,
+      std::unique_ptr<common::RNG> _rng,
       std::shared_ptr<statespace::SE3> _stateSpace,
       const Eigen::Isometry3d& _T0_w,
       const Eigen::Matrix<double, 6, 2>& _Bw,
       const Eigen::Isometry3d& _Tw_e);
 
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
 
   std::shared_ptr<statespace::SE3> mStateSpace;
 
@@ -80,7 +80,7 @@ public:
 
 //==============================================================================
 TSR::TSR(
-    std::unique_ptr<util::RNG> _rng,
+    std::unique_ptr<common::RNG> _rng,
     const Eigen::Isometry3d& _T0_w,
     const Eigen::Matrix<double, 6, 2>& _Bw,
     const Eigen::Isometry3d& _Tw_e,
@@ -106,8 +106,8 @@ TSR::TSR(
   , mTw_e(_Tw_e)
   , mTestableTolerance(_testableTolerance)
   , mRng(
-        std::unique_ptr<util::RNG>(
-            new util::RNGWrapper<std::default_random_engine>(0)))
+        std::unique_ptr<common::RNG>(
+            new common::RNGWrapper<std::default_random_engine>(0)))
   , mStateSpace(std::make_shared<SE3>())
 {
   validate();
@@ -235,7 +235,7 @@ void TSR::validate() const
 }
 
 //==============================================================================
-void TSR::setRNG(std::unique_ptr<util::RNG> rng)
+void TSR::setRNG(std::unique_ptr<common::RNG> rng)
 {
   mRng = std::move(rng);
 }
@@ -365,7 +365,7 @@ bool TSR::project(
 
 //==============================================================================
 TSRSampleGenerator::TSRSampleGenerator(
-    std::unique_ptr<util::RNG> _rng,
+    std::unique_ptr<common::RNG> _rng,
     std::shared_ptr<SE3> _stateSpace,
     const Eigen::Isometry3d& _T0_w,
     const Eigen::Matrix<double, 6, 2>& _Bw,

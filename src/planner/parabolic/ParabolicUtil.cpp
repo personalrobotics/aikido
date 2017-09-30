@@ -1,18 +1,18 @@
-#ifndef PARABOLIC_UTIL_HPP_
-#define PARABOLIC_UTIL_HPP_
-
 #include "ParabolicUtil.hpp"
+
 #include <cassert>
 #include <set>
+
 #include <dart/common/StlHelpers.hpp>
 #include <dart/dart.hpp>
+#include <aikido/common/Spline.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
-#include <aikido/util/Spline.hpp>
+
 #include "DynamicPath.h"
 
 using Eigen::Vector2d;
@@ -23,7 +23,7 @@ using aikido::statespace::StateSpace;
 using dart::common::make_unique;
 
 using CubicSplineProblem
-    = aikido::util::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+    = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
 
 namespace aikido {
 namespace planner {
@@ -254,5 +254,3 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido
-
-#endif // PARABOLIC_UTIL_HPP_
