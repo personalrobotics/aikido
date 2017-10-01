@@ -22,10 +22,11 @@ public:
 
 private:
   SO2UniformSampleGenerator(
-      std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng);
+      std::shared_ptr<statespace::SO2> _space,
+      std::unique_ptr<common::RNG> _rng);
 
   std::shared_ptr<statespace::SO2> mSpace;
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
   std::uniform_real_distribution<double> mDistribution;
 
   friend class SO2Sampleable;
@@ -33,7 +34,7 @@ private:
 
 //==============================================================================
 SO2UniformSampleGenerator::SO2UniformSampleGenerator(
-    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng)
+    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(-M_PI, M_PI)
 {
   // Do nothing
@@ -67,7 +68,7 @@ bool SO2UniformSampleGenerator::canSample() const
 
 //==============================================================================
 SO2Sampleable::SO2Sampleable(
-    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<util::RNG> _rng)
+    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   if (!mSpace)

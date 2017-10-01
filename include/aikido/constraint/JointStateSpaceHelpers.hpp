@@ -85,7 +85,7 @@ std::unique_ptr<Testable> createTestableBounds(
 /// \param _rng The random number generator to be used by the Sampleable
 template <class Space>
 std::unique_ptr<Sampleable> createSampleableBoundsFor(
-    std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng);
+    std::shared_ptr<Space> _stateSpace, std::unique_ptr<common::RNG> _rng);
 
 /// Create a Sampleabe constraint that can be used to sample values for the
 /// joint that are guarenteed to be within joint limits.  The Sampleable is
@@ -95,7 +95,7 @@ std::unique_ptr<Sampleable> createSampleableBoundsFor(
 /// \param _rng The random number generator to be used by the Sampleable
 std::unique_ptr<Sampleable> createSampleableBounds(
     std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
-    std::unique_ptr<util::RNG> _rng);
+    std::unique_ptr<common::RNG> _rng);
 
 /// Create a Sampleable constraint that can be used to sampel values for all
 /// joints in a MetaSkeleton. The sampled joint values are guarenteed to lie
@@ -105,7 +105,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
 /// \param _rng The random number generator to be used by the Sampleable
 std::unique_ptr<Sampleable> createSampleableBounds(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
-    std::unique_ptr<util::RNG> _rng);
+    std::unique_ptr<common::RNG> _rng);
 
 } // namespace constraint
 } // namespace aikido

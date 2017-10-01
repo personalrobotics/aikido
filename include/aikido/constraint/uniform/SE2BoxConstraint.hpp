@@ -28,7 +28,7 @@ public:
   /// \param upperLimits Upper limits on the state, only on x and y.
   SE2BoxConstraint(
       std::shared_ptr<statespace::SE2> space,
-      std::unique_ptr<util::RNG> rng,
+      std::unique_ptr<common::RNG> rng,
       const Eigen::Vector2d& lowerLimits,
       const Eigen::Vector2d& upperLimits);
 
@@ -56,7 +56,7 @@ public:
 private:
   std::shared_ptr<statespace::SE2> mSpace;
 
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
 
   /// Lower limits on the state. The first element encodes the rotational limit
   /// and the last two elements encode the translational limits.

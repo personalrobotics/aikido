@@ -1,0 +1,15 @@
+#ifndef AIKIDO_IO_YAML_HPP_
+#define AIKIDO_IO_YAML_HPP_
+
+#include <yaml-cpp/yaml.h>
+
+#include "aikido/io/detail/yaml_extension.hpp"
+// The above header allows extended value types for yaml-cpp.
+//
+// Supported types:
+// - Eigen::Matrix<...>
+// - Eigen::Isometry<...>
+// - std::unordered_map
+//
+
+#endif // AIKIDO_IO_YAML_HPP_

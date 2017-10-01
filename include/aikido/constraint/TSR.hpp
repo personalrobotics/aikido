@@ -41,7 +41,7 @@ public:
   ///        _Bw(i, 0) should be less than or equal to _Bw(i, 1).
   /// \param _Tw_e end-effector offset transform in the coordinates of w
   /// \param _testableTolerance tolerance used in isSatisfiable as testable
-  TSR(std::unique_ptr<util::RNG> _rng,
+  TSR(std::unique_ptr<common::RNG> _rng,
       const Eigen::Isometry3d& _T0_w = Eigen::Isometry3d::Identity(),
       const Eigen::Matrix<double, 6, 2>& _Bw
       = Eigen::Matrix<double, 6, 2>::Zero(),
@@ -87,7 +87,7 @@ public:
   void validate() const;
 
   /// Set the random number generator used by SampleGenerators for this TSR.
-  void setRNG(std::unique_ptr<util::RNG> rng);
+  void setRNG(std::unique_ptr<common::RNG> rng);
 
   // Documentation inherited.
   size_t getConstraintDimension() const override;
@@ -138,7 +138,7 @@ public:
 private:
   /// Tolerance used in isSatisfied as a testable
   double mTestableTolerance;
-  std::unique_ptr<util::RNG> mRng;
+  std::unique_ptr<common::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
 };
 

@@ -1,12 +1,12 @@
 #include <sstream>
 #include <dart/common/StlHelpers.hpp>
+#include "../../common/metaprogramming.hpp"
 #include "../../statespace/dart/RnJoint.hpp"
 #include "../../statespace/dart/SE2Joint.hpp"
 #include "../../statespace/dart/SE3Joint.hpp"
 #include "../../statespace/dart/SO2Joint.hpp"
 #include "../../statespace/dart/SO3Joint.hpp"
 #include "../../statespace/dart/WeldJoint.hpp"
-#include "../../util/metaprogramming.hpp"
 #include "../Satisfied.hpp"
 #include "../uniform/RnBoxConstraint.hpp"
 #include "../uniform/RnConstantSampler.hpp"
@@ -56,16 +56,16 @@ inline Eigen::VectorXd getPositionUpperLimits(
 }
 
 //==============================================================================
-using JointStateSpaceTypeList = util::type_list<statespace::dart::R0Joint,
-                                                statespace::dart::R1Joint,
-                                                statespace::dart::R2Joint,
-                                                statespace::dart::R3Joint,
-                                                statespace::dart::R6Joint,
-                                                statespace::dart::SO2Joint,
-                                                statespace::dart::SO3Joint,
-                                                statespace::dart::SE2Joint,
-                                                statespace::dart::SE3Joint,
-                                                statespace::dart::WeldJoint>;
+using JointStateSpaceTypeList = common::type_list<statespace::dart::R0Joint,
+                                                  statespace::dart::R1Joint,
+                                                  statespace::dart::R2Joint,
+                                                  statespace::dart::R3Joint,
+                                                  statespace::dart::R6Joint,
+                                                  statespace::dart::SO2Joint,
+                                                  statespace::dart::SO3Joint,
+                                                  statespace::dart::SE2Joint,
+                                                  statespace::dart::SE3Joint,
+                                                  statespace::dart::WeldJoint>;
 
 //==============================================================================
 template <class T>
@@ -96,7 +96,7 @@ struct createSampleableFor_impl
 template <int N, class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<statespace::dart::RJoint<N>> _stateSpace,
-    std::unique_ptr<util::RNG> _rng)
+    std::unique_ptr<common::RNG> _rng)
 {
   const auto joint = _stateSpace->getJoint();
 
@@ -162,7 +162,7 @@ struct createSampleableFor_impl<statespace::dart::RJoint<N>>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-      StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
+      StateSpacePtr _stateSpace, std::unique_ptr<common::RNG> _rng)
   {
     const auto joint = _stateSpace->getJoint();
 
@@ -237,7 +237,7 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-      StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
+      StateSpacePtr _stateSpace, std::unique_ptr<common::RNG> _rng)
   {
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO2Joint must not have limits.");
@@ -303,7 +303,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-      StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> _rng)
+      StateSpacePtr _stateSpace, std::unique_ptr<common::RNG> _rng)
   {
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO3Joint must not have limits.");
@@ -317,7 +317,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<statespace::dart::SE2Joint> _stateSpace,
-    std::unique_ptr<util::RNG> _rng)
+    std::unique_ptr<common::RNG> _rng)
 {
   const auto joint = _stateSpace->getJoint();
 
@@ -397,7 +397,7 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-      StateSpacePtr stateSpace, std::unique_ptr<util::RNG> rng)
+      StateSpacePtr stateSpace, std::unique_ptr<common::RNG> rng)
   {
     auto joint = stateSpace->getJoint();
     if (joint->hasPositionLimit(0))
@@ -469,7 +469,7 @@ struct createSampleableFor_impl<statespace::dart::SE3Joint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-      StateSpacePtr /*_stateSpace*/, std::unique_ptr<util::RNG> /*_rng*/)
+      StateSpacePtr /*_stateSpace*/, std::unique_ptr<common::RNG> /*_rng*/)
   {
     throw std::runtime_error("No Sampleable is available for SE3Joint.");
   }
@@ -479,7 +479,7 @@ struct createSampleableFor_impl<statespace::dart::SE3Joint>
 template <class OutputConstraint>
 std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<statespace::dart::WeldJoint> _stateSpace,
-    std::unique_ptr<util::RNG> /*_rng*/)
+    std::unique_ptr<common::RNG> /*_rng*/)
 {
   return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
 }
@@ -531,7 +531,7 @@ struct createSampleableFor_impl<statespace::dart::WeldJoint>
   using StateSpacePtr = std::shared_ptr<StateSpace>;
 
   static std::unique_ptr<Sampleable> create(
-      StateSpacePtr _stateSpace, std::unique_ptr<util::RNG> /*_rng*/)
+      StateSpacePtr _stateSpace, std::unique_ptr<common::RNG> /*_rng*/)
   {
     const auto joint = _stateSpace->getJoint();
     Eigen::VectorXd positions = joint->getPositions();
@@ -572,7 +572,7 @@ std::unique_ptr<Testable> createTestableBoundsFor(
 //==============================================================================
 template <class Space>
 std::unique_ptr<Sampleable> createSampleableBoundsFor(
-    std::shared_ptr<Space> _stateSpace, std::unique_ptr<util::RNG> _rng)
+    std::shared_ptr<Space> _stateSpace, std::unique_ptr<common::RNG> _rng)
 {
   return detail::createSampleableFor_impl<Space>::create(
       std::move(_stateSpace), std::move(_rng));

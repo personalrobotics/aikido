@@ -22,7 +22,7 @@ using aikido::constraint::Satisfied;
 using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
 using aikido::statespace::dart::SO3Joint;
-using aikido::util::RNGWrapper;
+using aikido::common::RNGWrapper;
 
 using aikido::constraint::createDifferentiableBoundsFor;
 using aikido::constraint::createProjectableBoundsFor;

@@ -7,7 +7,7 @@
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/constraint/TSR.hpp>
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 #include "MockConstraints.hpp"
@@ -21,8 +21,8 @@ using aikido::statespace::SO2;
 using dart::dynamics::FreeJoint;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::TSR;
-using aikido::util::RNGWrapper;
-using aikido::util::RNG;
+using aikido::common::RNGWrapper;
+using aikido::common::RNG;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using dart::dynamics::Skeleton;
