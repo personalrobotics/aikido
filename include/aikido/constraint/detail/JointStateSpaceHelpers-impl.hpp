@@ -242,7 +242,7 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
     if (isLimited(_stateSpace->getJoint()))
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SO2Sampleable>(
+    return dart::common::make_unique<SO2UniformSampler>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
