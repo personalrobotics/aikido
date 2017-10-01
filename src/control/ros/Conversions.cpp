@@ -3,11 +3,11 @@
 #include <map>
 #include <sstream>
 #include <dart/dynamics/Joint.hpp>
+#include <aikido/common/Spline.hpp>
+#include <aikido/common/StepSequence.hpp>
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
-#include <aikido/util/Spline.hpp>
-#include <aikido/util/StepSequence.hpp>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
@@ -66,7 +66,7 @@ Eigen::MatrixXd fitPolynomial(
     const Eigen::VectorXd& _nextAcceleration,
     size_t _numCoefficients)
 {
-  using aikido::util::SplineProblem;
+  using aikido::common::SplineProblem;
 
   assert(
       _numCoefficients == 2 || _numCoefficients == 4 || _numCoefficients == 6);
@@ -440,7 +440,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
     }
   }
 
-  util::StepSequence timeSequence{
+  common::StepSequence timeSequence{
       timestep, true, 0., trajectory->getDuration()};
   const auto numJoints = space->getNumSubspaces();
   const auto numWaypoints = timeSequence.getMaxSteps();
