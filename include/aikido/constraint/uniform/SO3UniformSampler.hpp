@@ -1,5 +1,6 @@
 #ifndef AIKIDO_CONSTRAINT_UNIFORM_SO3UNIFORMSAMPLER_HPP_
 #define AIKIDO_CONSTRAINT_UNIFORM_SO3UNIFORMSAMPLER_HPP_
+
 #include "../../statespace/SO3.hpp"
 #include "../Sampleable.hpp"
 
