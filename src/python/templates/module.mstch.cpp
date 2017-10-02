@@ -1,6 +1,6 @@
-{{{header}}}
+{{header}}
 {{#includes}}
-#include <{{{.}}}>
+#include <{{.}}>
 {{/includes}}
 
 #include <boost/python.hpp>
@@ -12,7 +12,7 @@ BOOST_PYTHON_MODULE({{module.name}})
 {
 ::boost::python::docstring_options options(true, true, false);
 
-{{{precontent}}}
+{{precontent}}
 {{#module.namespaces}}{{#name}}
   ::boost::python::scope(){{!
     }}{{#scope}}{{#name}}.attr("{{name}}"){{/name}}{{/scope}}.attr("{{name}}") = {{!
@@ -27,5 +27,5 @@ BOOST_PYTHON_MODULE({{module.name}})
 
 {{/module.bindings}}
 }
-{{{postcontent}}}
-{{{footer}}}
+{{postcontent}}
+{{footer}}

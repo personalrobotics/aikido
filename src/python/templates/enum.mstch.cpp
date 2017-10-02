@@ -1,8 +1,8 @@
-{{{header}}}
+{{header}}
 {{#includes}}
-#include <{{{.}}}>
+#include <{{.}}>
 {{/includes}}
-{{{precontent}}}
+{{precontent}}
 #include <boost/python.hpp>
 #include <cmath>
 
@@ -14,9 +14,9 @@ void {{enum.mangled_name}}()
     }}{{#enum.scope}}{{#name}}.attr("{{name}}"){{/name}}{{/enum.scope}});
 ::boost::python::scope parent_scope(parent_object);
 
-::boost::python::enum_<{{{enum.type}}}>("{{enum.name}}"){{#enum.values}}
-.value("{{name}}", {{{qualified_name}}}){{/enum.values}}
+::boost::python::enum_<{{enum.type}}>("{{enum.name}}"){{#enum.values}}
+.value("{{name}}", {{qualified_name}}){{/enum.values}}
 ;
 }
-{{{postcontent}}}
-{{{footer}}}
+{{postcontent}}
+{{footer}}

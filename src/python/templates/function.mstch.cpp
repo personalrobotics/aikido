@@ -1,8 +1,8 @@
-{{{header}}}
+{{header}}
 {{#includes}}
-#include <{{{.}}}>
+#include <{{.}}>
 {{/includes}}
-{{{precontent}}}
+{{precontent}}
 #include <boost/python.hpp>
 #include <cmath>
 
@@ -15,12 +15,12 @@ void {{function.mangled_name}}()
 ::boost::python::scope parent_scope(parent_object);
 
 {{#function.overloads}}{{!
-    }}::boost::python::def("{{name}}", []({{#params}}{{{type}}} {{name}}{{^last}}, {{/last}}{{/params}}) -> {{{return_type}}} { {{!
-    }}return {{{qualified_call}}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
-    }}{{#return_value_policy}}, ::boost::python::return_value_policy<{{{.}}} >(){{/return_value_policy}}{{!
+    }}::boost::python::def("{{name}}", []({{#params}}{{type}} {{name}}{{^last}}, {{/last}}{{/params}}) -> {{return_type}} { {{!
+    }}return {{qualified_call}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
+    }}{{#return_value_policy}}, ::boost::python::return_value_policy<{{.}} >(){{/return_value_policy}}{{!
     }}{{#params?}}, ({{#params}}::boost::python::arg("{{name}}"){{^last}}, {{/last}}{{/params}}){{/params?}});
 {{/function.overloads}}
 
 }
-{{{postcontent}}}
-{{{footer}}}
+{{postcontent}}
+{{footer}}

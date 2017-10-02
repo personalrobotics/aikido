@@ -1,8 +1,8 @@
-{{{header}}}
+{{header}}
 {{#includes}}
-#include <{{{.}}}>
+#include <{{.}}>
 {{/includes}}
-{{{precontent}}}
+{{precontent}}
 #include <boost/python.hpp>
 #include <cmath>
 
@@ -14,7 +14,7 @@ void {{variable.mangled_name}}()
     }}{{#variable.scope}}{{#name}}.attr("{{name}}"){{/name}}{{/variable.scope}});
 ::boost::python::scope parent_scope(parent_object);
 
-::boost::python::scope().attr("{{variable.name}}") = {{{variable.qualified_name}}};
+::boost::python::scope().attr("{{variable.name}}") = {{variable.qualified_name}};
 }
-{{{postcontent}}}
-{{{footer}}}
+{{postcontent}}
+{{footer}}
