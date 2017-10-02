@@ -7,8 +7,9 @@ aikido_check_package(PYTHONINTERP "Python bindings" "Python interpreter")
 find_package(PythonLibs QUIET)
 aikido_check_package(PYTHONLIBS "Python bindings" "Python libraries")
 
+find_package(Boost COMPONENTS python)
 aikido_check_package(Boost_PYTHON "Python bindings" "Boost.Python")
- 
+
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
   "from distutils.sysconfig import get_python_lib;\
   print(get_python_lib(plat_specific=True, prefix=''))"
@@ -26,7 +27,8 @@ include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-get_property(AIKIDO_LIBRARIES GLOBAL PROPERTY AIKIDO_LIBRARIES)
+get_property(aikido_LIBRARIES GLOBAL PROPERTY aikido_LIBRARIES)
+get_property(aikido_INCLUDE_DIRS GLOBAL PROPERTY aikido_INCLUDE_DIRS)
 
 add_chimera_binding(TARGET "${PROJECT_NAME}_python"
   MODULE "${PROJECT_NAME}"
@@ -35,8 +37,15 @@ add_chimera_binding(TARGET "${PROJECT_NAME}_python"
   SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/chimera.cpp"
   DEBUG
 )
+target_compile_options("${PROJECT_NAME}_python" PUBLIC
+  -std=c++11
+)
+target_include_directories("${PROJECT_NAME}_python" PUBLIC
+  ${aikido_INCLUDE_DIRS}
+  ${DART_INCLUDE_DIRS}
+)
 target_link_libraries("${PROJECT_NAME}_python"
-  ${AIKIDO_LIBRARIES}
+  ${aikido_LIBRARIES}
   ${Boost_PYTHON_LIBRARIES}
   ${DART_LIBRARIES}
   ${PYTHON_LIBRARIES}

@@ -40,4 +40,4 @@ types:
     return_value_policy: boost::python::copy_const_reference
   'const aikido::statespace::SO3::State::Quaternion &':
     return_value_policy: boost::python::copy_const_reference
-classes: []
+classes: {}
