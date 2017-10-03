@@ -1,7 +1,14 @@
-[Insert your comment here]
+[Describe this pull request. Link to relevant GitHub issues, if any.]
 
 ***
-Please make sure that these boxes are checked before closing your pull request.
-- [ ] Set milestone for this PR
-- [ ] Added a brief explanation about this change in CHANGELOG.md
-- [ ] Added unit test for this change
+
+**Before creating a pull request**
+
+- [ ] Document new methods and classes
+- [ ] Format code with `make format`
+
+**Before merging a pull request**
+
+- [ ] Set version target
+- [ ] Summarize this change in `CHANGELOG.md`
+- [ ] Add unit test(s) for this change
