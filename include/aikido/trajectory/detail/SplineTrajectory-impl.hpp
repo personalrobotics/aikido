@@ -14,13 +14,13 @@ SplineTrajectory<_NumCoefficients>::SplineTrajectory(Spline&& _spline)
 }
 
 template <Trajectory::Index _NumCoefficients>
-auto SplineTrajectory<_NumCoefficients>::getSpline() -> Spline &
+auto SplineTrajectory<_NumCoefficients>::getSpline() -> Spline&
 {
   return mSpline;
 }
 
 template <Trajectory::Index _NumCoefficients>
-auto SplineTrajectory<_NumCoefficients>::getSpline() const -> const Spline &
+auto SplineTrajectory<_NumCoefficients>::getSpline() const -> const Spline&
 {
   return mSpline;
 }
@@ -44,8 +44,8 @@ auto SplineTrajectory<_NumCoefficients>::getDuration() const -> Scalar
 }
 
 template <Trajectory::Index _NumCoefficients>
-auto SplineTrajectory<_NumCoefficients>
-  ::evaluate(Scalar _t, Index _derivative) const -> Vector
+auto SplineTrajectory<_NumCoefficients>::evaluate(
+    Scalar _t, Index _derivative) const -> Vector
 {
   return mSpline.evaluate(_t, _derivative);
 }

@@ -9,7 +9,7 @@
 
 
 using aikido::statespace::SO2;
-using aikido::constraint::SO2Sampleable;
+using aikido::constraint::SO2UniformSampler;
 using aikido::statespace::R1;
 using aikido::statespace::R2;
 using aikido::constraint::CyclicSampleable;
@@ -17,8 +17,8 @@ using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
 using dart::common::make_unique;
-using aikido::util::RNGWrapper;
-using aikido::util::RNG;
+using aikido::common::RNGWrapper;
+using aikido::common::RNG;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 static std::unique_ptr<DefaultRNG> make_rng()
@@ -34,7 +34,7 @@ TEST(CyclicSampleableTest, ConstructorThrowsOnNullConstraint)
 TEST(CyclicSampleableTest, ConstructorThrowsOnUnlimitiedSampleGenerator)
 {
     auto so2 = std::make_shared<SO2>();
-    auto constraint = std::make_shared<SO2Sampleable>(so2, make_rng());
+    auto constraint = std::make_shared<SO2UniformSampler>(so2, make_rng());
     EXPECT_THROW(std::make_shared<CyclicSampleable>(constraint),
                  std::invalid_argument);
 }

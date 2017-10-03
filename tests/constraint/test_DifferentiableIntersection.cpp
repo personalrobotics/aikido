@@ -31,7 +31,7 @@ TEST(DifferentiableIntersection, InvalidConstructor)
   // constraints have different space
   constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
     Eigen::Vector3d(1, 2, 3), rvss));
-  constraints.push_back(Eigen::make_aligned_shared<TSR>());
+  constraints.push_back(dart::common::make_aligned_shared<TSR>());
   EXPECT_THROW(DifferentiableIntersection(constraints, rvss), std::invalid_argument);
 }
 
@@ -62,7 +62,6 @@ TEST(DifferentiableIntersection, getValue)
 
   EXPECT_TRUE(out.isApprox(expected));
 }
-
 
 TEST(DifferentiableIntersection, getJacobian)
 {
@@ -172,5 +171,3 @@ TEST(DifferentiableIntersection, GetStateSpace)
 
   EXPECT_EQ(space, rvss);
 }
-
-

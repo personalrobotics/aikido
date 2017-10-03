@@ -32,7 +32,7 @@ public:
   static constexpr int DimensionAtCompileTime
       = _QualifiedState::DimensionAtCompileTime;
 
-  using Vectord = typename R<DimensionAtCompileTime>::Vectord;
+  using VectorNd = typename R<DimensionAtCompileTime>::VectorNd;
 
   using typename statespace::StateHandle<R<DimensionAtCompileTime>,
                                          _QualifiedState>::State;
@@ -42,8 +42,8 @@ public:
                                          _QualifiedState>::QualifiedState;
 
   using ValueType = std::conditional<std::is_const<QualifiedState>::value,
-                                     const Vectord,
-                                     Vectord>;
+                                     const VectorNd,
+                                     VectorNd>;
 
   /// Construct and initialize to \c nullptr.
   RStateHandle()
@@ -64,7 +64,7 @@ public:
   /// Gets the real vector stored in this state.
   ///
   /// \return real vector stored in this state
-  Eigen::Map<const Vectord> getValue()
+  Eigen::Map<const VectorNd> getValue()
   {
     return this->getStateSpace()->getValue(this->getState());
   }
@@ -72,13 +72,13 @@ public:
   /// Sets the real vector stored in this state.
   ///
   /// \param _value real vector to store in \c _state
-  void setValue(const Vectord& _value)
+  void setValue(const VectorNd& _value)
   {
     return this->getStateSpace()->setValue(this->getState(), _value);
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <int N>
 R<N>::R()
 {
@@ -95,7 +95,7 @@ R<N>::R()
   }
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 R<N>::R(int dimension) : mDimension(dimension)
 {
@@ -114,36 +114,36 @@ R<N>::R(int dimension) : mDimension(dimension)
   }
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 auto R<N>::createState() const -> ScopedState
 {
   return ScopedState(this);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
-auto R<N>::getMutableValue(State* _state) const -> Eigen::Map<Vectord>
+auto R<N>::getMutableValue(State* _state) const -> Eigen::Map<VectorNd>
 {
   auto valueBuffer
       = reinterpret_cast<double*>(reinterpret_cast<unsigned char*>(_state));
 
-  return Eigen::Map<Vectord>(valueBuffer, getDimension());
+  return Eigen::Map<VectorNd>(valueBuffer, getDimension());
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
-auto R<N>::getValue(const State* _state) const -> Eigen::Map<const Vectord>
+auto R<N>::getValue(const State* _state) const -> Eigen::Map<const VectorNd>
 {
   auto valueBuffer = reinterpret_cast<const double*>(
       reinterpret_cast<const unsigned char*>(_state));
 
-  return Eigen::Map<const Vectord>(valueBuffer, getDimension());
+  return Eigen::Map<const VectorNd>(valueBuffer, getDimension());
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
-void R<N>::setValue(State* _state, const typename R<N>::Vectord& _value) const
+void R<N>::setValue(State* _state, const typename R<N>::VectorNd& _value) const
 {
   // TODO: Skip this check in release mode.
   if (static_cast<std::size_t>(_value.size()) != getDimension())
@@ -157,14 +157,14 @@ void R<N>::setValue(State* _state, const typename R<N>::Vectord& _value) const
   getMutableValue(_state) = _value;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 size_t R<N>::getStateSizeInBytes() const
 {
   return getDimension() * sizeof(double);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 StateSpace::State* R<N>::allocateStateInBuffer(void* _buffer) const
 {
@@ -173,14 +173,14 @@ StateSpace::State* R<N>::allocateStateInBuffer(void* _buffer) const
   return state;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::freeStateInBuffer(StateSpace::State* /*_state*/) const
 {
   // Do nothing.
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::compose(
     const StateSpace::State* _state1,
@@ -198,7 +198,7 @@ void R<N>::compose(
   setValue(out, getValue(state1) + getValue(state2));
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 size_t R<N>::getDimension() const
 {
@@ -208,16 +208,16 @@ size_t R<N>::getDimension() const
     return N;
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::getIdentity(StateSpace::State* _out) const
 {
   auto out = static_cast<State*>(_out);
 
-  setValue(out, Vectord::Zero(getDimension()));
+  setValue(out, VectorNd::Zero(getDimension()));
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::getInverse(
     const StateSpace::State* _in, StateSpace::State* _out) const
@@ -232,7 +232,7 @@ void R<N>::getInverse(
   setValue(out, -getValue(in));
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::copyState(
     const StateSpace::State* _source, StateSpace::State* _destination) const
@@ -242,7 +242,7 @@ void R<N>::copyState(
   setValue(destination, getValue(source));
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::expMap(
     const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
@@ -260,7 +260,7 @@ void R<N>::expMap(
   setValue(out, _tangent);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
 {
@@ -271,7 +271,7 @@ void R<N>::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
   _tangent = getValue(in);
 }
 
-//=============================================================================
+//==============================================================================
 template <int N>
 void R<N>::print(const StateSpace::State* _state, std::ostream& _os) const
 {

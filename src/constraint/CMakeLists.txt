@@ -3,6 +3,7 @@ set(sources
   uniform/RnConstantSampler.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
+  uniform/SE2BoxConstraint.cpp
   CartesianProductProjectable.cpp
   CartesianProductSampleable.cpp
   CartesianProductTestable.cpp
@@ -34,8 +35,8 @@ target_include_directories("${PROJECT_NAME}_constraint"
 )
 target_link_libraries("${PROJECT_NAME}_constraint"
   PUBLIC
+    "${PROJECT_NAME}_common"
     "${PROJECT_NAME}_statespace"
-    "${PROJECT_NAME}_util"
     ${DART_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_constraint"
@@ -44,6 +45,6 @@ target_compile_options("${PROJECT_NAME}_constraint"
 
 add_component(${PROJECT_NAME} constraint)
 add_component_targets(${PROJECT_NAME} constraint "${PROJECT_NAME}_constraint")
-add_component_dependencies(${PROJECT_NAME} constraint statespace util)
+add_component_dependencies(${PROJECT_NAME} constraint common statespace)
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})

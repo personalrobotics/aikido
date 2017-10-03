@@ -22,7 +22,7 @@ public:
 
 TEST_F(StateSamplerTest, ThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(StateSampler(0, std::move(sampler->createSampleGenerator())),
+  EXPECT_THROW(StateSampler(0, sampler->createSampleGenerator()),
                std::invalid_argument);
 }
 
@@ -60,8 +60,7 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorFailsSample)
 
 TEST_F(StateSamplerTest, SampleUniformValid)
 {
-  StateSampler ssampler(gSpace.get(),
-                        std::move(sampler->createSampleGenerator()));
+  StateSampler ssampler(gSpace.get(), sampler->createSampleGenerator());
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
   auto s2 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
@@ -76,8 +75,7 @@ TEST_F(StateSamplerTest, SampleUniformValid)
 
 TEST_F(StateSamplerTest, SampleUniformNearAlwaysThrows)
 {
-  StateSampler ssampler(gSpace.get(),
-                        std::move(sampler->createSampleGenerator()));
+  StateSampler ssampler(gSpace.get(), sampler->createSampleGenerator());
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
   auto s2 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
@@ -89,8 +87,7 @@ TEST_F(StateSamplerTest, SampleUniformNearAlwaysThrows)
 
 TEST_F(StateSamplerTest, SampleGaussianAlwaysThrows)
 {
-  StateSampler ssampler(gSpace.get(),
-                        std::move(sampler->createSampleGenerator()));
+  StateSampler ssampler(gSpace.get(), sampler->createSampleGenerator());
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
   auto s2 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 

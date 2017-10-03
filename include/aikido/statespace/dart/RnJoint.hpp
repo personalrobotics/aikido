@@ -25,9 +25,9 @@ class RJoint : public R<N>,
 public:
   static constexpr int DimensionAtCompileTime = N;
 
-  using R<DimensionAtCompileTime>::State;
+  using typename R<DimensionAtCompileTime>::State;
 
-  using Vectord = typename R<DimensionAtCompileTime>::Vectord;
+  using VectorNd = typename R<DimensionAtCompileTime>::VectorNd;
 
   using DartJoint = typename detail::RJointTraits<N>::DartJoint;
 

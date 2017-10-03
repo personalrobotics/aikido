@@ -65,5 +65,4 @@ add_component(${PROJECT_NAME} control_ros)
 add_component_targets(${PROJECT_NAME} control_ros "${PROJECT_NAME}_control_ros")
 add_component_dependencies(${PROJECT_NAME} control_ros control statespace trajectory)
 
-coveralls_add_sources(${sources})
 format_add_sources(${sources})

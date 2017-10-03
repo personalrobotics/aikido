@@ -7,7 +7,7 @@
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/util/StepSequence.hpp>
+#include <aikido/common/StepSequence.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
@@ -15,6 +15,7 @@ using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::CRRT;
 using aikido::planner::ompl::CRRTConnect;
+using aikido::planner::ompl::ompl_dynamic_pointer_cast;
 
 TEST_F(PlannerTest, PlanToConfiguration)
 {
@@ -138,7 +139,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
   EXPECT_TRUE(goalTestable->isSatisfied(s0));
 
   // Check all intermediate waypoints adhere to constraint
-  aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
+  aikido::common::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
     traj->evaluate(t, s0);
@@ -196,7 +197,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
   EXPECT_TRUE(goalTestable->isSatisfied(s0));
 
   // Check all intermediate waypoints adhere to constraint
-  aikido::util::StepSequence seq(0.1, true, traj->getStartTime(),
+  aikido::common::StepSequence seq(0.1, true, traj->getStartTime(),
                                  traj->getEndTime());
   for (double t : seq) {
     traj->evaluate(t, s0);
@@ -471,7 +472,7 @@ TEST_F(PlannerTest, GetSpaceInformationCreatesGeometricStateSpace)
       std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 0.1);
 
-  auto ss = boost::dynamic_pointer_cast<aikido::planner::ompl::GeometricStateSpace>(
+  auto ss = ompl_dynamic_pointer_cast<aikido::planner::ompl::GeometricStateSpace>(
       si->getStateSpace());
   EXPECT_FALSE(ss == nullptr);
 }
@@ -483,7 +484,7 @@ TEST_F(PlannerTest, GetSpaceInformationCreatesValidityChecker)
       std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 0.1);
 
-  auto vc = boost::dynamic_pointer_cast<aikido::planner::ompl::StateValidityChecker>(
+  auto vc = ompl_dynamic_pointer_cast<aikido::planner::ompl::StateValidityChecker>(
       si->getStateValidityChecker());
   EXPECT_FALSE(vc == nullptr);
 }
@@ -495,8 +496,7 @@ TEST_F(PlannerTest, GetSpaceInformationCreatesMotionValidator)
       std::move(sampler), std::move(collConstraint),
       std::move(boundsConstraint), std::move(boundsProjection), 0.1);
 
-  auto mvalidator = boost::dynamic_pointer_cast<aikido::planner::ompl::MotionValidator>(
+  auto mvalidator = ompl_dynamic_pointer_cast<aikido::planner::ompl::MotionValidator>(
       si->getMotionValidator());
   EXPECT_FALSE(mvalidator == nullptr);
 }
-

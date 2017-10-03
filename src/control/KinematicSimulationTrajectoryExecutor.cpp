@@ -13,7 +13,7 @@ using std::chrono::seconds;
 namespace aikido {
 namespace control {
 
-//=============================================================================
+//==============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
   : mSkeleton(std::move(skeleton))
@@ -26,7 +26,7 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
     throw std::invalid_argument("Skeleton is null.");
 }
 
-//=============================================================================
+//==============================================================================
 KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 {
   {
@@ -35,7 +35,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
   }
 }
 
-//=============================================================================
+//==============================================================================
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     trajectory::TrajectoryPtr traj)
 {
@@ -84,7 +84,7 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
   return mPromise->get_future();
 }
 
-//=============================================================================
+//==============================================================================
 void KinematicSimulationTrajectoryExecutor::step()
 {
   using namespace std::chrono;

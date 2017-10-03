@@ -1,11 +1,9 @@
-#ifndef AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP
-#define AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP
+#ifndef AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP_
+#define AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP_
 
+#include "../statespace/StateSpace.hpp"
 #include "Sampleable.hpp"
 #include "Testable.hpp"
-#include "../statespace/StateSpace.hpp"
-
-
 
 namespace aikido {
 namespace constraint {
@@ -17,9 +15,8 @@ namespace constraint {
 class RejectionSampleable : public Sampleable
 {
 public:
-
   /// Constructor.
-  /// \param _stateSpace StateSpace in which both 
+  /// \param _stateSpace StateSpace in which both
   ///        sampleable and testable operate.
   /// \prarm _sampleable Sampleable for robot configuration.
   /// \param _testable Testable for each configuration.
@@ -27,11 +24,10 @@ public:
   ///        If all _maxTrialPerSample fails to pass _testable,
   ///        SampleGenerator.sample(...) will return false.
   RejectionSampleable(
-    statespace::StateSpacePtr _stateSpace,
-    SampleablePtr _sampleable,
-    TestablePtr _testable,
-    int _maxTrialPerSample);
-
+      statespace::StateSpacePtr _stateSpace,
+      SampleablePtr _sampleable,
+      TestablePtr _testable,
+      int _maxTrialPerSample);
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -49,4 +45,4 @@ private:
 } // namespace constraint
 } // namespace aikido
 
-#endif 
+#endif // AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP_

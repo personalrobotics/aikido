@@ -10,7 +10,7 @@
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 #include <dart/dart.hpp>
 #include <ompl/base/State.h>
 
@@ -18,8 +18,8 @@ using dart::common::make_unique;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R3;
 using aikido::planner::ompl::GeometricStateSpace;
-using aikido::util::RNGWrapper;
-using aikido::util::RNG;
+using aikido::common::RNGWrapper;
+using aikido::common::RNG;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 static std::unique_ptr<DefaultRNG> make_rng()

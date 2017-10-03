@@ -1,8 +1,8 @@
 #include <aikido/planner/ompl/MotionValidator.hpp>
 
 #include <ompl/base/SpaceInformation.h>
-#include <aikido/util/StepSequence.hpp>
-#include <aikido/util/VanDerCorput.hpp>
+#include <aikido/common/StepSequence.hpp>
+#include <aikido/common/VanDerCorput.hpp>
 
 namespace aikido {
 namespace planner {
@@ -29,10 +29,10 @@ bool MotionValidator::checkMotion(
     const ::ompl::base::State* _s1, const ::ompl::base::State* _s2) const
 {
   double dist = si_->distance(_s1, _s2);
-  aikido::util::VanDerCorput vdc{1,
-                                 true,
-                                 true, // include endpoints
-                                 mSequenceResolution / dist};
+  aikido::common::VanDerCorput vdc{1,
+                                   true,
+                                   true, // include endpoints
+                                   mSequenceResolution / dist};
 
   auto stateSpace = si_->getStateSpace();
   auto iState = stateSpace->allocState();
@@ -60,7 +60,7 @@ bool MotionValidator::checkMotion(
 
   // Allocate a sequence that steps from 0 to 1 by a stepsize that ensures no
   // more than mSequenceResolution of distance between successive points
-  aikido::util::StepSequence seq(
+  aikido::common::StepSequence seq(
       mSequenceResolution / dist,
       true); // include endpoints
 

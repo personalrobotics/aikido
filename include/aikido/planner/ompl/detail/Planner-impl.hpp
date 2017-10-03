@@ -9,7 +9,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-//=============================================================================
+//==============================================================================
 template <class PlannerType>
 trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,
@@ -57,7 +57,7 @@ trajectory::InterpolatedPtr planOMPL(
       _maxPlanTime);
 }
 
-//=============================================================================
+//==============================================================================
 template <class PlannerType>
 trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,

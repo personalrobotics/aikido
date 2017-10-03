@@ -136,7 +136,7 @@ bool convertShape(
 {
   marker->type = Marker::SPHERE;
   marker->pose.orientation.w = 1.;
-  marker->scale = convertEigenToROSVector3(shape.getSize());
+  marker->scale = convertEigenToROSVector3(shape.getDiameters());
   return true;
 }
 

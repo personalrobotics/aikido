@@ -1,12 +1,12 @@
 #include <aikido/control/ros/RosTrajectoryExecutor.hpp>
 
+#include <aikido/common/StepSequence.hpp>
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/control/ros/RosTrajectoryExecutionException.hpp>
 #include <aikido/control/ros/util.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
-#include <aikido/util/StepSequence.hpp>
 
 namespace aikido {
 namespace control {
@@ -15,7 +15,7 @@ namespace {
 
 using std::chrono::milliseconds;
 
-//=============================================================================
+//==============================================================================
 std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 {
   using Result = control_msgs::FollowJointTrajectoryResult;
@@ -49,7 +49,7 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 
 } // namespace
 
-//=============================================================================
+//==============================================================================
 RosTrajectoryExecutor::RosTrajectoryExecutor(
     ::ros::NodeHandle node,
     const std::string& serverName,
@@ -73,21 +73,21 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
     throw std::invalid_argument("Goal time tolerance must be positive.");
 }
 
-//=============================================================================
+//==============================================================================
 RosTrajectoryExecutor::~RosTrajectoryExecutor()
 {
   // Do nothing.
   // TODO: Should we wait for the current trajectory to finish executing?
 }
 
-//=============================================================================
+//==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(trajectory::TrajectoryPtr traj)
 {
   static const ::ros::Time invalidTime;
   return execute(traj, invalidTime);
 }
 
-//=============================================================================
+//==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
     trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
 {
@@ -143,7 +143,7 @@ std::future<void> RosTrajectoryExecutor::execute(
   }
 }
 
-//=============================================================================
+//==============================================================================
 void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
 {
   // This function assumes that mMutex is locked.
@@ -204,7 +204,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
   }
 }
 
-//=============================================================================
+//==============================================================================
 void RosTrajectoryExecutor::step()
 {
   std::lock_guard<std::mutex> lock(mMutex);

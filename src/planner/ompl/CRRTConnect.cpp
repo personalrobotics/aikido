@@ -8,7 +8,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-//=============================================================================
+//==============================================================================
 CRRTConnect::CRRTConnect(const ::ompl::base::SpaceInformationPtr& _si)
   : CRRT(_si, "CRRTConnect"), mConnectionRadius(1e-4)
 {
@@ -24,13 +24,13 @@ CRRTConnect::CRRTConnect(const ::ompl::base::SpaceInformationPtr& _si)
       nullptr, nullptr);
 }
 
-//=============================================================================
+//==============================================================================
 CRRTConnect::~CRRTConnect()
 {
   clear();
 }
 
-//=============================================================================
+//==============================================================================
 void CRRTConnect::setup()
 {
   Planner::setup();
@@ -56,7 +56,7 @@ void CRRTConnect::setup()
           OMPL_PLACEHOLDER(_2)));
 }
 
-//=============================================================================
+//==============================================================================
 void CRRTConnect::freeMemory()
 {
   CRRT::freeMemory();
@@ -74,7 +74,7 @@ void CRRTConnect::freeMemory()
   }
 }
 
-//=============================================================================
+//==============================================================================
 void CRRTConnect::clear()
 {
   CRRT::clear();
@@ -84,19 +84,19 @@ void CRRTConnect::clear()
       nullptr, nullptr);
 }
 
-//=============================================================================
+//==============================================================================
 void CRRTConnect::setConnectionRadius(double radius)
 {
   mConnectionRadius = radius;
 }
 
-//=============================================================================
+//==============================================================================
 double CRRTConnect::getConnectionRadius() const
 {
   return mConnectionRadius;
 }
 
-//=============================================================================
+//==============================================================================
 ::ompl::base::PlannerStatus CRRTConnect::solve(
     const ::ompl::base::PlannerTerminationCondition& ptc)
 {
@@ -267,7 +267,7 @@ double CRRTConnect::getConnectionRadius() const
                 : ::ompl::base::PlannerStatus::TIMEOUT;
 }
 
-//=============================================================================
+//==============================================================================
 void CRRTConnect::getPlannerData(::ompl::base::PlannerData& data) const
 {
   Planner::getPlannerData(data);

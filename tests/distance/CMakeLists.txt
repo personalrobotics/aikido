@@ -13,8 +13,13 @@ target_link_libraries(test_SO3Angular
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace")
 
-aikido_add_test(test_Weighted test_Weighted.cpp)
-target_link_libraries(test_Weighted
+aikido_add_test(test_SE2Weighted test_SE2Weighted.cpp)
+target_link_libraries(test_SE2Weighted
+  "${PROJECT_NAME}_distance"
+  "${PROJECT_NAME}_statespace")
+
+aikido_add_test(test_CartesianProductWeighted test_CartesianProductWeighted.cpp)
+target_link_libraries(test_CartesianProductWeighted
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace")
 

@@ -3,7 +3,7 @@
 namespace aikido {
 namespace constraint {
 
-//=============================================================================
+//==============================================================================
 bool Projectable::project(statespace::StateSpace::State* _s) const
 {
   auto space = getStateSpace();

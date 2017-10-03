@@ -25,11 +25,10 @@ public:
   ///
   /// \param _stateSpace state space this trajectory is defined in
   /// \param _startTime start time of the trajectory
-  Spline(
-    statespace::StateSpacePtr _stateSpace, double _startTime = 0.);
+  Spline(statespace::StateSpacePtr _stateSpace, double _startTime = 0.);
 
   virtual ~Spline();
-  
+
   /// Add a segment to the end of this trajectory that starts at
   /// \c _startState, lasts for \c _duration, and is defined by a polynomial in
   /// the tangent space of \c _startState.
@@ -54,8 +53,10 @@ public:
   /// \param _coefficients polynomial coefficients
   /// \param _duration duration of this segment, must be positive
   /// \param _startSTate start state of the segment
-  void addSegment(const Eigen::MatrixXd& _coefficients, double _duration,
-    const statespace::StateSpace::State* _startState);
+  void addSegment(
+      const Eigen::MatrixXd& _coefficients,
+      double _duration,
+      const statespace::StateSpace::State* _startState);
 
   /// Adds a segment to the end of the trajectory while preserving C0
   /// continuity. This is a helper function that calls the three-argument
@@ -63,7 +64,7 @@ public:
   /// trajectory. As a result, the trajectory must be non-empty.
   ///
   /// Note that repeated calls to this function may accumulate numerical
-  /// imprecision from repeated polynomial evaluation. We suggest calling 
+  /// imprecision from repeated polynomial evaluation. We suggest calling
   /// the overload of the function that accepts an explicit start state
   /// if it is possible to do so.
   ///
@@ -93,22 +94,47 @@ public:
 
   // Documentation inherited.
   void evaluate(
-    double _t, statespace::StateSpace::State *_state) const override;
+      double _t, statespace::StateSpace::State* _state) const override;
 
   // Documentation inherited.
-  void evaluateDerivative(double _t, int _derivative,
-    Eigen::VectorXd& _tangentVector ) const override;
+  void evaluateDerivative(
+      double _t,
+      int _derivative,
+      Eigen::VectorXd& _tangentVector) const override;
+
+  /// Gets the number of waypoints.
+  /// \return The number of waypoints
+  size_t getNumWaypoints() const;
+
+  /// Gets a waypoint.
+  ///
+  /// \param _index waypoint index
+  /// \param[out] state of the waypoint at index \c _index
+  void getWaypoint(size_t _index, statespace::StateSpace::State* state) const;
+
+  /// Gets the time of a waypoint.
+  /// \param _index waypoint index
+  /// \return time of the waypoint at index \c _index
+  double getWaypointTime(size_t _index) const;
+
+  /// Gets the derivative of a waypoint.
+  /// \param _index waypoint index
+  /// \param _derivative order of derivative
+  /// \param[out] _tangentVector output tangent vector in the local frame at
+  /// index \c _index
+  void getWaypointDerivative(
+      size_t _index, int _derivative, Eigen::VectorXd& _tangentVector) const;
 
 private:
   struct PolynomialSegment
   {
-    statespace::StateSpace::State* mStartState; 
+    statespace::StateSpace::State* mStartState;
     Eigen::MatrixXd mCoefficients;
     double mDuration;
   };
 
   static Eigen::VectorXd evaluatePolynomial(
-    const Eigen::MatrixXd& _coefficients, double _t, int _derivative);
+      const Eigen::MatrixXd& _coefficients, double _t, int _derivative);
 
   std::pair<size_t, double> getSegmentForTime(double _t) const;
 
