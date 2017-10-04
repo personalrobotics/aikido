@@ -1,13 +1,17 @@
 # AIKIDO Style Guide #
 
-The code in this library generally follows the same coding convention as the [DART/KIDO](https://github.com/dartsim/dart).
+The code in this library generally follows the same coding convention as the [DART](https://github.com/dartsim/dart).
 
-* [C++ Header Style](#c-header-style)
-* [C++ Source Style](#c-source-style)
+* [C++ Style](#c-style)
+  * [C++ Header Style](#header-style)
+  * [C++ Source Style](#source-style)
+  * [Autoformatting using ClangFormat](#autoformatting-using-clangformat)
 * [Python Style](#python-style)
 * [CMake Style](#cmake-style)
 
-## C++ Header Style
+## C++ Style
+
+### Header Style
 
 C++ headers should be contained in a subdirectory of `include/` that matches their namespace, with the extension `.hpp`.
 
@@ -97,7 +101,7 @@ using ExamplePtr = std::shared_ptr<Example>;
 #endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```
 
-## C++ Source Style
+### Source Style
 
 C++ sources should be contained in a subdirectory of `src/` that matches their namespace, with the extension `.cpp`.
 
@@ -143,6 +147,28 @@ int ExampleClass::exampleMethod(int _A, int _B, int *_out) const
 
 } // namespace example
 } // namespace aikido
+```
+
+### Autoformatting using ClangFormat
+
+You can automatically format the entire Aikido code using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) through CMake. Make sure `clang-format 3.8` is installed.
+
+#### Using CMake
+
+```bash
+$ cd to/aikido/root/
+$ mkdir build
+$ cd build
+$ make check-format # to check the code without formatting
+$ make format       # to format the code
+```
+
+#### Using catkin
+
+```bash
+$ cd to/your/catkin/workspace/
+$ catkin build aikido --no-deps --make-args format       # to format the code
+$ catkin build aikido --no-deps --make-args check-format # to check the code without formatting
 ```
 
 ## Python Style

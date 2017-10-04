@@ -5,22 +5,23 @@
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
 using aikido::constraint::FramePairDifferentiable;
 using aikido::constraint::TSR;
-using dart::dynamics::BodyNodePtr;
-using dart::dynamics::SkeletonPtr;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using dart::dynamics::Skeleton;
-using aikido::statespace::SE3;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::SO2;
-using aikido::util::RNG;
-using aikido::util::RNGWrapper;
+using aikido::statespace::SE3;
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
+
+using dart::dynamics::BodyNodePtr;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 using dart::dynamics::FreeJoint;
 using dart::dynamics::BodyNode;
 
@@ -28,7 +29,7 @@ class FramePairDifferentiableTest : public ::testing::Test {
   protected:
     virtual void SetUp() {
 
-      tsr = std::make_shared<TSR>(
+      tsr = dart::common::make_aligned_shared<TSR>(
         std::unique_ptr<RNG>(new RNGWrapper<std::default_random_engine>(0)));
 
       Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
@@ -143,7 +144,6 @@ TEST_F(FramePairDifferentiableTest, Value)
 
   tsr->mBw = Bw;
 
-  Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
   adaptor.getValue(state, value);
   
   Eigen::VectorXd expected(Eigen::VectorXd::Zero(6));

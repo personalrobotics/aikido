@@ -1,5 +1,5 @@
 #include <aikido/distance/defaults.hpp>
-#include <aikido/distance/Weighted.hpp>
+#include <aikido/distance/CartesianProductWeighted.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
@@ -14,7 +14,7 @@ TEST(Defaults, CreateDistanceMetricForThrowsOnNull)
 {
   EXPECT_THROW(createDistanceMetricFor<SO2>(nullptr),
                std::invalid_argument);
-  EXPECT_THROW(createDistanceMetricFor<Rn>(nullptr),
+  EXPECT_THROW(createDistanceMetricFor<R1>(nullptr),
                std::invalid_argument);
   EXPECT_THROW(createDistanceMetricFor<SO3>(nullptr),
                std::invalid_argument);
@@ -34,9 +34,9 @@ TEST(Defaults, CreateDistanceMetricFor)
   auto so2metric_c = dynamic_cast<SO2Angular*>(so2metric.get());
   EXPECT_TRUE(so2metric_c != nullptr);
 
-  auto rv3 = std::make_shared<Rn>(3);
-  auto rv3metric = createDistanceMetricFor<Rn>(rv3);
-  auto rv3metric_c = dynamic_cast<RnEuclidean*>(rv3metric.get());
+  auto rv3 = std::make_shared<R3>();
+  auto rv3metric = createDistanceMetricFor<R3>(rv3);
+  auto rv3metric_c = dynamic_cast<R3Euclidean*>(rv3metric.get());
   EXPECT_TRUE(rv3metric_c != nullptr);
 
   auto so3 = std::make_shared<SO3>();
@@ -47,7 +47,7 @@ TEST(Defaults, CreateDistanceMetricFor)
   std::vector<StateSpacePtr> spaces({so2, rv3, so3});
   auto space = std::make_shared<CartesianProduct>(spaces);
   auto dmetric = createDistanceMetricFor<CartesianProduct>(space);
-  auto cmetric = dynamic_cast<Weighted*>(dmetric.get());
+  auto cmetric = dynamic_cast<CartesianProductWeighted*>(dmetric.get());
   EXPECT_TRUE(cmetric != nullptr);
 }
 
@@ -58,9 +58,9 @@ TEST(Defaults, CreateDistanceMetric)
   auto so2metric_c = dynamic_cast<SO2Angular*>(so2metric.get());
   EXPECT_TRUE(so2metric_c != nullptr);
 
-  auto rv3 = std::make_shared<Rn>(3);
+  auto rv3 = std::make_shared<R3>();
   auto rv3metric = createDistanceMetric(rv3);
-  auto rv3metric_c = dynamic_cast<RnEuclidean*>(rv3metric.get());
+  auto rv3metric_c = dynamic_cast<R3Euclidean*>(rv3metric.get());
   EXPECT_TRUE(rv3metric_c != nullptr);
 
   auto so3 = std::make_shared<SO3>();
@@ -71,6 +71,6 @@ TEST(Defaults, CreateDistanceMetric)
   std::vector<StateSpacePtr> spaces({so2, rv3, so3});
   auto space = std::make_shared<CartesianProduct>(spaces);
   auto dmetric = createDistanceMetric(space);
-  auto cmetric = dynamic_cast<Weighted*>(dmetric.get());
+  auto cmetric = dynamic_cast<CartesianProductWeighted*>(dmetric.get());
   EXPECT_TRUE(cmetric != nullptr);
 }

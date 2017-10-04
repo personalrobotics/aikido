@@ -1,19 +1,19 @@
 #ifndef AIKIDO_CONSTRAINT_TESTABLESUBSPACE_HPP_
 #define AIKIDO_CONSTRAINT_TESTABLESUBSPACE_HPP_
+
 #include <vector>
-#include "Testable.hpp"
 #include "../statespace/CartesianProduct.hpp"
+#include "Testable.hpp"
 
 namespace aikido {
 namespace constraint {
 
-/// Testable for CompoundStates. 
-/// It takes in a set of Testables and test i-th substate on 
+/// Testable for CompoundStates.
+/// It takes in a set of Testables and test i-th substate on
 /// the i-th Testable.
 class CartesianProductTestable : public Testable
 {
 public:
-
   /// Constructor.
   /// \param _stateSpace StateSpace in which this constraint operates.
   /// \param _constraints Set of testables. The size of _constraints
@@ -33,7 +33,7 @@ private:
   std::vector<TestablePtr> mConstraints;
 };
 
-}  // namespace constraint
-}  // namespace aikido
+} // namespace constraint
+} // namespace aikido
 
-#endif  // define AIKIDO_CONSTRAINT_SAMPLEABLESUBSPACE_HPP_
+#endif // define AIKIDO_CONSTRAINT_SAMPLEABLESUBSPACE_HPP_

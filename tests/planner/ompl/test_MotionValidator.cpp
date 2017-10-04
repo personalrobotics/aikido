@@ -9,6 +9,7 @@
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::MotionValidator;
+using aikido::planner::ompl::ompl_make_shared;
 
 /// This test creates a world with a translational robot
 /// and a .2x.2x.2 block obstacle at the origin
@@ -29,7 +30,7 @@ public:
             stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
             Eigen::Vector3d(0.1, 0.1, 0.1));
     ::ompl::base::StateValidityCheckerPtr vchecker =
-          boost::make_shared<aikido::planner::ompl::StateValidityChecker>(
+        ompl_make_shared<aikido::planner::ompl::StateValidityChecker>(
             si, mockCollisionConstraint);
     si->setStateValidityChecker(vchecker);
     validator = std::make_shared<MotionValidator>(si, 0.1);

@@ -15,14 +15,21 @@ set(sources
   dart/SO2Joint.cpp
   dart/SO3Joint.cpp
   dart/RnJoint.cpp
+  dart/WeldJoint.cpp
 )
 
 add_library("${PROJECT_NAME}_statespace" SHARED ${sources})
+target_include_directories("${PROJECT_NAME}_statespace"
+  PUBLIC ${DART_INCLUDE_DIRS}
+)
 target_link_libraries("${PROJECT_NAME}_statespace"
-  ${DART_LIBRARIES}
+  PUBLIC ${DART_LIBRARIES}
+)
+target_compile_options("${PROJECT_NAME}_statespace"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
-add_component(statespace)
-add_component_targets(statespace "${PROJECT_NAME}_statespace")
+add_component(${PROJECT_NAME} statespace)
+add_component_targets(${PROJECT_NAME} statespace "${PROJECT_NAME}_statespace")
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})

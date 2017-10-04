@@ -6,16 +6,16 @@ namespace statespace {
 /// \c StateHandle for a \c CartesianProduct. The template parameter is
 /// necessary to support both \c const and non-<tt>const</tt> states.
 template <class _QualifiedState>
-class CompoundStateHandle 
-  : public statespace::StateHandle<CartesianProduct, _QualifiedState>
+class CompoundStateHandle
+    : public statespace::StateHandle<CartesianProduct, _QualifiedState>
 {
 public:
-  using typename statespace::StateHandle<
-    CartesianProduct, _QualifiedState>::State;
-  using typename statespace::StateHandle<
-    CartesianProduct, _QualifiedState>::StateSpace;
-  using typename statespace::StateHandle<
-    CartesianProduct, _QualifiedState>::QualifiedState;
+  using typename statespace::StateHandle<CartesianProduct,
+                                         _QualifiedState>::State;
+  using typename statespace::StateHandle<CartesianProduct,
+                                         _QualifiedState>::StateSpace;
+  using typename statespace::StateHandle<CartesianProduct,
+                                         _QualifiedState>::QualifiedState;
 
   /// Construct and initialize to \c nullptr.
   CompoundStateHandle()
@@ -27,8 +27,7 @@ public:
   /// \param _space state space that created \c _state
   /// \param _state state created by \c _space
   CompoundStateHandle(const StateSpace* _space, State* _state)
-    : statespace::StateHandle<CartesianProduct, QualifiedState>(
-        _space, _state)
+    : statespace::StateHandle<CartesianProduct, QualifiedState>(_space, _state)
   {
   }
 
@@ -41,10 +40,10 @@ public:
   typename Space::State* getSubState(size_t _index) const
   {
     return this->getStateSpace()->template getSubState<Space>(
-      this->getState(), _index);
+        this->getState(), _index);
   }
 
-  /// Gets state by subspace indexa and wraps it in a \c Space::StateHandle
+  /// Gets state by subspace index and wraps it in a \c Space::StateHandle
   /// helper class.
   ///
   /// \tparam Space type of \c StateSpace for subspace \c _index
@@ -54,12 +53,12 @@ public:
   typename Space::StateHandle getSubStateHandle(size_t _index) const
   {
     return typename Space::StateHandle(
-      this->getStateSpace()->template getSubspace<Space>(_index).get(),
-      getSubState<Space>(_index));
+        this->getStateSpace()->template getSubspace<Space>(_index).get(),
+        getSubState<Space>(_index));
   }
 };
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 std::shared_ptr<Space> CartesianProduct::getSubspace(size_t _index) const
 {
@@ -81,46 +80,46 @@ std::shared_ptr<Space> CartesianProduct::getSubspace(size_t _index) const
   return space;
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 typename Space::State* CartesianProduct::getSubState(
-  State* _state, size_t _index) const
+    State* _state, size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubspace(_index);
 
   return reinterpret_cast<typename Space::State*>(
-    reinterpret_cast<char*>(_state) + mOffsets[_index]);
+      reinterpret_cast<char*>(_state) + mOffsets[_index]);
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 const typename Space::State* CartesianProduct::getSubState(
-  const State* _state, size_t _index) const
+    const State* _state, size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubspace(_index);
 
   return reinterpret_cast<const typename Space::State*>(
-    reinterpret_cast<const char*>(_state) + mOffsets[_index]);
+      reinterpret_cast<const char*>(_state) + mOffsets[_index]);
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 typename Space::StateHandle CartesianProduct::getSubStateHandle(
-  State* _state, size_t _index) const
+    State* _state, size_t _index) const
 {
   return typename Space::StateHandle(
-    getSubspace<Space>(_index).get(), getSubState<Space>(_state, _index));
+      getSubspace<Space>(_index).get(), getSubState<Space>(_state, _index));
 }
 
-//=============================================================================
+//==============================================================================
 template <class Space>
 typename Space::StateHandleConst CartesianProduct::getSubStateHandle(
-  const State* _state, size_t _index) const
+    const State* _state, size_t _index) const
 {
   return typename Space::StateHandleConst(
-    getSubspace<Space>(_index).get(), getSubState<Space>(_state, _index));
+      getSubspace<Space>(_index).get(), getSubState<Space>(_state, _index));
 }
 
 } // namespace statespace

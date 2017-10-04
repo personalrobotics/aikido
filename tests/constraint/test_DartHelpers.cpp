@@ -19,24 +19,17 @@ using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
 using aikido::constraint::SampleGenerator;
 using aikido::constraint::Satisfied;
-using aikido::statespace::dart::RnJoint;
+using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
 using aikido::statespace::dart::SO3Joint;
-using aikido::util::RNGWrapper;
+using aikido::common::RNGWrapper;
 
 using aikido::constraint::createDifferentiableBoundsFor;
 using aikido::constraint::createProjectableBoundsFor;
 using aikido::constraint::createTestableBoundsFor;
 using aikido::constraint::createSampleableBoundsFor;
 
-static Vector1d make_vector(double _x)
-{
-  Vector1d matrix;
-  matrix(0, 0) = _x;
-  return matrix;
-}
-
-//=============================================================================
+//==============================================================================
 class RnJointHelpersTests : public ::testing::Test
 {
 protected:
@@ -50,19 +43,18 @@ protected:
     mJoint->setPositionLowerLimit(0, -1.);
     mJoint->setPositionUpperLimit(0, 2.);
 
-    mStateSpace = std::make_shared<RnJoint>(mJoint);
+    mStateSpace = std::make_shared<R1Joint>(mJoint);
   }
 
   SkeletonPtr mSkeleton;
   RevoluteJoint* mJoint;
-  std::shared_ptr<RnJoint> mStateSpace;
+  std::shared_ptr<R1Joint> mStateSpace;
 };
 
-//=============================================================================
+//==============================================================================
 TEST_F(RnJointHelpersTests, createTestableBoundsFor)
 {
-  auto constraint = createTestableBoundsFor<RnJoint>(
-    mStateSpace);
+  auto constraint = createTestableBoundsFor<R1Joint>(mStateSpace);
   auto state = mStateSpace->createState();
 
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
@@ -84,13 +76,11 @@ TEST_F(RnJointHelpersTests, createTestableBoundsFor)
   EXPECT_FALSE(constraint->isSatisfied(state));
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(RnJointHelpersTests, createProjectableBounds)
 {
-  auto testableConstraint
-    = createTestableBoundsFor<RnJoint>(mStateSpace);
-  auto projectableConstraint
-    = createProjectableBoundsFor<RnJoint>(mStateSpace);
+  auto testableConstraint = createTestableBoundsFor<R1Joint>(mStateSpace);
+  auto projectableConstraint = createProjectableBoundsFor<R1Joint>(mStateSpace);
 
   auto inState = mStateSpace->createState();
   auto outState = mStateSpace->createState();
@@ -120,11 +110,11 @@ TEST_F(RnJointHelpersTests, createProjectableBounds)
   EXPECT_TRUE(testableConstraint->isSatisfied(outState));
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(RnJointHelpersTests, createDifferentiableBounds)
 {
   const auto differentiableConstraint
-    = createDifferentiableBoundsFor<RnJoint>(mStateSpace);
+    = createDifferentiableBoundsFor<R1Joint>(mStateSpace);
 
   EXPECT_EQ(mStateSpace, differentiableConstraint->getStateSpace());
 
@@ -154,14 +144,12 @@ TEST_F(RnJointHelpersTests, createDifferentiableBounds)
   EXPECT_FALSE(Vector1d::Zero().isApprox(constraintValue));
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(RnJointHelpersTests, createSampleableBounds)
 {
   auto rng = make_unique<RNGWrapper<std::default_random_engine>>(0);
-  const auto testableConstraint
-    = createTestableBoundsFor<RnJoint>(mStateSpace);
-  const auto sampleableConstraint
-    = createSampleableBoundsFor<RnJoint>(
+  const auto testableConstraint = createTestableBoundsFor<R1Joint>(mStateSpace);
+  const auto sampleableConstraint = createSampleableBoundsFor<R1Joint>(
         mStateSpace, std::move(rng));
   ASSERT_TRUE(!!sampleableConstraint);
   EXPECT_EQ(mStateSpace, sampleableConstraint->getStateSpace());
@@ -181,7 +169,7 @@ TEST_F(RnJointHelpersTests, createSampleableBounds)
   }
 }
 
-//=============================================================================
+//==============================================================================
 class SO2JointHelpersTests : public ::testing::Test
 {
 protected:
@@ -202,7 +190,7 @@ protected:
   std::shared_ptr<SO2Joint> mStateSpace;
 };
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO2JointHelpersTests, createTestableBoundsFor)
 {
   const auto constraint
@@ -211,7 +199,7 @@ TEST_F(SO2JointHelpersTests, createTestableBoundsFor)
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO2JointHelpersTests, createProjectableBounds)
 {
   const auto constraint
@@ -220,7 +208,7 @@ TEST_F(SO2JointHelpersTests, createProjectableBounds)
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO2JointHelpersTests, createDifferentiableBounds)
 {
   const auto constraint
@@ -229,7 +217,7 @@ TEST_F(SO2JointHelpersTests, createDifferentiableBounds)
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO2JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint
@@ -254,7 +242,7 @@ TEST_F(SO2JointHelpersTests, createSampleableBounds)
   }
 }
 
-//=============================================================================
+//==============================================================================
 class SO3JointHelpersTests : public ::testing::Test
 {
 protected:
@@ -275,7 +263,7 @@ protected:
   std::shared_ptr<SO3Joint> mStateSpace;
 };
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO3JointHelpersTests, createTestableBoundsFor)
 {
   const auto constraint
@@ -284,7 +272,7 @@ TEST_F(SO3JointHelpersTests, createTestableBoundsFor)
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO3JointHelpersTests, createProjectableBounds)
 {
   const auto constraint
@@ -293,7 +281,7 @@ TEST_F(SO3JointHelpersTests, createProjectableBounds)
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO3JointHelpersTests, createDifferentiableBounds)
 {
   const auto constraint
@@ -302,7 +290,7 @@ TEST_F(SO3JointHelpersTests, createDifferentiableBounds)
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 }
 
-//=============================================================================
+//==============================================================================
 TEST_F(SO3JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint

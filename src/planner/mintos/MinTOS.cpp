@@ -1,6 +1,6 @@
 #include <aikido/planner/mintos/MinTOS.hpp>
-#include <aikido/util/StepSequence.hpp>
-#include <aikido/util/Spline.hpp>
+#include <aikido/common/StepSequence.hpp>
+#include <aikido/common/Spline.hpp>
 #include <mintos/Mintos.h>
 
 namespace aikido {
@@ -165,7 +165,7 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   double _interpolationTimestep)
 {
   using QuinticSegmentProblem
-    = util::SplineProblem<double, int, 6, Eigen::Dynamic, 2>;
+    = common::SplineProblem<double, int, 6, Eigen::Dynamic, 2>;
 
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
@@ -219,7 +219,7 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   std::cout << "Output has duration " << outputCurve.EndTime() << std::endl;
 
   // Convert the output of MinTOS to an Aikido trajectory.
-  util::StepSequence timeSequence{
+  common::StepSequence timeSequence{
     _interpolationTimestep, true, 0., outputCurve.EndTime()};
 
   auto timeIterator = std::begin(timeSequence);

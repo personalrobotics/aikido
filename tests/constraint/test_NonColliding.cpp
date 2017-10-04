@@ -35,16 +35,14 @@ protected:
     auto boxNode = mBox->createJointAndBodyNodePair<FreeJoint>().second;
     Eigen::Vector3d boxSize(0.5, 0.5, 0.5);
     std::shared_ptr<BoxShape> boxShape(new BoxShape(boxSize));
-    auto shapeNode = boxNode->createShapeNodeWith
-                      <VisualAspect, CollisionAspect, DynamicsAspect>(boxShape);
+    boxNode->createShapeNodeWith<
+        VisualAspect, CollisionAspect, DynamicsAspect>(boxShape);
 
     // Set shapes on the bodies.
     Eigen::Vector3d shape(0.2, 0.2, 0.7);
     std::shared_ptr<BoxShape> box(new BoxShape(shape));
-
-    // Create a shpae node for visualization and collision checking
-    auto shapeNode1 = bn1->createShapeNodeWith
-                      <VisualAspect, CollisionAspect, DynamicsAspect>(box);
+    bn1->createShapeNodeWith<
+        VisualAspect, CollisionAspect, DynamicsAspect>(box);
 
     // Add skeleton to world
     mCollisionDetector = FCLCollisionDetector::create();
@@ -62,7 +60,8 @@ protected:
     group->addDofs(mBox->getDofs());
 
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(group);
-    mManipulator->enableSelfCollision(true);
+    mManipulator->enableSelfCollisionCheck();
+    mManipulator->enableAdjacentBodyCheck();
 
   }
 

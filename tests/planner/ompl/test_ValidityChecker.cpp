@@ -21,7 +21,7 @@ public:
       boundsConstraint, boundsProjection, 0.1);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
-  boost::shared_ptr<::ompl::base::SpaceInformation> si;
+  ::ompl::base::SpaceInformationPtr si;
 };
 
 TEST_F(StateValidityCheckerTest, ThrowsOnNullSpaceInformation)

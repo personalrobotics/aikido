@@ -1,9 +1,10 @@
 #ifndef AIKIDO_STATESPACE_STATESPACE_HPP_
 #define AIKIDO_STATESPACE_STATESPACE_HPP_
+
 #include <memory>
-#include "ScopedState.hpp"
 #include <Eigen/Dense>
-#include "../util/RNG.hpp"
+#include "../common/RNG.hpp"
+#include "ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -11,7 +12,7 @@ namespace statespace {
 /// Represents a Lie group and its associated Lie algebra, i.e. a
 /// differentiable manifold embedded in Euclidean space. This is a base class
 /// for all other state spaces and provides the following operations:
-/// 
+///
 /// - a group operation
 /// - an identity element
 /// - an inverse operation
@@ -58,13 +59,13 @@ public:
   /// create a \c State, and returns that pointer.
   ///
   /// \return state in this space
-  virtual State *allocateState() const;
+  virtual State* allocateState() const;
 
   /// Free a state previously created by \c allocateState. It is undefined
   /// behavior to access \c _state after calling this function.
   ///
   /// \param _state state to be deleted
-  virtual void freeState(State *_state) const;
+  virtual void freeState(State* _state) const;
 
   /// Gets the size of a State, in bytes.
   ///
@@ -77,13 +78,13 @@ public:
   ///
   /// \param _buffer memory used to store the returned state
   /// \return state object allocated in \c _buffer
-  virtual State *allocateStateInBuffer(void *_buffer) const = 0;
+  virtual State* allocateStateInBuffer(void* _buffer) const = 0;
 
   /// Free a state previously created by \c allocateStateInBuffer. It is
   /// undefined behavior to access \c _state after calling this function.
   ///
   /// \param _state state to free
-  virtual void freeStateInBuffer(State *_state) const = 0;
+  virtual void freeStateInBuffer(State* _state) const = 0;
 
   /// Lie group operation for this StateSpace. It is not acceptable for \c _out
   /// to share memory with \c _state1 or \c _state2.
@@ -91,8 +92,8 @@ public:
   /// \param _state1 left input state
   /// \param _state2 right input state
   /// \param[out] _out output state
-  virtual void compose(const State *_state1, const State *_state2,
-                       State *_out) const = 0;
+  virtual void compose(
+      const State* _state1, const State* _state2, State* _out) const = 0;
 
   /// Lie group operation for this StateSpace. This is an in-place version of
   /// the three argument \c compose member function that computes:
@@ -103,7 +104,7 @@ public:
   ///
   /// \param[in,out] _state1 left input state, overwritten by output
   /// \param _state2 right input state
-  virtual void compose(State *_state1, const State *_state2);
+  virtual void compose(State* _state1, const State* _state2);
 
   /// Gets the identity element for this Lie group, such that:
   /// \code
@@ -111,7 +112,7 @@ public:
   /// \endcode
   ///
   /// \param[out] _out output state
-  virtual void getIdentity(State *_out) const = 0;
+  virtual void getIdentity(State* _out) const = 0;
 
   /// Gets the inverse of \c _in in this Lie group, such that:
   /// \code
@@ -121,13 +122,13 @@ public:
   ///
   /// \param _state input state
   /// \param[out] _out output state
-  virtual void getInverse(const State *_state, State *_out) const = 0;
+  virtual void getInverse(const State* _state, State* _out) const = 0;
 
   /// Gets the inverse of \c _in in this Lie group. This is an in-place
   /// version of the two-argument \c getInverse member function.
   ///
   /// \param[in,out] _state input state, to be overwritten by output
-  virtual void getInverse(State *_state) const;
+  virtual void getInverse(State* _state) const;
 
   /// Get the dimension of this Lie group. This is also the dimension of the
   /// tangent space, i.e. the Lie algebra, associated with this group.
@@ -140,8 +141,8 @@ public:
   /// \param _source input state
   /// \param[out] _destination output state
   virtual void copyState(
-    const StateSpace::State *_source,
-    StateSpace::State *_destination) const = 0;
+      const StateSpace::State* _source,
+      StateSpace::State* _destination) const = 0;
 
   /// Exponential mapping of Lie algebra element to a Lie group element. The
   /// parameterization of the tangent space is defined by the concrete
@@ -149,8 +150,7 @@ public:
   ///
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
-  virtual void expMap(
-    const Eigen::VectorXd& _tangent, State* _out) const = 0;
+  virtual void expMap(const Eigen::VectorXd& _tangent, State* _out) const = 0;
 
   /// Log mapping of Lie group element to a Lie algebra element. The
   /// parameterization of the tangent space is defined by the concrete
@@ -158,17 +158,17 @@ public:
   ///
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
-  virtual void logMap(const State *_in, Eigen::VectorXd &_tangent) const = 0;
+  virtual void logMap(const State* _in, Eigen::VectorXd& _tangent) const = 0;
 
   /// Print the state to the output stream
   /// \param _state The element to print
   /// \param _os The stream to print to
-  virtual void print(const State *_state, std::ostream &_os) const = 0;
+  virtual void print(const State* _state, std::ostream& _os) const = 0;
 };
 
 using StateSpacePtr = std::shared_ptr<StateSpace>;
 
-}  // namespace statespace
-}  // namespace aikido
+} // namespace statespace
+} // namespace aikido
 
 #endif // ifndef AIKIDO_STATESPACE_STATESPACE_HPP_

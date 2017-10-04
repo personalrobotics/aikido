@@ -5,13 +5,16 @@ set(sources
 
 add_library("${PROJECT_NAME}_trajectory" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_trajectory"
-  "${PROJECT_NAME}_statespace"
-  "${PROJECT_NAME}_util"
-  ${DART_LIBRARIES}
+  PUBLIC
+    "${PROJECT_NAME}_common"
+    "${PROJECT_NAME}_statespace"
+)
+target_compile_options("${PROJECT_NAME}_trajectory"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
-add_component(trajectory)
-add_component_targets(trajectory "${PROJECT_NAME}_trajectory")
-add_component_dependencies(trajectory statespace util)
+add_component(${PROJECT_NAME} trajectory)
+add_component_targets(${PROJECT_NAME} trajectory "${PROJECT_NAME}_trajectory")
+add_component_dependencies(${PROJECT_NAME} trajectory common statespace)
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})

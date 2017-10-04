@@ -1,4 +1,5 @@
 #include <aikido/constraint/FiniteSampleable.hpp>
+
 #include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
@@ -8,21 +9,18 @@ namespace constraint {
 class FiniteSampleGenerator : public SampleGenerator
 {
 public:
-
   // For internal use only.
   FiniteSampleGenerator(
-    statespace::StateSpacePtr _stateSpace,
-    const std::vector<statespace::StateSpace::State*>& _states);
+      statespace::StateSpacePtr _stateSpace,
+      const std::vector<statespace::StateSpace::State*>& _states);
 
   FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
   FiniteSampleGenerator(FiniteSampleGenerator&& other) = delete;
 
-  FiniteSampleGenerator& operator=(
-    const FiniteSampleGenerator& other) = delete;
-  FiniteSampleGenerator& operator=(
-    FiniteSampleGenerator&& other) = delete;
+  FiniteSampleGenerator& operator=(const FiniteSampleGenerator& other) = delete;
+  FiniteSampleGenerator& operator=(FiniteSampleGenerator&& other) = delete;
 
-  virtual ~FiniteSampleGenerator(); 
+  virtual ~FiniteSampleGenerator();
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -37,7 +35,6 @@ public:
   bool canSample() const override;
 
 private:
-
   statespace::StateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
   int mIndex;
@@ -45,12 +42,11 @@ private:
   friend class FiniteSampleable;
 };
 
-//=============================================================================
- FiniteSampleGenerator::FiniteSampleGenerator(
-  statespace::StateSpacePtr _stateSpace,
-  const std::vector<statespace::StateSpace::State*>& _states)
-: mStateSpace(std::move(_stateSpace))
-, mIndex(0)
+//==============================================================================
+FiniteSampleGenerator::FiniteSampleGenerator(
+    statespace::StateSpacePtr _stateSpace,
+    const std::vector<statespace::StateSpace::State*>& _states)
+  : mStateSpace(std::move(_stateSpace)), mIndex(0)
 {
   if (!mStateSpace)
     throw std::invalid_argument("StateSpacePtr is nullptr.");
@@ -60,11 +56,12 @@ private:
 
   mStates.reserve(_states.size());
 
-  for (auto state: _states)
+  for (auto state : _states)
   {
-    if (!state){
+    if (!state)
+    {
       // Free all states already saved in mStates.
-      for (auto saved: mStates)
+      for (auto saved : mStates)
         mStateSpace->freeState(saved);
 
       throw std::invalid_argument("One of the states in _states is nullptr.");
@@ -77,25 +74,23 @@ private:
   }
 }
 
-//=============================================================================
+//==============================================================================
 FiniteSampleGenerator::~FiniteSampleGenerator()
 {
-  for (auto state: mStates)
-  {
+  for (auto state : mStates)
     mStateSpace->freeState(state);
-  }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr FiniteSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
-  if (mStates.size() <= mIndex)
+  if (mStates.size() <= static_cast<size_t>(mIndex))
     return false;
 
   mStateSpace->copyState(mStates[mIndex], _state);
@@ -104,23 +99,23 @@ bool FiniteSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
-//=============================================================================
+//==============================================================================
 int FiniteSampleGenerator::getNumSamples() const
 {
   return mStates.size() - mIndex;
 }
 
-//=============================================================================
+//==============================================================================
 bool FiniteSampleGenerator::canSample() const
 {
-  return mStates.size() > mIndex;
+  return mStates.size() > static_cast<size_t>(mIndex);
 }
 
-//=============================================================================
+//==============================================================================
 FiniteSampleable::FiniteSampleable(
-  statespace::StateSpacePtr _stateSpace,
-  const statespace::StateSpace::State* _state)
-: mStateSpace(std::move(_stateSpace))
+    statespace::StateSpacePtr _stateSpace,
+    const statespace::StateSpace::State* _state)
+  : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
     throw std::invalid_argument("StateSpacePtr is nullptr.");
@@ -134,12 +129,11 @@ FiniteSampleable::FiniteSampleable(
   mStates.push_back(state);
 }
 
-
-//=============================================================================
+//==============================================================================
 FiniteSampleable::FiniteSampleable(
-  statespace::StateSpacePtr _stateSpace,
+    statespace::StateSpacePtr _stateSpace,
     const std::vector<const statespace::StateSpace::State*>& _states)
-: mStateSpace(std::move(_stateSpace))
+  : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
     throw std::invalid_argument("StateSpacePtr is nullptr.");
@@ -149,11 +143,12 @@ FiniteSampleable::FiniteSampleable(
 
   mStates.reserve(_states.size());
 
-  for (auto state: _states)
+  for (auto state : _states)
   {
-    if (!state){
+    if (!state)
+    {
       // Free all states already saved in mStates.
-      for (auto saved: mStates)
+      for (auto saved : mStates)
         mStateSpace->freeState(saved);
 
       throw std::invalid_argument("One of the states in _states is nullptr.");
@@ -164,29 +159,28 @@ FiniteSampleable::FiniteSampleable(
 
     mStates.emplace_back(newState);
   }
-
 }
 
-//=============================================================================
+//==============================================================================
 FiniteSampleable::~FiniteSampleable()
 {
-  for (auto state: mStates)
+  for (auto state : mStates)
   {
     mStateSpace->freeState(state);
   }
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr FiniteSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator> FiniteSampleable::createSampleGenerator() const
 {
   return dart::common::make_unique<FiniteSampleGenerator>(mStateSpace, mStates);
 }
 
-}
-}
+} // namespace constraint
+} // namespace aikido

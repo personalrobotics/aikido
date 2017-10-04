@@ -1,5 +1,6 @@
 #ifndef AIKIDO_PLANNER_PARABOLIC_PARABOLICTIMER_HPP_
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICTIMER_HPP_
+
 #include <Eigen/Dense>
 #include "../../trajectory/Interpolated.hpp"
 #include "../../trajectory/Spline.hpp"
@@ -28,10 +29,19 @@ namespace parabolic {
 /// \param _maxVelocity maximum velocity for each dimension
 /// \param _maxAcceleration maximum acceleration for each dimension
 /// \return time optimal trajectory that satisfies acceleration constraints
-std::unique_ptr<trajectory::Spline> computeParabolicTiming(
-  const trajectory::Interpolated& _inputTrajectory,
-  const Eigen::VectorXd& _maxVelocity,
-  const Eigen::VectorXd& _maxAcceleration);
+std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
+    const aikido::trajectory::Interpolated& _inputTrajectory,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration);
+
+/// Convert an interpolated trajectory to a piecewise linear spline trajectory
+/// This function requires the \c _inputTrajectory to use a \c
+/// GeodesicInterpolator.
+/// So the conversion exactly preserves the geometric path
+/// \param _inputTrajectory interpolated trajectory
+/// \return a spline trajectory
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+    const aikido::trajectory::Interpolated& _inputTrajectory);
 
 } // namespace parabolic
 } // namespace planner

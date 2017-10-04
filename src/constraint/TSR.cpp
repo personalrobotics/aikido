@@ -1,12 +1,13 @@
 #include <aikido/constraint/TSR.hpp>
+
+#include <cmath>
+#include <random>
+#include <stdexcept>
+#include <vector>
+#include <boost/format.hpp>
 #include <dart/common/Console.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include <dart/math/Geometry.hpp>
-#include <boost/format.hpp>
-#include <stdexcept>
-#include <math.h>
-#include <vector>
-#include <random>
 
 using boost::format;
 using boost::str;
@@ -22,7 +23,7 @@ public:
   TSRSampleGenerator(TSRSampleGenerator&& other) = delete;
   TSRSampleGenerator& operator=(const TSRSampleGenerator& other) = delete;
   TSRSampleGenerator& operator=(TSRSampleGenerator&& other) = delete;
-  virtual ~TSRSampleGenerator() = default; 
+  virtual ~TSRSampleGenerator() = default;
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -45,13 +46,14 @@ public:
 
 private:
   // For internal use only.
-  TSRSampleGenerator(std::unique_ptr<util::RNG> _rng,
-                     std::shared_ptr<statespace::SE3> _stateSpace,
-                     const Eigen::Isometry3d& _T0_w,
-                     const Eigen::Matrix<double, 6, 2>& _Bw,
-                     const Eigen::Isometry3d& _Tw_e);
-  
-  std::unique_ptr<util::RNG> mRng;
+  TSRSampleGenerator(
+      std::unique_ptr<common::RNG> _rng,
+      std::shared_ptr<statespace::SE3> _stateSpace,
+      const Eigen::Isometry3d& _T0_w,
+      const Eigen::Matrix<double, 6, 2>& _Bw,
+      const Eigen::Isometry3d& _Tw_e);
+
+  std::unique_ptr<common::RNG> mRng;
 
   std::shared_ptr<statespace::SE3> mStateSpace;
 
@@ -70,149 +72,183 @@ private:
   // True if point TSR and has already been sampled.
   bool mPointTSRSampled;
 
-
   friend class TSR;
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-//=============================================================================
-TSR::TSR(std::unique_ptr<util::RNG> _rng, const Eigen::Isometry3d& _T0_w,
-         const Eigen::Matrix<double, 6, 2>& _Bw, const Eigen::Isometry3d& _Tw_e)
-    : mRng(std::move(_rng))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(_T0_w)
-    , mBw(_Bw)
-    , mTw_e(_Tw_e)
+//==============================================================================
+TSR::TSR(
+    std::unique_ptr<common::RNG> _rng,
+    const Eigen::Isometry3d& _T0_w,
+    const Eigen::Matrix<double, 6, 2>& _Bw,
+    const Eigen::Isometry3d& _Tw_e,
+    double _testableTolerance)
+  : mT0_w(_T0_w)
+  , mBw(_Bw)
+  , mTw_e(_Tw_e)
+  , mTestableTolerance(_testableTolerance)
+  , mRng(std::move(_rng))
+  , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
 
-//=============================================================================
-TSR::TSR(const Eigen::Isometry3d& _T0_w, const Eigen::Matrix<double, 6, 2>& _Bw,
-         const Eigen::Isometry3d& _Tw_e)
-    : mRng(std::unique_ptr<util::RNG>(
-          new util::RNGWrapper<std::default_random_engine>(0)))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(_T0_w)
-    , mBw(_Bw)
-    , mTw_e(_Tw_e)
+//==============================================================================
+TSR::TSR(
+    const Eigen::Isometry3d& _T0_w,
+    const Eigen::Matrix<double, 6, 2>& _Bw,
+    const Eigen::Isometry3d& _Tw_e,
+    double _testableTolerance)
+  : mT0_w(_T0_w)
+  , mBw(_Bw)
+  , mTw_e(_Tw_e)
+  , mTestableTolerance(_testableTolerance)
+  , mRng(
+        std::unique_ptr<common::RNG>(
+            new common::RNGWrapper<std::default_random_engine>(0)))
+  , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
 
-//=============================================================================
+//==============================================================================
 TSR::TSR(const TSR& other)
-    : mRng(std::move(other.mRng->clone()))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(other.mT0_w)
-    , mTw_e(other.mTw_e)
-    , mBw(other.mBw)
+  : mT0_w(other.mT0_w)
+  , mBw(other.mBw)
+  , mTw_e(other.mTw_e)
+  , mTestableTolerance(other.mTestableTolerance)
+  , mRng(other.mRng->clone())
+  , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
 
-//=============================================================================
+//==============================================================================
 TSR::TSR(TSR&& other)
-    : mRng(std::move(other.mRng))
-    , mStateSpace(std::make_shared<SE3>())
-    , mT0_w(other.mT0_w)
-    , mTw_e(other.mTw_e)
-    , mBw(other.mBw)
+  : mT0_w(other.mT0_w)
+  , mBw(other.mBw)
+  , mTw_e(other.mTw_e)
+  , mTestableTolerance(other.mTestableTolerance)
+  , mRng(std::move(other.mRng))
+  , mStateSpace(std::make_shared<SE3>())
 {
   validate();
 }
 
-//=============================================================================
+//==============================================================================
 TSR& TSR::operator=(const TSR& other)
 {
-  mRng = std::move(other.mRng->clone());
+
   mT0_w = other.mT0_w;
-  mTw_e = other.mTw_e;
   mBw = other.mBw;
+  mTw_e = other.mTw_e;
+  mTestableTolerance = other.mTestableTolerance;
+  mRng = other.mRng->clone();
 
   // Intentionally don't assign StateSpace.
 
   return *this;
 }
 
-//=============================================================================
+//==============================================================================
 TSR& TSR::operator=(TSR&& other)
 {
+  mT0_w = std::move(other.mT0_w);
+  mBw = std::move(other.mBw);
+  mTw_e = std::move(other.mTw_e);
+  mTestableTolerance = other.mTestableTolerance;
   mRng = std::move(other.mRng);
   mStateSpace = std::move(other.mStateSpace);
-  mT0_w = std::move(other.mT0_w);
-  mTw_e = std::move(other.mTw_e);
-  mBw = std::move(other.mBw);
 
   return *this;
 }
 
-//=============================================================================
+//==============================================================================
 std::shared_ptr<statespace::StateSpace> TSR::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::shared_ptr<statespace::SE3> TSR::getSE3() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 {
   validate();
 
-  if (!mRng) throw std::invalid_argument("Random generator is nullptr.");
+  if (!mRng)
+    throw std::invalid_argument("Random generator is nullptr.");
 
   for (int i = 0; i < 6; ++i)
-    for (int j = 0; j < 2; ++j) {
+  {
+    for (int j = 0; j < 2; ++j)
+    {
       if (!std::isfinite(mBw(i, j)))
         throw std::invalid_argument(
             str(format("Sampling requires finite bounds. Bw[%d, %d] is %f.") % i
-                % j % mBw(i, j)));
+                % j
+                % mBw(i, j)));
     }
+  }
 
   if (mBw.col(0) == mBw.col(1))
+  {
     dtwarn << "[TSR::createSampleGenerator] This is a point TSR that represents"
               " a zero measure set in SE(3). The SampleGenerator<Isometry3d>"
               " returned by this function will sample the same pose infinitely"
               " many times.\n";
+  }
 
   return std::unique_ptr<TSRSampleGenerator>(
       new TSRSampleGenerator(mRng->clone(), mStateSpace, mT0_w, mBw, mTw_e));
 }
 
-//=============================================================================
+//==============================================================================
 bool TSR::isSatisfied(const statespace::StateSpace::State* _s) const
 {
-  static constexpr double eps = 1e-6;
   Eigen::VectorXd dist;
   getValue(_s, dist);
-  return dist.norm() < eps;
+  return dist.norm() < mTestableTolerance;
 }
 
-//=============================================================================
+//==============================================================================
 void TSR::validate() const
 {
   // Assertion checks for min, max on bounds
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; i++)
+  {
     if (mBw(i, 0) > mBw(i, 1))
+    {
       throw std::logic_error(
           str(format("Lower bound exceeds upper bound on dimension %d: %f > %f")
-              % i % mBw(i, 0) % mBw(i, 1)));
+              % i
+              % mBw(i, 0)
+              % mBw(i, 1)));
+    }
   }
 }
 
-//=============================================================================
-void TSR::setRNG(std::unique_ptr<util::RNG> rng) { mRng = std::move(rng); }
+//==============================================================================
+void TSR::setRNG(std::unique_ptr<common::RNG> rng)
+{
+  mRng = std::move(rng);
+}
 
-//=============================================================================
-size_t TSR::getConstraintDimension() const { return 6; }
+//==============================================================================
+size_t TSR::getConstraintDimension() const
+{
+  return 6;
+}
 
-//=============================================================================
-void TSR::getValue(const statespace::StateSpace::State* _s,
-  Eigen::VectorXd& _out) const
+//==============================================================================
+void TSR::getValue(
+    const statespace::StateSpace::State* _s, Eigen::VectorXd& _out) const
 {
   using SE3 = statespace::SE3;
   using SE3State = SE3::State;
@@ -232,7 +268,8 @@ void TSR::getValue(const statespace::StateSpace::State* _s,
 
   _out.resize(6);
 
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 3; ++i)
+  {
     if (translation(i) < mBw(i, 0))
       _out(i) = std::abs(translation(i) - mBw(i, 0));
 
@@ -243,7 +280,8 @@ void TSR::getValue(const statespace::StateSpace::State* _s,
       _out(i) = 0;
   }
 
-  for (int i = 3; i < 6; ++i) {
+  for (int i = 3; i < 6; ++i)
+  {
     // Find n such that: 2*n*pi <= mBw(i, 0) < 2*(n+1)*pi
     int n = mBw(i, 0) / (2 * M_PI);
 
@@ -253,7 +291,8 @@ void TSR::getValue(const statespace::StateSpace::State* _s,
     // check if angle is within bound
     if ((angle >= mBw(i, 0) && angle <= mBw(i, 1))
         || (angle + M_PI * 2 >= mBw(i, 0) && angle + M_PI * 2 <= mBw(i, 1))
-        || (angle - M_PI * 2 >= mBw(i, 0) && angle - M_PI * 2 <= mBw(i, 1))) {
+        || (angle - M_PI * 2 >= mBw(i, 0) && angle - M_PI * 2 <= mBw(i, 1)))
+    {
       _out(i) = 0;
       continue;
     }
@@ -265,12 +304,11 @@ void TSR::getValue(const statespace::StateSpace::State* _s,
     else if (mBw(i, 1) < angle)
       _out(i) = std::min(angle - mBw(i, 1), mBw(i, 0) + 2 * M_PI - angle);
   }
-
 }
 
-//=============================================================================
-void TSR::getJacobian(const statespace::StateSpace::State* _s,
-  Eigen::MatrixXd& _out) const
+//==============================================================================
+void TSR::getJacobian(
+    const statespace::StateSpace::State* _s, Eigen::MatrixXd& _out) const
 {
   using SE3 = statespace::SE3;
   using SE3State = SE3::State;
@@ -290,7 +328,8 @@ void TSR::getJacobian(const statespace::StateSpace::State* _s,
   auto se3negat = mStateSpace->createState();
 
   // Finite Differencing.
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < 6; ++i)
+  {
     posit(i) = twist(i) + eps;
     negat(i) = twist(i) - eps;
 
@@ -309,28 +348,28 @@ void TSR::getJacobian(const statespace::StateSpace::State* _s,
   }
 }
 
-
-//=============================================================================
+//==============================================================================
 std::vector<ConstraintType> TSR::getConstraintTypes() const
 {
   return std::vector<ConstraintType>(6, ConstraintType::INEQUALITY);
 }
 
-//=============================================================================
-bool TSR::project(const statespace::StateSpace::State* _s,
-  statespace::StateSpace::State* _out) const
+//==============================================================================
+bool TSR::project(
+    const statespace::StateSpace::State* /*_s*/,
+    statespace::StateSpace::State* /*_out*/) const
 {
-  // TODO 
+  // TODO
   return false;
 }
 
-//=============================================================================
+//==============================================================================
 TSRSampleGenerator::TSRSampleGenerator(
-      std::unique_ptr<util::RNG> _rng,
-      std::shared_ptr<SE3> _stateSpace,
-      const Eigen::Isometry3d& _T0_w,
-      const Eigen::Matrix<double, 6, 2>& _Bw,
-      const Eigen::Isometry3d& _Tw_e)
+    std::unique_ptr<common::RNG> _rng,
+    std::shared_ptr<SE3> _stateSpace,
+    const Eigen::Isometry3d& _T0_w,
+    const Eigen::Matrix<double, 6, 2>& _Bw,
+    const Eigen::Isometry3d& _Tw_e)
   : mRng(std::move(_rng))
   , mStateSpace(std::move(_stateSpace))
   , mT0_w(_T0_w)
@@ -339,8 +378,7 @@ TSRSampleGenerator::TSRSampleGenerator(
 {
   if (!mRng)
   {
-    throw std::invalid_argument(
-      "Random generator is empty.");
+    throw std::invalid_argument("Random generator is empty.");
   }
 
   if (mBw.col(0) == mBw.col(1))
@@ -351,47 +389,41 @@ TSRSampleGenerator::TSRSampleGenerator(
   mPointTSRSampled = false;
 }
 
-//=============================================================================
+//==============================================================================
 statespace::StateSpacePtr TSRSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
 
-//=============================================================================
+//==============================================================================
 bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
-  if ( mPointTSR && mPointTSRSampled )
+  if (mPointTSR && mPointTSRSampled)
     return false;
 
   using statespace::SE3;
 
-  Eigen::Vector3d translation; 
+  Eigen::Vector3d translation;
   Eigen::Vector3d angles;
 
   if (mPointTSR)
   {
     translation = mBw.block(0, 0, 3, 1);
     angles = mBw.block(3, 0, 3, 1);
-    
+
     mPointTSRSampled = true;
   }
   else
   {
     std::vector<std::uniform_real_distribution<double> > distributions;
-    for(int i = 0; i < 6; i++)
-    {
+    for (int i = 0; i < 6; i++)
       distributions.emplace_back(mBw(i, 0), mBw(i, 1));
-    }
 
-    for(int i = 0; i < 3; i++)
-    {
+    for (int i = 0; i < 3; i++)
       translation(i) = distributions.at(i)(*mRng);
-    }
 
-    for(int i = 0; i < 3; i++)
-    {
-      angles(i) = distributions.at(i+3)(*mRng);
-    }
+    for (int i = 0; i < 3; i++)
+      angles(i) = distributions.at(i + 3)(*mRng);
   }
 
   Eigen::Isometry3d Tw_s;
@@ -405,8 +437,19 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
   return true;
 }
 
+//==============================================================================
+double TSR::getTestableTolerance()
+{
+  return mTestableTolerance;
+}
 
-//=============================================================================
+//==============================================================================
+void TSR::setTestableTolerance(double _testableTolerance)
+{
+  mTestableTolerance = _testableTolerance;
+}
+
+//==============================================================================
 bool TSRSampleGenerator::canSample() const
 {
   if (mPointTSR && mPointTSRSampled)
@@ -415,8 +458,7 @@ bool TSRSampleGenerator::canSample() const
   return true;
 }
 
-
-//=============================================================================
+//==============================================================================
 int TSRSampleGenerator::getNumSamples() const
 {
   if (mPointTSR && !mPointTSRSampled)
@@ -427,6 +469,6 @@ int TSRSampleGenerator::getNumSamples() const
 
   return NO_LIMIT;
 }
+
 } // namespace constraint
 } // namespace aikido
-

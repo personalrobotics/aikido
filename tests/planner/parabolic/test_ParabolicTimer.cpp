@@ -9,20 +9,21 @@
 using Eigen::Vector2d;
 using Eigen::Vector3d;
 using aikido::trajectory::Interpolated;
-using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::Rn;
+using aikido::statespace::R2;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
+using aikido::planner::parabolic::computeParabolicTiming;
+using aikido::planner::parabolic::convertToSpline;
 
 class ParabolicTimerTests : public ::testing::Test
 {
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<Rn>(2);
+    mStateSpace = std::make_shared<R2>();
     mMaxVelocity = Eigen::Vector2d(1., 1.);
     mMaxAcceleration = Eigen::Vector2d(2., 2.);
 
@@ -39,7 +40,7 @@ protected:
     mStraightLine->addWaypoint(1., state);
   }
 
-  std::shared_ptr<Rn> mStateSpace;
+  std::shared_ptr<R2> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
 
@@ -51,15 +52,12 @@ TEST_F(ParabolicTimerTests, InputTrajectoryIsEmpty_Throws)
 {
   Interpolated emptyTrajectory(mStateSpace, mInterpolator);
 
-  EXPECT_THROW({
-    computeParabolicTiming(emptyTrajectory, mMaxVelocity, mMaxAcceleration);
-  }, std::invalid_argument);
+  EXPECT_THROW({convertToSpline(emptyTrajectory);}, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxVelocityIsZero_Throws)
 {
   Vector2d zeroMaxVelocity(1., 0.);
-
   EXPECT_THROW({
     computeParabolicTiming(
       *mStraightLine, zeroMaxVelocity, mMaxAcceleration);
@@ -69,7 +67,6 @@ TEST_F(ParabolicTimerTests, MaxVelocityIsZero_Throws)
 TEST_F(ParabolicTimerTests, MaxVelocityIsNegative_Throws)
 {
   Vector2d negativeMaxVelocity(1., -1);
-
   EXPECT_THROW({
     computeParabolicTiming(
       *mStraightLine, negativeMaxVelocity, mMaxAcceleration);
@@ -79,7 +76,6 @@ TEST_F(ParabolicTimerTests, MaxVelocityIsNegative_Throws)
 TEST_F(ParabolicTimerTests, MaxAccelerationIsZero_Throws)
 {
   Vector2d zeroMaxAcceleration(1., 0.);
-
   EXPECT_THROW({
     computeParabolicTiming(
       *mStraightLine, mMaxVelocity, zeroMaxAcceleration);
@@ -89,7 +85,6 @@ TEST_F(ParabolicTimerTests, MaxAccelerationIsZero_Throws)
 TEST_F(ParabolicTimerTests, MaxAccelerationIsNegative_Throws)
 {
   Vector2d negativeMaxAcceleration(1., -1);
-
   EXPECT_THROW({
     computeParabolicTiming(
       *mStraightLine, mMaxVelocity, negativeMaxAcceleration);
@@ -114,7 +109,7 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
   auto timedTrajectory = computeParabolicTiming(
     inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
-  timedTrajectory->evaluate(1., state);
+  timedTrajectory->evaluate(1., state);  
   EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(2., state);
@@ -281,7 +276,10 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
   auto stateSpace = std::make_shared<SO3>();
   auto state = stateSpace->createState();
 
-  Interpolated inputTrajectory(stateSpace, mInterpolator);
+  std::shared_ptr<GeodesicInterpolator> interpolator =
+  std::make_shared<GeodesicInterpolator>(stateSpace);
+
+  Interpolated inputTrajectory(stateSpace, interpolator);
 
   state.setQuaternion(Eigen::Quaterniond::Identity());
   inputTrajectory.addWaypoint(0., state);
@@ -290,10 +288,7 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
     Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
   inputTrajectory.addWaypoint(1., state);
 
-  EXPECT_THROW({
-    computeParabolicTiming(
-      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
-  }, std::invalid_argument);
+  EXPECT_THROW({convertToSpline(inputTrajectory);}, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
@@ -302,7 +297,10 @@ TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
     std::vector<StateSpacePtr> { std::make_shared<SO3>() });
   auto state = stateSpace->createState();
 
-  Interpolated inputTrajectory(stateSpace, mInterpolator);
+  std::shared_ptr<GeodesicInterpolator> interpolator =
+  std::make_shared<GeodesicInterpolator>(stateSpace);
+
+  Interpolated inputTrajectory(stateSpace, interpolator);
 
   state.getSubStateHandle<SO3>(0).setQuaternion(
     Eigen::Quaterniond::Identity());
@@ -312,28 +310,28 @@ TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
     Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
   inputTrajectory.addWaypoint(1., state);
 
-  EXPECT_THROW({
-    computeParabolicTiming(
-      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
-  }, std::invalid_argument);
+  EXPECT_THROW({convertToSpline(inputTrajectory);}, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
 {
   auto stateSpace = std::make_shared<CartesianProduct>(
     std::vector<StateSpacePtr> {
-      std::make_shared<Rn>(2),
+      std::make_shared<R2>(),
       std::make_shared<SO2>(),
     });
   auto state = stateSpace->createState();
 
-  Interpolated inputTrajectory(stateSpace, mInterpolator);
+  std::shared_ptr<GeodesicInterpolator> interpolator =
+  std::make_shared<GeodesicInterpolator>(stateSpace);
 
-  state.getSubStateHandle<Rn>(0).setValue(Vector2d::Zero());
+  Interpolated inputTrajectory(stateSpace, interpolator);
+
+  state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
   state.getSubStateHandle<SO2>(1).setAngle(0.);
   inputTrajectory.addWaypoint(0., state);
 
-  state.getSubStateHandle<Rn>(0).setValue(Vector2d::Zero());
+  state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
   state.getSubStateHandle<SO2>(1).setAngle(M_PI_2);
   inputTrajectory.addWaypoint(1., state);
 

@@ -1,5 +1,6 @@
 #ifndef AIKIDO_STATESPACE_INTERPOLATOR_HPP_
 #define AIKIDO_STATESPACE_INTERPOLATOR_HPP_
+
 #include <memory>
 #include "../statespace/StateSpace.hpp"
 
@@ -29,7 +30,8 @@ public:
   /// \param[out] _state output interpolated state
   virtual void interpolate(
       const statespace::StateSpace::State* _from,
-      const statespace::StateSpace::State* _to, double _alpha,
+      const statespace::StateSpace::State* _to,
+      double _alpha,
       statespace::StateSpace::State* _state) const = 0;
 
   /// Computes the <tt>_derivative</tt>-th derivative of the path at path
@@ -44,7 +46,8 @@ public:
   virtual void getDerivative(
       const statespace::StateSpace::State* _from,
       const statespace::StateSpace::State* _to,
-      size_t _derivative, double _alpha,
+      size_t _derivative,
+      double _alpha,
       Eigen::VectorXd& _tangentVector) const = 0;
 };
 

@@ -1,5 +1,7 @@
 #ifndef AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
+
+#include "aikido/statespace/dart/detail/RnJointTraits.hpp"
 #include "../Rn.hpp"
 #include "JointStateSpace.hpp"
 
@@ -15,32 +17,46 @@ namespace dart {
 /// best modelled as having an SE(3) state space. If you are not sure what type
 /// of \c JointStateSpace to for a \c Joint you most likely should use
 /// the \c createJointStateSpace helper function.
-class RnJoint
-  : public Rn
-  , public JointStateSpace
-  , public std::enable_shared_from_this<RnJoint>
+template <int N>
+class RJoint : public R<N>,
+               public JointStateSpace,
+               public std::enable_shared_from_this<RJoint<N>>
 {
 public:
-  using Rn::State;
+  static constexpr int DimensionAtCompileTime = N;
+
+  using typename R<DimensionAtCompileTime>::State;
+
+  using VectorNd = typename R<DimensionAtCompileTime>::VectorNd;
+
+  using DartJoint = typename detail::RJointTraits<N>::DartJoint;
 
   /// Create a real vector state space for \c _joint.
   ///
   /// \param _joint joint to create a state space for
-  explicit RnJoint(::dart::dynamics::Joint* _joint);
+  explicit RJoint(DartJoint* _joint);
 
   // Documentation inherited.
   void convertPositionsToState(
-    const Eigen::VectorXd& _positions,
-    StateSpace::State* _state) const override;
+      const Eigen::VectorXd& _positions,
+      StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-    const StateSpace::State* _state,
-    Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* _state,
+      Eigen::VectorXd& _positions) const override;
 };
+
+using R0Joint = RJoint<0>;
+using R1Joint = RJoint<1>;
+using R2Joint = RJoint<2>;
+using R3Joint = RJoint<3>;
+using R6Joint = RJoint<6>;
 
 } // namespace dart
 } // namespace statespace
 } // namespace aikido
+
+#include "aikido/statespace/dart/detail/RnJoint-impl.hpp"
 
 #endif // ifndef AIKIDO_STATESPACE_REALVECTORJOINTSTATESPACE_HPP_

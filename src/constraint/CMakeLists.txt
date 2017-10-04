@@ -1,7 +1,9 @@
 set(sources
   uniform/RnBoxConstraint.cpp
+  uniform/RnConstantSampler.cpp
   uniform/SO2UniformSampler.cpp
   uniform/SO3UniformSampler.cpp
+  uniform/SE2BoxConstraint.cpp
   CartesianProductProjectable.cpp
   CartesianProductSampleable.cpp
   CartesianProductTestable.cpp
@@ -26,14 +28,23 @@ set(sources
 )
 
 add_library("${PROJECT_NAME}_constraint" SHARED ${sources})
+target_include_directories("${PROJECT_NAME}_constraint"
+  PUBLIC
+    ${Boost_INCLUDE_DIRS}
+    ${DART_INCLUDE_DIRS}
+)
 target_link_libraries("${PROJECT_NAME}_constraint"
-  "${PROJECT_NAME}_statespace"
-  "${PROJECT_NAME}_util"
-  ${DART_LIBRARIES}
+  PUBLIC
+    "${PROJECT_NAME}_common"
+    "${PROJECT_NAME}_statespace"
+    ${DART_LIBRARIES}
+)
+target_compile_options("${PROJECT_NAME}_constraint"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
-add_component(constraint)
-add_component_targets(constraint "${PROJECT_NAME}_constraint")
-add_component_dependencies(constraint statespace util)
+add_component(${PROJECT_NAME} constraint)
+add_component_targets(${PROJECT_NAME} constraint "${PROJECT_NAME}_constraint")
+add_component_dependencies(${PROJECT_NAME} constraint common statespace)
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})

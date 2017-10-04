@@ -4,27 +4,15 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-//=============================================================================
-RnJoint::RnJoint(
-      ::dart::dynamics::Joint* _joint)
-  : Rn(_joint->getNumDofs())
-  , JointStateSpace(_joint)
-{
-}
+template class RJoint<0>;
 
-//=============================================================================
-void RnJoint::convertPositionsToState(
-  const Eigen::VectorXd& _positions, StateSpace::State* _state) const
-{
-  setValue(static_cast<State*>(_state), _positions);
-}
+template class RJoint<1>;
 
-//=============================================================================
-void RnJoint::convertStateToPositions(
-  const StateSpace::State* _state, Eigen::VectorXd& _positions) const
-{
-  _positions = getValue(static_cast<const State*>(_state));
-}
+template class RJoint<2>;
+
+template class RJoint<3>;
+
+template class RJoint<6>;
 
 } // namespace dart
 } // namespace statespace

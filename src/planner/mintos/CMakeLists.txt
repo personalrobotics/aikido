@@ -9,18 +9,18 @@ target_link_libraries("${PROJECT_NAME}_planner_mintos"
     "${PROJECT_NAME}_constraint"
     "${PROJECT_NAME}_statespace"
     "${PROJECT_NAME}_trajectory"
-    "${PROJECT_NAME}_util"
+    "${PROJECT_NAME}_common"
   PRIVATE
     "${PROJECT_NAME}_external_mintos"
 )
 
-add_component(planner_mintos)
-add_component_targets(planner_mintos "${PROJECT_NAME}_planner_mintos")
-add_component_dependencies(planner_mintos
+add_component(${PROJECT_NAME} planner_mintos)
+add_component_targets(${PROJECT_NAME} planner_mintos "${PROJECT_NAME}_planner_mintos")
+add_component_dependencies(${PROJECT_NAME} planner_mintos
   constraint
   statespace
   trajectory
-  util
+  common
 )
 
-coveralls_add_sources(${sources})
+format_add_sources(${sources})

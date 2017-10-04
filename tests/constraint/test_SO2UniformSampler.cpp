@@ -5,10 +5,10 @@
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::SO2;
-using aikido::constraint::SO2Sampleable;
+using aikido::constraint::SO2UniformSampler;
 using aikido::constraint::SampleGenerator;
-using aikido::util::RNG;
-using aikido::util::RNGWrapper;
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using aikido::distance::SO2Angular;
 using dart::common::make_unique;
 
@@ -26,7 +26,7 @@ protected:
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
-    for (int i = 0; i < NUM_TARGETS; ++i)
+    for (size_t i = 0; i < NUM_TARGETS; ++i)
     {
       const double angle = (2 * M_PI * i) / NUM_TARGETS;
 
@@ -44,26 +44,26 @@ protected:
 TEST_F(SO2UniformSamplerTests, constructor_StateSpaceIsNull_Throws)
 {
   EXPECT_THROW({
-    SO2Sampleable(nullptr, mRng->clone());
+    SO2UniformSampler(nullptr, mRng->clone());
   }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, constructor_RNGIsNull_Throws)
 {
   EXPECT_THROW({
-    SO2Sampleable(mStateSpace, nullptr);
+    SO2UniformSampler(mStateSpace, nullptr);
   }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, getStateSpace)
 {
-  SO2Sampleable constraint(mStateSpace, mRng->clone());
+  SO2UniformSampler constraint(mStateSpace, mRng->clone());
   EXPECT_EQ(mStateSpace, constraint.getStateSpace());
 }
 
 TEST_F(SO2UniformSamplerTests, createSampleGenerator)
 {
-  SO2Sampleable constraint(mStateSpace, mRng->clone());
+  SO2UniformSampler constraint(mStateSpace, mRng->clone());
   auto generator = constraint.createSampleGenerator();
 
   ASSERT_TRUE(!!generator);

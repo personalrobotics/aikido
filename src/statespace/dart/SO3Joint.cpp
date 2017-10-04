@@ -11,29 +11,29 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-//=============================================================================
+//==============================================================================
 SO3Joint::SO3Joint(::dart::dynamics::BallJoint* _joint)
-  : JointStateSpace(_joint)
-  , SO3()
+  : SO3(), JointStateSpace(_joint)
 {
 }
 
-//=============================================================================
+//==============================================================================
 void SO3Joint::convertPositionsToState(
-  const Eigen::VectorXd& _positions, StateSpace::State* _state) const
+    const Eigen::VectorXd& _positions, StateSpace::State* _state) const
 {
-  setQuaternion(static_cast<State*>(_state), SO3::Quaternion(
-    BallJoint::convertToRotation(_positions)));
+  setQuaternion(
+      static_cast<State*>(_state),
+      SO3::Quaternion(BallJoint::convertToRotation(_positions)));
 }
 
-//=============================================================================
+//==============================================================================
 void SO3Joint::convertStateToPositions(
-  const StateSpace::State* _state, Eigen::VectorXd& _positions) const
+    const StateSpace::State* _state, Eigen::VectorXd& _positions) const
 {
   // TODO: We should call BallJoint::convertToRotation instead of logMap once
   // the convertToRotation method is fixed in DART.
   _positions = ::dart::math::logMap(
-    getQuaternion(static_cast<const State*>(_state)).toRotationMatrix());
+      getQuaternion(static_cast<const State*>(_state)).toRotationMatrix());
 }
 
 } // namespace dart

@@ -1,7 +1,7 @@
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/constraint/Differentiable.hpp>
 #include <aikido/statespace/SE3.hpp>
-#include <aikido/util/RNG.hpp>
+#include <aikido/common/RNG.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include <dart/math/Geometry.hpp>
 #include <gtest/gtest.h>
@@ -11,25 +11,11 @@
 using aikido::constraint::TSR;
 using aikido::constraint::ConstraintType;
 using aikido::statespace::SE3;
-using aikido::util::RNGWrapper;
-using aikido::util::RNG;
+using aikido::common::RNGWrapper;
+using aikido::common::RNG;
 using dart::common::make_unique;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
-
-
-static Eigen::Vector6d getPose(Eigen::Isometry3d isometry)
-{
-  Eigen::Vector6d pose;
-  pose.topRows(3) = isometry.translation(); 
-  pose.bottomRows(3) = dart::math::matrixToEulerZYX(isometry.linear());
-  return pose; 
-}
-
-static std::unique_ptr<DefaultRNG> make_rng()
-{
-  return make_unique<RNGWrapper<std::default_random_engine>>(0);
-}
 
 TEST(TSR, InitializesToIdentity)
 {
@@ -477,6 +463,3 @@ TEST(TSR, getSE3EqualToGetStateSpace)
 
   EXPECT_EQ(se3space, space);
 }
-
-
-
