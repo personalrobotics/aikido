@@ -1,6 +1,8 @@
 set(sources 
   SnapPlanner.cpp
-  VectorFieldPlanner.cpp)
+  VectorFieldPlanner.cpp
+  VectorFieldPlannerExceptions.cpp
+)
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_planner"
@@ -10,6 +12,13 @@ target_link_libraries("${PROJECT_NAME}_planner"
     "${PROJECT_NAME}_distance"
     "${PROJECT_NAME}_trajectory"
     "${PROJECT_NAME}_statespace"
+    ${DART_LIBRARIES}
+    ${Boost_LIBRARIES}
+)
+target_include_directories("${PROJECT_NAME}_planner" SYSTEM
+  PUBLIC
+    ${Boost_INCLUDE_DIRS}
+    ${DART_INCLUDE_DIRS}
 )
 target_compile_options("${PROJECT_NAME}_planner"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}

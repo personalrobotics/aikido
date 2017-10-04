@@ -1,8 +1,9 @@
 #ifndef AIKIDO_PLANNER_VECTOR_FIELD_PLANNER_HPP_
 #define AIKIDO_PLANNER_VECTOR_FIELD_PLANNER_HPP_
 
-#include <dart/dynamics/MetaSkeleton.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
+#include <boost/function.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
 namespace planner {
@@ -18,22 +19,22 @@ struct VectorFieldPlannerStatus {
 };
 
 using VectorFieldCallback = std::function<bool (
-  const dart::dynamics::MetaSkeletonPtr skeleton,
+  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
   double t,
-  const Eigen::VectorXd& qd)>;
+  Eigen::VectorXd* qd)>;
 
 using VectorFieldStatusCallback = 
   std::function<VectorFieldPlannerStatus::Enum (
-  const dart::dynamics::MetaSkeletonPtr skeleton, double t)>; 
+  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace, double t)>;
 
-aikido::trajectory::InterpolatedPtr planPathByVectorField(
-  const dart::dynamics::MetaSkeletonPtr skeleton,
-  double t,
+std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
+  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+  double dt,
   const VectorFieldCallback& vectorFiledCb,
   const VectorFieldStatusCallback& statusCb);
 
-aikido::trajectory::InterpolatedPtr planStrightLine(
-  const dart::dynamics::MetaSkeletonPtr skeleton,
+std::unique_ptr<aikido::trajectory::Spline> planStrightLine(
+  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
   const Eigen::VectorXd& startPosition,
   const Eigen::VectorXd& goalPosition); 
 
