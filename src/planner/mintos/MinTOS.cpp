@@ -70,22 +70,22 @@ public:
     mConstraint->getValueAndJacobian(mState, mValue, mJacobian);
   }
 
-  void Eval(const Math::Vector& x, Math::Vector& v) override
+  void Eval(const Math::Vector&, Math::Vector& v) override
   {
     eigenToVector(mValue, v);
   }
 
-  Math::Real Jacobian_ij(const Math::Vector& x, int i, int j) override
+  Math::Real Jacobian_ij(const Math::Vector&, int i, int j) override
   {
     return mJacobian(i, j);
   }
 
-  void Hessian_i(const Math::Vector& x, int i, Math::Matrix& Hi) override
+  void Hessian_i(const Math::Vector&, int, Math::Matrix&) override
   {
     throw std::runtime_error("Hessian_i is not implemented on DifferentiableWrapper.");
   }
 
-  Math::Real Hessian_ijk(const Math::Vector& x, int i, int j, int k) override
+  Math::Real Hessian_ijk(const Math::Vector&, int, int, int) override
   {
     throw std::runtime_error("Hessian_ijk is not implemented on DifferentiableWrapper.");
   }
