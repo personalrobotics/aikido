@@ -9,8 +9,10 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-struct VectorFieldPlannerStatus {
-  enum Enum {
+struct VectorFieldPlannerStatus
+{
+  enum Enum
+  {
     TERMINATE,
     CACHE_AND_TERMINATE,
     CACHE_AND_CONTINUE,
@@ -18,25 +20,25 @@ struct VectorFieldPlannerStatus {
   };
 };
 
-using VectorFieldCallback = std::function<bool (
-  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-  double t,
-  Eigen::VectorXd* qd)>;
+using VectorFieldCallback = std::function<bool(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    double t,
+    Eigen::VectorXd* qd)>;
 
-using VectorFieldStatusCallback = 
-  std::function<VectorFieldPlannerStatus::Enum (
-  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace, double t)>;
+using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus::Enum(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    double t)>;
 
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
-  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-  double dt,
-  const VectorFieldCallback& vectorFiledCb,
-  const VectorFieldStatusCallback& statusCb);
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    double dt,
+    const VectorFieldCallback& vectorFiledCb,
+    const VectorFieldStatusCallback& statusCb);
 
 std::unique_ptr<aikido::trajectory::Spline> planStrightLine(
-  const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-  const Eigen::VectorXd& startPosition,
-  const Eigen::VectorXd& goalPosition); 
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const Eigen::VectorXd& startPosition,
+    const Eigen::VectorXd& goalPosition);
 
 } // namespace vectorfield
 } // namespace planner
