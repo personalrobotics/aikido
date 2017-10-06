@@ -1,4 +1,4 @@
-#include <aikido/planner/VectorFieldPlanner.hpp>
+#include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <gtest/gtest.h>
 #include "../constraint/MockConstraints.hpp"
 #include <aikido/planner/PlanningResult.hpp>
@@ -33,12 +33,12 @@ public:
   VectorFieldPlannerTest()
       : skel{dart::dynamics::Skeleton::create("skel")}
       , jn_bn{skel->createJointAndBodyNodePair<dart::dynamics::RevoluteJoint>()}
-      , stateSpace{make_shared<MetaSkeletonStateSpace>(skel)}
-      , startState{make_shared<ScopedState>(stateSpace->createState())}
-      , goalState{make_shared<ScopedState>(stateSpace->createState())}
-      , passingConstraint{make_shared<PassingConstraint>(stateSpace)}
-      , failingConstraint{make_shared<FailingConstraint>(stateSpace)}
-      , interpolator(make_shared<GeodesicInterpolator>(stateSpace))
+      , stateSpace{std::make_shared<MetaSkeletonStateSpace>(skel)}
+      , startState{std::make_shared<ScopedState>(stateSpace->createState())}
+      , goalState{std::make_shared<ScopedState>(stateSpace->createState())}
+      , passingConstraint{std::make_shared<PassingConstraint>(stateSpace)}
+      , failingConstraint{std::make_shared<FailingConstraint>(stateSpace)}
+      , interpolator(std::make_shared<GeodesicInterpolator>(stateSpace))
   {
   }
 
@@ -56,4 +56,14 @@ public:
   aikido::planner::PlanningResult planningResult;
 };
 
+TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
+{
 
+
+}
+
+TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetCollisionTest)
+{
+
+
+}

@@ -1,7 +1,5 @@
 set(sources 
   SnapPlanner.cpp
-  VectorFieldPlanner.cpp
-  VectorFieldPlannerExceptions.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
@@ -38,3 +36,4 @@ format_add_sources(${sources})
 
 add_subdirectory("ompl")      # [constraint], [distance], [statespace], [trajectory], dart, ompl
 add_subdirectory("parabolic") # [external], [common], [trajectory], [statespace], dart
+add_subdirectory("vectorfield") 

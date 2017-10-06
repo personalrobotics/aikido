@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_VECTOR_FIELD_PLANNER_HPP_
 
 #include <boost/function.hpp>
+#include <aikido/constraint/Testable.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -31,14 +32,16 @@ using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus::Enum(
 
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::constraint::TestablePtr& constraint,
     double dt,
     const VectorFieldCallback& vectorFiledCb,
     const VectorFieldStatusCallback& statusCb);
 
 std::unique_ptr<aikido::trajectory::Spline> planStrightLine(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const Eigen::VectorXd& startPosition,
-    const Eigen::VectorXd& goalPosition);
+    const aikido::constraint::TestablePtr& constraint,
+    const statespace::StateSpace::State* startState,
+    const statespace::StateSpace::State* goalState);
 
 } // namespace vectorfield
 } // namespace planner

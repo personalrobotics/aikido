@@ -2,6 +2,7 @@
 
 namespace aikido {
 namespace planner {
+namespace vectorfield {
 
 /*
  * VectorFieldTerminated
@@ -25,5 +26,6 @@ dart::dynamics::DegreeOfFreedom* DofLimitError::dof() const
   return dof_;
 }
 
+} // namespace vectorfield
 } // namespace planner
 } // namespace aikido

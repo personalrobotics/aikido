@@ -1,9 +1,10 @@
 #include <boost/format.hpp>
 #include <aikido/common/Spline.hpp>
-#include <aikido/planner/VectorFieldPlanner.hpp>
+#include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
 #include "VectorFieldPlannerExceptions.hpp"
+#include "MoveHandStraightVectorField.hpp"
 
 using dart::common::make_unique;
 using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
@@ -65,13 +66,21 @@ static void CheckDofLimits(
 }
 
 static void CheckCollision(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::constraint::TestablePtr& constraint)
 {
-  DART_UNUSED(stateSpace);
+  // Get current position
+  auto state = stateSpace->getScopedStateFromMetaSkeleton();
+  // Throw a termination if in collision
+  if(!constraint->isSatisfied(state))
+  {
+    throw VectorFieldTerminated("state in collision");
+  }
 }
 
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::constraint::TestablePtr& constraint,
     double dt,
     const VectorFieldCallback& vectorFiledCb,
     const VectorFieldStatusCallback& statusCb)
@@ -140,7 +149,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
       {
         CheckDofLimits(stateSpace, q, qd);
         stateSpace->getMetaSkeleton()->setPositions(q);
-        CheckCollision(stateSpace);
+        CheckCollision(stateSpace, constraint);
       }
       catch (VectorFieldTerminated const& e)
       {
@@ -240,10 +249,18 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 
 std::unique_ptr<aikido::trajectory::Spline> planStrightLine(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const Eigen::VectorXd& startPosition,
-    const Eigen::VectorXd& goalPosition)
+    const aikido::constraint::TestablePtr& constraint,
+    const statespace::StateSpace::State* startState,
+    const statespace::StateSpace::State* goalState)
 {
+  auto vectorfield = MoveHandStraightVectorField(nullptr, Eigen::Vector3d(), 0, 0, 0);
+  Eigen::VectorXd tmp;
+  VectorFieldCallback vfCb = std::bind(vectorfield, stateSpace, 0.0, &tmp);
+  VectorFieldStatusCallback stCb = std::bind(vectorfield, stateSpace, 0.0);
+  return planPathByVectorField(stateSpace, constraint, 0.0,
+                               vfCb, stCb);
 }
+
 
 } // namespace vectorfield
 } // namespace planner

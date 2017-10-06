@@ -6,6 +6,7 @@
 
 namespace aikido {
 namespace planner {
+namespace vectorfield {
 
 class VectorFieldTerminated : public std::runtime_error {
 public:
@@ -23,6 +24,7 @@ private:
   dart::dynamics::DegreeOfFreedom *dof_;
 };
 
+} // namespace vectorfield
 } // namespace aikido
 } // namespace planner
 
