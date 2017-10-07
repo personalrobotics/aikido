@@ -299,7 +299,7 @@ int ResourceServer::queueHttpError(
 }
 
 //==============================================================================
-sstd::size_t ResourceServer::resourceReaderCallback(
+std::size_t ResourceServer::resourceReaderCallback(
     void* cls, uint64_t pos, char* buf, std::size_t max)
 {
   auto resourceRequest = reinterpret_cast<ResourceRequest*>(cls);
