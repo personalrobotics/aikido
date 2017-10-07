@@ -1,5 +1,5 @@
-#ifndef AIKIDO_OMPL_GOALREGION_HPP_
-#define AIKIDO_OMPL_GOALREGION_HPP_
+#ifndef AIKIDO_PLANNER_OMPL_GOALREGION_HPP_
+#define AIKIDO_PLANNER_OMPL_GOALREGION_HPP_
 
 #include <ompl/base/goals/GoalSampleableRegion.h>
 #include "../../constraint/Sampleable.hpp"

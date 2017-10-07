@@ -1,5 +1,5 @@
-#ifndef AIKIDO_OMPL_AIKIDOSTATESAMPLER_HPP_
-#define AIKIDO_OMPL_AIKIDOSTATESAMPLER_HPP_
+#ifndef AIKIDO_PLANNER_OMPL_AIKIDOSTATESAMPLER_HPP_
+#define AIKIDO_PLANNER_OMPL_AIKIDOSTATESAMPLER_HPP_
 
 #include <ompl/base/StateSampler.h>
 #include "../../constraint/Sampleable.hpp"
