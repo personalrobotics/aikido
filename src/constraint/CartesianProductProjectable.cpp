@@ -22,7 +22,7 @@ CartesianProductProjectable::CartesianProductProjectable(
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mConstraints.size(); ++i)
+  for (std::size_t i = 0; i < mConstraints.size(); ++i)
   {
     if (!mConstraints[i])
     {
@@ -54,7 +54,7 @@ bool CartesianProductProjectable::project(
   auto s = static_cast<const statespace::CartesianProduct::State*>(_s);
   auto out = static_cast<statespace::CartesianProduct::State*>(_out);
 
-  for (size_t i = 0; i < mConstraints.size(); ++i)
+  for (std::size_t i = 0; i < mConstraints.size(); ++i)
   {
     auto inSubState = mStateSpace->getSubState<>(s, i);
     auto outSubState = mStateSpace->getSubState<>(out, i);

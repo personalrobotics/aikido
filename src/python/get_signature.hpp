@@ -6,7 +6,7 @@
 #include <boost/function_types/is_callable_builtin.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/greater.hpp>
-#include <boost/mpl/size_t.hpp>
+#include <boost/mpl/std::size_t.hpp>
 
 // Source: https://mail.python.org/pipermail/cplusplus-sig/2014-February/017103.html
 
@@ -26,7 +26,7 @@ struct fun_sign<
   typename enable_if<
     mpl::greater<
       mpl::size<T>,
-      mpl::size_t<1>
+      mpl::std::size_t<1>
     >
   >::type
 >

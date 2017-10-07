@@ -37,7 +37,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
   constraints.reserve(n);
 
   // TODO: Filter out trivial constraints for efficiency.
-  for (size_t i = 0; i < n; ++i)
+  for (std::size_t i = 0; i < n; ++i)
   {
     auto subspace
         = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);
@@ -72,7 +72,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
   std::vector<ProjectablePtr> constraints;
   constraints.reserve(n);
 
-  for (size_t i = 0; i < n; ++i)
+  for (std::size_t i = 0; i < n; ++i)
   {
     auto subspace
         = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);
@@ -104,7 +104,7 @@ std::unique_ptr<Testable> createTestableBounds(
   std::vector<std::shared_ptr<Testable>> constraints;
   constraints.reserve(n);
 
-  for (size_t i = 0; i < n; ++i)
+  for (std::size_t i = 0; i < n; ++i)
   {
     auto subspace
         = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);
@@ -141,7 +141,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
   std::vector<std::shared_ptr<Sampleable>> constraints;
   constraints.reserve(n);
 
-  for (size_t i = 0; i < n; ++i)
+  for (std::size_t i = 0; i < n; ++i)
   {
     auto subspace
         = _metaSkeleton->getSubspace<statespace::dart::JointStateSpace>(i);

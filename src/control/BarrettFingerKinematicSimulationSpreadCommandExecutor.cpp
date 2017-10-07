@@ -10,7 +10,7 @@ namespace control {
 BarrettFingerKinematicSimulationSpreadCommandExecutor::
     BarrettFingerKinematicSimulationSpreadCommandExecutor(
         std::array<::dart::dynamics::ChainPtr, 2> fingers,
-        size_t spread,
+        std::size_t spread,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
         ::dart::collision::CollisionGroupPtr collideWith,
         ::dart::collision::CollisionOption collisionOptions)
@@ -39,7 +39,7 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
     }
 
     const auto numDofs = mFingers[i]->getNumDofs();
-    if (static_cast<size_t>(spread) >= numDofs)
+    if (static_cast<std::size_t>(spread) >= numDofs)
       throw std::invalid_argument("Finger does not have spread dof.");
 
     mSpreadDofs.push_back(mFingers[i]->getDof(spread));
@@ -94,7 +94,7 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
 
   mDofLimits = mSpreadDofs[0]->getPositionLimits();
 
-  for (size_t i = 1; i < kNumFingers; ++i)
+  for (std::size_t i = 1; i < kNumFingers; ++i)
   {
     auto limits = mSpreadDofs[i]->getPositionLimits();
     if (std::abs(limits.first - mDofLimits.first) > kDofTolerance)
@@ -120,7 +120,7 @@ std::future<void>
 BarrettFingerKinematicSimulationSpreadCommandExecutor::execute(
     const Eigen::VectorXd& goalPosition)
 {
-  for (size_t i = 0; i < kNumFingers; ++i)
+  for (std::size_t i = 0; i < kNumFingers; ++i)
   {
     if (!mFingers[i]->isAssembled())
     {
@@ -170,7 +170,7 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
 
   // Current spread. Check that all spreads have same values.
   double spread = mSpreadDofs[0]->getPosition();
-  for (size_t i = 1; i < kNumFingers; ++i)
+  for (std::size_t i = 1; i < kNumFingers; ++i)
   {
     double _spread = mSpreadDofs[i]->getPosition();
     if (std::abs(spread - _spread) > kDofTolerance)

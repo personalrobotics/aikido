@@ -16,8 +16,8 @@ using Eigen::Vector3d;
 class SO3UniformSamplerTests : public ::testing::Test
 {
 protected:
-  static constexpr size_t NUM_SAMPLES = 1000;
-  static constexpr size_t NUM_AXIS_TARGETS = 5;
+  static constexpr std::size_t NUM_SAMPLES = 1000;
+  static constexpr std::size_t NUM_AXIS_TARGETS = 5;
   static constexpr double DISTANCE_THRESHOLD = M_PI / NUM_AXIS_TARGETS;
 
   void SetUp() override
@@ -28,9 +28,9 @@ protected:
 
     mTargets.clear();
 
-    for (size_t i = 0; i < NUM_AXIS_TARGETS; ++i)
-    for (size_t j = 0; j < NUM_AXIS_TARGETS; ++j)
-    for (size_t k = 0; k < NUM_AXIS_TARGETS; ++k)
+    for (std::size_t i = 0; i < NUM_AXIS_TARGETS; ++i)
+    for (std::size_t j = 0; j < NUM_AXIS_TARGETS; ++j)
+    for (std::size_t k = 0; k < NUM_AXIS_TARGETS; ++k)
     {
       const auto angle1 = (2. * M_PI * i) / NUM_AXIS_TARGETS;
       const auto angle2 = (2. * M_PI * j) / NUM_AXIS_TARGETS;

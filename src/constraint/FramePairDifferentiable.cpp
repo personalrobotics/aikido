@@ -47,7 +47,7 @@ FramePairDifferentiable::FramePairDifferentiable(
 }
 
 //==============================================================================
-size_t FramePairDifferentiable::getConstraintDimension() const
+std::size_t FramePairDifferentiable::getConstraintDimension() const
 {
   return mRelPoseConstraint->getConstraintDimension();
 }

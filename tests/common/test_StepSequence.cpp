@@ -63,7 +63,7 @@ TEST(StepSequence, IteratorAlternateRange)
 
 TEST(StepSequence, IteratorStop)
 {
-  size_t count = 0;
+  std::size_t count = 0;
   StepSequence seq(0.3, true);
   for (double v : seq) {
     DART_UNUSED(v);
@@ -75,7 +75,7 @@ TEST(StepSequence, IteratorStop)
 
 TEST(StepSequence, IteratorStopAlternateRange)
 {
-  size_t count = 0;
+  std::size_t count = 0;
   StepSequence seq(0.3, true, 3, 3.7);
   for (double v : seq) {
     DART_UNUSED(v);

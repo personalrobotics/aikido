@@ -107,7 +107,7 @@ TEST_F(PlannerTest, OMPLStatesRemainUnchaged)
   ASSERT_TRUE(traj->getNumWaypoints() == omplTraj.getStateCount());
 
   // Match every point
-  for(size_t idx = 0; idx < traj->getNumWaypoints(); ++idx)
+  for(std::size_t idx = 0; idx < traj->getNumWaypoints(); ++idx)
   {
     auto s0 = static_cast<const CartesianProduct::State*>(traj->getWaypoint(idx));
     auto r0 = stateSpace->getSubStateHandle<R3>(s0, 0);
@@ -183,7 +183,7 @@ TEST_F(PlannerTest, InterpolatedStatesRemainUnchaged)
   ASSERT_TRUE(interpolatedTraj->getNumWaypoints() == omplTraj.getStateCount());
 
   // Match every point
-  for(size_t idx = 0; idx < interpolatedTraj->getNumWaypoints(); ++idx)
+  for(std::size_t idx = 0; idx < interpolatedTraj->getNumWaypoints(); ++idx)
   {
     auto s0 = static_cast<const CartesianProduct::State*>(interpolatedTraj->getWaypoint(idx));
     auto r0 = stateSpace->getSubStateHandle<R3>(s0, 0);

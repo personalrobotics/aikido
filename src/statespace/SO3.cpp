@@ -47,7 +47,7 @@ void SO3::setQuaternion(State* _state, const Quaternion& _quaternion) const
 }
 
 //==============================================================================
-size_t SO3::getStateSizeInBytes() const
+std::size_t SO3::getStateSizeInBytes() const
 {
   return sizeof(State);
 }
@@ -103,7 +103,7 @@ void SO3::getInverse(
 }
 
 //==============================================================================
-size_t SO3::getDimension() const
+std::size_t SO3::getDimension() const
 {
   return 3;
 }

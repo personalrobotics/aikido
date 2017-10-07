@@ -67,7 +67,7 @@ void SO2::setRotation(State* _state, const Eigen::Rotation2Dd& _rotation) const
 }
 
 //==============================================================================
-size_t SO2::getStateSizeInBytes() const
+std::size_t SO2::getStateSizeInBytes() const
 {
   return sizeof(State);
 }
@@ -123,7 +123,7 @@ void SO2::getInverse(
 }
 
 //==============================================================================
-size_t SO2::getDimension() const
+std::size_t SO2::getDimension() const
 {
   return 1;
 }

@@ -51,7 +51,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
       stateSpace, _inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
-  for (size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
+  for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
   {
     const auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
     double currentTime = _inputTrajectory.getWaypointTime(iwaypoint);
@@ -85,13 +85,13 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
 
-  if (static_cast<size_t>(_maxVelocity.size()) != dimension)
+  if (static_cast<std::size_t>(_maxVelocity.size()) != dimension)
     throw std::invalid_argument("Velocity limits have wrong dimension.");
 
-  if (static_cast<size_t>(_maxAcceleration.size()) != dimension)
+  if (static_cast<std::size_t>(_maxAcceleration.size()) != dimension)
     throw std::invalid_argument("Acceleration limits have wrong dimension.");
 
-  for (size_t i = 0; i < dimension; ++i)
+  for (std::size_t i = 0; i < dimension; ++i)
   {
     if (_maxVelocity[i] <= 0.)
       throw std::invalid_argument("Velocity limits must be positive.");

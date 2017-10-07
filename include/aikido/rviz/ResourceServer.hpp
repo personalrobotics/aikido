@@ -24,7 +24,7 @@ struct BinaryResource
   }
 
   std::string mPath;
-  size_t mSize;
+  std::size_t mSize;
   char* mData;
 };
 
@@ -84,8 +84,8 @@ private:
       unsigned int code,
       const std::string& message);
 
-  static ssize_t resourceReaderCallback(
-      void* cls, uint64_t pos, char* buf, size_t max);
+  static std::size_t resourceReaderCallback(
+      void* cls, uint64_t pos, char* buf, std::size_t max);
 
   static void resourceReaderFreeCallback(void* cls);
 
@@ -96,7 +96,7 @@ private:
       const char* method,
       const char* version,
       const char* upload_data,
-      size_t* upload_data_size,
+      std::size_t* upload_data_size,
       void** ptr);
 
   std::string getMeshURI(const MeshResourcePtr& meshResource) const;

@@ -17,7 +17,7 @@ std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
 //==============================================================================
 template <class Space>
 std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
-    size_t _index) const
+    std::size_t _index) const
 {
   return getSubspace<Space>(_index);
 }

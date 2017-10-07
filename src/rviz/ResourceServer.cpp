@@ -299,8 +299,8 @@ int ResourceServer::queueHttpError(
 }
 
 //==============================================================================
-ssize_t ResourceServer::resourceReaderCallback(
-    void* cls, uint64_t pos, char* buf, size_t max)
+std::size_t ResourceServer::resourceReaderCallback(
+    void* cls, uint64_t pos, char* buf, std::size_t max)
 {
   auto resourceRequest = reinterpret_cast<ResourceRequest*>(cls);
 
@@ -325,7 +325,7 @@ int ResourceServer::processConnection(
     char const* method,
     char const* /*version*/,
     char const* /*upload_data*/,
-    size_t* upload_data_size,
+    std::size_t* upload_data_size,
     void** ptr)
 {
   static int headerReceived = 0;

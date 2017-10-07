@@ -1736,7 +1736,7 @@ void ParabolicRampND::SetConstant(const Vector& x,Real t)
   fill(dx1.begin(),dx1.end(),0);
   endTime = t;
   ramps.resize(x.size());
-  for(size_t i=0;i<x.size();i++)
+  for(std::size_t i=0;i<x.size();i++)
     ramps[i].SetConstant(x[i],t);
 }
 
@@ -1747,12 +1747,12 @@ void ParabolicRampND::SetLinear(const Vector& _x0,const Vector& _x1,Real t)
   x0 = _x0;
   x1 = _x1;
   dx0.resize(_x1.size());
-  for(size_t i=0;i<_x1.size();i++)
+  for(std::size_t i=0;i<_x1.size();i++)
     dx0[i] = (_x1[i]-_x0[i])/t;
   dx1 = dx0;
   endTime = t;
   ramps.resize(_x0.size());
-  for(size_t i=0;i<_x0.size();i++)
+  for(std::size_t i=0;i<_x0.size();i++)
     ramps[i].SetLinear(_x0[i],_x1[i],t);
 }
 
@@ -1771,7 +1771,7 @@ bool ParabolicRampND::SolveMinTimeLinear(const Vector& amax,const Vector& vmax)
   sramp.dx0 = 0;
   sramp.dx1 = 0;
   Real svmax=Inf,samax=Inf;
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].x0=x0[i];
     ramps[i].x1=x1[i];
     ramps[i].dx0=dx0[i];
@@ -1812,7 +1812,7 @@ bool ParabolicRampND::SolveMinTimeLinear(const Vector& amax,const Vector& vmax)
   }
 
   endTime = sramp.ttotal;
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].v = svmax * (x1[i]-x0[i]);
     ramps[i].a1 = samax * (x1[i]-x0[i]);
     ramps[i].a2 = -samax * (x1[i]-x0[i]);
@@ -1824,9 +1824,9 @@ bool ParabolicRampND::SolveMinTimeLinear(const Vector& amax,const Vector& vmax)
 	if(gVerbose >= 1) 
 	  PARABOLIC_RAMP_PERROR("Warning, error in straight-line path formula\n");
 	if(gVerbose >= 2) {
-	  for(size_t j=0;j<dx0.size();j++)
+	  for(std::size_t j=0;j<dx0.size();j++)
 	    PARABOLIC_RAMP_PERROR("%g ",dx0[j]);
-	  for(size_t j=0;j<dx1.size();j++)
+	  for(std::size_t j=0;j<dx1.size();j++)
 	    PARABOLIC_RAMP_PERROR("%g ",dx1[j]);
 	}
 	if(gErrorGetchar) getchar();
@@ -1877,7 +1877,7 @@ bool ParabolicRampND::SolveMinTime(const Vector& amax,const Vector& vmax)
   PARABOLIC_RAMP_ASSERT(x0.size() == vmax.size());
   endTime = 0;
   ramps.resize(x0.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].x0=x0[i];
     ramps[i].x1=x1[i];
     ramps[i].dx0=dx0[i];
@@ -1904,7 +1904,7 @@ bool ParabolicRampND::SolveMinTime(const Vector& amax,const Vector& vmax)
   //until we have solved all ramps
   while(true) {
     bool solved = true;
-    for(size_t i=0;i<ramps.size();i++) {
+    for(std::size_t i=0;i<ramps.size();i++) {
       if(ramps[i].ttotal == endTime) continue;
       if(vmax[i]==0 || amax[i]==0) {
 	ramps[i].ttotal = endTime;
@@ -1968,7 +1968,7 @@ bool ParabolicRampND::SolveMinAccel(const Vector& vmax,Real time)
   PARABOLIC_RAMP_ASSERT(x0.size() == vmax.size());
   endTime = time;
   ramps.resize(x0.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].x0=x0[i];
     ramps[i].x1=x1[i];
     ramps[i].dx0=dx0[i];
@@ -2001,7 +2001,7 @@ bool ParabolicRampND::SolveMinAccelLinear(const Vector& vmax,Real time)
   sramp.dx0 = 0;
   sramp.dx1 = 0;
   Real svmax=Inf;
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].x0=x0[i];
     ramps[i].x1=x1[i];
     ramps[i].dx0=dx0[i];
@@ -2040,7 +2040,7 @@ bool ParabolicRampND::SolveMinAccelLinear(const Vector& vmax,Real time)
   }
 
   endTime = sramp.ttotal;
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].v = sramp.v * (x1[i]-x0[i]);
     ramps[i].a1 = sramp.a1 * (x1[i]-x0[i]);
     ramps[i].a2 = sramp.a2 * (x1[i]-x0[i]);
@@ -2067,7 +2067,7 @@ void ParabolicRampND::SolveBraking(const Vector& amax)
   dx1.resize(x0.size());
   endTime = 0;
   ramps.resize(x0.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     if(amax[i]==0) {
       PARABOLIC_RAMP_ASSERT(FuzzyEquals(dx0[i],0.0,EpsilonV));
       ramps[i].SetConstant(0);
@@ -2077,9 +2077,9 @@ void ParabolicRampND::SolveBraking(const Vector& amax)
     ramps[i].dx0 = dx0[i];
     ramps[i].SolveBraking(amax[i]);
   }
-  for(size_t i=0;i<ramps.size();i++)
+  for(std::size_t i=0;i<ramps.size();i++)
     endTime = Max(endTime,ramps[i].ttotal);
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     if(amax[i] != 0 && ramps[i].ttotal != endTime) {
       //scale ramp acceleration to meet endTimeMax
       ramps[i].ttotal = endTime;
@@ -2100,21 +2100,21 @@ void ParabolicRampND::Evaluate(Real t,Vector& x) const
 {
   x.resize(ramps.size());
 
-  for(size_t j=0;j<ramps.size();j++)
+  for(std::size_t j=0;j<ramps.size();j++)
     x[j]=ramps[j].Evaluate(t);
 }
 
 void ParabolicRampND::Derivative(Real t,Vector& x) const
 {
   x.resize(ramps.size());
-  for(size_t j=0;j<ramps.size();j++)
+  for(std::size_t j=0;j<ramps.size();j++)
     x[j]=ramps[j].Derivative(t);
 }
 
 void ParabolicRampND::Accel(Real t,Vector& x) const
 {
   x.resize(ramps.size());
-  for(size_t j=0;j<ramps.size();j++)
+  for(std::size_t j=0;j<ramps.size();j++)
     x[j]=ramps[j].Accel(t);
 }
 
@@ -2125,29 +2125,29 @@ void ParabolicRampND::Output(Real dt,std::vector<Vector>& path) const
   path.resize(size);
   if(size == 1) {
     path[0].resize(ramps.size());
-    for(size_t j=0;j<ramps.size();j++)
+    for(std::size_t j=0;j<ramps.size();j++)
       path[0][j] = ramps[j].x0;
     return;
   } 
   for(int i=0;i<size;i++) {
     Real t=endTime*Real(i)/Real(size-1);
     path[i].resize(ramps.size());
-    for(size_t j=0;j<ramps.size();j++)
+    for(std::size_t j=0;j<ramps.size();j++)
       path[i][j]=ramps[j].Evaluate(t);
   }
   
   /*
   path[0].resize(ramps.size());
-  for(size_t j=0;j<ramps.size();j++)
+  for(std::size_t j=0;j<ramps.size();j++)
     path[0][j] = ramps[j].x0;
   for(int i=1;i+1<size;i++) {
     Real t=endTime*Real(i)/Real(size-1);
     path[i].resize(ramps.size());
-    for(size_t j=0;j<ramps.size();j++)
+    for(std::size_t j=0;j<ramps.size();j++)
       path[i][j]=ramps[j].Evaluate(t);
   }
   path[size-1].resize(ramps.size());
-  for(size_t j=0;j<ramps.size();j++)
+  for(std::size_t j=0;j<ramps.size();j++)
     path[size-1][j] = ramps[j].x1;
   */
 }
@@ -2155,7 +2155,7 @@ void ParabolicRampND::Output(Real dt,std::vector<Vector>& path) const
 
 void ParabolicRampND::Dilate(Real timeScale)
 {
-  for(size_t i=0;i<ramps.size();i++)
+  for(std::size_t i=0;i<ramps.size();i++)
     ramps[i].Dilate(timeScale);
 }
 
@@ -2165,7 +2165,7 @@ void ParabolicRampND::TrimFront(Real tcut)
   Evaluate(tcut,x0);
   Derivative(tcut,dx0);
   endTime -= tcut;
-  for(size_t i=0;i<ramps.size();i++)
+  for(std::size_t i=0;i<ramps.size();i++)
     ramps[i].TrimFront(tcut);
   if(gValidityCheckLevel >= 2) 
     PARABOLIC_RAMP_ASSERT(IsValid());
@@ -2173,13 +2173,13 @@ void ParabolicRampND::TrimFront(Real tcut)
 
 void ParabolicRampND::TrimBack(Real tcut)
 {
-  for(size_t i=0;i<ramps.size();i++)
+  for(std::size_t i=0;i<ramps.size();i++)
     PARABOLIC_RAMP_ASSERT(endTime == ramps[i].ttotal);
   PARABOLIC_RAMP_ASSERT(tcut <= endTime);
   Evaluate(endTime-tcut,x1);
   Derivative(endTime-tcut,dx1);
   endTime -= tcut;
-  for(size_t i=0;i<ramps.size();i++)
+  for(std::size_t i=0;i<ramps.size();i++)
     ramps[i].TrimBack(tcut);
   if(gValidityCheckLevel >= 2) 
     PARABOLIC_RAMP_ASSERT(IsValid());
@@ -2189,7 +2189,7 @@ void ParabolicRampND::Bounds(Vector& xmin,Vector& xmax) const
 {
   xmin.resize(ramps.size());
   xmax.resize(ramps.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].Bounds(xmin[i],xmax[i]);
   }
 }
@@ -2198,7 +2198,7 @@ void ParabolicRampND::Bounds(Real ta,Real tb,Vector& xmin,Vector& xmax) const
 {
   xmin.resize(ramps.size());
   xmax.resize(ramps.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].Bounds(ta,tb,xmin[i],xmax[i]);
   }
 }
@@ -2207,7 +2207,7 @@ void ParabolicRampND::DerivBounds(Vector& vmin,Vector& vmax) const
 {
   vmin.resize(ramps.size());
   vmax.resize(ramps.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].DerivBounds(vmin[i],vmax[i]);
   }
 }
@@ -2216,7 +2216,7 @@ void ParabolicRampND::DerivBounds(Real ta,Real tb,Vector& vmin,Vector& vmax) con
 {
   vmin.resize(ramps.size());
   vmax.resize(ramps.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].DerivBounds(ta,tb,vmin[i],vmax[i]);
   }
 }
@@ -2227,7 +2227,7 @@ bool ParabolicRampND::IsValid() const
     if(gVerbose >= 1) PARABOLIC_RAMP_PERROR("ParabolicRampND::IsValid(): endTime is negative\n");
     return false;
   }
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     if(!ramps[i].IsValid()) {
       if(gVerbose >= 1) PARABOLIC_RAMP_PERROR("ParabolicRampND::IsValid(): element %d is invalid\n",i);
       return false;
@@ -2479,7 +2479,7 @@ bool SolveMinAccelBounded(Real x0,Real v0,Real x1,Real v1,Real endTime,Real vmax
     return false;
   }
   if(gValidityCheckLevel >= 1) {
-    for(size_t i=0;i<ramps.size();i++) {
+    for(std::size_t i=0;i<ramps.size();i++) {
       ramps[i].Bounds(bmin,bmax);
       if(bmin < xmin-EpsilonX || bmax > xmax+EpsilonX) {
 	if(gVerbose >= 1) 
@@ -2497,13 +2497,13 @@ bool SolveMinAccelBounded(Real x0,Real v0,Real x1,Real v1,Real endTime,Real vmax
   PARABOLIC_RAMP_ASSERT(ramps.back().x1 == x1);
   PARABOLIC_RAMP_ASSERT(ramps.back().dx1 == v1);
   double ttotal = 0;
-  for(size_t i=0;i<ramps.size();i++)
+  for(std::size_t i=0;i<ramps.size();i++)
     ttotal += ramps[i].ttotal;
   if(!FuzzyEquals(ttotal,endTime,EpsilonT*0.1)) {
     if(gVerbose >= 1) PARABOLIC_RAMP_PERROR("SolveMinTimeBounded: Numerical timing error");
     if(gVerbose >= 2) {
       PARABOLIC_RAMP_PERROR("Ramp times: ");
-      for(size_t i=0;i<ramps.size();i++)
+      for(std::size_t i=0;i<ramps.size();i++)
 	PARABOLIC_RAMP_PERROR("%g ",ramps[i].ttotal);
       PARABOLIC_RAMP_PERROR("\n");
     }
@@ -2521,7 +2521,7 @@ Real SolveMinTimeBounded(const Vector& x0,const Vector& v0,const Vector& x1,cons
   PARABOLIC_RAMP_ASSERT(x0.size() == x1.size());
   PARABOLIC_RAMP_ASSERT(x0.size() == amax.size());
   PARABOLIC_RAMP_ASSERT(x0.size() == vmax.size());
-  for(size_t i=0;i<x0.size();i++) {
+  for(std::size_t i=0;i<x0.size();i++) {
     PARABOLIC_RAMP_ASSERT(x0[i] >= xmin[i] && x0[i] <= xmax[i]);
     PARABOLIC_RAMP_ASSERT(x1[i] >= xmin[i] && x1[i] <= xmax[i]);
     PARABOLIC_RAMP_ASSERT(Abs(v0[i]) <= vmax[i]);
@@ -2529,7 +2529,7 @@ Real SolveMinTimeBounded(const Vector& x0,const Vector& v0,const Vector& x1,cons
   }
   Real endTime = 0;
   ramps.resize(x0.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     ramps[i].resize(1);
     ramps[i][0].x0=x0[i];
     ramps[i][0].x1=x1[i];
@@ -2560,7 +2560,7 @@ Real SolveMinTimeBounded(const Vector& x0,const Vector& v0,const Vector& x1,cons
   //until we have solved all ramps
   while(true) {
     bool solved = true;
-    for(size_t i=0;i<ramps.size();i++) {
+    for(std::size_t i=0;i<ramps.size();i++) {
       PARABOLIC_RAMP_ASSERT(ramps[i].size() > 0);
       if(vmax[i]==0 || amax[i]==0) {
 	ramps[i][0].ttotal = endTime;
@@ -2568,7 +2568,7 @@ Real SolveMinTimeBounded(const Vector& x0,const Vector& v0,const Vector& x1,cons
       }
       //already at maximum
       Real ttotal = 0;
-      for(size_t j=0;j<ramps[i].size();j++)
+      for(std::size_t j=0;j<ramps[i].size();j++)
 	ttotal += ramps[i][j].ttotal;
       if(FuzzyEquals(ttotal,endTime,EpsilonT)) continue;
 	 
@@ -2580,7 +2580,7 @@ Real SolveMinTimeBounded(const Vector& x0,const Vector& v0,const Vector& x1,cons
       }
       //now check accel/velocity bounds
       bool inVelBounds = true;
-      for(size_t j=0;j<ramps[i].size();j++)
+      for(std::size_t j=0;j<ramps[i].size();j++)
 	if(Abs(ramps[i][j].a1) > amax[i]+EpsilonA || Abs(ramps[i][j].a2) > amax[i]+EpsilonA || Abs(ramps[i][j].v) > vmax[i]+EpsilonV) {
 	  //printf("Ramp %d entry %d accels: %g %g, vel %g\n",i,j,ramps[i][j].a1,ramps[i][j].a2,ramps[i][j].v);
 	  inVelBounds = false;
@@ -2608,7 +2608,7 @@ Real SolveMinTimeBounded(const Vector& x0,const Vector& v0,const Vector& x1,cons
 
 	//revise total time
 	ttotal = 0;
-	for(size_t j=0;j<ramps[i].size();j++)
+	for(std::size_t j=0;j<ramps[i].size();j++)
 	  ttotal += ramps[i][j].ttotal;
 	PARABOLIC_RAMP_ASSERT(ttotal > endTime);
 	endTime = ttotal;
@@ -2616,7 +2616,7 @@ Real SolveMinTimeBounded(const Vector& x0,const Vector& v0,const Vector& x1,cons
 	break; //go back and re-solve
       }
       ttotal = 0;
-      for(size_t j=0;j<ramps[i].size();j++) {
+      for(std::size_t j=0;j<ramps[i].size();j++) {
 	PARABOLIC_RAMP_ASSERT(Abs(ramps[i][j].a1) <= amax[i]+EpsilonA);
 	PARABOLIC_RAMP_ASSERT(Abs(ramps[i][j].a2) <= amax[i]+EpsilonA);
 	PARABOLIC_RAMP_ASSERT(Abs(ramps[i][j].v) <= vmax[i]+EpsilonV);
@@ -2638,13 +2638,13 @@ bool SolveMinAccelBounded(const Vector& x0,const Vector& v0,const Vector& x1,con
   PARABOLIC_RAMP_ASSERT(x1.size() == v1.size());
   PARABOLIC_RAMP_ASSERT(x0.size() == x1.size());
   PARABOLIC_RAMP_ASSERT(x0.size() == vmax.size());
-  for(size_t i=0;i<x0.size();i++) {
+  for(std::size_t i=0;i<x0.size();i++) {
     PARABOLIC_RAMP_ASSERT(x0[i] >= xmin[i] && x0[i] <= xmax[i]);
     PARABOLIC_RAMP_ASSERT(x1[i] >= xmin[i] && x1[i] <= xmax[i]);
     PARABOLIC_RAMP_ASSERT(Abs(v0[i]) <= vmax[i]);
     PARABOLIC_RAMP_ASSERT(Abs(v1[i]) <= vmax[i]);
   }
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     if(vmax[i]==0) {
       ramps[i].resize(1);
       ramps[i][0].x0=x0[i];
@@ -2668,7 +2668,7 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
 {
   ndramps.resize(0);
   vector<vector<ParabolicRamp1D>::const_iterator> indices(ramps.size());
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     PARABOLIC_RAMP_ASSERT(!ramps[i].empty());
     indices[i] = ramps[i].begin();
   }
@@ -2677,7 +2677,7 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
   while(true) {
     //pick next ramp
     Real tnext=Inf;
-    for(size_t i=0;i<ramps.size();i++) {
+    for(std::size_t i=0;i<ramps.size();i++) {
       if(indices[i] != ramps[i].end()) 
 	tnext = Min(tnext,timeOffsets[i]+indices[i]->ttotal);
     }
@@ -2687,10 +2687,10 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
 	PARABOLIC_RAMP_PERROR("CombineRamps: error finding next time step?\n");
       if(gVerbose >= 2) {
 	PARABOLIC_RAMP_PERROR("tnext = %g, t = %g, step = %d\n",tnext,t,ndramps.size());
-	for(size_t k=0;k<ramps.size();k++) {
+	for(std::size_t k=0;k<ramps.size();k++) {
 	  PARABOLIC_RAMP_PERROR("Ramp %d times: ",k);
 	  Real ttotal = 0.0;
-	  for(size_t j=0;j<ramps[k].size();j++) {
+	  for(std::size_t j=0;j<ramps[k].size();j++) {
 	    PARABOLIC_RAMP_PERROR("%g ",ramps[k][j].ttotal);
 	    ttotal += ramps[k][j].ttotal;
 	  }
@@ -2700,7 +2700,7 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
     }
     PARABOLIC_RAMP_ASSERT(tnext > t || t == 0);
     if(tnext == 0) {
-      for(size_t i=0;i<ramps.size();i++) 
+      for(std::size_t i=0;i<ramps.size();i++) 
 	PARABOLIC_RAMP_ASSERT(ramps[i].size()==1);
     }
 
@@ -2712,7 +2712,7 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
     ramp.dx1.resize(ramps.size());
     ramp.ramps.resize(ramps.size());
     ramp.endTime = tnext-t;
-    for(size_t i=0;i<ramps.size();i++) {
+    for(std::size_t i=0;i<ramps.size();i++) {
       if(indices[i] != ramps[i].end()) {
 	ParabolicRamp1D iramp = *indices[i];
 	if(indices[i] == --ramps[i].end() && FuzzyEquals(tnext-timeOffsets[i],indices[i]->ttotal,EpsilonT*0.1)) {
@@ -2758,10 +2758,10 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
 	  if(gVerbose >= 1) 
 	    PARABOLIC_RAMP_PERROR("CombineRamps: warning, propagating time %g distance %g off the back, vel %g\n",(tnext-t),ramps[i].back().dx1*(tnext-t),ramp.dx0[i]);
 	  if(gVerbose >= 2) {
-	    for(size_t k=0;k<ramps.size();k++) {
+	    for(std::size_t k=0;k<ramps.size();k++) {
 	      PARABOLIC_RAMP_PERROR("Ramp %d times: ",k);
 	      Real ttotal = 0.0;
-	      for(size_t j=0;j<ramps[k].size();j++) {
+	      for(std::size_t j=0;j<ramps[k].size();j++) {
 		PARABOLIC_RAMP_PERROR("%g ",ramps[k][j].ttotal);
 		ttotal += ramps[k][j].ttotal;
 	      }
@@ -2790,7 +2790,7 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
     if(ndramps.size() > 1) { //fix up endpoints
       ramp.x0 = ndramps[ndramps.size()-2].x1;
       ramp.dx0 = ndramps[ndramps.size()-2].dx1;
-      for(size_t i=0;i<ramp.ramps.size();i++) {
+      for(std::size_t i=0;i<ramp.ramps.size();i++) {
 	ramp.ramps[i].x0=ramp.x0[i];
 	ramp.ramps[i].dx0=ramp.dx0[i];
       }
@@ -2802,7 +2802,7 @@ void CombineRamps(const std::vector<std::vector<ParabolicRamp1D> >& ramps,std::v
     if(tnext == 0) //all null ramps
       break;
   }
-  for(size_t i=0;i<ramps.size();i++) {
+  for(std::size_t i=0;i<ramps.size();i++) {
     if(!FuzzyEquals(ramps[i].front().x0,ndramps.front().x0[i],EpsilonX)) {
       PARABOLIC_RAMP_PERROR("CombineRamps: Error: %d start %g != %g\n",i,ramps[i].front().x0,ndramps.front().x0[i]);
       if(gErrorGetchar) getchar();

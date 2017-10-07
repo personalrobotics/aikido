@@ -44,7 +44,7 @@ void SE2::setIsometry(State* _state, const Isometry2d& _transform) const
 }
 
 //==============================================================================
-size_t SE2::getStateSizeInBytes() const
+std::size_t SE2::getStateSizeInBytes() const
 {
   return sizeof(State);
 }
@@ -79,7 +79,7 @@ void SE2::compose(
 }
 
 //==============================================================================
-size_t SE2::getDimension() const
+std::size_t SE2::getDimension() const
 {
   return 3;
 }

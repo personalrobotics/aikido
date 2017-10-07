@@ -9,8 +9,8 @@ namespace control {
 BarrettFingerKinematicSimulationPositionCommandExecutor::
     BarrettFingerKinematicSimulationPositionCommandExecutor(
         ::dart::dynamics::ChainPtr finger,
-        size_t proximal,
-        size_t distal,
+        std::size_t proximal,
+        std::size_t distal,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
         ::dart::collision::CollisionGroupPtr collideWith,
         ::dart::collision::CollisionOption collisionOptions)

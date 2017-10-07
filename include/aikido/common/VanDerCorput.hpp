@@ -53,7 +53,7 @@ public:
   /// Returns the total length of sequence.
   ///
   /// \return Non-negative number of the tatal length of sequence.
-  size_t getLength() const;
+  std::size_t getLength() const;
 
 private:
   constexpr static int BASE{2};

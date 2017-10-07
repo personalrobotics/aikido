@@ -70,7 +70,7 @@ public:
   /// Gets the size of a State, in bytes.
   ///
   /// \return size, in bytes, requires to store a \c State
-  virtual size_t getStateSizeInBytes() const = 0;
+  virtual std::size_t getStateSizeInBytes() const = 0;
 
   /// Create a new state in a pre-allocated buffer. The input argument must
   /// contain at least \c getStateSizeInBytes() bytes of memory. This state
@@ -134,7 +134,7 @@ public:
   /// tangent space, i.e. the Lie algebra, associated with this group.
   ///
   /// \return dimension of this state space
-  virtual size_t getDimension() const = 0;
+  virtual std::size_t getDimension() const = 0;
 
   /// Copy a state.
   ///

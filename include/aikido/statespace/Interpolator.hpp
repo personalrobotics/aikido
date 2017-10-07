@@ -17,7 +17,7 @@ public:
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
 
   /// Upper bound on the number of non-zero derivatives.
-  virtual size_t getNumDerivatives() const = 0;
+  virtual std::size_t getNumDerivatives() const = 0;
 
   /// Computes the state that lies at path parameter \c _alpha along the path
   /// that connects \c _from to \c _to. By definition \c interpolate(0) is
@@ -46,7 +46,7 @@ public:
   virtual void getDerivative(
       const statespace::StateSpace::State* _from,
       const statespace::StateSpace::State* _to,
-      size_t _derivative,
+      std::size_t _derivative,
       double _alpha,
       Eigen::VectorXd& _tangentVector) const = 0;
 };

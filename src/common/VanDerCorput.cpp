@@ -84,7 +84,7 @@ pair<double, double> VanDerCorput::operator[](int n) const
 }
 
 //==============================================================================
-size_t VanDerCorput::getLength() const
+std::size_t VanDerCorput::getLength() const
 {
   return std::distance(begin(), end());
 }

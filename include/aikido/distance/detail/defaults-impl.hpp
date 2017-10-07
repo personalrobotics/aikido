@@ -109,7 +109,7 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
     std::vector<std::shared_ptr<DistanceMetric> > metrics;
     metrics.reserve(_sspace->getNumSubspaces());
 
-    for (size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
+    for (std::size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
     {
       auto subspace = _sspace->getSubspace<>(i);
       auto metric = createDistanceMetric(std::move(subspace));
