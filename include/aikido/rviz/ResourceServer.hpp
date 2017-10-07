@@ -84,7 +84,7 @@ private:
       unsigned int code,
       const std::string& message);
 
-  static std::size_t resourceReaderCallback(
+  static ssize_t resourceReaderCallback(
       void* cls, uint64_t pos, char* buf, std::size_t max);
 
   static void resourceReaderFreeCallback(void* cls);
