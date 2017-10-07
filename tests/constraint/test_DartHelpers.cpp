@@ -160,7 +160,7 @@ TEST_F(RnJointHelpersTests, createSampleableBounds)
 
   auto state = mStateSpace->createState();
 
-  for (size_t isample = 0; isample < NUM_SAMPLES; ++isample)
+  for (std::size_t isample = 0; isample < NUM_SAMPLES; ++isample)
   {
     ASSERT_TRUE(generator->canSample());
     ASSERT_EQ(SampleGenerator::NO_LIMIT, generator->getNumSamples());
@@ -233,7 +233,7 @@ TEST_F(SO2JointHelpersTests, createSampleableBounds)
 
   auto state = mStateSpace->createState();
 
-  for (size_t isample = 0; isample < NUM_SAMPLES; ++isample)
+  for (std::size_t isample = 0; isample < NUM_SAMPLES; ++isample)
   {
     ASSERT_TRUE(generator->canSample());
     ASSERT_EQ(SampleGenerator::NO_LIMIT, generator->getNumSamples());
@@ -306,7 +306,7 @@ TEST_F(SO3JointHelpersTests, createSampleableBounds)
 
   auto state = mStateSpace->createState();
 
-  for (size_t isample = 0; isample < NUM_SAMPLES; ++isample)
+  for (std::size_t isample = 0; isample < NUM_SAMPLES; ++isample)
   {
     ASSERT_TRUE(generator->canSample());
     ASSERT_EQ(SampleGenerator::NO_LIMIT, generator->getNumSamples());

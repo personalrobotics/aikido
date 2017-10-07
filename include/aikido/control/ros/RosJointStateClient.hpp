@@ -26,7 +26,7 @@ public:
       dart::dynamics::SkeletonPtr _skeleton,
       ::ros::NodeHandle _nodeHandle,
       const std::string& _topicName,
-      size_t capacity);
+      std::size_t capacity);
 
   /// Update mBuffer with any JointState messages that have been received.
   void spin();
@@ -62,7 +62,7 @@ private:
   dart::dynamics::SkeletonPtr mSkeleton;
   std::unordered_map<std::string, boost::circular_buffer<JointStateRecord>>
       mBuffer;
-  size_t mCapacity;
+  std::size_t mCapacity;
 
   ::ros::CallbackQueue mCallbackQueue;
   ::ros::NodeHandle mNodeHandle;

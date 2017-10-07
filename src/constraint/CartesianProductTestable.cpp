@@ -15,7 +15,7 @@ CartesianProductTestable::CartesianProductTestable(
   if (!mStateSpace)
     throw std::invalid_argument("_stateSpace is nullptr.");
 
-  for (size_t i = 0; i < mConstraints.size(); ++i)
+  for (std::size_t i = 0; i < mConstraints.size(); ++i)
   {
     if (!mConstraints[i])
     {
@@ -34,7 +34,7 @@ CartesianProductTestable::CartesianProductTestable(
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
+  for (std::size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     if (mConstraints[i]->getStateSpace() != mStateSpace->getSubspace<>(i))
     {
@@ -58,7 +58,7 @@ bool CartesianProductTestable::isSatisfied(
   const auto state
       = static_cast<const statespace::CartesianProduct::State*>(_state);
 
-  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
+  for (std::size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     auto subState = mStateSpace->getSubState<>(state, i);
     if (!mConstraints[i]->isSatisfied(subState))

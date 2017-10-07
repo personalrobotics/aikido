@@ -204,7 +204,7 @@ auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
     const ResourcePtr marker_resource = mDelegate->retrieve(marker_uri);
     if (marker_resource)
     {
-      const size_t filesize = marker_resource->getSize();
+      const std::size_t filesize = marker_resource->getSize();
 
       std::string contents;
       contents.resize(filesize);

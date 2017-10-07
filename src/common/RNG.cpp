@@ -9,13 +9,13 @@ constexpr std::size_t RNG::NUM_BITS;
 
 //==============================================================================
 std::vector<std::unique_ptr<common::RNG>> cloneRNGsFrom(
-    RNG& _engine, size_t _numOutputs, size_t _numSeeds)
+    RNG& _engine, std::size_t _numOutputs, std::size_t _numSeeds)
 {
   // Use the input RNG to create an initial batch of seeds.
   std::vector<common::RNG::result_type> initialSeeds;
   initialSeeds.reserve(_numSeeds);
 
-  for (size_t iseed = 0; iseed < _numSeeds; ++iseed)
+  for (std::size_t iseed = 0; iseed < _numSeeds; ++iseed)
     initialSeeds.emplace_back(_engine());
 
   // Use seed_seq to improve the quality of our seeds.
@@ -35,7 +35,7 @@ std::vector<std::unique_ptr<common::RNG>> cloneRNGsFrom(
 
 //==============================================================================
 std::vector<std::unique_ptr<common::RNG>> cloneRNGFrom(
-    RNG& _engine, size_t _numSeeds)
+    RNG& _engine, std::size_t _numSeeds)
 {
   return cloneRNGsFrom(_engine, 1, _numSeeds);
 }

@@ -32,7 +32,7 @@ public:
   virtual std::vector<ConstraintType> getConstraintTypes() const = 0;
 
   /// Size of constraints
-  virtual size_t getConstraintDimension() const = 0;
+  virtual std::size_t getConstraintDimension() const = 0;
 
   /// Get the value of constraints at _s.
   /// Should be 0 to satisfy equality constraints.

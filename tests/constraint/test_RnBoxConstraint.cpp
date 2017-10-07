@@ -21,9 +21,9 @@ using Eigen::Matrix2d;
 class RnBoxConstraintTests : public ::testing::Test
 {
 protected:
-  static constexpr size_t NUM_X_TARGETS { 10 };
-  static constexpr size_t NUM_Y_TARGETS { 10 };
-  static constexpr size_t NUM_SAMPLES { 10000 };
+  static constexpr std::size_t NUM_X_TARGETS { 10 };
+  static constexpr std::size_t NUM_Y_TARGETS { 10 };
+  static constexpr std::size_t NUM_SAMPLES { 10000 };
   static constexpr double DISTANCE_THRESHOLD { 0.15 };
 
   void SetUp() override
@@ -55,12 +55,12 @@ protected:
     mTargets.clear();
     mTargets.reserve(NUM_X_TARGETS * NUM_Y_TARGETS);
 
-    for (size_t ix = 0; ix < NUM_X_TARGETS; ++ix)
+    for (std::size_t ix = 0; ix < NUM_X_TARGETS; ++ix)
     {
       auto xRatio = static_cast<double>(ix) / (NUM_X_TARGETS - 1);
       auto x = (1 - xRatio) * mLowerLimits[0] + xRatio * mUpperLimits[0];
 
-      for (size_t iy = 0; iy < NUM_Y_TARGETS; ++iy)
+      for (std::size_t iy = 0; iy < NUM_Y_TARGETS; ++iy)
       {
         auto yRatio = static_cast<double>(iy) / (NUM_Y_TARGETS - 1);
         auto y = (1 - yRatio) * mLowerLimits[1] + yRatio * mUpperLimits[1];

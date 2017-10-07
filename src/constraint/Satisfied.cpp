@@ -18,7 +18,7 @@ statespace::StateSpacePtr Satisfied::getStateSpace() const
 }
 
 //==============================================================================
-size_t Satisfied::getConstraintDimension() const
+std::size_t Satisfied::getConstraintDimension() const
 {
   return 0;
 }

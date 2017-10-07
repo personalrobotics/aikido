@@ -37,7 +37,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = statespace::StateSpace>
-  typename Space::State* getSubState(size_t _index) const
+  typename Space::State* getSubState(std::size_t _index) const
   {
     return this->getStateSpace()->template getSubState<Space>(
         this->getState(), _index);
@@ -50,7 +50,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = statespace::StateSpace>
-  typename Space::StateHandle getSubStateHandle(size_t _index) const
+  typename Space::StateHandle getSubStateHandle(std::size_t _index) const
   {
     return typename Space::StateHandle(
         this->getStateSpace()->template getSubspace<Space>(_index).get(),
@@ -60,7 +60,7 @@ public:
 
 //==============================================================================
 template <class Space>
-std::shared_ptr<Space> CartesianProduct::getSubspace(size_t _index) const
+std::shared_ptr<Space> CartesianProduct::getSubspace(std::size_t _index) const
 {
   // TODO: Replace this with a static_cast in release mode.
   const auto rawSpace = mSubspaces[_index];
@@ -83,7 +83,7 @@ std::shared_ptr<Space> CartesianProduct::getSubspace(size_t _index) const
 //==============================================================================
 template <class Space>
 typename Space::State* CartesianProduct::getSubState(
-    State* _state, size_t _index) const
+    State* _state, std::size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubspace(_index);
@@ -95,7 +95,7 @@ typename Space::State* CartesianProduct::getSubState(
 //==============================================================================
 template <class Space>
 const typename Space::State* CartesianProduct::getSubState(
-    const State* _state, size_t _index) const
+    const State* _state, std::size_t _index) const
 {
   // Use getStateSpace() to perform a type-check on the StateSpace.
   getSubspace(_index);
@@ -107,7 +107,7 @@ const typename Space::State* CartesianProduct::getSubState(
 //==============================================================================
 template <class Space>
 typename Space::StateHandle CartesianProduct::getSubStateHandle(
-    State* _state, size_t _index) const
+    State* _state, std::size_t _index) const
 {
   return typename Space::StateHandle(
       getSubspace<Space>(_index).get(), getSubState<Space>(_state, _index));
@@ -116,7 +116,7 @@ typename Space::StateHandle CartesianProduct::getSubStateHandle(
 //==============================================================================
 template <class Space>
 typename Space::StateHandleConst CartesianProduct::getSubStateHandle(
-    const State* _state, size_t _index) const
+    const State* _state, std::size_t _index) const
 {
   return typename Space::StateHandleConst(
       getSubspace<Space>(_index).get(), getSubState<Space>(_state, _index));

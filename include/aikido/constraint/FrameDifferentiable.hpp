@@ -31,7 +31,7 @@ public:
       DifferentiablePtr _poseConstraint);
 
   // Documentation inherited.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   // Documentation inherited.
   void getValue(const statespace::StateSpace::State* _s, Eigen::VectorXd& _out)

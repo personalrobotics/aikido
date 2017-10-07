@@ -15,8 +15,8 @@ using dart::common::make_unique;
 class SO2UniformSamplerTests : public ::testing::Test
 {
 protected:
-  static constexpr size_t NUM_SAMPLES = 10000;
-  static constexpr size_t NUM_TARGETS = 20;
+  static constexpr std::size_t NUM_SAMPLES = 10000;
+  static constexpr std::size_t NUM_TARGETS = 20;
   static constexpr double DISTANCE_THRESHOLD = M_PI / NUM_TARGETS;
 
   void SetUp() override
@@ -26,7 +26,7 @@ protected:
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
-    for (size_t i = 0; i < NUM_TARGETS; ++i)
+    for (std::size_t i = 0; i < NUM_TARGETS; ++i)
     {
       const double angle = (2 * M_PI * i) / NUM_TARGETS;
 

@@ -20,10 +20,10 @@ using Eigen::Matrix2d;
 class SE2BoxConstraintTests : public ::testing::Test
 {
 protected:
-  static constexpr size_t NUM_A_TARGETS { 10 };
-  static constexpr size_t NUM_X_TARGETS { 10 };
-  static constexpr size_t NUM_Y_TARGETS { 10 };
-  static constexpr size_t NUM_SAMPLES { 1000 };
+  static constexpr std::size_t NUM_A_TARGETS { 10 };
+  static constexpr std::size_t NUM_X_TARGETS { 10 };
+  static constexpr std::size_t NUM_Y_TARGETS { 10 };
+  static constexpr std::size_t NUM_SAMPLES { 1000 };
   static constexpr double DISTANCE_THRESHOLD { 0.8 };
 
   void SetUp() override
@@ -53,17 +53,17 @@ protected:
     mTargets.clear();
     mTargets.reserve(NUM_A_TARGETS * NUM_X_TARGETS * NUM_Y_TARGETS);
 
-    for (size_t ia = 0; ia < NUM_A_TARGETS; ++ia)
+    for (std::size_t ia = 0; ia < NUM_A_TARGETS; ++ia)
     {
       auto aRatio = static_cast<double>(ia) / (NUM_A_TARGETS - 1);
       auto a = (1 - aRatio) * (-M_PI) + aRatio * M_PI;
 
-      for (size_t ix = 0; ix < NUM_X_TARGETS; ++ix)
+      for (std::size_t ix = 0; ix < NUM_X_TARGETS; ++ix)
       {
         auto xRatio = static_cast<double>(ix) / (NUM_X_TARGETS - 1);
         auto x = (1 - xRatio) * mLowerLimits[0] + xRatio * mUpperLimits[0];
 
-        for (size_t iy = 0; iy < NUM_Y_TARGETS; ++iy)
+        for (std::size_t iy = 0; iy < NUM_Y_TARGETS; ++iy)
         {
           auto yRatio = static_cast<double>(iy) / (NUM_Y_TARGETS - 1);
           auto y = (1 - yRatio) * mLowerLimits[1] + yRatio * mUpperLimits[1];

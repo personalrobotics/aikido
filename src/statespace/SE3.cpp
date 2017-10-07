@@ -44,7 +44,7 @@ void SE3::setIsometry(State* _state, const Isometry3d& _transform) const
 }
 
 //==============================================================================
-size_t SE3::getStateSizeInBytes() const
+std::size_t SE3::getStateSizeInBytes() const
 {
   return sizeof(State);
 }
@@ -99,7 +99,7 @@ void SE3::getInverse(
 }
 
 //==============================================================================
-size_t SE3::getDimension() const
+std::size_t SE3::getDimension() const
 {
   return 6;
 }

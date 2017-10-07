@@ -27,7 +27,7 @@ YamlAprilTagsDatabase::YamlAprilTagsDatabase(
   }
 
   // Put file in string
-  const size_t size = resource->getSize();
+  const std::size_t size = resource->getSize();
   std::string content;
   content.resize(size);
   if (resource->read(&content.front(), size, 1) != 1)

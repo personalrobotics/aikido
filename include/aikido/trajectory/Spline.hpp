@@ -75,13 +75,13 @@ public:
   /// Gets the number of segments in this spline.
   ///
   /// \return number of segments in this spline
-  size_t getNumSegments() const;
+  std::size_t getNumSegments() const;
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
-  size_t getNumDerivatives() const override;
+  std::size_t getNumDerivatives() const override;
 
   // Documentation inherited.
   double getStartTime() const override;
@@ -104,18 +104,18 @@ public:
 
   /// Gets the number of waypoints.
   /// \return The number of waypoints
-  size_t getNumWaypoints() const;
+  std::size_t getNumWaypoints() const;
 
   /// Gets a waypoint.
   ///
   /// \param _index waypoint index
   /// \param[out] state of the waypoint at index \c _index
-  void getWaypoint(size_t _index, statespace::StateSpace::State* state) const;
+  void getWaypoint(std::size_t _index, statespace::StateSpace::State* state) const;
 
   /// Gets the time of a waypoint.
   /// \param _index waypoint index
   /// \return time of the waypoint at index \c _index
-  double getWaypointTime(size_t _index) const;
+  double getWaypointTime(std::size_t _index) const;
 
   /// Gets the derivative of a waypoint.
   /// \param _index waypoint index
@@ -123,7 +123,7 @@ public:
   /// \param[out] _tangentVector output tangent vector in the local frame at
   /// index \c _index
   void getWaypointDerivative(
-      size_t _index, int _derivative, Eigen::VectorXd& _tangentVector) const;
+      std::size_t _index, int _derivative, Eigen::VectorXd& _tangentVector) const;
 
 private:
   struct PolynomialSegment
@@ -136,7 +136,7 @@ private:
   static Eigen::VectorXd evaluatePolynomial(
       const Eigen::MatrixXd& _coefficients, double _t, int _derivative);
 
-  std::pair<size_t, double> getSegmentForTime(double _t) const;
+  std::pair<std::size_t, double> getSegmentForTime(double _t) const;
 
   statespace::StateSpacePtr mStateSpace;
   double mStartTime;

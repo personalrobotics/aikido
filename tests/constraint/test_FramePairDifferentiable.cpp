@@ -121,7 +121,7 @@ TEST_F(FramePairDifferentiableTest, ConstraintTypes)
   std::vector<aikido::constraint::ConstraintType> tsrTypes =
       tsr->getConstraintTypes();
   EXPECT_EQ(tsrTypes.size(), ctypes.size());
-  for(size_t i = 0; i < ctypes.size(); ++i)
+  for(std::size_t i = 0; i < ctypes.size(); ++i)
       EXPECT_EQ(tsrTypes[i], ctypes[i]);
 }
 

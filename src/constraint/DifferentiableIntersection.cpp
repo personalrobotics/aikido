@@ -31,7 +31,7 @@ DifferentiableIntersection::DifferentiableIntersection(
 }
 
 //==============================================================================
-size_t DifferentiableIntersection::getConstraintDimension() const
+std::size_t DifferentiableIntersection::getConstraintDimension() const
 {
   int dim = 0;
 

@@ -27,7 +27,7 @@ public:
   /// before this value for some trajectories.
   ///
   /// \return upper bound on the number of non-zero derivatives
-  virtual size_t getNumDerivatives() const = 0;
+  virtual std::size_t getNumDerivatives() const = 0;
 
   /// Duration of the trajectory. Note that \c getStartTime() may not be zero.
   ///

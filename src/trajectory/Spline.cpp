@@ -29,7 +29,7 @@ void Spline::addSegment(
   if (_duration <= 0.)
     throw std::invalid_argument("Duration must be positive.");
 
-  if (static_cast<size_t>(_coefficients.rows()) != mStateSpace->getDimension())
+  if (static_cast<std::size_t>(_coefficients.rows()) != mStateSpace->getDimension())
     throw std::invalid_argument("Incorrect number of dimensions.");
 
   if (_coefficients.cols() < 1)
@@ -61,7 +61,7 @@ void Spline::addSegment(const Eigen::MatrixXd& _coefficients, double _duration)
 }
 
 //==============================================================================
-size_t Spline::getNumSegments() const
+std::size_t Spline::getNumSegments() const
 {
   return mSegments.size();
 }
@@ -73,14 +73,14 @@ statespace::StateSpacePtr Spline::getStateSpace() const
 }
 
 //==============================================================================
-size_t Spline::getNumDerivatives() const
+std::size_t Spline::getNumDerivatives() const
 {
-  size_t numDerivatives = 0;
+  std::size_t numDerivatives = 0;
 
   for (const auto& segment : mSegments)
   {
     numDerivatives
-        = std::max<size_t>(numDerivatives, segment.mCoefficients.cols() - 1);
+        = std::max<std::size_t>(numDerivatives, segment.mCoefficients.cols() - 1);
   }
 
   return numDerivatives;
@@ -158,11 +158,11 @@ void Spline::evaluateDerivative(
 }
 
 //==============================================================================
-std::pair<size_t, double> Spline::getSegmentForTime(double _t) const
+std::pair<std::size_t, double> Spline::getSegmentForTime(double _t) const
 {
   auto segmentStartTime = mStartTime;
 
-  for (size_t isegment = 0; isegment < mSegments.size(); ++isegment)
+  for (std::size_t isegment = 0; isegment < mSegments.size(); ++isegment)
   {
     const auto& segment = mSegments[isegment];
     const auto nextSegmentStartTime = segmentStartTime + segment.mDuration;
@@ -202,20 +202,20 @@ Eigen::VectorXd Spline::evaluatePolynomial(
 }
 
 //==============================================================================
-size_t Spline::getNumWaypoints() const
+std::size_t Spline::getNumWaypoints() const
 {
   return getNumSegments() + 1;
 }
 
 //==============================================================================
-double Spline::getWaypointTime(size_t _index) const
+double Spline::getWaypointTime(std::size_t _index) const
 {
   double waypointTime = mStartTime;
 
   if (_index >= getNumWaypoints())
     throw std::domain_error("Waypoint index is out of bounds.");
 
-  for (size_t i = 0; i < _index; ++i)
+  for (std::size_t i = 0; i < _index; ++i)
     waypointTime += mSegments[i].mDuration;
 
   return waypointTime;
@@ -223,7 +223,7 @@ double Spline::getWaypointTime(size_t _index) const
 
 //==============================================================================
 void Spline::getWaypoint(
-    size_t _index, statespace::StateSpace::State* state) const
+    std::size_t _index, statespace::StateSpace::State* state) const
 {
   if (_index < getNumWaypoints())
   {
@@ -238,7 +238,7 @@ void Spline::getWaypoint(
 
 //==============================================================================
 void Spline::getWaypointDerivative(
-    size_t _index, int _derivative, Eigen::VectorXd& _tangentVector) const
+    std::size_t _index, int _derivative, Eigen::VectorXd& _tangentVector) const
 {
   if (_index < getNumWaypoints())
   {

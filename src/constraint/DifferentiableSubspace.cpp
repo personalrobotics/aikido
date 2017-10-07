@@ -8,7 +8,7 @@ namespace constraint {
 DifferentiableSubspace::DifferentiableSubspace(
     std::shared_ptr<statespace::CartesianProduct> _stateSpace,
     DifferentiablePtr _constraint,
-    size_t _index)
+    std::size_t _index)
   : mStateSpace(std::move(_stateSpace))
   , mConstraint(std::move(_constraint))
   , mIndex(_index)
@@ -47,7 +47,7 @@ std::vector<ConstraintType> DifferentiableSubspace::getConstraintTypes() const
 }
 
 //==============================================================================
-size_t DifferentiableSubspace::getConstraintDimension() const
+std::size_t DifferentiableSubspace::getConstraintDimension() const
 {
   return mConstraint->getConstraintDimension();
 }

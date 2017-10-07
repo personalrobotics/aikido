@@ -19,7 +19,7 @@ statespace::StateSpacePtr GeodesicInterpolator::getStateSpace() const
 }
 
 //==============================================================================
-size_t GeodesicInterpolator::getNumDerivatives() const
+std::size_t GeodesicInterpolator::getNumDerivatives() const
 {
   return 1;
 }
@@ -60,7 +60,7 @@ void GeodesicInterpolator::interpolate(
 void GeodesicInterpolator::getDerivative(
     const statespace::StateSpace::State* _from,
     const statespace::StateSpace::State* _to,
-    size_t _derivative,
+    std::size_t _derivative,
     double /*_alpha*/,
     Eigen::VectorXd& _tangentVector) const
 {

@@ -241,7 +241,7 @@ void TSR::setRNG(std::unique_ptr<common::RNG> rng)
 }
 
 //==============================================================================
-size_t TSR::getConstraintDimension() const
+std::size_t TSR::getConstraintDimension() const
 {
   return 6;
 }

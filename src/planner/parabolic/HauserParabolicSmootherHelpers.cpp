@@ -72,7 +72,7 @@ private:
 
 bool needsBlend(const ParabolicRamp::ParabolicRampND& rampNd)
 {
-  for (size_t idof = 0; idof < rampNd.dx1.size(); ++idof)
+  for (std::size_t idof = 0; idof < rampNd.dx1.size(); ++idof)
   {
     if (std::fabs(rampNd.dx1[idof]) > ParabolicRamp::EpsilonV)
     {
@@ -91,11 +91,11 @@ bool tryBlend(
   // blending can completely remove waypoints from the trajectory in the case
   // that two waypoints are closer than _blendRadius together - which means
   // that waypoint indicies can change between iterations of the algorithm.
-  const size_t numRamps = dynamicPath.ramps.size();
+  const std::size_t numRamps = dynamicPath.ramps.size();
   const double tMax = dynamicPath.GetTotalTime();
   double t = 0;
 
-  for (size_t iRamp = 0; iRamp < numRamps - 1; ++iRamp)
+  for (std::size_t iRamp = 0; iRamp < numRamps - 1; ++iRamp)
   {
     ParabolicRamp::ParabolicRampND& rampNd = dynamicPath.ramps[iRamp];
     t += rampNd.endTime;

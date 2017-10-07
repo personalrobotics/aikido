@@ -15,7 +15,7 @@ public:
         = std::make_shared<aikido::statespace::R<N>>());
 
   // Documentation inherited.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   // Documentation inherited.
   void getValue(

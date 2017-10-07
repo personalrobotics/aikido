@@ -9,7 +9,7 @@ RosJointStateClient::RosJointStateClient(
     dart::dynamics::SkeletonPtr _skeleton,
     ::ros::NodeHandle _nodeHandle,
     const std::string& _topicName,
-    size_t capacity)
+    std::size_t capacity)
   : mSkeleton{std::move(_skeleton)}
   , mBuffer{}
   , mCapacity{capacity}
@@ -43,7 +43,7 @@ Eigen::VectorXd RosJointStateClient::getLatestPosition(
   std::lock_guard<std::mutex> bufferLock{mMutex};
   Eigen::VectorXd position(_metaSkeleton.getNumDofs());
 
-  for (size_t idof = 0; idof < _metaSkeleton.getNumDofs(); ++idof)
+  for (std::size_t idof = 0; idof < _metaSkeleton.getNumDofs(); ++idof)
   {
     const auto dof = _metaSkeleton.getDof(idof);
     const auto it = mBuffer.find(dof->getName());
@@ -87,7 +87,7 @@ void RosJointStateClient::jointStateCallback(
   }
   // TODO: Also check for velocities.
 
-  for (size_t i = 0; i < _jointState.name.size(); ++i)
+  for (std::size_t i = 0; i < _jointState.name.size(); ++i)
   {
     const auto result = mBuffer.emplace(
         _jointState.name[i],

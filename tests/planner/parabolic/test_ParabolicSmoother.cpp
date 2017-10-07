@@ -119,7 +119,7 @@ protected:
     auto currState = mStateSpace->createState();
     auto nextState = mStateSpace->createState();
     Eigen::VectorXd currVec, nextVec;
-    for(size_t i=1; i<spline->getNumWaypoints();++i)
+    for(std::size_t i=1; i<spline->getNumWaypoints();++i)
     {
       spline->getWaypoint(i-1, currState);
       spline->getWaypoint(i, nextState);

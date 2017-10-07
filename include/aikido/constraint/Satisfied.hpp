@@ -26,7 +26,7 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   /// Returns \c 0.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   /// Returns an empty vector.
   std::vector<constraint::ConstraintType> getConstraintTypes() const override;

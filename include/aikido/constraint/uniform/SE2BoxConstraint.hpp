@@ -68,10 +68,10 @@ private:
 
   // DOFs of joint that have limits, in this case translational DOFs.
   // TODO: Confirm this with Gilwoo
-  size_t mRnDimension;
+  std::size_t mRnDimension;
 
   // DOF of the joint
-  size_t mDimension;
+  std::size_t mDimension;
 };
 
 } // namespace constraint

@@ -137,7 +137,7 @@ Quaternion sampleQuaternion(
 /// \param _numSeeds number of seeds to use for initialization
 /// \return new random number generators
 std::vector<std::unique_ptr<common::RNG>> cloneRNGsFrom(
-    RNG& _engine, size_t _numOutputs, size_t _numSeeds = NUM_DEFAULT_SEEDS);
+    RNG& _engine, std::size_t _numOutputs, std::size_t _numSeeds = NUM_DEFAULT_SEEDS);
 
 /// Deterministically create a random number generator of the same type as the
 /// input \c _engine. This is implemented by using \c _engine to generate \c
@@ -148,7 +148,7 @@ std::vector<std::unique_ptr<common::RNG>> cloneRNGsFrom(
 /// \param _numSeeds number of seeds to use for initialization
 /// \return new random number generators
 std::vector<std::unique_ptr<common::RNG>> cloneRNGFrom(
-    RNG& _engine, size_t _numSeeds = NUM_DEFAULT_SEEDS);
+    RNG& _engine, std::size_t _numSeeds = NUM_DEFAULT_SEEDS);
 
 } // namespace common
 } // namespace aikido

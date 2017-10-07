@@ -21,9 +21,9 @@ static testing::AssertionResult CompareResourceContents(
   if (!_resource)
     return testing::AssertionFailure() << "Resource is nullptr";
 
-  const size_t length = _resource->getSize();
+  const std::size_t length = _resource->getSize();
   std::vector<char> content_buffer(length, '\0');
-  const size_t read_length = _resource->read(content_buffer.data(), length, 1);
+  const std::size_t read_length = _resource->read(content_buffer.data(), length, 1);
   if (read_length != 1)
     return testing::AssertionFailure() << "Failed reading Resource.";
 

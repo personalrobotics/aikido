@@ -82,7 +82,7 @@ bool ShapeFrameMarker::update()
       = convertEigenToROSPose(mShapeFrame->getWorldTransform());
 
   // Incrementally update the pose if nothing else have changed.
-  const size_t newVersion = mShapeFrame->getVersion();
+  const std::size_t newVersion = mShapeFrame->getVersion();
   const bool do_update = mForceUpdate || newVersion != mVersion;
 
   if (!do_update)

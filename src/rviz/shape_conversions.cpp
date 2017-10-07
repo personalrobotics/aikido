@@ -158,8 +158,8 @@ bool convertShape(
 
   for (const Eigen::Vector2i& connection : connections)
   {
-    const size_t& i1 = connection[0];
-    const size_t& i2 = connection[1];
+    const std::size_t& i1 = connection[0];
+    const std::size_t& i2 = connection[1];
 
     if (i1 >= connections.size() || i2 >= connections.size())
     {

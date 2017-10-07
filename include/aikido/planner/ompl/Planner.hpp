@@ -309,7 +309,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     constraint::ProjectablePtr _boundsProjector,
     double _maxDistanceBtwValidityChecks,
     double _timeout,
-    size_t _maxEmptySteps,
+    std::size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj);
 
 /// Take an interpolated trajectory and convert it into OMPL geometric path
