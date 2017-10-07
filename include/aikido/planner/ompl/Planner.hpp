@@ -1,5 +1,5 @@
-#ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
-#define AIKIDO_OMPL_OMPLPLANNER_HPP_
+#ifndef AIKIDO_PLANNER_OMPL_OMPLPLANNER_HPP_
+#define AIKIDO_PLANNER_OMPL_OMPLPLANNER_HPP_
 
 #include <chrono>
 #include <utility> // std::pair
