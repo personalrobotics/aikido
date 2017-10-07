@@ -125,9 +125,12 @@ include(FindPkgConfig)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DART 6.2.0 REQUIRED
-  COMPONENTS optimizer-nlopt utils
-  OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
+find_package(DART 6.3.0 REQUIRED
+  COMPONENTS
+    optimizer-nlopt # for planner/optimization
+    utils
+  OPTIONAL_COMPONENTS
+    utils-urdf # for perception
   CONFIG
 )
 
