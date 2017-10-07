@@ -104,49 +104,49 @@ class StateSpaceWrapper : public Mintos::GeodesicManifold
  public:
   virtual ~StateSpaceWrapper() = default;
 
-  Math::Real Distance(const Mintos::Config& x, const Mintos::Config& y) override
+  Math::Real Distance(const Mintos::Config&, const Mintos::Config&) override
   {
     throw std::runtime_error("Distance is not implemented.");
   }
 
   void Interpolate(
-    const Mintos::Config& x, const Mintos::Config& y,
-    Math::Real u, Mintos::Config& out) override
+    const Mintos::Config&, const Mintos::Config&,
+    Math::Real, Mintos::Config&) override
   {
     throw std::runtime_error("Interpolate is not implemented.");
   }
 
   void InterpolateDeriv(
-    const Mintos::Config& a, const Mintos::Config& b,
-    Math::Real u, Math::Vector& dx) override
+    const Mintos::Config&, const Mintos::Config&,
+    Math::Real, Math::Vector&) override
   {
     throw std::runtime_error("InterpolateDeriv is not implemented.");
   }
 
   void InterpolateDerivA(
-    const Mintos::Config& a, const Mintos::Config& b,
-    Math::Real u, const Math::Vector& da, Math::Vector& dx) override
+    const Mintos::Config&, const Mintos::Config&,
+    Math::Real, const Math::Vector&, Math::Vector&) override
   {
     throw std::runtime_error("InterpolateDerivA is not implemented.");
   }
 
   void InterpolateDerivB(
-    const Mintos::Config& a, const Mintos::Config& b,
-    Math::Real u, const Math::Vector& db, Math::Vector& dx) override
+    const Mintos::Config&, const Mintos::Config&,
+    Math::Real, const Math::Vector&, Math::Vector&) override
   {
     throw std::runtime_error("InterpolateDerivB is not implemented.");
   }
 
   void InterpolateDeriv2(
-    const Mintos::Config& a, const Mintos::Config& b,
-    Math::Real u, Math::Vector& ddx) override
+    const Mintos::Config&, const Mintos::Config&,
+    Math::Real, Math::Vector&) override
   {
     throw std::runtime_error("InterpolateDeriv2 is not implemented.");
   }
 
   void Integrate(
-    const Mintos::Config& a, const Math::Vector& da,
-    Mintos::Config& b) override
+    const Mintos::Config&, const Math::Vector&,
+    Mintos::Config&) override
   {
     throw std::runtime_error("Integrate is not implemented.");
   }
