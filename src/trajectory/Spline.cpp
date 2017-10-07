@@ -29,7 +29,8 @@ void Spline::addSegment(
   if (_duration <= 0.)
     throw std::invalid_argument("Duration must be positive.");
 
-  if (static_cast<std::size_t>(_coefficients.rows()) != mStateSpace->getDimension())
+  if (static_cast<std::size_t>(_coefficients.rows())
+      != mStateSpace->getDimension())
     throw std::invalid_argument("Incorrect number of dimensions.");
 
   if (_coefficients.cols() < 1)
@@ -79,8 +80,8 @@ std::size_t Spline::getNumDerivatives() const
 
   for (const auto& segment : mSegments)
   {
-    numDerivatives
-        = std::max<std::size_t>(numDerivatives, segment.mCoefficients.cols() - 1);
+    numDerivatives = std::max<std::size_t>(
+        numDerivatives, segment.mCoefficients.cols() - 1);
   }
 
   return numDerivatives;

@@ -110,7 +110,8 @@ public:
   ///
   /// \param _index waypoint index
   /// \param[out] state of the waypoint at index \c _index
-  void getWaypoint(std::size_t _index, statespace::StateSpace::State* state) const;
+  void getWaypoint(
+      std::size_t _index, statespace::StateSpace::State* state) const;
 
   /// Gets the time of a waypoint.
   /// \param _index waypoint index
@@ -123,7 +124,9 @@ public:
   /// \param[out] _tangentVector output tangent vector in the local frame at
   /// index \c _index
   void getWaypointDerivative(
-      std::size_t _index, int _derivative, Eigen::VectorXd& _tangentVector) const;
+      std::size_t _index,
+      int _derivative,
+      Eigen::VectorXd& _tangentVector) const;
 
 private:
   struct PolynomialSegment

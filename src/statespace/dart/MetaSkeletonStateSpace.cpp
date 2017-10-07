@@ -105,7 +105,8 @@ MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 void MetaSkeletonStateSpace::convertPositionsToState(
     const Eigen::VectorXd& _positions, State* _state) const
 {
-  if (static_cast<std::size_t>(_positions.size()) != mMetaSkeleton->getNumDofs())
+  if (static_cast<std::size_t>(_positions.size())
+      != mMetaSkeleton->getNumDofs())
     throw std::invalid_argument("Incorrect number of positions.");
 
   for (std::size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
@@ -150,7 +151,8 @@ void MetaSkeletonStateSpace::convertStateToPositions(
     subspace->convertStateToPositions(substate, jointPositions);
 
     // TODO: Find a more efficient way to do this mapping.
-    for (std::size_t idof = 0; idof < static_cast<std::size_t>(jointPositions.size());
+    for (std::size_t idof = 0;
+         idof < static_cast<std::size_t>(jointPositions.size());
          ++idof)
     {
       const auto dof = joint->getDof(idof);

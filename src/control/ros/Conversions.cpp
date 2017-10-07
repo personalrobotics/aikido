@@ -1,7 +1,7 @@
 #include <aikido/control/ros/Conversions.hpp>
 
-#include <unordered_set>
 #include <sstream>
+#include <unordered_set>
 #include <dart/dynamics/Joint.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/common/StepSequence.hpp>
@@ -110,7 +110,8 @@ void extractJointTrajectoryPoint(
     Eigen::VectorXd& _accelerations,
     bool _accelerationsRequired,
     const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
-    const std::vector<std::size_t>& unspecifiedJoints,  // joints to get from startPositions
+    const std::vector<std::size_t>&
+        unspecifiedJoints, // joints to get from startPositions
     const Eigen::VectorXd& startPositions)
 {
   const auto& waypoint = _trajectory.points[_index];
@@ -133,18 +134,9 @@ void extractJointTrajectoryPoint(
   try
   {
     Eigen::VectorXd trajPos, trajVel, trajAccel;
+    checkVector("positions", positions, _numDofs, _positionsRequired, trajPos);
     checkVector(
-        "positions",
-        positions,
-        _numDofs,
-        _positionsRequired,
-        trajPos);
-    checkVector(
-        "velocities",
-        velocities,
-        _numDofs,
-        _velocitiesRequired,
-        trajVel);
+        "velocities", velocities, _numDofs, _velocitiesRequired, trajVel);
     checkVector(
         "accelerations",
         accelerations,
@@ -344,10 +336,12 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
 
   // Add unspecified joint mappings to rosJointToMetaSkeletonJoint
   std::vector<std::size_t> unspecifiedMetaSkeletonJoints;
-  unspecifiedMetaSkeletonJoints.reserve(numControlledJoints - numTrajectoryJoints);
+  unspecifiedMetaSkeletonJoints.reserve(
+      numControlledJoints - numTrajectoryJoints);
   if (paddingMode)
   {
-    for (std::size_t metaSkeletonIndex = 0; metaSkeletonIndex < numControlledJoints;
+    for (std::size_t metaSkeletonIndex = 0;
+         metaSkeletonIndex < numControlledJoints;
          ++metaSkeletonIndex)
     {
       if (specifiedMetaSkeletonJoints.find(metaSkeletonIndex)
