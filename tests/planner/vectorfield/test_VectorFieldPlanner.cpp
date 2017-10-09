@@ -59,13 +59,27 @@ public:
                                 Eigen::Vector3d(1.0, 1.0, 1.0),
                                 DOF_Z,
                                 false, false);
+    upperPositionLimits = Eigen::VectorXd(skel->getNumDofs());
+    upperPositionLimits << 3.1, 3.1, 3.1;
+    lowerPositionLimits = Eigen::VectorXd(skel->getNumDofs());
+    lowerPositionLimits << -3.1, -3.1, -3.1;
+    upperVelocityLimits = Eigen::VectorXd(skel->getNumDofs());
+    upperVelocityLimits << 10.0, 10.0, 10.0;
+    lowerVelocityLimits = Eigen::VectorXd(skel->getNumDofs());
+    lowerVelocityLimits << -10.0, -10.0, -10.0;
 
+    skel->setPositionUpperLimits(upperPositionLimits);
+    skel->setPositionLowerLimits(lowerPositionLimits);
+    skel->setVelocityUpperLimits(upperVelocityLimits);
+    skel->setVelocityLowerLimits(lowerVelocityLimits);
     stateSpace = std::make_shared<MetaSkeletonStateSpace>(skel);
     startVec = Eigen::VectorXd(skel->getNumDofs());
     goalVec = Eigen::VectorXd(skel->getNumDofs());
     passingConstraint = std::make_shared<PassingConstraint>(stateSpace);
     failingConstraint = std::make_shared<FailingConstraint>(stateSpace);
     interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
+
+
   }
 
   std::pair<Joint*, BodyNode*> add1DofJoint(SkeletonPtr skel,
@@ -211,6 +225,10 @@ public:
   SkeletonPtr skel;
   std::vector<std::pair<JointPtr, BodyNodePtr>> jn_bn;
   shared_ptr<MetaSkeletonStateSpace> stateSpace;
+  Eigen::VectorXd upperPositionLimits;
+  Eigen::VectorXd lowerPositionLimits;
+  Eigen::VectorXd upperVelocityLimits;
+  Eigen::VectorXd lowerVelocityLimits;
 
   // Arguments for planner  
   Eigen::VectorXd startVec;
@@ -231,17 +249,19 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   stateSpace->getMetaSkeleton()->setPositions(startVec);
   auto startState = stateSpace->createState();
   stateSpace->convertPositionsToState(startVec, startState);
-  Eigen::Isometry3d startTrans = stateSpace->getMetaSkeleton()->getBodyNodes().back()->getTransform();
+  dart::dynamics::BodyNodePtr bn = stateSpace->getMetaSkeleton()->getBodyNodes().back();
+  Eigen::Isometry3d startTrans = bn->getTransform();
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(stateSpace,
+                                                                    bn,
                                                                     passingConstraint,
                                                                     direction,
                                                                     distance);
 
   EXPECT_FALSE(traj==nullptr) << "Trajectory not found";
 
-    //Trajectory should have >= 1 waypoints
-    EXPECT_GE(traj->getNumWaypoints(),1)
+  //Trajectory should have >= 1 waypoints
+  EXPECT_GE(traj->getNumWaypoints(),1)
           << "Trajectory should have >= 1 waypoints";
 
     // Extract and evaluate first waypoint

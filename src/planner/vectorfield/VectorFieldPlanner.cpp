@@ -3,8 +3,8 @@
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
-#include "VectorFieldPlannerExceptions.hpp"
 #include "MoveHandStraightVectorField.hpp"
+#include "VectorFieldPlannerExceptions.hpp"
 
 using dart::common::make_unique;
 using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
@@ -14,7 +14,7 @@ namespace planner {
 namespace vectorfield {
 
 static void CheckDofLimits(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     Eigen::VectorXd const& q,
     Eigen::VectorXd const& qd)
 {
@@ -66,21 +66,21 @@ static void CheckDofLimits(
 }
 
 static void CheckCollision(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const aikido::constraint::TestablePtr& constraint)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    const aikido::constraint::TestablePtr constraint)
 {
   // Get current position
   auto state = stateSpace->getScopedStateFromMetaSkeleton();
   // Throw a termination if in collision
-  if(!constraint->isSatisfied(state))
+  if (!constraint->isSatisfied(state))
   {
     throw VectorFieldTerminated("state in collision");
   }
 }
 
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const aikido::constraint::TestablePtr& constraint,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    const aikido::constraint::TestablePtr constraint,
     double dt,
     const VectorFieldCallback& vectorFiledCb,
     const VectorFieldStatusCallback& statusCb)
@@ -101,6 +101,17 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 
   auto saver = MetaSkeletonStateSpaceSaver(stateSpace);
   DART_UNUSED(saver);
+
+  if (stateSpace->getMetaSkeleton()->getPositionUpperLimits()
+      == stateSpace->getMetaSkeleton()->getPositionLowerLimits())
+  {
+    throw std::invalid_argument("State space volume zero");
+  }
+  if (stateSpace->getMetaSkeleton()->getVelocityUpperLimits()
+      == stateSpace->getMetaSkeleton()->getVelocityLowerLimits())
+  {
+    throw std::invalid_argument("Velocity space volume zero");
+  }
 
   size_t const num_dof = stateSpace->getDimension();
 
@@ -248,8 +259,9 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 }
 
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const aikido::constraint::TestablePtr& constraint,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    const dart::dynamics::BodyNodePtr bn,
+    const aikido::constraint::TestablePtr constraint,
     const Eigen::Vector3d& direction,
     double distance,
     double position_tolerance,
@@ -259,18 +271,27 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   double dt = 0.01;
   double linear_gain = 10.0;
   double angular_gain = 10.0;
-  auto vectorfield = MoveHandStraightVectorField(stateSpace->getMetaSkeleton()->getBodyNodes().back(),
-                                                 direction/integration_interval, 0.0, integration_interval,
-                                                 dt, linear_gain, position_tolerance,
-                                                 angular_gain, angular_tolerance);
+
+  double linear_velocity = distance / integration_interval;
+
+  auto vectorfield = MoveHandStraightVectorField(
+      bn,
+      direction.normalized() * linear_velocity,
+      0.0,
+      integration_interval,
+      dt,
+      linear_gain,
+      position_tolerance,
+      angular_gain,
+      angular_tolerance);
 
   Eigen::VectorXd qd(stateSpace->getMetaSkeleton()->getNumDofs());
-  VectorFieldCallback vfCb = std::bind(vectorfield, stateSpace, integration_interval, &qd);
-  VectorFieldStatusCallback stCb = std::bind(vectorfield, stateSpace, integration_interval);
-  return planPathByVectorField(stateSpace, constraint, dt,
-                               vfCb, stCb);
+  VectorFieldCallback vfCb
+      = std::bind(vectorfield, stateSpace, integration_interval, &qd);
+  VectorFieldStatusCallback stCb
+      = std::bind(vectorfield, stateSpace, integration_interval);
+  return planPathByVectorField(stateSpace, constraint, dt, vfCb, stCb);
 }
-
 
 } // namespace vectorfield
 } // namespace planner

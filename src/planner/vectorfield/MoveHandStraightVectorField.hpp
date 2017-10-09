@@ -10,7 +10,7 @@ namespace vectorfield {
 class MoveHandStraightVectorField {
 public:
   MoveHandStraightVectorField(
-    dart::dynamics::BodyNode *bodynode,
+    dart::dynamics::BodyNodePtr bn,
     Eigen::Vector3d const &linear_velocity,
     double min_duration,
     double max_duration,
@@ -22,11 +22,11 @@ public:
   );
 
   bool operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     double t, Eigen::VectorXd *qd);
 
   VectorFieldPlannerStatus::Enum operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     double t);
 
 private:
