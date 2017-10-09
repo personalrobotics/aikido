@@ -128,13 +128,7 @@ public:
       int _derivative,
       Eigen::VectorXd& _tangentVector) const;
 
-  // Documentation inherited
-  std::size_t getNumParameters() const override;
-
-  // Documentation inherited
-  void setParameters(const Eigen::MatrixXd& parameters) override;
-
-private:
+protected:
   struct PolynomialSegment
   {
     statespace::StateSpace::State* mStartState;

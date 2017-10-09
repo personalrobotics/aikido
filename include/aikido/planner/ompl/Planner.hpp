@@ -335,4 +335,4 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
 
 #include "detail/Planner-impl.hpp"
 
-#endif
+#endif // AIKIDO_PLANNER_OMPL_OMPLPLANNER_HPP_

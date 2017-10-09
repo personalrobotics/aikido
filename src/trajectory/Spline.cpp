@@ -252,27 +252,5 @@ void Spline::getWaypointDerivative(
   }
 }
 
-//==============================================================================
-std::size_t Spline::getNumParameters() const
-{
-  size_t numParameters = 0u;
-
-  for (const auto& segment : mSegments)
-  {
-    assert(
-        static_cast<std::size_t>(segment.mCoefficients.rows())
-        == mStateSpace->getDimension());
-
-    numParameters += segment.mCoefficients.cols();
-  }
-
-  return numParameters * mStateSpace->getDimension();
-}
-
-//==============================================================================
-void Spline::setParameters(const Eigen::MatrixXd& /*parameters*/)
-{
-}
-
 } // namespace trajectory
 } // namespace aikido

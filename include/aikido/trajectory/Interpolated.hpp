@@ -68,12 +68,6 @@ public:
       int _derivative,
       Eigen::VectorXd& _tangentVector) const override;
 
-  // Documentation inherited
-  std::size_t getNumParameters() const override;
-
-  // Documentation inherited
-  void setParameters(const Eigen::MatrixXd& parameters) override;
-
 private:
   /// Waypoint in the trajectory.
   struct Waypoint

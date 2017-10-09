@@ -445,10 +445,8 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   std::pair<std::unique_ptr<trajectory::Interpolated>, bool> returnPair;
   return std::make_pair(std::move(returnTraj), shorten_success);
 }
+
 //==============================================================================
-
-// Following are helper functions.
-
 ::ompl::geometric::PathGeometric toOMPLTrajectory(
     const trajectory::InterpolatedPtr& _interpolatedTraj,
     ::ompl::base::SpaceInformationPtr _si)
@@ -472,6 +470,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   return returnPath;
 }
 
+//==============================================================================
 std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
     statespace::InterpolatorPtr _interpolator)
@@ -492,8 +491,7 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
   }
   return returnInterpolated;
 }
-//==============================================================================
 
-} // ns ompl
-} // ns planner
-} // ns aikido
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

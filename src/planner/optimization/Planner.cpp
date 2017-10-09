@@ -13,42 +13,31 @@ namespace optimization {
 
 //==============================================================================
 trajectory::InterpolatedPtr planOptimization(
-    const std::shared_ptr<statespace::StateSpace>& stateSpace,
+    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
-    const std::shared_ptr<statespace::Interpolator>& interpolator,
-    const std::shared_ptr<constraint::Testable>& constraint,
-    planner::PlanningResult& planningResult)
+    planner::PlanningResult& /*planningResult*/)
 {
-  if (stateSpace != constraint->getStateSpace())
-  {
-    throw std::invalid_argument(
-        "StateSpace of constraint not equal to StateSpace of planning space");
-  }
+  OptimizationBasedMotionPlanning planner(stateSpace);
 
-  aikido::common::VanDerCorput vdc{1, true, true, 0.02}; // TODO junk resolution
-  auto returnTraj
-      = std::make_shared<trajectory::Interpolated>(stateSpace, interpolator);
-  auto testState = stateSpace->createState();
+  planner.setStartState(startState);
+  planner.setGoalState(goalState);
 
-  for (const auto alpha : vdc)
-  {
-    interpolator->interpolate(startState, goalState, alpha, testState);
-    if (!constraint->isSatisfied(testState))
-    {
-      planningResult.message = "Collision detected";
-      return nullptr;
-    }
-  }
-
-  returnTraj->addWaypoint(0, startState);
-  returnTraj->addWaypoint(1, goalState);
+  auto returnTraj = planner.plan();
 
   return returnTraj;
 }
 
 //==============================================================================
-bool OptimizationBasedMotionPlanning::plan()
+OptimizationBasedMotionPlanning::OptimizationBasedMotionPlanning(
+    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace)
+  : mStateSpace(stateSpace)
+{
+  // TODO(JS)
+}
+
+//==============================================================================
+trajectory::InterpolatedPtr OptimizationBasedMotionPlanning::plan()
 {
   if (nullptr == mSolver)
   {
@@ -90,11 +79,108 @@ bool OptimizationBasedMotionPlanning::plan()
   //    skel->getDof(i)->setVelocity(0.0);
 
   //  Eigen::VectorXd originalPositions = getPositions();
-  bool wasSolved = mSolver->solve();
+  /*bool wasSolved =*/mSolver->solve();
   //  setPositions(originalPositions);
   //  skel->setVelocities(originalVelocities);
 
-  return wasSolved;
+  return nullptr;
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::setVariables(
+    const OptimizationVariables* variables)
+{
+  if (!variables)
+  {
+    // TODO(JS): warning message
+    return;
+  }
+
+  mVariables = variables->clone();
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::setStartState(
+    const statespace::StateSpace::State* startState)
+{
+  mStartState = startState;
+}
+
+//==============================================================================
+const statespace::StateSpace::State*
+OptimizationBasedMotionPlanning::getStartState() const
+{
+  return mStartState;
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::setGoalState(
+    const statespace::StateSpace::State* goalState)
+{
+  mGoalState = goalState;
+}
+
+//==============================================================================
+const statespace::StateSpace::State*
+OptimizationBasedMotionPlanning::getGoalState() const
+{
+  return mGoalState;
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::setObjective(
+    const std::shared_ptr<dart::optimizer::Function>& objective)
+{
+  mObjective = objective;
+}
+
+//==============================================================================
+const std::shared_ptr<dart::optimizer::Function>&
+OptimizationBasedMotionPlanning::getObjective()
+{
+  return mObjective;
+}
+
+//==============================================================================
+std::shared_ptr<const dart::optimizer::Function>
+OptimizationBasedMotionPlanning::getObjective() const
+{
+  return mObjective;
+}
+
+//==============================================================================
+const std::shared_ptr<dart::optimizer::Problem>&
+OptimizationBasedMotionPlanning::getProblem()
+{
+  return mProblem;
+}
+
+//==============================================================================
+std::shared_ptr<const dart::optimizer::Problem>
+OptimizationBasedMotionPlanning::getProblem() const
+{
+  return mProblem;
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::setSolver(
+    const std::shared_ptr<dart::optimizer::Solver>& newSolver)
+{
+  mSolver = newSolver;
+}
+
+//==============================================================================
+const std::shared_ptr<dart::optimizer::Solver>&
+OptimizationBasedMotionPlanning::getSolver()
+{
+  return mSolver;
+}
+
+//==============================================================================
+std::shared_ptr<const dart::optimizer::Solver>
+OptimizationBasedMotionPlanning::getSolver() const
+{
+  return mSolver;
 }
 
 } // namespace optimization
