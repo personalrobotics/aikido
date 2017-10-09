@@ -123,6 +123,8 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   ptrdiff_t index = 0;
   double t = 0;
   Eigen::VectorXd q = stateSpace->getMetaSkeleton()->getPositions();
+  auto startState = stateSpace->createState();
+  stateSpace->convertPositionsToState(q, startState);
   Eigen::VectorXd qd(num_dof);
   assert(static_cast<size_t>(q.size()) == num_dof);
 
@@ -246,6 +248,14 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const auto spline = problem.fit();
 
     // TODO:: convert spline to outputTrajectory
+    for(size_t i=0;i<spline.getCoefficients().size();i++)
+    {
+        auto coefficients = spline.getCoefficients()[i];
+        double timeStep = spline.getTimes()[i+1];
+        _outputTrajectory->addSegment(
+                    coefficients, timeStep, startState);
+
+    }
 
     return _outputTrajectory;
   }
