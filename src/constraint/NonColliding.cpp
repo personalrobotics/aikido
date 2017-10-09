@@ -44,7 +44,7 @@ statespace::StateSpacePtr NonColliding::getStateSpace() const
 
 //==============================================================================
 bool NonColliding::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state, bool _givenState) const
 {
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
@@ -60,7 +60,18 @@ bool NonColliding::isSatisfied(
         collisionOptions,
         &collisionResult);
     if (collision)
+    {
+      if(_givenState)
+      {
+        auto selfCollidingBodies = collisionResult.getCollidingBodyNodes();
+        for(const auto& elem: selfCollidingBodies)
+        {
+          std::cout << elem->getName() << " ";
+        }
+        std::cout << "in collision" << std::endl;
+      }
       return false;
+    }
   }
 
   for (auto group : groupsToSelfCheck)
@@ -68,7 +79,18 @@ bool NonColliding::isSatisfied(
     collision = collisionDetector->collide(
         group.get(), collisionOptions, &collisionResult);
     if (collision)
+    {
+      if(_givenState)
+      {
+        auto selfCollidingBodies = collisionResult.getCollidingBodyNodes();
+        for(const auto& elem: selfCollidingBodies)
+        {
+          std::cout << elem->getName() << " ";
+        }
+        std::cout << "in collision" << std::endl;
+      }
       return false;
+    }
   }
   return true;
 }

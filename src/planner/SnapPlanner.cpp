@@ -17,6 +17,10 @@ trajectory::InterpolatedPtr planSnap(
     const std::shared_ptr<aikido::constraint::Testable>& constraint,
     aikido::planner::PlanningResult& planningResult)
 {
+
+  if(!(constraint->isSatisfied(startState, true)))
+    throw std::invalid_argument("Start State in Collision");
+
   if (stateSpace != constraint->getStateSpace())
   {
     throw std::invalid_argument(

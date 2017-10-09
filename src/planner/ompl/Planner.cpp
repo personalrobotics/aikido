@@ -218,6 +218,10 @@ trajectory::InterpolatedPtr planCRRT(
     double _maxDistanceBtwProjections,
     double _minStepsize)
 {
+
+  if(!(_validityConstraint->isSatisfied(_start, true)))
+    throw std::invalid_argument("Start State in Collision");
+
   if (_trajConstraint == nullptr)
   {
     throw std::invalid_argument("Trajectory constraint is nullptr.");
@@ -303,6 +307,10 @@ trajectory::InterpolatedPtr planCRRTConnect(
     double _minStepsize,
     double _minTreeConnectionDistance)
 {
+
+  if(!(_validityConstraint->isSatisfied(_start, true)))
+    throw std::invalid_argument("Start State in Collision");
+
   if (_trajConstraint == nullptr)
   {
     throw std::invalid_argument("Trajectory constraint is nullptr.");
@@ -424,7 +432,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
   do
   {
-
     bool const shortened
         = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
     if (shortened)

@@ -24,6 +24,10 @@ trajectory::InterpolatedPtr planOMPL(
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks)
 {
+
+  if(!(_validityConstraint->isSatisfied(_start, true)))
+    throw std::invalid_argument("Start State in Collision");
+
   // Create a SpaceInformation.  This function will ensure state space matching
   auto si = getSpaceInformation(
       _stateSpace,
@@ -73,6 +77,10 @@ trajectory::InterpolatedPtr planOMPL(
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks)
 {
+
+  if(!(_validityConstraint->isSatisfied(_start, true)))
+    throw std::invalid_argument("Start State in Collision");
+
   if (_goalTestable == nullptr)
   {
     throw std::invalid_argument("Testable goal is nullptr.");

@@ -23,7 +23,7 @@ public:
 
   // Documentation inherited.
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* state) const override;
+      const aikido::statespace::StateSpace::State* state, bool _givenState = false) const override;
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;

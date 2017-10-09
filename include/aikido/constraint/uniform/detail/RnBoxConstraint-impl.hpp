@@ -175,7 +175,7 @@ std::vector<ConstraintType> RBoxConstraint<N>::getConstraintTypes() const
 //==============================================================================
 template <int N>
 bool RBoxConstraint<N>::isSatisfied(
-    const statespace::StateSpace::State* state) const
+    const statespace::StateSpace::State* state, bool /*_givenState*/) const
 {
   const auto value = mSpace->getValue(
       static_cast<const typename statespace::R<N>::State*>(state));

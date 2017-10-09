@@ -36,7 +36,7 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
-  bool isSatisfied(const statespace::StateSpace::State* state) const override;
+  bool isSatisfied(const statespace::StateSpace::State* state, bool _givenState = false) const override;
 
   // Documentation inherited.
   bool project(

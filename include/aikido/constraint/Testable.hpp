@@ -15,7 +15,11 @@ public:
 
   /// Returns true if state satisfies this constraint.
   virtual bool isSatisfied(
-      const statespace::StateSpace::State* _state) const = 0;
+      const statespace::StateSpace::State* _state, bool _givenState = false) const = 0;
+
+  // /// Returns true if state satisfies this constraint.
+  // virtual bool isSatisfiedGivenState(
+  //     const statespace::StateSpace::State* _state) const = 0;
 
   /// Returns StateSpace in which this constraint operates.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
