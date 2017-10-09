@@ -90,8 +90,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   using dart::dynamics::DegreeOfFreedom;
   using dart::dynamics::DegreeOfFreedomPtr;
   using aikido::trajectory::Spline;
-  using CubicSplineProblem
-      = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+
 
   struct Knot
   {
@@ -224,8 +223,12 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 
     auto _outputTrajectory
         = make_unique<aikido::trajectory::Spline>(stateSpace);
+
+    using CubicSplineProblem
+        = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
+
     CubicSplineProblem problem(times, 4, num_dof);
-    for (size_t iknot = 0; iknot < cache_index; ++iknot)
+    for (int iknot = 0; iknot < cache_index; ++iknot)
     {
       problem.addConstantConstraint(iknot, 0, knots[iknot].values.row(0));
 
@@ -268,7 +271,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double angular_tolerance,
     double integration_interval)
 {
-  double dt = 0.01;
+  double dt = 0.1;
   double linear_gain = 10.0;
   double angular_gain = 10.0;
 
@@ -285,12 +288,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       angular_gain,
       angular_tolerance);
 
-  Eigen::VectorXd qd(stateSpace->getMetaSkeleton()->getNumDofs());
-  VectorFieldCallback vfCb
-      = std::bind(vectorfield, stateSpace, integration_interval, &qd);
-  VectorFieldStatusCallback stCb
-      = std::bind(vectorfield, stateSpace, integration_interval);
-  return planPathByVectorField(stateSpace, constraint, dt, vfCb, stCb);
+  return planPathByVectorField(stateSpace, constraint, dt, vectorfield, vectorfield);
 }
 
 } // namespace vectorfield
