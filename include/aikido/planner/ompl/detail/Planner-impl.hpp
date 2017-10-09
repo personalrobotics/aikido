@@ -25,6 +25,7 @@ trajectory::InterpolatedPtr planOMPL(
     double _maxDistanceBtwValidityChecks)
 {
 
+  // Terminate if the start state is in collision
   if(!(_validityConstraint->isSatisfied(_start, true)))
     throw std::invalid_argument("Start State in Collision");
 
