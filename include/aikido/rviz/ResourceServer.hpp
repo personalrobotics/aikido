@@ -84,6 +84,8 @@ private:
       unsigned int code,
       const std::string& message);
 
+  // This must match MHD_ContentReaderCallback (i.e. ssize_t and size_t rather
+  // than std::size_t).
   static ssize_t resourceReaderCallback(
       void* cls, uint64_t pos, char* buf, std::size_t max);
 
