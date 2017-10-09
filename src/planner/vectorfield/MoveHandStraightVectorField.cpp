@@ -64,7 +64,7 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
   assert(min_duration >= 0);
   assert(max_duration >= min_duration);
   assert(dt >= 0);
-  assert(linear_velocity.all() > 0);
+  assert(linear_velocity.all() >= 0);
   assert(linear_gain >= 0);
   assert(linear_tolerance > 0);
   assert(rotation_gain >= 0);

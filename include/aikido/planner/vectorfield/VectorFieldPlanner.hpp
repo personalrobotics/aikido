@@ -37,11 +37,14 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const VectorFieldCallback& vectorFiledCb,
     const VectorFieldStatusCallback& statusCb);
 
-std::unique_ptr<aikido::trajectory::Spline> planStrightLine(
+std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     const aikido::constraint::TestablePtr& constraint,
-    const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState);
+    const Eigen::Vector3d& direction,
+    double distance,
+    double position_tolerance=0.01,
+    double angular_tolerance=0.15,
+    double integration_interval=10.0);
 
 } // namespace vectorfield
 } // namespace planner

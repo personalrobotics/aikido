@@ -247,17 +247,27 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   }
 }
 
-std::unique_ptr<aikido::trajectory::Spline> planStrightLine(
+std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     const aikido::constraint::TestablePtr& constraint,
-    const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState)
+    const Eigen::Vector3d& direction,
+    double distance,
+    double position_tolerance,
+    double angular_tolerance,
+    double integration_interval)
 {
-  auto vectorfield = MoveHandStraightVectorField(nullptr, Eigen::Vector3d(), 0, 0, 0);
-  Eigen::VectorXd tmp;
-  VectorFieldCallback vfCb = std::bind(vectorfield, stateSpace, 0.0, &tmp);
-  VectorFieldStatusCallback stCb = std::bind(vectorfield, stateSpace, 0.0);
-  return planPathByVectorField(stateSpace, constraint, 0.0,
+  double dt = 0.01;
+  double linear_gain = 10.0;
+  double angular_gain = 10.0;
+  auto vectorfield = MoveHandStraightVectorField(stateSpace->getMetaSkeleton()->getBodyNodes().back(),
+                                                 direction/integration_interval, 0.0, integration_interval,
+                                                 dt, linear_gain, position_tolerance,
+                                                 angular_gain, angular_tolerance);
+
+  Eigen::VectorXd qd(stateSpace->getMetaSkeleton()->getNumDofs());
+  VectorFieldCallback vfCb = std::bind(vectorfield, stateSpace, integration_interval, &qd);
+  VectorFieldStatusCallback stCb = std::bind(vectorfield, stateSpace, integration_interval);
+  return planPathByVectorField(stateSpace, constraint, dt,
                                vfCb, stCb);
 }
 
