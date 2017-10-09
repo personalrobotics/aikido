@@ -300,7 +300,7 @@ int ResourceServer::queueHttpError(
 
 //==============================================================================
 ssize_t ResourceServer::resourceReaderCallback(
-    void* cls, uint64_t pos, char* buf, std::size_t max)
+    void* cls, uint64_t pos, char* buf, size_t max)
 {
   auto resourceRequest = reinterpret_cast<ResourceRequest*>(cls);
 
