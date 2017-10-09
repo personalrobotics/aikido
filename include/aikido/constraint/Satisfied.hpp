@@ -39,12 +39,6 @@ public:
       const statespace::StateSpace::State* state,
       bool _givenState = false) const override;
 
-  // /// Returns \c true.
-  // ///
-  // /// \param state a state in \c getStateSpace()
-  // bool isSatisfiedGivenState(const statespace::StateSpace::State* state)
-  // const override;
-
   /// Sets \c _out to \c _s.
   ///
   /// \param _s input state

@@ -51,9 +51,6 @@ public:
       const aikido::statespace::StateSpace::State* _state,
       bool _givenState = false) const override;
 
-  // bool isSatisfiedGivenState(
-  //     const aikido::statespace::StateSpace::State* _state) const override;
-
   /// Checks collision between group1 and group2.
   /// \param group1 First collision group.
   /// \param group2 Second collision group.
