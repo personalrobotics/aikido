@@ -17,6 +17,7 @@ target_link_libraries("${PROJECT_NAME}_planner_optimization"
     "${PROJECT_NAME}_distance"
     "${PROJECT_NAME}_statespace"
     "${PROJECT_NAME}_trajectory"
+    "${PROJECT_NAME}_planner"
     ${DART_LIBRARIES}
     ${OMPL_LIBRARIES}
 )

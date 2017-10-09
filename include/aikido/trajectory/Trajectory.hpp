@@ -66,6 +66,13 @@ public:
   /// \param[out] _tangentVector output tangent vector in the local frame
   virtual void evaluateDerivative(
       double _t, int _derivative, Eigen::VectorXd& _tangentVector) const = 0;
+
+  virtual std::size_t getNumParameters() const = 0;
+
+  virtual void setParameters(const Eigen::MatrixXd& parameters) = 0;
+
+  // TODO(JS): add option whether col-major or row-major
+  void setParameters(const Eigen::VectorXd& parameters);
 };
 
 using TrajectoryPtr = std::shared_ptr<Trajectory>;

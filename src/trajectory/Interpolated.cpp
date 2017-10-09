@@ -143,6 +143,17 @@ void Interpolated::evaluateDerivative(
 }
 
 //==============================================================================
+std::size_t Interpolated::getNumParameters() const
+{
+  return getNumWaypoints() * mStateSpace->getDimension();
+}
+
+//==============================================================================
+void Interpolated::setParameters(const Eigen::MatrixXd& /*parameters*/)
+{
+}
+
+//==============================================================================
 void Interpolated::addWaypoint(double _t, const State* _state)
 {
   State* state = mStateSpace->allocateState();
