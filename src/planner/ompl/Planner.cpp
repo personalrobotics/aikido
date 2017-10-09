@@ -219,7 +219,7 @@ trajectory::InterpolatedPtr planCRRT(
     double _minStepsize)
 {
 
-  if(!(_validityConstraint->isSatisfied(_start, true)))
+  if (!(_validityConstraint->isSatisfied(_start, true)))
     throw std::invalid_argument("Start State in Collision");
 
   if (_trajConstraint == nullptr)
@@ -308,7 +308,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
     double _minTreeConnectionDistance)
 {
 
-  if(!(_validityConstraint->isSatisfied(_start, true)))
+  if (!(_validityConstraint->isSatisfied(_start, true)))
     throw std::invalid_argument("Start State in Collision");
 
   if (_trajConstraint == nullptr)

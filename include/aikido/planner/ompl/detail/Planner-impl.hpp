@@ -26,7 +26,7 @@ trajectory::InterpolatedPtr planOMPL(
 {
 
   // Terminate if the start state is in collision
-  if(!(_validityConstraint->isSatisfied(_start, true)))
+  if (!(_validityConstraint->isSatisfied(_start, true)))
     throw std::invalid_argument("Start State in Collision");
 
   // Create a SpaceInformation.  This function will ensure state space matching
@@ -79,7 +79,7 @@ trajectory::InterpolatedPtr planOMPL(
     double _maxDistanceBtwValidityChecks)
 {
 
-  if(!(_validityConstraint->isSatisfied(_start, true)))
+  if (!(_validityConstraint->isSatisfied(_start, true)))
     throw std::invalid_argument("Start State in Collision");
 
   if (_goalTestable == nullptr)

@@ -35,12 +35,15 @@ public:
   ///
   /// \param state a state in \c getStateSpace()
   /// \param _givenState true if state is user-provided
-  bool isSatisfied(const statespace::StateSpace::State* state, bool _givenState = false) const override;
+  bool isSatisfied(
+      const statespace::StateSpace::State* state,
+      bool _givenState = false) const override;
 
   // /// Returns \c true.
   // ///
   // /// \param state a state in \c getStateSpace()
-  // bool isSatisfiedGivenState(const statespace::StateSpace::State* state) const override;
+  // bool isSatisfiedGivenState(const statespace::StateSpace::State* state)
+  // const override;
 
   /// Sets \c _out to \c _s.
   ///

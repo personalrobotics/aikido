@@ -30,7 +30,9 @@ public:
   ///        constraint's metaskeketon. This state's StateSpace should match
   ///        StateSpace returend by getStateSpace().
   /// \param _givenState true if state is user-provided
-  bool isSatisfied(const statespace::StateSpace::State* _state, bool _givenState = false) const override;
+  bool isSatisfied(
+      const statespace::StateSpace::State* _state,
+      bool _givenState = false) const override;
 
   // Documentation inhereted
   std::shared_ptr<statespace::StateSpace> getStateSpace() const override;

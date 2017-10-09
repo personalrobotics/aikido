@@ -61,10 +61,10 @@ bool NonColliding::isSatisfied(
         &collisionResult);
     if (collision)
     {
-      if(_givenState)
+      if (_givenState)
       {
         auto selfCollidingBodies = collisionResult.getCollidingBodyNodes();
-        for(const auto& elem: selfCollidingBodies)
+        for (const auto& elem : selfCollidingBodies)
         {
           std::cout << elem->getName() << " ";
         }
@@ -80,10 +80,10 @@ bool NonColliding::isSatisfied(
         group.get(), collisionOptions, &collisionResult);
     if (collision)
     {
-      if(_givenState)
+      if (_givenState)
       {
         auto selfCollidingBodies = collisionResult.getCollidingBodyNodes();
-        for(const auto& elem: selfCollidingBodies)
+        for (const auto& elem : selfCollidingBodies)
         {
           std::cout << elem->getName() << " ";
         }
