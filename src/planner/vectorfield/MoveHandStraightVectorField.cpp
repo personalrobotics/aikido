@@ -194,7 +194,7 @@ VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
   }
 
   // Check if we've reached the target.
-  if (t >= max_duration_)
+  if (t > max_duration_)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }

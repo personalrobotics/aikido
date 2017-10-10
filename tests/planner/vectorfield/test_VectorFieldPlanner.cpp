@@ -50,7 +50,7 @@ public:
   };
 
   VectorFieldPlannerTest()
-      : errorTolerance(0.01)
+      : errorTolerance(1e-4)
   {
     skel = createThreeLinkRobot(Eigen::Vector3d(1.0, 1.0, 1.0),
                                 DOF_X,
@@ -244,13 +244,14 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
   Eigen::Vector3d direction;
   direction << 0., 0., 1.;
-  double distance = 0.1;
+  double distance = 1.0;
 
   stateSpace->getMetaSkeleton()->setPositions(startVec);
   auto startState = stateSpace->createState();
   stateSpace->convertPositionsToState(startVec, startState);
   dart::dynamics::BodyNodePtr bn = stateSpace->getMetaSkeleton()->getBodyNodes().back();
   Eigen::Isometry3d startTrans = bn->getTransform();
+  Eigen::VectorXd startVec = startTrans.translation();
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(stateSpace,
                                                                     bn,
@@ -264,37 +265,36 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   EXPECT_GE(traj->getNumWaypoints(),1)
           << "Trajectory should have >= 1 waypoints";
 
-    // Extract and evaluate first waypoint
-    auto firstWayPoint = stateSpace->createState();
-    traj->getWaypoint(0, firstWayPoint);
-    auto testStartState = static_cast<const MetaSkeletonStateSpace::State*>(firstWayPoint);
-    Eigen::VectorXd testStart(stateSpace->getDimension());
-    Eigen::VectorXd referenceStart(stateSpace->getDimension());
-    stateSpace->convertStateToPositions(testStartState, testStart);
-    stateSpace->convertStateToPositions(startState, referenceStart);
-    EXPECT_TRUE(testStart.isApprox(referenceStart));
+  // Extract and evaluate first waypoint
+  auto firstWayPoint = stateSpace->createState();
+  traj->evaluate(0.0, firstWayPoint);
+  Eigen::VectorXd testStart(stateSpace->getDimension());
+  Eigen::VectorXd referenceStart(stateSpace->getDimension());
+  stateSpace->convertStateToPositions(firstWayPoint, testStart);
+  stateSpace->convertStateToPositions(startState, referenceStart);
+  EXPECT_TRUE( (testStart-referenceStart).norm() <= errorTolerance);
 
     double expectedDistance = 0.0;
-    for(size_t i=1; i<traj->getNumWaypoints(); i++)
+    int stepNum = 10;
+    double timeStep = traj->getDuration() / stepNum;
+    for(double t=traj->getStartTime(); t<=traj->getEndTime(); t+=timeStep)
     {
       auto waypoint = stateSpace->createState();
-      traj->getWaypoint(i, waypoint);
-      auto waypointState = static_cast<const MetaSkeletonStateSpace::State*>(waypoint);
+      traj->evaluate(t, waypoint);
 
-      stateSpace->setState(waypointState);
-
+      stateSpace->setState(waypoint);
       auto waypointTrans = stateSpace->getMetaSkeleton()->getBodyNodes().back()->getTransform();
       auto waypointVec = waypointTrans.translation();
 
       // update distance
-      expectedDistance = (testStart - waypointVec).norm();
+      expectedDistance = (startVec - waypointVec).norm();
 
       Eigen::Isometry3d expectedTrans = startTrans;
       expectedTrans.translation() += expectedDistance * direction;
       auto expectedVec = expectedTrans.translation();
 
       // Verify that the position is monotone
-      EXPECT_TRUE(waypointVec.isApprox(expectedVec, errorTolerance));
+      EXPECT_TRUE( (waypointVec-expectedVec).norm() <= errorTolerance );
     }
 
     // Verify the moving distance

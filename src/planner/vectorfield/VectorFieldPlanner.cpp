@@ -247,7 +247,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 
     const auto spline = problem.fit();
 
-    // TODO:: convert spline to outputTrajectory
+    // convert spline to outputTrajectory
     for(size_t i=0;i<spline.getCoefficients().size();i++)
     {
         auto coefficients = spline.getCoefficients()[i];
@@ -281,7 +281,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double angular_tolerance,
     double integration_interval)
 {
-  double dt = 0.1;
+  double dt = 0.01;
   double linear_gain = 10.0;
   double angular_gain = 10.0;
 
