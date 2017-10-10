@@ -33,6 +33,18 @@ protected:
 private:
 };
 
+class TrajectoryOptimizationVariables : virtual trajectory::Trajectory,
+                                        public OptimizationVariables
+{
+public:
+  TrajectoryOptimizationVariables() = default;
+
+  ~TrajectoryOptimizationVariables() = default;
+
+protected:
+private:
+};
+
 } // namespace optimization
 } // namespace planner
 } // namespace aikido

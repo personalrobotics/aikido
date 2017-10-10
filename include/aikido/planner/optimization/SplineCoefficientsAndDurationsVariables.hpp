@@ -12,8 +12,9 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-class SplineCoefficientsAndDurationsVariables : public OptimizationVariables,
-                                                public trajectory::Spline
+class SplineCoefficientsAndDurationsVariables
+    : public TrajectoryOptimizationVariables,
+      public trajectory::Spline
 {
 public:
   SplineCoefficientsAndDurationsVariables() = default;

@@ -3,6 +3,7 @@
 #
 set(sources 
   OptimizationInterpolated.cpp
+  OptimizationFunction.cpp
   OptimizationVariables.cpp
   Planner.cpp
   SplineCoefficientsVariables.cpp

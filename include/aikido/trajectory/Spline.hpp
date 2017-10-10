@@ -18,7 +18,7 @@ namespace trajectory {
 /// This trajectory does \b not guarantee any continuity (not even C0). It is
 /// the responsibility of the user to pass in continuous spline coefficients
 /// if continuity is desired.
-class Spline : public Trajectory
+class Spline : virtual Trajectory
 {
 public:
   /// Constructs an empty trajectory.

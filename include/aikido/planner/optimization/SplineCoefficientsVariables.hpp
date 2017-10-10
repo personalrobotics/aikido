@@ -12,7 +12,7 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-class SplineCoefficientsVariables : public OptimizationVariables,
+class SplineCoefficientsVariables : public TrajectoryOptimizationVariables,
                                     public trajectory::Spline
 {
 public:

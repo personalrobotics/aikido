@@ -5,6 +5,14 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
+SplineDurationsVariables::SplineDurationsVariables(
+    statespace::StateSpacePtr sspace, double startTime)
+  : trajectory::Trajectory(), Spline(sspace, startTime)
+{
+  // Do nothing
+}
+
+//==============================================================================
 std::shared_ptr<OptimizationVariables> SplineDurationsVariables::clone() const
 {
   auto cloned = std::make_shared<SplineDurationsVariables>(*this);
