@@ -144,7 +144,7 @@ public:
   }
 
   bool isSatisfied(
-    const aikido::statespace::StateSpace::State *_s, bool _givenState = false) const override
+    const aikido::statespace::StateSpace::State *_s, bool /*_givenState*/) const override
   {
     auto state =
         static_cast<const CartesianProduct::State *>(_s);
