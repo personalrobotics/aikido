@@ -63,8 +63,8 @@ bool NonColliding::isSatisfied(
     {
       if (_givenState)
       {
-        auto selfCollidingBodies = collisionResult.getCollidingBodyNodes();
-        for (const auto& elem : selfCollidingBodies)
+        auto collidingBodies = collisionResult.getCollidingBodyNodes();
+        for (const auto& elem : collidingBodies)
         {
           std::cout << elem->getName() << " ";
         }
@@ -87,7 +87,7 @@ bool NonColliding::isSatisfied(
         {
           std::cout << elem->getName() << " ";
         }
-        std::cout << "in collision" << std::endl;
+        std::cout << "in self-collision" << std::endl;
       }
       return false;
     }
