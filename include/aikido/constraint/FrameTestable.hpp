@@ -29,7 +29,10 @@ public:
   /// \param _state a MetaskeletonState to set the configuration of this
   ///        constraint's metaskeketon. This state's StateSpace should match
   ///        StateSpace returend by getStateSpace().
-  bool isSatisfied(const statespace::StateSpace::State* _state) const override;
+  /// \param _givenState true if state is user-provided
+  bool isSatisfied(
+      const statespace::StateSpace::State* _state,
+      bool _givenState = false) const override;
 
   // Documentation inhereted
   std::shared_ptr<statespace::StateSpace> getStateSpace() const override;

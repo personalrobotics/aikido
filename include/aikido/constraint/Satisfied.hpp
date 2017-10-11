@@ -34,7 +34,10 @@ public:
   /// Returns \c true.
   ///
   /// \param state a state in \c getStateSpace()
-  bool isSatisfied(const statespace::StateSpace::State* state) const override;
+  /// \param _givenState true if state is user-provided
+  bool isSatisfied(
+      const statespace::StateSpace::State* state,
+      bool _givenState = false) const override;
 
   /// Sets \c _out to \c _s.
   ///

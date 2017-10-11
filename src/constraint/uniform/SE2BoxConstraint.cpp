@@ -137,7 +137,7 @@ statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
 
 //==============================================================================
 bool SE2BoxConstraint::isSatisfied(
-    const statespace::StateSpace::State* state) const
+    const statespace::StateSpace::State* state, bool _givenState) const
 {
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);

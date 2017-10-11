@@ -26,7 +26,8 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* _state) const override;
+      const aikido::statespace::StateSpace::State* _state,
+      bool _givenState = false) const override;
 
 private:
   std::shared_ptr<statespace::CartesianProduct> mStateSpace;

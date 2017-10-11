@@ -144,7 +144,7 @@ public:
   }
 
   bool isSatisfied(
-    const aikido::statespace::StateSpace::State *_s) const override
+    const aikido::statespace::StateSpace::State *_s, bool /*_givenState*/) const override
   {
     auto state =
         static_cast<const CartesianProduct::State *>(_s);
@@ -180,7 +180,7 @@ public:
 
   // Documentation inherited
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State *_state) const override
+      const aikido::statespace::StateSpace::State *_state, bool _givenState = false) const override
   {
     auto cst = static_cast<const CartesianProduct::State *>(_state);
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);

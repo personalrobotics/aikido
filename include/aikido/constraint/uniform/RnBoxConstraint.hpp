@@ -46,7 +46,9 @@ public:
   std::vector<constraint::ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  bool isSatisfied(const statespace::StateSpace::State* state) const override;
+  bool isSatisfied(
+      const statespace::StateSpace::State* state,
+      bool _givenState = false) const override;
 
   // Documentation inherited.
   bool project(

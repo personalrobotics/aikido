@@ -53,7 +53,7 @@ statespace::StateSpacePtr CartesianProductTestable::getStateSpace() const
 
 //==============================================================================
 bool CartesianProductTestable::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state, bool _givenState) const
 {
   const auto state
       = static_cast<const statespace::CartesianProduct::State*>(_state);
@@ -61,7 +61,7 @@ bool CartesianProductTestable::isSatisfied(
   for (std::size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     auto subState = mStateSpace->getSubState<>(state, i);
-    if (!mConstraints[i]->isSatisfied(subState))
+    if (!mConstraints[i]->isSatisfied(subState, _givenState))
       return false;
   }
   return true;

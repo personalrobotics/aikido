@@ -14,8 +14,10 @@ public:
   virtual ~Testable() = default;
 
   /// Returns true if state satisfies this constraint.
+  /// \param _givenState: true if state is user-provided
   virtual bool isSatisfied(
-      const statespace::StateSpace::State* _state) const = 0;
+      const statespace::StateSpace::State* _state,
+      bool _givenState = false) const = 0;
 
   /// Returns StateSpace in which this constraint operates.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
