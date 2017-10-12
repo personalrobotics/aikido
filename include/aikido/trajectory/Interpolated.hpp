@@ -30,15 +30,15 @@ public:
   ///
   /// \param _index waypoint index
   /// \return state of the waypoint at index \c _index
-  const statespace::StateSpace::State* getWaypoint(size_t _index) const;
+  const statespace::StateSpace::State* getWaypoint(std::size_t _index) const;
 
   /// Gets the time of a waypoint.
   /// \param _index waypoint index
   /// \return time of the waypoint at index \c _index
-  double getWaypointTime(size_t _index) const;
+  double getWaypointTime(std::size_t _index) const;
 
   /// Gets the number of waypoints.
-  size_t getNumWaypoints() const;
+  std::size_t getNumWaypoints() const;
 
   // Documentation inherited
   aikido::statespace::StateSpacePtr getStateSpace() const override;
@@ -47,7 +47,7 @@ public:
   aikido::statespace::InterpolatorPtr getInterpolator() const;
 
   // Documentation inherited
-  size_t getNumDerivatives() const override;
+  std::size_t getNumDerivatives() const override;
 
   // Documentation inherited
   double getStartTime() const override;

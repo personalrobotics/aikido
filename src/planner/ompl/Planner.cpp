@@ -187,7 +187,7 @@ trajectory::InterpolatedPtr planOMPL(
           "Trajectory");
     }
 
-    for (size_t idx = 0; idx < path->getStateCount(); ++idx)
+    for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
     {
       const auto* st
           = static_cast<GeometricStateSpace::StateType*>(path->getState(idx));
@@ -386,7 +386,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     constraint::ProjectablePtr _boundsProjector,
     double _maxDistanceBtwValidityChecks,
     double _timeout,
-    size_t _maxEmptySteps,
+    std::size_t _maxEmptySteps,
     trajectory::InterpolatedPtr _originalTraj)
 {
   if (_timeout < 0)
@@ -420,7 +420,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   std::chrono::system_clock::time_point time_current;
   std::chrono::duration<double> const time_limit
       = std::chrono::duration<double>(_timeout);
-  size_t empty_steps = 0;
+  std::size_t empty_steps = 0;
 
   do
   {
@@ -463,7 +463,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
   ::ompl::geometric::PathGeometric returnPath{std::move(_si)};
 
-  for (size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx)
+  for (std::size_t idx = 0; idx < _interpolatedTraj->getNumWaypoints(); ++idx)
   {
     auto ompl_state = sspace->allocState(_interpolatedTraj->getWaypoint(idx));
     returnPath.append(ompl_state);
@@ -479,7 +479,7 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
   auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
       _interpolator->getStateSpace(), std::move(_interpolator));
 
-  for (size_t idx = 0; idx < _path.getStateCount(); ++idx)
+  for (std::size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {
     // Note that following static_cast is guaranteed to be safe because
     // GeometricPath defines a path through a GeometricStateSpace, which

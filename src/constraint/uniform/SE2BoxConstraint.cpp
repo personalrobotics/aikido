@@ -28,7 +28,7 @@ private:
       const Eigen::Vector3d& _lowerLimits,
       const Eigen::Vector3d& _upperLimits);
 
-  const size_t mDimension;
+  const std::size_t mDimension;
   std::shared_ptr<statespace::SE2> mSpace;
   std::unique_ptr<common::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
@@ -45,7 +45,7 @@ SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
 {
   mDistributions.reserve(mDimension);
 
-  for (size_t i = 0; i < mDimension; ++i)
+  for (std::size_t i = 0; i < mDimension; ++i)
     mDistributions.emplace_back(_lowerLimits[i], _upperLimits[i]);
 }
 
@@ -116,7 +116,7 @@ SE2BoxConstraint::SE2BoxConstraint(
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (mLowerLimits[i] > mUpperLimits[i])
     {
@@ -142,7 +142,7 @@ bool SE2BoxConstraint::isSatisfied(
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);
 
-  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (tangent[i] < mLowerLimits[i] || tangent[i] > mUpperLimits[i])
       return false;
@@ -158,7 +158,7 @@ bool SE2BoxConstraint::project(
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(s), tangent);
 
-  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (tangent[i] < mLowerLimits[i])
       tangent[i] = mLowerLimits[i];
@@ -178,7 +178,7 @@ SE2BoxConstraint::createSampleGenerator() const
   if (!mRng)
     throw std::invalid_argument("mRng is null.");
 
-  for (size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (!(std::isfinite(mLowerLimits[i]) && std::isfinite(mUpperLimits[i])))
     {

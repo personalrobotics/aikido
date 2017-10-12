@@ -40,7 +40,7 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   // Documentation inherited.
   std::vector<constraint::ConstraintType> getConstraintTypes() const override;

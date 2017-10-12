@@ -59,13 +59,13 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
   std::vector<std::shared_ptr<JointStateSpace>> spaces;
   spaces.reserve(_metaskeleton.getNumJoints());
 
-  for (size_t ijoint = 0; ijoint < _metaskeleton.getNumJoints(); ++ijoint)
+  for (std::size_t ijoint = 0; ijoint < _metaskeleton.getNumJoints(); ++ijoint)
   {
     const auto joint = _metaskeleton.getJoint(ijoint);
 
     // Verify that the joint is not missing any DOFs. This could alter the
     // topology of the space that we create.
-    for (size_t idof = 0; idof < joint->getNumDofs(); ++idof)
+    for (std::size_t idof = 0; idof < joint->getNumDofs(); ++idof)
     {
       const auto dof = joint->getDof(idof);
       if (_metaskeleton.getIndexOf(dof, false) == INVALID_INDEX)
@@ -105,10 +105,11 @@ MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
 void MetaSkeletonStateSpace::convertPositionsToState(
     const Eigen::VectorXd& _positions, State* _state) const
 {
-  if (static_cast<size_t>(_positions.size()) != mMetaSkeleton->getNumDofs())
+  if (static_cast<std::size_t>(_positions.size())
+      != mMetaSkeleton->getNumDofs())
     throw std::invalid_argument("Incorrect number of positions.");
 
-  for (size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
+  for (std::size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubspace<JointStateSpace>(isubspace);
     const auto joint = subspace->getJoint();
@@ -117,7 +118,7 @@ void MetaSkeletonStateSpace::convertPositionsToState(
     const auto numJointDofs = joint->getNumDofs();
     Eigen::VectorXd jointPositions(numJointDofs);
 
-    for (size_t idof = 0; idof < numJointDofs; ++idof)
+    for (std::size_t idof = 0; idof < numJointDofs; ++idof)
     {
       const auto dof = joint->getDof(idof);
       const auto dofIndex = mMetaSkeleton->getIndexOf(dof, false);
@@ -140,7 +141,7 @@ void MetaSkeletonStateSpace::convertStateToPositions(
 {
   _positions.resize(mMetaSkeleton->getNumDofs());
 
-  for (size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
+  for (std::size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubspace<JointStateSpace>(isubspace);
     const auto joint = subspace->getJoint();
@@ -150,7 +151,8 @@ void MetaSkeletonStateSpace::convertStateToPositions(
     subspace->convertStateToPositions(substate, jointPositions);
 
     // TODO: Find a more efficient way to do this mapping.
-    for (size_t idof = 0; idof < static_cast<size_t>(jointPositions.size());
+    for (std::size_t idof = 0;
+         idof < static_cast<std::size_t>(jointPositions.size());
          ++idof)
     {
       const auto dof = joint->getDof(idof);

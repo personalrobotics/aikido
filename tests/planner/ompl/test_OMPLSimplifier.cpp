@@ -29,7 +29,7 @@ namespace {
     
     if(traj.getNumWaypoints())
     {
-      for(size_t i = 0; i < traj.getNumWaypoints() - 1; ++i)
+      for(std::size_t i = 0; i < traj.getNumWaypoints() - 1; ++i)
       {
         traj.evaluate(i, stateCurrent);   
         traj.evaluate(i+1, stateNext);

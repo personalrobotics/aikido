@@ -35,7 +35,7 @@ public:
   ///        maxNumContacts = 1.)
   BarrettFingerKinematicSimulationSpreadCommandExecutor(
       std::array<::dart::dynamics::ChainPtr, 2> fingers,
-      size_t spread,
+      std::size_t spread,
       ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
       ::dart::collision::CollisionGroupPtr collideWith = nullptr,
       ::dart::collision::CollisionOption collisionOptions

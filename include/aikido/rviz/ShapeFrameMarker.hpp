@@ -41,7 +41,7 @@ private:
 
   bool mExists;
   bool mForceUpdate;
-  size_t mVersion;
+  std::size_t mVersion;
 
   bool mShowVisual;
   bool mShowCollision;

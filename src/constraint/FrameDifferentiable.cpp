@@ -42,7 +42,7 @@ FrameDifferentiable::FrameDifferentiable(
 }
 
 //==============================================================================
-size_t FrameDifferentiable::getConstraintDimension() const
+std::size_t FrameDifferentiable::getConstraintDimension() const
 {
   return mPoseConstraint->getConstraintDimension();
 }

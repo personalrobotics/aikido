@@ -159,7 +159,7 @@ void R<N>::setValue(State* _state, const typename R<N>::VectorNd& _value) const
 
 //==============================================================================
 template <int N>
-size_t R<N>::getStateSizeInBytes() const
+std::size_t R<N>::getStateSizeInBytes() const
 {
   return getDimension() * sizeof(double);
 }
@@ -200,7 +200,7 @@ void R<N>::compose(
 
 //==============================================================================
 template <int N>
-size_t R<N>::getDimension() const
+std::size_t R<N>::getDimension() const
 {
   if (N == Eigen::Dynamic)
     return mDimension;

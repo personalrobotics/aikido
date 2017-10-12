@@ -186,7 +186,7 @@ public:
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);
     auto val = subState.getValue();
 
-    for (size_t i = 0; i < 3; ++i) {
+    for (std::size_t i = 0; i < 3; ++i) {
       if (val[i] < mLowerBounds[i] || val[i] > mUpperBounds[i]) {
         return true;
       }

@@ -20,7 +20,7 @@ PolynomialConstraint<N>::PolynomialConstraint(
 
 //==============================================================================
 template <int N>
-size_t PolynomialConstraint<N>::getConstraintDimension() const
+std::size_t PolynomialConstraint<N>::getConstraintDimension() const
 {
   return 1;
 }

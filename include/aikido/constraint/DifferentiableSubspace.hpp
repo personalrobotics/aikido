@@ -19,7 +19,7 @@ public:
   DifferentiableSubspace(
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       DifferentiablePtr _constraint,
-      size_t _index);
+      std::size_t _index);
 
   virtual ~DifferentiableSubspace() = default;
 
@@ -30,7 +30,7 @@ public:
   std::vector<ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   // Documentation inherited.
   void getValue(const statespace::StateSpace::State* _s, Eigen::VectorXd& _out)
@@ -50,7 +50,7 @@ public:
 private:
   std::shared_ptr<statespace::CartesianProduct> mStateSpace;
   DifferentiablePtr mConstraint;
-  size_t mIndex;
+  std::size_t mIndex;
 };
 
 } // namespace constraint

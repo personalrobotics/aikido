@@ -75,7 +75,7 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 
   const auto stateMetaSkeleton = mStateSpace->getMetaSkeleton();
   const auto ikSkeleton = mInverseKinematics->getNode()->getSkeleton();
-  for (const size_t dofIndex : mInverseKinematics->getDofs())
+  for (const std::size_t dofIndex : mInverseKinematics->getDofs())
   {
     const auto dof = ikSkeleton->getDof(dofIndex);
     if (stateMetaSkeleton->getIndexOf(dof, false) == INVALID_INDEX)

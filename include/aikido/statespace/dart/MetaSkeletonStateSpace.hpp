@@ -46,7 +46,7 @@ public:
   /// \param _index index of a joint in the \c MetaSkeleton
   /// \return state space corresponding to \c _joint
   template <class Space = JointStateSpace>
-  std::shared_ptr<Space> getJointSpace(size_t _index) const;
+  std::shared_ptr<Space> getJointSpace(std::size_t _index) const;
 
   /// Converts DART \c MetaSkeleton positions, e.g. those returned by
   /// \c getPositions, to a \c State in this state space.

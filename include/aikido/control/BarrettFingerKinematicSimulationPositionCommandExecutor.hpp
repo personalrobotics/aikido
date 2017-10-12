@@ -42,8 +42,8 @@ public:
   ///        See dart/collison/Option.h for more information
   BarrettFingerKinematicSimulationPositionCommandExecutor(
       ::dart::dynamics::ChainPtr finger,
-      size_t proximal,
-      size_t distal,
+      std::size_t proximal,
+      std::size_t distal,
       ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
       ::dart::collision::CollisionGroupPtr collideWith = nullptr,
       ::dart::collision::CollisionOption collisionOptions

@@ -25,7 +25,7 @@ CartesianProductWeighted::CartesianProductWeighted(
   }
 
   mMetrics.reserve(_metrics.size());
-  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
+  for (std::size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     if (_metrics[i] == nullptr)
     {
@@ -66,7 +66,7 @@ CartesianProductWeighted::CartesianProductWeighted(
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
+  for (std::size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     if (mMetrics[i].first == nullptr)
     {
@@ -108,7 +108,7 @@ double CartesianProductWeighted::distance(
       = static_cast<const statespace::CartesianProduct::State*>(_state2);
 
   double dist = 0.0;
-  for (size_t i = 0; i < mMetrics.size(); ++i)
+  for (std::size_t i = 0; i < mMetrics.size(); ++i)
   {
     dist += mMetrics[i].second
             * mMetrics[i].first->distance(

@@ -21,7 +21,7 @@ namespace detail {
 //==============================================================================
 inline bool isLimited(const dart::dynamics::Joint* _joint)
 {
-  for (size_t i = 0; i < _joint->getNumDofs(); ++i)
+  for (std::size_t i = 0; i < _joint->getNumDofs(); ++i)
   {
     if (_joint->hasPositionLimit(i))
       return true;
@@ -36,7 +36,7 @@ inline Eigen::VectorXd getPositionLowerLimits(
   const auto dimension = _joint->getNumDofs();
   Eigen::VectorXd bounds(dimension);
 
-  for (size_t i = 0; i < dimension; ++i)
+  for (std::size_t i = 0; i < dimension; ++i)
     bounds[i] = _joint->getPositionLowerLimit(i);
 
   return bounds;
@@ -49,7 +49,7 @@ inline Eigen::VectorXd getPositionUpperLimits(
   const auto dimension = _joint->getNumDofs();
   Eigen::VectorXd bounds(dimension);
 
-  for (size_t i = 0; i < dimension; ++i)
+  for (std::size_t i = 0; i < dimension; ++i)
     bounds[i] = _joint->getPositionUpperLimit(i);
 
   return bounds;
