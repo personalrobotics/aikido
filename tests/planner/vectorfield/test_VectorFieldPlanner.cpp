@@ -304,8 +304,22 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
 }
 
-TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetCollisionTest)
+TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 {
+  Eigen::Vector3d direction;
+  direction << 0., 0., 0.;
+  double distance = 1.0;
 
+  stateSpace->getMetaSkeleton()->setPositions(startVec);
+  auto startState = stateSpace->createState();
+  stateSpace->convertPositionsToState(startVec, startState);
+  dart::dynamics::BodyNodePtr bn = stateSpace->getMetaSkeleton()->getBodyNodes().back();
 
+  EXPECT_THROW( aikido::planner::vectorfield::planToEndEffectorOffset(stateSpace,
+                                                                      bn,
+                                                                      passingConstraint,
+                                                                      direction,
+                                                                      distance),
+                std::runtime_error );
 }
+

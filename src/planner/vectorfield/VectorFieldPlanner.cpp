@@ -284,6 +284,18 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double angular_tolerance,
     double integration_interval)
 {
+  if( distance < 0.)
+  {
+    std::stringstream ss;
+    ss << "Distance must be non-negative; got " << distance << ".";
+    throw std::runtime_error(ss.str());
+  }
+
+  if( direction.norm() == 0.0 )
+  {
+    throw std::runtime_error("Direction vector is a zero vector");
+  }
+
   double dt = 0.1;
   double linear_gain = 10.0;
   double angular_gain = 10.0;
