@@ -117,7 +117,7 @@ bool MoveHandStraightVectorField::operator()(
       = linear_feedforward + linear_gain_ * linear_orthogonal_error;
 
   // TODO: This should be a parameter.
-  const double padding = 1e-3;
+  const double padding = 1e-5;
 
   // Use LBFGS to find joint angles that won't violate the joint limits.
   const Jacobian jacobian
@@ -194,7 +194,7 @@ VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
   }
 
   // Check if we've reached the target.
-  if (t > max_duration_)
+  if (t >= max_duration_)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }

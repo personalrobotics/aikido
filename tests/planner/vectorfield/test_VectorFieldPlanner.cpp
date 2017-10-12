@@ -274,31 +274,33 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   stateSpace->convertStateToPositions(startState, referenceStart);
   EXPECT_TRUE( (testStart-referenceStart).norm() <= errorTolerance);
 
-    double expectedDistance = 0.0;
-    int stepNum = 10;
-    double timeStep = traj->getDuration() / stepNum;
-    for(double t=traj->getStartTime(); t<=traj->getEndTime(); t+=timeStep)
-    {
-      auto waypoint = stateSpace->createState();
-      traj->evaluate(t, waypoint);
+  double expectedDistance = 0.0;
+  int stepNum = 10;
+  double timeStep = traj->getDuration() / stepNum;
+  std::cout << "start time " << traj->getStartTime() << std::endl;
+  std::cout << "end time " << traj->getEndTime() << std::endl;
+  for(double t=traj->getStartTime(); t<=traj->getEndTime(); t+=timeStep)
+  {
+    auto waypoint = stateSpace->createState();
+    traj->evaluate(t, waypoint);
 
-      stateSpace->setState(waypoint);
-      auto waypointTrans = stateSpace->getMetaSkeleton()->getBodyNodes().back()->getTransform();
-      auto waypointVec = waypointTrans.translation();
+    stateSpace->setState(waypoint);
+    auto waypointTrans = stateSpace->getMetaSkeleton()->getBodyNodes().back()->getTransform();
+    auto waypointVec = waypointTrans.translation();
 
-      // update distance
-      expectedDistance = (startVec - waypointVec).norm();
+    // update distance
+    expectedDistance = (startVec - waypointVec).norm();
 
-      Eigen::Isometry3d expectedTrans = startTrans;
-      expectedTrans.translation() += expectedDistance * direction;
-      auto expectedVec = expectedTrans.translation();
+    Eigen::Isometry3d expectedTrans = startTrans;
+    expectedTrans.translation() += expectedDistance * direction;
+    auto expectedVec = expectedTrans.translation();
 
-      // Verify that the position is monotone
-      EXPECT_TRUE( (waypointVec-expectedVec).norm() <= errorTolerance );
-    }
+    // Verify that the position is monotone
+    EXPECT_TRUE( (waypointVec-expectedVec).norm() <= errorTolerance );
+  }
 
-    // Verify the moving distance
-    EXPECT_NEAR(expectedDistance, distance, errorTolerance);
+  // Verify the moving distance
+  EXPECT_NEAR(expectedDistance, distance, errorTolerance);
 
 }
 

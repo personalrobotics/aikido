@@ -181,9 +181,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
       knot.values.row(1) = qd;
       knots.push_back(knot);
 
-      // Take a step.
-      q += dt * qd;
-      t += dt;
       index++;
 
       // Check if we should terminate.
@@ -193,6 +190,10 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
                  == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
       {
         cache_index = index;
+
+        // Take a step.
+        q += dt * qd;
+        t += dt;
       }
     }
   } while (termination_status != VectorFieldPlannerStatus::TERMINATE
@@ -248,13 +249,15 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const auto spline = problem.fit();
 
     // convert spline to outputTrajectory
-    for(size_t i=0;i<spline.getCoefficients().size();i++)
+    for(size_t i=0;i<spline.getNumKnots()-1;i++)
     {
-        auto coefficients = spline.getCoefficients()[i];
-        double timeStep = spline.getTimes()[i+1];
-        _outputTrajectory->addSegment(
-                    coefficients, timeStep, startState);
-
+      auto coefficients = spline.getCoefficients()[i];
+      double timeStep = spline.getTimes()[i];
+      double duration = spline.getTimes()[i+1] - spline.getTimes()[i];
+      auto currentVec = spline.evaluate(timeStep);
+      auto currentState = stateSpace->createState();
+      stateSpace->convertPositionsToState(currentVec, currentState);
+      _outputTrajectory->addSegment(coefficients, duration, currentState);
     }
 
     return _outputTrajectory;
@@ -281,7 +284,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double angular_tolerance,
     double integration_interval)
 {
-  double dt = 0.01;
+  double dt = 0.1;
   double linear_gain = 10.0;
   double angular_gain = 10.0;
 
