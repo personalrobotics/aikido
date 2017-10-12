@@ -1,9 +1,11 @@
 #ifndef AIKIDO_CONSTRAINT_NONCOLLIDING_HPP_
 #define AIKIDO_CONSTRAINT_NONCOLLIDING_HPP_
 
+#include <memory>
 #include <tuple>
 #include <vector>
 #include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/CollisionFilter.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -19,19 +21,6 @@ class NonColliding : public Testable
 {
 public:
   /// Constructs an empty constraint that uses \c _collisionDetector to test
-  /// for collision with default \c CollisionOptions. The default behavior is
-  /// terminate on first collision and use
-  /// a \c dart::collision::BodyNodeCollisionFilter. You should call \c
-  /// addPairWiseCheck and \c addSelfCheck to register collision checks before
-  /// calling \c isSatisfied.
-  ///
-  /// \param _statespace state space on which the constraint operates
-  /// \param _collisionDetector collision detector used to test for collision
-  NonColliding(
-      statespace::dart::MetaSkeletonStateSpacePtr _statespace,
-      std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector);
-
-  /// Constructs an empty constraint that uses \c _collisionDetector to test
   /// for collision. You should call \c addPairWiseCheck and \c addSelfCheck
   /// to register collision checks before calling \c isSatisfied.
   ///
@@ -41,7 +30,11 @@ public:
   NonColliding(
       statespace::dart::MetaSkeletonStateSpacePtr _statespace,
       std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
-      dart::collision::CollisionOption _collisionOptions);
+      dart::collision::CollisionOption _collisionOptions
+      = dart::collision::CollisionOption(
+          false,
+          1,
+          std::make_shared<dart::collision::BodyNodeCollisionFilter>()));
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;

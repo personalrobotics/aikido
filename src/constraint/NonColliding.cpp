@@ -1,24 +1,7 @@
 #include <aikido/constraint/NonColliding.hpp>
 
-#include <dart/dart.hpp>
-
-using dart::collision::BodyNodeCollisionFilter;
-
 namespace aikido {
 namespace constraint {
-
-//==============================================================================
-NonColliding::NonColliding(
-    statespace::dart::MetaSkeletonStateSpacePtr _statespace,
-    std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector)
-  : NonColliding(
-        std::move(_statespace),
-        std::move(_collisionDetector),
-        dart::collision::CollisionOption(
-            false, 1, std::make_shared<BodyNodeCollisionFilter>()))
-{
-  // Do nothing
-}
 
 //==============================================================================
 NonColliding::NonColliding(
