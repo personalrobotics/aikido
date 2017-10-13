@@ -35,11 +35,9 @@ TEST_F(SplineProblemTests, fit_ConstantConstraints)
   EXPECT_EIGEN_EQUAL(times, spline.getTimes(), EPSILON);
 
   Eigen::Matrix<double, 2, 4> coefficients1;
-  coefficients1 << 1., 0., 2., -1., 
-                   2., 0., 2., -1.;
+  coefficients1 << 1., 0., 2., -1., 2., 0., 2., -1.;
   Eigen::Matrix<double, 2, 4> coefficients2;
-  coefficients2 << 3., -4., 4., -1.,
-                   4., -4., 4., -1.;
+  coefficients2 << 3., -4., 4., -1., 4., -4., 4., -1.;
 
   EXPECT_EIGEN_EQUAL(coefficients1, spline.getCoefficients()[0], EPSILON);
   EXPECT_EIGEN_EQUAL(coefficients2, spline.getCoefficients()[1], EPSILON);
@@ -65,8 +63,8 @@ TEST_F(SplineProblemTests, fit_ContinuityConstraints)
   SplineProblem::Spline spline = problem.fit();
   EXPECT_EIGEN_EQUAL(times, spline.getTimes(), EPSILON);
 
-  // TODO: Check the coefficient matrices.
-#if  0
+// TODO: Check the coefficient matrices.
+#if 0
   EXPECT_EIGEN_EQUAL(coefficients1, spline.getCoefficients()[0], EPSILON);
   EXPECT_EIGEN_EQUAL(coefficients2, spline.getCoefficients()[1], EPSILON);
 #endif

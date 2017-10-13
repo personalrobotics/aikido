@@ -1,5 +1,5 @@
-#include <aikido/statespace/dart/WeldJoint.hpp>
 #include <gtest/gtest.h>
+#include <aikido/statespace/dart/WeldJoint.hpp>
 
 using namespace aikido;
 

@@ -10,7 +10,7 @@ using aikido::statespace::R1;
 TEST(Differentiable, GetValueAndJacobianDefault)
 {
 
-  PolynomialConstraint<1> p(Eigen::Vector3d(1,2,3));
+  PolynomialConstraint<1> p(Eigen::Vector3d(1, 2, 3));
 
   Eigen::VectorXd v(1);
   v(0) = -2;
@@ -25,7 +25,7 @@ TEST(Differentiable, GetValueAndJacobianDefault)
 
   Eigen::MatrixXd jacExpected;
   p.getJacobian(s1, jacExpected);
-  EXPECT_DOUBLE_EQ(-10, jacExpected(0,0));
+  EXPECT_DOUBLE_EQ(-10, jacExpected(0, 0));
 
   Eigen::VectorXd val;
   Eigen::MatrixXd jac;
@@ -35,5 +35,3 @@ TEST(Differentiable, GetValueAndJacobianDefault)
   EXPECT_TRUE(valExpected.isApprox(val));
   EXPECT_TRUE(jacExpected.isApprox(jac));
 }
-
-

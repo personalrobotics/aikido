@@ -1,10 +1,10 @@
-#include "PolynomialConstraint.hpp"
+#include <memory>
+#include <Eigen/Dense>
+#include <gtest/gtest.h>
 #include <aikido/constraint/DifferentiableIntersection.hpp>
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/statespace/Rn.hpp>
-#include <gtest/gtest.h>
-#include <Eigen/Dense>
-#include <memory>
+#include "PolynomialConstraint.hpp"
 
 using aikido::constraint::DifferentiableIntersection;
 using aikido::constraint::TSR;
@@ -20,19 +20,24 @@ TEST(DifferentiableIntersection, InvalidConstructor)
   std::shared_ptr<R1> rvss(new R1());
 
   // empty constraints
-  EXPECT_THROW(DifferentiableIntersection(constraints, rvss), std::invalid_argument);
+  EXPECT_THROW(
+      DifferentiableIntersection(constraints, rvss), std::invalid_argument);
 
   // null statespace
   StateSpacePtr space;
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector3d(1, 2, 3), rvss));
-  EXPECT_THROW(DifferentiableIntersection(constraints, space), std::invalid_argument);
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(
+          Eigen::Vector3d(1, 2, 3), rvss));
+  EXPECT_THROW(
+      DifferentiableIntersection(constraints, space), std::invalid_argument);
 
   // constraints have different space
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector3d(1, 2, 3), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(
+          Eigen::Vector3d(1, 2, 3), rvss));
   constraints.push_back(dart::common::make_aligned_shared<TSR>());
-  EXPECT_THROW(DifferentiableIntersection(constraints, rvss), std::invalid_argument);
+  EXPECT_THROW(
+      DifferentiableIntersection(constraints, rvss), std::invalid_argument);
 }
 
 TEST(DifferentiableIntersection, getValue)
@@ -41,12 +46,13 @@ TEST(DifferentiableIntersection, getValue)
   std::shared_ptr<R1> rvss(new R1());
 
   // constraint1: 1 + 2x + 3x^2
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector3d(1, 2, 3), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(
+          Eigen::Vector3d(1, 2, 3), rvss));
 
   // constraint2: 4 + 5x
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector2d(4, 5), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector2d(4, 5), rvss));
 
   Eigen::VectorXd v(1);
   v(0) = -2;
@@ -69,12 +75,13 @@ TEST(DifferentiableIntersection, getJacobian)
   std::shared_ptr<R1> rvss(new R1());
 
   // constraint1: 1 + 2x + 3x^2
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector3d(1, 2, 3), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(
+          Eigen::Vector3d(1, 2, 3), rvss));
 
   // constraint2: 4 + 5x
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector2d(4, 5), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector2d(4, 5), rvss));
 
   Eigen::VectorXd v(1);
   v(0) = -2;
@@ -100,12 +107,13 @@ TEST(DifferentiableIntersection, GetValueAndJacobianMatchValueAndJacobian)
   std::shared_ptr<R1> rvss(new R1());
 
   // constraint1: 1 + 2x + 3x^2
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector3d(1, 2, 3), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(
+          Eigen::Vector3d(1, 2, 3), rvss));
 
   // constraint2: 4 + 5x
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector2d(4, 5), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector2d(4, 5), rvss));
 
   auto s1 = rvss->createState();
   Eigen::VectorXd v(1);
@@ -133,12 +141,13 @@ TEST(DifferentiableIntersection, GetConstraintTypes)
   std::shared_ptr<R1> rvss(new R1());
 
   // constraint1: 1 + 2x + 3x^2
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector3d(1, 2, 3), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(
+          Eigen::Vector3d(1, 2, 3), rvss));
 
   // constraint2: 4 + 5x
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector2d(4, 5), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector2d(4, 5), rvss));
 
   DifferentiableIntersection stacked(constraints, rvss);
   auto constraintTypes = stacked.getConstraintTypes();
@@ -147,7 +156,7 @@ TEST(DifferentiableIntersection, GetConstraintTypes)
   EXPECT_EQ(constraintTypes.size(), 2);
 
   // Check the types
-  for (auto cType: constraintTypes)
+  for (auto cType : constraintTypes)
   {
     EXPECT_EQ(cType, aikido::constraint::ConstraintType::EQUALITY);
   }
@@ -159,12 +168,13 @@ TEST(DifferentiableIntersection, GetStateSpace)
   std::shared_ptr<R1> rvss(new R1());
 
   // constraint1: 1 + 2x + 3x^2
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector3d(1, 2, 3), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(
+          Eigen::Vector3d(1, 2, 3), rvss));
 
   // constraint2: 4 + 5x
-  constraints.push_back(std::make_shared<PolynomialConstraint<1>>(
-    Eigen::Vector2d(4, 5), rvss));
+  constraints.push_back(
+      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector2d(4, 5), rvss));
 
   DifferentiableIntersection stacked(constraints, rvss);
   auto space = stacked.getStateSpace();

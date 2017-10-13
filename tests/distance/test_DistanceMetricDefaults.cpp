@@ -1,8 +1,8 @@
-#include <aikido/distance/defaults.hpp>
 #include <aikido/distance/CartesianProductWeighted.hpp>
-#include <aikido/distance/SO3Angular.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
+#include <aikido/distance/SO3Angular.hpp>
+#include <aikido/distance/defaults.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 
 #include <gtest/gtest.h>
@@ -12,14 +12,12 @@ using namespace aikido::statespace;
 
 TEST(Defaults, CreateDistanceMetricForThrowsOnNull)
 {
-  EXPECT_THROW(createDistanceMetricFor<SO2>(nullptr),
-               std::invalid_argument);
-  EXPECT_THROW(createDistanceMetricFor<R1>(nullptr),
-               std::invalid_argument);
-  EXPECT_THROW(createDistanceMetricFor<SO3>(nullptr),
-               std::invalid_argument);
-  EXPECT_THROW(createDistanceMetricFor<CartesianProduct>(nullptr),
-               std::invalid_argument);
+  EXPECT_THROW(createDistanceMetricFor<SO2>(nullptr), std::invalid_argument);
+  EXPECT_THROW(createDistanceMetricFor<R1>(nullptr), std::invalid_argument);
+  EXPECT_THROW(createDistanceMetricFor<SO3>(nullptr), std::invalid_argument);
+  EXPECT_THROW(
+      createDistanceMetricFor<CartesianProduct>(nullptr),
+      std::invalid_argument);
 }
 
 TEST(Defaults, CreateDistanceMetricThrowsOnNull)
