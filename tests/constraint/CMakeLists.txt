@@ -124,7 +124,7 @@ target_link_libraries(test_NonColliding
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_Differentiable
-	PolynomialConstraint.cpp
+        PolynomialConstraint.cpp
   test_Differentiable.cpp)
 target_link_libraries(test_Differentiable
   "${PROJECT_NAME}_constraint")
@@ -133,3 +133,11 @@ aikido_add_test(test_RejectionSampleable
   test_RejectionSampleable.cpp)
 target_link_libraries(test_RejectionSampleable
   "${PROJECT_NAME}_constraint")
+
+format_add_sources(
+  MockConstraints.hpp
+  PolynomialConstraint.cpp
+  PolynomialConstraint.hpp
+  PolynomialConstraint-impl.hpp
+  SampleGeneratorCoverage.hpp
+)
