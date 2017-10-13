@@ -91,7 +91,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   using dart::dynamics::DegreeOfFreedomPtr;
   using aikido::trajectory::Spline;
 
-
   struct Knot
   {
     double t;
@@ -227,8 +226,8 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     auto _outputTrajectory
         = make_unique<aikido::trajectory::Spline>(stateSpace);
 
-    using CubicSplineProblem
-        = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
+    using CubicSplineProblem = aikido::common::
+        SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
 
     CubicSplineProblem problem(times, 4, num_dof);
     for (int iknot = 0; iknot < cache_index; ++iknot)
@@ -249,11 +248,11 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const auto spline = problem.fit();
 
     // convert spline to outputTrajectory
-    for(size_t i=0;i<spline.getNumKnots()-1;i++)
+    for (size_t i = 0; i < spline.getNumKnots() - 1; i++)
     {
       auto coefficients = spline.getCoefficients()[i];
       double timeStep = spline.getTimes()[i];
-      double duration = spline.getTimes()[i+1] - spline.getTimes()[i];
+      double duration = spline.getTimes()[i + 1] - spline.getTimes()[i];
       auto currentVec = spline.evaluate(timeStep);
       auto currentState = stateSpace->createState();
       stateSpace->convertPositionsToState(currentVec, currentState);
@@ -284,14 +283,14 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double angular_tolerance,
     double integration_interval)
 {
-  if( distance < 0.)
+  if (distance < 0.)
   {
     std::stringstream ss;
     ss << "Distance must be non-negative; got " << distance << ".";
     throw std::runtime_error(ss.str());
   }
 
-  if( direction.norm() == 0.0 )
+  if (direction.norm() == 0.0)
   {
     throw std::runtime_error("Direction vector is a zero vector");
   }
@@ -313,7 +312,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       angular_gain,
       angular_tolerance);
 
-  return planPathByVectorField(stateSpace, constraint, dt, vectorfield, vectorfield);
+  return planPathByVectorField(
+      stateSpace, constraint, dt, vectorfield, vectorfield);
 }
 
 } // namespace vectorfield
