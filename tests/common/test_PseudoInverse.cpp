@@ -1,6 +1,6 @@
-#include <aikido/common/PseudoInverse.hpp>
-#include <gtest/gtest.h>
 #include <Eigen/Dense>
+#include <gtest/gtest.h>
+#include <aikido/common/PseudoInverse.hpp>
 
 using namespace aikido::common;
 
@@ -10,7 +10,7 @@ TEST(PseudoInverse, Invertible)
   mat.setIdentity();
   Eigen::Matrix2d inverse = pseudoinverse(mat);
 
-  EXPECT_TRUE((inverse*mat).isApprox(Eigen::Matrix2d::Identity()));
+  EXPECT_TRUE((inverse * mat).isApprox(Eigen::Matrix2d::Identity()));
 }
 
 TEST(PseudoInverse, Vector)
@@ -19,13 +19,13 @@ TEST(PseudoInverse, Vector)
 
   Eigen::MatrixXd inverse = pseudoinverse(vec);
 
-  EXPECT_DOUBLE_EQ((inverse*vec)(0,0), 1);
+  EXPECT_DOUBLE_EQ((inverse * vec)(0, 0), 1);
 }
 
 TEST(PseudoInverse, Matrix)
 {
-  Eigen::MatrixXd mat(Eigen::MatrixXd::Random(3,4));
+  Eigen::MatrixXd mat(Eigen::MatrixXd::Random(3, 4));
   Eigen::MatrixXd inverse = pseudoinverse(mat);
 
-  EXPECT_TRUE((mat*inverse).isApprox(Eigen::Matrix3d::Identity()));
+  EXPECT_TRUE((mat * inverse).isApprox(Eigen::Matrix3d::Identity()));
 }

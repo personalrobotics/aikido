@@ -1,14 +1,14 @@
+#include <aikido/common/RNG.hpp>
 #include <aikido/constraint/FramePairDifferentiable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/TSR.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
-#include <aikido/common/RNG.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
-#include <gtest/gtest.h>
 #include <Eigen/Dense>
+#include <gtest/gtest.h>
 
 using aikido::constraint::FramePairDifferentiable;
 using aikido::constraint::TSR;
@@ -25,86 +25,95 @@ using dart::dynamics::SkeletonPtr;
 using dart::dynamics::FreeJoint;
 using dart::dynamics::BodyNode;
 
-class FramePairDifferentiableTest : public ::testing::Test {
-  protected:
-    virtual void SetUp() {
+class FramePairDifferentiableTest : public ::testing::Test
+{
+protected:
+  virtual void SetUp()
+  {
 
-      tsr = dart::common::make_aligned_shared<TSR>(
+    tsr = dart::common::make_aligned_shared<TSR>(
         std::unique_ptr<RNG>(new RNGWrapper<std::default_random_engine>(0)));
 
-      Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
-      tsr->mBw = Bw;
+    Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
+    tsr->mBw = Bw;
 
-      skeleton = Skeleton::create("env");
+    skeleton = Skeleton::create("env");
 
-      // body 1
-      FreeJoint::Properties jointProperties1;
-      jointProperties1.mName = "joint1";
+    // body 1
+    FreeJoint::Properties jointProperties1;
+    jointProperties1.mName = "joint1";
 
-      BodyNode::Properties bodyProperties1;
-      bodyProperties1.mName = "body1";
+    BodyNode::Properties bodyProperties1;
+    bodyProperties1.mName = "body1";
 
-      bn1 = skeleton->createJointAndBodyNodePair<FreeJoint>(
-        nullptr, jointProperties1, bodyProperties1).second;
+    bn1 = skeleton
+              ->createJointAndBodyNodePair<FreeJoint>(
+                  nullptr, jointProperties1, bodyProperties1)
+              .second;
 
-      // body 2
-      FreeJoint::Properties jointProperties2;
-      jointProperties2.mName = "joint 2";
+    // body 2
+    FreeJoint::Properties jointProperties2;
+    jointProperties2.mName = "joint 2";
 
-      BodyNode::Properties bodyProperties2;
-      bodyProperties2.mName = "body2";
+    BodyNode::Properties bodyProperties2;
+    bodyProperties2.mName = "body2";
 
-      bn2 = skeleton->createJointAndBodyNodePair<FreeJoint>(
-        nullptr,  jointProperties2, bodyProperties2).second;
+    bn2 = skeleton
+              ->createJointAndBodyNodePair<FreeJoint>(
+                  nullptr, jointProperties2, bodyProperties2)
+              .second;
 
-      MetaSkeletonStateSpace space(skeleton);
-      spacePtr = std::make_shared<MetaSkeletonStateSpace>(space);
+    MetaSkeletonStateSpace space(skeleton);
+    spacePtr = std::make_shared<MetaSkeletonStateSpace>(space);
   }
 
   BodyNodePtr bn1, bn2;
   SkeletonPtr skeleton;
   MetaSkeletonStateSpacePtr spacePtr;
-  std::shared_ptr<TSR> tsr ;
-
+  std::shared_ptr<TSR> tsr;
 };
 
 TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(FramePairDifferentiable(nullptr, bn1.get(), bn2.get(), tsr),
-               std::invalid_argument);
+  EXPECT_THROW(
+      FramePairDifferentiable(nullptr, bn1.get(), bn2.get(), tsr),
+      std::invalid_argument);
 }
 
 TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullNode1)
 {
-  EXPECT_THROW(FramePairDifferentiable(spacePtr, nullptr, bn2.get(), tsr),
-               std::invalid_argument);
+  EXPECT_THROW(
+      FramePairDifferentiable(spacePtr, nullptr, bn2.get(), tsr),
+      std::invalid_argument);
 }
 
 TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullNode2)
 {
-  EXPECT_THROW(FramePairDifferentiable(spacePtr, bn1.get(), nullptr, tsr),
-               std::invalid_argument);
+  EXPECT_THROW(
+      FramePairDifferentiable(spacePtr, bn1.get(), nullptr, tsr),
+      std::invalid_argument);
 }
 
 TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnNullPoseConstraint)
 {
-  EXPECT_THROW(FramePairDifferentiable(spacePtr, bn1.get(), bn2.get(), nullptr),
-               std::invalid_argument);
+  EXPECT_THROW(
+      FramePairDifferentiable(spacePtr, bn1.get(), bn2.get(), nullptr),
+      std::invalid_argument);
 }
 
 TEST_F(FramePairDifferentiableTest, ConstructorThrowsOnInvalidPoseConstraint)
 {
   auto so2 = std::make_shared<SO2>();
   auto pconstraint = std::make_shared<aikido::constraint::Satisfied>(so2);
-  EXPECT_THROW(FramePairDifferentiable(spacePtr, bn1.get(), bn2.get(), pconstraint),
-               std::invalid_argument);
+  EXPECT_THROW(
+      FramePairDifferentiable(spacePtr, bn1.get(), bn2.get(), pconstraint),
+      std::invalid_argument);
 }
 
 TEST_F(FramePairDifferentiableTest, ConstraintDimension)
 {
-  FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);         
-  EXPECT_EQ(tsr->getConstraintDimension(),
-            adaptor.getConstraintDimension());
+  FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
+  EXPECT_EQ(tsr->getConstraintDimension(), adaptor.getConstraintDimension());
 }
 
 TEST_F(FramePairDifferentiableTest, StateSpaceMatch)
@@ -116,36 +125,34 @@ TEST_F(FramePairDifferentiableTest, StateSpaceMatch)
 TEST_F(FramePairDifferentiableTest, ConstraintTypes)
 {
   FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
-  std::vector<aikido::constraint::ConstraintType> ctypes =
-      adaptor.getConstraintTypes();
-  std::vector<aikido::constraint::ConstraintType> tsrTypes =
-      tsr->getConstraintTypes();
+  std::vector<aikido::constraint::ConstraintType> ctypes
+      = adaptor.getConstraintTypes();
+  std::vector<aikido::constraint::ConstraintType> tsrTypes
+      = tsr->getConstraintTypes();
   EXPECT_EQ(tsrTypes.size(), ctypes.size());
-  for(std::size_t i = 0; i < ctypes.size(); ++i)
-      EXPECT_EQ(tsrTypes[i], ctypes[i]);
+  for (std::size_t i = 0; i < ctypes.size(); ++i)
+    EXPECT_EQ(tsrTypes[i], ctypes[i]);
 }
 
 TEST_F(FramePairDifferentiableTest, Value)
 {
   FramePairDifferentiable adaptor(spacePtr, bn1.get(), bn2.get(), tsr);
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
-  state.getSubStateHandle<SE3>(0).setIsometry(
-    Eigen::Isometry3d::Identity());
-  state.getSubStateHandle<SE3>(1).setIsometry(
-    Eigen::Isometry3d::Identity());
-  
+  state.getSubStateHandle<SE3>(0).setIsometry(Eigen::Isometry3d::Identity());
+  state.getSubStateHandle<SE3>(1).setIsometry(Eigen::Isometry3d::Identity());
+
   Eigen::VectorXd value;
   adaptor.getValue(state, value);
   EXPECT_TRUE(value.isApprox(Eigen::VectorXd::Zero(6)));
 
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
-  Bw(2,0) = 1;
-  Bw(2,1) = 1;
+  Bw(2, 0) = 1;
+  Bw(2, 1) = 1;
 
   tsr->mBw = Bw;
 
   adaptor.getValue(state, value);
-  
+
   Eigen::VectorXd expected(Eigen::VectorXd::Zero(6));
   expected(2) = 1;
   EXPECT_TRUE(value.isApprox(expected));
@@ -155,7 +162,7 @@ TEST_F(FramePairDifferentiableTest, Jacobian)
 {
 
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
-  for(int i = 0; i < 6; ++i)
+  for (int i = 0; i < 6; ++i)
   {
     Bw(i, 0) = -0.2;
     Bw(i, 1) = 0.2;
@@ -167,11 +174,9 @@ TEST_F(FramePairDifferentiableTest, Jacobian)
 
   // state strictly inside tsr
   auto state = spacePtr->getScopedStateFromMetaSkeleton();
-  state.getSubStateHandle<SE3>(0).setIsometry(
-    Eigen::Isometry3d::Identity());
-  state.getSubStateHandle<SE3>(1).setIsometry(
-    Eigen::Isometry3d::Identity());
-  
+  state.getSubStateHandle<SE3>(0).setIsometry(Eigen::Isometry3d::Identity());
+  state.getSubStateHandle<SE3>(1).setIsometry(Eigen::Isometry3d::Identity());
+
   Eigen::VectorXd value;
   adaptor.getValue(state, value);
   EXPECT_TRUE(value.isApprox(Eigen::VectorXd::Zero(6)));
@@ -179,7 +184,6 @@ TEST_F(FramePairDifferentiableTest, Jacobian)
   Eigen::MatrixXd jacobian;
   adaptor.getJacobian(state, jacobian);
   EXPECT_TRUE(jacobian.isApproxToConstant(0, 1e-3));
-
 
   // state outside tsr
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
@@ -189,8 +193,7 @@ TEST_F(FramePairDifferentiableTest, Jacobian)
   adaptor.getJacobian(state, jacobian);
 
   Eigen::MatrixXd expected(Eigen::MatrixXd::Zero(6, 12));
-  expected(2, 5) = 1; 
+  expected(2, 5) = 1;
   expected(2, 11) = -1;
   EXPECT_TRUE(jacobian.isApprox(expected, 1e-3));
-
 }

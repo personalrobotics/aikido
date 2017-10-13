@@ -1,12 +1,12 @@
-#include "PolynomialConstraint.hpp"
 #include <aikido/constraint/NewtonsMethodProjectable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/TSR.hpp>
+#include "PolynomialConstraint.hpp"
 
 #include <aikido/statespace/Rn.hpp>
 
-#include <gtest/gtest.h>
 #include <Eigen/Dense>
+#include <gtest/gtest.h>
 
 using aikido::constraint::NewtonsMethodProjectable;
 using aikido::constraint::Satisfied;
@@ -16,14 +16,15 @@ using aikido::statespace::R3;
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNullDifferentiable)
 {
-  EXPECT_THROW(NewtonsMethodProjectable(nullptr, std::vector<double>{}, 1, 1),
-               std::invalid_argument);
+  EXPECT_THROW(
+      NewtonsMethodProjectable(nullptr, std::vector<double>{}, 1, 1),
+      std::invalid_argument);
 }
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnBadToleranceDimension)
 {
   auto ss = std::make_shared<R3>();
-  auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
+  auto constraint = std::make_shared<Satisfied>(ss); // dimension = 0
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>({0.1}), 1, 1e-4),
       std::invalid_argument);
@@ -31,37 +32,36 @@ TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnBadToleranceDimension)
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeTolerance)
 {
-  auto constraint =
-      std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(1, 2, 3));
+  auto constraint
+      = std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(1, 2, 3));
   EXPECT_THROW(
-      NewtonsMethodProjectable(constraint, std::vector<double>({-0.1}), 1, 1e-4),
+      NewtonsMethodProjectable(
+          constraint, std::vector<double>({-0.1}), 1, 1e-4),
       std::invalid_argument);
 }
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeIteration)
 {
   auto ss = std::make_shared<R3>();
-  auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
+  auto constraint = std::make_shared<Satisfied>(ss); // dimension = 0
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>(), 0, 1e-4),
       std::invalid_argument);
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>(), -1, 1e-4),
       std::invalid_argument);
-
 }
 
 TEST(NewtonsMethodProjectableTest, ConstructorThrowsOnNegativeStepsize)
 {
   auto ss = std::make_shared<R3>();
-  auto constraint = std::make_shared<Satisfied>(ss); //dimension = 0
+  auto constraint = std::make_shared<Satisfied>(ss); // dimension = 0
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>(), 1, 0),
       std::invalid_argument);
   EXPECT_THROW(
       NewtonsMethodProjectable(constraint, std::vector<double>(), 1, -0.1),
       std::invalid_argument);
-
 }
 
 TEST(NewtonsMethodProjectable, Constructor)
@@ -69,14 +69,18 @@ TEST(NewtonsMethodProjectable, Constructor)
   // Constraint: x^2 - 1 = 0.
   NewtonsMethodProjectable projector(
       std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(-1, 0, 1)),
-      std::vector<double>({0.1}), 10, 1e-4);
+      std::vector<double>({0.1}),
+      10,
+      1e-4);
 }
 
 TEST(NewtonsMethodProjectable, ProjectPolynomialFirstOrder)
 {
   NewtonsMethodProjectable projector(
       std::make_shared<PolynomialConstraint<1>>(Eigen::Vector2d(1, 2)),
-      std::vector<double>({0.1}), 1, 1e-4);
+      std::vector<double>({0.1}),
+      1,
+      1e-4);
 
   Eigen::VectorXd v(1);
   v(0) = -2;
@@ -96,11 +100,13 @@ TEST(NewtonsMethodProjectable, ProjectPolynomialFirstOrder)
 }
 
 TEST(NewtonsMethodProjectable, ProjectPolynomialSecondOrder)
-{ 
+{
   // Constraint: x^2 - 1 = 0.
   NewtonsMethodProjectable projector(
       std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(-1, 0, 1)),
-      std::vector<double>({1e-6}), 10, 1e-8);
+      std::vector<double>({1e-6}),
+      10,
+      1e-8);
 
   // Project x = -2. Should get -1 as projected solution.
   Eigen::VectorXd v(1);
@@ -130,7 +136,7 @@ TEST(NewtonsMethodProjectable, ProjectPolynomialSecondOrder)
 
   EXPECT_TRUE(expected.isApprox(projected, 1e-5));
 
-  // Project x = 1. Should get 1 as projected solution. 
+  // Project x = 1. Should get 1 as projected solution.
   v(0) = 1;
   seedState.setValue(v);
 
@@ -140,30 +146,29 @@ TEST(NewtonsMethodProjectable, ProjectPolynomialSecondOrder)
   expected(0) = 1;
 
   EXPECT_TRUE(expected.isApprox(projected, 1e-5));
-
 }
 
 TEST(NewtonsMethodProjectable, ProjectTSRTranslation)
 {
   std::shared_ptr<TSR> tsr = std::make_shared<TSR>();
 
-  // non-trivial translation bounds 
+  // non-trivial translation bounds
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
-  Bw(0,0) = 1;
-  Bw(0,1) = 2;
+  Bw(0, 0) = 1;
+  Bw(0, 1) = 2;
 
   tsr->mBw = Bw;
 
   auto space = tsr->getSE3();
 
-  auto seedState = space->createState();  
+  auto seedState = space->createState();
 
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
   isometry.translation() = Eigen::Vector3d(-1, 0, 1);
   seedState.setIsometry(isometry);
 
-  NewtonsMethodProjectable projector(tsr, std::vector<double>(6, 1e-4), 1000,
-                                    1e-8);
+  NewtonsMethodProjectable projector(
+      tsr, std::vector<double>(6, 1e-4), 1000, 1e-8);
 
   auto out = space->createState();
   EXPECT_TRUE(projector.project(seedState, out));
@@ -173,24 +178,24 @@ TEST(NewtonsMethodProjectable, ProjectTSRTranslation)
   expected.translation() = Eigen::Vector3d(1, 0, 0);
 
   EXPECT_TRUE(expected.isApprox(projected, 5e-4));
-
 }
 
 TEST(NewtonsMethodProjectable, ProjectTSRRotation)
 {
   std::shared_ptr<TSR> tsr = std::make_shared<TSR>();
 
-  // non-trivial rotation bounds 
+  // non-trivial rotation bounds
   Eigen::MatrixXd Bw = Eigen::Matrix<double, 6, 2>::Zero();
-  Bw(3,0) = M_PI_4;
-  Bw(3,1) = M_PI_2;
+  Bw(3, 0) = M_PI_4;
+  Bw(3, 1) = M_PI_2;
 
   tsr->mBw = Bw;
 
   auto space = tsr->getSE3();
   auto seedState = space->createState();
 
-  NewtonsMethodProjectable projector(tsr, std::vector<double>(6, 1e-4), 1000, 1e-8);
+  NewtonsMethodProjectable projector(
+      tsr, std::vector<double>(6, 1e-4), 1000, 1e-8);
 
   auto out = space->createState();
   EXPECT_TRUE(projector.project(seedState, out));
@@ -199,9 +204,9 @@ TEST(NewtonsMethodProjectable, ProjectTSRRotation)
   Eigen::Isometry3d expected = Eigen::Isometry3d::Identity();
 
   Eigen::Matrix3d rotation;
-  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()) *
-             Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-             Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX());
+  rotation = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ())
+             * Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY())
+             * Eigen::AngleAxisd(M_PI_4, Eigen::Vector3d::UnitX());
   expected.linear() = rotation;
 
   EXPECT_TRUE(expected.isApprox(projected, 5e-4));

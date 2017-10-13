@@ -25,8 +25,8 @@ TEST(GeodesicDistance, Distance)
   auto state1 = so3->createState();
   auto state2 = so3->createState();
 
-  auto quat =
-      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY()));
+  auto quat
+      = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY()));
   state1.setQuaternion(quat);
   state2.setQuaternion(quat);
   EXPECT_DOUBLE_EQ(0.0, dmetric.distance(state1, state2));
