@@ -47,8 +47,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double angular_tolerance = 0.01,
     double duration = 2.0,
     double timestep = 0.01,
-    double linear_gain = 10.0,
-    double angular_gain = 10.0);
+    double linear_gain = 1.0,
+    double angular_gain = 1.0);
 
 } // namespace vectorfield
 } // namespace planner

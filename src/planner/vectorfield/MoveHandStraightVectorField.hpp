@@ -15,9 +15,9 @@ public:
     double min_duration,
     double max_duration,
     double stepsize,
-    double linear_gain = 10.,
+    double linear_gain = 1.,
     double linear_tolerance = 0.01,
-    double rotation_gain = 10.,
+    double rotation_gain = 1.,
     double rotation_tolerance = 0.01,
     double optimization_tolerance = 1e-4,
     double padding = 1e-5
