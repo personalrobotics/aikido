@@ -1,6 +1,6 @@
-#include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/statespace/Rn.hpp>
 #include <gtest/gtest.h>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 
 using namespace aikido::statespace;
 using aikido::trajectory::Interpolated;
@@ -44,7 +44,7 @@ TEST_F(InterpolatedTest, AddWaypoint)
 TEST_F(InterpolatedTest, EvaluatePt)
 {
   auto istate = rvss->createState();
-  
+
   // Point before first time on traj
   traj->evaluate(-0.001, istate);
   EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(0, 0)));
@@ -52,13 +52,14 @@ TEST_F(InterpolatedTest, EvaluatePt)
   // Point after last time on traj
   traj->evaluate(8, istate);
   EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(8, 1)));
-  
+
   traj->evaluate(1.5, istate);
   EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(.75, .75)));
 
   traj->evaluate(6, istate);
   EXPECT_TRUE(
-      rvss->getValue(istate).isApprox(Eigen::Vector2d(3 + 5 * 0.75, 3 - 2 * .75)));
+      rvss->getValue(istate).isApprox(
+          Eigen::Vector2d(3 + 5 * 0.75, 3 - 2 * .75)));
 
   traj->evaluate(7, istate);
   EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(8, 1)));
@@ -71,7 +72,8 @@ TEST_F(InterpolatedTest, EvaluateDerivative)
 {
   Eigen::VectorXd tangentVector;
 
-  EXPECT_THROW(traj->evaluateDerivative(1.5, 0, tangentVector), std::invalid_argument);
+  EXPECT_THROW(
+      traj->evaluateDerivative(1.5, 0, tangentVector), std::invalid_argument);
 
   traj->evaluateDerivative(1.5, 2, tangentVector);
   EXPECT_TRUE(tangentVector.isApprox(Eigen::Vector2d::Zero()));

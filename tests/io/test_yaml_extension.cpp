@@ -8,27 +8,32 @@ TEST(YamlEigenExtension, Validity)
   using Matrix1d = Eigen::Matrix<double, 1, 1>;
 
   std::string empty = "empty:";
-  EXPECT_THROW(YAML::Load(empty)["empty"].as<Eigen::VectorXd>(),
+  EXPECT_THROW(
+      YAML::Load(empty)["empty"].as<Eigen::VectorXd>(),
       YAML::RepresentationException);
 
   std::string map = "map: {left: ok, right: bad}";
-  EXPECT_THROW(YAML::Load(map)["map"].as<Eigen::VectorXd>(),
+  EXPECT_THROW(
+      YAML::Load(map)["map"].as<Eigen::VectorXd>(),
       YAML::RepresentationException);
 
   std::string zeroSizedVector = "vector: []";
   Eigen::VectorXd zeroVec;
-  EXPECT_NO_THROW(zeroVec = YAML::Load(zeroSizedVector)["vector"].as<Eigen::VectorXd>());
+  EXPECT_NO_THROW(
+      zeroVec = YAML::Load(zeroSizedVector)["vector"].as<Eigen::VectorXd>());
   EXPECT_EQ(zeroVec.size(), 0);
 
   std::string zeroSizedMatrix1 = "matrix: [[]]";
   Eigen::MatrixXd zeroMat1;
-  EXPECT_NO_THROW(zeroMat1 = YAML::Load(zeroSizedMatrix1)["matrix"].as<Eigen::MatrixXd>());
+  EXPECT_NO_THROW(
+      zeroMat1 = YAML::Load(zeroSizedMatrix1)["matrix"].as<Eigen::MatrixXd>());
   EXPECT_EQ(zeroMat1.rows(), 0);
   EXPECT_EQ(zeroMat1.cols(), 0);
 
   std::string zeroSizedMatrix2 = "matrix: [[], []]";
   Eigen::MatrixXd zeroMat2;
-  EXPECT_NO_THROW(zeroMat2 = YAML::Load(zeroSizedMatrix2)["matrix"].as<Eigen::MatrixXd>());
+  EXPECT_NO_THROW(
+      zeroMat2 = YAML::Load(zeroSizedMatrix2)["matrix"].as<Eigen::MatrixXd>());
   EXPECT_EQ(zeroMat2.rows(), 0);
   EXPECT_EQ(zeroMat2.cols(), 0);
 
@@ -39,70 +44,77 @@ TEST(YamlEigenExtension, Validity)
   EXPECT_NO_THROW(YAML::Load(matrix1)["matrix"].as<Matrix1d>());
 
   std::string incorrectVectorSize = "vector: [1, 2, 3]";
-  EXPECT_THROW(YAML::Load(incorrectVectorSize)["vector"].as<Eigen::Vector4d>(),
+  EXPECT_THROW(
+      YAML::Load(incorrectVectorSize)["vector"].as<Eigen::Vector4d>(),
       YAML::RepresentationException);
 
-  std::string incorrectMatrixRowSize
-      = "matrix: [[1, 2, 3], [4, 5, 6]]";
-  EXPECT_THROW(YAML::Load(incorrectMatrixRowSize)["matrix"].as<
-      Eigen::Matrix3d>(), YAML::RepresentationException);
+  std::string incorrectMatrixRowSize = "matrix: [[1, 2, 3], [4, 5, 6]]";
+  EXPECT_THROW(
+      YAML::Load(incorrectMatrixRowSize)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
 
-  std::string incorrectMatrixColSize
-      = "matrix: [[1, 2], [3, 4], [5, 6]]";
-  EXPECT_THROW(YAML::Load(incorrectMatrixColSize)["matrix"].as<
-      Eigen::Matrix3d>(), YAML::RepresentationException);
+  std::string incorrectMatrixColSize = "matrix: [[1, 2], [3, 4], [5, 6]]";
+  EXPECT_THROW(
+      YAML::Load(incorrectMatrixColSize)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
 
-  std::string incorrectMatrixSize1
-      = "matrix: [[1, 2, 3], [1, 2, 3], [1, 2]]";
-  EXPECT_THROW(YAML::Load(incorrectMatrixSize1)["matrix"].as<
-      Eigen::Matrix3d>(), YAML::RepresentationException);
+  std::string incorrectMatrixSize1 = "matrix: [[1, 2, 3], [1, 2, 3], [1, 2]]";
+  EXPECT_THROW(
+      YAML::Load(incorrectMatrixSize1)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
 
-  std::string incorrectMatrixSize2
-      = "matrix: [1, 2, 3]";
-  EXPECT_THROW(YAML::Load(incorrectMatrixSize2)["matrix"].as<
-      Eigen::Matrix3d>(), YAML::RepresentationException);
+  std::string incorrectMatrixSize2 = "matrix: [1, 2, 3]";
+  EXPECT_THROW(
+      YAML::Load(incorrectMatrixSize2)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
 
   std::string inconsistentMatrixRowSize1
       = "matrix: [[1, 2, 3], [4, 5, 6], [7, 8]]";
-  EXPECT_THROW(YAML::Load(inconsistentMatrixRowSize1)["matrix"].as<
-      Eigen::MatrixXd>(), YAML::RepresentationException);
+  EXPECT_THROW(
+      YAML::Load(inconsistentMatrixRowSize1)["matrix"].as<Eigen::MatrixXd>(),
+      YAML::RepresentationException);
 
-  std::string inconsistentMatrixRowSize2
-      = "matrix: [[], [1], [2]]";
-  EXPECT_THROW(YAML::Load(inconsistentMatrixRowSize2)["matrix"].as<
-      Eigen::MatrixXd>(), YAML::RepresentationException);
+  std::string inconsistentMatrixRowSize2 = "matrix: [[], [1], [2]]";
+  EXPECT_THROW(
+      YAML::Load(inconsistentMatrixRowSize2)["matrix"].as<Eigen::MatrixXd>(),
+      YAML::RepresentationException);
 
   std::string notSequenceInVector = "vector: 1";
-  EXPECT_THROW(YAML::Load(notSequenceInVector)["vector"].as<Vector1d>(),
+  EXPECT_THROW(
+      YAML::Load(notSequenceInVector)["vector"].as<Vector1d>(),
       YAML::RepresentationException);
 
   std::string notSequenceInMatrix1 = "matrix: [1, 2, 3]";
-  EXPECT_THROW(YAML::Load(notSequenceInMatrix1)["matrix"].as<Eigen::Matrix3d>(),
+  EXPECT_THROW(
+      YAML::Load(notSequenceInMatrix1)["matrix"].as<Eigen::Matrix3d>(),
       YAML::RepresentationException);
 
   std::string notSequenceInMatrix2 = "matrix: [[1, 2, 3], [1, 2, 3], 1]";
-  EXPECT_THROW(YAML::Load(notSequenceInMatrix2)["matrix"].as<Eigen::Matrix3d>(),
+  EXPECT_THROW(
+      YAML::Load(notSequenceInMatrix2)["matrix"].as<Eigen::Matrix3d>(),
       YAML::RepresentationException);
 
-  std::string notScalarElementInVector1
-      = "vector: [1, 2, [3]]";
-  EXPECT_THROW(YAML::Load(notScalarElementInVector1)["vector"].as<
-      Eigen::Vector3d>(), YAML::RepresentationException);
+  std::string notScalarElementInVector1 = "vector: [1, 2, [3]]";
+  EXPECT_THROW(
+      YAML::Load(notScalarElementInVector1)["vector"].as<Eigen::Vector3d>(),
+      YAML::RepresentationException);
 
-  std::string notScalarElementInVector2
-      = "vector: [1, 2, []]";
-  EXPECT_THROW(YAML::Load(notScalarElementInVector2)["vector"].as<
-      Eigen::Vector3d>(), YAML::RepresentationException);
+  std::string notScalarElementInVector2 = "vector: [1, 2, []]";
+  EXPECT_THROW(
+      YAML::Load(notScalarElementInVector2)["vector"].as<Eigen::Vector3d>(),
+      YAML::RepresentationException);
 
   std::string notScalarElementInMatrix1
       = "matrix: [[1, 2, 3], [[1, 2], 2, 3], [1, 2, 3]]";
-  EXPECT_THROW(YAML::Load(notScalarElementInMatrix1)["matrix"].as<
-      Eigen::Matrix3d>(), YAML::RepresentationException);
+  EXPECT_THROW(
+      YAML::Load(notScalarElementInMatrix1)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
 
   std::string notScalarElementInMatrix2
       = "matrix: [[1, 2, 3], [[], 2, 3], [1, 2, 3]]";
-  EXPECT_THROW(YAML::Load(notScalarElementInMatrix2)["matrix"].as<
-      Eigen::Matrix3d>(), YAML::RepresentationException);
+  EXPECT_THROW(
+      YAML::Load(notScalarElementInMatrix2)["matrix"].as<Eigen::Matrix3d>(),
+      YAML::RepresentationException);
 }
 
 //==============================================================================
@@ -127,14 +139,16 @@ TEST(YamlEigenExtension, LoadVectorMatrix3dIsometry3d)
 
   EXPECT_TRUE(closed.isApprox(Eigen::Vector4d(2.443, 2.443, 2.443, 0.0)));
   EXPECT_TRUE(relative_pose.isApprox(Eigen::Matrix3d::Identity()));
-  EXPECT_TRUE(absolute_pose.matrix().isApprox(
-      Eigen::Isometry3d::Identity().matrix()));
+  EXPECT_TRUE(
+      absolute_pose.matrix().isApprox(Eigen::Isometry3d::Identity().matrix()));
 
   EXPECT_TRUE(YAML::Node(closed).as<Eigen::VectorXd>() == closed);
   EXPECT_TRUE(YAML::Node(relative_pose).as<Eigen::Matrix3d>() == relative_pose);
   EXPECT_TRUE(
-      YAML::Node(absolute_pose).as<Eigen::Isometry3d>().matrix().isApprox(
-          absolute_pose.matrix()));
+      YAML::Node(absolute_pose)
+          .as<Eigen::Isometry3d>()
+          .matrix()
+          .isApprox(absolute_pose.matrix()));
 }
 
 //==============================================================================
@@ -160,13 +174,13 @@ TEST(YamlEigenExtension, UnorderedMap)
 //==============================================================================
 TEST(YamlEigenExtension, TsrTransforms)
 {
-  using TransformMap = std::unordered_map<
-      std::string,
-      Eigen::Isometry3d,
-      std::hash<std::string>,
-      std::equal_to<std::string>,
-      Eigen::aligned_allocator<std::pair<const std::string, Eigen::Isometry3d>>
-  >;
+  using TransformMap = std::
+      unordered_map<std::string,
+                    Eigen::Isometry3d,
+                    std::hash<std::string>,
+                    std::equal_to<std::string>,
+                    Eigen::aligned_allocator<std::pair<const std::string,
+                                                       Eigen::Isometry3d>>>;
 
   using TransformsMap = std::unordered_map<std::string, TransformMap>;
 
@@ -198,10 +212,7 @@ TEST(YamlEigenExtension, TsrTransforms)
 
   auto left_default = left["default"];
   Eigen::Isometry3d expectedLeftDefault = Eigen::Isometry3d::Identity();
-  expectedLeftDefault.linear()
-      << 0.0, 0.0, 1.0,
-         1.0, 0.0, 0.0,
-         0.0, 1.0, 0.0;
+  expectedLeftDefault.linear() << 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0;
   expectedLeftDefault.translation() << 0.0, 0.0, 0.18;
   EXPECT_TRUE(left_default.matrix().isApprox(expectedLeftDefault.matrix()));
 
@@ -213,10 +224,7 @@ TEST(YamlEigenExtension, TsrTransforms)
 
   auto right_default = right["default"];
   Eigen::Isometry3d expectedRightDefault = Eigen::Isometry3d::Identity();
-  expectedRightDefault.linear()
-      << 0.0, 0.0, 1.0,
-         1.0, 0.0, 0.0,
-         0.0, 1.0, 0.0;
+  expectedRightDefault.linear() << 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0;
   expectedRightDefault.translation() << 0.0, 0.0, 0.18;
   EXPECT_TRUE(right_default.matrix().isApprox(expectedRightDefault.matrix()));
 

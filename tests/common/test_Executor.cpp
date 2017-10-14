@@ -1,12 +1,15 @@
+#include <gtest/gtest.h>
 #include <aikido/common/ExecutorMultiplexer.hpp>
 #include <aikido/common/ExecutorThread.hpp>
-#include <gtest/gtest.h>
 
 using namespace aikido::common;
 
 static int numCalled = 0;
 
-void foo() { numCalled++; }
+void foo()
+{
+  numCalled++;
+}
 
 //==============================================================================
 TEST(ExecutorMultiplexer, Execute)

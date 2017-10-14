@@ -69,8 +69,9 @@ TEST(SO3, LogMap)
 {
   SO3 so3;
   auto state = so3.createState();
-  so3.setQuaternion(state, Eigen::Quaterniond(Eigen::AngleAxisd(
-                               M_PI_2, Eigen::Vector3d::UnitZ())));
+  so3.setQuaternion(
+      state,
+      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitZ())));
 
   Eigen::VectorXd out;
   so3.logMap(state, out);

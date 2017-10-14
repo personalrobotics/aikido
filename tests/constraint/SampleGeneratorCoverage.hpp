@@ -2,15 +2,17 @@
 #define AIKIDO_TESTS_CONSTRAINT_SAMPLEGENERATORCOVERAGE_H_
 #include <vector>
 #include <gtest/gtest.h>
-#include <aikido/distance/DistanceMetric.hpp>
 #include <aikido/constraint/Sampleable.hpp>
+#include <aikido/distance/DistanceMetric.hpp>
 
 template <class Iterator>
 testing::AssertionResult SampleGeneratorCoverage(
-  aikido::constraint::SampleGenerator& _generator,
-  const aikido::distance::DistanceMetric& _metric,
-  const Iterator _beginTargets, const Iterator _endTargets,
-  double _distanceThreshold, std::size_t _numSamples)
+    aikido::constraint::SampleGenerator& _generator,
+    const aikido::distance::DistanceMetric& _metric,
+    const Iterator _beginTargets,
+    const Iterator _endTargets,
+    double _distanceThreshold,
+    std::size_t _numSamples)
 {
   std::vector<int> counts(std::distance(_beginTargets, _endTargets), 0);
 
@@ -38,7 +40,7 @@ testing::AssertionResult SampleGeneratorCoverage(
     if (count == 0)
       return ::testing::AssertionFailure() << "Missed one or more targets.";
   }
-  
+
   return testing::AssertionSuccess();
 }
 

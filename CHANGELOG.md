@@ -5,6 +5,7 @@
 * Build & Testing & ETC
 
   * Changed to use size_t over std::size_t: [#230](https://github.com/personalrobotics/aikido/pull/230)
+  * Included test code to formatting code list: [#239](https://github.com/personalrobotics/aikido/pull/239)
 
 ### [0.1.0 (2017-10-02)](https://github.com/personalrobotics/aikido/milestone/4?closed=1)
 

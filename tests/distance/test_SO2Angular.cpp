@@ -31,6 +31,7 @@ TEST(SO2Angular, Distance)
   EXPECT_DOUBLE_EQ(0.2, dmetric.distance(state1, state2));
 
   state2.setAngle(6.0);
-  EXPECT_DOUBLE_EQ(2. * M_PI - state2.getAngle() + state1.getAngle(),
-                   dmetric.distance(state1, state2));
+  EXPECT_DOUBLE_EQ(
+      2. * M_PI - state2.getAngle() + state1.getAngle(),
+      dmetric.distance(state1, state2));
 }

@@ -1,7 +1,7 @@
+#include <dart/common/StlHelpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
-#include <dart/common/StlHelpers.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::R2;
@@ -21,10 +21,10 @@ using Eigen::Matrix2d;
 class RnBoxConstraintTests : public ::testing::Test
 {
 protected:
-  static constexpr std::size_t NUM_X_TARGETS { 10 };
-  static constexpr std::size_t NUM_Y_TARGETS { 10 };
-  static constexpr std::size_t NUM_SAMPLES { 10000 };
-  static constexpr double DISTANCE_THRESHOLD { 0.15 };
+  static constexpr std::size_t NUM_X_TARGETS{10};
+  static constexpr std::size_t NUM_Y_TARGETS{10};
+  static constexpr std::size_t NUM_SAMPLES{10000};
+  static constexpr double DISTANCE_THRESHOLD{0.15};
 
   void SetUp() override
   {
@@ -35,22 +35,22 @@ protected:
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mLowerLimits = Vector2d(-1., 1.);
-    mUpperLimits = Vector2d( 1., 2.);
+    mUpperLimits = Vector2d(1., 2.);
 
     mGoodValues.resize(3);
     mGoodValues[0] = Vector2d(-0.9, 1.1);
-    mGoodValues[1] = Vector2d( 0.0, 1.5);
-    mGoodValues[2] = Vector2d( 0.9, 1.9);
+    mGoodValues[1] = Vector2d(0.0, 1.5);
+    mGoodValues[2] = Vector2d(0.9, 1.9);
 
     mBadValues.resize(8);
     mBadValues[0] = Vector2d(-1.1, 1.5);
-    mBadValues[1] = Vector2d( 1.1, 1.5);
-    mBadValues[2] = Vector2d( 0.0, 0.9);
-    mBadValues[3] = Vector2d( 0.0, 2.1);
+    mBadValues[1] = Vector2d(1.1, 1.5);
+    mBadValues[2] = Vector2d(0.0, 0.9);
+    mBadValues[3] = Vector2d(0.0, 2.1);
     mBadValues[4] = Vector2d(-1.1, 0.9);
     mBadValues[5] = Vector2d(-1.1, 2.1);
-    mBadValues[6] = Vector2d( 1.1, 0.9);
-    mBadValues[7] = Vector2d( 1.1, 2.1);
+    mBadValues[6] = Vector2d(1.1, 0.9);
+    mBadValues[7] = Vector2d(1.1, 2.1);
 
     mTargets.clear();
     mTargets.reserve(NUM_X_TARGETS * NUM_Y_TARGETS);
@@ -82,10 +82,10 @@ protected:
   Eigen::Vector2d mLowerLimits;
   Eigen::Vector2d mUpperLimits;
 
-  std::vector<Eigen::Vector2d,
-    Eigen::aligned_allocator<Eigen::Vector2d>> mGoodValues;
-  std::vector<Eigen::Vector2d,
-    Eigen::aligned_allocator<Eigen::Vector2d>> mBadValues;
+  std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>
+      mGoodValues;
+  std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>
+      mBadValues;
 
   std::vector<R2::ScopedState> mTargets;
 
@@ -96,64 +96,68 @@ public:
 //==============================================================================
 TEST_F(RnBoxConstraintTests, R2_constructor_StateSpaceIsNull_Throws)
 {
-  EXPECT_THROW({
-    R2BoxConstraint(nullptr, mRng->clone(), mLowerLimits, mUpperLimits);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { R2BoxConstraint(nullptr, mRng->clone(), mLowerLimits, mUpperLimits); },
+      std::invalid_argument);
 }
 
 //==============================================================================
 TEST_F(RnBoxConstraintTests, Rx_constructor_StateSpaceIsNull_Throws)
 {
-  EXPECT_THROW({
-    RnBoxConstraint(nullptr, mRng->clone(), mLowerLimits, mUpperLimits);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { RnBoxConstraint(nullptr, mRng->clone(), mLowerLimits, mUpperLimits); },
+      std::invalid_argument);
 }
 
 //==============================================================================
 TEST_F(RnBoxConstraintTests, R2_constructor_RNGIsNull_DoesNotThrow)
 {
-  EXPECT_NO_THROW({
-    R2BoxConstraint(mR2StateSpace, nullptr, mLowerLimits, mUpperLimits);
-  });
+  EXPECT_NO_THROW(
+      { R2BoxConstraint(mR2StateSpace, nullptr, mLowerLimits, mUpperLimits); });
 }
 
 //==============================================================================
 TEST_F(RnBoxConstraintTests, Rx_constructor_RNGIsNull_DoesNotThrow)
 {
-  EXPECT_NO_THROW({
-    RnBoxConstraint(mRxStateSpace, nullptr, mLowerLimits, mUpperLimits);
-  });
+  EXPECT_NO_THROW(
+      { RnBoxConstraint(mRxStateSpace, nullptr, mLowerLimits, mUpperLimits); });
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, R2_constructor_LowersLimitExceedsUpperLimits_Throws)
+TEST_F(
+    RnBoxConstraintTests, R2_constructor_LowersLimitExceedsUpperLimits_Throws)
 {
   Eigen::Vector2d badLowerLimits(1., 0.);
   Eigen::Vector2d badUpperLimits(0., 1.);
 
-  EXPECT_THROW({
-    R2BoxConstraint(
-      mR2StateSpace, mRng->clone(), badLowerLimits, badUpperLimits);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      {
+        R2BoxConstraint(
+            mR2StateSpace, mRng->clone(), badLowerLimits, badUpperLimits);
+      },
+      std::invalid_argument);
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, Rx_constructor_LowersLimitExceedsUpperLimits_Throws)
+TEST_F(
+    RnBoxConstraintTests, Rx_constructor_LowersLimitExceedsUpperLimits_Throws)
 {
   Eigen::Vector2d badLowerLimits(1., 0.);
   Eigen::Vector2d badUpperLimits(0., 1.);
 
-  EXPECT_THROW({
-    RnBoxConstraint(
-      mRxStateSpace, mRng->clone(), badLowerLimits, badUpperLimits);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      {
+        RnBoxConstraint(
+            mRxStateSpace, mRng->clone(), badLowerLimits, badUpperLimits);
+      },
+      std::invalid_argument);
 }
 
 //==============================================================================
 TEST_F(RnBoxConstraintTests, R2_getStateSpace)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   EXPECT_EQ(mR2StateSpace, constraint.getStateSpace());
 }
@@ -162,7 +166,7 @@ TEST_F(RnBoxConstraintTests, R2_getStateSpace)
 TEST_F(RnBoxConstraintTests, Rx_getStateSpace)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   EXPECT_EQ(mRxStateSpace, constraint.getStateSpace());
 }
@@ -171,7 +175,7 @@ TEST_F(RnBoxConstraintTests, Rx_getStateSpace)
 TEST_F(RnBoxConstraintTests, R2_getConstraintDimension)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   EXPECT_EQ(2, constraint.getConstraintDimension());
 }
@@ -180,7 +184,7 @@ TEST_F(RnBoxConstraintTests, R2_getConstraintDimension)
 TEST_F(RnBoxConstraintTests, Rx_getConstraintDimension)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   EXPECT_EQ(2, constraint.getConstraintDimension());
 }
@@ -189,7 +193,7 @@ TEST_F(RnBoxConstraintTests, Rx_getConstraintDimension)
 TEST_F(RnBoxConstraintTests, R2_getConstraintTypes)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
   auto constraintTypes = constraint.getConstraintTypes();
 
   ASSERT_EQ(2, constraintTypes.size());
@@ -201,7 +205,7 @@ TEST_F(RnBoxConstraintTests, R2_getConstraintTypes)
 TEST_F(RnBoxConstraintTests, Rx_getConstraintTypes)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
   auto constraintTypes = constraint.getConstraintTypes();
 
   ASSERT_EQ(2, constraintTypes.size());
@@ -213,7 +217,7 @@ TEST_F(RnBoxConstraintTests, Rx_getConstraintTypes)
 TEST_F(RnBoxConstraintTests, R2_isSatisfied_SatisfiesConstraint_ReturnsTrue)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mR2StateSpace->createState();
 
@@ -228,7 +232,7 @@ TEST_F(RnBoxConstraintTests, R2_isSatisfied_SatisfiesConstraint_ReturnsTrue)
 TEST_F(RnBoxConstraintTests, Rx_isSatisfied_SatisfiesConstraint_ReturnsTrue)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mRxStateSpace->createState();
 
@@ -240,10 +244,11 @@ TEST_F(RnBoxConstraintTests, Rx_isSatisfied_SatisfiesConstraint_ReturnsTrue)
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, R2_isSatisfied_DoesNotSatisfyConstraint_ReturnsFalse)
+TEST_F(
+    RnBoxConstraintTests, R2_isSatisfied_DoesNotSatisfyConstraint_ReturnsFalse)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mR2StateSpace->createState();
 
@@ -255,10 +260,11 @@ TEST_F(RnBoxConstraintTests, R2_isSatisfied_DoesNotSatisfyConstraint_ReturnsFals
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, Rx_isSatisfied_DoesNotSatisfyConstraint_ReturnsFalse)
+TEST_F(
+    RnBoxConstraintTests, Rx_isSatisfied_DoesNotSatisfyConstraint_ReturnsFalse)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mRxStateSpace->createState();
 
@@ -273,7 +279,7 @@ TEST_F(RnBoxConstraintTests, Rx_isSatisfied_DoesNotSatisfyConstraint_ReturnsFals
 TEST_F(RnBoxConstraintTests, R2_project_SatisfiesConstraint_DoesNothing)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto inState = mR2StateSpace->createState();
   auto outState = mR2StateSpace->createState();
@@ -290,7 +296,7 @@ TEST_F(RnBoxConstraintTests, R2_project_SatisfiesConstraint_DoesNothing)
 TEST_F(RnBoxConstraintTests, Rx_project_SatisfiesConstraint_DoesNothing)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto inState = mRxStateSpace->createState();
   auto outState = mRxStateSpace->createState();
@@ -307,7 +313,7 @@ TEST_F(RnBoxConstraintTests, Rx_project_SatisfiesConstraint_DoesNothing)
 TEST_F(RnBoxConstraintTests, R2_project_DoesNotSatisfyConstraint_Projects)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto inState = mR2StateSpace->createState();
   auto outState = mR2StateSpace->createState();
@@ -324,7 +330,7 @@ TEST_F(RnBoxConstraintTests, R2_project_DoesNotSatisfyConstraint_Projects)
 TEST_F(RnBoxConstraintTests, Rx_project_DoesNotSatisfyConstraint_Projects)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto inState = mRxStateSpace->createState();
   auto outState = mRxStateSpace->createState();
@@ -341,7 +347,7 @@ TEST_F(RnBoxConstraintTests, Rx_project_DoesNotSatisfyConstraint_Projects)
 TEST_F(RnBoxConstraintTests, R2_getValue_SatisfiesConstraint_ReturnsZero)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mR2StateSpace->createState();
 
@@ -358,7 +364,7 @@ TEST_F(RnBoxConstraintTests, R2_getValue_SatisfiesConstraint_ReturnsZero)
 TEST_F(RnBoxConstraintTests, Rx_getValue_SatisfiesConstraint_ReturnsZero)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mRxStateSpace->createState();
 
@@ -372,10 +378,11 @@ TEST_F(RnBoxConstraintTests, Rx_getValue_SatisfiesConstraint_ReturnsZero)
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, R2_getValue_DoesNotSatisfyConstraint_ReturnsNonZero)
+TEST_F(
+    RnBoxConstraintTests, R2_getValue_DoesNotSatisfyConstraint_ReturnsNonZero)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mR2StateSpace->createState();
 
@@ -392,10 +399,11 @@ TEST_F(RnBoxConstraintTests, R2_getValue_DoesNotSatisfyConstraint_ReturnsNonZero
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, Rx_getValue_DoesNotSatisfyConstraint_ReturnsNonZero)
+TEST_F(
+    RnBoxConstraintTests, Rx_getValue_DoesNotSatisfyConstraint_ReturnsNonZero)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mRxStateSpace->createState();
 
@@ -415,7 +423,7 @@ TEST_F(RnBoxConstraintTests, Rx_getValue_DoesNotSatisfyConstraint_ReturnsNonZero
 TEST_F(RnBoxConstraintTests, R2_getJacobian_SatisfiesConstraint_ReturnsZero)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mR2StateSpace->createState();
 
@@ -432,7 +440,7 @@ TEST_F(RnBoxConstraintTests, R2_getJacobian_SatisfiesConstraint_ReturnsZero)
 TEST_F(RnBoxConstraintTests, Rx_getJacobian_SatisfiesConstraint_ReturnsZero)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mRxStateSpace->createState();
 
@@ -446,10 +454,12 @@ TEST_F(RnBoxConstraintTests, Rx_getJacobian_SatisfiesConstraint_ReturnsZero)
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, R2_getJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
+TEST_F(
+    RnBoxConstraintTests,
+    R2_getJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   // TODO: Check the sign.
   // TODO: Check which elements are non-zero.
@@ -466,10 +476,12 @@ TEST_F(RnBoxConstraintTests, R2_getJacobian_DoesNotSatisfyConstraint_ReturnsNonZ
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, Rx_getJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
+TEST_F(
+    RnBoxConstraintTests,
+    Rx_getJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   // TODO: Check the sign.
   // TODO: Check which elements are non-zero.
@@ -486,10 +498,12 @@ TEST_F(RnBoxConstraintTests, Rx_getJacobian_DoesNotSatisfyConstraint_ReturnsNonZ
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, R2_getValueAndJacobian_SatisfiesConstraint_ReturnsZero)
+TEST_F(
+    RnBoxConstraintTests,
+    R2_getValueAndJacobian_SatisfiesConstraint_ReturnsZero)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mR2StateSpace->createState();
 
@@ -507,10 +521,12 @@ TEST_F(RnBoxConstraintTests, R2_getValueAndJacobian_SatisfiesConstraint_ReturnsZ
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, Rx_getValueAndJacobian_SatisfiesConstraint_ReturnsZero)
+TEST_F(
+    RnBoxConstraintTests,
+    Rx_getValueAndJacobian_SatisfiesConstraint_ReturnsZero)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mRxStateSpace->createState();
 
@@ -528,10 +544,12 @@ TEST_F(RnBoxConstraintTests, Rx_getValueAndJacobian_SatisfiesConstraint_ReturnsZ
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, R2_getValueAndJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
+TEST_F(
+    RnBoxConstraintTests,
+    R2_getValueAndJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
 {
   R2BoxConstraint constraint(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mR2StateSpace->createState();
 
@@ -549,10 +567,12 @@ TEST_F(RnBoxConstraintTests, R2_getValueAndJacobian_DoesNotSatisfyConstraint_Ret
 }
 
 //==============================================================================
-TEST_F(RnBoxConstraintTests, Rx_getValueAndJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
+TEST_F(
+    RnBoxConstraintTests,
+    Rx_getValueAndJacobian_DoesNotSatisfyConstraint_ReturnsNonZero)
 {
   RnBoxConstraint constraint(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto state = mRxStateSpace->createState();
 
@@ -573,13 +593,18 @@ TEST_F(RnBoxConstraintTests, Rx_getValueAndJacobian_DoesNotSatisfyConstraint_Ret
 TEST_F(RnBoxConstraintTests, R2_createSampleGenerator)
 {
   auto constraint = std::make_shared<R2BoxConstraint>(
-    mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto generator = constraint->createSampleGenerator();
   EXPECT_EQ(mR2StateSpace, generator->getStateSpace());
 
-  auto result = SampleGeneratorCoverage(*generator, *mR2Distance,
-    std::begin(mTargets), std::end(mTargets), DISTANCE_THRESHOLD, NUM_SAMPLES);
+  auto result = SampleGeneratorCoverage(
+      *generator,
+      *mR2Distance,
+      std::begin(mTargets),
+      std::end(mTargets),
+      DISTANCE_THRESHOLD,
+      NUM_SAMPLES);
   ASSERT_TRUE(result);
 }
 
@@ -587,13 +612,18 @@ TEST_F(RnBoxConstraintTests, R2_createSampleGenerator)
 TEST_F(RnBoxConstraintTests, Rx_createSampleGenerator)
 {
   auto constraint = std::make_shared<RnBoxConstraint>(
-    mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
+      mRxStateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto generator = constraint->createSampleGenerator();
   EXPECT_EQ(mRxStateSpace, generator->getStateSpace());
 
-  auto result = SampleGeneratorCoverage(*generator, *mRxDistance,
-    std::begin(mTargets), std::end(mTargets), DISTANCE_THRESHOLD, NUM_SAMPLES);
+  auto result = SampleGeneratorCoverage(
+      *generator,
+      *mRxDistance,
+      std::begin(mTargets),
+      std::end(mTargets),
+      DISTANCE_THRESHOLD,
+      NUM_SAMPLES);
   ASSERT_TRUE(result);
 }
 
@@ -603,11 +633,9 @@ TEST_F(RnBoxConstraintTests, R2_createSampleGenerator_RNGIsNull_Throws)
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
   auto constraint = std::make_shared<R2BoxConstraint>(
-    mR2StateSpace, nullptr, mLowerLimits, mUpperLimits);
+      mR2StateSpace, nullptr, mLowerLimits, mUpperLimits);
 
-  EXPECT_THROW({
-    constraint->createSampleGenerator();
-      }, std::invalid_argument);
+  EXPECT_THROW({ constraint->createSampleGenerator(); }, std::invalid_argument);
 }
 
 //==============================================================================
@@ -616,11 +644,9 @@ TEST_F(RnBoxConstraintTests, Rx_createSampleGenerator_RNGIsNull_Throws)
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
   auto constraint = std::make_shared<RnBoxConstraint>(
-    mRxStateSpace, nullptr, mLowerLimits, mUpperLimits);
+      mRxStateSpace, nullptr, mLowerLimits, mUpperLimits);
 
-  EXPECT_THROW({
-    constraint->createSampleGenerator();
-      }, std::invalid_argument);
+  EXPECT_THROW({ constraint->createSampleGenerator(); }, std::invalid_argument);
 }
 
 //==============================================================================
@@ -635,16 +661,12 @@ TEST_F(RnBoxConstraintTests, R2_createSampleGenerator_Unbounded_Throws)
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
   auto unbounded1 = std::make_shared<R2BoxConstraint>(
-    mR2StateSpace, mRng->clone(), noLowerBound, mUpperLimits);
-  EXPECT_THROW({
-    unbounded1->createSampleGenerator();
-  }, std::runtime_error);
+      mR2StateSpace, mRng->clone(), noLowerBound, mUpperLimits);
+  EXPECT_THROW({ unbounded1->createSampleGenerator(); }, std::runtime_error);
 
   auto unbounded2 = std::make_shared<R2BoxConstraint>(
-    mR2StateSpace, mRng->clone(), mLowerLimits, noUpperBound);
-  EXPECT_THROW({
-    unbounded2->createSampleGenerator();
-  }, std::runtime_error);
+      mR2StateSpace, mRng->clone(), mLowerLimits, noUpperBound);
+  EXPECT_THROW({ unbounded2->createSampleGenerator(); }, std::runtime_error);
 }
 
 //==============================================================================
@@ -659,14 +681,10 @@ TEST_F(RnBoxConstraintTests, Rx_createSampleGenerator_Unbounded_Throws)
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
   auto unbounded1 = std::make_shared<RnBoxConstraint>(
-    mRxStateSpace, mRng->clone(), noLowerBound, mUpperLimits);
-  EXPECT_THROW({
-    unbounded1->createSampleGenerator();
-  }, std::runtime_error);
+      mRxStateSpace, mRng->clone(), noLowerBound, mUpperLimits);
+  EXPECT_THROW({ unbounded1->createSampleGenerator(); }, std::runtime_error);
 
   auto unbounded2 = std::make_shared<RnBoxConstraint>(
-    mRxStateSpace, mRng->clone(), mLowerLimits, noUpperBound);
-  EXPECT_THROW({
-    unbounded2->createSampleGenerator();
-  }, std::runtime_error);
+      mRxStateSpace, mRng->clone(), mLowerLimits, noUpperBound);
+  EXPECT_THROW({ unbounded2->createSampleGenerator(); }, std::runtime_error);
 }

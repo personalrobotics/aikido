@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include <dart/common/StlHelpers.hpp>
+#include <gtest/gtest.h>
 #include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
@@ -29,21 +29,20 @@ protected:
     mTargets.clear();
 
     for (std::size_t i = 0; i < NUM_AXIS_TARGETS; ++i)
-    for (std::size_t j = 0; j < NUM_AXIS_TARGETS; ++j)
-    for (std::size_t k = 0; k < NUM_AXIS_TARGETS; ++k)
-    {
-      const auto angle1 = (2. * M_PI * i) / NUM_AXIS_TARGETS;
-      const auto angle2 = (2. * M_PI * j) / NUM_AXIS_TARGETS;
-      const auto angle3 = (2. * M_PI * k) / NUM_AXIS_TARGETS;
-      const auto rotation = Eigen::Quaterniond(
-          Eigen::AngleAxisd(angle1, Vector3d::UnitX())
-        * Eigen::AngleAxisd(angle2, Vector3d::UnitY())
-        * Eigen::AngleAxisd(angle3, Vector3d::UnitZ())
-      );
+      for (std::size_t j = 0; j < NUM_AXIS_TARGETS; ++j)
+        for (std::size_t k = 0; k < NUM_AXIS_TARGETS; ++k)
+        {
+          const auto angle1 = (2. * M_PI * i) / NUM_AXIS_TARGETS;
+          const auto angle2 = (2. * M_PI * j) / NUM_AXIS_TARGETS;
+          const auto angle3 = (2. * M_PI * k) / NUM_AXIS_TARGETS;
+          const auto rotation = Eigen::Quaterniond(
+              Eigen::AngleAxisd(angle1, Vector3d::UnitX())
+              * Eigen::AngleAxisd(angle2, Vector3d::UnitY())
+              * Eigen::AngleAxisd(angle3, Vector3d::UnitZ()));
 
-      mTargets.emplace_back(mStateSpace->createState());
-      mTargets.back().setQuaternion(rotation);
-    }
+          mTargets.emplace_back(mStateSpace->createState());
+          mTargets.back().setQuaternion(rotation);
+        }
   }
 
   std::unique_ptr<RNG> mRng;
@@ -54,16 +53,14 @@ protected:
 
 TEST_F(SO3UniformSamplerTests, constructor_StateSpaceIsNull_Throws)
 {
-  EXPECT_THROW({
-    SO3UniformSampler(nullptr, mRng->clone());
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { SO3UniformSampler(nullptr, mRng->clone()); }, std::invalid_argument);
 }
 
 TEST_F(SO3UniformSamplerTests, constructor_RNGIsNull_Throws)
 {
-  EXPECT_THROW({
-    SO3UniformSampler(mStateSpace, nullptr);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { SO3UniformSampler(mStateSpace, nullptr); }, std::invalid_argument);
 }
 
 TEST_F(SO3UniformSamplerTests, sampleGenerator)
@@ -74,7 +71,12 @@ TEST_F(SO3UniformSamplerTests, sampleGenerator)
   ASSERT_TRUE(generator->canSample());
   ASSERT_EQ(SampleGenerator::NO_LIMIT, generator->getNumSamples());
 
-  auto result = SampleGeneratorCoverage(*generator, *mDistance,
-    std::begin(mTargets), std::end(mTargets), DISTANCE_THRESHOLD, NUM_SAMPLES);
+  auto result = SampleGeneratorCoverage(
+      *generator,
+      *mDistance,
+      std::begin(mTargets),
+      std::end(mTargets),
+      DISTANCE_THRESHOLD,
+      NUM_SAMPLES);
   ASSERT_TRUE(result);
 }

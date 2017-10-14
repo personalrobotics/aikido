@@ -1,6 +1,6 @@
+#include <dart/dart.hpp>
 #include <gtest/gtest.h>
 #include <aikido/control/ros/Conversions.hpp>
-#include <dart/dart.hpp>
 #include "eigen_tests.hpp"
 
 using dart::dynamics::SkeletonPtr;
@@ -23,12 +23,12 @@ protected:
 
     RevoluteJoint::Properties jointProperties;
     jointProperties.mName = "Joint1";
-    
+
     BodyNode::Properties bnProperties;
     bnProperties.mName = "BodyNode1";
 
-    mSkeleton->createJointAndBodyNodePair<
-      RevoluteJoint, BodyNode>(nullptr, jointProperties, bnProperties);
+    mSkeleton->createJointAndBodyNodePair<RevoluteJoint, BodyNode>(
+        nullptr, jointProperties, bnProperties);
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton);
 
     // Create a two-waypoint trajectory for mSkeleton.
@@ -46,10 +46,10 @@ protected:
 
     // 2-Joint skeleton
     mSkeleton2Joints = dart::dynamics::Skeleton::create("2JointSkeleton");
-    
+
     RevoluteJoint::Properties jointProperties1;
     jointProperties1.mName = "Joint1";
-    
+
     RevoluteJoint::Properties jointProperties2;
     jointProperties2.mName = "Joint2";
 
@@ -59,11 +59,14 @@ protected:
     BodyNode::Properties bnProperties2;
     bnProperties2.mName = "BodyNode2";
 
-    auto bn1 = mSkeleton2Joints->createJointAndBodyNodePair<
-      RevoluteJoint, BodyNode>(nullptr, jointProperties1, bnProperties1).second;
-    mSkeleton2Joints->createJointAndBodyNodePair<
-      RevoluteJoint, BodyNode>(bn1, jointProperties2, bnProperties2);
-    mStateSpace2Joints = std::make_shared<MetaSkeletonStateSpace>(mSkeleton2Joints);
+    auto bn1 = mSkeleton2Joints
+                   ->createJointAndBodyNodePair<RevoluteJoint, BodyNode>(
+                       nullptr, jointProperties1, bnProperties1)
+                   .second;
+    mSkeleton2Joints->createJointAndBodyNodePair<RevoluteJoint, BodyNode>(
+        bn1, jointProperties2, bnProperties2);
+    mStateSpace2Joints
+        = std::make_shared<MetaSkeletonStateSpace>(mSkeleton2Joints);
 
     // Create a two-waypoint trajectory for mSkeleton2Joints,
     // with different ordering of joints.
@@ -84,7 +87,6 @@ protected:
   SkeletonPtr mSkeleton;
   std::shared_ptr<MetaSkeletonStateSpace> mStateSpace;
   trajectory_msgs::JointTrajectory mTwoWaypointMessage;
-  
 
   SkeletonPtr mSkeleton2Joints;
   std::shared_ptr<MetaSkeletonStateSpace> mStateSpace2Joints;
@@ -93,9 +95,9 @@ protected:
 
 TEST_F(ConvertJointTrajectoryTests, StateSpaceIsNull_Throws)
 {
-  EXPECT_THROW({
-    toSplineJointTrajectory(nullptr, mTwoWaypointMessage);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(nullptr, mTwoWaypointMessage); },
+      std::invalid_argument);
 }
 
 TEST_F(ConvertJointTrajectoryTests, NoWaypoints_Throws)
@@ -103,9 +105,9 @@ TEST_F(ConvertJointTrajectoryTests, NoWaypoints_Throws)
   auto zeroWaypointMessage = mTwoWaypointMessage;
   zeroWaypointMessage.points.clear();
 
-  EXPECT_THROW({
-    toSplineJointTrajectory(mStateSpace, zeroWaypointMessage);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(mStateSpace, zeroWaypointMessage); },
+      std::invalid_argument);
 }
 
 TEST_F(ConvertJointTrajectoryTests, LessThanTwoWaypoints_Throws)
@@ -113,44 +115,43 @@ TEST_F(ConvertJointTrajectoryTests, LessThanTwoWaypoints_Throws)
   auto oneWaypointMessage = mTwoWaypointMessage;
   oneWaypointMessage.points.resize(1);
 
-  EXPECT_THROW({
-    toSplineJointTrajectory(mStateSpace, oneWaypointMessage);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(mStateSpace, oneWaypointMessage); },
+      std::invalid_argument);
 }
 
 TEST_F(ConvertJointTrajectoryTests, IncorrectNumberOfJoints_Throws)
 {
   mTwoWaypointMessage.joint_names.emplace_back("Joint1");
 
-  EXPECT_THROW({
-    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage); },
+      std::invalid_argument);
 }
 
 TEST_F(ConvertJointTrajectoryTests, TrajectoryHasUnknownJoint_Throws)
 {
   mTwoWaypointMessage.joint_names[0] = "MissingJoint";
 
-  EXPECT_THROW({
-    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage); },
+      std::invalid_argument);
 }
 
 TEST_F(ConvertJointTrajectoryTests, StateSpaceHasUnknownJoint_Throws)
 {
   mSkeleton->getJoint(0)->setName("MissingJoint");
 
-  EXPECT_THROW({
-    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage); },
+      std::invalid_argument);
 }
-
 
 TEST_F(ConvertJointTrajectoryTests, LinearTrajectory)
 {
   const auto linearTwoWaypointMessage = mTwoWaypointMessage;
-  const auto trajectory = toSplineJointTrajectory(
-    mStateSpace, linearTwoWaypointMessage);
+  const auto trajectory
+      = toSplineJointTrajectory(mStateSpace, linearTwoWaypointMessage);
 
   ASSERT_TRUE(!!trajectory);
   ASSERT_DOUBLE_EQ(0., trajectory->getStartTime());
@@ -183,8 +184,8 @@ TEST_F(ConvertJointTrajectoryTests, CubicTrajectory)
   cubicTwoWaypointMessage.points[0].velocities.assign({3.});
   cubicTwoWaypointMessage.points[1].velocities.assign({4.});
 
-  const auto trajectory = toSplineJointTrajectory(
-    mStateSpace, cubicTwoWaypointMessage);
+  const auto trajectory
+      = toSplineJointTrajectory(mStateSpace, cubicTwoWaypointMessage);
 
   ASSERT_TRUE(!!trajectory);
   ASSERT_DOUBLE_EQ(0., trajectory->getStartTime());
@@ -219,8 +220,8 @@ TEST_F(ConvertJointTrajectoryTests, QuinticTrajectory)
   quinticTwoWaypointMessage.points[1].velocities.assign({4.});
   quinticTwoWaypointMessage.points[1].accelerations.assign({6.});
 
-  const auto trajectory = toSplineJointTrajectory(
-    mStateSpace, quinticTwoWaypointMessage);
+  const auto trajectory
+      = toSplineJointTrajectory(mStateSpace, quinticTwoWaypointMessage);
 
   ASSERT_TRUE(!!trajectory);
   ASSERT_DOUBLE_EQ(0., trajectory->getStartTime());
@@ -255,8 +256,8 @@ TEST_F(ConvertJointTrajectoryTests, QuinticTrajectory)
 
 TEST_F(ConvertJointTrajectoryTests, DifferentOrderingOfJoints)
 {
-  const auto trajectory = toSplineJointTrajectory(
-    mStateSpace2Joints, mTwoWaypointMessage2Joints);
+  const auto trajectory
+      = toSplineJointTrajectory(mStateSpace2Joints, mTwoWaypointMessage2Joints);
 
   ASSERT_TRUE(!!trajectory);
   ASSERT_DOUBLE_EQ(0., trajectory->getStartTime());
@@ -285,13 +286,14 @@ TEST_F(ConvertJointTrajectoryTests, DifferentOrderingOfJoints)
 
 TEST_F(ConvertJointTrajectoryTests, StateSpaceMissingJoint_Throws)
 {
-  EXPECT_THROW({
-    toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage2Joints);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage2Joints); },
+      std::invalid_argument);
 }
 
-TEST_F(ConvertJointTrajectoryTests,
-  JointTrajectoryHasMultipleJointsWithSameName_Throws)
+TEST_F(
+    ConvertJointTrajectoryTests,
+    JointTrajectoryHasMultipleJointsWithSameName_Throws)
 {
   auto trajectory = trajectory_msgs::JointTrajectory{};
   trajectory.joint_names.emplace_back("Joint1");
@@ -306,13 +308,13 @@ TEST_F(ConvertJointTrajectoryTests,
   waypoint2.time_from_start = ros::Duration{1.};
   waypoint2.positions.assign({2., 3.});
 
-  EXPECT_THROW({
-    toSplineJointTrajectory(mStateSpace2Joints, trajectory);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(mStateSpace2Joints, trajectory); },
+      std::invalid_argument);
 }
 
-TEST_F(ConvertJointTrajectoryTests,
-    StateSpaceHasMultipleJointsWithSameName_Throws)
+TEST_F(
+    ConvertJointTrajectoryTests, StateSpaceHasMultipleJointsWithSameName_Throws)
 {
   using dart::dynamics::BodyNode;
   using dart::dynamics::RevoluteJoint;
@@ -323,19 +325,19 @@ TEST_F(ConvertJointTrajectoryTests,
   RevoluteJoint::Properties jointProperties;
   jointProperties.mName = "Joint1";
 
-  skeleton1->createJointAndBodyNodePair<
-      RevoluteJoint>(nullptr, jointProperties);
+  skeleton1->createJointAndBodyNodePair<RevoluteJoint>(
+      nullptr, jointProperties);
 
   auto skeleton2 = dart::dynamics::Skeleton::create();
-  skeleton2->createJointAndBodyNodePair<
-    RevoluteJoint>(nullptr, jointProperties);
+  skeleton2->createJointAndBodyNodePair<RevoluteJoint>(
+      nullptr, jointProperties);
 
   auto groupSkeleton = dart::dynamics::Group::create();
   groupSkeleton->addJoint(skeleton1->getJoint(0));
   groupSkeleton->addJoint(skeleton2->getJoint(0));
   auto space = std::make_shared<MetaSkeletonStateSpace>(groupSkeleton);
 
-  EXPECT_THROW({
-    toSplineJointTrajectory(space, mTwoWaypointMessage2Joints);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toSplineJointTrajectory(space, mTwoWaypointMessage2Joints); },
+      std::invalid_argument);
 }
