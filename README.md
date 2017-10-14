@@ -62,7 +62,7 @@ Once the dependencies are installed, you can build and install AIKIDO using [CMa
 $ mkdir build
 $ cd build
 $ cmake ..
-$ make
+$ make  # you may want to build AIKIDO using multi-core by executing `make -j4`
 $ sudo make install
 ```
 
