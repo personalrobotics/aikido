@@ -12,13 +12,13 @@ execution on real robots.
 ## Installation
 
 ### Dependencies
-AIKIDO depends on [CMake], [Boost], [DART] \(version 6.1 or above), [OMPL], and the
+AIKIDO depends on [CMake], [Boost], [DART] \(version 6.3 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
 make heavy use of C++11 and require a modern compiler.
 
 ### Ubuntu Trusty
 
-AIKIDO includes several optional components that depend on [ROS]. In order to install them, you should [install ROS](http://wiki.ros.org/indigo/Installation/Ubuntu) first. We encourage to install indigo.
+AIKIDO includes several optional components that depend on [ROS]. In order to install them, you should [install ROS](http://wiki.ros.org/indigo/Installation/Ubuntu) first. We encourage users to install [`indigo`](http://wiki.ros.org/indigo).
 ```shell
 $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 $ sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
@@ -32,7 +32,7 @@ Add [PRL's PPA repository](https://launchpad.net/~personalrobotics/+archive/ubun
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
 ```
-You could install all the AIKIDO components at once (make sure ROS depencies are all installed):
+You could install all the AIKIDO components at once (make sure ROS dependencies are all installed):
 ```shell
 $ sudo apt-get install libaikido0-all-dev
 ```
