@@ -111,7 +111,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     throw std::invalid_argument("Velocity space volume zero");
   }
 
-  size_t const num_dof = stateSpace->getDimension();
+  std::size_t const num_dof = stateSpace->getDimension();
 
   std::vector<Knot> knots;
   VectorFieldPlannerStatus::Enum termination_status
@@ -144,17 +144,17 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
       break;
     }
 
-    if (static_cast<size_t>(qd.size()) != num_dof)
+    if (static_cast<std::size_t>(qd.size()) != num_dof)
     {
       throw std::length_error(
           "Vector field returned an incorrect number of DOF velocities.");
     }
 
     // TODO: This should be computed from the DOF resolutions.
-    size_t const num_steps = 1;
+    std::size_t const num_steps = 1;
 
     // Compute the number of collision checks we need.
-    for (size_t istep = 0; istep < num_steps; ++istep)
+    for (std::size_t istep = 0; istep < num_steps; ++istep)
     {
       try
       {
@@ -248,7 +248,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const auto spline = problem.fit();
 
     // convert spline to outputTrajectory
-    for (size_t i = 0; i < spline.getNumKnots() - 1; i++)
+    for (int i = 0; i < spline.getNumKnots() - 1; i++)
     {
       auto coefficients = spline.getCoefficients()[i];
       double timeStep = spline.getTimes()[i];
@@ -281,7 +281,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double distance,
     double position_tolerance,
     double angular_tolerance,
-    double integration_interval)
+    double duration,
+    double timestep,
+    double linear_gain,
+    double angular_gain)
 {
   if (distance < 0.)
   {
@@ -295,25 +298,21 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error("Direction vector is a zero vector");
   }
 
-  double dt = 0.01;
-  double linear_gain = 10.0;
-  double angular_gain = 10.0;
-
-  double linear_velocity = distance / integration_interval;
+  double linear_velocity = distance / duration;
 
   auto vectorfield = MoveHandStraightVectorField(
       bn,
       direction.normalized() * linear_velocity,
       0.0,
-      integration_interval,
-      dt,
+      duration,
+      timestep,
       linear_gain,
       position_tolerance,
       angular_gain,
       angular_tolerance);
 
   return planPathByVectorField(
-      stateSpace, constraint, dt, vectorfield, vectorfield);
+      stateSpace, constraint, timestep, vectorfield, vectorfield);
 }
 
 } // namespace vectorfield

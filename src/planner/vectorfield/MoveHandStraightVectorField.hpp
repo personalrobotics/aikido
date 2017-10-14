@@ -1,5 +1,5 @@
-#ifndef MUUL_PROJECTION_MOVEHANDSTRAIGHTVECTORFIELD_H_
-#define MUUL_PROJECTION_MOVEHANDSTRAIGHTVECTORFIELD_H_
+#ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_
+#define AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_
 #include <Eigen/Geometry>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 
@@ -14,11 +14,13 @@ public:
     Eigen::Vector3d const &linear_velocity,
     double min_duration,
     double max_duration,
-    double dt,
+    double stepsize,
     double linear_gain = 10.,
     double linear_tolerance = 0.01,
     double rotation_gain = 10.,
-    double rotation_tolerance = 0.1
+    double rotation_tolerance = 0.01,
+    double optimization_tolerance = 1e-4,
+    double padding = 1e-5
   );
 
   bool operator()(
@@ -30,15 +32,17 @@ public:
     double t);
 
 private:
+  dart::dynamics::BodyNode *bodynode_;
+  Eigen::VectorXd velocity_;
   double min_duration_;
   double max_duration_;
-  double dt_;
-  Eigen::VectorXd velocity_;
+  double timsetep_;
   double linear_gain_;
   double linear_tolerance_;
   double rotation_gain_;
   double rotation_tolerance_;
-  dart::dynamics::BodyNode *bodynode_;
+  double optimization_tolerance_;
+  double padding_;
   Eigen::Isometry3d start_pose_;
   Eigen::Isometry3d target_pose_;
 };
@@ -47,4 +51,4 @@ private:
 } // namespace planner
 } // namespace aikido
 
-#endif // ifndef MUUL_PROJECTION_MOVEHANDSTRAIGHTVECTORFIELD_H_
+#endif // ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_

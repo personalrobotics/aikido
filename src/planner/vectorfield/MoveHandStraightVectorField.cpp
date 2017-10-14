@@ -46,33 +46,42 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
     Eigen::Vector3d const& linear_velocity,
     double min_duration,
     double max_duration,
-    double dt,
+    double stepsize,
     double linear_gain,
     double linear_tolerance,
     double rotation_gain,
-    double rotation_tolerance)
-  : min_duration_(min_duration)
-  , max_duration_(max_duration)
-  , dt_(dt)
+    double rotation_tolerance,
+    double optimization_tolerance,
+    double padding)
+  : bodynode_(bn)
   , velocity_(linear_velocity)
+  , min_duration_(min_duration)
+  , max_duration_(max_duration)
+  , timsetep_(stepsize)
   , linear_gain_(linear_gain)
   , linear_tolerance_(linear_tolerance)
   , rotation_gain_(rotation_gain)
   , rotation_tolerance_(rotation_tolerance)
-  , bodynode_(bn)
+  , optimization_tolerance_(optimization_tolerance)
+  , padding_(padding)
   , start_pose_(bn->getTransform())
 {
-  assert(min_duration >= 0);
-  assert(max_duration >= min_duration);
-  assert(dt >= 0);
-  assert(linear_velocity.all() >= 0);
-  assert(linear_gain >= 0);
-  assert(linear_tolerance > 0);
-  assert(rotation_gain >= 0);
-  assert(rotation_tolerance > 0);
+  assert(min_duration_ >= 0);
+  assert(max_duration_ >= min_duration_);
+  assert(timsetep_ >= 0);
+  assert(velocity_.all() >= 0);
+  assert(linear_gain_ >= 0);
+  assert(linear_tolerance_ > 0);
+  assert(rotation_gain_ >= 0);
+  assert(rotation_tolerance_ > 0);
+  assert(optimization_tolerance_ > 0);
 
   target_pose_ = start_pose_;
-  target_pose_.translation() += velocity_ * max_duration;
+  target_pose_.translation() += velocity_ * max_duration_;
+
+  // consider linear tolerance in terminating by time
+  double time_padding = linear_tolerance / linear_velocity.norm();
+  max_duration_ += time_padding;
 }
 
 bool MoveHandStraightVectorField::operator()(
@@ -88,9 +97,8 @@ bool MoveHandStraightVectorField::operator()(
   using dart::math::Jacobian;
   using dart::math::logMap;
 
+  DART_UNUSED(t);
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
-
-  static const double tolerance = 1e-4;
 
   Isometry3d const current_pose = bodynode_->getTransform();
 
@@ -116,9 +124,6 @@ bool MoveHandStraightVectorField::operator()(
   desired_twist.tail<3>()
       = linear_feedforward + linear_gain_ * linear_orthogonal_error;
 
-  // TODO: This should be a parameter.
-  const double padding = 1e-5;
-
   // Use LBFGS to find joint angles that won't violate the joint limits.
   const Jacobian jacobian
       = stateSpace->getMetaSkeleton()->getWorldJacobian(bodynode_);
@@ -138,12 +143,14 @@ bool MoveHandStraightVectorField::operator()(
     const double velocityUpperLimit
         = stateSpace->getMetaSkeleton()->getVelocityUpperLimit(i);
 
-    if (position < positionLowerLimit - dt_ * velocityLowerLimit + padding)
+    if (position
+        < positionLowerLimit - timsetep_ * velocityLowerLimit + padding_)
       lowerLimits[i] = 0;
     else
       lowerLimits[i] = velocityLowerLimit;
 
-    if (position > positionUpperLimit - dt_ * velocityUpperLimit - padding)
+    if (position
+        > positionUpperLimit - timsetep_ * velocityUpperLimit - padding_)
       upperLimits[i] = 0;
     else
       upperLimits[i] = velocityUpperLimit;
@@ -156,7 +163,7 @@ bool MoveHandStraightVectorField::operator()(
       std::make_shared<DesiredTwistFunction>(desired_twist, jacobian));
 
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
-  if (!solver.solve() || problem->getOptimumValue() > tolerance)
+  if (!solver.solve() || problem->getOptimumValue() > optimization_tolerance_)
   {
     return false;
   }
@@ -174,6 +181,7 @@ VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
 
+  DART_UNUSED(stateSpace);
   Isometry3d const current_pose = bodynode_->getTransform();
 
   // Check for deviation from the straight-line trajectory.
@@ -194,7 +202,7 @@ VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
   }
 
   // Check if we've reached the target.
-  if (t >= max_duration_)
+  if (t > max_duration_)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }

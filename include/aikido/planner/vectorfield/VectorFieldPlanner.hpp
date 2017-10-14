@@ -28,12 +28,12 @@ using VectorFieldCallback = std::function<bool(
 
 using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus::Enum(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    double t)>;
+    double duration)>;
 
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     const aikido::constraint::TestablePtr constraint,
-    double dt,
+    double timestep,
     const VectorFieldCallback& vectorFiledCb,
     const VectorFieldStatusCallback& statusCb);
 
@@ -45,7 +45,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double distance,
     double position_tolerance = 0.001,
     double angular_tolerance = 0.01,
-    double integration_interval = 2.0);
+    double duration = 2.0,
+    double timestep = 0.01,
+    double linear_gain = 10.0,
+    double angular_gain = 10.0);
 
 } // namespace vectorfield
 } // namespace planner

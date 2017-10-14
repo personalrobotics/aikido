@@ -50,7 +50,7 @@ public:
   };
 
   VectorFieldPlannerTest()
-      : errorTolerance(1e-4)
+      : errorTolerance(1e-3)
   {
     skel = createThreeLinkRobot(Eigen::Vector3d(1.0, 1.0, 1.0),
                                 DOF_X,
@@ -78,7 +78,6 @@ public:
     passingConstraint = std::make_shared<PassingConstraint>(stateSpace);
     failingConstraint = std::make_shared<FailingConstraint>(stateSpace);
     interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
-
 
   }
 
@@ -243,7 +242,8 @@ public:
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
   Eigen::Vector3d direction;
-  direction << 0., 0., 1.;
+  direction << 1., 1., 1.;
+  direction.normalize();
   double distance = 1.0;
 
   stateSpace->getMetaSkeleton()->setPositions(startVec);
@@ -261,6 +261,11 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   EXPECT_FALSE(traj==nullptr) << "Trajectory not found";
 
+  if(traj==nullptr)
+  {
+    return;
+  }
+
   //Trajectory should have >= 1 waypoints
   EXPECT_GE(traj->getNumWaypoints(),1)
           << "Trajectory should have >= 1 waypoints";
@@ -277,8 +282,11 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double expectedDistance = 0.0;
   int stepNum = 10;
   double timeStep = traj->getDuration() / stepNum;
-  std::cout << "start time " << traj->getStartTime() << std::endl;
-  std::cout << "end time " << traj->getEndTime() << std::endl;
+  //std::cout << "start time " << traj->getStartTime() << std::endl;
+  //std::cout << "end time " << traj->getEndTime() << std::endl;
+
+
+
   for(double t=traj->getStartTime(); t<=traj->getEndTime(); t+=timeStep)
   {
     auto waypoint = stateSpace->createState();
@@ -292,11 +300,12 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
     expectedDistance = (startVec - waypointVec).norm();
 
     Eigen::Isometry3d expectedTrans = startTrans;
-    expectedTrans.translation() += expectedDistance * direction;
+    expectedTrans.translation() += expectedDistance * direction.normalized();
     auto expectedVec = expectedTrans.translation();
 
+    double currentError = (waypointVec-expectedVec).norm();
     // Verify that the position is monotone
-    EXPECT_TRUE( (waypointVec-expectedVec).norm() <= errorTolerance );
+    EXPECT_TRUE( currentError <= errorTolerance );
   }
 
   // Verify the moving distance
