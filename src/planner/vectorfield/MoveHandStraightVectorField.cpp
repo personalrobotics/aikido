@@ -90,7 +90,7 @@ bool MoveHandStraightVectorField::operator()(
 
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
-  static const double tolerance = 1e-6;
+  static const double tolerance = 1e-4;
 
   Isometry3d const current_pose = bodynode_->getTransform();
 

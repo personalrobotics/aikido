@@ -295,7 +295,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error("Direction vector is a zero vector");
   }
 
-  double dt = 0.1;
+  double dt = 0.01;
   double linear_gain = 10.0;
   double angular_gain = 10.0;
 
