@@ -11,39 +11,43 @@ execution on real robots.
 
 ## Installation
 
-### Dependencies
-AIKIDO depends on [CMake], [Boost], [DART] \(version 6.3 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), and the
-Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
-make heavy use of C++11 and require a modern compiler.
-
-### Ubuntu Trusty
-
-AIKIDO includes several optional components that depend on [ROS]. In order to install them, you should [install ROS](http://wiki.ros.org/indigo/Installation/Ubuntu) first. We encourage users to install [`indigo`](http://wiki.ros.org/indigo).
+### On Ubuntu Trusty using `apt-get`
+AIKIDO depends on [ROS], which is not installed by `apt-get`. You should [install ROS](http://wiki.ros.org/indigo/Installation/Ubuntu) by adding ROS repository to your `sources.list` as followings. We encourage users to install [`indigo`](http://wiki.ros.org/indigo).
 ```shell
 $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 $ sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 $ sudo apt-get update
 $ sudo apt-get install ros-indigo-actionlib ros-indigo-geometry-msgs ros-indigo-interactive-markers ros-indigo-roscpp ros-indigo-std-msgs ros-indigo-tf ros-indigo-trajectory-msgs ros-indigo-visualization-msgs
 ```
-
-#### Using `apt-get`
-Add [PRL's PPA repository](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa):
+Once ROS is installed, you can install AIKIDO from [PRL's PPA repository](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa):
 ```shell
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
-```
-You could install all the AIKIDO components at once (make sure ROS dependencies are all installed):
-```shell
 $ sudo apt-get install libaikido0-all-dev
 ```
-or install individual packages:
-```shell
-$ sudo apt-get install libaikido0-<component_name>-dev
-```
-The full list of AIKIDO components can be found [here](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa/+packages).
 
-#### Build from source (Standalone)
-Install the dependencies:
+### On macOS using [Homebrew]
+```shell
+# install Homebrew package manager
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# add Homebrew tap for Personal Robotics Lab software
+$ brew tap personalrobotics/tap
+# install AIKIDO
+$ brew install aikido0
+```
+> Note: ROS seems to be [available on macOS](http://wiki.ros.org/indigo/Installation/OSX/Homebrew/Source), but we haven't tested it yet. So `brew install aikido0` installs AIKIDO without ROS related components for now.
+
+## Build from Source
+
+### Dependencies
+AIKIDO depends on [CMake], [Boost], [DART] \(version 6.3 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
+Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
+make heavy use of C++11 and require a modern compiler.
+
+### On Ubuntu Trusty using CMake
+You should install ROS packages as described above to build all the ROS dependent AIKIDO components (e.g., `aikido-control-ros`).
+
+Install the other dependencies:
 ```shell
 $ sudo apt-add-repository ppa:libccd-debs/ppa
 $ sudo apt-add-repository ppa:fcl-debs/ppa
@@ -53,7 +57,7 @@ $ sudo apt-get update
 $ sudo apt-get install cmake build-essential libboost-filesystem-dev libdart6-optimizer-nlopt-dev libdart6-utils-dev libdart6-utils-urdf-dev libmicrohttpd-dev libompl-dev libtinyxml2-dev libyaml-cpp-dev pr-control-msgs
 ```
 
-Once the dependencies are installed, you can build AIKIDO using [CMake]:
+Once the dependencies are installed, you can build and install AIKIDO using [CMake]:
 ```shell
 $ mkdir build
 $ cd build
@@ -71,7 +75,7 @@ running the above commands, e.g.:
 $ . /path/to/my/workspace/setup.bash
 ```
 
-#### Build from source (Catkin)
+### On Ubuntu Trusty using Catkin
 It is also possible to build AIKIDO as a [third-party package][REP-136] inside a
 [Catkin workspace][Catkin Workspaces]. To do so, clone AIKIDO into your Catkin
 workspace and use the `catkin build` command like normal.
@@ -80,19 +84,6 @@ If you are using the older `catkin_make` command, then you must build your works
 with `catkin_make_isolated`. This may dramatically increase your build time, so we
 *strongly recommend* that you use `catkin build`, which is provided by the
 [`catkin_tools` package][Catkin Tools], if possible.
-
-### macOS
-
-#### Using [Homebrew]
-
-```shell
-# install Homebrew package manager
-$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-# add Homebrew tap for Personal Robotics Lab software
-$ brew tap personalrobotics/tap
-# install AIKIDO
-$ brew install aikido0
-```
 
 ## Code Style
 Please follow the [AIKIDO code style](https://github.com/personalrobotics/aikido/blob/master/STYLE.md) when you making a contribution.
