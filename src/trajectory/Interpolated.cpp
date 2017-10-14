@@ -1,5 +1,7 @@
 #include <aikido/trajectory/Interpolated.hpp>
 
+#include <dart/common/common.hpp>
+
 using aikido::statespace::GeodesicInterpolator;
 
 namespace aikido {
@@ -14,6 +16,12 @@ Interpolated::Interpolated(
   : mStateSpace(std::move(_sspace)), mInterpolator(std::move(_interpolator))
 {
   // Do nothing
+}
+
+//==============================================================================
+std::unique_ptr<Trajectory> Interpolated::clone() const
+{
+  return dart::common::make_unique<Interpolated>(*this);
 }
 
 //==============================================================================

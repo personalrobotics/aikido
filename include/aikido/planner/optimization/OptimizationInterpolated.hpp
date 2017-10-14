@@ -5,13 +5,13 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
-#include "aikido/planner/optimization/OptimizationVariables.hpp"
+#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
 
 namespace aikido {
 namespace planner {
 namespace optimization {
 
-class OptimizationInterpolated : public OptimizationVariables
+class OptimizationInterpolated : public TrajectoryOptimizationVariables
 {
 public:
   OptimizationInterpolated() = default;

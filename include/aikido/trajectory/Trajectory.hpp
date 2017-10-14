@@ -17,6 +17,9 @@ class Trajectory
 public:
   virtual ~Trajectory() = default;
 
+  /// Clone this Trajectory
+  virtual std::unique_ptr<Trajectory> clone() const = 0;
+
   /// Gets the \c StateSpace that this trajectory is defined in.
   ///
   /// \return state space this trajectory is defined in.

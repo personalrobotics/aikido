@@ -1,5 +1,6 @@
 #include <aikido/trajectory/Spline.hpp>
 
+#include <dart/common/common.hpp>
 #include <aikido/common/Spline.hpp>
 
 namespace aikido {
@@ -18,6 +19,12 @@ Spline::~Spline()
 {
   for (const auto& segment : mSegments)
     mStateSpace->freeState(segment.mStartState);
+}
+
+//==============================================================================
+std::unique_ptr<Trajectory> Spline::clone() const
+{
+  return dart::common::make_unique<Spline>(*this);
 }
 
 //==============================================================================
@@ -65,6 +72,71 @@ void Spline::addSegment(const Eigen::MatrixXd& _coefficients, double _duration)
 std::size_t Spline::getNumSegments() const
 {
   return mSegments.size();
+}
+
+//==============================================================================
+void Spline::setSegmentDuration(std::size_t index, double duration)
+{
+  if (index >= getNumSegments())
+    throw std::domain_error("Segment index is out of bounds.");
+
+  if (duration <= 0.0)
+    throw std::domain_error("Segment duration should be positive value.");
+
+  mSegments[index].mDuration = duration;
+}
+
+//==============================================================================
+double Spline::getSegmentDuration(std::size_t index) const
+{
+  if (index >= getNumSegments())
+    throw std::domain_error("Segment index is out of bounds.");
+
+  return mSegments[index].mDuration;
+}
+
+//==============================================================================
+void Spline::setSegmentCoefficients(
+    std::size_t index, const Eigen::MatrixXd& coefficients)
+{
+  if (index >= getNumSegments())
+    throw std::domain_error("Segment index is out of bounds.");
+
+  mSegments[index].mCoefficients = coefficients;
+}
+
+//==============================================================================
+void Spline::setSegmentCoefficient(
+    std::size_t segmentIndex,
+    std::size_t coeffRow,
+    std::size_t coeffCol,
+    double coefficient)
+{
+  if (segmentIndex >= getNumSegments())
+    throw std::domain_error("Segment index is out of bounds.");
+
+  if (coeffRow
+      >= static_cast<std::size_t>(mSegments[segmentIndex].mCoefficients.rows()))
+  {
+    throw std::domain_error("Spline coefficient's index is out of bounds.");
+  }
+
+  if (coeffCol
+      >= static_cast<std::size_t>(mSegments[segmentIndex].mCoefficients.cols()))
+  {
+    throw std::domain_error("Spline coefficient's index is out of bounds.");
+  }
+
+  mSegments[segmentIndex].mCoefficients(coeffRow, coeffCol) = coefficient;
+}
+
+//==============================================================================
+const Eigen::MatrixXd& Spline::getSegmentCoefficients(std::size_t index) const
+{
+  if (index >= getNumSegments())
+    throw std::domain_error("Segment index is out of bounds.");
+
+  return mSegments[index].mCoefficients;
 }
 
 //==============================================================================

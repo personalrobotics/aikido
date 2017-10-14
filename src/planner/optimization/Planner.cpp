@@ -88,7 +88,7 @@ trajectory::InterpolatedPtr OptimizationBasedMotionPlanning::plan()
 
 //==============================================================================
 void OptimizationBasedMotionPlanning::setVariables(
-    const OptimizationVariables* variables)
+    const TrajectoryOptimizationVariables* variables)
 {
   if (!variables)
   {

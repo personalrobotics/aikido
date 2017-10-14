@@ -5,7 +5,7 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
-#include "aikido/planner/optimization/OptimizationVariables.hpp"
+#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {

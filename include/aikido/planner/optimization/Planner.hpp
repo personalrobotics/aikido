@@ -7,7 +7,7 @@
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/PlanningResult.hpp"
-#include "aikido/planner/optimization/OptimizationVariables.hpp"
+#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -33,7 +33,7 @@ public:
 
   trajectory::InterpolatedPtr plan();
 
-  void setVariables(const OptimizationVariables* variables);
+  void setVariables(const TrajectoryOptimizationVariables* variables);
 
   void setStartState(const statespace::StateSpace::State* startState);
 
@@ -91,7 +91,7 @@ protected:
   /// Objective for the trajectory optimization.
   std::shared_ptr<dart::optimizer::Function> mObjective;
 
-  std::shared_ptr<OptimizationVariables> mVariables;
+  std::shared_ptr<TrajectoryOptimizationVariables> mVariables;
 
   const statespace::StateSpace::State* mStartState;
 

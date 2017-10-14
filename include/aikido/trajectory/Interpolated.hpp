@@ -19,6 +19,9 @@ public:
       aikido::statespace::StateSpacePtr _sspace,
       aikido::statespace::InterpolatorPtr _interpolator);
 
+  // Documentation inherited.
+  std::unique_ptr<Trajectory> clone() const override;
+
   /// Add a waypoint to the trajectory at the given time.
   ///
   /// \param _t time of the waypoint

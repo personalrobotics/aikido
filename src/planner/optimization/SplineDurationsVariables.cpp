@@ -5,15 +5,15 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-SplineDurationsVariables::SplineDurationsVariables(
-    statespace::StateSpacePtr sspace, double startTime)
-  : trajectory::Trajectory(), Spline(sspace, startTime)
+SplineDurationsVariables::SplineDurationsVariables(const trajectory::Spline& /*splineToClone*/)
+  : mSpline(nullptr) // TODO)
 {
   // Do nothing
 }
 
 //==============================================================================
-std::shared_ptr<OptimizationVariables> SplineDurationsVariables::clone() const
+std::shared_ptr<TrajectoryOptimizationVariables>
+SplineDurationsVariables::clone() const
 {
   auto cloned = std::make_shared<SplineDurationsVariables>(*this);
 
@@ -23,16 +23,17 @@ std::shared_ptr<OptimizationVariables> SplineDurationsVariables::clone() const
 //==============================================================================
 std::size_t SplineDurationsVariables::getDimension() const
 {
-  return mSegments.size();
+  return mSpline->getNumSegments();
 }
 
 //==============================================================================
 void SplineDurationsVariables::setVariables(const Eigen::VectorXd& variables)
 {
-  // TODO(JS): Check the dimension of variables
+  if (static_cast<std::size_t>(variables.size()) >= mSpline->getNumSegments())
+    throw std::domain_error("Incorrect variable size.");
 
-  for (std::size_t i = 0; i < mSegments.size(); ++i)
-    mSegments[i].mDuration = variables[i];
+  for (std::size_t i = 0; i < mSpline->getNumSegments(); ++i)
+    mSpline->setSegmentDuration(i, variables[i]);
 }
 
 //==============================================================================
@@ -40,8 +41,8 @@ void SplineDurationsVariables::getVariables(Eigen::VectorXd& variables) const
 {
   variables.resize(getDimension());
 
-  for (std::size_t i = 0; i < mSegments.size(); ++i)
-    variables[i] = mSegments[i].mDuration;
+  for (std::size_t i = 0; i < mSpline->getNumSegments(); ++i)
+    variables[i] = mSpline->getSegmentDuration(i);
 }
 
 } // namespace optimization

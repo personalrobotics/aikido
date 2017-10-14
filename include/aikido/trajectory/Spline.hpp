@@ -18,7 +18,7 @@ namespace trajectory {
 /// This trajectory does \b not guarantee any continuity (not even C0). It is
 /// the responsibility of the user to pass in continuous spline coefficients
 /// if continuity is desired.
-class Spline : virtual Trajectory
+class Spline : public Trajectory
 {
 public:
   /// Constructs an empty trajectory.
@@ -28,6 +28,9 @@ public:
   Spline(statespace::StateSpacePtr _stateSpace, double _startTime = 0.);
 
   virtual ~Spline();
+
+  // Documentation inherited.
+  std::unique_ptr<Trajectory> clone() const override;
 
   /// Add a segment to the end of this trajectory that starts at
   /// \c _startState, lasts for \c _duration, and is defined by a polynomial in
@@ -76,6 +79,42 @@ public:
   ///
   /// \return number of segments in this spline
   std::size_t getNumSegments() const;
+
+  /// Sets the duration of a spline segment.
+  ///
+  /// \param[in] index Spline segment index
+  /// \param[in] duration New duration for the spline segment
+  void setSegmentDuration(std::size_t index, double duration);
+
+  /// Returns the duration of a spline segment.
+  ///
+  /// \param[in] index Spline segment index
+  /// \return Duration of the spline segment
+  double getSegmentDuration(std::size_t index) const;
+
+  /// Sets the coefficients of a spline segment.
+  ///
+  /// \param[in] index Spline segment index
+  /// \param[in] coefficients Spline segment coefficients
+  void setSegmentCoefficients(
+      std::size_t index, const Eigen::MatrixXd& coefficients);
+
+  /// Sets the coefficient of a spline segment.
+  ///
+  /// \param[in] segmentIndex Spline segment index
+  /// \param[in] coeffRow Spline segment coefficients' row index
+  /// \param[in] coeffCol Spline segment coefficients' column index
+  /// \param[in] coefficient Spline segment coefficient
+  void setSegmentCoefficient(
+      std::size_t segmentIndex,
+      std::size_t coeffRow,
+      std::size_t coeffCol,
+      double coefficient);
+
+  /// Returns the coefficients of a spline segment.
+  ///
+  /// \param[in] index Spline segment index
+  const Eigen::MatrixXd& getSegmentCoefficients(std::size_t index) const;
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;

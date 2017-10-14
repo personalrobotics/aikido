@@ -5,14 +5,14 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-double PoseErrorFunction::eval(const Eigen::VectorXd& x) const
+double PoseErrorFunction::eval(const Eigen::VectorXd& x)
 {
   auto metaSkel = mMetaSkeletonStateSpace->getMetaSkeleton();
 
   auto state = mMetaSkeletonStateSpace->createState();
 
   mTrajectory->setVariables(x);
-  mTrajectory->evaluate(mTargetTime, state);
+  //  mTrajectory->evaluate(mTargetTime, state);
 
   Eigen::Isometry3d currentPose = mTargetBodyNode->getTransform();
 

@@ -5,7 +5,7 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
-#include "aikido/planner/optimization/OptimizationVariables.hpp"
+#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
@@ -23,11 +23,11 @@ public:
   double eval(const Eigen::VectorXd& x) override;
 
 protected:
-  std::shared_ptr<OptimizationVariables> mTrajectory;
+  std::shared_ptr<TrajectoryOptimizationVariables> mTrajectory;
 
   const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& mStateSpace;
 
-  std::shared_ptr<OptimizationVariables> mVariables;
+  std::shared_ptr<TrajectoryOptimizationVariables> mVariables;
 
   const statespace::StateSpace::State* mStartState;
 
@@ -43,7 +43,7 @@ public:
 
   ~PoseErrorFunction() = default;
 
-  double eval(const Eigen::VectorXd& x) const override;
+  double eval(const Eigen::VectorXd& x) override;
 
 protected:
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
@@ -56,6 +56,7 @@ protected:
 
   // TODO(JS): Change to end-effector
   dart::dynamics::BodyNodePtr mTargetBodyNode;
+
 private:
 };
 
