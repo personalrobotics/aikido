@@ -103,20 +103,23 @@ information.
 ## Authors
 
 AIKIDO is developed by the
-[Personal Robotics Lab](https://personalrobotics.ri.cmu.edu/) in the
-[Robotics Institute](http://ri.cmu.edu/) at
-[Carnegie Mellon University](http://www.cmu.edu/). The library was started by 
+[Personal Robotics Lab](https://personalrobotics.cs.washington.edu/) in the
+[Paul G. Allen School of Computer Science and Engineering](https://www.cs.washington.edu/) at
+the [University of Washington](https://www.washington.edu/).
+The library was started by
 Michael Koval ([**@mkoval**](https://github.com/mkoval))
-and Pras Velagapudi ([**@psigen**](https://github.com/psigen)). It has received
-major contributions from
+and Pras Velagapudi ([**@psigen**](https://github.com/psigen)).
+It has received major contributions from
 Shushman Choudhury ([**@Shushman**](https://github.com/Shushman)),
+Brian Hou ([**@brianhou**](https://github.com/brianhou)),
 Aaron Johnson ([**@aaronjoh**](https://github.com/aaronjoh)),
 Jennifer King ([**@jeking**](https://github.com/jeking04)),
-Gilwoo Lee ([**@lgw903**](https://github.com/lgw903)),
-and Clint Liddick ([**@ClintLiddick**](https://github.com/ClintLiddick)). We
-also would like to thank
+Gilwoo Lee ([**@gilwoolee**](https://github.com/gilwoolee)),
+Jeongseok Lee ([**@jslee02**](https://github.com/jslee02)),
+and Clint Liddick ([**@ClintLiddick**](https://github.com/ClintLiddick)).
+We also would like to thank
 Michael Grey ([**@mxgrey**](https://github.com/mxgrey))
-and J.S. Lee ([**@jslee02**](https://github.com/jslee02))
+and Jeongseok Lee ([**@jslee02**](https://github.com/jslee02))
 for making changes to DART to better support AIKIDO.
 
 
