@@ -12,14 +12,16 @@ execution on real robots.
 ## Installation
 
 ### On Ubuntu Trusty using `apt-get`
-AIKIDO depends on [ROS], which is not installed by `apt-get`. You should [install ROS](http://wiki.ros.org/indigo/Installation/Ubuntu) by adding ROS repository to your `sources.list` as followings. We encourage users to install [`indigo`](http://wiki.ros.org/indigo).
+
+AIKIDO depends on [ROS]. You should [install ROS](http://wiki.ros.org/indigo/Installation/Ubuntu) by adding the ROS repository to your `sources.list` as follows. We encourage users to install [`indigo`](http://wiki.ros.org/indigo).
 ```shell
 $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 $ sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 $ sudo apt-get update
 $ sudo apt-get install ros-indigo-actionlib ros-indigo-geometry-msgs ros-indigo-interactive-markers ros-indigo-roscpp ros-indigo-std-msgs ros-indigo-tf ros-indigo-trajectory-msgs ros-indigo-visualization-msgs
 ```
-Once ROS is installed, you can install AIKIDO from [PRL's PPA repository](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa):
+
+Once ROS is installed, you can install AIKIDO from the [Personal Robotics Lab PPA](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa):
 ```shell
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
@@ -27,25 +29,28 @@ $ sudo apt-get install libaikido0-all-dev
 ```
 
 ### On macOS using [Homebrew]
+
 ```shell
-# install Homebrew package manager
+# Install the Homebrew package manager
 $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-# add Homebrew tap for Personal Robotics Lab software
+# Add Homebrew tap for Personal Robotics Lab software
 $ brew tap personalrobotics/tap
-# install AIKIDO
+# Install AIKIDO
 $ brew install aikido0
 ```
-> Note: ROS seems to be [available on macOS](http://wiki.ros.org/indigo/Installation/OSX/Homebrew/Source), but we haven't tested it yet. So `brew install aikido0` installs AIKIDO without ROS related components for now.
+> Note: While ROS seems to be [available on macOS](http://wiki.ros.org/indigo/Installation/OSX/Homebrew/Source), we haven't tested it with AIKIDO. For now, `brew install aikido0` installs AIKIDO without the ROS-dependent components.
 
-## Build from Source
+## Building from Source
 
 ### Dependencies
+
 AIKIDO depends on [CMake], [Boost], [DART] \(version 6.3 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
 make heavy use of C++11 and require a modern compiler.
 
 ### On Ubuntu Trusty using CMake
-You should install ROS packages as described above to build all the ROS dependent AIKIDO components (e.g., `aikido-control-ros`).
+
+You should install the ROS packages as described above to build all the ROS-dependent AIKIDO components (e.g., `aikido-control-ros`).
 
 Install the other dependencies:
 ```shell
@@ -76,6 +81,7 @@ $ . /path/to/my/workspace/setup.bash
 ```
 
 ### On Ubuntu Trusty using Catkin
+
 It is also possible to build AIKIDO as a [third-party package][REP-136] inside a
 [Catkin workspace][Catkin Workspaces]. To do so, clone AIKIDO into your Catkin
 workspace and use the `catkin build` command like normal.
@@ -86,13 +92,16 @@ with `catkin_make_isolated`. This may dramatically increase your build time, so 
 [`catkin_tools` package][Catkin Tools], if possible.
 
 ## Code Style
-Please follow the [AIKIDO code style](https://github.com/personalrobotics/aikido/blob/master/STYLE.md) when you making a contribution.
+
+Please follow the [AIKIDO style guidelines](https://github.com/personalrobotics/aikido/blob/master/STYLE.md) when making a contribution.
 
 ## License
+
 AIKIDO is licensed under a BSD license. See [LICENSE](./LICENSE) for more
 information.
 
 ## Authors
+
 AIKIDO is developed by the
 [Personal Robotics Lab](https://personalrobotics.ri.cmu.edu/) in the
 [Robotics Institute](http://ri.cmu.edu/) at
@@ -108,7 +117,7 @@ and Clint Liddick ([**@ClintLiddick**](https://github.com/ClintLiddick)). We
 also would like to thank
 Michael Grey ([**@mxgrey**](https://github.com/mxgrey))
 and J.S. Lee ([**@jslee02**](https://github.com/jslee02))
-for making changes to DART to better support Aikido.
+for making changes to DART to better support AIKIDO.
 
 
 [DART]: http://dartsim.github.io/
