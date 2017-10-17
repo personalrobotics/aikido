@@ -58,14 +58,13 @@ public:
   VectorFieldPlannerTest() : errorTolerance(1e-3)
   {
     skel = createThreeLinkRobot(
-        Eigen::Vector3d(1.0, 1.0, 1.0),
+        Eigen::Vector3d(0.2, 0.2, 2.0),
         DOF_X,
-        Eigen::Vector3d(1.0, 1.0, 1.0),
+        Eigen::Vector3d(0.2, 0.2, 1.5),
         DOF_Y,
-        Eigen::Vector3d(1.0, 1.0, 1.0),
+        Eigen::Vector3d(0.2, 0.2, 1.0),
         DOF_Z,
-        false,
-        false);
+        true);
     upperPositionLimits = Eigen::VectorXd(skel->getNumDofs());
     upperPositionLimits << 3.1, 3.1, 3.1;
     lowerPositionLimits = Eigen::VectorXd(skel->getNumDofs());
@@ -81,6 +80,7 @@ public:
     skel->setVelocityLowerLimits(lowerVelocityLimits);
     stateSpace = std::make_shared<MetaSkeletonStateSpace>(skel);
     startVec = Eigen::VectorXd(skel->getNumDofs());
+    startVec << 0.1, 0.5, 0.3;
     goalVec = Eigen::VectorXd(skel->getNumDofs());
     passingConstraint = std::make_shared<PassingConstraint>(stateSpace);
     failingConstraint = std::make_shared<FailingConstraint>(stateSpace);
@@ -172,7 +172,6 @@ public:
       size_t stopAfter = 3)
   {
     SkeletonPtr robot = Skeleton::create();
-
     Eigen::Vector3d dimEE = dim1;
 
     // Create the first link
@@ -232,7 +231,7 @@ public:
         shapeNode->createDynamicsAspect();
       }
 
-      parent_node = pair2.second;
+      parent_node = current_node;
       dimEE = dim2;
     }
 
@@ -265,7 +264,7 @@ public:
         shapeNode->createDynamicsAspect();
       }
 
-      parent_node = pair3.second;
+      parent_node = current_node;
       dimEE = dim3;
     }
 
@@ -308,12 +307,29 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   auto startState = stateSpace->createState();
   stateSpace->convertPositionsToState(startVec, startState);
   dart::dynamics::BodyNodePtr bn
-      = stateSpace->getMetaSkeleton()->getBodyNodes().back();
+      = stateSpace->getMetaSkeleton()->getBodyNode("ee");
   Eigen::Isometry3d startTrans = bn->getTransform();
   Eigen::VectorXd startVec = startTrans.translation();
 
+  double position_tolerance = 0.001;
+  double angular_tolerance = 0.01;
+  double duration = 0.1;
+  double timestep = 0.01;
+  double linear_gain = 1.0;
+  double angular_gain = 1.0;
+
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
-      stateSpace, bn, passingConstraint, direction, distance);
+      stateSpace,
+      bn,
+      passingConstraint,
+      direction,
+      distance,
+      position_tolerance,
+      angular_tolerance,
+      duration,
+      timestep,
+      linear_gain,
+      angular_gain);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 

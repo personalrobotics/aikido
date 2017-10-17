@@ -57,7 +57,7 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
   , velocity_(linear_velocity)
   , min_duration_(min_duration)
   , max_duration_(max_duration)
-  , timsetep_(stepsize)
+  , timestep_(stepsize)
   , linear_gain_(linear_gain)
   , linear_tolerance_(linear_tolerance)
   , rotation_gain_(rotation_gain)
@@ -68,7 +68,7 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
 {
   assert(min_duration_ >= 0);
   assert(max_duration_ >= min_duration_);
-  assert(timsetep_ >= 0);
+  assert(timestep_ >= 0);
   assert(velocity_.all() >= 0);
   assert(linear_gain_ >= 0);
   assert(linear_tolerance_ > 0);
@@ -78,10 +78,7 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
 
   target_pose_ = start_pose_;
   target_pose_.translation() += velocity_ * max_duration_;
-
-  // consider linear tolerance in terminating by time
-  double time_padding = linear_tolerance / linear_velocity.norm();
-  max_duration_ += time_padding;
+  max_duration_ += timestep_ / 20;
 }
 
 bool MoveHandStraightVectorField::operator()(
@@ -104,7 +101,7 @@ bool MoveHandStraightVectorField::operator()(
 
   // Compute the "feed-forward" term necessary to move at a constant velocity
   // from the start to the goal.
-  Vector3d const linear_direction = velocity_ / velocity_.norm();
+  Vector3d const linear_direction = velocity_.normalized();
   Vector3d const& linear_feedforward = velocity_;
 
   // Compute positional error orthogonal to the direction of motion by
@@ -131,26 +128,32 @@ bool MoveHandStraightVectorField::operator()(
   VectorXd lowerLimits(numDofs);
   VectorXd upperLimits(numDofs);
 
+  VectorXd positions = stateSpace->getMetaSkeleton()->getPositions();
+  VectorXd positionLowerLimits
+      = stateSpace->getMetaSkeleton()->getPositionLowerLimits();
+  VectorXd positionUpperLimits
+      = stateSpace->getMetaSkeleton()->getPositionUpperLimits();
+  VectorXd velocityLowerLimits
+      = stateSpace->getMetaSkeleton()->getVelocityLowerLimits();
+  VectorXd velocityUpperLimits
+      = stateSpace->getMetaSkeleton()->getVelocityUpperLimits();
+
   for (size_t i = 0; i < numDofs; ++i)
   {
-    const double position = stateSpace->getMetaSkeleton()->getPosition(i);
-    const double positionLowerLimit
-        = stateSpace->getMetaSkeleton()->getPositionLowerLimit(i);
-    const double positionUpperLimit
-        = stateSpace->getMetaSkeleton()->getPositionUpperLimit(i);
-    const double velocityLowerLimit
-        = stateSpace->getMetaSkeleton()->getVelocityLowerLimit(i);
-    const double velocityUpperLimit
-        = stateSpace->getMetaSkeleton()->getVelocityUpperLimit(i);
+    const double position = positions[i];
+    const double positionLowerLimit = positionLowerLimits[i];
+    const double positionUpperLimit = positionUpperLimits[i];
+    const double velocityLowerLimit = velocityLowerLimits[i];
+    const double velocityUpperLimit = velocityUpperLimits[i];
 
     if (position
-        < positionLowerLimit - timsetep_ * velocityLowerLimit + padding_)
+        < positionLowerLimit - timestep_ * velocityLowerLimit + padding_)
       lowerLimits[i] = 0;
     else
       lowerLimits[i] = velocityLowerLimit;
 
     if (position
-        > positionUpperLimit - timsetep_ * velocityUpperLimit - padding_)
+        > positionUpperLimit - timestep_ * velocityUpperLimit - padding_)
       upperLimits[i] = 0;
     else
       upperLimits[i] = velocityUpperLimit;
@@ -176,8 +179,6 @@ VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     double t)
 {
-  using boost::format;
-  using boost::str;
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
 

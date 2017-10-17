@@ -36,7 +36,7 @@ private:
   Eigen::VectorXd velocity_;
   double min_duration_;
   double max_duration_;
-  double timsetep_;
+  double timestep_;
   double linear_gain_;
   double linear_tolerance_;
   double rotation_gain_;

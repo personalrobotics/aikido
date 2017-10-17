@@ -122,6 +122,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   ptrdiff_t index = 0;
   double t = 0;
   Eigen::VectorXd q = stateSpace->getMetaSkeleton()->getPositions();
+
   auto startState = stateSpace->createState();
   stateSpace->convertPositionsToState(q, startState);
   Eigen::VectorXd qd(num_dof);
@@ -189,7 +190,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
                  == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
       {
         cache_index = index;
-
         // Take a step.
         q += dt * qd;
         t += dt;
@@ -229,34 +229,28 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     using CubicSplineProblem = aikido::common::
         SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
 
-    CubicSplineProblem problem(times, 4, num_dof);
-    for (int iknot = 0; iknot < cache_index; ++iknot)
+    const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(num_dof);
+    auto currState = stateSpace->createState();
+    for (int iknot = 0; iknot < cache_index - 1; ++iknot)
     {
-      problem.addConstantConstraint(iknot, 0, knots[iknot].values.row(0));
+      const double segmentDuration = knots[iknot + 1].t - knots[iknot].t;
+      Eigen::VectorXd currentPosition = knots[iknot].values.row(0);
+      Eigen::VectorXd currentVelocity = knots[iknot].values.row(1);
+      Eigen::VectorXd nextPosition = knots[iknot + 1].values.row(0);
+      Eigen::VectorXd nextVelocity = knots[iknot + 1].values.row(1);
 
-      if (iknot != 0 && iknot != cache_index - 1)
-      {
-        problem.addContinuityConstraint(iknot, 1);
-        problem.addContinuityConstraint(iknot, 2);
-      }
-    }
+      CubicSplineProblem problem(
+          Eigen::Vector2d{0., segmentDuration}, 4, num_dof);
+      problem.addConstantConstraint(0, 0, zeroPosition);
+      problem.addConstantConstraint(0, 1, currentVelocity);
+      problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
+      problem.addConstantConstraint(1, 1, nextVelocity);
+      const auto solution = problem.fit();
+      const auto coefficients = solution.getCoefficients().front();
 
-    problem.addConstantConstraint(0, 1, knots.front().values.row(1));
-    problem.addConstantConstraint(
-        cache_index - 1, 1, knots[cache_index - 1].values.row(1));
-
-    const auto spline = problem.fit();
-
-    // convert spline to outputTrajectory
-    for (int i = 0; i < spline.getNumKnots() - 1; i++)
-    {
-      auto coefficients = spline.getCoefficients()[i];
-      double timeStep = spline.getTimes()[i];
-      double duration = spline.getTimes()[i + 1] - spline.getTimes()[i];
-      auto currentVec = spline.evaluate(timeStep);
-      auto currentState = stateSpace->createState();
-      stateSpace->convertPositionsToState(currentVec, currentState);
-      _outputTrajectory->addSegment(coefficients, duration, currentState);
+      // Build the output trajectory/
+      stateSpace->expMap(currentPosition, currState);
+      _outputTrajectory->addSegment(coefficients, segmentDuration, currState);
     }
 
     return _outputTrajectory;
@@ -299,10 +293,11 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   }
 
   double linear_velocity = distance / duration;
+  Eigen::Vector3d velocity = direction.normalized() * linear_velocity;
 
   auto vectorfield = MoveHandStraightVectorField(
       bn,
-      direction.normalized() * linear_velocity,
+      velocity,
       0.0,
       duration,
       timestep,
