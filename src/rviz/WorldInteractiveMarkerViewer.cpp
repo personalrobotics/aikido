@@ -4,7 +4,6 @@
 #include <aikido/rviz/SkeletonMarker.hpp>
 #include <aikido/rviz/WorldInteractiveMarkerViewer.hpp>
 
-using dart::dynamics::SkeletonPtr;
 using aikido::rviz::InteractiveMarkerViewer;
 
 namespace aikido {
@@ -12,7 +11,7 @@ namespace rviz {
 
 //==============================================================================
 WorldInteractiveMarkerViewer::WorldInteractiveMarkerViewer(
-    dart::simulation::WorldPtr env,
+    aikido::planner::WorldPtr env,
     const std::string& topicNamespace,
     const std::string& frameId)
   : InteractiveMarkerViewer(topicNamespace, frameId), mWorld(std::move(env))

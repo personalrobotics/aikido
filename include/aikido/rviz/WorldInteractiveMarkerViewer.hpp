@@ -2,7 +2,7 @@
 #define AIKIDO_RVIZ_WORLDINTERACTIVEMARKERVIEWER_HPP_
 
 #include <map>
-#include <dart/simulation/World.hpp>
+#include <aikido/planner/World.hpp>
 #include <aikido/rviz/InteractiveMarkerViewer.hpp>
 #include <aikido/rviz/SmartPointers.hpp>
 
@@ -13,7 +13,7 @@ class WorldInteractiveMarkerViewer : public InteractiveMarkerViewer
 {
 public:
   WorldInteractiveMarkerViewer(
-      dart::simulation::WorldPtr env,
+      aikido::planner::WorldPtr env,
       const std::string& topicNamespace,
       const std::string& frameId);
   virtual ~WorldInteractiveMarkerViewer();
@@ -30,7 +30,7 @@ protected:
   void autoUpdate();
 
   std::map<std::string, SkeletonMarkerPtr> mSkeletonMarkers;
-  dart::simulation::WorldPtr mWorld;
+  aikido::planner::WorldPtr mWorld;
 };
 
 } // namespace rviz
