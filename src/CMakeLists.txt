@@ -13,4 +13,5 @@ add_subdirectory("trajectory") # [common], [statespace]
 add_subdirectory("constraint") # [common], [statespace]
 add_subdirectory("planner")    # [external], [common], [statespace], [trajectory], [constraint], [distance], dart, ompl
 add_subdirectory("control")    # [statespace], [trajectory]
+add_subdirectory("sensor")    # roscpp
 #add_subdirectory("python")     # everything

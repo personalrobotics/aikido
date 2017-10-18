@@ -20,6 +20,8 @@
   <depend>libmicrohttpd</depend>
   <depend>interactive_markers</depend>
   <depend>pr_control_msgs</depend>
+  <!-- TODO: No idea if this goes here. -->
+  <depend>eyerectoo_stream</depend>
   <doc_depend>doxygen</doc_depend>
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>
