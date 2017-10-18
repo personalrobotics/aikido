@@ -11,15 +11,15 @@ class MoveHandStraightVectorField {
 public:
   MoveHandStraightVectorField(
     dart::dynamics::BodyNodePtr bn,
-    Eigen::Vector3d const &linear_velocity,
-    double min_duration,
-    double max_duration,
+    Eigen::Vector3d const &linearVelocity,
+    double minDuration,
+    double maxDuration,
     double stepsize,
-    double linear_gain = 1.,
-    double linear_tolerance = 0.01,
-    double rotation_gain = 1.,
-    double rotation_tolerance = 0.01,
-    double optimization_tolerance = 1e-4,
+    double linearGain = 1.,
+    double linearTolerance = 0.01,
+    double rotationGain = 1.,
+    double rotationTolerance = 0.01,
+    double optimizationTolerance = 1e-4,
     double padding = 1e-5
   );
 
@@ -34,17 +34,17 @@ public:
 private:
   dart::dynamics::BodyNode *bodynode_;
   Eigen::VectorXd velocity_;
-  double min_duration_;
-  double max_duration_;
+  double minDuration_;
+  double maxDuration_;
   double timestep_;
-  double linear_gain_;
-  double linear_tolerance_;
-  double rotation_gain_;
-  double rotation_tolerance_;
-  double optimization_tolerance_;
+  double linearGain_;
+  double linearTolerance_;
+  double rotationGain_;
+  double rotationTolerance_;
+  double optimizationTolerance_;
   double padding_;
-  Eigen::Isometry3d start_pose_;
-  Eigen::Isometry3d target_pose_;
+  Eigen::Isometry3d startPose_;
+  Eigen::Isometry3d targetPose_;
 };
 
 } // namespace vectorfield

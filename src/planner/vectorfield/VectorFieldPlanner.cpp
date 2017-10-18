@@ -273,12 +273,12 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::constraint::TestablePtr constraint,
     const Eigen::Vector3d& direction,
     double distance,
-    double position_tolerance,
-    double angular_tolerance,
+    double positionTolerance,
+    double angularTolerance,
     double duration,
     double timestep,
-    double linear_gain,
-    double angular_gain)
+    double linearGain,
+    double angularGain)
 {
   if (distance < 0.)
   {
@@ -301,10 +301,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       0.0,
       duration,
       timestep,
-      linear_gain,
-      position_tolerance,
-      angular_gain,
-      angular_tolerance);
+      linearGain,
+      positionTolerance,
+      angularGain,
+      angularTolerance);
 
   return planPathByVectorField(
       stateSpace, constraint, timestep, vectorfield, vectorfield);

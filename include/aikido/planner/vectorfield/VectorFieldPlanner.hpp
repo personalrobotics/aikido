@@ -39,16 +39,16 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    dart::dynamics::BodyNodePtr _bn,
+    dart::dynamics::BodyNodePtr bn,
     const aikido::constraint::TestablePtr constraint,
     const Eigen::Vector3d& direction,
     double distance,
-    double position_tolerance = 0.001,
-    double angular_tolerance = 0.01,
+    double positionTolerance = 0.001,
+    double angularTolerance = 0.01,
     double duration = 2.0,
     double timestep = 0.01,
-    double linear_gain = 1.0,
-    double angular_gain = 1.0);
+    double linearGain = 1.0,
+    double angularGain = 1.0);
 
 } // namespace vectorfield
 } // namespace planner

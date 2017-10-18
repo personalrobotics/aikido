@@ -15,42 +15,42 @@ namespace vectorfield {
 
 MoveHandStraightVectorField::MoveHandStraightVectorField(
     dart::dynamics::BodyNodePtr bn,
-    Eigen::Vector3d const& linear_velocity,
-    double min_duration,
-    double max_duration,
+    Eigen::Vector3d const& linearVelocity,
+    double minDuration,
+    double maxDuration,
     double stepsize,
-    double linear_gain,
-    double linear_tolerance,
-    double rotation_gain,
-    double rotation_tolerance,
-    double optimization_tolerance,
+    double linearGain,
+    double linearTolerance,
+    double rotationGain,
+    double rotationTolerance,
+    double optimizationTolerance,
     double padding)
   : bodynode_(bn)
-  , velocity_(linear_velocity)
-  , min_duration_(min_duration)
-  , max_duration_(max_duration)
+  , velocity_(linearVelocity)
+  , minDuration_(minDuration)
+  , maxDuration_(maxDuration)
   , timestep_(stepsize)
-  , linear_gain_(linear_gain)
-  , linear_tolerance_(linear_tolerance)
-  , rotation_gain_(rotation_gain)
-  , rotation_tolerance_(rotation_tolerance)
-  , optimization_tolerance_(optimization_tolerance)
+  , linearGain_(linearGain)
+  , linearTolerance_(linearTolerance)
+  , rotationGain_(rotationGain)
+  , rotationTolerance_(rotationTolerance)
+  , optimizationTolerance_(optimizationTolerance)
   , padding_(padding)
-  , start_pose_(bn->getTransform())
+  , startPose_(bn->getTransform())
 {
-  assert(min_duration_ >= 0);
-  assert(max_duration_ >= min_duration_);
+  assert(minDuration_ >= 0);
+  assert(maxDuration_ >= minDuration_);
   assert(timestep_ >= 0);
   assert(velocity_.all() >= 0);
-  assert(linear_gain_ >= 0);
-  assert(linear_tolerance_ > 0);
-  assert(rotation_gain_ >= 0);
-  assert(rotation_tolerance_ > 0);
-  assert(optimization_tolerance_ > 0);
+  assert(linearGain_ >= 0);
+  assert(linearTolerance_ > 0);
+  assert(rotationGain_ >= 0);
+  assert(rotationTolerance_ > 0);
+  assert(optimizationTolerance_ > 0);
 
-  target_pose_ = start_pose_;
-  target_pose_.translation() += velocity_ * max_duration_;
-  max_duration_ += timestep_ / 20;
+  targetPose_ = startPose_;
+  targetPose_.translation() += velocity_ * maxDuration_;
+  maxDuration_ += timestep_ / 20;
 }
 
 bool MoveHandStraightVectorField::operator()(
@@ -75,25 +75,25 @@ bool MoveHandStraightVectorField::operator()(
   // Compute positional error orthogonal to the direction of motion by
   // projecting out the component of the error along that direction.
   Vector3d const linear_error
-      = target_pose_.translation() - current_pose.translation();
+      = targetPose_.translation() - current_pose.translation();
   Vector3d const linear_orthogonal_error
       = linear_error - linear_error.dot(linear_direction) * linear_direction;
 
   // Compute rotational error.
   Vector3d const rotation_error = dart::math::logMap(
-      target_pose_.rotation().inverse() * current_pose.rotation());
+      targetPose_.rotation().inverse() * current_pose.rotation());
 
   // Compute the desired twist using a proportional controller.
   Vector6d desired_twist;
-  desired_twist.head<3>() = rotation_gain_ * rotation_error;
+  desired_twist.head<3>() = rotationGain_ * rotation_error;
   desired_twist.tail<3>()
-      = linear_feedforward + linear_gain_ * linear_orthogonal_error;
+      = linear_feedforward + linearGain_ * linear_orthogonal_error;
 
   bool result = ComputeJointVelocityFromTwist(
       desired_twist,
       stateSpace,
       bodynode_,
-      optimization_tolerance_,
+      optimizationTolerance_,
       timestep_,
       padding_,
       qd);
@@ -112,27 +112,27 @@ VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
 
   // Check for deviation from the straight-line trajectory.
   Vector3d const linear_direction
-      = (target_pose_.translation() - start_pose_.translation()).normalized();
+      = (targetPose_.translation() - startPose_.translation()).normalized();
   Vector3d const linear_error
-      = target_pose_.translation() - current_pose.translation();
+      = targetPose_.translation() - current_pose.translation();
   Vector3d const linear_orthogonal_error
       = linear_error - linear_error.dot(linear_direction) * linear_direction;
   double const linear_orthogonal_magnitude = linear_orthogonal_error.norm();
 
-  if (linear_orthogonal_magnitude >= linear_tolerance_)
+  if (linear_orthogonal_magnitude >= linearTolerance_)
   {
     dtwarn << "Trajectory deviated from the straight line by "
            << linear_orthogonal_magnitude << " m; the tolerance is "
-           << linear_tolerance_ << " m.\n";
+           << linearTolerance_ << " m.\n";
     return VectorFieldPlannerStatus::TERMINATE;
   }
 
   // Check if we've reached the target.
-  if (t > max_duration_)
+  if (t > maxDuration_)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }
-  else if (t >= min_duration_)
+  else if (t >= minDuration_)
   {
     return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
   }
