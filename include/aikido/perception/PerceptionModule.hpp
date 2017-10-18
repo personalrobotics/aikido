@@ -1,6 +1,8 @@
 #ifndef AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 #define AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 
+#include <aikido/planner/World.hpp>
+
 namespace aikido {
 namespace perception {
 
@@ -29,7 +31,7 @@ public:
   /// detections has a more recent timestamp than the parameter. Returns \c true
   /// otherwise.
   virtual bool detectObjects(
-      const dart::simulation::WorldPtr& env,
+      const aikido::planner::WorldPtr& env,
       ros::Duration timeout,
       ros::Time timestamp)
       = 0;
