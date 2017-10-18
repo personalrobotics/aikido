@@ -57,7 +57,6 @@ public:
 private:
   void autoUpdate();
 
-  ros::NodeHandle mNodeHandle;
   interactive_markers::InteractiveMarkerServer mMarkerServer;
   std::set<SkeletonMarkerPtr> mSkeletonMarkers;
   std::set<FrameMarkerPtr> mFrameMarkers;
