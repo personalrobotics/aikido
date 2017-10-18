@@ -58,12 +58,12 @@ public:
   VectorFieldPlannerTest() : errorTolerance(1e-3)
   {
     skel = createThreeLinkRobot(
-        Eigen::Vector3d(0.2, 0.2, 2.0),
-        DOF_X,
-        Eigen::Vector3d(0.2, 0.2, 1.5),
-        DOF_Y,
         Eigen::Vector3d(0.2, 0.2, 1.0),
-        DOF_Z,
+        DOF_YAW,
+        Eigen::Vector3d(0.2, 0.2, 1.0),
+        DOF_PITCH,
+        Eigen::Vector3d(0.2, 0.2, 1.0),
+        DOF_ROLL,
         true);
     upperPositionLimits = Eigen::VectorXd(skel->getNumDofs());
     upperPositionLimits << 3.1, 3.1, 3.1;
@@ -299,7 +299,7 @@ public:
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
   Eigen::Vector3d direction;
-  direction << 1., 1., 1.;
+  direction << 0., 0., 1.;
   direction.normalize();
   double distance = 1.0;
 
@@ -311,12 +311,12 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   Eigen::Isometry3d startTrans = bn->getTransform();
   Eigen::VectorXd startVec = startTrans.translation();
 
-  double position_tolerance = 0.001;
+  double position_tolerance = 0.01;
   double angular_tolerance = 0.01;
-  double duration = 0.1;
-  double timestep = 0.01;
-  double linear_gain = 1.0;
-  double angular_gain = 1.0;
+  double duration = 10.0;
+  double timestep = 0.1;
+  double linear_gain = 0.1;
+  double angular_gain = 0.1;
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       stateSpace,

@@ -7,39 +7,11 @@
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 #include <dart/optimizer/nlopt/NloptSolver.hpp>
+#include "VectorFieldUtil.hpp"
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
-
-class DesiredTwistFunction : public dart::optimizer::Function
-{
-public:
-  using Twist = Eigen::Matrix<double, 6, 1>;
-  using Jacobian = dart::math::Jacobian;
-
-  DesiredTwistFunction(const Twist& _twist, const Jacobian& _jacobian)
-    : dart::optimizer::Function("DesiredTwistFunction")
-    , mTwist(_twist)
-    , mJacobian(_jacobian)
-  {
-  }
-
-  double eval(const Eigen::VectorXd& _qd) override
-  {
-    return 0.5 * (mJacobian * _qd - mTwist).squaredNorm();
-  }
-
-  void evalGradient(
-      const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad) override
-  {
-    _grad = mJacobian.transpose() * (mJacobian * _qd - mTwist);
-  }
-
-private:
-  Twist mTwist;
-  Jacobian mJacobian;
-};
 
 MoveHandStraightVectorField::MoveHandStraightVectorField(
     dart::dynamics::BodyNodePtr bn,
@@ -89,10 +61,6 @@ bool MoveHandStraightVectorField::operator()(
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
   using Eigen::VectorXd;
-  using Eigen::JacobiSVD;
-  using dart::optimizer::Problem;
-  using dart::math::Jacobian;
-  using dart::math::logMap;
 
   DART_UNUSED(t);
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
@@ -112,8 +80,8 @@ bool MoveHandStraightVectorField::operator()(
       = linear_error - linear_error.dot(linear_direction) * linear_direction;
 
   // Compute rotational error.
-  Vector3d const rotation_error
-      = logMap(target_pose_.rotation().inverse() * current_pose.rotation());
+  Vector3d const rotation_error = dart::math::logMap(
+      target_pose_.rotation().inverse() * current_pose.rotation());
 
   // Compute the desired twist using a proportional controller.
   Vector6d desired_twist;
@@ -121,58 +89,15 @@ bool MoveHandStraightVectorField::operator()(
   desired_twist.tail<3>()
       = linear_feedforward + linear_gain_ * linear_orthogonal_error;
 
-  // Use LBFGS to find joint angles that won't violate the joint limits.
-  const Jacobian jacobian
-      = stateSpace->getMetaSkeleton()->getWorldJacobian(bodynode_);
-  const size_t numDofs = stateSpace->getMetaSkeleton()->getNumDofs();
-  VectorXd lowerLimits(numDofs);
-  VectorXd upperLimits(numDofs);
-
-  VectorXd positions = stateSpace->getMetaSkeleton()->getPositions();
-  VectorXd positionLowerLimits
-      = stateSpace->getMetaSkeleton()->getPositionLowerLimits();
-  VectorXd positionUpperLimits
-      = stateSpace->getMetaSkeleton()->getPositionUpperLimits();
-  VectorXd velocityLowerLimits
-      = stateSpace->getMetaSkeleton()->getVelocityLowerLimits();
-  VectorXd velocityUpperLimits
-      = stateSpace->getMetaSkeleton()->getVelocityUpperLimits();
-
-  for (size_t i = 0; i < numDofs; ++i)
-  {
-    const double position = positions[i];
-    const double positionLowerLimit = positionLowerLimits[i];
-    const double positionUpperLimit = positionUpperLimits[i];
-    const double velocityLowerLimit = velocityLowerLimits[i];
-    const double velocityUpperLimit = velocityUpperLimits[i];
-
-    if (position
-        < positionLowerLimit - timestep_ * velocityLowerLimit + padding_)
-      lowerLimits[i] = 0;
-    else
-      lowerLimits[i] = velocityLowerLimit;
-
-    if (position
-        > positionUpperLimit - timestep_ * velocityUpperLimit - padding_)
-      upperLimits[i] = 0;
-    else
-      upperLimits[i] = velocityUpperLimit;
-  }
-
-  const auto problem = std::make_shared<Problem>(numDofs);
-  problem->setLowerBounds(lowerLimits);
-  problem->setUpperBounds(upperLimits);
-  problem->setObjective(
-      std::make_shared<DesiredTwistFunction>(desired_twist, jacobian));
-
-  dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
-  if (!solver.solve() || problem->getOptimumValue() > optimization_tolerance_)
-  {
-    return false;
-  }
-
-  *qd = problem->getOptimalSolution();
-  return true;
+  bool result = ComputeJointVelocityFromTwist(
+      desired_twist,
+      stateSpace,
+      bodynode_,
+      optimization_tolerance_,
+      timestep_,
+      padding_,
+      qd);
+  return result;
 }
 
 VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
