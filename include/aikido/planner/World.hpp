@@ -16,7 +16,8 @@ public:
   virtual ~World() = default;
 
   /// Create a clone of this World. All Skeletons will be copied over.
-  std::shared_ptr<World> clone(const std::string& name) const;
+  /// \param newName Name for the cloned World
+  std::shared_ptr<World> clone(const std::string& newName) const;
 
   /// Create a clone of this World with the same name.
   std::shared_ptr<World> clone() const;

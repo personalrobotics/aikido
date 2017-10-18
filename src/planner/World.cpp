@@ -58,8 +58,10 @@ dart::dynamics::SkeletonPtr World::getSkeleton(std::size_t i) const
 dart::dynamics::SkeletonPtr World::getSkeleton(const std::string& name) const
 {
   for (const auto& skeleton : mSkeletons)
+  {
     if (skeleton->getName() == name)
       return skeleton;
+  }
 
   return nullptr;
 }
@@ -73,14 +75,14 @@ std::size_t World::getNumSkeletons() const
 //==============================================================================
 std::string World::addSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 {
-  std::lock_guard<std::mutex> lock(mMutex);
-
   if (!skeleton)
   {
     std::cout << "[World::addSkeleton] Attempting to add a nullptr Skeleton to "
               << "the world!" << std::endl;
     return "";
   }
+
+  std::lock_guard<std::mutex> lock(mMutex);
 
   // If mSkeletons already has skeleton, then do nothing.
   if (std::find(mSkeletons.begin(), mSkeletons.end(), skeleton)
@@ -102,14 +104,14 @@ std::string World::addSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 //==============================================================================
 void World::removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 {
-  std::lock_guard<std::mutex> lock(mMutex);
-
   if (!skeleton)
   {
     std::cout << "[World::removeSkeleton] Attempting to remove a nullptr "
               << "Skeleton from the world!" << std::endl;
     return;
   }
+
+  std::lock_guard<std::mutex> lock(mMutex);
 
   // If mSkeletons doesn't have skeleton, then do nothing.
   auto skelIt = std::find(mSkeletons.begin(), mSkeletons.end(), skeleton);
