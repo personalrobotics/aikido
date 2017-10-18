@@ -13,17 +13,20 @@ MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(
 
 MetaSkeletonStateSpaceSaver::~MetaSkeletonStateSpaceSaver()
 {
-  if (mPositions.size() != mSpace->getMetaSkeleton()->getNumDofs())
+  if (static_cast<std::size_t>(mPositions.size())
+      != mSpace->getMetaSkeleton()->getNumDofs())
   {
     std::cerr << "[MetaSkeletonStateSpaceSaver] The number of DOFs in the "
               << "MetaSkeleton does not match the saved position.";
   }
-  if (mPositionLowerLimits.size() != mSpace->getMetaSkeleton()->getNumDofs())
+  if (static_cast<std::size_t>(mPositionLowerLimits.size())
+      != mSpace->getMetaSkeleton()->getNumDofs())
   {
     std::cerr << "[MetaSkeletonStateSpaceSaver] The number of DOFs in the "
               << "MetaSkeleton does not match the saved joint lower limits.";
   }
-  if (mPositionUpperLimits.size() != mSpace->getMetaSkeleton()->getNumDofs())
+  if (static_cast<std::size_t>(mPositionUpperLimits.size())
+      != mSpace->getMetaSkeleton()->getNumDofs())
   {
     std::cerr << "[MetaSkeletonStateSpaceSaver] The number of DOFs in the "
               << "MetaSkeleton does not match the saved joint upper limits.";
