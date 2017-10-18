@@ -23,7 +23,7 @@ public:
   std::shared_ptr<World> clone() const;
 
   /// Set the name of this World
-  const std::string& setName(const std::string& newName);
+  void setName(const std::string& newName);
 
   /// Get the name of this World
   const std::string& getName() const;
