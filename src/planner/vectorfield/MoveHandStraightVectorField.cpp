@@ -6,7 +6,6 @@
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
-#include <dart/optimizer/nlopt/NloptSolver.hpp>
 #include "VectorFieldUtil.hpp"
 
 namespace aikido {

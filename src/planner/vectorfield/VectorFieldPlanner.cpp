@@ -1,12 +1,11 @@
 #include <boost/format.hpp>
-#include <aikido/common/Spline.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
 #include "MoveHandStraightVectorField.hpp"
 #include "VectorFieldPlannerExceptions.hpp"
+#include "VectorFieldUtil.hpp"
 
-using dart::common::make_unique;
 using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
 
 namespace aikido {
@@ -91,11 +90,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   using dart::dynamics::DegreeOfFreedomPtr;
   using aikido::trajectory::Spline;
 
-  struct Knot
-  {
-    double t;
-    Eigen::Matrix<double, 2, Eigen::Dynamic> values;
-  };
 
   auto saver = MetaSkeletonStateSpaceSaver(stateSpace);
   DART_UNUSED(saver);
@@ -212,48 +206,11 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
       {
         dtwarn << "[VectorFieldPlanner::Plan] Terminated early: " << e.what()
                << '\n';
+        return nullptr;
       }
     }
 
-    // Construct the output spline.
-    Eigen::VectorXd times(cache_index);
-    std::transform(
-        knots.begin(),
-        knots.begin() + cache_index,
-        times.data(),
-        [](Knot const& knot) { return knot.t; });
-
-    auto _outputTrajectory
-        = make_unique<aikido::trajectory::Spline>(stateSpace);
-
-    using CubicSplineProblem = aikido::common::
-        SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
-
-    const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(num_dof);
-    auto currState = stateSpace->createState();
-    for (int iknot = 0; iknot < cache_index - 1; ++iknot)
-    {
-      const double segmentDuration = knots[iknot + 1].t - knots[iknot].t;
-      Eigen::VectorXd currentPosition = knots[iknot].values.row(0);
-      Eigen::VectorXd currentVelocity = knots[iknot].values.row(1);
-      Eigen::VectorXd nextPosition = knots[iknot + 1].values.row(0);
-      Eigen::VectorXd nextVelocity = knots[iknot + 1].values.row(1);
-
-      CubicSplineProblem problem(
-          Eigen::Vector2d{0., segmentDuration}, 4, num_dof);
-      problem.addConstantConstraint(0, 0, zeroPosition);
-      problem.addConstantConstraint(0, 1, currentVelocity);
-      problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
-      problem.addConstantConstraint(1, 1, nextVelocity);
-      const auto solution = problem.fit();
-      const auto coefficients = solution.getCoefficients().front();
-
-      // Build the output trajectory/
-      stateSpace->expMap(currentPosition, currState);
-      _outputTrajectory->addSegment(coefficients, segmentDuration, currState);
-    }
-
-    return _outputTrajectory;
+    return convertToSpline(knots, cache_index, stateSpace);
   }
   // Re-throw whatever error caused planning to fail.
   else if (termination_error)
@@ -265,6 +222,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     throw VectorFieldTerminated(
         "Planning was terminated by the StatusCallback.");
   }
+  return nullptr;
 }
 
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(

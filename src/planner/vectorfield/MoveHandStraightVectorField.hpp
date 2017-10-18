@@ -19,7 +19,7 @@ public:
     double linearTolerance = 0.01,
     double rotationGain = 1.,
     double rotationTolerance = 0.01,
-    double optimizationTolerance = 1e-4,
+    double optimizationTolerance = 1e-3,
     double padding = 1e-5
   );
 

@@ -59,20 +59,20 @@ public:
   {
     skel = createThreeLinkRobot(
         Eigen::Vector3d(0.2, 0.2, 1.0),
-        DOF_YAW,
+        DOF_ROLL,
         Eigen::Vector3d(0.2, 0.2, 1.0),
         DOF_PITCH,
         Eigen::Vector3d(0.2, 0.2, 1.0),
-        DOF_ROLL,
+        DOF_PITCH,
         true);
     upperPositionLimits = Eigen::VectorXd(skel->getNumDofs());
     upperPositionLimits << 3.1, 3.1, 3.1;
     lowerPositionLimits = Eigen::VectorXd(skel->getNumDofs());
     lowerPositionLimits << -3.1, -3.1, -3.1;
     upperVelocityLimits = Eigen::VectorXd(skel->getNumDofs());
-    upperVelocityLimits << 10.0, 10.0, 10.0;
+    upperVelocityLimits << 20.0, 20.0, 20.0;
     lowerVelocityLimits = Eigen::VectorXd(skel->getNumDofs());
-    lowerVelocityLimits << -10.0, -10.0, -10.0;
+    lowerVelocityLimits << -20.0, -20.0, -20.0;
 
     skel->setPositionUpperLimits(upperPositionLimits);
     skel->setPositionLowerLimits(lowerPositionLimits);
@@ -299,7 +299,7 @@ public:
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
   Eigen::Vector3d direction;
-  direction << 0., 0., 1.;
+  direction << 1., 1., 1.;
   direction.normalize();
   double distance = 1.0;
 
@@ -314,7 +314,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double position_tolerance = 0.01;
   double angular_tolerance = 0.01;
   double duration = 10.0;
-  double timestep = 0.1;
+  double timestep = 0.01;
   double linear_gain = 0.1;
   double angular_gain = 0.1;
 
@@ -354,8 +354,6 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double expectedDistance = 0.0;
   int stepNum = 10;
   double timeStep = traj->getDuration() / stepNum;
-  // std::cout << "start time " << traj->getStartTime() << std::endl;
-  // std::cout << "end time " << traj->getEndTime() << std::endl;
 
   for (double t = traj->getStartTime(); t <= traj->getEndTime(); t += timeStep)
   {
@@ -387,7 +385,7 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 {
   Eigen::Vector3d direction;
   direction << 0., 0., 0.;
-  double distance = 1.0;
+  double distance = 0.2;
 
   stateSpace->getMetaSkeleton()->setPositions(startVec);
   auto startState = stateSpace->createState();
