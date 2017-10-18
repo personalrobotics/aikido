@@ -54,7 +54,7 @@ public:
   void setAutoUpdate(bool flag);
   void update();
 
-private:
+protected:
   void autoUpdate();
 
   interactive_markers::InteractiveMarkerServer mMarkerServer;

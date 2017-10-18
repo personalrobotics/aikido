@@ -33,6 +33,7 @@ set(sources
   SkeletonMarker.cpp
   shape_conversions.cpp
   TSRMarker.cpp
+  WorldInteractiveMarkerViewer.cpp
 )
 
 add_library("${PROJECT_NAME}_rviz" SHARED ${sources})
