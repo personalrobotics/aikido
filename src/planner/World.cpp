@@ -33,6 +33,13 @@ WorldPtr World::clone() const
 }
 
 //==============================================================================
+WorldPtr World::create(const std::string& name)
+{
+  WorldPtr world(new World(name));
+  return world;
+}
+
+//==============================================================================
 void World::setName(const std::string& newName)
 {
   mName = newName;

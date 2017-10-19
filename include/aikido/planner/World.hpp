@@ -22,6 +22,9 @@ public:
   /// Create a clone of this World with the same name.
   std::shared_ptr<World> clone() const;
 
+  /// Create a new World inside of a shared_ptr
+  static std::shared_ptr<World> create(const std::string& name);
+
   /// Set the name of this World
   void setName(const std::string& newName);
 

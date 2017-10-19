@@ -14,8 +14,8 @@ public:
     : skel1{dart::dynamics::Skeleton::create("skel1")}
     , skel2{dart::dynamics::Skeleton::create("skel2")}
     , skel3{dart::dynamics::Skeleton::create("skel3")}
+    , mWorld{aikido::planner::World::create("test")}
   {
-    mWorld = std::make_shared<aikido::planner::World>("test");
   }
 
   // DART setup
