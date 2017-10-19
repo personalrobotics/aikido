@@ -24,6 +24,28 @@ public:
   struct GazeData
   {
     uint syncTimestamp;
+    float gazeX;
+    float gazeY;
+    bool validGaze;
+    uint fieldWidth;
+    uint fieldHeight;
+    bool arucoMarkersPresent;
+    float leftPupilX;
+    float leftPupilY;
+    float leftPupilWidth;
+    float leftPupilHeight;
+    float leftPupilAngle;
+    bool leftPupilValid;
+    float rightPupilX;
+    float rightPupilY;
+    float rightPupilWidth;
+    float rightPupilHeight;
+    float rightPupilAngle;
+    bool rightPupilValid;
+
+    std::vector<int> arucoIDs;
+    std::vector<float> arcuoXCoords;
+    std::vector<float> arcuoYCoords;
   };
 
   GazeData getCurGazeData();

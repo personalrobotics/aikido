@@ -17,7 +17,9 @@ set(sources
   EyeTracker.cpp
 )
 
-add_library("${PROJECT_NAME}_sensor" SHARED ${sources})
+#add_library("${PROJECT_NAME}_sensor" SHARED ${sources})
+# TODO: This is just a hack to actually run the subscriber.
+add_executable("${PROJECT_NAME}_sensor" ${sources})
 target_include_directories("${PROJECT_NAME}_sensor" SYSTEM
   PUBLIC
     ${roscpp_INCLUDE_DIRS}
@@ -29,11 +31,14 @@ target_link_libraries("${PROJECT_NAME}_sensor"
   ${roscpp_LIBRARIES}
 )
 
-add_component(${PROJECT_NAME} sensor)
-add_component_targets(${PROJECT_NAME} sensor "${PROJECT_NAME}_sensor")
+# TODO: This is just a hack to actually run the subscriber.
+#add_component(${PROJECT_NAME} sensor)
+#add_component_targets(${PROJECT_NAME} sensor "${PROJECT_NAME}_sensor")
 
 format_add_sources(${sources})
 
 target_compile_options("${PROJECT_NAME}_sensor"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
+
+
