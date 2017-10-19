@@ -183,10 +183,11 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
           || termination_status
                  == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
       {
-        cache_index = index;
+
         // Take a step.
         q += dt * qd;
         t += dt;
+        cache_index = index;
       }
     }
   } while (termination_status != VectorFieldPlannerStatus::TERMINATE

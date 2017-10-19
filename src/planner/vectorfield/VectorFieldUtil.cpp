@@ -45,7 +45,6 @@ convertToSpline(const std::vector<Knot>& knots, ptrdiff_t cache_index,
     const auto solution = problem.fit();
     const auto coefficients = solution.getCoefficients().front();
 
-    // Build the output trajectory/
     stateSpace->expMap(currentPosition, currState);
     _outputTrajectory->addSegment(coefficients, segmentDuration, currState);
   }
@@ -109,13 +108,13 @@ bool ComputeJointVelocityFromTwist(const Eigen::Vector6d& _desiredTwist,
     const double velocityUpperLimit = velocityUpperLimits[i];
 
     if (position
-        < positionLowerLimit - _timestep * velocityLowerLimit + _padding)
+        < positionLowerLimit /* - _timestep * velocityLowerLimit */ + _padding)
       lowerLimits[i] = 0;
     else
       lowerLimits[i] = velocityLowerLimit;
 
     if (position
-        > positionUpperLimit - _timestep * velocityUpperLimit - _padding)
+        > positionUpperLimit /* - _timestep * velocityUpperLimit */ - _padding)
       upperLimits[i] = 0;
     else
       upperLimits[i] = velocityUpperLimit;

@@ -65,6 +65,8 @@ bool MoveHandStraightVectorField::operator()(
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
   Isometry3d const current_pose = bodynode_->getTransform();
+  Vector3d current_workspace_pose = current_pose.translation();
+  Vector3d target_workspace_pose = targetPose_.translation();
 
   // Compute the "feed-forward" term necessary to move at a constant velocity
   // from the start to the goal.
@@ -74,7 +76,7 @@ bool MoveHandStraightVectorField::operator()(
   // Compute positional error orthogonal to the direction of motion by
   // projecting out the component of the error along that direction.
   Vector3d const linear_error
-      = targetPose_.translation() - current_pose.translation();
+      = target_workspace_pose - current_workspace_pose;
   Vector3d const linear_orthogonal_error
       = linear_error - linear_error.dot(linear_direction) * linear_direction;
 
