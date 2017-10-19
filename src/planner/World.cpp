@@ -21,6 +21,13 @@ World::~World()
 }
 
 //==============================================================================
+WorldPtr World::create(const std::string& name)
+{
+  WorldPtr world(new World(name));
+  return world;
+}
+
+//==============================================================================
 WorldPtr World::clone(const std::string& newName) const
 {
   WorldPtr worldClone(new World(newName.empty() ? mName : newName));
@@ -35,13 +42,6 @@ WorldPtr World::clone(const std::string& newName) const
   }
 
   return worldClone;
-}
-
-//==============================================================================
-WorldPtr World::create(const std::string& name)
-{
-  WorldPtr world(new World(name));
-  return world;
 }
 
 //==============================================================================
