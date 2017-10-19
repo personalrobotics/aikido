@@ -3,16 +3,27 @@
 namespace aikido {
 namespace planner {
 
+dart::common::NameManager<World*> World::worldNameManager{"World", "world"};
+
 //==============================================================================
-World::World(const std::string& name) : mName(name)
+World::World(const std::string& name)
 {
-  // Do nothing
+  setName(name);
+
+  mSkeletonNameManager.setManagerName("World::Skeleton | " + mName);
+  mSkeletonNameManager.setDefaultName("skeleton");
+}
+
+//==============================================================================
+World::~World()
+{
+  World::worldNameManager.removeName(mName);
 }
 
 //==============================================================================
 WorldPtr World::clone(const std::string& newName) const
 {
-  WorldPtr worldClone(new World(newName));
+  WorldPtr worldClone(new World(newName.empty() ? mName : newName));
 
   // Clone and add each Skeleton
   worldClone->mSkeletons.reserve(mSkeletons.size());
@@ -27,12 +38,6 @@ WorldPtr World::clone(const std::string& newName) const
 }
 
 //==============================================================================
-WorldPtr World::clone() const
-{
-  return clone(mName);
-}
-
-//==============================================================================
 WorldPtr World::create(const std::string& name)
 {
   WorldPtr world(new World(name));
@@ -40,9 +45,13 @@ WorldPtr World::create(const std::string& name)
 }
 
 //==============================================================================
-void World::setName(const std::string& newName)
+std::string World::setName(const std::string& newName)
 {
-  mName = newName;
+  if (mName.empty())
+    mName = World::worldNameManager.issueNewNameAndAdd(newName, this);
+  else
+    mName = World::worldNameManager.changeObjectName(this, newName);
+  return mName;
 }
 
 //==============================================================================
@@ -63,13 +72,7 @@ dart::dynamics::SkeletonPtr World::getSkeleton(std::size_t i) const
 //==============================================================================
 dart::dynamics::SkeletonPtr World::getSkeleton(const std::string& name) const
 {
-  for (const auto& skeleton : mSkeletons)
-  {
-    if (skeleton->getName() == name)
-      return skeleton;
-  }
-
-  return nullptr;
+  return mSkeletonNameManager.getObject(name);
 }
 
 //==============================================================================
@@ -101,8 +104,8 @@ std::string World::addSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 
   mSkeletons.push_back(skeleton);
 
-  // TODO: handle name conflicts
-  // dart::simulation::World uses dart::common::NameManager
+  skeleton->setName(
+      mSkeletonNameManager.issueNewNameAndAdd(skeleton->getName(), skeleton));
 
   return skeleton->getName();
 }
@@ -130,6 +133,8 @@ void World::removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 
   // Remove skeleton from mSkeletons
   mSkeletons.erase(skelIt);
+
+  mSkeletonNameManager.removeName(skeleton->getName());
 }
 
 //==============================================================================

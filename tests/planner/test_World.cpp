@@ -69,7 +69,7 @@ TEST_F(WorldTest, CloningPreservesSkeletonNamesAndConfigurations)
   mWorld->addSkeleton(skel3);
 
   auto clone1 = mWorld->clone();
-  EXPECT_EQ(mWorld->getName(), clone1->getName());
+  EXPECT_NE(mWorld->getName(), clone1->getName());
 
   auto clone2 = clone1->clone("clone2");
   EXPECT_EQ("clone2", clone2->getName());

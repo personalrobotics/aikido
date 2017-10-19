@@ -11,22 +11,19 @@ class World
 {
 public:
   /// Construct a kinematic World.
-  World(const std::string& name);
+  World(const std::string& name = "");
 
-  virtual ~World() = default;
+  virtual ~World();
 
   /// Create a clone of this World. All Skeletons will be copied over.
   /// \param newName Name for the cloned World
-  std::shared_ptr<World> clone(const std::string& newName) const;
-
-  /// Create a clone of this World with the same name.
-  std::shared_ptr<World> clone() const;
+  std::shared_ptr<World> clone(const std::string& newName = "") const;
 
   /// Create a new World inside of a shared_ptr
-  static std::shared_ptr<World> create(const std::string& name);
+  static std::shared_ptr<World> create(const std::string& name = "");
 
   /// Set the name of this World
-  void setName(const std::string& newName);
+  std::string setName(const std::string& newName);
 
   /// Get the name of this World
   const std::string& getName() const;
@@ -59,6 +56,12 @@ protected:
   std::vector<dart::dynamics::SkeletonPtr> mSkeletons;
 
   mutable std::mutex mMutex;
+
+  /// NameManager for keeping track of Worlds
+  static dart::common::NameManager<World*> worldNameManager;
+
+  /// NameManager for keeping track of Skeletons
+  dart::common::NameManager<dart::dynamics::SkeletonPtr> mSkeletonNameManager;
 };
 
 typedef std::shared_ptr<World> WorldPtr;
