@@ -64,13 +64,12 @@ public:
   {
     SkeletonPtr skel
         = createNLinkRobot(3, Eigen::Vector3d(0.2, 0.2, 1.0), BALL);
+    numDof = skel->getNumDofs();
 
-    upperPositionLimits
-        = Eigen::VectorXd::Constant(skel->getNumDofs(), constantsd::pi());
-    lowerPositionLimits
-        = Eigen::VectorXd::Constant(skel->getNumDofs(), -constantsd::pi());
-    upperVelocityLimits = Eigen::VectorXd::Constant(skel->getNumDofs(), 2.0);
-    lowerVelocityLimits = Eigen::VectorXd::Constant(skel->getNumDofs(), -2.0);
+    upperPositionLimits = Eigen::VectorXd::Constant(numDof, constantsd::pi());
+    lowerPositionLimits = Eigen::VectorXd::Constant(numDof, -constantsd::pi());
+    upperVelocityLimits = Eigen::VectorXd::Constant(numDof, 2.0);
+    lowerVelocityLimits = Eigen::VectorXd::Constant(numDof, -2.0);
 
     skel->setPositionUpperLimits(upperPositionLimits);
     skel->setPositionLowerLimits(lowerPositionLimits);
@@ -78,13 +77,12 @@ public:
     skel->setVelocityLowerLimits(lowerVelocityLimits);
     stateSpace = std::make_shared<MetaSkeletonStateSpace>(skel);
     bodynode = stateSpace->getMetaSkeleton()->getBodyNodes().back();
-    startVec = Eigen::VectorXd::Zero(skel->getNumDofs());
-    // startVec = Eigen::VectorXd::Random(skel->getNumDofs());
-    // startVec *= constantsd::pi();
+
+    startVec = Eigen::VectorXd::Zero(numDof);
     startVec << 2.13746, -0.663612, 1.77876, 1.87515, 2.58646, -1.90034,
         -1.03533, 1.68534, -1.39628;
 
-    goalVec = Eigen::VectorXd(skel->getNumDofs());
+    goalVec = Eigen::VectorXd(numDof);
     passingConstraint = std::make_shared<PassingConstraint>(stateSpace);
   }
 
@@ -276,6 +274,7 @@ public:
   std::vector<std::pair<JointPtr, BodyNodePtr>> jn_bn;
   MetaSkeletonStateSpacePtr stateSpace;
   BodyNodePtr bodynode;
+  std::size_t numDof;
 
   Eigen::VectorXd upperPositionLimits;
   Eigen::VectorXd lowerPositionLimits;
@@ -291,8 +290,7 @@ public:
 TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 {
   using aikido::planner::vectorfield::ComputeJointVelocityFromTwist;
-  Eigen::VectorXd currentConfig
-      = Eigen::VectorXd::Random(stateSpace->getMetaSkeleton()->getNumDofs());
+  Eigen::VectorXd currentConfig = Eigen::VectorXd::Random(numDof);
   stateSpace->getMetaSkeleton()->setPositions(currentConfig);
 
   Eigen::Isometry3d currentTrans = bodynode->getTransform();
@@ -308,8 +306,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
   double timestep = 0.01;
   double padding = 1e-3;
   double optimizationTolerance = 1e-10;
-  Eigen::VectorXd qd
-      = Eigen::VectorXd::Zero(stateSpace->getMetaSkeleton()->getNumDofs());
+  Eigen::VectorXd qd = Eigen::VectorXd::Zero(numDof);
   EXPECT_TRUE(
       ComputeJointVelocityFromTwist(
           desiredTwist,
@@ -320,7 +317,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           padding,
           &qd));
 
-  Eigen::VectorXd nextConfig(stateSpace->getMetaSkeleton()->getNumDofs());
+  Eigen::VectorXd nextConfig(numDof);
   auto currentState = stateSpace->createState();
   stateSpace->convertPositionsToState(currentConfig, currentState);
   auto deltaState = stateSpace->createState();

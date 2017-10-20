@@ -50,10 +50,7 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
 
   targetPose_ = startPose_;
   targetPose_.translation() += velocity_ * maxDuration_;
-  maxDuration_ += timestep_ / 20;
-
-  // linearGain_ = 1.0 / timestep_;
-  // rotationGain_ = 1.0 / timestep_;
+  maxDuration_ += padding;
 }
 
 bool MoveHandStraightVectorField::operator()(
@@ -81,11 +78,6 @@ bool MoveHandStraightVectorField::operator()(
   Vector3d const linear_error = target_workspace_pose - current_workspace_pose;
   Vector3d const linear_orthogonal_error
       = linear_error - linear_error.dot(linearDirection_) * linearDirection_;
-
-  // Compute rotational error.
-  /*
-  Vector3d const rotation_error = dart::math::logMap(
-      targetPose_.rotation().transpose() * current_pose.rotation());*/
 
   // Compute the desired twist using a proportional controller.
   Vector6d desired_twist;
