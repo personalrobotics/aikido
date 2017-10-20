@@ -1,6 +1,6 @@
-set(sources 
+set(sources
   SnapPlanner.cpp
-)
+  World.cpp)
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_planner"
@@ -36,4 +36,4 @@ format_add_sources(${sources})
 
 add_subdirectory("ompl")      # [constraint], [distance], [statespace], [trajectory], dart, ompl
 add_subdirectory("parabolic") # [external], [common], [trajectory], [statespace], dart
-add_subdirectory("vectorfield") 
+add_subdirectory("vectorfield") # [common], [trajectory], [statespace], dart
