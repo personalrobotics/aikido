@@ -3,7 +3,7 @@
 namespace aikido {
 namespace planner {
 
-dart::common::NameManager<World*> World::worldNameManager{"World", "world"};
+dart::common::NameManager<World*> World::mWorldNameManager{"World", "world"};
 
 //==============================================================================
 World::World(const std::string& name)
@@ -17,20 +17,20 @@ World::World(const std::string& name)
 //==============================================================================
 World::~World()
 {
-  World::worldNameManager.removeName(mName);
+  World::mWorldNameManager.removeName(mName);
 }
 
 //==============================================================================
-WorldPtr World::create(const std::string& name)
+std::unique_ptr<World> World::create(const std::string& name)
 {
-  WorldPtr world(new World(name));
+  std::unique_ptr<World> world(new World(name));
   return world;
 }
 
 //==============================================================================
-WorldPtr World::clone(const std::string& newName) const
+std::unique_ptr<World> World::clone(const std::string& newName) const
 {
-  WorldPtr worldClone(new World(newName.empty() ? mName : newName));
+  std::unique_ptr<World> worldClone(new World(newName.empty() ? mName : newName));
 
   // Clone and add each Skeleton
   worldClone->mSkeletons.reserve(mSkeletons.size());
@@ -48,9 +48,9 @@ WorldPtr World::clone(const std::string& newName) const
 std::string World::setName(const std::string& newName)
 {
   if (mName.empty())
-    mName = World::worldNameManager.issueNewNameAndAdd(newName, this);
+    mName = World::mWorldNameManager.issueNewNameAndAdd(newName, this);
   else
-    mName = World::worldNameManager.changeObjectName(this, newName);
+    mName = World::mWorldNameManager.changeObjectName(this, newName);
   return mName;
 }
 

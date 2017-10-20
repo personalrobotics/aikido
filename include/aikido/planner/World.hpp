@@ -18,11 +18,11 @@ public:
 
   /// Create a new World inside of a shared_ptr
   /// \param name Name for the new World
-  static std::shared_ptr<World> create(const std::string& name = "");
+  static std::unique_ptr<World> create(const std::string& name = "");
 
   /// Create a clone of this World. All Skeletons will be copied over.
   /// \param newName Name for the cloned World
-  std::shared_ptr<World> clone(const std::string& newName = "") const;
+  std::unique_ptr<World> clone(const std::string& newName = "") const;
 
   /// Set the name of this World
   /// \param newName New name for this World
@@ -66,13 +66,13 @@ protected:
   mutable std::mutex mMutex;
 
   /// NameManager for keeping track of Worlds
-  static dart::common::NameManager<World*> worldNameManager;
+  static dart::common::NameManager<World*> mWorldNameManager;
 
   /// NameManager for keeping track of Skeletons
   dart::common::NameManager<dart::dynamics::SkeletonPtr> mSkeletonNameManager;
 };
 
-typedef std::shared_ptr<World> WorldPtr;
+using WorldPtr = std::shared_ptr<World>;
 
 } // namespace planner
 } // namespace aikido
