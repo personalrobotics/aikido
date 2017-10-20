@@ -34,6 +34,7 @@ public:
 private:
   dart::dynamics::BodyNode *bodynode_;
   Eigen::VectorXd velocity_;
+  Eigen::VectorXd linearDirection_;
   double minDuration_;
   double maxDuration_;
   double timestep_;

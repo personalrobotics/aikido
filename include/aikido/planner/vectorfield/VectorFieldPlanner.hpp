@@ -43,12 +43,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::constraint::TestablePtr constraint,
     const Eigen::Vector3d& direction,
     double distance,
-    double positionTolerance = 0.001,
-    double angularTolerance = 0.01,
+    double positionTolerance = 0.005,
+    double angularTolerance = 0.2,
     double duration = 2.0,
-    double timestep = 0.01,
-    double linearGain = 1.0,
-    double angularGain = 1.0);
+    double timestep = 0.01);
 
 } // namespace vectorfield
 } // namespace planner

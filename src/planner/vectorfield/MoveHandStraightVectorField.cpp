@@ -6,7 +6,7 @@
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
-#include "VectorFieldUtil.hpp"
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 
 namespace aikido {
 namespace planner {
@@ -26,6 +26,7 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
     double padding)
   : bodynode_(bn)
   , velocity_(linearVelocity)
+  , linearDirection_(linearVelocity.normalized())
   , minDuration_(minDuration)
   , maxDuration_(maxDuration)
   , timestep_(stepsize)
@@ -50,6 +51,9 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
   targetPose_ = startPose_;
   targetPose_.translation() += velocity_ * maxDuration_;
   maxDuration_ += timestep_ / 20;
+
+  // linearGain_ = 1.0 / timestep_;
+  // rotationGain_ = 1.0 / timestep_;
 }
 
 bool MoveHandStraightVectorField::operator()(
@@ -70,23 +74,23 @@ bool MoveHandStraightVectorField::operator()(
 
   // Compute the "feed-forward" term necessary to move at a constant velocity
   // from the start to the goal.
-  Vector3d const linear_direction = velocity_.normalized();
   Vector3d const& linear_feedforward = velocity_;
 
   // Compute positional error orthogonal to the direction of motion by
   // projecting out the component of the error along that direction.
-  Vector3d const linear_error
-      = target_workspace_pose - current_workspace_pose;
+  Vector3d const linear_error = target_workspace_pose - current_workspace_pose;
   Vector3d const linear_orthogonal_error
-      = linear_error - linear_error.dot(linear_direction) * linear_direction;
+      = linear_error - linear_error.dot(linearDirection_) * linearDirection_;
 
   // Compute rotational error.
+  /*
   Vector3d const rotation_error = dart::math::logMap(
-      targetPose_.rotation().inverse() * current_pose.rotation());
+      targetPose_.rotation().transpose() * current_pose.rotation());*/
 
   // Compute the desired twist using a proportional controller.
   Vector6d desired_twist;
-  desired_twist.head<3>() = rotationGain_ * rotation_error;
+  desired_twist.head<3>()
+      = Eigen::Vector3d::Zero(); // rotationGain_ * rotation_error;
   desired_twist.tail<3>()
       = linear_feedforward + linearGain_ * linear_orthogonal_error;
 
@@ -112,12 +116,10 @@ VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
   Isometry3d const current_pose = bodynode_->getTransform();
 
   // Check for deviation from the straight-line trajectory.
-  Vector3d const linear_direction
-      = (targetPose_.translation() - startPose_.translation()).normalized();
   Vector3d const linear_error
       = targetPose_.translation() - current_pose.translation();
   Vector3d const linear_orthogonal_error
-      = linear_error - linear_error.dot(linear_direction) * linear_direction;
+      = linear_error - linear_error.dot(linearDirection_) * linearDirection_;
   double const linear_orthogonal_magnitude = linear_orthogonal_error.norm();
 
   if (linear_orthogonal_magnitude >= linearTolerance_)

@@ -1,10 +1,10 @@
 #include <boost/format.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
 #include "MoveHandStraightVectorField.hpp"
 #include "VectorFieldPlannerExceptions.hpp"
-#include "VectorFieldUtil.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
 
@@ -90,7 +90,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   using dart::dynamics::DegreeOfFreedomPtr;
   using aikido::trajectory::Spline;
 
-
   auto saver = MetaSkeletonStateSpaceSaver(stateSpace);
   DART_UNUSED(saver);
 
@@ -175,6 +174,16 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
       knot.values.row(1) = qd;
       knots.push_back(knot);
 
+      // Take a step.
+      auto currentState = stateSpace->createState();
+      stateSpace->convertPositionsToState(q, currentState);
+      auto deltaState = stateSpace->createState();
+      stateSpace->convertPositionsToState(dt * qd, deltaState);
+      auto nextState = stateSpace->createState();
+      stateSpace->compose(currentState, deltaState, nextState);
+      stateSpace->convertStateToPositions(nextState, q);
+
+      t += dt;
       index++;
 
       // Check if we should terminate.
@@ -183,10 +192,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
           || termination_status
                  == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
       {
-
-        // Take a step.
-        q += dt * qd;
-        t += dt;
         cache_index = index;
       }
     }
@@ -235,9 +240,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance,
     double duration,
-    double timestep,
-    double linearGain,
-    double angularGain)
+    double timestep)
 {
   if (distance < 0.)
   {
@@ -253,6 +256,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 
   double linear_velocity = distance / duration;
   Eigen::Vector3d velocity = direction.normalized() * linear_velocity;
+  double linearGain = 1.0 / timestep;
+  double angularGain = 1.0 / timestep;
 
   auto vectorfield = MoveHandStraightVectorField(
       bn,
