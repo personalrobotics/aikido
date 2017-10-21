@@ -83,8 +83,7 @@ bool MoveHandStraightVectorField::operator()(
 
   // Compute the desired twist using a proportional controller.
   Vector6d desiredTwist;
-  desiredTwist.head<3>()
-      = Eigen::Vector3d::Zero(); // rotationGain_ * rotation_error;
+  desiredTwist.head<3>() = Eigen::Vector3d::Zero();
   desiredTwist.tail<3>()
       = linearFeedforward + mLinearGain * linearOrthogonalError;
 
@@ -116,7 +115,7 @@ VectorFieldPlannerStatus MoveHandStraightVectorField::operator()(
       = mTargetPose.translation() - currentPose.translation();
   const Vector3d linearOrthogonalError
       = linearError - linearError.dot(mLinearDirection) * mLinearDirection;
-  double const linearOrthogonalMagnitude = linearOrthogonalError.norm();
+  double linearOrthogonalMagnitude = linearOrthogonalError.norm();
 
   if (linearOrthogonalMagnitude >= mLinearTolerance)
   {

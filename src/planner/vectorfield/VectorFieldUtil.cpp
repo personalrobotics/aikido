@@ -6,35 +6,35 @@ namespace planner {
 namespace vectorfield {
 
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const std::vector<Knot>& knots,
-    ptrdiff_t cacheIndex,
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace)
+    const std::vector<Knot>& _knots,
+    ptrdiff_t _cacheIndex,
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace)
 {
   using dart::common::make_unique;
 
-  std::size_t numDof = stateSpace->getMetaSkeleton()->getNumDofs();
+  std::size_t numDof = _stateSpace->getMetaSkeleton()->getNumDofs();
   // Construct the output spline.
-  Eigen::VectorXd times(cacheIndex);
+  Eigen::VectorXd times(_cacheIndex);
   std::transform(
-      knots.begin(),
-      knots.begin() + cacheIndex,
+      _knots.begin(),
+      _knots.begin() + _cacheIndex,
       times.data(),
       [](Knot const& knot) { return knot.mT; });
 
-  auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(stateSpace);
+  auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(_stateSpace);
 
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
 
   const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(numDof);
-  auto currState = stateSpace->createState();
-  for (int iknot = 0; iknot < cacheIndex - 1; ++iknot)
+  auto currState = _stateSpace->createState();
+  for (int iknot = 0; iknot < _cacheIndex - 1; ++iknot)
   {
-    const double segmentDuration = knots[iknot + 1].mT - knots[iknot].mT;
-    Eigen::VectorXd currentPosition = knots[iknot].mValues.row(0);
-    Eigen::VectorXd currentVelocity = knots[iknot].mValues.row(1);
-    Eigen::VectorXd nextPosition = knots[iknot + 1].mValues.row(0);
-    Eigen::VectorXd nextVelocity = knots[iknot + 1].mValues.row(1);
+    const double segmentDuration = _knots[iknot + 1].mT - _knots[iknot].mT;
+    Eigen::VectorXd currentPosition = _knots[iknot].mValues.row(0);
+    Eigen::VectorXd currentVelocity = _knots[iknot].mValues.row(1);
+    Eigen::VectorXd nextPosition = _knots[iknot + 1].mValues.row(0);
+    Eigen::VectorXd nextVelocity = _knots[iknot + 1].mValues.row(1);
 
     CubicSplineProblem problem(Eigen::Vector2d{0., segmentDuration}, 4, numDof);
     problem.addConstantConstraint(0, 0, zeroPosition);
@@ -44,7 +44,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const auto solution = problem.fit();
     const auto coefficients = solution.getCoefficients().front();
 
-    stateSpace->expMap(currentPosition, currState);
+    _stateSpace->expMap(currentPosition, currState);
     _outputTrajectory->addSegment(coefficients, segmentDuration, currState);
   }
   return _outputTrajectory;

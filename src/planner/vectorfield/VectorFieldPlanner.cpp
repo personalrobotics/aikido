@@ -100,7 +100,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     throw std::invalid_argument("Velocity space volume zero");
   }
 
-  std::size_t const numDof = _stateSpace->getDimension();
+  const std::size_t numDof = _stateSpace->getDimension();
 
   std::vector<Knot> knots;
   VectorFieldPlannerStatus terminationStatus
