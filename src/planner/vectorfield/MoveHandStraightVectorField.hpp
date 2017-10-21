@@ -1,6 +1,6 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_
 #define AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_
-#include <Eigen/Geometry>
+
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 
 namespace aikido {
@@ -10,42 +10,43 @@ namespace vectorfield {
 class MoveHandStraightVectorField {
 public:
   MoveHandStraightVectorField(
-    dart::dynamics::BodyNodePtr bn,
-    Eigen::Vector3d const &linearVelocity,
-    double minDuration,
-    double maxDuration,
-    double stepsize,
-    double linearGain = 1.,
-    double linearTolerance = 0.01,
-    double rotationGain = 1.,
-    double rotationTolerance = 0.01,
-    double optimizationTolerance = 1e-3,
-    double padding = 1e-5
+    dart::dynamics::BodyNodePtr _bn,
+    const Eigen::Vector3d& _linearVelocity,
+    double _minDuration,
+    double _maxDuration,
+    double _stepsize,
+    double _linearGain = 1.,
+    double _linearTolerance = 0.01,
+    double _rotationGain = 1.,
+    double _rotationTolerance = 0.01,
+    double _optimizationTolerance = 1e-3,
+    double _padding = 1e-5
   );
 
   bool operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    double t, Eigen::VectorXd *qd);
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    double _t,
+    Eigen::VectorXd* _qd);
 
-  VectorFieldPlannerStatus::Enum operator()(
+  VectorFieldPlannerStatus operator()(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     double t);
 
 private:
-  dart::dynamics::BodyNode *bodynode_;
-  Eigen::VectorXd velocity_;
-  Eigen::VectorXd linearDirection_;
-  double minDuration_;
-  double maxDuration_;
-  double timestep_;
-  double linearGain_;
-  double linearTolerance_;
-  double rotationGain_;
-  double rotationTolerance_;
-  double optimizationTolerance_;
-  double padding_;
-  Eigen::Isometry3d startPose_;
-  Eigen::Isometry3d targetPose_;
+  dart::dynamics::BodyNodePtr mBodynode;
+  Eigen::VectorXd mVelocity;
+  Eigen::VectorXd mLinearDirection;
+  double mMinDuration;
+  double mMaxDuration;
+  double mTimestep;
+  double mLinearGain;
+  double mLinearTolerance;
+  double mRotationGain;
+  double mRotationTolerance;
+  double mOptimizationTolerance;
+  double mPadding;
+  Eigen::Isometry3d mStartPose;
+  Eigen::Isometry3d mTargetPose;
 };
 
 } // namespace vectorfield

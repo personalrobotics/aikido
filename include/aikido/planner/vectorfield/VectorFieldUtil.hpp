@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_VECTORFIELD_UTIL_H_
-#define AIKIDO_PLANNER_VECTORFIELD_UTIL_H_
+#ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_H_
+#define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_H_
 
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/optimizer/Function.hpp>
@@ -15,37 +15,46 @@ namespace vectorfield {
 
 struct Knot
 {
-  double t;
-  Eigen::Matrix<double, 2, Eigen::Dynamic> values;
+  double mT;
+  Eigen::Matrix<double, 2, Eigen::Dynamic> mValues;
 };
 
-/// convert a sequence of knots into a Spline trajectory.
-/// \param knots a sequence of knots
-/// \param cache_index total cache index number
-/// \param stateSpace MetaSkeleton state space
+/// Convert a sequence of knots into a Spline trajectory.
+///
+/// \param[in] _knots A sequence of knots
+/// \param[in] _cache_index Total cache index number
+/// \param[in] _stateSpace MetaSkeleton state space
 /// \return A Spline trajectory
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const std::vector<Knot>& knots,
-    ptrdiff_t cache_index,
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace);
+    const std::vector<Knot>& _knots,
+    ptrdiff_t _cacheIndex,
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace);
 
 /// A function class that defines an objective. The objective measures
 /// the difference between a desired twist and Jacobian * joint velocities.
 class DesiredTwistFunction : public dart::optimizer::Function
 {
 public:
-  using Twist = Eigen::Matrix<double, 6, 1>;
+  using Twist = Eigen::Vector6d;
   using Jacobian = dart::math::Jacobian;
 
   /// Constructor.
-  /// \param _twist a desired twist
-  /// \param _jacobian system Jacobian
-  DesiredTwistFunction(const Twist& _twist, const Jacobian& _jacobian);
-  /// Evluating an objective by a state vaue
-  /// \param joinit velocities
-  /// \return objective value
-  double eval(const Eigen::VectorXd& _qd) override;
   ///
+  /// \param[in] twist A desired twist
+  /// \param[in] jacobian System Jacobian
+  DesiredTwistFunction(const Twist& twist, const Jacobian& jacobian);
+
+  /// Implementation inherited.
+  /// Evaluating an objective by a state value.
+  ///
+  /// \param[in] _qd Joint velocities
+  /// \return Objective value
+  double eval(const Eigen::VectorXd& _qd) override;
+
+  /// Implementation inherited.
+  /// Evaluating gradient of an objective by a state value.
+  /// \param[in] _qd Joint velocities
+  /// \param[out] _grad Gradient of a defined objective
   void evalGradient(
       const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad) override;
 
@@ -55,25 +64,26 @@ private:
 };
 
 /// Compute joint velocity from a given twist.
-/// \param _desiredTwist desired twist, which consists of angular velocity and
-/// linear velocity
-/// \param _stateSpace MetaSkeleton state space
-/// \param _bodyNode body node of the end-effector
-/// \param _optimizationTolerance callback of vector field calculation
-/// \param _timestep how long will the computed joint velocities be executed
-/// \param _padding padding for joint limits
-/// \param[out] _jointVelocity calculated joint velocities
-bool ComputeJointVelocityFromTwist(
+///
+/// \param[in] _desiredTwist Desired twist, which consists of angular velocity
+/// and linear velocity
+/// \param[in] _stateSpace MetaSkeleton state space
+/// \param[in]  _bodyNode Body node of the end-effector
+/// \param[in] _optimizationTolerance Callback of vector field calculation
+/// \param[in] _timestep How long will the computed joint velocities be executed
+/// \param[in] _padding Padding for joint limits
+/// \param[out] _jointVelocity Calculated joint velocities
+bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     const dart::dynamics::BodyNodePtr _bodyNode,
-    const double _optimizationTolerance,
-    const double _timestep,
-    const double _padding,
+    double _optimizationTolerance,
+    double _timestep,
+    double _padding,
     Eigen::VectorXd* _jointVelocity);
 
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_VECTORFIELD_UTIL_H_
+#endif // AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_H_

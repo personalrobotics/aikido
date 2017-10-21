@@ -4,26 +4,24 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-/*
- * VectorFieldTerminated
- */
-VectorFieldTerminated::VectorFieldTerminated(std::string const& what_arg)
-  : std::runtime_error(what_arg)
+VectorFieldTerminated::VectorFieldTerminated(const std::string& _whatArg)
+  : std::runtime_error(_whatArg)
 {
 }
 
-/*
- * DofLimitError
- */
+//==============================================================================
+
 DofLimitError::DofLimitError(
-    dart::dynamics::DegreeOfFreedom* dof, std::string const& what_arg)
-  : VectorFieldTerminated(what_arg), dof_(dof)
+    dart::dynamics::DegreeOfFreedom* _dof, const std::string& _whatArg)
+  : VectorFieldTerminated(_whatArg), mDof(_dof)
 {
 }
+
+//==============================================================================
 
 dart::dynamics::DegreeOfFreedom* DofLimitError::dof() const
 {
-  return dof_;
+  return mDof;
 }
 
 } // namespace vectorfield

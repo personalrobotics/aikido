@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_VECTOR_FIELD_PLANNER_HPP_
-#define AIKIDO_PLANNER_VECTOR_FIELD_PLANNER_HPP_
+#ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
+#define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 
 #include <boost/function.hpp>
 #include <aikido/constraint/Testable.hpp>
@@ -10,78 +10,81 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-struct VectorFieldPlannerStatus
+enum class VectorFieldPlannerStatus
 {
-  enum Enum
-  {
-    TERMINATE,
-    CACHE_AND_TERMINATE,
-    CACHE_AND_CONTINUE,
-    CONTINUE
-  };
+  TERMINATE,
+  CACHE_AND_TERMINATE,
+  CACHE_AND_CONTINUE,
+  CONTINUE
 };
 
 /// Callback function of joint velocity calculated by a vector field and a
 /// MetaSkeleton.
-/// \param stateSpace MetaSkeleton state space
-/// \param t planned time of a given duration
-/// \param qd joint velocity calculated by a vector field and meta skeleton
-/// \return trajectory or \c nullptr if planning failed
+///
+/// \param[in] _stateSpace MetaSkeleton state space
+/// \param[in] _t Planned time of a given duration
+/// \param[out] _qd Joint velocity calculated by a vector field and meta
+/// skeleton
+/// \return Whether vectorfield evaluation succeeds
 using VectorFieldCallback = std::function<bool(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    double t,
-    Eigen::VectorXd* qd)>;
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    double _t,
+    Eigen::VectorXd* _qd)>;
 
 /// Callback function of status of planning
-/// \param stateSpace MetaSkeleton state space
-/// \param t planned time of a given duration
-/// \return trajectory or \c nullptr if planning failed
-using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus::Enum(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    double t)>;
+///
+/// \param[in] _stateSpace MetaSkeleton state space
+/// \param[in] _t Planned time of a given duration
+/// \return Status of vectorfield planner
+using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    double _t)>;
 
 /// Plan to a trajectory by a given vector field.
-/// \param stateSpace state space
-/// \param constraint trajectory-wide constraint that must be satisfied
-/// \param timestep how long an evaluation step is
-/// \param vectorField callback of vector field calculation
-/// \param statusCb callback of planning status
-/// \return trajectory or \c nullptr if planning failed
+///
+/// \param[in] _stateSpace MetaSkeleton state space
+/// \param[in] _constraint Trajectory-wide constraint that must be satisfied
+/// \param[in] _timestep How long an evaluation step is
+/// \param[in] _vectorField Callback of vector field calculation
+/// \param[in] _statusCb Callback of planning status
+/// \return Trajectory or \c nullptr if planning failed
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    const aikido::constraint::TestablePtr constraint,
-    double timestep,
-    const VectorFieldCallback& vectorFieldCb,
-    const VectorFieldStatusCallback& statusCb);
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const aikido::constraint::TestablePtr _constraint,
+    double _timestep,
+    const VectorFieldCallback& _vectorFieldCb,
+    const VectorFieldStatusCallback& _statusCb);
 
 /// Plan to a trajectory that moves the end-effector by a given direction and
 /// distance.
-/// \param stateSpace MetaSkeleton state space
-/// \param bn body node of the end-effector
-/// \param constraint trajectory-wide constraint that must be satisfied
-/// \param direction direction of moving the end-effector
-/// \param distance  distance of moving the end-effector
-/// \param positionTolerance how a planned trajectory is allowed to deviated
-/// from
-/// a straight line segment defined by the direction and the distance.
-/// \param angularTolerance how a planned trajectory is allowed to deviate from
+///
+/// \param[in] _stateSpace MetaSkeleton state space
+/// \param[in] _bn Body node of the end-effector
+/// \param[in] _constraint Trajectory-wide constraint that must be satisfied
+/// \param[in] _direction Direction of moving the end-effector
+/// \param[in] _distance  Distance of moving the end-effector
+/// \param[in] _positionTolerance How a planned trajectory is allowed to
+/// deviated
+/// from a straight line segment defined by the direction and the distance.
+/// \param angularTolerance How a planned trajectory is allowed to deviate from
 /// a given direction
-/// \param duration total time of executing a planned trajectory
-/// \param timestep how often velocity should be updated from a vector field
-/// \return trajectory or \c nullptr if planning failed
+/// \param[in] _duration Total time of executing a planned trajectory
+/// \param[in] _timestep How often velocity should be updated from a vector
+/// field
+/// \return Trajectory or \c nullptr if planning failed
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    dart::dynamics::BodyNodePtr bn,
-    const aikido::constraint::TestablePtr constraint,
-    const Eigen::Vector3d& direction,
-    double distance,
-    double positionTolerance = 0.005,
-    double angularTolerance = 0.2,
-    double duration = 2.0,
-    double timestep = 0.01);
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    dart::dynamics::BodyNodePtr _bn,
+    const aikido::constraint::TestablePtr _constraint,
+    const Eigen::Vector3d& _direction,
+    double _distance,
+    double _positionTolerance = 0.005,
+    double _angularTolerance = 0.2,
+    double _duration = 2.0,
+    double _timestep = 0.01);
 
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_VECTOR_FIELD_PLANNER_HPP_
+#endif // AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_

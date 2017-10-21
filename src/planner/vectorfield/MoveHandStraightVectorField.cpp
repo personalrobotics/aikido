@@ -13,121 +13,125 @@ namespace planner {
 namespace vectorfield {
 
 MoveHandStraightVectorField::MoveHandStraightVectorField(
-    dart::dynamics::BodyNodePtr bn,
-    Eigen::Vector3d const& linearVelocity,
-    double minDuration,
-    double maxDuration,
-    double stepsize,
-    double linearGain,
-    double linearTolerance,
-    double rotationGain,
-    double rotationTolerance,
-    double optimizationTolerance,
-    double padding)
-  : bodynode_(bn)
-  , velocity_(linearVelocity)
-  , linearDirection_(linearVelocity.normalized())
-  , minDuration_(minDuration)
-  , maxDuration_(maxDuration)
-  , timestep_(stepsize)
-  , linearGain_(linearGain)
-  , linearTolerance_(linearTolerance)
-  , rotationGain_(rotationGain)
-  , rotationTolerance_(rotationTolerance)
-  , optimizationTolerance_(optimizationTolerance)
-  , padding_(padding)
-  , startPose_(bn->getTransform())
+    dart::dynamics::BodyNodePtr _bn,
+    const Eigen::Vector3d& _linearVelocity,
+    double _minDuration,
+    double _maxDuration,
+    double _stepsize,
+    double _linearGain,
+    double _linearTolerance,
+    double _rotationGain,
+    double _rotationTolerance,
+    double _optimizationTolerance,
+    double _padding)
+  : mBodynode(_bn)
+  , mVelocity(_linearVelocity)
+  , mLinearDirection(_linearVelocity.normalized())
+  , mMinDuration(_minDuration)
+  , mMaxDuration(_maxDuration)
+  , mTimestep(_stepsize)
+  , mLinearGain(_linearGain)
+  , mLinearTolerance(_linearTolerance)
+  , mRotationGain(_rotationGain)
+  , mRotationTolerance(_rotationTolerance)
+  , mOptimizationTolerance(_optimizationTolerance)
+  , mPadding(_padding)
+  , mStartPose(_bn->getTransform())
 {
-  assert(minDuration_ >= 0);
-  assert(maxDuration_ >= minDuration_);
-  assert(timestep_ >= 0);
-  assert(velocity_.all() >= 0);
-  assert(linearGain_ >= 0);
-  assert(linearTolerance_ > 0);
-  assert(rotationGain_ >= 0);
-  assert(rotationTolerance_ > 0);
-  assert(optimizationTolerance_ > 0);
+  assert(mMinDuration >= 0);
+  assert(mMaxDuration >= mMinDuration);
+  assert(mTimestep >= 0);
+  assert(mVelocity.all() >= 0);
+  assert(mLinearGain >= 0);
+  assert(mLinearTolerance > 0);
+  assert(mRotationGain >= 0);
+  assert(mRotationTolerance > 0);
+  assert(mOptimizationTolerance > 0);
 
-  targetPose_ = startPose_;
-  targetPose_.translation() += velocity_ * maxDuration_;
-  maxDuration_ += padding;
+  mTargetPose = mStartPose;
+  mTargetPose.translation() += mVelocity * mMaxDuration;
+  mMaxDuration += _padding;
 }
 
+//==============================================================================
+
 bool MoveHandStraightVectorField::operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    double t,
-    Eigen::VectorXd* qd)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    double _t,
+    Eigen::VectorXd* _qd)
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
   using Eigen::VectorXd;
+  using Eigen::Vector6d;
 
-  DART_UNUSED(t);
-  typedef Eigen::Matrix<double, 6, 1> Vector6d;
+  DART_UNUSED(_t);
 
-  Isometry3d const current_pose = bodynode_->getTransform();
-  Vector3d current_workspace_pose = current_pose.translation();
-  Vector3d target_workspace_pose = targetPose_.translation();
+  Isometry3d const currentPose = mBodynode->getTransform();
+  Vector3d currentWorkspacePose = currentPose.translation();
+  Vector3d targetWorkspacePose = mTargetPose.translation();
 
   // Compute the "feed-forward" term necessary to move at a constant velocity
   // from the start to the goal.
-  Vector3d const& linear_feedforward = velocity_;
+  const Vector3d& linearFeedforward = mVelocity;
 
   // Compute positional error orthogonal to the direction of motion by
   // projecting out the component of the error along that direction.
-  Vector3d const linear_error = target_workspace_pose - current_workspace_pose;
-  Vector3d const linear_orthogonal_error
-      = linear_error - linear_error.dot(linearDirection_) * linearDirection_;
+  const Vector3d linearError = targetWorkspacePose - currentWorkspacePose;
+  const Vector3d linearOrthogonalError
+      = linearError - linearError.dot(mLinearDirection) * mLinearDirection;
 
   // Compute the desired twist using a proportional controller.
-  Vector6d desired_twist;
-  desired_twist.head<3>()
+  Vector6d desiredTwist;
+  desiredTwist.head<3>()
       = Eigen::Vector3d::Zero(); // rotationGain_ * rotation_error;
-  desired_twist.tail<3>()
-      = linear_feedforward + linearGain_ * linear_orthogonal_error;
+  desiredTwist.tail<3>()
+      = linearFeedforward + mLinearGain * linearOrthogonalError;
 
-  bool result = ComputeJointVelocityFromTwist(
-      desired_twist,
-      stateSpace,
-      bodynode_,
-      optimizationTolerance_,
-      timestep_,
-      padding_,
-      qd);
+  bool result = computeJointVelocityFromTwist(
+      desiredTwist,
+      _stateSpace,
+      mBodynode,
+      mOptimizationTolerance,
+      mTimestep,
+      mPadding,
+      _qd);
   return result;
 }
 
-VectorFieldPlannerStatus::Enum MoveHandStraightVectorField::operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    double t)
+//==============================================================================
+
+VectorFieldPlannerStatus MoveHandStraightVectorField::operator()(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    double _t)
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
 
-  DART_UNUSED(stateSpace);
-  Isometry3d const current_pose = bodynode_->getTransform();
+  DART_UNUSED(_stateSpace);
+  const Isometry3d currentPose = mBodynode->getTransform();
 
   // Check for deviation from the straight-line trajectory.
-  Vector3d const linear_error
-      = targetPose_.translation() - current_pose.translation();
-  Vector3d const linear_orthogonal_error
-      = linear_error - linear_error.dot(linearDirection_) * linearDirection_;
-  double const linear_orthogonal_magnitude = linear_orthogonal_error.norm();
+  const Vector3d linearError
+      = mTargetPose.translation() - currentPose.translation();
+  const Vector3d linearOrthogonalError
+      = linearError - linearError.dot(mLinearDirection) * mLinearDirection;
+  double const linearOrthogonalMagnitude = linearOrthogonalError.norm();
 
-  if (linear_orthogonal_magnitude >= linearTolerance_)
+  if (linearOrthogonalMagnitude >= mLinearTolerance)
   {
     dtwarn << "Trajectory deviated from the straight line by "
-           << linear_orthogonal_magnitude << " m; the tolerance is "
-           << linearTolerance_ << " m.\n";
+           << linearOrthogonalMagnitude << " m; the tolerance is "
+           << mLinearTolerance << " m.\n";
     return VectorFieldPlannerStatus::TERMINATE;
   }
 
   // Check if we've reached the target.
-  if (t > maxDuration_)
+  if (_t > mMaxDuration)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }
-  else if (t >= minDuration_)
+  else if (_t >= mMinDuration)
   {
     return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
   }

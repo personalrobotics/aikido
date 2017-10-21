@@ -60,78 +60,78 @@ public:
     BALL
   };
 
-  VectorFieldPlannerTest() : errorTolerance(1e-3)
+  VectorFieldPlannerTest() : mErrorTolerance(1e-3)
   {
     SkeletonPtr skel
         = createNLinkRobot(3, Eigen::Vector3d(0.2, 0.2, 1.0), BALL);
-    numDof = skel->getNumDofs();
+    mNumDof = skel->getNumDofs();
 
-    upperPositionLimits = Eigen::VectorXd::Constant(numDof, constantsd::pi());
-    lowerPositionLimits = Eigen::VectorXd::Constant(numDof, -constantsd::pi());
-    upperVelocityLimits = Eigen::VectorXd::Constant(numDof, 2.0);
-    lowerVelocityLimits = Eigen::VectorXd::Constant(numDof, -2.0);
+    mUpperPositionLimits = Eigen::VectorXd::Constant(mNumDof, constantsd::pi());
+    mLowerPositionLimits = Eigen::VectorXd::Constant(mNumDof, -constantsd::pi());
+    mUpperVelocityLimits = Eigen::VectorXd::Constant(mNumDof, 2.0);
+    mLowerVelocityLimits = Eigen::VectorXd::Constant(mNumDof, -2.0);
 
-    skel->setPositionUpperLimits(upperPositionLimits);
-    skel->setPositionLowerLimits(lowerPositionLimits);
-    skel->setVelocityUpperLimits(upperVelocityLimits);
-    skel->setVelocityLowerLimits(lowerVelocityLimits);
-    stateSpace = std::make_shared<MetaSkeletonStateSpace>(skel);
-    bodynode = stateSpace->getMetaSkeleton()->getBodyNodes().back();
+    skel->setPositionUpperLimits(mUpperPositionLimits);
+    skel->setPositionLowerLimits(mLowerPositionLimits);
+    skel->setVelocityUpperLimits(mUpperVelocityLimits);
+    skel->setVelocityLowerLimits(mLowerVelocityLimits);
+    mStateSpace = std::make_shared<MetaSkeletonStateSpace>(skel);
+    mBodynode = mStateSpace->getMetaSkeleton()->getBodyNodes().back();
 
-    startVec = Eigen::VectorXd::Zero(numDof);
-    startVec << 2.13746, -0.663612, 1.77876, 1.87515, 2.58646, -1.90034,
+    mStartVec = Eigen::VectorXd::Zero(mNumDof);
+    mStartVec << 2.13746, -0.663612, 1.77876, 1.87515, 2.58646, -1.90034,
         -1.03533, 1.68534, -1.39628;
 
-    goalVec = Eigen::VectorXd(numDof);
-    passingConstraint = std::make_shared<PassingConstraint>(stateSpace);
+    mGoalVec = Eigen::VectorXd(mNumDof);
+    mPassingConstraint = std::make_shared<PassingConstraint>(mStateSpace);
   }
 
   std::pair<Joint*, BodyNode*> add1DofJoint(
-      SkeletonPtr skel,
-      BodyNode* parent,
-      const BodyNode::Properties& node,
-      const std::string& name,
-      double val,
-      double min,
-      double max,
-      int type)
+      SkeletonPtr _skel,
+      BodyNode* _parent,
+      const BodyNode::Properties& _node,
+      const std::string& _name,
+      double _val,
+      double _min,
+      double _max,
+      int _type)
   {
     dart::dynamics::GenericJoint<dart::math::R1Space>::Properties properties(
-        name);
-    properties.mPositionLowerLimits[0] = min;
+        _name);
+    properties.mPositionLowerLimits[0] = _min;
     properties.mPositionUpperLimits[0] = max;
     std::pair<Joint*, BodyNode*> newComponent;
-    if (DOF_X == type)
-      newComponent = skel->createJointAndBodyNodePair<PrismaticJoint>(
-          parent,
+    if (DOF_X == _type)
+      newComponent = _skel->createJointAndBodyNodePair<PrismaticJoint>(
+          _parent,
           PrismaticJoint::Properties(
               properties, Eigen::Vector3d(1.0, 0.0, 0.0)),
           node);
-    else if (DOF_Y == type)
-      newComponent = skel->createJointAndBodyNodePair<PrismaticJoint>(
-          parent,
+    else if (DOF_Y == _type)
+      newComponent = _skel->createJointAndBodyNodePair<PrismaticJoint>(
+          _parent,
           PrismaticJoint::Properties(
               properties, Eigen::Vector3d(0.0, 1.0, 0.0)),
           node);
-    else if (DOF_Z == type)
-      newComponent = skel->createJointAndBodyNodePair<PrismaticJoint>(
-          parent,
+    else if (DOF_Z == _type)
+      newComponent = _skel->createJointAndBodyNodePair<PrismaticJoint>(
+          _parent,
           PrismaticJoint::Properties(
               properties, Eigen::Vector3d(0.0, 0.0, 1.0)),
           node);
-    else if (DOF_YAW == type)
-      newComponent = skel->createJointAndBodyNodePair<RevoluteJoint>(
-          parent,
+    else if (DOF_YAW == _type)
+      newComponent = _skel->createJointAndBodyNodePair<RevoluteJoint>(
+          _parent,
           RevoluteJoint::Properties(properties, Eigen::Vector3d(0.0, 0.0, 1.0)),
           node);
-    else if (DOF_PITCH == type)
-      newComponent = skel->createJointAndBodyNodePair<RevoluteJoint>(
-          parent,
+    else if (DOF_PITCH == _type)
+      newComponent = _skel->createJointAndBodyNodePair<RevoluteJoint>(
+          _parent,
           RevoluteJoint::Properties(properties, Eigen::Vector3d(0.0, 1.0, 0.0)),
           node);
-    else if (DOF_ROLL == type)
-      newComponent = skel->createJointAndBodyNodePair<RevoluteJoint>(
-          parent,
+    else if (DOF_ROLL == _type)
+      newComponent = _skel->createJointAndBodyNodePair<RevoluteJoint>(
+          _parent,
           RevoluteJoint::Properties(properties, Eigen::Vector3d(1.0, 0.0, 0.0)),
           node);
 
@@ -140,7 +140,7 @@ public:
   }
 
   /// Add an end-effector to the last link of the given robot
-  void addEndEffector(SkeletonPtr robot, BodyNode* parent_node, Vector3d dim)
+  void addEndEffector(SkeletonPtr _robot, BodyNode* _parentNode, Vector3d _dim)
   {
     // Create the end-effector node with a random dimension
     BodyNode::Properties node(BodyNode::AspectProperties("ee"));
@@ -148,11 +148,11 @@ public:
         = std::make_shared<BoxShape>(Vector3d(0.2, 0.2, 0.2));
 
     Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
-    T.translate(Eigen::Vector3d(0.0, 0.0, dim(2)));
+    T.translate(Eigen::Vector3d(0.0, 0.0, _dim(2)));
     Joint::Properties joint("eeJoint", T);
 
-    auto pair = robot->createJointAndBodyNodePair<WeldJoint>(
-        parent_node, joint, node);
+    auto pair = _robot->createJointAndBodyNodePair<WeldJoint>(
+        _parentNode, joint, node);
     auto bodyNode = pair.second;
     bodyNode
         ->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(
@@ -163,7 +163,7 @@ public:
   /// Creates a N link manipulator with the given dimensions where each joint is
   /// the specified type
   SkeletonPtr createNLinkRobot(
-      int _n, Vector3d dim, TypeOfDOF type, bool finished = false)
+      int _n, Vector3d _dim, TypeOfDOF _type, bool _finished = false)
   {
     assert(_n > 0);
 
@@ -173,10 +173,10 @@ public:
     // Create the first link, the joint with the ground and its shape
     BodyNode::Properties node(BodyNode::AspectProperties("link1"));
     //  node.mInertia.setLocalCOM(Vector3d(0.0, 0.0, dim(2)/2.0));
-    std::shared_ptr<Shape> shape(new BoxShape(dim));
+    std::shared_ptr<Shape> shape(new BoxShape(_dim));
 
     std::pair<Joint*, BodyNode*> pair1;
-    if (BALL == type)
+    if (BALL == _type)
     {
       BallJoint::Base::Properties properties(std::string("joint1"));
       pair1 = robot->createJointAndBodyNodePair<BallJoint>(
@@ -192,23 +192,23 @@ public:
           0.0,
           -constantsd::pi(),
           constantsd::pi(),
-          type);
+          _type);
     }
 
     Joint* joint = pair1.first;
     Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
     // T.translation() = Eigen::Vector3d(0.0, 0.0, -0.5*dim(2));
     // joint->setTransformFromParentBodyNode(T);
-    T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * dim(2));
+    T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * _dim(2));
     joint->setTransformFromChildBodyNode(T);
     // joint->setDampingCoefficient(0, 0.01);
 
-    auto current_node = pair1.second;
-    current_node
+    auto currentNode = pair1.second;
+    currentNode
         ->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(
             shape);
 
-    BodyNode* parent_node = current_node;
+    BodyNode* parentNode = currentNode;
 
     // Create links iteratively
     for (int i = 1; i < _n; ++i)
@@ -220,34 +220,34 @@ public:
 
       node = BodyNode::Properties(BodyNode::AspectProperties(ssLink.str()));
       //    node.mInertia.setLocalCOM(Vector3d(0.0, 0.0, dim(2)/2.0));
-      shape = std::shared_ptr<Shape>(new BoxShape(dim));
+      shape = std::shared_ptr<Shape>(new BoxShape(_dim));
 
       std::pair<Joint*, BodyNode*> newPair;
 
-      if (BALL == type)
+      if (BALL == _type)
       {
         BallJoint::Base::Properties properties(ssJoint.str());
         newPair = robot->createJointAndBodyNodePair<BallJoint>(
-            parent_node, BallJoint::Properties(properties), node);
+            parentNode, BallJoint::Properties(properties), node);
       }
       else
       {
         newPair = add1DofJoint(
             robot,
-            parent_node,
+            parentNode,
             node,
             ssJoint.str(),
             0.0,
             -constantsd::pi(),
             constantsd::pi(),
-            type);
+            _type);
       }
 
       Joint* joint = newPair.first;
       Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
-      T.translation() = Eigen::Vector3d(0.0, 0.0, -0.5 * dim(2));
+      T.translation() = Eigen::Vector3d(0.0, 0.0, -0.5 * _dim(2));
       joint->setTransformFromParentBodyNode(T);
-      T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * dim(2));
+      T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * _dim(2));
       joint->setTransformFromChildBodyNode(T);
       // joint->setDampingCoefficient(0, 0.01);
 
@@ -256,40 +256,40 @@ public:
           ->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(
               shape);
 
-      parent_node = current_node;
+      parentNode = current_node;
     }
 
     // If finished, initialize the skeleton
-    if (finished)
-      addEndEffector(robot, parent_node, dim);
+    if (_finished)
+      addEndEffector(robot, parentNode, _dim);
 
     return robot;
   }
 
   // Parameters
-  double errorTolerance;
+  double mErrorTolerance;
 
   // DART setup
-  SkeletonPtr skel;
-  std::vector<std::pair<JointPtr, BodyNodePtr>> jn_bn;
-  MetaSkeletonStateSpacePtr stateSpace;
-  BodyNodePtr bodynode;
-  std::size_t numDof;
+  SkeletonPtr mSkel;
+  std::vector<std::pair<JointPtr, BodyNodePtr>> mJnBn;
+  MetaSkeletonStateSpacePtr mStateSpace;
+  BodyNodePtr mBodynode;
+  std::size_t mNumDof;
 
-  Eigen::VectorXd upperPositionLimits;
-  Eigen::VectorXd lowerPositionLimits;
-  Eigen::VectorXd upperVelocityLimits;
-  Eigen::VectorXd lowerVelocityLimits;
+  Eigen::VectorXd mUpperPositionLimits;
+  Eigen::VectorXd mLowerPositionLimits;
+  Eigen::VectorXd mUpperVelocityLimits;
+  Eigen::VectorXd mLowerVelocityLimits;
 
   // Arguments for planner
-  Eigen::VectorXd startVec;
-  Eigen::VectorXd goalVec;
-  shared_ptr<PassingConstraint> passingConstraint;
+  Eigen::VectorXd mStartVec;
+  Eigen::VectorXd mGoalVec;
+  shared_ptr<PassingConstraint> mPassingConstraint;
 };
 
 TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 {
-  using aikido::planner::vectorfield::ComputeJointVelocityFromTwist;
+  using aikido::planner::vectorfield::computeJointVelocityFromTwist;
   Eigen::VectorXd currentConfig = Eigen::VectorXd::Random(numDof);
   stateSpace->getMetaSkeleton()->setPositions(currentConfig);
 
@@ -308,7 +308,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
   double optimizationTolerance = 1e-10;
   Eigen::VectorXd qd = Eigen::VectorXd::Zero(numDof);
   EXPECT_TRUE(
-      ComputeJointVelocityFromTwist(
+      computeJointVelocityFromTwist(
           desiredTwist,
           stateSpace,
           bodynode,

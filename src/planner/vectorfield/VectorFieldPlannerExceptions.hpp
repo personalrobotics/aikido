@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_VECTORFIELDPLANNEREXCEPTIONS_H_
-#define AIKIDO_PLANNER_VECTORFIELDPLANNEREXCEPTIONS_H_
+#ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNEREXCEPTIONS_H_
+#define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNEREXCEPTIONS_H_
 #include <string>
 #include <stdexcept>
 #include <dart/dynamics/dynamics.hpp>
@@ -10,22 +10,22 @@ namespace vectorfield {
 
 class VectorFieldTerminated : public std::runtime_error {
 public:
-  VectorFieldTerminated(std::string const &what_arg);
+  VectorFieldTerminated(const std::string& _whatArg);
 };
 
 class DofLimitError : public VectorFieldTerminated {
 public:
   DofLimitError(dart::dynamics::DegreeOfFreedom *dof,
-    std::string const &what_arg);
+    const std::string& _whatArg);
 
   dart::dynamics::DegreeOfFreedom *dof() const;
 
 private:
-  dart::dynamics::DegreeOfFreedom *dof_;
+  dart::dynamics::DegreeOfFreedom *mDof;
 };
 
 } // namespace vectorfield
 } // namespace aikido
 } // namespace planner
 
-#endif // ifndef AIKIDO_PLANNER_VECTORFIELDPLANNEREXCEPTIONS_H_
+#endif // ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNEREXCEPTIONS_H_
