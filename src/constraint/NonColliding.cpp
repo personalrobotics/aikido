@@ -70,8 +70,9 @@ void NonColliding::removePairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
   auto it = std::find(
-    groupsToPairwiseCheck.begin(), groupsToPairwiseCheck.end(),
-    std::make_pair(_group1, _group2));
+      groupsToPairwiseCheck.begin(),
+      groupsToPairwiseCheck.end(),
+      std::make_pair(_group1, _group2));
   if (it != groupsToPairwiseCheck.end())
   {
     groupsToPairwiseCheck.erase(it);
@@ -80,8 +81,9 @@ void NonColliding::removePairwiseCheck(
 
   // Check for reverse pair
   it = std::find(
-    groupsToPairwiseCheck.begin(), groupsToPairwiseCheck.end(),
-    std::make_pair(_group2, _group1));
+      groupsToPairwiseCheck.begin(),
+      groupsToPairwiseCheck.end(),
+      std::make_pair(_group2, _group1));
   if (it != groupsToPairwiseCheck.end())
   {
     groupsToPairwiseCheck.erase(it);
@@ -100,9 +102,8 @@ void NonColliding::addSelfCheck(
 void NonColliding::removeSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
-  auto it = std::find(
-    groupsToSelfCheck.begin(), groupsToSelfCheck.end(),
-    _group);
+  auto it
+      = std::find(groupsToSelfCheck.begin(), groupsToSelfCheck.end(), _group);
   if (it != groupsToSelfCheck.end())
     groupsToSelfCheck.erase(it);
 }
