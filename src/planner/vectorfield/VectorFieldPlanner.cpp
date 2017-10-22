@@ -1,10 +1,10 @@
 #include <boost/format.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include <aikido/planner/vectorfield/detail/MoveHandStraightVectorField.hpp>
+#include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
-#include "MoveHandStraightVectorField.hpp"
-#include "VectorFieldPlannerExceptions.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
 
@@ -78,6 +78,8 @@ static void CheckCollision(
     throw VectorFieldTerminated("state in collision");
   }
 }
+
+//==============================================================================
 
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,

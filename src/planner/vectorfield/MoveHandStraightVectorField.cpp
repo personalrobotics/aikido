@@ -1,4 +1,3 @@
-#include "MoveHandStraightVectorField.hpp"
 #include <fstream>
 #include <iostream>
 #include <boost/format.hpp>
@@ -7,6 +6,7 @@
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include <aikido/planner/vectorfield/detail/MoveHandStraightVectorField.hpp>
 
 namespace aikido {
 namespace planner {
@@ -15,9 +15,9 @@ namespace vectorfield {
 MoveHandStraightVectorField::MoveHandStraightVectorField(
     dart::dynamics::BodyNodePtr _bn,
     const Eigen::Vector3d& _linearVelocity,
-    double _minDuration,
-    double _maxDuration,
-    double _stepsize,
+    double _startTime,
+    double _endTime,
+    double _timestep,
     double _linearGain,
     double _linearTolerance,
     double _rotationGain,
@@ -27,9 +27,9 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
   : mBodynode(_bn)
   , mVelocity(_linearVelocity)
   , mLinearDirection(_linearVelocity.normalized())
-  , mMinDuration(_minDuration)
-  , mMaxDuration(_maxDuration)
-  , mTimestep(_stepsize)
+  , mStartTime(_startTime)
+  , mEndTime(_endTime)
+  , mTimestep(_timestep)
   , mLinearGain(_linearGain)
   , mLinearTolerance(_linearTolerance)
   , mRotationGain(_rotationGain)
@@ -38,8 +38,8 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
   , mPadding(_padding)
   , mStartPose(_bn->getTransform())
 {
-  assert(mMinDuration >= 0);
-  assert(mMaxDuration >= mMinDuration);
+  assert(mStartTime >= 0);
+  assert(mEndTime >= mStartTime);
   assert(mTimestep >= 0);
   assert(mVelocity.all() >= 0);
   assert(mLinearGain >= 0);
@@ -49,8 +49,8 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
   assert(mOptimizationTolerance > 0);
 
   mTargetPose = mStartPose;
-  mTargetPose.translation() += mVelocity * mMaxDuration;
-  mMaxDuration += _padding;
+  mTargetPose.translation() += mVelocity * mEndTime;
+  mEndTime += _padding;
 }
 
 //==============================================================================
@@ -126,11 +126,11 @@ VectorFieldPlannerStatus MoveHandStraightVectorField::operator()(
   }
 
   // Check if we've reached the target.
-  if (_t > mMaxDuration)
+  if (_t > mEndTime)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }
-  else if (_t >= mMinDuration)
+  else if (_t >= mStartTime)
   {
     return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
   }

@@ -1,4 +1,4 @@
-#include "VectorFieldPlannerExceptions.hpp"
+#include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
 
 namespace aikido {
 namespace planner {
