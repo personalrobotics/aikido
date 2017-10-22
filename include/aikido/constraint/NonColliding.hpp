@@ -50,9 +50,20 @@ public:
       std::shared_ptr<dart::collision::CollisionGroup> _group1,
       std::shared_ptr<dart::collision::CollisionGroup> _group2);
 
+  /// Remove collision check between group1 and group2.
+  /// \param group1 First collision group.
+  /// \param group2 Second collision group.
+  void removePairwiseCheck(
+      std::shared_ptr<dart::collision::CollisionGroup> _group1,
+      std::shared_ptr<dart::collision::CollisionGroup> _group2);
+
   /// Checks collision within group.
   /// \param group Collision group.
   void addSelfCheck(std::shared_ptr<dart::collision::CollisionGroup> _group);
+
+  /// Remove self-collision check within group.
+  /// \param group Collision group.
+  void removeSelfCheck(std::shared_ptr<dart::collision::CollisionGroup> _group);
 
 private:
   using CollisionGroup = dart::collision::CollisionGroup;

@@ -65,10 +65,46 @@ void NonColliding::addPairwiseCheck(
 }
 
 //==============================================================================
+void NonColliding::removePairwiseCheck(
+    std::shared_ptr<dart::collision::CollisionGroup> _group1,
+    std::shared_ptr<dart::collision::CollisionGroup> _group2)
+{
+  auto it = std::find(
+    groupsToPairwiseCheck.begin(), groupsToPairwiseCheck.end(),
+    std::make_pair(_group1, _group2));
+  if (it != groupsToPairwiseCheck.end())
+  {
+    groupsToPairwiseCheck.erase(it);
+    return;
+  }
+
+  // Check for reverse pair
+  it = std::find(
+    groupsToPairwiseCheck.begin(), groupsToPairwiseCheck.end(),
+    std::make_pair(_group2, _group1));
+  if (it != groupsToPairwiseCheck.end())
+  {
+    groupsToPairwiseCheck.erase(it);
+    return;
+  }
+}
+
+//==============================================================================
 void NonColliding::addSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
   groupsToSelfCheck.emplace_back(std::move(_group));
+}
+
+//==============================================================================
+void NonColliding::removeSelfCheck(
+    std::shared_ptr<dart::collision::CollisionGroup> _group)
+{
+  auto it = std::find(
+    groupsToSelfCheck.begin(), groupsToSelfCheck.end(),
+    _group);
+  if (it != groupsToSelfCheck.end())
+    groupsToSelfCheck.erase(it);
 }
 
 } // namespace constraint
