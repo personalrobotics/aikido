@@ -23,6 +23,9 @@ $ sudo apt-get install ros-indigo-actionlib ros-indigo-geometry-msgs ros-indigo-
 
 Once ROS is installed, you can install AIKIDO from the [Personal Robotics Lab PPA](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa):
 ```shell
+$ sudo apt-add-repository ppa:libccd-debs/ppa
+$ sudo apt-add-repository ppa:fcl-debs/ppa
+$ sudo apt-add-repository ppa:dartsim/ppa
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
 $ sudo apt-get install libaikido0-all-dev
