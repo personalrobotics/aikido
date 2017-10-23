@@ -53,6 +53,10 @@ public:
       double _alpha,
       Eigen::VectorXd& _tangentVector) const override;
 
+  // Documentation inherited.
+  std::shared_ptr<Interpolator> convertStateSpace(
+      statespace::StateSpacePtr newStateSpace) override;
+
 private:
   statespace::StateSpacePtr mStateSpace;
 };

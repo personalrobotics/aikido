@@ -75,5 +75,12 @@ void GeodesicInterpolator::getDerivative(
   }
 }
 
+//==============================================================================
+std::shared_ptr<Interpolator> GeodesicInterpolator::convertStateSpace(
+    statespace::StateSpacePtr newStateSpace)
+{
+  return std::shared_ptr<Interpolator>(new GeodesicInterpolator(newStateSpace));
+}
+
 } // namespace statespace
 } // namespace aikido
