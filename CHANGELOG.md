@@ -10,6 +10,10 @@
 
   * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243)
 
+* RViz
+
+  * Added WorldInteractiveMarkerViewer: [#242](https://github.com/personalrobotics/aikido/pull/242)
+
 * Build & Testing & ETC
 
   * Changed to use size_t over std::size_t: [#230](https://github.com/personalrobotics/aikido/pull/230)
