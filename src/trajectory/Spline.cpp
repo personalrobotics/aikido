@@ -253,16 +253,15 @@ void Spline::getWaypointDerivative(
 }
 
 //==============================================================================
-TrajectoryPtr Spline::convertStateSpace(
-    statespace::StateSpacePtr newStateSpace)
+TrajectoryPtr Spline::convertStateSpace(statespace::StateSpacePtr newStateSpace)
 {
   auto returnTraj
-    = std::make_shared<trajectory::Spline>(newStateSpace, mStartTime);
+      = std::make_shared<trajectory::Spline>(newStateSpace, mStartTime);
   for (const auto& segment : mSegments)
-    returnTraj->addSegment(segment.mCoefficients, segment.mDuration, segment.mStartState);
+    returnTraj->addSegment(
+        segment.mCoefficients, segment.mDuration, segment.mStartState);
   return returnTraj;
 }
-
 
 } // namespace trajectory
 } // namespace aikido

@@ -147,8 +147,8 @@ TrajectoryPtr Interpolated::convertStateSpace(
     statespace::StateSpacePtr newStateSpace)
 {
   auto newInterpolator = mInterpolator->convertStateSpace(newStateSpace);
-  auto returnTraj
-    = std::make_shared<trajectory::Interpolated>(newStateSpace, newInterpolator);
+  auto returnTraj = std::make_shared<trajectory::Interpolated>(
+      newStateSpace, newInterpolator);
   for (const auto& waypoint : mWaypoints)
     returnTraj->addWaypoint(waypoint.t, waypoint.state);
   return returnTraj;

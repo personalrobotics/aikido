@@ -54,7 +54,8 @@ public:
   ///
   /// \param newStateSpace New state space
   virtual std::shared_ptr<Interpolator> convertStateSpace(
-      statespace::StateSpacePtr newStateSpace) = 0;
+      statespace::StateSpacePtr newStateSpace)
+      = 0;
 };
 
 using InterpolatorPtr = std::shared_ptr<Interpolator>;

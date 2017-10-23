@@ -71,7 +71,8 @@ public:
   ///
   /// \param newStateSpace New statespace to execute this trajectory in
   virtual std::shared_ptr<Trajectory> convertStateSpace(
-      statespace::StateSpacePtr newStateSpace) = 0;
+      statespace::StateSpacePtr newStateSpace)
+      = 0;
 };
 
 using TrajectoryPtr = std::shared_ptr<Trajectory>;
