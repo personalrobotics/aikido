@@ -52,6 +52,19 @@ public:
 
   // TODO: Add methods for registering callbacks?
 
+  /// Get the CollisionDetector for this World
+  dart::collision::CollisionDetectorPtr getCollisionDetector() const;
+
+  /// Create a CollisionGroup for this World
+  dart::collision::CollisionGroupPtr createCollisionGroup();
+
+  /// Create an empty NonColliding constraint for this World
+  /// \param space Space for this NonColliding constraint
+  /// \param collisionFilter Filter for this NonColliding constraint
+  aikido::constraint::NonCollidingPtr createCollisionConstraint(
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr space,
+    std::shared_ptr<dart::collision::CollisionFilter> collisionFilter = nullptr);
+
   /// Get the mutex that protects the state of this World.
   std::mutex& getMutex() const;
 
@@ -70,6 +83,9 @@ protected:
 
   /// NameManager for keeping track of Skeletons
   dart::common::NameManager<dart::dynamics::SkeletonPtr> mSkeletonNameManager;
+
+  /// CollisionDetector for this World
+  dart::collision::CollisionDetectorPtr mCollisionDetector;
 };
 
 using WorldPtr = std::shared_ptr<World>;

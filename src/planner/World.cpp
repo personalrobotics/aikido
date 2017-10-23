@@ -138,6 +138,40 @@ void World::removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 }
 
 //==============================================================================
+dart::collision::CollisionDetectorPtr getCollisionDetector() const
+{
+  return mCollisionDetector;
+}
+
+//==============================================================================
+dart::collision::CollisionGroupPtr createCollisionGroup()
+{
+  return mCollisionDetector->createCollisionGroup();
+}
+
+//==============================================================================
+aikido::constraint::NonCollidingPtr createCollisionConstraint(
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr space,
+    std::shared_ptr<dart::collision::CollisionFilter> collisionFilter)
+{
+  auto skeleton = space->getMetaSkeleton();
+
+  auto it = std::find(mSkeletons.begin(), mSkeletons.end(), skeleton);
+  if (it == mSkeletons.end())
+  {
+    std::stringstream msg;
+    msg << "Skeleton [" << skeleton->getName() << "] does not exist in World.";
+    throw std::runtime_error(msg.str());
+  }
+
+  auto option
+    = dart::collision::CollisionOption(false, 1, collisionFilter);
+  auto constraint
+    = std::make_shared<NonColliding>(space, mCollisionDetector, option);
+  return constraint;
+}
+
+//==============================================================================
 std::mutex& World::getMutex() const
 {
   return mMutex;
