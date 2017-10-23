@@ -1,15 +1,15 @@
 ## Aikido 0 (prerelease)
 
-
-  
-
 ### 0.2.0 (201X-XX-XX)
 
 * Planner
 
   * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243)
-
   * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246)
+
+* RViz
+
+  * Added WorldInteractiveMarkerViewer: [#242](https://github.com/personalrobotics/aikido/pull/242)
 
 * Build & Testing & ETC
 
