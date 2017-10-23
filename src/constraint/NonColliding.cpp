@@ -61,7 +61,10 @@ void NonColliding::addPairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
-  mGroupsToPairwiseCheck.emplace_back(std::move(_group1), std::move(_group2));
+  if (_group1 < _group2)
+    mGroupsToPairwiseCheck.emplace_back(std::move(_group1), std::move(_group2));
+  else
+    mGroupsToPairwiseCheck.emplace_back(std::move(_group2), std::move(_group1));
 }
 
 //==============================================================================
@@ -69,26 +72,20 @@ void NonColliding::removePairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
-  auto it = std::find(
-      mGroupsToPairwiseCheck.begin(),
-      mGroupsToPairwiseCheck.end(),
-      std::make_pair(_group1, _group2));
-  if (it != mGroupsToPairwiseCheck.end())
-  {
-    mGroupsToPairwiseCheck.erase(it);
-    return;
-  }
-
-  // Check for reverse pair
-  it = std::find(
-      mGroupsToPairwiseCheck.begin(),
-      mGroupsToPairwiseCheck.end(),
-      std::make_pair(_group2, _group1));
-  if (it != mGroupsToPairwiseCheck.end())
-  {
-    mGroupsToPairwiseCheck.erase(it);
-    return;
-  }
+  if (_group1 < _group2)
+    mGroupsToPairwiseCheck.erase(
+        std::remove(
+            mGroupsToPairwiseCheck.begin(),
+            mGroupsToPairwiseCheck.end(),
+            std::make_pair(_group1, _group2)),
+        mGroupsToPairwiseCheck.end());
+  else
+    mGroupsToPairwiseCheck.erase(
+        std::remove(
+            mGroupsToPairwiseCheck.begin(),
+            mGroupsToPairwiseCheck.end(),
+            std::make_pair(_group2, _group1)),
+        mGroupsToPairwiseCheck.end());
 }
 
 //==============================================================================
@@ -102,10 +99,9 @@ void NonColliding::addSelfCheck(
 void NonColliding::removeSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
-  auto it
-      = std::find(mGroupsToSelfCheck.begin(), mGroupsToSelfCheck.end(), _group);
-  if (it != mGroupsToSelfCheck.end())
-    mGroupsToSelfCheck.erase(it);
+  mGroupsToSelfCheck.erase(
+      std::remove(mGroupsToSelfCheck.begin(), mGroupsToSelfCheck.end(), _group),
+      mGroupsToSelfCheck.end());
 }
 
 } // namespace constraint
