@@ -23,9 +23,9 @@ $ sudo apt-get install ros-indigo-actionlib ros-indigo-geometry-msgs ros-indigo-
 
 Once ROS is installed, you can install AIKIDO from the [Personal Robotics Lab PPA](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa):
 ```shell
-$ sudo apt-add-repository ppa:libccd-debs/ppa
-$ sudo apt-add-repository ppa:fcl-debs/ppa
-$ sudo apt-add-repository ppa:dartsim/ppa
+$ sudo add-apt-repository ppa:libccd-debs/ppa
+$ sudo add-apt-repository ppa:fcl-debs/ppa
+$ sudo add-apt-repository ppa:dartsim/ppa
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
 $ sudo apt-get install libaikido0-all-dev
@@ -57,9 +57,9 @@ You should install the ROS packages as described above to build all the ROS-depe
 
 Install the other dependencies:
 ```shell
-$ sudo apt-add-repository ppa:libccd-debs/ppa
-$ sudo apt-add-repository ppa:fcl-debs/ppa
-$ sudo apt-add-repository ppa:dartsim/ppa
+$ sudo add-apt-repository ppa:libccd-debs/ppa
+$ sudo add-apt-repository ppa:fcl-debs/ppa
+$ sudo add-apt-repository ppa:dartsim/ppa
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
 $ sudo apt-get install cmake build-essential libboost-filesystem-dev libdart6-optimizer-nlopt-dev libdart6-utils-dev libdart6-utils-urdf-dev libmicrohttpd-dev libompl-dev libtinyxml2-dev libyaml-cpp-dev pr-control-msgs
