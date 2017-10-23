@@ -68,13 +68,13 @@ public:
 private:
   using CollisionGroup = dart::collision::CollisionGroup;
 
-  std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> statespace;
-  std::shared_ptr<dart::collision::CollisionDetector> collisionDetector;
-  dart::collision::CollisionOption collisionOptions;
+  std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> mStatespace;
+  std::shared_ptr<dart::collision::CollisionDetector> mCollisionDetector;
+  dart::collision::CollisionOption mCollisionOptions;
   std::vector<std::pair<std::shared_ptr<CollisionGroup>,
                         std::shared_ptr<CollisionGroup>>>
-      groupsToPairwiseCheck;
-  std::vector<std::shared_ptr<CollisionGroup>> groupsToSelfCheck;
+      mGroupsToPairwiseCheck;
+  std::vector<std::shared_ptr<CollisionGroup>> mGroupsToSelfCheck;
 };
 
 using NonCollidingPtr = std::shared_ptr<NonColliding>;
