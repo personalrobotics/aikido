@@ -9,7 +9,9 @@ env:
     - TIMEOUT=30
 
 cache:
-  - apt
+  apt: true
+  directories:
+    - /usr/local/Cellar
 
 matrix:
   include:

@@ -132,6 +132,25 @@ TEST_F(NonCollidingTest, AddPairwiseCheckFails_IsSatisfied)
   EXPECT_FALSE(constraint.isSatisfied(state));
 }
 
+TEST_F(NonCollidingTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
+{
+  NonColliding constraint(mStateSpace, mCollisionDetector);
+
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+
+  constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
+  EXPECT_FALSE(constraint.isSatisfied(state));
+
+  constraint.removePairwiseCheck(mCollisionGroup1, mCollisionGroup3);
+  EXPECT_TRUE(constraint.isSatisfied(state));
+
+  constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
+  EXPECT_FALSE(constraint.isSatisfied(state));
+
+  constraint.removePairwiseCheck(mCollisionGroup3, mCollisionGroup1);
+  EXPECT_TRUE(constraint.isSatisfied(state));
+}
+
 TEST_F(NonCollidingTest, AddSelfCheckPasses_IsSatisfied)
 {
   NonColliding constraint(mStateSpace, mCollisionDetector);
@@ -149,4 +168,17 @@ TEST_F(NonCollidingTest, AddSelfCheckFails_IsSatisfied)
 
   constraint.addSelfCheck(mCollisionGroup3);
   EXPECT_FALSE(constraint.isSatisfied(state));
+}
+
+TEST_F(NonCollidingTest, AddAndRemoveSelfCheckFails_IsSatisfied)
+{
+  NonColliding constraint(mStateSpace, mCollisionDetector);
+
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+
+  constraint.addSelfCheck(mCollisionGroup3);
+  EXPECT_FALSE(constraint.isSatisfied(state));
+
+  constraint.removeSelfCheck(mCollisionGroup3);
+  EXPECT_TRUE(constraint.isSatisfied(state));
 }
