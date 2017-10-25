@@ -2,6 +2,10 @@
 
 ### 0.2.0 (201X-XX-XX)
 
+* Constraint
+
+  * Added methods for removing groups from NonColliding constraints. [#247](https://github.com/personalrobotics/aikido/pull/247)
+
 * Planner
 
   * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243)
