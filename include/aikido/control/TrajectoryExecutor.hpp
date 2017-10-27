@@ -19,7 +19,11 @@ public:
 
   /// Execute traj and set future upon completion.
   /// \param traj Trajectory to be executed.
-  virtual std::future<void> execute(trajectory::TrajectoryPtr _traj) = 0;
+  /// \param skip Whether to skip to the end of the trajectory (only used by
+  ///        simulation trajectory executors)
+  virtual std::future<void> execute(
+      trajectory::TrajectoryPtr _traj, bool _skip = false)
+      = 0;
 
   /// Executes one step.
   virtual void step() = 0;
