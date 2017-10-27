@@ -1,4 +1,3 @@
-#include <iostream>
 #include <ros/ros.h>
 #include <aikido/control/TrajectoryExecutor.hpp>
 
