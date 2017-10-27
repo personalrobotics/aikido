@@ -1,4 +1,5 @@
 set(sources
+  TrajectoryExecutor.cpp
   KinematicSimulationTrajectoryExecutor.cpp
   BarrettHandKinematicSimulationPositionCommandExecutor.cpp
   BarrettFingerKinematicSimulationPositionCommandExecutor.cpp

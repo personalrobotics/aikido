@@ -16,7 +16,8 @@ namespace control {
 //==============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
-  : mSkeleton(std::move(skeleton))
+  : TrajectoryExecutor()
+  , mSkeleton(std::move(skeleton))
   , mPromise(nullptr)
   , mTraj(nullptr)
   , mMutex()
