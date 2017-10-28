@@ -31,10 +31,10 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   for (int iknot = 0; iknot < _cacheIndex - 1; ++iknot)
   {
     const double segmentDuration = _knots[iknot + 1].mT - _knots[iknot].mT;
-    Eigen::VectorXd currentPosition = _knots[iknot].mValues.row(0);
-    Eigen::VectorXd currentVelocity = _knots[iknot].mValues.row(1);
-    Eigen::VectorXd nextPosition = _knots[iknot + 1].mValues.row(0);
-    Eigen::VectorXd nextVelocity = _knots[iknot + 1].mValues.row(1);
+    Eigen::VectorXd currentPosition = _knots[iknot].mPositions;
+    Eigen::VectorXd currentVelocity = _knots[iknot].mVelocities;
+    Eigen::VectorXd nextPosition = _knots[iknot + 1].mPositions;
+    Eigen::VectorXd nextVelocity = _knots[iknot + 1].mVelocities;
 
     CubicSplineProblem problem(Eigen::Vector2d{0., segmentDuration}, 4, numDof);
     problem.addConstantConstraint(0, 0, zeroPosition);
@@ -84,29 +84,34 @@ bool computeJointVelocityFromTwist(
     double _optimizationTolerance,
     double _timestep,
     double _padding,
-    Eigen::VectorXd* _jointVelocity)
+    Eigen::VectorXd& _jointVelocity)
 {
   using dart::math::Jacobian;
   using dart::optimizer::Problem;
   using dart::optimizer::Solver;
   using Eigen::VectorXd;
+
+  const dart::dynamics::MetaSkeletonPtr skeleton = _stateSpace->getMetaSkeleton();
   // Use LBFGS to find joint angles that won't violate the joint limits.
   const Jacobian jacobian
-      = _stateSpace->getMetaSkeleton()->getWorldJacobian(_bodyNode);
+      = skeleton->getWorldJacobian(_bodyNode);
 
-  const std::size_t numDofs = _stateSpace->getMetaSkeleton()->getNumDofs();
+
+  const std::size_t numDofs = skeleton->getNumDofs();
   VectorXd lowerLimits(numDofs);
   VectorXd upperLimits(numDofs);
 
-  VectorXd positions = _stateSpace->getMetaSkeleton()->getPositions();
-  VectorXd positionLowerLimits
-      = _stateSpace->getMetaSkeleton()->getPositionLowerLimits();
-  VectorXd positionUpperLimits
-      = _stateSpace->getMetaSkeleton()->getPositionUpperLimits();
-  VectorXd velocityLowerLimits
-      = _stateSpace->getMetaSkeleton()->getVelocityLowerLimits();
-  VectorXd velocityUpperLimits
-      = _stateSpace->getMetaSkeleton()->getVelocityUpperLimits();
+  VectorXd positions = skeleton->getPositions();
+  VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
+  VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
+  VectorXd velocityLowerLimits = skeleton->getVelocityLowerLimits();
+  VectorXd velocityUpperLimits = skeleton->getVelocityUpperLimits();
+  VectorXd nextPosition = VectorXd::Zero(numDofs);
+
+  auto currentState = _stateSpace->createState();
+  auto deltaState = _stateSpace->createState();
+  auto nextState = _stateSpace->createState();
+  _stateSpace->convertPositionsToState(positions, currentState);
 
   for (std::size_t i = 0; i < numDofs; ++i)
   {
@@ -116,14 +121,14 @@ bool computeJointVelocityFromTwist(
     const double velocityLowerLimit = velocityLowerLimits[i];
     const double velocityUpperLimit = velocityUpperLimits[i];
 
-    if (position
-        < positionLowerLimit - _timestep * velocityLowerLimit + _padding)
+    if (position + _timestep * velocityLowerLimit
+        < positionLowerLimit + _padding)
       lowerLimits[i] = 0;
     else
       lowerLimits[i] = velocityLowerLimit;
 
-    if (position
-        > positionUpperLimit - _timestep * velocityUpperLimit - _padding)
+    if (position + _timestep * velocityUpperLimit
+        > positionUpperLimit  - _padding)
       upperLimits[i] = 0;
     else
       upperLimits[i] = velocityUpperLimit;
@@ -146,7 +151,7 @@ bool computeJointVelocityFromTwist(
     return false;
   }
 
-  *_jointVelocity = problem->getOptimalSolution();
+  _jointVelocity = problem->getOptimalSolution();
   return true;
 }
 

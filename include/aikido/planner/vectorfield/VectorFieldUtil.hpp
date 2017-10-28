@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_H_
-#define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_H_
+#ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_HPP_
+#define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_HPP_
 
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/optimizer/Function.hpp>
@@ -16,7 +16,8 @@ namespace vectorfield {
 struct Knot
 {
   double mT;
-  Eigen::Matrix<double, 2, Eigen::Dynamic> mValues;
+  Eigen::VectorXd mPositions;
+  Eigen::VectorXd mVelocities;
 };
 
 /// Convert a sequence of knots into a Spline trajectory.
@@ -80,10 +81,10 @@ bool computeJointVelocityFromTwist(
     double _optimizationTolerance,
     double _timestep,
     double _padding,
-    Eigen::VectorXd* _jointVelocity);
+    Eigen::VectorXd& _jointVelocity);
 
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_H_
+#endif // AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_HPP_

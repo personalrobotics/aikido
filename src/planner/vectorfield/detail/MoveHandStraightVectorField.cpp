@@ -56,9 +56,9 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
 //==============================================================================
 
 bool MoveHandStraightVectorField::operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t,
-    Eigen::VectorXd* _qd)
+    Eigen::VectorXd& _qd)
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
@@ -101,7 +101,7 @@ bool MoveHandStraightVectorField::operator()(
 //==============================================================================
 
 VectorFieldPlannerStatus MoveHandStraightVectorField::operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t)
 {
   using Eigen::Isometry3d;

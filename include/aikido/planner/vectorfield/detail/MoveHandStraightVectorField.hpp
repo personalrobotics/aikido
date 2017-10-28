@@ -25,8 +25,8 @@ public:
   /// \param[in] _timestep Time step size
   /// \param[in] _linearGain Gain of P control on linear deviation
   /// \param[in] _linearTolerance Tolerance on linear deviation
-  /// \param[in] _rotationGain Gain of P control on angular deviation
-  /// \param[in] _rotationTolerance Tolerance on angular deviation
+  /// \param[in] _angularGain Gain of P control on angular deviation
+  /// \param[in] _angularTolerance Tolerance on angular deviation
   /// \param[in] _optimizationTolerance Tolerance on optimization
   /// \param[in] _padding Padding to the boundary
   MoveHandStraightVectorField(
@@ -37,8 +37,8 @@ public:
     double _timestep,
     double _linearGain = 1.,
     double _linearTolerance = 0.01,
-    double _rotationGain = 1.,
-    double _rotationTolerance = 0.01,
+    double _angularGain = 1.,
+    double _angularTolerance = 0.01,
     double _optimizationTolerance = 1e-3,
     double _padding = 1e-5
   );
@@ -50,9 +50,9 @@ public:
   /// \param[out] _qd Joint velocities
   /// \return
   bool operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t,
-    Eigen::VectorXd* _qd);
+    Eigen::VectorXd& _qd);
 
   /// Vectorfield planning status callback function
   ///
@@ -60,7 +60,7 @@ public:
   /// \param[in] _t Current time being planned
   /// \return
   VectorFieldPlannerStatus operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t);
 
 private:

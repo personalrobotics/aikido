@@ -65,6 +65,7 @@ public:
     SkeletonPtr skel
         = createNLinkRobot(3, Eigen::Vector3d(0.2, 0.2, 1.0), BALL);
     mNumDof = skel->getNumDofs();
+    mLinearVelocity = 0.2;
 
     mUpperPositionLimits = Eigen::VectorXd::Constant(mNumDof, constantsd::pi());
     mLowerPositionLimits
@@ -276,6 +277,7 @@ public:
   MetaSkeletonStateSpacePtr mStateSpace;
   BodyNodePtr mBodynode;
   std::size_t mNumDof;
+  double mLinearVelocity;
 
   Eigen::VectorXd mUpperPositionLimits;
   Eigen::VectorXd mLowerPositionLimits;
@@ -317,7 +319,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           optimizationTolerance,
           timestep,
           padding,
-          &qd));
+          qd));
 
   Eigen::VectorXd nextConfig(mNumDof);
   auto currentState = mStateSpace->createState();
@@ -354,8 +356,9 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
-  double duration = 1.0;
   double timestep = 0.02;
+  double linearGain = 10.;
+  double angularGain = 0.; // not trying to correct angular deviation
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       mStateSpace,
@@ -363,9 +366,11 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       mPassingConstraint,
       direction,
       distance,
+      mLinearVelocity,
       positionTolerance,
       angularTolerance,
-      duration,
+      linearGain,
+      angularGain,
       timestep);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
@@ -428,6 +433,6 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 
   EXPECT_THROW(
       aikido::planner::vectorfield::planToEndEffectorOffset(
-          mStateSpace, mBodynode, mPassingConstraint, direction, distance),
+          mStateSpace, mBodynode, mPassingConstraint, direction, distance, mLinearVelocity),
       std::runtime_error);
 }

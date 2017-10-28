@@ -1,8 +1,8 @@
 set(sources 
   VectorFieldPlanner.cpp
-  VectorFieldPlannerExceptions.cpp
-  MoveHandStraightVectorField.cpp
   VectorFieldUtil.cpp
+  detail/VectorFieldPlannerExceptions.cpp
+  detail/MoveHandStraightVectorField.cpp
 )
 
 add_library("${PROJECT_NAME}_planner_vectorfield" SHARED ${sources})

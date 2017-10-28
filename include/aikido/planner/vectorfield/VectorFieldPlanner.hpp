@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 
-#include <boost/function.hpp>
+#include <functional>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
@@ -23,13 +23,13 @@ enum class VectorFieldPlannerStatus
 ///
 /// \param[in] _stateSpace MetaSkeleton state space
 /// \param[in] _t Planned time of a given duration
-/// \param[out] _qd Joint velocity calculated by a vector field and meta
+/// \param[out] _dq Joint velocity calculated by a vector field and meta
 /// skeleton
 /// \return Whether vectorfield evaluation succeeds
 using VectorFieldCallback = std::function<bool(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t,
-    Eigen::VectorXd* _qd)>;
+    Eigen::VectorXd& _dq)>;
 
 /// Callback function of status of planning
 ///
@@ -37,7 +37,7 @@ using VectorFieldCallback = std::function<bool(
 /// \param[in] _t Planned time of a given duration
 /// \return Status of vectorfield planner
 using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t)>;
 
 /// Plan to a trajectory by a given vector field.
@@ -49,8 +49,8 @@ using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus(
 /// \param[in] _statusCb Callback of planning status
 /// \return Trajectory or \c nullptr if planning failed
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    const aikido::constraint::TestablePtr _constraint,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const aikido::constraint::TestablePtr& _constraint,
     double _timestep,
     const VectorFieldCallback& _vectorFieldCb,
     const VectorFieldStatusCallback& _statusCb);
@@ -63,24 +63,30 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 /// \param[in] _constraint Trajectory-wide constraint that must be satisfied
 /// \param[in] _direction Direction of moving the end-effector
 /// \param[in] _distance  Distance of moving the end-effector
-/// \param[in] _positionTolerance How a planned trajectory is allowed to
-/// deviated
-/// from a straight line segment defined by the direction and the distance.
-/// \param angularTolerance How a planned trajectory is allowed to deviate from
-/// a given direction
-/// \param[in] _duration Total time of executing a planned trajectory
+/// \param[in] _linearVelocity Linear velocity of moving the end-effector
+/// \param[in] _linearTolerance How a planned trajectory is allowed to
+/// deviated from a straight line segment defined by the direction and the
+/// distance
+/// \param[in] angularTolerance How a planned trajectory is allowed to deviate
+/// from a given direction
+/// \param[in] _linearGain Linear gain for a P controller to correct linear
+/// deviation
+/// \param[in] _angularGain Angular gain for a P controller to correct angular
+/// deviation
 /// \param[in] _timestep How often velocity should be updated from a vector
 /// field
 /// \return Trajectory or \c nullptr if planning failed
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    dart::dynamics::BodyNodePtr _bn,
-    const aikido::constraint::TestablePtr _constraint,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const dart::dynamics::BodyNodePtr& _bn,
+    const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Vector3d& _direction,
     double _distance,
-    double _positionTolerance = 0.005,
+    double _linearVelocity,
+    double _linearTolerance = 0.005,
     double _angularTolerance = 0.2,
-    double _duration = 2.0,
+    double _linearGain = 10.0,
+    double _angularGain = 10.0,
     double _timestep = 0.01);
 
 } // namespace vectorfield

@@ -13,7 +13,7 @@ namespace planner {
 namespace vectorfield {
 
 static void CheckDofLimits(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     Eigen::VectorXd const& q,
     Eigen::VectorXd const& qd)
 {
@@ -67,8 +67,8 @@ static void CheckDofLimits(
 //==============================================================================
 
 static void CheckCollision(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    const aikido::constraint::TestablePtr constraint)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::constraint::TestablePtr& constraint)
 {
   // Get current position
   auto state = stateSpace->getScopedStateFromMetaSkeleton();
@@ -82,8 +82,8 @@ static void CheckCollision(
 //==============================================================================
 
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    const aikido::constraint::TestablePtr _constraint,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const aikido::constraint::TestablePtr& _constraint,
     double _dt,
     const VectorFieldCallback& _vectorFiledCb,
     const VectorFieldStatusCallback& _statusCb)
@@ -116,7 +116,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 
   auto startState = _stateSpace->createState();
   _stateSpace->convertPositionsToState(q, startState);
-  Eigen::VectorXd qd(numDof);
+  Eigen::VectorXd dq(numDof);
   assert(static_cast<std::size_t>(q.size()) == numDof);
 
   do
@@ -124,7 +124,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     // Evaluate the vector field.
     try
     {
-      if (!_vectorFiledCb(_stateSpace, t, &qd))
+      if (!_vectorFiledCb(_stateSpace, t, dq))
       {
         throw VectorFieldTerminated("Failed evaluating VectorField.");
       }
@@ -136,7 +136,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
       break;
     }
 
-    if (static_cast<std::size_t>(qd.size()) != numDof)
+    if (static_cast<std::size_t>(dq.size()) != numDof)
     {
       throw std::length_error(
           "Vector field returned an incorrect number of DOF velocities.");
@@ -150,7 +150,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     {
       try
       {
-        CheckDofLimits(_stateSpace, q, qd);
+        CheckDofLimits(_stateSpace, q, dq);
         _stateSpace->getMetaSkeleton()->setPositions(q);
         CheckCollision(_stateSpace, _constraint);
       }
@@ -163,20 +163,19 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 
       // Insert the waypoint.
       assert(static_cast<std::size_t>(q.size()) == numDof);
-      assert(static_cast<std::size_t>(qd.size()) == numDof);
+      assert(static_cast<std::size_t>(dq.size()) == numDof);
 
       Knot knot;
       knot.mT = t;
-      knot.mValues.resize(2, numDof);
-      knot.mValues.row(0) = q;
-      knot.mValues.row(1) = qd;
+      knot.mPositions = q;
+      knot.mVelocities = dq;
       knots.push_back(knot);
 
       // Take a step.
       auto currentState = _stateSpace->createState();
       _stateSpace->convertPositionsToState(q, currentState);
       auto deltaState = _stateSpace->createState();
-      _stateSpace->convertPositionsToState(_dt * qd, deltaState);
+      _stateSpace->convertPositionsToState(_dt * dq, deltaState);
       auto nextState = _stateSpace->createState();
       _stateSpace->compose(currentState, deltaState, nextState);
       _stateSpace->convertStateToPositions(nextState, q);
@@ -231,14 +230,16 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 //==============================================================================
 
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    const dart::dynamics::BodyNodePtr _bn,
-    const aikido::constraint::TestablePtr _constraint,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const dart::dynamics::BodyNodePtr& _bn,
+    const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Vector3d& _direction,
     double _distance,
-    double _positionTolerance,
+    double _linearVelocity,
+    double _linearTolerance,
     double _angularTolerance,
-    double _duration,
+    double _linearGain,
+    double _angularGain,
     double _timestep)
 {
   if (_distance < 0.)
@@ -248,25 +249,30 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error(ss.str());
   }
 
+  if (_linearVelocity <= 0.0)
+  {
+    std::stringstream ss;
+    ss << "Linear velocity must be positive; got " << _linearVelocity << ".";
+    throw std::runtime_error(ss.str());
+  }
+
   if (_direction.norm() == 0.0)
   {
     throw std::runtime_error("Direction vector is a zero vector");
   }
 
-  double linearVelocity = _distance / _duration;
-  Eigen::Vector3d velocity = _direction.normalized() * linearVelocity;
-  double linearGain = 1.0 / _timestep;
-  double angularGain = 1.0 / _timestep;
+  Eigen::Vector3d velocity = _direction.normalized() * _linearVelocity;
+  double duration = _distance / _linearVelocity;
 
   auto vectorfield = MoveHandStraightVectorField(
       _bn,
       velocity,
       0.0,
-      _duration,
+      duration,
       _timestep,
-      linearGain,
-      _positionTolerance,
-      angularGain,
+      _linearGain,
+      _linearTolerance,
+      _angularGain,
       _angularTolerance);
 
   return planPathByVectorField(
