@@ -1,9 +1,9 @@
 #include <exception>
 #include <string>
-#include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
+#include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -88,15 +88,15 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     throw std::invalid_argument("Velocity space volume zero");
   }
 
-  for(std::size_t i=0; i < skeleton->getNumDofs(); ++i)
+  for (std::size_t i = 0; i < skeleton->getNumDofs(); ++i)
   {
     std::stringstream ss;
-    if(skeleton->getPositionLowerLimit(i) > skeleton->getPositionUpperLimit(i))
+    if (skeleton->getPositionLowerLimit(i) > skeleton->getPositionUpperLimit(i))
     {
       ss << "Position lower limit is larger than upper limit at DOF " << i;
       throw std::invalid_argument(ss.str());
     }
-    if(skeleton->getVelocityLowerLimit(i) > skeleton->getVelocityUpperLimit(i))
+    if (skeleton->getVelocityLowerLimit(i) > skeleton->getVelocityUpperLimit(i))
     {
       ss << "Velocity lower limit is larger than upper limit at DOF " << i;
       throw std::invalid_argument(ss.str());

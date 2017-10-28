@@ -89,11 +89,10 @@ bool computeJointVelocityFromTwist(
   using dart::optimizer::Solver;
   using Eigen::VectorXd;
 
-  const dart::dynamics::MetaSkeletonPtr skeleton = _stateSpace->getMetaSkeleton();
+  const dart::dynamics::MetaSkeletonPtr skeleton
+      = _stateSpace->getMetaSkeleton();
   // Use LBFGS to find joint angles that won't violate the joint limits.
-  const Jacobian jacobian
-      = skeleton->getWorldJacobian(_bodyNode);
-
+  const Jacobian jacobian = skeleton->getWorldJacobian(_bodyNode);
 
   const std::size_t numDofs = skeleton->getNumDofs();
   VectorXd positions = skeleton->getPositions();
@@ -115,11 +114,15 @@ bool computeJointVelocityFromTwist(
 
     if (position + _timestep * velocityLowerLimit
         < positionLowerLimit + _padding)
-      velocityLowerLimits[i] = std::max(velocityLowerLimits[i], ((velocityLowerLimits[i] + _padding) - position) / _timestep);
+      velocityLowerLimits[i] = std::max(
+          velocityLowerLimits[i],
+          ((velocityLowerLimits[i] + _padding) - position) / _timestep);
 
     if (position + _timestep * velocityUpperLimit
-        > positionUpperLimit  - _padding)
-      velocityUpperLimits[i] = std::min(velocityUpperLimits[i], ((velocityUpperLimits[i] - _padding) - position) / _timestep);
+        > positionUpperLimit - _padding)
+      velocityUpperLimits[i] = std::min(
+          velocityUpperLimits[i],
+          ((velocityUpperLimits[i] - _padding) - position) / _timestep);
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);

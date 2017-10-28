@@ -433,6 +433,11 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 
   EXPECT_THROW(
       aikido::planner::vectorfield::planToEndEffectorOffset(
-          mStateSpace, mBodynode, mPassingConstraint, direction, distance, mLinearVelocity),
+          mStateSpace,
+          mBodynode,
+          mPassingConstraint,
+          direction,
+          distance,
+          mLinearVelocity),
       std::runtime_error);
 }

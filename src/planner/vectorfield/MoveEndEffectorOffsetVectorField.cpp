@@ -2,8 +2,8 @@
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 
 namespace aikido {
 namespace planner {
@@ -36,22 +36,22 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
   , mStartPose(_bn->getTransform())
 {
   if (mStartTime < 0.0)
-      throw std::invalid_argument("Start time is negative");
+    throw std::invalid_argument("Start time is negative");
   if (mEndTime < mStartTime)
-      throw std::invalid_argument("End time is smaller than start time");
+    throw std::invalid_argument("End time is smaller than start time");
   if (mTimestep <= 0.0)
-      throw std::invalid_argument("Time step is negative");
+    throw std::invalid_argument("Time step is negative");
 
   if (mLinearGain < 0)
-      throw std::invalid_argument("Linear gain is negative");
-  if (mLinearTolerance <0)
-      throw std::invalid_argument("Linear tolerance is negative");
+    throw std::invalid_argument("Linear gain is negative");
+  if (mLinearTolerance < 0)
+    throw std::invalid_argument("Linear tolerance is negative");
   if (mAngularGain < 0)
-      throw std::invalid_argument("Angular gain is negative");
+    throw std::invalid_argument("Angular gain is negative");
   if (mAngularTolerance < 0)
-      throw std::invalid_argument("Angular tolerance is negative");
+    throw std::invalid_argument("Angular tolerance is negative");
   if (mOptimizationTolerance < 0)
-      throw std::invalid_argument("Optimization tolerance is negative");
+    throw std::invalid_argument("Optimization tolerance is negative");
 
   mTargetPose = mStartPose;
   mTargetPose.translation() += mVelocity * (mEndTime - mStartTime);
@@ -83,7 +83,8 @@ bool MoveEndEffectorOffsetVectorField::operator()(
   const Vector3d linearOrthogonalError
       = linearError - linearError.dot(mLinearDirection) * mLinearDirection;
   // Compute rotational error.
-  const Vector3d rotationError = logMap(mTargetPose.rotation().inverse() * currentPose.rotation());
+  const Vector3d rotationError
+      = logMap(mTargetPose.rotation().inverse() * currentPose.rotation());
 
   // Compute the desired twist using a proportional controller.
   Vector6d desiredTwist;
