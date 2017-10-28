@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_
-#define AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_
+#ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_
+#define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_
 
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 
@@ -13,8 +13,7 @@ namespace vectorfield {
 /// This class defines two callback functions for vectorfield planner.
 /// One for generating joint velocity in MetaSkeleton state space,
 /// and one for determining vectorfield planner status.
-///
-class MoveHandStraightVectorField {
+class MoveEndEffectorOffsetVectorField {
 public:
   /// Constructor
   ///
@@ -29,7 +28,7 @@ public:
   /// \param[in] _angularTolerance Tolerance on angular deviation
   /// \param[in] _optimizationTolerance Tolerance on optimization
   /// \param[in] _padding Padding to the boundary
-  MoveHandStraightVectorField(
+  MoveEndEffectorOffsetVectorField(
     dart::dynamics::BodyNodePtr _bn,
     const Eigen::Vector3d& _linearVelocity,
     double _startTime,
@@ -47,33 +46,33 @@ public:
   ///
   /// \param[in] _stateSpace MetaSkeleton state space
   /// \param[in] _t Current time being planned
-  /// \param[out] _qd Joint velocities
-  /// \return
+  /// \param[out] _dq Joint velocities
+  /// \return Whether joint velocities are successfully computed
   bool operator()(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double _t,
-    Eigen::VectorXd& _qd);
+    double /* _t */,
+    Eigen::VectorXd& _dq);
 
   /// Vectorfield planning status callback function
   ///
   /// \param[in] _stateSpace MetaSkeleton state space
   /// \param[in] _t Current time being planned
-  /// \return
+  /// \return Status of planning
   VectorFieldPlannerStatus operator()(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t);
 
 private:
   dart::dynamics::BodyNodePtr mBodynode;
-  Eigen::VectorXd mVelocity;
-  Eigen::VectorXd mLinearDirection;
+  Eigen::Vector3d mVelocity;
+  Eigen::Vector3d mLinearDirection;
   double mStartTime;
   double mEndTime;
   double mTimestep;
   double mLinearGain;
   double mLinearTolerance;
-  double mRotationGain;
-  double mRotationTolerance;
+  double mAngularGain;
+  double mAngularTolerance;
   double mOptimizationTolerance;
   double mPadding;
   Eigen::Isometry3d mStartPose;
@@ -84,4 +83,4 @@ private:
 } // namespace planner
 } // namespace aikido
 
-#endif // ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEHANDSTRAIGHTVECTORFIELD_H_
+#endif // ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_

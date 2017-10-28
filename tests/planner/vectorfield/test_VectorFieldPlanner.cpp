@@ -357,7 +357,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
   double timestep = 0.02;
-  double linearGain = 10.;
+  double linearGain = 1. / timestep;
   double angularGain = 0.; // not trying to correct angular deviation
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(

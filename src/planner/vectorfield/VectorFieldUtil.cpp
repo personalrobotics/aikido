@@ -7,7 +7,7 @@ namespace vectorfield {
 
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const std::vector<Knot>& _knots,
-    ptrdiff_t _cacheIndex,
+    int _cacheIndex,
     aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace)
 {
   using dart::common::make_unique;
@@ -19,7 +19,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
       _knots.begin(),
       _knots.begin() + _cacheIndex,
       times.data(),
-      [](Knot const& knot) { return knot.mT; });
+      [](const Knot& knot) { return knot.mT; });
 
   auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(_stateSpace);
 
@@ -51,7 +51,6 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 }
 
 //==============================================================================
-
 DesiredTwistFunction::DesiredTwistFunction(
     const Twist& _twist, const Jacobian& _jacobian)
   : dart::optimizer::Function("DesiredTwistFunction")
@@ -61,7 +60,6 @@ DesiredTwistFunction::DesiredTwistFunction(
 }
 
 //==============================================================================
-
 double DesiredTwistFunction::eval(const Eigen::VectorXd& _qd)
 {
   return 0.5 * (mJacobian * _qd - mTwist).squaredNorm();
@@ -98,19 +96,13 @@ bool computeJointVelocityFromTwist(
 
 
   const std::size_t numDofs = skeleton->getNumDofs();
-  VectorXd lowerLimits(numDofs);
-  VectorXd upperLimits(numDofs);
-
   VectorXd positions = skeleton->getPositions();
   VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
   VectorXd velocityLowerLimits = skeleton->getVelocityLowerLimits();
   VectorXd velocityUpperLimits = skeleton->getVelocityUpperLimits();
-  VectorXd nextPosition = VectorXd::Zero(numDofs);
 
   auto currentState = _stateSpace->createState();
-  auto deltaState = _stateSpace->createState();
-  auto nextState = _stateSpace->createState();
   _stateSpace->convertPositionsToState(positions, currentState);
 
   for (std::size_t i = 0; i < numDofs; ++i)
@@ -123,20 +115,16 @@ bool computeJointVelocityFromTwist(
 
     if (position + _timestep * velocityLowerLimit
         < positionLowerLimit + _padding)
-      lowerLimits[i] = 0;
-    else
-      lowerLimits[i] = velocityLowerLimit;
+      velocityLowerLimits[i] = std::max(velocityLowerLimits[i], ((velocityLowerLimits[i] + _padding) - position) / _timestep);
 
     if (position + _timestep * velocityUpperLimit
         > positionUpperLimit  - _padding)
-      upperLimits[i] = 0;
-    else
-      upperLimits[i] = velocityUpperLimit;
+      velocityUpperLimits[i] = std::min(velocityUpperLimits[i], ((velocityUpperLimits[i] - _padding) - position) / _timestep);
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);
-  problem->setLowerBounds(lowerLimits);
-  problem->setUpperBounds(upperLimits);
+  problem->setLowerBounds(velocityLowerLimits);
+  problem->setUpperBounds(velocityUpperLimits);
   problem->setObjective(
       std::make_shared<DesiredTwistFunction>(_desiredTwist, jacobian));
 

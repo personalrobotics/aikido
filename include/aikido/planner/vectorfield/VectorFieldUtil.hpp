@@ -28,7 +28,7 @@ struct Knot
 /// \return A Spline trajectory
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const std::vector<Knot>& _knots,
-    ptrdiff_t _cacheIndex,
+    int _cacheIndex,
     aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace);
 
 /// A function class that defines an objective. The objective measures

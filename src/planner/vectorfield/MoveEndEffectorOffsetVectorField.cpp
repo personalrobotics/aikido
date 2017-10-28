@@ -1,18 +1,15 @@
-#include <fstream>
-#include <iostream>
-#include <boost/format.hpp>
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/planner/vectorfield/detail/MoveHandStraightVectorField.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-MoveHandStraightVectorField::MoveHandStraightVectorField(
+MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     dart::dynamics::BodyNodePtr _bn,
     const Eigen::Vector3d& _linearVelocity,
     double _startTime,
@@ -24,7 +21,7 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
     double _rotationTolerance,
     double _optimizationTolerance,
     double _padding)
-  : mBodynode(_bn)
+  : mBodynode(std::move(_bn))
   , mVelocity(_linearVelocity)
   , mLinearDirection(_linearVelocity.normalized())
   , mStartTime(_startTime)
@@ -32,42 +29,47 @@ MoveHandStraightVectorField::MoveHandStraightVectorField(
   , mTimestep(_timestep)
   , mLinearGain(_linearGain)
   , mLinearTolerance(_linearTolerance)
-  , mRotationGain(_rotationGain)
-  , mRotationTolerance(_rotationTolerance)
+  , mAngularGain(_rotationGain)
+  , mAngularTolerance(_rotationTolerance)
   , mOptimizationTolerance(_optimizationTolerance)
   , mPadding(_padding)
   , mStartPose(_bn->getTransform())
 {
-  assert(mStartTime >= 0);
-  assert(mEndTime >= mStartTime);
-  assert(mTimestep >= 0);
-  assert(mVelocity.all() >= 0);
-  assert(mLinearGain >= 0);
-  assert(mLinearTolerance > 0);
-  assert(mRotationGain >= 0);
-  assert(mRotationTolerance > 0);
-  assert(mOptimizationTolerance > 0);
+  if (mStartTime < 0.0)
+      throw std::invalid_argument("Start time is negative");
+  if (mEndTime < mStartTime)
+      throw std::invalid_argument("End time is smaller than start time");
+  if (mTimestep <= 0.0)
+      throw std::invalid_argument("Time step is negative");
+
+  if (mLinearGain < 0)
+      throw std::invalid_argument("Linear gain is negative");
+  if (mLinearTolerance <0)
+      throw std::invalid_argument("Linear tolerance is negative");
+  if (mAngularGain < 0)
+      throw std::invalid_argument("Angular gain is negative");
+  if (mAngularTolerance < 0)
+      throw std::invalid_argument("Angular tolerance is negative");
+  if (mOptimizationTolerance < 0)
+      throw std::invalid_argument("Optimization tolerance is negative");
 
   mTargetPose = mStartPose;
-  mTargetPose.translation() += mVelocity * mEndTime;
+  mTargetPose.translation() += mVelocity * (mEndTime - mStartTime);
   mEndTime += _padding;
 }
 
 //==============================================================================
-
-bool MoveHandStraightVectorField::operator()(
+bool MoveEndEffectorOffsetVectorField::operator()(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double _t,
-    Eigen::VectorXd& _qd)
+    double,
+    Eigen::VectorXd& _dq)
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
-  using Eigen::VectorXd;
   using Eigen::Vector6d;
+  using dart::math::logMap;
 
-  DART_UNUSED(_t);
-
-  Isometry3d const currentPose = mBodynode->getTransform();
+  const Isometry3d currentPose = mBodynode->getTransform();
   Vector3d currentWorkspacePose = currentPose.translation();
   Vector3d targetWorkspacePose = mTargetPose.translation();
 
@@ -80,10 +82,12 @@ bool MoveHandStraightVectorField::operator()(
   const Vector3d linearError = targetWorkspacePose - currentWorkspacePose;
   const Vector3d linearOrthogonalError
       = linearError - linearError.dot(mLinearDirection) * mLinearDirection;
+  // Compute rotational error.
+  const Vector3d rotationError = logMap(mTargetPose.rotation().inverse() * currentPose.rotation());
 
   // Compute the desired twist using a proportional controller.
   Vector6d desiredTwist;
-  desiredTwist.head<3>() = Eigen::Vector3d::Zero();
+  desiredTwist.head<3>() = mAngularGain * rotationError;
   desiredTwist.tail<3>()
       = linearFeedforward + mLinearGain * linearOrthogonalError;
 
@@ -94,13 +98,12 @@ bool MoveHandStraightVectorField::operator()(
       mOptimizationTolerance,
       mTimestep,
       mPadding,
-      _qd);
+      _dq);
   return result;
 }
 
 //==============================================================================
-
-VectorFieldPlannerStatus MoveHandStraightVectorField::operator()(
+VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::operator()(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     double _t)
 {
