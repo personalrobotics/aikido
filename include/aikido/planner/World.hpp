@@ -39,6 +39,11 @@ public:
   /// \param name Name of desired Skeleton
   dart::dynamics::SkeletonPtr getSkeleton(const std::string& name) const;
 
+  /// Find a Skeleton by Skeleton, returning null if it is not in the World
+  /// \param skel Desired Skeleton
+  dart::dynamics::SkeletonPtr getSkeleton(
+      const dart::dynamics::SkeletonPtr skel) const;
+
   /// Get the number of Skeletons
   std::size_t getNumSkeletons() const;
 
