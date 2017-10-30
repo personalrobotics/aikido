@@ -75,6 +75,7 @@ void TrajectoryExecutor::executeAllFromQueue()
   mReturnWhenEmpty.store(true);
   if (mThread.joinable())
     mThread.join();
+  mReturnWhenEmpty.store(false);
 }
 
 } // namespace control
