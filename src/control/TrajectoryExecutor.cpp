@@ -1,5 +1,5 @@
-#include <ros/ros.h>
 #include <aikido/control/TrajectoryExecutor.hpp>
+#include <chrono>
 
 namespace aikido {
 namespace control {
@@ -37,9 +37,10 @@ void TrajectoryExecutor::setExecuteFromQueue(bool flag)
 //==============================================================================
 void TrajectoryExecutor::executeFromQueue()
 {
-  ::ros::Rate rate(30);
+  // TODO: can this be rewritten with aikido::common::ExecutorThread?
 
-  while (mRunning.load() && ::ros::ok())
+  const auto period = std::chrono::milliseconds(100);
+  while (mRunning.load())
   {
     trajectory::TrajectoryPtr traj;
 
@@ -63,7 +64,7 @@ void TrajectoryExecutor::executeFromQueue()
     if (traj)
       execute(traj).wait();
 
-    rate.sleep();
+    std::this_thread::sleep_until(std::chrono::steady_clock::now() + period);
   }
 
   mRunning.store(false);
