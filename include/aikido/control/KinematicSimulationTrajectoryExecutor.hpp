@@ -33,7 +33,8 @@ public:
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   /// \throws invalid_argument if traj is invalid.
-  std::future<void> execute(trajectory::TrajectoryPtr traj, bool skip) override;
+  std::future<void> execute(
+      trajectory::TrajectoryPtr traj, bool skip = false) override;
 
   /// \copydoc PositionCommandExecutor::step()
   ///
