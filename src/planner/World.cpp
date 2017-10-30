@@ -30,7 +30,8 @@ std::unique_ptr<World> World::create(const std::string& name)
 //==============================================================================
 std::unique_ptr<World> World::clone(const std::string& newName) const
 {
-  std::unique_ptr<World> worldClone(new World(newName.empty() ? mName : newName));
+  std::unique_ptr<World> worldClone(
+      new World(newName.empty() ? mName : newName));
 
   // Clone and add each Skeleton
   worldClone->mSkeletons.reserve(mSkeletons.size());
