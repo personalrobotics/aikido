@@ -29,6 +29,7 @@ aikido_check_package(tf "perception" "tf")
 #
 set(sources
   AprilTagsModule.cpp
+  RcnnMopedModule.cpp
   shape_conversions.cpp
   YamlAprilTagsDatabase.cpp
 )
