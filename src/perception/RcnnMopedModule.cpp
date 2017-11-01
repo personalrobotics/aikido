@@ -29,7 +29,7 @@ RcnnMopedModule::RcnnMopedModule(
 
 //=============================================================================
 bool RcnnMopedModule::detectObjects(
-    const dart::simulation::WorldPtr& env,
+    const aikido::planner::WorldPtr& env,
     ros::Duration timeout,
     ros::Time timestamp)
 {
