@@ -50,6 +50,9 @@ target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
 )
 target_link_libraries("${PROJECT_NAME}_rviz"
   PUBLIC
+    "${PROJECT_NAME}_constraint"
+    "${PROJECT_NAME}_planner"
+    "${PROJECT_NAME}_statespace"
     ${Boost_FILESYSTEM_LIBRARY}
     ${DART_LIBRARIES}
     ${geometry_msgs_LIBRARIES}
