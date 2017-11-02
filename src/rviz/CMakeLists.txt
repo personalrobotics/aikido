@@ -67,6 +67,10 @@ target_compile_options("${PROJECT_NAME}_rviz"
 
 add_component(${PROJECT_NAME} rviz)
 add_component_targets(${PROJECT_NAME} rviz "${PROJECT_NAME}_rviz")
+add_component_dependencies(${PROJECT_NAME} rviz
+  constraint
+  planner
+)
 
 # Intentionally omit tests for or_rviz. It's not clear how to test a viewer.
 
