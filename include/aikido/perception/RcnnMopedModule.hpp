@@ -17,6 +17,7 @@ public:
       ros::NodeHandle nodeHandle,
       std::string markerTopic,
       dart::common::ResourceRetrieverPtr resourceRetriever,
+      std::string canUri,
       std::string referenceFrameId,
       dart::dynamics::Frame* referenceLink);
 
@@ -36,6 +37,8 @@ private:
   std::string mReferenceFrameId;
 
   dart::common::ResourceRetrieverPtr mResourceRetriever;
+
+  std::string mCanUri;
 
   dart::dynamics::Frame* mReferenceLink;
 
