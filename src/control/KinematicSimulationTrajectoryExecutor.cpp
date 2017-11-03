@@ -16,7 +16,8 @@ namespace control {
 //==============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
-  : mSkeleton(std::move(skeleton))
+  : TrajectoryExecutor()
+  , mSkeleton(std::move(skeleton))
   , mPromise(nullptr)
   , mTraj(nullptr)
   , mMutex()
@@ -37,7 +38,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 
 //==============================================================================
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj)
+    trajectory::TrajectoryPtr traj, bool skip)
 {
   if (!traj)
     throw std::invalid_argument("Traj is null.");
@@ -76,9 +77,22 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
       throw std::runtime_error("Another trajectory in execution.");
 
     mPromise.reset(new std::promise<void>());
-    mTraj = traj;
-    mInExecution = true;
-    mExecutionStartTime = std::chrono::system_clock::now();
+    if (skip)
+    {
+      auto state = space->createState();
+      traj->evaluate(traj->getEndTime(), state);
+
+      Eigen::VectorXd positions(space->getDimension());
+      space->convertStateToPositions(state, positions);
+      metaSkeleton->setPositions(positions);
+      mPromise->set_value();
+    }
+    else
+    {
+      mTraj = traj;
+      mInExecution = true;
+      mExecutionStartTime = std::chrono::system_clock::now();
+    }
   }
 
   return mPromise->get_future();

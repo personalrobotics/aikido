@@ -57,7 +57,8 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
     double goalTimeTolerance,
     const std::chrono::milliseconds& connectionTimeout,
     const std::chrono::milliseconds& connectionPollingPeriod)
-  : mNode{std::move(node)}
+  : TrajectoryExecutor()
+  , mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mTimestep{timestep}
@@ -78,6 +79,13 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 {
   // Do nothing.
   // TODO: Should we wait for the current trajectory to finish executing?
+}
+
+//==============================================================================
+std::future<void> RosTrajectoryExecutor::execute(
+    trajectory::TrajectoryPtr traj, bool)
+{
+  return execute(traj);
 }
 
 //==============================================================================
