@@ -7,6 +7,7 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <aikido/perception/shape_conversions.hpp>
+#include <aikido/io/CatkinResourceRetriever.hpp>
 
 namespace aikido {
 namespace perception {
@@ -15,16 +16,41 @@ RcnnMopedModule::RcnnMopedModule(
     ros::NodeHandle nodeHandle,
     std::string markerTopic,
     dart::common::ResourceRetrieverPtr resourceRetriever,
+    std::string canUri,
     std::string referenceFrameId,
     dart::dynamics::Frame* referenceLink)
   : mNodeHandle(std::move(nodeHandle))
   , mMarkerTopic(std::move(markerTopic))
   , mReferenceFrameId(std::move(referenceFrameId))
   , mResourceRetriever(std::move(resourceRetriever))
+  , mCanUri(std::move(canUri))
   , mReferenceLink(std::move(referenceLink))
   , mTfListener(mNodeHandle)
 {
   // Do nothing
+}
+
+
+//=============================================================================
+const dart::dynamics::SkeletonPtr makeBodyFromURDF(const std::string& uri,
+    const Eigen::Isometry3d& transform)
+{
+  // Resolves package:// URIs by emulating the behavior of 'catkin_find'.
+  const auto resourceRetriever =
+      std::make_shared<aikido::io::CatkinResourceRetriever>();
+
+  dart::utils::DartLoader urdfLoader;
+  const dart::dynamics::SkeletonPtr skeleton = urdfLoader.parseSkeleton(
+      uri, resourceRetriever);
+
+  if (!skeleton)
+  {
+    throw std::runtime_error("unable to load '" + uri + "'");
+  }
+
+  dynamic_cast<dart::dynamics::FreeJoint*>(skeleton->getJoint(0))->setTransform(transform);
+
+  return skeleton;
 }
 
 //=============================================================================
@@ -60,23 +86,14 @@ bool RcnnMopedModule::detectObjects(
   {
     // Get marker, tag ID, and detection transform name
     const auto& marker_stamp = marker_transform.header.stamp;
-    const auto& tag_name = marker_transform.ns;
     const auto& detection_frame = marker_transform.header.frame_id;
     if (!timestamp.isValid() || marker_stamp < timestamp)
     {
       continue;
     }
 
-    any_valid = true;
-    std::string skel_name;
-    Eigen::Isometry3d skel_offset;
-    dart::common::Uri skel_resource;
     ros::Time t0 = ros::Time(0);
    
-    // Get orientation of marker
-    Eigen::Isometry3d marker_pose =
-        aikido::perception::convertROSPoseToEigen(marker_transform.pose);
-
     tf::StampedTransform transform;
     try
     {
@@ -94,81 +111,34 @@ bool RcnnMopedModule::detectObjects(
       continue;
     }
 
+    // Get orientation of marker
+    Eigen::Isometry3d marker_pose =
+        aikido::perception::convertROSPoseToEigen(marker_transform.pose);
     // Get the transform as a pose matrix
     Eigen::Isometry3d frame_pose =
         aikido::perception::convertStampedTransformToEigen(transform);
-
     // Compose to get actual skeleton pose
-    Eigen::Isometry3d temp_pose = frame_pose * marker_pose;
-    Eigen::Isometry3d skel_pose = temp_pose * skel_offset;
+    Eigen::Isometry3d skel_pose = frame_pose * marker_pose;
     Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
     skel_pose = link_offset * skel_pose;
 
-    // Check if skel in skel_list
-    skel_name.append(std::to_string(marker_transform.id));
-    bool is_new_skel;
+    dart::dynamics::SkeletonPtr canSkeletonPtr =
+        makeBodyFromURDF(mCanUri, skel_pose);
 
-    // Search the environment for skeleton
-    dart::dynamics::SkeletonPtr skel_to_update;
+    std::string skel_name = "can";
+    skel_name.append(std::to_string(marker_transform.id));
+
+    canSkeletonPtr->setName(skel_name);
 
     dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skel_name);
 
-    if (env_skeleton == nullptr)
+    if (env_skeleton != nullptr)
     {
-      // Getting the model for the new object
-      is_new_skel = true;
-      dart::utils::DartLoader urdfLoader;
-      skel_to_update =
-          urdfLoader.parseSkeleton(skel_resource, mResourceRetriever);
-
-      if (!skel_to_update)
-      {
-        dtwarn << "[RcnnMopedModule::detectObjects] Failed to load skeleton "
-                  "for URI "
-               << skel_resource.toString() << std::endl;
-      }
-
-      skel_to_update->setName(skel_name);
+      env->removeSkeleton(env_skeleton);
     }
-    else
-    {
-      is_new_skel = false;
-      skel_to_update = env_skeleton;
-    }
+    env->addSkeleton(canSkeletonPtr);
 
-    dart::dynamics::Joint* jtptr;
-    // Get root joint of skeleton
-    if (skel_to_update->getNumDofs() > 0)
-    {
-      jtptr = skel_to_update->getJoint(0);
-    }
-    else
-    {
-      dtwarn << "[RcnnMopedModule::detectObjects] Skeleton " << skel_name
-             << " has 0 DOFs! " << std::endl;
-      continue;
-    }
-    
-    // Downcast Joint to FreeJoint
-    dart::dynamics::FreeJoint* freejtptr =
-        dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
-
-    // Check if successful down-cast
-    if (freejtptr == nullptr)
-    {
-      dtwarn << "[RcnnMopedModule::detectObjects] Could not cast the joint "
-                "of the body to a Free Joint so ignoring marker "
-             << tag_name << std::endl;
-      continue;
-    }
-
-    freejtptr->setTransform(skel_pose);
-
-    if (is_new_skel)
-    {
-      // Adding new skeleton to the world env
-      env->addSkeleton(skel_to_update);
-    }
+    any_valid = true;
   }
 
   if (!any_valid)
