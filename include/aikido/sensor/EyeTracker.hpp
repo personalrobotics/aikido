@@ -50,6 +50,7 @@ public:
 
   GazeData getCurGazeData();
 
+
 private:
   //mutable std::mutex mMutex;
 

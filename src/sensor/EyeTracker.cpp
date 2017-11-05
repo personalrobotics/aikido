@@ -9,15 +9,18 @@ EyeTracker::EyeTracker(
     const std::string& _topicName)
   : mNodeHandle{std::move(_nodeHandle)}
 {
+  mNodeHandle.setCallbackQueue(&mCallbackQueue);
   mSubscriber = mNodeHandle.subscribe(
       _topicName, 1, &EyeTracker::gazeDataCallback, this);
-  ros::spin();
 }
 
 //==============================================================================
 EyeTracker::GazeData EyeTracker::getCurGazeData()
 {
-  ros::spinOnce();
+  while (mCallbackQueue.empty()) {
+    // Wait
+  }
+  mCallbackQueue.callAvailable();
   return mGazeData;
 }
 
@@ -140,8 +143,10 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "EyeTracker");
   ros::NodeHandle n;
   aikido::sensor::EyeTracker testTracker(n, "eyerectoo_journal");
-  // uint curStamp = testTracker.getCurGazeData().syncTimestamp;
-  // std::cout << "CUR STAMP" << std::endl;
-  // std::cout << curStamp << std::endl;
+  usleep(5000000);
+  testTracker.getCurGazeData();
+  uint curStamp = testTracker.mGazeData.syncTimestamp;
+  std::cout << "CUR STAMP" << std::endl;
+  std::cout << curStamp << std::endl;
 }
 
