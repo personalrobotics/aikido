@@ -164,6 +164,9 @@ void EyeTracker::isLookingAruco(float numSeconds) {
       if (gazeWithinRadius(curGazeData)) {
         markerTriggered = true;
         triggerTime = clock();
+        std::cout << "" << std::endl;
+        std::cout << "TRIGGER" << std::endl;
+        std::cout << "" << std::endl;
       }
     }
   }

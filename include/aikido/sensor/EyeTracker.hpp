@@ -61,11 +61,11 @@ public:
 
   cv::Mat getCurGazeImage();
 
-  void isLookingAruco(float numSeconds = 10.0);
+  void isLookingAruco(float numSeconds = 5.0);
 
   bool gazeWithinRadius(
     GazeData curGazeData,
-    float radius = 5.0);
+    float radius = 60.0);
 
 
 private:
