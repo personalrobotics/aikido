@@ -10,6 +10,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+// For Demo purposes.
+#include <time.h>
+
 namespace aikido {
 namespace sensor {
 
@@ -57,6 +60,12 @@ public:
   GazeData getCurGazeData();
 
   cv::Mat getCurGazeImage();
+
+  void isLookingAruco(float numSeconds = 10.0);
+
+  bool gazeWithinRadius(
+    GazeData curGazeData,
+    float radius = 5.0);
 
 
 private:

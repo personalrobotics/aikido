@@ -68,27 +68,6 @@ void EyeTracker::gazeDataCallback(
   mGazeData.rightPupilAngle = _journal.right_pupil_angle;
   mGazeData.rightPupilValid = _journal.right_pupil_valid;
 
-  std::cout << "" << std::endl;
-  std::cout << mGazeData.syncTimestamp << std::endl;
-  std::cout << mGazeData.gazeX << std::endl;
-  std::cout << mGazeData.gazeY << std::endl;
-  std::cout << mGazeData.validGaze << std::endl;
-  std::cout << mGazeData.fieldWidth << std::endl;
-  std::cout << mGazeData.fieldHeight << std::endl;
-  std::cout << mGazeData.arucoMarkersPresent << std::endl;
-  std::cout << mGazeData.leftPupilX << std::endl;
-  std::cout << mGazeData.leftPupilY << std::endl;
-  std::cout << mGazeData.leftPupilWidth << std::endl;
-  std::cout << mGazeData.leftPupilHeight << std::endl;
-  std::cout << mGazeData.leftPupilAngle << std::endl;
-  std::cout << mGazeData.leftPupilValid << std::endl;
-  std::cout << mGazeData.rightPupilX << std::endl;
-  std::cout << mGazeData.rightPupilY << std::endl;
-  std::cout << mGazeData.rightPupilWidth << std::endl;
-  std::cout << mGazeData.rightPupilHeight << std::endl;
-  std::cout << mGazeData.rightPupilAngle << std::endl;
-  std::cout << mGazeData.rightPupilValid << std::endl;
-
   if (mGazeData.arucoMarkersPresent) {
     mGazeData.arucoIDs.clear();
     mGazeData.arcuoXCoords.clear();
@@ -140,16 +119,7 @@ void EyeTracker::gazeDataCallback(
 
     }
 
-    std::cout << "EYE COORDS" << std::endl;
-    std::cout << mGazeData.arucoIDs[0] << std::endl;
-    std::cout << mGazeData.arcuoXCoords[0] << std::endl;
-    std::cout << mGazeData.arcuoYCoords[0] << std::endl;
   }
-
-
-  std::cout << "" << std::endl;
-
-  
 }
 
 //==============================================================================
@@ -162,9 +132,70 @@ void EyeTracker::gazeImageCallback(
 
   }
 
+//==============================================================================
+// TODO: This really should be in it's own demo repo.
+void EyeTracker::isLookingAruco(float numSeconds) {
+
+  bool markerTriggered = false;
+  clock_t triggerTime;
+
+  while (true) {
+    GazeData curGazeData = getCurGazeData();
+    
+    if (markerTriggered) {
+      // Do we maintain the trigger status?
+      if (!gazeWithinRadius(curGazeData)) {
+        markerTriggered = false;
+      } else {
+      // Or, if been looking long enough, say so!
+        clock_t ticksElapsed = clock() - triggerTime;
+        float secondsPassed = ((float) ticksElapsed)/CLOCKS_PER_SEC;
+        if (secondsPassed > numSeconds) {
+          std::cout << "" << std::endl;
+          std::cout << "LOOKED AT IT" << std::endl;
+          std::cout << "" << std::endl;
+          break;
+        }
+      }
+    }
 
 
+    else {
+      if (gazeWithinRadius(curGazeData)) {
+        markerTriggered = true;
+        triggerTime = clock();
+      }
+    }
+  }
+}
 
+
+bool EyeTracker::gazeWithinRadius(
+  GazeData curGazeData,
+  float radius
+) {
+
+  // No Aruco markers present? Then no point!
+  if (curGazeData.arucoIDs.size() == 0) {
+    return false;
+  }
+
+  float gazeX = curGazeData.gazeX;
+  float gazeY = curGazeData.gazeY;
+
+  float arucoX = curGazeData.arcuoXCoords[0];
+  float arucoY = curGazeData.arcuoYCoords[0];
+
+  float x_sqaure = gazeX - arucoX;
+  x_sqaure *= x_sqaure;
+
+  float y_square = gazeY - arucoY;
+  y_square *= y_square;
+
+  float dist = sqrt(x_sqaure + y_square);
+
+  return dist <= radius;
+}
 
 } // namespace sensor
 } // namespace aikido
@@ -180,19 +211,6 @@ int main(int argc, char** argv)
   std::string imageTopicName = "EyeRecTooImage";
   aikido::sensor::EyeTracker testTracker(n_data, n_image, dataTopicName, imageTopicName);
 
-  usleep(5000000);
-  uint curStamp = testTracker.getCurGazeData().syncTimestamp;
-  uint curStamp2 = testTracker.getCurGazeData().syncTimestamp;
-  uint curStamp3 = testTracker.getCurGazeData().syncTimestamp;
-  std::cout << "CUR STAMP" << std::endl;
-  std::cout << curStamp << std::endl;
-
-  cv::Mat curGazeImage = testTracker.getCurGazeImage();
-
-  std::cout << "CUR WIDTH" << std::endl;
-  std::cout << curGazeImage.cols << std::endl;
-
-  std::cout << "CUR HEIGHT" << std::endl;
-  std::cout << curGazeImage.rows << std::endl;
+  testTracker.isLookingAruco();
 }
 
