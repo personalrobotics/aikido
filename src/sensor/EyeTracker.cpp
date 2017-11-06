@@ -5,30 +5,48 @@ namespace sensor {
 
 //==============================================================================
 EyeTracker::EyeTracker(
-    ::ros::NodeHandle _nodeHandle,
-    const std::string& _topicName)
-  : mNodeHandle{std::move(_nodeHandle)}
+    ::ros::NodeHandle _nodeHandleData,
+      ::ros::NodeHandle _nodeHandleImage,
+      const std::string& _dataTopicName,
+      const std::string& _imageTopicName)
+  : mDataNodeHandle{std::move(_nodeHandleData)},
+    mImageNodeHandle{std::move(_nodeHandleImage)}
 {
-  mNodeHandle.setCallbackQueue(&mCallbackQueue);
-  mSubscriber = mNodeHandle.subscribe(
-      _topicName, 1, &EyeTracker::gazeDataCallback, this);
+  mDataNodeHandle.setCallbackQueue(&mDataCallbackQueue);
+  mDataSubscriber = mDataNodeHandle.subscribe(
+      _dataTopicName, 1, &EyeTracker::gazeDataCallback, this);
+
+  mImageNodeHandle.setCallbackQueue(&mImageCallbackQueue);
+  mImageSubscriber = mImageNodeHandle.subscribe(
+      _imageTopicName, 1, &EyeTracker::gazeImageCallback, this);
 }
 
 //==============================================================================
 EyeTracker::GazeData EyeTracker::getCurGazeData()
 {
-  while (mCallbackQueue.empty()) {
+  while (mDataCallbackQueue.empty()) {
     // Wait
   }
-  mCallbackQueue.callAvailable();
+  mDataCallbackQueue.callAvailable();
   return mGazeData;
 }
+
+//==============================================================================
+cv::Mat EyeTracker::getCurGazeImage()
+{
+  while (mImageCallbackQueue.empty()) {
+    // Wait
+  }
+  mImageCallbackQueue.callAvailable();
+  return mGazeImage;
+}
+
 
 //==============================================================================
 void EyeTracker::gazeDataCallback(
   const eyerectoo_stream::Journal& _journal
 ) {
-  // TODO: Handle concurrency with Mutex?
+  // TODO: Remove all these ugly print statements once debugging is done.
   // TODO: Some form of sanity check on data that comes in.
   mGazeData.syncTimestamp = _journal.sync_timestamp;
   mGazeData.gazeX = _journal.gaze_x;
@@ -134,6 +152,20 @@ void EyeTracker::gazeDataCallback(
   
 }
 
+//==============================================================================
+void EyeTracker::gazeImageCallback(
+  const sensor_msgs::ImageConstPtr& msg
+) {
+
+  // TODO: Instead of just one data point, keep queues of them over time.
+  mGazeImage = cv_bridge::toCvShare(msg, "bgr8")->image;
+
+  }
+
+
+
+
+
 } // namespace sensor
 } // namespace aikido
 
@@ -141,12 +173,26 @@ void EyeTracker::gazeDataCallback(
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "EyeTracker");
-  ros::NodeHandle n;
-  aikido::sensor::EyeTracker testTracker(n, "eyerectoo_journal");
+
+  ros::NodeHandle n_data;
+  ros::NodeHandle n_image;
+  std::string dataTopicName = "eyerectoo_journal";
+  std::string imageTopicName = "EyeRecTooImage";
+  aikido::sensor::EyeTracker testTracker(n_data, n_image, dataTopicName, imageTopicName);
+
   usleep(5000000);
-  testTracker.getCurGazeData();
-  uint curStamp = testTracker.mGazeData.syncTimestamp;
+  uint curStamp = testTracker.getCurGazeData().syncTimestamp;
+  uint curStamp2 = testTracker.getCurGazeData().syncTimestamp;
+  uint curStamp3 = testTracker.getCurGazeData().syncTimestamp;
   std::cout << "CUR STAMP" << std::endl;
   std::cout << curStamp << std::endl;
+
+  cv::Mat curGazeImage = testTracker.getCurGazeImage();
+
+  std::cout << "CUR WIDTH" << std::endl;
+  std::cout << curGazeImage.cols << std::endl;
+
+  std::cout << "CUR HEIGHT" << std::endl;
+  std::cout << curGazeImage.rows << std::endl;
 }
 
