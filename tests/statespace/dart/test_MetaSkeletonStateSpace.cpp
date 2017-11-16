@@ -1,12 +1,12 @@
+#include <dart/dynamics/dynamics.hpp>
+#include <gtest/gtest.h>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/SO2.hpp>
-#include <aikido/statespace/SO3.hpp>
 #include <aikido/statespace/SE2.hpp>
 #include <aikido/statespace/SE3.hpp>
-#include <aikido/statespace/CartesianProduct.hpp>
+#include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/SO3.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <gtest/gtest.h>
-#include <dart/dynamics/dynamics.hpp>
 
 using Eigen::Isometry3d;
 using Eigen::Vector3d;
@@ -146,8 +146,8 @@ TEST(MetaSkeletonStateSpace, FreeJoint_CreatesSE3)
 
   substate.setIsometry(value2);
   space.setState(state);
-  EXPECT_TRUE(value2.isApprox(
-    FreeJoint::convertToTransform(skeleton->getPositions())));
+  EXPECT_TRUE(
+      value2.isApprox(FreeJoint::convertToTransform(skeleton->getPositions())));
 }
 
 TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCartesianProduct)
@@ -157,7 +157,8 @@ TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCartesianProduct)
 
   auto skeleton = Skeleton::create();
   auto joint1 = skeleton->createJointAndBodyNodePair<RevoluteJoint>().first;
-  auto joint2 = skeleton->createJointAndBodyNodePair<TranslationalJoint>().first;
+  auto joint2
+      = skeleton->createJointAndBodyNodePair<TranslationalJoint>().first;
 
   MetaSkeletonStateSpace space(skeleton);
   ASSERT_EQ(2, space.getNumSubspaces());

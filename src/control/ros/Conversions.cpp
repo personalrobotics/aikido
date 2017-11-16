@@ -335,6 +335,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   }
 
   // Add unspecified joint mappings to rosJointToMetaSkeletonJoint
+
   std::vector<std::size_t> unspecifiedMetaSkeletonJoints;
   unspecifiedMetaSkeletonJoints.reserve(
       numControlledJoints - numTrajectoryJoints);

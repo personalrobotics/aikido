@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/Rn.hpp>
 #include <aikido/constraint/Satisfied.hpp>
+#include <aikido/statespace/Rn.hpp>
 
 using aikido::statespace::R2;
 using aikido::constraint::Satisfied;
@@ -20,9 +20,7 @@ protected:
 
 TEST_F(SatisfiedTests, constructor_StateSpaceIsNull_Throws)
 {
-  EXPECT_THROW({
-    Satisfied(nullptr);
-  }, std::invalid_argument);
+  EXPECT_THROW({ Satisfied(nullptr); }, std::invalid_argument);
 }
 
 TEST_F(SatisfiedTests, getStateSpace)

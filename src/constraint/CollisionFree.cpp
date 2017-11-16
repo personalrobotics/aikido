@@ -8,21 +8,21 @@ CollisionFree::CollisionFree(
     statespace::dart::MetaSkeletonStateSpacePtr _statespace,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
     dart::collision::CollisionOption _collisionOptions)
-  : statespace(std::move(_statespace))
-  , collisionDetector(std::move(_collisionDetector))
-  , collisionOptions(std::move(_collisionOptions))
+  : mStatespace(std::move(_statespace))
+  , mCollisionDetector(std::move(_collisionDetector))
+  , mCollisionOptions(std::move(_collisionOptions))
 {
-  if (!statespace)
+  if (!mStatespace)
     throw std::invalid_argument("_statespace is nullptr.");
 
-  if (!collisionDetector)
+  if (!mCollisionDetector)
     throw std::invalid_argument("_collisionDetector is nullptr.");
 }
 
 //==============================================================================
 statespace::StateSpacePtr CollisionFree::getStateSpace() const
 {
-  return statespace;
+  return mStatespace;
 }
 
 //==============================================================================
@@ -31,25 +31,25 @@ bool CollisionFree::isSatisfied(
 {
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
-  statespace->setState(skelStatePtr);
+  mStatespace->setState(skelStatePtr);
 
   bool collision = false;
   dart::collision::CollisionResult collisionResult;
-  for (auto groups : groupsToPairwiseCheck)
+  for (auto groups : mGroupsToPairwiseCheck)
   {
-    collision = collisionDetector->collide(
+    collision = mCollisionDetector->collide(
         groups.first.get(),
         groups.second.get(),
-        collisionOptions,
+        mCollisionOptions,
         &collisionResult);
     if (collision)
       return false;
   }
 
-  for (auto group : groupsToSelfCheck)
+  for (auto group : mGroupsToSelfCheck)
   {
-    collision = collisionDetector->collide(
-        group.get(), collisionOptions, &collisionResult);
+    collision = mCollisionDetector->collide(
+        group.get(), mCollisionOptions, &collisionResult);
     if (collision)
       return false;
   }
@@ -61,14 +61,47 @@ void CollisionFree::addPairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
-  groupsToPairwiseCheck.emplace_back(std::move(_group1), std::move(_group2));
+  if (_group1 < _group2)
+    mGroupsToPairwiseCheck.emplace_back(std::move(_group1), std::move(_group2));
+  else
+    mGroupsToPairwiseCheck.emplace_back(std::move(_group2), std::move(_group1));
+}
+
+//==============================================================================
+void CollisionFree::removePairwiseCheck(
+    std::shared_ptr<dart::collision::CollisionGroup> _group1,
+    std::shared_ptr<dart::collision::CollisionGroup> _group2)
+{
+  if (_group1 < _group2)
+    mGroupsToPairwiseCheck.erase(
+        std::remove(
+            mGroupsToPairwiseCheck.begin(),
+            mGroupsToPairwiseCheck.end(),
+            std::make_pair(_group1, _group2)),
+        mGroupsToPairwiseCheck.end());
+  else
+    mGroupsToPairwiseCheck.erase(
+        std::remove(
+            mGroupsToPairwiseCheck.begin(),
+            mGroupsToPairwiseCheck.end(),
+            std::make_pair(_group2, _group1)),
+        mGroupsToPairwiseCheck.end());
 }
 
 //==============================================================================
 void CollisionFree::addSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
-  groupsToSelfCheck.emplace_back(std::move(_group));
+  mGroupsToSelfCheck.emplace_back(std::move(_group));
+}
+
+//==============================================================================
+void CollisionFree::removeSelfCheck(
+    std::shared_ptr<dart::collision::CollisionGroup> _group)
+{
+  mGroupsToSelfCheck.erase(
+      std::remove(mGroupsToSelfCheck.begin(), mGroupsToSelfCheck.end(), _group),
+      mGroupsToSelfCheck.end());
 }
 
 } // namespace constraint

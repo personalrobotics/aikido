@@ -1,6 +1,6 @@
+#include <dart/common/StlHelpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
-#include <dart/common/StlHelpers.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
@@ -43,16 +43,14 @@ protected:
 
 TEST_F(SO2UniformSamplerTests, constructor_StateSpaceIsNull_Throws)
 {
-  EXPECT_THROW({
-    SO2UniformSampler(nullptr, mRng->clone());
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { SO2UniformSampler(nullptr, mRng->clone()); }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, constructor_RNGIsNull_Throws)
 {
-  EXPECT_THROW({
-    SO2UniformSampler(mStateSpace, nullptr);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { SO2UniformSampler(mStateSpace, nullptr); }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, getStateSpace)
@@ -69,7 +67,12 @@ TEST_F(SO2UniformSamplerTests, createSampleGenerator)
   ASSERT_TRUE(!!generator);
   EXPECT_EQ(mStateSpace, generator->getStateSpace());
 
-  auto result = SampleGeneratorCoverage(*generator, *mDistance,
-    std::begin(mTargets), std::end(mTargets), DISTANCE_THRESHOLD, NUM_SAMPLES);
+  auto result = SampleGeneratorCoverage(
+      *generator,
+      *mDistance,
+      std::begin(mTargets),
+      std::end(mTargets),
+      DISTANCE_THRESHOLD,
+      NUM_SAMPLES);
   ASSERT_TRUE(result);
 }

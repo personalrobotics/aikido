@@ -1,8 +1,8 @@
-#include "OMPLTestHelpers.hpp"
-#include "../../constraint/MockConstraints.hpp"
+#include <ompl/base/spaces/SO2StateSpace.h>
 #include <aikido/planner/ompl/GoalRegion.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
-#include <ompl/base/spaces/SO2StateSpace.h>
+#include "../../constraint/MockConstraints.hpp"
+#include "OMPLTestHelpers.hpp"
 
 using aikido::planner::ompl::GeometricStateSpace;
 using aikido::planner::ompl::GoalRegion;
@@ -15,12 +15,21 @@ public:
   {
     PlannerTest::SetUp();
     gSpace = std::make_shared<GeometricStateSpace>(
-        stateSpace, interpolator, dmetric, sampler, boundsConstraint,
+        stateSpace,
+        interpolator,
+        dmetric,
+        sampler,
+        boundsConstraint,
         boundsProjection);
     si = aikido::planner::ompl::getSpaceInformation(
-      stateSpace, interpolator, dmetric, sampler, collConstraint,
-      boundsConstraint, boundsProjection, 0.1);
-
+        stateSpace,
+        interpolator,
+        dmetric,
+        sampler,
+        collConstraint,
+        boundsConstraint,
+        boundsProjection,
+        0.1);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
   ::ompl::base::SpaceInformationPtr si;
@@ -30,22 +39,23 @@ TEST_F(GoalRegionTest, ThrowsOnNullSpaceInformation)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
   auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
-  EXPECT_THROW(GoalRegion(nullptr, std::move(testable), std::move(generator)),
-               std::invalid_argument);
+  EXPECT_THROW(
+      GoalRegion(nullptr, std::move(testable), std::move(generator)),
+      std::invalid_argument);
 }
 
 TEST_F(GoalRegionTest, ThrowsOnNullTestable)
 {
   auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
-  EXPECT_THROW(GoalRegion(si, nullptr, std::move(generator)),
-               std::invalid_argument);
+  EXPECT_THROW(
+      GoalRegion(si, nullptr, std::move(generator)), std::invalid_argument);
 }
 
 TEST_F(GoalRegionTest, ThrowsOnNullGenerator)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  EXPECT_THROW(GoalRegion(si, std::move(testable), nullptr),
-               std::invalid_argument);
+  EXPECT_THROW(
+      GoalRegion(si, std::move(testable), nullptr), std::invalid_argument);
 }
 
 TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
@@ -53,8 +63,9 @@ TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
   auto so3 = std::make_shared<aikido::statespace::SO3>();
   auto testable = std::make_shared<PassingConstraint>(so3);
   auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
-  EXPECT_THROW(GoalRegion(si, std::move(testable), std::move(generator)),
-               std::invalid_argument);
+  EXPECT_THROW(
+      GoalRegion(si, std::move(testable), std::move(generator)),
+      std::invalid_argument);
 }
 
 TEST_F(GoalRegionTest, DifferentSample)
@@ -68,8 +79,9 @@ TEST_F(GoalRegionTest, DifferentSample)
   // Check that successive sample calls generate different states
   gr.sampleGoal(state1);
   gr.sampleGoal(state2);
-  EXPECT_FALSE(getTranslationalState(stateSpace, state1)
-                   .isApprox(getTranslationalState(stateSpace, state2)));
+  EXPECT_FALSE(
+      getTranslationalState(stateSpace, state1)
+          .isApprox(getTranslationalState(stateSpace, state2)));
   si->freeState(state1);
   si->freeState(state2);
 }
@@ -153,8 +165,8 @@ TEST_F(GoalRegionTest, InfiniteDistance)
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
   auto state = si->allocState();
-  EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(),
-                   gr.distanceGoal(state));
+  EXPECT_DOUBLE_EQ(
+      std::numeric_limits<double>::infinity(), gr.distanceGoal(state));
   si->freeState(state);
 }
 

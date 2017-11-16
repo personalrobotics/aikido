@@ -1,12 +1,12 @@
-#include <gtest/gtest.h>
 #include <Eigen/Dense>
-#include <aikido/constraint/RejectionSampleable.hpp>
+#include <gtest/gtest.h>
 #include <aikido/constraint/FiniteSampleable.hpp>
+#include <aikido/constraint/RejectionSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
-#include "MockConstraints.hpp"
 #include "../eigen_tests.hpp"
+#include "MockConstraints.hpp"
 
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::RejectionSampleable;
@@ -18,7 +18,8 @@ using aikido::statespace::R1;
 class RejectionSampleableTest : public testing::Test
 {
 public:
-  virtual void SetUp(){
+  virtual void SetUp()
+  {
     mStateSpace = std::make_shared<R1>();
 
     std::vector<const aikido::statespace::StateSpace::State*> states;
@@ -38,58 +39,62 @@ protected:
   TestablePtr mPassing, mFailing;
   SampleablePtr mSampleable;
   std::shared_ptr<R1> mStateSpace;
-
 };
-
 
 TEST_F(RejectionSampleableTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(RejectionSampleable(nullptr, mSampleable, mPassing, 1),
-    std::invalid_argument);
+  EXPECT_THROW(
+      RejectionSampleable(nullptr, mSampleable, mPassing, 1),
+      std::invalid_argument);
 }
-
 
 TEST_F(RejectionSampleableTest, ConstructorThrowsOnNullSampleable)
 {
-  EXPECT_THROW(RejectionSampleable(mStateSpace, nullptr, mPassing, 1),
-    std::invalid_argument);
+  EXPECT_THROW(
+      RejectionSampleable(mStateSpace, nullptr, mPassing, 1),
+      std::invalid_argument);
 }
-
 
 TEST_F(RejectionSampleableTest, ConstructorThrowsOnNullTestable)
 {
-  EXPECT_THROW(RejectionSampleable(mStateSpace, mSampleable, nullptr, 1),
-    std::invalid_argument);
+  EXPECT_THROW(
+      RejectionSampleable(mStateSpace, mSampleable, nullptr, 1),
+      std::invalid_argument);
 }
 
-
-TEST_F(RejectionSampleableTest, ConstructorThrowsOnNonMatchingStateSpaceSampleable)
+TEST_F(
+    RejectionSampleableTest, ConstructorThrowsOnNonMatchingStateSpaceSampleable)
 {
-  auto ss =  std::make_shared<R1>();
+  auto ss = std::make_shared<R1>();
 
   auto s1 = ss->createState();
   s1.setValue(aikido::tests::make_vector(0));
 
   auto sampleable = std::make_shared<FiniteSampleable>(ss, s1);
-  EXPECT_THROW(RejectionSampleable(mStateSpace, sampleable, mPassing, 1),
-    std::invalid_argument);
+  EXPECT_THROW(
+      RejectionSampleable(mStateSpace, sampleable, mPassing, 1),
+      std::invalid_argument);
 }
 
-TEST_F(RejectionSampleableTest, ConstructorThrowsOnNonMatchingStateSpaceTestable)
+TEST_F(
+    RejectionSampleableTest, ConstructorThrowsOnNonMatchingStateSpaceTestable)
 {
-  auto ss =  std::make_shared<R1>();
+  auto ss = std::make_shared<R1>();
   auto testable = std::make_shared<PassingConstraint>(ss);
 
-  EXPECT_THROW(RejectionSampleable(mStateSpace, mSampleable, testable, 1),
-    std::invalid_argument);
+  EXPECT_THROW(
+      RejectionSampleable(mStateSpace, mSampleable, testable, 1),
+      std::invalid_argument);
 }
 
 TEST_F(RejectionSampleableTest, ConstructorThrowsOnNegativeMaxNumTrial)
 {
-  EXPECT_THROW(RejectionSampleable(mStateSpace, mSampleable, mPassing, 0),
-    std::invalid_argument);
-  EXPECT_THROW(RejectionSampleable(mStateSpace, mSampleable, mPassing, -1),
-    std::invalid_argument);
+  EXPECT_THROW(
+      RejectionSampleable(mStateSpace, mSampleable, mPassing, 0),
+      std::invalid_argument);
+  EXPECT_THROW(
+      RejectionSampleable(mStateSpace, mSampleable, mPassing, -1),
+      std::invalid_argument);
 }
 
 TEST_F(RejectionSampleableTest, GetStateSpaceMatchStateSpace)
@@ -99,7 +104,9 @@ TEST_F(RejectionSampleableTest, GetStateSpaceMatchStateSpace)
   EXPECT_EQ(mStateSpace, rs.getStateSpace());
 }
 
-TEST_F(RejectionSampleableTest, SampleGenerator_SampleAllSamplesWithPassingTestable)
+TEST_F(
+    RejectionSampleableTest,
+    SampleGenerator_SampleAllSamplesWithPassingTestable)
 {
   RejectionSampleable rs(mStateSpace, mSampleable, mPassing, 1);
 
@@ -108,31 +115,32 @@ TEST_F(RejectionSampleableTest, SampleGenerator_SampleAllSamplesWithPassingTesta
 
   auto rsState = mStateSpace->createState();
   auto expected = mStateSpace->createState();
-  int numSamples = generator->getNumSamples(); 
-  for(int i = 0; i < numSamples; ++i)
+  int numSamples = generator->getNumSamples();
+  for (int i = 0; i < numSamples; ++i)
   {
     EXPECT_TRUE(rsGenerator->sample(rsState));
     EXPECT_TRUE(generator->sample(expected));
-    
-    EXPECT_TRUE(mStateSpace->getValue(rsState).isApprox(
-      mStateSpace->getValue(expected)));
-  }
 
+    EXPECT_TRUE(
+        mStateSpace->getValue(rsState).isApprox(
+            mStateSpace->getValue(expected)));
+  }
 }
 
-TEST_F(RejectionSampleableTest, SampleGenerator_RejectAllSamplesWithFailingTestable)
+TEST_F(
+    RejectionSampleableTest,
+    SampleGenerator_RejectAllSamplesWithFailingTestable)
 {
   RejectionSampleable rs(mStateSpace, mSampleable, mFailing, 1);
   auto rsGenerator = rs.createSampleGenerator();
 
-  int numSamples = rsGenerator->getNumSamples(); 
+  int numSamples = rsGenerator->getNumSamples();
 
   auto rsState = mStateSpace->createState();
 
-  for(int i = 0; i < numSamples; ++i)
+  for (int i = 0; i < numSamples; ++i)
   {
     EXPECT_TRUE(rsGenerator->canSample());
     EXPECT_FALSE(rsGenerator->sample(rsState));
   }
 }
-

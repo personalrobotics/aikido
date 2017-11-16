@@ -1,12 +1,11 @@
+#include <dart/dart.hpp>
+#include <gtest/gtest.h>
 #include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
-#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-#include <gtest/gtest.h>
-#include <dart/dart.hpp>
-
 
 using aikido::statespace::SO2;
 using aikido::constraint::SO2UniformSampler;
@@ -33,10 +32,10 @@ TEST(CyclicSampleableTest, ConstructorThrowsOnNullConstraint)
 
 TEST(CyclicSampleableTest, ConstructorThrowsOnUnlimitiedSampleGenerator)
 {
-    auto so2 = std::make_shared<SO2>();
-    auto constraint = std::make_shared<SO2UniformSampler>(so2, make_rng());
-    EXPECT_THROW(std::make_shared<CyclicSampleable>(constraint),
-                 std::invalid_argument);
+  auto so2 = std::make_shared<SO2>();
+  auto constraint = std::make_shared<SO2UniformSampler>(so2, make_rng());
+  EXPECT_THROW(
+      std::make_shared<CyclicSampleable>(constraint), std::invalid_argument);
 }
 
 TEST(CyclicSampleableTest, SingleState)
@@ -60,8 +59,8 @@ TEST(CyclicSampleableTest, SingleState)
 
   auto state = rvss.createState();
 
-  // Test consistency of the generator's behavior. 
-  for(int i = 0; i < 10; ++i)
+  // Test consistency of the generator's behavior.
+  for (int i = 0; i < 10; ++i)
   {
     EXPECT_TRUE(generator->canSample());
     EXPECT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
@@ -76,7 +75,7 @@ TEST(CyclicSampleableTest, MultipleStates)
   // Finite samples.
   Eigen::Vector2d v1(0, 1);
   Eigen::Vector2d v2(2, 3);
-  
+
   std::vector<Eigen::Vector2d> expected;
   expected.push_back(v1);
   expected.push_back(v2);
@@ -93,9 +92,8 @@ TEST(CyclicSampleableTest, MultipleStates)
   states.push_back(s2);
 
   // Finite-sample constraint
-  std::shared_ptr<FiniteSampleable> constraint = 
-    std::make_shared<FiniteSampleable>(
-    std::make_shared<R2>(rvss), states);
+  std::shared_ptr<FiniteSampleable> constraint
+      = std::make_shared<FiniteSampleable>(std::make_shared<R2>(rvss), states);
 
   // Finite-sample cyclic constraint
   CyclicSampleable cyclicConstraint(constraint);
@@ -111,10 +109,9 @@ TEST(CyclicSampleableTest, MultipleStates)
     EXPECT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
 
     EXPECT_TRUE(generator->sample(state));
-    EXPECT_TRUE(state.getValue().isApprox(expected[i%2]));
+    EXPECT_TRUE(state.getValue().isApprox(expected[i % 2]));
   }
 
   EXPECT_TRUE(generator->canSample());
   EXPECT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
-
 }
