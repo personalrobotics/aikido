@@ -1,8 +1,8 @@
+#include <dart/dart.hpp>
 #include <gtest/gtest.h>
 #include <aikido/control/ros/Conversions.hpp>
-#include <dart/dart.hpp>
-#include <aikido/trajectory/Spline.hpp>
 #include <aikido/statespace/Rn.hpp>
+#include <aikido/trajectory/Spline.hpp>
 #include "eigen_tests.hpp"
 
 using dart::dynamics::SkeletonPtr;
@@ -48,10 +48,11 @@ protected:
     jointProperties.mName = "Joint1";
     BodyNode::Properties bnProperties;
     bnProperties.mName = "BodyNode1";
-    
-    auto bn = skeleton2->createJointAndBodyNodePair<
-      RevoluteJoint, BodyNode>(
-        nullptr, jointProperties, bnProperties).second;
+
+    auto bn = skeleton2
+                  ->createJointAndBodyNodePair<RevoluteJoint, BodyNode>(
+                      nullptr, jointProperties, bnProperties)
+                  .second;
     skeleton2->createJointAndBodyNodePair<RevoluteJoint>(bn);
     skeleton2->getJoint(0)->setName("Joint1");
     skeleton2->getJoint(1)->setName("Joint2");
@@ -64,8 +65,7 @@ protected:
     // Spline trajectory
     mTrajectory2DOF = std::make_shared<Spline>(mStateSpace2DOF, 0.);
     Eigen::Matrix2d coeffs2;
-    coeffs2 << 3., 1.,
-               1., 1.;
+    coeffs2 << 3., 1., 1., 1.;
     mTrajectory2DOF->addSegment(coeffs2, 0.1, startState2DOF);
   }
 
@@ -80,23 +80,20 @@ protected:
 
 TEST_F(ToRosJointTrajectoryTests, TrajectoryIsNull_Throws)
 {
-  EXPECT_THROW({
-    toRosJointTrajectory(nullptr, mTimestep);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toRosJointTrajectory(nullptr, mTimestep); }, std::invalid_argument);
 }
 
 TEST_F(ToRosJointTrajectoryTests, TimestepIsZero_Throws)
 {
-  EXPECT_THROW({
-    toRosJointTrajectory(mTrajectory, 0.0);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toRosJointTrajectory(mTrajectory, 0.0); }, std::invalid_argument);
 }
 
 TEST_F(ToRosJointTrajectoryTests, TimestepIsNegative_Throws)
 {
-  EXPECT_THROW({
-    toRosJointTrajectory(mTrajectory, -0.1);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toRosJointTrajectory(mTrajectory, -0.1); }, std::invalid_argument);
 }
 
 TEST_F(ToRosJointTrajectoryTests, SkeletonHasUnsupportedJoint_Throws)
@@ -106,53 +103,50 @@ TEST_F(ToRosJointTrajectoryTests, SkeletonHasUnsupportedJoint_Throws)
   auto space = std::make_shared<MetaSkeletonStateSpace>(skeleton);
 
   auto trajectory = std::make_shared<Spline>(space, 0.0);
-  EXPECT_THROW({
-    toRosJointTrajectory(trajectory, mTimestep);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { toRosJointTrajectory(trajectory, mTimestep); }, std::invalid_argument);
 }
 
 TEST_F(ToRosJointTrajectoryTests, TrajectoryHasCorrectWaypoints)
 {
-  auto rosTrajectory = toRosJointTrajectory(
-      mTrajectory, mTimestep);
+  auto rosTrajectory = toRosJointTrajectory(mTrajectory, mTimestep);
 
   EXPECT_EQ(2, rosTrajectory.points.size());
   for (int i = 0; i < 2; ++i)
   {
-    ASSERT_DOUBLE_EQ(mTimestep*i, rosTrajectory.points[i].time_from_start.toSec());
+    ASSERT_DOUBLE_EQ(
+        mTimestep * i, rosTrajectory.points[i].time_from_start.toSec());
 
     auto state = mStateSpace->createState();
     Eigen::VectorXd values;
 
-    mTrajectory->evaluate(mTimestep*i, state);
+    mTrajectory->evaluate(mTimestep * i, state);
     mStateSpace->convertStateToPositions(state, values);
 
-    EXPECT_EIGEN_EQUAL(values,
-        make_vector(rosTrajectory.points[i].positions[0]), kTolerance);
+    EXPECT_EIGEN_EQUAL(
+        values, make_vector(rosTrajectory.points[i].positions[0]), kTolerance);
   }
-  ASSERT_DOUBLE_EQ(mTimestep*(rosTrajectory.points.size()-1),
-      mTrajectory->getEndTime());
+  ASSERT_DOUBLE_EQ(
+      mTimestep * (rosTrajectory.points.size() - 1), mTrajectory->getEndTime());
 
   // Finer timesteps
   double timestep = 0.01;
-  auto rosTrajectory2 = toRosJointTrajectory(
-      mTrajectory, timestep);
-  
+  auto rosTrajectory2 = toRosJointTrajectory(mTrajectory, timestep);
+
   EXPECT_EQ(11, rosTrajectory2.points.size());
   for (int i = 0; i < 11; ++i)
   {
-    ASSERT_DOUBLE_EQ(timestep*i,
-        rosTrajectory2.points[i].time_from_start.toSec());
+    ASSERT_DOUBLE_EQ(
+        timestep * i, rosTrajectory2.points[i].time_from_start.toSec());
 
     auto state = mStateSpace->createState();
     Eigen::VectorXd values;
 
-    mTrajectory->evaluate(timestep*i, state);
+    mTrajectory->evaluate(timestep * i, state);
     mStateSpace->convertStateToPositions(state, values);
-    EXPECT_EIGEN_EQUAL(values,
-        make_vector(rosTrajectory2.points[i].positions[0]), kTolerance);
+    EXPECT_EIGEN_EQUAL(
+        values, make_vector(rosTrajectory2.points[i].positions[0]), kTolerance);
   }
-  ASSERT_DOUBLE_EQ(timestep*(rosTrajectory2.points.size()-1),
-      mTrajectory->getEndTime());
-
+  ASSERT_DOUBLE_EQ(
+      timestep * (rosTrajectory2.points.size() - 1), mTrajectory->getEndTime());
 }

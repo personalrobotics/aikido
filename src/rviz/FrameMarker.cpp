@@ -74,7 +74,7 @@ FrameMarker::FrameMarker(
   CreateAxis(Eigen::Vector3d::UnitZ(), length, thickness, &control.markers[2]);
   control.markers[0].color = makeColorRGBA(1, 0, 0, alpha);
   control.markers[1].color = makeColorRGBA(0, 1, 0, alpha);
-  control.markers[2].color = makeColorRGBA(0, 0, 3, alpha);
+  control.markers[2].color = makeColorRGBA(0, 0, 1, alpha);
 
   mMarkerServer->insert(mInteractiveMarker);
   update();

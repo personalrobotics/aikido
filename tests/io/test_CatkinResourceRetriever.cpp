@@ -16,22 +16,24 @@ static constexpr auto WORKSPACE_PATH = STR(AIKIDO_TEST_WORKSPACE_PATH);
 /// indicator at the beginning of the file. After calling this function, the
 /// final location of the position indicator is undefined.
 static testing::AssertionResult CompareResourceContents(
-  const std::string& _expectedContent, const ResourcePtr& _resource)
+    const std::string& _expectedContent, const ResourcePtr& _resource)
 {
   if (!_resource)
     return testing::AssertionFailure() << "Resource is nullptr";
 
   const std::size_t length = _resource->getSize();
   std::vector<char> content_buffer(length, '\0');
-  const std::size_t read_length = _resource->read(content_buffer.data(), length, 1);
+  const std::size_t read_length
+      = _resource->read(content_buffer.data(), length, 1);
   if (read_length != 1)
     return testing::AssertionFailure() << "Failed reading Resource.";
 
   const std::string content(
-    std::begin(content_buffer), std::end(content_buffer));
+      std::begin(content_buffer), std::end(content_buffer));
   if (content != _expectedContent)
     return testing::AssertionFailure() << "Got content \"" << content
-      << "\", expected \"" << _expectedContent << "\".";
+                                       << "\", expected \"" << _expectedContent
+                                       << "\".";
 
   return testing::AssertionSuccess();
 }

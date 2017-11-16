@@ -1,18 +1,18 @@
 #ifndef AIKIDO_TESTS_OMPL_OMPLTESTHELPERS_HPP_
 #define AIKIDO_TESTS_OMPL_OMPLTESTHELPERS_HPP_
 
+#include <dart/dart.hpp>
 #include <gtest/gtest.h>
-#include <aikido/constraint/Testable.hpp>
+#include <ompl/base/State.h>
+#include <aikido/common/RNG.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
+#include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/common/RNG.hpp>
-#include <dart/dart.hpp>
-#include <ompl/base/State.h>
 
 using dart::common::make_unique;
 using aikido::statespace::CartesianProduct;
@@ -45,9 +45,9 @@ dart::dynamics::SkeletonPtr createTranslationalRobot()
 }
 
 void setTranslationalState(
-    const Eigen::Vector3d &_value,
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_stateSpace,
-    ::ompl::base::State *_state)
+    const Eigen::Vector3d& _value,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    ::ompl::base::State* _state)
 {
   auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
   auto cst = static_cast<CartesianProduct::State*>(st->mState);
@@ -56,8 +56,8 @@ void setTranslationalState(
 }
 
 Eigen::Vector3d getTranslationalState(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_stateSpace,
-    ::ompl::base::State *_state)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    ::ompl::base::State* _state)
 {
   auto st = _state->as<GeometricStateSpace::StateType>();
   auto cst = static_cast<CartesianProduct::State*>(st->mState);
@@ -67,25 +67,30 @@ Eigen::Vector3d getTranslationalState(
 }
 
 class MockConstrainedSampleGenerator
-    : public aikido::constraint::SampleGenerator {
+    : public aikido::constraint::SampleGenerator
+{
 
 public:
   MockConstrainedSampleGenerator(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
       std::unique_ptr<aikido::constraint::SampleGenerator> _generator,
       double _value)
-      : mStateSpace(std::move(_stateSpace))
-      , mSampleGenerator(std::move(_generator))
-      , mValue(_value){}
+    : mStateSpace(std::move(_stateSpace))
+    , mSampleGenerator(std::move(_generator))
+    , mValue(_value)
+  {
+  }
 
-  aikido::statespace::StateSpacePtr getStateSpace() const override {
+  aikido::statespace::StateSpacePtr getStateSpace() const override
+  {
     return mStateSpace;
   }
 
   /// Returns one sample from this constraint; returns true if succeeded.
-  bool sample(aikido::statespace::StateSpace::State *_state) override {
+  bool sample(aikido::statespace::StateSpace::State* _state) override
+  {
     mSampleGenerator->sample(_state);
-    auto outstate = static_cast<CartesianProduct::State *>(_state);
+    auto outstate = static_cast<CartesianProduct::State*>(_state);
     auto outSubState = mStateSpace->getSubStateHandle<R3>(outstate, 0);
     auto val = outSubState.getValue();
     Eigen::Vector3d newval(mValue, val(1), val(2));
@@ -94,31 +99,36 @@ public:
   }
 
   /// Gets an upper bound on the number of samples remaining or NO_LIMIT.
-  int getNumSamples() const override {
+  int getNumSamples() const override
+  {
     return mSampleGenerator->getNumSamples();
   }
 
   /// Returns whether getNumSamples() > 0.
-  bool canSample() const override { return mSampleGenerator->canSample(); }
+  bool canSample() const override
+  {
+    return mSampleGenerator->canSample();
+  }
 
 private:
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-    std::unique_ptr<aikido::constraint::SampleGenerator> mSampleGenerator;
-    double mValue;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  std::unique_ptr<aikido::constraint::SampleGenerator> mSampleGenerator;
+  double mValue;
 };
 
 class MockProjectionConstraint : public aikido::constraint::Projectable,
                                  public aikido::constraint::Testable,
-                                 public aikido::constraint::Sampleable {
+                                 public aikido::constraint::Sampleable
+{
 public:
   // Construct a constraint that project to x=_val
   MockProjectionConstraint(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
       aikido::constraint::SampleablePtr _sampleable,
       double _val)
-      : mStateSpace(std::move(_stateSpace))
-      , mSampleable(std::move(_sampleable))
-      , mValue(_val)
+    : mStateSpace(std::move(_stateSpace))
+    , mSampleable(std::move(_sampleable))
+    , mValue(_val)
   {
   }
 
@@ -129,12 +139,12 @@ public:
   }
 
   // Documentation inherited
-  bool project(const aikido::statespace::StateSpace::State *_s,
-               aikido::statespace::StateSpace::State *_out) const override {
-    auto instate =
-        static_cast<const CartesianProduct::State *>(_s);
-    auto outstate =
-        static_cast<CartesianProduct::State *>(_out);
+  bool project(
+      const aikido::statespace::StateSpace::State* _s,
+      aikido::statespace::StateSpace::State* _out) const override
+  {
+    auto instate = static_cast<const CartesianProduct::State*>(_s);
+    auto outstate = static_cast<CartesianProduct::State*>(_out);
     auto inSubState = mStateSpace->getSubStateHandle<R3>(instate, 0);
     auto outSubState = mStateSpace->getSubStateHandle<R3>(outstate, 0);
     auto val = inSubState.getValue();
@@ -144,25 +154,24 @@ public:
   }
 
   bool isSatisfied(
-    const aikido::statespace::StateSpace::State *_s) const override
+      const aikido::statespace::StateSpace::State* _s) const override
   {
-    auto state =
-        static_cast<const CartesianProduct::State *>(_s);
+    auto state = static_cast<const CartesianProduct::State*>(_s);
     auto val = mStateSpace->getSubStateHandle<R3>(state, 0).getValue();
     return std::fabs(val[0] - mValue) < 1e-6;
   }
 
-  std::unique_ptr<aikido::constraint::SampleGenerator>
-    createSampleGenerator() const override 
+  std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator()
+      const override
   {
     return make_unique<MockConstrainedSampleGenerator>(
         mStateSpace, mSampleable->createSampleGenerator(), mValue);
   }
 
 private:
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-    aikido::constraint::SampleablePtr mSampleable;
-    double mValue;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  aikido::constraint::SampleablePtr mSampleable;
+  double mValue;
 };
 
 class MockTranslationalRobotConstraint : public aikido::constraint::Testable
@@ -171,23 +180,26 @@ public:
   // Construct the mock constraint
   MockTranslationalRobotConstraint(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-      const Eigen::Vector3d &_lowerBounds, const Eigen::Vector3d &_upperBounds)
-      : mStateSpace(std::move(_stateSpace))
-      , mLowerBounds(_lowerBounds)
-      , mUpperBounds(_upperBounds)
+      const Eigen::Vector3d& _lowerBounds,
+      const Eigen::Vector3d& _upperBounds)
+    : mStateSpace(std::move(_stateSpace))
+    , mLowerBounds(_lowerBounds)
+    , mUpperBounds(_upperBounds)
   {
   }
 
   // Documentation inherited
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State *_state) const override
+      const aikido::statespace::StateSpace::State* _state) const override
   {
-    auto cst = static_cast<const CartesianProduct::State *>(_state);
+    auto cst = static_cast<const CartesianProduct::State*>(_state);
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);
     auto val = subState.getValue();
 
-    for (std::size_t i = 0; i < 3; ++i) {
-      if (val[i] < mLowerBounds[i] || val[i] > mUpperBounds[i]) {
+    for (std::size_t i = 0; i < 3; ++i)
+    {
+      if (val[i] < mLowerBounds[i] || val[i] > mUpperBounds[i])
+      {
         return true;
       }
     }
@@ -196,8 +208,8 @@ public:
   }
 
   // Documentatoin inherited
-  std::shared_ptr<aikido::statespace::StateSpace>
-  getStateSpace() const override {
+  std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
+  {
     return mStateSpace;
   }
 
@@ -207,12 +219,11 @@ private:
   Eigen::Vector3d mUpperBounds;
 };
 
-
 class EmptySampleGenerator : public aikido::constraint::SampleGenerator
 {
 public:
   EmptySampleGenerator(aikido::statespace::StateSpacePtr sspace)
-      : mStateSpace(sspace)
+    : mStateSpace(sspace)
   {
   }
 
@@ -225,17 +236,24 @@ public:
   {
     return true;
   }
-  int getNumSamples() const override { return 0; }
-  bool canSample() const override { return false; }
+  int getNumSamples() const override
+  {
+    return 0;
+  }
+  bool canSample() const override
+  {
+    return false;
+  }
 
 private:
   aikido::statespace::StateSpacePtr mStateSpace;
 };
 
-class FailedSampleGenerator : public aikido::constraint::SampleGenerator {
+class FailedSampleGenerator : public aikido::constraint::SampleGenerator
+{
 public:
   FailedSampleGenerator(aikido::statespace::StateSpacePtr sspace)
-      : mStateSpace(sspace)
+    : mStateSpace(sspace)
   {
   }
 
@@ -248,8 +266,14 @@ public:
   {
     return false;
   }
-  int getNumSamples() const override { return 1000; }
-  bool canSample() const override { return true; }
+  int getNumSamples() const override
+  {
+    return 1000;
+  }
+  bool canSample() const override
+  {
+    return true;
+  }
 
 private:
   aikido::statespace::StateSpacePtr mStateSpace;
@@ -266,19 +290,21 @@ public:
     robot = createTranslationalRobot();
 
     stateSpace = std::make_shared<StateSpace>(robot);
-    interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(stateSpace);
+    interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
+        stateSpace);
 
     // Collision constraint
     collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
-        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
+        stateSpace,
+        Eigen::Vector3d(-0.1, -0.1, -0.1),
         Eigen::Vector3d(0.1, 0.1, 0.1));
 
     // Distance metric
     dmetric = aikido::distance::createDistanceMetric(stateSpace);
 
     // Sampler
-    sampler =
-        aikido::constraint::createSampleableBounds(stateSpace, make_rng());
+    sampler
+        = aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
     // Projectable constraint
     boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);
@@ -297,7 +323,6 @@ public:
   aikido::constraint::TestablePtr collConstraint;
 };
 
-
 class SimplifierTest : public ::testing::Test
 {
 public:
@@ -309,19 +334,21 @@ public:
     robot = createTranslationalRobot();
 
     stateSpace = std::make_shared<StateSpace>(robot);
-    interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(stateSpace);
+    interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
+        stateSpace);
 
     // Collision constraint
     collConstraint = std::make_shared<MockTranslationalRobotConstraint>(
-        stateSpace, Eigen::Vector3d(-0.1, -0.1, -0.1),
+        stateSpace,
+        Eigen::Vector3d(-0.1, -0.1, -0.1),
         Eigen::Vector3d(0.1, 0.1, 0.1));
 
     // Distance metric
     dmetric = aikido::distance::createDistanceMetric(stateSpace);
 
     // Sampler
-    sampler =
-        aikido::constraint::createSampleableBounds(stateSpace, make_rng());
+    sampler
+        = aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
     // Projectable constraint
     boundsProjection = aikido::constraint::createProjectableBounds(stateSpace);

@@ -113,6 +113,7 @@ function(aikido_add_test target_name)
   target_link_libraries("${target_name}" gtest gtest_main)
 
   set_property(GLOBAL APPEND PROPERTY AIKIDO_TESTS "${target_name}")
+  format_add_sources(${ARGN})
 endfunction()
 
 #==============================================================================

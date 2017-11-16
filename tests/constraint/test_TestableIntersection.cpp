@@ -1,9 +1,9 @@
-#include <aikido/constraint/TestableIntersection.hpp>
-#include <gtest/gtest.h>
-#include "MockConstraints.hpp"
 #include <stdexcept>
+#include <gtest/gtest.h>
+#include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+#include "MockConstraints.hpp"
 
 using aikido::constraint::TestableIntersection;
 using aikido::constraint::Testable;
@@ -83,8 +83,8 @@ TEST(TestableIntersectionTest, ThrowIfDifferentStateSpacesOnConstruction)
   auto ss2 = std::make_shared<aikido::statespace::SO2>();
   auto ss2C = std::make_shared<PassingConstraint>(ss2);
   auto avoidMacro = [&]() {
-    TestableIntersection cc{
-        ss1, std::vector<std::shared_ptr<Testable>>({ss2C})};
+    TestableIntersection cc{ss1,
+                            std::vector<std::shared_ptr<Testable>>({ss2C})};
     return cc;
   };
   EXPECT_THROW(avoidMacro(), std::invalid_argument);

@@ -1,7 +1,7 @@
-#include "../eigen_tests.hpp"
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+#include "../eigen_tests.hpp"
 
 #include <gtest/gtest.h>
 
@@ -24,7 +24,6 @@ TEST(FiniteSampleableTest, ConstructorThrowsOnNullStateSpace)
   EXPECT_THROW(FiniteSampleable(nullptr, states), std::invalid_argument);
 }
 
-
 TEST(FiniteSampleableTest, ConstructorThrowsOnNullState)
 {
   auto rvss = std::make_shared<R1>();
@@ -40,7 +39,8 @@ TEST(FiniteSampleableTest, ConstructorThrowsOnEmptyStates)
   EXPECT_THROW(FiniteSampleable(rvss, states), std::invalid_argument);
 }
 
-TEST(FiniteSampleableTest, StateSpaceMatch){
+TEST(FiniteSampleableTest, StateSpaceMatch)
+{
   auto rvss = std::make_shared<R1>();
   Eigen::VectorXd v = aikido::tests::make_vector(-2);
   auto s1 = rvss->createState();
@@ -62,7 +62,8 @@ TEST(FiniteSampleableTest, SingleSampleGenerator)
   FiniteSampleable constraint(std::make_shared<R1>(rvss), s1);
 
   // Single-sample-generator.
-  std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
+  std::unique_ptr<SampleGenerator> generator
+      = constraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
@@ -75,7 +76,6 @@ TEST(FiniteSampleableTest, SingleSampleGenerator)
 
   EXPECT_FALSE(generator->canSample());
   EXPECT_EQ(generator->getNumSamples(), 0);
-  
 }
 
 TEST(FiniteSampleableTest, FiniteSampleGenerator)
@@ -84,7 +84,7 @@ TEST(FiniteSampleableTest, FiniteSampleGenerator)
   // Finite-samples
   Eigen::Vector2d v1(0, 1);
   Eigen::Vector2d v2(2, 3);
-  
+
   std::vector<Eigen::Vector2d> expected;
   expected.push_back(v1);
   expected.push_back(v2);
@@ -104,7 +104,8 @@ TEST(FiniteSampleableTest, FiniteSampleGenerator)
   FiniteSampleable constraint(std::make_shared<R2>(rvss), states);
 
   // Finite-sample generator.
-  std::unique_ptr<SampleGenerator> generator = constraint.createSampleGenerator();
+  std::unique_ptr<SampleGenerator> generator
+      = constraint.createSampleGenerator();
 
   auto state = rvss.createState();
 
@@ -112,14 +113,13 @@ TEST(FiniteSampleableTest, FiniteSampleGenerator)
   for (int i = 0; i < 2; ++i)
   {
     EXPECT_TRUE(generator->canSample());
-    EXPECT_EQ(generator->getNumSamples(), 2-i);
+    EXPECT_EQ(generator->getNumSamples(), 2 - i);
 
     generator->sample(state);
 
-    EXPECT_TRUE(state.getValue().isApprox(expected[i%2]));
+    EXPECT_TRUE(state.getValue().isApprox(expected[i % 2]));
   }
 
   EXPECT_FALSE(generator->canSample());
   EXPECT_EQ(generator->getNumSamples(), 0);
-
 }

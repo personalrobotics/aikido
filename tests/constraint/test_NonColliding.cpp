@@ -1,10 +1,10 @@
-#include <aikido/constraint/NonColliding.hpp>
-#include <gtest/gtest.h>
-#include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/SO2.hpp>
-#include <aikido/statespace/SE3.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <dart/dart.hpp>
+#include <gtest/gtest.h>
+#include <aikido/constraint/NonColliding.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SE3.hpp>
+#include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
@@ -20,29 +20,31 @@ class NonCollidingTest : public ::testing::Test
 protected:
   void SetUp() override
   {
-    // Manipulator with 1 joint 
+    // Manipulator with 1 joint
     mManipulator = Skeleton::create("Manipulator");
 
     // Root free joint, body 1
     RevoluteJoint::Properties properties1;
     properties1.mAxis = Eigen::Vector3d::UnitY();
     properties1.mName = "Joint1";
-    auto bn1 = mManipulator->createJointAndBodyNodePair<RevoluteJoint>(
-      nullptr, properties1).second;
+    auto bn1
+        = mManipulator
+              ->createJointAndBodyNodePair<RevoluteJoint>(nullptr, properties1)
+              .second;
 
     // Box
     mBox = Skeleton::create("Box");
     auto boxNode = mBox->createJointAndBodyNodePair<FreeJoint>().second;
     Eigen::Vector3d boxSize(0.5, 0.5, 0.5);
     std::shared_ptr<BoxShape> boxShape(new BoxShape(boxSize));
-    boxNode->createShapeNodeWith<
-        VisualAspect, CollisionAspect, DynamicsAspect>(boxShape);
+    boxNode->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(
+        boxShape);
 
     // Set shapes on the bodies.
     Eigen::Vector3d shape(0.2, 0.2, 0.7);
     std::shared_ptr<BoxShape> box(new BoxShape(shape));
-    bn1->createShapeNodeWith<
-        VisualAspect, CollisionAspect, DynamicsAspect>(box);
+    bn1->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(
+        box);
 
     // Add skeleton to world
     mCollisionDetector = FCLCollisionDetector::create();
@@ -62,7 +64,6 @@ protected:
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(group);
     mManipulator->enableSelfCollisionCheck();
     mManipulator->enableAdjacentBodyCheck();
-
   }
 
 public:
@@ -79,17 +80,15 @@ public:
   MetaSkeletonStateSpacePtr mStateSpace;
 };
 
-
 TEST_F(NonCollidingTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(NonColliding(nullptr, mCollisionDetector), 
-              std::invalid_argument);
+  EXPECT_THROW(
+      NonColliding(nullptr, mCollisionDetector), std::invalid_argument);
 }
 
 TEST_F(NonCollidingTest, ConstructorThrowsOnNullCollisionDetector)
 {
-  EXPECT_THROW(NonColliding(mStateSpace, nullptr), 
-              std::invalid_argument);
+  EXPECT_THROW(NonColliding(mStateSpace, nullptr), std::invalid_argument);
 }
 
 TEST_F(NonCollidingTest, GetStateSpaceMatchStateSpace)
@@ -114,7 +113,7 @@ TEST_F(NonCollidingTest, AddPairwiseCheckPasses_IsSatisfied)
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup2);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
-  
+
   Eigen::VectorXd position(Eigen::VectorXd::Zero(7));
   position(4) = 5;
   mStateSpace->convertPositionsToState(position, state);
@@ -133,6 +132,25 @@ TEST_F(NonCollidingTest, AddPairwiseCheckFails_IsSatisfied)
   EXPECT_FALSE(constraint.isSatisfied(state));
 }
 
+TEST_F(NonCollidingTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
+{
+  NonColliding constraint(mStateSpace, mCollisionDetector);
+
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+
+  constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
+  EXPECT_FALSE(constraint.isSatisfied(state));
+
+  constraint.removePairwiseCheck(mCollisionGroup1, mCollisionGroup3);
+  EXPECT_TRUE(constraint.isSatisfied(state));
+
+  constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
+  EXPECT_FALSE(constraint.isSatisfied(state));
+
+  constraint.removePairwiseCheck(mCollisionGroup3, mCollisionGroup1);
+  EXPECT_TRUE(constraint.isSatisfied(state));
+}
+
 TEST_F(NonCollidingTest, AddSelfCheckPasses_IsSatisfied)
 {
   NonColliding constraint(mStateSpace, mCollisionDetector);
@@ -141,7 +159,6 @@ TEST_F(NonCollidingTest, AddSelfCheckPasses_IsSatisfied)
   constraint.addSelfCheck(mCollisionGroup1);
   EXPECT_TRUE(constraint.isSatisfied(state));
 }
-
 
 TEST_F(NonCollidingTest, AddSelfCheckFails_IsSatisfied)
 {
@@ -153,3 +170,15 @@ TEST_F(NonCollidingTest, AddSelfCheckFails_IsSatisfied)
   EXPECT_FALSE(constraint.isSatisfied(state));
 }
 
+TEST_F(NonCollidingTest, AddAndRemoveSelfCheckFails_IsSatisfied)
+{
+  NonColliding constraint(mStateSpace, mCollisionDetector);
+
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+
+  constraint.addSelfCheck(mCollisionGroup3);
+  EXPECT_FALSE(constraint.isSatisfied(state));
+
+  constraint.removeSelfCheck(mCollisionGroup3);
+  EXPECT_TRUE(constraint.isSatisfied(state));
+}

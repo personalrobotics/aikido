@@ -1,4 +1,6 @@
-set(sources SnapPlanner.cpp)
+set(sources
+  SnapPlanner.cpp
+  World.cpp)
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_planner"
@@ -8,6 +10,13 @@ target_link_libraries("${PROJECT_NAME}_planner"
     "${PROJECT_NAME}_distance"
     "${PROJECT_NAME}_trajectory"
     "${PROJECT_NAME}_statespace"
+    ${DART_LIBRARIES}
+    ${Boost_LIBRARIES}
+)
+target_include_directories("${PROJECT_NAME}_planner" SYSTEM
+  PUBLIC
+    ${Boost_INCLUDE_DIRS}
+    ${DART_INCLUDE_DIRS}
 )
 target_compile_options("${PROJECT_NAME}_planner"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
@@ -25,6 +34,7 @@ add_component_dependencies(${PROJECT_NAME} planner
 
 format_add_sources(${sources})
 
-add_subdirectory("ompl")         # [constraint], [distance], [statespace], [trajectory], dart, ompl
-add_subdirectory("parabolic")    # [external], [common], [trajectory], [statespace], dart
+add_subdirectory("ompl")        # [constraint], [distance], [statespace], [trajectory], dart, ompl
+add_subdirectory("parabolic")   # [external], [common], [trajectory], [statespace], dart
+add_subdirectory("vectorfield") # [common], [trajectory], [statespace], dart
 add_subdirectory("optimization")

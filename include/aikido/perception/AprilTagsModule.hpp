@@ -53,7 +53,7 @@ public:
 
   // Documentation inherited
   bool detectObjects(
-      const dart::simulation::WorldPtr& env,
+      const aikido::planner::WorldPtr& env,
       ros::Duration timeout = ros::Duration(0.0),
       ros::Time timestamp = ros::Time(0.0)) override;
 

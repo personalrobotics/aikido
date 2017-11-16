@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SE2.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
-#include <aikido/statespace/SE2.hpp>
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R2;
@@ -119,19 +119,20 @@ TEST(CartesianProduct, LogMap)
 
 TEST(CartesianProduct, CopyState)
 {
-  CartesianProduct space({
-      std::make_shared<SO2>(),
-      std::make_shared<R3>(),
-      std::make_shared<SO3>(),
-  });
+  CartesianProduct space(
+      {
+          std::make_shared<SO2>(),
+          std::make_shared<R3>(),
+          std::make_shared<SO3>(),
+      });
 
   auto source = space.createState();
   auto dest = space.createState();
 
   double angle = M_PI;
   auto rv = Eigen::Vector3d(3, 4, 5);
-  auto quat =
-      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
+  auto quat
+      = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
 
   source.getSubStateHandle<SO2>(0).setAngle(angle);
   source.getSubStateHandle<R3>(1).setValue(rv);
@@ -151,20 +152,21 @@ TEST(CartesianProduct, CopyState)
 
 TEST(CartesianProduct, PrintState)
 {
-  CartesianProduct space({
-      std::make_shared<SO2>(),
-      std::make_shared<R3>(),
-      std::make_shared<SO3>(),
-      std::make_shared<SE2>(),
-//      std::make_shared<SE3>(),
-  });
+  CartesianProduct space(
+      {
+          std::make_shared<SO2>(),
+          std::make_shared<R3>(),
+          std::make_shared<SO3>(),
+          std::make_shared<SE2>(),
+          //      std::make_shared<SE3>(),
+      });
 
   auto source = space.createState();
 
   double angle = M_PI;
   auto rv = Eigen::Vector3d(3, 4, 5);
-  auto quat =
-      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
+  auto quat
+      = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
   auto pose1 = Eigen::Isometry2d::Identity();
   pose1.rotate(Eigen::Rotation2Dd(M_PI_2));
   pose1.translation() << 2, 3;

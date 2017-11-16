@@ -1,7 +1,7 @@
-#include "OMPLTestHelpers.hpp"
-#include "../../constraint/MockConstraints.hpp"
-#include <aikido/planner/ompl/StateValidityChecker.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
+#include <aikido/planner/ompl/StateValidityChecker.hpp>
+#include "../../constraint/MockConstraints.hpp"
+#include "OMPLTestHelpers.hpp"
 
 using aikido::planner::ompl::GeometricStateSpace;
 using aikido::planner::ompl::StateValidityChecker;
@@ -14,11 +14,21 @@ public:
   {
     PlannerTest::SetUp();
     gSpace = std::make_shared<GeometricStateSpace>(
-        stateSpace, interpolator, dmetric, sampler, boundsConstraint,
+        stateSpace,
+        interpolator,
+        dmetric,
+        sampler,
+        boundsConstraint,
         boundsProjection);
     si = aikido::planner::ompl::getSpaceInformation(
-      stateSpace, interpolator, dmetric, sampler, collConstraint,
-      boundsConstraint, boundsProjection, 0.1);
+        stateSpace,
+        interpolator,
+        dmetric,
+        sampler,
+        collConstraint,
+        boundsConstraint,
+        boundsProjection,
+        0.1);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
   ::ompl::base::SpaceInformationPtr si;
@@ -26,10 +36,10 @@ public:
 
 TEST_F(StateValidityCheckerTest, ThrowsOnNullSpaceInformation)
 {
-  auto constraint =
-      std::make_shared<aikido::constraint::Satisfied>(stateSpace);
-  EXPECT_THROW(StateValidityChecker(nullptr, std::move(constraint)),
-               std::invalid_argument);
+  auto constraint = std::make_shared<aikido::constraint::Satisfied>(stateSpace);
+  EXPECT_THROW(
+      StateValidityChecker(nullptr, std::move(constraint)),
+      std::invalid_argument);
 }
 
 TEST_F(StateValidityCheckerTest, ThrowsOnNullConstraint)
