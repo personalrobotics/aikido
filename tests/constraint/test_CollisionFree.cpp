@@ -1,4 +1,4 @@
-#include <aikido/constraint/NonColliding.hpp>
+#include <aikido/constraint/CollisionFree.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
@@ -8,14 +8,14 @@
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using aikido::constraint::NonColliding;
+using aikido::constraint::CollisionFree;
 using aikido::statespace::SO2;
 using aikido::statespace::SE3;
 
 using namespace dart::dynamics;
 using namespace dart::collision;
 
-class NonCollidingTest : public ::testing::Test
+class CollisionFreeTest : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -80,27 +80,27 @@ public:
 };
 
 
-TEST_F(NonCollidingTest, ConstructorThrowsOnNullStateSpace)
+TEST_F(CollisionFreeTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(NonColliding(nullptr, mCollisionDetector), 
+  EXPECT_THROW(CollisionFree(nullptr, mCollisionDetector), 
               std::invalid_argument);
 }
 
-TEST_F(NonCollidingTest, ConstructorThrowsOnNullCollisionDetector)
+TEST_F(CollisionFreeTest, ConstructorThrowsOnNullCollisionDetector)
 {
-  EXPECT_THROW(NonColliding(mStateSpace, nullptr), 
+  EXPECT_THROW(CollisionFree(mStateSpace, nullptr), 
               std::invalid_argument);
 }
 
-TEST_F(NonCollidingTest, GetStateSpaceMatchStateSpace)
+TEST_F(CollisionFreeTest, GetStateSpaceMatchStateSpace)
 {
-  NonColliding constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mCollisionDetector);
   EXPECT_EQ(mStateSpace, constraint.getStateSpace());
 }
 
-TEST_F(NonCollidingTest, EmptyCollisionGroup_IsSatisfiedReturnsTrue)
+TEST_F(CollisionFreeTest, EmptyCollisionGroup_IsSatisfiedReturnsTrue)
 {
-  NonColliding constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mCollisionDetector);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
   mStateSpace->setState(state);
@@ -108,9 +108,9 @@ TEST_F(NonCollidingTest, EmptyCollisionGroup_IsSatisfiedReturnsTrue)
   EXPECT_TRUE(constraint.isSatisfied(state));
 }
 
-TEST_F(NonCollidingTest, AddPairwiseCheckPasses_IsSatisfied)
+TEST_F(CollisionFreeTest, AddPairwiseCheckPasses_IsSatisfied)
 {
-  NonColliding constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mCollisionDetector);
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup2);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
@@ -123,9 +123,9 @@ TEST_F(NonCollidingTest, AddPairwiseCheckPasses_IsSatisfied)
   EXPECT_TRUE(constraint.isSatisfied(state));
 }
 
-TEST_F(NonCollidingTest, AddPairwiseCheckFails_IsSatisfied)
+TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
 {
-  NonColliding constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mCollisionDetector);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
 
@@ -133,9 +133,9 @@ TEST_F(NonCollidingTest, AddPairwiseCheckFails_IsSatisfied)
   EXPECT_FALSE(constraint.isSatisfied(state));
 }
 
-TEST_F(NonCollidingTest, AddSelfCheckPasses_IsSatisfied)
+TEST_F(CollisionFreeTest, AddSelfCheckPasses_IsSatisfied)
 {
-  NonColliding constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mCollisionDetector);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
   constraint.addSelfCheck(mCollisionGroup1);
@@ -143,9 +143,9 @@ TEST_F(NonCollidingTest, AddSelfCheckPasses_IsSatisfied)
 }
 
 
-TEST_F(NonCollidingTest, AddSelfCheckFails_IsSatisfied)
+TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
 {
-  NonColliding constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mCollisionDetector);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
 

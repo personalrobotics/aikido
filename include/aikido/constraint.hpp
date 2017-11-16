@@ -12,7 +12,7 @@
 #include "constraint/InverseKinematicsSampleable.hpp"
 #include "constraint/JointStateSpaceHelpers.hpp"
 #include "constraint/NewtonsMethodProjectable.hpp"
-#include "constraint/NonColliding.hpp"
+#include "constraint/CollisionFree.hpp"
 #include "constraint/Projectable.hpp"
 #include "constraint/RejectionSampleable.hpp"
 #include "constraint/Sampleable.hpp"

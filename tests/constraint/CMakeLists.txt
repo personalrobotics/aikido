@@ -118,9 +118,9 @@ aikido_add_test(test_Projectable
 target_link_libraries(test_Projectable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_NonColliding
-  test_NonColliding.cpp)
-target_link_libraries(test_NonColliding
+aikido_add_test(test_CollisionFree
+  test_CollisionFree.cpp)
+target_link_libraries(test_CollisionFree
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_Differentiable
