@@ -77,13 +77,10 @@ dart::dynamics::SkeletonPtr World::getSkeleton(const std::string& name) const
 }
 
 //==============================================================================
-dart::dynamics::SkeletonPtr World::getSkeleton(
-    const dart::dynamics::SkeletonPtr skel) const
+bool World::hasSkeleton(const dart::dynamics::SkeletonPtr& skel) const
 {
-  auto it = std::find(mSkeletons.begin(), mSkeletons.end(), skel);
-  if (it == mSkeletons.end())
-    return nullptr;
-  return skel;
+  return std::find(mSkeletons.begin(), mSkeletons.end(), skel)
+         != mSkeletons.end();
 }
 
 //==============================================================================
