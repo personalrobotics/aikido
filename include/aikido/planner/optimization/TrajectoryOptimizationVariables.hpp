@@ -34,13 +34,10 @@ public:
   virtual void getVariables(Eigen::VectorXd& variables) const = 0;
 
   /// Returns the trajectory
-  trajectory::ConstTrajectoryPtr getTrajectory() const;
-
-  /// Returns the trajectory
-  trajectory::TrajectoryPtr getTrajectory();
+  trajectory::Trajectory* getTrajectory() const;
 
 protected:
-  trajectory::TrajectoryPtr mTrajectory;
+  trajectory::TrajectoryUniquePtr mTrajectory;
 };
 
 } // namespace optimization

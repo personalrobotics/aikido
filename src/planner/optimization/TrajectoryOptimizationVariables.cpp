@@ -5,16 +5,9 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-trajectory::ConstTrajectoryPtr TrajectoryOptimizationVariables::getTrajectory()
-    const
+trajectory::Trajectory* TrajectoryOptimizationVariables::getTrajectory() const
 {
-  return mTrajectory;
-}
-
-//==============================================================================
-trajectory::TrajectoryPtr TrajectoryOptimizationVariables::getTrajectory()
-{
-  return mTrajectory;
+  return mTrajectory.get();
 }
 
 } // namespace optimization

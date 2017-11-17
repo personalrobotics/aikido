@@ -9,18 +9,24 @@ std::size_t SplineCoefficientsVariables::getDimension() const
 {
   std::size_t dim = 0u;
 
-  for (const auto& segment : mSegments)
+  const auto* spline = getSpline();
+  const auto& statespace = spline->getStateSpace();
+  assert(spline);
+
+  for (auto i = 0u; i < spline->getNumSegments(); ++i)
   {
+    const auto& segmentCoeffs = spline->getSegmentCoefficients(i);
+
     // This should be guaranteed by Spline::addSegment(). Here we just check
     // this for sure.
     assert(
-        static_cast<std::size_t>(segment.mCoefficients.rows())
-        == mStateSpace->getDimension());
+        static_cast<std::size_t>(segmentCoeffs.rows())
+        == statespace->getDimension());
 
-    dim += segment.mCoefficients.cols();
+    dim += segmentCoeffs.cols();
   }
 
-  dim *= mStateSpace->getDimension();
+  dim *= statespace->getDimension();
 
   return dim;
 }
@@ -31,14 +37,22 @@ void SplineCoefficientsVariables::setVariables(const Eigen::VectorXd& variables)
   // TODO(JS): Check the dimension of variables
 
   int index = 0;
-  for (auto& segment : mSegments)
+
+  auto* spline = getSpline();
+  const auto& statespace = spline->getStateSpace();
+  assert(spline);
+
+  for (auto i = 0u; i < spline->getNumSegments(); ++i)
   {
-    const auto rows = mStateSpace->getDimension();
-    const auto cols = segment.mCoefficients.cols();
+    const auto& segmentCoeffs = spline->getSegmentCoefficients(i);
+
+    const auto rows = statespace->getDimension();
+    const auto cols = segmentCoeffs.cols();
     const auto numLocalVariables = rows * cols;
 
-    segment.mCoefficients = Eigen::Map<const Eigen::MatrixXd>(
-        variables.segment(index, numLocalVariables).data(), rows, cols);
+    Eigen::Map<const Eigen::MatrixXd> tmp(
+      variables.segment(index, numLocalVariables).data(), rows, cols);
+    spline->setSegmentCoefficients(i, tmp);
 
     index += numLocalVariables;
   }

@@ -8,6 +8,7 @@ set(sources
   SplineCoefficientsVariables.cpp
   SplineCoefficientsAndDurationsVariables.cpp
   SplineDurationsVariables.cpp
+  SplineVariables.cpp
   TrajectoryOptimizationVariables.cpp
 )
 

@@ -5,15 +5,14 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
-#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
+#include "aikido/planner/optimization/SplineVariables.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
 namespace optimization {
 
-class SplineCoefficientsVariables : public TrajectoryOptimizationVariables,
-                                    public trajectory::Spline
+class SplineCoefficientsVariables : public SplineVariables
 {
 public:
   SplineCoefficientsVariables() = default;

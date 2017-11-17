@@ -9,19 +9,20 @@
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
 namespace optimization {
 
-trajectory::InterpolatedPtr planOptimization(
+trajectory::SplinePtr planOptimization(
     const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
     planner::PlanningResult& planningResult);
 
-// TODO(JS): templatize this class for the trajectory type
+// TODO(JS): templatize this class for the trajectory type. For now, this class
+// returns trajectory::Spline()
 class OptimizationBasedMotionPlanning
 {
 public:
@@ -31,7 +32,7 @@ public:
 
   ~OptimizationBasedMotionPlanning() = default;
 
-  trajectory::InterpolatedPtr plan();
+  trajectory::SplinePtr plan();
 
   void setVariables(const TrajectoryOptimizationVariables* variables);
 

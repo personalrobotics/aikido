@@ -12,7 +12,7 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-trajectory::InterpolatedPtr planOptimization(
+trajectory::SplinePtr planOptimization(
     const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
@@ -37,7 +37,7 @@ OptimizationBasedMotionPlanning::OptimizationBasedMotionPlanning(
 }
 
 //==============================================================================
-trajectory::InterpolatedPtr OptimizationBasedMotionPlanning::plan()
+trajectory::SplinePtr OptimizationBasedMotionPlanning::plan()
 {
   if (nullptr == mSolver)
   {
