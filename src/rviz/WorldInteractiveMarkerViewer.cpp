@@ -76,7 +76,7 @@ void WorldInteractiveMarkerViewer::update()
   while (it != std::end(mSkeletonMarkers))
   {
     // Skeleton still exists in the World, do nothing.
-    if (mWorld->getSkeleton(it->first))
+    if (mWorld->hasSkeleton(it->first))
     {
       ++it;
     }
