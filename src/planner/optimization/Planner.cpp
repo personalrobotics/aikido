@@ -43,7 +43,7 @@ trajectory::SplinePtr OptimizationBasedMotionPlanning::plan()
   {
     dtwarn << "[OptimizationBasedMotionPlanning::plan] The Solver for an "
            << "OptimizationBasedMotionPlanning module is a nullptr. You must "
-           << "reset the module's Solver before you can use it.\n";
+           << "reset the Solver before you can use it.\n";
     return false;
   }
 
@@ -51,7 +51,7 @@ trajectory::SplinePtr OptimizationBasedMotionPlanning::plan()
   {
     dtwarn << "[OptimizationBasedMotionPlanning::plan] The Problem for an "
            << "OptimizationBasedMotionPlanning module is a nullptr. You must "
-           << "reset the module's Solver before you can use it.\n";
+           << "reset the Solver before using it.\n";
     return false;
   }
 
@@ -88,15 +88,9 @@ trajectory::SplinePtr OptimizationBasedMotionPlanning::plan()
 
 //==============================================================================
 void OptimizationBasedMotionPlanning::setVariables(
-    const TrajectoryOptimizationVariables* variables)
+    const TrajectoryVariables& variables)
 {
-  if (!variables)
-  {
-    // TODO(JS): warning message
-    return;
-  }
-
-  mVariables = variables->clone();
+  mVariables = variables.clone();
 }
 
 //==============================================================================

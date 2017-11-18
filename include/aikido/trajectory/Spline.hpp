@@ -96,20 +96,15 @@ public:
   ///
   /// \param[in] index Spline segment index
   /// \param[in] coefficients Spline segment coefficients
-//  template <typename Derived>
   void setSegmentCoefficients(
       std::size_t index, const Eigen::MatrixXd& coefficients);
 
-//  template <typename Derived>
+  /// Sets the coefficients of a spline segment.
+  ///
+  /// \param[in] index Spline segment index
+  /// \param[in] coefficients Spline segment coefficients
   void setSegmentCoefficients(
-      std::size_t index, const Eigen::Map<const Eigen::MatrixXd>& coefficients)
-  {
-    if (index >= getNumSegments())
-      throw std::domain_error("Segment index is out of bounds.");
-
-    mSegments[index].mCoefficients = coefficients;
-  }
-  // TODO(JS): move this to detail header
+      std::size_t index, const Eigen::Map<const Eigen::MatrixXd>& coefficients);
 
   /// Sets the coefficient of a spline segment.
   ///
@@ -198,6 +193,7 @@ protected:
 };
 
 using SplinePtr = std::shared_ptr<Spline>;
+using SplineUniquePtr = std::unique_ptr<Spline>;
 
 } // namespace trajectory
 } // namespace aikido

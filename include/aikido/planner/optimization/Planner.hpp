@@ -34,7 +34,7 @@ public:
 
   trajectory::SplinePtr plan();
 
-  void setVariables(const TrajectoryOptimizationVariables* variables);
+  void setVariables(const TrajectoryVariables& variables);
 
   void setStartState(const statespace::StateSpace::State* startState);
 
@@ -92,7 +92,7 @@ protected:
   /// Objective for the trajectory optimization.
   std::shared_ptr<dart::optimizer::Function> mObjective;
 
-  std::shared_ptr<TrajectoryOptimizationVariables> mVariables;
+  std::shared_ptr<TrajectoryVariables> mVariables;
 
   const statespace::StateSpace::State* mStartState;
 

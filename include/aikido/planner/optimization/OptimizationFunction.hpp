@@ -23,11 +23,11 @@ public:
   double eval(const Eigen::VectorXd& x) override;
 
 protected:
-  std::shared_ptr<TrajectoryOptimizationVariables> mTrajectory;
+  std::shared_ptr<TrajectoryVariables> mTrajectory;
 
   const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& mStateSpace;
 
-  std::shared_ptr<TrajectoryOptimizationVariables> mVariables;
+  std::shared_ptr<TrajectoryVariables> mVariables;
 
   const statespace::StateSpace::State* mStartState;
 
@@ -48,7 +48,7 @@ public:
 protected:
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
 
-  std::shared_ptr<TrajectoryOptimizationVariables> mTrajectory;
+  std::shared_ptr<TrajectoryVariables> mTrajectory;
 
   double mTargetTime;
 
@@ -70,7 +70,7 @@ public:
   double eval(const Eigen::VectorXd& x) override;
 
 protected:
-  std::shared_ptr<TrajectoryOptimizationVariables> mTrajectory;
+  std::shared_ptr<TrajectoryVariables> mTrajectory;
 
 private:
 };

@@ -11,7 +11,7 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-class OptimizationInterpolated : public TrajectoryOptimizationVariables
+class OptimizationInterpolated : public TrajectoryVariables
 {
 public:
   OptimizationInterpolated() = default;

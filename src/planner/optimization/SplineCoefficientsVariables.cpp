@@ -5,30 +5,17 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-std::size_t SplineCoefficientsVariables::getDimension() const
+SplineCoefficientsVariables::SplineCoefficientsVariables(
+    const trajectory::Spline& splineToClone)
+  : SplineVariables(splineToClone)
 {
-  std::size_t dim = 0u;
+  updateDimension();
+}
 
-  const auto* spline = getSpline();
-  const auto& statespace = spline->getStateSpace();
-  assert(spline);
-
-  for (auto i = 0u; i < spline->getNumSegments(); ++i)
-  {
-    const auto& segmentCoeffs = spline->getSegmentCoefficients(i);
-
-    // This should be guaranteed by Spline::addSegment(). Here we just check
-    // this for sure.
-    assert(
-        static_cast<std::size_t>(segmentCoeffs.rows())
-        == statespace->getDimension());
-
-    dim += segmentCoeffs.cols();
-  }
-
-  dim *= statespace->getDimension();
-
-  return dim;
+//==============================================================================
+std::shared_ptr<TrajectoryVariables> SplineCoefficientsVariables::clone() const
+{
+  return std::make_shared<SplineCoefficientsVariables>(*this);
 }
 
 //==============================================================================
@@ -36,23 +23,18 @@ void SplineCoefficientsVariables::setVariables(const Eigen::VectorXd& variables)
 {
   // TODO(JS): Check the dimension of variables
 
+  const auto& statespace = mSpline.getStateSpace();
+
   int index = 0;
-
-  auto* spline = getSpline();
-  const auto& statespace = spline->getStateSpace();
-  assert(spline);
-
-  for (auto i = 0u; i < spline->getNumSegments(); ++i)
+  for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
   {
-    const auto& segmentCoeffs = spline->getSegmentCoefficients(i);
-
     const auto rows = statespace->getDimension();
-    const auto cols = segmentCoeffs.cols();
+    const auto cols = mSpline.getSegmentCoefficients(i).cols();
     const auto numLocalVariables = rows * cols;
 
-    Eigen::Map<const Eigen::MatrixXd> tmp(
-      variables.segment(index, numLocalVariables).data(), rows, cols);
-    spline->setSegmentCoefficients(i, tmp);
+    Eigen::Map<const Eigen::MatrixXd> newSegmentCoeffis(
+        variables.segment(index, numLocalVariables).data(), rows, cols);
+    mSpline.setSegmentCoefficients(i, newSegmentCoeffis);
 
     index += numLocalVariables;
   }
@@ -65,21 +47,49 @@ void SplineCoefficientsVariables::getVariables(Eigen::VectorXd& variables) const
 {
   variables.resize(getDimension());
 
+  const auto& statespace = mSpline.getStateSpace();
+
   int index = 0;
-  for (const auto& segment : mSegments)
+  for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
   {
-    const auto rows = mStateSpace->getDimension();
-    const auto cols = segment.mCoefficients.cols();
+    auto& segmentCoeffs = mSpline.getSegmentCoefficients(i);
+
+    const auto rows = statespace->getDimension();
+    const auto cols = segmentCoeffs.cols();
     const auto numLocalVariables = rows * cols;
 
     variables.segment(index, numLocalVariables)
         = Eigen::Map<const Eigen::VectorXd>(
-            segment.mCoefficients.data(), numLocalVariables);
+            segmentCoeffs.data(), numLocalVariables);
 
     index += numLocalVariables;
   }
 
   assert(static_cast<std::size_t>(index) == getDimension());
+}
+
+//==============================================================================
+void SplineCoefficientsVariables::updateDimension()
+{
+  std::size_t dim = 0u;
+  const auto& statespace = mSpline.getStateSpace();
+
+  for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
+  {
+    const auto& segmentCoeffs = mSpline.getSegmentCoefficients(i);
+
+    // This should be guaranteed by Spline::addSegment(). Double check this for
+    // sure.
+    assert(
+        static_cast<std::size_t>(segmentCoeffs.rows())
+        == statespace->getDimension());
+
+    dim += segmentCoeffs.cols();
+  }
+
+  dim *= statespace->getDimension();
+
+  mDimension = dim;
 }
 
 } // namespace optimization

@@ -106,6 +106,16 @@ void Spline::setSegmentCoefficients(
 }
 
 //==============================================================================
+void Spline::setSegmentCoefficients(
+    std::size_t index, const Eigen::Map<const Eigen::MatrixXd>& coefficients)
+{
+  if (index >= getNumSegments())
+    throw std::domain_error("Segment index is out of bounds.");
+
+  mSegments[index].mCoefficients = coefficients;
+}
+
+//==============================================================================
 void Spline::setSegmentCoefficient(
     std::size_t segmentIndex,
     std::size_t coeffRow,

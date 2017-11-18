@@ -2,11 +2,7 @@
 #define AIKIDO_PLANNER_OPTIMIZATION_OPTIMIZATIONSPLINE_HPP_
 
 #include <memory>
-
-#include <dart/optimizer/optimizer.hpp>
-
 #include "aikido/planner/optimization/SplineVariables.hpp"
-#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
@@ -15,18 +11,22 @@ namespace optimization {
 class SplineCoefficientsAndDurationsVariables : public SplineVariables
 {
 public:
-  SplineCoefficientsAndDurationsVariables() = default;
+  /// Constructor
+  SplineCoefficientsAndDurationsVariables(
+      const trajectory::Spline& splineToClone);
 
-  ~SplineCoefficientsAndDurationsVariables() = default;
+  // Documentation inherited.
+  std::shared_ptr<TrajectoryVariables> clone() const override;
 
-  std::size_t getDimension() const override;
-
+  // Documentation inherited.
   void setVariables(const Eigen::VectorXd& variables) override;
 
+  // Documentation inherited.
   void getVariables(Eigen::VectorXd& variables) const override;
 
 protected:
-private:
+  // Documentation inherited.
+  void updateDimension() override;
 };
 
 } // namespace optimization

@@ -5,17 +5,28 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-const trajectory::Spline*SplineVariables::getSpline() const
+SplineVariables::SplineVariables(const trajectory::Spline& splineToClone)
+  : mSpline(splineToClone)
 {
-  assert(dynamic_cast<trajectory::Spline*>(getTrajectory()));
-  return static_cast<trajectory::Spline*>(getTrajectory());
+  // Do nothing
 }
 
 //==============================================================================
-trajectory::Spline*SplineVariables::getSpline()
+const trajectory::Trajectory& SplineVariables::getTrajectory() const
 {
-  assert(dynamic_cast<trajectory::Spline*>(getTrajectory()));
-  return static_cast<trajectory::Spline*>(getTrajectory());
+  return static_cast<const trajectory::Trajectory&>(mSpline);
+}
+
+//==============================================================================
+const trajectory::Spline& SplineVariables::getSpline() const
+{
+  return mSpline;
+}
+
+//==============================================================================
+std::size_t SplineVariables::getDimension() const
+{
+  return mDimension;
 }
 
 } // namespace optimization
