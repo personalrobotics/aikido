@@ -1,6 +1,7 @@
 #include "control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp"
 #include "control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp"
 #include "control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp"
+#include "control/InstantaneousTrajectoryExecutor.hpp"
 #include "control/KinematicSimulationTrajectoryExecutor.hpp"
 #include "control/PositionCommandExecutor.hpp"
 #include "control/TrajectoryExecutor.hpp"

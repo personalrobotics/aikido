@@ -1,5 +1,6 @@
 set(sources
   TrajectoryRunningException.cpp
+  InstantaneousTrajectoryExecutor.cpp
   KinematicSimulationTrajectoryExecutor.cpp
   BarrettHandKinematicSimulationPositionCommandExecutor.cpp
   BarrettFingerKinematicSimulationPositionCommandExecutor.cpp
