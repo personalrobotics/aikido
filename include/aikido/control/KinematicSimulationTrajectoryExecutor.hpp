@@ -43,15 +43,15 @@ public:
 
 private:
   ::dart::dynamics::SkeletonPtr mSkeleton;
+
+  bool mInProgress;
   std::unique_ptr<std::promise<void>> mPromise;
   trajectory::TrajectoryPtr mTraj;
 
   std::chrono::system_clock::time_point mExecutionStartTime;
 
-  /// Manages access on mTraj, mPromise, mInExecution
+  /// Manages access on mInProgress, mPromise, mTraj
   std::mutex mMutex;
-
-  bool mInExecution;
 };
 
 } // namespace control

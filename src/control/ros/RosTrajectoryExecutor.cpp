@@ -65,6 +65,8 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
   , mConnectionTimeout{connectionTimeout}
   , mConnectionPollingPeriod{connectionPollingPeriod}
   , mInProgress{false}
+  , mPromise{nullptr}
+  , mMutex{}
 {
   if (mTimestep <= 0)
     throw std::invalid_argument("Timestep must be positive.");
@@ -133,13 +135,13 @@ std::future<void> RosTrajectoryExecutor::execute(
     if (mInProgress)
       throw std::runtime_error("Another trajectory is in progress.");
 
-    mPromise = std::promise<void>();
+    mPromise.reset(new std::promise<void>());
     mInProgress = true;
     mGoalHandle = mClient.sendGoal(
         goal,
         boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
 
-    return mPromise.get_future();
+    return mPromise->get_future();
   }
 }
 
@@ -167,7 +169,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       if (!terminalMessage.empty())
         message << " (" << terminalMessage << ")";
 
-      mPromise.set_exception(
+      mPromise->set_exception(
           std::make_exception_ptr(
               RosTrajectoryExecutionException(message.str(), terminalState)));
 
@@ -189,7 +191,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       if (!result->error_string.empty())
         message << " (" << result->error_string << ")";
 
-      mPromise.set_exception(
+      mPromise->set_exception(
           std::make_exception_ptr(
               RosTrajectoryExecutionException(
                   message.str(), result->error_code)));
@@ -198,7 +200,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
     }
 
     if (isSuccessful)
-      mPromise.set_value();
+      mPromise->set_value();
 
     mInProgress = false;
   }
@@ -214,7 +216,7 @@ void RosTrajectoryExecutor::step()
 
   if (!::ros::ok() && mInProgress)
   {
-    mPromise.set_exception(
+    mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
     mInProgress = false;
   }

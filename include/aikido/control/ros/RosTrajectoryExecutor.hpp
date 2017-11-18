@@ -74,9 +74,9 @@ private:
   std::chrono::milliseconds mConnectionPollingPeriod;
 
   bool mInProgress;
-  std::promise<void> mPromise;
-  trajectory::TrajectoryPtr mTrajectory;
+  std::unique_ptr<std::promise<void>> mPromise;
 
+  /// Manages access on mInProgress, mPromise
   std::mutex mMutex;
 };
 

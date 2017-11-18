@@ -16,11 +16,11 @@ namespace control {
 //==============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
-  : mSkeleton(std::move(skeleton))
-  , mPromise(nullptr)
-  , mTraj(nullptr)
-  , mMutex()
-  , mInExecution(false)
+  : mSkeleton{std::move(skeleton)}
+  , mInProgress{false}
+  , mPromise{nullptr}
+  , mTraj{nullptr}
+  , mMutex{}
 {
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
@@ -30,8 +30,10 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
 KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 {
   {
-    std::lock_guard<std::mutex> lockSpin(mMutex);
-    mInExecution = false;
+    std::lock_guard<std::mutex> lock(mMutex);
+    DART_UNUSED(lock); // Suppress unused variable warning
+
+    mInProgress = false;
   }
 }
 
@@ -70,14 +72,15 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
   skeleton_lock.unlock();
 
   {
-    std::lock_guard<std::mutex> lockSpin(mMutex);
+    std::lock_guard<std::mutex> lock(mMutex);
+    DART_UNUSED(lock); // Suppress unused variable warning
 
-    if (mTraj)
+    if (mInProgress)
       throw std::runtime_error("Another trajectory in execution.");
 
     mPromise.reset(new std::promise<void>());
     mTraj = traj;
-    mInExecution = true;
+    mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
   }
 
@@ -90,23 +93,23 @@ void KinematicSimulationTrajectoryExecutor::step()
   using namespace std::chrono;
   std::lock_guard<std::mutex> lock(mMutex);
 
-  if (!mInExecution && !mTraj)
+  if (!mInProgress && !mTraj)
     return;
 
-  if (!mInExecution && mTraj)
+  if (!mInProgress && mTraj)
   {
     mPromise->set_exception(
         std::make_exception_ptr(
             std::runtime_error("Trajectory terminated while in execution.")));
     mTraj.reset();
   }
-  else if (mInExecution && !mTraj)
+  else if (mInProgress && !mTraj)
   {
     mPromise->set_exception(
         std::make_exception_ptr(
             std::runtime_error(
                 "Set for execution but no trajectory is provided.")));
-    mInExecution = false;
+    mInProgress = false;
   }
 
   auto timeSinceBeginning = system_clock::now() - mExecutionStartTime;
@@ -130,7 +133,7 @@ void KinematicSimulationTrajectoryExecutor::step()
   {
     mTraj.reset();
     mPromise->set_value();
-    mInExecution = false;
+    mInProgress = false;
   }
 }
 

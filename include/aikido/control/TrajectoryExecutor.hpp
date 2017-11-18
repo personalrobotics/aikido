@@ -3,7 +3,6 @@
 
 #include <future>
 #include <aikido/trajectory/Trajectory.hpp>
-#include "TrajectoryResult.hpp"
 
 namespace aikido {
 namespace control {
