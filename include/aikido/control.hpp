@@ -5,6 +5,7 @@
 #include "control/PositionCommandExecutor.hpp"
 #include "control/TrajectoryExecutor.hpp"
 #include "control/TrajectoryResult.hpp"
+#include "control/TrajectoryRunningException.hpp"
 #include "control/ros/Conversions.hpp"
 #include "control/ros/RosJointStateClient.hpp"
 #include "control/ros/RosPositionCommandExecutor.hpp"

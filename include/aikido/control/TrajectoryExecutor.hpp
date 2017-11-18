@@ -12,7 +12,8 @@ class TrajectoryExecutor
 public:
   virtual ~TrajectoryExecutor() = default;
 
-  /// Execute traj and set future upon completion.
+  /// Execute traj and set future upon completion. If a trajectory is already
+  /// running, raise an exception unless the executor supports queuing.
   /// \param traj Trajectory to be executed.
   virtual std::future<void> execute(trajectory::TrajectoryPtr _traj) = 0;
 

@@ -1,6 +1,7 @@
 #include <aikido/control/ros/RosTrajectoryExecutor.hpp>
 
 #include <aikido/common/StepSequence.hpp>
+#include <aikido/control/TrajectoryRunningException.hpp>
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/control/ros/RosTrajectoryExecutionException.hpp>
 #include <aikido/control/ros/util.hpp>
@@ -133,7 +134,7 @@ std::future<void> RosTrajectoryExecutor::execute(
     DART_UNUSED(lock); // Suppress unused variable warning
 
     if (mInProgress)
-      throw std::runtime_error("Another trajectory is in progress.");
+      throw TrajectoryRunningException();
 
     mPromise.reset(new std::promise<void>());
     mInProgress = true;

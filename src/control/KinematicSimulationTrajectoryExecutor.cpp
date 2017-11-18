@@ -2,6 +2,7 @@
 #include <thread>
 #include <dart/common/StlHelpers.hpp>
 #include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
+#include <aikido/control/TrajectoryRunningException.hpp>
 #include <aikido/statespace/SO2.hpp>
 
 using aikido::statespace::SO2;
@@ -76,7 +77,7 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     DART_UNUSED(lock); // Suppress unused variable warning
 
     if (mInProgress)
-      throw std::runtime_error("Another trajectory in execution.");
+      throw TrajectoryRunningException();
 
     mPromise.reset(new std::promise<void>());
     mTraj = traj;
