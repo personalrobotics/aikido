@@ -32,7 +32,7 @@ public:
   /// \throws invalid_argument if traj is invalid.
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
-  /// Do nothing.
+  // Do nothing.
   void step() override;
 
 private:

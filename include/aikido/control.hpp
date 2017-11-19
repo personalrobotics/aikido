@@ -4,6 +4,7 @@
 #include "control/InstantaneousTrajectoryExecutor.hpp"
 #include "control/KinematicSimulationTrajectoryExecutor.hpp"
 #include "control/PositionCommandExecutor.hpp"
+#include "control/QueuedTrajectoryExecutor.hpp"
 #include "control/TrajectoryExecutor.hpp"
 #include "control/TrajectoryResult.hpp"
 #include "control/TrajectoryRunningException.hpp"
