@@ -148,9 +148,8 @@ void InteractiveMarkerViewer::update()
 
     if (skeleton)
     {
-      std::unique_lock<std::mutex> lock(skeleton->getMutex(), std::try_to_lock);
-
-      if (lock.owns_lock())
+      std::unique_lock<std::mutex> skeleton_lock(skeleton->getMutex(), std::try_to_lock);
+      if (skeleton_lock.owns_lock())
         (*it)->update();
 
       ++it;

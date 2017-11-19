@@ -65,7 +65,7 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     if (!dof_in_skeleton)
     {
       std::stringstream msg;
-      msg << "traj contrains dof [" << name << "], which is not in mSkeleton.";
+      msg << "traj contains dof [" << name << "], which is not in mSkeleton.";
 
       throw std::invalid_argument(msg.str());
     }
