@@ -1,10 +1,10 @@
-#include <aikido/constraint/NonColliding.hpp>
+#include <aikido/constraint/CollisionFree.hpp>
 
 namespace aikido {
 namespace constraint {
 
 //==============================================================================
-NonColliding::NonColliding(
+CollisionFree::CollisionFree(
     statespace::dart::MetaSkeletonStateSpacePtr _statespace,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
     dart::collision::CollisionOption _collisionOptions)
@@ -20,13 +20,13 @@ NonColliding::NonColliding(
 }
 
 //==============================================================================
-statespace::StateSpacePtr NonColliding::getStateSpace() const
+statespace::StateSpacePtr CollisionFree::getStateSpace() const
 {
   return mStatespace;
 }
 
 //==============================================================================
-bool NonColliding::isSatisfied(
+bool CollisionFree::isSatisfied(
     const aikido::statespace::StateSpace::State* _state) const
 {
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
@@ -57,7 +57,7 @@ bool NonColliding::isSatisfied(
 }
 
 //==============================================================================
-void NonColliding::addPairwiseCheck(
+void CollisionFree::addPairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
@@ -68,7 +68,7 @@ void NonColliding::addPairwiseCheck(
 }
 
 //==============================================================================
-void NonColliding::removePairwiseCheck(
+void CollisionFree::removePairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)
 {
@@ -89,14 +89,14 @@ void NonColliding::removePairwiseCheck(
 }
 
 //==============================================================================
-void NonColliding::addSelfCheck(
+void CollisionFree::addSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
   mGroupsToSelfCheck.emplace_back(std::move(_group));
 }
 
 //==============================================================================
-void NonColliding::removeSelfCheck(
+void CollisionFree::removeSelfCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group)
 {
   mGroupsToSelfCheck.erase(

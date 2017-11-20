@@ -63,7 +63,7 @@ void WorldInteractiveMarkerViewer::update()
     {
       // Either a new SkeletonMarker or a previously-inserted SkeletonMarker
       auto result = mSkeletonMarkers.emplace(
-          skeleton->getName(), CreateSkeletonMarker(skeleton, mFrameId));
+          skeleton, CreateSkeletonMarker(skeleton, mFrameId));
 
       std::unique_lock<std::mutex> lock(skeleton->getMutex(), std::try_to_lock);
       if (lock.owns_lock())
@@ -76,7 +76,7 @@ void WorldInteractiveMarkerViewer::update()
   while (it != std::end(mSkeletonMarkers))
   {
     // Skeleton still exists in the World, do nothing.
-    if (mWorld->getSkeleton(it->first))
+    if (mWorld->hasSkeleton(it->first))
     {
       ++it;
     }
