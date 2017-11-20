@@ -118,17 +118,14 @@ bool computeJointVelocityFromTwist(
       velocityLowerLimits[i] = std::max(
           velocityLowerLimit,
           ((positionLowerLimit + _padding) - position) / _timestep);
-    initialGuess[i] = std::max(
-          velocityLowerLimits[i], initialGuess[i] );
-
+    initialGuess[i] = std::max(velocityLowerLimits[i], initialGuess[i]);
 
     if (position + _timestep * velocityUpperLimit
         > positionUpperLimit - _padding)
       velocityUpperLimits[i] = std::min(
           velocityUpperLimit,
           ((positionUpperLimit - _padding) - position) / _timestep);
-    initialGuess[i] = std::min(
-          velocityUpperLimits[i], initialGuess[i] );
+    initialGuess[i] = std::min(velocityUpperLimits[i], initialGuess[i]);
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);
