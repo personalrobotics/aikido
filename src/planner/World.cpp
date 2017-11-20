@@ -162,7 +162,7 @@ bool World::equalConfiguration(const World* otherWorld) const
     if (mSkeletons[idx]->getName() != otherWorld->mSkeletons[idx]->getName())
       return false;
     if (mSkeletons[idx]->getConfiguration()
-      != otherWorld->mSkeletons[idx]->getConfiguration())
+        != otherWorld->mSkeletons[idx]->getConfiguration())
       return false;
   }
 

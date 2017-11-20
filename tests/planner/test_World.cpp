@@ -111,8 +111,9 @@ TEST_F(WorldTest, EqualConfigurationReturnsTrueForClonedWorlds)
   EXPECT_TRUE(otherWorld->equalConfiguration(mWorld.get()));
 }
 
-TEST_F(WorldTest,
-  EqualConfigurationReturnsFalseForWorldsWithDifferentNumberOfSkeletons)
+TEST_F(
+    WorldTest,
+    EqualConfigurationReturnsFalseForWorldsWithDifferentNumberOfSkeletons)
 {
   auto otherWorld = aikido::planner::World::create("other");
   mWorld->addSkeleton(skel1);
@@ -121,8 +122,9 @@ TEST_F(WorldTest,
   EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
 }
 
-TEST_F(WorldTest,
-  EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentNames)
+TEST_F(
+    WorldTest,
+    EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentNames)
 {
   mWorld->addSkeleton(skel1);
 
@@ -133,8 +135,9 @@ TEST_F(WorldTest,
   EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
 }
 
-TEST_F(WorldTest,
-  EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentJointValues)
+TEST_F(
+    WorldTest,
+    EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentJointValues)
 {
   using dart::dynamics::RevoluteJoint;
 
