@@ -9,7 +9,8 @@ QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::unique_ptr<TrajectoryExecutor> executor)
   : mExecutor{std::move(executor)}, mInProgress{false}, mMutex{}
 {
-  // Do nothing
+  if (!mExecutor)
+    throw std::invalid_argument("Executor is null.");
 }
 
 //==============================================================================
