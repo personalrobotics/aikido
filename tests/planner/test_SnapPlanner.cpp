@@ -1,7 +1,7 @@
 #include <tuple>
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
-#include <aikido/constraint/NonColliding.hpp>
+#include <aikido/constraint/CollisionFree.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/PlanningResult.hpp>
@@ -19,7 +19,7 @@ class SnapPlannerTest : public ::testing::Test
 public:
   using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
   using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
-  using NonColliding = aikido::constraint::NonColliding;
+  using CollisionFree = aikido::constraint::CollisionFree;
   using DistanceMetric = aikido::distance::DistanceMetric;
   using MetaSkeletonStateSpace
       = aikido::statespace::dart::MetaSkeletonStateSpace;

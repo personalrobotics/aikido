@@ -4,11 +4,12 @@
 
 * Constraint
 
-  * Added methods for removing groups from NonColliding constraints. [#247](https://github.com/personalrobotics/aikido/pull/247)
+  * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
+  * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
 
 * Planner
 
-  * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243)
+  * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243), [#252](https://github.com/personalrobotics/aikido/pull/252)
   * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262) 
 
 * RViz

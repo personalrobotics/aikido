@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_NONCOLLIDING_HPP_
-#define AIKIDO_CONSTRAINT_NONCOLLIDING_HPP_
+#ifndef AIKIDO_CONSTRAINT_COLLISIONFREE_HPP_
+#define AIKIDO_CONSTRAINT_COLLISIONFREE_HPP_
 
 #include <memory>
 #include <tuple>
@@ -17,7 +17,7 @@ namespace constraint {
 /// A testable that uses a collision detector to check whether
 /// a metakeleton state (configuration) results in collision between and within
 /// specified collision groups.
-class NonColliding : public Testable
+class CollisionFree : public Testable
 {
 public:
   /// Constructs an empty constraint that uses \c _collisionDetector to test
@@ -27,7 +27,7 @@ public:
   /// \param _statespace state space on which the constraint operates
   /// \param _collisionDetector collision detector used to test for collision
   /// \param _collisionOptions options passed to \c _collisionDetector
-  NonColliding(
+  CollisionFree(
       statespace::dart::MetaSkeletonStateSpacePtr _statespace,
       std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
       dart::collision::CollisionOption _collisionOptions
@@ -77,9 +77,9 @@ private:
   std::vector<std::shared_ptr<CollisionGroup>> mGroupsToSelfCheck;
 };
 
-using NonCollidingPtr = std::shared_ptr<NonColliding>;
+using CollisionFreePtr = std::shared_ptr<CollisionFree>;
 
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_NONCOLLIDING_HPP_
+#endif // AIKIDO_CONSTRAINT_COLLISIONFREE_HPP_
