@@ -9,7 +9,7 @@
 * Planner
 
   * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243)
-  * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246)
+  * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262) 
 
 * RViz
 
