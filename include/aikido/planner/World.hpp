@@ -7,6 +7,8 @@
 namespace aikido {
 namespace planner {
 
+/// A Kinematic world that contains a set of skeletons.
+/// It is expected that worlds do not share the same skeletons.
 class World
 {
 public:
@@ -59,6 +61,10 @@ public:
 
   /// Get the mutex that protects the state of this World.
   std::mutex& getMutex() const;
+
+  /// Returns true if \c otherWorld has the same configuration as this.
+  /// \param otherWorld World to compare against.
+  bool equalConfiguration(const World* otherWorld) const;
 
 protected:
   /// Name of this World

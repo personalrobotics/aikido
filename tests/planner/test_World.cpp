@@ -1,4 +1,5 @@
 #include <dart/dart.hpp>
+#include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
 #include <aikido/planner/World.hpp>
 
@@ -90,4 +91,62 @@ TEST_F(WorldTest, CloningPreservesSkeletonNamesAndConfigurations)
     EXPECT_EQ(
         origSkeleton->getConfiguration(), clonedSkeleton2->getConfiguration());
   }
+}
+
+TEST_F(WorldTest, EqualConfigurationReturnsTrueForEmptyWorlds)
+{
+  auto otherWorld = aikido::planner::World::create("other");
+  EXPECT_TRUE(mWorld->equalConfiguration(otherWorld.get()));
+  EXPECT_TRUE(otherWorld->equalConfiguration(mWorld.get()));
+}
+
+TEST_F(WorldTest, EqualConfigurationReturnsTrueForClonedWorlds)
+{
+  mWorld->addSkeleton(skel1);
+  mWorld->addSkeleton(skel2);
+  mWorld->addSkeleton(skel3);
+
+  auto otherWorld = mWorld->clone();
+  EXPECT_TRUE(mWorld->equalConfiguration(otherWorld.get()));
+  EXPECT_TRUE(otherWorld->equalConfiguration(mWorld.get()));
+}
+
+TEST_F(WorldTest,
+  EqualConfigurationReturnsFalseForWorldsWithDifferentNumberOfSkeletons)
+{
+  auto otherWorld = aikido::planner::World::create("other");
+  mWorld->addSkeleton(skel1);
+
+  EXPECT_FALSE(mWorld->equalConfiguration(otherWorld.get()));
+  EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
+}
+
+TEST_F(WorldTest,
+  EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentNames)
+{
+  mWorld->addSkeleton(skel1);
+
+  auto otherWorld = mWorld->clone();
+  otherWorld->getSkeleton(0)->setName("cloned_skel");
+
+  EXPECT_FALSE(mWorld->equalConfiguration(otherWorld.get()));
+  EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
+}
+
+TEST_F(WorldTest,
+  EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentJointValues)
+{
+  using dart::dynamics::RevoluteJoint;
+
+  mWorld->addSkeleton(skel1);
+  skel1->createJointAndBodyNodePair<RevoluteJoint>();
+  skel1->setPosition(0, 0.5);
+
+  auto otherWorld = mWorld->clone();
+  EXPECT_TRUE(mWorld->equalConfiguration(otherWorld.get()));
+  EXPECT_TRUE(otherWorld->equalConfiguration(mWorld.get()));
+
+  otherWorld->getSkeleton(0)->setPosition(0, 1.0);
+  EXPECT_FALSE(mWorld->equalConfiguration(otherWorld.get()));
+  EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
 }

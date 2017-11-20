@@ -151,5 +151,23 @@ std::mutex& World::getMutex() const
   return mMutex;
 }
 
+//==============================================================================
+bool World::equalConfiguration(const World* otherWorld) const
+{
+  if (otherWorld->mSkeletons.size() != mSkeletons.size())
+    return false;
+
+  for (size_t idx = 0; idx < mSkeletons.size(); ++idx)
+  {
+    if (mSkeletons[idx]->getName() != otherWorld->mSkeletons[idx]->getName())
+      return false;
+    if (mSkeletons[idx]->getConfiguration()
+      != otherWorld->mSkeletons[idx]->getConfiguration())
+      return false;
+  }
+
+  return true;
+}
+
 } // namespace planner
 } // namespace aikido
