@@ -96,6 +96,7 @@ bool computeJointVelocityFromTwist(
 
   const std::size_t numDofs = skeleton->getNumDofs();
   VectorXd positions = skeleton->getPositions();
+  VectorXd initialGuess = skeleton->getVelocities();
   VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
   VectorXd velocityLowerLimits = skeleton->getVelocityLowerLimits();
@@ -115,19 +116,25 @@ bool computeJointVelocityFromTwist(
     if (position + _timestep * velocityLowerLimit
         < positionLowerLimit + _padding)
       velocityLowerLimits[i] = std::max(
-          velocityLowerLimits[i],
-          ((velocityLowerLimits[i] + _padding) - position) / _timestep);
+          velocityLowerLimit,
+          ((positionLowerLimit + _padding) - position) / _timestep);
+    initialGuess[i] = std::max(
+          velocityLowerLimits[i], initialGuess[i] );
+
 
     if (position + _timestep * velocityUpperLimit
         > positionUpperLimit - _padding)
       velocityUpperLimits[i] = std::min(
-          velocityUpperLimits[i],
-          ((velocityUpperLimits[i] - _padding) - position) / _timestep);
+          velocityUpperLimit,
+          ((positionUpperLimit - _padding) - position) / _timestep);
+    initialGuess[i] = std::min(
+          velocityUpperLimits[i], initialGuess[i] );
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);
   problem->setLowerBounds(velocityLowerLimits);
   problem->setUpperBounds(velocityUpperLimits);
+  problem->setInitialGuess(initialGuess);
   problem->setObjective(
       std::make_shared<DesiredTwistFunction>(_desiredTwist, jacobian));
 
