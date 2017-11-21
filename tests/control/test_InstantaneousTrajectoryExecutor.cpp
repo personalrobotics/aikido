@@ -1,6 +1,6 @@
 #include <chrono>
-#include <gtest/gtest.h>
 #include <dart/dart.hpp>
+#include <gtest/gtest.h>
 #include <aikido/control/InstantaneousTrajectoryExecutor.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
@@ -80,11 +80,9 @@ protected:
   BodyNodePtr bn1;
 };
 
-TEST_F(
-    InstantaneousTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
+TEST_F(InstantaneousTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
 {
-  EXPECT_THROW(
-      InstantaneousTrajectoryExecutor(nullptr), std::invalid_argument);
+  EXPECT_THROW(InstantaneousTrajectoryExecutor(nullptr), std::invalid_argument);
 }
 
 TEST_F(InstantaneousTrajectoryExecutorTest, constructor_Passes)

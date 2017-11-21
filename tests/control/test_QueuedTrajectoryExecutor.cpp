@@ -1,8 +1,8 @@
 #include <chrono>
 #include <gtest/gtest.h>
-#include <aikido/control/TrajectoryExecutor.hpp>
-#include <aikido/control/QueuedTrajectoryExecutor.hpp>
 #include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
+#include <aikido/control/QueuedTrajectoryExecutor.hpp>
+#include <aikido/control/TrajectoryExecutor.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
@@ -95,11 +95,9 @@ protected:
   BodyNodePtr bn1;
 };
 
-TEST_F(
-    QueuedTrajectoryExecutorTest, constructor_NullExecutor_Throws)
+TEST_F(QueuedTrajectoryExecutorTest, constructor_NullExecutor_Throws)
 {
-  EXPECT_THROW(
-      QueuedTrajectoryExecutor(nullptr), std::invalid_argument);
+  EXPECT_THROW(QueuedTrajectoryExecutor(nullptr), std::invalid_argument);
 }
 
 TEST_F(QueuedTrajectoryExecutorTest, constructor_Passes)
@@ -107,9 +105,7 @@ TEST_F(QueuedTrajectoryExecutorTest, constructor_Passes)
   EXPECT_NO_THROW(QueuedTrajectoryExecutor executor(std::move(mExecutor)));
 }
 
-TEST_F(
-    QueuedTrajectoryExecutorTest,
-    execute_WaitOnFuture_TrajectoryWasExecuted)
+TEST_F(QueuedTrajectoryExecutorTest, execute_WaitOnFuture_TrajectoryWasExecuted)
 {
   QueuedTrajectoryExecutor executor(std::move(mExecutor));
 
@@ -186,4 +182,3 @@ TEST_F(
 
   EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
 }
-
