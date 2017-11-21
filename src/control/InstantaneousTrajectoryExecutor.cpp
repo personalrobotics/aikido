@@ -23,13 +23,15 @@ InstantaneousTrajectoryExecutor::~InstantaneousTrajectoryExecutor()
 }
 
 //==============================================================================
-std::future<void> InstantaneousTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj)
+void InstantaneousTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
 {
   if (!traj)
     throw std::invalid_argument("Traj is null.");
 
-  auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  if (traj->metadata.executorValidated)
+    return;
+
+  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   if (!space)
@@ -55,6 +57,17 @@ std::future<void> InstantaneousTrajectoryExecutor::execute(
     }
   }
   skeleton_lock.unlock();
+
+  traj->metadata.executorValidated = true;
+}
+//==============================================================================
+std::future<void> InstantaneousTrajectoryExecutor::execute(
+    trajectory::TrajectoryPtr traj)
+{
+  validate(traj);
+
+  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+      traj->getStateSpace());
 
   {
     std::lock_guard<std::mutex> lock(mMutex);

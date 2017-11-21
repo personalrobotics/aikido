@@ -20,9 +20,17 @@ QueuedTrajectoryExecutor::~QueuedTrajectoryExecutor()
 }
 
 //==============================================================================
+void QueuedTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
+{
+  mExecutor->validate(traj);
+}
+
+//==============================================================================
 std::future<void> QueuedTrajectoryExecutor::execute(
     trajectory::TrajectoryPtr traj)
 {
+  validate(traj);
+
   {
     std::lock_guard<std::mutex> lock(mMutex);
     DART_UNUSED(lock); // Suppress unused variable warning

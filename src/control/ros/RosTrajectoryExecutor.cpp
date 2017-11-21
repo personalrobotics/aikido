@@ -91,22 +91,32 @@ std::future<void> RosTrajectoryExecutor::execute(trajectory::TrajectoryPtr traj)
 }
 
 //==============================================================================
-std::future<void> RosTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
+void RosTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
 {
-  using aikido::control::ros::toRosJointTrajectory;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
   if (!traj)
     throw std::invalid_argument("Trajectory is null.");
 
+  if (traj->metadata.executorValidated)
+    return;
+
   const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
       traj->getStateSpace());
+
   if (!space)
-  {
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
-  }
+
+  traj->metadata.executorValidated = true;
+}
+//==============================================================================
+std::future<void> RosTrajectoryExecutor::execute(
+    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
+{
+  using aikido::control::ros::toRosJointTrajectory;
+
+  validate(traj);
 
   // Setup the goal properties.
   // TODO: Also set goal_tolerance, path_tolerance.

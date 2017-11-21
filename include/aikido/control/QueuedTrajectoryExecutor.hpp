@@ -18,6 +18,9 @@ public:
 
   virtual ~QueuedTrajectoryExecutor();
 
+  // Documentation inherited.
+  void validate(trajectory::TrajectoryPtr traj) override;
+
   /// Execute trajectory and set future upon completion. If another trajectory
   /// is already running, queue the trajectory for later execution.
   /// \param traj Trajectory to be executed or queued.

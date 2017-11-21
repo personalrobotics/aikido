@@ -39,6 +39,9 @@ public:
 
   virtual ~RosTrajectoryExecutor();
 
+  // Documentation inherited.
+  void validate(trajectory::TrajectoryPtr traj) override;
+
   /// Sends trajectory to ROS server for execution.
   /// \param[in] traj Trajectory to be executed.
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;

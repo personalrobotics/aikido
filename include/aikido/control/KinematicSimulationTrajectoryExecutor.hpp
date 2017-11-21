@@ -24,6 +24,9 @@ public:
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
+  // Documentation inherited.
+  void validate(trajectory::TrajectoryPtr traj) override;
+
   /// Execute traj and set future upon completion.
   /// \param traj Trajectory to be executed. Its StateSpace should be a
   ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton
