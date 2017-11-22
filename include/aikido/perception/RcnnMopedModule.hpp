@@ -45,6 +45,6 @@ private:
   tf::TransformListener mTfListener;
 };
 
-}  // namespace perception
-}  // namespace aikido
-#endif  // AIKIDO_PERCEPTION_RCNNMOPEDMODULE_HPP_
+} // namespace perception
+} // namespace aikido
+#endif // AIKIDO_PERCEPTION_RCNNMOPEDMODULE_HPP_
