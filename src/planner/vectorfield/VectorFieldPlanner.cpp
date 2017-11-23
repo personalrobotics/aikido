@@ -127,7 +127,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     {
       if (!_vectorFiledCb(_stateSpace, t, dq))
       {
-        dtwarn << "Failed evaluating VectorField." << std::endl;
         throw VectorFieldTerminated("Failed evaluating VectorField.");
       }
     }
