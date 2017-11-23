@@ -93,51 +93,37 @@ TEST_F(WorldTest, CloningPreservesSkeletonNamesAndConfigurations)
   }
 }
 
-TEST_F(WorldTest, EqualConfigurationReturnsTrueForEmptyWorlds)
+TEST_F(WorldTest, EqualStatesReturnsTrueForEmptyWorlds)
 {
   auto otherWorld = aikido::planner::World::create("other");
-  EXPECT_TRUE(mWorld->equalConfiguration(otherWorld.get()));
-  EXPECT_TRUE(otherWorld->equalConfiguration(mWorld.get()));
+  EXPECT_TRUE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_TRUE(otherWorld->getState().equals(mWorld->getState()));
 }
 
-TEST_F(WorldTest, EqualConfigurationReturnsTrueForClonedWorlds)
+TEST_F(WorldTest, EqualStatesReturnsTrueForClonedWorlds)
 {
   mWorld->addSkeleton(skel1);
   mWorld->addSkeleton(skel2);
   mWorld->addSkeleton(skel3);
 
   auto otherWorld = mWorld->clone();
-  EXPECT_TRUE(mWorld->equalConfiguration(otherWorld.get()));
-  EXPECT_TRUE(otherWorld->equalConfiguration(mWorld.get()));
+  EXPECT_TRUE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_TRUE(otherWorld->getState().equals(mWorld->getState()));
 }
 
 TEST_F(
-    WorldTest,
-    EqualConfigurationReturnsFalseForWorldsWithDifferentNumberOfSkeletons)
+    WorldTest, EqualStatesReturnsFalseForWorldsWithDifferentNumberOfSkeletons)
 {
   auto otherWorld = aikido::planner::World::create("other");
   mWorld->addSkeleton(skel1);
 
-  EXPECT_FALSE(mWorld->equalConfiguration(otherWorld.get()));
-  EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
+  EXPECT_FALSE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_FALSE(otherWorld->getState().equals(mWorld->getState()));
 }
 
 TEST_F(
     WorldTest,
-    EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentNames)
-{
-  mWorld->addSkeleton(skel1);
-
-  auto otherWorld = mWorld->clone();
-  otherWorld->getSkeleton(0)->setName("cloned_skel");
-
-  EXPECT_FALSE(mWorld->equalConfiguration(otherWorld.get()));
-  EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
-}
-
-TEST_F(
-    WorldTest,
-    EqualConfigurationReturnsFalseForWorldsWithSkeletonsWithDifferentJointValues)
+    EqualStatesReturnsFalseForWorldsWithSkeletonsWithDifferentJointValues)
 {
   using dart::dynamics::RevoluteJoint;
 
@@ -146,10 +132,8 @@ TEST_F(
   skel1->setPosition(0, 0.5);
 
   auto otherWorld = mWorld->clone();
-  EXPECT_TRUE(mWorld->equalConfiguration(otherWorld.get()));
-  EXPECT_TRUE(otherWorld->equalConfiguration(mWorld.get()));
-
   otherWorld->getSkeleton(0)->setPosition(0, 1.0);
-  EXPECT_FALSE(mWorld->equalConfiguration(otherWorld.get()));
-  EXPECT_FALSE(otherWorld->equalConfiguration(mWorld.get()));
+
+  EXPECT_FALSE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_FALSE(otherWorld->getState().equals(mWorld->getState()));
 }

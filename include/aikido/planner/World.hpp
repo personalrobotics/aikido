@@ -12,6 +12,17 @@ namespace planner {
 class World
 {
 public:
+  // Encapsulates the state of the World.
+  struct State
+  {
+    std::vector<dart::dynamics::Skeleton::Configuration> configurations;
+
+    /// Returns true if two world states are the same.
+    /// \param other State to compare against.
+    /// \return bool True if the two states are the same.
+    bool equals(const State& other);
+  };
+
   /// Construct a kinematic World.
   /// \param name Name for the new World
   World(const std::string& name = "");
@@ -62,9 +73,14 @@ public:
   /// Get the mutex that protects the state of this World.
   std::mutex& getMutex() const;
 
-  /// Returns true if \c otherWorld has the same configuration as this.
-  /// \param otherWorld World to compare against.
-  bool equalConfiguration(const World* otherWorld) const;
+  /// Returns the state of this World.
+  /// \return State
+  World::State getState() const;
+
+  /// Sets the state of this World to match State.
+  /// The caller of this method MUST LOCK the mutex of this World.
+  /// \param State State to set this world to.
+  void setState(const World::State& State);
 
 protected:
   /// Name of this World

@@ -152,21 +152,48 @@ std::mutex& World::getMutex() const
 }
 
 //==============================================================================
-bool World::equalConfiguration(const World* otherWorld) const
+bool World::State::equals(const State& other)
 {
-  if (otherWorld->mSkeletons.size() != mSkeletons.size())
+  if (configurations.size() != other.configurations.size())
     return false;
 
-  for (size_t idx = 0; idx < mSkeletons.size(); ++idx)
+  for (size_t idx = 0; idx < configurations.size(); ++idx)
   {
-    if (mSkeletons[idx]->getName() != otherWorld->mSkeletons[idx]->getName())
-      return false;
-    if (mSkeletons[idx]->getConfiguration()
-        != otherWorld->mSkeletons[idx]->getConfiguration())
+    if (configurations[idx] != other.configurations[idx])
       return false;
   }
 
   return true;
+}
+
+//==============================================================================
+World::State World::getState() const
+{
+  World::State state;
+  state.configurations.clear();
+  state.configurations.reserve(mSkeletons.size());
+
+  for (const auto& skeleton : mSkeletons)
+  {
+    state.configurations.emplace_back(skeleton->getConfiguration());
+  }
+
+  return state;
+}
+
+//==============================================================================
+void World::setState(const World::State& state)
+{
+  if (state.configurations.size() != mSkeletons.size())
+    throw std::invalid_argument(
+        "World::State and this World does not have the same number of "
+        "skeletons.");
+
+  for (size_t idx = 0; idx < state.configurations.size(); ++idx)
+  {
+    std::lock_guard<std::mutex> lock(mSkeletons[idx]->getMutex());
+    mSkeletons[idx]->setConfiguration(state.configurations[idx]);
+  }
 }
 
 } // namespace planner
