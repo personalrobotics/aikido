@@ -151,5 +151,50 @@ std::mutex& World::getMutex() const
   return mMutex;
 }
 
+//==============================================================================
+bool World::State::equals(const State& other)
+{
+  if (configurations.size() != other.configurations.size())
+    return false;
+
+  for (size_t idx = 0; idx < configurations.size(); ++idx)
+  {
+    if (configurations[idx] != other.configurations[idx])
+      return false;
+  }
+
+  return true;
+}
+
+//==============================================================================
+World::State World::getState() const
+{
+  World::State state;
+  state.configurations.clear();
+  state.configurations.reserve(mSkeletons.size());
+
+  for (const auto& skeleton : mSkeletons)
+  {
+    state.configurations.emplace_back(skeleton->getConfiguration());
+  }
+
+  return state;
+}
+
+//==============================================================================
+void World::setState(const World::State& state)
+{
+  if (state.configurations.size() != mSkeletons.size())
+    throw std::invalid_argument(
+        "World::State and this World does not have the same number of "
+        "skeletons.");
+
+  for (size_t idx = 0; idx < state.configurations.size(); ++idx)
+  {
+    std::lock_guard<std::mutex> lock(mSkeletons[idx]->getMutex());
+    mSkeletons[idx]->setConfiguration(state.configurations[idx]);
+  }
+}
+
 } // namespace planner
 } // namespace aikido

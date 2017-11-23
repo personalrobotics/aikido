@@ -1,4 +1,5 @@
 #include <dart/dart.hpp>
+#include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
 #include <aikido/planner/World.hpp>
 
@@ -90,4 +91,49 @@ TEST_F(WorldTest, CloningPreservesSkeletonNamesAndConfigurations)
     EXPECT_EQ(
         origSkeleton->getConfiguration(), clonedSkeleton2->getConfiguration());
   }
+}
+
+TEST_F(WorldTest, EqualStatesReturnsTrueForEmptyWorlds)
+{
+  auto otherWorld = aikido::planner::World::create("other");
+  EXPECT_TRUE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_TRUE(otherWorld->getState().equals(mWorld->getState()));
+}
+
+TEST_F(WorldTest, EqualStatesReturnsTrueForClonedWorlds)
+{
+  mWorld->addSkeleton(skel1);
+  mWorld->addSkeleton(skel2);
+  mWorld->addSkeleton(skel3);
+
+  auto otherWorld = mWorld->clone();
+  EXPECT_TRUE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_TRUE(otherWorld->getState().equals(mWorld->getState()));
+}
+
+TEST_F(
+    WorldTest, EqualStatesReturnsFalseForWorldsWithDifferentNumberOfSkeletons)
+{
+  auto otherWorld = aikido::planner::World::create("other");
+  mWorld->addSkeleton(skel1);
+
+  EXPECT_FALSE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_FALSE(otherWorld->getState().equals(mWorld->getState()));
+}
+
+TEST_F(
+    WorldTest,
+    EqualStatesReturnsFalseForWorldsWithSkeletonsWithDifferentJointValues)
+{
+  using dart::dynamics::RevoluteJoint;
+
+  mWorld->addSkeleton(skel1);
+  skel1->createJointAndBodyNodePair<RevoluteJoint>();
+  skel1->setPosition(0, 0.5);
+
+  auto otherWorld = mWorld->clone();
+  otherWorld->getSkeleton(0)->setPosition(0, 1.0);
+
+  EXPECT_FALSE(mWorld->getState().equals(otherWorld->getState()));
+  EXPECT_FALSE(otherWorld->getState().equals(mWorld->getState()));
 }
