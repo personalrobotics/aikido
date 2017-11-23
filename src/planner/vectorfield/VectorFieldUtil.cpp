@@ -1,3 +1,4 @@
+#include <aikido/common/algorithm.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -57,6 +58,7 @@ DesiredTwistFunction::DesiredTwistFunction(
   , mTwist(_twist)
   , mJacobian(_jacobian)
 {
+  // Do nothing
 }
 
 //==============================================================================
@@ -66,7 +68,6 @@ double DesiredTwistFunction::eval(const Eigen::VectorXd& _qd)
 }
 
 //==============================================================================
-
 void DesiredTwistFunction::evalGradient(
     const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad)
 {
@@ -74,7 +75,6 @@ void DesiredTwistFunction::evalGradient(
 }
 
 //==============================================================================
-
 bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
@@ -95,10 +95,10 @@ bool computeJointVelocityFromTwist(
   const Jacobian jacobian = skeleton->getWorldJacobian(_bodyNode);
 
   const std::size_t numDofs = skeleton->getNumDofs();
-  VectorXd positions = skeleton->getPositions();
+  const VectorXd positions = skeleton->getPositions();
   VectorXd initialGuess = skeleton->getVelocities();
-  VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
-  VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
+  const VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
+  const VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
   VectorXd velocityLowerLimits = skeleton->getVelocityLowerLimits();
   VectorXd velocityUpperLimits = skeleton->getVelocityUpperLimits();
 
@@ -107,25 +107,32 @@ bool computeJointVelocityFromTwist(
 
   for (std::size_t i = 0; i < numDofs; ++i)
   {
-    const double position = positions[i];
-    const double positionLowerLimit = positionLowerLimits[i];
-    const double positionUpperLimit = positionUpperLimits[i];
-    const double velocityLowerLimit = velocityLowerLimits[i];
-    const double velocityUpperLimit = velocityUpperLimits[i];
+    const double nextPositionLowerBound
+        = positions[i] + _timestep * velocityLowerLimits[i];
+    const double nextPositionUpperBound
+        = positions[i] + _timestep * velocityUpperLimits[i];
 
-    if (position + _timestep * velocityLowerLimit
-        < positionLowerLimit + _padding)
-      velocityLowerLimits[i] = std::max(
-          velocityLowerLimit,
-          ((positionLowerLimit + _padding) - position) / _timestep);
-    initialGuess[i] = std::max(velocityLowerLimits[i], initialGuess[i]);
+    const double paddedPositionLowerLimit = positionLowerLimits[i] + _padding;
+    const double paddedPositionUpperLimit = positionUpperLimits[i] - _padding;
 
-    if (position + _timestep * velocityUpperLimit
-        > positionUpperLimit - _padding)
-      velocityUpperLimits[i] = std::min(
-          velocityUpperLimit,
-          ((positionUpperLimit - _padding) - position) / _timestep);
-    initialGuess[i] = std::min(velocityUpperLimits[i], initialGuess[i]);
+    if (nextPositionLowerBound < paddedPositionLowerLimit)
+    {
+      const double feasibleVelocityLowerLimit
+          = (paddedPositionLowerLimit - positions[i]) / _timestep;
+      velocityLowerLimits[i]
+          = std::max(velocityLowerLimits[i], feasibleVelocityLowerLimit);
+    }
+
+    if (nextPositionUpperBound > paddedPositionUpperLimit)
+    {
+      const double feasibleVelocityUpperLimit
+          = (paddedPositionUpperLimit - positions[i]) / _timestep;
+      velocityUpperLimits[i]
+          = std::min(velocityUpperLimits[i], feasibleVelocityUpperLimit);
+    }
+
+    initialGuess[i] = common::clamp(
+        initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);
