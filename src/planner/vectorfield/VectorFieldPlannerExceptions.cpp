@@ -5,7 +5,7 @@ namespace planner {
 namespace vectorfield {
 
 VectorFieldTerminated::VectorFieldTerminated(const std::string& _whatArg)
-  : std::runtime_error(_whatArg)
+  : mWhatArg(_whatArg)
 {
   // Do nothing
 }

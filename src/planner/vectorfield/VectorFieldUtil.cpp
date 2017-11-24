@@ -1,3 +1,4 @@
+#include <Eigen/Geometry>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -24,7 +25,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(_stateSpace);
 
   using CubicSplineProblem = aikido::common::
-      SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
+      SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
 
   const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(numDof);
   auto currState = _stateSpace->createState();
@@ -32,15 +33,15 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   {
     const double segmentDuration = _knots[iknot + 1].mT - _knots[iknot].mT;
     Eigen::VectorXd currentPosition = _knots[iknot].mPositions;
-    Eigen::VectorXd currentVelocity = _knots[iknot].mVelocities;
     Eigen::VectorXd nextPosition = _knots[iknot + 1].mPositions;
-    Eigen::VectorXd nextVelocity = _knots[iknot + 1].mVelocities;
 
-    CubicSplineProblem problem(Eigen::Vector2d{0., segmentDuration}, 4, numDof);
+    if (segmentDuration == 0.0)
+    {
+      std::cout << "ZERO SEGMENT DURATION " << std::endl;
+    }
+    CubicSplineProblem problem(Eigen::Vector2d{0., segmentDuration}, 2, numDof);
     problem.addConstantConstraint(0, 0, zeroPosition);
-    problem.addConstantConstraint(0, 1, currentVelocity);
     problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
-    problem.addConstantConstraint(1, 1, nextVelocity);
     const auto solution = problem.fit();
     const auto coefficients = solution.getCoefficients().front();
 
@@ -79,9 +80,8 @@ bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     const dart::dynamics::BodyNodePtr _bodyNode,
+    double _jointLimitTolerance,
     double _optimizationTolerance,
-    double _timestep,
-    double _padding,
     Eigen::VectorXd& _jointVelocity)
 {
   using dart::math::Jacobian;
@@ -96,6 +96,7 @@ bool computeJointVelocityFromTwist(
 
   const std::size_t numDofs = skeleton->getNumDofs();
   VectorXd positions = skeleton->getPositions();
+  VectorXd initialGuess = skeleton->getVelocities();
   VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
   VectorXd velocityLowerLimits = skeleton->getVelocityLowerLimits();
@@ -112,22 +113,29 @@ bool computeJointVelocityFromTwist(
     const double velocityLowerLimit = velocityLowerLimits[i];
     const double velocityUpperLimit = velocityUpperLimits[i];
 
-    if (position + _timestep * velocityLowerLimit
-        < positionLowerLimit + _padding)
-      velocityLowerLimits[i] = std::max(
-          velocityLowerLimits[i],
-          ((velocityLowerLimits[i] + _padding) - position) / _timestep);
+    if (position <= positionLowerLimit + _jointLimitTolerance)
+    {
+      velocityLowerLimits[i] = 0.0;
+      if (initialGuess[i] < 0.0)
+      {
+        initialGuess[i] = 0.0;
+      }
+    }
 
-    if (position + _timestep * velocityUpperLimit
-        > positionUpperLimit - _padding)
-      velocityUpperLimits[i] = std::min(
-          velocityUpperLimits[i],
-          ((velocityUpperLimits[i] - _padding) - position) / _timestep);
+    if (position >= positionUpperLimit - _jointLimitTolerance)
+    {
+      velocityUpperLimits[i] = 0.0;
+      if (initialGuess[i] > 0.0)
+      {
+        initialGuess[i] = 0.0;
+      }
+    }
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);
   problem->setLowerBounds(velocityLowerLimits);
   problem->setUpperBounds(velocityUpperLimits);
+  problem->setInitialGuess(initialGuess);
   problem->setObjective(
       std::make_shared<DesiredTwistFunction>(_desiredTwist, jacobian));
 
@@ -144,6 +152,53 @@ bool computeJointVelocityFromTwist(
 
   _jointVelocity = problem->getOptimalSolution();
   return true;
+}
+
+// compute the twist in global coordinate that corresponds to the gradient of
+// the geodesic distance between two transforms
+Eigen::Vector6d computeGeodesicTwist(
+    const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
+{
+  using dart::math::logMap;
+  Eigen::Isometry3d relativeTrans = _currentTrans.inverse() * _goalTrans;
+  Eigen::Vector3d relativeTranslation
+      = _currentTrans.linear() * relativeTrans.translation();
+  Eigen::Vector3d axisAngles = logMap(relativeTrans.linear());
+  Eigen::Vector3d relativeAngles = _currentTrans.linear() * axisAngles;
+  Eigen::Vector6d geodesicTwist;
+  geodesicTwist << relativeAngles, relativeTranslation;
+  return geodesicTwist;
+}
+
+// compute the error in gloabl coordinate between two transforms
+Eigen::Vector4d computeGeodesicError(
+    const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
+{
+  using dart::math::logMap;
+  Eigen::Isometry3d relativeTrans = _currentTrans.inverse() * _goalTrans;
+  Eigen::Vector3d relativeTranslation
+      = _currentTrans.linear() * relativeTrans.translation();
+  Eigen::Vector3d axisAngles = logMap(relativeTrans.linear());
+  Eigen::Vector4d geodesicError;
+  geodesicError << axisAngles.norm(), relativeTranslation;
+  return geodesicError;
+}
+
+double computeGeodesicDistanceBetweenTransforms(
+    const Eigen::Isometry3d& _currentTrans,
+    const Eigen::Isometry3d& _goalTrans,
+    double _r)
+{
+  return computeGeodesicDistance(_currentTrans, _goalTrans, _r);
+}
+
+double computeGeodesicDistance(
+    const Eigen::Isometry3d& _currentTrans,
+    const Eigen::Isometry3d& _goalTrans,
+    double _r)
+{
+  Eigen::Vector4d error = computeGeodesicError(_currentTrans, _goalTrans);
+  return fabs(_r * error[0]);
 }
 
 } // namespace vectorfield

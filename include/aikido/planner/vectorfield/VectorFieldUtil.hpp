@@ -7,6 +7,7 @@
 #include <dart/optimizer/nlopt/NloptSolver.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
@@ -67,21 +68,58 @@ private:
 /// Compute joint velocity from a given twist.
 ///
 /// \param[in] _desiredTwist Desired twist, which consists of angular velocity
-/// and linear velocity
+/// and linear velocity.
 /// \param[in] _stateSpace MetaSkeleton state space
 /// \param[in]  _bodyNode Body node of the end-effector
+/// \param[in] _jointLimitTolerance If less then this distance to joint
+/// limit, velocity is bounded in that direction to 0.
 /// \param[in] _optimizationTolerance Callback of vector field calculation
-/// \param[in] _timestep How long will the computed joint velocities be executed
-/// \param[in] _padding Padding for joint limits
 /// \param[out] _jointVelocity Calculated joint velocities
 bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     const dart::dynamics::BodyNodePtr _bodyNode,
+    double _jointLimitTolerance,
     double _optimizationTolerance,
-    double _timestep,
-    double _padding,
     Eigen::VectorXd& _jointVelocity);
+
+/// Compute the twist in global coordinate that corresponds to the gradient of
+/// the geodesic distance between two transforms
+///
+/// \param[in] _currentTrans Current transformation
+/// \param[in] _goalTrans Goal transformation
+Eigen::Vector6d computeGeodesicTwist(
+    const Eigen::Isometry3d& _currentTrans,
+    const Eigen::Isometry3d& _goalTrans);
+
+/// Compute the error in gloabl coordinate between two transforms
+///
+/// \param[in] _currentTrans Current transformation
+/// \param[in] _goalTrans Goal transformation
+Eigen::Vector4d computeGeodesicError(
+    const Eigen::Isometry3d& _currentTrans,
+    const Eigen::Isometry3d& _goalTrans);
+
+/// Calculate the geodesic distance between two transforms, being
+/// gd = norm( relative translation + r * axis-angle error )
+/// \param[in] _currentTrans Current transformation
+/// \param[in] _goalTrans Goal transformation
+/// \param[in] _r In units of meters/radians converts radians to meters
+double computeGeodesicDistanceBetweenTransforms(
+    const Eigen::Isometry3d& _currentTrans,
+    const Eigen::Isometry3d& _goalTrans,
+    double _r = 1.0);
+
+/// Compute the geodesic distance between two transforms
+///
+/// \param[in] _currentTrans Current transformation
+/// \param[in] _goalTrans Goal transformation
+/// \param[in] _r in units of meters/radians converts radians to meters
+double computeGeodesicDistance(
+    const Eigen::Isometry3d& _currentTrans,
+    const Eigen::Isometry3d& _goalTrans,
+    double _r = 1.0);
+
 
 } // namespace vectorfield
 } // namespace planner

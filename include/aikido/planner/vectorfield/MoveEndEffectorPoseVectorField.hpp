@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_
-#define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_
+#ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
+#define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
 
 #include <aikido/planner/vectorfield/ConfigurationSpaceVectorField.hpp>
 
@@ -12,28 +12,21 @@ namespace vectorfield {
 /// This class defines two callback functions for vectorfield planner.
 /// One for generating joint velocity in MetaSkeleton state space,
 /// and one for determining vectorfield planner status.
-class MoveEndEffectorOffsetVectorField : public ConfigurationSpaceVectorField
+class MoveEndEffectorPoseVectorField : public ConfigurationSpaceVectorField
 {
 public:
   /// Constructor
   ///
   /// \param[in] _stateSpace MetaSkeleton state space
   /// \param[in] _bn Body node of end-effector
-  /// \param[in] _direction Unit vector in the direction of motion
-  /// \param[in] _distance Minimum distance in meters
-  /// \param[in] _maxDistance Maximum distance in meters
-  /// \param[in] _positionTolerance Constraint tolerance in meters
-  /// \param[in] _angularTolerance Constraint tolerance in radians
-  /// \param[in] _jointLimitTolerance Padding to the boundary in meters
+  /// \param[in] _goalPose Desired en-effector pose
+  /// \param[in] _poseErrorTolerance Constraint error tolerance in meters
   /// \param[in] _optimizationTolerance Tolerance on optimization
-  MoveEndEffectorOffsetVectorField(
+  MoveEndEffectorPoseVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
       dart::dynamics::BodyNodePtr _bn,
-      const Eigen::Vector3d& _direction,
-      double _distance,
-      double _maxDistance = std::numeric_limits<double>::max(),
-      double _positionTolerance = 0.01,
-      double _angularTolerance = 0.15,
+      const Eigen::Isometry3d& _goalPose,
+      double _poseErrorTolerance = 0.01,
       double _jointLimitTolerance = 3e-2,
       double _optimizationTolerance = 1e-3);
 
@@ -55,14 +48,13 @@ public:
       const Eigen::VectorXd& _q, double _t) override;
 
 protected:
-  Eigen::Vector3d mDirection;
-  double mDistance;
-  double mMaxDistance;
-  double mPositionTolerance;
-  double mAngularTolerance;
+  Eigen::Isometry3d mGoalPose;
+  double mPoseErrorTolerance;
   double mJointLimitTolerance;
   double mOptimizationTolerance;
-  Eigen::Isometry3d mStartPose;
+
+  Eigen::VectorXd mVelocityLowerLimits;
+  Eigen::VectorXd mVelocityUpperLimits;
 };
 
 } // namespace vectorfield
@@ -70,4 +62,4 @@ protected:
 } // namespace aikido
 
 #endif // ifndef
-       // AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_
+       // AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_

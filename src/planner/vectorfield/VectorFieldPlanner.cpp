@@ -1,6 +1,8 @@
 #include <exception>
 #include <string>
+#include <boost/numeric/odeint.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
@@ -14,39 +16,39 @@ namespace planner {
 namespace vectorfield {
 
 static void checkDofLimits(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    Eigen::VectorXd const& q,
-    Eigen::VectorXd const& qd)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    Eigen::VectorXd const& _q,
+    Eigen::VectorXd const& _qd)
 {
   using dart::dynamics::DegreeOfFreedom;
   std::stringstream ss;
 
-  for (std::size_t i = 0; i < stateSpace->getMetaSkeleton()->getNumDofs(); ++i)
+  for (std::size_t i = 0; i < _stateSpace->getMetaSkeleton()->getNumDofs(); ++i)
   {
-    DegreeOfFreedom* const dof = stateSpace->getMetaSkeleton()->getDof(i);
+    DegreeOfFreedom* const dof = _stateSpace->getMetaSkeleton()->getDof(i);
 
-    if (q[i] < dof->getPositionLowerLimit())
+    if (_q[i] < dof->getPositionLowerLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds lower position limit: ";
-      ss << q[i] << " < " << dof->getPositionLowerLimit();
+      ss << _q[i] << " < " << dof->getPositionLowerLimit();
       throw DofLimitError(dof, ss.str());
     }
-    else if (q[i] > dof->getPositionUpperLimit())
+    else if (_q[i] > dof->getPositionUpperLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds upper position limit: ";
-      ss << q[i] << " > " << dof->getPositionLowerLimit();
+      ss << _q[i] << " > " << dof->getPositionLowerLimit();
       throw DofLimitError(dof, ss.str());
     }
-    else if (qd[i] < dof->getVelocityLowerLimit())
+    else if (_qd[i] < dof->getVelocityLowerLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds lower velocity limit: ";
-      ss << qd[i] << " < " << dof->getVelocityLowerLimit();
+      ss << _qd[i] << " < " << dof->getVelocityLowerLimit();
       throw DofLimitError(dof, ss.str());
     }
-    else if (qd[i] > dof->getVelocityUpperLimit())
+    else if (_qd[i] > dof->getVelocityUpperLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds upper velocity limit: ";
-      ss << qd[i] << " > " << dof->getVelocityUpperLimit();
+      ss << _qd[i] << " > " << dof->getVelocityUpperLimit();
       throw DofLimitError(dof, ss.str());
     }
   }
@@ -54,178 +56,170 @@ static void checkDofLimits(
 
 //==============================================================================
 static void checkCollision(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const aikido::constraint::TestablePtr& constraint)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const aikido::constraint::TestablePtr& _constraint)
 {
   // Get current position
-  auto state = stateSpace->getScopedStateFromMetaSkeleton();
+  auto state = _stateSpace->getScopedStateFromMetaSkeleton();
   // Throw a termination if in collision
-  if (!constraint->isSatisfied(state))
+  if (!_constraint->isSatisfied(state))
   {
     throw VectorFieldTerminated("state in collision");
   }
 }
 
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    const aikido::constraint::TestablePtr& _constraint,
-    double _dt,
-    const VectorFieldCallback& _vectorFiledCb,
-    const VectorFieldStatusCallback& _statusCb)
+VectorFieldPlanner::VectorFieldPlanner(
+    const aikido::planner::vectorfield::ConfigurationSpaceVectorFieldPtr
+        _vectorField,
+    const aikido::constraint::TestablePtr _constraint,
+    double _initialStepSize)
+  : mVectorField(_vectorField)
+  , mConstraint(_constraint)
+  , mMetaSkeletonStateSpace(_vectorField->getMetaSkeletonStateSpace())
+  , mMetaSkeleton(_vectorField->getMetaSkeleton())
+  , mBodyNode(_vectorField->getBodyNode())
+  , mInitialStepSize(_initialStepSize)
 {
-  auto saver = MetaSkeletonStateSpaceSaver(_stateSpace);
+  mCacheIndex = -1;
+  mIndex = 0;
+}
+
+void VectorFieldPlanner::step(
+    const Eigen::VectorXd& q, Eigen::VectorXd& qd, double t)
+{
+  // set joint values
+  mMetaSkeleton->setPositions(q);
+
+  // collision checking of current joint values
+  checkCollision(mMetaSkeletonStateSpace, mConstraint);
+
+  // compute joint velocities
+  bool success = mVectorField->getJointVelocities(q, t, qd);
+  if (success == false)
+  {
+    throw IntegrationFailedException();
+  }
+
+  checkDofLimits(mMetaSkeletonStateSpace, q, qd);
+}
+
+void VectorFieldPlanner::check(const Eigen::VectorXd& q, double t)
+{
+  if (mTimer.getElapsedTime() > mTimelimit)
+  {
+    // throw TimeLimitError();
+  }
+
+  // set joint values
+  mMetaSkeleton->setPositions(q);
+
+  // collision checking of current joint values
+  checkCollision(mMetaSkeletonStateSpace, mConstraint);
+
+  Knot knot;
+  knot.mT = t;
+  knot.mPositions = q;
+
+  if (mKnots.size() > 0 && t == mKnots.back().mT)
+  {
+    std::cout << "SAME T" << std::endl;
+  }
+  else
+  {
+    mKnots.push_back(knot);
+    mIndex += 1;
+  }
+
+  VectorFieldPlannerStatus status = mVectorField->checkPlanningStatus(q, t);
+  if (status == VectorFieldPlannerStatus::CACHE_AND_CONTINUE
+      || status == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
+  {
+    mCacheIndex = mIndex;
+  }
+
+  if (status == VectorFieldPlannerStatus::TERMINATE
+      || status == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
+  {
+    throw VectorFieldTerminated(
+        "Planning was terminated by the StatusCallback.");
+  }
+}
+
+std::unique_ptr<aikido::trajectory::Spline>
+VectorFieldPlanner::followVectorField(
+    double _integrationTimeInterval, double _timelimit)
+{
+  using namespace std::placeholders;
+  using errorStepper = boost::numeric::odeint::
+      runge_kutta_dopri5<Eigen::VectorXd,
+                         double,
+                         Eigen::VectorXd,
+                         double,
+                         boost::numeric::odeint::vector_space_algebra>;
+
+  auto saver = MetaSkeletonStateSpaceSaver(mMetaSkeletonStateSpace);
   DART_UNUSED(saver);
 
-  dart::dynamics::MetaSkeletonPtr skeleton = _stateSpace->getMetaSkeleton();
+  mTimelimit = _timelimit;
 
-  if (skeleton->getPositionUpperLimits() == skeleton->getPositionLowerLimits())
+  if (mMetaSkeleton->getPositionUpperLimits()
+      == mMetaSkeleton->getPositionLowerLimits())
   {
     throw std::invalid_argument("State space volume zero");
   }
-  if (skeleton->getVelocityUpperLimits() == skeleton->getVelocityLowerLimits())
+  if (mMetaSkeleton->getVelocityUpperLimits()
+      == mMetaSkeleton->getVelocityLowerLimits())
   {
     throw std::invalid_argument("Velocity space volume zero");
   }
 
-  for (std::size_t i = 0; i < skeleton->getNumDofs(); ++i)
+  for (std::size_t i = 0; i < mMetaSkeleton->getNumDofs(); ++i)
   {
     std::stringstream ss;
-    if (skeleton->getPositionLowerLimit(i) > skeleton->getPositionUpperLimit(i))
+    if (mMetaSkeleton->getPositionLowerLimit(i)
+        > mMetaSkeleton->getPositionUpperLimit(i))
     {
       ss << "Position lower limit is larger than upper limit at DOF " << i;
       throw std::invalid_argument(ss.str());
     }
-    if (skeleton->getVelocityLowerLimit(i) > skeleton->getVelocityUpperLimit(i))
+    if (mMetaSkeleton->getVelocityLowerLimit(i)
+        > mMetaSkeleton->getVelocityUpperLimit(i))
     {
       ss << "Velocity lower limit is larger than upper limit at DOF " << i;
       throw std::invalid_argument(ss.str());
     }
   }
 
-  const std::size_t numDof = _stateSpace->getDimension();
+  mKnots.clear();
+  mCacheIndex = -1;
+  mIndex = 0;
 
-  std::vector<Knot> knots;
-  VectorFieldPlannerStatus terminationStatus
-      = VectorFieldPlannerStatus::CONTINUE;
-  std::exception_ptr terminationError;
+  mTimer.start();
 
-  int cacheIndex = -1;
-  int index = 0;
-  double t = 0;
-  Eigen::VectorXd q = _stateSpace->getMetaSkeleton()->getPositions();
-
-  auto startState = _stateSpace->createState();
-  _stateSpace->convertPositionsToState(q, startState);
-  Eigen::VectorXd dq(numDof);
-  assert(static_cast<std::size_t>(q.size()) == numDof);
-
-  do
+  try
   {
-    // Evaluate the vector field.
-    try
-    {
-      if (!_vectorFiledCb(_stateSpace, t, dq))
-      {
-        throw VectorFieldTerminated("Failed evaluating VectorField.");
-      }
-    }
-    catch (const VectorFieldTerminated& e)
-    {
-      terminationStatus = VectorFieldPlannerStatus::TERMINATE;
-      terminationError = std::current_exception();
-      break;
-    }
-
-    if (static_cast<std::size_t>(dq.size()) != numDof)
-    {
-      throw std::length_error(
-          "Vector field returned an incorrect number of DOF velocities.");
-    }
-
-    // TODO: This should be computed from the DOF resolutions.
-    const std::size_t numSteps = 1;
-
-    // Compute the number of collision checks we need.
-    for (std::size_t istep = 0; istep < numSteps; ++istep)
-    {
-      try
-      {
-        checkDofLimits(_stateSpace, q, dq);
-        _stateSpace->getMetaSkeleton()->setPositions(q);
-        checkCollision(_stateSpace, _constraint);
-      }
-      catch (const VectorFieldTerminated& e)
-      {
-        terminationStatus = VectorFieldPlannerStatus::TERMINATE;
-        terminationError = std::current_exception();
-        break;
-      }
-
-      // Insert the waypoint.
-      assert(static_cast<std::size_t>(q.size()) == numDof);
-      assert(static_cast<std::size_t>(dq.size()) == numDof);
-
-      Knot knot;
-      knot.mT = t;
-      knot.mPositions = q;
-      knot.mVelocities = dq;
-      knots.push_back(knot);
-
-      // Take a step.
-      auto currentState = _stateSpace->createState();
-      _stateSpace->convertPositionsToState(q, currentState);
-      auto deltaState = _stateSpace->createState();
-      _stateSpace->convertPositionsToState(_dt * dq, deltaState);
-      auto nextState = _stateSpace->createState();
-      _stateSpace->compose(currentState, deltaState, nextState);
-      _stateSpace->convertStateToPositions(nextState, q);
-
-      t += _dt;
-      index++;
-
-      // Check if we should terminate.
-      terminationStatus = _statusCb(_stateSpace, t);
-      if (terminationStatus == VectorFieldPlannerStatus::CACHE_AND_CONTINUE
-          || terminationStatus == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
-      {
-        cacheIndex = index;
-      }
-    }
-  } while (terminationStatus != VectorFieldPlannerStatus::TERMINATE
-           && terminationStatus
-                  != VectorFieldPlannerStatus::CACHE_AND_TERMINATE);
-
-  if (cacheIndex >= 0)
-  {
-    // Print the termination condition.
-    if (terminationError)
-    {
-      try
-      {
-        std::rethrow_exception(terminationError);
-      }
-      catch (const VectorFieldTerminated& e)
-      {
-        dtwarn << "[VectorFieldPlanner::Plan] Terminated early: " << e.what()
-               << '\n';
-        return nullptr;
-      }
-    }
-
-    return convertToSpline(knots, cacheIndex, _stateSpace);
+    Eigen::VectorXd initialQ = mMetaSkeleton->getPositions();
+    // Integrate the vector field to get a configuration space path.
+    boost::numeric::odeint::integrate_adaptive(
+        errorStepper(),
+        std::bind(&VectorFieldPlanner::step, this, _1, _2, _3),
+        initialQ,
+        0.,
+        _integrationTimeInterval,
+        mInitialStepSize,
+        std::bind(&VectorFieldPlanner::check, this, _1, _2));
   }
-  // Re-throw whatever error caused planning to fail.
-  else if (terminationError)
+  catch (const VectorFieldTerminated& e)
   {
-    std::rethrow_exception(terminationError);
+    dtwarn << e.what() << std::endl;
   }
-  else
+  catch (const IntegrationFailedException& e)
   {
-    throw VectorFieldTerminated(
-        "Planning was terminated by the StatusCallback.");
+    dtwarn << e.what() << std::endl;
+    return nullptr;
   }
-  return nullptr;
+
+  return convertToSpline(mKnots, mCacheIndex, mMetaSkeletonStateSpace);
 }
 
 //==============================================================================
@@ -235,12 +229,11 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Vector3d& _direction,
     double _distance,
-    double _linearVelocity,
-    double _linearTolerance,
+    double _maxDistance,
+    double _positionTolerance,
     double _angularTolerance,
-    double _linearGain,
-    double _angularGain,
-    double _timestep)
+    double _timelimit,
+    double _integralTimeInterval)
 {
   if (_distance < 0.)
   {
@@ -249,11 +242,9 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error(ss.str());
   }
 
-  if (_linearVelocity <= 0.0)
+  if (_maxDistance < _distance)
   {
-    std::stringstream ss;
-    ss << "Linear velocity must be positive; got " << _linearVelocity << ".";
-    throw std::runtime_error(ss.str());
+    throw std::runtime_error("Max distance is less than distance.");
   }
 
   if (_direction.norm() == 0.0)
@@ -261,22 +252,33 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error("Direction vector is a zero vector");
   }
 
-  Eigen::Vector3d velocity = _direction.normalized() * _linearVelocity;
-  double duration = _distance / _linearVelocity;
-
-  auto vectorfield = MoveEndEffectorOffsetVectorField(
+  auto vectorfield = std::make_shared<MoveEndEffectorOffsetVectorField>(
+      _stateSpace,
       _bn,
-      velocity,
-      0.0,
-      duration,
-      _timestep,
-      _linearGain,
-      _linearTolerance,
-      _angularGain,
+      _direction,
+      _distance,
+      _maxDistance,
+      _positionTolerance,
       _angularTolerance);
 
-  return planPathByVectorField(
-      _stateSpace, _constraint, _timestep, vectorfield, vectorfield);
+  auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, _constraint);
+  return planner->followVectorField(_integralTimeInterval, _timelimit);
+}
+
+std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const dart::dynamics::BodyNodePtr& _bn,
+    const aikido::constraint::TestablePtr& _constraint,
+    const Eigen::Isometry3d& _goalPose,
+    double _poseErrorTolerance,
+    double _timelimit,
+    double _integralTimeInterval)
+{
+  auto vectorfield = std::make_shared<MoveEndEffectorPoseVectorField>(
+      _stateSpace, _bn, _goalPose, _poseErrorTolerance);
+
+  auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, _constraint);
+  return planner->followVectorField(_integralTimeInterval, _timelimit);
 }
 
 } // namespace vectorfield

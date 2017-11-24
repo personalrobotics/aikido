@@ -10,13 +10,21 @@ namespace planner {
 namespace vectorfield {
 
 /// Define runtime error for the termination of vectorfield planner.
-class VectorFieldTerminated : public std::runtime_error
+class VectorFieldTerminated : public std::exception
 {
 public:
   /// Constructor
   ///
   /// \param[in] _whatArg Error string
   VectorFieldTerminated(const std::string& _whatArg);
+
+  const char* what() const throw()
+  {
+    return mWhatArg.c_str();
+  }
+
+protected:
+  std::string mWhatArg;
 };
 
 /// Define termination error of vectorfield planner due to DOF limit error.
@@ -37,6 +45,24 @@ public:
 
 private:
   const dart::dynamics::DegreeOfFreedom* mDof;
+};
+
+/// Define integration failure for the termination of vectorfield planner.
+class IntegrationFailedException : public std::runtime_error
+{
+public:
+  IntegrationFailedException() : std::runtime_error("Integation failed.")
+  {
+  }
+};
+
+/// Define time limit error for the termination of vectorfield planner.
+class TimeLimitError : public VectorFieldTerminated
+{
+public:
+  TimeLimitError() : VectorFieldTerminated("Reached time limit.")
+  {
+  }
 };
 
 } // namespace vectorfield
