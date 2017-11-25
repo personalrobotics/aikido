@@ -1,4 +1,5 @@
 #include <Eigen/Geometry>
+#include <aikido/common/algorithm.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -58,6 +59,7 @@ DesiredTwistFunction::DesiredTwistFunction(
   , mTwist(_twist)
   , mJacobian(_jacobian)
 {
+  // Do nothing
 }
 
 //==============================================================================
@@ -67,7 +69,6 @@ double DesiredTwistFunction::eval(const Eigen::VectorXd& _qd)
 }
 
 //==============================================================================
-
 void DesiredTwistFunction::evalGradient(
     const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad)
 {
@@ -75,7 +76,6 @@ void DesiredTwistFunction::evalGradient(
 }
 
 //==============================================================================
-
 bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
@@ -98,6 +98,7 @@ bool computeJointVelocityFromTwist(
   const Jacobian jacobian = skeleton->getWorldJacobian(_bodyNode);
 
   const std::size_t numDofs = skeleton->getNumDofs();
+
   _jointVelocity = Eigen::VectorXd::Zero(numDofs);
   VectorXd positions = skeleton->getPositions();
   VectorXd initialGuess = skeleton->getVelocities();
@@ -105,6 +106,7 @@ bool computeJointVelocityFromTwist(
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
   VectorXd velocityLowerLimits = _jointVelocityLowerLimits;
   VectorXd velocityUpperLimits = _jointVelocityUpperLimits;
+
   auto currentState = _stateSpace->createState();
   _stateSpace->convertPositionsToState(positions, currentState);
 
@@ -120,21 +122,16 @@ bool computeJointVelocityFromTwist(
         <= positionLowerLimit + _jointLimitTolerance)
     {
       velocityLowerLimits[i] = 0.0;
-      if (initialGuess[i] < 0.0)
-      {
-        initialGuess[i] = 0.0;
-      }
     }
 
     if (position + _maxStepSize * velocityUpperLimit
         >= positionUpperLimit - _jointLimitTolerance)
     {
       velocityUpperLimits[i] = 0.0;
-      if (initialGuess[i] > 0.0)
-      {
-        initialGuess[i] = 0.0;
-      }
     }
+
+    initialGuess[i] = common::clamp(
+        initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);

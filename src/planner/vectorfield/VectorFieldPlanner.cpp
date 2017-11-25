@@ -103,7 +103,7 @@ void VectorFieldPlanner::step(
     throw IntegrationFailedException();
   }
 
-  // checkDofLimits(mMetaSkeletonStateSpace, q, qd);
+  checkDofLimits(mMetaSkeletonStateSpace, q, qd);
 }
 
 //==============================================================================
@@ -196,7 +196,6 @@ VectorFieldPlanner::followVectorField(
   mIndex = 0;
 
   mTimer.start();
-
   try
   {
     Eigen::VectorXd initialQ = mMetaSkeleton->getPositions();
