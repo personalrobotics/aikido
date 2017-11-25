@@ -24,7 +24,9 @@ public:
   /// \param[in] _maxDistance Maximum distance in meters
   /// \param[in] _positionTolerance Constraint tolerance in meters
   /// \param[in] _angularTolerance Constraint tolerance in radians
-  /// \param[in] _jointLimitTolerance Padding to the boundary in meters
+  /// \param[in] _initialStepSize Initial step size
+  /// \param[in] _jointLimitTolerance If less then this distance to joint
+  /// limit, velocity is bounded in that direction to 0
   /// \param[in] _optimizationTolerance Tolerance on optimization
   MoveEndEffectorOffsetVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
@@ -34,6 +36,7 @@ public:
       double _maxDistance = std::numeric_limits<double>::max(),
       double _positionTolerance = 0.01,
       double _angularTolerance = 0.15,
+      double _initialStepSize = 1e-1,
       double _jointLimitTolerance = 3e-2,
       double _optimizationTolerance = 1e-3);
 
@@ -60,6 +63,7 @@ protected:
   double mMaxDistance;
   double mPositionTolerance;
   double mAngularTolerance;
+  double mInitialStepSize;
   double mJointLimitTolerance;
   double mOptimizationTolerance;
   Eigen::Isometry3d mStartPose;

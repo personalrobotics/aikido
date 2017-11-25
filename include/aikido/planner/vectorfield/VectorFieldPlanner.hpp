@@ -52,7 +52,7 @@ public:
   ///
   /// \param[in] _vectorField Vector field in configuration space
   /// \param[in] _constraint Constraint to be satisfied
-  /// \param[in] _initialStepSize Initial step size
+
   VectorFieldPlanner(
       const aikido::planner::vectorfield::ConfigurationSpaceVectorFieldPtr
           _vectorField,
@@ -110,6 +110,10 @@ protected:
 /// distance
 /// \param[in] angularTolerance How a planned trajectory is allowed to deviate
 /// from a given direction
+/// \param[in] _initialStepSize Initial step size
+/// \param[in] _jointLimitTolerance If less then this distance to joint
+/// limit, velocity is bounded in that direction to 0
+/// \param[in] _optimizationTolerance Tolerance on optimization
 /// \param[in] _timelimit timeout in seconds
 /// \param[in] _integralTimeInterval The time interval to integrate over
 /// \return Trajectory or \c nullptr if planning failed
@@ -122,6 +126,9 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double _maxDistance = std::numeric_limits<double>::max(),
     double _positionTolerance = 0.01,
     double _angularTolerance = 0.15,
+    double _initialStepSize = 1e-2,
+    double _jointLimitTolerance = 3e-2,
+    double _optimizationTolerance = 1e-3,
     double _timelimit = 5.0,
     double _integralTimeInterval = 10.0);
 
@@ -136,6 +143,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \param[in] _positionErrorTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
 /// distance
+/// \param[in] _initialStepSize Initial step size
+/// \param[in] _jointLimitTolerance If less then this distance to joint
+/// limit, velocity is bounded in that direction to 0
+/// \param[in] _optimizationTolerance Tolerance on optimization
 /// \param[in] _timelimit timeout in seconds
 /// \param[in] _integralTimeInterval The time interval to integrate over
 /// \return Trajectory or \c nullptr if planning failed
@@ -145,6 +156,9 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Isometry3d& _goalPose,
     double _poseErrorTolerance,
+    double _initialStepSize = 1e-2,
+    double _jointLimitTolerance = 3e-2,
+    double _optimizationTolerance = 1.,
     double _timelimit = 5.0,
     double _integralTimeInterval = 10.0);
 

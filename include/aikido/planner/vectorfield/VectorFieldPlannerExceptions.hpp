@@ -9,7 +9,7 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-/// Define runtime error for the termination of vectorfield planner.
+/// Define termination of vectorfield planner.
 class VectorFieldTerminated : public std::exception
 {
 public:
@@ -18,17 +18,24 @@ public:
   /// \param[in] _whatArg Error string
   VectorFieldTerminated(const std::string& _whatArg);
 
-  const char* what() const throw()
-  {
-    return mWhatArg.c_str();
-  }
+  const char* what() const throw();
 
 protected:
   std::string mWhatArg;
 };
 
+/// Define runtime error of vector field planner.
+class VectorFieldError : public std::runtime_error
+{
+public:
+  /// Constructor
+  ///
+  /// \param[in] _whatArg Error string
+  VectorFieldError(const std::string& _whatArg);
+};
+
 /// Define termination error of vectorfield planner due to DOF limit error.
-class DofLimitError : public VectorFieldTerminated
+class DofLimitError : public VectorFieldError
 {
 public:
   /// Constructor
@@ -48,19 +55,19 @@ private:
 };
 
 /// Define integration failure for the termination of vectorfield planner.
-class IntegrationFailedException : public std::runtime_error
+class IntegrationFailedException : public VectorFieldError
 {
 public:
-  IntegrationFailedException() : std::runtime_error("Integation failed.")
+  IntegrationFailedException() : VectorFieldError("Integation failed.")
   {
   }
 };
 
 /// Define time limit error for the termination of vectorfield planner.
-class TimeLimitError : public VectorFieldTerminated
+class TimeLimitError : public VectorFieldError
 {
 public:
-  TimeLimitError() : VectorFieldTerminated("Reached time limit.")
+  TimeLimitError() : VectorFieldError("Reached time limit.")
   {
   }
 };

@@ -81,6 +81,9 @@ bool computeJointVelocityFromTwist(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     const dart::dynamics::BodyNodePtr _bodyNode,
     double _jointLimitTolerance,
+    const Eigen::VectorXd& _jointVelocityLowerLimits,
+    const Eigen::VectorXd& _jointVelocityUpperLimits,
+    double _maxStepSize,
     double _optimizationTolerance,
     Eigen::VectorXd& _jointVelocity)
 {
@@ -95,13 +98,13 @@ bool computeJointVelocityFromTwist(
   const Jacobian jacobian = skeleton->getWorldJacobian(_bodyNode);
 
   const std::size_t numDofs = skeleton->getNumDofs();
+  _jointVelocity = Eigen::VectorXd::Zero(numDofs);
   VectorXd positions = skeleton->getPositions();
   VectorXd initialGuess = skeleton->getVelocities();
   VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
-  VectorXd velocityLowerLimits = skeleton->getVelocityLowerLimits();
-  VectorXd velocityUpperLimits = skeleton->getVelocityUpperLimits();
-
+  VectorXd velocityLowerLimits = _jointVelocityLowerLimits;
+  VectorXd velocityUpperLimits = _jointVelocityUpperLimits;
   auto currentState = _stateSpace->createState();
   _stateSpace->convertPositionsToState(positions, currentState);
 
@@ -113,7 +116,8 @@ bool computeJointVelocityFromTwist(
     const double velocityLowerLimit = velocityLowerLimits[i];
     const double velocityUpperLimit = velocityUpperLimits[i];
 
-    if (position <= positionLowerLimit + _jointLimitTolerance)
+    if (position + _maxStepSize * velocityLowerLimit
+        <= positionLowerLimit + _jointLimitTolerance)
     {
       velocityLowerLimits[i] = 0.0;
       if (initialGuess[i] < 0.0)
@@ -122,7 +126,8 @@ bool computeJointVelocityFromTwist(
       }
     }
 
-    if (position >= positionUpperLimit - _jointLimitTolerance)
+    if (position + _maxStepSize * velocityUpperLimit
+        >= positionUpperLimit - _jointLimitTolerance)
     {
       velocityUpperLimits[i] = 0.0;
       if (initialGuess[i] > 0.0)
@@ -133,8 +138,8 @@ bool computeJointVelocityFromTwist(
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);
-  problem->setLowerBounds(velocityLowerLimits);
-  problem->setUpperBounds(velocityUpperLimits);
+  // problem->setLowerBounds(velocityLowerLimits);
+  // problem->setUpperBounds(velocityUpperLimits);
   problem->setInitialGuess(initialGuess);
   problem->setObjective(
       std::make_shared<DesiredTwistFunction>(_desiredTwist, jacobian));
@@ -154,8 +159,8 @@ bool computeJointVelocityFromTwist(
   return true;
 }
 
-// compute the twist in global coordinate that corresponds to the gradient of
-// the geodesic distance between two transforms
+//==============================================================================
+
 Eigen::Vector6d computeGeodesicTwist(
     const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
 {
@@ -170,7 +175,8 @@ Eigen::Vector6d computeGeodesicTwist(
   return geodesicTwist;
 }
 
-// compute the error in gloabl coordinate between two transforms
+//==============================================================================
+
 Eigen::Vector4d computeGeodesicError(
     const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
 {
@@ -184,6 +190,8 @@ Eigen::Vector4d computeGeodesicError(
   return geodesicError;
 }
 
+//==============================================================================
+
 double computeGeodesicDistanceBetweenTransforms(
     const Eigen::Isometry3d& _currentTrans,
     const Eigen::Isometry3d& _goalTrans,
@@ -191,6 +199,8 @@ double computeGeodesicDistanceBetweenTransforms(
 {
   return computeGeodesicDistance(_currentTrans, _goalTrans, _r);
 }
+
+//==============================================================================
 
 double computeGeodesicDistance(
     const Eigen::Isometry3d& _currentTrans,

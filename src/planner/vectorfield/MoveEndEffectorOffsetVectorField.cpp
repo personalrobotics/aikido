@@ -18,6 +18,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     double _maxDistance,
     double _positionTolerance,
     double _angularTolerance,
+    double _initialStepSize,
     double _jointLimitTolerance,
     double _optimizationTolerance)
   : ConfigurationSpaceVectorField(_stateSpace, _bn)
@@ -26,6 +27,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
   , mMaxDistance(_maxDistance)
   , mPositionTolerance(_positionTolerance)
   , mAngularTolerance(_angularTolerance)
+  , mInitialStepSize(_initialStepSize)
   , mJointLimitTolerance(_jointLimitTolerance)
   , mOptimizationTolerance(_optimizationTolerance)
   , mStartPose(_bn->getTransform())
@@ -55,6 +57,11 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(
 
   const Isometry3d currentPose = mBodyNode->getTransform();
 
+  Eigen::VectorXd jointVelocityUpperLimits
+      = mMetaSkeleton->getVelocityUpperLimits();
+  Eigen::VectorXd jointVelocityLowerLimits
+      = mMetaSkeleton->getVelocityLowerLimits();
+
   Vector6d desiredTwist = computeGeodesicTwist(currentPose, mStartPose);
   desiredTwist.tail<3>() = mDirection;
 
@@ -63,6 +70,9 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(
       mStateSpace,
       mBodyNode,
       mJointLimitTolerance,
+      jointVelocityLowerLimits,
+      jointVelocityUpperLimits,
+      mInitialStepSize,
       mOptimizationTolerance,
       _qd);
   return result;
@@ -100,7 +110,7 @@ VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus(
   // Check if we've reached the target.
   if (mMaxDistance == std::numeric_limits<double>::max())
   {
-    if (movedDistance > mDistance)
+    if (movedDistance >= mDistance)
     {
       return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
     }

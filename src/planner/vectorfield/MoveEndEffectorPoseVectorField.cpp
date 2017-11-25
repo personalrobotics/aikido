@@ -14,11 +14,13 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     dart::dynamics::BodyNodePtr _bn,
     const Eigen::Isometry3d& _goalPose,
     double _poseErrorTolerance,
+    double _initialStepSize,
     double _jointLimitTolerance,
     double _optimizationTolerance)
   : ConfigurationSpaceVectorField(_stateSpace, _bn)
   , mGoalPose(_goalPose)
   , mPoseErrorTolerance(_poseErrorTolerance)
+  , mInitialStepSize(_initialStepSize)
   , mJointLimitTolerance(_jointLimitTolerance)
   , mOptimizationTolerance(_optimizationTolerance)
 {
@@ -32,6 +34,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
 }
 
 //==============================================================================
+
 bool MoveEndEffectorPoseVectorField::getJointVelocities(
     const Eigen::VectorXd& _q, double _t, Eigen::VectorXd& _qd)
 {
@@ -44,35 +47,48 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(
 
   Vector6d desiredTwist = computeGeodesicTwist(currentPose, mGoalPose);
 
+  // Eigen::VectorXd jointVelocityUpperLimits =
+  // mMetaSkeleton->getVelocityUpperLimits();
+  // Eigen::VectorXd jointVelocityLowerLimits =
+  // mMetaSkeleton->getVelocityLowerLimits();
+  std::size_t numDof = mMetaSkeleton->getNumDofs();
+  Eigen::VectorXd jointVelocityUpperLimits
+      = Eigen::VectorXd::Constant(numDof, std::numeric_limits<double>::max());
+  Eigen::VectorXd jointVelocityLowerLimits
+      = Eigen::VectorXd::Constant(numDof, std::numeric_limits<double>::min());
+
   bool result = computeJointVelocityFromTwist(
       desiredTwist,
       mStateSpace,
       mBodyNode,
       mJointLimitTolerance,
+      jointVelocityLowerLimits,
+      jointVelocityUpperLimits,
+      mInitialStepSize,
       mOptimizationTolerance,
       _qd);
 
   if (result == true)
   {
-    /*
     // Go as fast as possible
-    for(int i=0; i< mMetaSkeleton->getNumDofs(); i++)
+    for (std::size_t i = 0; i < numDof; i++)
     {
-      if(_qd[i]>0)
+      if (_qd[i] > mVelocityUpperLimits[i])
       {
         _qd[i] = mVelocityUpperLimits[i];
       }
-      else if(_qd[i]<0)
+      else if (_qd[i] < mVelocityLowerLimits[i])
       {
         _qd[i] = mVelocityLowerLimits[i];
       }
-    }*/
+    }
   }
 
   return result;
 }
 
 //==============================================================================
+
 VectorFieldPlannerStatus MoveEndEffectorPoseVectorField::checkPlanningStatus(
     const Eigen::VectorXd& _q, double _t)
 {

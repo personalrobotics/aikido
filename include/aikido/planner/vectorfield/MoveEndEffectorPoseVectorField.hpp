@@ -21,14 +21,18 @@ public:
   /// \param[in] _bn Body node of end-effector
   /// \param[in] _goalPose Desired en-effector pose
   /// \param[in] _poseErrorTolerance Constraint error tolerance in meters
+  /// \param[in] _initialStepSize Initial step size
+  /// \param[in] _jointLimitTolerance If less then this distance to joint
+  /// limit, velocity is bounded in that direction to 0
   /// \param[in] _optimizationTolerance Tolerance on optimization
   MoveEndEffectorPoseVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
       dart::dynamics::BodyNodePtr _bn,
       const Eigen::Isometry3d& _goalPose,
-      double _poseErrorTolerance = 0.01,
+      double _poseErrorTolerance = 0.5,
+      double _initialStepSize = 1e-2,
       double _jointLimitTolerance = 3e-2,
-      double _optimizationTolerance = 1e-3);
+      double _optimizationTolerance = 5e-2);
 
   /// Vectorfield callback function
   ///
@@ -50,6 +54,7 @@ public:
 protected:
   Eigen::Isometry3d mGoalPose;
   double mPoseErrorTolerance;
+  double mInitialStepSize;
   double mJointLimitTolerance;
   double mOptimizationTolerance;
 

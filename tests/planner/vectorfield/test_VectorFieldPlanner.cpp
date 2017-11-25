@@ -257,93 +257,64 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 {
   using aikido::planner::vectorfield::computeJointVelocityFromTwist;
 
-  Eigen::VectorXd currentConfig = Eigen::VectorXd::Random(mNumDof);
-  mStateSpace->getMetaSkeleton()->setPositions(currentConfig);
+  Eigen::VectorXd jointVelocityUpperLimits
+      = mStateSpace->getMetaSkeleton()->getVelocityUpperLimits();
+  Eigen::VectorXd jointVelocityLowerLimits
+      = mStateSpace->getMetaSkeleton()->getVelocityLowerLimits();
 
-  Eigen::Isometry3d currentTrans = mBodynode->getTransform();
-  Eigen::Vector3d currentTranslation = currentTrans.translation();
-
-  Eigen::Vector6d desiredTwist;
-  Eigen::Vector3d linearVel = Eigen::Vector3d::Zero();
-  Eigen::Vector3d angularVel = Eigen::Vector3d::Zero();
-  linearVel << 0.5, 0.5, 0.5;
-  desiredTwist.head<3>() = angularVel;
-  desiredTwist.tail<3>() = linearVel;
-
-  double timestep = 0.01;
+  double maxStepSize = 0.01;
   double padding = 2e-3;
-  double optimizationTolerance = 1e-10;
+  double optimizationTolerance = 1; // 1e-3;// 1e-10;
+
+  // Linear only
+  Eigen::Vector6d desiredTwist1 = Eigen::Vector6d::Zero();
+  desiredTwist1.tail<3>() << 1.0, 1.0, 1.0;
+
   Eigen::VectorXd qd = Eigen::VectorXd::Zero(mNumDof);
   EXPECT_TRUE(
       computeJointVelocityFromTwist(
-          desiredTwist,
+          desiredTwist1,
           mStateSpace,
           mBodynode,
           padding,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          maxStepSize,
           optimizationTolerance,
           qd));
 
-  Eigen::VectorXd nextConfig(mNumDof);
-  auto currentState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(currentConfig, currentState);
-  auto deltaState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(timestep * qd, deltaState);
-  auto nextState = mStateSpace->createState();
-  mStateSpace->compose(currentState, deltaState, nextState);
-  mStateSpace->convertStateToPositions(nextState, nextConfig);
-  mStateSpace->getMetaSkeleton()->setPositions(nextConfig);
+  // Angular only
+  Eigen::Vector6d desiredTwist2 = Eigen::Vector6d::Zero();
+  desiredTwist2.head<3>() << 1.0, 1.0, 1.0;
 
-  Eigen::Isometry3d nextTrans = mBodynode->getTransform();
-  Eigen::Vector3d nextTranslation = nextTrans.translation();
+  EXPECT_TRUE(
+      computeJointVelocityFromTwist(
+          desiredTwist2,
+          mStateSpace,
+          mBodynode,
+          padding,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          maxStepSize,
+          optimizationTolerance,
+          qd));
 
-  Eigen::Vector3d linearDelta = nextTranslation - currentTranslation;
-  Eigen::Vector3d expectedLinearDelta = linearVel * timestep;
+  // Both linear and angular
+  Eigen::Vector6d desiredTwist3 = Eigen::Vector6d::Zero();
+  desiredTwist3.head<3>() << 1.0, 1.0, 1.0;
+  desiredTwist3.tail<3>() << 1.0, 1.0, 1.0;
 
-  double tolerance = 1e-3;
-  EXPECT_TRUE((linearDelta - expectedLinearDelta).norm() < tolerance);
-}
-
-TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
-{
-  using dart::math::eulerXYXToMatrix;
-  using aikido::planner::vectorfield::computeGeodesicDistanceBetweenTransforms;
-
-  Eigen::VectorXd startConfig = Eigen::VectorXd::Zero(mNumDof);
-  startConfig << 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0;
-  mStateSpace->getMetaSkeleton()->setPositions(startConfig);
-  Eigen::Isometry3d startPose = mBodynode->getTransform();
-
-  Eigen::Isometry3d targetPose = startPose;
-  targetPose.linear()
-      = targetPose.linear() * eulerXYXToMatrix(Eigen::Vector3d(1.0, 0.0, 0.0));
-
-  double initialPoseError
-      = computeGeodesicDistanceBetweenTransforms(startPose, targetPose);
-
-  double poseErrorTolerance = 0.1;
-
-  auto traj = aikido::planner::vectorfield::planToEndEffectorPose(
-      mStateSpace,
-      mBodynode,
-      mPassingConstraint,
-      targetPose,
-      poseErrorTolerance);
-
-  EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
-
-  if (traj == nullptr)
-  {
-    return;
-  }
-
-  auto endpoint = mStateSpace->createState();
-  traj->evaluate(traj->getEndTime(), endpoint);
-  mStateSpace->setState(endpoint);
-  Eigen::Isometry3d endTrans = mBodynode->getTransform();
-
-  double poseError
-      = computeGeodesicDistanceBetweenTransforms(endTrans, targetPose);
-  EXPECT_TRUE(poseError <= poseErrorTolerance);
+  EXPECT_TRUE(
+      computeJointVelocityFromTwist(
+          desiredTwist2,
+          mStateSpace,
+          mBodynode,
+          padding,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          maxStepSize,
+          optimizationTolerance,
+          qd));
 }
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
@@ -443,6 +414,109 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
       std::runtime_error);
 }
 
-TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPose)
+TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
 {
+  using dart::math::eulerXYXToMatrix;
+  using aikido::planner::vectorfield::computeGeodesicDistanceBetweenTransforms;
+
+  Eigen::VectorXd startConfig = Eigen::VectorXd::Zero(mNumDof);
+  startConfig << 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0;
+  mStateSpace->getMetaSkeleton()->setPositions(startConfig);
+  Eigen::Isometry3d startPose = mBodynode->getTransform();
+
+  double poseErrorTolerance = 0.1;
+
+  // translation difference
+  Eigen::Isometry3d targetPose = startPose;
+  targetPose.translation() += Eigen::Vector3d(0.1, 0.2, 0.3);
+
+  double initialPoseError
+      = computeGeodesicDistanceBetweenTransforms(startPose, targetPose);
+
+  mStateSpace->getMetaSkeleton()->setPositions(startConfig);
+  auto traj1 = aikido::planner::vectorfield::planToEndEffectorPose(
+      mStateSpace,
+      mBodynode,
+      mPassingConstraint,
+      targetPose,
+      poseErrorTolerance);
+
+  EXPECT_FALSE(traj1 == nullptr) << "Trajectory not found";
+
+  if (traj1 == nullptr)
+  {
+    return;
+  }
+
+  auto endpoint = mStateSpace->createState();
+  traj1->evaluate(traj1->getEndTime(), endpoint);
+  mStateSpace->setState(endpoint);
+  Eigen::Isometry3d endTrans = mBodynode->getTransform();
+
+  double poseError
+      = computeGeodesicDistanceBetweenTransforms(endTrans, targetPose);
+  EXPECT_TRUE(poseError <= poseErrorTolerance);
+
+  // rotation difference
+  targetPose = startPose;
+  targetPose.linear()
+      = targetPose.linear() * eulerXYXToMatrix(Eigen::Vector3d(0.2, 0.0, 0.0));
+
+  initialPoseError
+      = computeGeodesicDistanceBetweenTransforms(startPose, targetPose);
+
+  mStateSpace->getMetaSkeleton()->setPositions(startConfig);
+  auto traj2 = aikido::planner::vectorfield::planToEndEffectorPose(
+      mStateSpace,
+      mBodynode,
+      mPassingConstraint,
+      targetPose,
+      poseErrorTolerance);
+
+  EXPECT_FALSE(traj2 == nullptr) << "Trajectory not found";
+
+  if (traj2 == nullptr)
+  {
+    return;
+  }
+
+  endpoint = mStateSpace->createState();
+  traj2->evaluate(traj2->getEndTime(), endpoint);
+  mStateSpace->setState(endpoint);
+  endTrans = mBodynode->getTransform();
+
+  poseError = computeGeodesicDistanceBetweenTransforms(endTrans, targetPose);
+  EXPECT_TRUE(poseError <= poseErrorTolerance);
+
+  // translation and rotation differences
+  targetPose = startPose;
+  targetPose.translation() += Eigen::Vector3d(0.1, 0.2, 0.3);
+  targetPose.linear()
+      = targetPose.linear() * eulerXYXToMatrix(Eigen::Vector3d(0.2, 0.0, 0.0));
+
+  initialPoseError
+      = computeGeodesicDistanceBetweenTransforms(startPose, targetPose);
+
+  mStateSpace->getMetaSkeleton()->setPositions(startConfig);
+  auto traj3 = aikido::planner::vectorfield::planToEndEffectorPose(
+      mStateSpace,
+      mBodynode,
+      mPassingConstraint,
+      targetPose,
+      poseErrorTolerance);
+
+  EXPECT_FALSE(traj3 == nullptr) << "Trajectory not found";
+
+  if (traj3 == nullptr)
+  {
+    return;
+  }
+
+  endpoint = mStateSpace->createState();
+  traj3->evaluate(traj3->getEndTime(), endpoint);
+  mStateSpace->setState(endpoint);
+  endTrans = mBodynode->getTransform();
+
+  poseError = computeGeodesicDistanceBetweenTransforms(endTrans, targetPose);
+  EXPECT_TRUE(poseError <= poseErrorTolerance);
 }

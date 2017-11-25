@@ -73,6 +73,9 @@ private:
 /// \param[in]  _bodyNode Body node of the end-effector
 /// \param[in] _jointLimitTolerance If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
+/// \param[in] _jointVelocityLowerLimits Joint velocity lower bounds
+/// \param[in] _jointVelocityUpperLimits Joint velocity upper bounds
+/// \param[in] _maxStepSize Max step size in second.
 /// \param[in] _optimizationTolerance Callback of vector field calculation
 /// \param[out] _jointVelocity Calculated joint velocities
 bool computeJointVelocityFromTwist(
@@ -80,6 +83,9 @@ bool computeJointVelocityFromTwist(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     const dart::dynamics::BodyNodePtr _bodyNode,
     double _jointLimitTolerance,
+    const Eigen::VectorXd& _jointVelocityLowerLimits,
+    const Eigen::VectorXd& _jointVelocityUpperLimits,
+    double _maxStepSize,
     double _optimizationTolerance,
     Eigen::VectorXd& _jointVelocity);
 
@@ -119,7 +125,6 @@ double computeGeodesicDistance(
     const Eigen::Isometry3d& _currentTrans,
     const Eigen::Isometry3d& _goalTrans,
     double _r = 1.0);
-
 
 } // namespace vectorfield
 } // namespace planner
