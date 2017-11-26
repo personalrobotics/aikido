@@ -88,48 +88,48 @@ VectorFieldPlanner::VectorFieldPlanner(
 }
 
 void VectorFieldPlanner::step(
-    const Eigen::VectorXd& q, Eigen::VectorXd& qd, double t)
+    const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double _t)
 {
+  DART_UNUSED(_t);
   // set joint values
-  mMetaSkeleton->setPositions(q);
+  mMetaSkeleton->setPositions(_q);
 
   // collision checking of current joint values
   checkCollision(mMetaSkeletonStateSpace, mConstraint);
 
   // compute joint velocities
-  bool success = mVectorField->getJointVelocities(q, t, qd);
+  bool success = mVectorField->getJointVelocities(_qd);
   if (success == false)
   {
     throw IntegrationFailedException();
   }
 
-  checkDofLimits(mMetaSkeletonStateSpace, q, qd);
+  checkDofLimits(mMetaSkeletonStateSpace, _q, _qd);
 }
 
 //==============================================================================
 
-void VectorFieldPlanner::check(const Eigen::VectorXd& q, double t)
+void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
 {
   if (mTimer.getElapsedTime() > mTimelimit)
   {
-    // TODO disable time limit error for debugging
-    // throw TimeLimitError();
+    throw TimeLimitError();
   }
 
   // set joint values
-  mMetaSkeleton->setPositions(q);
+  mMetaSkeleton->setPositions(_q);
 
   // collision checking of current joint valuesb
   checkCollision(mMetaSkeletonStateSpace, mConstraint);
 
   Knot knot;
-  knot.mT = t;
-  knot.mPositions = q;
+  knot.mT = _t;
+  knot.mPositions = _q;
 
   mKnots.push_back(knot);
   mIndex += 1;
 
-  VectorFieldPlannerStatus status = mVectorField->checkPlanningStatus(q, t);
+  VectorFieldPlannerStatus status = mVectorField->checkPlanningStatus();
   if (status == VectorFieldPlannerStatus::CACHE_AND_CONTINUE
       || status == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
   {

@@ -30,7 +30,7 @@ public:
       dart::dynamics::BodyNodePtr _bn,
       const Eigen::Isometry3d& _goalPose,
       double _poseErrorTolerance = 0.5,
-      double _initialStepSize = 1e-2,
+      double _initialStepSize = 1e-1,
       double _jointLimitTolerance = 3e-2,
       double _optimizationTolerance = 5e-2);
 
@@ -40,16 +40,14 @@ public:
   /// \param[in] _t Current time being planned
   /// \param[out] _qd Joint velocities
   /// \return Whether joint velocities are successfully computed
-  virtual bool getJointVelocities(
-      const Eigen::VectorXd& _q, double _t, Eigen::VectorXd& _qd) override;
+  virtual bool getJointVelocities(Eigen::VectorXd& _qd) override;
 
   /// Vectorfield planning status callback function
   ///
   /// \param[in] _q Position in configuration space
   /// \param[in] _t Current time being planned
   /// \return Status of planning
-  virtual VectorFieldPlannerStatus checkPlanningStatus(
-      const Eigen::VectorXd& _q, double _t) override;
+  virtual VectorFieldPlannerStatus checkPlanningStatus() override;
 
 protected:
   Eigen::Isometry3d mGoalPose;

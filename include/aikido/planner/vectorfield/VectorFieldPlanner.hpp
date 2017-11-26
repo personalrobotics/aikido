@@ -15,35 +15,13 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-/// Callback function of joint velocity calculated by a vector field and a
-/// MetaSkeleton.
-///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _t Planned time of a given duration
-/// \param[out] _dq Joint velocity calculated by a vector field and meta
-/// skeleton
-/// \return Whether vectorfield evaluation succeeds
-using VectorFieldCallback = std::function<bool(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double _t,
-    Eigen::VectorXd& _dq)>;
-
-/// Callback function of status of planning
-///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _t Planned time of a given duration
-/// \return Status of vectorfield planner
-using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double _t)>;
-
 /// VectorField Planner generates a trajectory by following a vector field
 /// defined in joint space.
 /// A planned trajectroy ends either by a predefined termination criterion or a
 /// integral time.
 ///
 /// This class defines two callback functions for a integrator.
-/// step() provides joint velocities given joint positions and time
+/// step() provides joint velocities the vector field planner should follow
 /// check() is called after each integration step.
 class VectorFieldPlanner
 {
@@ -64,13 +42,13 @@ public:
   /// \param[in] _q Position in configuration space
   /// \param[out] _qd Joint velocities
   /// \param[in] _t Current time being planned
-  void step(const Eigen::VectorXd& q, Eigen::VectorXd& qd, double t);
+  void step(const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double _t);
 
   /// Check status after every intergration step
   ///
   /// \param[in] _q Position in configuration space
   /// \param[in] _t Current time being planned
-  void check(const Eigen::VectorXd& q, double t);
+  void check(const Eigen::VectorXd& _q, double _t);
 
   /// Generate a trajectory following the vector field along given time
   ///

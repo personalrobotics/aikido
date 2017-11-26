@@ -35,8 +35,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
 
 //==============================================================================
 
-bool MoveEndEffectorPoseVectorField::getJointVelocities(
-    const Eigen::VectorXd& _q, double _t, Eigen::VectorXd& _qd)
+bool MoveEndEffectorPoseVectorField::getJointVelocities(Eigen::VectorXd& _qd)
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
@@ -47,15 +46,10 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(
 
   Vector6d desiredTwist = computeGeodesicTwist(currentPose, mGoalPose);
 
-  // Eigen::VectorXd jointVelocityUpperLimits =
-  // mMetaSkeleton->getVelocityUpperLimits();
-  // Eigen::VectorXd jointVelocityLowerLimits =
-  // mMetaSkeleton->getVelocityLowerLimits();
-  std::size_t numDof = mMetaSkeleton->getNumDofs();
   Eigen::VectorXd jointVelocityUpperLimits
-      = Eigen::VectorXd::Constant(numDof, std::numeric_limits<double>::max());
+      = mMetaSkeleton->getVelocityUpperLimits();
   Eigen::VectorXd jointVelocityLowerLimits
-      = Eigen::VectorXd::Constant(numDof, std::numeric_limits<double>::min());
+      = mMetaSkeleton->getVelocityLowerLimits();
 
   bool result = computeJointVelocityFromTwist(
       desiredTwist,
@@ -64,6 +58,7 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(
       mJointLimitTolerance,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
+      false,
       mInitialStepSize,
       mOptimizationTolerance,
       _qd);
@@ -71,7 +66,7 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(
   if (result == true)
   {
     // Go as fast as possible
-    for (std::size_t i = 0; i < numDof; i++)
+    for (std::size_t i = 0; i < mMetaSkeleton->getNumDofs(); i++)
     {
       if (_qd[i] > mVelocityUpperLimits[i])
       {
@@ -89,8 +84,7 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(
 
 //==============================================================================
 
-VectorFieldPlannerStatus MoveEndEffectorPoseVectorField::checkPlanningStatus(
-    const Eigen::VectorXd& _q, double _t)
+VectorFieldPlannerStatus MoveEndEffectorPoseVectorField::checkPlanningStatus()
 {
   using Eigen::Isometry3d;
 
@@ -100,7 +94,7 @@ VectorFieldPlannerStatus MoveEndEffectorPoseVectorField::checkPlanningStatus(
       = computeGeodesicDistanceBetweenTransforms(currentPose, mGoalPose);
   if (poseError < mPoseErrorTolerance)
   {
-    return VectorFieldPlannerStatus::TERMINATE;
+    return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
   }
   return VectorFieldPlannerStatus::CONTINUE;
 }

@@ -31,22 +31,14 @@ public:
 
   /// Vectorfield callback function
   ///
-  /// \param[in] _q Position in configuration space
-  /// \param[in] _t Current time being planned
   /// \param[out] _qd Joint velocities
   /// \return Whether joint velocities are successfully computed
-  virtual bool getJointVelocities(
-      const Eigen::VectorXd& _q, double _t, Eigen::VectorXd& _qd)
-      = 0;
+  virtual bool getJointVelocities(Eigen::VectorXd& _qd) = 0;
 
   /// Vectorfield planning status callback function
   ///
-  /// \param[in] _q Position in configuration space
-  /// \param[in] _t Current time being planned
   /// \return Status of planning
-  virtual VectorFieldPlannerStatus checkPlanningStatus(
-      const Eigen::VectorXd& _q, double _t)
-      = 0;
+  virtual VectorFieldPlannerStatus checkPlanningStatus() = 0;
 
   /// Meta skeleton spate space
   virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr

@@ -83,6 +83,7 @@ bool computeJointVelocityFromTwist(
     double _jointLimitTolerance,
     const Eigen::VectorXd& _jointVelocityLowerLimits,
     const Eigen::VectorXd& _jointVelocityUpperLimits,
+    bool _jointVelocityLimited,
     double _maxStepSize,
     double _optimizationTolerance,
     Eigen::VectorXd& _jointVelocity)
@@ -110,33 +111,39 @@ bool computeJointVelocityFromTwist(
   auto currentState = _stateSpace->createState();
   _stateSpace->convertPositionsToState(positions, currentState);
 
-  for (std::size_t i = 0; i < numDofs; ++i)
+  if (_jointVelocityLimited == true)
   {
-    const double position = positions[i];
-    const double positionLowerLimit = positionLowerLimits[i];
-    const double positionUpperLimit = positionUpperLimits[i];
-    const double velocityLowerLimit = velocityLowerLimits[i];
-    const double velocityUpperLimit = velocityUpperLimits[i];
-
-    if (position + _maxStepSize * velocityLowerLimit
-        <= positionLowerLimit + _jointLimitTolerance)
+    for (std::size_t i = 0; i < numDofs; ++i)
     {
-      velocityLowerLimits[i] = 0.0;
-    }
+      const double position = positions[i];
+      const double positionLowerLimit = positionLowerLimits[i];
+      const double positionUpperLimit = positionUpperLimits[i];
+      const double velocityLowerLimit = velocityLowerLimits[i];
+      const double velocityUpperLimit = velocityUpperLimits[i];
 
-    if (position + _maxStepSize * velocityUpperLimit
-        >= positionUpperLimit - _jointLimitTolerance)
-    {
-      velocityUpperLimits[i] = 0.0;
-    }
+      if (position + _maxStepSize * velocityLowerLimit
+          <= positionLowerLimit + _jointLimitTolerance)
+      {
+        velocityLowerLimits[i] = 0.0;
+      }
 
-    initialGuess[i] = common::clamp(
-        initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
+      if (position + _maxStepSize * velocityUpperLimit
+          >= positionUpperLimit - _jointLimitTolerance)
+      {
+        velocityUpperLimits[i] = 0.0;
+      }
+
+      initialGuess[i] = common::clamp(
+          initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
+    }
   }
 
   const auto problem = std::make_shared<Problem>(numDofs);
-  // problem->setLowerBounds(velocityLowerLimits);
-  // problem->setUpperBounds(velocityUpperLimits);
+  if (_jointVelocityLimited)
+  {
+    problem->setLowerBounds(velocityLowerLimits);
+    problem->setUpperBounds(velocityUpperLimits);
+  }
   problem->setInitialGuess(initialGuess);
   problem->setObjective(
       std::make_shared<DesiredTwistFunction>(_desiredTwist, jacobian));

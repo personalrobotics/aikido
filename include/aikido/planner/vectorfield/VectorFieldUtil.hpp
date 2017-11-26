@@ -75,6 +75,8 @@ private:
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] _jointVelocityLowerLimits Joint velocity lower bounds
 /// \param[in] _jointVelocityUpperLimits Joint velocity upper bounds
+/// \param[in] bool _jointVelocityLimited Whether joint velocity bounds are
+/// considered in optimization
 /// \param[in] _maxStepSize Max step size in second.
 /// \param[in] _optimizationTolerance Callback of vector field calculation
 /// \param[out] _jointVelocity Calculated joint velocities
@@ -85,6 +87,7 @@ bool computeJointVelocityFromTwist(
     double _jointLimitTolerance,
     const Eigen::VectorXd& _jointVelocityLowerLimits,
     const Eigen::VectorXd& _jointVelocityUpperLimits,
+    bool _jointVelocityLimited,
     double _maxStepSize,
     double _optimizationTolerance,
     Eigen::VectorXd& _jointVelocity);

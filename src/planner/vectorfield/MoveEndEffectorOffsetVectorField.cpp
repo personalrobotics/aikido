@@ -47,8 +47,8 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 }
 
 //==============================================================================
-bool MoveEndEffectorOffsetVectorField::getJointVelocities(
-    const Eigen::VectorXd& _q, double _t, Eigen::VectorXd& _qd)
+
+bool MoveEndEffectorOffsetVectorField::getJointVelocities(Eigen::VectorXd& _qd)
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
@@ -72,6 +72,7 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(
       mJointLimitTolerance,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
+      true,
       mInitialStepSize,
       mOptimizationTolerance,
       _qd);
@@ -79,8 +80,8 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(
 }
 
 //==============================================================================
-VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus(
-    const Eigen::VectorXd& _q, double _t)
+
+VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus()
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
