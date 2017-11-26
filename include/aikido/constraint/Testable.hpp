@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "../statespace/StateSpace.hpp"
+#include "outcome/TestableOutcome.hpp"
 
 namespace aikido {
 namespace constraint {

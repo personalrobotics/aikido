@@ -6,7 +6,7 @@ namespace constraint {
 
 class TestableOutcome {
 public:
-  bool is_satisfied() const = 0;
+  virtual bool is_satisfied() const = 0;
   virtual std::string to_string() const = 0;
 };
 
