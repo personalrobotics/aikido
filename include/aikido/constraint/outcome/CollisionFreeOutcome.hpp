@@ -1,6 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_COLLISIONFREEOUTCOME_HPP_
 #define AIKIDO_CONSTRAINT_COLLISIONFREEOUTCOME_HPP_
 
+#include <sstream>
 #include <vector>
 #include "TestableOutcome.hpp"
 

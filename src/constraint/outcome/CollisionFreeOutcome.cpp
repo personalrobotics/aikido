@@ -17,8 +17,20 @@ bool CollisionFreeOutcome::isSatisfied() const
 //==============================================================================
 std::string CollisionFreeOutcome::toString() const
 {
-  // TODO
-  return "TODO";
+  std::stringstream ss;
+  ss << "ALL COLLISIONS: " << std::endl;
+
+  for (auto collBodyNodeName : mCollisionBodyNodes)
+  {
+    ss << "[COLLISION]: " << collBodyNodeName << std::endl;
+  }
+
+  for (auto selfCollBodyNodeName: mSelfCollisionBodyNodes)
+  {
+    ss << "[SELF COLLISION]: " << selfCollBodyNodeName << std::endl;
+  }
+
+  return ss.str();
 }
 
 //==============================================================================
