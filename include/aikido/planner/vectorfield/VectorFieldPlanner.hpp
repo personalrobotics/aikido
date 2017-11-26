@@ -21,8 +21,8 @@ namespace vectorfield {
 /// integral time.
 ///
 /// This class defines two callback functions for a integrator.
-/// step() provides joint velocities the vector field planner should follow
-/// check() is called after each integration step.
+/// step() provides joint velocities the vector field planner should follow,
+/// check() is called after each integration step to check planner status.
 class VectorFieldPlanner
 {
 public:
@@ -37,10 +37,11 @@ public:
       const aikido::constraint::TestablePtr _constraint,
       double _initialStepSize = 0.1);
 
-  /// Vectorfield callback function
+  /// Vectorfield callback function that returns joint velocities for
+  /// integration.
   ///
   /// \param[in] _q Position in configuration space
-  /// \param[out] _qd Joint velocities
+  /// \param[out] _qd Joint velocities in configuration space
   /// \param[in] _t Current time being planned
   void step(const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double _t);
 
@@ -55,7 +56,7 @@ public:
   /// \param[in] _integrationTimeInterval Position in configuration space
   /// \param[in] _timelimit Timelimit for integration calculation
   /// \param[in] _useCollisionChecking Whether collision checking is
-  /// considered in planning
+  /// considered in planning.
   /// \param[in] _useDofLimitChecking Whether Dof Limits are considered
   /// in planning
   /// \return A trajectory following the vector field

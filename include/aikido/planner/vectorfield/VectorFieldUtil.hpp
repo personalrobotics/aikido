@@ -18,7 +18,7 @@ struct Knot
 {
   double mT;
   Eigen::VectorXd mPositions;
-  Eigen::VectorXd mVelocities;
+  Eigen::VectorXd mVelocities; // Not used in current implementation
 };
 
 /// Convert a sequence of knots into a Spline trajectory.
@@ -75,7 +75,7 @@ private:
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] _jointVelocityLowerLimits Joint velocity lower bounds
 /// \param[in] _jointVelocityUpperLimits Joint velocity upper bounds
-/// \param[in] bool _jointVelocityLimited Whether joint velocity bounds are
+/// \param[in] _jointVelocityLimited Whether joint velocity bounds are
 /// considered in optimization
 /// \param[in] _maxStepSize Max step size in second.
 /// \param[in] _optimizationTolerance Callback of vector field calculation

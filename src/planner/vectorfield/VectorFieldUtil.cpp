@@ -53,6 +53,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 }
 
 //==============================================================================
+
 DesiredTwistFunction::DesiredTwistFunction(
     const Twist& _twist, const Jacobian& _jacobian)
   : dart::optimizer::Function("DesiredTwistFunction")
@@ -63,12 +64,14 @@ DesiredTwistFunction::DesiredTwistFunction(
 }
 
 //==============================================================================
+
 double DesiredTwistFunction::eval(const Eigen::VectorXd& _qd)
 {
   return 0.5 * (mJacobian * _qd - mTwist).squaredNorm();
 }
 
 //==============================================================================
+
 void DesiredTwistFunction::evalGradient(
     const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad)
 {
@@ -76,6 +79,7 @@ void DesiredTwistFunction::evalGradient(
 }
 
 //==============================================================================
+
 bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
