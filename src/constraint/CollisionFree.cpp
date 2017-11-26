@@ -43,8 +43,20 @@ bool CollisionFree::isSatisfied(
         groups.second.get(),
         mCollisionOptions,
         &collisionResult);
+
     if (collision)
+    {
+      if (_outcome != nullptr)
+      {
+        auto collisionOutcome = static_cast<CollisionFreeOutcome*>(_outcome);
+        auto collidingBodies = collisionResult.getCollidingBodyNodes();
+        for (const auto& elem : collidingBodies)
+        {
+          collisionOutcome->markCollisionBodyNode(elem->getName());
+        }
+      }
       return false;
+    }
   }
 
   for (auto group : mGroupsToSelfCheck)
@@ -52,7 +64,18 @@ bool CollisionFree::isSatisfied(
     collision = mCollisionDetector->collide(
         group.get(), mCollisionOptions, &collisionResult);
     if (collision)
+    {
+      if (_outcome != nullptr)
+      {
+        auto collisionOutcome = static_cast<CollisionFreeOutcome*>(_outcome);
+        auto collidingBodies = collisionResult.getCollidingBodyNodes();
+        for (const auto& elem : collidingBodies)
+        {
+          collisionOutcome->markSelfCollisionBodyNode(elem->getName());
+        }
+      }
       return false;
+    }
   }
   return true;
 }
