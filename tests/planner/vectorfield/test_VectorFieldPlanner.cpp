@@ -446,6 +446,15 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
     return;
   }
 
+  // Extract and evalute first waypoint
+  auto firstWayPoint = mStateSpace->createState();
+  traj1->evaluate(0.0, firstWayPoint);
+  Eigen::VectorXd testStart(mNumDof);
+  mStateSpace->convertStateToPositions(firstWayPoint, testStart);
+
+  double errorTolerance = 1e-3;
+  EXPECT_TRUE((testStart - mStartConfig).norm() <= errorTolerance);
+
   auto endpoint = mStateSpace->createState();
   traj1->evaluate(traj1->getEndTime(), endpoint);
   mStateSpace->setState(endpoint);
