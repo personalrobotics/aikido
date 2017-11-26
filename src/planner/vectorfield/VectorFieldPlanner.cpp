@@ -85,6 +85,9 @@ VectorFieldPlanner::VectorFieldPlanner(
 {
   mCacheIndex = -1;
   mIndex = 0;
+
+  mEnableCollisionCheck = true;
+  mEnableDofLimitCheck = true;
 }
 
 void VectorFieldPlanner::step(
@@ -95,7 +98,10 @@ void VectorFieldPlanner::step(
   mMetaSkeleton->setPositions(_q);
 
   // collision checking of current joint values
-  checkCollision(mMetaSkeletonStateSpace, mConstraint);
+  if (mEnableCollisionCheck)
+  {
+    checkCollision(mMetaSkeletonStateSpace, mConstraint);
+  }
 
   // compute joint velocities
   bool success = mVectorField->getJointVelocities(_qd);
@@ -104,7 +110,10 @@ void VectorFieldPlanner::step(
     throw IntegrationFailedException();
   }
 
-  checkDofLimits(mMetaSkeletonStateSpace, _q, _qd);
+  if (mEnableDofLimitCheck)
+  {
+    checkDofLimits(mMetaSkeletonStateSpace, _q, _qd);
+  }
 }
 
 //==============================================================================
@@ -120,7 +129,10 @@ void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
   mMetaSkeleton->setPositions(_q);
 
   // collision checking of current joint valuesb
-  checkCollision(mMetaSkeletonStateSpace, mConstraint);
+  if (mEnableCollisionCheck)
+  {
+    checkCollision(mMetaSkeletonStateSpace, mConstraint);
+  }
 
   Knot knot;
   knot.mT = _t;
@@ -148,7 +160,10 @@ void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
 
 std::unique_ptr<aikido::trajectory::Spline>
 VectorFieldPlanner::followVectorField(
-    double _integrationTimeInterval, double _timelimit)
+    double _integrationTimeInterval,
+    double _timelimit,
+    double _useCollisionChecking,
+    double _useDofLimitChecking)
 {
   using namespace std::placeholders;
   using errorStepper = boost::numeric::odeint::
@@ -162,6 +177,8 @@ VectorFieldPlanner::followVectorField(
   DART_UNUSED(saver);
 
   mTimelimit = _timelimit;
+  mEnableCollisionCheck = _useCollisionChecking;
+  mEnableDofLimitCheck = _useDofLimitChecking;
 
   if (mMetaSkeleton->getPositionUpperLimits()
       == mMetaSkeleton->getPositionLowerLimits())
@@ -233,6 +250,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double _maxDistance,
     double _positionTolerance,
     double _angularTolerance,
+    double _useCollisionChecking,
+    double _useDofLimitChecking,
     double _initialStepSize,
     double _jointLimitTolerance,
     double _optimizationTolerance,
@@ -269,7 +288,11 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       _optimizationTolerance);
 
   auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, _constraint);
-  return planner->followVectorField(_integralTimeInterval, _timelimit);
+  return planner->followVectorField(
+      _integralTimeInterval,
+      _timelimit,
+      _useCollisionChecking,
+      _useDofLimitChecking);
 }
 
 //==============================================================================
@@ -280,6 +303,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Isometry3d& _goalPose,
     double _poseErrorTolerance,
+    double _useCollisionChecking,
+    double _useDofLimitChecking,
     double _initialStepSize,
     double _jointLimitTolerance,
     double _optimizationTolerance,
@@ -296,7 +321,11 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       _optimizationTolerance);
 
   auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, _constraint);
-  return planner->followVectorField(_integralTimeInterval, _timelimit);
+  return planner->followVectorField(
+      _integralTimeInterval,
+      _timelimit,
+      _useCollisionChecking,
+      _useDofLimitChecking);
 }
 
 } // namespace vectorfield

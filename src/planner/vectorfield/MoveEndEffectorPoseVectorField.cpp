@@ -58,7 +58,7 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(Eigen::VectorXd& _qd)
       mJointLimitTolerance,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
-      false,
+      true,
       mInitialStepSize,
       mOptimizationTolerance,
       _qd);
@@ -92,6 +92,7 @@ VectorFieldPlannerStatus MoveEndEffectorPoseVectorField::checkPlanningStatus()
 
   double poseError
       = computeGeodesicDistanceBetweenTransforms(currentPose, mGoalPose);
+
   if (poseError < mPoseErrorTolerance)
   {
     return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
