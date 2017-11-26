@@ -53,7 +53,8 @@ statespace::StateSpacePtr CartesianProductTestable::getStateSpace() const
 
 //==============================================================================
 bool CartesianProductTestable::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state,
+    TestableOutcome* _outcome) const
 {
   const auto state
       = static_cast<const statespace::CartesianProduct::State*>(_state);

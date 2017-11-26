@@ -31,7 +31,8 @@ std::vector<constraint::ConstraintType> Satisfied::getConstraintTypes() const
 
 //==============================================================================
 bool Satisfied::isSatisfied(
-    const statespace::StateSpace::State* /*state*/) const
+    const statespace::StateSpace::State* /*state*/,
+    TestableOutcome* /*_outcome*/) const
 {
   return true;
 }

@@ -34,7 +34,8 @@ FrameTestable::FrameTestable(
 
 //==============================================================================
 bool FrameTestable::isSatisfied(
-    const statespace::StateSpace::State* _state) const
+    const statespace::StateSpace::State* _state,
+    TestableOutcome* _outcome) const
 {
   // Set the state
   auto state

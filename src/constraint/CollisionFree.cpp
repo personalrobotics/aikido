@@ -27,7 +27,8 @@ statespace::StateSpacePtr CollisionFree::getStateSpace() const
 
 //==============================================================================
 bool CollisionFree::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state,
+    TestableOutcome* _outcome) const
 {
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
