@@ -8,7 +8,8 @@
 namespace aikido {
 namespace constraint {
 
-class CollisionFreeOutcome : public TestableOutcome {
+class CollisionFreeOutcome : public TestableOutcome
+{
 public:
   bool isSatisfied() const;
   std::string toString() const;

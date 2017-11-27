@@ -25,12 +25,12 @@ std::string CollisionFreeOutcome::toString() const
     ss << "[COLLISION]: " << collBodyNodeName << std::endl;
   }
 
-  for (auto selfCollBodyNodeName: mSelfCollisionBodyNodes)
+  for (auto selfCollBodyNodeName : mSelfCollisionBodyNodes)
   {
     ss << "[SELF COLLISION]: " << selfCollBodyNodeName << std::endl;
   }
 
-  return  std::move(ss.str());
+  return std::move(ss.str());
 }
 
 //==============================================================================

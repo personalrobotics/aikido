@@ -6,7 +6,8 @@
 namespace aikido {
 namespace constraint {
 
-class TestableOutcome {
+class TestableOutcome
+{
 public:
   virtual bool isSatisfied() const = 0;
   virtual std::string toString() const = 0;

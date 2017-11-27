@@ -15,7 +15,8 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* /*state*/,
-      aikido::constraint::TestableOutcome* = nullptr /*_outcome*/) const override
+      aikido::constraint::TestableOutcome* = nullptr /*_outcome*/)
+      const override
   {
     return true;
   }
@@ -40,7 +41,8 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* /*state*/,
-      aikido::constraint::TestableOutcome* = nullptr /*_outcome*/) const override
+      aikido::constraint::TestableOutcome* = nullptr /*_outcome*/)
+      const override
   {
     return false;
   }
