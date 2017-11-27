@@ -336,6 +336,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
+  double linearVelocity = 1.0;
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       mStateSpace,
@@ -345,7 +346,8 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       distance,
       maxDistance,
       positionTolerance,
-      angularTolerance);
+      angularTolerance,
+      linearVelocity);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 

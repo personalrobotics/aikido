@@ -18,6 +18,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     double _maxDistance,
     double _positionTolerance,
     double _angularTolerance,
+    double _linearVelocityGain,
     double _initialStepSize,
     double _jointLimitTolerance,
     double _optimizationTolerance)
@@ -27,6 +28,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
   , mMaxDistance(_maxDistance)
   , mPositionTolerance(_positionTolerance)
   , mAngularTolerance(_angularTolerance)
+  , mLinearVelocityGain(_linearVelocityGain)
   , mInitialStepSize(_initialStepSize)
   , mJointLimitTolerance(_jointLimitTolerance)
   , mOptimizationTolerance(_optimizationTolerance)
@@ -63,7 +65,7 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(Eigen::VectorXd& _qd)
       = mMetaSkeleton->getVelocityLowerLimits();
 
   Vector6d desiredTwist = computeGeodesicTwist(currentPose, mStartPose);
-  desiredTwist.tail<3>() = mDirection;
+  desiredTwist.tail<3>() = mDirection * mLinearVelocityGain;
 
   bool result = computeJointVelocityFromTwist(
       desiredTwist,
@@ -93,16 +95,15 @@ VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus()
   const Vector4d geodesicError = computeGeodesicError(mStartPose, currentPose);
   const double orientationError = geodesicError[0];
   const Vector3d positionError = geodesicError.tail<3>();
+  double movedDistance = positionError.transpose() * mDirection;
+  double positionDeviation
+      = (positionError - movedDistance * mDirection).norm();
 
   if (fabs(orientationError) > mAngularTolerance)
   {
     throw VectorFieldTerminated("Deviated from orientation constraint.");
   }
 
-  double movedDistance = positionError.transpose()
-                         * mDirection; // positionError.dot(mDirection);
-  double positionDeviation
-      = (positionError - movedDistance * mDirection).norm();
   if (positionDeviation > mPositionTolerance)
   {
     throw VectorFieldTerminated("Deviated from straight line constraint.");

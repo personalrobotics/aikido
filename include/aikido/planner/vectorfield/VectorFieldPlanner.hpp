@@ -99,6 +99,7 @@ protected:
 /// distance
 /// \param[in] angularTolerance How a planned trajectory is allowed to deviate
 /// from a given direction
+/// \param[in] _linearVelocityGain Linear velocity gain in workspace.
 /// \param[in] _useCollisionChecking Whether collision checking is
 /// considered in planning
 /// \param[in] _useDofLimitChecking Whether Dof Limits are considered
@@ -119,6 +120,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double _maxDistance = std::numeric_limits<double>::max(),
     double _positionTolerance = 0.01,
     double _angularTolerance = 0.15,
+    double _linearVelocityGain = 1.0,
     double _useCollisionChecking = true,
     double _useDofLimitChecking = true,
     double _initialStepSize = 1e-2,
@@ -138,6 +140,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \param[in] _positionErrorTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
 /// distance
+/// \param[in] _linearVelocityGain Linear velocity gain in workspace.
+/// \param[in] _angularVelocityGain Angular velocity gain in workspace.
 /// \param[in] _useCollisionChecking Whether collision checking is
 /// considered in planning
 /// \param[in] _useDofLimitChecking Whether Dof Limits are considered
@@ -155,6 +159,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Isometry3d& _goalPose,
     double _poseErrorTolerance,
+    double _linearVelocityGain = 1.0,
+    double _angularvelocityGain = 1.0,
     double _useCollisionChecking = true,
     double _useDofLimitChecking = true,
     double _initialStepSize = 1e-2,

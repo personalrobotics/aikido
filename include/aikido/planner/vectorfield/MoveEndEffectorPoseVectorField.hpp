@@ -21,6 +21,8 @@ public:
   /// \param[in] _bn Body node of end-effector
   /// \param[in] _goalPose Desired en-effector pose
   /// \param[in] _poseErrorTolerance Constraint error tolerance in meters
+  /// \param[in] _linearVelocityGain Linear velocity gain in workspace
+  /// \param[in] _angularVelocityGain Angular velocity gain in workspace
   /// \param[in] _initialStepSize Initial step size
   /// \param[in] _jointLimitTolerance If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0
@@ -29,6 +31,8 @@ public:
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
       dart::dynamics::BodyNodePtr _bn,
       const Eigen::Isometry3d& _goalPose,
+      double _linearVelocityGain = 1.0,
+      double _angularVelocityGain = 1.0,
       double _poseErrorTolerance = 0.5,
       double _initialStepSize = 1e-1,
       double _jointLimitTolerance = 3e-2,
@@ -52,6 +56,8 @@ public:
 protected:
   Eigen::Isometry3d mGoalPose;
   double mPoseErrorTolerance;
+  double mLinearVelocityGain;
+  double mAngularVelocityGain;
   double mInitialStepSize;
   double mJointLimitTolerance;
   double mOptimizationTolerance;

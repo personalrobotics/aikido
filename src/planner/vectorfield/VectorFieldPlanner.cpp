@@ -250,6 +250,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double _maxDistance,
     double _positionTolerance,
     double _angularTolerance,
+    double _linearVelocityGain,
     double _useCollisionChecking,
     double _useDofLimitChecking,
     double _initialStepSize,
@@ -283,6 +284,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       _maxDistance,
       _positionTolerance,
       _angularTolerance,
+      _linearVelocityGain,
       _initialStepSize,
       _jointLimitTolerance,
       _optimizationTolerance);
@@ -303,6 +305,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Isometry3d& _goalPose,
     double _poseErrorTolerance,
+    double _linearVelocityGain,
+    double _angularvelocityGain,
     double _useCollisionChecking,
     double _useDofLimitChecking,
     double _initialStepSize,
@@ -316,6 +320,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       _bn,
       _goalPose,
       _poseErrorTolerance,
+      _linearVelocityGain,
+      _angularvelocityGain,
       _initialStepSize,
       _jointLimitTolerance,
       _optimizationTolerance);

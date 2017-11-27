@@ -14,12 +14,16 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     dart::dynamics::BodyNodePtr _bn,
     const Eigen::Isometry3d& _goalPose,
     double _poseErrorTolerance,
+    double _linearVelocityGain,
+    double _angularVelocityGain,
     double _initialStepSize,
     double _jointLimitTolerance,
     double _optimizationTolerance)
   : ConfigurationSpaceVectorField(_stateSpace, _bn)
   , mGoalPose(_goalPose)
   , mPoseErrorTolerance(_poseErrorTolerance)
+  , mLinearVelocityGain(_linearVelocityGain)
+  , mAngularVelocityGain(_angularVelocityGain)
   , mInitialStepSize(_initialStepSize)
   , mJointLimitTolerance(_jointLimitTolerance)
   , mOptimizationTolerance(_optimizationTolerance)
@@ -45,6 +49,9 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(Eigen::VectorXd& _qd)
   const Isometry3d currentPose = mBodyNode->getTransform();
 
   Vector6d desiredTwist = computeGeodesicTwist(currentPose, mGoalPose);
+
+  desiredTwist.head<3>() = desiredTwist.head<3>() * mAngularVelocityGain;
+  desiredTwist.tail<3>() = desiredTwist.tail<3>() * mLinearVelocityGain;
 
   Eigen::VectorXd jointVelocityUpperLimits
       = mMetaSkeleton->getVelocityUpperLimits();
