@@ -30,7 +30,7 @@ std::string CollisionFreeOutcome::toString() const
     ss << "[SELF COLLISION]: " << selfCollBodyNodeName << std::endl;
   }
 
-  return ss.str();
+  return  std::move(ss.str());
 }
 
 //==============================================================================
