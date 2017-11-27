@@ -1,6 +1,3 @@
-#!/usr/bin/env bash
-set -ev
-
 ./scripts/internal-build.sh ${PACKAGE_NAMES}
 ./scripts/internal-test.sh ${PACKAGE_NAMES}
 
