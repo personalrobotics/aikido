@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-set -ev
+#!/usr/bin/env bash -e
 
 brew install boost
 brew install dartsim/dart/dartsim6
