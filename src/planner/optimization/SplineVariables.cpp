@@ -1,4 +1,6 @@
 #include "aikido/planner/optimization/SplineVariables.hpp"
+#include <dart/dynamics/dynamics.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 namespace aikido {
 namespace planner {
@@ -6,7 +8,9 @@ namespace optimization {
 
 //==============================================================================
 SplineVariables::SplineVariables(const trajectory::Spline& splineToClone)
-  : mSpline(splineToClone)
+//  : mSpline(static_cast<const trajectory::Spline&>(*(splineToClone.clone().release())))
+//    : mSpline(std::make_shared<statespace::dart::MetaSkeletonStateSpace>(dart::dynamics::Skeleton::create("skel")))
+    : mSpline(std::make_shared<statespace::dart::MetaSkeletonStateSpace>(std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(splineToClone.getStateSpace())->getMetaSkeleton()))
 {
   // Do nothing
 }

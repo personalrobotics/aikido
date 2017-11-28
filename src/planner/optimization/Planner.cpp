@@ -44,7 +44,7 @@ trajectory::SplinePtr OptimizationBasedMotionPlanning::plan()
     dtwarn << "[OptimizationBasedMotionPlanning::plan] The Solver for an "
            << "OptimizationBasedMotionPlanning module is a nullptr. You must "
            << "reset the Solver before you can use it.\n";
-    return false;
+    return nullptr;
   }
 
   if (nullptr == mProblem)
@@ -52,7 +52,7 @@ trajectory::SplinePtr OptimizationBasedMotionPlanning::plan()
     dtwarn << "[OptimizationBasedMotionPlanning::plan] The Problem for an "
            << "OptimizationBasedMotionPlanning module is a nullptr. You must "
            << "reset the Solver before using it.\n";
-    return false;
+    return nullptr;
   }
 
   //  mProblem->setDimension(mDofs.size());
