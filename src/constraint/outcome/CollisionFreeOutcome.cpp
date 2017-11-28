@@ -6,12 +6,7 @@ namespace constraint {
 //==============================================================================
 bool CollisionFreeOutcome::isSatisfied() const
 {
-  if (mCollisionBodyNodes.size() > 0 || mSelfCollisionBodyNodes.size() > 0)
-  {
-    return false;
-  }
-
-  return true;
+  return mCollisionBodyNodes.empty() && mSelfCollisionBodyNodes.empty();
 }
 
 //==============================================================================
@@ -20,17 +15,17 @@ std::string CollisionFreeOutcome::toString() const
   std::stringstream ss;
   ss << "ALL COLLISIONS: " << std::endl;
 
-  for (auto collBodyNodeName : mCollisionBodyNodes)
+  for (const auto& collBodyNodeName : mCollisionBodyNodes)
   {
     ss << "[COLLISION]: " << collBodyNodeName << std::endl;
   }
 
-  for (auto selfCollBodyNodeName : mSelfCollisionBodyNodes)
+  for (const auto& selfCollBodyNodeName : mSelfCollisionBodyNodes)
   {
     ss << "[SELF COLLISION]: " << selfCollBodyNodeName << std::endl;
   }
 
-  return std::move(ss.str());
+  return ss.str();
 }
 
 //==============================================================================

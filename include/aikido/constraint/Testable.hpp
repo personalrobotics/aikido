@@ -3,10 +3,11 @@
 
 #include <memory>
 #include "../statespace/StateSpace.hpp"
-#include "outcome/TestableOutcome.hpp"
 
 namespace aikido {
 namespace constraint {
+
+class TestableOutcome;
 
 /// Constraint which can be tested.
 class Testable

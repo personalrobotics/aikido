@@ -48,8 +48,8 @@ bool CollisionFree::isSatisfied(
     {
       if (_outcome != nullptr)
       {
-        auto collisionOutcome = static_cast<CollisionFreeOutcome*>(_outcome);
-        auto collidingBodies = collisionResult.getCollidingBodyNodes();
+        const auto& collisionOutcome = static_cast<CollisionFreeOutcome*>(_outcome);
+        const auto& collidingBodies = collisionResult.getCollidingBodyNodes();
         for (const auto& elem : collidingBodies)
         {
           collisionOutcome->markCollisionBodyNode(elem->getName());
@@ -67,8 +67,8 @@ bool CollisionFree::isSatisfied(
     {
       if (_outcome != nullptr)
       {
-        auto collisionOutcome = static_cast<CollisionFreeOutcome*>(_outcome);
-        auto collidingBodies = collisionResult.getCollidingBodyNodes();
+        const auto& collisionOutcome = static_cast<CollisionFreeOutcome*>(_outcome);
+        const auto& collidingBodies = collisionResult.getCollidingBodyNodes();
         for (const auto& elem : collidingBodies)
         {
           collisionOutcome->markSelfCollisionBodyNode(elem->getName());
