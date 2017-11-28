@@ -211,7 +211,8 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 
 //==============================================================================
 bool TSR::isSatisfied(
-    const statespace::StateSpace::State* _s, TestableOutcome* _outcome) const
+    const statespace::StateSpace::State* _s,
+    TestableOutcome* /*_outcome*/) const
 {
   Eigen::VectorXd dist;
   getValue(_s, dist);
