@@ -145,7 +145,19 @@ TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
   CollisionFreeOutcome outcome;
   EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
   EXPECT_FALSE(outcome.isSatisfied());
-  EXPECT_NE(mCollisionFreeOutcomeString, outcome.toString());
+  EXPECT_EQ(0, outcome.getSelfContacts().size());
+
+  std::vector<dart::collision::Contact> pairwiseContacts
+      = outcome.getPairwiseContacts();
+  EXPECT_EQ(1, pairwiseContacts.size());
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(
+          pairwiseContacts.front().collisionObject1));
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(
+          pairwiseContacts.front().collisionObject2));
 }
 
 TEST_F(CollisionFreeTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
@@ -189,7 +201,17 @@ TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
   CollisionFreeOutcome outcome;
   EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
   EXPECT_FALSE(outcome.isSatisfied());
-  EXPECT_NE(mCollisionFreeOutcomeString, outcome.toString());
+  EXPECT_EQ(0, outcome.getPairwiseContacts().size());
+
+  std::vector<dart::collision::Contact> selfContacts
+      = outcome.getSelfContacts();
+  EXPECT_EQ(1, selfContacts.size());
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(selfContacts.front().collisionObject1));
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(selfContacts.front().collisionObject2));
 }
 
 TEST_F(CollisionFreeTest, AddAndRemoveSelfCheckFails_IsSatisfied)

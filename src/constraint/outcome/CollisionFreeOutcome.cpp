@@ -1,5 +1,5 @@
-#include <aikido/constraint/outcome/CollisionFreeOutcome.hpp>
 #include <sstream>
+#include <aikido/constraint/outcome/CollisionFreeOutcome.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -45,6 +45,19 @@ void CollisionFreeOutcome::markSelfContact(
     const dart::collision::Contact& selfContact)
 {
   mSelfContacts.push_back(selfContact);
+}
+
+//==============================================================================
+std::vector<dart::collision::Contact>
+CollisionFreeOutcome::getPairwiseContacts()
+{
+  return mPairwiseContacts;
+}
+
+//==============================================================================
+std::vector<dart::collision::Contact> CollisionFreeOutcome::getSelfContacts()
+{
+  return mSelfContacts;
 }
 
 //==============================================================================

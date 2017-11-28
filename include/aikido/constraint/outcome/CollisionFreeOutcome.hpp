@@ -33,12 +33,13 @@ public:
   /// \param selfContact Contact object to store.
   void markSelfContact(const dart::collision::Contact& selfContact);
 
-protected:
-  /// Holds Contact objects from pairwise collisions.
-  std::vector<dart::collision::Contact> mPairwiseContacts;
+  /// Return a copy of the vector storing the Contact objects from pairwise
+  /// collisions.
+  std::vector<dart::collision::Contact> getPairwiseContacts();
 
-  /// Holds Contact objects from self collisions.
-  std::vector<dart::collision::Contact> mSelfContacts;
+  /// Return a copy of the vector storing the Contact objects from self
+  /// collisions.
+  std::vector<dart::collision::Contact> getSelfContacts();
 
   /// Gets the name of a CollisionObject. The name returned is that of the
   /// corresponding BodyNode (if possible). If not, the name of the ShapeFrame
@@ -46,6 +47,13 @@ protected:
   /// \param object object pointer to CollisionObject we want the name of.
   std::string getCollisionObjectName(
       dart::collision::CollisionObject* object) const;
+
+protected:
+  /// Holds Contact objects from pairwise collisions.
+  std::vector<dart::collision::Contact> mPairwiseContacts;
+
+  /// Holds Contact objects from self collisions.
+  std::vector<dart::collision::Contact> mSelfContacts;
 };
 
 } // namespace constraint
