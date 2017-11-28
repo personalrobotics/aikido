@@ -34,7 +34,7 @@ static void checkDofLimits(
     else if (q[i] > dof->getPositionUpperLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds upper position limit: ";
-      ss << q[i] << " > " << dof->getPositionLowerLimit();
+      ss << q[i] << " > " << dof->getPositionUpperLimit();
       throw DofLimitError(dof, ss.str());
     }
     else if (qd[i] < dof->getVelocityLowerLimit())
@@ -132,6 +132,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     }
     catch (const VectorFieldTerminated& e)
     {
+      dtwarn << "Terminating vector field evaluation." << std::endl;
       terminationStatus = VectorFieldPlannerStatus::TERMINATE;
       terminationError = std::current_exception();
       break;
@@ -196,29 +197,24 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
            && terminationStatus
                   != VectorFieldPlannerStatus::CACHE_AND_TERMINATE);
 
+  // Print the termination condition.
+  if (terminationError)
+  {
+    try
+    {
+      std::rethrow_exception(terminationError);
+    }
+    catch (const VectorFieldTerminated& e)
+    {
+      dtwarn << "[VectorFieldPlanner::Plan] Terminated early: " << e.what()
+             << '\n';
+      return nullptr;
+    }
+  }
+
   if (cacheIndex >= 0)
   {
-    // Print the termination condition.
-    if (terminationError)
-    {
-      try
-      {
-        std::rethrow_exception(terminationError);
-      }
-      catch (const VectorFieldTerminated& e)
-      {
-        dtwarn << "[VectorFieldPlanner::Plan] Terminated early: " << e.what()
-               << '\n';
-        return nullptr;
-      }
-    }
-
     return convertToSpline(knots, cacheIndex, _stateSpace);
-  }
-  // Re-throw whatever error caused planning to fail.
-  else if (terminationError)
-  {
-    std::rethrow_exception(terminationError);
   }
   else
   {

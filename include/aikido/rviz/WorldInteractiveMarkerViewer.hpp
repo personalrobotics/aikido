@@ -38,8 +38,8 @@ protected:
   /// Thread target for auto-updating the viewer
   void autoUpdate();
 
-  /// Mapping of Skeleton names to SkeletonMarkers
-  std::map<std::string, SkeletonMarkerPtr> mSkeletonMarkers;
+  /// Mapping of Skeletons to SkeletonMarkers
+  std::map<dart::dynamics::SkeletonPtr, SkeletonMarkerPtr> mSkeletonMarkers;
 
   /// World that automatically updates the viewer
   aikido::planner::WorldPtr mWorld;

@@ -18,7 +18,7 @@ set(sources
   InverseKinematicsSampleable.cpp
   JointStateSpaceHelpers.cpp
   NewtonsMethodProjectable.cpp
-  NonColliding.cpp
+  CollisionFree.cpp
   Projectable.cpp
   RejectionSampleable.cpp
   Sampleable.cpp
