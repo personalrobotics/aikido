@@ -4,6 +4,11 @@
 #include <sstream>
 #include <vector>
 #include "TestableOutcome.hpp"
+#include "dart/collision/CollisionObject.hpp"
+#include "dart/collision/Contact.hpp"
+#include "dart/dynamics/BodyNode.hpp"
+#include "dart/dynamics/ShapeFrame.hpp"
+#include "dart/dynamics/ShapeNode.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -14,27 +19,34 @@ public:
   /// Documentation inherited.
   bool isSatisfied() const override;
 
-  /// Returns a string with the name of each colliding BodyNode on a separate
-  /// line. Each BodyNode is also marked as being a normal collision or self
+  /// Returns a string with each pair of CollisionObject names on a separate
+  /// line. Each pair is also marked as being a normal collision or self
   /// collision.
   std::string toString() const override;
 
-  /// Mark a colliding BodyNode in a normal collision. Used by CollisionFree
-  /// to modify this object.
-  /// \param bodyNodeName name of body node collided with.
-  void markCollisionBodyNode(const std::string& bodyNodeName);
+  /// Store a Contact object from a pairwise collision. Used by CollisionFree
+  // to modify this object.
+  /// \param pairwiseContact Contact object to store.
+  void markPairwiseContact(const dart::collision::Contact& pairwiseContact);
 
-  /// Mark a colliding BodyNode in a self collision. Used by CollisionFree to
+  /// Store a Contact object from a self collision. Used by CollisionFree to
   /// modify this object.
-  /// \param bodyNodeName name of body node collided with during self collision.
-  void markSelfCollisionBodyNode(const std::string& bodyNodeName);
+  /// \param selfContact Contact object to store.
+  void markSelfContact(const dart::collision::Contact& selfContact);
 
-private:
-  /// Holds names of colliding BodyNodes.
-  std::vector<std::string> mCollisionBodyNodes;
+protected:
+  /// Holds Contact objects from pairwise collisions.
+  std::vector<dart::collision::Contact> mPairwiseContacts;
 
-  /// Holds names of self-colliding BodyNodes.
-  std::vector<std::string> mSelfCollisionBodyNodes;
+  /// Holds Contact objects from self collisions.
+  std::vector<dart::collision::Contact> mSelfContacts;
+
+  /// Gets the name of a CollisionObject. The name returned is that of the
+  /// corresponding BodyNode (if possible). If not, the name of the ShapeFrame
+  /// is returned instead. This is a helper for toString().
+  /// \param object object pointer to CollisionObject we want the name of.
+  std::string getCollisionObjectName(
+      dart::collision::CollisionObject* object) const;
 };
 
 } // namespace constraint

@@ -6,7 +6,7 @@ namespace constraint {
 //==============================================================================
 bool CollisionFreeOutcome::isSatisfied() const
 {
-  return mCollisionBodyNodes.empty() && mSelfCollisionBodyNodes.empty();
+  return mPairwiseContacts.empty() && mSelfContacts.empty();
 }
 
 //==============================================================================
@@ -15,31 +15,52 @@ std::string CollisionFreeOutcome::toString() const
   std::stringstream ss;
   ss << "ALL COLLISIONS: " << std::endl;
 
-  for (const auto& collBodyNodeName : mCollisionBodyNodes)
+  for (const auto& pairwiseContact : mPairwiseContacts)
   {
-    ss << "[COLLISION]: " << collBodyNodeName << std::endl;
+    ss << "[COLLISION]: "
+       << getCollisionObjectName(pairwiseContact.collisionObject1) << " and "
+       << getCollisionObjectName(pairwiseContact.collisionObject2) << std::endl;
   }
 
-  for (const auto& selfCollBodyNodeName : mSelfCollisionBodyNodes)
+  for (const auto& selfContact : mSelfContacts)
   {
-    ss << "[SELF COLLISION]: " << selfCollBodyNodeName << std::endl;
+    ss << "[SELF COLLISION]: "
+       << getCollisionObjectName(selfContact.collisionObject1) << " and "
+       << getCollisionObjectName(selfContact.collisionObject2) << std::endl;
   }
 
   return ss.str();
 }
 
 //==============================================================================
-void CollisionFreeOutcome::markCollisionBodyNode(
-    const std::string& bodyNodeName)
+void CollisionFreeOutcome::markPairwiseContact(
+    const dart::collision::Contact& pairwiseContact)
 {
-  mCollisionBodyNodes.push_back(bodyNodeName);
+  mPairwiseContacts.push_back(pairwiseContact);
 }
 
 //==============================================================================
-void CollisionFreeOutcome::markSelfCollisionBodyNode(
-    const std::string& bodyNodeName)
+void CollisionFreeOutcome::markSelfContact(
+    const dart::collision::Contact& selfContact)
 {
-  mSelfCollisionBodyNodes.push_back(bodyNodeName);
+  mSelfContacts.push_back(selfContact);
+}
+
+//==============================================================================
+std::string CollisionFreeOutcome::getCollisionObjectName(
+    dart::collision::CollisionObject* object) const
+{
+  const dart::dynamics::ShapeFrame* frame = object->getShapeFrame();
+
+  if (frame->isShapeNode())
+  {
+    const dart::dynamics::ShapeNode* node = frame->asShapeNode();
+    return node->getBodyNodePtr()->getName();
+  }
+  else
+  {
+    return frame->getName();
+  }
 }
 
 } // namespace constraint

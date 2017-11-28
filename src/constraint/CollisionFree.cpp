@@ -53,10 +53,10 @@ bool CollisionFree::isSatisfied(
         if (collisionOutcome == nullptr)
           throw std::invalid_argument(
               "TestableOutcome pointer is not of type CollisionFreeOutcome.");
-        const auto& collidingBodies = collisionResult.getCollidingBodyNodes();
-        for (const auto& elem : collidingBodies)
+        const auto& contacts = collisionResult.getContacts();
+        for (const auto& elem : contacts)
         {
-          collisionOutcome->markCollisionBodyNode(elem->getName());
+          collisionOutcome->markPairwiseContact(elem);
         }
       }
       return false;
@@ -76,10 +76,10 @@ bool CollisionFree::isSatisfied(
         if (collisionOutcome == nullptr)
           throw std::invalid_argument(
               "TestableOutcome pointer is not of type CollisionFreeOutcome.");
-        const auto& collidingBodies = collisionResult.getCollidingBodyNodes();
-        for (const auto& elem : collidingBodies)
+        const auto& contacts = collisionResult.getContacts();
+        for (const auto& elem : contacts)
         {
-          collisionOutcome->markSelfCollisionBodyNode(elem->getName());
+          collisionOutcome->markSelfContact(elem);
         }
       }
       return false;
