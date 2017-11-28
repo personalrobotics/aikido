@@ -65,7 +65,7 @@ static void checkCollision(
   // Throw a termination if in collision
   if (!_constraint->isSatisfied(state))
   {
-    throw VectorFieldTerminated("state in collision");
+    throw StateInCollisionError();
   }
 }
 
@@ -107,7 +107,7 @@ void VectorFieldPlanner::step(
   bool success = mVectorField->getJointVelocities(_qd);
   if (success == false)
   {
-    throw IntegrationFailedException();
+    throw IntegrationFailedError();
   }
 
   if (mEnableDofLimitCheck)
@@ -230,7 +230,7 @@ VectorFieldPlanner::followVectorField(
   {
     dtwarn << e.what() << std::endl;
   }
-  catch (const IntegrationFailedException& e)
+  catch (const IntegrationFailedError& e)
   {
     dtwarn << e.what() << std::endl;
     return nullptr;

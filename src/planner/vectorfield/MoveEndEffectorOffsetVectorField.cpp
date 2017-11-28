@@ -101,12 +101,12 @@ VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus()
 
   if (fabs(orientationError) > mAngularTolerance)
   {
-    throw VectorFieldTerminated("Deviated from orientation constraint.");
+    throw VectorFieldError("Deviated from orientation constraint.");
   }
 
   if (positionDeviation > mPositionTolerance)
   {
-    throw VectorFieldTerminated("Deviated from straight line constraint.");
+    throw VectorFieldError("Deviated from straight line constraint.");
   }
 
   // Check if we've reached the target.

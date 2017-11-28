@@ -54,11 +54,20 @@ private:
   const dart::dynamics::DegreeOfFreedom* mDof;
 };
 
-/// Define integration failure for the termination of vectorfield planner.
-class IntegrationFailedException : public VectorFieldError
+/// Define state in collision for the termination of vector field planner.
+class StateInCollisionError : public VectorFieldError
 {
 public:
-  IntegrationFailedException() : VectorFieldError("Integation failed.")
+  StateInCollisionError() : VectorFieldError("State in collision")
+  {
+  }
+};
+
+/// Define integration failure for the termination of vectorfield planner.
+class IntegrationFailedError : public VectorFieldError
+{
+public:
+  IntegrationFailedError() : VectorFieldError("Integation failed.")
   {
   }
 };
