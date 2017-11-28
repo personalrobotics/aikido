@@ -4,12 +4,13 @@
 
 * Constraint
 
-  * Added methods for removing groups from NonColliding constraints. [#247](https://github.com/personalrobotics/aikido/pull/247)
+  * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
+  * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
 
 * Planner
 
-  * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243)
-  * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246)
+  * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243), [#252](https://github.com/personalrobotics/aikido/pull/252)
+  * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262) 
 
 * RViz
 
@@ -19,6 +20,7 @@
 
   * Changed to use size_t over std::size_t: [#230](https://github.com/personalrobotics/aikido/pull/230)
   * Included test code to formatting code list: [#239](https://github.com/personalrobotics/aikido/pull/239)
+  * Fixed RViz component dependencies: [#253](https://github.com/personalrobotics/aikido/pull/253)
 
 ### [0.1.0 (2017-10-02)](https://github.com/personalrobotics/aikido/milestone/4?closed=1)
 

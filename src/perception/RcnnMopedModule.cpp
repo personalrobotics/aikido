@@ -122,13 +122,20 @@ bool RcnnMopedModule::detectObjects(
     Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
     skel_pose = link_offset * skel_pose;
 
-    dart::dynamics::SkeletonPtr canSkeletonPtr =
-        makeBodyFromURDF(mCanUri, skel_pose);
+    std::string skel_name = marker_transform.text;
+    std::string skel_uri;
+    if (!skel_name.compare(0, 5, "water"))
+    {
+      skel_uri = "package://pr_ordata/data/objects/water_bottle.urdf";
+    }
+    else
+    {
+      skel_uri = "package://pr_ordata/data/objects/can.urdf";
+    }
 
-    std::string skel_name = "can";
-    skel_name.append(std::to_string(marker_transform.id));
-
-    canSkeletonPtr->setName(skel_name);
+    dart::dynamics::SkeletonPtr objSkeletonPtr =
+        makeBodyFromURDF(skel_uri, skel_pose);
+    objSkeletonPtr->setName(skel_name);
 
     dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skel_name);
 
@@ -136,7 +143,7 @@ bool RcnnMopedModule::detectObjects(
     {
       env->removeSkeleton(env_skeleton);
     }
-    env->addSkeleton(canSkeletonPtr);
+    env->addSkeleton(objSkeletonPtr);
 
     any_valid = true;
   }
