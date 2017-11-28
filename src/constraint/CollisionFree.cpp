@@ -49,7 +49,10 @@ bool CollisionFree::isSatisfied(
       if (_outcome != nullptr)
       {
         const auto& collisionOutcome
-            = static_cast<CollisionFreeOutcome*>(_outcome);
+            = dynamic_cast<CollisionFreeOutcome*>(_outcome);
+        if (collisionOutcome == nullptr)
+          throw std::invalid_argument(
+              "TestableOutcome pointer is not of type CollisionFreeOutcome.");
         const auto& collidingBodies = collisionResult.getCollidingBodyNodes();
         for (const auto& elem : collidingBodies)
         {
@@ -69,7 +72,10 @@ bool CollisionFree::isSatisfied(
       if (_outcome != nullptr)
       {
         const auto& collisionOutcome
-            = static_cast<CollisionFreeOutcome*>(_outcome);
+            = dynamic_cast<CollisionFreeOutcome*>(_outcome);
+        if (collisionOutcome == nullptr)
+          throw std::invalid_argument(
+              "TestableOutcome pointer is not of type CollisionFreeOutcome.");
         const auto& collidingBodies = collisionResult.getCollidingBodyNodes();
         for (const auto& elem : collidingBodies)
         {
