@@ -35,11 +35,11 @@ public:
 
   /// Return a copy of the vector storing the Contact objects from pairwise
   /// collisions.
-  std::vector<dart::collision::Contact> getPairwiseContacts();
+  std::vector<dart::collision::Contact> getPairwiseContacts() const;
 
   /// Return a copy of the vector storing the Contact objects from self
   /// collisions.
-  std::vector<dart::collision::Contact> getSelfContacts();
+  std::vector<dart::collision::Contact> getSelfContacts() const;
 
   /// Gets the name of a CollisionObject. The name returned is that of the
   /// corresponding BodyNode (if possible). If not, the name of the ShapeFrame

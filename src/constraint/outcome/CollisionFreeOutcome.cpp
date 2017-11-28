@@ -49,13 +49,14 @@ void CollisionFreeOutcome::markSelfContact(
 
 //==============================================================================
 std::vector<dart::collision::Contact>
-CollisionFreeOutcome::getPairwiseContacts()
+CollisionFreeOutcome::getPairwiseContacts() const
 {
   return mPairwiseContacts;
 }
 
 //==============================================================================
 std::vector<dart::collision::Contact> CollisionFreeOutcome::getSelfContacts()
+    const
 {
   return mSelfContacts;
 }
