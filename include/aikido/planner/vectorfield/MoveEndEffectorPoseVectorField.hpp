@@ -56,25 +56,18 @@ public:
 protected:
   /// Goal pose.
   Eigen::Isometry3d mGoalPose;
-
   /// Tolerance of pose error.
   double mPoseErrorTolerance;
-
   /// Linear velocity gain.
   double mLinearVelocityGain;
-
   /// Angular velocit gain.
   double mAngularVelocityGain;
-
   /// Initial step size of adaptive integration.
   double mInitialStepSize;
-
   /// Padding of joint limits
   double mJointLimitPadding;
-
   /// Tolerance of optimization solver.
   double mOptimizationTolerance;
-
   Eigen::VectorXd mVelocityLowerLimits;
   Eigen::VectorXd mVelocityUpperLimits;
 };

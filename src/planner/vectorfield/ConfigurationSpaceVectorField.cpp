@@ -1,4 +1,3 @@
-#include <memory>
 #include <dart/dynamics/BodyNode.hpp>
 #include <aikido/planner/vectorfield/ConfigurationSpaceVectorField.hpp>
 

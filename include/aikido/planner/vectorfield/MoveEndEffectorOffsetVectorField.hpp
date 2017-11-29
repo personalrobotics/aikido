@@ -56,31 +56,22 @@ public:
 protected:
   /// Movement direction.
   Eigen::Vector3d mDirection;
-
   /// Movement distance.
   double mDistance;
-
   /// Maximum distance allowed to move.
   double mMaxDistance;
-
   /// Tolerance of linear deviation error.
   double mPositionTolerance;
-
   /// Tolerance of angular error.
   double mAngularTolerance;
-
   /// Linear velocity gain.
   double mLinearVelocityGain;
-
   /// Initial step size in adaptive integration.
   double mInitialStepSize;
-
   /// Padding for joint limits.
   double mJointLimitPadding;
-
   /// Tolerance of optimization solver.
   double mOptimizationTolerance;
-
   /// Start pose of the end-effector.
   Eigen::Isometry3d mStartPose;
 };
