@@ -39,11 +39,17 @@ public:
   aikido::statespace::dart::MetaSkeletonStateSpacePtr
   getMetaSkeletonStateSpace() const;
 
-  /// Meta skeleton
-  dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
+  /// Returns meta skeleton
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
-  /// Body node of end-effector
-  dart::dynamics::BodyNodePtr getBodyNode() const;
+  /// Returns const meta skeleton
+  dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const;
+
+  /// Returns body node of end-effector
+  dart::dynamics::BodyNodePtr getBodyNode();
+
+  /// Returns const body node of end-effector
+  dart::dynamics::ConstBodyNodePtr getBodyNode() const;
 
 protected:
   /// State space of vector field

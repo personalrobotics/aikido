@@ -84,6 +84,7 @@ private:
 };
 
 using MetaSkeletonStateSpacePtr = std::shared_ptr<MetaSkeletonStateSpace>;
+using ConstMetaSkeletonStateSpacePtr = std::shared_ptr<const MetaSkeletonStateSpace>;
 
 } // namespace dart
 } // namespace statespace

@@ -6,6 +6,7 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+//==============================================================================
 ConfigurationSpaceVectorField::ConfigurationSpaceVectorField(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     dart::dynamics::BodyNodePtr _bodyNode)
@@ -16,21 +17,34 @@ ConfigurationSpaceVectorField::ConfigurationSpaceVectorField(
   // Do nothing
 }
 
+//==============================================================================
 aikido::statespace::dart::MetaSkeletonStateSpacePtr
 ConfigurationSpaceVectorField::getMetaSkeletonStateSpace() const
 {
   return mStateSpace;
 }
 
-/// Meta skeleton
+//==============================================================================
 dart::dynamics::MetaSkeletonPtr ConfigurationSpaceVectorField::getMetaSkeleton()
+{
+  return mMetaSkeleton;
+}
+
+//==============================================================================
+dart::dynamics::ConstMetaSkeletonPtr ConfigurationSpaceVectorField::getMetaSkeleton()
     const
 {
   return mMetaSkeleton;
 }
 
-/// Body node of end-effector
-dart::dynamics::BodyNodePtr ConfigurationSpaceVectorField::getBodyNode() const
+//==============================================================================
+dart::dynamics::BodyNodePtr ConfigurationSpaceVectorField::getBodyNode()
+{
+  return mBodyNode;
+}
+
+//==============================================================================
+dart::dynamics::ConstBodyNodePtr ConfigurationSpaceVectorField::getBodyNode() const
 {
   return mBodyNode;
 }
