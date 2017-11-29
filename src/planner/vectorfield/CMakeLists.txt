@@ -2,6 +2,7 @@ set(sources
   VectorFieldPlanner.cpp
   VectorFieldUtil.cpp
   VectorFieldPlannerExceptions.cpp
+  ConfigurationSpaceVectorField.cpp
   MoveEndEffectorOffsetVectorField.cpp
   MoveEndEffectorPoseVectorField.cpp
 )

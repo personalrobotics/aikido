@@ -26,7 +26,7 @@ public:
   /// \param[in] _angularTolerance Constraint tolerance in radians
   /// \param[in] _linearVelocityGain Linear velocity gain in workspace.
   /// \param[in] _initialStepSize Initial step size
-  /// \param[in] _jointLimitTolerance If less then this distance to joint
+  /// \param[in] _jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0
   /// \param[in] _optimizationTolerance Tolerance on optimization
   MoveEndEffectorOffsetVectorField(
@@ -39,19 +39,19 @@ public:
       double _angularTolerance = 0.15,
       double _linearVelocityGain = 1.0,
       double _initialStepSize = 1e-1,
-      double _jointLimitTolerance = 3e-2,
+      double _jointLimitPadding = 3e-2,
       double _optimizationTolerance = 1e-3);
 
   /// Vectorfield callback function
   ///
   /// \param[out] _qd Joint velocities
   /// \return Whether joint velocities are successfully computed
-  virtual bool getJointVelocities(Eigen::VectorXd& _qd) override;
+  virtual bool getJointVelocities(Eigen::VectorXd& _qd) const override;
 
   /// Vectorfield planning status callback function
   ///
   /// \return Status of planning
-  virtual VectorFieldPlannerStatus checkPlanningStatus() override;
+  virtual VectorFieldPlannerStatus checkPlanningStatus() const override;
 
 protected:
   Eigen::Vector3d mDirection;
@@ -61,7 +61,7 @@ protected:
   double mAngularTolerance;
   double mLinearVelocityGain;
   double mInitialStepSize;
-  double mJointLimitTolerance;
+  double mJointLimitPadding;
   double mOptimizationTolerance;
   Eigen::Isometry3d mStartPose;
 };

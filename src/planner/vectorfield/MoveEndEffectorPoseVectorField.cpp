@@ -17,7 +17,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     double _linearVelocityGain,
     double _angularVelocityGain,
     double _initialStepSize,
-    double _jointLimitTolerance,
+    double _jointLimitPadding,
     double _optimizationTolerance)
   : ConfigurationSpaceVectorField(_stateSpace, _bn)
   , mGoalPose(_goalPose)
@@ -25,7 +25,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
   , mLinearVelocityGain(_linearVelocityGain)
   , mAngularVelocityGain(_angularVelocityGain)
   , mInitialStepSize(_initialStepSize)
-  , mJointLimitTolerance(_jointLimitTolerance)
+  , mJointLimitPadding(_jointLimitPadding)
   , mOptimizationTolerance(_optimizationTolerance)
 {
   if (mPoseErrorTolerance < 0)
@@ -38,8 +38,8 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
 }
 
 //==============================================================================
-
-bool MoveEndEffectorPoseVectorField::getJointVelocities(Eigen::VectorXd& _qd)
+bool MoveEndEffectorPoseVectorField::getJointVelocities(
+    Eigen::VectorXd& _qd) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
@@ -50,8 +50,8 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(Eigen::VectorXd& _qd)
 
   Vector6d desiredTwist = computeGeodesicTwist(currentPose, mGoalPose);
 
-  desiredTwist.head<3>() = desiredTwist.head<3>() * mAngularVelocityGain;
-  desiredTwist.tail<3>() = desiredTwist.tail<3>() * mLinearVelocityGain;
+  desiredTwist.head<3>() *= mAngularVelocityGain;
+  desiredTwist.tail<3>() *= mLinearVelocityGain;
 
   Eigen::VectorXd jointVelocityUpperLimits
       = mMetaSkeleton->getVelocityUpperLimits();
@@ -59,18 +59,18 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(Eigen::VectorXd& _qd)
       = mMetaSkeleton->getVelocityLowerLimits();
 
   bool result = computeJointVelocityFromTwist(
+      _qd,
       desiredTwist,
       mStateSpace,
       mBodyNode,
-      mJointLimitTolerance,
+      mJointLimitPadding,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
       true,
       mInitialStepSize,
-      mOptimizationTolerance,
-      _qd);
+      mOptimizationTolerance);
 
-  if (result == true)
+  if (result)
   {
     // Go as fast as possible
     for (std::size_t i = 0; i < mMetaSkeleton->getNumDofs(); i++)
@@ -90,15 +90,14 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(Eigen::VectorXd& _qd)
 }
 
 //==============================================================================
-
 VectorFieldPlannerStatus MoveEndEffectorPoseVectorField::checkPlanningStatus()
+    const
 {
   using Eigen::Isometry3d;
 
   const Isometry3d currentPose = mBodyNode->getTransform();
 
-  double poseError
-      = computeGeodesicDistanceBetweenTransforms(currentPose, mGoalPose);
+  double poseError = computeGeodesicDistance(currentPose, mGoalPose);
 
   if (poseError < mPoseErrorTolerance)
   {

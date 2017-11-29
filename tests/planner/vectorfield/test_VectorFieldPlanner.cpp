@@ -150,7 +150,7 @@ public:
     // robot->disableSelfCollision();
 
     // Create the first link, the joint with the ground and its shape
-    BodyNode::Properties node(BodyNode::AspectProperties("link1"));
+    BodyNode::Properties node(BodyNode::AspectProperties("link0"));
     //  node.mInertia.setLocalCOM(Vector3d(0.0, 0.0, dim(2)/2.0));
     std::shared_ptr<Shape> shape(new BoxShape(dim));
 
@@ -159,7 +159,7 @@ public:
         robot,
         nullptr,
         node,
-        "joint1",
+        "joint0",
         0.0,
         -constantsd::pi(),
         constantsd::pi(),
@@ -273,6 +273,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
   Eigen::VectorXd qd = Eigen::VectorXd::Zero(mNumDof);
   EXPECT_TRUE(
       computeJointVelocityFromTwist(
+          qd,
           desiredTwist1,
           mStateSpace,
           mBodynode,
@@ -281,8 +282,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           jointVelocityUpperLimits,
           true,
           maxStepSize,
-          optimizationTolerance,
-          qd));
+          optimizationTolerance));
 
   // Angular only
   Eigen::Vector6d desiredTwist2 = Eigen::Vector6d::Zero();
@@ -290,6 +290,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 
   EXPECT_TRUE(
       computeJointVelocityFromTwist(
+          qd,
           desiredTwist2,
           mStateSpace,
           mBodynode,
@@ -298,8 +299,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           jointVelocityUpperLimits,
           true,
           maxStepSize,
-          optimizationTolerance,
-          qd));
+          optimizationTolerance));
 
   // Both linear and angular
   Eigen::Vector6d desiredTwist3 = Eigen::Vector6d::Zero();
@@ -308,6 +308,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 
   EXPECT_TRUE(
       computeJointVelocityFromTwist(
+          qd,
           desiredTwist2,
           mStateSpace,
           mBodynode,
@@ -316,8 +317,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           jointVelocityUpperLimits,
           true,
           maxStepSize,
-          optimizationTolerance,
-          qd));
+          optimizationTolerance));
 }
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
@@ -422,7 +422,7 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
 {
   using dart::math::eulerXYXToMatrix;
-  using aikido::planner::vectorfield::computeGeodesicDistanceBetweenTransforms;
+  using aikido::planner::vectorfield::computeGeodesicDistance;
 
   Eigen::VectorXd goalConfig = Eigen::VectorXd::Zero(mNumDof);
   goalConfig << 1.13746, -0.363612, 0.77876, 1.07515, 1.58646, -1.00034,
@@ -462,7 +462,6 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   mStateSpace->setState(endpoint);
   Eigen::Isometry3d endTrans = mBodynode->getTransform();
 
-  double poseError
-      = computeGeodesicDistanceBetweenTransforms(endTrans, targetPose);
+  double poseError = computeGeodesicDistance(endTrans, targetPose);
   EXPECT_TRUE(poseError <= poseErrorTolerance);
 }

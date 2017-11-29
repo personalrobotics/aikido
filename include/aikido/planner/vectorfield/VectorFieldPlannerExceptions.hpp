@@ -58,27 +58,21 @@ private:
 class StateInCollisionError : public VectorFieldError
 {
 public:
-  StateInCollisionError() : VectorFieldError("State in collision")
-  {
-  }
+  StateInCollisionError();
 };
 
 /// Define integration failure for the termination of vectorfield planner.
 class IntegrationFailedError : public VectorFieldError
 {
 public:
-  IntegrationFailedError() : VectorFieldError("Integation failed.")
-  {
-  }
+  IntegrationFailedError();
 };
 
 /// Define time limit error for the termination of vectorfield planner.
 class TimeLimitError : public VectorFieldError
 {
 public:
-  TimeLimitError() : VectorFieldError("Reached time limit.")
-  {
-  }
+  TimeLimitError();
 };
 
 } // namespace vectorfield

@@ -67,30 +67,30 @@ private:
 
 /// Compute joint velocity from a given twist.
 ///
+/// /// \param[out] _jointVelocity Calculated joint velocities
 /// \param[in] _desiredTwist Desired twist, which consists of angular velocity
 /// and linear velocity.
 /// \param[in] _stateSpace MetaSkeleton state space
 /// \param[in]  _bodyNode Body node of the end-effector
-/// \param[in] _jointLimitTolerance If less then this distance to joint
+/// \param[in] _jointLimitPadding If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] _jointVelocityLowerLimits Joint velocity lower bounds
 /// \param[in] _jointVelocityUpperLimits Joint velocity upper bounds
 /// \param[in] _jointVelocityLimited Whether joint velocity bounds are
 /// considered in optimization
 /// \param[in] _maxStepSize Max step size in second.
-/// \param[in] _optimizationTolerance Callback of vector field calculation
-/// \param[out] _jointVelocity Calculated joint velocities
+/// \param[in] _optimizationTolerance  Callback of vector field calculation
 bool computeJointVelocityFromTwist(
+    Eigen::VectorXd& _jointVelocity,
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     const dart::dynamics::BodyNodePtr _bodyNode,
-    double _jointLimitTolerance,
+    double _jointLimitPadding,
     const Eigen::VectorXd& _jointVelocityLowerLimits,
     const Eigen::VectorXd& _jointVelocityUpperLimits,
     bool _jointVelocityLimited,
     double _maxStepSize,
-    double _optimizationTolerance,
-    Eigen::VectorXd& _jointVelocity);
+    double _optimizationTolerance);
 
 /// Compute the twist in global coordinate that corresponds to the gradient of
 /// the geodesic distance between two transforms
@@ -109,17 +109,8 @@ Eigen::Vector4d computeGeodesicError(
     const Eigen::Isometry3d& _currentTrans,
     const Eigen::Isometry3d& _goalTrans);
 
-/// Calculate the geodesic distance between two transforms, being
-/// gd = norm( relative translation + r * axis-angle error )
-/// \param[in] _currentTrans Current transformation
-/// \param[in] _goalTrans Goal transformation
-/// \param[in] _r In units of meters/radians converts radians to meters
-double computeGeodesicDistanceBetweenTransforms(
-    const Eigen::Isometry3d& _currentTrans,
-    const Eigen::Isometry3d& _goalTrans,
-    double _r = 1.0);
-
 /// Compute the geodesic distance between two transforms
+/// gd = norm( relative translation + r * axis-angle error )
 ///
 /// \param[in] _currentTrans Current transformation
 /// \param[in] _goalTrans Goal transformation

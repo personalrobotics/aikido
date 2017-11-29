@@ -13,10 +13,10 @@ namespace vectorfield {
 /// CACHE_AND_TERMINATE - save the current trajectory and TERMINATE
 enum class VectorFieldPlannerStatus
 {
-  TERMINATE = -1,
-  CACHE_AND_CONTINUE = 0,
-  CONTINUE = 1,
-  CACHE_AND_TERMINATE = 2
+  TERMINATE,
+  CACHE_AND_CONTINUE,
+  CONTINUE,
+  CACHE_AND_TERMINATE
 };
 
 } // namespace vectorfield

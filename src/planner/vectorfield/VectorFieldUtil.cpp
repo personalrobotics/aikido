@@ -53,7 +53,6 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 }
 
 //==============================================================================
-
 DesiredTwistFunction::DesiredTwistFunction(
     const Twist& _twist, const Jacobian& _jacobian)
   : dart::optimizer::Function("DesiredTwistFunction")
@@ -64,14 +63,12 @@ DesiredTwistFunction::DesiredTwistFunction(
 }
 
 //==============================================================================
-
 double DesiredTwistFunction::eval(const Eigen::VectorXd& _qd)
 {
   return 0.5 * (mJacobian * _qd - mTwist).squaredNorm();
 }
 
 //==============================================================================
-
 void DesiredTwistFunction::evalGradient(
     const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad)
 {
@@ -79,18 +76,17 @@ void DesiredTwistFunction::evalGradient(
 }
 
 //==============================================================================
-
 bool computeJointVelocityFromTwist(
+    Eigen::VectorXd& _jointVelocity,
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     const dart::dynamics::BodyNodePtr _bodyNode,
-    double _jointLimitTolerance,
+    double _jointLimitPadding,
     const Eigen::VectorXd& _jointVelocityLowerLimits,
     const Eigen::VectorXd& _jointVelocityUpperLimits,
     bool _jointVelocityLimited,
     double _maxStepSize,
-    double _optimizationTolerance,
-    Eigen::VectorXd& _jointVelocity)
+    double _optimizationTolerance)
 {
   using dart::math::Jacobian;
   using dart::optimizer::Problem;
@@ -115,7 +111,8 @@ bool computeJointVelocityFromTwist(
   auto currentState = _stateSpace->createState();
   _stateSpace->convertPositionsToState(positions, currentState);
 
-  if (_jointVelocityLimited == true)
+  const auto problem = std::make_shared<Problem>(numDofs);
+  if (_jointVelocityLimited)
   {
     for (std::size_t i = 0; i < numDofs; ++i)
     {
@@ -126,13 +123,13 @@ bool computeJointVelocityFromTwist(
       const double velocityUpperLimit = velocityUpperLimits[i];
 
       if (position + _maxStepSize * velocityLowerLimit
-          <= positionLowerLimit + _jointLimitTolerance)
+          <= positionLowerLimit + _jointLimitPadding)
       {
         velocityLowerLimits[i] = 0.0;
       }
 
       if (position + _maxStepSize * velocityUpperLimit
-          >= positionUpperLimit - _jointLimitTolerance)
+          >= positionUpperLimit - _jointLimitPadding)
       {
         velocityUpperLimits[i] = 0.0;
       }
@@ -140,11 +137,7 @@ bool computeJointVelocityFromTwist(
       initialGuess[i] = common::clamp(
           initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
     }
-  }
 
-  const auto problem = std::make_shared<Problem>(numDofs);
-  if (_jointVelocityLimited)
-  {
     problem->setLowerBounds(velocityLowerLimits);
     problem->setUpperBounds(velocityUpperLimits);
   }
@@ -168,7 +161,6 @@ bool computeJointVelocityFromTwist(
 }
 
 //==============================================================================
-
 Eigen::Vector6d computeGeodesicTwist(
     const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
 {
@@ -184,7 +176,6 @@ Eigen::Vector6d computeGeodesicTwist(
 }
 
 //==============================================================================
-
 Eigen::Vector4d computeGeodesicError(
     const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
 {
@@ -199,24 +190,14 @@ Eigen::Vector4d computeGeodesicError(
 }
 
 //==============================================================================
-
-double computeGeodesicDistanceBetweenTransforms(
-    const Eigen::Isometry3d& _currentTrans,
-    const Eigen::Isometry3d& _goalTrans,
-    double _r)
-{
-  return computeGeodesicDistance(_currentTrans, _goalTrans, _r);
-}
-
-//==============================================================================
-
 double computeGeodesicDistance(
     const Eigen::Isometry3d& _currentTrans,
     const Eigen::Isometry3d& _goalTrans,
     double _r)
 {
   Eigen::Vector4d error = computeGeodesicError(_currentTrans, _goalTrans);
-  return fabs(_r * error[0]);
+  error[0] = _r * error[0];
+  return error.norm();
 }
 
 } // namespace vectorfield

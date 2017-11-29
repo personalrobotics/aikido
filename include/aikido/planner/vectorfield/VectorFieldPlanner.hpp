@@ -30,26 +30,10 @@ public:
   ///
   /// \param[in] _vectorField Vector field in configuration space
   /// \param[in] _constraint Constraint to be satisfied
-
   VectorFieldPlanner(
-      const aikido::planner::vectorfield::ConfigurationSpaceVectorFieldPtr
-          _vectorField,
+      const ConfigurationSpaceVectorFieldPtr _vectorField,
       const aikido::constraint::TestablePtr _constraint,
       double _initialStepSize = 0.1);
-
-  /// Vectorfield callback function that returns joint velocities for
-  /// integration.
-  ///
-  /// \param[in] _q Position in configuration space
-  /// \param[out] _qd Joint velocities in configuration space
-  /// \param[in] _t Current time being planned
-  void step(const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double _t);
-
-  /// Check status after every intergration step
-  ///
-  /// \param[in] _q Position in configuration space
-  /// \param[in] _t Current time being planned
-  void check(const Eigen::VectorXd& _q, double _t);
 
   /// Generate a trajectory following the vector field along given time
   ///
@@ -67,7 +51,21 @@ public:
       double _useDofLimitChecking = true);
 
 protected:
-  aikido::planner::vectorfield::ConfigurationSpaceVectorFieldPtr mVectorField;
+  /// Vectorfield callback function that returns joint velocities for
+  /// integration.
+  ///
+  /// \param[in] _q Position in configuration space
+  /// \param[out] _qd Joint velocities in configuration space
+  /// \param[in] _t Current time being planned
+  void step(const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double _t);
+
+  /// Check status after every intergration step
+  ///
+  /// \param[in] _q Position in configuration space
+  /// \param[in] _t Current time being planned
+  void check(const Eigen::VectorXd& _q, double _t);
+
+  ConfigurationSpaceVectorFieldPtr mVectorField;
   aikido::constraint::TestablePtr mConstraint;
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
@@ -131,7 +129,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 
 /// Plan to an end effector pose by following a geodesic loss function
 /// in SE(3) via an optimized Jacobian.
-
 ///
 /// \param[in] _stateSpace MetaSkeleton state space
 /// \param[in] _bn Body node of the end-effector

@@ -10,7 +10,7 @@ namespace vectorfield {
 
 /// This class defines a vector field in a configuration space
 ///
-/// Any vector filed should inherit this class to implememnt functions
+/// Any vector field should inherit this class to implememnt functions
 /// for calculating joint velocities giving joint positions and time,
 /// and checking planning status.
 class ConfigurationSpaceVectorField
@@ -22,39 +22,34 @@ public:
   /// \param[in] _bn Body node of end-effector
   ConfigurationSpaceVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-      dart::dynamics::BodyNodePtr _bodyNode)
-    : mStateSpace(_stateSpace)
-    , mMetaSkeleton(_stateSpace->getMetaSkeleton())
-    , mBodyNode(_bodyNode)
-  {
-  }
+      dart::dynamics::BodyNodePtr _bodyNode);
 
   /// Vectorfield callback function
   ///
   /// \param[out] _qd Joint velocities
   /// \return Whether joint velocities are successfully computed
-  virtual bool getJointVelocities(Eigen::VectorXd& _qd) = 0;
+  virtual bool getJointVelocities(Eigen::VectorXd& _qd) const = 0;
 
   /// Vectorfield planning status callback function
   ///
   /// \return Status of planning
-  virtual VectorFieldPlannerStatus checkPlanningStatus() = 0;
+  virtual VectorFieldPlannerStatus checkPlanningStatus() const = 0;
 
-  /// Meta skeleton spate space
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr
-  getMetaSkeletonStateSpace()
+  /// Meta skeleton state space
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr
+  getMetaSkeletonStateSpace() const
   {
     return mStateSpace;
   }
 
   /// Meta skeleton
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton()
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const
   {
     return mMetaSkeleton;
   }
 
   /// Body node of end-effector
-  virtual dart::dynamics::BodyNodePtr getBodyNode()
+  dart::dynamics::BodyNodePtr getBodyNode() const
   {
     return mBodyNode;
   }

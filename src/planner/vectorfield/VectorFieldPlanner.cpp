@@ -25,7 +25,8 @@ static void checkDofLimits(
 
   for (std::size_t i = 0; i < _stateSpace->getMetaSkeleton()->getNumDofs(); ++i)
   {
-    DegreeOfFreedom* const dof = _stateSpace->getMetaSkeleton()->getDof(i);
+    const DegreeOfFreedom* const dof
+        = _stateSpace->getMetaSkeleton()->getDof(i);
 
     if (_q[i] < dof->getPositionLowerLimit())
     {
@@ -55,7 +56,6 @@ static void checkDofLimits(
 }
 
 //==============================================================================
-
 static void checkCollision(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     const aikido::constraint::TestablePtr& _constraint)
@@ -70,10 +70,8 @@ static void checkCollision(
 }
 
 //==============================================================================
-
 VectorFieldPlanner::VectorFieldPlanner(
-    const aikido::planner::vectorfield::ConfigurationSpaceVectorFieldPtr
-        _vectorField,
+    const ConfigurationSpaceVectorFieldPtr _vectorField,
     const aikido::constraint::TestablePtr _constraint,
     double _initialStepSize)
   : mVectorField(_vectorField)
@@ -91,9 +89,8 @@ VectorFieldPlanner::VectorFieldPlanner(
 }
 
 void VectorFieldPlanner::step(
-    const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double _t)
+    const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double /*_t*/)
 {
-  DART_UNUSED(_t);
   // set joint values
   mMetaSkeleton->setPositions(_q);
 
@@ -105,7 +102,7 @@ void VectorFieldPlanner::step(
 
   // compute joint velocities
   bool success = mVectorField->getJointVelocities(_qd);
-  if (success == false)
+  if (!success)
   {
     throw IntegrationFailedError();
   }
@@ -117,7 +114,6 @@ void VectorFieldPlanner::step(
 }
 
 //==============================================================================
-
 void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
 {
   if (mTimer.getElapsedTime() > mTimelimit)
@@ -157,7 +153,6 @@ void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
 }
 
 //==============================================================================
-
 std::unique_ptr<aikido::trajectory::Spline>
 VectorFieldPlanner::followVectorField(
     double _integrationTimeInterval,
@@ -240,7 +235,6 @@ VectorFieldPlanner::followVectorField(
 }
 
 //==============================================================================
-
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     const dart::dynamics::BodyNodePtr& _bn,
@@ -298,7 +292,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 }
 
 //==============================================================================
-
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     const dart::dynamics::BodyNodePtr& _bn,

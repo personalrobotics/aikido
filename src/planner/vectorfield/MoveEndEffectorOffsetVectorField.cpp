@@ -20,7 +20,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     double _angularTolerance,
     double _linearVelocityGain,
     double _initialStepSize,
-    double _jointLimitTolerance,
+    double _jointLimitPadding,
     double _optimizationTolerance)
   : ConfigurationSpaceVectorField(_stateSpace, _bn)
   , mDirection(_direction)
@@ -30,7 +30,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
   , mAngularTolerance(_angularTolerance)
   , mLinearVelocityGain(_linearVelocityGain)
   , mInitialStepSize(_initialStepSize)
-  , mJointLimitTolerance(_jointLimitTolerance)
+  , mJointLimitPadding(_jointLimitPadding)
   , mOptimizationTolerance(_optimizationTolerance)
   , mStartPose(_bn->getTransform())
 {
@@ -49,8 +49,8 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 }
 
 //==============================================================================
-
-bool MoveEndEffectorOffsetVectorField::getJointVelocities(Eigen::VectorXd& _qd)
+bool MoveEndEffectorOffsetVectorField::getJointVelocities(
+    Eigen::VectorXd& _qd) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
@@ -68,22 +68,22 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(Eigen::VectorXd& _qd)
   desiredTwist.tail<3>() = mDirection * mLinearVelocityGain;
 
   bool result = computeJointVelocityFromTwist(
+      _qd,
       desiredTwist,
       mStateSpace,
       mBodyNode,
-      mJointLimitTolerance,
+      mJointLimitPadding,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
       true,
       mInitialStepSize,
-      mOptimizationTolerance,
-      _qd);
+      mOptimizationTolerance);
   return result;
 }
 
 //==============================================================================
-
 VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus()
+    const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
