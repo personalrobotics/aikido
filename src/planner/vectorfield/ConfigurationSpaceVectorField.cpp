@@ -31,8 +31,8 @@ dart::dynamics::MetaSkeletonPtr ConfigurationSpaceVectorField::getMetaSkeleton()
 }
 
 //==============================================================================
-dart::dynamics::ConstMetaSkeletonPtr ConfigurationSpaceVectorField::getMetaSkeleton()
-    const
+dart::dynamics::ConstMetaSkeletonPtr
+ConfigurationSpaceVectorField::getMetaSkeleton() const
 {
   return mMetaSkeleton;
 }
@@ -44,7 +44,8 @@ dart::dynamics::BodyNodePtr ConfigurationSpaceVectorField::getBodyNode()
 }
 
 //==============================================================================
-dart::dynamics::ConstBodyNodePtr ConfigurationSpaceVectorField::getBodyNode() const
+dart::dynamics::ConstBodyNodePtr ConfigurationSpaceVectorField::getBodyNode()
+    const
 {
   return mBodyNode;
 }
