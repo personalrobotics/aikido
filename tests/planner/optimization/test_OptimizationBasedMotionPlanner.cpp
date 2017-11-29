@@ -81,7 +81,7 @@ TEST_F(OptimizationBasedMotionPlanner, Variables)
   EXPECT_TRUE(spline.getDuration() == 6.0);
 
   planner::optimization::SplineCoefficientsAndDurationsVariables variables(spline);
-//  EXPECT_TRUE(variables.getDimension() == 1*3*3 + 3);
+  EXPECT_TRUE(variables.getDimension() == 1*3*3 + 3);
 }
 
 //==============================================================================
@@ -93,21 +93,21 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
   CoefficientType coefficients2 = CoefficientType::Zero();
   CoefficientType coefficients3 = CoefficientType::Zero();
 
-//  trajectory::Spline spline(mStateSpace);
-//  spline.addSegment(coefficients1, 1.0, mStartState->getState());
-//  spline.addSegment(coefficients2, 2.0);
-//  spline.addSegment(coefficients3, 3.0);
-//  EXPECT_TRUE(spline.getNumSegments() == 3);
-//  EXPECT_TRUE(spline.getDuration() == 6.0);
+  trajectory::Spline spline(mStateSpace);
+  spline.addSegment(coefficients1, 1.0, mStartState->getState());
+  spline.addSegment(coefficients2, 2.0);
+  spline.addSegment(coefficients3, 3.0);
+  EXPECT_TRUE(spline.getNumSegments() == 3);
+  EXPECT_TRUE(spline.getDuration() == 6.0);
 
-//  planner::optimization::SplineCoefficientsAndDurationsVariables variables(spline);
-//  EXPECT_TRUE(variables.getDimension() == 1*3*3 + 3);
+  planner::optimization::SplineCoefficientsAndDurationsVariables variables(spline);
+  EXPECT_TRUE(variables.getDimension() == 1*3*3 + 3);
 
-//  planner::optimization::OptimizationBasedMotionPlanning planner(mStateSpace);
+  planner::optimization::OptimizationBasedMotionPlanning planner(variables);
 
-//  planner.setVariables(variables);
+  planner.setVariables(variables);
 
-//  EXPECT_TRUE(mStateSpace->getDimension() == 1);
+  EXPECT_TRUE(mStateSpace->getDimension() == 1);
 
-//  planner.plan();
+  planner.plan();
 }

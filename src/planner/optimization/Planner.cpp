@@ -12,26 +12,26 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-trajectory::SplinePtr planOptimization(
-    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
-    const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState,
-    planner::PlanningResult& /*planningResult*/)
-{
-  OptimizationBasedMotionPlanning planner(stateSpace);
+//trajectory::SplinePtr planOptimization(
+//    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
+//    const statespace::StateSpace::State* startState,
+//    const statespace::StateSpace::State* goalState,
+//    planner::PlanningResult& /*planningResult*/)
+//{
+//  OptimizationBasedMotionPlanning planner(stateSpace);
 
-  planner.setStartState(startState);
-  planner.setGoalState(goalState);
+//  planner.setStartState(startState);
+//  planner.setGoalState(goalState);
 
-  auto returnTraj = planner.plan();
+//  auto returnTraj = planner.plan();
 
-  return returnTraj;
-}
+//  return returnTraj;
+//}
 
 //==============================================================================
 OptimizationBasedMotionPlanning::OptimizationBasedMotionPlanning(
-    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace)
-  : mStateSpace(stateSpace)
+    const TrajectoryVariables& variablesToClone)
+  : mVariables(variablesToClone.clone())
 {
   // TODO(JS)
 }

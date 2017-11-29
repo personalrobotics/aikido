@@ -8,9 +8,9 @@ namespace optimization {
 
 //==============================================================================
 SplineVariables::SplineVariables(const trajectory::Spline& splineToClone)
-//  : mSpline(static_cast<const trajectory::Spline&>(*(splineToClone.clone().release())))
-//    : mSpline(std::make_shared<statespace::dart::MetaSkeletonStateSpace>(dart::dynamics::Skeleton::create("skel")))
-    : mSpline(std::make_shared<statespace::dart::MetaSkeletonStateSpace>(std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(splineToClone.getStateSpace())->getMetaSkeleton()))
+  : mSpline(
+        static_cast<const trajectory::Spline&>(
+            *(splineToClone.clone().release())))
 {
   // Do nothing
 }

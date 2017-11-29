@@ -15,20 +15,18 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-trajectory::SplinePtr planOptimization(
-    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
-    const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState,
-    planner::PlanningResult& planningResult);
+//trajectory::SplinePtr planOptimization(
+//    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
+//    const statespace::StateSpace::State* startState,
+//    const statespace::StateSpace::State* goalState,
+//    planner::PlanningResult& planningResult);
 
 // TODO(JS): templatize this class for the trajectory type. For now, this class
 // returns trajectory::Spline()
 class OptimizationBasedMotionPlanning
 {
 public:
-  OptimizationBasedMotionPlanning(
-      const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>&
-          stateSpace);
+  OptimizationBasedMotionPlanning(const TrajectoryVariables& variablesToClone);
 
   ~OptimizationBasedMotionPlanning() = default;
 
@@ -80,7 +78,7 @@ public:
   std::shared_ptr<const dart::optimizer::Solver> getSolver() const;
 
 protected:
-  const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& mStateSpace;
+  std::shared_ptr<TrajectoryVariables> mVariables;
 
   /// The Problem that will be maintained by this trajectory optimization.
   std::shared_ptr<dart::optimizer::Problem> mProblem;
@@ -91,8 +89,6 @@ protected:
 
   /// Objective for the trajectory optimization.
   std::shared_ptr<dart::optimizer::Function> mObjective;
-
-  std::shared_ptr<TrajectoryVariables> mVariables;
 
   const statespace::StateSpace::State* mStartState;
 

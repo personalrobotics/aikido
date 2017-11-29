@@ -27,7 +27,28 @@ public:
   /// \param _startTime start time of the trajectory
   Spline(statespace::StateSpacePtr _stateSpace, double _startTime = 0.);
 
+  /// Copy constructor
+  ///
+  /// \param[in] other The other Spline being copied.
+  Spline(const Spline& other);
+
+  /// Move constructor
+  ///
+  /// \param[in] other The other Spline being moved.
+  Spline(Spline&& other);
+
+  /// Destructor
   virtual ~Spline();
+
+  /// Copy assignment operator
+  ///
+  /// \param[in] other The other Spline being copied.
+  Spline& operator=(const Spline& other);
+
+  /// Move assignment operator
+  ///
+  /// \param[in] other The other Spline being moved.
+  Spline& operator=(Spline&& other);
 
   // Documentation inherited.
   std::unique_ptr<Trajectory> clone() const override;

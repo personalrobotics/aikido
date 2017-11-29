@@ -8,10 +8,27 @@ namespace trajectory {
 
 //==============================================================================
 Spline::Spline(statespace::StateSpacePtr _stateSpace, double _startTime)
-  : mStateSpace(std::move(_stateSpace)), mStartTime(_startTime)
+  : mStateSpace(std::move(_stateSpace)), mStartTime(_startTime), mSegments()
 {
   if (mStateSpace == nullptr)
     throw std::invalid_argument("StateSpace is null.");
+}
+
+//==============================================================================
+Spline::Spline(const Spline& other)
+  : mStateSpace(other.mStateSpace), mStartTime(other.mStartTime), mSegments()
+{
+  for (const auto& segment : other.mSegments)
+    addSegment(segment.mCoefficients, segment.mDuration, segment.mStartState);
+}
+
+//==============================================================================
+Spline::Spline(Spline&& other)
+  : mStateSpace(std::move(other.mStateSpace))
+  , mStartTime(std::move(other.mStartTime))
+  , mSegments(std::move(other.mSegments))
+{
+  // Do nothing
 }
 
 //==============================================================================
@@ -19,6 +36,25 @@ Spline::~Spline()
 {
   for (const auto& segment : mSegments)
     mStateSpace->freeState(segment.mStartState);
+}
+
+//==============================================================================
+Spline& Spline::operator=(const Spline& other)
+{
+  Spline newSpline(other);
+  *this = std::move(newSpline);
+
+  return *this;
+}
+
+//==============================================================================
+Spline& Spline::operator=(Spline&& other)
+{
+  mStateSpace = std::move(other.mStateSpace);
+  mStartTime = std::move(other.mStartTime);
+  mSegments = std::move(other.mSegments);
+
+  return *this;
 }
 
 //==============================================================================

@@ -204,6 +204,7 @@ Interpolated::Waypoint::Waypoint(
     double _t, aikido::statespace::StateSpace::State* _state)
   : t(_t), state(_state)
 {
+  // Do nothing
 }
 
 //==============================================================================
