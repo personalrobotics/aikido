@@ -88,6 +88,7 @@ VectorFieldPlanner::VectorFieldPlanner(
   mEnableDofLimitCheck = true;
 }
 
+//==============================================================================
 void VectorFieldPlanner::step(
     const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double /*_t*/)
 {

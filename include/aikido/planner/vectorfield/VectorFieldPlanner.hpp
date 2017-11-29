@@ -65,21 +65,32 @@ protected:
   /// \param[in] _t Current time being planned
   void check(const Eigen::VectorXd& _q, double _t);
 
+  /// Vector field
   ConfigurationSpaceVectorFieldPtr mVectorField;
+
+  /// Planning constraint
   aikido::constraint::TestablePtr mConstraint;
+
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   dart::dynamics::BodyNodePtr mBodyNode;
+
+  /// Timer for timelimit
   dart::common::Timer mTimer;
+  /// Planning timelimit
   double mTimelimit;
 
   std::vector<Knot> mKnots;
 
+  /// Initial step size for adaptive integrator
   double mInitialStepSize;
   int mCacheIndex;
   int mIndex;
 
+  /// Enable collision checking in following vector field
   bool mEnableCollisionCheck;
+
+  /// Enable DOF limit checking in following vector field
   bool mEnableDofLimitCheck;
 };
 
