@@ -192,7 +192,7 @@ public:
   // Documentation inherited
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
-      aikido::constraint::TestableOutcome* = nullptr /*outcome*/) const override
+      aikido::constraint::TestableOutcome* /*outcome*/ = nullptr) const override
   {
     auto cst = static_cast<const CartesianProduct::State*>(_state);
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);
