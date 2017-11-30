@@ -21,7 +21,7 @@ TestableIntersection::TestableIntersection(
 //==============================================================================
 bool TestableIntersection::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
-    TestableOutcome* /*_outcome*/) const
+    TestableOutcome* /*outcome*/) const
 {
   for (auto c : mConstraints)
   {

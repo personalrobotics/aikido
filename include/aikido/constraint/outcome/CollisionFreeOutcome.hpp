@@ -12,6 +12,8 @@
 namespace aikido {
 namespace constraint {
 
+/// TestableOutcome derivative class intended as (optional) input to isSatisfied
+/// method in CollisionFree class.
 class CollisionFreeOutcome : public TestableOutcome
 {
 public:
@@ -24,13 +26,13 @@ public:
   std::string toString() const override;
 
   /// Store a Contact object from a pairwise collision. Used by CollisionFree
-  // to modify this object.
-  /// \param pairwiseContact Contact object to store.
+  /// to modify this object.
+  /// \param[in] pairwiseContact Contact object to store.
   void markPairwiseContact(const dart::collision::Contact& pairwiseContact);
 
   /// Store a Contact object from a self collision. Used by CollisionFree to
   /// modify this object.
-  /// \param selfContact Contact object to store.
+  /// \param[in] selfContact Contact object to store.
   void markSelfContact(const dart::collision::Contact& selfContact);
 
   /// Return a copy of the vector storing the Contact objects from pairwise
@@ -44,9 +46,9 @@ public:
   /// Gets the name of a CollisionObject. The name returned is that of the
   /// corresponding BodyNode (if possible). If not, the name of the ShapeFrame
   /// is returned instead. This is a helper for toString().
-  /// \param object object pointer to CollisionObject we want the name of.
+  /// \param[in] object object pointer to CollisionObject we want the name of.
   std::string getCollisionObjectName(
-      dart::collision::CollisionObject* object) const;
+      const dart::collision::CollisionObject* object) const;
 
 protected:
   /// Holds Contact objects from pairwise collisions.
@@ -59,4 +61,4 @@ protected:
 } // namespace constraint
 } // namespace aikido
 
-#endif // ifndef AIKIDO_CONSTRAINT_COLLISIONFREEOUTCOME_HPP_
+#endif // AIKIDO_CONSTRAINT_COLLISIONFREEOUTCOME_HPP_

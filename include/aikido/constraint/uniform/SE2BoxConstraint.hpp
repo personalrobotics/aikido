@@ -38,7 +38,7 @@ public:
   // Documentation inherited.
   bool isSatisfied(
       const statespace::StateSpace::State* state,
-      TestableOutcome* _outcome = nullptr) const override;
+      TestableOutcome* outcome = nullptr) const override;
 
   // Documentation inherited.
   bool project(

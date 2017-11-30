@@ -63,7 +63,7 @@ std::vector<dart::collision::Contact> CollisionFreeOutcome::getSelfContacts()
 
 //==============================================================================
 std::string CollisionFreeOutcome::getCollisionObjectName(
-    dart::collision::CollisionObject* object) const
+    const dart::collision::CollisionObject* object) const
 {
   const dart::dynamics::ShapeFrame* frame = object->getShapeFrame();
 

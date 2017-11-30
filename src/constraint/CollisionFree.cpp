@@ -28,7 +28,7 @@ statespace::StateSpacePtr CollisionFree::getStateSpace() const
 //==============================================================================
 bool CollisionFree::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
-    TestableOutcome* _outcome) const
+    TestableOutcome* outcome) const
 {
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
@@ -36,7 +36,7 @@ bool CollisionFree::isSatisfied(
 
   bool collision = false;
   dart::collision::CollisionResult collisionResult;
-  for (auto groups : mGroupsToPairwiseCheck)
+  for (const auto& groups : mGroupsToPairwiseCheck)
   {
     collision = mCollisionDetector->collide(
         groups.first.get(),
@@ -46,10 +46,10 @@ bool CollisionFree::isSatisfied(
 
     if (collision)
     {
-      if (_outcome != nullptr)
+      if (outcome != nullptr)
       {
         const auto& collisionOutcome
-            = dynamic_cast<CollisionFreeOutcome*>(_outcome);
+            = dynamic_cast<CollisionFreeOutcome*>(outcome);
         if (collisionOutcome == nullptr)
           throw std::invalid_argument(
               "TestableOutcome pointer is not of type CollisionFreeOutcome.");
@@ -63,16 +63,16 @@ bool CollisionFree::isSatisfied(
     }
   }
 
-  for (auto group : mGroupsToSelfCheck)
+  for (const auto& group : mGroupsToSelfCheck)
   {
     collision = mCollisionDetector->collide(
         group.get(), mCollisionOptions, &collisionResult);
     if (collision)
     {
-      if (_outcome != nullptr)
+      if (outcome != nullptr)
       {
         const auto& collisionOutcome
-            = dynamic_cast<CollisionFreeOutcome*>(_outcome);
+            = dynamic_cast<CollisionFreeOutcome*>(outcome);
         if (collisionOutcome == nullptr)
           throw std::invalid_argument(
               "TestableOutcome pointer is not of type CollisionFreeOutcome.");

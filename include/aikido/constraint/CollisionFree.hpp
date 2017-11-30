@@ -43,7 +43,7 @@ public:
   // Documentation inherited.
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
-      TestableOutcome* _outcome = nullptr) const override;
+      TestableOutcome* outcome = nullptr) const override;
 
   /// Checks collision between group1 and group2.
   /// \param group1 First collision group.

@@ -31,7 +31,7 @@ public:
   ///        StateSpace returend by getStateSpace().
   bool isSatisfied(
       const statespace::StateSpace::State* _state,
-      TestableOutcome* _outcome = nullptr) const override;
+      TestableOutcome* outcome = nullptr) const override;
 
   // Documentation inhereted
   std::shared_ptr<statespace::StateSpace> getStateSpace() const override;

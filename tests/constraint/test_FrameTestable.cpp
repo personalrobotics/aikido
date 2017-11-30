@@ -30,8 +30,7 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
-      aikido::constraint::TestableOutcome* = nullptr /*_outcome*/)
-      const override
+      aikido::constraint::TestableOutcome* /*outcome*/ = nullptr) const override
   {
     auto st = static_cast<const SE3::State*>(_state);
     auto val = st->getIsometry();

@@ -27,7 +27,7 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
-      TestableOutcome* _outcome = nullptr) const override;
+      TestableOutcome* outcome = nullptr) const override;
 
 private:
   std::shared_ptr<statespace::CartesianProduct> mStateSpace;

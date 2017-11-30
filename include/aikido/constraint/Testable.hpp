@@ -18,7 +18,7 @@ public:
   /// Returns true if state satisfies this constraint.
   virtual bool isSatisfied(
       const statespace::StateSpace::State* _state,
-      TestableOutcome* _outcome = nullptr) const = 0;
+      TestableOutcome* outcome = nullptr) const = 0;
 
   /// Returns StateSpace in which this constraint operates.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
