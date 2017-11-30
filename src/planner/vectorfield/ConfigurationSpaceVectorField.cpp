@@ -7,11 +7,11 @@ namespace vectorfield {
 
 //==============================================================================
 ConfigurationSpaceVectorField::ConfigurationSpaceVectorField(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    dart::dynamics::BodyNodePtr _bodyNode)
-  : mStateSpace(_stateSpace)
-  , mMetaSkeleton(_stateSpace->getMetaSkeleton())
-  , mBodyNode(_bodyNode)
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    dart::dynamics::BodyNodePtr bodyNode)
+  : mStateSpace(stateSpace)
+  , mMetaSkeleton(stateSpace->getMetaSkeleton())
+  , mBodyNode(bodyNode)
 {
   // Do nothing
 }

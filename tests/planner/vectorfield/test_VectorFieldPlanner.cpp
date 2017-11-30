@@ -326,7 +326,8 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   direction << 1., 1., 0.;
   direction.normalize();
   double distance = 0.4;
-  double maxDistance = std::numeric_limits<double>::max();
+  double maxDistance = aikido::planner::vectorfield::
+      MoveEndEffectorOffsetVectorField::InvalidMaxDistance;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
   auto startState = mStateSpace->createState();

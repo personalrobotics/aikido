@@ -4,8 +4,9 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-VectorFieldTerminated::VectorFieldTerminated(const std::string& _whatArg)
-  : mWhatArg(_whatArg)
+//==============================================================================
+VectorFieldTerminated::VectorFieldTerminated(const std::string& whatArg)
+  : mWhatArg(whatArg)
 {
   // Do nothing
 }
@@ -17,16 +18,16 @@ const char* VectorFieldTerminated::what() const throw()
 }
 
 //==============================================================================
-VectorFieldError::VectorFieldError(const std::string& _whatArg)
-  : std::runtime_error(_whatArg)
+VectorFieldError::VectorFieldError(const std::string& whatArg)
+  : std::runtime_error(whatArg)
 {
   // Do nothing
 }
 
 //==============================================================================
 DofLimitError::DofLimitError(
-    const dart::dynamics::DegreeOfFreedom* _dof, const std::string& _whatArg)
-  : VectorFieldError(_whatArg), mDof(_dof)
+    const dart::dynamics::DegreeOfFreedom* dof, const std::string& whatArg)
+  : VectorFieldError(whatArg), mDof(dof)
 {
   // Do nothing
 }

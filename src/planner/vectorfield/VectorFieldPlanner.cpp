@@ -1,11 +1,7 @@
 #include <exception>
 #include <string>
 #include <boost/numeric/odeint.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -15,41 +11,41 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+//==============================================================================
 static void checkDofLimits(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    Eigen::VectorXd const& _q,
-    Eigen::VectorXd const& _qd)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    Eigen::VectorXd const& q,
+    Eigen::VectorXd const& qd)
 {
   using dart::dynamics::DegreeOfFreedom;
   std::stringstream ss;
 
-  for (std::size_t i = 0; i < _stateSpace->getMetaSkeleton()->getNumDofs(); ++i)
+  for (std::size_t i = 0; i < stateSpace->getMetaSkeleton()->getNumDofs(); ++i)
   {
-    const DegreeOfFreedom* const dof
-        = _stateSpace->getMetaSkeleton()->getDof(i);
+    const DegreeOfFreedom* const dof = stateSpace->getMetaSkeleton()->getDof(i);
 
-    if (_q[i] < dof->getPositionLowerLimit())
+    if (q[i] < dof->getPositionLowerLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds lower position limit: ";
-      ss << _q[i] << " < " << dof->getPositionLowerLimit();
+      ss << q[i] << " < " << dof->getPositionLowerLimit();
       throw DofLimitError(dof, ss.str());
     }
-    else if (_q[i] > dof->getPositionUpperLimit())
+    else if (q[i] > dof->getPositionUpperLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds upper position limit: ";
-      ss << _q[i] << " > " << dof->getPositionUpperLimit();
+      ss << q[i] << " > " << dof->getPositionUpperLimit();
       throw DofLimitError(dof, ss.str());
     }
-    else if (_qd[i] < dof->getVelocityLowerLimit())
+    else if (qd[i] < dof->getVelocityLowerLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds lower velocity limit: ";
-      ss << _qd[i] << " < " << dof->getVelocityLowerLimit();
+      ss << qd[i] << " < " << dof->getVelocityLowerLimit();
       throw DofLimitError(dof, ss.str());
     }
-    else if (_qd[i] > dof->getVelocityUpperLimit())
+    else if (qd[i] > dof->getVelocityUpperLimit())
     {
       ss << "DOF " << dof->getName() << " exceeds upper velocity limit: ";
-      ss << _qd[i] << " > " << dof->getVelocityUpperLimit();
+      ss << qd[i] << " > " << dof->getVelocityUpperLimit();
       throw DofLimitError(dof, ss.str());
     }
   }
@@ -57,13 +53,13 @@ static void checkDofLimits(
 
 //==============================================================================
 static void checkCollision(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    const aikido::constraint::TestablePtr& _constraint)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::constraint::TestablePtr& constraint)
 {
   // Get current position
-  auto state = _stateSpace->getScopedStateFromMetaSkeleton();
+  auto state = stateSpace->getScopedStateFromMetaSkeleton();
   // Throw a termination if in collision
-  if (!_constraint->isSatisfied(state))
+  if (!constraint->isSatisfied(state))
   {
     throw StateInCollisionError();
   }
@@ -71,15 +67,15 @@ static void checkCollision(
 
 //==============================================================================
 VectorFieldPlanner::VectorFieldPlanner(
-    const ConfigurationSpaceVectorFieldPtr _vectorField,
-    const aikido::constraint::TestablePtr _constraint,
-    double _initialStepSize)
-  : mVectorField(_vectorField)
-  , mConstraint(_constraint)
-  , mMetaSkeletonStateSpace(_vectorField->getMetaSkeletonStateSpace())
-  , mMetaSkeleton(_vectorField->getMetaSkeleton())
-  , mBodyNode(_vectorField->getBodyNode())
-  , mInitialStepSize(_initialStepSize)
+    const ConfigurationSpaceVectorFieldPtr vectorField,
+    const aikido::constraint::TestablePtr constraint,
+    double initialStepSize)
+  : mVectorField(vectorField)
+  , mConstraint(constraint)
+  , mMetaSkeletonStateSpace(vectorField->getMetaSkeletonStateSpace())
+  , mMetaSkeleton(vectorField->getMetaSkeleton())
+  , mBodyNode(vectorField->getBodyNode())
+  , mInitialStepSize(initialStepSize)
 {
   mCacheIndex = -1;
   mIndex = 0;
@@ -90,10 +86,10 @@ VectorFieldPlanner::VectorFieldPlanner(
 
 //==============================================================================
 void VectorFieldPlanner::step(
-    const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double /*_t*/)
+    const Eigen::VectorXd& q, Eigen::VectorXd& qd, double /*_t*/)
 {
   // set joint values
-  mMetaSkeleton->setPositions(_q);
+  mMetaSkeleton->setPositions(q);
 
   // collision checking of current joint values
   if (mEnableCollisionCheck)
@@ -102,7 +98,7 @@ void VectorFieldPlanner::step(
   }
 
   // compute joint velocities
-  bool success = mVectorField->getJointVelocities(_qd);
+  bool success = mVectorField->getJointVelocities(qd);
   if (!success)
   {
     throw IntegrationFailedError();
@@ -110,12 +106,12 @@ void VectorFieldPlanner::step(
 
   if (mEnableDofLimitCheck)
   {
-    checkDofLimits(mMetaSkeletonStateSpace, _q, _qd);
+    checkDofLimits(mMetaSkeletonStateSpace, q, qd);
   }
 }
 
 //==============================================================================
-void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
+void VectorFieldPlanner::check(const Eigen::VectorXd& q, double t)
 {
   if (mTimer.getElapsedTime() > mTimelimit)
   {
@@ -123,7 +119,7 @@ void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
   }
 
   // set joint values
-  mMetaSkeleton->setPositions(_q);
+  mMetaSkeleton->setPositions(q);
 
   // collision checking of current joint valuesb
   if (mEnableCollisionCheck)
@@ -132,8 +128,8 @@ void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
   }
 
   Knot knot;
-  knot.mT = _t;
-  knot.mPositions = _q;
+  knot.mT = t;
+  knot.mPositions = q;
 
   mKnots.push_back(knot);
   mIndex += 1;
@@ -154,12 +150,11 @@ void VectorFieldPlanner::check(const Eigen::VectorXd& _q, double _t)
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline>
-VectorFieldPlanner::followVectorField(
-    double _integrationTimeInterval,
-    double _timelimit,
-    double _useCollisionChecking,
-    double _useDofLimitChecking)
+std::unique_ptr<aikido::trajectory::Spline> VectorFieldPlanner::plan(
+    double integrationTimeInterval,
+    double timelimit,
+    double useCollisionChecking,
+    double useDofLimitChecking)
 {
   using namespace std::placeholders;
   using errorStepper = boost::numeric::odeint::
@@ -172,9 +167,9 @@ VectorFieldPlanner::followVectorField(
   auto saver = MetaSkeletonStateSpaceSaver(mMetaSkeletonStateSpace);
   DART_UNUSED(saver);
 
-  mTimelimit = _timelimit;
-  mEnableCollisionCheck = _useCollisionChecking;
-  mEnableDofLimitCheck = _useDofLimitChecking;
+  mTimelimit = timelimit;
+  mEnableCollisionCheck = useCollisionChecking;
+  mEnableDofLimitCheck = useDofLimitChecking;
 
   if (mMetaSkeleton->getPositionUpperLimits()
       == mMetaSkeleton->getPositionLowerLimits())
@@ -218,7 +213,7 @@ VectorFieldPlanner::followVectorField(
         std::bind(&VectorFieldPlanner::step, this, _1, _2, _3),
         initialQ,
         0.,
-        _integrationTimeInterval,
+        integrationTimeInterval,
         mInitialStepSize,
         std::bind(&VectorFieldPlanner::check, this, _1, _2));
   }
@@ -237,95 +232,95 @@ VectorFieldPlanner::followVectorField(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    const dart::dynamics::BodyNodePtr& _bn,
-    const aikido::constraint::TestablePtr& _constraint,
-    const Eigen::Vector3d& _direction,
-    double _distance,
-    double _maxDistance,
-    double _positionTolerance,
-    double _angularTolerance,
-    double _linearVelocityGain,
-    double _useCollisionChecking,
-    double _useDofLimitChecking,
-    double _initialStepSize,
-    double _jointLimitTolerance,
-    double _optimizationTolerance,
-    double _timelimit,
-    double _integralTimeInterval)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const dart::dynamics::BodyNodePtr& bn,
+    const aikido::constraint::TestablePtr& constraint,
+    const Eigen::Vector3d& direction,
+    double distance,
+    double maxDistance,
+    double positionTolerance,
+    double angularTolerance,
+    double linearVelocityGain,
+    double useCollisionChecking,
+    double useDofLimitChecking,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double optimizationTolerance,
+    double timelimit,
+    double integralTimeInterval)
 {
-  if (_distance < 0.)
+  if (distance < 0.)
   {
     std::stringstream ss;
-    ss << "Distance must be non-negative; got " << _distance << ".";
+    ss << "Distance must be non-negative; got " << distance << ".";
     throw std::runtime_error(ss.str());
   }
 
-  if (_maxDistance < _distance)
+  if (maxDistance < distance)
   {
     throw std::runtime_error("Max distance is less than distance.");
   }
 
-  if (_direction.norm() == 0.0)
+  if (direction.norm() == 0.0)
   {
     throw std::runtime_error("Direction vector is a zero vector");
   }
 
   auto vectorfield = std::make_shared<MoveEndEffectorOffsetVectorField>(
-      _stateSpace,
-      _bn,
-      _direction,
-      _distance,
-      _maxDistance,
-      _positionTolerance,
-      _angularTolerance,
-      _linearVelocityGain,
-      _initialStepSize,
-      _jointLimitTolerance,
-      _optimizationTolerance);
+      stateSpace,
+      bn,
+      direction,
+      distance,
+      maxDistance,
+      positionTolerance,
+      angularTolerance,
+      linearVelocityGain,
+      initialStepSize,
+      jointLimitTolerance,
+      optimizationTolerance);
 
-  auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, _constraint);
-  return planner->followVectorField(
-      _integralTimeInterval,
-      _timelimit,
-      _useCollisionChecking,
-      _useDofLimitChecking);
+  auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, constraint);
+  return planner->plan(
+      integralTimeInterval,
+      timelimit,
+      useCollisionChecking,
+      useDofLimitChecking);
 }
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    const dart::dynamics::BodyNodePtr& _bn,
-    const aikido::constraint::TestablePtr& _constraint,
-    const Eigen::Isometry3d& _goalPose,
-    double _poseErrorTolerance,
-    double _linearVelocityGain,
-    double _angularvelocityGain,
-    double _useCollisionChecking,
-    double _useDofLimitChecking,
-    double _initialStepSize,
-    double _jointLimitTolerance,
-    double _optimizationTolerance,
-    double _timelimit,
-    double _integralTimeInterval)
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const dart::dynamics::BodyNodePtr& bn,
+    const aikido::constraint::TestablePtr& constraint,
+    const Eigen::Isometry3d& goalPose,
+    double poseErrorTolerance,
+    double linearVelocityGain,
+    double angularvelocityGain,
+    double useCollisionChecking,
+    double useDofLimitChecking,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double optimizationTolerance,
+    double timelimit,
+    double integralTimeInterval)
 {
   auto vectorfield = std::make_shared<MoveEndEffectorPoseVectorField>(
-      _stateSpace,
-      _bn,
-      _goalPose,
-      _poseErrorTolerance,
-      _linearVelocityGain,
-      _angularvelocityGain,
-      _initialStepSize,
-      _jointLimitTolerance,
-      _optimizationTolerance);
+      stateSpace,
+      bn,
+      goalPose,
+      poseErrorTolerance,
+      linearVelocityGain,
+      angularvelocityGain,
+      initialStepSize,
+      jointLimitTolerance,
+      optimizationTolerance);
 
-  auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, _constraint);
-  return planner->followVectorField(
-      _integralTimeInterval,
-      _timelimit,
-      _useCollisionChecking,
-      _useDofLimitChecking);
+  auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, constraint);
+  return planner->plan(
+      integralTimeInterval,
+      timelimit,
+      useCollisionChecking,
+      useDofLimitChecking);
 }
 
 } // namespace vectorfield

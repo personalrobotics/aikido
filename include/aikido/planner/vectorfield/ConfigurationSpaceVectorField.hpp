@@ -18,17 +18,17 @@ class ConfigurationSpaceVectorField
 public:
   /// Constructor.
   ///
-  /// \param[in] _stateSpace MetaSkeleton state space.
-  /// \param[in] _bn Body node of end-effector.
+  /// \param[in] stateSpace MetaSkeleton state space.
+  /// \param[in] bn Body node of end-effector.
   ConfigurationSpaceVectorField(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-      dart::dynamics::BodyNodePtr _bodyNode);
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+      dart::dynamics::BodyNodePtr bodyNode);
 
   /// Vectorfield callback function
   ///
   /// \param[out] _qd Joint velocities.
   /// \return Whether joint velocities are successfully computed.
-  virtual bool getJointVelocities(Eigen::VectorXd& _qd) const = 0;
+  virtual bool getJointVelocities(Eigen::VectorXd& qd) const = 0;
 
   /// Vectorfield planning status callback function
   ///

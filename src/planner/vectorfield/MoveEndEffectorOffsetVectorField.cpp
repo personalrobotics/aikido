@@ -10,29 +10,34 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+//==============================================================================
+double MoveEndEffectorOffsetVectorField::InvalidMaxDistance
+    = std::numeric_limits<double>::infinity();
+
+//==============================================================================
 MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    dart::dynamics::BodyNodePtr _bn,
-    const Eigen::Vector3d& _direction,
-    double _distance,
-    double _maxDistance,
-    double _positionTolerance,
-    double _angularTolerance,
-    double _linearVelocityGain,
-    double _initialStepSize,
-    double _jointLimitPadding,
-    double _optimizationTolerance)
-  : ConfigurationSpaceVectorField(_stateSpace, _bn)
-  , mDirection(_direction)
-  , mDistance(_distance)
-  , mMaxDistance(_maxDistance)
-  , mPositionTolerance(_positionTolerance)
-  , mAngularTolerance(_angularTolerance)
-  , mLinearVelocityGain(_linearVelocityGain)
-  , mInitialStepSize(_initialStepSize)
-  , mJointLimitPadding(_jointLimitPadding)
-  , mOptimizationTolerance(_optimizationTolerance)
-  , mStartPose(_bn->getTransform())
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    dart::dynamics::BodyNodePtr bn,
+    const Eigen::Vector3d& direction,
+    double distance,
+    double maxDistance,
+    double positionTolerance,
+    double angularTolerance,
+    double linearVelocityGain,
+    double initialStepSize,
+    double jointLimitPadding,
+    double optimizationTolerance)
+  : ConfigurationSpaceVectorField(stateSpace, bn)
+  , mDirection(direction)
+  , mDistance(distance)
+  , mMaxDistance(maxDistance)
+  , mPositionTolerance(positionTolerance)
+  , mAngularTolerance(angularTolerance)
+  , mLinearVelocityGain(linearVelocityGain)
+  , mInitialStepSize(initialStepSize)
+  , mJointLimitPadding(jointLimitPadding)
+  , mOptimizationTolerance(optimizationTolerance)
+  , mStartPose(bn->getTransform())
 {
   if (mDistance < 0)
     throw std::invalid_argument("Distance must be non-negative.");
@@ -50,7 +55,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 
 //==============================================================================
 bool MoveEndEffectorOffsetVectorField::getJointVelocities(
-    Eigen::VectorXd& _qd) const
+    Eigen::VectorXd& qd) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
@@ -68,7 +73,7 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(
   desiredTwist.tail<3>() = mDirection * mLinearVelocityGain;
 
   bool result = computeJointVelocityFromTwist(
-      _qd,
+      qd,
       desiredTwist,
       mStateSpace,
       mBodyNode,
@@ -110,7 +115,7 @@ VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus()
   }
 
   // Check if we've reached the target.
-  if (mMaxDistance == std::numeric_limits<double>::max())
+  if (mMaxDistance == InvalidMaxDistance)
   {
     if (movedDistance >= mDistance)
     {

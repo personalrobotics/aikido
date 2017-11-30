@@ -10,13 +10,15 @@ namespace planner {
 namespace vectorfield {
 
 /// Define termination of vectorfield planner.
+// When VectorFieldTerminated is throws, it means
+// that planning is finished.
 class VectorFieldTerminated : public std::exception
 {
 public:
   /// Constructor.
   ///
   /// \param[in] _whatArg Error string.
-  VectorFieldTerminated(const std::string& _whatArg);
+  VectorFieldTerminated(const std::string& whatArg);
 
   const char* what() const throw();
 
@@ -25,13 +27,15 @@ protected:
 };
 
 /// Define runtime error of vector field planner.
+// When VectorFieldError is thrown, it means that
+// planning encounters an error.
 class VectorFieldError : public std::runtime_error
 {
 public:
   /// Constructor.
   ///
-  /// \param[in] _whatArg Error string.
-  VectorFieldError(const std::string& _whatArg);
+  /// \param[in] whatArg Error string.
+  VectorFieldError(const std::string& whatArg);
 };
 
 /// Define termination error of vectorfield planner due to DOF limit error.
@@ -40,10 +44,10 @@ class DofLimitError : public VectorFieldError
 public:
   /// Constructor.
   ///
-  /// \param[in] _dof Degree of freedom.
-  /// \param[in] _whatArg Error string.
+  /// \param[in] dof Degree of freedom.
+  /// \param[in] whatArg Error string.
   DofLimitError(
-      const dart::dynamics::DegreeOfFreedom* _dof, const std::string& _whatArg);
+      const dart::dynamics::DegreeOfFreedom* dof, const std::string& whatArg);
 
   /// Get degree of freedom.
   ///

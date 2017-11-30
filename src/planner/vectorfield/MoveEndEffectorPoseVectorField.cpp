@@ -9,24 +9,25 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+//==============================================================================
 MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    dart::dynamics::BodyNodePtr _bn,
-    const Eigen::Isometry3d& _goalPose,
-    double _poseErrorTolerance,
-    double _linearVelocityGain,
-    double _angularVelocityGain,
-    double _initialStepSize,
-    double _jointLimitPadding,
-    double _optimizationTolerance)
-  : ConfigurationSpaceVectorField(_stateSpace, _bn)
-  , mGoalPose(_goalPose)
-  , mPoseErrorTolerance(_poseErrorTolerance)
-  , mLinearVelocityGain(_linearVelocityGain)
-  , mAngularVelocityGain(_angularVelocityGain)
-  , mInitialStepSize(_initialStepSize)
-  , mJointLimitPadding(_jointLimitPadding)
-  , mOptimizationTolerance(_optimizationTolerance)
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    dart::dynamics::BodyNodePtr bn,
+    const Eigen::Isometry3d& goalPose,
+    double poseErrorTolerance,
+    double linearVelocityGain,
+    double angularVelocityGain,
+    double initialStepSize,
+    double jointLimitPadding,
+    double optimizationTolerance)
+  : ConfigurationSpaceVectorField(stateSpace, bn)
+  , mGoalPose(goalPose)
+  , mPoseErrorTolerance(poseErrorTolerance)
+  , mLinearVelocityGain(linearVelocityGain)
+  , mAngularVelocityGain(angularVelocityGain)
+  , mInitialStepSize(initialStepSize)
+  , mJointLimitPadding(jointLimitPadding)
+  , mOptimizationTolerance(optimizationTolerance)
 {
   if (mPoseErrorTolerance < 0)
     throw std::invalid_argument("Pose error tolerance is negative");
@@ -39,7 +40,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
 
 //==============================================================================
 bool MoveEndEffectorPoseVectorField::getJointVelocities(
-    Eigen::VectorXd& _qd) const
+    Eigen::VectorXd& qd) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
@@ -59,7 +60,7 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(
       = mMetaSkeleton->getVelocityLowerLimits();
 
   bool result = computeJointVelocityFromTwist(
-      _qd,
+      qd,
       desiredTwist,
       mStateSpace,
       mBodyNode,
@@ -75,13 +76,13 @@ bool MoveEndEffectorPoseVectorField::getJointVelocities(
     // Go as fast as possible
     for (std::size_t i = 0; i < mMetaSkeleton->getNumDofs(); i++)
     {
-      if (_qd[i] > mVelocityUpperLimits[i])
+      if (qd[i] > mVelocityUpperLimits[i])
       {
-        _qd[i] = mVelocityUpperLimits[i];
+        qd[i] = mVelocityUpperLimits[i];
       }
-      else if (_qd[i] < mVelocityLowerLimits[i])
+      else if (qd[i] < mVelocityLowerLimits[i])
       {
-        _qd[i] = mVelocityLowerLimits[i];
+        qd[i] = mVelocityLowerLimits[i];
       }
     }
   }

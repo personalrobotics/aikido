@@ -15,38 +15,47 @@ namespace vectorfield {
 class MoveEndEffectorOffsetVectorField : public ConfigurationSpaceVectorField
 {
 public:
-  /// Constructor.
+  static double InvalidMaxDistance;
+
+  /// Constructor
   ///
-  /// \param[in] _stateSpace MetaSkeleton state space.
-  /// \param[in] _bn Body node of end-effector.
-  /// \param[in] _direction Unit vector in the direction of motion.
-  /// \param[in] _distance Minimum distance in meters.
-  /// \param[in] _maxDistance Maximum distance in meters.
-  /// \param[in] _positionTolerance Constraint tolerance in meters.
-  /// \param[in] _angularTolerance Constraint tolerance in radians.
-  /// \param[in] _linearVelocityGain Linear velocity gain in workspace.
-  /// \param[in] _initialStepSize Initial step size.
-  /// \param[in] _jointLimitPadding If less then this distance to joint
+  /// (1) When maxDistance is set to InvalidMaxDistance, planning
+  /// will terminate and return a path if moved distance is larger
+  /// than distance.
+  /// (2) When maxDistance is not set to InvalidMaxDistance,
+  /// planning will terminate and return a path, the path length
+  /// of which is [distance, maxDistance].
+  ///
+  /// \param[in] stateSpace MetaSkeleton state space
+  /// \param[in] bn Body node of end-effector
+  /// \param[in] direction Unit vector in the direction of motion
+  /// \param[in] distance Minimum distance in meters
+  /// \param[in] maxDistance Maximum distance in meters
+  /// \param[in] positionTolerance Constraint tolerance in meters
+  /// \param[in] angularTolerance Constraint tolerance in radians
+  /// \param[in] linearVelocityGain Linear velocity gain in workspace.
+  /// \param[in] initialStepSize Initial step size.
+  /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
-  /// \param[in] _optimizationTolerance Tolerance on optimization.
+  /// \param[in] optimizationTolerance Tolerance on optimization.
   MoveEndEffectorOffsetVectorField(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-      dart::dynamics::BodyNodePtr _bn,
-      const Eigen::Vector3d& _direction,
-      double _distance,
-      double _maxDistance = std::numeric_limits<double>::max(),
-      double _positionTolerance = 0.01,
-      double _angularTolerance = 0.15,
-      double _linearVelocityGain = 1.0,
-      double _initialStepSize = 1e-1,
-      double _jointLimitPadding = 3e-2,
-      double _optimizationTolerance = 1e-3);
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+      dart::dynamics::BodyNodePtr bn,
+      const Eigen::Vector3d& direction,
+      double distance,
+      double maxDistance = InvalidMaxDistance,
+      double positionTolerance = 0.01,
+      double angularTolerance = 0.15,
+      double linearVelocityGain = 1.0,
+      double initialStepSize = 1e-1,
+      double jointLimitPadding = 3e-2,
+      double optimizationTolerance = 1e-3);
 
   /// Vectorfield callback function.
   ///
-  /// \param[out] _qd Joint velocities.
+  /// \param[out] qd Joint velocities.
   /// \return Whether joint velocities are successfully computed.
-  bool getJointVelocities(Eigen::VectorXd& _qd) const override;
+  bool getJointVelocities(Eigen::VectorXd& qd) const override;
 
   /// Vectorfield planning status callback function.
   ///

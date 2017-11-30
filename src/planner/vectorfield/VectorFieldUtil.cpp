@@ -7,34 +7,35 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const std::vector<Knot>& _knots,
-    int _cacheIndex,
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace)
+    const std::vector<Knot>& knots,
+    int cacheIndex,
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace)
 {
   using dart::common::make_unique;
 
-  std::size_t numDof = _stateSpace->getMetaSkeleton()->getNumDofs();
+  std::size_t numDof = stateSpace->getMetaSkeleton()->getNumDofs();
   // Construct the output spline.
-  Eigen::VectorXd times(_cacheIndex);
+  Eigen::VectorXd times(cacheIndex);
   std::transform(
-      _knots.begin(),
-      _knots.begin() + _cacheIndex,
+      knots.begin(),
+      knots.begin() + cacheIndex,
       times.data(),
       [](const Knot& knot) { return knot.mT; });
 
-  auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(_stateSpace);
+  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(stateSpace);
 
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
 
   const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(numDof);
-  auto currState = _stateSpace->createState();
-  for (int iknot = 0; iknot < _cacheIndex - 1; ++iknot)
+  auto currState = stateSpace->createState();
+  for (int iknot = 0; iknot < cacheIndex - 1; ++iknot)
   {
-    const double segmentDuration = _knots[iknot + 1].mT - _knots[iknot].mT;
-    Eigen::VectorXd currentPosition = _knots[iknot].mPositions;
-    Eigen::VectorXd nextPosition = _knots[iknot + 1].mPositions;
+    const double segmentDuration = knots[iknot + 1].mT - knots[iknot].mT;
+    Eigen::VectorXd currentPosition = knots[iknot].mPositions;
+    Eigen::VectorXd nextPosition = knots[iknot + 1].mPositions;
 
     if (segmentDuration == 0.0)
     {
@@ -46,47 +47,47 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const auto solution = problem.fit();
     const auto coefficients = solution.getCoefficients().front();
 
-    _stateSpace->expMap(currentPosition, currState);
-    _outputTrajectory->addSegment(coefficients, segmentDuration, currState);
+    stateSpace->expMap(currentPosition, currState);
+    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
   }
-  return _outputTrajectory;
+  return outputTrajectory;
 }
 
 //==============================================================================
 DesiredTwistFunction::DesiredTwistFunction(
-    const Twist& _twist, const Jacobian& _jacobian)
+    const Twist& twist, const Jacobian& jacobian)
   : dart::optimizer::Function("DesiredTwistFunction")
-  , mTwist(_twist)
-  , mJacobian(_jacobian)
+  , mTwist(twist)
+  , mJacobian(jacobian)
 {
   // Do nothing
 }
 
 //==============================================================================
-double DesiredTwistFunction::eval(const Eigen::VectorXd& _qd)
+double DesiredTwistFunction::eval(const Eigen::VectorXd& qd)
 {
-  return 0.5 * (mJacobian * _qd - mTwist).squaredNorm();
+  return 0.5 * (mJacobian * qd - mTwist).squaredNorm();
 }
 
 //==============================================================================
 void DesiredTwistFunction::evalGradient(
-    const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad)
+    const Eigen::VectorXd& qd, Eigen::Map<Eigen::VectorXd> grad)
 {
-  _grad = mJacobian.transpose() * (mJacobian * _qd - mTwist);
+  grad = mJacobian.transpose() * (mJacobian * qd - mTwist);
 }
 
 //==============================================================================
 bool computeJointVelocityFromTwist(
-    Eigen::VectorXd& _jointVelocity,
-    const Eigen::Vector6d& _desiredTwist,
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    const dart::dynamics::BodyNodePtr _bodyNode,
-    double _jointLimitPadding,
-    const Eigen::VectorXd& _jointVelocityLowerLimits,
-    const Eigen::VectorXd& _jointVelocityUpperLimits,
-    bool _jointVelocityLimited,
-    double _maxStepSize,
-    double _optimizationTolerance)
+    Eigen::VectorXd& jointVelocity,
+    const Eigen::Vector6d& desiredTwist,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    const dart::dynamics::BodyNodePtr bodyNode,
+    double jointLimitPadding,
+    const Eigen::VectorXd& jointVelocityLowerLimits,
+    const Eigen::VectorXd& jointVelocityUpperLimits,
+    bool jointVelocityLimited,
+    double maxStepSize,
+    double optimizationTolerance)
 {
   using dart::math::Jacobian;
   using dart::optimizer::Problem;
@@ -94,25 +95,25 @@ bool computeJointVelocityFromTwist(
   using Eigen::VectorXd;
 
   const dart::dynamics::MetaSkeletonPtr skeleton
-      = _stateSpace->getMetaSkeleton();
+      = stateSpace->getMetaSkeleton();
   // Use LBFGS to find joint angles that won't violate the joint limits.
-  const Jacobian jacobian = skeleton->getWorldJacobian(_bodyNode);
+  const Jacobian jacobian = skeleton->getWorldJacobian(bodyNode);
 
   const std::size_t numDofs = skeleton->getNumDofs();
 
-  _jointVelocity = Eigen::VectorXd::Zero(numDofs);
+  jointVelocity = Eigen::VectorXd::Zero(numDofs);
   VectorXd positions = skeleton->getPositions();
   VectorXd initialGuess = skeleton->getVelocities();
   VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
-  VectorXd velocityLowerLimits = _jointVelocityLowerLimits;
-  VectorXd velocityUpperLimits = _jointVelocityUpperLimits;
+  VectorXd velocityLowerLimits = jointVelocityLowerLimits;
+  VectorXd velocityUpperLimits = jointVelocityUpperLimits;
 
-  auto currentState = _stateSpace->createState();
-  _stateSpace->convertPositionsToState(positions, currentState);
+  auto currentState = stateSpace->createState();
+  stateSpace->convertPositionsToState(positions, currentState);
 
   const auto problem = std::make_shared<Problem>(numDofs);
-  if (_jointVelocityLimited)
+  if (jointVelocityLimited)
   {
     for (std::size_t i = 0; i < numDofs; ++i)
     {
@@ -122,14 +123,14 @@ bool computeJointVelocityFromTwist(
       const double velocityLowerLimit = velocityLowerLimits[i];
       const double velocityUpperLimit = velocityUpperLimits[i];
 
-      if (position + _maxStepSize * velocityLowerLimit
-          <= positionLowerLimit + _jointLimitPadding)
+      if (position + maxStepSize * velocityLowerLimit
+          <= positionLowerLimit + jointLimitPadding)
       {
         velocityLowerLimits[i] = 0.0;
       }
 
-      if (position + _maxStepSize * velocityUpperLimit
-          >= positionUpperLimit - _jointLimitPadding)
+      if (position + maxStepSize * velocityUpperLimit
+          >= positionUpperLimit - jointLimitPadding)
       {
         velocityUpperLimits[i] = 0.0;
       }
@@ -143,7 +144,7 @@ bool computeJointVelocityFromTwist(
   }
   problem->setInitialGuess(initialGuess);
   problem->setObjective(
-      std::make_shared<DesiredTwistFunction>(_desiredTwist, jacobian));
+      std::make_shared<DesiredTwistFunction>(desiredTwist, jacobian));
 
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
   if (!solver.solve())
@@ -151,25 +152,25 @@ bool computeJointVelocityFromTwist(
     return false;
   }
   double optimalVal = problem->getOptimumValue();
-  if (optimalVal > _optimizationTolerance)
+  if (optimalVal > optimizationTolerance)
   {
     return false;
   }
 
-  _jointVelocity = problem->getOptimalSolution();
+  jointVelocity = problem->getOptimalSolution();
   return true;
 }
 
 //==============================================================================
 Eigen::Vector6d computeGeodesicTwist(
-    const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
+    const Eigen::Isometry3d& currentTrans, const Eigen::Isometry3d& goalTrans)
 {
   using dart::math::logMap;
-  Eigen::Isometry3d relativeTrans = _currentTrans.inverse() * _goalTrans;
+  Eigen::Isometry3d relativeTrans = currentTrans.inverse() * goalTrans;
   Eigen::Vector3d relativeTranslation
-      = _currentTrans.linear() * relativeTrans.translation();
+      = currentTrans.linear() * relativeTrans.translation();
   Eigen::Vector3d axisAngles = logMap(relativeTrans.linear());
-  Eigen::Vector3d relativeAngles = _currentTrans.linear() * axisAngles;
+  Eigen::Vector3d relativeAngles = currentTrans.linear() * axisAngles;
   Eigen::Vector6d geodesicTwist;
   geodesicTwist << relativeAngles, relativeTranslation;
   return geodesicTwist;
@@ -177,12 +178,12 @@ Eigen::Vector6d computeGeodesicTwist(
 
 //==============================================================================
 Eigen::Vector4d computeGeodesicError(
-    const Eigen::Isometry3d& _currentTrans, const Eigen::Isometry3d& _goalTrans)
+    const Eigen::Isometry3d& currentTrans, const Eigen::Isometry3d& goalTrans)
 {
   using dart::math::logMap;
-  Eigen::Isometry3d relativeTrans = _currentTrans.inverse() * _goalTrans;
+  Eigen::Isometry3d relativeTrans = currentTrans.inverse() * goalTrans;
   Eigen::Vector3d relativeTranslation
-      = _currentTrans.linear() * relativeTrans.translation();
+      = currentTrans.linear() * relativeTrans.translation();
   Eigen::Vector3d axisAngles = logMap(relativeTrans.linear());
   Eigen::Vector4d geodesicError;
   geodesicError << axisAngles.norm(), relativeTranslation;
@@ -191,12 +192,12 @@ Eigen::Vector4d computeGeodesicError(
 
 //==============================================================================
 double computeGeodesicDistance(
-    const Eigen::Isometry3d& _currentTrans,
-    const Eigen::Isometry3d& _goalTrans,
-    double _r)
+    const Eigen::Isometry3d& currentTrans,
+    const Eigen::Isometry3d& goalTrans,
+    double r)
 {
-  Eigen::Vector4d error = computeGeodesicError(_currentTrans, _goalTrans);
-  error[0] = _r * error[0];
+  Eigen::Vector4d error = computeGeodesicError(currentTrans, goalTrans);
+  error[0] = r * error[0];
   return error.norm();
 }
 

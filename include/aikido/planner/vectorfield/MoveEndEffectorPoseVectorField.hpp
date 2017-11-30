@@ -17,32 +17,32 @@ class MoveEndEffectorPoseVectorField : public ConfigurationSpaceVectorField
 public:
   /// Constructor.
   ///
-  /// \param[in] _stateSpace MetaSkeleton state space.
-  /// \param[in] _bn Body node of end-effector.
-  /// \param[in] _goalPose Desired end-effector pose.
-  /// \param[in] _poseErrorTolerance Constraint error tolerance in meters.
-  /// \param[in] _linearVelocityGain Linear velocity gain in workspace.
-  /// \param[in] _angularVelocityGain Angular velocity gain in workspace.
-  /// \param[in] _initialStepSize Initial step size.
-  /// \param[in] _jointLimitPadding If less then this distance to joint
+  /// \param[in] stateSpace MetaSkeleton state space.
+  /// \param[in] bn Body node of end-effector.
+  /// \param[in] goalPose Desired end-effector pose.
+  /// \param[in] poseErrorTolerance Constraint error tolerance in meters.
+  /// \param[in] linearVelocityGain Linear velocity gain in workspace.
+  /// \param[in] angularVelocityGain Angular velocity gain in workspace.
+  /// \param[in] initialStepSize Initial step size.
+  /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
-  /// \param[in] _optimizationTolerance Tolerance on optimization.
+  /// \param[in] optimizationTolerance Tolerance on optimization.
   MoveEndEffectorPoseVectorField(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-      dart::dynamics::BodyNodePtr _bn,
-      const Eigen::Isometry3d& _goalPose,
-      double _poseErrorTolerance = 0.5,
-      double _linearVelocityGain = 1.0,
-      double _angularVelocityGain = 1.0,
-      double _initialStepSize = 1e-1,
-      double _jointLimitPadding = 3e-2,
-      double _optimizationTolerance = 5e-2);
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+      dart::dynamics::BodyNodePtr bn,
+      const Eigen::Isometry3d& goalPose,
+      double poseErrorTolerance = 0.5,
+      double linearVelocityGain = 1.0,
+      double angularVelocityGain = 1.0,
+      double initialStepSize = 1e-1,
+      double jointLimitPadding = 3e-2,
+      double optimizationTolerance = 5e-2);
 
   /// Vectorfield callback function.
   ///
-  /// \param[out] _qd Joint velocities.
+  /// \param[out] qd Joint velocities.
   /// \return Whether joint velocities are successfully computed.
-  bool getJointVelocities(Eigen::VectorXd& _qd) const override;
+  bool getJointVelocities(Eigen::VectorXd& qd) const override;
 
   /// Vectorfield planning status callback function
   ///
