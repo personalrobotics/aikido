@@ -20,7 +20,8 @@ public:
   /// Constructor.
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
-  KinematicSimulationTrajectoryExecutor(::dart::dynamics::SkeletonPtr skeleton);
+  explicit KinematicSimulationTrajectoryExecutor(
+      ::dart::dynamics::SkeletonPtr skeleton);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 

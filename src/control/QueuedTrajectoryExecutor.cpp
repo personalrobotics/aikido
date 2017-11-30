@@ -6,7 +6,7 @@ namespace control {
 
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
-    std::unique_ptr<TrajectoryExecutor> executor)
+    std::shared_ptr<TrajectoryExecutor> executor)
   : mExecutor{std::move(executor)}, mInProgress{false}, mMutex{}
 {
   if (!mExecutor)

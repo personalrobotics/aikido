@@ -14,7 +14,8 @@ class QueuedTrajectoryExecutor : public TrajectoryExecutor
 public:
   /// Constructor
   /// \param executor Underlying TrajectoryExecutor
-  QueuedTrajectoryExecutor(std::unique_ptr<TrajectoryExecutor> executor);
+  explicit QueuedTrajectoryExecutor(
+      std::shared_ptr<TrajectoryExecutor> executor);
 
   virtual ~QueuedTrajectoryExecutor();
 
@@ -33,7 +34,7 @@ public:
 
 private:
   /// Underlying TrajectoryExecutor
-  std::unique_ptr<TrajectoryExecutor> mExecutor;
+  std::shared_ptr<TrajectoryExecutor> mExecutor;
 
   /// Whether a trajectory is currently being executed
   bool mInProgress;

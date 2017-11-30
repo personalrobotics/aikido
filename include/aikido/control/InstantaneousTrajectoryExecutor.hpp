@@ -19,7 +19,8 @@ public:
   /// Constructor.
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
-  InstantaneousTrajectoryExecutor(::dart::dynamics::SkeletonPtr skeleton);
+  explicit InstantaneousTrajectoryExecutor(
+      ::dart::dynamics::SkeletonPtr skeleton);
 
   virtual ~InstantaneousTrajectoryExecutor();
 
