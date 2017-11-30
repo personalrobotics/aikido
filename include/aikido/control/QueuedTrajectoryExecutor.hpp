@@ -50,7 +50,7 @@ private:
   /// Queue of trajectories
   std::queue<trajectory::TrajectoryPtr> mTrajectoryQueue;
 
-  /// Queue of promises
+  /// Queue of promises made by this to the client
   std::queue<std::shared_ptr<std::promise<void>>> mPromiseQueue;
 
   /// Manages access on mInProgress, mFuture, mTrajectoryQueue, mPromiseQueue

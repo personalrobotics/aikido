@@ -35,6 +35,8 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
     DART_UNUSED(lock); // Suppress unused variable warning
 
     mInProgress = false;
+    mPromise->set_exception(
+      std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
   }
 }
 
