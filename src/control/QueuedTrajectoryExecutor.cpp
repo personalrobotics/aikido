@@ -71,6 +71,7 @@ void QueuedTrajectoryExecutor::step()
     catch (const std::exception& e)
     {
       promise->set_exception(std::current_exception());
+      abort();
     }
 
     mInProgress = false;
@@ -85,6 +86,37 @@ void QueuedTrajectoryExecutor::step()
     mFuture = mExecutor->execute(std::move(traj));
     mInProgress = true;
   }
+}
+
+//==============================================================================
+void QueuedTrajectoryExecutor::abort()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  DART_UNUSED(lock); // Suppress unused variable warning
+
+  std::exception_ptr abort
+      = std::make_exception_ptr(std::runtime_error("Trajectory aborted."));
+
+  if (mInProgress)
+  {
+    auto promise = mPromiseQueue.front();
+    mPromiseQueue.pop();
+    promise->set_exception(abort);
+
+    mInProgress = false;
+  }
+
+  // Trajectory and promise queue are now the same length
+  while (!mPromiseQueue.empty())
+  {
+    auto promise = mPromiseQueue.front();
+    mPromiseQueue.pop();
+    promise->set_exception(abort);
+
+    mTrajectoryQueue.pop();
+  }
+
+  mFuture = std::future<void>();
 }
 
 } // namespace control

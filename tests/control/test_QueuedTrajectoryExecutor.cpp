@@ -79,7 +79,8 @@ public:
     mTraj2->addWaypoint(0, s2);
     mTraj2->addWaypoint(1, s3);
 
-    mExecutor = make_unique<KinematicSimulationTrajectoryExecutor>(mSkeleton);
+    mExecutor
+        = std::make_shared<KinematicSimulationTrajectoryExecutor>(mSkeleton);
   }
 
 protected:
@@ -90,7 +91,7 @@ protected:
   std::shared_ptr<Interpolated> mTraj1;
   std::shared_ptr<Interpolated> mTraj2;
 
-  std::unique_ptr<TrajectoryExecutor> mExecutor;
+  std::shared_ptr<TrajectoryExecutor> mExecutor;
 
   BodyNodePtr bn1;
 };
@@ -181,4 +182,47 @@ TEST_F(
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 2.0);
 
   EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
+}
+
+TEST_F(
+    QueuedTrajectoryExecutorTest,
+    abort_NoRunningTrajectories_QueuedTrajectoriesAborted)
+{
+  QueuedTrajectoryExecutor executor(std::move(mExecutor));
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+
+  auto f1 = executor.execute(mTraj1);
+  auto f2 = executor.execute(mTraj2);
+
+  executor.abort();
+
+  EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
+  EXPECT_EQ(f2.wait_for(zeroTime), std::future_status::ready);
+
+  EXPECT_THROW(f1.get(), std::runtime_error);
+  EXPECT_THROW(f2.get(), std::runtime_error);
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+}
+
+TEST_F(
+    QueuedTrajectoryExecutorTest,
+    abort_OneRunningTrajectory_QueuedTrajectoriesAborted)
+{
+  QueuedTrajectoryExecutor executor(std::move(mExecutor));
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+
+  auto f1 = executor.execute(mTraj1);
+  auto f2 = executor.execute(mTraj2);
+
+  executor.step();
+  executor.abort();
+
+  EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
+  EXPECT_EQ(f2.wait_for(zeroTime), std::future_status::ready);
+
+  EXPECT_THROW(f1.get(), std::runtime_error);
+  EXPECT_THROW(f2.get(), std::runtime_error);
 }

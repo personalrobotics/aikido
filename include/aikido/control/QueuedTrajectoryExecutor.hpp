@@ -23,7 +23,8 @@ public:
   void validate(trajectory::TrajectoryPtr traj) override;
 
   /// Execute trajectory and set future upon completion. If another trajectory
-  /// is already running, queue the trajectory for later execution.
+  /// is already running, queue the trajectory for later execution. If executing
+  /// a trajectory terminates in an error, all queued trajectories are aborted.
   /// \param traj Trajectory to be executed or queued.
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
@@ -31,6 +32,10 @@ public:
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
   void step() override;
+
+  /// Abort all trajectories currently in the queue. Does NOT stop the
+  /// trajectory that is currently executing.
+  void abort();
 
 private:
   /// Underlying TrajectoryExecutor
