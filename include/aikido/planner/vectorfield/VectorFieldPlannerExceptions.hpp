@@ -13,9 +13,9 @@ namespace vectorfield {
 class VectorFieldTerminated : public std::exception
 {
 public:
-  /// Constructor
+  /// Constructor.
   ///
-  /// \param[in] _whatArg Error string
+  /// \param[in] _whatArg Error string.
   VectorFieldTerminated(const std::string& _whatArg);
 
   const char* what() const throw();
@@ -28,9 +28,9 @@ protected:
 class VectorFieldError : public std::runtime_error
 {
 public:
-  /// Constructor
+  /// Constructor.
   ///
-  /// \param[in] _whatArg Error string
+  /// \param[in] _whatArg Error string.
   VectorFieldError(const std::string& _whatArg);
 };
 
@@ -38,16 +38,16 @@ public:
 class DofLimitError : public VectorFieldError
 {
 public:
-  /// Constructor
+  /// Constructor.
   ///
-  /// \param[in] _dof Degree of freedom
-  /// \param[in] _whatArg Error string
+  /// \param[in] _dof Degree of freedom.
+  /// \param[in] _whatArg Error string.
   DofLimitError(
       const dart::dynamics::DegreeOfFreedom* _dof, const std::string& _whatArg);
 
-  /// Get degree of freedom
+  /// Get degree of freedom.
   ///
-  /// \return Degree of freedom
+  /// \return Degree of freedom.
   const dart::dynamics::DegreeOfFreedom* dof() const;
 
 private:
@@ -58,6 +58,8 @@ private:
 class StateInCollisionError : public VectorFieldError
 {
 public:
+  /// Constructor.
+  ///
   StateInCollisionError();
 };
 
@@ -65,6 +67,8 @@ public:
 class IntegrationFailedError : public VectorFieldError
 {
 public:
+  /// Constructor.
+  ///
   IntegrationFailedError();
 };
 
@@ -72,6 +76,8 @@ public:
 class TimeLimitError : public VectorFieldError
 {
 public:
+  /// Constructor.
+  ///
   TimeLimitError();
 };
 

@@ -26,24 +26,24 @@ namespace vectorfield {
 class VectorFieldPlanner
 {
 public:
-  /// Constructor
+  /// Constructor.
   ///
-  /// \param[in] _vectorField Vector field in configuration space
-  /// \param[in] _constraint Constraint to be satisfied
+  /// \param[in] _vectorField Vector field in configuration space.
+  /// \param[in] _constraint Constraint to be satisfied.
   VectorFieldPlanner(
       const ConfigurationSpaceVectorFieldPtr _vectorField,
       const aikido::constraint::TestablePtr _constraint,
       double _initialStepSize = 0.1);
 
-  /// Generate a trajectory following the vector field along given time
+  /// Generate a trajectory following the vector field along given time.
   ///
-  /// \param[in] _integrationTimeInterval Position in configuration space
-  /// \param[in] _timelimit Timelimit for integration calculation
+  /// \param[in] _integrationTimeInterval Position in configuration space.
+  /// \param[in] _timelimit Timelimit for integration calculation.
   /// \param[in] _useCollisionChecking Whether collision checking is
   /// considered in planning.
   /// \param[in] _useDofLimitChecking Whether Dof Limits are considered
-  /// in planning
-  /// \return A trajectory following the vector field
+  /// in planning.
+  /// \return A trajectory following the vector field.
   std::unique_ptr<aikido::trajectory::Spline> followVectorField(
       double _integrationTimeInterval,
       double _timelimit,
@@ -54,65 +54,81 @@ protected:
   /// Vectorfield callback function that returns joint velocities for
   /// integration.
   ///
-  /// \param[in] _q Position in configuration space
-  /// \param[out] _qd Joint velocities in configuration space
-  /// \param[in] _t Current time being planned
+  /// \param[in] _q Position in configuration space.
+  /// \param[out] _qd Joint velocities in configuration space.
+  /// \param[in] _t Current time being planned.
   void step(const Eigen::VectorXd& _q, Eigen::VectorXd& _qd, double _t);
 
-  /// Check status after every intergration step
+  /// Check status after every intergration step.
   ///
-  /// \param[in] _q Position in configuration space
-  /// \param[in] _t Current time being planned
+  /// \param[in] _q Position in configuration space.
+  /// \param[in] _t Current time being planned.
   void check(const Eigen::VectorXd& _q, double _t);
 
-  /// Vector field
+  /// Vector field.
   ConfigurationSpaceVectorFieldPtr mVectorField;
-  /// Planning constraint
+
+  /// Planning constraint.
   aikido::constraint::TestablePtr mConstraint;
+
+  /// Meta Skeleton state space.
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+
+  /// Meta skeleton.
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+
+  /// Body node of end-effector.
   dart::dynamics::BodyNodePtr mBodyNode;
-  /// Timer for timelimit
+
+  /// Timer for timelimit.
   dart::common::Timer mTimer;
-  /// Planning timelimit
+
+  /// Planning timelimit.
   double mTimelimit;
   std::vector<Knot> mKnots;
-  /// Initial step size for adaptive integrator
+
+  /// Initial step size for adaptive integrator.
   double mInitialStepSize;
+
+  /// Cached index of knots.
   int mCacheIndex;
+
+  /// current index of knots.
   int mIndex;
-  /// Enable collision checking in following vector field
+
+  /// Enable collision checking in following vector field.
   bool mEnableCollisionCheck;
-  /// Enable DOF limit checking in following vector field
+
+  /// Enable DOF limit checking in following vector field.
   bool mEnableDofLimitCheck;
 };
 
 /// Plan to a trajectory that moves the end-effector by a given direction and
 /// distance.
 ///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _bn Body node of the end-effector
-/// \param[in] _constraint Trajectory-wide constraint that must be satisfied
-/// \param[in] _direction Direction of moving the end-effector
-/// \param[in] _distance  Distance of moving the end-effector
-/// \param[in] _maxDistance Max distance of moving the end-effector
+/// \param[in] _stateSpace MetaSkeleton state space.
+/// \param[in] _bn Body node of the end-effector.
+/// \param[in] _constraint Trajectory-wide constraint that must be satisfied.
+/// \param[in] _direction Direction of moving the end-effector.
+/// \param[in] _distance  Distance of moving the end-effector.
+/// \param[in] _maxDistance Max distance of moving the end-effector.
 /// \param[in] _positionTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
-/// distance
+/// distance.
 /// \param[in] angularTolerance How a planned trajectory is allowed to deviate
-/// from a given direction
+/// from a given direction.
 /// \param[in] _linearVelocityGain Linear velocity gain in workspace.
 /// \param[in] _useCollisionChecking Whether collision checking is
-/// considered in planning
+/// considered in planning.
 /// \param[in] _useDofLimitChecking Whether Dof Limits are considered
-/// in planning
-/// \param[in] _initialStepSize Initial step size
+/// in planning.
+/// \param[in] _initialStepSize Initial step size.
 /// \param[in] _jointLimitTolerance If less then this distance to joint
-/// limit, velocity is bounded in that direction to 0
-/// \param[in] _optimizationTolerance Tolerance on optimization
-/// \param[in] _timelimit timeout in seconds
+/// limit, velocity is bounded in that direction to 0.
+/// \param[in] _optimizationTolerance Tolerance on optimization.
+/// \param[in] _timelimit timeout in seconds.
 /// \param[in] _integralTimeInterval The time interval to integrate over
-/// \return Trajectory or \c nullptr if planning failed
+/// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     const dart::dynamics::BodyNodePtr& _bn,
@@ -134,26 +150,26 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// Plan to an end effector pose by following a geodesic loss function
 /// in SE(3) via an optimized Jacobian.
 ///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _bn Body node of the end-effector
-/// \param[in] _constraint Trajectory-wide constraint that must be satisfied
-/// \param[in] _goalPose Desired end-effector pose
+/// \param[in] _stateSpace MetaSkeleton state space.
+/// \param[in] _bn Body node of the end-effector.
+/// \param[in] _constraint Trajectory-wide constraint that must be satisfied.
+/// \param[in] _goalPose Desired end-effector pose.
 /// \param[in] _positionErrorTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
-/// distance
+/// distance.
 /// \param[in] _linearVelocityGain Linear velocity gain in workspace.
 /// \param[in] _angularVelocityGain Angular velocity gain in workspace.
 /// \param[in] _useCollisionChecking Whether collision checking is
-/// considered in planning
+/// considered in planning.
 /// \param[in] _useDofLimitChecking Whether Dof Limits are considered
-/// in planning
-/// \param[in] _initialStepSize Initial step size
+/// in planning.
+/// \param[in] _initialStepSize Initial step size.
 /// \param[in] _jointLimitTolerance If less then this distance to joint
-/// limit, velocity is bounded in that direction to 0
-/// \param[in] _optimizationTolerance Tolerance on optimization
-/// \param[in] _timelimit timeout in seconds
-/// \param[in] _integralTimeInterval The time interval to integrate over
-/// \return Trajectory or \c nullptr if planning failed
+/// limit, velocity is bounded in that direction to 0.
+/// \param[in] _optimizationTolerance Tolerance on optimization.
+/// \param[in] _timelimit timeout in seconds.
+/// \param[in] _integralTimeInterval The time interval to integrate over.
+/// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
     const dart::dynamics::BodyNodePtr& _bn,

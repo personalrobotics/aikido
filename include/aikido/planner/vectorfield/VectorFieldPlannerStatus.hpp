@@ -5,12 +5,12 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-/// Status of planning
-/// TERMINATE - stop gracefully and output the CACHEd trajectory
+/// Status of planning.
+/// TERMINATE - stop gracefully and output the CACHEd trajectory.
 /// CACHE_AND_CONTINUE - save the current trajectory and CONTINUE.
 ///                      return the saved trajectory if TERMINATEd.
-/// CONTINUE - keep going
-/// CACHE_AND_TERMINATE - save the current trajectory and TERMINATE
+/// CONTINUE - keep going.
+/// CACHE_AND_TERMINATE - save the current trajectory and TERMINATE.
 enum class VectorFieldPlannerStatus
 {
   TERMINATE,
