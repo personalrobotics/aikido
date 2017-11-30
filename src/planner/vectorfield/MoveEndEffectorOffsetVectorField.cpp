@@ -10,6 +10,11 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+//==============================================================================
+double MoveEndEffectorOffsetVectorField::InvalidMaxDistance
+    = std::numeric_limits<double>::infinity();
+
+//==============================================================================
 MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
     dart::dynamics::BodyNodePtr _bn,
@@ -110,7 +115,7 @@ VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus()
   }
 
   // Check if we've reached the target.
-  if (mMaxDistance == std::numeric_limits<double>::max())
+  if (mMaxDistance == InvalidMaxDistance)
   {
     if (movedDistance >= mDistance)
     {

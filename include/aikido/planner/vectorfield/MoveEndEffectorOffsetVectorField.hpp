@@ -15,7 +15,11 @@ namespace vectorfield {
 class MoveEndEffectorOffsetVectorField : public ConfigurationSpaceVectorField
 {
 public:
+  static double InvalidMaxDistance;
+
   /// Constructor
+  ///
+  /// // TODO: Add comment about _distance and _maxDistance
   ///
   /// \param[in] _stateSpace MetaSkeleton state space
   /// \param[in] _bn Body node of end-effector
@@ -34,7 +38,7 @@ public:
       dart::dynamics::BodyNodePtr _bn,
       const Eigen::Vector3d& _direction,
       double _distance,
-      double _maxDistance = std::numeric_limits<double>::max(),
+      double _maxDistance = InvalidMaxDistance,
       double _positionTolerance = 0.01,
       double _angularTolerance = 0.15,
       double _linearVelocityGain = 1.0,
