@@ -2,7 +2,9 @@
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 
 #include <Eigen/Core>
-#include "../statespace/StateSpace.hpp"
+
+#include "aikido/distance/DistanceMetric.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -69,6 +71,16 @@ public:
   /// \param[out] _tangentVector output tangent vector in the local frame
   virtual void evaluateDerivative(
       double _t, int _derivative, Eigen::VectorXd& _tangentVector) const = 0;
+
+  /// Computes the arc length of the trajectory.
+  ///
+  /// \param[in] distanceMetric A distance metric to be used computing the arc
+  /// length.
+  /// \return Computed arc length.
+  virtual double computeArcLength(
+      const distance::DistanceMetric* distanceMetric) const = 0;
+  // TODO: Consider computing the arc-length of a segment of a trajectory that
+  // is specified by given range of trajectory parameter [t0, t1].
 };
 
 using TrajectoryPtr = std::shared_ptr<Trajectory>;

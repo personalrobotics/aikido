@@ -12,8 +12,9 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-//trajectory::SplinePtr planOptimization(
-//    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
+// trajectory::SplinePtr planOptimization(
+//    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>&
+//    stateSpace,
 //    const statespace::StateSpace::State* startState,
 //    const statespace::StateSpace::State* goalState,
 //    planner::PlanningResult& /*planningResult*/)
@@ -31,13 +32,19 @@ namespace optimization {
 //==============================================================================
 OptimizationBasedMotionPlanning::OptimizationBasedMotionPlanning(
     const TrajectoryVariables& variablesToClone)
-  : mVariables(variablesToClone.clone())
+  : mVariables(nullptr)
 {
-  // TODO(JS)
+  setVariables(variablesToClone);
+
+  mProblem = std::make_shared<dart::optimizer::Problem>(0);
+  mSolver = std::make_shared<dart::optimizer::NloptSolver>(
+      mProblem, nlopt::LD_LBFGS);
+
+  resetProblem();
 }
 
 //==============================================================================
-trajectory::SplinePtr OptimizationBasedMotionPlanning::plan()
+trajectory::TrajectoryPtr OptimizationBasedMotionPlanning::plan()
 {
   if (nullptr == mSolver)
   {
@@ -175,6 +182,21 @@ std::shared_ptr<const dart::optimizer::Solver>
 OptimizationBasedMotionPlanning::getSolver() const
 {
   return mSolver;
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::resetProblem(bool clearSeeds)
+{
+  mProblem->removeAllEqConstraints();
+  mProblem->removeAllIneqConstraints();
+
+  if (clearSeeds)
+    mProblem->clearAllSeeds();
+
+  mProblem->setObjective(mObjective);
+  //  mProblem->setEq
+
+  mProblem->setDimension(mVariables->getDimension());
 }
 
 } // namespace optimization

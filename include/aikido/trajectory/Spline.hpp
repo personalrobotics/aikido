@@ -195,6 +195,10 @@ public:
       int _derivative,
       Eigen::VectorXd& _tangentVector) const;
 
+  // Documentation inherited
+  double computeArcLength(
+      const distance::DistanceMetric* distanceMetric) const override;
+
 protected:
   struct PolynomialSegment
   {

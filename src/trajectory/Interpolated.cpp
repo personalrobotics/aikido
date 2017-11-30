@@ -151,6 +151,34 @@ void Interpolated::evaluateDerivative(
 }
 
 //==============================================================================
+double Interpolated::computeArcLength(
+    const distance::DistanceMetric* distanceMetric) const
+{
+  if (!distanceMetric)
+  {
+    throw std::invalid_argument(
+        "Distance metric should be given for computing arc-length of a "
+        "trajectory.");
+    // TODO: Consider adding a method for creating a default distance metric
+    // from the state space.
+  }
+
+  double arcLength = 0.0;
+
+  for (auto i = 1u; i < mWaypoints.size(); ++i)
+  {
+    const auto* state1 = mWaypoints[i - 1].state;
+    const auto* state2 = mWaypoints[i].state;
+
+    arcLength += distanceMetric->distance(state1, state2);
+  }
+
+  assert(arcLength >= 0.0);
+
+  return arcLength;
+}
+
+//==============================================================================
 void Interpolated::addWaypoint(double _t, const State* _state)
 {
   State* state = mStateSpace->allocateState();

@@ -71,6 +71,10 @@ public:
       int _derivative,
       Eigen::VectorXd& _tangentVector) const override;
 
+  // Documentation inherited
+  double computeArcLength(
+      const distance::DistanceMetric* distanceMetric) const override;
+
 private:
   /// Waypoint in the trajectory.
   struct Waypoint

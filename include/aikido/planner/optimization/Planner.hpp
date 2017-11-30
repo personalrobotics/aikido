@@ -15,8 +15,9 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-//trajectory::SplinePtr planOptimization(
-//    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& stateSpace,
+// trajectory::SplinePtr planOptimization(
+//    const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>&
+//    stateSpace,
 //    const statespace::StateSpace::State* startState,
 //    const statespace::StateSpace::State* goalState,
 //    planner::PlanningResult& planningResult);
@@ -30,7 +31,7 @@ public:
 
   ~OptimizationBasedMotionPlanning() = default;
 
-  trajectory::SplinePtr plan();
+  trajectory::TrajectoryPtr plan();
 
   void setVariables(const TrajectoryVariables& variables);
 
@@ -78,6 +79,8 @@ public:
   std::shared_ptr<const dart::optimizer::Solver> getSolver() const;
 
 protected:
+  void resetProblem(bool clearSeeds = false);
+
   std::shared_ptr<TrajectoryVariables> mVariables;
 
   /// The Problem that will be maintained by this trajectory optimization.

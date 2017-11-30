@@ -1,7 +1,8 @@
-#include <aikido/trajectory/Spline.hpp>
+#include "aikido/trajectory/Spline.hpp"
 
+#include <boost/numeric/odeint.hpp>
 #include <dart/common/common.hpp>
-#include <aikido/common/Spline.hpp>
+#include "aikido/common/Spline.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -368,6 +369,44 @@ void Spline::getWaypointDerivative(
   {
     throw std::domain_error("Waypoint index is out of bounds.");
   }
+}
+
+//==============================================================================
+double Spline::computeArcLength(
+    const distance::DistanceMetric* distanceMetric) const
+{
+  if (!distanceMetric)
+  {
+    throw std::invalid_argument(
+        "Distance metric should be given for computing arc-length of a "
+        "trajectory.");
+    // TODO: Consider adding a method for creating a default distance metric
+    // from the state space.
+  }
+
+  using Stepper = boost::numeric::odeint::
+        runge_kutta_dopri5<statespace::StateSpace::State*,
+                           double,
+                           Eigen::VectorXd,
+                           double,
+                           boost::numeric::odeint::vector_space_algebra>;
+
+  double arcLength = 0.0;
+
+  auto state0 = mStateSpace->createState();
+  evaluate(0, state0);
+
+  boost::numeric::odeint::integrate_adaptive(
+      Stepper(),
+      nullptr, // std::bind(&VectorFieldPlanner::step, this, _1, _2, _3),
+      state0.getState(),
+      getStartTime(),
+      getEndTime(), // integrationTimeInterval,
+      0.1, // mInitialStepSize,
+      nullptr //std::bind(&VectorFieldPlanner::check, this, _1, _2)
+  );
+
+  return arcLength;
 }
 
 } // namespace trajectory
