@@ -201,6 +201,146 @@ double computeGeodesicDistance(
   return error.norm();
 }
 
+//==============================================================================
+bool getTransfromFromTimedSE3Trajectory(
+    std::shared_ptr<aikido::statespace::SE3> stateSpace,
+    const aikido::trajectory::Interpolated* timedSE3Path,
+    double t,
+    Eigen::Isometry3d& trans)
+{
+  if (t < timedSE3Path->getStartTime() || t > timedSE3Path->getEndTime())
+  {
+    return false;
+  }
+  auto state = stateSpace->createState();
+  timedSE3Path->evaluate(t, state);
+  stateSpace->setIsometry(state, trans);
+  return true;
+}
+
+//==============================================================================
+double getEuclideanDistanceBetweenTransforms(
+    const Eigen::Isometry3d& currentTrans, const Eigen::Isometry3d& goalTrans)
+{
+  Eigen::Vector3d currentVec = currentTrans.translation();
+  Eigen::Vector3d goalVec = goalTrans.translation();
+  Eigen::Vector3d deltaVec = currentVec - goalVec;
+  double distance = deltaVec.transpose() * deltaVec;
+  return std::sqrt(distance);
+}
+
+//==============================================================================
+double getErrorFromTimedSE3Trajectory(
+    const Eigen::Isometry3d& currentTrans,
+    const aikido::trajectory::Interpolated* timedSE3Path,
+    std::shared_ptr<aikido::statespace::SE3> stateSpace)
+
+{
+  Eigen::Isometry3d nearestTrans;
+  double t = 0.0;
+  if (getTransfromFromTimedSE3Trajectory(
+          stateSpace, timedSE3Path, t, nearestTrans))
+  {
+    return getEuclideanDistanceBetweenTransforms(currentTrans, nearestTrans);
+  }
+  return false;
+}
+
+//==============================================================================
+bool getMinDistanceBetweenTransformAndWorkspaceTraj(
+    const Eigen::Isometry3d& currentPose,
+    const aikido::trajectory::Interpolated* timedWorkspacePath,
+    const std::shared_ptr<aikido::statespace::SE3> SE3StateSpace,
+    double dt,
+    double& minDist,
+    double& tLoc,
+    Eigen::Isometry3d& transLoc)
+{
+  minDist = std::numeric_limits<double>::max();
+  tLoc = 0.0;
+
+  // Iterate over the trajectory
+  double t = 0.0;
+  double duration = timedWorkspacePath->getDuration();
+  while (t < duration)
+  {
+    double error = getErrorFromTimedSE3Trajectory(
+        currentPose, timedWorkspacePath, SE3StateSpace);
+    if (error < minDist)
+    {
+      minDist = error;
+      tLoc = t;
+    }
+    t = t + dt;
+  }
+
+  return getTransfromFromTimedSE3Trajectory(
+      SE3StateSpace, timedWorkspacePath, tLoc, transLoc);
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Interpolated>
+timeTrajectoryByGeodesicUnitTiming(
+    const aikido::trajectory::Interpolated* untimedTraj,
+    const std::shared_ptr<aikido::statespace::SE3> SE3StateSpace,
+    double alpha)
+{
+  using dart::common::make_unique;
+  using std::make_shared;
+  using aikido::trajectory::Interpolated;
+  using aikido::statespace::Interpolator;
+
+  std::size_t numWaypoints = untimedTraj->getNumWaypoints();
+  if (numWaypoints <= 1)
+  {
+    dtwarn << "Trajectory needs more than 1 waypoint." << std::endl;
+    return nullptr;
+  }
+
+  // Create a new workspace trajectory with the same spec as the old one
+  std::shared_ptr<Interpolator> interpolator
+      = make_shared<aikido::statespace::GeodesicInterpolator>(SE3StateSpace);
+  auto outputTrajectory = make_unique<aikido::trajectory::Interpolated>(
+      SE3StateSpace, interpolator);
+
+  // Get the current pose of the end effector
+  auto currentState = untimedTraj->getWaypoint(0);
+  auto currentSE3State
+      = static_cast<const aikido::statespace::SE3::State*>(currentState);
+  Eigen::Isometry3d currentTrans, nextTrans;
+  currentTrans = SE3StateSpace->getIsometry(currentSE3State);
+  Eigen::Vector4d geodesicError;
+  Eigen::Vector3d positionError;
+  double angularError = 0.0;
+
+  double currentTime = 0.0;
+  outputTrajectory->addWaypoint(currentTime, currentState);
+  for (std::size_t i = 1; i < numWaypoints; i++)
+  {
+    auto nextState = untimedTraj->getWaypoint(i);
+    auto nextSE3State
+        = static_cast<const aikido::statespace::SE3::State*>(nextState);
+    nextTrans = SE3StateSpace->getIsometry(nextSE3State);
+    geodesicError = computeGeodesicError(currentTrans, nextTrans);
+    // Compute the translation delta
+    positionError = geodesicError.tail<3>();
+
+    // Compute the orientation delta
+    angularError = geodesicError[0];
+
+    double dist = positionError.transpose() * positionError
+                  + alpha * alpha * angularError * angularError;
+
+    currentTime += dist;
+    currentTrans = nextTrans;
+    currentState = nextState;
+
+    outputTrajectory->addWaypoint(currentTime, currentState);
+  }
+
+  return outputTrajectory;
+}
+
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

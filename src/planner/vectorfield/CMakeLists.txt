@@ -5,6 +5,7 @@ set(sources
   ConfigurationSpaceVectorField.cpp
   MoveEndEffectorOffsetVectorField.cpp
   MoveEndEffectorPoseVectorField.cpp
+  MoveEndEffectorAlongWorkspacePathVectorField.cpp
 )
 
 add_library("${PROJECT_NAME}_planner_vectorfield" SHARED ${sources})

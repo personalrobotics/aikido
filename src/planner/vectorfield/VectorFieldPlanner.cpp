@@ -241,8 +241,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance,
     double linearVelocityGain,
-    double useCollisionChecking,
-    double useDofLimitChecking,
+    bool useCollisionChecking,
+    bool useDofLimitChecking,
     double initialStepSize,
     double jointLimitTolerance,
     double optimizationTolerance,
@@ -296,8 +296,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     double poseErrorTolerance,
     double linearVelocityGain,
     double angularvelocityGain,
-    double useCollisionChecking,
-    double useDofLimitChecking,
+    bool useCollisionChecking,
+    bool useDofLimitChecking,
     double initialStepSize,
     double jointLimitTolerance,
     double optimizationTolerance,
@@ -314,6 +314,47 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       initialStepSize,
       jointLimitTolerance,
       optimizationTolerance);
+
+  auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, constraint);
+  return planner->plan(
+      integralTimeInterval,
+      timelimit,
+      useCollisionChecking,
+      useDofLimitChecking);
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> planWorkspacePath(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const dart::dynamics::BodyNodePtr& bn,
+    const aikido::constraint::TestablePtr& constraint,
+    const aikido::trajectory::InterpolatedPtr workspacePath,
+    double positionTolerance,
+    double angularTolerance,
+    double tStep,
+    const Eigen::Vector6d& kpFF,
+    const Eigen::Vector6d& kpE,
+    double useCollisionChecking,
+    double useDofLimitChecking,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double optimizationTolerance,
+    double timelimit,
+    double integralTimeInterval)
+{
+  auto vectorfield
+      = std::make_shared<MoveEndEffectorAlongWorkspacePathVectorField>(
+          stateSpace,
+          bn,
+          workspacePath,
+          positionTolerance,
+          angularTolerance,
+          tStep,
+          initialStepSize,
+          jointLimitTolerance,
+          optimizationTolerance,
+          kpFF,
+          kpE);
 
   auto planner = std::make_shared<VectorFieldPlanner>(vectorfield, constraint);
   return planner->plan(

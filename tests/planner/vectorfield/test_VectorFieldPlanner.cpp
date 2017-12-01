@@ -320,6 +320,116 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           optimizationTolerance));
 }
 
+TEST_F(VectorFieldPlannerTest, TimeTrajectoryByGeodesicUnitTiming)
+{
+  using aikido::statespace::Interpolator;
+  using dart::common::make_unique;
+  using std::make_shared;
+  // Create SE3 trajectory
+  std::shared_ptr<Interpolator> interpolator
+      = make_shared<aikido::statespace::GeodesicInterpolator>(
+          mWorkspaceStateSpace);
+  auto workpath = std::make_shared<aikido::trajectory::Interpolated>(
+      mWorkspaceStateSpace, interpolator);
+
+  Eigen::Isometry3d T0, T1, T2;
+  T0.matrix() = Eigen::Matrix4d::Identity();
+  T1.matrix() = Eigen::Matrix4d::Identity();
+  T1.linear()
+      *= dart::math::eulerXYXToMatrix(Eigen::Vector3d(45 * M_PI / 180, 0, 0));
+  T1.translation() = Eigen::Vector3d(1, 0, 1);
+  T2.matrix() = Eigen::Matrix4d::Identity();
+  T2.translation() = Eigen::Vector3d(1, 1, 1);
+  auto t0State = mWorkspaceStateSpace->createState();
+  aikido::statespace::SE3::State* t0SE3state
+      = static_cast<aikido::statespace::SE3::State*>(t0State);
+  t0SE3state->setIsometry(T0);
+  auto t1State = mWorkspaceStateSpace->createState();
+  aikido::statespace::SE3::State* t1SE3state
+      = static_cast<aikido::statespace::SE3::State*>(t1State);
+  t1SE3state->setIsometry(T1);
+  auto t2State = mWorkspaceStateSpace->createState();
+  aikido::statespace::SE3::State* t2SE3state
+      = static_cast<aikido::statespace::SE3::State*>(t2State);
+  t2SE3state->setIsometry(T2);
+
+  workpath->addWaypoint(0, t0State);
+  workpath->addWaypoint(1, t1State);
+  workpath->addWaypoint(2, t2State);
+
+  double tolerance = 1e-2;
+
+  auto timedTraj
+      = aikido::planner::vectorfield::timeTrajectoryByGeodesicUnitTiming(
+          workpath.get(), mWorkspaceStateSpace, 0.0);
+
+  double duration = timedTraj->getDuration();
+  double expectedDuration = 2.41421356;
+  EXPECT_NEAR(duration, expectedDuration, tolerance)
+      << "The trajectory duration " << duration
+      << " doesnt match the expected duration " << expectedDuration;
+
+  auto timedTraj2
+      = aikido::planner::vectorfield::timeTrajectoryByGeodesicUnitTiming(
+          workpath.get(), mWorkspaceStateSpace, 1.0);
+
+  duration = timedTraj2->getDuration();
+  expectedDuration = 2.88915342;
+  EXPECT_NEAR(duration, expectedDuration, tolerance)
+      << "The trajectory duration " << duration
+      << " doesnt match the expected duration " << expectedDuration;
+}
+
+TEST_F(
+    VectorFieldPlannerTest, GetMinDistanceBetweenTransformAndWorkspaceTrajTest)
+{
+  using aikido::statespace::Interpolator;
+  using dart::common::make_unique;
+  using std::make_shared;
+  // Create SE3 trajectory
+  std::shared_ptr<Interpolator> interpolator
+      = make_shared<aikido::statespace::GeodesicInterpolator>(
+          mWorkspaceStateSpace);
+  auto workpath = std::make_shared<aikido::trajectory::Interpolated>(
+      mWorkspaceStateSpace, interpolator);
+
+  Eigen::Isometry3d T0, T1, T2;
+  T0.matrix() = Eigen::Matrix4d::Identity();
+  T1.matrix() = Eigen::Matrix4d::Identity();
+  T1.translation() = Eigen::Vector3d(5, 0, 0);
+  T2.matrix() = Eigen::Matrix4d::Identity();
+  T2.translation() = Eigen::Vector3d(0.5, 2, 0.0);
+  auto t0State = mWorkspaceStateSpace->createState();
+  aikido::statespace::SE3::State* t0SE3state
+      = static_cast<aikido::statespace::SE3::State*>(t0State);
+  t0SE3state->setIsometry(T0);
+  auto t1State = mWorkspaceStateSpace->createState();
+  aikido::statespace::SE3::State* t1SE3state
+      = static_cast<aikido::statespace::SE3::State*>(t1State);
+  t1SE3state->setIsometry(T1);
+
+  workpath->addWaypoint(0, t0State);
+  workpath->addWaypoint(1, t1State);
+
+  double minDist = 0.0;
+  double tLoc = 0.0;
+  Eigen::Isometry3d transLoc;
+  aikido::planner::vectorfield::getMinDistanceBetweenTransformAndWorkspaceTraj(
+      T2, workpath.get(), mWorkspaceStateSpace, 0.001, minDist, tLoc, transLoc);
+
+  // The position on the workspace trajectory is half-way along, which is where
+  // t = 0.5
+  double expectedTLoc = 0.5;
+  Eigen::Isometry3d expectedTransLoc;
+  expectedTransLoc.matrix() = Eigen::Matrix4d::Identity();
+  expectedTransLoc.translation() = Eigen::Vector3d(0.5, 0, 0);
+
+  double tolerance = 0.01;
+  EXPECT_NEAR(tLoc, expectedTLoc, tolerance);
+
+  EXPECT_TRUE(transLoc.isApprox(expectedTransLoc, tolerance));
+}
+
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
   Eigen::Vector3d direction;

@@ -6,6 +6,7 @@
 #include <dart/optimizer/Solver.hpp>
 #include <dart/optimizer/nlopt/NloptSolver.hpp>
 #include <aikido/common/Spline.hpp>
+#include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
@@ -126,6 +127,55 @@ double computeGeodesicDistance(
     const Eigen::Isometry3d& currentTrans,
     const Eigen::Isometry3d& goalTrans,
     double r = 1.0);
+
+/// Get a Transform in a timed SE3 trajectory at time t
+///
+/// \param[in] stateSpace SE3 state space
+/// \param[in] timedSE3Path A timed SE3 trajectory
+/// \param[in] t Time to query
+/// \param[out] trans Found transform
+/// \return Whether a transform is found
+bool getTransfromFromTimedSE3Trajectory(
+    std::shared_ptr<aikido::statespace::SE3> stateSpace,
+    const aikido::trajectory::Interpolated* timedSE3Path,
+    double t,
+    Eigen::Isometry3d& trans);
+
+/// Find the location on a workspace trajectory which is closest
+/// to the specified transform.
+///
+/// \param[in] currentPose A 4x4 transformation matrix.
+/// \param[in] timedWorkspacePath A timed workspace trajectory.
+/// \param[in] dt Resolution at which to sample along the trajectory.
+/// \param[out] minDist The minimum distance.
+/// \param[out] tLoc The time value along the timed trajectory.
+/// \param[out] transLoc The transform.
+bool getMinDistanceBetweenTransformAndWorkspaceTraj(
+    const Eigen::Isometry3d& currentPose,
+    const aikido::trajectory::Interpolated* timedWorkspacePath,
+    const std::shared_ptr<aikido::statespace::SE3> SE3StateSpace,
+    double dt,
+    double& minDist,
+    double& tLoc,
+    Eigen::Isometry3d& transLoc);
+
+/// Compute the geodesic unit velocity timing of a workspace path or
+/// trajectory, also called a path length parameterization.
+/// The path length is calculated as the sum of all segment lengths,
+/// where each segment length = norm( delta_translation^2 +
+///                                       alpha^2*delta_orientation^2 )
+/// Note: Currently only linear velocity interpolation is supported,
+///      however OpenRAVE does allow you to specify quadratic
+///      interpolation.
+/// \param[in] untimedTraj Workspace path or trajectory.
+/// \param[in] SE3StateSpace SE3 state space.
+/// \param[in] alpha Weighting for delta orientation.
+/// \return A workspace trajectory with unit velocity timing.
+std::unique_ptr<aikido::trajectory::Interpolated>
+timeTrajectoryByGeodesicUnitTiming(
+    const aikido::trajectory::Interpolated* untimedTraj,
+    const std::shared_ptr<aikido::statespace::SE3> SE3StateSpace,
+    double alpha = 1.0);
 
 } // namespace vectorfield
 } // namespace planner
