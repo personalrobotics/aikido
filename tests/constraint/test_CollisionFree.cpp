@@ -10,6 +10,7 @@ using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::constraint::CollisionFree;
 using aikido::constraint::CollisionFreeOutcome;
+using aikido::constraint::TestableOutcome;
 using aikido::statespace::SO2;
 using aikido::statespace::SE3;
 
@@ -65,11 +66,6 @@ protected:
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(group);
     mManipulator->enableSelfCollisionCheck();
     mManipulator->enableAdjacentBodyCheck();
-
-    // See what CollisionFreeOutcome's toString returns when no collision
-    // has occurred. Compared to in tests as a sanity check.
-    CollisionFreeOutcome outcome;
-    mCollisionFreeOutcomeString = outcome.toString();
   }
 
 public:
@@ -84,9 +80,6 @@ public:
 
   // statespace setup
   MetaSkeletonStateSpacePtr mStateSpace;
-
-  // constraint outcome setup
-  std::string mCollisionFreeOutcomeString;
 };
 
 TEST_F(CollisionFreeTest, ConstructorThrowsOnNullStateSpace)
@@ -113,9 +106,9 @@ TEST_F(CollisionFreeTest, EmptyCollisionGroup_IsSatisfiedReturnsTrue)
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
   mStateSpace->setState(state);
 
-  CollisionFreeOutcome outcome;
-  EXPECT_TRUE(constraint.isSatisfied(state, &outcome));
-  EXPECT_TRUE(outcome.isSatisfied());
+  std::unique_ptr<TestableOutcome> outcome = constraint.createOutcome();
+  EXPECT_TRUE(constraint.isSatisfied(state, outcome.get()));
+  EXPECT_TRUE(outcome->isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddPairwiseCheckPasses_IsSatisfied)
@@ -130,9 +123,9 @@ TEST_F(CollisionFreeTest, AddPairwiseCheckPasses_IsSatisfied)
   mStateSpace->convertPositionsToState(position, state);
   mStateSpace->setState(state);
 
-  CollisionFreeOutcome outcome;
-  EXPECT_TRUE(constraint.isSatisfied(state, &outcome));
-  EXPECT_TRUE(outcome.isSatisfied());
+  std::unique_ptr<TestableOutcome> outcome = constraint.createOutcome();
+  EXPECT_TRUE(constraint.isSatisfied(state, outcome.get()));
+  EXPECT_TRUE(outcome->isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
@@ -186,9 +179,9 @@ TEST_F(CollisionFreeTest, AddSelfCheckPasses_IsSatisfied)
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
   constraint.addSelfCheck(mCollisionGroup1);
 
-  CollisionFreeOutcome outcome;
-  EXPECT_TRUE(constraint.isSatisfied(state, &outcome));
-  EXPECT_TRUE(outcome.isSatisfied());
+  std::unique_ptr<TestableOutcome> outcome = constraint.createOutcome();
+  EXPECT_TRUE(constraint.isSatisfied(state, outcome.get()));
+  EXPECT_TRUE(outcome->isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)

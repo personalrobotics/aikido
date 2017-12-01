@@ -89,6 +89,12 @@ bool CollisionFree::isSatisfied(
 }
 
 //==============================================================================
+std::unique_ptr<TestableOutcome> CollisionFree::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new CollisionFreeOutcome());
+}
+
+//==============================================================================
 void CollisionFree::addPairwiseCheck(
     std::shared_ptr<dart::collision::CollisionGroup> _group1,
     std::shared_ptr<dart::collision::CollisionGroup> _group2)

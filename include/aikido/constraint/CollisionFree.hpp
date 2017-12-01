@@ -45,6 +45,9 @@ public:
       const aikido::statespace::StateSpace::State* _state,
       TestableOutcome* outcome = nullptr) const override;
 
+  // Documentation inherited.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
+
   /// Checks collision between group1 and group2.
   /// \param group1 First collision group.
   /// \param group2 Second collision group.

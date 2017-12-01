@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "../statespace/StateSpace.hpp"
+#include "outcome/DummyOutcome.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -22,6 +23,15 @@ public:
 
   /// Returns StateSpace in which this constraint operates.
   virtual statespace::StateSpacePtr getStateSpace() const = 0;
+
+  /// Return an instance of a TestableOutcome derivative class that corresponds
+  /// to this constraint class. Ensures that correct outcome object is passed
+  /// to isSatisfied (and casts, etc do not explode). Default implementation
+  /// just returns a dummy object.
+  virtual std::unique_ptr<TestableOutcome> createOutcome() const
+  {
+    return std::unique_ptr<TestableOutcome>(new DummyOutcome());
+  }
 };
 
 using TestablePtr = std::shared_ptr<Testable>;
