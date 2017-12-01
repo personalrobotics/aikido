@@ -414,11 +414,9 @@ TEST_F(
   workpath->addWaypoint(0, t0State);
   workpath->addWaypoint(1, t1State);
 
-  auto timedWorkpath = aikido::planner::vectorfield::timeTrajectoryByGeodesicUnitTiming(
-      workpath.get(),
-      mWorkspaceStateSpace);
-
-  std::cout << "Duration " << timedWorkpath->getDuration() << std::endl;
+  auto timedWorkpath
+      = aikido::planner::vectorfield::timeTrajectoryByGeodesicUnitTiming(
+          workpath.get(), mWorkspaceStateSpace);
 
   Eigen::Isometry3d test0, test1, test2;
   auto state = mWorkspaceStateSpace->createState();
@@ -426,7 +424,9 @@ TEST_F(
   test0 = mWorkspaceStateSpace->getIsometry(state);
   timedWorkpath->evaluate(timedWorkpath->getEndTime(), state);
   test1 = mWorkspaceStateSpace->getIsometry(state);
-  timedWorkpath->evaluate((timedWorkpath->getStartTime() + timedWorkpath->getEndTime())/2., state);
+  timedWorkpath->evaluate(
+      (timedWorkpath->getStartTime() + timedWorkpath->getEndTime()) / 2.,
+      state);
   test2 = mWorkspaceStateSpace->getIsometry(state);
 
   EXPECT_TRUE(T0.matrix().isApprox(test0.matrix()));
@@ -436,7 +436,13 @@ TEST_F(
   double tLoc = 0.0;
   Eigen::Isometry3d transLoc;
   aikido::planner::vectorfield::getMinDistanceBetweenTransformAndWorkspaceTraj(
-      T2, timedWorkpath.get(), mWorkspaceStateSpace, 0.01, minDist, tLoc, transLoc);
+      T2,
+      timedWorkpath.get(),
+      mWorkspaceStateSpace,
+      0.01,
+      minDist,
+      tLoc,
+      transLoc);
 
   // The position on the workspace trajectory is half-way along, which is where
   // t = 0.5
@@ -596,4 +602,71 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
 
   double poseError = computeGeodesicDistance(endTrans, targetPose);
   EXPECT_TRUE(poseError <= poseErrorTolerance);
+}
+
+TEST_F(VectorFieldPlannerTest, PlanWorkspacePathTest)
+{
+  std::shared_ptr<aikido::statespace::Interpolator> interpolator
+      = std::make_shared<aikido::statespace::GeodesicInterpolator>(
+          mWorkspaceStateSpace);
+  auto workspacePath = std::make_shared<aikido::trajectory::Interpolated>(
+      mWorkspaceStateSpace, interpolator);
+
+  Eigen::VectorXd startConfig = Eigen::VectorXd::Zero(mNumDof);
+  startConfig << 1.13746, -0.663612, 0.77876, 1.07515, 1.58646, -1.00034,
+      -1.03533;
+  Eigen::VectorXd goalConfig = Eigen::VectorXd::Zero(mNumDof);
+  goalConfig << 1.13746, -0.363612, 0.77876, 1.07515, 1.58646, -1.00034,
+      -0.03533;
+
+  mStateSpace->getMetaSkeleton()->setPositions(startConfig);
+  Eigen::Isometry3d startPose = mBodynode->getTransform();
+  mStateSpace->getMetaSkeleton()->setPositions(goalConfig);
+  Eigen::Isometry3d targetPose = mBodynode->getTransform();
+  auto startState = mWorkspaceStateSpace->createState();
+  auto targetState = mWorkspaceStateSpace->createState();
+  mWorkspaceStateSpace->setIsometry(startState, startPose);
+  mWorkspaceStateSpace->setIsometry(targetState, targetPose);
+  workspacePath->addWaypoint(0, startState);
+  workspacePath->addWaypoint(1, targetState);
+
+  mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
+
+  double positionTolerance = 1.5;
+  double angularTolerance = 0.5;
+  double tStep = 0.001;
+  Eigen::Vector6d kpFF = Eigen::VectorXd::Constant(6, 1.0);
+  Eigen::Vector6d kpE = Eigen::VectorXd::Constant(6, 0.8);
+  bool useCollisionChecking = false;
+  bool useDofLimitChecking = false;
+  double initialStepSize = 1e-3;
+  double jointLimitTolerance = 3e-2;
+  double optimizationTolerance = 10.;
+  double timelimit = 100000.0;
+  double integralTimeInterval = 10.0;
+
+  auto traj = aikido::planner::vectorfield::planWorkspacePath(
+      mStateSpace,
+      mBodynode,
+      mPassingConstraint,
+      workspacePath,
+      positionTolerance,
+      angularTolerance,
+      tStep,
+      kpFF,
+      kpE,
+      useCollisionChecking,
+      useDofLimitChecking,
+      initialStepSize,
+      jointLimitTolerance,
+      optimizationTolerance,
+      timelimit,
+      integralTimeInterval);
+
+  EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
+
+  if (traj == nullptr)
+  {
+    return;
+  }
 }

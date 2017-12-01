@@ -68,7 +68,7 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
   // Find where we are on the goal trajectory by finding the the closest point
   double minDist = 0.0;
   double t = 0.0;
-  Eigen::Isometry3d trans;
+  Eigen::Isometry3d trans = Eigen::Isometry3d::Identity();
   getMinDistanceBetweenTransformAndWorkspaceTraj(
       actualTEE,
       mTimedWorkspacePath.get(),
@@ -139,7 +139,7 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
       mJointLimitTolerance,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
-      false,
+      true,
       mInitialStepSize,
       mOptimizationTolerance);
   return result;

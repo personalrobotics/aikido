@@ -239,7 +239,7 @@ double getErrorFromTimedSE3Trajectory(
 {
   Eigen::Isometry3d nearestTrans = Eigen::Isometry3d::Identity();
   if (getTransfromFromTimedSE3Trajectory(
-        stateSpace, timedSE3Path, t, nearestTrans))
+          stateSpace, timedSE3Path, t, nearestTrans))
   {
     return getEuclideanDistanceBetweenTransforms(currentTrans, nearestTrans);
   }
