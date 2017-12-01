@@ -397,28 +397,46 @@ TEST_F(
       mWorkspaceStateSpace, interpolator);
 
   Eigen::Isometry3d T0, T1, T2;
-  T0.matrix() = Eigen::Matrix4d::Identity();
-  T1.matrix() = Eigen::Matrix4d::Identity();
+  T0 = Eigen::Isometry3d::Identity();
+  T1 = Eigen::Isometry3d::Identity();
   T1.translation() = Eigen::Vector3d(5, 0, 0);
-  T2.matrix() = Eigen::Matrix4d::Identity();
+  T2 = Eigen::Isometry3d::Identity();
   T2.translation() = Eigen::Vector3d(0.5, 2, 0.0);
   auto t0State = mWorkspaceStateSpace->createState();
   aikido::statespace::SE3::State* t0SE3state
       = static_cast<aikido::statespace::SE3::State*>(t0State);
-  t0SE3state->setIsometry(T0);
+  mWorkspaceStateSpace->setIsometry(t0SE3state, T0);
   auto t1State = mWorkspaceStateSpace->createState();
   aikido::statespace::SE3::State* t1SE3state
       = static_cast<aikido::statespace::SE3::State*>(t1State);
-  t1SE3state->setIsometry(T1);
+  mWorkspaceStateSpace->setIsometry(t1SE3state, T1);
 
   workpath->addWaypoint(0, t0State);
   workpath->addWaypoint(1, t1State);
+
+  auto timedWorkpath = aikido::planner::vectorfield::timeTrajectoryByGeodesicUnitTiming(
+      workpath.get(),
+      mWorkspaceStateSpace);
+
+  std::cout << "Duration " << timedWorkpath->getDuration() << std::endl;
+
+  Eigen::Isometry3d test0, test1, test2;
+  auto state = mWorkspaceStateSpace->createState();
+  timedWorkpath->evaluate(timedWorkpath->getStartTime(), state);
+  test0 = mWorkspaceStateSpace->getIsometry(state);
+  timedWorkpath->evaluate(timedWorkpath->getEndTime(), state);
+  test1 = mWorkspaceStateSpace->getIsometry(state);
+  timedWorkpath->evaluate((timedWorkpath->getStartTime() + timedWorkpath->getEndTime())/2., state);
+  test2 = mWorkspaceStateSpace->getIsometry(state);
+
+  EXPECT_TRUE(T0.matrix().isApprox(test0.matrix()));
+  EXPECT_TRUE(T1.matrix().isApprox(test1.matrix()));
 
   double minDist = 0.0;
   double tLoc = 0.0;
   Eigen::Isometry3d transLoc;
   aikido::planner::vectorfield::getMinDistanceBetweenTransformAndWorkspaceTraj(
-      T2, workpath.get(), mWorkspaceStateSpace, 0.001, minDist, tLoc, transLoc);
+      T2, timedWorkpath.get(), mWorkspaceStateSpace, 0.01, minDist, tLoc, transLoc);
 
   // The position on the workspace trajectory is half-way along, which is where
   // t = 0.5

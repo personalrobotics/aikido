@@ -214,7 +214,7 @@ bool getTransfromFromTimedSE3Trajectory(
   }
   auto state = stateSpace->createState();
   timedSE3Path->evaluate(t, state);
-  stateSpace->setIsometry(state, trans);
+  trans = stateSpace->getIsometry(state);
   return true;
 }
 
@@ -233,16 +233,17 @@ double getEuclideanDistanceBetweenTransforms(
 double getErrorFromTimedSE3Trajectory(
     const Eigen::Isometry3d& currentTrans,
     const aikido::trajectory::Interpolated* timedSE3Path,
-    std::shared_ptr<aikido::statespace::SE3> stateSpace)
+    std::shared_ptr<aikido::statespace::SE3> stateSpace,
+    double t)
 
 {
-  Eigen::Isometry3d nearestTrans;
-  double t = 0.0;
+  Eigen::Isometry3d nearestTrans = Eigen::Isometry3d::Identity();
   if (getTransfromFromTimedSE3Trajectory(
-          stateSpace, timedSE3Path, t, nearestTrans))
+        stateSpace, timedSE3Path, t, nearestTrans))
   {
     return getEuclideanDistanceBetweenTransforms(currentTrans, nearestTrans);
   }
+
   return false;
 }
 
@@ -262,10 +263,10 @@ bool getMinDistanceBetweenTransformAndWorkspaceTraj(
   // Iterate over the trajectory
   double t = 0.0;
   double duration = timedWorkspacePath->getDuration();
-  while (t < duration)
+  while (t <= duration)
   {
     double error = getErrorFromTimedSE3Trajectory(
-        currentPose, timedWorkspacePath, SE3StateSpace);
+        currentPose, timedWorkspacePath, SE3StateSpace, t);
     if (error < minDist)
     {
       minDist = error;
@@ -307,7 +308,8 @@ timeTrajectoryByGeodesicUnitTiming(
   auto currentState = untimedTraj->getWaypoint(0);
   auto currentSE3State
       = static_cast<const aikido::statespace::SE3::State*>(currentState);
-  Eigen::Isometry3d currentTrans, nextTrans;
+  Eigen::Isometry3d currentTrans = Eigen::Isometry3d::Identity();
+  Eigen::Isometry3d nextTrans = Eigen::Isometry3d::Identity();
   currentTrans = SE3StateSpace->getIsometry(currentSE3State);
 
   double currentTime = 0.0;
