@@ -27,6 +27,7 @@ public:
   using MetaSkeletonStateSpace
       = aikido::statespace::dart::MetaSkeletonStateSpace;
   using SO2 = aikido::statespace::SO2;
+  using SE3 = aikido::statespace::SE3;
   using GeodesicInterpolator = aikido::statespace::GeodesicInterpolator;
   using ScopedState = MetaSkeletonStateSpace::ScopedState;
 
@@ -75,6 +76,7 @@ public:
     skel->setPositionLowerLimits(mLowerPositionLimits);
     skel->setVelocityUpperLimits(mUpperVelocityLimits);
     skel->setVelocityLowerLimits(mLowerVelocityLimits);
+    mWorkspaceStateSpace = std::make_shared<SE3>();
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(skel);
     mBodynode = mStateSpace->getMetaSkeleton()->getBodyNodes().back();
 
@@ -238,6 +240,7 @@ public:
   SkeletonPtr mSkel;
   std::vector<std::pair<JointPtr, BodyNodePtr>> mJnBn;
   MetaSkeletonStateSpacePtr mStateSpace;
+  std::shared_ptr<SE3> mWorkspaceStateSpace;
   BodyNodePtr mBodynode;
   std::size_t mNumDof;
   double mLinearVelocity;
