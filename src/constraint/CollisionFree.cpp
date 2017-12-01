@@ -48,8 +48,7 @@ bool CollisionFree::isSatisfied(
     {
       if (outcome != nullptr)
       {
-        const auto& collisionOutcome
-            = dynamic_cast<CollisionFreeOutcome*>(outcome);
+        auto collisionOutcome = dynamic_cast<CollisionFreeOutcome*>(outcome);
         if (collisionOutcome == nullptr)
           throw std::invalid_argument(
               "TestableOutcome pointer is not of type CollisionFreeOutcome.");
@@ -71,8 +70,7 @@ bool CollisionFree::isSatisfied(
     {
       if (outcome != nullptr)
       {
-        const auto& collisionOutcome
-            = dynamic_cast<CollisionFreeOutcome*>(outcome);
+        auto collisionOutcome = dynamic_cast<CollisionFreeOutcome*>(outcome);
         if (collisionOutcome == nullptr)
           throw std::invalid_argument(
               "TestableOutcome pointer is not of type CollisionFreeOutcome.");
