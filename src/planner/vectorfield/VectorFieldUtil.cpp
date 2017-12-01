@@ -309,9 +309,6 @@ timeTrajectoryByGeodesicUnitTiming(
       = static_cast<const aikido::statespace::SE3::State*>(currentState);
   Eigen::Isometry3d currentTrans, nextTrans;
   currentTrans = SE3StateSpace->getIsometry(currentSE3State);
-  Eigen::Vector4d geodesicError;
-  Eigen::Vector3d positionError;
-  double angularError = 0.0;
 
   double currentTime = 0.0;
   outputTrajectory->addWaypoint(currentTime, currentState);
@@ -321,15 +318,7 @@ timeTrajectoryByGeodesicUnitTiming(
     auto nextSE3State
         = static_cast<const aikido::statespace::SE3::State*>(nextState);
     nextTrans = SE3StateSpace->getIsometry(nextSE3State);
-    geodesicError = computeGeodesicError(currentTrans, nextTrans);
-    // Compute the translation delta
-    positionError = geodesicError.tail<3>();
-
-    // Compute the orientation delta
-    angularError = geodesicError[0];
-
-    double dist = positionError.transpose() * positionError
-                  + alpha * alpha * angularError * angularError;
+    double dist = computeGeodesicDistance(currentTrans, nextTrans, alpha);
 
     currentTime += dist;
     currentTrans = nextTrans;
