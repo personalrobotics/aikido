@@ -68,6 +68,10 @@ public:
       int _derivative,
       Eigen::VectorXd& _tangentVector) const override;
 
+  // Documentation inherited
+  std::shared_ptr<Trajectory> convertStateSpace(
+      statespace::StateSpacePtr newStateSpace) override;
+
 private:
   /// Waypoint in the trajectory.
   struct Waypoint

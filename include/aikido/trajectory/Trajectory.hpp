@@ -66,6 +66,13 @@ public:
   /// \param[out] _tangentVector output tangent vector in the local frame
   virtual void evaluateDerivative(
       double _t, int _derivative, Eigen::VectorXd& _tangentVector) const = 0;
+
+  /// Convert a trajectory from the current StateSpace to the new StateSpace.
+  ///
+  /// \param newStateSpace New statespace to execute this trajectory in
+  virtual std::shared_ptr<Trajectory> convertStateSpace(
+      statespace::StateSpacePtr newStateSpace)
+      = 0;
 };
 
 using TrajectoryPtr = std::shared_ptr<Trajectory>;

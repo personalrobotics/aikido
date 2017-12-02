@@ -143,6 +143,18 @@ void Interpolated::evaluateDerivative(
 }
 
 //==============================================================================
+TrajectoryPtr Interpolated::convertStateSpace(
+    statespace::StateSpacePtr newStateSpace)
+{
+  auto newInterpolator = mInterpolator->convertStateSpace(newStateSpace);
+  auto returnTraj = std::make_shared<trajectory::Interpolated>(
+      newStateSpace, newInterpolator);
+  for (const auto& waypoint : mWaypoints)
+    returnTraj->addWaypoint(waypoint.t, waypoint.state);
+  return returnTraj;
+}
+
+//==============================================================================
 void Interpolated::addWaypoint(double _t, const State* _state)
 {
   State* state = mStateSpace->allocateState();

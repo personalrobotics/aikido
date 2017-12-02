@@ -128,6 +128,10 @@ public:
       int _derivative,
       Eigen::VectorXd& _tangentVector) const;
 
+  // Documentation inherited
+  std::shared_ptr<Trajectory> convertStateSpace(
+      statespace::StateSpacePtr newStateSpace) override;
+
 private:
   struct PolynomialSegment
   {

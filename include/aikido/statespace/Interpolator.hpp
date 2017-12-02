@@ -49,6 +49,13 @@ public:
       std::size_t _derivative,
       double _alpha,
       Eigen::VectorXd& _tangentVector) const = 0;
+
+  /// Create a new Interpolator in a different statespace
+  ///
+  /// \param newStateSpace New state space
+  virtual std::shared_ptr<Interpolator> convertStateSpace(
+      statespace::StateSpacePtr newStateSpace)
+      = 0;
 };
 
 using InterpolatorPtr = std::shared_ptr<Interpolator>;
