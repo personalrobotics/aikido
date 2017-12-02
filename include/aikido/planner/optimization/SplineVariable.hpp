@@ -1,14 +1,14 @@
 #ifndef AIKIDO_PLANNER_OPTIMIZATION_SPLINEVARIABLES_HPP_
 #define AIKIDO_PLANNER_OPTIMIZATION_SPLINEVARIABLES_HPP_
 
-#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
+#include "aikido/planner/optimization/TrajectoryVariable.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
 namespace optimization {
 
-class SplineVariables : public TrajectoryVariables
+class SplineVariables : public TrajectoryVariable
 {
 public:
   /// Constructor
@@ -24,7 +24,7 @@ public:
   const trajectory::Spline& getSpline() const;
 
   /// Returns the dimension of this trajectory optimization variables.
-  std::size_t getDimension() const;
+  std::size_t getDimension() const override;
 
 protected:
   /// Update the dimension of this trajectory optimization variables.

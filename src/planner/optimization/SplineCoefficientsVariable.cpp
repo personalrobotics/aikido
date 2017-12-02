@@ -1,4 +1,4 @@
-#include "aikido/planner/optimization/SplineCoefficientsVariables.hpp"
+#include "aikido/planner/optimization/SplineCoefficientsVariable.hpp"
 
 namespace aikido {
 namespace planner {
@@ -13,13 +13,13 @@ SplineCoefficientsVariables::SplineCoefficientsVariables(
 }
 
 //==============================================================================
-std::shared_ptr<TrajectoryVariables> SplineCoefficientsVariables::clone() const
+std::shared_ptr<Variable> SplineCoefficientsVariables::clone() const
 {
   return std::make_shared<SplineCoefficientsVariables>(*this);
 }
 
 //==============================================================================
-void SplineCoefficientsVariables::setVariables(const Eigen::VectorXd& variables)
+void SplineCoefficientsVariables::setValue(const Eigen::VectorXd& variables)
 {
   // TODO(JS): Check the dimension of variables
 
@@ -43,9 +43,9 @@ void SplineCoefficientsVariables::setVariables(const Eigen::VectorXd& variables)
 }
 
 //==============================================================================
-void SplineCoefficientsVariables::getVariables(Eigen::VectorXd& variables) const
+Eigen::VectorXd SplineCoefficientsVariables::getValue() const
 {
-  variables.resize(getDimension());
+  Eigen::VectorXd variables(getDimension());
 
   const auto& statespace = mSpline.getStateSpace();
 

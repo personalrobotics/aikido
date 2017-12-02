@@ -1,4 +1,4 @@
-#include "aikido/planner/optimization/SplineVariables.hpp"
+#include "aikido/planner/optimization/SplineVariable.hpp"
 #include <dart/dynamics/dynamics.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 

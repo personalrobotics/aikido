@@ -3,6 +3,7 @@
 #include <boost/numeric/odeint.hpp>
 #include <dart/common/common.hpp>
 #include "aikido/common/Spline.hpp"
+#include "aikido/common/algorithm.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -117,8 +118,8 @@ void Spline::setSegmentDuration(std::size_t index, double duration)
   if (index >= getNumSegments())
     throw std::domain_error("Segment index is out of bounds.");
 
-  if (duration <= 0.0)
-    throw std::domain_error("Segment duration should be positive value.");
+  if (duration < 0.0)
+    throw std::domain_error("Segment duration should be non-negative value.");
 
   mSegments[index].mDuration = duration;
 }
@@ -384,27 +385,34 @@ double Spline::computeArcLength(
     // from the state space.
   }
 
-  using Stepper = boost::numeric::odeint::
-        runge_kutta_dopri5<statespace::StateSpace::State*,
-                           double,
-                           Eigen::VectorXd,
-                           double,
-                           boost::numeric::odeint::vector_space_algebra>;
+  double resolution = 0.001; // TODO(JS): Make this as spline parameter
+  auto steps = common::arange(getStartTime(), getEndTime(), resolution);
+
+  if (steps.empty())
+    return 0.0;
+
+  auto state0 = mStateSpace->createState();
+  auto state1 = mStateSpace->createState();
 
   double arcLength = 0.0;
 
-  auto state0 = mStateSpace->createState();
-  evaluate(0, state0);
+  for (auto i = 0u; i < steps.size() - 1u; ++i)
+  {
+    evaluate(steps[i], state0);
+    evaluate(steps[i + 1], state1);
 
-  boost::numeric::odeint::integrate_adaptive(
-      Stepper(),
-      nullptr, // std::bind(&VectorFieldPlanner::step, this, _1, _2, _3),
-      state0.getState(),
-      getStartTime(),
-      getEndTime(), // integrationTimeInterval,
-      0.1, // mInitialStepSize,
-      nullptr //std::bind(&VectorFieldPlanner::check, this, _1, _2)
-  );
+    arcLength += distanceMetric->distance(state0, state1);
+  }
+
+  auto residual = getEndTime() - steps[steps.size() - 1];
+  assert(0.0 <= residual);
+  if (residual > 0)
+  {
+    evaluate(steps[steps.size() - 1], state0);
+    evaluate(getEndTime(), state1);
+
+    arcLength += distanceMetric->distance(state0, state1);
+  }
 
   return arcLength;
 }

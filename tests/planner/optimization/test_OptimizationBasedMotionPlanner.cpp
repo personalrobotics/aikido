@@ -6,8 +6,9 @@
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
+#include <aikido/planner/optimization/PathLengthFunction.hpp>
 #include <aikido/planner/optimization/Planner.hpp>
-#include <aikido/planner/optimization/SplineCoefficientsAndDurationsVariables.hpp>
+#include <aikido/planner/optimization/SplineCoefficientsAndDurationsVariable.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
@@ -46,6 +47,8 @@ public:
     , mPassingConstraint{make_shared<PassingConstraint>(mStateSpace)}
     , mFailingConstraint{make_shared<FailingConstraint>(mStateSpace)}
     , mInterpolator(make_shared<GeodesicInterpolator>(mStateSpace))
+    , mDistanceMetric{distance::createDistanceMetricFor<MetaSkeletonStateSpace>(
+          mStateSpace)}
   {
     // Do nothing
   }
@@ -61,6 +64,7 @@ public:
   shared_ptr<PassingConstraint> mPassingConstraint;
   shared_ptr<FailingConstraint> mFailingConstraint;
   shared_ptr<GeodesicInterpolator> mInterpolator;
+  distance::DistanceMetricPtr mDistanceMetric;
   planner::PlanningResult mPlanningResult;
 };
 
@@ -80,9 +84,9 @@ TEST_F(OptimizationBasedMotionPlanner, Variables)
   EXPECT_TRUE(spline.getNumSegments() == 3);
   EXPECT_TRUE(spline.getDuration() == 6.0);
 
-  planner::optimization::SplineCoefficientsAndDurationsVariables variables(
+  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
       spline);
-  EXPECT_TRUE(variables.getDimension() == 1 * 3 * 3 + 3);
+  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
 }
 
 //==============================================================================
@@ -101,13 +105,18 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
   EXPECT_TRUE(spline.getNumSegments() == 3);
   EXPECT_TRUE(spline.getDuration() == 6.0);
 
-  planner::optimization::SplineCoefficientsAndDurationsVariables variables(
+  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
       spline);
-  EXPECT_TRUE(variables.getDimension() == 1 * 3 * 3 + 3);
+  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
 
-  planner::optimization::OptimizationBasedMotionPlanning planner(variables);
+  planner::optimization::OptimizationBasedMotionPlanning planner(variable);
 
-  planner.setVariables(variables);
+  auto objective = std::make_shared<planner::optimization::PathLengthFunction>(
+      mDistanceMetric);
+
+  //  planner.setVariable(variables);
+  planner.setObjective(objective);
+  planner.setInitialGuess(Eigen::VectorXd::Random(variable.getDimension()));
 
   EXPECT_TRUE(mStateSpace->getDimension() == 1);
 

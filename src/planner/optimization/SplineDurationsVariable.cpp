@@ -1,4 +1,4 @@
-#include "aikido/planner/optimization/SplineDurationsVariables.hpp"
+#include "aikido/planner/optimization/SplineDurationsVariable.hpp"
 
 namespace aikido {
 namespace planner {
@@ -13,13 +13,13 @@ SplineDurationsVariables::SplineDurationsVariables(
 }
 
 //==============================================================================
-std::shared_ptr<TrajectoryVariables> SplineDurationsVariables::clone() const
+std::shared_ptr<Variable> SplineDurationsVariables::clone() const
 {
   return std::make_shared<SplineDurationsVariables>(*this);
 }
 
 //==============================================================================
-void SplineDurationsVariables::setVariables(const Eigen::VectorXd& variables)
+void SplineDurationsVariables::setValue(const Eigen::VectorXd& variables)
 {
   if (static_cast<std::size_t>(variables.size()) >= mSpline.getNumSegments())
     throw std::domain_error("Incorrect variable size.");
@@ -29,12 +29,14 @@ void SplineDurationsVariables::setVariables(const Eigen::VectorXd& variables)
 }
 
 //==============================================================================
-void SplineDurationsVariables::getVariables(Eigen::VectorXd& variables) const
+Eigen::VectorXd SplineDurationsVariables::getValue() const
 {
-  variables.resize(getDimension());
+  Eigen::VectorXd value(getDimension());
 
   for (std::size_t i = 0; i < mSpline.getNumSegments(); ++i)
-    variables[i] = mSpline.getSegmentDuration(i);
+    value[i] = mSpline.getSegmentDuration(i);
+
+  return value;
 }
 
 //==============================================================================

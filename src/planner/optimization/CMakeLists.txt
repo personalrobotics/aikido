@@ -3,13 +3,14 @@
 #
 set(sources 
   OptimizationInterpolated.cpp
-  OptimizationFunction.cpp
+  Function.cpp
   Planner.cpp
-  SplineCoefficientsVariables.cpp
-  SplineCoefficientsAndDurationsVariables.cpp
-  SplineDurationsVariables.cpp
-  SplineVariables.cpp
-  TrajectoryOptimizationVariables.cpp
+  SplineCoefficientsVariable.cpp
+  SplineCoefficientsAndDurationsVariable.cpp
+  SplineDurationsVariable.cpp
+  SplineVariable.cpp
+  TrajectoryVariable.cpp
+  Variable.cpp
 )
 
 add_library("${PROJECT_NAME}_planner_optimization" SHARED ${sources})

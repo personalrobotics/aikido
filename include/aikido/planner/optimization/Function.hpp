@@ -5,7 +5,7 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
-#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
+#include "aikido/planner/optimization/TrajectoryVariable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
@@ -13,27 +13,46 @@ namespace planner {
 namespace optimization {
 
 // TODO(JS): Rename to something like TrajectoryOptimizationFunction
-class OptimizationFunction : public dart::optimizer::Function
+class Function : public dart::optimizer::Function
 {
 public:
-  OptimizationFunction() = default;
+  Function() = default;
 
-  ~OptimizationFunction() = default;
-
-  double eval(const Eigen::VectorXd& x) override;
+  virtual ~Function() = default;
 
 protected:
-  std::shared_ptr<TrajectoryVariables> mTrajectory;
+  friend class OptimizationBasedMotionPlanning;
 
-  const std::shared_ptr<statespace::dart::MetaSkeletonStateSpace>& mStateSpace;
+  void setVariable(const VariablePtr& variableToClone);
 
-  std::shared_ptr<TrajectoryVariables> mVariables;
+  virtual bool isCompatible(const VariablePtr& variable) const = 0;
 
-  const statespace::StateSpace::State* mStartState;
+  std::shared_ptr<Variable> mVariable;
+};
 
-  const statespace::StateSpace::State* mGoalState;
+using FunctionPtr = std::shared_ptr<Function>;
+using ConstFunctionPtr = std::shared_ptr<const Function>;
 
-private:
+class TrajectoryFunction : public Function
+{
+public:
+  TrajectoryVariablePtr getTrajectoryVariable()
+  {
+    return std::static_pointer_cast<TrajectoryVariable>(mVariable);
+  }
+
+  ConstTrajectoryVariablePtr getTrajectoryVariable() const
+  {
+    return std::static_pointer_cast<TrajectoryVariable>(mVariable);
+  }
+
+  const trajectory::Trajectory& getTrajectory() const
+  {
+    return getTrajectoryVariable()->getTrajectory();
+  }
+
+protected:
+  bool isCompatible(const VariablePtr& variable) const override;
 };
 
 class PoseErrorFunction : public dart::optimizer::Function
@@ -48,7 +67,7 @@ public:
 protected:
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
 
-  std::shared_ptr<TrajectoryVariables> mTrajectory;
+  std::shared_ptr<TrajectoryVariable> mTrajectory;
 
   double mTargetTime;
 
@@ -60,7 +79,7 @@ protected:
 private:
 };
 
-class DiscreteTimeCollisionFunction : public OptimizationFunction
+class DiscreteTimeCollisionFunction : public Function
 {
 public:
   DiscreteTimeCollisionFunction() = default;
@@ -70,7 +89,7 @@ public:
   double eval(const Eigen::VectorXd& x) override;
 
 protected:
-  std::shared_ptr<TrajectoryVariables> mTrajectory;
+  std::shared_ptr<TrajectoryVariable> mTrajectory;
 
 private:
 };

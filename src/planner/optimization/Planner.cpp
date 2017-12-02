@@ -31,14 +31,15 @@ namespace optimization {
 
 //==============================================================================
 OptimizationBasedMotionPlanning::OptimizationBasedMotionPlanning(
-    const TrajectoryVariables& variablesToClone)
-  : mVariables(nullptr)
+    const TrajectoryVariable& variablesToClone)
+  : mVariable(nullptr)
 {
-  setVariables(variablesToClone);
-
   mProblem = std::make_shared<dart::optimizer::Problem>(0);
   mSolver = std::make_shared<dart::optimizer::NloptSolver>(
-      mProblem, nlopt::LD_LBFGS);
+      mProblem, nlopt::LN_COBYLA);
+  // TODO(JS): Choose algorithm according to the problem.
+
+  setVariable(variablesToClone);
 
   resetProblem();
 }
@@ -61,6 +62,8 @@ trajectory::TrajectoryPtr OptimizationBasedMotionPlanning::plan()
            << "reset the Solver before using it.\n";
     return nullptr;
   }
+
+  mProblem->setObjective(mObjective);
 
   //  mProblem->setDimension(mDofs.size());
 
@@ -86,18 +89,29 @@ trajectory::TrajectoryPtr OptimizationBasedMotionPlanning::plan()
   //    skel->getDof(i)->setVelocity(0.0);
 
   //  Eigen::VectorXd originalPositions = getPositions();
-  /*bool wasSolved =*/mSolver->solve();
+  bool wasSolved = mSolver->solve();
   //  setPositions(originalPositions);
   //  skel->setVelocities(originalVelocities);
+  const Eigen::VectorXd& solution = mProblem->getOptimalSolution();
 
   return nullptr;
 }
 
 //==============================================================================
-void OptimizationBasedMotionPlanning::setVariables(
-    const TrajectoryVariables& variables)
+void OptimizationBasedMotionPlanning::setVariable(
+    const Variable& variableToClone)
 {
-  mVariables = variables.clone();
+  mVariable = variableToClone.clone();
+
+  if (mObjective)
+  {
+    mObjective->setVariable(mVariable);
+  }
+
+  if (mProblem)
+  {
+    mProblem->setInitialGuess(mVariable->getValue());
+  }
 }
 
 //==============================================================================
@@ -129,24 +143,34 @@ OptimizationBasedMotionPlanning::getGoalState() const
 }
 
 //==============================================================================
-void OptimizationBasedMotionPlanning::setObjective(
-    const std::shared_ptr<dart::optimizer::Function>& objective)
+void OptimizationBasedMotionPlanning::setObjective(const FunctionPtr& objective)
 {
   mObjective = objective;
+  mObjective->setVariable(mVariable);
 }
 
 //==============================================================================
-const std::shared_ptr<dart::optimizer::Function>&
-OptimizationBasedMotionPlanning::getObjective()
+FunctionPtr OptimizationBasedMotionPlanning::getObjective()
 {
   return mObjective;
 }
 
 //==============================================================================
-std::shared_ptr<const dart::optimizer::Function>
-OptimizationBasedMotionPlanning::getObjective() const
+ConstFunctionPtr OptimizationBasedMotionPlanning::getObjective() const
 {
   return mObjective;
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::setInitialGuess(const Eigen::VectorXd& guess)
+{
+  mProblem->setInitialGuess(guess);
+}
+
+//==============================================================================
+void OptimizationBasedMotionPlanning::setInitialGuess(const Variable& guess)
+{
+  setInitialGuess(guess.getValue());
 }
 
 //==============================================================================
@@ -196,7 +220,7 @@ void OptimizationBasedMotionPlanning::resetProblem(bool clearSeeds)
   mProblem->setObjective(mObjective);
   //  mProblem->setEq
 
-  mProblem->setDimension(mVariables->getDimension());
+  mProblem->setDimension(mVariable->getDimension());
 }
 
 } // namespace optimization

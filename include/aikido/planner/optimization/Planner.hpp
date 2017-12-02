@@ -7,7 +7,8 @@
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/PlanningResult.hpp"
-#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
+#include "aikido/planner/optimization/Function.hpp"
+#include "aikido/planner/optimization/TrajectoryVariable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
@@ -27,13 +28,13 @@ namespace optimization {
 class OptimizationBasedMotionPlanning
 {
 public:
-  OptimizationBasedMotionPlanning(const TrajectoryVariables& variablesToClone);
+  OptimizationBasedMotionPlanning(const TrajectoryVariable& variablesToClone);
 
   ~OptimizationBasedMotionPlanning() = default;
 
   trajectory::TrajectoryPtr plan();
 
-  void setVariables(const TrajectoryVariables& variables);
+  void setVariable(const Variable& variableToClone);
 
   void setStartState(const statespace::StateSpace::State* startState);
 
@@ -50,14 +51,17 @@ public:
   /// function.
   ///
   /// \param[in] objective TODO
-  void setObjective(
-      const std::shared_ptr<dart::optimizer::Function>& objective);
+  void setObjective(const FunctionPtr& objective);
 
   /// Returns the objective function for this trajectory optimization.
-  const std::shared_ptr<dart::optimizer::Function>& getObjective();
+  FunctionPtr getObjective();
 
   /// Returns the objective function for this trajectory optimization.
-  std::shared_ptr<const dart::optimizer::Function> getObjective() const;
+  ConstFunctionPtr getObjective() const;
+
+  void setInitialGuess(const Eigen::VectorXd& guess);
+
+  void setInitialGuess(const Variable& guess);
 
   /// Returns the Problem that is being maintained by this trajectory
   /// optimization.
@@ -81,7 +85,7 @@ public:
 protected:
   void resetProblem(bool clearSeeds = false);
 
-  std::shared_ptr<TrajectoryVariables> mVariables;
+  VariablePtr mVariable;
 
   /// The Problem that will be maintained by this trajectory optimization.
   std::shared_ptr<dart::optimizer::Problem> mProblem;
@@ -91,7 +95,7 @@ protected:
   std::shared_ptr<dart::optimizer::Solver> mSolver;
 
   /// Objective for the trajectory optimization.
-  std::shared_ptr<dart::optimizer::Function> mObjective;
+  FunctionPtr mObjective;
 
   const statespace::StateSpace::State* mStartState;
 

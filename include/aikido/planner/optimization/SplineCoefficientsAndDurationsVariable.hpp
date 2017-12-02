@@ -2,7 +2,7 @@
 #define AIKIDO_PLANNER_OPTIMIZATION_OPTIMIZATIONSPLINE_HPP_
 
 #include <memory>
-#include "aikido/planner/optimization/SplineVariables.hpp"
+#include "aikido/planner/optimization/SplineVariable.hpp"
 
 namespace aikido {
 namespace planner {
@@ -16,13 +16,13 @@ public:
       const trajectory::Spline& splineToClone);
 
   // Documentation inherited.
-  std::shared_ptr<TrajectoryVariables> clone() const override;
+  std::shared_ptr<Variable> clone() const override;
 
   // Documentation inherited.
-  void setVariables(const Eigen::VectorXd& variables) override;
+  void setValue(const Eigen::VectorXd& value) override;
 
   // Documentation inherited.
-  void getVariables(Eigen::VectorXd& variables) const override;
+  Eigen::VectorXd getValue() const override;
 
 protected:
   // Documentation inherited.

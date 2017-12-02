@@ -1,6 +1,8 @@
 #ifndef AIKIDO_COMMON_ALGORITHM_HPP_
 #define AIKIDO_COMMON_ALGORITHM_HPP_
 
+#include <vector>
+
 namespace aikido {
 namespace common {
 
@@ -27,6 +29,14 @@ const T& clamp(const T& v, const T& lo, const T& hi, Compare comp);
 /// Same as above, but uses std::less<T> to compare the values.
 template <class T>
 const T& clamp(const T& v, const T& lo, const T& hi);
+
+// TODO(JS): docstring
+template <typename T>
+std::vector<T> linspace(T start, T end, std::size_t n, bool endpoint = true);
+
+// TODO(JS): docstring
+template<typename T>
+std::vector<T> arange(T start, T stop, T step = static_cast<T>(1u));
 
 } // namespace common
 } // namespace aikido

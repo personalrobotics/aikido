@@ -6,6 +6,7 @@
 #include "../../statespace/SE2.hpp"
 #include "../../statespace/SO2.hpp"
 #include "../../statespace/SO3.hpp"
+#include "../../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "../CartesianProductWeighted.hpp"
 #include "../RnEuclidean.hpp"
 #include "../SE2Weighted.hpp"
@@ -118,6 +119,19 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
 
     return make_unique<CartesianProductWeighted>(
         std::move(_sspace), std::move(metrics));
+  }
+};
+
+//==============================================================================
+template <>
+struct createDistanceMetricFor_impl<statespace::dart::MetaSkeletonStateSpace>
+{
+  static Ptr create(
+      std::shared_ptr<statespace::dart::MetaSkeletonStateSpace> _sspace)
+  {
+    return createDistanceMetric(
+        std::move(
+            std::static_pointer_cast<statespace::CartesianProduct>(_sspace)));
   }
 };
 

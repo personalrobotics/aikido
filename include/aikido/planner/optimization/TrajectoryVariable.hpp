@@ -7,6 +7,7 @@
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/PlanningResult.hpp"
+#include "aikido/planner/optimization/Variable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -14,27 +15,27 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-class TrajectoryVariables
+class TrajectoryVariable : public Variable
 {
 public:
-  /// Clone
-  virtual std::shared_ptr<TrajectoryVariables> clone() const = 0;
-
-  /// Returns the dimension of optimization variables.
-  virtual std::size_t getDimension() const = 0;
-
-  /// Sets the optimization variables.
-  virtual void setVariables(const Eigen::VectorXd& variables) = 0;
-
-  /// Returns the optimization variables.
-  virtual void getVariables(Eigen::VectorXd& variables) const = 0;
-
   /// Returns const Trajectory
   ///
   /// We only provide const version of this function because we don't intend
   /// the structure and parameters of spline to be changed by the caller.
   virtual const trajectory::Trajectory& getTrajectory() const = 0;
+
+  // Documentation inherited.
+  bool isTrajectoryVariable() const override final;
+
+  // Documentation inherited.
+  TrajectoryVariable* asTrajectoryVariable() override final;
+
+  // Documentation inherited.
+  const TrajectoryVariable* asTrajectoryVariable() const override final;
 };
+
+using TrajectoryVariablePtr = std::shared_ptr<TrajectoryVariable>;
+using ConstTrajectoryVariablePtr = std::shared_ptr<const TrajectoryVariable>;
 
 } // namespace optimization
 } // namespace planner

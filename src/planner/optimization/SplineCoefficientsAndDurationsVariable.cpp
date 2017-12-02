@@ -1,4 +1,4 @@
-#include "aikido/planner/optimization/SplineCoefficientsAndDurationsVariables.hpp"
+#include "aikido/planner/optimization/SplineCoefficientsAndDurationsVariable.hpp"
 
 namespace aikido {
 namespace planner {
@@ -14,15 +14,14 @@ SplineCoefficientsAndDurationsVariables::
 }
 
 //==============================================================================
-std::shared_ptr<TrajectoryVariables>
-SplineCoefficientsAndDurationsVariables::clone() const
+std::shared_ptr<Variable> SplineCoefficientsAndDurationsVariables::clone() const
 {
   return std::make_shared<SplineCoefficientsAndDurationsVariables>(*this);
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::setVariables(
-    const Eigen::VectorXd& variables)
+void SplineCoefficientsAndDurationsVariables::setValue(
+    const Eigen::VectorXd& value)
 {
   // TODO(JS): Check the dimension of variables
 
@@ -34,9 +33,9 @@ void SplineCoefficientsAndDurationsVariables::setVariables(
     const auto numLocalVariables = rows * cols;
 
     Eigen::Map<const Eigen::MatrixXd> newSegmentCoeffis(
-        variables.segment(index, numLocalVariables).data(), rows, cols);
+        value.segment(index, numLocalVariables).data(), rows, cols);
     mSpline.setSegmentCoefficients(i, newSegmentCoeffis);
-    mSpline.setSegmentDuration(i, variables[index + numLocalVariables]);
+    mSpline.setSegmentDuration(i, value[index + numLocalVariables]);
 
     index += numLocalVariables + 1;
   }
@@ -45,10 +44,9 @@ void SplineCoefficientsAndDurationsVariables::setVariables(
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::getVariables(
-    Eigen::VectorXd& variables) const
+Eigen::VectorXd SplineCoefficientsAndDurationsVariables::getValue() const
 {
-  variables.resize(getDimension());
+  Eigen::VectorXd value(getDimension());
 
   int index = 0;
   for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
@@ -59,15 +57,15 @@ void SplineCoefficientsAndDurationsVariables::getVariables(
     const auto cols = segmentCoeffs.cols();
     const auto numLocalVariables = rows * cols;
 
-    variables.segment(index, numLocalVariables)
-        = Eigen::Map<const Eigen::VectorXd>(
-            segmentCoeffs.data(), numLocalVariables);
-    variables[index + numLocalVariables] = mSpline.getSegmentDuration(i);
+    value.segment(index, numLocalVariables) = Eigen::Map<const Eigen::VectorXd>(
+        segmentCoeffs.data(), numLocalVariables);
+    value[index + numLocalVariables] = mSpline.getSegmentDuration(i);
 
     index += numLocalVariables + 1;
   }
 
   assert(static_cast<std::size_t>(index) == getDimension());
+  return value;
 }
 
 //==============================================================================

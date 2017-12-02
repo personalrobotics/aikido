@@ -5,22 +5,22 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
-#include "aikido/planner/optimization/TrajectoryOptimizationVariables.hpp"
+#include "aikido/planner/optimization/TrajectoryVariable.hpp"
 
 namespace aikido {
 namespace planner {
 namespace optimization {
 
-class OptimizationInterpolated : public TrajectoryVariables
+class OptimizationInterpolated : public TrajectoryVariable
 {
 public:
   OptimizationInterpolated() = default;
 
   ~OptimizationInterpolated() = default;
 
-  virtual void setVariables(const Eigen::VectorXd& variables) = 0;
+  virtual void setValue(const Eigen::VectorXd& variables) = 0;
 
-  virtual void getVariables(Eigen::VectorXd& variables) const = 0;
+  virtual Eigen::VectorXd getValue() const = 0;
 
 protected:
 private:
