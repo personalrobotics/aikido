@@ -1,6 +1,5 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
-#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
