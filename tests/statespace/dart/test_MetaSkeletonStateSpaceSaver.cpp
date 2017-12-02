@@ -12,7 +12,6 @@ using aikido::statespace::SO2;
 
 TEST(MetaSkeletonStateSpaceSaver, MetaSkeletonStateSpaceReturnsToOriginal)
 {
-
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<RevoluteJoint>();
 

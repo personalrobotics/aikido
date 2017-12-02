@@ -12,6 +12,7 @@ MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(
   , mPositionLowerLimits(mSpace->getMetaSkeleton()->getPositionLowerLimits())
   , mPositionUpperLimits(mSpace->getMetaSkeleton()->getPositionUpperLimits())
 {
+  // Do nothing
 }
 
 //==============================================================================
