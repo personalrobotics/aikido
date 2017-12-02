@@ -171,7 +171,7 @@ Eigen::Vector6d computeGeodesicTwist(
       = currentTrans.linear() * relativeTrans.translation();
   Eigen::Vector3d axisAngles = logMap(relativeTrans.linear());
   Eigen::Vector3d relativeAngles = currentTrans.linear() * axisAngles;
-  Eigen::Vector6d geodesicTwist;
+  Eigen::Vector6d geodesicTwist = Eigen::Vector6d::Zero();
   geodesicTwist << relativeAngles, relativeTranslation;
   return geodesicTwist;
 }

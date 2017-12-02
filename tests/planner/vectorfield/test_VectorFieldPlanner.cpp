@@ -615,14 +615,11 @@ TEST_F(VectorFieldPlannerTest, PlanWorkspacePathTest)
   Eigen::VectorXd startConfig = Eigen::VectorXd::Zero(mNumDof);
   startConfig << 1.13746, -0.663612, 0.77876, 1.07515, 1.58646, -1.00034,
       -1.03533;
-  Eigen::VectorXd goalConfig = Eigen::VectorXd::Zero(mNumDof);
-  goalConfig << 1.13746, -0.363612, 0.77876, 1.07515, 1.58646, -1.00034,
-      -0.03533;
-
   mStateSpace->getMetaSkeleton()->setPositions(startConfig);
   Eigen::Isometry3d startPose = mBodynode->getTransform();
-  mStateSpace->getMetaSkeleton()->setPositions(goalConfig);
-  Eigen::Isometry3d targetPose = mBodynode->getTransform();
+
+  Eigen::Isometry3d targetPose = startPose;
+  targetPose.translation() += Eigen::Vector3d(0.1, 0.1, 0.1);
   auto startState = mWorkspaceStateSpace->createState();
   auto targetState = mWorkspaceStateSpace->createState();
   mWorkspaceStateSpace->setIsometry(startState, startPose);
@@ -630,20 +627,24 @@ TEST_F(VectorFieldPlannerTest, PlanWorkspacePathTest)
   workspacePath->addWaypoint(0, startState);
   workspacePath->addWaypoint(1, targetState);
 
-  mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
+  mStateSpace->getMetaSkeleton()->setPositions(startConfig);
 
-  double positionTolerance = 1.5;
-  double angularTolerance = 0.5;
+  double positionTolerance = 0.05;
+  double angularTolerance = 0.2;
   double tStep = 0.001;
   Eigen::Vector6d kpFF = Eigen::VectorXd::Constant(6, 1.0);
-  Eigen::Vector6d kpE = Eigen::VectorXd::Constant(6, 0.8);
+  Eigen::Vector6d kpE = Eigen::VectorXd::Constant(6, 0.6);
   bool useCollisionChecking = false;
   bool useDofLimitChecking = false;
   double initialStepSize = 1e-3;
   double jointLimitTolerance = 3e-2;
   double optimizationTolerance = 10.;
-  double timelimit = 100000.0;
+  double timelimit = 30.0;
   double integralTimeInterval = 10.0;
+
+  auto timedWorkspacePath
+      = aikido::planner::vectorfield::timeTrajectoryByGeodesicUnitTiming(
+          workspacePath.get(), mWorkspaceStateSpace);
 
   auto traj = aikido::planner::vectorfield::planWorkspacePath(
       mStateSpace,
@@ -669,4 +670,57 @@ TEST_F(VectorFieldPlannerTest, PlanWorkspacePathTest)
   {
     return;
   }
+
+  double checkStep = 0.01;
+  double minDist = 0.0;
+  double tLoc = 0.0;
+  Eigen::Isometry3d transLoc = Eigen::Isometry3d::Identity();
+  for (double t = 0.0; t < traj->getDuration(); t += checkStep)
+  {
+    auto state = mStateSpace->createState();
+    traj->evaluate(t, state);
+    Eigen::VectorXd config = Eigen::VectorXd::Zero(mNumDof);
+    mStateSpace->convertStateToPositions(state, config);
+    mStateSpace->getMetaSkeleton()->setPositions(config);
+    Eigen::Isometry3d currTrans = mBodynode->getTransform();
+
+    aikido::planner::vectorfield::
+        getMinDistanceBetweenTransformAndWorkspaceTraj(
+            currTrans,
+            timedWorkspacePath.get(),
+            mWorkspaceStateSpace,
+            checkStep,
+            minDist,
+            tLoc,
+            transLoc);
+
+    Eigen::Vector4d geodesicError
+        = aikido::planner::vectorfield::computeGeodesicError(
+            currTrans, transLoc);
+
+    EXPECT_TRUE(std::abs(geodesicError[0]) < positionTolerance);
+    EXPECT_TRUE(geodesicError.tail<3>().norm() < angularTolerance);
+  }
+
+  auto goalState = mStateSpace->createState();
+  traj->evaluate(traj->getEndTime(), goalState);
+  Eigen::VectorXd goalConfig = Eigen::VectorXd::Zero(mNumDof);
+  mStateSpace->convertStateToPositions(goalState, goalConfig);
+  mStateSpace->getMetaSkeleton()->setPositions(goalConfig);
+  Eigen::Isometry3d goalTrans = mBodynode->getTransform();
+
+  aikido::planner::vectorfield::getMinDistanceBetweenTransformAndWorkspaceTraj(
+      goalTrans,
+      timedWorkspacePath.get(),
+      mWorkspaceStateSpace,
+      1e-3,
+      minDist,
+      tLoc,
+      transLoc);
+
+  Eigen::Vector4d geodesicError
+      = aikido::planner::vectorfield::computeGeodesicError(goalTrans, transLoc);
+
+  EXPECT_TRUE(std::abs(geodesicError[0]) < positionTolerance);
+  EXPECT_TRUE(geodesicError.tail<3>().norm() < angularTolerance);
 }

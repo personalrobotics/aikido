@@ -11,6 +11,8 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+constexpr double norm_threshold = 1e-10;
+
 MoveEndEffectorAlongWorkspacePathVectorField::
     MoveEndEffectorAlongWorkspacePathVectorField(
         aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
@@ -79,12 +81,12 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
       trans);
 
   // Get the desired end-effector transform from the goal trajectory
-  Eigen::Isometry3d desiredTEE;
+  Eigen::Isometry3d desiredTEE = Eigen::Isometry3d::Identity();
   getTransfromFromTimedSE3Trajectory(
       mSE3StateSpace, mTimedWorkspacePath.get(), t, desiredTEE);
 
   // Get the next end-effector transform, using finite-differences
-  Eigen::Isometry3d desiredTEEnext;
+  Eigen::Isometry3d desiredTEEnext = Eigen::Isometry3d::Identity();
   getTransfromFromTimedSE3Trajectory(
       mSE3StateSpace, mTimedWorkspacePath.get(), t + mDeltaT, desiredTEEnext);
 
@@ -114,11 +116,13 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
       = computeGeodesicTwist(desiredTEE, desiredTEEnext);
 
   // Normalize the translational and angular velocity of the feed-forward twist
-  twistParallel.head<3>().normalize();
-  twistParallel.tail<3>().normalize();
+  if (twistParallel.head<3>().norm() > norm_threshold)
+    twistParallel.head<3>().normalize();
+  if (twistParallel.head<3>().norm() > norm_threshold)
+    twistParallel.tail<3>().normalize();
 
   // Apply gains
-  Vector6d desiredTwist;
+  Vector6d desiredTwist = Eigen::Vector6d::Zero();
   for (std::size_t i = 0; i < 6; i++)
   {
     desiredTwist[i]
@@ -169,7 +173,7 @@ MoveEndEffectorAlongWorkspacePathVectorField::checkPlanningStatus() const
       trans);
 
   // Get the desired end-effector transform from the goal trajectory
-  Eigen::Isometry3d desiredTEE;
+  Eigen::Isometry3d desiredTEE = Eigen::Isometry3d::Identity();
   getTransfromFromTimedSE3Trajectory(
       mSE3StateSpace, mTimedWorkspacePath.get(), t, desiredTEE);
 
@@ -209,14 +213,15 @@ MoveEndEffectorAlongWorkspacePathVectorField::checkPlanningStatus() const
   Eigen::Vector4d errorToGoal = computeGeodesicError(currTEE, mGoalPose);
   double orientationErrorToGoal = errorToGoal[3];
   Eigen::Vector3d positionErrorToGoal = errorToGoal.tail<3>();
+  double positionErrorToGoalNorm = positionErrorToGoal.norm();
 
   if (orientationErrorToGoal < mAngularTolerance
-      && positionErrorToGoal.norm() < mPositionTolerance)
+      && positionErrorToGoalNorm < mPositionTolerance)
   {
     return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
   }
 
-  return VectorFieldPlannerStatus::CONTINUE;
+  return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
 }
 
 } // namespace vectorfield
