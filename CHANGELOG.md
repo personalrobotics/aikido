@@ -2,6 +2,9 @@
 
 ### 0.2.0 (201X-XX-XX)
 
+* State Space
+  * Moved MetaSkeletonStateSpaceSaver implementation to src: [#273](https://github.com/personalrobotics/aikido/pull/273)
+
 * Constraint
 
   * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
