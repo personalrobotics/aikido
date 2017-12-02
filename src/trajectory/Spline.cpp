@@ -385,7 +385,7 @@ double Spline::computeArcLength(
     // from the state space.
   }
 
-  double resolution = 0.001; // TODO(JS): Make this as spline parameter
+  double resolution = 0.01; // TODO(JS): Make this as spline parameter
   auto steps = common::arange(getStartTime(), getEndTime(), resolution);
 
   if (steps.empty())

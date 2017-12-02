@@ -9,6 +9,7 @@
 #include <aikido/planner/optimization/PathLengthFunction.hpp>
 #include <aikido/planner/optimization/Planner.hpp>
 #include <aikido/planner/optimization/SplineCoefficientsAndDurationsVariable.hpp>
+#include <aikido/planner/optimization/SplineCoefficientsVariable.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
@@ -105,9 +106,11 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
   EXPECT_TRUE(spline.getNumSegments() == 3);
   EXPECT_TRUE(spline.getDuration() == 6.0);
 
-  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
-      spline);
-  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
+//  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
+//      spline);
+  planner::optimization::SplineCoefficientsVariables variable(spline);
+  //EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
+  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3);
 
   planner::optimization::OptimizationBasedMotionPlanning planner(variable);
 

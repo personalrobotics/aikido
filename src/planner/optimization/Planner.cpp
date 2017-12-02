@@ -65,6 +65,8 @@ trajectory::TrajectoryPtr OptimizationBasedMotionPlanning::plan()
 
   mProblem->setObjective(mObjective);
 
+  auto f0 = mObjective->eval(mProblem->getInitialGuess());
+
   //  mProblem->setDimension(mDofs.size());
 
   //  mProblem->setInitialGuess(getPositions());
@@ -93,6 +95,8 @@ trajectory::TrajectoryPtr OptimizationBasedMotionPlanning::plan()
   //  setPositions(originalPositions);
   //  skel->setVelocities(originalVelocities);
   const Eigen::VectorXd& solution = mProblem->getOptimalSolution();
+
+  auto f1 = mObjective->eval(solution);
 
   return nullptr;
 }
