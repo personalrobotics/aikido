@@ -10,6 +10,7 @@ set(sources
   dart/JointStateSpace.cpp
   dart/JointStateSpaceHelpers.cpp
   dart/MetaSkeletonStateSpace.cpp
+  dart/MetaSkeletonStateSpaceSaver.cpp
   dart/SE2Joint.cpp
   dart/SE3Joint.cpp
   dart/SO2Joint.cpp
