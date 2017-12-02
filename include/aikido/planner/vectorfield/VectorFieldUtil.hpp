@@ -164,9 +164,6 @@ bool getMinDistanceBetweenTransformAndWorkspaceTraj(
 /// The path length is calculated as the sum of all segment lengths,
 /// where each segment length = norm( delta_translation^2 +
 ///                                       alpha^2*delta_orientation^2 )
-/// Note: Currently only linear velocity interpolation is supported,
-///      however OpenRAVE does allow you to specify quadratic
-///      interpolation.
 /// \param[in] untimedTraj Workspace path or trajectory.
 /// \param[in] SE3StateSpace SE3 state space.
 /// \param[in] alpha Weighting for delta orientation.

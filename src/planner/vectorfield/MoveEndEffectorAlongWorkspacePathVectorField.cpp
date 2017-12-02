@@ -11,8 +11,10 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-constexpr double norm_threshold = 1e-10;
+constexpr double normThreshold = 1e-10;
+constexpr double trajectoryCheckStepSize = 0.0005;
 
+//==============================================================================
 MoveEndEffectorAlongWorkspacePathVectorField::
     MoveEndEffectorAlongWorkspacePathVectorField(
         aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
@@ -22,7 +24,7 @@ MoveEndEffectorAlongWorkspacePathVectorField::
         double angularTolerance,
         double tStep,
         double initialStepSize,
-        double jointLimitTolerance,
+        double jointLimitPadding,
         double optimizationTolerance,
         const Eigen::Vector6d& kpFF,
         const Eigen::Vector6d& kpE)
@@ -32,7 +34,7 @@ MoveEndEffectorAlongWorkspacePathVectorField::
   , mAngularTolerance(angularTolerance)
   , mDeltaT(tStep)
   , mInitialStepSize(initialStepSize)
-  , mJointLimitTolerance(jointLimitTolerance)
+  , mJointLimitPadding(jointLimitPadding)
   , mOptimizationTolerance(optimizationTolerance)
   , mKpFF(kpFF)
   , mKpE(kpE)
@@ -75,7 +77,7 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
       actualTEE,
       mTimedWorkspacePath.get(),
       mSE3StateSpace,
-      0.0005,
+      trajectoryCheckStepSize,
       minDist,
       t,
       trans);
@@ -116,9 +118,9 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
       = computeGeodesicTwist(desiredTEE, desiredTEEnext);
 
   // Normalize the translational and angular velocity of the feed-forward twist
-  if (twistParallel.head<3>().norm() > norm_threshold)
+  if (twistParallel.head<3>().norm() > normThreshold)
     twistParallel.head<3>().normalize();
-  if (twistParallel.head<3>().norm() > norm_threshold)
+  if (twistParallel.head<3>().norm() > normThreshold)
     twistParallel.tail<3>().normalize();
 
   // Apply gains
@@ -140,7 +142,7 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
       desiredTwist,
       mStateSpace,
       mBodyNode,
-      mJointLimitTolerance,
+      mJointLimitPadding,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
       true,
@@ -167,7 +169,7 @@ MoveEndEffectorAlongWorkspacePathVectorField::checkPlanningStatus() const
       currTEE,
       mTimedWorkspacePath.get(),
       mSE3StateSpace,
-      0.0005,
+      trajectoryCheckStepSize,
       minDist,
       t,
       trans);
