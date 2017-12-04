@@ -202,8 +202,7 @@ TEST_F(
 }
 
 TEST_F(
-    KinematicSimulationTrajectoryExecutorTest,
-    abort_TrajectoryInProgress_Halts)
+    KinematicSimulationTrajectoryExecutorTest, abort_TrajectoryInProgress_Halts)
 {
   KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 

@@ -38,7 +38,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
     {
       mInProgress = false;
       mPromise->set_exception(
-        std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
+          std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
     }
   }
 }
@@ -164,7 +164,7 @@ void KinematicSimulationTrajectoryExecutor::abort()
     mInProgress = false;
     mTraj.reset();
     mPromise->set_exception(
-      std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
+        std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
   }
 }
 
