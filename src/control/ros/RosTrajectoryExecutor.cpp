@@ -233,6 +233,12 @@ void RosTrajectoryExecutor::step()
   }
 }
 
+//==============================================================================
+void RosTrajectoryExecutor::abort()
+{
+  // TODO: cancel the actionlib goal (once there is support in ReWD controller)
+}
+
 } // namespace ros
 } // namespace control
 } // namespace aikido

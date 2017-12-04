@@ -151,5 +151,19 @@ void KinematicSimulationTrajectoryExecutor::step()
   }
 }
 
+//==============================================================================
+void KinematicSimulationTrajectoryExecutor::abort()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+
+  if (mInProgress && mTraj)
+  {
+    mInProgress = false;
+    mTraj.reset();
+    mPromise->set_exception(
+      std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
+  }
+}
+
 } // namespace control
 } // namespace aikido

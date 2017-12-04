@@ -33,9 +33,10 @@ public:
 
   void step() override;
 
-  /// Abort all trajectories currently in the queue. Does NOT stop the
-  /// trajectory that is currently executing.
-  void abort();
+  /// Abort the current trajectory, as well as all trajectories currently in the
+  /// queue. Does NOT stop the trajectory that is currently executing if the
+  /// underlying executor does not support it.
+  void abort() override;
 
 private:
   /// Underlying TrajectoryExecutor

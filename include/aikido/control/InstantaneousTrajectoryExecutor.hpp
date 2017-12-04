@@ -39,6 +39,9 @@ public:
   // Do nothing.
   void step() override;
 
+  // Do nothing.
+  void abort() override;
+
 private:
   ::dart::dynamics::SkeletonPtr mSkeleton;
 

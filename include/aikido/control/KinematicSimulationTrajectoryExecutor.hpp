@@ -44,6 +44,9 @@ public:
   /// calling this method.
   void step() override;
 
+  /// Aborts the current trajectory.
+  void abort() override;
+
 private:
   ::dart::dynamics::SkeletonPtr mSkeleton;
 

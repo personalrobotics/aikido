@@ -57,6 +57,8 @@ void QueuedTrajectoryExecutor::step()
     if (mFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
       return;
 
+    mInProgress = false;
+
     // The promise corresponding to the trajectory that just finished must be
     // at the front of its queue.
     auto promise = mPromiseQueue.front();
@@ -73,8 +75,6 @@ void QueuedTrajectoryExecutor::step()
       promise->set_exception(std::current_exception());
       abort();
     }
-
-    mInProgress = false;
   }
 
   // No trajectory currently executing, execute a trajectory from the queue
@@ -99,6 +99,9 @@ void QueuedTrajectoryExecutor::abort()
 
   if (mInProgress)
   {
+    mExecutor->abort();
+
+    // Set our own exception, since abort may not be supported
     auto promise = mPromiseQueue.front();
     mPromiseQueue.pop();
     promise->set_exception(abort);

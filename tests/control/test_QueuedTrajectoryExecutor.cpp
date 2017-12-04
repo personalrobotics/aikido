@@ -217,7 +217,11 @@ TEST_F(
   auto f1 = executor.execute(mTraj1);
   auto f2 = executor.execute(mTraj2);
 
+  executor.step(); // dequeue trajectory
+
+  f1.wait_for(stepTime);
   executor.step();
+
   executor.abort();
 
   EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
@@ -225,4 +229,7 @@ TEST_F(
 
   EXPECT_THROW(f1.get(), std::runtime_error);
   EXPECT_THROW(f2.get(), std::runtime_error);
+
+  EXPECT_GT(mSkeleton->getDof(0)->getPosition(), 0.0);
+  EXPECT_LT(mSkeleton->getDof(0)->getPosition(), 1.0);
 }

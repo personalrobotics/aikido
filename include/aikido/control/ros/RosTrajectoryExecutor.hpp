@@ -58,6 +58,9 @@ public:
   /// Regularly checks for the completion of a sent trajectory.
   void step() override;
 
+  // Do nothing.
+  void abort() override;
+
 private:
   using TrajectoryActionClient
       = actionlib::ActionClient<control_msgs::FollowJointTrajectoryAction>;

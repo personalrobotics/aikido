@@ -24,6 +24,10 @@ public:
 
   /// Executes one step.
   virtual void step() = 0;
+
+  /// Aborts the current trajectory. This is currently only supported in
+  /// simulation.
+  virtual void abort() = 0;
 };
 
 using TrajectoryExecutorPtr = std::shared_ptr<TrajectoryExecutor>;

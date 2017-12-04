@@ -89,5 +89,11 @@ void InstantaneousTrajectoryExecutor::step()
   // Do nothing
 }
 
+//==============================================================================
+void InstantaneousTrajectoryExecutor::abort()
+{
+  // Do nothing
+}
+
 } // namespace control
 } // namespace aikido
