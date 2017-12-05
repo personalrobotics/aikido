@@ -2,6 +2,7 @@
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 
 #include <Eigen/Core>
+#include <aikido/trajectory/TrajectoryMetadata.hpp>
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -66,6 +67,9 @@ public:
   /// \param[out] _tangentVector output tangent vector in the local frame
   virtual void evaluateDerivative(
       double _t, int _derivative, Eigen::VectorXd& _tangentVector) const = 0;
+
+  /// Trajectory metadata
+  TrajectoryMetadata metadata;
 };
 
 using TrajectoryPtr = std::shared_ptr<Trajectory>;
