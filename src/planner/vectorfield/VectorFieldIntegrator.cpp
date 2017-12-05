@@ -9,6 +9,7 @@ namespace planner {
 namespace vectorfield {
 
 constexpr double integrationTimeInterval = 10.0;
+constexpr double defaultConstraintCheckResolution = 1e-3;
 
 //==============================================================================
 VectorFieldIntegrator::VectorFieldIntegrator(
@@ -23,6 +24,7 @@ VectorFieldIntegrator::VectorFieldIntegrator(
   mIndex = 0;
 
   mDimension = mVectorField->getStateSpace()->getDimension();
+  mConstraintCheckResolution = defaultConstraintCheckResolution;
 }
 
 //==============================================================================
@@ -69,7 +71,10 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
     segment.push_back(knot);
     auto trajSegment = convertToSpline(segment, mVectorField->getStateSpace());
 
-    evaluateTrajectory(trajSegment.get(), mCollisionFreeConstraint, 0.0001);
+    evaluateTrajectory(
+        trajSegment.get(),
+        mCollisionFreeConstraint,
+        mConstraintCheckResolution);
   }
   mKnots.push_back(knot);
   mIndex += 1;
@@ -152,6 +157,7 @@ VectorFieldIntegrator::followVectorField(
   return convertToSpline(mKnots, mVectorField->getStateSpace());
 }
 
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline>
 VectorFieldIntegrator::convertToSpline(
     const std::vector<Knot>& knots,
@@ -189,9 +195,22 @@ VectorFieldIntegrator::convertToSpline(
   return outputTrajectory;
 }
 
+//==============================================================================
 double VectorFieldIntegrator::getInitialStepSize()
 {
   return mInitialStepSize;
+}
+
+//==============================================================================
+double VectorFieldIntegrator::getConstraintCheckResolution()
+{
+  return mConstraintCheckResolution;
+}
+
+//==============================================================================
+void VectorFieldIntegrator::setConstraintCheckResolution(double resolution)
+{
+  mConstraintCheckResolution = resolution;
 }
 
 } // namespace vectorfield

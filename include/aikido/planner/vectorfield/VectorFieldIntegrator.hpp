@@ -59,6 +59,16 @@ public:
   /// \return Initial step size.
   double getInitialStepSize();
 
+  /// Get resolution of constraint checking.
+  ///
+  /// \return Resolution of constraint checking.
+  double getConstraintCheckResolution();
+
+  /// Set resolution of constraint checking.
+  ///
+  /// /param[in] Resolution used in constraint checking.
+  void setConstraintCheckResolution(double resolution);
+
 protected:
   /// Evaluate whether a trajectory is eligible
   ///
@@ -113,6 +123,9 @@ protected:
   /// Planning timelimit.
   double mTimelimit;
   std::vector<Knot> mKnots;
+
+  /// Resolution used in checking constraint satisfaction.
+  double mConstraintCheckResolution;
 };
 
 } // namespace vectorfield

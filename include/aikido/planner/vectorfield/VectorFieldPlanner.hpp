@@ -36,6 +36,7 @@ namespace vectorfield {
 /// \param[in] initialStepSize Initial step size.
 /// \param[in] jointLimitTolerance If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
+/// \param[in] constraintCheckResolution Resolution used in constraint checking.
 /// \param[in] timelimit timeout in seconds.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
@@ -50,6 +51,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double linearVelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
+    double constraintCheckResolution,
     double timelimit);
 
 /// Plan to an end effector pose by following a geodesic loss function
@@ -64,16 +66,11 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// distance.
 /// \param[in] linearVelocityGain Linear velocity gain in workspace.
 /// \param[in] angularVelocityGain Angular velocity gain in workspace.
-/// \param[in] useCollisionChecking Whether collision checking is
-/// considered in planning.
-/// \param[in] useDofLimitChecking Whether Dof Limits are considered
-/// in planning.
 /// \param[in] initialStepSize Initial step size.
 /// \param[in] jointLimitTolerance If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
-/// \param[in] optimizationTolerance Tolerance on optimization.
-/// \param[in] timelimit timeout in seconds.
-/// \param[in] integralTimeInterval The time interval to integrate over.
+/// \param[in] constraintCheckResolution Resolution used in constraint checking.
+/// \param[in] timelimit Timeout in seconds.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
@@ -85,6 +82,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     double angularVelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
+    double constraintCheckResolution,
     double timelimit);
 
 } // namespace vectorfield

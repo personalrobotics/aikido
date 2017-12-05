@@ -30,6 +30,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double linearVelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
+    double constraintCheckResolution,
     double timelimit)
 {
   if (minDistance < 0.)
@@ -67,6 +68,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 
   auto planner = std::make_shared<MetaSkeletonStateSpaceVectorFieldIntegrator>(
       vectorfield, constraint, initialStepSize);
+  planner->setConstraintCheckResolution(constraintCheckResolution);
   auto startState = stateSpace->getScopedStateFromMetaSkeleton();
   return planner->followVectorField(startState, timelimit);
 }
@@ -82,6 +84,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     double angularvelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
+    double constraintCheckResolution,
     double timelimit)
 {
   // Save the current state of the space
@@ -100,6 +103,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
 
   auto planner = std::make_shared<MetaSkeletonStateSpaceVectorFieldIntegrator>(
       vectorfield, constraint, initialStepSize);
+  planner->setConstraintCheckResolution(constraintCheckResolution);
   auto startState = stateSpace->getScopedStateFromMetaSkeleton();
   return planner->followVectorField(startState, timelimit);
 }

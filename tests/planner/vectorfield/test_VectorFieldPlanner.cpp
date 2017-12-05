@@ -336,6 +336,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double linearVelocity = 1.0;
   double initialStepSize = 0.05;
   double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
   double timelimit = 5.;
   double maxDistance = MoveEndEffectorOffsetVectorField::InvalidMaxDistance;
 
@@ -351,6 +352,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       linearVelocity,
       initialStepSize,
       jointLimitTolerance,
+      constraintCheckResolution,
       timelimit);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
@@ -416,6 +418,7 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
   double linearVelocity = 1.0;
   double initialStepSize = 0.05;
   double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
   double timelimit = 5.;
   double maxDistance = MoveEndEffectorOffsetVectorField::InvalidMaxDistance;
 
@@ -434,6 +437,7 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
           linearVelocity,
           initialStepSize,
           jointLimitTolerance,
+          constraintCheckResolution,
           timelimit),
       std::runtime_error);
 }
@@ -455,6 +459,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   double angularVelocityGain = 1.0;
   double initialStepSize = 0.05;
   double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
   double timelimit = 5.;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
@@ -469,6 +474,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
       angularVelocityGain,
       initialStepSize,
       jointLimitTolerance,
+      constraintCheckResolution,
       timelimit);
 
   EXPECT_FALSE(traj1 == nullptr) << "Trajectory not found";
