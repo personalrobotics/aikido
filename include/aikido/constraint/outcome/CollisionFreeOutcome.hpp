@@ -25,6 +25,11 @@ public:
   /// collision.
   std::string toString() const override;
 
+  /// Clears this outcome object. Useful in the event that a CollisionFree
+  /// object is passed to the isSatisfied() method of more than one constraint
+  /// object.
+  void clear();
+
   /// Store a Contact object from a pairwise collision. Used by CollisionFree
   /// to modify this object.
   /// \param[in] pairwiseContact Contact object to store.

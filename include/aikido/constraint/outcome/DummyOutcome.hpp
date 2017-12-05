@@ -7,7 +7,7 @@ namespace aikido {
 namespace constraint {
 
 /// This is a dummy TestableOutcome derivative class. An instance of this class
-/// is returned when createOutcome() is called on an instance of a class that 
+/// is returned when createOutcome() is called on an instance of a class that
 /// inherits Testable, but has no corresponding TestableOutcome derivative
 /// implemented.
 class DummyOutcome : public TestableOutcome

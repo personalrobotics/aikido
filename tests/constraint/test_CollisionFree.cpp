@@ -158,18 +158,25 @@ TEST_F(CollisionFreeTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
   CollisionFree constraint(mStateSpace, mCollisionDetector);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  // Also reuse this outcome object and ensure the correct result
+  // is still returned,
+  CollisionFreeOutcome outcome;
 
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
-  EXPECT_FALSE(constraint.isSatisfied(state));
+  EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
+  EXPECT_FALSE(outcome.isSatisfied());
 
   constraint.removePairwiseCheck(mCollisionGroup1, mCollisionGroup3);
-  EXPECT_TRUE(constraint.isSatisfied(state));
+  EXPECT_TRUE(constraint.isSatisfied(state, &outcome));
+  EXPECT_TRUE(outcome.isSatisfied());
 
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
-  EXPECT_FALSE(constraint.isSatisfied(state));
+  EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
+  EXPECT_FALSE(outcome.isSatisfied());
 
   constraint.removePairwiseCheck(mCollisionGroup3, mCollisionGroup1);
-  EXPECT_TRUE(constraint.isSatisfied(state));
+  EXPECT_TRUE(constraint.isSatisfied(state, &outcome));
+  EXPECT_TRUE(outcome.isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddSelfCheckPasses_IsSatisfied)

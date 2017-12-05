@@ -37,6 +37,8 @@ bool CollisionFree::isSatisfied(
     if (!collisionFreeOutcome)
       throw std::invalid_argument(
           "TestableOutcome pointer is not of type CollisionFreeOutcome.");
+    // Clear the outcome object in case it's being reused.
+    collisionFreeOutcome->clear();
   }
 
   auto skelStatePtr = static_cast<const aikido::statespace::dart::

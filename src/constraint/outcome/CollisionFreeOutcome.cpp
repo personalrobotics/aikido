@@ -34,6 +34,13 @@ std::string CollisionFreeOutcome::toString() const
 }
 
 //==============================================================================
+void CollisionFreeOutcome::clear()
+{
+  mPairwiseContacts.clear();
+  mSelfContacts.clear();
+}
+
+//==============================================================================
 void CollisionFreeOutcome::markPairwiseContact(
     const dart::collision::Contact& pairwiseContact)
 {
