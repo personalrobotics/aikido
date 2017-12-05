@@ -65,8 +65,9 @@ void WorldInteractiveMarkerViewer::update()
       auto result = mSkeletonMarkers.emplace(
           skeleton, CreateSkeletonMarker(skeleton, mFrameId));
 
-      std::unique_lock<std::mutex> lock(skeleton->getMutex(), std::try_to_lock);
-      if (lock.owns_lock())
+      std::unique_lock<std::mutex> skeleton_lock(
+          skeleton->getMutex(), std::try_to_lock);
+      if (skeleton_lock.owns_lock())
         result.first->second->update();
     }
   }

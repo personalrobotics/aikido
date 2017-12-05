@@ -1,7 +1,10 @@
+#include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
+
 namespace aikido {
 namespace statespace {
 namespace dart {
 
+//==============================================================================
 MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(
     MetaSkeletonStateSpacePtr _space)
   : mSpace(std::move(_space))
@@ -9,8 +12,10 @@ MetaSkeletonStateSpaceSaver::MetaSkeletonStateSpaceSaver(
   , mPositionLowerLimits(mSpace->getMetaSkeleton()->getPositionLowerLimits())
   , mPositionUpperLimits(mSpace->getMetaSkeleton()->getPositionUpperLimits())
 {
+  // Do nothing
 }
 
+//==============================================================================
 MetaSkeletonStateSpaceSaver::~MetaSkeletonStateSpaceSaver()
 {
   if (static_cast<std::size_t>(mPositions.size())
