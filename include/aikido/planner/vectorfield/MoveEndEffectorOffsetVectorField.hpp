@@ -8,6 +8,12 @@ namespace planner {
 namespace vectorfield {
 
 /// Vector field for moving end-effector by a direction and distance.
+/// It defines a vector field in meta-skeleton state space that moves
+/// an end-effector a desired offset with move-hand-straight constraint.
+/// The move-hand-straight constraint is defined by the direction and
+/// distance range [minimum distance, maximum distance).
+/// Movement less than minimum distance will return failure.
+/// The motion will not move further than maximum distance.
 ///
 /// This class defines two callback functions for vectorfield planner.
 /// One for generating joint velocity in MetaSkeleton state space,

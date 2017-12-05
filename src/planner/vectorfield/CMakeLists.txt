@@ -3,7 +3,7 @@ set(sources
   VectorField.cpp
   VectorFieldIntegrator.cpp   
   VectorFieldUtil.cpp
-  VectorFieldPlannerExceptions.cpp
+  detail/VectorFieldPlannerExceptions.cpp
   MetaSkeletonStateSpaceVectorField.cpp
   BodyNodePoseVectorField.cpp
   MoveEndEffectorOffsetVectorField.cpp

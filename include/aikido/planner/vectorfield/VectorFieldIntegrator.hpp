@@ -1,11 +1,10 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDINTEGRATOR_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDINTEGRATOR_HPP_
 
-#include <functional>
 #include <dart/common/Timer.hpp>
 #include <aikido/constraint/Testable.hpp>
+#include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/vectorfield/VectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
@@ -40,10 +39,12 @@ public:
   ///
   /// \param[in] integrationTimeInterval Position in configuration space.
   /// \param[in] timelimit Timelimit for integration calculation.
+  /// \param[out] planningResult information about success or failure.
   /// \return A trajectory following the vector field.
   std::unique_ptr<aikido::trajectory::Spline> followVectorField(
       const aikido::statespace::StateSpace::State* startState,
-      double timelimit);
+      std::chrono::duration<double> timelimit,
+      planner::PlanningResult& planningResult);
 
   /// Convert a sequence of waypoint and time pairs into a trajectory.
   ///

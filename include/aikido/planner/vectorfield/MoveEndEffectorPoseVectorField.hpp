@@ -7,7 +7,12 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-/// Vector field for moving end-effector by a direction and distance.
+/// Vector field for moving end-effector to a goal pose in SE(3).
+/// It defines a vector field in meta-skeleton state space that moves
+/// an end-effector a desired pose in SE(3) by following a geodesic
+/// loss function in SE(3) via an optimized Jacobian.
+/// The geodesic loss function is defined as the geodesic (shortest
+///  path) from the current pose to the goal pose.
 ///
 /// This class defines two callback functions for vectorfield planner.
 /// One for generating joint velocity in MetaSkeleton state space,

@@ -6,7 +6,6 @@
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/planner/vectorfield/MetaSkeletonStateSpaceVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldIntegrator.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>

@@ -2,6 +2,7 @@
 #include <string>
 #include <boost/numeric/odeint.hpp>
 #include <aikido/planner/vectorfield/VectorFieldIntegrator.hpp>
+#include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
@@ -100,7 +101,9 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline>
 VectorFieldIntegrator::followVectorField(
-    const aikido::statespace::StateSpace::State* startState, double timelimit)
+    const aikido::statespace::StateSpace::State* startState,
+    std::chrono::duration<double> timelimit,
+    planner::PlanningResult& planningResult)
 {
   using namespace std::placeholders;
   using errorStepper = boost::numeric::odeint::
@@ -110,7 +113,7 @@ VectorFieldIntegrator::followVectorField(
                          double,
                          boost::numeric::odeint::vector_space_algebra>;
 
-  mTimelimit = timelimit;
+  mTimelimit = timelimit.count();
   mTimer.start();
 
   mKnots.clear();
@@ -134,15 +137,18 @@ VectorFieldIntegrator::followVectorField(
   catch (const VectorFieldTerminated& e)
   {
     dtwarn << e.what() << std::endl;
+    planningResult.message = e.what();
   }
-  catch (const IntegrationFailedError& e)
+  catch (const VectorFieldError& e)
   {
     dtwarn << e.what() << std::endl;
+    planningResult.message = e.what();
     return nullptr;
   }
 
   if (mCacheIndex < 0)
   {
+    planningResult.message = "No waypoint cached.";
     return nullptr;
   }
 
@@ -178,10 +184,6 @@ VectorFieldIntegrator::convertToSpline(
     Eigen::VectorXd currentPosition = knots[iknot].mPositions;
     Eigen::VectorXd nextPosition = knots[iknot + 1].mPositions;
 
-    if (segmentDuration == 0.0)
-    {
-      std::cout << "ZERO SEGMENT DURATION " << std::endl;
-    }
     CubicSplineProblem problem(
         Eigen::Vector2d{0., segmentDuration}, 2, mDimension);
     problem.addConstantConstraint(0, 0, zeroPosition);

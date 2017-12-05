@@ -2,6 +2,7 @@
 #include <string>
 #include <boost/numeric/odeint.hpp>
 #include <aikido/planner/vectorfield/MetaSkeletonStateSpaceVectorFieldIntegrator.hpp>
+#include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {

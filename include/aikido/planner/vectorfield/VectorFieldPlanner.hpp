@@ -1,16 +1,8 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 
-#include <functional>
-#include <dart/common/Timer.hpp>
 #include <aikido/constraint/Testable.hpp>
-#include <aikido/planner/vectorfield/MetaSkeletonStateSpaceVectorField.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include <aikido/planner/PlanningResult.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -38,6 +30,7 @@ namespace vectorfield {
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] constraintCheckResolution Resolution used in constraint checking.
 /// \param[in] timelimit timeout in seconds.
+/// \param[out] planningResult information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
@@ -52,7 +45,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
-    double timelimit);
+    std::chrono::duration<double> timelimit,
+    planner::PlanningResult& planningResult);
 
 /// Plan to an end effector pose by following a geodesic loss function
 /// in SE(3) via an optimized Jacobian.
@@ -71,6 +65,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] constraintCheckResolution Resolution used in constraint checking.
 /// \param[in] timelimit Timeout in seconds.
+/// \param[out] planningResult information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
@@ -83,7 +78,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
-    double timelimit);
+    std::chrono::duration<double> timelimit,
+    planner::PlanningResult& planningResult);
 
 } // namespace vectorfield
 } // namespace planner

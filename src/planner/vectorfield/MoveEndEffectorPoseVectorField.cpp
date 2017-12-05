@@ -4,6 +4,7 @@
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
 
 namespace aikido {
 namespace planner {
