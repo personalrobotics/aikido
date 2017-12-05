@@ -30,6 +30,15 @@ bool CollisionFree::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
     TestableOutcome* outcome) const
 {
+  CollisionFreeOutcome* collisionFreeOutcome = nullptr;
+  if (outcome)
+  {
+    collisionFreeOutcome = dynamic_cast<CollisionFreeOutcome*>(outcome);
+    if (!collisionFreeOutcome)
+      throw std::invalid_argument(
+          "TestableOutcome pointer is not of type CollisionFreeOutcome.");
+  }
+
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
   mStatespace->setState(skelStatePtr);
@@ -46,16 +55,12 @@ bool CollisionFree::isSatisfied(
 
     if (collision)
     {
-      if (outcome != nullptr)
+      if (collisionFreeOutcome)
       {
-        auto collisionOutcome = dynamic_cast<CollisionFreeOutcome*>(outcome);
-        if (collisionOutcome == nullptr)
-          throw std::invalid_argument(
-              "TestableOutcome pointer is not of type CollisionFreeOutcome.");
         const auto& contacts = collisionResult.getContacts();
         for (const auto& elem : contacts)
         {
-          collisionOutcome->markPairwiseContact(elem);
+          collisionFreeOutcome->markPairwiseContact(elem);
         }
       }
       return false;
@@ -68,16 +73,12 @@ bool CollisionFree::isSatisfied(
         group.get(), mCollisionOptions, &collisionResult);
     if (collision)
     {
-      if (outcome != nullptr)
+      if (collisionFreeOutcome)
       {
-        auto collisionOutcome = dynamic_cast<CollisionFreeOutcome*>(outcome);
-        if (collisionOutcome == nullptr)
-          throw std::invalid_argument(
-              "TestableOutcome pointer is not of type CollisionFreeOutcome.");
         const auto& contacts = collisionResult.getContacts();
         for (const auto& elem : contacts)
         {
-          collisionOutcome->markSelfContact(elem);
+          collisionFreeOutcome->markSelfContact(elem);
         }
       }
       return false;
