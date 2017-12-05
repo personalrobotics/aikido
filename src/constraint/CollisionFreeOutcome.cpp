@@ -1,5 +1,5 @@
 #include <sstream>
-#include <aikido/constraint/outcome/CollisionFreeOutcome.hpp>
+#include <aikido/constraint/CollisionFreeOutcome.hpp>
 
 namespace aikido {
 namespace constraint {

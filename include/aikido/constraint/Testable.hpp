@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "../statespace/StateSpace.hpp"
-#include "outcome/DummyOutcome.hpp"
+#include "DefaultOutcome.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -30,7 +30,7 @@ public:
   /// just returns a dummy object.
   virtual std::unique_ptr<TestableOutcome> createOutcome() const
   {
-    return std::unique_ptr<TestableOutcome>(new DummyOutcome());
+    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
   }
 };
 

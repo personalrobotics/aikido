@@ -9,8 +9,8 @@
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "CollisionFreeOutcome.hpp"
 #include "Testable.hpp"
-#include "outcome/CollisionFreeOutcome.hpp"
 
 namespace aikido {
 namespace constraint {

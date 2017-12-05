@@ -1,5 +1,4 @@
 set(sources
-  outcome/CollisionFreeOutcome.cpp
   uniform/RnBoxConstraint.cpp
   uniform/RnConstantSampler.cpp
   uniform/SO2UniformSampler.cpp
@@ -8,6 +7,8 @@ set(sources
   CartesianProductProjectable.cpp
   CartesianProductSampleable.cpp
   CartesianProductTestable.cpp
+  CollisionFree.cpp
+  CollisionFreeOutcome.cpp
   CyclicSampleable.cpp
   Differentiable.cpp
   DifferentiableIntersection.cpp
@@ -19,7 +20,6 @@ set(sources
   InverseKinematicsSampleable.cpp
   JointStateSpaceHelpers.cpp
   NewtonsMethodProjectable.cpp
-  CollisionFree.cpp
   Projectable.cpp
   RejectionSampleable.cpp
   Sampleable.cpp
