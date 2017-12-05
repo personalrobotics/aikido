@@ -1,10 +1,14 @@
 set(sources 
   VectorFieldPlanner.cpp
+  VectorField.cpp
+  VectorFieldIntegrator.cpp   
   VectorFieldUtil.cpp
   VectorFieldPlannerExceptions.cpp
-  ConfigurationSpaceVectorField.cpp
+  MetaSkeletonStateSpaceVectorField.cpp
+  BodyNodePoseVectorField.cpp
   MoveEndEffectorOffsetVectorField.cpp
   MoveEndEffectorPoseVectorField.cpp
+  MetaSkeletonStateSpaceVectorFieldIntegrator.cpp
 )
 
 add_library("${PROJECT_NAME}_planner_vectorfield" SHARED ${sources})

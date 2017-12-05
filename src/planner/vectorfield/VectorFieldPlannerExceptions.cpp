@@ -25,17 +25,9 @@ VectorFieldError::VectorFieldError(const std::string& whatArg)
 }
 
 //==============================================================================
-DofLimitError::DofLimitError(
-    const dart::dynamics::DegreeOfFreedom* dof, const std::string& whatArg)
-  : VectorFieldError(whatArg), mDof(dof)
+DofLimitError::DofLimitError() : VectorFieldError("DOF limit exceeded")
 {
   // Do nothing
-}
-
-//==============================================================================
-const dart::dynamics::DegreeOfFreedom* DofLimitError::dof() const
-{
-  return mDof;
 }
 
 //==============================================================================

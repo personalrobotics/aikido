@@ -8,52 +8,6 @@ namespace planner {
 namespace vectorfield {
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const std::vector<Knot>& knots,
-    int cacheIndex,
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace)
-{
-  using dart::common::make_unique;
-
-  std::size_t numDof = stateSpace->getMetaSkeleton()->getNumDofs();
-  // Construct the output spline.
-  Eigen::VectorXd times(cacheIndex);
-  std::transform(
-      knots.begin(),
-      knots.begin() + cacheIndex,
-      times.data(),
-      [](const Knot& knot) { return knot.mT; });
-
-  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(stateSpace);
-
-  using CubicSplineProblem = aikido::common::
-      SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
-
-  const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(numDof);
-  auto currState = stateSpace->createState();
-  for (int iknot = 0; iknot < cacheIndex - 1; ++iknot)
-  {
-    const double segmentDuration = knots[iknot + 1].mT - knots[iknot].mT;
-    Eigen::VectorXd currentPosition = knots[iknot].mPositions;
-    Eigen::VectorXd nextPosition = knots[iknot + 1].mPositions;
-
-    if (segmentDuration == 0.0)
-    {
-      std::cout << "ZERO SEGMENT DURATION " << std::endl;
-    }
-    CubicSplineProblem problem(Eigen::Vector2d{0., segmentDuration}, 2, numDof);
-    problem.addConstantConstraint(0, 0, zeroPosition);
-    problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
-    const auto solution = problem.fit();
-    const auto coefficients = solution.getCoefficients().front();
-
-    stateSpace->expMap(currentPosition, currState);
-    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
-  }
-  return outputTrajectory;
-}
-
-//==============================================================================
 DesiredTwistFunction::DesiredTwistFunction(
     const Twist& twist, const Jacobian& jacobian)
   : dart::optimizer::Function("DesiredTwistFunction")
@@ -86,8 +40,7 @@ bool computeJointVelocityFromTwist(
     const Eigen::VectorXd& jointVelocityLowerLimits,
     const Eigen::VectorXd& jointVelocityUpperLimits,
     bool jointVelocityLimited,
-    double maxStepSize,
-    double optimizationTolerance)
+    double stepSize)
 {
   using dart::math::Jacobian;
   using dart::optimizer::Problem;
@@ -123,13 +76,13 @@ bool computeJointVelocityFromTwist(
       const double velocityLowerLimit = velocityLowerLimits[i];
       const double velocityUpperLimit = velocityUpperLimits[i];
 
-      if (position + maxStepSize * velocityLowerLimit
+      if (position + stepSize * velocityLowerLimit
           <= positionLowerLimit + jointLimitPadding)
       {
         velocityLowerLimits[i] = 0.0;
       }
 
-      if (position + maxStepSize * velocityUpperLimit
+      if (position + stepSize * velocityUpperLimit
           >= positionUpperLimit - jointLimitPadding)
       {
         velocityUpperLimits[i] = 0.0;
@@ -148,11 +101,6 @@ bool computeJointVelocityFromTwist(
 
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
   if (!solver.solve())
-  {
-    return false;
-  }
-  double optimalVal = problem->getOptimumValue();
-  if (optimalVal > optimizationTolerance)
   {
     return false;
   }

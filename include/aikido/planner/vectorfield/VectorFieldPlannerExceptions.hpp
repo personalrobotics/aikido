@@ -44,18 +44,7 @@ class DofLimitError : public VectorFieldError
 public:
   /// Constructor.
   ///
-  /// \param[in] dof Degree of freedom.
-  /// \param[in] whatArg Error string.
-  DofLimitError(
-      const dart::dynamics::DegreeOfFreedom* dof, const std::string& whatArg);
-
-  /// Get degree of freedom.
-  ///
-  /// \return Degree of freedom.
-  const dart::dynamics::DegreeOfFreedom* dof() const;
-
-private:
-  const dart::dynamics::DegreeOfFreedom* mDof;
+  DofLimitError();
 };
 
 /// Define state in collision for the termination of vector field planner.

@@ -21,21 +21,7 @@ struct Knot
 
   /// Positions.
   Eigen::VectorXd mPositions;
-
-  /// Velocities.
-  Eigen::VectorXd mVelocities; // Not used in current implementation
 };
-
-/// Convert a sequence of knots into a Spline trajectory.
-///
-/// \param[in] knots A sequence of knots.
-/// \param[in] cache_index Total cache index number.
-/// \param[in] stateSpace MetaSkeleton state space.
-/// \return A Spline trajectory
-std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const std::vector<Knot>& knots,
-    int cacheIndex,
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace);
 
 /// A function class that defines an objective. The objective measures
 /// the difference between a desired twist and Jacobian * joint velocities.
@@ -87,8 +73,8 @@ private:
 /// \param[in] jointVelocityUpperLimits Joint velocity upper bounds.
 /// \param[in] jointVelocityLimited Whether joint velocity bounds are
 /// considered in optimization.
-/// \param[in] maxStepSize Max step size in second.
-/// \param[in] optimizationTolerance  Callback of vector field calculation.
+/// \param[in] stepSize Step size in second.
+/// \return Whether a joint velocity is found
 bool computeJointVelocityFromTwist(
     Eigen::VectorXd& jointVelocity,
     const Eigen::Vector6d& desiredTwist,
@@ -98,8 +84,7 @@ bool computeJointVelocityFromTwist(
     const Eigen::VectorXd& jointVelocityLowerLimits,
     const Eigen::VectorXd& jointVelocityUpperLimits,
     bool jointVelocityLimited,
-    double maxStepSize,
-    double optimizationTolerance);
+    double stepSize);
 
 /// Compute the twist in global coordinate that corresponds to the gradient of
 /// the geodesic distance between two transforms.

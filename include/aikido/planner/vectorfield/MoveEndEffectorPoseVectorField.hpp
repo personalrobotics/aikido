@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
 
-#include <aikido/planner/vectorfield/ConfigurationSpaceVectorField.hpp>
+#include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
 
 namespace aikido {
 namespace planner {
@@ -12,7 +12,7 @@ namespace vectorfield {
 /// This class defines two callback functions for vectorfield planner.
 /// One for generating joint velocity in MetaSkeleton state space,
 /// and one for determining vectorfield planner status.
-class MoveEndEffectorPoseVectorField : public ConfigurationSpaceVectorField
+class MoveEndEffectorPoseVectorField : public BodyNodePoseVectorField
 {
 public:
   /// Constructor.
@@ -26,7 +26,6 @@ public:
   /// \param[in] initialStepSize Initial step size.
   /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
-  /// \param[in] optimizationTolerance Tolerance on optimization.
   MoveEndEffectorPoseVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bn,
@@ -34,20 +33,17 @@ public:
       double poseErrorTolerance = 0.5,
       double linearVelocityGain = 1.0,
       double angularVelocityGain = 1.0,
-      double initialStepSize = 1e-1,
-      double jointLimitPadding = 3e-2,
-      double optimizationTolerance = 5e-2);
+      double initialStepSize = 5e-2,
+      double jointLimitPadding = 3e-2);
 
-  /// Vectorfield callback function.
-  ///
-  /// \param[out] qd Joint velocities.
-  /// \return Whether joint velocities are successfully computed.
-  bool getJointVelocities(Eigen::VectorXd& qd) const override;
+  // Documentation inherited.
+  bool evaluateVelocity(
+      const aikido::statespace::StateSpace::State* state,
+      Eigen::VectorXd& qd) const override;
 
-  /// Vectorfield planning status callback function
-  ///
-  /// \return Status of planning.
-  VectorFieldPlannerStatus checkPlanningStatus() const override;
+  // Documentation inherited.
+  VectorFieldPlannerStatus evaluateStatus(
+      const aikido::statespace::StateSpace::State* state) const override;
 
 protected:
   /// Goal pose.
@@ -62,14 +58,11 @@ protected:
   /// Angular velocit gain.
   double mAngularVelocityGain;
 
-  /// Initial step size of adaptive integration.
+  /// Initial step size of integrator.
   double mInitialStepSize;
 
   /// Padding of joint limits.
   double mJointLimitPadding;
-
-  /// Tolerance of optimization solver.
-  double mOptimizationTolerance;
 
   /// Joint velocities lower limits.
   Eigen::VectorXd mVelocityLowerLimits;

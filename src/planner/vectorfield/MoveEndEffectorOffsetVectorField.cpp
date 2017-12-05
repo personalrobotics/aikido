@@ -25,9 +25,8 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     double angularTolerance,
     double linearVelocityGain,
     double initialStepSize,
-    double jointLimitPadding,
-    double optimizationTolerance)
-  : ConfigurationSpaceVectorField(stateSpace, bn)
+    double jointLimitPadding)
+  : BodyNodePoseVectorField(stateSpace, bn)
   , mDirection(direction)
   , mDistance(distance)
   , mMaxDistance(maxDistance)
@@ -36,7 +35,6 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
   , mLinearVelocityGain(linearVelocityGain)
   , mInitialStepSize(initialStepSize)
   , mJointLimitPadding(jointLimitPadding)
-  , mOptimizationTolerance(optimizationTolerance)
   , mStartPose(bn->getTransform())
 {
   if (mDistance < 0)
@@ -49,18 +47,26 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     throw std::invalid_argument("Position tolerance is negative");
   if (mAngularTolerance < 0)
     throw std::invalid_argument("Angular tolerance is negative");
-  if (mOptimizationTolerance < 0)
-    throw std::invalid_argument("Optimization tolerance is negative");
+
+  // Normalize the direction vector
+  mDirection.normalize();
 }
 
 //==============================================================================
-bool MoveEndEffectorOffsetVectorField::getJointVelocities(
+bool MoveEndEffectorOffsetVectorField::evaluateVelocity(
+    const aikido::statespace::StateSpace::State* state,
     Eigen::VectorXd& qd) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
   using Eigen::Vector6d;
   using dart::math::logMap;
+
+  Eigen::VectorXd position(mMetaSkeleton->getNumDofs());
+  auto newState
+      = static_cast<const aikido::statespace::CartesianProduct::State*>(state);
+  mMetaSkeletonStateSpace->convertStateToPositions(newState, position);
+  mMetaSkeleton->setPositions(position);
 
   const Isometry3d currentPose = mBodyNode->getTransform();
 
@@ -75,24 +81,29 @@ bool MoveEndEffectorOffsetVectorField::getJointVelocities(
   bool result = computeJointVelocityFromTwist(
       qd,
       desiredTwist,
-      mStateSpace,
+      mMetaSkeletonStateSpace,
       mBodyNode,
       mJointLimitPadding,
       jointVelocityLowerLimits,
       jointVelocityUpperLimits,
       true,
-      mInitialStepSize,
-      mOptimizationTolerance);
+      mInitialStepSize);
   return result;
 }
 
 //==============================================================================
-VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::checkPlanningStatus()
-    const
+VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::evaluateStatus(
+    const aikido::statespace::StateSpace::State* state) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
   using Eigen::Vector4d;
+
+  Eigen::VectorXd position(mMetaSkeleton->getNumDofs());
+  auto newState = static_cast<const aikido::statespace::dart::
+                                  MetaSkeletonStateSpace::State*>(state);
+  mMetaSkeletonStateSpace->convertStateToPositions(newState, position);
+  mMetaSkeleton->setPositions(position);
 
   const Isometry3d currentPose = mBodyNode->getTransform();
 
