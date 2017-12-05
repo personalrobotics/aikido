@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_DUMMYOUTCOME_HPP_
-#define AIKIDO_CONSTRAINT_DUMMYOUTCOME_HPP_
+#ifndef AIKIDO_CONSTRAINT_DEFAULTOUTCOME_HPP_
+#define AIKIDO_CONSTRAINT_DEFAULTOUTCOME_HPP_
 
 #include "TestableOutcome.hpp"
 
@@ -13,25 +13,24 @@ namespace constraint {
 class DefaultOutcome : public TestableOutcome
 {
 public:
-  /// Nonsense.
-  bool isSatisfied() const override
-  {
-    throw std::runtime_error(
-        "This is a dummy constraint outcome. The Testable derivative class you "
-        "called createOutcome() on has no corresponding TestableOutcome "
-        "derivative implemented. Do not call isSatisfied.");
-  }
+  /// Returns whether the isSatisfied method this object was passed to
+  /// returned true or false.
+  bool isSatisfied() const override;
 
-  /// Nonsense.
-  std::string toString() const override
-  {
-    return "This is a dummy constraint outcome. The Testable derivative class "
-           "you called createOutcome() on has no corresponding TestableOutcome "
-           "derivative implemented.";
-  }
+  /// String representation of isSatisfied return value.
+  std::string toString() const override;
+
+  /// Used by the isSatisfied this outcome object is passed to set whether the
+  /// constraint was satisifed or not.
+  /// \param[in] satisfiedFlag whether the constraint was satisfied or not.
+  void setSatisfiedFlag(bool satisfiedFlag);
+
+
+protected:
+  bool mSatisfiedFlag;
 };
 
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_DUMMYOUTCOME_HPP_
+#endif // AIKIDO_CONSTRAINT_DEFAULTOUTCOME_HPP_

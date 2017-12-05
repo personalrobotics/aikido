@@ -10,6 +10,7 @@ set(sources
   CollisionFree.cpp
   CollisionFreeOutcome.cpp
   CyclicSampleable.cpp
+  DefaultOutcome.cpp
   Differentiable.cpp
   DifferentiableIntersection.cpp
   DifferentiableSubspace.cpp
