@@ -1,3 +1,4 @@
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/planner/World.hpp>
 
 namespace aikido {
@@ -152,31 +153,24 @@ std::mutex& World::getMutex() const
 }
 
 //==============================================================================
-bool World::State::equals(const State& other)
+bool World::State::operator==(const State& other) const
 {
-  if (configurations.size() != other.configurations.size())
-    return false;
+  return configurations == other.configurations;
+}
 
-  for (size_t idx = 0; idx < configurations.size(); ++idx)
-  {
-    if (configurations[idx] != other.configurations[idx])
-      return false;
-  }
-
-  return true;
+//==============================================================================
+bool World::State::operator!=(const State& other) const
+{
+  return !(*this == other);
 }
 
 //==============================================================================
 World::State World::getState() const
 {
   World::State state;
-  state.configurations.clear();
-  state.configurations.reserve(mSkeletons.size());
 
-  for (const auto& skeleton : mSkeletons)
-  {
-    state.configurations.emplace_back(skeleton->getConfiguration());
-  }
+  for (auto skeleton : mSkeletons)
+    state.configurations[skeleton->getName()] = skeleton->getConfiguration();
 
   return state;
 }
@@ -186,13 +180,22 @@ void World::setState(const World::State& state)
 {
   if (state.configurations.size() != mSkeletons.size())
     throw std::invalid_argument(
-        "World::State and this World does not have the same number of "
+        "World::State and this World do not have the same number of "
         "skeletons.");
 
-  for (size_t idx = 0; idx < state.configurations.size(); ++idx)
+  for (const auto& skeleton : mSkeletons)
   {
-    std::lock_guard<std::mutex> lock(mSkeletons[idx]->getMutex());
-    mSkeletons[idx]->setConfiguration(state.configurations[idx]);
+    auto name = skeleton->getName();
+    auto it = state.configurations.find(name);
+    if (it == state.configurations.end())
+      throw std::invalid_argument(
+        "Skeleton " + name + " does not exist in state.");
+  }
+
+  for (const auto& skeleton : mSkeletons)
+  {
+    std::lock_guard<std::mutex> lock(skeleton->getMutex());
+    skeleton->setConfiguration(state.configurations.at(skeleton->getName()));
   }
 }
 

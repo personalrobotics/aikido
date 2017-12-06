@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_WORLD_HPP_
 #define AIKIDO_PLANNER_WORLD_HPP_
 
+#include <unordered_map>
 #include <string>
 #include <dart/dart.hpp>
 
@@ -15,12 +16,19 @@ public:
   // Encapsulates the state of the World.
   struct State
   {
-    std::vector<dart::dynamics::Skeleton::Configuration> configurations;
+    std::unordered_map<std::string, dart::dynamics::Skeleton::Configuration>
+        configurations;
 
-    /// Returns true if two world states are the same.
+    /// Returns true if two world states have the same
+    /// skeletons with same configurations.
     /// \param other State to compare against.
     /// \return bool True if the two states are the same.
-    bool equals(const State& other);
+    bool operator==(const State& other) const;
+
+    /// Returns true if two world states are not the same.
+    /// \param other State to compare against.
+    /// \return bool True if the two states are not the same.
+    bool operator!=(const State& other) const;
   };
 
   /// Construct a kinematic World.

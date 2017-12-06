@@ -3,10 +3,11 @@
 namespace aikido {
 namespace planner {
 
-WorldStateSaver::WorldStateSaver(
-    WorldPtr world)
-  : mWorld{world}
+WorldStateSaver::WorldStateSaver(World* const world) : mWorld{world}
 {
+  if (!world)
+    throw std::invalid_argument("World must not be nullptr.");
+
   mWorldState = mWorld->getState();
 }
 

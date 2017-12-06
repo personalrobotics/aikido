@@ -96,8 +96,8 @@ TEST_F(WorldTest, CloningPreservesSkeletonNamesAndConfigurations)
 TEST_F(WorldTest, EqualStatesReturnsTrueForEmptyWorlds)
 {
   auto otherWorld = aikido::planner::World::create("other");
-  EXPECT_TRUE(mWorld->getState().equals(otherWorld->getState()));
-  EXPECT_TRUE(otherWorld->getState().equals(mWorld->getState()));
+  EXPECT_TRUE(mWorld->getState() == otherWorld->getState());
+  EXPECT_TRUE(otherWorld->getState() == mWorld->getState());
 }
 
 TEST_F(WorldTest, EqualStatesReturnsTrueForClonedWorlds)
@@ -107,8 +107,8 @@ TEST_F(WorldTest, EqualStatesReturnsTrueForClonedWorlds)
   mWorld->addSkeleton(skel3);
 
   auto otherWorld = mWorld->clone();
-  EXPECT_TRUE(mWorld->getState().equals(otherWorld->getState()));
-  EXPECT_TRUE(otherWorld->getState().equals(mWorld->getState()));
+  EXPECT_TRUE(mWorld->getState() == otherWorld->getState());
+  EXPECT_TRUE(otherWorld->getState() == mWorld->getState());
 }
 
 TEST_F(
@@ -117,8 +117,8 @@ TEST_F(
   auto otherWorld = aikido::planner::World::create("other");
   mWorld->addSkeleton(skel1);
 
-  EXPECT_FALSE(mWorld->getState().equals(otherWorld->getState()));
-  EXPECT_FALSE(otherWorld->getState().equals(mWorld->getState()));
+  EXPECT_FALSE(mWorld->getState() == otherWorld->getState());
+  EXPECT_FALSE(otherWorld->getState() == mWorld->getState());
 }
 
 TEST_F(
@@ -134,6 +134,34 @@ TEST_F(
   auto otherWorld = mWorld->clone();
   otherWorld->getSkeleton(0)->setPosition(0, 1.0);
 
-  EXPECT_FALSE(mWorld->getState().equals(otherWorld->getState()));
-  EXPECT_FALSE(otherWorld->getState().equals(mWorld->getState()));
+  EXPECT_FALSE(mWorld->getState() == otherWorld->getState());
+  EXPECT_FALSE(otherWorld->getState() == mWorld->getState());
+}
+
+TEST_F(
+  WorldTest,
+  SetStateThrowsErrorsOnWorldsWithDiffrentNumberOfSkeletons)
+{
+  mWorld->addSkeleton(skel1);
+  mWorld->addSkeleton(skel2);
+
+  auto state = mWorld->getState();
+  mWorld->addSkeleton(skel3);
+
+  EXPECT_THROW(mWorld->setState(state), std::invalid_argument);
+}
+
+TEST_F(
+  WorldTest,
+  SetStateThrowsErrorsOnWorldsWithSkeletonsWithDiffrentNames)
+{
+  mWorld->addSkeleton(skel1);
+
+  auto clonedWorld = mWorld->clone();
+  auto state = clonedWorld->getState();
+  EXPECT_NO_THROW(mWorld->setState(state));
+
+  clonedWorld->getSkeleton(0)->setName("testSkel");
+  state = clonedWorld->getState();
+  EXPECT_THROW(mWorld->setState(state), std::invalid_argument);
 }
