@@ -159,14 +159,8 @@ public:
       const aikido::statespace::StateSpace::State* _s,
       TestableOutcome* outcome = nullptr) const override
   {
-    DefaultOutcome* defaultOutcomeObject = nullptr;
-    if (outcome)
-    {
-      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
-      if (!defaultOutcomeObject)
-        throw std::invalid_argument(
-            "TestableOutcome pointer is not of type DefaultOutcome.");
-    }
+    auto defaultOutcomeObject
+        = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
 
     auto state = static_cast<const CartesianProduct::State*>(_s);
     auto val = mStateSpace->getSubStateHandle<R3>(state, 0).getValue();
@@ -214,14 +208,8 @@ public:
       const aikido::statespace::StateSpace::State* _state,
       TestableOutcome* outcome = nullptr) const override
   {
-    DefaultOutcome* defaultOutcomeObject = nullptr;
-    if (outcome)
-    {
-      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
-      if (!defaultOutcomeObject)
-        throw std::invalid_argument(
-            "TestableOutcome pointer is not of type DefaultOutcome.");
-    }
+    auto defaultOutcomeObject
+        = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
 
     auto cst = static_cast<const CartesianProduct::State*>(_state);
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);

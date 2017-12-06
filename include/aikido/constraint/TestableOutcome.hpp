@@ -37,7 +37,8 @@ Child* dynamic_cast_if_present(TestableOutcome* _outcome)
   if (!childPtr)
   {
     std::stringstream message;
-    message << "TestableOutcome pointer is not of type " << typeid(Child).name() << ".";
+    message << "TestableOutcome pointer is not of type " << typeid(Child).name()
+            << ".";
     throw std::invalid_argument(message.str());
   }
 

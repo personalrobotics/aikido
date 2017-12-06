@@ -30,7 +30,8 @@ bool CollisionFree::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
     TestableOutcome* outcome) const
 {
-  auto collisionFreeOutcome = dynamic_cast_if_present<CollisionFreeOutcome>(outcome);
+  auto collisionFreeOutcome
+      = dynamic_cast_if_present<CollisionFreeOutcome>(outcome);
 
   if (collisionFreeOutcome)
   {

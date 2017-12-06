@@ -33,7 +33,8 @@ public:
       const aikido::statespace::StateSpace::State* _state,
       aikido::constraint::TestableOutcome* outcome = nullptr) const override
   {
-    DefaultOutcome* defaultOutcomeObject = nullptr;
+    auto defaultOutcomeObject
+        = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
     if (outcome)
     {
       defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);

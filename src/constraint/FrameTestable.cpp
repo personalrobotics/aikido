@@ -36,14 +36,7 @@ FrameTestable::FrameTestable(
 bool FrameTestable::isSatisfied(
     const statespace::StateSpace::State* _state, TestableOutcome* outcome) const
 {
-  DefaultOutcome* defaultOutcomeObject = nullptr;
-  if (outcome)
-  {
-    defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
-    if (!defaultOutcomeObject)
-      throw std::invalid_argument(
-          "TestableOutcome pointer is not of type DefaultOutcome.");
-  }
+  auto defaultOutcomeObject = dynamic_cast_if_present<DefaultOutcome>(outcome);
 
   // Set the state
   auto state
