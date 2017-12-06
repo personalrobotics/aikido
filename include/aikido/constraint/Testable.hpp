@@ -17,6 +17,12 @@ public:
   virtual ~Testable() = default;
 
   /// Returns true if state satisfies this constraint.
+  /// \param[in] _state given state to test.
+  /// \param[in] outcome pointer to TestableOutcome derivative instance that
+  /// method will populate with useful information. Each derivative class of 
+  /// Testable may expect outcome to be a different derivative class of
+  /// TestableOutcome (this casting and population is done under the hood). If
+  /// this argument is missing, it is ignored.
   virtual bool isSatisfied(
       const statespace::StateSpace::State* _state,
       TestableOutcome* outcome = nullptr) const = 0;

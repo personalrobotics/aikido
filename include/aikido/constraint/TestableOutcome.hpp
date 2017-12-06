@@ -28,12 +28,12 @@ public:
 /// pointers down to pointers for a derivative class. Mostly used in the
 /// isSatisfied methods of classes that inherit Testable.
 template <class Child>
-Child* dynamic_cast_if_present(TestableOutcome* _outcome)
+Child* dynamic_cast_if_present(TestableOutcome* outcome)
 {
-  if (!_outcome)
+  if (!outcome)
     return nullptr;
 
-  auto childPtr = dynamic_cast<Child*>(_outcome);
+  auto childPtr = dynamic_cast<Child*>(outcome);
   if (!childPtr)
   {
     std::stringstream message;
