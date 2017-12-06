@@ -59,7 +59,7 @@ bool CollisionFree::isSatisfied(
         const auto& contacts = collisionResult.getContacts();
         for (const auto& elem : contacts)
         {
-          collisionFreeOutcome->markPairwiseContact(elem);
+          collisionFreeOutcome->mPairwiseContacts.push_back(elem);
         }
       }
       return false;
@@ -77,7 +77,7 @@ bool CollisionFree::isSatisfied(
         const auto& contacts = collisionResult.getContacts();
         for (const auto& elem : contacts)
         {
-          collisionFreeOutcome->markSelfContact(elem);
+          collisionFreeOutcome->mSelfContacts.push_back(elem);
         }
       }
       return false;

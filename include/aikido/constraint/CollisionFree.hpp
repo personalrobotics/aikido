@@ -41,8 +41,8 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited. As an important note, outcome is expected to be
-  // an instance of CollisionFreeOutcome. This method will cast outcome to 
-  // a pointer of this type, and then populate the collision information 
+  // an instance of CollisionFreeOutcome. This method will cast outcome to
+  // a pointer of this type, and then populate the collision information
   // (which bodies are in self/pairwise collision).
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,

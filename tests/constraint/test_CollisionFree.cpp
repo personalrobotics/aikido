@@ -140,7 +140,7 @@ TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
   EXPECT_FALSE(outcome.isSatisfied());
   EXPECT_EQ(0, outcome.getSelfContacts().size());
 
-  std::vector<dart::collision::Contact> pairwiseContacts
+  auto pairwiseContacts
       = outcome.getPairwiseContacts();
   EXPECT_EQ(1, pairwiseContacts.size());
   EXPECT_EQ(
@@ -203,7 +203,7 @@ TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
   EXPECT_FALSE(outcome.isSatisfied());
   EXPECT_EQ(0, outcome.getPairwiseContacts().size());
 
-  std::vector<dart::collision::Contact> selfContacts
+  auto selfContacts
       = outcome.getSelfContacts();
   EXPECT_EQ(1, selfContacts.size());
   EXPECT_EQ(

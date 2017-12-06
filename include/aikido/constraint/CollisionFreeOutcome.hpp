@@ -8,6 +8,7 @@
 #include "dart/dynamics/BodyNode.hpp"
 #include "dart/dynamics/ShapeFrame.hpp"
 #include "dart/dynamics/ShapeNode.hpp"
+#include <Eigen/StdVector>
 
 namespace aikido {
 namespace constraint {
@@ -16,6 +17,8 @@ namespace constraint {
 /// method in CollisionFree class.
 class CollisionFreeOutcome : public TestableOutcome
 {
+  friend class CollisionFree;
+
 public:
   /// Documentation inherited.
   bool isSatisfied() const override;
@@ -30,23 +33,13 @@ public:
   /// object.
   void clear();
 
-  /// Store a Contact object from a pairwise collision. Used by CollisionFree
-  /// to modify this object.
-  /// \param[in] pairwiseContact Contact object to store.
-  void markPairwiseContact(const dart::collision::Contact& pairwiseContact);
-
-  /// Store a Contact object from a self collision. Used by CollisionFree to
-  /// modify this object.
-  /// \param[in] selfContact Contact object to store.
-  void markSelfContact(const dart::collision::Contact& selfContact);
-
   /// Return a copy of the vector storing the Contact objects from pairwise
   /// collisions.
-  std::vector<dart::collision::Contact> getPairwiseContacts() const;
+  std::vector<dart::collision::Contact, Eigen::aligned_allocator<dart::collision::Contact>> getPairwiseContacts() const;
 
   /// Return a copy of the vector storing the Contact objects from self
   /// collisions.
-  std::vector<dart::collision::Contact> getSelfContacts() const;
+  std::vector<dart::collision::Contact, Eigen::aligned_allocator<dart::collision::Contact>> getSelfContacts() const;
 
   /// Gets the name of a CollisionObject. The name returned is that of the
   /// corresponding BodyNode (if possible). If not, the name of the ShapeFrame
@@ -57,10 +50,10 @@ public:
 
 protected:
   /// Holds Contact objects from pairwise collisions.
-  std::vector<dart::collision::Contact> mPairwiseContacts;
+  std::vector<dart::collision::Contact, Eigen::aligned_allocator<dart::collision::Contact>> mPairwiseContacts;
 
   /// Holds Contact objects from self collisions.
-  std::vector<dart::collision::Contact> mSelfContacts;
+  std::vector<dart::collision::Contact, Eigen::aligned_allocator<dart::collision::Contact>> mSelfContacts;
 };
 
 } // namespace constraint
