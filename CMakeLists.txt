@@ -150,6 +150,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
   DESTINATION "${INCLUDE_INSTALL_DIR}/aikido")
 
 include_directories("include")
+include_directories(
+  ${OMPL_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIR}
+)
+link_libraries(
+  ${OMPL_LIBRARIES}
+  ${Boost_LIBRARIES}
+)
+
 
 # This custom target doesn't affect on building aikido projects but is only for
 # displaying the header files in IDEs.

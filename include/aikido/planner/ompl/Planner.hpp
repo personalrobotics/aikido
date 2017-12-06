@@ -216,6 +216,11 @@ trajectory::InterpolatedPtr planLRAstar(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwProjections,
     std::string _roadmapPath,
     double _maxPlanTime);
 

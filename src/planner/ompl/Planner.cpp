@@ -383,14 +383,14 @@ trajectory::InterpolatedPtr planLRAstar(
     statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwProjections,
     std::string _roadmapPath,
     double _maxPlanTime)
 {
-  constraint::SampleablePtr _sampler;
-  constraint::TestablePtr _validityConstraint;
-  constraint::TestablePtr _boundsConstraint;
-  constraint::ProjectablePtr _boundsProjector;
-  double _maxDistanceBtwProjections;
 
   auto si = getSpaceInformation(
       _stateSpace,
@@ -415,8 +415,6 @@ trajectory::InterpolatedPtr planLRAstar(
   sspace->freeState(goal);
 
   auto planner = ompl_make_shared<LRAstar>(si, _roadmapPath, 1,1);
-//  planner->setLookahead(1);
-//  planner->setRoadmapFileName(_roadmapPath);
 
   if(_maxPlanTime > 0)
   {
