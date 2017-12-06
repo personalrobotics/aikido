@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_DEFAULTOUTCOME_HPP_
-#define AIKIDO_CONSTRAINT_DEFAULTOUTCOME_HPP_
+#ifndef AIKIDO_CONSTRAINT_DEFAULTTESTABLEOUTCOME_HPP_
+#define AIKIDO_CONSTRAINT_DEFAULTTESTABLEOUTCOME_HPP_
 
 #include "TestableOutcome.hpp"
 
@@ -10,7 +10,7 @@ namespace constraint {
 /// is returned when createOutcome() is called on an instance of a class that
 /// inherits Testable, but has no corresponding TestableOutcome derivative
 /// implemented.
-class DefaultOutcome : public TestableOutcome
+class DefaultTestableOutcome : public TestableOutcome
 {
 public:
   /// Returns whether the isSatisfied method this object was passed to
@@ -32,4 +32,4 @@ protected:
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_DEFAULTOUTCOME_HPP_
+#endif // AIKIDO_CONSTRAINT_DEFAULTTESTABLEOUTCOME_HPP_

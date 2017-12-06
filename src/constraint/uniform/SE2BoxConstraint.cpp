@@ -139,7 +139,8 @@ statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
 bool SE2BoxConstraint::isSatisfied(
     const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
-  auto defaultOutcomeObject = dynamic_cast_if_present<DefaultOutcome>(outcome);
+  auto defaultOutcomeObject
+      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
 
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);
@@ -162,7 +163,7 @@ bool SE2BoxConstraint::isSatisfied(
 //==============================================================================
 std::unique_ptr<TestableOutcome> SE2BoxConstraint::createOutcome() const
 {
-  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================

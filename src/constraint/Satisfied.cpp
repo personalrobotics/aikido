@@ -34,7 +34,8 @@ bool Satisfied::isSatisfied(
     const statespace::StateSpace::State* /*state*/,
     TestableOutcome* outcome) const
 {
-  auto defaultOutcomeObject = dynamic_cast_if_present<DefaultOutcome>(outcome);
+  auto defaultOutcomeObject
+      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
 
   if (defaultOutcomeObject)
     defaultOutcomeObject->setSatisfiedFlag(true);
@@ -44,7 +45,7 @@ bool Satisfied::isSatisfied(
 //==============================================================================
 std::unique_ptr<TestableOutcome> Satisfied::createOutcome() const
 {
-  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================

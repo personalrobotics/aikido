@@ -177,7 +177,8 @@ template <int N>
 bool RBoxConstraint<N>::isSatisfied(
     const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
-  auto defaultOutcomeObject = dynamic_cast_if_present<DefaultOutcome>(outcome);
+  auto defaultOutcomeObject
+      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
 
   const auto value = mSpace->getValue(
       static_cast<const typename statespace::R<N>::State*>(state));
@@ -201,7 +202,7 @@ bool RBoxConstraint<N>::isSatisfied(
 template <int N>
 std::unique_ptr<TestableOutcome> RBoxConstraint<N>::createOutcome() const
 {
-  return std::unique_ptr<TestableOutcome>(new DefaultOutcome);
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================

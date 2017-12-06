@@ -41,15 +41,17 @@ void CollisionFreeOutcome::clear()
 }
 
 //==============================================================================
-std::vector<dart::collision::Contact, Eigen::aligned_allocator<dart::collision::Contact>>
+std::vector<dart::collision::Contact,
+            Eigen::aligned_allocator<dart::collision::Contact>>
 CollisionFreeOutcome::getPairwiseContacts() const
 {
   return mPairwiseContacts;
 }
 
 //==============================================================================
-std::vector<dart::collision::Contact, Eigen::aligned_allocator<dart::collision::Contact>> CollisionFreeOutcome::getSelfContacts()
-    const
+std::vector<dart::collision::Contact,
+            Eigen::aligned_allocator<dart::collision::Contact>>
+CollisionFreeOutcome::getSelfContacts() const
 {
   return mSelfContacts;
 }

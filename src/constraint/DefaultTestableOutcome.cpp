@@ -1,16 +1,16 @@
-#include <aikido/constraint/DefaultOutcome.hpp>
+#include <aikido/constraint/DefaultTestableOutcome.hpp>
 
 namespace aikido {
 namespace constraint {
 
 //==============================================================================
-bool DefaultOutcome::isSatisfied() const
+bool DefaultTestableOutcome::isSatisfied() const
 {
   return mSatisfiedFlag;
 }
 
 //==============================================================================
-std::string DefaultOutcome::toString() const
+std::string DefaultTestableOutcome::toString() const
 {
   if (mSatisfiedFlag)
     return "true";
@@ -19,7 +19,7 @@ std::string DefaultOutcome::toString() const
 }
 
 //==============================================================================
-void DefaultOutcome::setSatisfiedFlag(bool satisfiedFlag)
+void DefaultTestableOutcome::setSatisfiedFlag(bool satisfiedFlag)
 {
   mSatisfiedFlag = satisfiedFlag;
 }

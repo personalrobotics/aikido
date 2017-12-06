@@ -56,7 +56,8 @@ bool CartesianProductTestable::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
     TestableOutcome* outcome) const
 {
-  auto defaultOutcomeObject = dynamic_cast_if_present<DefaultOutcome>(outcome);
+  auto defaultOutcomeObject
+      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
 
   const auto state
       = static_cast<const statespace::CartesianProduct::State*>(_state);
@@ -80,7 +81,7 @@ bool CartesianProductTestable::isSatisfied(
 //==============================================================================
 std::unique_ptr<TestableOutcome> CartesianProductTestable::createOutcome() const
 {
-  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 } // namespace constraint

@@ -140,8 +140,7 @@ TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
   EXPECT_FALSE(outcome.isSatisfied());
   EXPECT_EQ(0, outcome.getSelfContacts().size());
 
-  auto pairwiseContacts
-      = outcome.getPairwiseContacts();
+  auto pairwiseContacts = outcome.getPairwiseContacts();
   EXPECT_EQ(1, pairwiseContacts.size());
   EXPECT_EQ(
       "BodyNode",
@@ -203,8 +202,7 @@ TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
   EXPECT_FALSE(outcome.isSatisfied());
   EXPECT_EQ(0, outcome.getPairwiseContacts().size());
 
-  auto selfContacts
-      = outcome.getSelfContacts();
+  auto selfContacts = outcome.getSelfContacts();
   EXPECT_EQ(1, selfContacts.size());
   EXPECT_EQ(
       "BodyNode",

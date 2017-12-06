@@ -213,7 +213,8 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 bool TSR::isSatisfied(
     const statespace::StateSpace::State* _s, TestableOutcome* outcome) const
 {
-  auto defaultOutcomeObject = dynamic_cast_if_present<DefaultOutcome>(outcome);
+  auto defaultOutcomeObject
+      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
 
   Eigen::VectorXd dist;
   getValue(_s, dist);
@@ -227,7 +228,7 @@ bool TSR::isSatisfied(
 //==============================================================================
 std::unique_ptr<TestableOutcome> TSR::createOutcome() const
 {
-  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================

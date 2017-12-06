@@ -15,7 +15,7 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 using dart::common::make_unique;
-using aikido::constraint::DefaultOutcome;
+using aikido::constraint::DefaultTestableOutcome;
 using aikido::constraint::TestableOutcome;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R3;
@@ -160,7 +160,8 @@ public:
       TestableOutcome* outcome = nullptr) const override
   {
     auto defaultOutcomeObject
-        = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
+        = aikido::constraint::dynamic_cast_if_present<DefaultTestableOutcome>(
+            outcome);
 
     auto state = static_cast<const CartesianProduct::State*>(_s);
     auto val = mStateSpace->getSubStateHandle<R3>(state, 0).getValue();
@@ -173,7 +174,7 @@ public:
 
   std::unique_ptr<TestableOutcome> createOutcome() const
   {
-    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+    return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }
 
   std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator()
@@ -209,7 +210,8 @@ public:
       TestableOutcome* outcome = nullptr) const override
   {
     auto defaultOutcomeObject
-        = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
+        = aikido::constraint::dynamic_cast_if_present<DefaultTestableOutcome>(
+            outcome);
 
     auto cst = static_cast<const CartesianProduct::State*>(_state);
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);
@@ -232,7 +234,7 @@ public:
 
   std::unique_ptr<TestableOutcome> createOutcome() const
   {
-    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+    return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }
 
   // Documentatoin inherited

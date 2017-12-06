@@ -4,7 +4,7 @@
 #include <memory>
 #include <aikido/constraint/Testable.hpp>
 
-using aikido::constraint::DefaultOutcome;
+using aikido::constraint::DefaultTestableOutcome;
 using aikido::constraint::TestableOutcome;
 
 class PassingConstraint : public aikido::constraint::Testable
@@ -21,7 +21,8 @@ public:
       TestableOutcome* outcome = nullptr) const override
   {
     auto defaultOutcomeObject
-        = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
+        = aikido::constraint::dynamic_cast_if_present<DefaultTestableOutcome>(
+            outcome);
 
     if (defaultOutcomeObject)
       defaultOutcomeObject->setSatisfiedFlag(true);
@@ -30,7 +31,7 @@ public:
 
   std::unique_ptr<TestableOutcome> createOutcome() const
   {
-    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+    return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }
 
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
@@ -56,7 +57,8 @@ public:
       TestableOutcome* outcome = nullptr) const override
   {
     auto defaultOutcomeObject
-        = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
+        = aikido::constraint::dynamic_cast_if_present<DefaultTestableOutcome>(
+            outcome);
 
     if (defaultOutcomeObject)
       defaultOutcomeObject->setSatisfiedFlag(false);
@@ -65,7 +67,7 @@ public:
 
   std::unique_ptr<TestableOutcome> createOutcome() const
   {
-    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+    return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }
 
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
