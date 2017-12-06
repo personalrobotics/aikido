@@ -189,7 +189,7 @@ void World::setState(const World::State& state)
     auto it = state.configurations.find(name);
     if (it == state.configurations.end())
       throw std::invalid_argument(
-        "Skeleton " + name + " does not exist in state.");
+          "Skeleton " + name + " does not exist in state.");
   }
 
   for (const auto& skeleton : mSkeletons)

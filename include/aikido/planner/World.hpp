@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PLANNER_WORLD_HPP_
 #define AIKIDO_PLANNER_WORLD_HPP_
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 #include <dart/dart.hpp>
 
 namespace aikido {

@@ -138,9 +138,7 @@ TEST_F(
   EXPECT_FALSE(otherWorld->getState() == mWorld->getState());
 }
 
-TEST_F(
-  WorldTest,
-  SetStateThrowsErrorsOnWorldsWithDiffrentNumberOfSkeletons)
+TEST_F(WorldTest, SetStateThrowsErrorsOnWorldsWithDiffrentNumberOfSkeletons)
 {
   mWorld->addSkeleton(skel1);
   mWorld->addSkeleton(skel2);
@@ -151,9 +149,7 @@ TEST_F(
   EXPECT_THROW(mWorld->setState(state), std::invalid_argument);
 }
 
-TEST_F(
-  WorldTest,
-  SetStateThrowsErrorsOnWorldsWithSkeletonsWithDiffrentNames)
+TEST_F(WorldTest, SetStateThrowsErrorsOnWorldsWithSkeletonsWithDiffrentNames)
 {
   mWorld->addSkeleton(skel1);
 

@@ -13,8 +13,8 @@ public:
   /// \c World. This state will be restored when
   /// WorldStateSaver is destructed.
   ///
-  /// \param _space WorldState to save/restore
-  explicit WorldStateSaver(World* const world);
+  /// \param _world World to save state from and restore to.
+  explicit WorldStateSaver(World* const _world);
 
   virtual ~WorldStateSaver();
 
