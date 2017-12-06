@@ -36,8 +36,6 @@ FrameTestable::FrameTestable(
 bool FrameTestable::isSatisfied(
     const statespace::StateSpace::State* _state, TestableOutcome* outcome) const
 {
-  auto defaultOutcomeObject = dynamic_cast_if_present<DefaultOutcome>(outcome);
-
   // Set the state
   auto state
       = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
@@ -48,16 +46,16 @@ bool FrameTestable::isSatisfied(
   auto st = mPoseStateSpace->createState();
   mPoseStateSpace->setIsometry(st, mFrame->getTransform());
 
-  bool isSatisfiedResult = mPoseConstraint->isSatisfied(st);
-  if (defaultOutcomeObject)
-    defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
-  return isSatisfiedResult;
+  if (outcome)
+    return mPoseConstraint->isSatisfied(st, outcome);
+
+  return mPoseConstraint->isSatisfied(st);
 }
 
 //==============================================================================
 std::unique_ptr<TestableOutcome> FrameTestable::createOutcome() const
 {
-  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+  return mPoseConstraint->createOutcome();
 }
 
 //==============================================================================

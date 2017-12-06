@@ -29,12 +29,16 @@ public:
   /// \param _state a MetaskeletonState to set the configuration of this
   ///        constraint's metaskeketon. This state's StateSpace should match
   ///        StateSpace returend by getStateSpace().
+  /// \param outcome Testable outcome derivative class. Passed to the 
+  ///        isSatisfied method of mPoseConstraint to allow "pass through" of
+  ///        debugging information.    
   bool isSatisfied(
       const statespace::StateSpace::State* _state,
       TestableOutcome* outcome = nullptr) const override;
 
-  /// Return an instance of DefaultOutcome, since this class doesn't have a
-  /// more specialized TestableOutcome derivative assigned to it.
+  /// Return the outcome of mPoseConstraint->createOutcome(). Reason:
+  /// isSatisfied in this class will just pass outcome to the isSatisfied 
+  /// method of of mPoseConstraint.
   std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   // Documentation inhereted
