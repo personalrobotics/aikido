@@ -1,7 +1,9 @@
 #ifndef AIKIDO_CONSTRAINT_TESTABLEOUTCOME_HPP_
 #define AIKIDO_CONSTRAINT_TESTABLEOUTCOME_HPP_
 
-#include <string>
+#include <sstream>
+#include <stdexcept>
+#include <typeinfo>
 
 namespace aikido {
 namespace constraint {
@@ -21,6 +23,26 @@ public:
   /// access to debug information.
   virtual std::string toString() const = 0;
 };
+
+/// Helper function. Avoids repeating logic for casting TestableOutcome
+/// pointers down to pointers for a derivative class. Mostly used in the
+/// isSatisfied methods of classes that inherit Testable.
+template <class Child>
+Child* dynamic_cast_if_present(TestableOutcome* _outcome)
+{
+  if (!_outcome)
+    return nullptr;
+
+  auto childPtr = dynamic_cast<Child*>(_outcome);
+  if (!childPtr)
+  {
+    std::stringstream message;
+    message << "TestableOutcome pointer is not of type " << typeid(Child).name() << ".";
+    throw std::invalid_argument(message.str());
+  }
+
+  return childPtr;
+}
 
 } // namespace constraint
 } // namespace aikido

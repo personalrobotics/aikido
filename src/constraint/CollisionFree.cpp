@@ -30,14 +30,10 @@ bool CollisionFree::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
     TestableOutcome* outcome) const
 {
-  CollisionFreeOutcome* collisionFreeOutcome = nullptr;
-  if (outcome)
+  auto collisionFreeOutcome = dynamic_cast_if_present<CollisionFreeOutcome>(outcome);
+
+  if (collisionFreeOutcome)
   {
-    collisionFreeOutcome = dynamic_cast<CollisionFreeOutcome*>(outcome);
-    if (!collisionFreeOutcome)
-      throw std::invalid_argument(
-          "TestableOutcome pointer is not of type CollisionFreeOutcome.");
-    // Clear the outcome object in case it's being reused.
     collisionFreeOutcome->clear();
   }
 
