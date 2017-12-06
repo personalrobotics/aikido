@@ -209,6 +209,16 @@ trajectory::InterpolatedPtr planCRRTConnect(
     double _minStepsize,
     double _minTreeConnectionDistance);
 
+
+trajectory::InterpolatedPtr planLRAstar(
+    const statespace::StateSpace::State* _start,
+    const statespace::StateSpace::State* _goal,
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    std::string _roadmapPath,
+    double _maxPlanTime);
+
 /// Generate an OMPL SpaceInformation from aikido components
 /// \param _statespace The StateSpace that the SpaceInformation operates on
 /// \param _interpolator An Interpolator defined on the StateSpace. This is used

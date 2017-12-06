@@ -4,6 +4,7 @@
 #include "planner/ompl/BackwardCompatibility.hpp"
 #include "planner/ompl/CRRT.hpp"
 #include "planner/ompl/CRRTConnect.hpp"
+#include "planner/ompl/LRAstar.hpp"
 #include "planner/ompl/GeometricStateSpace.hpp"
 #include "planner/ompl/GoalRegion.hpp"
 #include "planner/ompl/MotionValidator.hpp"

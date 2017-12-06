@@ -1,6 +1,7 @@
 #include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/planner/ompl/CRRT.hpp>
 #include <aikido/planner/ompl/CRRTConnect.hpp>
+#include <aikido/planner/ompl/LRAstar.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
@@ -367,6 +368,56 @@ trajectory::InterpolatedPtr planCRRTConnect(
   planner->setProjectionResolution(_maxDistanceBtwProjections);
   planner->setConnectionRadius(_minTreeConnectionDistance);
   planner->setMinStateDifference(_minStepsize);
+  return planOMPL(
+      planner,
+      pdef,
+      std::move(_stateSpace),
+      std::move(_interpolator),
+      _maxPlanTime);
+}
+
+//==============================================================================
+trajectory::InterpolatedPtr planLRAstar(
+    const statespace::StateSpace::State* _start,
+    const statespace::StateSpace::State* _goal,
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    std::string _roadmapPath,
+    double _maxPlanTime)
+{
+
+  constraint::SampleablePtr _sampler;
+  constraint::TestablePtr _validityConstraint;
+  constraint::TestablePtr _boundsConstraint;
+  constraint::ProjectablePtr _boundsProjector;
+  double _maxDistanceBtwProjections;
+
+  auto si = getSpaceInformation(
+      _stateSpace,
+      _interpolator,
+      std::move(_dmetric),
+      std::move(_sampler),
+      std::move(_validityConstraint),
+      std::move(_boundsConstraint),
+      std::move(_boundsProjector),
+      _maxDistanceBtwProjections);
+
+  // Set the start and goal
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace
+      = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
+  auto start = sspace->allocState(_start);
+  pdef->addStartState(start); // copies
+  sspace->freeState(start);
+
+  auto goal = sspace->allocState(_goal);
+  pdef->setGoalState(goal); // copies
+  sspace->freeState(goal);
+
+  auto planner = ompl_make_shared<LRAstar>(si);
+  planner->setLookahead(1);
+  planner->setRoadmapFileName(_roadmapPath);
   return planOMPL(
       planner,
       pdef,
