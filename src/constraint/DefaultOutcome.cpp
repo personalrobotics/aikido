@@ -14,7 +14,7 @@ std::string DefaultOutcome::toString() const
 {
   if (mSatisfiedFlag)
     return "true";
-  
+
   return "false";
 }
 

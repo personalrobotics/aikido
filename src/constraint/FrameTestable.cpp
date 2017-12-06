@@ -34,8 +34,7 @@ FrameTestable::FrameTestable(
 
 //==============================================================================
 bool FrameTestable::isSatisfied(
-    const statespace::StateSpace::State* _state,
-    TestableOutcome* outcome) const
+    const statespace::StateSpace::State* _state, TestableOutcome* outcome) const
 {
   DefaultOutcome* defaultOutcomeObject = nullptr;
   if (outcome)

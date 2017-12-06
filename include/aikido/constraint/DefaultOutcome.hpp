@@ -25,7 +25,6 @@ public:
   /// \param[in] satisfiedFlag whether the constraint was satisfied or not.
   void setSatisfiedFlag(bool satisfiedFlag);
 
-
 protected:
   bool mSatisfiedFlag;
 };

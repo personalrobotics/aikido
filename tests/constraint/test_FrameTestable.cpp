@@ -46,7 +46,8 @@ public:
     auto val = st->getIsometry();
     auto trans = val.translation();
 
-    bool isSatisfiedResult =  trans(0) > 0.5 && trans(0) < 1.5 && trans(1) > 0.0 && trans(1) < 1.0;
+    bool isSatisfiedResult
+        = trans(0) > 0.5 && trans(0) < 1.5 && trans(1) > 0.0 && trans(1) < 1.0;
     if (defaultOutcomeObject)
       defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
     return isSatisfiedResult;

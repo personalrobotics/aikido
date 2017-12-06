@@ -175,8 +175,7 @@ std::vector<ConstraintType> RBoxConstraint<N>::getConstraintTypes() const
 //==============================================================================
 template <int N>
 bool RBoxConstraint<N>::isSatisfied(
-    const statespace::StateSpace::State* state,
-    TestableOutcome* outcome) const
+    const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
   DefaultOutcome* defaultOutcomeObject = nullptr;
   if (outcome)

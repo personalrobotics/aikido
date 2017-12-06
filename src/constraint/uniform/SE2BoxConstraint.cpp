@@ -137,8 +137,7 @@ statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
 
 //==============================================================================
 bool SE2BoxConstraint::isSatisfied(
-    const statespace::StateSpace::State* state,
-    TestableOutcome* outcome) const
+    const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
   DefaultOutcome* defaultOutcomeObject = nullptr;
   if (outcome)

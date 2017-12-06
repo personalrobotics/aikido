@@ -171,7 +171,6 @@ public:
     auto state = static_cast<const CartesianProduct::State*>(_s);
     auto val = mStateSpace->getSubStateHandle<R3>(state, 0).getValue();
 
-    
     bool isSatisfiedResult = std::fabs(val[0] - mValue) < 1e-6;
     if (defaultOutcomeObject)
       defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
@@ -247,7 +246,6 @@ public:
   {
     return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
   }
-
 
   // Documentatoin inherited
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override

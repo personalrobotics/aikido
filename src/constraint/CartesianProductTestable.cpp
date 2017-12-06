@@ -76,7 +76,7 @@ bool CartesianProductTestable::isSatisfied(
       if (defaultOutcomeObject)
         defaultOutcomeObject->setSatisfiedFlag(false);
       return false;
-    } 
+    }
   }
 
   if (defaultOutcomeObject)
