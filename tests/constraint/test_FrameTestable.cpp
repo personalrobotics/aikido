@@ -35,13 +35,6 @@ public:
   {
     auto defaultOutcomeObject
         = aikido::constraint::dynamic_cast_if_present<DefaultOutcome>(outcome);
-    if (outcome)
-    {
-      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
-      if (!defaultOutcomeObject)
-        throw std::invalid_argument(
-            "TestableOutcome pointer is not of type DefaultOutcome.");
-    }
 
     auto st = static_cast<const SE3::State*>(_state);
     auto val = st->getIsometry();
