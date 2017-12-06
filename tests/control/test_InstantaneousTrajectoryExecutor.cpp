@@ -1,11 +1,13 @@
 #include <chrono>
+#include <dart/dart.hpp>
 #include <gtest/gtest.h>
-#include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
+#include <aikido/control/InstantaneousTrajectoryExecutor.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 
-using aikido::control::KinematicSimulationTrajectoryExecutor;
+using aikido::control::InstantaneousTrajectoryExecutor;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::Interpolator;
@@ -20,9 +22,9 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
-const static std::chrono::milliseconds stepTime{100};
+const static std::chrono::milliseconds stepTime{0};
 
-class KinematicSimulationTrajectoryExecutorTest : public testing::Test
+class InstantaneousTrajectoryExecutorTest : public testing::Test
 {
 public:
   virtual void SetUp()
@@ -78,29 +80,27 @@ protected:
   BodyNodePtr bn1;
 };
 
-TEST_F(
-    KinematicSimulationTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
+TEST_F(InstantaneousTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
 {
-  EXPECT_THROW(
-      KinematicSimulationTrajectoryExecutor(nullptr), std::invalid_argument);
+  EXPECT_THROW(InstantaneousTrajectoryExecutor(nullptr), std::invalid_argument);
 }
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_Passes)
+TEST_F(InstantaneousTrajectoryExecutorTest, constructor_Passes)
 {
-  EXPECT_NO_THROW(KinematicSimulationTrajectoryExecutor executor(mSkeleton));
+  EXPECT_NO_THROW(InstantaneousTrajectoryExecutor executor(mSkeleton));
 }
 
-TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_NullTrajectory_Throws)
+TEST_F(InstantaneousTrajectoryExecutorTest, execute_NullTrajectory_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
   EXPECT_THROW(executor.execute(nullptr), std::invalid_argument);
 }
 
 TEST_F(
-    KinematicSimulationTrajectoryExecutorTest,
+    InstantaneousTrajectoryExecutorTest,
     execute_NonMetaSkeletonStateSpace_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
 
   auto space = std::make_shared<SO2>();
   auto interpolator = std::make_shared<GeodesicInterpolator>(space);
@@ -110,31 +110,26 @@ TEST_F(
 }
 
 TEST_F(
-    KinematicSimulationTrajectoryExecutorTest,
+    InstantaneousTrajectoryExecutorTest,
     execute_TrajWithUncontrolledDofs_Throws)
 {
   auto skeleton = Skeleton::create("Skeleton");
 
-  KinematicSimulationTrajectoryExecutor executor(skeleton);
+  InstantaneousTrajectoryExecutor executor(skeleton);
   EXPECT_THROW(executor.execute(mTraj), std::invalid_argument);
 }
 
 TEST_F(
-    KinematicSimulationTrajectoryExecutorTest,
-    execute_WaitOnFuture_TrajectoryWasExecuted)
+    InstantaneousTrajectoryExecutorTest,
+    execute_WaitOnFuture_TrajectoryWasExecutedInstantly)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-
-  std::future_status status;
-  do
-  {
-    executor.step();
-    status = future.wait_for(stepTime);
-  } while (status != std::future_status::ready);
+  std::future_status status = future.wait_for(stepTime);
+  EXPECT_EQ(status, std::future_status::ready);
 
   future.get();
 
@@ -142,77 +137,29 @@ TEST_F(
 }
 
 TEST_F(
-    KinematicSimulationTrajectoryExecutorTest,
-    execute_TrajectoryIsAlreadyRunning_Throws)
-{
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
-
-  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
-
-  auto future = executor.execute(mTraj);
-
-  EXPECT_THROW(executor.execute(mTraj), std::runtime_error);
-  std::future_status status;
-  do
-  {
-    executor.step();
-    status = future.wait_for(stepTime);
-  } while (status != std::future_status::ready);
-
-  future.get();
-
-  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
-}
-
-TEST_F(
-    KinematicSimulationTrajectoryExecutorTest,
+    InstantaneousTrajectoryExecutorTest,
     execute_TrajectoryFinished_DoesNotThrow)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-
-  std::future_status status;
-  do
-  {
-    executor.step();
-    status = future.wait_for(stepTime);
-  } while (status != std::future_status::ready);
+  std::future_status status = future.wait_for(stepTime);
+  EXPECT_EQ(status, std::future_status::ready);
 
   future.get();
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 
-  mSkeleton->getDof(0)->setPosition(-1.0);
+  mSkeleton->getDof(0)->setPosition(0.0);
 
   // Execute second traj.
   future = executor.execute(mTraj);
-
-  do
-  {
-    executor.step();
-    status = future.wait_for(stepTime);
-  } while (status != std::future_status::ready);
+  status = future.wait_for(stepTime);
+  EXPECT_EQ(status, std::future_status::ready);
 
   future.get();
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
-}
-
-TEST_F(
-    KinematicSimulationTrajectoryExecutorTest, abort_TrajectoryInProgress_Halts)
-{
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
-
-  auto future = executor.execute(mTraj);
-  future.wait_for(stepTime);
-  executor.step();
-  executor.abort();
-
-  EXPECT_THROW(future.get(), std::runtime_error);
-
-  EXPECT_GT(mSkeleton->getDof(0)->getPosition(), 0.0);
-  EXPECT_LT(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
