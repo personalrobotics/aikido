@@ -32,9 +32,26 @@ std::vector<constraint::ConstraintType> Satisfied::getConstraintTypes() const
 //==============================================================================
 bool Satisfied::isSatisfied(
     const statespace::StateSpace::State* /*state*/,
-    TestableOutcome* /*outcome*/) const
+    TestableOutcome* outcome) const
 {
+  DefaultOutcome* defaultOutcomeObject = nullptr;
+  if (outcome)
+  {
+    defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+    if (!defaultOutcomeObject)
+      throw std::invalid_argument(
+          "TestableOutcome pointer is not of type DefaultOutcome.");
+  }
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> Satisfied::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
 }
 
 //==============================================================================

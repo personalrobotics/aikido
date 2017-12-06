@@ -35,8 +35,17 @@ FrameTestable::FrameTestable(
 //==============================================================================
 bool FrameTestable::isSatisfied(
     const statespace::StateSpace::State* _state,
-    TestableOutcome* /*outcome*/) const
+    TestableOutcome* outcome) const
 {
+  DefaultOutcome* defaultOutcomeObject = nullptr;
+  if (outcome)
+  {
+    defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+    if (!defaultOutcomeObject)
+      throw std::invalid_argument(
+          "TestableOutcome pointer is not of type DefaultOutcome.");
+  }
+
   // Set the state
   auto state
       = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
@@ -47,7 +56,16 @@ bool FrameTestable::isSatisfied(
   auto st = mPoseStateSpace->createState();
   mPoseStateSpace->setIsometry(st, mFrame->getTransform());
 
-  return mPoseConstraint->isSatisfied(st);
+  bool isSatisfiedResult = mPoseConstraint->isSatisfied(st);
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
+  return isSatisfiedResult;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> FrameTestable::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
 }
 
 //==============================================================================

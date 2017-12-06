@@ -15,6 +15,8 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 using dart::common::make_unique;
+using aikido::constraint::DefaultOutcome;
+using aikido::constraint::TestableOutcome;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R3;
 using aikido::planner::ompl::GeometricStateSpace;
@@ -155,11 +157,30 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _s,
-      aikido::constraint::TestableOutcome* /*outcome*/ = nullptr) const override
+      TestableOutcome* outcome = nullptr) const override
   {
+    DefaultOutcome* defaultOutcomeObject = nullptr;
+    if (outcome)
+    {
+      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+      if (!defaultOutcomeObject)
+        throw std::invalid_argument(
+            "TestableOutcome pointer is not of type DefaultOutcome.");
+    }
+
     auto state = static_cast<const CartesianProduct::State*>(_s);
     auto val = mStateSpace->getSubStateHandle<R3>(state, 0).getValue();
-    return std::fabs(val[0] - mValue) < 1e-6;
+
+    
+    bool isSatisfiedResult = std::fabs(val[0] - mValue) < 1e-6;
+    if (defaultOutcomeObject)
+      defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
+    return isSatisfiedResult;
+  }
+
+  std::unique_ptr<TestableOutcome> createOutcome() const
+  {
+    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
   }
 
   std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator()
@@ -192,8 +213,17 @@ public:
   // Documentation inherited
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
-      aikido::constraint::TestableOutcome* /*outcome*/ = nullptr) const override
+      TestableOutcome* outcome = nullptr) const override
   {
+    DefaultOutcome* defaultOutcomeObject = nullptr;
+    if (outcome)
+    {
+      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+      if (!defaultOutcomeObject)
+        throw std::invalid_argument(
+            "TestableOutcome pointer is not of type DefaultOutcome.");
+    }
+
     auto cst = static_cast<const CartesianProduct::State*>(_state);
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);
     auto val = subState.getValue();
@@ -202,12 +232,22 @@ public:
     {
       if (val[i] < mLowerBounds[i] || val[i] > mUpperBounds[i])
       {
+        if (defaultOutcomeObject)
+          defaultOutcomeObject->setSatisfiedFlag(true);
         return true;
       }
     }
 
+    if (defaultOutcomeObject)
+      defaultOutcomeObject->setSatisfiedFlag(false);
     return false;
   }
+
+  std::unique_ptr<TestableOutcome> createOutcome() const
+  {
+    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
+  }
+
 
   // Documentatoin inherited
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override

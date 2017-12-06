@@ -26,12 +26,8 @@ public:
 
   /// Return an instance of a TestableOutcome derivative class that corresponds
   /// to this constraint class. Ensures that correct outcome object is passed
-  /// to isSatisfied (and casts, etc do not explode). Default implementation
-  /// just returns a dummy object.
-  virtual std::unique_ptr<TestableOutcome> createOutcome() const
-  {
-    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
-  }
+  /// to isSatisfied (and casts, etc do not explode).
+  virtual std::unique_ptr<TestableOutcome> createOutcome() const = 0;
 };
 
 using TestablePtr = std::shared_ptr<Testable>;

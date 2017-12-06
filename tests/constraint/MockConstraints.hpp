@@ -4,6 +4,9 @@
 #include <memory>
 #include <aikido/constraint/Testable.hpp>
 
+using aikido::constraint::DefaultOutcome;
+using aikido::constraint::TestableOutcome;
+
 class PassingConstraint : public aikido::constraint::Testable
 {
 public:
@@ -15,9 +18,25 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* /*state*/,
-      aikido::constraint::TestableOutcome* /*outcome*/ = nullptr) const override
+      TestableOutcome* outcome = nullptr) const override
   {
+    DefaultOutcome* defaultOutcomeObject = nullptr;
+    if (outcome)
+    {
+      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+      if (!defaultOutcomeObject)
+        throw std::invalid_argument(
+            "TestableOutcome pointer is not of type DefaultOutcome.");
+    }
+
+    if (defaultOutcomeObject)
+      defaultOutcomeObject->setSatisfiedFlag(true);
     return true;
+  }
+
+  std::unique_ptr<TestableOutcome> createOutcome() const
+  {
+    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
   }
 
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
@@ -40,9 +59,25 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* /*state*/,
-      aikido::constraint::TestableOutcome* /*outcome*/ = nullptr) const override
+      TestableOutcome* outcome = nullptr) const override
   {
+    DefaultOutcome* defaultOutcomeObject = nullptr;
+    if (outcome)
+    {
+      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+      if (!defaultOutcomeObject)
+        throw std::invalid_argument(
+            "TestableOutcome pointer is not of type DefaultOutcome.");
+    }
+
+    if (defaultOutcomeObject)
+      defaultOutcomeObject->setSatisfiedFlag(false);
     return false;
+  }
+
+  std::unique_ptr<TestableOutcome> createOutcome() const
+  {
+    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
   }
 
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override

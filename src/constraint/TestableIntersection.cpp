@@ -21,14 +21,36 @@ TestableIntersection::TestableIntersection(
 //==============================================================================
 bool TestableIntersection::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
-    TestableOutcome* /*outcome*/) const
+    TestableOutcome* outcome) const
 {
+  DefaultOutcome* defaultOutcomeObject = nullptr;
+  if (outcome)
+  {
+    defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+    if (!defaultOutcomeObject)
+      throw std::invalid_argument(
+          "TestableOutcome pointer is not of type DefaultOutcome.");
+  }
+
   for (auto c : mConstraints)
   {
     if (!c->isSatisfied(_state))
+    {
+      if (defaultOutcomeObject)
+        defaultOutcomeObject->setSatisfiedFlag(false);
       return false;
+    }
   }
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> TestableIntersection::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
 }
 
 //==============================================================================

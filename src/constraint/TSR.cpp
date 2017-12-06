@@ -211,11 +211,30 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 
 //==============================================================================
 bool TSR::isSatisfied(
-    const statespace::StateSpace::State* _s, TestableOutcome* /*outcome*/) const
+    const statespace::StateSpace::State* _s, TestableOutcome* outcome) const
 {
+  DefaultOutcome* defaultOutcomeObject = nullptr;
+  if (outcome)
+  {
+    defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+    if (!defaultOutcomeObject)
+      throw std::invalid_argument(
+          "TestableOutcome pointer is not of type DefaultOutcome.");
+  }
+
   Eigen::VectorXd dist;
   getValue(_s, dist);
-  return dist.norm() < mTestableTolerance;
+
+  bool isSatisfiedResult = dist.norm() < mTestableTolerance;
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
+  return isSatisfiedResult;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> TSR::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
 }
 
 //==============================================================================

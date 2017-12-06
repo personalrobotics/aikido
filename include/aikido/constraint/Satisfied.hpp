@@ -38,6 +38,10 @@ public:
       const statespace::StateSpace::State* state,
       TestableOutcome* outcome = nullptr) const override;
 
+  /// Return an instance of DefaultOutcome, since this class doesn't have a
+  /// more specialized TestableOutcome derivative assigned to it.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
+
   /// Sets \c _out to \c _s.
   ///
   /// \param _s input state

@@ -4,6 +4,7 @@
 #include <aikido/statespace/SO2.hpp>
 #include "MockConstraints.hpp"
 
+using aikido::constraint::DefaultOutcome;
 using aikido::constraint::FrameTestable;
 using aikido::constraint::Testable;
 using aikido::constraint::TestablePtr;
@@ -30,13 +31,30 @@ public:
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
-      aikido::constraint::TestableOutcome* /*outcome*/ = nullptr) const override
+      aikido::constraint::TestableOutcome* outcome = nullptr) const override
   {
+    DefaultOutcome* defaultOutcomeObject = nullptr;
+    if (outcome)
+    {
+      defaultOutcomeObject = dynamic_cast<DefaultOutcome*>(outcome);
+      if (!defaultOutcomeObject)
+        throw std::invalid_argument(
+            "TestableOutcome pointer is not of type DefaultOutcome.");
+    }
+
     auto st = static_cast<const SE3::State*>(_state);
     auto val = st->getIsometry();
     auto trans = val.translation();
-    return (
-        trans(0) > 0.5 && trans(0) < 1.5 && trans(1) > 0.0 && trans(1) < 1.0);
+
+    bool isSatisfiedResult =  trans(0) > 0.5 && trans(0) < 1.5 && trans(1) > 0.0 && trans(1) < 1.0;
+    if (defaultOutcomeObject)
+      defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
+    return isSatisfiedResult;
+  }
+
+  std::unique_ptr<TestableOutcome> createOutcome() const
+  {
+    return std::unique_ptr<TestableOutcome>(new DefaultOutcome());
   }
 
 private:
