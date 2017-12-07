@@ -169,7 +169,7 @@ World::State World::getState() const
 {
   World::State state;
 
-  for (auto skeleton : mSkeletons)
+  for (const auto& skeleton : mSkeletons)
     state.configurations[skeleton->getName()] = skeleton->getConfiguration();
 
   return state;
