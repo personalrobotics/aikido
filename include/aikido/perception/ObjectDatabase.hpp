@@ -41,7 +41,7 @@ public:
 
   virtual ~ObjectDatabase() = default;
 
-  bool getObjectByKey(
+  void getObjectByKey(
       const std::string& _obj_key,
       std::string& obj_name,
       dart::common::Uri& obj_resource);

@@ -9,8 +9,6 @@
 #include <aikido/io/CatkinResourceRetriever.hpp>
 #include <aikido/perception/shape_conversions.hpp>
 
-using dart::dynamics::SkeletonPtr;
-
 namespace aikido {
 namespace perception {
 
@@ -39,7 +37,7 @@ bool RcnnPoseModule::detectObjects(
 {
   // Checks detected objects, looks up the database,
   // and adds new skeletons to the world env
-  bool any_valid = false;
+  bool any_detected = false;
   visualization_msgs::MarkerArrayConstPtr marker_message
       = ros::topic::waitForMessage<visualization_msgs::MarkerArray>(
           mMarkerTopic, mNodeHandle, timeout);
@@ -89,11 +87,8 @@ bool RcnnPoseModule::detectObjects(
     dart::common::Uri obj_resource;
     ros::Time t0 = ros::Time(0);
 
-    // check if this object key is in database
-    if (!mConfigData->getObjectByKey(obj_key, obj_name, obj_resource))
-    {
-      continue;
-    }
+    // get the object name and resource from database
+    mConfigData->getObjectByKey(obj_key, obj_name, obj_resource);
 
     tf::StampedTransform transform;
     try
@@ -126,7 +121,7 @@ bool RcnnPoseModule::detectObjects(
     bool is_new_obj;
     dart::dynamics::SkeletonPtr obj_skeleton;
 
-    // Check if skel in skel_list
+    // Check if skel in World
     // If there is, update its pose
     // If not, add skeleton to env
     // RcnnPose module should provide the unique obj_id per object
@@ -181,10 +176,10 @@ bool RcnnPoseModule::detectObjects(
       env->addSkeleton(obj_skeleton);
     }
 
-    any_valid = true;
+    any_detected = true;
   }
 
-  if (!any_valid)
+  if (!any_detected)
   {
     dtwarn << "[RcnnPoseModule::detectObjects] No marker up-to-date with "
               "timestamp parameter"

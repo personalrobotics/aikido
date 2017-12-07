@@ -15,25 +15,14 @@ ObjectDatabase::ObjectDatabase(
   // Read the JSON file into string
   if (!resourceRetriever)
   {
-    throw std::invalid_argument("ResourceRetrieverPtr given is null!");
+    throw std::invalid_argument("ResourceRetriever is null");
   }
 
-  const dart::common::ResourcePtr resource
-      = resourceRetriever->retrieve(configDataURI);
-  if (!resource)
+  std::string content = resourceRetriever->readAll(configDataURI);
+  if (content.empty())
   {
     throw std::runtime_error(
-        std::string("Failed opening URI - ") + configDataURI.toString());
-  }
-
-  // Put file in string
-  const std::size_t size = resource->getSize();
-  std::string content;
-  content.resize(size);
-  if (resource->read(&content.front(), size, 1) != 1)
-  {
-    throw std::runtime_error(
-        std::string("Failed reading  URI - ") + configDataURI.toString());
+        std::string("Failed load URI - ") + configDataURI.toString());
   }
 
   // Load from string
@@ -41,43 +30,38 @@ ObjectDatabase::ObjectDatabase(
 }
 
 //==============================================================================
-bool ObjectDatabase::getObjectByKey(
+void ObjectDatabase::getObjectByKey(
     const std::string& _obj_key,
     std::string& obj_name,
     dart::common::Uri& obj_resource)
 {
   // Get name of object and pose for a given tag ID
   YAML::Node obj_node = mObjData[_obj_key];
-  if (obj_node)
-  {
-    // Convert resource field
-    try
-    {
-      obj_resource.fromString(obj_node["resource"].as<std::string>());
-    }
-    catch (const YAML::ParserException& ex)
-    {
-      throw std::runtime_error(
-          "[ObjectDatabase] Error in converting [resource] field");
-    }
-
-    // Convert name field
-    try
-    {
-      obj_name = obj_node["name"].as<std::string>();
-    }
-    catch (const YAML::ParserException& ex)
-    {
-      throw std::runtime_error(
-          "[ObjectDatabase] Error in converting [name] field");
-    }
-
-    return true;
-  }
-  else
+  if (!obj_node)
   {
     throw std::runtime_error("[ObjectDatabase] Error: invalid object key");
-    return false;
+  }
+
+  // Convert resource field
+  try
+  {
+    obj_resource.fromString(obj_node["resource"].as<std::string>());
+  }
+  catch (const YAML::ParserException& ex)
+  {
+    throw std::runtime_error(
+        "[ObjectDatabase] Error in converting [resource] field");
+  }
+
+  // Convert name field
+  try
+  {
+    obj_name = obj_node["name"].as<std::string>();
+  }
+  catch (const YAML::ParserException& ex)
+  {
+    throw std::runtime_error(
+        "[ObjectDatabase] Error in converting [name] field");
   }
 }
 
