@@ -48,12 +48,12 @@ public:
 };
 
 /// Define state in collision for the termination of vector field planner.
-class StateInCollisionError : public VectorFieldError
+class ConstraintViolatedError : public VectorFieldError
 {
 public:
   /// Constructor.
   ///
-  StateInCollisionError();
+  ConstraintViolatedError();
 };
 
 /// Define integration failure for the termination of vectorfield planner.

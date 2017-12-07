@@ -4,6 +4,7 @@
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+#include <aikido/trajectory/Trajectory.hpp>
 
 namespace aikido {
 namespace planner {
@@ -17,7 +18,10 @@ namespace vectorfield {
 class VectorField
 {
 public:
-  VectorField(const aikido::statespace::StateSpacePtr stateSpace);
+  /// Constructor.
+  ///
+  /// \param[in] stateSpace State space that vector field is defined in
+  explicit VectorField(const aikido::statespace::StateSpacePtr stateSpace);
 
   /// Vectorfield callback function.
   ///
@@ -30,19 +34,27 @@ public:
 
   /// Vectorfield planning status callback function
   ///
+  /// \praram[in] state State tp evaluate
   /// \return Status of planning.
   virtual VectorFieldPlannerStatus evaluateStatus(
       const aikido::statespace::StateSpace::State* state) const = 0;
 
-  /// Get testable for state space limits.
+  /// Evaludate whether a trajectory satisfies a constraint.
+  /// It is checked by a user-defined evaluation step size.
   ///
-  /// \return Testable for state space limits.
-  virtual aikido::constraint::TestablePtr getBoundTestable() const = 0;
+  /// \param[in] trajectory Trajectory to be evaluated.
+  /// \param[in] constraint Constraint to be satisfied.
+  /// \param[in] evalStepSize The step size used in evaluating constraint
+  /// satisfaction.
+  virtual bool evaluateTrajectory(
+      const aikido::trajectory::Trajectory& trajectory,
+      aikido::constraint::TestablePtr constraint,
+      double evalStepSize) const = 0;
 
-  /// Returns meta skeleton.
+  /// Returns state space.
   aikido::statespace::StateSpacePtr getStateSpace();
 
-  /// Returns const meta skeleton.
+  /// Returns const state space.
   aikido::statespace::ConstStateSpacePtr getStateSpace() const;
 
 protected:

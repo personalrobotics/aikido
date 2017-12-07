@@ -6,13 +6,21 @@
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/vectorfield/VectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
+
+struct Knot
+{
+  /// Timestamp.
+  double mT;
+
+  /// Positions.
+  Eigen::VectorXd mPositions;
+};
 
 /// VectorField Planner generates a trajectory by following a vector field
 /// defined in joint space.
@@ -29,67 +37,27 @@ public:
   ///
   /// \param[in] vectorField Vector field in configuration space.
   /// \param[in] constraint Constraint to be satisfied.
-  /// \param[in] initialStepSize Initial step size in integation.
   VectorFieldIntegrator(
-      const VectorFieldPtr vectorField,
-      const aikido::constraint::TestablePtr collisionFreeConstraint,
-      double initialStepSize);
+      VectorFieldPtr vectorField, aikido::constraint::TestablePtr constraint);
 
   /// Generate a trajectory following the vector field along given time.
   ///
   /// \param[in] integrationTimeInterval Position in configuration space.
   /// \param[in] timelimit Timelimit for integration calculation.
+  /// \param[in] initialStepSize Initial step size of integator in following
+  /// vector field.
+  /// \param[in] checkConstraintResolution Resolution used in checking constraint
+  /// satisfaction in generated trajectory.
   /// \param[out] planningResult information about success or failure.
   /// \return A trajectory following the vector field.
   std::unique_ptr<aikido::trajectory::Spline> followVectorField(
       const aikido::statespace::StateSpace::State* startState,
       std::chrono::duration<double> timelimit,
-      planner::PlanningResult& planningResult);
-
-  /// Convert a sequence of waypoint and time pairs into a trajectory.
-  ///
-  /// \param[in] A seqeunce of waypoint and time pairs.
-  /// \param[in] stateSpace State space of output trajectory
-  /// \return A trajectory
-  std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-      const std::vector<Knot>& knots,
-      const aikido::statespace::StateSpacePtr stateSpace);
-
-  /// Get initial step size.
-  ///
-  /// \return Initial step size.
-  double getInitialStepSize();
-
-  /// Get resolution of constraint checking.
-  ///
-  /// \return Resolution of constraint checking.
-  double getConstraintCheckResolution();
-
-  /// Set resolution of constraint checking.
-  ///
-  /// /param[in] Resolution used in constraint checking.
-  void setConstraintCheckResolution(double resolution);
+      double initialStepSize,
+      double checkConstraintResolution,
+      planner::PlanningResult* planningResult);
 
 protected:
-  /// Evaluate whether a trajectory is eligible
-  ///
-  ///
-  virtual bool evaluateTrajectory(
-      const aikido::trajectory::Trajectory* trajectory,
-      const aikido::constraint::TestablePtr collisionFreeConstraint,
-      double evalStepSize)
-      = 0;
-
-  virtual bool convertStateToPositions(
-      const aikido::statespace::StateSpace::State* state,
-      Eigen::VectorXd& positions)
-      = 0;
-
-  virtual bool convertPositionsToState(
-      const Eigen::VectorXd& positions,
-      aikido::statespace::StateSpace::State* state)
-      = 0;
-
   /// Vectorfield callback function that returns joint velocities for
   /// integration.
   ///
@@ -98,24 +66,25 @@ protected:
   /// \param[in] t Current time being planned.
   virtual void step(const Eigen::VectorXd& q, Eigen::VectorXd& qd, double t);
 
-  /// Check status after every intergration step.
+  /// Check status after every integration step.
   ///
   /// \param[in] q Position in configuration space.
   /// \param[in] t Current time being planned.
   virtual void check(const Eigen::VectorXd& q, double t);
 
+  /// Vector field
   VectorFieldPtr mVectorField;
-  aikido::constraint::TestablePtr mCollisionFreeConstraint;
 
-  /// Initial step size for adaptive integrator.
-  double mInitialStepSize;
+  /// Constraint to be satisfied
+  aikido::constraint::TestablePtr mConstraint;
 
   /// Cached index of knots.
   int mCacheIndex;
 
-  /// current index of knots.
+  /// Current index of knots.
   int mIndex;
 
+  /// Dimension of state space.
   std::size_t mDimension;
 
   /// Timer for timelimit.
@@ -123,6 +92,7 @@ protected:
 
   /// Planning timelimit.
   double mTimelimit;
+
   std::vector<Knot> mKnots;
 
   /// Resolution used in checking constraint satisfaction.

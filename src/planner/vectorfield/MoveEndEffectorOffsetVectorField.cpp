@@ -3,8 +3,8 @@
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
+#include <aikido/planner/vectorfield/detail/VectorFieldUtil.hpp>
 
 namespace aikido {
 namespace planner {
@@ -26,15 +26,13 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     double linearVelocityGain,
     double initialStepSize,
     double jointLimitPadding)
-  : BodyNodePoseVectorField(stateSpace, bn)
+  : BodyNodePoseVectorField(stateSpace, bn, initialStepSize, jointLimitPadding)
   , mDirection(direction)
   , mDistance(distance)
   , mMaxDistance(maxDistance)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
   , mLinearVelocityGain(linearVelocityGain)
-  , mInitialStepSize(initialStepSize)
-  , mJointLimitPadding(jointLimitPadding)
   , mStartPose(bn->getTransform())
 {
   if (mDistance < 0)
@@ -53,64 +51,28 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 }
 
 //==============================================================================
-bool MoveEndEffectorOffsetVectorField::evaluateVelocity(
-    const aikido::statespace::StateSpace::State* state,
-    Eigen::VectorXd& qd) const
+bool MoveEndEffectorOffsetVectorField::evaluateCartesianVelocity(
+    const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
-  using Eigen::Isometry3d;
-  using Eigen::Vector3d;
-  using Eigen::Vector6d;
-  using dart::math::logMap;
+  using aikido::planner::vectorfield::computeGeodesicError;
 
-  Eigen::VectorXd position(mMetaSkeleton->getNumDofs());
-  auto newState
-      = static_cast<const aikido::statespace::CartesianProduct::State*>(state);
-  mMetaSkeletonStateSpace->convertStateToPositions(newState, position);
-  mMetaSkeleton->setPositions(position);
-
-  const Isometry3d currentPose = mBodyNode->getTransform();
-
-  Eigen::VectorXd jointVelocityUpperLimits
-      = mMetaSkeleton->getVelocityUpperLimits();
-  Eigen::VectorXd jointVelocityLowerLimits
-      = mMetaSkeleton->getVelocityLowerLimits();
-
-  Vector6d desiredTwist = computeGeodesicTwist(currentPose, mStartPose);
+  Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);
   desiredTwist.tail<3>() = mDirection * mLinearVelocityGain;
-
-  bool result = computeJointVelocityFromTwist(
-      qd,
-      desiredTwist,
-      mMetaSkeletonStateSpace,
-      mBodyNode,
-      mJointLimitPadding,
-      jointVelocityLowerLimits,
-      jointVelocityUpperLimits,
-      true,
-      mInitialStepSize);
-  return result;
+  cartesianVelocity = desiredTwist;
+  return true;
 }
 
 //==============================================================================
-VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::evaluateStatus(
-    const aikido::statespace::StateSpace::State* state) const
+VectorFieldPlannerStatus
+MoveEndEffectorOffsetVectorField::evaluateCartesianStatus(
+    const Eigen::Isometry3d& pose) const
 {
-  using Eigen::Isometry3d;
-  using Eigen::Vector3d;
-  using Eigen::Vector4d;
-
-  Eigen::VectorXd position(mMetaSkeleton->getNumDofs());
-  auto newState = static_cast<const aikido::statespace::dart::
-                                  MetaSkeletonStateSpace::State*>(state);
-  mMetaSkeletonStateSpace->convertStateToPositions(newState, position);
-  mMetaSkeleton->setPositions(position);
-
-  const Isometry3d currentPose = mBodyNode->getTransform();
+  using aikido::planner::vectorfield::computeGeodesicError;
 
   // Check for deviation from the straight-line trajectory.
-  const Vector4d geodesicError = computeGeodesicError(mStartPose, currentPose);
+  const Eigen::Vector4d geodesicError = computeGeodesicError(mStartPose, pose);
   const double orientationError = geodesicError[0];
-  const Vector3d positionError = geodesicError.tail<3>();
+  const Eigen::Vector3d positionError = geodesicError.tail<3>();
   double movedDistance = positionError.transpose() * mDirection;
   double positionDeviation
       = (positionError - movedDistance * mDirection).norm();

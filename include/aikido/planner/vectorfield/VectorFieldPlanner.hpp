@@ -46,7 +46,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::PlanningResult& planningResult);
+    planner::PlanningResult* planningResult = nullptr);
 
 /// Plan to an end effector pose by following a geodesic loss function
 /// in SE(3) via an optimized Jacobian.
@@ -58,6 +58,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \param[in] positionErrorTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
 /// distance.
+/// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radius to
+/// meter in computing geodesic distance.
 /// \param[in] linearVelocityGain Linear velocity gain in workspace.
 /// \param[in] angularVelocityGain Angular velocity gain in workspace.
 /// \param[in] initialStepSize Initial step size.
@@ -73,13 +75,14 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::constraint::TestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
+    double conversionRatioInGeodesicDistance,
     double linearVelocityGain,
     double angularVelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::PlanningResult& planningResult);
+    planner::PlanningResult* planningResult = nullptr);
 
 } // namespace vectorfield
 } // namespace planner

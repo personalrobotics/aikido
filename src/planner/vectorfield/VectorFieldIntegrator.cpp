@@ -1,8 +1,10 @@
 #include <exception>
 #include <string>
 #include <boost/numeric/odeint.hpp>
+#include <aikido/common/Spline.hpp>
 #include <aikido/planner/vectorfield/VectorFieldIntegrator.hpp>
 #include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
+#include <aikido/planner/vectorfield/detail/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
@@ -15,11 +17,8 @@ constexpr double defaultConstraintCheckResolution = 1e-3;
 //==============================================================================
 VectorFieldIntegrator::VectorFieldIntegrator(
     const VectorFieldPtr vectorField,
-    const aikido::constraint::TestablePtr collisionFreeConstraint,
-    double initialStepSize)
-  : mVectorField(vectorField)
-  , mCollisionFreeConstraint(collisionFreeConstraint)
-  , mInitialStepSize(initialStepSize)
+    const aikido::constraint::TestablePtr collisionFreeConstraint)
+  : mVectorField(vectorField), mConstraint(collisionFreeConstraint)
 {
   mCacheIndex = -1;
   mIndex = 0;
@@ -34,10 +33,7 @@ void VectorFieldIntegrator::step(
 {
   aikido::statespace::StateSpace::State* state
       = mVectorField->getStateSpace()->allocateState();
-  if (!convertPositionsToState(q, state))
-  {
-    throw IntegrationFailedError();
-  }
+  mVectorField->getStateSpace()->expMap(q, state);
 
   // compute joint velocities
   bool success = mVectorField->evaluateVelocity(state, qd);
@@ -58,7 +54,7 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
 
   aikido::statespace::StateSpace::State* state
       = mVectorField->getStateSpace()->allocateState();
-  convertPositionsToState(q, state);
+  mVectorField->getStateSpace()->expMap(q, state);
 
   Knot knot;
   knot.mT = t;
@@ -66,16 +62,14 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
 
   if (mKnots.size() > 0)
   {
-    // create a temporary trajectory segment
+    // create new incremental segment
     std::vector<Knot> segment;
     segment.push_back(mKnots.back());
     segment.push_back(knot);
     auto trajSegment = convertToSpline(segment, mVectorField->getStateSpace());
 
-    evaluateTrajectory(
-        trajSegment.get(),
-        mCollisionFreeConstraint,
-        mConstraintCheckResolution);
+    mVectorField->evaluateTrajectory(
+        *trajSegment.get(), mConstraint, mConstraintCheckResolution);
   }
   mKnots.push_back(knot);
   mIndex += 1;
@@ -103,7 +97,9 @@ std::unique_ptr<aikido::trajectory::Spline>
 VectorFieldIntegrator::followVectorField(
     const aikido::statespace::StateSpace::State* startState,
     std::chrono::duration<double> timelimit,
-    planner::PlanningResult& planningResult)
+    double initialStepSize,
+    double checkConstraintResolution,
+    planner::PlanningResult* planningResult)
 {
   using namespace std::placeholders;
   using errorStepper = boost::numeric::odeint::
@@ -114,6 +110,7 @@ VectorFieldIntegrator::followVectorField(
                          boost::numeric::odeint::vector_space_algebra>;
 
   mTimelimit = timelimit.count();
+  mConstraintCheckResolution = checkConstraintResolution;
   mTimer.start();
 
   mKnots.clear();
@@ -123,7 +120,8 @@ VectorFieldIntegrator::followVectorField(
   try
   {
     Eigen::VectorXd initialQ(mDimension);
-    convertStateToPositions(startState, initialQ);
+    mVectorField->getStateSpace()->logMap(startState, initialQ);
+
     // Integrate the vector field to get a configuration space path.
     boost::numeric::odeint::integrate_adaptive(
         errorStepper(),
@@ -131,24 +129,33 @@ VectorFieldIntegrator::followVectorField(
         initialQ,
         0.,
         integrationTimeInterval,
-        mInitialStepSize,
+        initialStepSize,
         std::bind(&VectorFieldIntegrator::check, this, _1, _2));
   }
   catch (const VectorFieldTerminated& e)
   {
     dtwarn << e.what() << std::endl;
-    planningResult.message = e.what();
+    if (planningResult)
+    {
+      planningResult->message = e.what();
+    }
   }
   catch (const VectorFieldError& e)
   {
     dtwarn << e.what() << std::endl;
-    planningResult.message = e.what();
+    if (planningResult)
+    {
+      planningResult->message = e.what();
+    }
     return nullptr;
   }
 
   if (mCacheIndex < 0)
   {
-    planningResult.message = "No waypoint cached.";
+    if (planningResult)
+    {
+      planningResult->message = "No waypoint cached.";
+    }
     return nullptr;
   }
 
@@ -161,58 +168,6 @@ VectorFieldIntegrator::followVectorField(
       [](const Knot& knot) { return knot.mT; });
 
   return convertToSpline(mKnots, mVectorField->getStateSpace());
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline>
-VectorFieldIntegrator::convertToSpline(
-    const std::vector<Knot>& knots,
-    const aikido::statespace::StateSpacePtr stateSpace)
-{
-  using dart::common::make_unique;
-
-  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(stateSpace);
-
-  using CubicSplineProblem = aikido::common::
-      SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
-
-  const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(mDimension);
-  auto currState = stateSpace->createState();
-  for (std::size_t iknot = 0; iknot < knots.size() - 1; ++iknot)
-  {
-    const double segmentDuration = knots[iknot + 1].mT - knots[iknot].mT;
-    Eigen::VectorXd currentPosition = knots[iknot].mPositions;
-    Eigen::VectorXd nextPosition = knots[iknot + 1].mPositions;
-
-    CubicSplineProblem problem(
-        Eigen::Vector2d{0., segmentDuration}, 2, mDimension);
-    problem.addConstantConstraint(0, 0, zeroPosition);
-    problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
-    const auto solution = problem.fit();
-    const auto coefficients = solution.getCoefficients().front();
-
-    stateSpace->expMap(currentPosition, currState);
-    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
-  }
-  return outputTrajectory;
-}
-
-//==============================================================================
-double VectorFieldIntegrator::getInitialStepSize()
-{
-  return mInitialStepSize;
-}
-
-//==============================================================================
-double VectorFieldIntegrator::getConstraintCheckResolution()
-{
-  return mConstraintCheckResolution;
-}
-
-//==============================================================================
-void VectorFieldIntegrator::setConstraintCheckResolution(double resolution)
-{
-  mConstraintCheckResolution = resolution;
 }
 
 } // namespace vectorfield

@@ -31,7 +31,7 @@ DofLimitError::DofLimitError() : VectorFieldError("DOF limit exceeded")
 }
 
 //==============================================================================
-StateInCollisionError::StateInCollisionError()
+ConstraintViolatedError::ConstraintViolatedError()
   : VectorFieldError("State in collision")
 {
   // Do nothing

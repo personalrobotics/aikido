@@ -30,7 +30,7 @@ public:
   /// than distance.
   /// (2) When maxDistance is not set to InvalidMaxDistance,
   /// planning will terminate and return a path, the path length
-  /// of which is [distance, maxDistance].
+  /// of which is [distance, maxDistance).
   ///
   /// \param[in] stateSpace MetaSkeleton state space
   /// \param[in] bn Body node of end-effector
@@ -48,21 +48,21 @@ public:
       dart::dynamics::BodyNodePtr bn,
       const Eigen::Vector3d& direction,
       double minDistance,
-      double maxDistance = InvalidMaxDistance,
-      double positionTolerance = 0.01,
-      double angularTolerance = 0.15,
-      double linearVelocityGain = 1.0,
-      double initialStepSize = 5e-2,
-      double jointLimitPadding = 3e-2);
+      double maxDistance,
+      double positionTolerance,
+      double angularTolerance,
+      double linearVelocityGain,
+      double initialStepSize,
+      double jointLimitPadding);
 
   // Documentation inherited.
-  bool evaluateVelocity(
-      const aikido::statespace::StateSpace::State* state,
-      Eigen::VectorXd& qd) const override;
+  bool evaluateCartesianVelocity(
+      const Eigen::Isometry3d& pose,
+      Eigen::Vector6d& cartesianVelocity) const override;
 
   // Documentation inherited.
-  VectorFieldPlannerStatus evaluateStatus(
-      const aikido::statespace::StateSpace::State* state) const override;
+  VectorFieldPlannerStatus evaluateCartesianStatus(
+      const Eigen::Isometry3d& pose) const override;
 
 protected:
   /// Movement direction.
@@ -82,12 +82,6 @@ protected:
 
   /// Linear velocity gain.
   double mLinearVelocityGain;
-
-  /// Initial step size of integrator.
-  double mInitialStepSize;
-
-  /// Padding for joint limits.
-  double mJointLimitPadding;
 
   /// Start pose of the end-effector.
   Eigen::Isometry3d mStartPose;

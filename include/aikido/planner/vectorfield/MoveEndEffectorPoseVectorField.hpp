@@ -26,6 +26,8 @@ public:
   /// \param[in] bn Body node of end-effector.
   /// \param[in] goalPose Desired end-effector pose.
   /// \param[in] poseErrorTolerance Constraint error tolerance in meters.
+  /// \param[in] r Conversion of radius to meters in computing Geodesic
+  /// distance.
   /// \param[in] linearVelocityGain Linear velocity gain in workspace.
   /// \param[in] angularVelocityGain Angular velocity gain in workspace.
   /// \param[in] initialStepSize Initial step size.
@@ -35,20 +37,21 @@ public:
       aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bn,
       const Eigen::Isometry3d& goalPose,
-      double poseErrorTolerance = 0.5,
-      double linearVelocityGain = 1.0,
-      double angularVelocityGain = 1.0,
-      double initialStepSize = 5e-2,
-      double jointLimitPadding = 3e-2);
+      double poseErrorTolerance,
+      double r,
+      double linearVelocityGain,
+      double angularVelocityGain,
+      double initialStepSize,
+      double jointLimitPadding);
 
   // Documentation inherited.
-  bool evaluateVelocity(
-      const aikido::statespace::StateSpace::State* state,
-      Eigen::VectorXd& qd) const override;
+  bool evaluateCartesianVelocity(
+      const Eigen::Isometry3d& pose,
+      Eigen::Vector6d& cartesianVelocity) const override;
 
   // Documentation inherited.
-  VectorFieldPlannerStatus evaluateStatus(
-      const aikido::statespace::StateSpace::State* state) const override;
+  VectorFieldPlannerStatus evaluateCartesianStatus(
+      const Eigen::Isometry3d& pose) const override;
 
 protected:
   /// Goal pose.
@@ -57,23 +60,14 @@ protected:
   /// Tolerance of pose error.
   double mPoseErrorTolerance;
 
+  /// Conversion ratio from radius to meter.
+  double mConversionRatioFromRadiusToMeter;
+
   /// Linear velocity gain.
   double mLinearVelocityGain;
 
   /// Angular velocit gain.
   double mAngularVelocityGain;
-
-  /// Initial step size of integrator.
-  double mInitialStepSize;
-
-  /// Padding of joint limits.
-  double mJointLimitPadding;
-
-  /// Joint velocities lower limits.
-  Eigen::VectorXd mVelocityLowerLimits;
-
-  /// Joint velocities upper limits.
-  Eigen::VectorXd mVelocityUpperLimits;
 };
 
 } // namespace vectorfield

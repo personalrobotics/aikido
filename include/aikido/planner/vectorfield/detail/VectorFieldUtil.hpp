@@ -6,6 +6,7 @@
 #include <dart/optimizer/Solver.hpp>
 #include <dart/optimizer/nlopt/NloptSolver.hpp>
 #include <aikido/common/Spline.hpp>
+#include <aikido/planner/vectorfield/VectorFieldIntegrator.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
@@ -13,15 +14,6 @@
 namespace aikido {
 namespace planner {
 namespace vectorfield {
-
-struct Knot
-{
-  /// Timestamp.
-  double mT;
-
-  /// Positions.
-  Eigen::VectorXd mPositions;
-};
 
 /// A function class that defines an objective. The objective measures
 /// the difference between a desired twist and Jacobian * joint velocities.
@@ -48,7 +40,7 @@ public:
   /// Implementation inherited.
   /// Evaluating gradient of an objective by a state value.
   /// \param[in] qd Joint velocities.
-  /// \param[out] grad Gradient of a defined objective
+  /// \param[out] grad Gradient of a defined objective.
   void evalGradient(
       const Eigen::VectorXd& qd, Eigen::Map<Eigen::VectorXd> grad) override;
 
@@ -56,9 +48,18 @@ private:
   /// Twist.
   Twist mTwist;
 
-  /// Jacobian of Meta Skeleton
+  /// Jacobian of Meta Skeleton.
   Jacobian mJacobian;
 };
+
+/// Convert a sequence of waypoint and time pairs into a trajectory.
+///
+/// \param[in] A seqeunce of waypoint and time pairs.
+/// \param[in] stateSpace State space of output trajectory.
+/// \return A trajectory.
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+    const std::vector<Knot>& knots,
+    const aikido::statespace::StateSpacePtr stateSpace);
 
 /// Compute joint velocity from a given twist.
 ///
@@ -78,8 +79,8 @@ private:
 bool computeJointVelocityFromTwist(
     Eigen::VectorXd& jointVelocity,
     const Eigen::Vector6d& desiredTwist,
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    const dart::dynamics::BodyNodePtr bodyNode,
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    dart::dynamics::BodyNodePtr bodyNode,
     double jointLimitPadding,
     const Eigen::VectorXd& jointVelocityLowerLimits,
     const Eigen::VectorXd& jointVelocityUpperLimits,
@@ -89,28 +90,31 @@ bool computeJointVelocityFromTwist(
 /// Compute the twist in global coordinate that corresponds to the gradient of
 /// the geodesic distance between two transforms.
 ///
-/// \param[in] currentTrans Current transformation.
-/// \param[in] goalTrans Goal transformation.
+/// \param[in] fromTrans Current transformation.
+/// \param[in] toTrans Goal transformation.
+/// \return Geodesic twist.
 Eigen::Vector6d computeGeodesicTwist(
-    const Eigen::Isometry3d& currentTrans, const Eigen::Isometry3d& goalTrans);
+    const Eigen::Isometry3d& fromTrans, const Eigen::Isometry3d& toTrans);
 
 /// Compute the error in gloabl coordinate between two transforms.
 ///
-/// \param[in] currentTrans Current transformation.
-/// \param[in] goalTrans Goal transformation.
+/// \param[in] fromTrans Current transformation.
+/// \param[in] toTrans Goal transformation.
+/// \return Geodesic error.
 Eigen::Vector4d computeGeodesicError(
-    const Eigen::Isometry3d& currentTrans, const Eigen::Isometry3d& goalTrans);
+    const Eigen::Isometry3d& fromTrans, const Eigen::Isometry3d& toTrans);
 
 /// Compute the geodesic distance between two transforms.
 /// gd = norm( relative translation + r * axis-angle error )
 ///
-/// \param[in] currentTrans Current transformation.
-/// \param[in] goalTrans Goal transformation.
+/// \param[in] fromTrans Current transformation.
+/// \param[in] toTrans Goal transformation.
 /// \param[in] r In units of meters/radians converts radians to meters.
+/// \return Geodesic distance.
 double computeGeodesicDistance(
-    const Eigen::Isometry3d& currentTrans,
-    const Eigen::Isometry3d& goalTrans,
-    double r = 1.0);
+    const Eigen::Isometry3d& fromTrans,
+    const Eigen::Isometry3d& toTrans,
+    double r);
 
 } // namespace vectorfield
 } // namespace planner
