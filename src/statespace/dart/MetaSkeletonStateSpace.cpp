@@ -112,7 +112,7 @@ void MetaSkeletonStateSpace::convertPositionsToState(
   for (std::size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubspace<JointStateSpace>(isubspace);
-    const auto joint = subspace->getJoint();
+    const auto joint = mMetaSkeleton->getJoint(isubspace);
 
     // TODO: Find a more efficient way to do this mapping.
     const auto numJointDofs = joint->getNumDofs();
@@ -144,7 +144,7 @@ void MetaSkeletonStateSpace::convertStateToPositions(
   for (std::size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubspace<JointStateSpace>(isubspace);
-    const auto joint = subspace->getJoint();
+    const auto joint = mMetaSkeleton->getJoint(isubspace);
     const auto substate = getSubState<>(_state, isubspace);
 
     Eigen::VectorXd jointPositions;

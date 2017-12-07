@@ -15,6 +15,7 @@ namespace dart {
 SO3Joint::SO3Joint(::dart::dynamics::BallJoint* _joint)
   : SO3(), JointStateSpace(_joint)
 {
+  // Do nothing.
 }
 
 //==============================================================================

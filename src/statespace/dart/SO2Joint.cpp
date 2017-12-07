@@ -9,6 +9,7 @@ SO2Joint::SO2Joint(
     ::dart::dynamics::GenericJoint<::dart::math::R1Space>* _joint)
   : SO2(), JointStateSpace(_joint)
 {
+  // Do nothing.
 }
 
 //==============================================================================
