@@ -1,4 +1,4 @@
-#include <aikido/perception/RcnnMopedModule.hpp>
+#include <aikido/perception/RcnnPoseModule.hpp>
 
 #include <Eigen/Geometry>
 #include <dart/utils/urdf/DartLoader.hpp>
