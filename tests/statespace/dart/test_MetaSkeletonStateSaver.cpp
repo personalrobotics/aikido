@@ -1,16 +1,16 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SO2.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 
 using dart::dynamics::Skeleton;
 using dart::dynamics::RevoluteJoint;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
+using aikido::statespace::dart::MetaSkeletonStateSaver;
 using aikido::statespace::SO2;
 
-TEST(MetaSkeletonStateSpaceSaver, MetaSkeletonStateSpaceReturnsToOriginal)
+TEST(MetaSkeletonStateSaver, MetaSkeletonStateSpaceReturnsToOriginal)
 {
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<RevoluteJoint>();
@@ -26,7 +26,7 @@ TEST(MetaSkeletonStateSpaceSaver, MetaSkeletonStateSpaceReturnsToOriginal)
   EXPECT_DOUBLE_EQ(1., skeleton->getPosition(0));
 
   {
-    auto saver = MetaSkeletonStateSpaceSaver(space);
+    auto saver = MetaSkeletonStateSaver(space->getMetaSkeleton());
     DART_UNUSED(saver);
 
     substate.setAngle(6.);

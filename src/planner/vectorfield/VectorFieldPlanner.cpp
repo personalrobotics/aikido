@@ -4,10 +4,10 @@
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
-using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
+using aikido::statespace::dart::MetaSkeletonStateSaver;
 
 namespace aikido {
 namespace planner {
@@ -74,7 +74,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const VectorFieldCallback& _vectorFiledCb,
     const VectorFieldStatusCallback& _statusCb)
 {
-  auto saver = MetaSkeletonStateSpaceSaver(_stateSpace);
+  auto saver = MetaSkeletonStateSaver(_stateSpace->getMetaSkeleton());
   DART_UNUSED(saver);
 
   dart::dynamics::MetaSkeletonPtr skeleton = _stateSpace->getMetaSkeleton();
