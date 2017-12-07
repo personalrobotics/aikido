@@ -73,7 +73,6 @@ private:
 
   /// Listens to the transform attached to the node
   tf::TransformListener mTfListener;
-  
 };
 
 } // namespace perception

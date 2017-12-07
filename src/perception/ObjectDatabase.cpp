@@ -18,8 +18,8 @@ ObjectDatabase::ObjectDatabase(
     throw std::invalid_argument("ResourceRetrieverPtr given is null!");
   }
 
-  const dart::common::ResourcePtr resource =
-      resourceRetriever->retrieve(configDataURI);
+  const dart::common::ResourcePtr resource
+      = resourceRetriever->retrieve(configDataURI);
   if (!resource)
   {
     throw std::runtime_error(
@@ -57,7 +57,8 @@ bool ObjectDatabase::getObjectByKey(
     }
     catch (const YAML::ParserException& ex)
     {
-      throw std::runtime_error("[ObjectDatabase] Error in converting [resource] field");
+      throw std::runtime_error(
+          "[ObjectDatabase] Error in converting [resource] field");
     }
 
     // Convert name field
@@ -67,7 +68,8 @@ bool ObjectDatabase::getObjectByKey(
     }
     catch (const YAML::ParserException& ex)
     {
-      throw std::runtime_error("[ObjectDatabase] Error in converting [name] field");
+      throw std::runtime_error(
+          "[ObjectDatabase] Error in converting [name] field");
     }
 
     return true;
