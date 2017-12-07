@@ -15,7 +15,6 @@ endif()
 set(sources 
   CRRT.cpp
   CRRTConnect.cpp
-  LRAstar.cpp
   dart.cpp
   GeometricStateSpace.cpp
   GoalRegion.cpp

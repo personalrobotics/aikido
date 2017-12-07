@@ -126,6 +126,14 @@ include(FindPkgConfig)
 
 find_package(Boost REQUIRED COMPONENTS filesystem graph program_options system)
 
+find_package(LRAstar CONFIG)
+if(LRAstar_FOUND)
+    message("FOUND")
+    message("${LRAstar_INCLUDE_DIR}")
+else()
+    message("NOT FOUND")
+endif()
+
 find_package(DART 6.2.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
@@ -153,10 +161,12 @@ include_directories("include")
 include_directories(
   ${OMPL_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
+  ${LRAstar_INCLUDE_DIR}
 )
 link_libraries(
   ${OMPL_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${LRAstar_LIBRARIES}
 )
 
 

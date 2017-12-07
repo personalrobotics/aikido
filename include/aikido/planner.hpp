@@ -4,7 +4,6 @@
 #include "planner/ompl/BackwardCompatibility.hpp"
 #include "planner/ompl/CRRT.hpp"
 #include "planner/ompl/CRRTConnect.hpp"
-#include "planner/ompl/LRAstar.hpp"
 #include "planner/ompl/GeometricStateSpace.hpp"
 #include "planner/ompl/GoalRegion.hpp"
 #include "planner/ompl/MotionValidator.hpp"
@@ -14,3 +13,4 @@
 #include "planner/ompl/dart.hpp"
 #include "planner/parabolic/ParabolicSmoother.hpp"
 #include "planner/parabolic/ParabolicTimer.hpp"
+#include "LRAstar/LRAstar.hpp"
