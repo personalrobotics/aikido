@@ -2,14 +2,35 @@
 #define AIKIDO_PLANNER_WORLD_HPP_
 
 #include <string>
+#include <unordered_map>
 #include <dart/dart.hpp>
 
 namespace aikido {
 namespace planner {
 
+/// A Kinematic world that contains a set of skeletons.
+/// It is expected that worlds do not share the same skeletons.
 class World
 {
 public:
+  // Encapsulates the state of the World.
+  struct State
+  {
+    std::unordered_map<std::string, dart::dynamics::Skeleton::Configuration>
+        configurations;
+
+    /// Returns true if two world states have the same
+    /// skeletons with same configurations.
+    /// \param other State to compare against.
+    /// \return bool True if the two states are the same.
+    bool operator==(const State& other) const;
+
+    /// Returns true if two world states are not the same.
+    /// \param other State to compare against.
+    /// \return bool True if the two states are not the same.
+    bool operator!=(const State& other) const;
+  };
+
   /// Construct a kinematic World.
   /// \param name Name for the new World
   World(const std::string& name = "");
@@ -59,6 +80,15 @@ public:
 
   /// Get the mutex that protects the state of this World.
   std::mutex& getMutex() const;
+
+  /// Returns the state of this World.
+  /// \return State
+  World::State getState() const;
+
+  /// Sets the state of this World to match State.
+  /// The caller of this method MUST LOCK the mutex of this World.
+  /// \param State State to set this world to.
+  void setState(const World::State& State);
 
 protected:
   /// Name of this World
