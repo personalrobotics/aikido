@@ -32,6 +32,7 @@ set(sources
   RcnnMopedModule.cpp
   shape_conversions.cpp
   YamlAprilTagsDatabase.cpp
+  ObjectDatabase.cpp
 )
 
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})

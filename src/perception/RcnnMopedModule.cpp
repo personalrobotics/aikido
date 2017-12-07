@@ -9,90 +9,80 @@
 #include <aikido/perception/shape_conversions.hpp>
 #include <aikido/io/CatkinResourceRetriever.hpp>
 
+
+using dart::dynamics::SkeletonPtr;
+
+
 namespace aikido {
 namespace perception {
 
-RcnnMopedModule::RcnnMopedModule(
+RcnnPoseModule::RcnnPoseModule(
     ros::NodeHandle nodeHandle,
     std::string markerTopic,
-    dart::common::ResourceRetrieverPtr resourceRetriever,
-    std::string canUri,
+    std::shared_ptr<ObjectDatabase> configData,
+    std::shared_ptr<aikido::io::CatkinResourceRetriever> resourceRetriever,
     std::string referenceFrameId,
     dart::dynamics::Frame* referenceLink)
   : mNodeHandle(std::move(nodeHandle))
   , mMarkerTopic(std::move(markerTopic))
-  , mReferenceFrameId(std::move(referenceFrameId))
+  , mConfigData(std::move(configData))
   , mResourceRetriever(std::move(resourceRetriever))
-  , mCanUri(std::move(canUri))
+  , mReferenceFrameId(std::move(referenceFrameId))
   , mReferenceLink(std::move(referenceLink))
   , mTfListener(mNodeHandle)
 {
   // Do nothing
 }
 
-
-//=============================================================================
-const dart::dynamics::SkeletonPtr makeBodyFromURDF(const std::string& uri,
-    const Eigen::Isometry3d& transform)
-{
-  // Resolves package:// URIs by emulating the behavior of 'catkin_find'.
-  const auto resourceRetriever =
-      std::make_shared<aikido::io::CatkinResourceRetriever>();
-
-  dart::utils::DartLoader urdfLoader;
-  const dart::dynamics::SkeletonPtr skeleton = urdfLoader.parseSkeleton(
-      uri, resourceRetriever);
-
-  if (!skeleton)
-  {
-    throw std::runtime_error("unable to load '" + uri + "'");
-  }
-
-  dynamic_cast<dart::dynamics::FreeJoint*>(skeleton->getJoint(0))->setTransform(transform);
-
-  return skeleton;
-}
-
-//=============================================================================
-bool RcnnMopedModule::detectObjects(
+bool RcnnPoseModule::detectObjects(
     const aikido::planner::WorldPtr& env,
     ros::Duration timeout,
     ros::Time timestamp)
 {
+  // Checks detected objects, looks up the database,
+  // and adds new skeletons to the world env
   bool any_valid = false;
-  
-  tf::TransformListener listener(mNodeHandle);
-  
   visualization_msgs::MarkerArrayConstPtr marker_message =
       ros::topic::waitForMessage<visualization_msgs::MarkerArray>(
           mMarkerTopic, mNodeHandle, timeout);
 
-  // Making sure the Message from MopedLite is non empty
+  // Making sure the Message from RcnnPose is non empty
   if (marker_message == nullptr)
   {
-    dtwarn << "[RcnnMopedModule::detectObjects] nullptr Marker Message "
+    dtwarn << "[RcnnPoseModule::detectObjects] nullptr Marker Message "
            << mMarkerTopic << std::endl;
     return false;
   }
 
   if (marker_message->markers.size() == 0)
   {
-    dtwarn << "[RcnnMopedModule::detectObjects] No markers on topic "
+    dtwarn << "[RcnnPoseModule::detectObjects] No markers on topic "
            << mMarkerTopic << std::endl;
     return false;
   }
 
+  dart::utils::DartLoader urdf_loader;
+
   for (const auto& marker_transform : marker_message->markers)
   {
-    // Get marker, tag ID, and detection transform name
     const auto& marker_stamp = marker_transform.header.stamp;
+    const auto& obj_key = marker_transform.text;
+    const auto& obj_id = marker_transform.ns;
     const auto& detection_frame = marker_transform.header.frame_id;
     if (!timestamp.isValid() || marker_stamp < timestamp)
     {
       continue;
     }
 
+    std::string obj_name;
+    dart::common::Uri obj_resource;
     ros::Time t0 = ros::Time(0);
+
+    // check if this object key is in database
+    if (!mConfigData->getObjectByKey(obj_key, obj_name, obj_resource))
+    {
+      continue;
+    }
    
     tf::StampedTransform transform;
     try
@@ -105,7 +95,7 @@ bool RcnnMopedModule::detectObjects(
     }
     catch (const tf::ExtrapolationException& ex)
     {
-      dtwarn << "[RcnnMopedModule::detectObjects] TF timestamp is "
+      dtwarn << "[RcnnPoseModule::detectObjects] TF timestamp is "
                 "out-of-date compared to marker timestamp "
              << ex.what() << std::endl;
       continue;
@@ -118,39 +108,75 @@ bool RcnnMopedModule::detectObjects(
     Eigen::Isometry3d frame_pose =
         aikido::perception::convertStampedTransformToEigen(transform);
     // Compose to get actual skeleton pose
-    Eigen::Isometry3d skel_pose = frame_pose * marker_pose;
+    Eigen::Isometry3d obj_pose = frame_pose * marker_pose;
     Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
-    skel_pose = link_offset * skel_pose;
+    obj_pose = link_offset * obj_pose;
 
-    std::string skel_name = marker_transform.text;
-    std::string skel_uri;
-    if (!skel_name.compare(0, 5, "water"))
+    bool is_new_obj;
+    dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_id);
+    dart::dynamics::SkeletonPtr obj_skeleton;
+
+    // Check if skel in skel_list
+    // If there is, update its pose
+    // If not, add skeleton to env
+    // RcnnPose module should provide the unique obj_id per object
+    if (env_skeleton == nullptr)
     {
-      skel_uri = "package://pr_ordata/data/objects/water_bottle.urdf";
+      is_new_obj = true;
+      obj_skeleton = urdf_loader.parseSkeleton(
+          obj_resource, mResourceRetriever);
+
+      if (!obj_skeleton)
+      {
+        dtwarn << "[RcnnPoseModule::detectObjects] Failed to load skeleton "
+               << "for URI " << obj_resource.toString() << std::endl;
+        continue;
+      }
+      obj_skeleton->setName(obj_id);
     }
     else
     {
-      skel_uri = "package://pr_ordata/data/objects/can.urdf";
+      is_new_obj = false;
+      obj_skeleton = env_skeleton;
     }
 
-    dart::dynamics::SkeletonPtr objSkeletonPtr =
-        makeBodyFromURDF(skel_uri, skel_pose);
-    objSkeletonPtr->setName(skel_name);
-
-    dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skel_name);
-
-    if (env_skeleton != nullptr)
+    dart::dynamics::Joint* jtptr;
+    if (obj_skeleton->getNumDofs() > 0)
     {
-      env->removeSkeleton(env_skeleton);
+      jtptr = obj_skeleton->getJoint(0);
     }
-    env->addSkeleton(objSkeletonPtr);
+    else
+    {
+      dtwarn << "[RcnnPoseModule::detectObjects] Skeleton " << obj_name
+             << " has 0 DOFs! \n";
+      continue;
+    }
+
+    // Downcast Joint to FreeJoint
+    dart::dynamics::FreeJoint* freejtptr =
+        dynamic_cast<dart::dynamics::FreeJoint*>(jtptr);
+
+    if (freejtptr == nullptr)
+    {
+      dtwarn << "[RcnnPoseModule::detectObjects] Could not cast the joint "
+                "of the body to a Free Joint so ignoring the object "
+             << obj_name << std::endl;
+      continue;
+    }
+
+    freejtptr->setTransform(obj_pose);
+
+    if (is_new_obj)
+    {
+      env->addSkeleton(obj_skeleton);
+    }
 
     any_valid = true;
   }
 
   if (!any_valid)
   {
-    dtwarn << "[RcnnMopedModule::detectObjects] No marker up-to-date with "
+    dtwarn << "[RcnnPoseModule::detectObjects] No marker up-to-date with "
               "timestamp parameter" << std::endl;
     return false;
   }
