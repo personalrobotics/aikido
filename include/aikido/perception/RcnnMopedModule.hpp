@@ -15,10 +15,10 @@ namespace perception {
 /// Instantiates the \c PerceptionModule specifically for RcnnPose.
 ///
 /// It receives input from the RcnnPose running in a separate process,
-/// by subscribing to a visualization_msg::MarkerArray ROS topic published by
+/// by subscribing to a \c visualization_msg::MarkerArray ROS topic published by
 /// the RcnnPose node. It uses a \c ObjectDatabase to resolve each marker to a
-/// \c dart::common::Uri, and updates the environment which is a list of \c
-/// dart::dynamics::SkeletonPtr.
+/// \c dart::common::Uri, and updates the environment which is an
+/// \c aikido::planner::World.
 class RcnnPoseModule : public PerceptionModule
 {
 public:
@@ -30,7 +30,8 @@ public:
   ///	\param[in] nodeHandle The node handle to be passed to the detector
   ///	\param[in] markerTopic The name of the topic on which objects' pose
   /// information is being published
-  ///   \param[in] resourceRetriever A CatkinResourceRetriever for resources
+  /// \param[in] configData The pointer to the loader of configuration data
+  /// \param[in] resourceRetriever A CatkinResourceRetriever for resources
   /// related to config files and models
   ///	\param[in] referenceFrameId The desired reference frame for the
   /// object pose
