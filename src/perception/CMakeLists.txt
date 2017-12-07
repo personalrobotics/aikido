@@ -29,8 +29,10 @@ aikido_check_package(tf "perception" "tf")
 #
 set(sources
   AprilTagsModule.cpp
+  RcnnPoseModule.cpp
   shape_conversions.cpp
   YamlAprilTagsDatabase.cpp
+  ObjectDatabase.cpp
 )
 
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})
