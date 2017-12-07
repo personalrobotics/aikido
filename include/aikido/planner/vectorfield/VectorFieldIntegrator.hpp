@@ -46,7 +46,8 @@ public:
   /// \param[in] timelimit Timelimit for integration calculation.
   /// \param[in] initialStepSize Initial step size of integator in following
   /// vector field.
-  /// \param[in] checkConstraintResolution Resolution used in checking constraint
+  /// \param[in] checkConstraintResolution Resolution used in checking
+  /// constraint
   /// satisfaction in generated trajectory.
   /// \param[out] planningResult information about success or failure.
   /// \return A trajectory following the vector field.
