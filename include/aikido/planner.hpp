@@ -13,4 +13,4 @@
 #include "planner/ompl/dart.hpp"
 #include "planner/parabolic/ParabolicSmoother.hpp"
 #include "planner/parabolic/ParabolicTimer.hpp"
-#include "LRAstar/LRAstar.hpp"
+#include "LRAstar.hpp"

@@ -1,4 +1,3 @@
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
@@ -6,18 +5,17 @@
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/planner/ompl/CRRT.hpp>
 #include <aikido/planner/ompl/CRRTConnect.hpp>
-#include <aikido/planner/ompl/LRAstar.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
+#include <LRAstar.hpp>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
-#include <aikido/planner/ompl/util.hpp>
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::CRRT;
 using aikido::planner::ompl::CRRTConnect;
-using aikido::planner::ompl::LRAstar;
 using aikido::planner::ompl::ompl_dynamic_pointer_cast;
 
 TEST_F(PlannerTest, PlanToConfiguration)
