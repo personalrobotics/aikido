@@ -5,7 +5,7 @@
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
 
-#include <LRAstar/LRAstar.hpp>
+#include <LRAstar.hpp>
 
 #include <dart/dart.hpp>
 

@@ -24,7 +24,7 @@ set(AIKIDO_MINOR_VERSION "2")
 set(AIKIDO_PATCH_VERSION "0")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
-list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
+list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 
 #==============================================================================
 # Configuration Options
@@ -127,12 +127,6 @@ include(FindPkgConfig)
 find_package(Boost REQUIRED COMPONENTS filesystem graph program_options system)
 
 find_package(LRAstar CONFIG)
-if(LRAstar_FOUND)
-    message("FOUND")
-    message("${LRAstar_INCLUDE_DIR}")
-else()
-    message("NOT FOUND")
-endif()
 
 find_package(DART 6.2.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
@@ -157,11 +151,10 @@ configure_file(
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
   DESTINATION "${INCLUDE_INSTALL_DIR}/aikido")
 
-include_directories("include")
 include_directories(
   ${OMPL_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
-  ${LRAstar_INCLUDE_DIR}
+  ${LRAstar_INCLUDE_DIRS}
 )
 link_libraries(
   ${OMPL_LIBRARIES}

@@ -29,6 +29,7 @@ target_include_directories("${PROJECT_NAME}_planner_ompl" SYSTEM
   PUBLIC
     ${DART_INCLUDE_DIRS}
     ${OMPL_INCLUDE_DIRS}
+    ${LRAstar_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_planner_ompl"
   PUBLIC
@@ -38,6 +39,7 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
     "${PROJECT_NAME}_trajectory"
     ${DART_LIBRARIES}
     ${OMPL_LIBRARIES}
+    ${LRAstar_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_planner_ompl"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
