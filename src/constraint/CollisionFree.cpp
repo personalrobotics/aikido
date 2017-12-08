@@ -5,15 +5,20 @@ namespace constraint {
 
 //==============================================================================
 CollisionFree::CollisionFree(
-    statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
     dart::collision::CollisionOption _collisionOptions)
-  : mStatespace(std::move(_statespace))
+  : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(_metaskeleton))
   , mCollisionDetector(std::move(_collisionDetector))
   , mCollisionOptions(std::move(_collisionOptions))
 {
-  if (!mStatespace)
-    throw std::invalid_argument("_statespace is nullptr.");
+  if (!mMetaSkeletonStateSpace)
+    throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
+
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("_metaskeleton is nullptr.");
 
   if (!mCollisionDetector)
     throw std::invalid_argument("_collisionDetector is nullptr.");
@@ -22,7 +27,7 @@ CollisionFree::CollisionFree(
 //==============================================================================
 statespace::StateSpacePtr CollisionFree::getStateSpace() const
 {
-  return mStatespace;
+  return mMetaSkeletonStateSpace;
 }
 
 //==============================================================================
@@ -31,7 +36,7 @@ bool CollisionFree::isSatisfied(
 {
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
-  mStatespace->setState(skelStatePtr);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
 
   bool collision = false;
   dart::collision::CollisionResult collisionResult;

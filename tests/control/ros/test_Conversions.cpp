@@ -29,7 +29,7 @@ protected:
 
     mSkeleton->createJointAndBodyNodePair<RevoluteJoint, BodyNode>(
         nullptr, jointProperties, bnProperties);
-    mStateSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton);
+    mStateSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton.get());
 
     // Create a two-waypoint trajectory for mSkeleton.
     mTwoWaypointMessage = trajectory_msgs::JointTrajectory{};
@@ -66,7 +66,7 @@ protected:
     mSkeleton2Joints->createJointAndBodyNodePair<RevoluteJoint, BodyNode>(
         bn1, jointProperties2, bnProperties2);
     mStateSpace2Joints
-        = std::make_shared<MetaSkeletonStateSpace>(mSkeleton2Joints);
+      = std::make_shared<MetaSkeletonStateSpace>(mSkeleton2Joints.get());
 
     // Create a two-waypoint trajectory for mSkeleton2Joints,
     // with different ordering of joints.
@@ -142,8 +142,11 @@ TEST_F(ConvertJointTrajectoryTests, StateSpaceHasUnknownJoint_Throws)
 {
   mSkeleton->getJoint(0)->setName("MissingJoint");
 
+  // This is necessary because the name change is not propagated to mStateSpace
+  auto sspace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton.get());
+
   EXPECT_THROW(
-      { toSplineJointTrajectory(mStateSpace, mTwoWaypointMessage); },
+      { toSplineJointTrajectory(sspace, mTwoWaypointMessage); },
       std::invalid_argument);
 }
 
@@ -335,7 +338,7 @@ TEST_F(
   auto groupSkeleton = dart::dynamics::Group::create();
   groupSkeleton->addJoint(skeleton1->getJoint(0));
   groupSkeleton->addJoint(skeleton2->getJoint(0));
-  auto space = std::make_shared<MetaSkeletonStateSpace>(groupSkeleton);
+  auto space = std::make_shared<MetaSkeletonStateSpace>(groupSkeleton.get());
 
   EXPECT_THROW(
       { toSplineJointTrajectory(space, mTwoWaypointMessage2Joints); },

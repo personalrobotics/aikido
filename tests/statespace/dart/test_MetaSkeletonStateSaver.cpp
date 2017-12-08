@@ -15,22 +15,22 @@ TEST(MetaSkeletonStateSaver, MetaSkeletonStateSpaceReturnsToOriginal)
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<RevoluteJoint>();
 
-  auto space = std::make_shared<MetaSkeletonStateSpace>(skeleton);
+  auto space = std::make_shared<MetaSkeletonStateSpace>(skeleton.get());
   ASSERT_EQ(1, space->getNumSubspaces());
 
   auto state = space->createState();
   auto substate = state.getSubStateHandle<SO2>(0);
 
   substate.setAngle(1.);
-  space->setState(state);
+  space->setState(skeleton.get(), state);
   EXPECT_DOUBLE_EQ(1., skeleton->getPosition(0));
 
   {
-    auto saver = MetaSkeletonStateSaver(space->getMetaSkeleton());
+    auto saver = MetaSkeletonStateSaver(skeleton);
     DART_UNUSED(saver);
 
     substate.setAngle(6.);
-    space->setState(state);
+    space->setState(skeleton.get(), state);
     EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
   }
   EXPECT_DOUBLE_EQ(1., skeleton->getPosition(0));

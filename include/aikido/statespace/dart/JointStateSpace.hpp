@@ -37,17 +37,26 @@ public:
     /// Return the number of DOFs in the joint.
     std::size_t getNumDofs() const;
 
+    /// Return the names of DOFs in the joint.
+    std::vector<std::string> getDofNames() const;
+
     /// Return whether the index DOF is position-limited.
     bool hasPositionLimit(std::size_t index) const;
 
     /// Return whether any DOF is position-limited.
-    bool isLimited() const;
+    bool isPositionLimited() const;
 
     /// Return the vector of position lower limits.
     const Eigen::VectorXd getPositionLowerLimits() const;
 
     /// Return the vector of position upper limits.
     const Eigen::VectorXd getPositionUpperLimits() const;
+
+    /// Return the vector of velocity lower limits.
+    const Eigen::VectorXd getVelocityLowerLimits() const;
+
+    /// Return the vector of velocity upper limits.
+    const Eigen::VectorXd getVelocityUpperLimits() const;
 
   protected:
     /// Name of the joint
@@ -56,8 +65,8 @@ public:
     /// Name of the joint type
     std::string mType;
 
-    /// Number of DOFs in the joint
-    std::size_t mNumDofs;
+    /// Names of DOFs in the Joint
+    std::vector<std::string> mDofNames;
 
     /// The joint's position lower limits
     Eigen::VectorXd mPositionLowerLimits;
@@ -67,6 +76,16 @@ public:
 
     /// The joint's position limits
     Eigen::Matrix<bool, Eigen::Dynamic, 1> mPositionHasLimits;
+
+    /// The joint's velocity lower limits
+    Eigen::VectorXd mVelocityLowerLimits;
+
+    /// The joint's velocity upper limits
+    Eigen::VectorXd mVelocityUpperLimits;
+
+    /// The joint's velocity limits
+    // TODO: why doesn't this exist in DART??
+    // Eigen::Matrix<bool, Eigen::Dynamic, 1> mVelocityHasLimits;
   };
 
   /// Constructs a state space for \c _joint.
@@ -106,7 +125,7 @@ public:
 
   /// Sets the positions of the \c _joint to \c _state.
   ///
-  /// \param _joint \c Joint to get position from
+  /// \param _joint \c Joint to set position for
   /// \param _state input state
   virtual void setState(
       ::dart::dynamics::Joint* _joint, const StateSpace::State* _state) const;

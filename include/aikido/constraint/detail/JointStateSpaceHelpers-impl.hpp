@@ -63,7 +63,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 {
   const auto properties = _stateSpace->getProperties();
 
-  if (properties.isLimited())
+  if (properties.isPositionLimited())
   {
     return dart::common::make_unique<RBoxConstraint<N>>(
         std::move(_stateSpace),
@@ -129,7 +129,7 @@ struct createSampleableFor_impl<statespace::dart::RJoint<N>>
   {
     const auto properties = _stateSpace->getProperties();
 
-    if (properties.isLimited())
+    if (properties.isPositionLimited())
     {
       return dart::common::make_unique<RBoxConstraint<N>>(
           std::move(_stateSpace),
@@ -153,7 +153,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO2Joint>
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
     return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
@@ -169,7 +169,7 @@ struct createTestableFor_impl<statespace::dart::SO2Joint>
 
   static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
     return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
@@ -185,7 +185,7 @@ struct createProjectableFor_impl<statespace::dart::SO2Joint>
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
     return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
@@ -202,7 +202,7 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
   static std::unique_ptr<Sampleable> create(
       StateSpacePtr _stateSpace, std::unique_ptr<common::RNG> _rng)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
     return dart::common::make_unique<SO2UniformSampler>(
@@ -219,7 +219,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO3Joint>
 
   static std::unique_ptr<Differentiable> create(StateSpacePtr _stateSpace)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
     return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
@@ -235,7 +235,7 @@ struct createTestableFor_impl<statespace::dart::SO3Joint>
 
   static std::unique_ptr<Testable> create(StateSpacePtr _stateSpace)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
     return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
@@ -251,7 +251,7 @@ struct createProjectableFor_impl<statespace::dart::SO3Joint>
 
   static std::unique_ptr<Projectable> create(StateSpacePtr _stateSpace)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
     return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
@@ -268,7 +268,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
   static std::unique_ptr<Sampleable> create(
       StateSpacePtr _stateSpace, std::unique_ptr<common::RNG> _rng)
   {
-    if (_stateSpace->getProperties().isLimited())
+    if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
     return dart::common::make_unique<SO3UniformSampler>(
@@ -284,7 +284,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 {
   const auto properties = _stateSpace->getProperties();
 
-  if (properties.isLimited())
+  if (properties.isPositionLimited())
   {
     return dart::common::make_unique<SE2BoxConstraint>(
         std::move(_stateSpace),

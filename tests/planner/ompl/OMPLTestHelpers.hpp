@@ -207,7 +207,7 @@ public:
     return false;
   }
 
-  // Documentatoin inherited
+  // Documentation inherited
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
   {
     return mStateSpace;
@@ -289,7 +289,7 @@ public:
     // Create robot
     robot = createTranslationalRobot();
 
-    stateSpace = std::make_shared<StateSpace>(robot);
+    stateSpace = std::make_shared<StateSpace>(robot.get());
     interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
         stateSpace);
 
@@ -333,7 +333,7 @@ public:
     // Create robot
     robot = createTranslationalRobot();
 
-    stateSpace = std::make_shared<StateSpace>(robot);
+    stateSpace = std::make_shared<StateSpace>(robot.get());
     interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
         stateSpace);
 

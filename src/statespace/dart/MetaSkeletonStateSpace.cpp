@@ -6,17 +6,6 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 using ::dart::dynamics::MetaSkeleton;
-using ::dart::dynamics::MetaSkeletonPtr;
-using ::dart::dynamics::BallJoint;
-using ::dart::dynamics::FreeJoint;
-using ::dart::dynamics::EulerJoint;
-using ::dart::dynamics::PlanarJoint;
-using ::dart::dynamics::PrismaticJoint;
-using ::dart::dynamics::RevoluteJoint;
-using ::dart::dynamics::Joint;
-using ::dart::dynamics::ScrewJoint;
-using ::dart::dynamics::TranslationalJoint;
-using ::dart::dynamics::WeldJoint;
 using ::dart::dynamics::INVALID_INDEX;
 
 namespace aikido {
@@ -45,7 +34,7 @@ template <class T>
 T* isJointOfType(::dart::dynamics::Joint* _joint)
 {
   // It's safe to do a pointer comparison here, since getType is guaranteed to
-  // return the same reference to the corresponding getTypeStatic method.
+  // return the same reference to the corresponding getStaticType method.
   if (&_joint->getType() == &T::getStaticType())
     return static_cast<T*>(_joint);
   else
@@ -87,48 +76,161 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
 } // namespace
 
 //==============================================================================
-MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeletonPtr _metaskeleton)
-  : CartesianProduct(
-        convertVectorType<JointStateSpacePtr, StateSpacePtr>(
-            createStateSpace(*_metaskeleton)))
-  , mMetaSkeleton(std::move(_metaskeleton))
+MetaSkeletonStateSpace::Properties::Properties(
+    ::dart::dynamics::MetaSkeleton* _metaskeleton)
+  : mName(_metaskeleton->getName())
+  , mNumJoints(_metaskeleton->getNumJoints())
+  , mPositionLowerLimits(_metaskeleton->getPositionLowerLimits())
+  , mPositionUpperLimits(_metaskeleton->getPositionUpperLimits())
+  , mVelocityLowerLimits(_metaskeleton->getVelocityLowerLimits())
+  , mVelocityUpperLimits(_metaskeleton->getVelocityUpperLimits())
 {
+  mDofNames.resize(_metaskeleton->getNumDofs());
+
+  for (std::size_t ijoint = 0; ijoint < _metaskeleton->getNumJoints(); ++ijoint)
+  {
+    const auto joint = _metaskeleton->getJoint(ijoint);
+
+    // FIXME: This duplicates some of the logic in createStateSpace above.
+    std::unordered_map<std::size_t, std::size_t> jointDofMap;
+    for (std::size_t idof = 0; idof < joint->getNumDofs(); ++idof)
+    {
+      const auto dof = joint->getDof(idof);
+      const auto dofName = dof->getName();
+      const auto dofIndex = _metaskeleton->getIndexOf(dof, false);
+      if (dofIndex == INVALID_INDEX)
+      {
+        std::stringstream msg;
+        msg << "MetaSkeleton is missing DegreeOfFreedom '" << dof->getName()
+            << "' (index: " << idof << ") of Joint '" << joint->getName()
+            << "'. This should never happen.";
+        throw std::runtime_error(msg.str());
+      }
+
+      mDofNames[dofIndex] = dofName;
+      jointDofMap[idof] = dofIndex;
+    }
+
+    mIndexMap[ijoint] = jointDofMap;
+  }
 }
 
 //==============================================================================
-MetaSkeletonPtr MetaSkeletonStateSpace::getMetaSkeleton() const
+std::size_t MetaSkeletonStateSpace::Properties::getNumJoints() const
 {
-  return mMetaSkeleton;
+  return mNumJoints;
+}
+
+//==============================================================================
+std::size_t MetaSkeletonStateSpace::Properties::getNumDofs() const
+{
+  return mDofNames.size();
+}
+
+//==============================================================================
+std::vector<std::string> MetaSkeletonStateSpace::Properties::getDofNames() const
+{
+  return mDofNames;
+}
+
+//==============================================================================
+std::size_t MetaSkeletonStateSpace::Properties::getDofIndex(
+    std::size_t ijoint, std::size_t ijointdof) const
+{
+  return mIndexMap.at(ijoint).at(ijointdof);
+}
+
+//==============================================================================
+std::size_t MetaSkeletonStateSpace::Properties::getDofIndex(
+    const std::string& dofName) const
+{
+  std::vector<std::size_t> indices;
+  for (std::size_t idof = 0; idof < mDofNames.size(); ++idof)
+  {
+    if (mDofNames[idof] == dofName)
+      indices.push_back(idof);
+  }
+
+  if (indices.size() == 0)
+  {
+    std::stringstream message;
+    message << "DegreeOfFreedom '" << dofName
+            << "' does not exist in MetaSkeleton.";
+    throw std::invalid_argument{message.str()};
+  }
+  else if (indices.size() > 1)
+  {
+    std::stringstream message;
+    message << "Multiple (" << indices.size() << ") DOFs have the same name '"
+            << dofName << "'.";
+    throw std::invalid_argument{message.str()};
+  }
+
+  assert(indices[0] != INVALID_INDEX);
+  return indices[0];
+}
+
+//==============================================================================
+const Eigen::VectorXd
+MetaSkeletonStateSpace::Properties::getPositionLowerLimits() const
+{
+  return mPositionLowerLimits;
+}
+
+//==============================================================================
+const Eigen::VectorXd
+MetaSkeletonStateSpace::Properties::getPositionUpperLimits() const
+{
+  return mPositionUpperLimits;
+}
+
+//==============================================================================
+const Eigen::VectorXd
+MetaSkeletonStateSpace::Properties::getVelocityLowerLimits() const
+{
+  return mVelocityLowerLimits;
+}
+
+//==============================================================================
+const Eigen::VectorXd
+MetaSkeletonStateSpace::Properties::getVelocityUpperLimits() const
+{
+  return mVelocityUpperLimits;
+}
+
+//==============================================================================
+MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeleton* _metaskeleton)
+  : CartesianProduct(
+        convertVectorType<JointStateSpacePtr, StateSpacePtr>(
+            createStateSpace(*_metaskeleton)))
+  , mProperties(MetaSkeletonStateSpace::Properties(_metaskeleton))
+{
+  // Do nothing.
+}
+
+//==============================================================================
+const MetaSkeletonStateSpace::Properties MetaSkeletonStateSpace::getProperties()
+    const
+{
+  return mProperties;
 }
 
 //==============================================================================
 void MetaSkeletonStateSpace::convertPositionsToState(
     const Eigen::VectorXd& _positions, State* _state) const
 {
-  if (static_cast<std::size_t>(_positions.size())
-      != mMetaSkeleton->getNumDofs())
+  if (static_cast<std::size_t>(_positions.size()) != mProperties.getNumDofs())
     throw std::invalid_argument("Incorrect number of positions.");
 
   for (std::size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubspace<JointStateSpace>(isubspace);
-    const auto joint = mMetaSkeleton->getJoint(isubspace);
+    const auto numJointDofs = subspace->getProperties().getNumDofs();
 
-    // TODO: Find a more efficient way to do this mapping.
-    const auto numJointDofs = joint->getNumDofs();
     Eigen::VectorXd jointPositions(numJointDofs);
-
     for (std::size_t idof = 0; idof < numJointDofs; ++idof)
-    {
-      const auto dof = joint->getDof(idof);
-      const auto dofIndex = mMetaSkeleton->getIndexOf(dof, false);
-      if (dofIndex == INVALID_INDEX)
-        throw std::logic_error(
-            "DegreeOfFreedom is not in MetaSkeleton. This should never "
-            "happen.");
-
-      jointPositions[idof] = _positions[dofIndex];
-    }
+      jointPositions[idof]
+          = _positions[mProperties.getDofIndex(isubspace, idof)];
 
     const auto substate = getSubState<>(_state, isubspace);
     subspace->convertPositionsToState(jointPositions, substate);
@@ -139,56 +241,47 @@ void MetaSkeletonStateSpace::convertPositionsToState(
 void MetaSkeletonStateSpace::convertStateToPositions(
     const State* _state, Eigen::VectorXd& _positions) const
 {
-  _positions.resize(mMetaSkeleton->getNumDofs());
+  _positions.resize(mProperties.getNumDofs());
 
   for (std::size_t isubspace = 0; isubspace < getNumSubspaces(); ++isubspace)
   {
     const auto subspace = getSubspace<JointStateSpace>(isubspace);
-    const auto joint = mMetaSkeleton->getJoint(isubspace);
+    const auto numJointDofs = subspace->getProperties().getNumDofs();
     const auto substate = getSubState<>(_state, isubspace);
 
-    Eigen::VectorXd jointPositions;
+    Eigen::VectorXd jointPositions(numJointDofs);
     subspace->convertStateToPositions(substate, jointPositions);
 
-    // TODO: Find a more efficient way to do this mapping.
-    for (std::size_t idof = 0;
-         idof < static_cast<std::size_t>(jointPositions.size());
-         ++idof)
-    {
-      const auto dof = joint->getDof(idof);
-      const auto dofIndex = mMetaSkeleton->getIndexOf(dof, false);
-      if (dofIndex == INVALID_INDEX)
-        throw std::logic_error(
-            "DegreeOfFreedom is not in MetaSkeleton. This should never "
-            "happen.");
-
-      _positions[dofIndex] = jointPositions[idof];
-    }
+    for (std::size_t idof = 0; idof < numJointDofs; ++idof)
+      _positions[mProperties.getDofIndex(isubspace, idof)]
+          = jointPositions[idof];
   }
 }
 
 //==============================================================================
-void MetaSkeletonStateSpace::getState(State* _state) const
+void MetaSkeletonStateSpace::getState(
+    const ::dart::dynamics::MetaSkeleton* _metaskeleton, State* _state) const
 {
-  convertPositionsToState(mMetaSkeleton->getPositions(), _state);
+  convertPositionsToState(_metaskeleton->getPositions(), _state);
 }
 
 //==============================================================================
-auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton() const
-    -> ScopedState
+auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton(
+    const ::dart::dynamics::MetaSkeleton* _metaskeleton) const -> ScopedState
 {
   auto scopedState = createState();
-  getState(scopedState.getState());
+  getState(_metaskeleton, scopedState.getState());
 
   return scopedState;
 }
 
 //==============================================================================
-void MetaSkeletonStateSpace::setState(const State* _state)
+void MetaSkeletonStateSpace::setState(
+    ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state)
 {
   Eigen::VectorXd positions;
   convertStateToPositions(_state, positions);
-  mMetaSkeleton->setPositions(positions);
+  _metaskeleton->setPositions(positions);
 }
 
 } // namespace dart

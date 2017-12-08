@@ -15,12 +15,14 @@ namespace constraint {
 class FrameTestable : public Testable
 {
 public:
-  /// Creat a Testable for the MetaSkeleton.
-  /// \param _stateSpace Configuration space of the metaskeleton.
+  /// Create a Testable for the MetaSkeleton.
+  /// \param _metaSkeletonStateSpace Configuration space of the metaskeleton.
+  /// \param _metaskeleton MetaSkeleton to test with
   /// \param _frame Frame constrained by _poseConstraint.
   /// \param _poseConstraint A testable constraint on _frame.
   FrameTestable(
-      statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       dart::dynamics::ConstJacobianNodePtr _frame,
       TestablePtr _poseConstraint);
 
@@ -31,11 +33,12 @@ public:
   ///        StateSpace returend by getStateSpace().
   bool isSatisfied(const statespace::StateSpace::State* _state) const override;
 
-  // Documentation inhereted
+  // Documentation inherited
   std::shared_ptr<statespace::StateSpace> getStateSpace() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   dart::dynamics::ConstJacobianNodePtr mFrame;
   TestablePtr mPoseConstraint;
   std::shared_ptr<statespace::SE3> mPoseStateSpace;

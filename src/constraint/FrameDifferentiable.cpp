@@ -7,20 +7,25 @@ namespace constraint {
 //==============================================================================
 FrameDifferentiable::FrameDifferentiable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode,
     DifferentiablePtr _poseConstraint)
-  : mJacobianNode(std::move(_jacobianNode))
+  : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(_metaskeleton))
+  , mJacobianNode(std::move(_jacobianNode))
   , mPoseConstraint(std::move(_poseConstraint))
-  , mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
 {
+  if (!mMetaSkeletonStateSpace)
+    throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
+
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("_metaskeleton is nullptr.");
+
   if (!mPoseConstraint)
     throw std::invalid_argument("_poseConstraint is nullptr.");
 
   if (!mJacobianNode)
     throw std::invalid_argument("_jacobianNode is nullptr.");
-
-  if (!mMetaSkeletonStateSpace)
-    throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
 
   using SE3 = statespace::SE3;
 
@@ -28,14 +33,6 @@ FrameDifferentiable::FrameDifferentiable(
 
   if (!space)
     throw std::invalid_argument("_poseConstraint is not in SE3.");
-
-  mMetaSkeleton = mMetaSkeletonStateSpace->getMetaSkeleton();
-
-  if (!mMetaSkeleton)
-  {
-    throw std::invalid_argument(
-        "_metaSkeletonStateSpace does not have skeleton.");
-  }
 
   // TODO: If possible, check that _frame is influenced by at least
   // one DegreeOfFreedom in the _stateSpace's Skeleton.
@@ -56,7 +53,7 @@ void FrameDifferentiable::getValue(
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setState(state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
 
@@ -69,11 +66,10 @@ void FrameDifferentiable::getJacobian(
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
-  using dart::dynamics::MetaSkeletonPtr;
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setState(state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
 
@@ -97,11 +93,10 @@ void FrameDifferentiable::getValueAndJacobian(
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
-  using dart::dynamics::MetaSkeletonPtr;
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setState(state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), state);
 
   SE3State bodyPose(mJacobianNode->getTransform());
 

@@ -6,19 +6,29 @@ namespace dart {
 
 //==============================================================================
 JointStateSpace::Properties::Properties(::dart::dynamics::Joint* _joint)
-  : mName(_joint->getName())
-  , mType(_joint->getType())
-  , mNumDofs(_joint->getNumDofs())
+  : mName(_joint->getName()), mType(_joint->getType())
 {
-  mPositionLowerLimits.resize(mNumDofs);
-  mPositionUpperLimits.resize(mNumDofs);
-  mPositionHasLimits.resize(mNumDofs);
+  const std::size_t numDofs = _joint->getNumDofs();
 
-  for (std::size_t index = 0; index < mNumDofs; ++index)
+  mDofNames.resize(numDofs);
+
+  mPositionLowerLimits.resize(numDofs);
+  mPositionUpperLimits.resize(numDofs);
+  mPositionHasLimits.resize(numDofs);
+
+  mVelocityLowerLimits.resize(numDofs);
+  mVelocityUpperLimits.resize(numDofs);
+
+  for (std::size_t index = 0; index < numDofs; ++index)
   {
+    mDofNames[index] = _joint->getDofName(index);
+
     mPositionLowerLimits[index] = _joint->getPositionLowerLimit(index);
     mPositionUpperLimits[index] = _joint->getPositionUpperLimit(index);
     mPositionHasLimits[index] = _joint->hasPositionLimit(index);
+
+    mVelocityLowerLimits[index] = _joint->getVelocityLowerLimit(index);
+    mVelocityUpperLimits[index] = _joint->getVelocityUpperLimit(index);
   }
 }
 
@@ -37,17 +47,23 @@ const std::string JointStateSpace::Properties::getType() const
 //==============================================================================
 std::size_t JointStateSpace::Properties::getNumDofs() const
 {
-  return mNumDofs;
+  return mDofNames.size();
+}
+
+//==============================================================================
+std::vector<std::string> JointStateSpace::Properties::getDofNames() const
+{
+  return mDofNames;
 }
 
 //==============================================================================
 bool JointStateSpace::Properties::hasPositionLimit(std::size_t index) const
 {
-  if (index >= mNumDofs)
+  if (index >= getNumDofs())
   {
     std::stringstream ss;
     ss << "[JointStateSpace::Properties::hasPositionLimit] Index " << index
-       << " is out of bounds for Joint with " << mNumDofs << " DOFs.";
+       << " is out of bounds for Joint with " << getNumDofs() << " DOFs.";
     throw std::out_of_range(ss.str());
   }
 
@@ -55,7 +71,7 @@ bool JointStateSpace::Properties::hasPositionLimit(std::size_t index) const
 }
 
 //==============================================================================
-bool JointStateSpace::Properties::isLimited() const
+bool JointStateSpace::Properties::isPositionLimited() const
 {
   return mPositionHasLimits.array().any();
 }
@@ -72,6 +88,20 @@ const Eigen::VectorXd JointStateSpace::Properties::getPositionUpperLimits()
     const
 {
   return mPositionUpperLimits;
+}
+
+//==============================================================================
+const Eigen::VectorXd JointStateSpace::Properties::getVelocityLowerLimits()
+    const
+{
+  return mVelocityLowerLimits;
+}
+
+//==============================================================================
+const Eigen::VectorXd JointStateSpace::Properties::getVelocityUpperLimits()
+    const
+{
+  return mVelocityUpperLimits;
 }
 
 //==============================================================================

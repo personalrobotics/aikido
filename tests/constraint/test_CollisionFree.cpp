@@ -55,13 +55,13 @@ protected:
     mCollisionGroup3 = mCollisionDetector->createCollisionGroup(bn1, boxNode);
 
     // StateSpace for controlling skeleton
-    GroupPtr group = Group::create();
-    group->addBodyNode(bn1);
-    group->addBodyNode(boxNode);
-    group->addDofs(mManipulator->getDofs());
-    group->addDofs(mBox->getDofs());
+    mSkeleton = Group::create();
+    mSkeleton->addBodyNode(bn1);
+    mSkeleton->addBodyNode(boxNode);
+    mSkeleton->addDofs(mManipulator->getDofs());
+    mSkeleton->addDofs(mBox->getDofs());
 
-    mStateSpace = std::make_shared<MetaSkeletonStateSpace>(group);
+    mStateSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton.get());
     mManipulator->enableSelfCollisionCheck();
     mManipulator->enableAdjacentBodyCheck();
   }
@@ -78,55 +78,58 @@ public:
 
   // statespace setup
   MetaSkeletonStateSpacePtr mStateSpace;
+  dart::dynamics::GroupPtr mSkeleton;
 };
 
 TEST_F(CollisionFreeTest, ConstructorThrowsOnNullStateSpace)
 {
   EXPECT_THROW(
-      CollisionFree(nullptr, mCollisionDetector), std::invalid_argument);
+      CollisionFree(nullptr, nullptr, mCollisionDetector),
+      std::invalid_argument);
 }
 
 TEST_F(CollisionFreeTest, ConstructorThrowsOnNullCollisionDetector)
 {
-  EXPECT_THROW(CollisionFree(mStateSpace, nullptr), std::invalid_argument);
+  EXPECT_THROW(
+      CollisionFree(mStateSpace, mSkeleton, nullptr), std::invalid_argument);
 }
 
 TEST_F(CollisionFreeTest, GetStateSpaceMatchStateSpace)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
   EXPECT_EQ(mStateSpace, constraint.getStateSpace());
 }
 
 TEST_F(CollisionFreeTest, EmptyCollisionGroup_IsSatisfiedReturnsTrue)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
 
-  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
-  mStateSpace->setState(state);
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
+  mStateSpace->setState(mSkeleton.get(), state);
 
   EXPECT_TRUE(constraint.isSatisfied(state));
 }
 
 TEST_F(CollisionFreeTest, AddPairwiseCheckPasses_IsSatisfied)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup2);
 
-  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
 
   Eigen::VectorXd position(Eigen::VectorXd::Zero(7));
   position(4) = 5;
   mStateSpace->convertPositionsToState(position, state);
-  mStateSpace->setState(state);
+  mStateSpace->setState(mSkeleton.get(), state);
 
   EXPECT_TRUE(constraint.isSatisfied(state));
 }
 
 TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
 
-  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
 
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
   EXPECT_FALSE(constraint.isSatisfied(state));
@@ -134,9 +137,9 @@ TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
 
 TEST_F(CollisionFreeTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
 
-  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
 
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
   EXPECT_FALSE(constraint.isSatisfied(state));
@@ -153,18 +156,18 @@ TEST_F(CollisionFreeTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
 
 TEST_F(CollisionFreeTest, AddSelfCheckPasses_IsSatisfied)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
 
-  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
   constraint.addSelfCheck(mCollisionGroup1);
   EXPECT_TRUE(constraint.isSatisfied(state));
 }
 
 TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
 
-  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
 
   constraint.addSelfCheck(mCollisionGroup3);
   EXPECT_FALSE(constraint.isSatisfied(state));
@@ -172,9 +175,9 @@ TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
 
 TEST_F(CollisionFreeTest, AddAndRemoveSelfCheckFails_IsSatisfied)
 {
-  CollisionFree constraint(mStateSpace, mCollisionDetector);
+  CollisionFree constraint(mStateSpace, mSkeleton, mCollisionDetector);
 
-  auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  auto state = mStateSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
 
   constraint.addSelfCheck(mCollisionGroup3);
   EXPECT_FALSE(constraint.isSatisfied(state));
