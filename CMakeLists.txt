@@ -124,7 +124,7 @@ initialize_component_helpers(aikido)
 include(CMakePackageConfigHelpers)
 include(FindPkgConfig)
 
-find_package(Boost REQUIRED COMPONENTS filesystem graph program_options system)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 
 find_package(DART 6.2.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
