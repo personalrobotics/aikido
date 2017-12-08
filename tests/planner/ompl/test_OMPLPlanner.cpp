@@ -244,50 +244,50 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
   }
 }
 
-TEST_F(PlannerTest, PlanLRAstar)
-{
-  Eigen::Vector3d startPose(-3, -3, 0);
-  Eigen::Vector3d goalPose(3, 3, 0);
+// TEST_F(PlannerTest, PlanLRAstar)
+// {
+//   Eigen::Vector3d startPose(-3, -3, 0);
+//   Eigen::Vector3d goalPose(3, 3, 0);
 
-  auto startState = stateSpace->createState();
-  auto subState1 = stateSpace->getSubStateHandle<R3>(startState, 0);
-  subState1.setValue(startPose);
+//   auto startState = stateSpace->createState();
+//   auto subState1 = stateSpace->getSubStateHandle<R3>(startState, 0);
+//   subState1.setValue(startPose);
 
-  auto goalState = stateSpace->createState();
-  auto subState2 = stateSpace->getSubStateHandle<R3>(goalState, 0);
-  subState2.setValue(goalPose);
+//   auto goalState = stateSpace->createState();
+//   auto subState2 = stateSpace->getSubStateHandle<R3>(goalState, 0);
+//   subState2.setValue(goalPose);
 
-  // Plan
-  auto traj = aikido::planner::ompl::planLRAstar(
-      startState,
-      goalState,
-      stateSpace,
-      interpolator,
-      std::move(dmetric),
-      std::move(sampler),
-      std::move(collConstraint),
-      std::move(boundsConstraint),
-      std::move(boundsProjection),
-      0.05,
-      "/home/adityavk/research-ws/src/LRAstar/scripts/graphs/"
-      "halton3D2_0.graphml",
-      std::numeric_limits<double>::max(),
-      1.0,
-      5.0);
+//   // Plan
+//   auto traj = aikido::planner::ompl::planLRAstar(
+//       startState,
+//       goalState,
+//       stateSpace,
+//       interpolator,
+//       std::move(dmetric),
+//       std::move(sampler),
+//       std::move(collConstraint),
+//       std::move(boundsConstraint),
+//       std::move(boundsProjection),
+//       0.05,
+//       "/home/adityavk/research-ws/src/LRAstar/scripts/graphs/"
+//       "halton3D2_0.graphml",
+//       std::numeric_limits<double>::max(),
+//       1.0,
+//       5.0);
 
-  ASSERT_TRUE(traj != nullptr);
+//   ASSERT_TRUE(traj != nullptr);
 
-  // Check the first waypoint
-  auto s0 = stateSpace->createState();
-  traj->evaluate(0, s0);
-  auto r0 = s0.getSubStateHandle<R3>(0);
-  EXPECT_TRUE(r0.getValue().isApprox(startPose));
+//   // Check the first waypoint
+//   auto s0 = stateSpace->createState();
+//   traj->evaluate(0, s0);
+//   auto r0 = s0.getSubStateHandle<R3>(0);
+//   EXPECT_TRUE(r0.getValue().isApprox(startPose));
 
-  // Check the last waypoint
-  traj->evaluate(traj->getEndTime(), s0);
-  r0 = s0.getSubStateHandle<R3>(0);
-  EXPECT_TRUE(r0.getValue().isApprox(goalPose));
-}
+//   // Check the last waypoint
+//   traj->evaluate(traj->getEndTime(), s0);
+//   r0 = s0.getSubStateHandle<R3>(0);
+//   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
+// }
 
 TEST_F(PlannerTest, PlanThrowsOnNullGoalTestable)
 {
