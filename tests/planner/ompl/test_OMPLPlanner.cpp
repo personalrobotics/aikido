@@ -1,3 +1,5 @@
+#include <LRAstar.hpp>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/CartesianProductTestable.hpp>
@@ -7,8 +9,6 @@
 #include <aikido/planner/ompl/CRRTConnect.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
-#include <LRAstar.hpp>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 
@@ -269,9 +269,11 @@ TEST_F(PlannerTest, PlanLRAstar)
       std::move(boundsConstraint),
       std::move(boundsProjection),
       0.05,
-      "/home/adityavk/research-ws/src/LRAstar/scripts/graphs/halton3D2_0.graphml",
-      5.0
-      );
+      "/home/adityavk/research-ws/src/LRAstar/scripts/graphs/"
+      "halton3D2_0.graphml",
+      std::numeric_limits<double>::max(),
+      1.0,
+      5.0);
 
   ASSERT_TRUE(traj != nullptr);
 

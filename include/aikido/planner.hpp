@@ -1,3 +1,4 @@
+#include "LRAstar.hpp"
 #include "planner/PlanningResult.hpp"
 #include "planner/SnapPlanner.hpp"
 #include "planner/World.hpp"
@@ -13,4 +14,3 @@
 #include "planner/ompl/dart.hpp"
 #include "planner/parabolic/ParabolicSmoother.hpp"
 #include "planner/parabolic/ParabolicTimer.hpp"
-#include "LRAstar.hpp"

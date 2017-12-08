@@ -390,6 +390,8 @@ trajectory::InterpolatedPtr planLRAstar(
     constraint::ProjectablePtr _boundsProjector,
     double _maxDistanceBtwProjections,
     std::string _roadmapPath,
+    double _lookahead,
+    double _greediness,
     double _maxPlanTime)
 {
 
@@ -415,42 +417,15 @@ trajectory::InterpolatedPtr planLRAstar(
   pdef->setGoalState(goal); // copies
   sspace->freeState(goal);
 
-  auto planner = ompl_make_shared<LRAstar::LRAstar>(si, _roadmapPath, 1,1);
+  auto planner = ompl_make_shared<LRAstar::LRAstar>(
+      si, _roadmapPath, _lookahead, _greediness);
 
-  if(_maxPlanTime > 0)
-  {
-    planner->setProblemDefinition(pdef);
-    planner->setup();
-    ::ompl::base::PlannerStatus status;
-    status = planner->solve(::ompl::base::plannerNonTerminatingCondition());
-
-    if (status == ::ompl::base::PlannerStatus::EXACT_SOLUTION)
-    {
-      auto returnTraj = std::make_shared<trajectory::Interpolated>(
-          std::move(_stateSpace), std::move(_interpolator));
-
-      // Get the path
-      auto path = ompl_dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
-          pdef->getSolutionPath());
-      if (!path)
-      {
-        throw std::invalid_argument(
-            "Path is not of type PathGeometric. Cannot convert to aikido "
-            "Trajectory");
-      }
-
-      for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
-      {
-        const auto* st
-            = static_cast<GeometricStateSpace::StateType*>(path->getState(idx));
-        // Arbitrary timing
-        returnTraj->addWaypoint(idx, st->mState);
-      }
-
-      return returnTraj;
-    }
-  }
-  return nullptr;
+  return planOMPL(
+      planner,
+      pdef,
+      std::move(_stateSpace),
+      std::move(_interpolator),
+      _maxPlanTime);
 }
 
 //==============================================================================
