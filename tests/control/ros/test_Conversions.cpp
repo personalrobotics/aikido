@@ -66,7 +66,7 @@ protected:
     mSkeleton2Joints->createJointAndBodyNodePair<RevoluteJoint, BodyNode>(
         bn1, jointProperties2, bnProperties2);
     mStateSpace2Joints
-      = std::make_shared<MetaSkeletonStateSpace>(mSkeleton2Joints.get());
+        = std::make_shared<MetaSkeletonStateSpace>(mSkeleton2Joints.get());
 
     // Create a two-waypoint trajectory for mSkeleton2Joints,
     // with different ordering of joints.

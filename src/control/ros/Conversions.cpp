@@ -486,8 +486,8 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
     {
       std::stringstream message;
       message << "Joint " << jointProperties.getName() << " of type "
-              << jointProperties.getType() << " has "
-              << jointDofNames.size() << " DOFs.";
+              << jointProperties.getType() << " has " << jointDofNames.size()
+              << " DOFs.";
       throw std::invalid_argument{message.str()};
     }
 
