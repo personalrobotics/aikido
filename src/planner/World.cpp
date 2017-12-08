@@ -1,3 +1,4 @@
+#include <dart/common/StlHelpers.hpp>
 #include <aikido/planner/World.hpp>
 
 namespace aikido {
@@ -149,6 +150,53 @@ void World::removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 std::mutex& World::getMutex() const
 {
   return mMutex;
+}
+
+//==============================================================================
+bool World::State::operator==(const State& other) const
+{
+  return configurations == other.configurations;
+}
+
+//==============================================================================
+bool World::State::operator!=(const State& other) const
+{
+  return !(*this == other);
+}
+
+//==============================================================================
+World::State World::getState() const
+{
+  World::State state;
+
+  for (const auto& skeleton : mSkeletons)
+    state.configurations[skeleton->getName()] = skeleton->getConfiguration();
+
+  return state;
+}
+
+//==============================================================================
+void World::setState(const World::State& state)
+{
+  if (state.configurations.size() != mSkeletons.size())
+    throw std::invalid_argument(
+        "World::State and this World do not have the same number of "
+        "skeletons.");
+
+  for (const auto& skeleton : mSkeletons)
+  {
+    auto name = skeleton->getName();
+    auto it = state.configurations.find(name);
+    if (it == state.configurations.end())
+      throw std::invalid_argument(
+          "Skeleton " + name + " does not exist in state.");
+  }
+
+  for (const auto& skeleton : mSkeletons)
+  {
+    std::lock_guard<std::mutex> lock(skeleton->getMutex());
+    skeleton->setConfiguration(state.configurations.at(skeleton->getName()));
+  }
 }
 
 } // namespace planner
