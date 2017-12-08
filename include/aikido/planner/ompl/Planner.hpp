@@ -233,7 +233,8 @@ trajectory::InterpolatedPtr planCRRTConnect(
 /// between projecting and validity checking two successive points on a tree
 /// extension
 /// \param _roadmapPath The path to the graph to be used
-/// \param _lookahead The number of edges over which lazy search is performed
+/// \param _lookahead The number of edges over which lazy search is performed. 
+/// The lookahead helps interpolate between LWA* and LazySP
 /// \param _greediness The number of edges along the lazy path to evaluate
 /// \param _maxPlanTime The maximum time to allow the planner to search for a
 /// solution

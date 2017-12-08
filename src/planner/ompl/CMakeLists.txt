@@ -9,6 +9,7 @@ else()
   return()
 endif()
 
+find_package(pr-ompl QUIET)
 #==============================================================================
 # Libraries
 #

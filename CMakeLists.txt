@@ -126,8 +126,6 @@ include(FindPkgConfig)
 
 find_package(Boost REQUIRED COMPONENTS filesystem graph program_options system)
 
-find_package(pr-ompl)
-
 find_package(DART 6.2.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
@@ -152,18 +150,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/aikido/version.hpp
   DESTINATION "${INCLUDE_INSTALL_DIR}/aikido")
 
 include_directories("include")
-
-include_directories(
-  ${OMPL_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIR}
-  ${pr-ompl_INCLUDE_DIRS}
-)
-link_libraries(
-  ${OMPL_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${pr-ompl_LIBRARIES}
-)
-
 
 # This custom target doesn't affect on building aikido projects but is only for
 # displaying the header files in IDEs.
