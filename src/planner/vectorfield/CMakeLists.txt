@@ -4,7 +4,6 @@ set(sources
   VectorFieldUtil.cpp
   detail/VectorFieldIntegrator.cpp
   detail/VectorFieldPlannerExceptions.cpp
-  detail/BodyNodePoseVectorFieldConstraint.cpp
   BodyNodePoseVectorField.cpp
   MoveEndEffectorOffsetVectorField.cpp
   MoveEndEffectorPoseVectorField.cpp

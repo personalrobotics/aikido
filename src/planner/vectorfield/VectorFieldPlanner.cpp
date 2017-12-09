@@ -1,11 +1,12 @@
 #include <boost/numeric/odeint.hpp>
+#include <aikido/constraint/JointStateSpaceHelpers.hpp>
+#include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
-#include "detail/BodyNodePoseVectorFieldConstraint.hpp"
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
@@ -53,12 +54,21 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
     // Integrate the vector field to get a configuration space path.
     boost::numeric::odeint::integrate_adaptive(
         errorStepper(),
-        std::bind(&detail::VectorFieldIntegrator::step, integrator, _1, _2, _3),
+        std::bind(
+            &detail::VectorFieldIntegrator::step,
+            integrator,
+            std::placeholders::_1,
+            std::placeholders::_2,
+            std::placeholders::_3),
         initialQ,
         0.,
         integrationTimeInterval,
         initialStepSize,
-        std::bind(&detail::VectorFieldIntegrator::check, integrator, _1, _2));
+        std::bind(
+            &detail::VectorFieldIntegrator::check,
+            integrator,
+            std::placeholders::_1,
+            std::placeholders::_2));
   }
   // VectorFieldTerminated is an exception that is raised internally to
   // terminate
@@ -163,15 +173,17 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       initialStepSize,
       jointLimitTolerance);
 
-  auto combinedConstraint
-      = std::make_shared<detail::BodyNodePoseVectorFieldConstraint>(
-          stateSpace, constraint);
+  auto compoundConstraint
+      = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);
+  compoundConstraint->addConstraint(constraint);
+  compoundConstraint->addConstraint(
+      aikido::constraint::createTestableBounds(stateSpace));
 
   auto startState = stateSpace->getScopedStateFromMetaSkeleton();
   return followVectorField(
       *vectorfield,
       *startState,
-      *combinedConstraint,
+      *compoundConstraint,
       timelimit,
       initialStepSize,
       constraintCheckResolution,
@@ -205,15 +217,17 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       initialStepSize,
       jointLimitTolerance);
 
-  auto combinedConstraint
-      = std::make_shared<detail::BodyNodePoseVectorFieldConstraint>(
-          stateSpace, constraint);
+  auto compoundConstraint
+      = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);
+  compoundConstraint->addConstraint(constraint);
+  compoundConstraint->addConstraint(
+      aikido::constraint::createTestableBounds(stateSpace));
 
   auto startState = stateSpace->getScopedStateFromMetaSkeleton();
   return followVectorField(
       *vectorfield,
       *startState,
-      *combinedConstraint,
+      *compoundConstraint,
       timelimit,
       initialStepSize,
       constraintCheckResolution,
