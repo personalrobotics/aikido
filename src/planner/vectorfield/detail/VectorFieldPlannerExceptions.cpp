@@ -1,8 +1,9 @@
-#include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
+#include "VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
+namespace detail {
 
 //==============================================================================
 VectorFieldTerminated::VectorFieldTerminated(const std::string& whatArg)
@@ -12,7 +13,7 @@ VectorFieldTerminated::VectorFieldTerminated(const std::string& whatArg)
 }
 
 //==============================================================================
-const char* VectorFieldTerminated::what() const throw()
+const char* VectorFieldTerminated::what() const noexcept
 {
   return mWhatArg.c_str();
 }
@@ -25,39 +26,26 @@ VectorFieldError::VectorFieldError(const std::string& whatArg)
 }
 
 //==============================================================================
-DofLimitError::DofLimitError(
-    const dart::dynamics::DegreeOfFreedom* dof, const std::string& whatArg)
-  : VectorFieldError(whatArg), mDof(dof)
-{
-  // Do nothing
-}
-
-//==============================================================================
-const dart::dynamics::DegreeOfFreedom* DofLimitError::dof() const
-{
-  return mDof;
-}
-
-//==============================================================================
-StateInCollisionError::StateInCollisionError()
-  : VectorFieldError("State in collision")
+ConstraintViolatedError::ConstraintViolatedError()
+  : VectorFieldTerminated("Constraint violated.")
 {
   // Do nothing
 }
 
 //==============================================================================
 IntegrationFailedError::IntegrationFailedError()
-  : VectorFieldError("Integation failed.")
+  : VectorFieldTerminated("Integation failed.")
 {
   // Do nothing
 }
 
 //==============================================================================
-TimeLimitError::TimeLimitError() : VectorFieldError("Reached time limit.")
+TimeLimitError::TimeLimitError() : VectorFieldTerminated("Reached time limit.")
 {
   // DO nothing
 }
 
+} // detail namespace
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

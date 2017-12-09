@@ -8,6 +8,7 @@
 namespace aikido {
 namespace planner {
 namespace vectorfield {
+namespace detail {
 
 /// Define termination of vectorfield planner.
 // When VectorFieldTerminated is throws, it means
@@ -18,9 +19,9 @@ public:
   /// Constructor.
   ///
   /// \param[in] _whatArg Error string.
-  VectorFieldTerminated(const std::string& whatArg);
+  explicit VectorFieldTerminated(const std::string& whatArg);
 
-  const char* what() const throw();
+  virtual const char* what() const noexcept;
 
 protected:
   std::string mWhatArg;
@@ -38,37 +39,17 @@ public:
   VectorFieldError(const std::string& whatArg);
 };
 
-/// Define termination error of vectorfield planner due to DOF limit error.
-class DofLimitError : public VectorFieldError
-{
-public:
-  /// Constructor.
-  ///
-  /// \param[in] dof Degree of freedom.
-  /// \param[in] whatArg Error string.
-  DofLimitError(
-      const dart::dynamics::DegreeOfFreedom* dof, const std::string& whatArg);
-
-  /// Get degree of freedom.
-  ///
-  /// \return Degree of freedom.
-  const dart::dynamics::DegreeOfFreedom* dof() const;
-
-private:
-  const dart::dynamics::DegreeOfFreedom* mDof;
-};
-
 /// Define state in collision for the termination of vector field planner.
-class StateInCollisionError : public VectorFieldError
+class ConstraintViolatedError : public VectorFieldTerminated
 {
 public:
   /// Constructor.
   ///
-  StateInCollisionError();
+  ConstraintViolatedError();
 };
 
 /// Define integration failure for the termination of vectorfield planner.
-class IntegrationFailedError : public VectorFieldError
+class IntegrationFailedError : public VectorFieldTerminated
 {
 public:
   /// Constructor.
@@ -77,7 +58,7 @@ public:
 };
 
 /// Define time limit error for the termination of vectorfield planner.
-class TimeLimitError : public VectorFieldError
+class TimeLimitError : public VectorFieldTerminated
 {
 public:
   /// Constructor.
@@ -85,6 +66,7 @@ public:
   TimeLimitError();
 };
 
+} // namespace detail
 } // namespace vectorfield
 } // namespace aikido
 } // namespace planner

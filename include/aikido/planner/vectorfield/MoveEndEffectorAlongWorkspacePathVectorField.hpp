@@ -1,10 +1,10 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORALONGWORKSPACEPATHVECTORFIELD_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORALONGWORKSPACEPATHVECTORFIELD_HPP_
 
-#include <aikido/planner/vectorfield/ConfigurationSpaceVectorField.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
+#include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
 
 namespace aikido {
 namespace planner {
@@ -16,7 +16,7 @@ namespace vectorfield {
 /// One for generating joint velocity in MetaSkeleton state space,
 /// and one for determining vectorfield planner status.
 class MoveEndEffectorAlongWorkspacePathVectorField
-    : public ConfigurationSpaceVectorField
+    : public BodyNodePoseVectorField
 {
 public:
   /// Constructor.
@@ -40,28 +40,22 @@ public:
       aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bn,
       aikido::trajectory::InterpolatedPtr workspacePath,
-      double positionTolerance = 0.01,
-      double angularTolerance = 0.15,
-      double tStep = 0.001,
-      double initialStepSize = 1e-1,
-      double jointLimitPadding = 3e-2,
-      double optimizationTolerance = 1e-3,
-      const Eigen::Vector6d& kpFF = Eigen::VectorXd::Constant(6, 0.4),
-      const Eigen::Vector6d& kpE = Eigen::VectorXd::Constant(6, 1.0));
+      double positionTolerance,
+      double angularTolerance,
+      double tStep,
+      double initialStepSize,
+      double jointLimitPadding,
+      const Eigen::Vector6d& kpFF,
+      const Eigen::Vector6d& kpE);
 
-  /// Vectorfield callback function.
-  ///.
-  /// \param[out] qd Joint velocities.
-  /// \return Whether joint velocities are successfully computed.
-  bool getJointVelocities(Eigen::VectorXd& qd) const override;
+  // Documentation inherited.
+  bool evaluateCartesianVelocity(
+      const Eigen::Isometry3d& pose,
+      Eigen::Vector6d& cartesianVelocity) const override;
 
-  /// Vectorfield planning status callback function.
-  ///
-  /// Fail if deviation larger than position and angular tolerance.
-  /// Succeed if distance moved is larger than max_distance.
-  /// Cache and continue if distance moved is larger than distance.
-  /// \return Status of planning.
-  VectorFieldPlannerStatus checkPlanningStatus() const override;
+  // Documentation inherited.
+  VectorFieldPlannerStatus evaluateCartesianStatus(
+      const Eigen::Isometry3d& pose) const override;
 
 protected:
   /// Workspace path.

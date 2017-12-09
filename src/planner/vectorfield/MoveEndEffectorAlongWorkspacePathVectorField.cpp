@@ -4,8 +4,8 @@
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorAlongWorkspacePathVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlannerExceptions.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
 namespace planner {
@@ -25,17 +25,13 @@ MoveEndEffectorAlongWorkspacePathVectorField::
         double tStep,
         double initialStepSize,
         double jointLimitPadding,
-        double optimizationTolerance,
         const Eigen::Vector6d& kpFF,
         const Eigen::Vector6d& kpE)
-  : ConfigurationSpaceVectorField(stateSpace, bn)
+  : BodyNodePoseVectorField(stateSpace, bn, initialStepSize, jointLimitPadding)
   , mWorkspacePath(workspacePath)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
   , mDeltaT(tStep)
-  , mInitialStepSize(initialStepSize)
-  , mJointLimitPadding(jointLimitPadding)
-  , mOptimizationTolerance(optimizationTolerance)
   , mKpFF(kpFF)
   , mKpE(kpE)
   , mStartPose(bn->getTransform())
@@ -59,15 +55,16 @@ MoveEndEffectorAlongWorkspacePathVectorField::
 }
 
 //==============================================================================
-bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
-    Eigen::VectorXd& qd) const
+bool MoveEndEffectorAlongWorkspacePathVectorField::evaluateCartesianVelocity(
+    const Eigen::Isometry3d& pose,
+    Eigen::Vector6d& cartesianVelocity) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
   using Eigen::Vector6d;
   using dart::math::logMap;
 
-  const Isometry3d actualTEE = mBodyNode->getTransform();
+  const Isometry3d actualTEE = pose;
 
   // Find where we are on the goal trajectory by finding the the closest point
   double minDist = 0.0;
@@ -131,35 +128,19 @@ bool MoveEndEffectorAlongWorkspacePathVectorField::getJointVelocities(
         = mKpE[i] * twistPerpendicular[i] + mKpFF[i] * twistParallel[i];
   }
 
-  Eigen::VectorXd jointVelocityUpperLimits
-      = mMetaSkeleton->getVelocityUpperLimits();
-  Eigen::VectorXd jointVelocityLowerLimits
-      = mMetaSkeleton->getVelocityLowerLimits();
-
-  // Calculate joint velocities using an optimized jacobian
-  bool result = computeJointVelocityFromTwist(
-      qd,
-      desiredTwist,
-      mStateSpace,
-      mBodyNode,
-      mJointLimitPadding,
-      jointVelocityLowerLimits,
-      jointVelocityUpperLimits,
-      true,
-      mInitialStepSize,
-      mOptimizationTolerance);
-  return result;
+  cartesianVelocity = desiredTwist;
+  return true;
 }
 
 //==============================================================================
-VectorFieldPlannerStatus
-MoveEndEffectorAlongWorkspacePathVectorField::checkPlanningStatus() const
+VectorFieldPlannerStatus MoveEndEffectorAlongWorkspacePathVectorField::evaluateCartesianStatus(
+    const Eigen::Isometry3d& pose) const
 {
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
   using Eigen::Vector4d;
 
-  const Isometry3d currTEE = mBodyNode->getTransform();
+  const Isometry3d currTEE = pose;
 
   // Find where we are on the goal trajectory by finding the closest point
   double minDist = 0.0;
@@ -202,14 +183,19 @@ MoveEndEffectorAlongWorkspacePathVectorField::checkPlanningStatus() const
 
   if (orientationError.norm() > mAngularTolerance)
   {
-    throw VectorFieldTerminated("Deviated from orientation constraint.");
+    dtwarn << "Deviated from orientation constraint.";
+    return VectorFieldPlannerStatus::TERMINATE;
   }
 
   double positionDeviation = positionError.norm();
   if (positionDeviation > mPositionTolerance)
   {
-    throw VectorFieldTerminated("Deviated from straight line constraint.");
+    dtwarn << "Deviated from straight line constraint.";
+    return VectorFieldPlannerStatus::TERMINATE;
   }
+
+  std::cout << " position " << mPositionTolerance
+            << " angular " << mAngularTolerance << std::endl;
 
   // Check if we have reached the end of the goal trajectory
   Eigen::Vector4d errorToGoal = computeGeodesicError(currTEE, mGoalPose);
@@ -223,7 +209,7 @@ MoveEndEffectorAlongWorkspacePathVectorField::checkPlanningStatus() const
     return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
   }
 
-  return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
+  return VectorFieldPlannerStatus::CONTINUE;
 }
 
 } // namespace vectorfield

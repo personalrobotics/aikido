@@ -4,7 +4,7 @@
 #include <aikido/constraint/CollisionFree.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/planner/PlanningResult.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -267,7 +267,6 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 
   double maxStepSize = 0.01;
   double padding = 2e-3;
-  double optimizationTolerance = 1; // 1e-3;// 1e-10;
 
   // Linear only
   Eigen::Vector6d desiredTwist1 = Eigen::Vector6d::Zero();
@@ -281,11 +280,9 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
-          maxStepSize,
-          optimizationTolerance));
+          &jointVelocityLowerLimits,
+          &jointVelocityUpperLimits,
+          maxStepSize));
 
   // Angular only
   Eigen::Vector6d desiredTwist2 = Eigen::Vector6d::Zero();
@@ -298,11 +295,9 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
-          maxStepSize,
-          optimizationTolerance));
+          &jointVelocityLowerLimits,
+          &jointVelocityUpperLimits,
+          maxStepSize));
 
   // Both linear and angular
   Eigen::Vector6d desiredTwist3 = Eigen::Vector6d::Zero();
@@ -316,11 +311,9 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
-          maxStepSize,
-          optimizationTolerance));
+          &jointVelocityLowerLimits,
+          &jointVelocityUpperLimits,
+          maxStepSize));
 }
 
 TEST_F(VectorFieldPlannerTest, TimeTrajectoryByGeodesicUnitTiming)
@@ -459,12 +452,13 @@ TEST_F(
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
+  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+
   Eigen::Vector3d direction;
   direction << 1., 1., 0.;
   direction.normalize();
-  double distance = 0.4;
-  double maxDistance = aikido::planner::vectorfield::
-      MoveEndEffectorOffsetVectorField::InvalidMaxDistance;
+  double minDistance = 0.4;
+  double maxDistance = 0.42;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
   auto startState = mStateSpace->createState();
@@ -474,18 +468,24 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
-  double linearVelocity = 1.0;
+  double initialStepSize = 0.001;
+  double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
+  std::chrono::duration<double> timelimit(5.);
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       mStateSpace,
       mBodynode,
       mPassingConstraint,
       direction,
-      distance,
+      minDistance,
       maxDistance,
       positionTolerance,
       angularTolerance,
-      linearVelocity);
+      initialStepSize,
+      jointLimitTolerance,
+      constraintCheckResolution,
+      timelimit);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 
@@ -520,7 +520,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
     Eigen::Vector3d waypointVec = waypointTrans.translation();
 
     Eigen::Vector3d linear_error
-        = startVec + direction * distance - waypointVec;
+        = startVec + direction * minDistance - waypointVec;
     Eigen::Vector3d const linear_orthogonal_error
         = linear_error - linear_error.dot(direction) * direction;
     double const linear_orthogonal_magnitude = linear_orthogonal_error.norm();
@@ -535,14 +535,23 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       = (endTrans.translation() - startTrans.translation()).norm();
 
   // Verify the moving distance
-  EXPECT_TRUE(movedDistance >= distance);
+  EXPECT_TRUE(movedDistance >= minDistance);
   EXPECT_TRUE(movedDistance <= maxDistance);
 }
 
 TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 {
+  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+
   Eigen::Vector3d direction = Eigen::Vector3d::Zero();
   double distance = 0.2;
+  double positionTolerance = 0.01;
+  double angularTolerance = 0.15;
+  double initialStepSize = 0.05;
+  double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
+  std::chrono::duration<double> timelimit(5.);
+  double maxDistance = 0.22;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
 
@@ -553,7 +562,13 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
           mPassingConstraint,
           direction,
           distance,
-          mLinearVelocity),
+          maxDistance,
+          positionTolerance,
+          angularTolerance,
+          initialStepSize,
+          jointLimitTolerance,
+          constraintCheckResolution,
+          timelimit),
       std::runtime_error);
 }
 
@@ -561,6 +576,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
 {
   using dart::math::eulerXYXToMatrix;
   using aikido::planner::vectorfield::computeGeodesicDistance;
+  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
 
   Eigen::VectorXd goalConfig = Eigen::VectorXd::Zero(mNumDof);
   goalConfig << 1.13746, -0.363612, 0.77876, 1.07515, 1.58646, -1.00034,
@@ -569,6 +585,13 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   Eigen::Isometry3d targetPose = mBodynode->getTransform();
 
   double poseErrorTolerance = 0.01;
+  double linearVelocityGain = 1.0;
+  double angularVelocityGain = 1.0;
+  double initialStepSize = 0.05;
+  double r = 1.0;
+  double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
+  std::chrono::duration<double> timelimit(5.);
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
 
@@ -577,7 +600,14 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
       mBodynode,
       mPassingConstraint,
       targetPose,
-      poseErrorTolerance);
+      poseErrorTolerance,
+      r,
+      linearVelocityGain,
+      angularVelocityGain,
+      initialStepSize,
+      jointLimitTolerance,
+      constraintCheckResolution,
+      timelimit);
 
   EXPECT_FALSE(traj1 == nullptr) << "Trajectory not found";
 
@@ -600,7 +630,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   mStateSpace->setState(endpoint);
   Eigen::Isometry3d endTrans = mBodynode->getTransform();
 
-  double poseError = computeGeodesicDistance(endTrans, targetPose);
+  double poseError = computeGeodesicDistance(endTrans, targetPose, r);
   EXPECT_TRUE(poseError <= poseErrorTolerance);
 }
 
@@ -634,13 +664,10 @@ TEST_F(VectorFieldPlannerTest, PlanWorkspacePathTest)
   double tStep = 0.001;
   Eigen::Vector6d kpFF = Eigen::VectorXd::Constant(6, 1.0);
   Eigen::Vector6d kpE = Eigen::VectorXd::Constant(6, 0.6);
-  bool useCollisionChecking = false;
-  bool useDofLimitChecking = false;
   double initialStepSize = 1e-3;
   double jointLimitTolerance = 3e-2;
-  double optimizationTolerance = 10.;
-  double timelimit = 30.0;
-  double integralTimeInterval = 10.0;
+  double constraintCheckResolution = 1e-3;
+  std::chrono::duration<double> timelimit(30.);
 
   auto timedWorkspacePath
       = aikido::planner::vectorfield::timeTrajectoryByGeodesicUnitTiming(
@@ -656,13 +683,10 @@ TEST_F(VectorFieldPlannerTest, PlanWorkspacePathTest)
       tStep,
       kpFF,
       kpE,
-      useCollisionChecking,
-      useDofLimitChecking,
       initialStepSize,
       jointLimitTolerance,
-      optimizationTolerance,
-      timelimit,
-      integralTimeInterval);
+      constraintCheckResolution,
+      timelimit);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 

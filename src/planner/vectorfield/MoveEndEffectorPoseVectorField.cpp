@@ -4,6 +4,7 @@
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
 namespace planner {
@@ -15,90 +16,41 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     dart::dynamics::BodyNodePtr bn,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
+    double r,
     double linearVelocityGain,
     double angularVelocityGain,
     double initialStepSize,
-    double jointLimitPadding,
-    double optimizationTolerance)
-  : ConfigurationSpaceVectorField(stateSpace, bn)
+    double jointLimitPadding)
+  : BodyNodePoseVectorField(stateSpace, bn, initialStepSize, jointLimitPadding)
   , mGoalPose(goalPose)
   , mPoseErrorTolerance(poseErrorTolerance)
+  , mConversionRatioFromRadiusToMeter(r)
   , mLinearVelocityGain(linearVelocityGain)
   , mAngularVelocityGain(angularVelocityGain)
-  , mInitialStepSize(initialStepSize)
-  , mJointLimitPadding(jointLimitPadding)
-  , mOptimizationTolerance(optimizationTolerance)
 {
   if (mPoseErrorTolerance < 0)
     throw std::invalid_argument("Pose error tolerance is negative");
-  if (mOptimizationTolerance < 0)
-    throw std::invalid_argument("Optimization tolerance is negative");
-
-  mVelocityLowerLimits = mMetaSkeleton->getVelocityLowerLimits();
-  mVelocityUpperLimits = mMetaSkeleton->getVelocityUpperLimits();
 }
 
 //==============================================================================
-bool MoveEndEffectorPoseVectorField::getJointVelocities(
-    Eigen::VectorXd& qd) const
+bool MoveEndEffectorPoseVectorField::evaluateCartesianVelocity(
+    const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
-  using Eigen::Isometry3d;
-  using Eigen::Vector3d;
-  using Eigen::Vector6d;
-  using dart::math::logMap;
-
-  const Isometry3d currentPose = mBodyNode->getTransform();
-
-  Vector6d desiredTwist = computeGeodesicTwist(currentPose, mGoalPose);
-
+  using aikido::planner::vectorfield::computeGeodesicTwist;
+  Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mGoalPose);
   desiredTwist.head<3>() *= mAngularVelocityGain;
   desiredTwist.tail<3>() *= mLinearVelocityGain;
-
-  Eigen::VectorXd jointVelocityUpperLimits
-      = mMetaSkeleton->getVelocityUpperLimits();
-  Eigen::VectorXd jointVelocityLowerLimits
-      = mMetaSkeleton->getVelocityLowerLimits();
-
-  bool result = computeJointVelocityFromTwist(
-      qd,
-      desiredTwist,
-      mStateSpace,
-      mBodyNode,
-      mJointLimitPadding,
-      jointVelocityLowerLimits,
-      jointVelocityUpperLimits,
-      true,
-      mInitialStepSize,
-      mOptimizationTolerance);
-
-  if (result)
-  {
-    // Go as fast as possible
-    for (std::size_t i = 0; i < mMetaSkeleton->getNumDofs(); i++)
-    {
-      if (qd[i] > mVelocityUpperLimits[i])
-      {
-        qd[i] = mVelocityUpperLimits[i];
-      }
-      else if (qd[i] < mVelocityLowerLimits[i])
-      {
-        qd[i] = mVelocityLowerLimits[i];
-      }
-    }
-  }
-
-  return result;
+  cartesianVelocity = desiredTwist;
+  return true;
 }
 
 //==============================================================================
-VectorFieldPlannerStatus MoveEndEffectorPoseVectorField::checkPlanningStatus()
-    const
+VectorFieldPlannerStatus
+MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
+    const Eigen::Isometry3d& pose) const
 {
-  using Eigen::Isometry3d;
-
-  const Isometry3d currentPose = mBodyNode->getTransform();
-
-  double poseError = computeGeodesicDistance(currentPose, mGoalPose);
+  double poseError = computeGeodesicDistance(
+      pose, mGoalPose, mConversionRatioFromRadiusToMeter);
 
   if (poseError < mPoseErrorTolerance)
   {

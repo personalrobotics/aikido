@@ -1,6 +1,7 @@
 #include <aikido/control/ros/RosTrajectoryExecutor.hpp>
 
 #include <aikido/common/StepSequence.hpp>
+#include <aikido/control/TrajectoryRunningException.hpp>
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/control/ros/RosTrajectoryExecutionException.hpp>
 #include <aikido/control/ros/util.hpp>
@@ -65,6 +66,8 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
   , mConnectionTimeout{connectionTimeout}
   , mConnectionPollingPeriod{connectionPollingPeriod}
   , mInProgress{false}
+  , mPromise{nullptr}
+  , mMutex{}
 {
   if (mTimestep <= 0)
     throw std::invalid_argument("Timestep must be positive.");
@@ -88,22 +91,32 @@ std::future<void> RosTrajectoryExecutor::execute(trajectory::TrajectoryPtr traj)
 }
 
 //==============================================================================
-std::future<void> RosTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
+void RosTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
 {
-  using aikido::control::ros::toRosJointTrajectory;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
   if (!traj)
     throw std::invalid_argument("Trajectory is null.");
 
+  if (traj->metadata.executorValidated)
+    return;
+
   const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
       traj->getStateSpace());
+
   if (!space)
-  {
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
-  }
+
+  traj->metadata.executorValidated = true;
+}
+//==============================================================================
+std::future<void> RosTrajectoryExecutor::execute(
+    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
+{
+  using aikido::control::ros::toRosJointTrajectory;
+
+  validate(traj);
 
   // Setup the goal properties.
   // TODO: Also set goal_tolerance, path_tolerance.
@@ -131,15 +144,15 @@ std::future<void> RosTrajectoryExecutor::execute(
     DART_UNUSED(lock); // Suppress unused variable warning
 
     if (mInProgress)
-      throw std::runtime_error("Another trajectory is in progress.");
+      throw TrajectoryRunningException();
 
-    mPromise = std::promise<void>();
+    mPromise.reset(new std::promise<void>());
     mInProgress = true;
     mGoalHandle = mClient.sendGoal(
         goal,
         boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
 
-    return mPromise.get_future();
+    return mPromise->get_future();
   }
 }
 
@@ -167,7 +180,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       if (!terminalMessage.empty())
         message << " (" << terminalMessage << ")";
 
-      mPromise.set_exception(
+      mPromise->set_exception(
           std::make_exception_ptr(
               RosTrajectoryExecutionException(message.str(), terminalState)));
 
@@ -189,7 +202,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       if (!result->error_string.empty())
         message << " (" << result->error_string << ")";
 
-      mPromise.set_exception(
+      mPromise->set_exception(
           std::make_exception_ptr(
               RosTrajectoryExecutionException(
                   message.str(), result->error_code)));
@@ -198,7 +211,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
     }
 
     if (isSuccessful)
-      mPromise.set_value();
+      mPromise->set_value();
 
     mInProgress = false;
   }
@@ -214,10 +227,16 @@ void RosTrajectoryExecutor::step()
 
   if (!::ros::ok() && mInProgress)
   {
-    mPromise.set_exception(
+    mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
     mInProgress = false;
   }
+}
+
+//==============================================================================
+void RosTrajectoryExecutor::abort()
+{
+  // TODO: cancel the actionlib goal (once there is support in ReWD controller)
 }
 
 } // namespace ros

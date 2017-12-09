@@ -2,10 +2,17 @@
 
 ### 0.2.0 (201X-XX-XX)
 
+* State Space
+  * Moved MetaSkeletonStateSpaceSaver implementation to src: [#273](https://github.com/personalrobotics/aikido/pull/273)
+
 * Constraint
 
   * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
   * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
+
+* Perception
+
+  * Added RcnnPoseModule: [#264](https://github.com/personalrobotics/aikido/pull/264)
 
 * Planner
 
