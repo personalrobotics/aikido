@@ -1,3 +1,4 @@
+#include <aikido/common/StepSequence.hpp>
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
@@ -11,15 +12,26 @@ namespace vectorfield {
 BodyNodePoseVectorField::BodyNodePoseVectorField(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
-    double initialStepSize,
-    double jointLimitPadding)
+    double maxStepSize,
+    double jointLimitPadding,
+    bool enforceJointVelocityLimits)
   : VectorField(metaSkeletonStateSpace)
   , mMetaSkeletonStateSpace(metaSkeletonStateSpace)
   , mMetaSkeleton(metaSkeletonStateSpace->getMetaSkeleton())
   , mBodyNode(bodyNode)
-  , mInitialStepSize(initialStepSize)
+  , mMaxStepSize(maxStepSize)
   , mJointLimitPadding(jointLimitPadding)
+  , mEnforceJointVelocityLimits(enforceJointVelocityLimits)
 {
+  if (mMaxStepSize <= 0)
+  {
+    throw std::invalid_argument("Maximum step size must be non-negative.");
+  }
+  if (mJointLimitPadding <= 0)
+  {
+    throw std::invalid_argument("Joint limit padding must be non-negative.");
+  }
+
   mVelocityLowerLimits = mMetaSkeleton->getVelocityLowerLimits();
   mVelocityUpperLimits = mMetaSkeleton->getVelocityUpperLimits();
 }
@@ -54,9 +66,10 @@ bool BodyNodePoseVectorField::evaluateVelocity(
       mMetaSkeletonStateSpace,
       mBodyNode,
       mJointLimitPadding,
-      &mVelocityLowerLimits,
-      &mVelocityUpperLimits,
-      mInitialStepSize);
+      mVelocityLowerLimits,
+      mVelocityUpperLimits,
+      mEnforceJointVelocityLimits,
+      mMaxStepSize);
   return result;
 }
 
@@ -82,7 +95,8 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
     const aikido::trajectory::Trajectory& trajectory,
     const aikido::constraint::Testable* constraint,
     double evalStepSize,
-    double evalStartTime) const
+    double& evalTimePivot,
+    bool excludeEndTime) const
 {
   if (constraint == nullptr)
   {
@@ -90,24 +104,20 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
   }
   auto state = mMetaSkeletonStateSpace->createState();
 
-  double t = evalStartTime;
-  while (t >= trajectory.getStartTime() && t <= trajectory.getEndTime())
-  {
-    if (!constraint->isSatisfied(state))
-    {
-      return false;
-    }
-    t += evalStepSize;
-  }
-  // in case end time is not checked
-  if (t > trajectory.getEndTime())
+  aikido::common::StepSequence seq(
+      evalStepSize, excludeEndTime, evalTimePivot, trajectory.getEndTime());
+
+  for (double t : seq)
   {
     trajectory.evaluate(t, state);
+    // update current evaluation time pivot
+    evalTimePivot = t;
     if (!constraint->isSatisfied(state))
     {
       return false;
     }
   }
+
   return true;
 }
 

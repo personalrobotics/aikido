@@ -22,9 +22,9 @@ constexpr double integrationTimeInterval = 10.0;
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> followVectorField(
-    const aikido::planner::vectorfield::VectorField* vectorField,
-    const aikido::statespace::StateSpace::State* startState,
-    const aikido::constraint::Testable* constraint,
+    const aikido::planner::vectorfield::VectorField& vectorField,
+    const aikido::statespace::StateSpace::State& startState,
+    const aikido::constraint::Testable& constraint,
     std::chrono::duration<double> timelimit,
     double initialStepSize,
     double checkConstraintResolution,
@@ -38,16 +38,17 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
                          double,
                          boost::numeric::odeint::vector_space_algebra>;
 
-  std::size_t dimension = vectorField->getStateSpace()->getDimension();
+  std::size_t dimension = vectorField.getStateSpace()->getDimension();
   auto integrator = std::make_shared<detail::VectorFieldIntegrator>(
-      vectorField, constraint, timelimit.count(), checkConstraintResolution);
+      &vectorField, &constraint, timelimit.count(), checkConstraintResolution);
 
   integrator->start();
 
   try
   {
     Eigen::VectorXd initialQ(dimension);
-    vectorField->getStateSpace()->logMap(startState, initialQ);
+    vectorField.getStateSpace()->logMap(&startState, initialQ);
+    // The current implementation works only in real vector spaces.
 
     // Integrate the vector field to get a configuration space path.
     boost::numeric::odeint::integrate_adaptive(
@@ -59,6 +60,9 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
         initialStepSize,
         std::bind(&detail::VectorFieldIntegrator::check, integrator, _1, _2));
   }
+  // VectorFieldTerminated is an exception that is raised internally to
+  // terminate
+  // integration, which does not indicate that an error has occurred.
   catch (const detail::VectorFieldTerminated& e)
   {
     // dtwarn << e.what() << std::endl;
@@ -77,11 +81,12 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
     return nullptr;
   }
 
-  if (integrator->getCacheIndex() < 0)
+  if (integrator->getCacheIndex() <= 1)
   {
+    // no enough waypoints cached to make a trajectory output.
     if (planningResult)
     {
-      planningResult->message = "No waypoint cached.";
+      planningResult->message = "No segment cached.";
     }
     return nullptr;
   }
@@ -89,7 +94,25 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
   std::vector<detail::Knot> newKnots(
       integrator->getKnots().begin(),
       integrator->getKnots().begin() + integrator->getCacheIndex());
-  return detail::convertToSpline(newKnots, vectorField->getStateSpace());
+  auto outputTrajectory
+      = detail::convertToSpline(newKnots, vectorField.getStateSpace());
+
+  // evaluate constraint satisfaction on last piece of trajectory
+  double lastEvaluationTime = integrator->getLastEvaluationTime();
+  if (outputTrajectory->getEndTime() > lastEvaluationTime)
+  {
+    if (!vectorField.evaluateTrajectory(
+            *outputTrajectory,
+            &constraint,
+            checkConstraintResolution,
+            lastEvaluationTime,
+            false))
+    {
+      planningResult->message = "Constraint violated.";
+      return nullptr;
+    }
+  }
+  return outputTrajectory;
 }
 
 //==============================================================================
@@ -146,9 +169,9 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 
   auto startState = stateSpace->getScopedStateFromMetaSkeleton();
   return followVectorField(
-      vectorfield.get(),
-      startState,
-      combinedConstraint.get(),
+      *vectorfield,
+      *startState,
+      *combinedConstraint,
       timelimit,
       initialStepSize,
       constraintCheckResolution,
@@ -163,8 +186,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double conversionRatioInGeodesicDistance,
-    double linearVelocityGain,
-    double angularvelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
@@ -181,8 +202,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       goalPose,
       poseErrorTolerance,
       conversionRatioInGeodesicDistance,
-      linearVelocityGain,
-      angularvelocityGain,
       initialStepSize,
       jointLimitTolerance);
 
@@ -192,9 +211,9 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
 
   auto startState = stateSpace->getScopedStateFromMetaSkeleton();
   return followVectorField(
-      vectorfield.get(),
-      startState,
-      combinedConstraint.get(),
+      *vectorfield,
+      *startState,
+      *combinedConstraint,
       timelimit,
       initialStepSize,
       constraintCheckResolution,

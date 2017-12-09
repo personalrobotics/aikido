@@ -24,9 +24,9 @@ namespace vectorfield {
 /// \param[out] planningResult information about success or failure.
 /// \return A trajectory following the vector field.
 std::unique_ptr<aikido::trajectory::Spline> followVectorField(
-    const aikido::planner::vectorfield::VectorField* vectorField,
-    const aikido::statespace::StateSpace::State* startState,
-    const aikido::constraint::Testable* constraint,
+    const aikido::planner::vectorfield::VectorField& vectorField,
+    const aikido::statespace::StateSpace::State& startState,
+    const aikido::constraint::Testable& constraint,
     std::chrono::duration<double> timelimit,
     double initialStepSize,
     double checkConstraintResolution,
@@ -80,8 +80,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// distance.
 /// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radius to
 /// meter in computing geodesic distance.
-/// \param[in] linearVelocityGain Linear velocity gain in workspace.
-/// \param[in] angularVelocityGain Angular velocity gain in workspace.
 /// \param[in] initialStepSize Initial step size.
 /// \param[in] jointLimitTolerance If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
@@ -96,8 +94,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double conversionRatioInGeodesicDistance,
-    double linearVelocityGain,
-    double angularVelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,

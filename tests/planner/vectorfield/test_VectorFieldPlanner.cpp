@@ -277,8 +277,9 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          &jointVelocityLowerLimits,
-          &jointVelocityUpperLimits,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          true,
           maxStepSize));
 
   // Angular only
@@ -292,8 +293,9 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          &jointVelocityLowerLimits,
-          &jointVelocityUpperLimits,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          true,
           maxStepSize));
 
   // Both linear and angular
@@ -308,8 +310,9 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          &jointVelocityLowerLimits,
-          &jointVelocityUpperLimits,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          true,
           maxStepSize));
 }
 
@@ -448,8 +451,6 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   Eigen::Isometry3d targetPose = mBodynode->getTransform();
 
   double poseErrorTolerance = 0.01;
-  double linearVelocityGain = 1.0;
-  double angularVelocityGain = 1.0;
   double initialStepSize = 0.05;
   double r = 1.0;
   double jointLimitTolerance = 1e-3;
@@ -465,8 +466,6 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
       targetPose,
       poseErrorTolerance,
       r,
-      linearVelocityGain,
-      angularVelocityGain,
       initialStepSize,
       jointLimitTolerance,
       constraintCheckResolution,

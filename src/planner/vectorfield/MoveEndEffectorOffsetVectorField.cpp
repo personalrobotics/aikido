@@ -19,9 +19,9 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     double maxDistance,
     double positionTolerance,
     double angularTolerance,
-    double initialStepSize,
+    double maxStepSize,
     double jointLimitPadding)
-  : BodyNodePoseVectorField(stateSpace, bn, initialStepSize, jointLimitPadding)
+  : BodyNodePoseVectorField(stateSpace, bn, maxStepSize, jointLimitPadding)
   , mDirection(direction)
   , mMinDistance(minDistance)
   , mMaxDistance(maxDistance)
@@ -39,6 +39,10 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     throw std::invalid_argument("Position tolerance is negative");
   if (mAngularTolerance < 0)
     throw std::invalid_argument("Angular tolerance is negative");
+  if (mLinearGain < 0)
+    throw std::invalid_argument("Linear gain is negative");
+  if (mRotationGain < 0)
+    throw std::invalid_argument("Rotation gain is negative");
 
   // Normalize the direction vector
   mDirection.normalize();
@@ -48,6 +52,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 bool MoveEndEffectorOffsetVectorField::evaluateCartesianVelocity(
     const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
+  using dart::math::logMap;
   using aikido::planner::vectorfield::computeGeodesicError;
 
   Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);

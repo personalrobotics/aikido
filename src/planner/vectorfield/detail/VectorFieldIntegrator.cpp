@@ -64,9 +64,9 @@ VectorFieldIntegrator::VectorFieldIntegrator(
   , mConstraintCheckResolution(checkConstraintResolution)
 {
   mCacheIndex = -1;
-  mIndex = 0;
-
+  mLastEvaluationTime = 0.0;
   mDimension = mVectorField->getStateSpace()->getDimension();
+  mState = mVectorField->getStateSpace()->createState();
 }
 
 //==============================================================================
@@ -75,7 +75,7 @@ void VectorFieldIntegrator::start()
   mTimer.start();
   mKnots.clear();
   mCacheIndex = -1;
-  mIndex = 0;
+  mLastEvaluationTime = 0.0;
 }
 
 //==============================================================================
@@ -90,17 +90,19 @@ std::vector<Knot>& VectorFieldIntegrator::getKnots()
   return mKnots;
 }
 
+double VectorFieldIntegrator::getLastEvaluationTime()
+{
+  return mLastEvaluationTime;
+}
+
 //==============================================================================
 void VectorFieldIntegrator::step(
     const Eigen::VectorXd& q, Eigen::VectorXd& qd, double /*_t*/)
 {
-  aikido::statespace::StateSpace::State* state
-      = mVectorField->getStateSpace()->allocateState();
-  mVectorField->getStateSpace()->expMap(q, state);
+  mVectorField->getStateSpace()->expMap(q, mState);
 
   // compute joint velocities
-  bool success = mVectorField->evaluateVelocity(state, qd);
-  mVectorField->getStateSpace()->freeState(state);
+  bool success = mVectorField->evaluateVelocity(mState, qd);
   if (!success)
   {
     throw IntegrationFailedError();
@@ -112,50 +114,37 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
 {
   if (mTimer.getElapsedTime() > mTimelimit)
   {
-    // throw TimeLimitError();
+    throw TimeLimitError();
   }
 
-  aikido::statespace::StateSpace::State* state
-      = mVectorField->getStateSpace()->allocateState();
-  mVectorField->getStateSpace()->expMap(q, state);
+  mVectorField->getStateSpace()->expMap(q, mState);
 
   Knot knot;
   knot.mT = t;
   knot.mPositions = q;
+  mKnots.push_back(knot);
 
-  double trajEvalStartTime = 0;
-  if (mKnots.size() > 0)
+  if (mKnots.size() > 1)
   {
-    // create new incremental segment
-    std::vector<Knot> segment;
-    segment.push_back(mKnots.back());
-    segment.push_back(knot);
-    auto trajSegment = convertToSpline(segment, mVectorField->getStateSpace());
+    auto trajSegment = convertToSpline(mKnots, mVectorField->getStateSpace());
 
-    if (mKnots.size() > 1)
-    {
-      trajEvalStartTime = mConstraintCheckResolution;
-    }
     if (!mVectorField->evaluateTrajectory(
-            *trajSegment.get(),
+            *trajSegment,
             mConstraint,
             mConstraintCheckResolution,
-            trajEvalStartTime))
+            mLastEvaluationTime,
+            true))
     {
-      throw VectorFieldTerminated("State not in constraint.");
+      throw ConstraintViolatedError();
     }
   }
-  mKnots.push_back(knot);
-  mIndex += 1;
 
-  VectorFieldPlannerStatus status = mVectorField->evaluateStatus(state);
-
-  mVectorField->getStateSpace()->freeState(state);
+  VectorFieldPlannerStatus status = mVectorField->evaluateStatus(mState);
 
   if (status == VectorFieldPlannerStatus::CACHE_AND_CONTINUE
       || status == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
   {
-    mCacheIndex = mIndex;
+    mCacheIndex = mKnots.size();
   }
 
   if (status == VectorFieldPlannerStatus::TERMINATE

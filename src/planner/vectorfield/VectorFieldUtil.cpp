@@ -68,8 +68,9 @@ bool computeJointVelocityFromTwist(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     const dart::dynamics::BodyNodePtr bodyNode,
     double jointLimitPadding,
-    const Eigen::VectorXd* jointVelocityLowerLimits,
-    const Eigen::VectorXd* jointVelocityUpperLimits,
+    const Eigen::VectorXd& jointVelocityLowerLimits,
+    const Eigen::VectorXd& jointVelocityUpperLimits,
+    bool enforceJointVelocityLimits,
     double stepSize)
 {
   using dart::math::Jacobian;
@@ -89,18 +90,22 @@ bool computeJointVelocityFromTwist(
   VectorXd initialGuess = skeleton->getVelocities();
   VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
+  VectorXd velocityLowerLimits = jointVelocityLowerLimits;
+  VectorXd velocityUpperLimits = jointVelocityUpperLimits;
+
   auto currentState = stateSpace->createState();
   stateSpace->convertPositionsToState(positions, currentState);
 
   const auto problem = std::make_shared<Problem>(numDofs);
-  if (jointVelocityLowerLimits != nullptr)
+  if (enforceJointVelocityLimits)
   {
-    VectorXd velocityLowerLimits = *jointVelocityLowerLimits;
     for (std::size_t i = 0; i < numDofs; ++i)
     {
       const double position = positions[i];
       const double positionLowerLimit = positionLowerLimits[i];
+      const double positionUpperLimit = positionUpperLimits[i];
       const double velocityLowerLimit = velocityLowerLimits[i];
+      const double velocityUpperLimit = velocityUpperLimits[i];
 
       if (position + stepSize * velocityLowerLimit
           <= positionLowerLimit + jointLimitPadding)
@@ -108,34 +113,16 @@ bool computeJointVelocityFromTwist(
         velocityLowerLimits[i] = 0.0;
       }
 
-      if (initialGuess[i] < velocityLowerLimits[i])
-      {
-        initialGuess[i] = velocityLowerLimits[i];
-      }
-    }
-    problem->setLowerBounds(velocityLowerLimits);
-  }
-
-  if (jointVelocityUpperLimits == nullptr)
-  {
-    VectorXd velocityUpperLimits = *jointVelocityUpperLimits;
-    for (std::size_t i = 0; i < numDofs; ++i)
-    {
-      const double position = positions[i];
-      const double positionUpperLimit = positionUpperLimits[i];
-      const double velocityUpperLimit = velocityUpperLimits[i];
-
       if (position + stepSize * velocityUpperLimit
           >= positionUpperLimit - jointLimitPadding)
       {
         velocityUpperLimits[i] = 0.0;
       }
 
-      if (initialGuess[i] > velocityUpperLimits[i])
-      {
-        initialGuess[i] = velocityUpperLimits[i];
-      }
+      initialGuess[i] = common::clamp(
+          initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
     }
+    problem->setLowerBounds(velocityLowerLimits);
     problem->setUpperBounds(velocityUpperLimits);
   }
 

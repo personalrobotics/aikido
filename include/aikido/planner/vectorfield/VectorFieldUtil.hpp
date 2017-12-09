@@ -21,9 +21,9 @@ namespace vectorfield {
 /// \param[in] jointLimitPadding If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] jointVelocityLowerLimits Joint velocity lower bounds.
-/// If input is nullptr, it means no joint velocity lower limits.
 /// \param[in] jointVelocityUpperLimits Joint velocity upper bounds.
-/// If input is nullptr, it means no joint velocity upper limits.
+/// \param[in] enforceJointVelocityLimits Whether joint velocity limits are
+/// considered in computation.
 /// \param[in] stepSize Step size in second. It is used in evaluating
 /// position bounds violation. It assumes that whether moving the time of
 /// stepSize by maximum joint velocity will reach the limit.
@@ -34,8 +34,9 @@ bool computeJointVelocityFromTwist(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
     double jointLimitPadding,
-    const Eigen::VectorXd* jointVelocityLowerLimits,
-    const Eigen::VectorXd* jointVelocityUpperLimits,
+    const Eigen::VectorXd& jointVelocityLowerLimits,
+    const Eigen::VectorXd& jointVelocityUpperLimits,
+    bool enforceJointVelocityLimits,
     double stepSize);
 
 /// Compute the twist in global coordinate that corresponds to the gradient of
@@ -43,8 +44,10 @@ bool computeJointVelocityFromTwist(
 ///
 /// \param[in] fromTrans Current transformation.
 /// \param[in] toTrans Goal transformation.
-/// \return Geodesic twist in global coordinate. The first three are angular
-/// velocities, and the last three are linear velocities.
+/// \return Geodesic twist in global coordinate. It corresponds to the gradient
+/// of the geodesic distance between two transforms. The first three are angular
+/// velocities (meters per second), and the last three are linear velocities
+/// (radian per sec).
 Eigen::Vector6d computeGeodesicTwist(
     const Eigen::Isometry3d& fromTrans, const Eigen::Isometry3d& toTrans);
 
@@ -53,8 +56,8 @@ Eigen::Vector6d computeGeodesicTwist(
 /// \param[in] fromTrans Current transformation.
 /// \param[in] toTrans Goal transformation.
 /// \return Geodesic error in global coordinate. It is a 4d vector, in which
-/// the first element is the norm of angle difference, and the last three
-/// elements are translation difference.
+/// the first element is the norm of angle difference (in radian), and the
+/// last three elements are translation difference (in meter).
 Eigen::Vector4d computeGeodesicError(
     const Eigen::Isometry3d& fromTrans, const Eigen::Isometry3d& toTrans);
 

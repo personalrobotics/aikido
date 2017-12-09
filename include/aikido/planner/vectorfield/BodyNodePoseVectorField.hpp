@@ -25,15 +25,17 @@ public:
   ///
   /// \param[in] stateSpace MetaSkeleton state space.
   /// \param[in] bn Body node of end-effector.
-  /// \param[in] initialStepSize Initial step size of integrator.
+  /// \param[in] maxStepSize The maximum step size used to guarantee
+  /// that the integrator does not step out of joint limits.
   /// \param[in] jointLimitpadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
   BodyNodePoseVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr
           metaSkeletonStateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
-      double initialStepSize,
-      double jointLimitPadding);
+      double maxStepSize,
+      double jointLimitPadding,
+      bool enforceJointVelocityLimits = true);
 
   // Documentation inherited.
   bool evaluateVelocity(
@@ -47,7 +49,7 @@ public:
   /// Evaluate Cartesian velocity by current pose of body node.
   ///
   /// \param[in] pose Current pose of body node.
-  /// \param[out] cartesianVelocity Cartesian velocity defined in SE(3).
+  /// \param[out] cartesianVelocity Cartesian velocity defined in se(3).
   virtual bool evaluateCartesianVelocity(
       const Eigen::Isometry3d& pose,
       Eigen::Vector6d& cartesianVelocity) const = 0;
@@ -64,7 +66,8 @@ public:
       const aikido::trajectory::Trajectory& trajectory,
       const aikido::constraint::Testable* constraint,
       double evalStepSize,
-      double evalStartTime) const override;
+      double& evalTimePivot,
+      bool excludeEndTime) const override;
 
   /// Return meta skeleton state space.
   aikido::statespace::dart::MetaSkeletonStateSpacePtr
@@ -97,7 +100,7 @@ protected:
   dart::dynamics::BodyNodePtr mBodyNode;
 
   /// Initial step size of integrator.
-  double mInitialStepSize;
+  double mMaxStepSize;
 
   /// Padding of joint limits.
   double mJointLimitPadding;
@@ -107,6 +110,9 @@ protected:
 
   /// Joint velocities upper limits.
   Eigen::VectorXd mVelocityUpperLimits;
+
+  /// Enfoce joint velocity limits
+  bool mEnforceJointVelocityLimits;
 };
 
 using BodyNodePoseVectorFieldPtr = std::shared_ptr<BodyNodePoseVectorField>;

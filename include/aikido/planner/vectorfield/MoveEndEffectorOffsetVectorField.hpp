@@ -21,6 +21,7 @@ namespace vectorfield {
 class MoveEndEffectorOffsetVectorField : public BodyNodePoseVectorField
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /// Constructor
   ///
   /// \param[in] stateSpace MetaSkeleton state space.
@@ -32,7 +33,12 @@ public:
   /// could be found.
   /// \param[in] positionTolerance Constraint tolerance in meters.
   /// \param[in] angularTolerance Constraint tolerance in radians.
-  /// \param[in] initialStepSize Initial step size.
+  /// \param[in] linearGain Proportional control gain that corrects linear
+  /// orthogonal error.
+  /// \param[in] rotationGain Proportional control gain that corrects
+  /// rotational error
+  /// \param[in] maxStepSize The maximum step size used to guarantee
+  /// that the integrator does not step out of joint limits.
   /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
   MoveEndEffectorOffsetVectorField(
@@ -43,7 +49,7 @@ public:
       double maxDistance,
       double positionTolerance,
       double angularTolerance,
-      double initialStepSize,
+      double maxStepSize,
       double jointLimitPadding);
 
   // Documentation inherited.
@@ -70,6 +76,13 @@ protected:
 
   /// Tolerance of angular error.
   double mAngularTolerance;
+
+  /// Linear gain of a proportional control that corrects linear orthogonal
+  /// error.
+  double mLinearGain;
+
+  /// Rotation gain of a proportional control that corrects rotational error.
+  double mRotationGain;
 
   /// Start pose of the end-effector.
   Eigen::Isometry3d mStartPose;

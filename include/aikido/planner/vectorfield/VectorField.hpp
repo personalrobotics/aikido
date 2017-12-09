@@ -32,9 +32,9 @@ public:
       const aikido::statespace::StateSpace::State* state,
       Eigen::VectorXd& qd) const = 0;
 
-  /// Vectorfield planning status callback function
+  /// Vectorfield planning status callback function.
   ///
-  /// \praram[in] state State tp evaluate
+  /// \praram[in] state State to evaluate.
   /// \return Status of planning.
   virtual VectorFieldPlannerStatus evaluateStatus(
       const aikido::statespace::StateSpace::State* state) const = 0;
@@ -44,15 +44,19 @@ public:
   ///
   /// \param[in] trajectory Trajectory to be evaluated.
   /// \param[in] constraint Constraint to be satisfied.
-  /// \param[in] evalStepSize The step size used in evaluating constraint
-  /// \param[in] evalStartTime The start time of the trajectory to
+  /// \param[in] evalStepSize The step size used in evaluating constraint.
+  /// \param[in/out] evalTimePivot Input provides the start time of the
+  /// trajectory
+  /// to evaluate; output returns the end time of the trajectory evaluate.
+  /// \param[in] excludeEndTime Whether end time is excluded in evaluation.
   /// evaluate.
   /// satisfaction.
   virtual bool evaluateTrajectory(
       const aikido::trajectory::Trajectory& trajectory,
       const aikido::constraint::Testable* constraint,
       double evalStepSize,
-      double evalStartTime) const = 0;
+      double& evalTimePivot,
+      bool excludeEndTime) const = 0;
 
   /// Returns state space.
   aikido::statespace::StateSpacePtr getStateSpace();

@@ -20,6 +20,7 @@ namespace vectorfield {
 class MoveEndEffectorPoseVectorField : public BodyNodePoseVectorField
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /// Constructor.
   ///
   /// \param[in] stateSpace MetaSkeleton state space.
@@ -28,9 +29,8 @@ public:
   /// \param[in] poseErrorTolerance Constraint error tolerance in meters.
   /// \param[in] r Conversion of radius to meters in computing Geodesic
   /// distance.
-  /// \param[in] linearVelocityGain Linear velocity gain in workspace.
-  /// \param[in] angularVelocityGain Angular velocity gain in workspace.
-  /// \param[in] initialStepSize Initial step size.
+  /// \param[in] maxStepSize The maximum step size used to guarantee
+  /// that the integrator does not step out of joint limits.
   /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
   MoveEndEffectorPoseVectorField(
@@ -39,9 +39,7 @@ public:
       const Eigen::Isometry3d& goalPose,
       double poseErrorTolerance,
       double r,
-      double linearVelocityGain,
-      double angularVelocityGain,
-      double initialStepSize,
+      double maxStepSize,
       double jointLimitPadding);
 
   // Documentation inherited.
@@ -62,12 +60,6 @@ protected:
 
   /// Conversion ratio from radius to meter.
   double mConversionRatioFromRadiusToMeter;
-
-  /// Linear velocity gain.
-  double mLinearVelocityGain;
-
-  /// Angular velocit gain.
-  double mAngularVelocityGain;
 };
 
 } // namespace vectorfield

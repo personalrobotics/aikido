@@ -72,6 +72,11 @@ public:
   /// \return a list of knots.
   std::vector<Knot>& getKnots();
 
+  /// Get last evaluation time.
+  ///
+  /// \return last evaluation time.
+  double getLastEvaluationTime();
+
   /// Vectorfield callback function that returns joint velocities for
   /// integration.
   ///
@@ -96,9 +101,6 @@ protected:
   /// Cached index of knots.
   int mCacheIndex;
 
-  /// Current index of knots.
-  int mIndex;
-
   /// Dimension of state space.
   std::size_t mDimension;
 
@@ -112,6 +114,12 @@ protected:
 
   /// Resolution used in checking constraint satisfaction.
   double mConstraintCheckResolution;
+
+  /// Current state in integration
+  aikido::statespace::StateSpace::State* mState;
+
+  /// Last evaluation time in checking trajectory
+  double mLastEvaluationTime;
 };
 
 } // namespace detail

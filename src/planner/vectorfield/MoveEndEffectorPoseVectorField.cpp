@@ -17,16 +17,12 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double r,
-    double linearVelocityGain,
-    double angularVelocityGain,
-    double initialStepSize,
+    double maxStepSize,
     double jointLimitPadding)
-  : BodyNodePoseVectorField(stateSpace, bn, initialStepSize, jointLimitPadding)
+  : BodyNodePoseVectorField(stateSpace, bn, maxStepSize, jointLimitPadding)
   , mGoalPose(goalPose)
   , mPoseErrorTolerance(poseErrorTolerance)
   , mConversionRatioFromRadiusToMeter(r)
-  , mLinearVelocityGain(linearVelocityGain)
-  , mAngularVelocityGain(angularVelocityGain)
 {
   if (mPoseErrorTolerance < 0)
     throw std::invalid_argument("Pose error tolerance is negative");
@@ -38,8 +34,6 @@ bool MoveEndEffectorPoseVectorField::evaluateCartesianVelocity(
 {
   using aikido::planner::vectorfield::computeGeodesicTwist;
   Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mGoalPose);
-  desiredTwist.head<3>() *= mAngularVelocityGain;
-  desiredTwist.tail<3>() *= mLinearVelocityGain;
   cartesianVelocity = desiredTwist;
   return true;
 }
