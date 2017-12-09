@@ -12,6 +12,7 @@
   <depend>dart</depend>
   <depend>eigen</depend>
   <depend>ompl</depend>
+  <depend>pr-ompl</depend>
   <depend>python</depend>
   <depend>tinyxml2</depend>
   <depend>yaml-cpp</depend>
