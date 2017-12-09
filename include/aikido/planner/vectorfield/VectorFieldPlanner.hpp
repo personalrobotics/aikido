@@ -3,12 +3,34 @@
 
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/planner/PlanningResult.hpp>
+#include <aikido/planner/vectorfield/VectorField.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
+
+/// Generate a trajectory following the vector field along given time.
+///
+/// \param[in] vectorField Vector field to follow.
+/// \param[in] startState Start state of the planning.
+/// \param[in] constraint Constraint to be satisfied.
+/// \param[in] timelimit Timelimit for integration calculation.
+/// \param[in] initialStepSize Initial step size of integator in following
+/// vector field.
+/// \param[in] checkConstraintResolution Resolution used in checking
+/// constraint satisfaction in generated trajectory.
+/// \param[out] planningResult information about success or failure.
+/// \return A trajectory following the vector field.
+std::unique_ptr<aikido::trajectory::Spline> followVectorField(
+    const aikido::planner::vectorfield::VectorField* vectorField,
+    const aikido::statespace::StateSpace::State* startState,
+    const aikido::constraint::Testable* constraint,
+    std::chrono::duration<double> timelimit,
+    double initialStepSize,
+    double checkConstraintResolution,
+    planner::PlanningResult* planningResult);
 
 /// Plan to a trajectory that moves the end-effector by a given direction and
 /// distance.
@@ -24,7 +46,6 @@ namespace vectorfield {
 /// distance.
 /// \param[in] angularTolerance How a planned trajectory is allowed to deviate
 /// from a given direction.
-/// \param[in] linearVelocityGain Linear velocity gain in workspace.
 /// \param[in] initialStepSize Initial step size.
 /// \param[in] jointLimitTolerance If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
@@ -41,7 +62,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double maxDistance,
     double positionTolerance,
     double angularTolerance,
-    double linearVelocityGain,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,

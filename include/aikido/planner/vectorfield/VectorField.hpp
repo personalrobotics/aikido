@@ -20,8 +20,8 @@ class VectorField
 public:
   /// Constructor.
   ///
-  /// \param[in] stateSpace State space that vector field is defined in
-  explicit VectorField(const aikido::statespace::StateSpacePtr stateSpace);
+  /// \param[in] stateSpace State space that vector field is defined in.
+  explicit VectorField(aikido::statespace::StateSpacePtr stateSpace);
 
   /// Vectorfield callback function.
   ///
@@ -45,11 +45,14 @@ public:
   /// \param[in] trajectory Trajectory to be evaluated.
   /// \param[in] constraint Constraint to be satisfied.
   /// \param[in] evalStepSize The step size used in evaluating constraint
+  /// \param[in] evalStartTime The start time of the trajectory to
+  /// evaluate.
   /// satisfaction.
   virtual bool evaluateTrajectory(
       const aikido::trajectory::Trajectory& trajectory,
-      aikido::constraint::TestablePtr constraint,
-      double evalStepSize) const = 0;
+      const aikido::constraint::Testable* constraint,
+      double evalStepSize,
+      double evalStartTime) const = 0;
 
   /// Returns state space.
   aikido::statespace::StateSpacePtr getStateSpace();

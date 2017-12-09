@@ -3,43 +3,37 @@
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
-#include <aikido/planner/vectorfield/detail/VectorFieldUtil.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
 
 //==============================================================================
-double MoveEndEffectorOffsetVectorField::InvalidMaxDistance
-    = std::numeric_limits<double>::infinity();
-
-//==============================================================================
 MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bn,
     const Eigen::Vector3d& direction,
-    double distance,
+    double minDistance,
     double maxDistance,
     double positionTolerance,
     double angularTolerance,
-    double linearVelocityGain,
     double initialStepSize,
     double jointLimitPadding)
   : BodyNodePoseVectorField(stateSpace, bn, initialStepSize, jointLimitPadding)
   , mDirection(direction)
-  , mDistance(distance)
+  , mMinDistance(minDistance)
   , mMaxDistance(maxDistance)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
-  , mLinearVelocityGain(linearVelocityGain)
   , mStartPose(bn->getTransform())
 {
-  if (mDistance < 0)
-    throw std::invalid_argument("Distance must be non-negative.");
+  if (mMinDistance < 0)
+    throw std::invalid_argument("Minimum distance must be non-negative.");
   if (mDirection.norm() == 0)
     throw std::invalid_argument("Direction must be non-zero");
-  if (mMaxDistance < mDistance)
+  if (mMaxDistance < mMinDistance)
     throw std::invalid_argument("Max distance is less than minimum distance.");
   if (mPositionTolerance < 0)
     throw std::invalid_argument("Position tolerance is negative");
@@ -57,7 +51,7 @@ bool MoveEndEffectorOffsetVectorField::evaluateCartesianVelocity(
   using aikido::planner::vectorfield::computeGeodesicError;
 
   Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);
-  desiredTwist.tail<3>() = mDirection * mLinearVelocityGain;
+  desiredTwist.tail<3>() = mDirection;
   cartesianVelocity = desiredTwist;
   return true;
 }
@@ -79,27 +73,24 @@ MoveEndEffectorOffsetVectorField::evaluateCartesianStatus(
 
   if (fabs(orientationError) > mAngularTolerance)
   {
-    throw VectorFieldError("Deviated from orientation constraint.");
+    dtwarn << "Deviated from orientation constraint.";
+    return VectorFieldPlannerStatus::TERMINATE;
   }
 
   if (positionDeviation > mPositionTolerance)
   {
-    throw VectorFieldError("Deviated from straight line constraint.");
+    dtwarn << "Deviated from straight line constraint.";
+    return VectorFieldPlannerStatus::TERMINATE;
   }
 
-  // Check if we've reached the target.
-  if (mMaxDistance == InvalidMaxDistance)
-  {
-    if (movedDistance >= mDistance)
-    {
-      return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
-    }
-  }
-  else if (movedDistance > mMaxDistance)
+  // if larger than max distance, terminate
+  // if larger than min distance, cache and continue
+  // if smaller than min distance, continue
+  if (movedDistance > mMaxDistance)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }
-  else if (movedDistance >= mDistance)
+  else if (movedDistance >= mMinDistance)
   {
     return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
   }

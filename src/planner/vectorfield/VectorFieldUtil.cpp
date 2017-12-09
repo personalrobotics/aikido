@@ -1,67 +1,64 @@
 #include <Eigen/Geometry>
+#include <dart/optimizer/Solver.hpp>
+#include <dart/optimizer/nlopt/NloptSolver.hpp>
 #include <aikido/common/algorithm.hpp>
-#include <aikido/planner/vectorfield/detail/VectorFieldUtil.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-//==============================================================================
-DesiredTwistFunction::DesiredTwistFunction(
-    const Twist& twist, const Jacobian& jacobian)
-  : dart::optimizer::Function("DesiredTwistFunction")
-  , mTwist(twist)
-  , mJacobian(jacobian)
+namespace {
+
+/// A function class that defines an objective. The objective measures
+/// the difference between a desired twist and Jacobian * joint velocities.
+///
+class DesiredTwistFunction : public dart::optimizer::Function
 {
-  // Do nothing
-}
+public:
+  using Twist = Eigen::Vector6d;
+  using Jacobian = dart::math::Jacobian;
 
-//==============================================================================
-double DesiredTwistFunction::eval(const Eigen::VectorXd& qd)
-{
-  return 0.5 * (mJacobian * qd - mTwist).squaredNorm();
-}
-
-//==============================================================================
-void DesiredTwistFunction::evalGradient(
-    const Eigen::VectorXd& qd, Eigen::Map<Eigen::VectorXd> grad)
-{
-  grad = mJacobian.transpose() * (mJacobian * qd - mTwist);
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const std::vector<Knot>& knots,
-    aikido::statespace::StateSpacePtr stateSpace)
-{
-  using dart::common::make_unique;
-
-  std::size_t dimension = stateSpace->getDimension();
-  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(stateSpace);
-
-  using CubicSplineProblem = aikido::common::
-      SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
-
-  const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
-  auto currState = stateSpace->createState();
-  for (std::size_t iknot = 0; iknot < knots.size() - 1; ++iknot)
+  /// Constructor.
+  ///
+  /// \param[in] twist A desired twist.
+  /// \param[in] jacobian System Jacobian.
+  DesiredTwistFunction(const Twist& twist, const Jacobian& jacobian)
+    : dart::optimizer::Function("DesiredTwistFunction")
+    , mTwist(twist)
+    , mJacobian(jacobian)
   {
-    const double segmentDuration = knots[iknot + 1].mT - knots[iknot].mT;
-    Eigen::VectorXd currentPosition = knots[iknot].mPositions;
-    Eigen::VectorXd nextPosition = knots[iknot + 1].mPositions;
-
-    CubicSplineProblem problem(
-        Eigen::Vector2d{0., segmentDuration}, 2, dimension);
-    problem.addConstantConstraint(0, 0, zeroPosition);
-    problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
-    const auto solution = problem.fit();
-    const auto coefficients = solution.getCoefficients().front();
-
-    stateSpace->expMap(currentPosition, currState);
-    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
+    // Do nothing
   }
-  return outputTrajectory;
+
+  /// Implementation inherited.
+  /// Evaluating an objective by a state value.
+  ///
+  /// \param[in] qd Joint velocities.
+  /// \return Objective value.
+  double eval(const Eigen::VectorXd& qd) override
+  {
+    return 0.5 * (mJacobian * qd - mTwist).squaredNorm();
+  }
+
+  /// Implementation inherited.
+  /// Evaluating gradient of an objective by a state value.
+  /// \param[in] qd Joint velocities.
+  /// \param[out] grad Gradient of a defined objective.
+  void evalGradient(
+      const Eigen::VectorXd& qd, Eigen::Map<Eigen::VectorXd> grad) override
+  {
+    grad = mJacobian.transpose() * (mJacobian * qd - mTwist);
+  }
+
+private:
+  /// Twist.
+  Twist mTwist;
+
+  /// Jacobian of Meta Skeleton.
+  Jacobian mJacobian;
+};
 }
 
 //==============================================================================
@@ -71,9 +68,8 @@ bool computeJointVelocityFromTwist(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
     const dart::dynamics::BodyNodePtr bodyNode,
     double jointLimitPadding,
-    const Eigen::VectorXd& jointVelocityLowerLimits,
-    const Eigen::VectorXd& jointVelocityUpperLimits,
-    bool jointVelocityLimited,
+    const Eigen::VectorXd* jointVelocityLowerLimits,
+    const Eigen::VectorXd* jointVelocityUpperLimits,
     double stepSize)
 {
   using dart::math::Jacobian;
@@ -93,22 +89,18 @@ bool computeJointVelocityFromTwist(
   VectorXd initialGuess = skeleton->getVelocities();
   VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
-  VectorXd velocityLowerLimits = jointVelocityLowerLimits;
-  VectorXd velocityUpperLimits = jointVelocityUpperLimits;
-
   auto currentState = stateSpace->createState();
   stateSpace->convertPositionsToState(positions, currentState);
 
   const auto problem = std::make_shared<Problem>(numDofs);
-  if (jointVelocityLimited)
+  if (jointVelocityLowerLimits != nullptr)
   {
+    VectorXd velocityLowerLimits = *jointVelocityLowerLimits;
     for (std::size_t i = 0; i < numDofs; ++i)
     {
       const double position = positions[i];
       const double positionLowerLimit = positionLowerLimits[i];
-      const double positionUpperLimit = positionUpperLimits[i];
       const double velocityLowerLimit = velocityLowerLimits[i];
-      const double velocityUpperLimit = velocityUpperLimits[i];
 
       if (position + stepSize * velocityLowerLimit
           <= positionLowerLimit + jointLimitPadding)
@@ -116,19 +108,37 @@ bool computeJointVelocityFromTwist(
         velocityLowerLimits[i] = 0.0;
       }
 
+      if (initialGuess[i] < velocityLowerLimits[i])
+      {
+        initialGuess[i] = velocityLowerLimits[i];
+      }
+    }
+    problem->setLowerBounds(velocityLowerLimits);
+  }
+
+  if (jointVelocityUpperLimits == nullptr)
+  {
+    VectorXd velocityUpperLimits = *jointVelocityUpperLimits;
+    for (std::size_t i = 0; i < numDofs; ++i)
+    {
+      const double position = positions[i];
+      const double positionUpperLimit = positionUpperLimits[i];
+      const double velocityUpperLimit = velocityUpperLimits[i];
+
       if (position + stepSize * velocityUpperLimit
           >= positionUpperLimit - jointLimitPadding)
       {
         velocityUpperLimits[i] = 0.0;
       }
 
-      initialGuess[i] = common::clamp(
-          initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
+      if (initialGuess[i] > velocityUpperLimits[i])
+      {
+        initialGuess[i] = velocityUpperLimits[i];
+      }
     }
-
-    problem->setLowerBounds(velocityLowerLimits);
     problem->setUpperBounds(velocityUpperLimits);
   }
+
   problem->setInitialGuess(initialGuess);
   problem->setObjective(
       std::make_shared<DesiredTwistFunction>(desiredTwist, jacobian));
@@ -138,7 +148,6 @@ bool computeJointVelocityFromTwist(
   {
     return false;
   }
-
   jointVelocity = problem->getOptimalSolution();
   return true;
 }

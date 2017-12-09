@@ -6,7 +6,7 @@
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
-#include <aikido/planner/vectorfield/detail/VectorFieldUtil.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
@@ -277,9 +277,8 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
+          &jointVelocityLowerLimits,
+          &jointVelocityUpperLimits,
           maxStepSize));
 
   // Angular only
@@ -293,9 +292,8 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
+          &jointVelocityLowerLimits,
+          &jointVelocityUpperLimits,
           maxStepSize));
 
   // Both linear and angular
@@ -310,9 +308,8 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
           mStateSpace,
           mBodynode,
           padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
+          &jointVelocityLowerLimits,
+          &jointVelocityUpperLimits,
           maxStepSize));
 }
 
@@ -323,7 +320,8 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   Eigen::Vector3d direction;
   direction << 1., 1., 0.;
   direction.normalize();
-  double distance = 0.4;
+  double minDistance = 0.4;
+  double maxDistance = 0.42;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
   auto startState = mStateSpace->createState();
@@ -333,23 +331,20 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
-  double linearVelocity = 1.0;
-  double initialStepSize = 0.05;
+  double initialStepSize = 0.001;
   double jointLimitTolerance = 1e-3;
   double constraintCheckResolution = 1e-3;
   std::chrono::duration<double> timelimit(5.);
-  double maxDistance = MoveEndEffectorOffsetVectorField::InvalidMaxDistance;
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       mStateSpace,
       mBodynode,
       mPassingConstraint,
       direction,
-      distance,
+      minDistance,
       maxDistance,
       positionTolerance,
       angularTolerance,
-      linearVelocity,
       initialStepSize,
       jointLimitTolerance,
       constraintCheckResolution,
@@ -388,7 +383,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
     Eigen::Vector3d waypointVec = waypointTrans.translation();
 
     Eigen::Vector3d linear_error
-        = startVec + direction * distance - waypointVec;
+        = startVec + direction * minDistance - waypointVec;
     Eigen::Vector3d const linear_orthogonal_error
         = linear_error - linear_error.dot(direction) * direction;
     double const linear_orthogonal_magnitude = linear_orthogonal_error.norm();
@@ -403,7 +398,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       = (endTrans.translation() - startTrans.translation()).norm();
 
   // Verify the moving distance
-  EXPECT_TRUE(movedDistance >= distance);
+  EXPECT_TRUE(movedDistance >= minDistance);
   EXPECT_TRUE(movedDistance <= maxDistance);
 }
 
@@ -415,12 +410,11 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
   double distance = 0.2;
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
-  double linearVelocity = 1.0;
   double initialStepSize = 0.05;
   double jointLimitTolerance = 1e-3;
   double constraintCheckResolution = 1e-3;
   std::chrono::duration<double> timelimit(5.);
-  double maxDistance = MoveEndEffectorOffsetVectorField::InvalidMaxDistance;
+  double maxDistance = 0.22;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
 
@@ -434,7 +428,6 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
           maxDistance,
           positionTolerance,
           angularTolerance,
-          linearVelocity,
           initialStepSize,
           jointLimitTolerance,
           constraintCheckResolution,

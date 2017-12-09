@@ -21,25 +21,17 @@ namespace vectorfield {
 class MoveEndEffectorOffsetVectorField : public BodyNodePoseVectorField
 {
 public:
-  static double InvalidMaxDistance;
-
   /// Constructor
   ///
-  /// (1) When maxDistance is set to InvalidMaxDistance, planning
-  /// will terminate and return a path if moved distance is larger
-  /// than distance.
-  /// (2) When maxDistance is not set to InvalidMaxDistance,
-  /// planning will terminate and return a path, the path length
-  /// of which is [distance, maxDistance).
-  ///
-  /// \param[in] stateSpace MetaSkeleton state space
-  /// \param[in] bn Body node of end-effector
-  /// \param[in] direction Unit vector in the direction of motion
-  /// \param[in] minDistance Minimum distance in meters
-  /// \param[in] maxDistance Maximum distance in meters
-  /// \param[in] positionTolerance Constraint tolerance in meters
-  /// \param[in] angularTolerance Constraint tolerance in radians
-  /// \param[in] linearVelocityGain Linear velocity gain in workspace.
+  /// \param[in] stateSpace MetaSkeleton state space.
+  /// \param[in] bn Body node of end-effector.
+  /// \param[in] direction Unit vector in the direction of motion.
+  /// \param[in] minDistance Minimum distance in meters.
+  /// \param[in] maxDistance Maximum distance in meters. Maximum distance
+  /// should be larger than minimum distance so that a feasible solution
+  /// could be found.
+  /// \param[in] positionTolerance Constraint tolerance in meters.
+  /// \param[in] angularTolerance Constraint tolerance in radians.
   /// \param[in] initialStepSize Initial step size.
   /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
@@ -51,7 +43,6 @@ public:
       double maxDistance,
       double positionTolerance,
       double angularTolerance,
-      double linearVelocityGain,
       double initialStepSize,
       double jointLimitPadding);
 
@@ -68,8 +59,8 @@ protected:
   /// Movement direction.
   Eigen::Vector3d mDirection;
 
-  /// Movement distance.
-  double mDistance;
+  /// Minimum movement distance.
+  double mMinDistance;
 
   /// Maximum distance allowed to move.
   double mMaxDistance;
@@ -79,9 +70,6 @@ protected:
 
   /// Tolerance of angular error.
   double mAngularTolerance;
-
-  /// Linear velocity gain.
-  double mLinearVelocityGain;
 
   /// Start pose of the end-effector.
   Eigen::Isometry3d mStartPose;

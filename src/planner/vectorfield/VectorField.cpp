@@ -5,7 +5,7 @@ namespace planner {
 namespace vectorfield {
 
 //==============================================================================
-VectorField::VectorField(const aikido::statespace::StateSpacePtr stateSpace)
+VectorField::VectorField(aikido::statespace::StateSpacePtr stateSpace)
   : mStateSpace(stateSpace)
 {
   // Do nothing

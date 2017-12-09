@@ -44,7 +44,7 @@ public:
   VectorFieldPlannerStatus evaluateStatus(
       const aikido::statespace::StateSpace::State* state) const override;
 
-  /// Evaluate Cartiseian velocity by current pose of body node.
+  /// Evaluate Cartesian velocity by current pose of body node.
   ///
   /// \param[in] pose Current pose of body node.
   /// \param[out] cartesianVelocity Cartesian velocity defined in SE(3).
@@ -62,8 +62,9 @@ public:
   // Documentation inherited.
   bool evaluateTrajectory(
       const aikido::trajectory::Trajectory& trajectory,
-      aikido::constraint::TestablePtr constraint,
-      double evalStepSize) const override;
+      const aikido::constraint::Testable* constraint,
+      double evalStepSize,
+      double evalStartTime) const override;
 
   /// Return meta skeleton state space.
   aikido::statespace::dart::MetaSkeletonStateSpacePtr

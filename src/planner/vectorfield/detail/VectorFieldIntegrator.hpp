@@ -12,6 +12,7 @@
 namespace aikido {
 namespace planner {
 namespace vectorfield {
+namespace detail {
 
 struct Knot
 {
@@ -21,6 +22,17 @@ struct Knot
   /// Positions.
   Eigen::VectorXd mPositions;
 };
+
+/// Convert a sequence of waypoint and time pairs into a trajectory.
+///
+/// \param[in] A seqeunce of waypoint and time pairs.
+/// \param[in] stateSpace State space of output trajectory.
+/// \return A trajectory.
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+    const std::vector<Knot>& knots,
+    aikido::statespace::ConstStateSpacePtr stateSpace);
+
+
 
 /// VectorField Planner generates a trajectory by following a vector field
 /// defined in joint space.
@@ -37,47 +49,49 @@ public:
   ///
   /// \param[in] vectorField Vector field in configuration space.
   /// \param[in] constraint Constraint to be satisfied.
-  VectorFieldIntegrator(
-      VectorFieldPtr vectorField, aikido::constraint::TestablePtr constraint);
-
-  /// Generate a trajectory following the vector field along given time.
-  ///
-  /// \param[in] integrationTimeInterval Position in configuration space.
   /// \param[in] timelimit Timelimit for integration calculation.
-  /// \param[in] initialStepSize Initial step size of integator in following
-  /// vector field.
   /// \param[in] checkConstraintResolution Resolution used in checking
-  /// constraint
-  /// satisfaction in generated trajectory.
-  /// \param[out] planningResult information about success or failure.
-  /// \return A trajectory following the vector field.
-  std::unique_ptr<aikido::trajectory::Spline> followVectorField(
-      const aikido::statespace::StateSpace::State* startState,
-      std::chrono::duration<double> timelimit,
-      double initialStepSize,
-      double checkConstraintResolution,
-      planner::PlanningResult* planningResult);
+  /// constraint satisfaction in generated trajectory.
+  VectorFieldIntegrator(
+      const VectorField* vectorField,
+      const aikido::constraint::Testable* constraint,
+      double timelimit,
+      double checkConstraintResolution);
 
-protected:
+  /// Called before doing integration.
+  ///
+  void start();
+
+  /// Get cache index.
+  ///
+  /// \return Cache index.
+  int getCacheIndex();
+
+  /// Get a list of knots stored in the integration
+  ///
+  /// \return a list of knots.
+  std::vector<Knot>& getKnots();
+
   /// Vectorfield callback function that returns joint velocities for
   /// integration.
   ///
   /// \param[in] q Position in configuration space.
   /// \param[out] qd Joint velocities in configuration space.
   /// \param[in] t Current time being planned.
-  virtual void step(const Eigen::VectorXd& q, Eigen::VectorXd& qd, double t);
+  void step(const Eigen::VectorXd& q, Eigen::VectorXd& qd, double t);
 
   /// Check status after every integration step.
   ///
   /// \param[in] q Position in configuration space.
   /// \param[in] t Current time being planned.
-  virtual void check(const Eigen::VectorXd& q, double t);
+  void check(const Eigen::VectorXd& q, double t);
 
+protected:
   /// Vector field
-  VectorFieldPtr mVectorField;
+  const VectorField* mVectorField;
 
   /// Constraint to be satisfied
-  aikido::constraint::TestablePtr mConstraint;
+  const aikido::constraint::Testable* mConstraint;
 
   /// Cached index of knots.
   int mCacheIndex;
@@ -100,6 +114,7 @@ protected:
   double mConstraintCheckResolution;
 };
 
+} // namespace detail
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

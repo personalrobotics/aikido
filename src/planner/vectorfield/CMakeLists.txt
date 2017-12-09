@@ -1,9 +1,10 @@
 set(sources 
   VectorFieldPlanner.cpp
   VectorField.cpp
-  VectorFieldIntegrator.cpp   
-  detail/VectorFieldUtil.cpp
+  VectorFieldUtil.cpp
+  detail/VectorFieldIntegrator.cpp
   detail/VectorFieldPlannerExceptions.cpp
+  detail/BodyNodePoseVectorFieldConstraint.cpp
   BodyNodePoseVectorField.cpp
   MoveEndEffectorOffsetVectorField.cpp
   MoveEndEffectorPoseVectorField.cpp

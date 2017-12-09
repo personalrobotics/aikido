@@ -1,7 +1,7 @@
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
-#include <aikido/planner/vectorfield/detail/VectorFieldPlannerExceptions.hpp>
-#include <aikido/planner/vectorfield/detail/VectorFieldUtil.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
 namespace planner {
@@ -54,9 +54,8 @@ bool BodyNodePoseVectorField::evaluateVelocity(
       mMetaSkeletonStateSpace,
       mBodyNode,
       mJointLimitPadding,
-      mVelocityLowerLimits,
-      mVelocityUpperLimits,
-      true,
+      &mVelocityLowerLimits,
+      &mVelocityUpperLimits,
       mInitialStepSize);
   return result;
 }
@@ -81,27 +80,32 @@ VectorFieldPlannerStatus BodyNodePoseVectorField::evaluateStatus(
 //==============================================================================
 bool BodyNodePoseVectorField::evaluateTrajectory(
     const aikido::trajectory::Trajectory& trajectory,
-    aikido::constraint::TestablePtr constraint,
-    double evalStepSize) const
+    const aikido::constraint::Testable* constraint,
+    double evalStepSize,
+    double evalStartTime) const
 {
-  using aikido::constraint::createTestableBounds;
-  auto boundConstraint = createTestableBounds(mMetaSkeletonStateSpace);
-  for (double t = trajectory.getStartTime(); t <= trajectory.getEndTime();
-       t += evalStepSize)
+  if (constraint == nullptr)
   {
-    auto state = mMetaSkeletonStateSpace->createState();
-    trajectory.evaluate(t, state);
+    return true;
+  }
+  auto state = mMetaSkeletonStateSpace->createState();
 
-    // firstly check the bound
-    if (!boundConstraint->isSatisfied(state))
-    {
-      throw DofLimitError();
-    }
-
-    // last check collision free constraint
+  double t = evalStartTime;
+  while (t >= trajectory.getStartTime() && t <= trajectory.getEndTime())
+  {
     if (!constraint->isSatisfied(state))
     {
-      throw ConstraintViolatedError();
+      return false;
+    }
+    t += evalStepSize;
+  }
+  // in case end time is not checked
+  if (t > trajectory.getEndTime())
+  {
+    trajectory.evaluate(t, state);
+    if (!constraint->isSatisfied(state))
+    {
+      return false;
     }
   }
   return true;
