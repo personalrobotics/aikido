@@ -75,7 +75,6 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
   // integration, which does not indicate that an error has occurred.
   catch (const detail::VectorFieldTerminated& e)
   {
-    // dtwarn << e.what() << std::endl;
     if (planningResult)
     {
       planningResult->message = e.what();

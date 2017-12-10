@@ -29,13 +29,15 @@ public:
   /// that the integrator does not step out of joint limits.
   /// \param[in] jointLimitpadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
+  /// \param[in] enforceJointVelocityLimits Whether joint velocity limits
+  /// are considered in computation.
   BodyNodePoseVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr
           metaSkeletonStateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       double maxStepSize,
       double jointLimitPadding,
-      bool enforceJointVelocityLimits = true);
+      bool enforceJointVelocityLimits = false);
 
   // Documentation inherited.
   bool evaluateVelocity(
@@ -99,7 +101,7 @@ protected:
   /// BodyNode
   dart::dynamics::BodyNodePtr mBodyNode;
 
-  /// Initial step size of integrator.
+  /// Maximum step size of integrator.
   double mMaxStepSize;
 
   /// Padding of joint limits.
