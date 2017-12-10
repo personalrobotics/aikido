@@ -39,10 +39,6 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     throw std::invalid_argument("Position tolerance is negative");
   if (mAngularTolerance < 0)
     throw std::invalid_argument("Angular tolerance is negative");
-  if (mLinearGain < 0)
-    throw std::invalid_argument("Linear gain is negative");
-  if (mRotationGain < 0)
-    throw std::invalid_argument("Rotation gain is negative");
 
   // Normalize the direction vector
   mDirection.normalize();

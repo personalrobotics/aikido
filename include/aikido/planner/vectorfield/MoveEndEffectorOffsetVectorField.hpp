@@ -77,13 +77,6 @@ protected:
   /// Tolerance of angular error.
   double mAngularTolerance;
 
-  /// Linear gain of a proportional control that corrects linear orthogonal
-  /// error.
-  double mLinearGain;
-
-  /// Rotation gain of a proportional control that corrects rotational error.
-  double mRotationGain;
-
   /// Start pose of the end-effector.
   Eigen::Isometry3d mStartPose;
 };
