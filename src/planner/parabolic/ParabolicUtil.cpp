@@ -215,7 +215,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
-  if(!untimed)
+  if (!untimed)
   {
     outputPath->SetMilestones(milestones, velocities);
   }
