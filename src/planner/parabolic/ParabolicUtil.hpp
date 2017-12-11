@@ -60,7 +60,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<ParabolicRamp::DynamicPath>
     convertToDynamicPath(const aikido::trajectory::Spline& _inputTrajectory,
                          const Eigen::VectorXd& _maxVelocity,
-                         const Eigen::VectorXd& _maxAcceleration);
+                         const Eigen::VectorXd& _maxAcceleration,
+                         bool untimed = false);
 
 /// Convert an interpolated trajectory to a dynamic path
 /// \param _inputTrajectory a spline trajectory
