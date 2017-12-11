@@ -89,7 +89,7 @@ bool CollisionFree::isSatisfied(
 //==============================================================================
 std::unique_ptr<TestableOutcome> CollisionFree::createOutcome() const
 {
-  return std::unique_ptr<TestableOutcome>(new CollisionFreeOutcome());
+  return std::unique_ptr<TestableOutcome>(new CollisionFreeOutcome);
 }
 
 //==============================================================================

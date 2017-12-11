@@ -45,11 +45,7 @@ bool FrameTestable::isSatisfied(
   // Check the pose constraint
   auto st = mPoseStateSpace->createState();
   mPoseStateSpace->setIsometry(st, mFrame->getTransform());
-
-  if (outcome)
-    return mPoseConstraint->isSatisfied(st, outcome);
-
-  return mPoseConstraint->isSatisfied(st);
+  return mPoseConstraint->isSatisfied(st, outcome);
 }
 
 //==============================================================================
