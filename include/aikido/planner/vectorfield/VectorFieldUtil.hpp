@@ -2,86 +2,76 @@
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_HPP_
 
 #include <dart/dynamics/BodyNode.hpp>
-#include <dart/optimizer/Function.hpp>
-#include <dart/optimizer/Solver.hpp>
-#include <dart/optimizer/nlopt/NloptSolver.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-struct Knot
-{
-  double mT;
-  Eigen::VectorXd mPositions;
-  Eigen::VectorXd mVelocities;
-};
-
-/// Convert a sequence of knots into a Spline trajectory.
-///
-/// \param[in] _knots A sequence of knots
-/// \param[in] _cache_index Total cache index number
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \return A Spline trajectory
-std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const std::vector<Knot>& _knots,
-    int _cacheIndex,
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace);
-
-/// A function class that defines an objective. The objective measures
-/// the difference between a desired twist and Jacobian * joint velocities.
-class DesiredTwistFunction : public dart::optimizer::Function
-{
-public:
-  using Twist = Eigen::Vector6d;
-  using Jacobian = dart::math::Jacobian;
-
-  /// Constructor.
-  ///
-  /// \param[in] twist A desired twist
-  /// \param[in] jacobian System Jacobian
-  DesiredTwistFunction(const Twist& twist, const Jacobian& jacobian);
-
-  /// Implementation inherited.
-  /// Evaluating an objective by a state value.
-  ///
-  /// \param[in] _qd Joint velocities
-  /// \return Objective value
-  double eval(const Eigen::VectorXd& _qd) override;
-
-  /// Implementation inherited.
-  /// Evaluating gradient of an objective by a state value.
-  /// \param[in] _qd Joint velocities
-  /// \param[out] _grad Gradient of a defined objective
-  void evalGradient(
-      const Eigen::VectorXd& _qd, Eigen::Map<Eigen::VectorXd> _grad) override;
-
-private:
-  Twist mTwist;
-  Jacobian mJacobian;
-};
-
 /// Compute joint velocity from a given twist.
 ///
-/// \param[in] _desiredTwist Desired twist, which consists of angular velocity
-/// and linear velocity
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in]  _bodyNode Body node of the end-effector
-/// \param[in] _optimizationTolerance Callback of vector field calculation
-/// \param[in] _timestep How long will the computed joint velocities be executed
-/// \param[in] _padding Padding for joint limits
-/// \param[out] _jointVelocity Calculated joint velocities
+/// \param[out] jointVelocity Calculated joint velocities.
+/// \param[in] desiredTwist Desired twist, which consists of angular velocity
+/// and linear velocity.
+/// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] bodyNode Body node of the end-effector.
+/// \param[in] jointLimitPadding If less then this distance to joint
+/// limit, velocity is bounded in that direction to 0.
+/// \param[in] jointVelocityLowerLimits Joint velocity lower bounds.
+/// \param[in] jointVelocityUpperLimits Joint velocity upper bounds.
+/// \param[in] enforceJointVelocityLimits Whether joint velocity limits are
+/// considered in computation.
+/// \param[in] stepSize Step size in second. It is used in evaluating
+/// position bounds violation. It assumes that whether moving the time of
+/// stepSize by maximum joint velocity will reach the limit.
+/// \return Whether a joint velocity is found
 bool computeJointVelocityFromTwist(
-    const Eigen::Vector6d& _desiredTwist,
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    const dart::dynamics::BodyNodePtr _bodyNode,
-    double _optimizationTolerance,
-    double _timestep,
-    double _padding,
-    Eigen::VectorXd& _jointVelocity);
+    Eigen::VectorXd& jointVelocity,
+    const Eigen::Vector6d& desiredTwist,
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    dart::dynamics::BodyNodePtr bodyNode,
+    double jointLimitPadding,
+    const Eigen::VectorXd& jointVelocityLowerLimits,
+    const Eigen::VectorXd& jointVelocityUpperLimits,
+    bool enforceJointVelocityLimits,
+    double stepSize);
+
+/// Compute the twist in global coordinate that corresponds to the gradient of
+/// the geodesic distance between two transforms.
+///
+/// \param[in] fromTrans Current transformation.
+/// \param[in] toTrans Goal transformation.
+/// \return Geodesic twist in global coordinate. It corresponds to the gradient
+/// of the geodesic distance between two transforms. The first three are angular
+/// velocities (meters per second), and the last three are linear velocities
+/// (radian per sec).
+Eigen::Vector6d computeGeodesicTwist(
+    const Eigen::Isometry3d& fromTrans, const Eigen::Isometry3d& toTrans);
+
+/// Compute the error in gloabl coordinate between two transforms.
+///
+/// \param[in] fromTrans Current transformation.
+/// \param[in] toTrans Goal transformation.
+/// \return Geodesic error in global coordinate. It is a 4d vector, in which
+/// the first element is the norm of angle difference (in radian), and the
+/// last three elements are translation difference (in meter).
+Eigen::Vector4d computeGeodesicError(
+    const Eigen::Isometry3d& fromTrans, const Eigen::Isometry3d& toTrans);
+
+/// Compute the geodesic distance between two transforms.
+/// gd = norm( relative translation + r * axis-angle error )
+///
+/// \param[in] fromTrans Current transformation.
+/// \param[in] toTrans Goal transformation.
+/// \param[in] r In units of meters/radians converts radians to meters.
+/// \return Geodesic distance in meter.
+double computeGeodesicDistance(
+    const Eigen::Isometry3d& fromTrans,
+    const Eigen::Isometry3d& toTrans,
+    double r);
 
 } // namespace vectorfield
 } // namespace planner
