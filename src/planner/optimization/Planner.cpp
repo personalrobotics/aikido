@@ -96,6 +96,8 @@ trajectory::TrajectoryPtr OptimizationBasedMotionPlanning::plan()
   //  skel->setVelocities(originalVelocities);
   const Eigen::VectorXd& solution = mProblem->getOptimalSolution();
 
+  std::cout << solution.transpose() << std::endl;
+
   auto f1 = mObjective->eval(solution);
 
   return nullptr;

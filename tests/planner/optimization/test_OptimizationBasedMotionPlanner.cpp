@@ -106,11 +106,11 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
   EXPECT_TRUE(spline.getNumSegments() == 3);
   EXPECT_TRUE(spline.getDuration() == 6.0);
 
-  //  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
-  //      spline);
-  planner::optimization::SplineCoefficientsVariables variable(spline);
-  // EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
-  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3);
+  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
+        spline);
+//  planner::optimization::SplineCoefficientsVariables variable(spline);
+   EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
+//  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3);
 
   planner::optimization::OptimizationBasedMotionPlanning planner(variable);
 
@@ -119,7 +119,42 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
 
   //  planner.setVariable(variables);
   planner.setObjective(objective);
-  planner.setInitialGuess(Eigen::VectorXd::Random(variable.getDimension()));
+
+  Eigen::VectorXd x0(variable.getDimension());
+  x0[0] = 1;
+  x0[1] = 1;
+  x0[2] = 1;
+  x0[3] = 1;
+  x0[4] = 1;
+  planner.setInitialGuess(x0);
+//  planner.setInitialGuess(Eigen::VectorXd::Random(variable.getDimension()));
+//  planner.setInitialGuess(Eigen::VectorXd::Random(variable.getDimension()));
+
+  Eigen::VectorXd lb(variable.getDimension());
+  Eigen::VectorXd ub(variable.getDimension());
+
+  lb[0] = 1;
+  lb[1] = 1;
+  lb[2] = 1;
+  planner::optimization::setCoefficientValueAsJointPositionLowerLimitsTo(
+        lb,
+        variable,
+        *mSkeleton);
+
+  ub[0] = 10;
+  ub[1] = 10;
+  ub[2] = 10;
+  planner::optimization::setCoefficientValueAsJointPositionUpperLimitsTo(
+        ub,
+        variable,
+        *mSkeleton);
+
+  std::cout << lb.transpose() << std::endl;
+  std::cout << ub.transpose() << std::endl;
+
+  planner.getProblem()->setLowerBounds(lb);
+  planner.getProblem()->setUpperBounds(ub);
+
 
   EXPECT_TRUE(mStateSpace->getDimension() == 1);
 

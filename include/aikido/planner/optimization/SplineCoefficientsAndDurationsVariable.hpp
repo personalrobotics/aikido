@@ -24,31 +24,16 @@ public:
   // Documentation inherited.
   Eigen::VectorXd getValue() const override;
 
-  void setCoefficientValue(const Eigen::VectorXd& value);
-
-  void setCoefficientValue(
-      std::size_t segmentIndex, const Eigen::VectorXd& value);
-
-  void setCoefficientValue(
-      std::size_t segmentIndex,
-      std::size_t statespaceIndex,
-      const Eigen::VectorXd& value);
-
-  void setCoefficientValue(
-      std::size_t segmentIndex,
-      std::size_t statespaceIndex,
-      std::size_t coeffIndex,
-      double value);
-
-  void setDurationValue(const Eigen::VectorXd& duration);
-
   void setCoefficientValueTo(Eigen::VectorXd& vector, double value) const;
 
   void setCoefficientValueTo(
       Eigen::VectorXd& vector, const Eigen::VectorXd& values) const;
 
-  void setCoefficientValueTo(
-      Eigen::VectorXd& vector, std::size_t index, double value) const;
+  void setDurationValueTo(
+      Eigen::VectorXd& vector, const Eigen::VectorXd& duration);
+
+  void setDurationValueTo(
+      Eigen::VectorXd& vector, std::size_t segmentIndex, double duration);
 
 protected:
   // Documentation inherited.
