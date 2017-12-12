@@ -4,6 +4,7 @@
 #include <dart/dart.hpp>
 #include <aikido/rviz/FrameMarker.hpp>
 #include <aikido/rviz/SkeletonMarker.hpp>
+#include <aikido/rviz/TrajectoryMarker.hpp>
 
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
@@ -105,6 +106,31 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
 }
 
 //==============================================================================
+TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
+    trajectory::ConstTrajectoryPtr trajectory,
+    const dart::dynamics::MetaSkeleton& skeleton,
+    const dart::dynamics::Frame& frame,
+    const Eigen::Vector4d& rgba,
+    double thickness,
+    std::size_t numLineSegments)
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  DART_UNUSED(lock);
+  auto marker = std::make_shared<TrajectoryMarker>(
+      &mMarkerServer,
+      mFrameId,
+      std::move(trajectory),
+      skeleton,
+      frame,
+      rgba,
+      thickness,
+      numLineSegments);
+  mTrajectoryMarkers.insert(marker);
+
+  return marker;
+}
+
+//==============================================================================
 SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
     const SkeletonPtr& skeleton, const std::string& frameId)
 {
@@ -164,6 +190,9 @@ void InteractiveMarkerViewer::update()
 
   // TODO: Merge this into a unified update loop.
   for (const FrameMarkerPtr& marker : mFrameMarkers)
+    marker->update();
+
+  for (const auto& marker : mTrajectoryMarkers)
     marker->update();
 
   mMarkerServer.applyChanges();
