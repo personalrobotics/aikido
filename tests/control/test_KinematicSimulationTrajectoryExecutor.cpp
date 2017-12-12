@@ -200,3 +200,19 @@ TEST_F(
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
+
+TEST_F(
+    KinematicSimulationTrajectoryExecutorTest, abort_TrajectoryInProgress_Halts)
+{
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+
+  auto future = executor.execute(mTraj);
+  future.wait_for(stepTime);
+  executor.step();
+  executor.abort();
+
+  EXPECT_THROW(future.get(), std::runtime_error);
+
+  EXPECT_GT(mSkeleton->getDof(0)->getPosition(), 0.0);
+  EXPECT_LT(mSkeleton->getDof(0)->getPosition(), 1.0);
+}

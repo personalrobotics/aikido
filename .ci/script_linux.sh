@@ -1,4 +1,6 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
+
+set -e
 
 ./scripts/internal-build.sh ${PACKAGE_NAMES}
 ./scripts/internal-test.sh ${PACKAGE_NAMES}

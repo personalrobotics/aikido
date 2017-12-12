@@ -4,7 +4,7 @@
 #include <aikido/constraint/CollisionFree.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/planner/PlanningResult.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -62,16 +62,14 @@ public:
 
   VectorFieldPlannerTest() : mErrorTolerance(1e-3)
   {
-    SkeletonPtr skel
-        = createNLinkRobot(3, Eigen::Vector3d(0.2, 0.2, 1.0), BALL);
+    SkeletonPtr skel = createNLinkRobot();
     mNumDof = skel->getNumDofs();
-    mLinearVelocity = 0.2;
 
     mUpperPositionLimits = Eigen::VectorXd::Constant(mNumDof, constantsd::pi());
     mLowerPositionLimits
         = Eigen::VectorXd::Constant(mNumDof, -constantsd::pi());
-    mUpperVelocityLimits = Eigen::VectorXd::Constant(mNumDof, 2.0);
-    mLowerVelocityLimits = Eigen::VectorXd::Constant(mNumDof, -2.0);
+    mUpperVelocityLimits = Eigen::VectorXd::Constant(mNumDof, 4.0);
+    mLowerVelocityLimits = Eigen::VectorXd::Constant(mNumDof, -4.0);
 
     skel->setPositionUpperLimits(mUpperPositionLimits);
     skel->setPositionLowerLimits(mLowerPositionLimits);
@@ -82,7 +80,7 @@ public:
 
     mStartConfig = Eigen::VectorXd::Zero(mNumDof);
     mStartConfig << 2.13746, -0.663612, 1.77876, 1.87515, 2.58646, -1.90034,
-        -1.03533, 1.68534, -1.39628;
+        -1.03533;
 
     mGoalConfig = Eigen::VectorXd(mNumDof);
     mPassingConstraint = std::make_shared<PassingConstraint>(mStateSpace);
@@ -141,67 +139,37 @@ public:
     return newComponent;
   }
 
-  /// Add an end-effector to the last link of the given robot
-  void addEndEffector(SkeletonPtr _robot, BodyNode* _parentNode, Vector3d _dim)
-  {
-    // Create the end-effector node with a random dimension
-    BodyNode::Properties node(BodyNode::AspectProperties("ee"));
-    std::shared_ptr<Shape> shape
-        = std::make_shared<BoxShape>(Vector3d(0.2, 0.2, 0.2));
-
-    Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
-    T.translate(Eigen::Vector3d(0.0, 0.0, _dim(2)));
-    Joint::Properties joint("eeJoint", T);
-
-    auto pair = _robot->createJointAndBodyNodePair<WeldJoint>(
-        _parentNode, joint, node);
-    auto bodyNode = pair.second;
-    bodyNode
-        ->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(
-            shape);
-  }
-
   //==============================================================================
   /// Creates a N link manipulator with the given dimensions where each joint is
   /// the specified type
-  SkeletonPtr createNLinkRobot(
-      int _n, Vector3d _dim, TypeOfDOF _type, bool _finished = false)
+  SkeletonPtr createNLinkRobot()
   {
-    assert(_n > 0);
+    Vector3d dim(0.1, 0.1, 0.2);
 
     SkeletonPtr robot = Skeleton::create();
     // robot->disableSelfCollision();
 
     // Create the first link, the joint with the ground and its shape
-    BodyNode::Properties node(BodyNode::AspectProperties("link1"));
+    BodyNode::Properties node(BodyNode::AspectProperties("link0"));
     //  node.mInertia.setLocalCOM(Vector3d(0.0, 0.0, dim(2)/2.0));
-    std::shared_ptr<Shape> shape(new BoxShape(_dim));
+    std::shared_ptr<Shape> shape(new BoxShape(dim));
 
     std::pair<Joint*, BodyNode*> pair1;
-    if (BALL == _type)
-    {
-      BallJoint::Base::Properties properties(std::string("joint1"));
-      pair1 = robot->createJointAndBodyNodePair<BallJoint>(
-          nullptr, BallJoint::Properties(properties), node);
-    }
-    else
-    {
-      pair1 = add1DofJoint(
-          robot,
-          nullptr,
-          node,
-          "joint1",
-          0.0,
-          -constantsd::pi(),
-          constantsd::pi(),
-          _type);
-    }
+    pair1 = add1DofJoint(
+        robot,
+        nullptr,
+        node,
+        "joint0",
+        0.0,
+        -constantsd::pi(),
+        constantsd::pi(),
+        DOF_ROLL);
 
     Joint* joint = pair1.first;
     Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
     // T.translation() = Eigen::Vector3d(0.0, 0.0, -0.5*dim(2));
     // joint->setTransformFromParentBodyNode(T);
-    T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * _dim(2));
+    T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * dim(2));
     joint->setTransformFromChildBodyNode(T);
     // joint->setDampingCoefficient(0, 0.01);
 
@@ -213,7 +181,7 @@ public:
     BodyNode* parentNode = currentNode;
 
     // Create links iteratively
-    for (int i = 1; i < _n; ++i)
+    for (int i = 1; i < 7; ++i)
     {
       std::ostringstream ssLink;
       std::ostringstream ssJoint;
@@ -222,34 +190,30 @@ public:
 
       node = BodyNode::Properties(BodyNode::AspectProperties(ssLink.str()));
       //    node.mInertia.setLocalCOM(Vector3d(0.0, 0.0, dim(2)/2.0));
-      shape = std::shared_ptr<Shape>(new BoxShape(_dim));
+      shape = std::shared_ptr<Shape>(new BoxShape(dim));
 
       std::pair<Joint*, BodyNode*> newPair;
 
-      if (BALL == _type)
-      {
-        BallJoint::Base::Properties properties(ssJoint.str());
-        newPair = robot->createJointAndBodyNodePair<BallJoint>(
-            parentNode, BallJoint::Properties(properties), node);
-      }
+      TypeOfDOF type;
+      if (i % 2 == 1)
+        type = DOF_PITCH;
       else
-      {
-        newPair = add1DofJoint(
-            robot,
-            parentNode,
-            node,
-            ssJoint.str(),
-            0.0,
-            -constantsd::pi(),
-            constantsd::pi(),
-            _type);
-      }
+        type = DOF_ROLL;
+      newPair = add1DofJoint(
+          robot,
+          parentNode,
+          node,
+          ssJoint.str(),
+          0.0,
+          -constantsd::pi(),
+          constantsd::pi(),
+          type);
 
       Joint* joint = newPair.first;
       Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
-      T.translation() = Eigen::Vector3d(0.0, 0.0, -0.5 * _dim(2));
+      T.translation() = Eigen::Vector3d(0.0, 0.0, -0.5 * dim(2));
       joint->setTransformFromParentBodyNode(T);
-      T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * _dim(2));
+      T.translation() = Eigen::Vector3d(0.0, 0.0, 0.5 * dim(2));
       joint->setTransformFromChildBodyNode(T);
       // joint->setDampingCoefficient(0, 0.01);
 
@@ -262,8 +226,7 @@ public:
     }
 
     // If finished, initialize the skeleton
-    if (_finished)
-      addEndEffector(robot, parentNode, _dim);
+    // addEndEffector(robot, parentNode, dim);
 
     return robot;
   }
@@ -294,59 +257,74 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 {
   using aikido::planner::vectorfield::computeJointVelocityFromTwist;
 
-  Eigen::VectorXd currentConfig = Eigen::VectorXd::Random(mNumDof);
-  mStateSpace->getMetaSkeleton()->setPositions(currentConfig);
+  Eigen::VectorXd jointVelocityUpperLimits
+      = mStateSpace->getMetaSkeleton()->getVelocityUpperLimits();
+  Eigen::VectorXd jointVelocityLowerLimits
+      = mStateSpace->getMetaSkeleton()->getVelocityLowerLimits();
 
-  Eigen::Isometry3d currentTrans = mBodynode->getTransform();
-  Eigen::Vector3d currentTranslation = currentTrans.translation();
+  double maxStepSize = 0.01;
+  double padding = 2e-3;
 
-  Eigen::Vector6d desiredTwist;
-  Eigen::Vector3d linearVel = Eigen::Vector3d::Zero();
-  Eigen::Vector3d angularVel = Eigen::Vector3d::Zero();
-  linearVel << 0.5, 0.5, 0.5;
-  desiredTwist.head<3>() = angularVel;
-  desiredTwist.tail<3>() = linearVel;
+  // Linear only
+  Eigen::Vector6d desiredTwist1 = Eigen::Vector6d::Zero();
+  desiredTwist1.tail<3>() << 1.0, 1.0, 1.0;
 
-  double timestep = 0.01;
-  double padding = 1e-3;
-  double optimizationTolerance = 1e-10;
   Eigen::VectorXd qd = Eigen::VectorXd::Zero(mNumDof);
   EXPECT_TRUE(
       computeJointVelocityFromTwist(
-          desiredTwist,
+          qd,
+          desiredTwist1,
           mStateSpace,
           mBodynode,
-          optimizationTolerance,
-          timestep,
           padding,
-          qd));
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          true,
+          maxStepSize));
 
-  Eigen::VectorXd nextConfig(mNumDof);
-  auto currentState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(currentConfig, currentState);
-  auto deltaState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(timestep * qd, deltaState);
-  auto nextState = mStateSpace->createState();
-  mStateSpace->compose(currentState, deltaState, nextState);
-  mStateSpace->convertStateToPositions(nextState, nextConfig);
-  mStateSpace->getMetaSkeleton()->setPositions(nextConfig);
+  // Angular only
+  Eigen::Vector6d desiredTwist2 = Eigen::Vector6d::Zero();
+  desiredTwist2.head<3>() << 1.0, 1.0, 1.0;
 
-  Eigen::Isometry3d nextTrans = mBodynode->getTransform();
-  Eigen::Vector3d nextTranslation = nextTrans.translation();
+  EXPECT_TRUE(
+      computeJointVelocityFromTwist(
+          qd,
+          desiredTwist2,
+          mStateSpace,
+          mBodynode,
+          padding,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          true,
+          maxStepSize));
 
-  Eigen::Vector3d linearDelta = nextTranslation - currentTranslation;
-  Eigen::Vector3d expectedLinearDelta = linearVel * timestep;
+  // Both linear and angular
+  Eigen::Vector6d desiredTwist3 = Eigen::Vector6d::Zero();
+  desiredTwist3.head<3>() << 1.0, 1.0, 1.0;
+  desiredTwist3.tail<3>() << 1.0, 1.0, 1.0;
 
-  double tolerance = 1e-3;
-  EXPECT_TRUE((linearDelta - expectedLinearDelta).norm() < tolerance);
+  EXPECT_TRUE(
+      computeJointVelocityFromTwist(
+          qd,
+          desiredTwist2,
+          mStateSpace,
+          mBodynode,
+          padding,
+          jointVelocityLowerLimits,
+          jointVelocityUpperLimits,
+          true,
+          maxStepSize));
 }
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
+  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+
   Eigen::Vector3d direction;
   direction << 1., 1., 0.;
   direction.normalize();
-  double distance = 0.5;
+  double minDistance = 0.4;
+  double maxDistance = 0.42;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
   auto startState = mStateSpace->createState();
@@ -356,22 +334,24 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
-  double timestep = 0.02;
-  double linearGain = 1. / timestep;
-  double angularGain = 0.; // not trying to correct angular deviation
+  double initialStepSize = 0.001;
+  double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
+  std::chrono::duration<double> timelimit(5.);
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       mStateSpace,
       mBodynode,
       mPassingConstraint,
       direction,
-      distance,
-      mLinearVelocity,
+      minDistance,
+      maxDistance,
       positionTolerance,
       angularTolerance,
-      linearGain,
-      angularGain,
-      timestep);
+      initialStepSize,
+      jointLimitTolerance,
+      constraintCheckResolution,
+      timelimit);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 
@@ -406,7 +386,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
     Eigen::Vector3d waypointVec = waypointTrans.translation();
 
     Eigen::Vector3d linear_error
-        = startVec + direction * distance - waypointVec;
+        = startVec + direction * minDistance - waypointVec;
     Eigen::Vector3d const linear_orthogonal_error
         = linear_error - linear_error.dot(direction) * direction;
     double const linear_orthogonal_magnitude = linear_orthogonal_error.norm();
@@ -421,13 +401,23 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       = (endTrans.translation() - startTrans.translation()).norm();
 
   // Verify the moving distance
-  EXPECT_NEAR(movedDistance, distance, positionTolerance);
+  EXPECT_TRUE(movedDistance >= minDistance);
+  EXPECT_TRUE(movedDistance <= maxDistance);
 }
 
 TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 {
+  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+
   Eigen::Vector3d direction = Eigen::Vector3d::Zero();
   double distance = 0.2;
+  double positionTolerance = 0.01;
+  double angularTolerance = 0.15;
+  double initialStepSize = 0.05;
+  double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
+  std::chrono::duration<double> timelimit(5.);
+  double maxDistance = 0.22;
 
   mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
 
@@ -438,6 +428,70 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
           mPassingConstraint,
           direction,
           distance,
-          mLinearVelocity),
+          maxDistance,
+          positionTolerance,
+          angularTolerance,
+          initialStepSize,
+          jointLimitTolerance,
+          constraintCheckResolution,
+          timelimit),
       std::runtime_error);
+}
+
+TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
+{
+  using dart::math::eulerXYXToMatrix;
+  using aikido::planner::vectorfield::computeGeodesicDistance;
+  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+
+  Eigen::VectorXd goalConfig = Eigen::VectorXd::Zero(mNumDof);
+  goalConfig << 1.13746, -0.363612, 0.77876, 1.07515, 1.58646, -1.00034,
+      -0.03533;
+  mStateSpace->getMetaSkeleton()->setPositions(goalConfig);
+  Eigen::Isometry3d targetPose = mBodynode->getTransform();
+
+  double poseErrorTolerance = 0.01;
+  double initialStepSize = 0.05;
+  double r = 1.0;
+  double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-3;
+  std::chrono::duration<double> timelimit(5.);
+
+  mStateSpace->getMetaSkeleton()->setPositions(mStartConfig);
+
+  auto traj1 = aikido::planner::vectorfield::planToEndEffectorPose(
+      mStateSpace,
+      mBodynode,
+      mPassingConstraint,
+      targetPose,
+      poseErrorTolerance,
+      r,
+      initialStepSize,
+      jointLimitTolerance,
+      constraintCheckResolution,
+      timelimit);
+
+  EXPECT_FALSE(traj1 == nullptr) << "Trajectory not found";
+
+  if (traj1 == nullptr)
+  {
+    return;
+  }
+
+  // Extract and evalute first waypoint
+  auto firstWayPoint = mStateSpace->createState();
+  traj1->evaluate(0.0, firstWayPoint);
+  Eigen::VectorXd testStart(mNumDof);
+  mStateSpace->convertStateToPositions(firstWayPoint, testStart);
+
+  double errorTolerance = 1e-3;
+  EXPECT_TRUE((testStart - mStartConfig).norm() <= errorTolerance);
+
+  auto endpoint = mStateSpace->createState();
+  traj1->evaluate(traj1->getEndTime(), endpoint);
+  mStateSpace->setState(endpoint);
+  Eigen::Isometry3d endTrans = mBodynode->getTransform();
+
+  double poseError = computeGeodesicDistance(endTrans, targetPose, r);
+  EXPECT_TRUE(poseError <= poseErrorTolerance);
 }

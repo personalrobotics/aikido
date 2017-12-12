@@ -1,8 +1,9 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 
-#include <functional>
 #include <aikido/constraint/Testable.hpp>
+#include <aikido/planner/PlanningResult.hpp>
+#include <aikido/planner/vectorfield/VectorField.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
@@ -10,84 +11,94 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
-enum class VectorFieldPlannerStatus
-{
-  TERMINATE,
-  CACHE_AND_TERMINATE,
-  CACHE_AND_CONTINUE,
-  CONTINUE
-};
-
-/// Callback function of joint velocity calculated by a vector field and a
-/// MetaSkeleton.
+/// Generate a trajectory following the vector field along given time.
 ///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _t Planned time of a given duration
-/// \param[out] _dq Joint velocity calculated by a vector field and meta
-/// skeleton
-/// \return Whether vectorfield evaluation succeeds
-using VectorFieldCallback = std::function<bool(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double _t,
-    Eigen::VectorXd& _dq)>;
-
-/// Callback function of status of planning
-///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _t Planned time of a given duration
-/// \return Status of vectorfield planner
-using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double _t)>;
-
-/// Plan to a trajectory by a given vector field.
-///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _constraint Trajectory-wide constraint that must be satisfied
-/// \param[in] _timestep How long an evaluation step is
-/// \param[in] _vectorField Callback of vector field calculation
-/// \param[in] _statusCb Callback of planning status
-/// \return Trajectory or \c nullptr if planning failed
-std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    const aikido::constraint::TestablePtr& _constraint,
-    double _timestep,
-    const VectorFieldCallback& _vectorFieldCb,
-    const VectorFieldStatusCallback& _statusCb);
+/// \param[in] vectorField Vector field to follow.
+/// \param[in] startState Start state of the planning.
+/// \param[in] constraint Constraint to be satisfied.
+/// \param[in] timelimit Timelimit for integration calculation.
+/// \param[in] initialStepSize Initial step size of integator in following
+/// vector field.
+/// \param[in] checkConstraintResolution Resolution used in checking
+/// constraint satisfaction in generated trajectory.
+/// \param[out] planningResult information about success or failure.
+/// \return A trajectory following the vector field.
+std::unique_ptr<aikido::trajectory::Spline> followVectorField(
+    const aikido::planner::vectorfield::VectorField& vectorField,
+    const aikido::statespace::StateSpace::State& startState,
+    const aikido::constraint::Testable& constraint,
+    std::chrono::duration<double> timelimit,
+    double initialStepSize,
+    double checkConstraintResolution,
+    planner::PlanningResult* planningResult);
 
 /// Plan to a trajectory that moves the end-effector by a given direction and
 /// distance.
 ///
-/// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _bn Body node of the end-effector
-/// \param[in] _constraint Trajectory-wide constraint that must be satisfied
-/// \param[in] _direction Direction of moving the end-effector
-/// \param[in] _distance  Distance of moving the end-effector
-/// \param[in] _linearVelocity Linear velocity of moving the end-effector
-/// \param[in] _linearTolerance How a planned trajectory is allowed to
+/// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] bn Body node of the end-effector.
+/// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+/// \param[in] direction Direction of moving the end-effector.
+/// \param[in] minDistance  Distance of moving the end-effector.
+/// \param[in] maxDistance Max distance of moving the end-effector.
+/// \param[in] positionTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
-/// distance
+/// distance.
 /// \param[in] angularTolerance How a planned trajectory is allowed to deviate
-/// from a given direction
-/// \param[in] _linearGain Linear gain for a P controller to correct linear
-/// deviation
-/// \param[in] _angularGain Angular gain for a P controller to correct angular
-/// deviation
-/// \param[in] _timestep How often velocity should be updated from a vector
-/// field
-/// \return Trajectory or \c nullptr if planning failed
+/// from a given direction.
+/// \param[in] initialStepSize Initial step size.
+/// \param[in] jointLimitTolerance If less then this distance to joint
+/// limit, velocity is bounded in that direction to 0.
+/// \param[in] constraintCheckResolution Resolution used in constraint checking.
+/// \param[in] timelimit timeout in seconds.
+/// \param[out] planningResult information about success or failure.
+/// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    const dart::dynamics::BodyNodePtr& _bn,
-    const aikido::constraint::TestablePtr& _constraint,
-    const Eigen::Vector3d& _direction,
-    double _distance,
-    double _linearVelocity,
-    double _linearTolerance = 0.005,
-    double _angularTolerance = 0.2,
-    double _linearGain = 10.0,
-    double _angularGain = 10.0,
-    double _timestep = 0.01);
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const dart::dynamics::BodyNodePtr& bn,
+    const aikido::constraint::TestablePtr& constraint,
+    const Eigen::Vector3d& direction,
+    double minDistance,
+    double maxDistance,
+    double positionTolerance,
+    double angularTolerance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::PlanningResult* planningResult = nullptr);
+
+/// Plan to an end effector pose by following a geodesic loss function
+/// in SE(3) via an optimized Jacobian.
+///
+/// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] bn Body node of the end-effector.
+/// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+/// \param[in] goalPose Desired end-effector pose.
+/// \param[in] positionErrorTolerance How a planned trajectory is allowed to
+/// deviated from a straight line segment defined by the direction and the
+/// distance.
+/// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radius to
+/// meter in computing geodesic distance.
+/// \param[in] initialStepSize Initial step size.
+/// \param[in] jointLimitTolerance If less then this distance to joint
+/// limit, velocity is bounded in that direction to 0.
+/// \param[in] constraintCheckResolution Resolution used in constraint checking.
+/// \param[in] timelimit Timeout in seconds.
+/// \param[out] planningResult information about success or failure.
+/// \return Trajectory or \c nullptr if planning failed.
+std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const dart::dynamics::BodyNodePtr& bn,
+    const aikido::constraint::TestablePtr& constraint,
+    const Eigen::Isometry3d& goalPose,
+    double poseErrorTolerance,
+    double conversionRatioInGeodesicDistance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::PlanningResult* planningResult = nullptr);
 
 } // namespace vectorfield
 } // namespace planner

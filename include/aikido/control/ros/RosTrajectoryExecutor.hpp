@@ -39,6 +39,9 @@ public:
 
   virtual ~RosTrajectoryExecutor();
 
+  // Documentation inherited.
+  void validate(trajectory::TrajectoryPtr traj) override;
+
   /// Sends trajectory to ROS server for execution.
   /// \param[in] traj Trajectory to be executed.
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
@@ -54,6 +57,9 @@ public:
   /// To be executed on a separate thread.
   /// Regularly checks for the completion of a sent trajectory.
   void step() override;
+
+  // Do nothing.
+  void abort() override;
 
 private:
   using TrajectoryActionClient
@@ -74,9 +80,9 @@ private:
   std::chrono::milliseconds mConnectionPollingPeriod;
 
   bool mInProgress;
-  std::promise<void> mPromise;
-  trajectory::TrajectoryPtr mTrajectory;
+  std::unique_ptr<std::promise<void>> mPromise;
 
+  /// Manages access on mInProgress, mPromise
   std::mutex mMutex;
 };
 

@@ -40,6 +40,4 @@ private:
 } // namespace statespace
 } // namespace aikido
 
-#include "detail/MetaSkeletonStateSpaceSaver-impl.hpp"
-
 #endif // ifndef AIKIDO_STATESPACE_DART_METASKELETONSTATESPACESAVER_HPP_

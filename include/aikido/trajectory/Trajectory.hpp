@@ -2,9 +2,9 @@
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 
 #include <Eigen/Core>
-
 #include "aikido/distance/DistanceMetric.hpp"
 #include "aikido/statespace/StateSpace.hpp"
+#include "aikido/trajectory/TrajectoryMetadata.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -81,6 +81,9 @@ public:
       const distance::DistanceMetric* distanceMetric) const = 0;
   // TODO: Consider computing the arc-length of a segment of a trajectory that
   // is specified by given range of trajectory parameter [t0, t1].
+
+  /// Trajectory metadata
+  TrajectoryMetadata metadata;
 };
 
 using TrajectoryPtr = std::shared_ptr<Trajectory>;
