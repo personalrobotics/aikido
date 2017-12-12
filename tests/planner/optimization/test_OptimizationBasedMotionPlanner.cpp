@@ -106,10 +106,10 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
   EXPECT_TRUE(spline.getNumSegments() == 3);
   EXPECT_TRUE(spline.getDuration() == 6.0);
 
-//  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
-//      spline);
+  //  planner::optimization::SplineCoefficientsAndDurationsVariables variable(
+  //      spline);
   planner::optimization::SplineCoefficientsVariables variable(spline);
-  //EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
+  // EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
   EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3);
 
   planner::optimization::OptimizationBasedMotionPlanning planner(variable);

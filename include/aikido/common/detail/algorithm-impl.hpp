@@ -60,7 +60,7 @@ std::vector<T> linspace(T start, T end, std::size_t n, bool endpoint)
 }
 
 //==============================================================================
-template<typename T>
+template <typename T>
 std::vector<T> arange(T start, T stop, T step)
 {
   std::vector<T> values;

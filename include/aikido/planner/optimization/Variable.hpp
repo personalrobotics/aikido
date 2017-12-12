@@ -33,8 +33,9 @@ public:
   virtual Eigen::VectorXd getValue() const = 0;
   // TODO(JS): Change to getValues()
 
-  virtual bool isValidLowerBounds(const Eigen::VectorXd& value) {}
-  virtual bool isValidUpperBounds(const Eigen::VectorXd& value) {}
+  Eigen::VectorXd createValue() const;
+  Eigen::VectorXd createValue(double value) const;
+  Eigen::VectorXd createZeroValue() const;
 
   virtual bool isTrajectoryVariable() const;
 

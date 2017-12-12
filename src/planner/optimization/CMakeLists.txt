@@ -4,6 +4,7 @@
 set(sources 
   OptimizationInterpolated.cpp
   Function.cpp
+  MetaSkeletonTrajectoryVariable.cpp
   Planner.cpp
   SplineCoefficientsVariable.cpp
   SplineCoefficientsAndDurationsVariable.cpp

@@ -35,7 +35,7 @@ template <typename T>
 std::vector<T> linspace(T start, T end, std::size_t n, bool endpoint = true);
 
 // TODO(JS): docstring
-template<typename T>
+template <typename T>
 std::vector<T> arange(T start, T stop, T step = static_cast<T>(1u));
 
 } // namespace common

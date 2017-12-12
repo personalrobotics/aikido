@@ -69,6 +69,96 @@ Eigen::VectorXd SplineCoefficientsAndDurationsVariables::getValue() const
 }
 
 //==============================================================================
+void SplineCoefficientsAndDurationsVariables::setCoefficientValue(
+    const Eigen::VectorXd& value)
+{
+  // TODO(JS): Check dimension of values (== num_segments * statespace_dim *
+  // cols)
+
+  int index = 0;
+  for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
+  {
+    const auto rows = mSpline.getStateSpace()->getDimension();
+    const auto cols = mSpline.getSegmentCoefficients(i).cols();
+    const auto numLocalVariables = rows * cols;
+
+    Eigen::Map<const Eigen::MatrixXd> newSegmentCoeffis(
+        value.segment(index, numLocalVariables).data(), rows, cols);
+    mSpline.setSegmentCoefficients(i, newSegmentCoeffis);
+
+    index += numLocalVariables + 1;
+  }
+
+  assert(static_cast<std::size_t>(index) == getDimension());
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariables::setCoefficientValueTo(
+    Eigen::VectorXd& vector, double value) const
+{
+  vector.resize(getDimension());
+
+  int index = 0;
+  for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
+  {
+    const auto rows = mSpline.getStateSpace()->getDimension();
+    const auto cols = mSpline.getSegmentCoefficients(i).cols();
+    const auto numLocalVariables = rows * cols;
+
+    vector.segment(index, numLocalVariables).setConstant(value);
+
+    index += numLocalVariables + 1;
+  }
+
+  assert(static_cast<std::size_t>(index) == getDimension());
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariables::setCoefficientValueTo(
+    Eigen::VectorXd& vector, const Eigen::VectorXd& values) const
+{
+  vector.resize(getDimension());
+
+  int index = 0;
+  for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
+  {
+    const auto rows = mSpline.getStateSpace()->getDimension();
+    const auto cols = mSpline.getSegmentCoefficients(i).cols();
+    const auto numLocalVariables = rows * cols;
+
+    assert(static_cast<std::size_t>(values.size()) == numLocalVariables);
+    vector.segment(index, numLocalVariables) = values;
+
+    index += numLocalVariables + 1;
+  }
+
+  assert(static_cast<std::size_t>(index) == getDimension());
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariables::setCoefficientValueTo(
+    Eigen::VectorXd& vector, std::size_t index, double value) const
+{
+  // TODO(JS): Check validity of index (0 <= index < dimension_of_statespace)
+
+  vector.resize(getDimension());
+
+  int segmentIndex = 0;
+  for (auto i = 0u; i < mSpline.getNumSegments(); ++i)
+  {
+    const auto rows = mSpline.getStateSpace()->getDimension();
+    const auto cols = mSpline.getSegmentCoefficients(i).cols();
+    const auto numLocalVariables = rows * cols;
+
+    vector[segmentIndex + index] = value;
+
+    segmentIndex += numLocalVariables + 1;
+  }
+
+  assert(static_cast<std::size_t>(segmentIndex) == getDimension());
+}
+
+//==============================================================================
 void SplineCoefficientsAndDurationsVariables::updateDimension()
 {
   std::size_t dim = 0u;
@@ -92,6 +182,24 @@ void SplineCoefficientsAndDurationsVariables::updateDimension()
   dim += mSpline.getNumSegments(); // for durations
 
   mDimension = dim;
+}
+
+//==============================================================================
+void setCoefficientValueAsJointPositionLowerLimitsTo(
+    Eigen::VectorXd& vector,
+    const SplineCoefficientsAndDurationsVariables& variables,
+    const dart::dynamics::MetaSkeleton& skeleton)
+{
+  variables.setCoefficientValueTo(vector, skeleton.getPositionLowerLimits());
+}
+
+//==============================================================================
+void setCoefficientValueAsJointPositionUpperLimitsTo(
+    Eigen::VectorXd& vector,
+    const SplineCoefficientsAndDurationsVariables& variables,
+    const dart::dynamics::MetaSkeleton& skeleton)
+{
+  variables.setCoefficientValueTo(vector, skeleton.getPositionUpperLimits());
 }
 
 } // namespace optimization

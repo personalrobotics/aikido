@@ -166,7 +166,8 @@ ConstFunctionPtr OptimizationBasedMotionPlanning::getObjective() const
 }
 
 //==============================================================================
-void OptimizationBasedMotionPlanning::setInitialGuess(const Eigen::VectorXd& guess)
+void OptimizationBasedMotionPlanning::setInitialGuess(
+    const Eigen::VectorXd& guess)
 {
   mProblem->setInitialGuess(guess);
 }
