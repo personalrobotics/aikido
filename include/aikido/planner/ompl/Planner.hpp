@@ -19,6 +19,7 @@
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
+#include <ompl/util/Exception.h>
 
 #include <ompl/geometric/PathSimplifier.h>
 

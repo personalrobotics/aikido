@@ -170,7 +170,15 @@ trajectory::InterpolatedPtr planOMPL(
     statespace::InterpolatorPtr _interpolator,
     double _maxPlanTime)
 {
-  _planner->setProblemDefinition(_pdef);
+  try
+  {
+    _planner->setProblemDefinition(_pdef);
+  }
+  catch(::ompl::Exception &ex)
+  {
+    std::cout << "Error" << std::endl;
+    return nullptr;
+  }
   _planner->setup();
   auto solved = _planner->solve(_maxPlanTime);
 
