@@ -69,6 +69,17 @@ void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
 {
   using visualization_msgs::Marker;
 
+  if (trajectory)
+  {
+    auto statespace = trajectory->getStateSpace();
+    if (!std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
+            statespace))
+    {
+      throw std::invalid_argument(
+          "The statespace in the trajectory should be MetaSkeletonStateSpace");
+    }
+  }
+
   mTrajectory = std::move(trajectory);
 
   mNeedPointsUpdate = true;

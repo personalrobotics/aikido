@@ -42,6 +42,10 @@ public:
   ~TrajectoryMarker();
 
   /// Sets or updates trajectory to visualize
+  ///
+  /// \param[in] trajectory C-sapce (or joint-space) trajectory. The statespace
+  /// of the trajectory should be MetaSkeletonStateSpace. Otherwise, throw
+  /// invalid_argument exception.
   void setTrajectory(trajectory::ConstTrajectoryPtr trajectory);
 
   /// Returns trajectory associated with this marker
