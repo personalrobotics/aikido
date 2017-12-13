@@ -7,7 +7,7 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-SplineVariables::SplineVariables(const trajectory::Spline& splineToClone)
+SplineVariable::SplineVariable(const trajectory::Spline& splineToClone)
   : mSpline(
         static_cast<const trajectory::Spline&>(
             *(splineToClone.clone().release())))
@@ -16,19 +16,19 @@ SplineVariables::SplineVariables(const trajectory::Spline& splineToClone)
 }
 
 //==============================================================================
-const trajectory::Trajectory& SplineVariables::getTrajectory() const
+const trajectory::Trajectory& SplineVariable::getTrajectory() const
 {
   return static_cast<const trajectory::Trajectory&>(mSpline);
 }
 
 //==============================================================================
-const trajectory::Spline& SplineVariables::getSpline() const
+const trajectory::Spline& SplineVariable::getSpline() const
 {
   return mSpline;
 }
 
 //==============================================================================
-std::size_t SplineVariables::getDimension() const
+std::size_t SplineVariable::getDimension() const
 {
   return mDimension;
 }

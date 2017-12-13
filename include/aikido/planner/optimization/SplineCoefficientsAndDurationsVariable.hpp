@@ -8,11 +8,11 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-class SplineCoefficientsAndDurationsVariables : public SplineVariables
+class SplineCoefficientsAndDurationsVariable : public SplineVariable
 {
 public:
   /// Constructor
-  SplineCoefficientsAndDurationsVariables(
+  explicit SplineCoefficientsAndDurationsVariable(
       const trajectory::Spline& splineToClone);
 
   // Documentation inherited.
@@ -29,6 +29,8 @@ public:
   void setCoefficientValueTo(
       Eigen::VectorXd& vector, const Eigen::VectorXd& values) const;
 
+  void setDurationValueTo(Eigen::VectorXd& vector, double duration);
+
   void setDurationValueTo(
       Eigen::VectorXd& vector, const Eigen::VectorXd& duration);
 
@@ -39,21 +41,6 @@ protected:
   // Documentation inherited.
   void updateDimension() override;
 };
-
-void setCoefficientValueAsJointPositionUpperLimitsTo(
-    Eigen::VectorXd& vector,
-    const SplineCoefficientsAndDurationsVariables& variables,
-    const dart::dynamics::MetaSkeleton& skeleton);
-
-void setCoefficientValueAsJointPositionLowerLimitsTo(
-    Eigen::VectorXd& vector,
-    const SplineCoefficientsAndDurationsVariables& variables,
-    const dart::dynamics::MetaSkeleton& skeleton);
-
-void setCoefficientValueAsJointMidPointsOfLimitsTo(
-    Eigen::VectorXd& vector,
-    const SplineCoefficientsAndDurationsVariables& variables,
-    const dart::dynamics::MetaSkeleton& skeleton);
 
 } // namespace optimization
 } // namespace planner

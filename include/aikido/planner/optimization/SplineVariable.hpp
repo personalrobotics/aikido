@@ -8,11 +8,11 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-class SplineVariables : public TrajectoryVariable
+class SplineVariable : public TrajectoryVariable
 {
 public:
   /// Constructor
-  explicit SplineVariables(const trajectory::Spline& splineToClone);
+  explicit SplineVariable(const trajectory::Spline& splineToClone);
 
   // Documentation inherited.
   const trajectory::Trajectory& getTrajectory() const override;

@@ -7,7 +7,7 @@ namespace optimization {
 //==============================================================================
 SplineCoefficientsVariables::SplineCoefficientsVariables(
     const trajectory::Spline& splineToClone)
-  : SplineVariables(splineToClone)
+  : SplineVariable(splineToClone)
 {
   updateDimension();
 }

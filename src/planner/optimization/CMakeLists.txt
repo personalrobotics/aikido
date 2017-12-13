@@ -2,14 +2,19 @@
 # Libraries
 #
 set(sources 
+  ConfigurationSpacePathLengthFunction.cpp
   OptimizationInterpolated.cpp
   Function.cpp
-  MetaSkeletonTrajectoryVariable.cpp
-  Planner.cpp
+  MetaSkeletonSplineCoefficientsAndDurationsVariable.cpp
+  Optimizer.cpp
+  PoseErrorFunction.cpp
   SplineCoefficientsVariable.cpp
   SplineCoefficientsAndDurationsVariable.cpp
   SplineDurationsVariable.cpp
   SplineVariable.cpp
+  TaskSpacePathLengthFunction.cpp
+  TrajectoryFunction.cpp
+  TrajectoryOptimizer.cpp
   TrajectoryVariable.cpp
   Variable.cpp
 )

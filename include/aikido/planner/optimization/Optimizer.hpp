@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_OPTIMIZATION_PLANNER_HPP_
-#define AIKIDO_PLANNER_OPTIMIZATION_PLANNER_HPP_
+#ifndef AIKIDO_PLANNER_OPTIMIZATION_OPTIMIZER_HPP_
+#define AIKIDO_PLANNER_OPTIMIZATION_OPTIMIZER_HPP_
 
 #include <memory>
 
@@ -25,32 +25,26 @@ namespace optimization {
 
 // TODO(JS): templatize this class for the trajectory type. For now, this class
 // returns trajectory::Spline()
-class OptimizationBasedMotionPlanning
+class Optimizer
 {
 public:
-  OptimizationBasedMotionPlanning(const TrajectoryVariable& variablesToClone);
+  struct OutCome;
 
-  ~OptimizationBasedMotionPlanning() = default;
+  explicit Optimizer(const TrajectoryVariable& variablesToClone);
 
-  trajectory::TrajectoryPtr plan();
+  virtual ~Optimizer() = default;
+
+  std::shared_ptr<OutCome> createOutCome() const;
+
+  VariablePtr solve(OutCome* outcome = nullptr);
 
   void setVariable(const Variable& variableToClone);
-
-  void setStartState(const statespace::StateSpace::State* startState);
-
-  const statespace::StateSpace::State* getStartState() const;
-
-  void setGoalState(const statespace::StateSpace::State* goalState);
-
-  const statespace::StateSpace::State* getGoalState() const;
 
   /// Sets an objective function that should be minimized while satisfying the
   /// trajectory optimization constraint.
   ///
   /// Pass in a nullptr to remove the objective and make it a constant-zero
   /// function.
-  ///
-  /// \param[in] objective TODO
   void setObjective(const FunctionPtr& objective);
 
   /// Returns the objective function for this trajectory optimization.
@@ -63,13 +57,19 @@ public:
 
   void setInitialGuess(const Variable& guess);
 
-  /// Returns the Problem that is being maintained by this trajectory
-  /// optimization.
-  const std::shared_ptr<dart::optimizer::Problem>& getProblem();
+  void setLowerBounds(const Eigen::VectorXd& lowerBounds);
+
+  void setLowerBounds(const Variable& lowerBounds);
+
+  void setUpperBounds(const Eigen::VectorXd& upperBounds);
+
+  void setUpperBounds(const Variable& upperBounds);
 
   /// Returns the Problem that is being maintained by this trajectory
   /// optimization.
   std::shared_ptr<const dart::optimizer::Problem> getProblem() const;
+  // We return as const problem because we don't want the problem to be changed
+  // externally.
 
   /// Sets the Solver that should be used by this trajectory optimization, and
   /// set it up with the Problem that is configured by this trajectory
@@ -82,8 +82,34 @@ public:
   /// Returns the Solver that is being used by this trajectory optimization.
   std::shared_ptr<const dart::optimizer::Solver> getSolver() const;
 
+  void setMaxAttempts(std::size_t maxAttempts);
+
+  std::size_t getMaxAttempts() const;
+
+  /// Add a seed for the Solver to use as a hint for the neighborhood of
+  /// the solution.
+  void addSeed(const Eigen::VectorXd& seed);
+
+  /// Get a mutable reference of the seed for the specified index. If an
+  /// out-of-bounds index is provided a warning will print, and a reference to
+  /// the initial guess will be returned instead.
+  Eigen::VectorXd& getSeed(std::size_t index);
+
+  /// An immutable version of getSeed(std::size_t)
+  const Eigen::VectorXd& getSeed(std::size_t index) const;
+
+  /// Get a mutable reference to the full vector of seeds that this
+  /// Problem currently contains
+  std::vector<Eigen::VectorXd>& getSeeds();
+
+  /// An immutable version of getSeeds()
+  const std::vector<Eigen::VectorXd>& getSeeds() const;
+
+  /// Clear the seeds that this Problem currently contains
+  void clearAllSeeds();
+
 protected:
-  void resetProblem(bool clearSeeds = false);
+  void randomizeConfiguration(Eigen::VectorXd& x);
 
   VariablePtr mVariable;
 
@@ -97,17 +123,27 @@ protected:
   /// Objective for the trajectory optimization.
   FunctionPtr mObjective;
 
-  const statespace::StateSpace::State* mStartState;
-
-  const statespace::StateSpace::State* mGoalState;
-
   std::shared_ptr<trajectory::Trajectory> mTrajectory;
 
-private:
+  std::size_t mMaxAttempts;
+};
+
+struct Optimizer::OutCome
+{
+  Eigen::VectorXd mInitialGuess;
+
+  double mInitialFunctionEvaluation;
+
+  bool mMinimized;
+
+  Eigen::VectorXd mSolution;
+  // TODO(JS): Consider having multiple solutions
+
+  double mMinimalFunctionEvaluation;
 };
 
 } // namespace optimization
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_OPTIMIZATION_PLANNER_HPP_
+#endif // AIKIDO_PLANNER_OPTIMIZATION_OPTIMIZER_HPP_

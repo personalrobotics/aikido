@@ -8,7 +8,7 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-class SplineCoefficientsVariables : public SplineVariables
+class SplineCoefficientsVariables : public SplineVariable
 {
 public:
   /// Constructor

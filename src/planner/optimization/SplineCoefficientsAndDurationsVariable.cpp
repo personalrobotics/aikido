@@ -5,22 +5,21 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-SplineCoefficientsAndDurationsVariables::
-    SplineCoefficientsAndDurationsVariables(
-        const trajectory::Spline& splineToClone)
-  : SplineVariables(splineToClone)
+SplineCoefficientsAndDurationsVariable::SplineCoefficientsAndDurationsVariable(
+    const trajectory::Spline& splineToClone)
+  : SplineVariable(splineToClone)
 {
   updateDimension();
 }
 
 //==============================================================================
-std::shared_ptr<Variable> SplineCoefficientsAndDurationsVariables::clone() const
+std::shared_ptr<Variable> SplineCoefficientsAndDurationsVariable::clone() const
 {
-  return std::make_shared<SplineCoefficientsAndDurationsVariables>(*this);
+  return std::make_shared<SplineCoefficientsAndDurationsVariable>(*this);
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::setValue(
+void SplineCoefficientsAndDurationsVariable::setValue(
     const Eigen::VectorXd& value)
 {
   if (static_cast<std::size_t>(value.size()) != getDimension())
@@ -45,7 +44,7 @@ void SplineCoefficientsAndDurationsVariables::setValue(
 }
 
 //==============================================================================
-Eigen::VectorXd SplineCoefficientsAndDurationsVariables::getValue() const
+Eigen::VectorXd SplineCoefficientsAndDurationsVariable::getValue() const
 {
   Eigen::VectorXd value(getDimension());
 
@@ -71,7 +70,7 @@ Eigen::VectorXd SplineCoefficientsAndDurationsVariables::getValue() const
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::setCoefficientValueTo(
+void SplineCoefficientsAndDurationsVariable::setCoefficientValueTo(
     Eigen::VectorXd& vector, double value) const
 {
   if (static_cast<std::size_t>(vector.size()) != getDimension())
@@ -81,7 +80,7 @@ void SplineCoefficientsAndDurationsVariables::setCoefficientValueTo(
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::setCoefficientValueTo(
+void SplineCoefficientsAndDurationsVariable::setCoefficientValueTo(
     Eigen::VectorXd& vector, const Eigen::VectorXd& values) const
 {
   if (static_cast<std::size_t>(vector.size()) != getDimension())
@@ -108,7 +107,14 @@ void SplineCoefficientsAndDurationsVariables::setCoefficientValueTo(
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::setDurationValueTo(
+void SplineCoefficientsAndDurationsVariable::setDurationValueTo(
+    Eigen::VectorXd& vector, double duration)
+{
+  vector.head(mSpline.getNumSegments()).setConstant(duration);
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariable::setDurationValueTo(
     Eigen::VectorXd& vector, const Eigen::VectorXd& duration)
 {
   if (static_cast<std::size_t>(vector.size()) != getDimension())
@@ -121,7 +127,7 @@ void SplineCoefficientsAndDurationsVariables::setDurationValueTo(
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::setDurationValueTo(
+void SplineCoefficientsAndDurationsVariable::setDurationValueTo(
     Eigen::VectorXd& vector, std::size_t segmentIndex, double duration)
 {
   if (static_cast<std::size_t>(vector.size()) != getDimension())
@@ -133,7 +139,7 @@ void SplineCoefficientsAndDurationsVariables::setDurationValueTo(
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariables::updateDimension()
+void SplineCoefficientsAndDurationsVariable::updateDimension()
 {
   std::size_t dim = 0u;
 
@@ -156,36 +162,6 @@ void SplineCoefficientsAndDurationsVariables::updateDimension()
   dim += mSpline.getNumSegments(); // for durations
 
   mDimension = dim;
-}
-
-//==============================================================================
-void setCoefficientValueAsJointPositionLowerLimitsTo(
-    Eigen::VectorXd& vector,
-    const SplineCoefficientsAndDurationsVariables& variables,
-    const dart::dynamics::MetaSkeleton& skeleton)
-{
-  variables.setCoefficientValueTo(vector, skeleton.getPositionLowerLimits());
-}
-
-//==============================================================================
-void setCoefficientValueAsJointPositionUpperLimitsTo(
-    Eigen::VectorXd& vector,
-    const SplineCoefficientsAndDurationsVariables& variables,
-    const dart::dynamics::MetaSkeleton& skeleton)
-{
-  variables.setCoefficientValueTo(vector, skeleton.getPositionUpperLimits());
-}
-
-//==============================================================================
-void setCoefficientValueAsJointMidPointsOfLimitsTo(
-    Eigen::VectorXd& vector,
-    const SplineCoefficientsAndDurationsVariables& variables,
-    const dart::dynamics::MetaSkeleton& skeleton)
-{
-  variables.setCoefficientValueTo(
-      vector,
-      0.5 * (skeleton.getPositionLowerLimits()
-             + skeleton.getPositionUpperLimits()));
 }
 
 } // namespace optimization
