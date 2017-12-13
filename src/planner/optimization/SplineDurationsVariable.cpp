@@ -13,9 +13,9 @@ SplineDurationsVariables::SplineDurationsVariables(
 }
 
 //==============================================================================
-std::shared_ptr<Variable> SplineDurationsVariables::clone() const
+std::unique_ptr<Variable> SplineDurationsVariables::clone() const
 {
-  return std::make_shared<SplineDurationsVariables>(*this);
+  return dart::common::make_unique<SplineDurationsVariables>(*this);
 }
 
 //==============================================================================

@@ -5,9 +5,9 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
+#include "aikido/planner/optimization/Function.hpp"
 #include "aikido/planner/optimization/TrajectoryVariable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/planner/optimization/Function.hpp"
 
 namespace aikido {
 namespace planner {
@@ -24,7 +24,6 @@ public:
 
 protected:
   bool isCompatible(const Variable& variable) const override;
-
 };
 
 } // namespace optimization

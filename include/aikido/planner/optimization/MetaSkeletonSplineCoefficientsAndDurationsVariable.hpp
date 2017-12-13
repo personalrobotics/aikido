@@ -18,7 +18,7 @@ public:
       dart::dynamics::MetaSkeletonPtr skeleton);
 
   // Documentation inherited.
-  std::shared_ptr<Variable> clone() const override;
+  std::unique_ptr<Variable> clone() const override;
 
   void setCoefficientValueAsJointPositionUpperLimitsTo(Eigen::VectorXd& vector);
 

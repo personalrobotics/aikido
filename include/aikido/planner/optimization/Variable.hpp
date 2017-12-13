@@ -21,7 +21,8 @@ class Variable
 {
 public:
   /// Clone
-  virtual std::shared_ptr<Variable> clone() const = 0;
+  virtual std::unique_ptr<Variable> clone() const = 0;
+  // TODO(JS): Change this to unique_ptr
 
   /// Returns the dimension of optimization variables.
   virtual std::size_t getDimension() const = 0;
@@ -60,6 +61,7 @@ public:
 
 using VariablePtr = std::shared_ptr<Variable>;
 using ConstVariablePtr = std::shared_ptr<const Variable>;
+using VariableUniquePtr = std::unique_ptr<Variable>;
 
 } // namespace optimization
 } // namespace planner

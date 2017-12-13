@@ -15,7 +15,8 @@ ConfigurationSpacePathLengthFunction::ConfigurationSpacePathLengthFunction(
 //==============================================================================
 std::shared_ptr<Function> ConfigurationSpacePathLengthFunction::clone() const
 {
-  return std::make_shared<ConfigurationSpacePathLengthFunction>(mDistanceMetric);
+  return std::make_shared<ConfigurationSpacePathLengthFunction>(
+      mDistanceMetric);
 }
 
 //==============================================================================
@@ -28,7 +29,6 @@ double ConfigurationSpacePathLengthFunction::eval(const Eigen::VectorXd& x)
 
   return arcLength;
 }
-
 
 } // namespace optimization
 } // namespace planner

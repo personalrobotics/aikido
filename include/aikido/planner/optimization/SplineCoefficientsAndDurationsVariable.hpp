@@ -16,7 +16,7 @@ public:
       const trajectory::Spline& splineToClone);
 
   // Documentation inherited.
-  std::shared_ptr<Variable> clone() const override;
+  std::unique_ptr<Variable> clone() const override;
 
   // Documentation inherited.
   void setValue(const Eigen::VectorXd& value) override;

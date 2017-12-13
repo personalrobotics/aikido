@@ -5,9 +5,9 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
+#include "aikido/planner/optimization/TrajectoryFunction.hpp"
 #include "aikido/planner/optimization/TrajectoryVariable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/planner/optimization/TrajectoryFunction.hpp"
 
 namespace aikido {
 namespace planner {
@@ -38,19 +38,19 @@ protected:
   dart::dynamics::BodyNodePtr mTargetBodyNode;
 };
 
-//class DiscreteTimeCollisionFunction : public Function
+// class DiscreteTimeCollisionFunction : public Function
 //{
-//public:
+// public:
 //  DiscreteTimeCollisionFunction() = default;
 
 //  virtual ~DiscreteTimeCollisionFunction() = default;
 
 //  double eval(const Eigen::VectorXd& x) override;
 
-//protected:
+// protected:
 //  std::shared_ptr<TrajectoryVariable> mTrajectory;
 
-//private:
+// private:
 //};
 
 } // namespace optimization

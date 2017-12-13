@@ -2,6 +2,8 @@
 # Libraries
 #
 set(sources 
+  CompositeFunction.cpp
+  CompositeVariable.cpp
   ConfigurationSpacePathLengthFunction.cpp
   OptimizationInterpolated.cpp
   Function.cpp

@@ -13,9 +13,9 @@ SplineCoefficientsVariables::SplineCoefficientsVariables(
 }
 
 //==============================================================================
-std::shared_ptr<Variable> SplineCoefficientsVariables::clone() const
+std::unique_ptr<Variable> SplineCoefficientsVariables::clone() const
 {
-  return std::make_shared<SplineCoefficientsVariables>(*this);
+  return dart::common::make_unique<SplineCoefficientsVariables>(*this);
 }
 
 //==============================================================================

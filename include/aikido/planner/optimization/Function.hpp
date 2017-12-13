@@ -12,7 +12,6 @@ namespace aikido {
 namespace planner {
 namespace optimization {
 
-// TODO(JS): Rename to something like TrajectoryOptimizationFunction
 class Function : public dart::optimizer::Function
 {
 public:
@@ -21,6 +20,7 @@ public:
   virtual ~Function() = default;
 
   virtual std::shared_ptr<Function> clone() const = 0;
+  // TODO(JS): Change this to unique_ptr
 
   double evalFor(const Variable& variable);
   // Helper function to compute the value of this function for given Variable

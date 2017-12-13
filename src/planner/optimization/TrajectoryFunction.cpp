@@ -17,7 +17,7 @@ ConstTrajectoryVariablePtr TrajectoryFunction::getTrajectoryVariable() const
 }
 
 //==============================================================================
-const trajectory::Trajectory&TrajectoryFunction::getTrajectory() const
+const trajectory::Trajectory& TrajectoryFunction::getTrajectory() const
 {
   return getTrajectoryVariable()->getTrajectory();
 }

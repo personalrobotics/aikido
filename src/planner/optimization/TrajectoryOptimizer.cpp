@@ -28,8 +28,7 @@ TrajectoryOptimizer::TrajectoryOptimizer(
 trajectory::TrajectoryPtr TrajectoryOptimizer::plan(OutCome* outcome)
 {
   auto variable = solve(outcome);
-  auto trajectoryVariable
-      = std::static_pointer_cast<TrajectoryVariable>(variable);
+  auto trajectoryVariable = static_cast<TrajectoryVariable*>(variable.get());
 
   return trajectoryVariable->getTrajectory().clone();
 }

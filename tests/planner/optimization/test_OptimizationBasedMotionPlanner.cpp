@@ -6,8 +6,8 @@
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
-#include <aikido/planner/optimization/MetaSkeletonSplineCoefficientsAndDurationsVariable.hpp>
 #include <aikido/planner/optimization/ConfigurationSpacePathLengthFunction.hpp>
+#include <aikido/planner/optimization/MetaSkeletonSplineCoefficientsAndDurationsVariable.hpp>
 #include <aikido/planner/optimization/SplineCoefficientsVariable.hpp>
 #include <aikido/planner/optimization/TrajectoryOptimizer.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
