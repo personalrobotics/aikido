@@ -208,6 +208,31 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
 }
 
 //==============================================================================
+void BarrettHandKinematicSimulationPositionCommandExecutor::jump(
+    const Eigen::VectorXd& goalPositions, double dt)
+{
+  std::lock_guard<std::mutex> lockSpin(mMutex);
+
+  if (mInExecution)
+    throw std::runtime_error("Another command in execution.");
+
+  if (goalPositions.size() != 4)
+  {
+    std::stringstream message;
+    message << "GoalPositions must have 4 elements, but ["
+            << goalPositions.size() << "] given.";
+    throw std::invalid_argument(message.str());
+  }
+
+  mProximalGoalPositions = goalPositions.head<3>();
+  mSpreadGoalPosition = goalPositions.row(3);
+
+  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+    mPositionCommandExecutors[i]->jump(mProximalGoalPositions.row(i), dt);
+  mSpreadCommandExecutor->jump(mSpreadGoalPosition, dt);
+}
+
+//==============================================================================
 bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {
@@ -218,6 +243,10 @@ bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
+
+  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+    mPositionCommandExecutors[i]->setCollideWith(mCollideWith);
+
   return true;
 }
 

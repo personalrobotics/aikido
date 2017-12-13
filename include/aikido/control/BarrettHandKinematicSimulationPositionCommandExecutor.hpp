@@ -56,6 +56,14 @@ public:
   /// calling this method.
   void step() override;
 
+  /// Move fingers to a goal configuration.
+  /// \param _goalPositions End dof pose for proximal joints and spread.
+  ///        First 3 should be for proximal joints, the last element should be
+  ///        for spread. If _positions are above/below joint limits,
+  ///        the fingers will move only up to the limit.
+  /// \param dt Step time
+  void jump(const Eigen::VectorXd& goalPositions, double dt = 0.01);
+
   /// Resets CollisionGroup to check collision with fingers.
   /// \param _collideWith CollisionGroup to check collision with fingers.
   /// \return false if fails to change collideWith (during execution).

@@ -212,6 +212,16 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
 }
 
 //==============================================================================
+void BarrettFingerKinematicSimulationSpreadCommandExecutor::jump(
+    const Eigen::VectorXd& goalPosition, double dt)
+{
+  // HACK: does not collision check!!
+  double goalPositionValue = goalPosition[0];
+  for (auto spreadDof : mSpreadDofs)
+    spreadDof->setPosition(goalPositionValue);
+}
+
+//==============================================================================
 bool BarrettFingerKinematicSimulationSpreadCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {
