@@ -5,12 +5,33 @@
 
 #include <dart/optimizer/optimizer.hpp>
 
-#include "aikido/planner/optimization/TrajectoryVariable.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/planner/optimization/CompositeVariable.hpp"
+#include "aikido/planner/optimization/Function.hpp"
 
 namespace aikido {
 namespace planner {
 namespace optimization {
+
+class CompositeFunction : public Function
+{
+public:
+  CompositeFunction();
+
+  ~CompositeFunction();
+
+  // Documentation inherited.
+  bool isCompatible(const Variable& variable) const override;
+
+  // Documentation inherited.
+  double eval(const Eigen::VectorXd& x) override;
+
+  void addFunction(FunctionPtr function, VariablePtr variable);
+
+protected:
+  CompositeVariablePtr getCompositeVariable();
+
+  std::unordered_map<FunctionPtr, CompositeVariable::Index> mFunctionToVariable;
+};
 
 } // namespace optimization
 } // namespace planner

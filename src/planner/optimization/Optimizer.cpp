@@ -31,7 +31,7 @@ namespace optimization {
 //}
 
 //==============================================================================
-Optimizer::Optimizer(const TrajectoryVariable& variablesToClone)
+Optimizer::Optimizer(const Variable& variablesToClone)
   : mVariable(nullptr), mMaxAttempts(16u)
 {
   mProblem = std::make_shared<dart::optimizer::Problem>(0);
@@ -125,7 +125,7 @@ void Optimizer::setVariable(const Variable& variableToClone)
   mVariable = variableToClone.clone();
 
   if (mObjective)
-    mObjective->setVariable(*mVariable);
+    mObjective->setVariable(mVariable);
 
   assert(mProblem);
   mProblem->setDimension(mVariable->getDimension());
@@ -135,7 +135,7 @@ void Optimizer::setVariable(const Variable& variableToClone)
   {
     auto aikidoFunction
         = std::static_pointer_cast<Function>(mProblem->getEqConstraint(i));
-    aikidoFunction->setVariable(*mVariable);
+    aikidoFunction->setVariable(mVariable);
   }
 }
 
@@ -143,7 +143,7 @@ void Optimizer::setVariable(const Variable& variableToClone)
 void Optimizer::setObjective(const FunctionPtr& objective)
 {
   mObjective = objective;
-  mObjective->setVariable(*mVariable);
+  mObjective->setVariable(mVariable);
 }
 
 //==============================================================================

@@ -5,21 +5,18 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-double Function::evalFor(const Variable& variable)
+void Function::setVariable(VariablePtr variable)
 {
-  auto clone2 = clone();
-  clone2->setVariable(variable);
+  if (variable and !isCompatible(*variable))
+    throw std::invalid_argument("Invalid variable for this function.");
 
-  return clone2->eval(variable.getValue());
+  mVariable = std::move(variable);
 }
 
 //==============================================================================
-void Function::setVariable(const Variable& variableToClone)
+ConstVariablePtr Function::getVariable() const
 {
-  if (!isCompatible(variableToClone))
-    throw std::invalid_argument("Invalid variable for this function.");
-
-  mVariable = variableToClone.clone();
+  return mVariable;
 }
 
 } // namespace optimization

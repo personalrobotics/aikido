@@ -20,6 +20,9 @@ namespace optimization {
 class CompositeVariable : public Variable
 {
 public:
+  using Index = std::size_t;
+  static Index InvalidIndex;
+
   /// Clone
   std::unique_ptr<Variable> clone() const override;
 
@@ -34,15 +37,25 @@ public:
   Eigen::VectorXd getValue() const override;
   // TODO(JS): Change to getValues()
 
-  void addVariable(const Variable& variableToClone);
+  Eigen::Map<const Eigen::VectorXd> getValueSegment(
+      const Eigen::VectorXd& value, const Variable* variable) const;
+
+  std::size_t addSubVariable(VariablePtr variable);
+
+  ConstVariablePtr getSubVariable(std::size_t index) const;
+
+  std::size_t getSubVariableIndex(const Variable* variable) const;
 
 protected:
   void updateDimension();
 
-  std::vector<Variable> mVariables;
+  std::vector<VariablePtr> mVariables;
 
   std::size_t mDimension;
 };
+
+using CompositeVariablePtr = std::shared_ptr<CompositeVariable>;
+using ConstCompositeVariablePtr = std::shared_ptr<const CompositeVariable>;
 
 } // namespace optimization
 } // namespace planner

@@ -16,10 +16,11 @@ MetaSkeletonSplineCoefficientsAndDurationsVariable::
 }
 
 //==============================================================================
-std::unique_ptr<Variable> MetaSkeletonSplineCoefficientsAndDurationsVariable::clone() const
+std::unique_ptr<Variable>
+MetaSkeletonSplineCoefficientsAndDurationsVariable::clone() const
 {
-  return dart::common::make_unique<MetaSkeletonSplineCoefficientsAndDurationsVariable>(
-      *this);
+  return dart::common::
+      make_unique<MetaSkeletonSplineCoefficientsAndDurationsVariable>(*this);
 }
 
 //==============================================================================

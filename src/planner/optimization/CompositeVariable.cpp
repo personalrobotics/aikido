@@ -5,6 +5,10 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
+CompositeVariable::Index CompositeVariable::InvalidIndex
+    = std::numeric_limits<std::size_t>::max();
+
+//==============================================================================
 std::unique_ptr<Variable> CompositeVariable::clone() const
 {
   return dart::common::make_unique<CompositeVariable>();
@@ -22,8 +26,8 @@ void CompositeVariable::setValue(const Eigen::VectorXd& value)
   std::size_t segmentIndex = 0u;
   for (auto& variable : mVariables)
   {
-    variable.setValue(value.segment(segmentIndex, variable.getDimension()));
-    segmentIndex += variable.getDimension();
+    variable->setValue(value.segment(segmentIndex, variable->getDimension()));
+    segmentIndex += variable->getDimension();
   }
 }
 
@@ -35,18 +39,54 @@ Eigen::VectorXd CompositeVariable::getValue() const
   std::size_t segmentIndex = 0u;
   for (auto& variable : mVariables)
   {
-    value.segment(segmentIndex, variable.getDimension()) = variable.getValue();
-    segmentIndex += variable.getDimension();
+    value.segment(segmentIndex, variable->getDimension())
+        = variable->getValue();
+    segmentIndex += variable->getDimension();
   }
 
   return value;
 }
 
 //==============================================================================
-void CompositeVariable::addVariable(const Variable& variableToClone)
+Eigen::Map<const Eigen::VectorXd> CompositeVariable::getValueSegment(
+    const Eigen::VectorXd& value, const Variable* variable) const
 {
-  variableToClone.clone();
-//  mVariables.emplace_back();
+  Eigen::Map<const Eigen::VectorXd> map(
+      value.data() + getSubVariableIndex(variable), variable->getDimension());
+
+  return map;
+}
+
+//==============================================================================
+std::size_t CompositeVariable::addSubVariable(VariablePtr variable)
+{
+  // TODO(JS): Should we check duplicity?
+
+  mVariables.emplace_back(std::move(variable));
+
+  return mVariables.size() - 1u;
+}
+
+//==============================================================================
+ConstVariablePtr CompositeVariable::getSubVariable(std::size_t index) const
+{
+  // TODO(JS): Check index validity
+  return mVariables[index];
+}
+
+//==============================================================================
+std::size_t CompositeVariable::getSubVariableIndex(
+    const Variable* variable) const
+{
+  auto result = std::find_if(
+      mVariables.begin(),
+      mVariables.end(),
+      [&variable](const VariablePtr& var) { return var.get() == variable; });
+
+  if (result == mVariables.end())
+    return InvalidIndex;
+  else
+    return std::distance(result, mVariables.begin());
 }
 
 //==============================================================================
@@ -54,7 +94,7 @@ void CompositeVariable::updateDimension()
 {
   mDimension = 0u;
   for (const auto& variable : mVariables)
-    mDimension += variable.getDimension();
+    mDimension += variable->getDimension();
 }
 
 } // namespace optimization

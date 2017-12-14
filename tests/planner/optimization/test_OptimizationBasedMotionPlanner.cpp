@@ -110,13 +110,12 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
   EXPECT_TRUE(spline.getNumSegments() == 3);
   EXPECT_TRUE(spline.getDuration() == 6.0);
 
-  MetaSkeletonSplineCoefficientsAndDurationsVariable variable(
-      spline, mSkeleton);
-  //  planner::optimization::SplineCoefficientsVariables variable(spline);
-  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3 + 3);
-  //  EXPECT_TRUE(variable.getDimension() == 1 * 3 * 3);
+  auto variable
+      = std::make_shared<MetaSkeletonSplineCoefficientsAndDurationsVariable>(
+          spline, mSkeleton);
+  EXPECT_TRUE(variable->getDimension() == 1 * 3 * 3 + 3);
 
-  TrajectoryOptimizer planner(variable);
+  TrajectoryOptimizer planner(*variable);
 
   auto objective = std::
       make_shared<planner::optimization::ConfigurationSpacePathLengthFunction>(
@@ -124,23 +123,23 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
 
   planner.setObjective(objective);
 
-  Eigen::VectorXd x0(variable.getDimension());
-  variable.setCoefficientValueAsJointMidPointsOfLimitsTo(x0);
-  variable.setCoefficientValueTo(x0, 0.0);
-  variable.setCoefficientValueAsCurrentJointPositionsTo(x0);
-  variable.setDurationValueTo(x0, 0.15);
+  Eigen::VectorXd x0(variable->getDimension());
+  variable->setCoefficientValueAsJointMidPointsOfLimitsTo(x0);
+  variable->setCoefficientValueTo(x0, 0.0);
+  variable->setCoefficientValueAsCurrentJointPositionsTo(x0);
+  variable->setDurationValueTo(x0, 0.15);
   planner.setInitialGuess(x0);
 
-  Eigen::VectorXd lb(variable.getDimension());
-  variable.setCoefficientValueAsJointPositionLowerLimitsTo(lb);
-  variable.setCoefficientValueTo(lb, -1.0);
-  variable.setDurationValueTo(lb, 0.15);
+  Eigen::VectorXd lb(variable->getDimension());
+  variable->setCoefficientValueAsJointPositionLowerLimitsTo(lb);
+  variable->setCoefficientValueTo(lb, -1.0);
+  variable->setDurationValueTo(lb, 0.15);
   planner.setLowerBounds(lb);
 
-  Eigen::VectorXd ub(variable.getDimension());
-  variable.setCoefficientValueAsJointPositionUpperLimitsTo(ub);
-  variable.setCoefficientValueTo(ub, 1.0);
-  variable.setDurationValueTo(ub, 0.2);
+  Eigen::VectorXd ub(variable->getDimension());
+  variable->setCoefficientValueAsJointPositionUpperLimitsTo(ub);
+  variable->setCoefficientValueTo(ub, 1.0);
+  variable->setDurationValueTo(ub, 0.2);
   planner.setUpperBounds(ub);
 
   EXPECT_TRUE(mStateSpace->getDimension() == 1);
@@ -154,4 +153,9 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
   std::cout << "solved: " << outcome->mMinimized << std::endl;
   std::cout << "f0: " << outcome->mInitialFunctionEvaluation << std::endl;
   std::cout << "f1: " << outcome->mMinimalFunctionEvaluation << std::endl;
+
+  objective->setVariable(variable);
+  Eigen::VectorXd value = x0;
+  auto f2 = objective->eval(value);
+  std::cout << "f2: " << f2 << std::endl;
 }

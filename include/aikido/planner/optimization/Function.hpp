@@ -15,26 +15,26 @@ namespace optimization {
 class Function : public dart::optimizer::Function
 {
 public:
-  Function() = default;
-
-  virtual ~Function() = default;
-
+  /// Clones this Function.
   virtual std::shared_ptr<Function> clone() const = 0;
   // TODO(JS): Change this to unique_ptr
 
-  double evalFor(const Variable& variable);
-  // Helper function to compute the value of this function for given Variable
-  // instead of using the internal Variable.
-
-protected:
-  friend class Optimizer;
-
-  void setVariable(const Variable& variableToClone);
+  /// Sets optimization variable associated with this Function.
+  void setVariable(VariablePtr variable);
   // Dev-note: This function shouldn't be called other than by Optimizer.
 
+  /// Returns optimization variable associated with this Function.
+  ConstVariablePtr getVariable() const;
+
+  /// Whether a variable is compatible this this function.
   virtual bool isCompatible(const Variable& variable) const = 0;
 
-  std::shared_ptr<Variable> mVariable;
+protected:
+  /// Optimization variable.
+  ///
+  /// Variable can be nullptr in case this function hasn't been added to a
+  /// Optimizer.
+  VariablePtr mVariable;
 };
 
 using FunctionPtr = std::shared_ptr<Function>;

@@ -30,7 +30,7 @@ class Optimizer
 public:
   struct OutCome;
 
-  explicit Optimizer(const TrajectoryVariable& variablesToClone);
+  explicit Optimizer(const Variable& variablesToClone);
 
   virtual ~Optimizer() = default;
 
