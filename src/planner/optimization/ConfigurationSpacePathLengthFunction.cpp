@@ -17,7 +17,7 @@ ConfigurationSpacePathLengthFunction::ConfigurationSpacePathLengthFunction(
 UniqueFunctionPtr ConfigurationSpacePathLengthFunction::clone() const
 {
   return dart::common::make_unique<ConfigurationSpacePathLengthFunction>(
-      getTrajectoryVariable(), mDistanceMetric);
+      *this);
 }
 
 //==============================================================================

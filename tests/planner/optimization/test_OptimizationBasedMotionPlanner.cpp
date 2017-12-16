@@ -25,6 +25,7 @@ using std::make_shared;
 using planner::optimization::Optimizer;
 using planner::optimization::TrajectoryOptimizer;
 using planner::optimization::Variable;
+using planner::optimization::VariablePtr;
 using planner::optimization::RVariable;
 using planner::optimization::R2Variable;
 using planner::optimization::R3Variable;
@@ -86,9 +87,14 @@ public:
 class NormFunction : public aikido::planner::optimization::Function
 {
 public:
+  NormFunction(VariablePtr variable) : Function(std::move(variable))
+  {
+
+  }
+
   aikido::planner::optimization::UniqueFunctionPtr clone() const override
   {
-    return dart::common::make_unique<NormFunction>();
+    return dart::common::make_unique<NormFunction>(*this);
   }
 
   bool isCompatible(const Variable& /*variable*/) const override

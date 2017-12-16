@@ -6,7 +6,7 @@ namespace optimization {
 
 //==============================================================================
 TrajectoryFunction::TrajectoryFunction(TrajectoryVariablePtr variable)
-  : Variable(std::move(variable))
+  : Function(std::move(variable))
 {
   // Do nothing
 }
