@@ -5,9 +5,16 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-std::shared_ptr<Function> PoseErrorFunction::clone() const
+PoseErrorFunction::PoseErrorFunction(TrajectoryVariablePtr variable)
+  : TrajectoryFunction(std::move(variable))
 {
-  return std::make_shared<PoseErrorFunction>();
+  // Do nothing
+}
+
+//==============================================================================
+UniqueFunctionPtr PoseErrorFunction::clone() const
+{
+  return dart::common::make_unique<PoseErrorFunction>(mVariable);
 }
 
 //==============================================================================

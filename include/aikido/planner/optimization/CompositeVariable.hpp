@@ -23,39 +23,42 @@ public:
   using Index = std::size_t;
   static Index InvalidIndex;
 
-  /// Clone
-  std::unique_ptr<Variable> clone() const override;
+  /// Clones this CompositeVariable.
+  UniqueVariablePtr clone() const override;
 
   /// Returns the dimension of optimization variables.
   std::size_t getDimension() const override;
 
   /// Sets the optimization variables.
   void setValue(const Eigen::VectorXd& value) override;
-  // TODO(JS): Change to setValues()
 
   /// Returns the optimization variables.
   Eigen::VectorXd getValue() const override;
-  // TODO(JS): Change to getValues()
 
-  Eigen::Map<const Eigen::VectorXd> getValueSegment(
+  Eigen::Map<const Eigen::VectorXd> getSubValue(
       const Eigen::VectorXd& value, const Variable* variable) const;
 
   std::size_t addSubVariable(VariablePtr variable);
 
+  /// Returns a sub variable by an index
   ConstVariablePtr getSubVariable(std::size_t index) const;
 
+  /// Returns an index of a sub variable
   std::size_t getSubVariableIndex(const Variable* variable) const;
 
+  /// Returns whether this CompositeVariable contains the Variable.
+  bool hasSubVariable(const Variable* variable) const;
+
 protected:
+  /// Updates the dimension of this CompositeVariable.
+  ///
+  /// This function should be called when sub variables are added or removed.
   void updateDimension();
 
-  std::vector<VariablePtr> mVariables;
+  std::vector<VariablePtr> mSubVariables;
 
   std::size_t mDimension;
 };
-
-using CompositeVariablePtr = std::shared_ptr<CompositeVariable>;
-using ConstCompositeVariablePtr = std::shared_ptr<const CompositeVariable>;
 
 } // namespace optimization
 } // namespace planner

@@ -5,9 +5,29 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-bool CompositeFunction::isCompatible(const Variable& /*variable*/) const
+CompositeFunction::CompositeFunction(VariablePtr variable)
+  : Function(std::move(variable))
 {
-  // TODO(JS): Return false if variable is not a CompositeVariable.
+  // Do nothing
+}
+
+//==============================================================================
+CompositeFunction::~CompositeFunction()
+{
+  // Do nothing
+}
+
+//==============================================================================
+UniqueFunctionPtr CompositeFunction::clone() const
+{
+  return dart::common::make_unique<CompositeFunction>(getVariable());
+}
+
+//==============================================================================
+bool CompositeFunction::isCompatible(const Variable& variable) const
+{
+  if (!dynamic_cast<const CompositeVariable*>(&variable))
+    return false;
 
   return true;
 }
@@ -15,8 +35,13 @@ bool CompositeFunction::isCompatible(const Variable& /*variable*/) const
 //==============================================================================
 double CompositeFunction::eval(const Eigen::VectorXd& x)
 {
+  if (static_cast<std::size_t>(x.size()) != getDimension())
+  {
+    throw std::invalid_argument(
+        "Inconsistent dimension between CompositeVariable and value");
+  }
+
   double value = 0.0;
-  std::size_t segmentIndex = 0;
 
   for (auto& functionAndIndex : mFunctionToVariable)
   {
@@ -25,20 +50,24 @@ double CompositeFunction::eval(const Eigen::VectorXd& x)
     auto subVariable = getCompositeVariable()->getSubVariable(subVariableIndex);
     const auto segmentSize = subVariable->getDimension();
 
-    value += function->eval(x.segment(segmentIndex, segmentSize));
-    segmentIndex += segmentSize;
+    value += function->eval(x.segment(subVariableIndex, segmentSize));
   }
-
-  assert(segmentIndex == static_cast<std::size_t>(x.size()));
 
   return value;
 }
 
 //==============================================================================
-void CompositeFunction::addFunction(FunctionPtr function, VariablePtr variable)
+void CompositeFunction::addSubFunction(
+    FunctionPtr function, VariablePtr variable)
 {
   auto subVariableIndex
       = getCompositeVariable()->getSubVariableIndex(variable.get());
+
+  if (subVariableIndex == CompositeVariable::InvalidIndex)
+  {
+    throw std::invalid_argument(
+        "variable is not an associated sub variable to this function.");
+  }
 
   mFunctionToVariable.insert(
       std::make_pair(std::move(function), subVariableIndex));

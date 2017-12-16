@@ -16,11 +16,9 @@ namespace optimization {
 class PoseErrorFunction : public TrajectoryFunction
 {
 public:
-  PoseErrorFunction() = default;
+  PoseErrorFunction(TrajectoryVariablePtr variable);
 
-  ~PoseErrorFunction() = default;
-
-  std::shared_ptr<Function> clone() const override;
+  UniqueFunctionPtr clone() const override;
 
   double eval(const Eigen::VectorXd& x) override;
 

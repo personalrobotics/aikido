@@ -6,8 +6,11 @@
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
+#include <aikido/planner/optimization/CompositeFunction.hpp>
+#include <aikido/planner/optimization/CompositeVariable.hpp>
 #include <aikido/planner/optimization/ConfigurationSpacePathLengthFunction.hpp>
 #include <aikido/planner/optimization/MetaSkeletonSplineCoefficientsAndDurationsVariable.hpp>
+#include <aikido/planner/optimization/RnVariable.hpp>
 #include <aikido/planner/optimization/SplineCoefficientsVariable.hpp>
 #include <aikido/planner/optimization/TrajectoryOptimizer.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -19,6 +22,16 @@ using namespace aikido;
 
 using std::shared_ptr;
 using std::make_shared;
+using planner::optimization::Optimizer;
+using planner::optimization::TrajectoryOptimizer;
+using planner::optimization::Variable;
+using planner::optimization::RVariable;
+using planner::optimization::R2Variable;
+using planner::optimization::R3Variable;
+using planner::optimization::CompositeVariable;
+using planner::optimization::Function;
+using planner::optimization::CompositeFunction;
+using planner::optimization::MetaSkeletonSplineCoefficientsAndDurationsVariable;
 
 class OptimizationBasedMotionPlanner : public ::testing::Test
 {
@@ -70,6 +83,26 @@ public:
 };
 
 //==============================================================================
+class NormFunction : public aikido::planner::optimization::Function
+{
+public:
+  aikido::planner::optimization::UniqueFunctionPtr clone() const override
+  {
+    return dart::common::make_unique<NormFunction>();
+  }
+
+  bool isCompatible(const Variable& /*variable*/) const override
+  {
+    return true;
+  }
+
+  double eval(const Eigen::VectorXd& x) override
+  {
+    return x.norm();
+  }
+};
+
+//==============================================================================
 TEST_F(OptimizationBasedMotionPlanner, Variables)
 {
   using CoefficientType = Eigen::Matrix<double, 1, 3>;
@@ -91,12 +124,57 @@ TEST_F(OptimizationBasedMotionPlanner, Variables)
 }
 
 //==============================================================================
+TEST_F(OptimizationBasedMotionPlanner, CompositeVariable)
+{
+  auto compositeVar = std::make_shared<CompositeVariable>();
+  EXPECT_EQ(compositeVar->getDimension(), 0u);
+
+  auto r2Var = std::make_shared<R2Variable>();
+  EXPECT_EQ(r2Var->getDimension(), 2u);
+
+  auto r3Var = std::make_shared<R3Variable>();
+  EXPECT_EQ(r3Var->getDimension(), 3u);
+
+  compositeVar->addSubVariable(r2Var);
+  EXPECT_EQ(compositeVar->getDimension(), 2u);
+  EXPECT_EQ(compositeVar->getSubVariable(0u), r2Var);
+
+  compositeVar->addSubVariable(r3Var);
+  EXPECT_EQ(compositeVar->getDimension(), 5u);
+  EXPECT_EQ(compositeVar->getSubVariable(1u), r3Var);
+
+  compositeVar->addSubVariable(r3Var);
+  EXPECT_EQ(compositeVar->getDimension(), 5u);
+}
+
+//==============================================================================
+TEST_F(OptimizationBasedMotionPlanner, CompositeFunction)
+{
+  auto compositeVar = std::make_shared<CompositeVariable>();
+  auto r2Var = std::make_shared<R2Variable>();
+  auto r3Var = std::make_shared<R3Variable>();
+  compositeVar->addSubVariable(r2Var);
+  compositeVar->addSubVariable(r3Var);
+
+  auto compositeFunction = std::make_shared<CompositeFunction>(compositeVar);
+  auto normFunction2 = std::make_shared<NormFunction>(r2Var);
+  compositeFunction->addSubFunction(normFunction2, r2Var);
+
+  Eigen::VectorXd value = Eigen::VectorXd::Zero(5);
+  value[0] = 1.0;
+  value[2] = 2.0;
+
+  EXPECT_FLOAT_EQ(compositeFunction->eval(value), 1.0);
+
+  auto normFunction3 = std::make_shared<NormFunction>(r3Var);
+  compositeFunction->addSubFunction(normFunction3, r3Var);
+
+  EXPECT_FLOAT_EQ(compositeFunction->eval(value), 3.0);
+}
+
+//==============================================================================
 TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
 {
-  using planner::optimization::TrajectoryOptimizer;
-  using planner::optimization::
-      MetaSkeletonSplineCoefficientsAndDurationsVariable;
-
   using CoefficientType = Eigen::Matrix<double, 1, 3>;
 
   CoefficientType coefficients1 = CoefficientType::Zero();
@@ -119,7 +197,7 @@ TEST_F(OptimizationBasedMotionPlanner, PlanToConfiguration)
 
   auto objective = std::
       make_shared<planner::optimization::ConfigurationSpacePathLengthFunction>(
-          mDistanceMetric);
+          variable, mDistanceMetric);
 
   planner.setObjective(objective);
 

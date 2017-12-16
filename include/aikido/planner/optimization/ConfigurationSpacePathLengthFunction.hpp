@@ -15,9 +15,11 @@ class ConfigurationSpacePathLengthFunction : public TrajectoryFunction
 public:
   /// Constructor
   explicit ConfigurationSpacePathLengthFunction(
+      TrajectoryVariablePtr variable,
       const distance::DistanceMetricPtr& distanceMetric);
 
-  std::shared_ptr<Function> clone() const override;
+  // Documentation inherited.
+  UniqueFunctionPtr clone() const override;
 
   // Documentation inherited.
   double eval(const Eigen::VectorXd& x) override;

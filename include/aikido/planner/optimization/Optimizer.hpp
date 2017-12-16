@@ -36,7 +36,7 @@ public:
 
   std::shared_ptr<OutCome> createOutCome() const;
 
-  VariableUniquePtr solve(OutCome* outcome = nullptr);
+  UniqueVariablePtr solve(OutCome* outcome = nullptr);
 
   void setVariable(const Variable& variableToClone);
 

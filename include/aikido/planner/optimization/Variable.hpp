@@ -8,6 +8,7 @@
 #include "aikido/common/algorithm.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/PlanningResult.hpp"
+#include "aikido/planner/optimization/smart_pointer.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -21,19 +22,16 @@ class Variable
 {
 public:
   /// Clone
-  virtual std::unique_ptr<Variable> clone() const = 0;
-  // TODO(JS): Change this to unique_ptr
+  virtual UniqueVariablePtr clone() const = 0;
 
   /// Returns the dimension of optimization variables.
   virtual std::size_t getDimension() const = 0;
 
   /// Sets the optimization variables.
   virtual void setValue(const Eigen::VectorXd& value) = 0;
-  // TODO(JS): Change to setValues()
 
   /// Returns the optimization variables.
   virtual Eigen::VectorXd getValue() const = 0;
-  // TODO(JS): Change to getValues()
 
   Eigen::VectorXd createValue() const;
   Eigen::VectorXd createValue(double value) const;
@@ -58,10 +56,6 @@ public:
 
   virtual const TrajectoryVariable* asTrajectoryVariable() const;
 };
-
-using VariablePtr = std::shared_ptr<Variable>;
-using ConstVariablePtr = std::shared_ptr<const Variable>;
-using VariableUniquePtr = std::unique_ptr<Variable>;
 
 } // namespace optimization
 } // namespace planner

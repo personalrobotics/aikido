@@ -5,6 +5,13 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
+TrajectoryFunction::TrajectoryFunction(TrajectoryVariablePtr variable)
+  : Variable(std::move(variable))
+{
+  // Do nothing
+}
+
+//==============================================================================
 TrajectoryVariablePtr TrajectoryFunction::getTrajectoryVariable()
 {
   return std::static_pointer_cast<TrajectoryVariable>(mVariable);

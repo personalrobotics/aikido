@@ -45,7 +45,7 @@ void SplineCoefficientsVariables::setValue(const Eigen::VectorXd& variables)
 //==============================================================================
 Eigen::VectorXd SplineCoefficientsVariables::getValue() const
 {
-  Eigen::VectorXd variables(getDimension());
+  Eigen::VectorXd variable(getDimension());
 
   const auto& statespace = mSpline.getStateSpace();
 
@@ -58,7 +58,7 @@ Eigen::VectorXd SplineCoefficientsVariables::getValue() const
     const auto cols = segmentCoeffs.cols();
     const auto numLocalVariables = rows * cols;
 
-    variables.segment(index, numLocalVariables)
+    variable.segment(index, numLocalVariables)
         = Eigen::Map<const Eigen::VectorXd>(
             segmentCoeffs.data(), numLocalVariables);
 
@@ -66,6 +66,8 @@ Eigen::VectorXd SplineCoefficientsVariables::getValue() const
   }
 
   assert(static_cast<std::size_t>(index) == getDimension());
+
+  return variable;
 }
 
 //==============================================================================

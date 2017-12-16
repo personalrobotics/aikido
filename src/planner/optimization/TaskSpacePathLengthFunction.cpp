@@ -5,9 +5,17 @@ namespace planner {
 namespace optimization {
 
 //==============================================================================
-TaskSpacePathLengthFunction::TaskSpacePathLengthFunction()
+TaskSpacePathLengthFunction::TaskSpacePathLengthFunction(
+    TrajectoryVariablePtr variable)
+  : TrajectoryFunction(std::move(variable))
 {
   // Do nothing
+}
+
+//==============================================================================
+UniqueFunctionPtr TaskSpacePathLengthFunction::clone() const
+{
+  return dart::common::make_unique<TaskSpacePathLengthFunction>(mVariable);
 }
 
 //==============================================================================

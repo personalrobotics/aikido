@@ -15,12 +15,10 @@ class TaskSpacePathLengthFunction : public TrajectoryFunction
 {
 public:
   /// Constructor
-  explicit TaskSpacePathLengthFunction();
+  explicit TaskSpacePathLengthFunction(TrajectoryVariablePtr variable);
 
-  std::shared_ptr<Function> clone() const override
-  {
-    return std::make_shared<TaskSpacePathLengthFunction>();
-  }
+  // Documentation inherited.
+  UniqueFunctionPtr clone() const override;
 
   // Documentation inherited.
   double eval(const Eigen::VectorXd& x) override;

@@ -6,17 +6,18 @@ namespace optimization {
 
 //==============================================================================
 ConfigurationSpacePathLengthFunction::ConfigurationSpacePathLengthFunction(
+    TrajectoryVariablePtr variable,
     const distance::DistanceMetricPtr& distanceMetric)
-  : mDistanceMetric(distanceMetric)
+  : TrajectoryFunction(std::move(variable)), mDistanceMetric(distanceMetric)
 {
   // Do nothing
 }
 
 //==============================================================================
-std::shared_ptr<Function> ConfigurationSpacePathLengthFunction::clone() const
+UniqueFunctionPtr ConfigurationSpacePathLengthFunction::clone() const
 {
-  return std::make_shared<ConfigurationSpacePathLengthFunction>(
-      mDistanceMetric);
+  return dart::common::make_unique<ConfigurationSpacePathLengthFunction>(
+      getTrajectoryVariable(), mDistanceMetric);
 }
 
 //==============================================================================

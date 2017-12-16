@@ -49,7 +49,7 @@ std::shared_ptr<Optimizer::OutCome> Optimizer::createOutCome() const
 }
 
 //==============================================================================
-VariableUniquePtr Optimizer::solve(OutCome* outcome)
+UniqueVariablePtr Optimizer::solve(OutCome* outcome)
 {
   if (nullptr == mSolver)
   {

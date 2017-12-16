@@ -15,9 +15,10 @@ namespace optimization {
 class Function : public dart::optimizer::Function
 {
 public:
+  Function(VariablePtr variable);
+
   /// Clones this Function.
-  virtual std::shared_ptr<Function> clone() const = 0;
-  // TODO(JS): Change this to unique_ptr
+  virtual UniqueFunctionPtr clone() const = 0;
 
   /// Sets optimization variable associated with this Function.
   void setVariable(VariablePtr variable);
@@ -29,6 +30,8 @@ public:
   /// Whether a variable is compatible this this function.
   virtual bool isCompatible(const Variable& variable) const = 0;
 
+  std::size_t getDimension() const;
+
 protected:
   /// Optimization variable.
   ///
@@ -36,9 +39,6 @@ protected:
   /// Optimizer.
   VariablePtr mVariable;
 };
-
-using FunctionPtr = std::shared_ptr<Function>;
-using ConstFunctionPtr = std::shared_ptr<const Function>;
 
 } // namespace optimization
 } // namespace planner

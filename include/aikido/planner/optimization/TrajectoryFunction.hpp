@@ -16,6 +16,8 @@ namespace optimization {
 class TrajectoryFunction : public Function
 {
 public:
+  TrajectoryFunction(TrajectoryVariablePtr variable);
+
   TrajectoryVariablePtr getTrajectoryVariable();
 
   ConstTrajectoryVariablePtr getTrajectoryVariable() const;
