@@ -18,6 +18,15 @@ namespace optimization {
 class TrajectoryVariable : public Variable
 {
 public:
+  /// Constructor
+  TrajectoryVariable();
+
+  /// Destructor
+  virtual ~TrajectoryVariable() = default;
+
+  /// Returns the dimension of optimization variables.
+  std::size_t getDimension() const override;
+
   /// Returns const Trajectory
   ///
   /// We only provide const version of this function because we don't intend
@@ -32,6 +41,14 @@ public:
 
   // Documentation inherited.
   const TrajectoryVariable* asTrajectoryVariable() const override final;
+
+protected:
+  /// Updates the dimension of this optimization variable.
+  virtual void updateDimension() const = 0;
+
+  bool mNeedDimensionUpdate;
+
+  mutable std::size_t mDimension;
 };
 
 using TrajectoryVariablePtr = std::shared_ptr<TrajectoryVariable>;

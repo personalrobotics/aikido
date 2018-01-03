@@ -6,10 +6,14 @@ namespace optimization {
 
 //==============================================================================
 SplineCoefficientsVariables::SplineCoefficientsVariables(
-    const trajectory::Spline& splineToClone)
+    const trajectory::Spline& splineToClone,
+    bool fixedStartPoint,
+    bool fixedEndPoint)
   : SplineVariable(splineToClone)
+  , mIsFixedStartPoint(fixedStartPoint)
+  , mIsFixedEndPoint(fixedEndPoint)
 {
-  updateDimension();
+  // Do nothing
 }
 
 //==============================================================================
@@ -71,7 +75,59 @@ Eigen::VectorXd SplineCoefficientsVariables::getValue() const
 }
 
 //==============================================================================
-void SplineCoefficientsVariables::updateDimension()
+void SplineCoefficientsVariables::freeStartPoint()
+{
+  if (!mIsFixedStartPoint)
+    return;
+
+  mIsFixedStartPoint = false;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+void SplineCoefficientsVariables::fixStartPoint()
+{
+  if (mIsFixedStartPoint)
+    return;
+
+  mIsFixedStartPoint = true;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+bool SplineCoefficientsVariables::isStartPointFixed() const
+{
+  return mIsFixedStartPoint;
+}
+
+//==============================================================================
+void SplineCoefficientsVariables::freeEndPoint()
+{
+  if (!mIsFixedEndPoint)
+    return;
+
+  mIsFixedEndPoint = false;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+void SplineCoefficientsVariables::fixEndPoint()
+{
+  if (mIsFixedEndPoint)
+    return;
+
+  mIsFixedEndPoint = true;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+bool SplineCoefficientsVariables::isEndPointFixed() const
+{
+  return mIsFixedEndPoint;
+}
+
+//==============================================================================
+void SplineCoefficientsVariables::updateDimension() const
 {
   std::size_t dim = 0u;
   const auto& statespace = mSpline.getStateSpace();

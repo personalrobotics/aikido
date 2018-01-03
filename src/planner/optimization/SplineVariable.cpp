@@ -27,12 +27,6 @@ const trajectory::Spline& SplineVariable::getSpline() const
   return mSpline;
 }
 
-//==============================================================================
-std::size_t SplineVariable::getDimension() const
-{
-  return mDimension;
-}
-
 } // namespace optimization
 } // namespace planner
 } // namespace aikido

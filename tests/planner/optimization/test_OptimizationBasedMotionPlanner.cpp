@@ -89,7 +89,6 @@ class NormFunction : public aikido::planner::optimization::Function
 public:
   NormFunction(VariablePtr variable) : Function(std::move(variable))
   {
-
   }
 
   aikido::planner::optimization::UniqueFunctionPtr clone() const override
@@ -141,14 +140,20 @@ TEST_F(OptimizationBasedMotionPlanner, CompositeVariable)
   auto r3Var = std::make_shared<R3Variable>();
   EXPECT_EQ(r3Var->getDimension(), 3u);
 
+  // Add new R2 variable; The dimension of the composite variable increases by
+  // 2.
   compositeVar->addSubVariable(r2Var);
   EXPECT_EQ(compositeVar->getDimension(), 2u);
   EXPECT_EQ(compositeVar->getSubVariable(0u), r2Var);
 
+  // Add new R3 variable; The dimension of the composite variable increases by
+  // 3.
   compositeVar->addSubVariable(r3Var);
   EXPECT_EQ(compositeVar->getDimension(), 5u);
   EXPECT_EQ(compositeVar->getSubVariable(1u), r3Var);
 
+  // Adding already added R3 variable is ignored; The dimension of the composite
+  // variable does not change.
   compositeVar->addSubVariable(r3Var);
   EXPECT_EQ(compositeVar->getDimension(), 5u);
 }
@@ -166,15 +171,18 @@ TEST_F(OptimizationBasedMotionPlanner, CompositeFunction)
   auto normFunction2 = std::make_shared<NormFunction>(r2Var);
   compositeFunction->addSubFunction(normFunction2, r2Var);
 
+  // Make a value vector of [1, 0, 2, 0, 0]
   Eigen::VectorXd value = Eigen::VectorXd::Zero(5);
   value[0] = 1.0;
   value[2] = 2.0;
 
+  // Norm of the first two elements (i.e., norm([1, 0]))
   EXPECT_FLOAT_EQ(compositeFunction->eval(value), 1.0);
 
   auto normFunction3 = std::make_shared<NormFunction>(r3Var);
   compositeFunction->addSubFunction(normFunction3, r3Var);
 
+  // Sum of the two norms of [1, 0] and [2, 0, 0]
   EXPECT_FLOAT_EQ(compositeFunction->eval(value), 3.0);
 }
 

@@ -6,10 +6,14 @@ namespace optimization {
 
 //==============================================================================
 SplineCoefficientsAndDurationsVariable::SplineCoefficientsAndDurationsVariable(
-    const trajectory::Spline& splineToClone)
+    const trajectory::Spline& splineToClone,
+    bool fixedStartPoint,
+    bool fixedEndPoint)
   : SplineVariable(splineToClone)
+  , mIsFixedStartPoint(fixedStartPoint)
+  , mIsFixedEndPoint(fixedEndPoint)
 {
-  updateDimension();
+  // Do nothing
 }
 
 //==============================================================================
@@ -68,6 +72,58 @@ Eigen::VectorXd SplineCoefficientsAndDurationsVariable::getValue() const
 
   assert(static_cast<std::size_t>(segmentIndex) == getDimension());
   return value;
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariable::freeStartPoint()
+{
+  if (!mIsFixedStartPoint)
+    return;
+
+  mIsFixedStartPoint = false;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariable::fixStartPoint()
+{
+  if (mIsFixedStartPoint)
+    return;
+
+  mIsFixedStartPoint = true;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+bool SplineCoefficientsAndDurationsVariable::isStartPointFixed() const
+{
+  return mIsFixedStartPoint;
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariable::freeEndPoint()
+{
+  if (!mIsFixedEndPoint)
+    return;
+
+  mIsFixedEndPoint = false;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+void SplineCoefficientsAndDurationsVariable::fixEndPoint()
+{
+  if (mIsFixedEndPoint)
+    return;
+
+  mIsFixedEndPoint = true;
+  mNeedDimensionUpdate = true;
+}
+
+//==============================================================================
+bool SplineCoefficientsAndDurationsVariable::isEndPointFixed() const
+{
+  return mIsFixedEndPoint;
 }
 
 //==============================================================================
@@ -140,7 +196,7 @@ void SplineCoefficientsAndDurationsVariable::setDurationValueTo(
 }
 
 //==============================================================================
-void SplineCoefficientsAndDurationsVariable::updateDimension()
+void SplineCoefficientsAndDurationsVariable::updateDimension() const
 {
   std::size_t dim = 0u;
 

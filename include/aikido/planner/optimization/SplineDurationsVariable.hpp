@@ -25,7 +25,7 @@ public:
 
 protected:
   // Documentation inherited.
-  void updateDimension() override;
+  void updateDimension() const override;
 };
 
 } // namespace optimization

@@ -9,15 +9,24 @@ CompositeVariable::Index CompositeVariable::InvalidIndex
     = std::numeric_limits<std::size_t>::max();
 
 //==============================================================================
-UniqueVariablePtr CompositeVariable::clone() const
+CompositeVariable::CompositeVariable() : mNeedDimensionUpdate(true)
 {
-  return dart::common::make_unique<CompositeVariable>();
+  // Do nothing
 }
 
 //==============================================================================
 std::size_t CompositeVariable::getDimension() const
 {
+  if (mNeedDimensionUpdate)
+    updateDimension();
+
   return mDimension;
+}
+
+//==============================================================================
+UniqueVariablePtr CompositeVariable::clone() const
+{
+  return dart::common::make_unique<CompositeVariable>();
 }
 
 //==============================================================================
@@ -72,7 +81,7 @@ std::size_t CompositeVariable::addSubVariable(VariablePtr variable)
 
   mSubVariables.emplace_back(std::move(variable));
 
-  updateDimension();
+  mNeedDimensionUpdate = true;
 
   return mSubVariables.size() - 1u;
 }
@@ -114,7 +123,7 @@ bool CompositeVariable::hasSubVariable(const Variable* variable) const
 }
 
 //==============================================================================
-void CompositeVariable::updateDimension()
+void CompositeVariable::updateDimension() const
 {
   mDimension = 0u;
   for (const auto& variable : mSubVariables)

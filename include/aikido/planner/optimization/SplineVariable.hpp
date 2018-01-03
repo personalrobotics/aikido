@@ -23,25 +23,13 @@ public:
   /// the structure and parameters of spline to be changed by the caller.
   const trajectory::Spline& getSpline() const;
 
-  /// Returns the dimension of this trajectory optimization variables.
-  std::size_t getDimension() const override;
-
 protected:
-  /// Update the dimension of this trajectory optimization variables.
-  virtual void updateDimension() = 0;
-
   /// Spline
   trajectory::Spline mSpline;
   // Note: This class is intended to only change the spline parameters (i.e.,
   // values of segment coefficients or duration) so DO NOT change the structures
   // (i.e., number of segments or shape of coefficients). This is important to
   // keep mDimension validate.
-
-  /// Dimension of this trajectory optimization variables.
-  ///
-  /// The dimension should be decided by concrete classes of this class by
-  /// calling updateDimension()
-  std::size_t mDimension;
 };
 
 } // namespace optimization

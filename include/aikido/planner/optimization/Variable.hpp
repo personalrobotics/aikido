@@ -24,7 +24,7 @@ public:
   /// Clone
   virtual UniqueVariablePtr clone() const = 0;
 
-  /// Returns the dimension of optimization variables.
+  /// Returns the dimension of optimization variable.
   virtual std::size_t getDimension() const = 0;
 
   /// Sets the optimization variables.

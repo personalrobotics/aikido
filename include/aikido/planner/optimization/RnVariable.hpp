@@ -15,7 +15,6 @@ class RVariable : public Variable
 public:
   /// Clone
   UniqueVariablePtr clone() const override;
-  // TODO(JS): Change this to unique_ptr
 
   /// Returns the dimension of optimization variables.
   std::size_t getDimension() const override;
