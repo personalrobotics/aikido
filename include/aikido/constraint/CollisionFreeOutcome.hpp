@@ -2,7 +2,6 @@
 #define AIKIDO_CONSTRAINT_COLLISIONFREEOUTCOME_HPP_
 
 #include <vector>
-#include <Eigen/StdVector>
 #include "TestableOutcome.hpp"
 #include "dart/collision/CollisionObject.hpp"
 #include "dart/collision/Contact.hpp"
@@ -35,15 +34,11 @@ public:
 
   /// Return a copy of the vector storing the Contact objects from pairwise
   /// collisions.
-  std::vector<dart::collision::Contact,
-              Eigen::aligned_allocator<dart::collision::Contact>>
-  getPairwiseContacts() const;
+  std::vector<dart::collision::Contact> getPairwiseContacts() const;
 
   /// Return a copy of the vector storing the Contact objects from self
   /// collisions.
-  std::vector<dart::collision::Contact,
-              Eigen::aligned_allocator<dart::collision::Contact>>
-  getSelfContacts() const;
+  std::vector<dart::collision::Contact> getSelfContacts() const;
 
   /// Gets the name of a CollisionObject. The name returned is that of the
   /// corresponding BodyNode (if possible). If not, the name of the ShapeFrame
@@ -54,14 +49,10 @@ public:
 
 protected:
   /// Holds Contact objects from pairwise collisions.
-  std::vector<dart::collision::Contact,
-              Eigen::aligned_allocator<dart::collision::Contact>>
-      mPairwiseContacts;
+  std::vector<dart::collision::Contact> mPairwiseContacts;
 
   /// Holds Contact objects from self collisions.
-  std::vector<dart::collision::Contact,
-              Eigen::aligned_allocator<dart::collision::Contact>>
-      mSelfContacts;
+  std::vector<dart::collision::Contact> mSelfContacts;
 };
 
 } // namespace constraint
