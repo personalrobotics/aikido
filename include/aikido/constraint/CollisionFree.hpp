@@ -40,15 +40,16 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  // Documentation inherited. As an important note, outcome is expected to be
-  // an instance of CollisionFreeOutcome. This method will cast outcome to
-  // a pointer of this type, and then populate the collision information
-  // (which bodies are in self/pairwise collision).
+  /// \copydoc Testable::isSatisfied()
+  /// \note Outcome is expected to be an instance of CollisionFreeOutcome.
+  /// This method will cast outcome to a pointer of this type, and then populate
+  /// the collision information (which bodies are in self/pairwise collision).
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
       TestableOutcome* outcome = nullptr) const override;
 
-  // Documentation inherited. Returns an instance of CollisionFreeOutcome.
+  /// \copydoc Testable::createOutcome()
+  /// \note Returns an instance of CollisionFreeOutcome.
   std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   /// Checks collision between group1 and group2.

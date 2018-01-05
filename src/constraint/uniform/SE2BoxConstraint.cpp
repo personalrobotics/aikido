@@ -140,7 +140,7 @@ bool SE2BoxConstraint::isSatisfied(
     const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
   auto defaultOutcomeObject
-      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
 
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);

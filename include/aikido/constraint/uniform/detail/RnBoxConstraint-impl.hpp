@@ -178,7 +178,7 @@ bool RBoxConstraint<N>::isSatisfied(
     const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
   auto defaultOutcomeObject
-      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
 
   const auto value = mSpace->getValue(
       static_cast<const typename statespace::R<N>::State*>(state));

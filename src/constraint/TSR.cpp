@@ -214,7 +214,7 @@ bool TSR::isSatisfied(
     const statespace::StateSpace::State* _s, TestableOutcome* outcome) const
 {
   auto defaultOutcomeObject
-      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
 
   Eigen::VectorXd dist;
   getValue(_s, dist);

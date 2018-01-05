@@ -31,7 +31,7 @@ bool CollisionFree::isSatisfied(
     TestableOutcome* outcome) const
 {
   auto collisionFreeOutcome
-      = dynamic_cast_if_present<CollisionFreeOutcome>(outcome);
+      = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
 
   if (collisionFreeOutcome)
   {

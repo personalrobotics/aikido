@@ -26,7 +26,7 @@ public:
 /// pointers down to pointers for a derivative class. Mostly used in the
 /// isSatisfied methods of classes that inherit Testable.
 template <class Child>
-Child* dynamic_cast_if_present(TestableOutcome* outcome);
+Child* dynamic_cast_or_throw(TestableOutcome* outcome);
 
 } // namespace constraint
 } // namespace aikido

@@ -35,7 +35,7 @@ bool Satisfied::isSatisfied(
     TestableOutcome* outcome) const
 {
   auto defaultOutcomeObject
-      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
 
   if (defaultOutcomeObject)
     defaultOutcomeObject->setSatisfiedFlag(true);

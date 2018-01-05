@@ -57,7 +57,7 @@ bool CartesianProductTestable::isSatisfied(
     TestableOutcome* outcome) const
 {
   auto defaultOutcomeObject
-      = dynamic_cast_if_present<DefaultTestableOutcome>(outcome);
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
 
   const auto state
       = static_cast<const statespace::CartesianProduct::State*>(_state);

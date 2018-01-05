@@ -7,7 +7,7 @@ namespace constraint {
 
 //==============================================================================
 template <class Child>
-Child* dynamic_cast_if_present(TestableOutcome* outcome)
+Child* dynamic_cast_or_throw(TestableOutcome* outcome)
 {
   if (!outcome)
     return nullptr;

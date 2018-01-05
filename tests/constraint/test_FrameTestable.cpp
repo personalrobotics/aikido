@@ -34,7 +34,7 @@ public:
       aikido::constraint::TestableOutcome* outcome = nullptr) const override
   {
     auto defaultOutcomeObject
-        = aikido::constraint::dynamic_cast_if_present<DefaultTestableOutcome>(
+        = aikido::constraint::dynamic_cast_or_throw<DefaultTestableOutcome>(
             outcome);
 
     auto st = static_cast<const SE3::State*>(_state);

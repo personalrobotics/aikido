@@ -160,7 +160,7 @@ public:
       TestableOutcome* outcome = nullptr) const override
   {
     auto defaultOutcomeObject
-        = aikido::constraint::dynamic_cast_if_present<DefaultTestableOutcome>(
+        = aikido::constraint::dynamic_cast_or_throw<DefaultTestableOutcome>(
             outcome);
 
     auto state = static_cast<const CartesianProduct::State*>(_s);
@@ -210,7 +210,7 @@ public:
       TestableOutcome* outcome = nullptr) const override
   {
     auto defaultOutcomeObject
-        = aikido::constraint::dynamic_cast_if_present<DefaultTestableOutcome>(
+        = aikido::constraint::dynamic_cast_or_throw<DefaultTestableOutcome>(
             outcome);
 
     auto cst = static_cast<const CartesianProduct::State*>(_state);
