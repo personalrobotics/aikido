@@ -9,6 +9,7 @@
 
   * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
   * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
+  * Added TestableOutcome class: [#266](https://github.com/personalrobotics/aikido/pull/266)
 
 * Perception
 
