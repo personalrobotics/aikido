@@ -6,13 +6,13 @@
 #
 # This file is provided under the "BSD-style" License
 
-# Find TINYXML2
+# Find TinyXML2
 #
 # This sets the following variables:
-# TINYXML2_FOUND
-# TINYXML2_INCLUDE_DIRS
-# TINYXML2_LIBRARIES
-# TINYXML2_VERSION
+# TinyXML2_FOUND
+# TinyXML2_INCLUDE_DIRS
+# TinyXML2_LIBRARIES
+# TinyXML2_VERSION
 
 find_package(PkgConfig QUIET)
 
