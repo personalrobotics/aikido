@@ -28,9 +28,9 @@ std::string getPackageNameFromXML(const std::string& _path)
   {
     dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
 #ifdef TINYXML2_MAJOR_VERSION_GE_6
-           << _path << "': " << document.GetErrorStr1() << "\n";
-#else
            << _path << "': " << document.ErrorStr() << "\n";
+#else
+           << _path << "': " << document.GetErrorStr1() << "\n";
 #endif
     return "";
   }
