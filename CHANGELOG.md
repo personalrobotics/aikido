@@ -23,6 +23,10 @@
 
   * Added WorldInteractiveMarkerViewer: [#242](https://github.com/personalrobotics/aikido/pull/242)
 
+* IO
+
+  * Added support for new ErrorStr API in tinyxml2 6.0.0: [#290](https://github.com/personalrobotics/aikido/pull/290)
+
 * Build & Testing & ETC
 
   * Changed to use size_t over std::size_t: [#230](https://github.com/personalrobotics/aikido/pull/230)
