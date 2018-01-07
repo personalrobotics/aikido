@@ -7,7 +7,10 @@ set(sources
   CartesianProductProjectable.cpp
   CartesianProductSampleable.cpp
   CartesianProductTestable.cpp
+  CollisionFree.cpp
+  CollisionFreeOutcome.cpp
   CyclicSampleable.cpp
+  DefaultTestableOutcome.cpp
   Differentiable.cpp
   DifferentiableIntersection.cpp
   DifferentiableSubspace.cpp
@@ -18,7 +21,6 @@ set(sources
   InverseKinematicsSampleable.cpp
   JointStateSpaceHelpers.cpp
   NewtonsMethodProjectable.cpp
-  CollisionFree.cpp
   Projectable.cpp
   RejectionSampleable.cpp
   Sampleable.cpp

@@ -34,7 +34,7 @@ FrameTestable::FrameTestable(
 
 //==============================================================================
 bool FrameTestable::isSatisfied(
-    const statespace::StateSpace::State* _state) const
+    const statespace::StateSpace::State* _state, TestableOutcome* outcome) const
 {
   // Set the state
   auto state
@@ -45,8 +45,13 @@ bool FrameTestable::isSatisfied(
   // Check the pose constraint
   auto st = mPoseStateSpace->createState();
   mPoseStateSpace->setIsometry(st, mFrame->getTransform());
+  return mPoseConstraint->isSatisfied(st, outcome);
+}
 
-  return mPoseConstraint->isSatisfied(st);
+//==============================================================================
+std::unique_ptr<TestableOutcome> FrameTestable::createOutcome() const
+{
+  return mPoseConstraint->createOutcome();
 }
 
 //==============================================================================
