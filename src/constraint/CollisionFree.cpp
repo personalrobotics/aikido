@@ -27,33 +27,61 @@ statespace::StateSpacePtr CollisionFree::getStateSpace() const
 
 //==============================================================================
 bool CollisionFree::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state,
+    TestableOutcome* outcome) const
 {
+  auto collisionFreeOutcome
+      = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
+
+  if (collisionFreeOutcome)
+  {
+    collisionFreeOutcome->clear();
+  }
+
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
   mStatespace->setState(skelStatePtr);
 
   bool collision = false;
   dart::collision::CollisionResult collisionResult;
-  for (auto groups : mGroupsToPairwiseCheck)
+  for (const auto& groups : mGroupsToPairwiseCheck)
   {
     collision = mCollisionDetector->collide(
         groups.first.get(),
         groups.second.get(),
         mCollisionOptions,
         &collisionResult);
+
     if (collision)
+    {
+      if (collisionFreeOutcome)
+      {
+        collisionFreeOutcome->mPairwiseContacts = collisionResult.getContacts();
+      }
       return false;
+    }
   }
 
-  for (auto group : mGroupsToSelfCheck)
+  for (const auto& group : mGroupsToSelfCheck)
   {
     collision = mCollisionDetector->collide(
         group.get(), mCollisionOptions, &collisionResult);
     if (collision)
+    {
+      if (collisionFreeOutcome)
+      {
+        collisionFreeOutcome->mSelfContacts = collisionResult.getContacts();
+      }
       return false;
+    }
   }
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> CollisionFree::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new CollisionFreeOutcome);
 }
 
 //==============================================================================
