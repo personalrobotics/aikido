@@ -53,8 +53,12 @@ statespace::StateSpacePtr CartesianProductTestable::getStateSpace() const
 
 //==============================================================================
 bool CartesianProductTestable::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state,
+    TestableOutcome* outcome) const
 {
+  auto defaultOutcomeObject
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
+
   const auto state
       = static_cast<const statespace::CartesianProduct::State*>(_state);
 
@@ -62,9 +66,22 @@ bool CartesianProductTestable::isSatisfied(
   {
     auto subState = mStateSpace->getSubState<>(state, i);
     if (!mConstraints[i]->isSatisfied(subState))
+    {
+      if (defaultOutcomeObject)
+        defaultOutcomeObject->setSatisfiedFlag(false);
       return false;
+    }
   }
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> CartesianProductTestable::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 } // namespace constraint

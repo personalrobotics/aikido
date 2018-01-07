@@ -9,6 +9,7 @@
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "CollisionFreeOutcome.hpp"
 #include "Testable.hpp"
 
 namespace aikido {
@@ -42,9 +43,17 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  // Documentation inherited.
+  /// \copydoc Testable::isSatisfied()
+  /// \note Outcome is expected to be an instance of CollisionFreeOutcome.
+  /// This method will cast outcome to a pointer of this type, and then populate
+  /// the collision information (which bodies are in self/pairwise collision).
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* _state) const override;
+      const aikido::statespace::StateSpace::State* _state,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// \copydoc Testable::createOutcome()
+  /// \note Returns an instance of CollisionFreeOutcome.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   /// Checks collision between group1 and group2.
   /// \param group1 First collision group.

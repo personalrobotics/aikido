@@ -4,144 +4,99 @@
 #include <dart/optimizer/Problem.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+//==============================================================================
 MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
-    dart::dynamics::BodyNodePtr _bn,
-    const Eigen::Vector3d& _linearVelocity,
-    double _startTime,
-    double _endTime,
-    double _timestep,
-    double _linearGain,
-    double _linearTolerance,
-    double _rotationGain,
-    double _rotationTolerance,
-    double _optimizationTolerance,
-    double _padding)
-  : mBodynode(std::move(_bn))
-  , mVelocity(_linearVelocity)
-  , mLinearDirection(_linearVelocity.normalized())
-  , mStartTime(_startTime)
-  , mEndTime(_endTime)
-  , mTimestep(_timestep)
-  , mLinearGain(_linearGain)
-  , mLinearTolerance(_linearTolerance)
-  , mAngularGain(_rotationGain)
-  , mAngularTolerance(_rotationTolerance)
-  , mOptimizationTolerance(_optimizationTolerance)
-  , mPadding(_padding)
-  , mStartPose(_bn->getTransform())
+    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    dart::dynamics::BodyNodePtr bn,
+    const Eigen::Vector3d& direction,
+    double minDistance,
+    double maxDistance,
+    double positionTolerance,
+    double angularTolerance,
+    double maxStepSize,
+    double jointLimitPadding)
+  : BodyNodePoseVectorField(stateSpace, bn, maxStepSize, jointLimitPadding)
+  , mDirection(direction)
+  , mMinDistance(minDistance)
+  , mMaxDistance(maxDistance)
+  , mPositionTolerance(positionTolerance)
+  , mAngularTolerance(angularTolerance)
+  , mStartPose(bn->getTransform())
 {
-  if (mStartTime < 0.0)
-    throw std::invalid_argument("Start time is negative");
-  if (mEndTime < mStartTime)
-    throw std::invalid_argument("End time is smaller than start time");
-  if (mTimestep <= 0.0)
-    throw std::invalid_argument("Time step is negative");
-
-  if (mLinearGain < 0)
-    throw std::invalid_argument("Linear gain is negative");
-  if (mLinearTolerance < 0)
-    throw std::invalid_argument("Linear tolerance is negative");
-  if (mAngularGain < 0)
-    throw std::invalid_argument("Angular gain is negative");
+  if (mMinDistance < 0)
+    throw std::invalid_argument("Minimum distance must be non-negative.");
+  if (mDirection.norm() == 0)
+    throw std::invalid_argument("Direction must be non-zero");
+  if (mMaxDistance < mMinDistance)
+    throw std::invalid_argument("Max distance is less than minimum distance.");
+  if (mPositionTolerance < 0)
+    throw std::invalid_argument("Position tolerance is negative");
   if (mAngularTolerance < 0)
     throw std::invalid_argument("Angular tolerance is negative");
-  if (mOptimizationTolerance < 0)
-    throw std::invalid_argument("Optimization tolerance is negative");
 
-  mTargetPose = mStartPose;
-  mTargetPose.translation() += mVelocity * (mEndTime - mStartTime);
-  mEndTime += _padding;
+  // Normalize the direction vector
+  mDirection.normalize();
 }
 
 //==============================================================================
-bool MoveEndEffectorOffsetVectorField::operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double,
-    Eigen::VectorXd& _dq)
+bool MoveEndEffectorOffsetVectorField::evaluateCartesianVelocity(
+    const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
-  using Eigen::Isometry3d;
-  using Eigen::Vector3d;
-  using Eigen::Vector6d;
   using dart::math::logMap;
+  using aikido::planner::vectorfield::computeGeodesicError;
 
-  const Isometry3d currentPose = mBodynode->getTransform();
-  Vector3d currentWorkspacePose = currentPose.translation();
-  Vector3d targetWorkspacePose = mTargetPose.translation();
-
-  // Compute the "feed-forward" term necessary to move at a constant velocity
-  // from the start to the goal.
-  const Vector3d& linearFeedforward = mVelocity;
-
-  // Compute positional error orthogonal to the direction of motion by
-  // projecting out the component of the error along that direction.
-  const Vector3d linearError = targetWorkspacePose - currentWorkspacePose;
-  const Vector3d linearOrthogonalError
-      = linearError - linearError.dot(mLinearDirection) * mLinearDirection;
-  // Compute rotational error.
-  const Vector3d rotationError
-      = logMap(mTargetPose.rotation().inverse() * currentPose.rotation());
-
-  // Compute the desired twist using a proportional controller.
-  Vector6d desiredTwist;
-  desiredTwist.head<3>() = mAngularGain * rotationError;
-  desiredTwist.tail<3>()
-      = linearFeedforward + mLinearGain * linearOrthogonalError;
-
-  bool result = computeJointVelocityFromTwist(
-      desiredTwist,
-      _stateSpace,
-      mBodynode,
-      mOptimizationTolerance,
-      mTimestep,
-      mPadding,
-      _dq);
-  return result;
+  Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);
+  desiredTwist.tail<3>() = mDirection;
+  cartesianVelocity = desiredTwist;
+  return true;
 }
 
 //==============================================================================
-VectorFieldPlannerStatus MoveEndEffectorOffsetVectorField::operator()(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    double _t)
+VectorFieldPlannerStatus
+MoveEndEffectorOffsetVectorField::evaluateCartesianStatus(
+    const Eigen::Isometry3d& pose) const
 {
-  using Eigen::Isometry3d;
-  using Eigen::Vector3d;
-
-  DART_UNUSED(_stateSpace);
-  const Isometry3d currentPose = mBodynode->getTransform();
+  using aikido::planner::vectorfield::computeGeodesicError;
 
   // Check for deviation from the straight-line trajectory.
-  const Vector3d linearError
-      = mTargetPose.translation() - currentPose.translation();
-  const Vector3d linearOrthogonalError
-      = linearError - linearError.dot(mLinearDirection) * mLinearDirection;
-  double linearOrthogonalMagnitude = linearOrthogonalError.norm();
+  const Eigen::Vector4d geodesicError = computeGeodesicError(mStartPose, pose);
+  const double orientationError = geodesicError[0];
+  const Eigen::Vector3d positionError = geodesicError.tail<3>();
+  double movedDistance = positionError.transpose() * mDirection;
+  double positionDeviation
+      = (positionError - movedDistance * mDirection).norm();
 
-  if (linearOrthogonalMagnitude >= mLinearTolerance)
+  if (fabs(orientationError) > mAngularTolerance)
   {
-    dtwarn << "Trajectory deviated from the straight line by "
-           << linearOrthogonalMagnitude << " m; the tolerance is "
-           << mLinearTolerance << " m.\n";
+    dtwarn << "Deviated from orientation constraint.";
     return VectorFieldPlannerStatus::TERMINATE;
   }
 
-  // Check if we've reached the target.
-  if (_t > mEndTime)
+  if (positionDeviation > mPositionTolerance)
+  {
+    dtwarn << "Deviated from straight line constraint.";
+    return VectorFieldPlannerStatus::TERMINATE;
+  }
+
+  // if larger than max distance, terminate
+  // if larger than min distance, cache and continue
+  // if smaller than min distance, continue
+  if (movedDistance > mMaxDistance)
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }
-  else if (_t >= mStartTime)
+  else if (movedDistance >= mMinDistance)
   {
     return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
   }
-  else
-  {
-    return VectorFieldPlannerStatus::CONTINUE;
-  }
+
+  return VectorFieldPlannerStatus::CONTINUE;
 }
 
 } // namespace vectorfield
