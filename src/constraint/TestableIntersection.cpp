@@ -20,14 +20,31 @@ TestableIntersection::TestableIntersection(
 
 //==============================================================================
 bool TestableIntersection::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state,
+    TestableOutcome* outcome) const
 {
+  auto defaultOutcomeObject
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
+
   for (auto c : mConstraints)
   {
     if (!c->isSatisfied(_state))
+    {
+      if (defaultOutcomeObject)
+        defaultOutcomeObject->setSatisfiedFlag(false);
       return false;
+    }
   }
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> TestableIntersection::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================

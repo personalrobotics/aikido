@@ -9,6 +9,7 @@
 
   * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
   * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
+  * Added TestableOutcome class: [#266](https://github.com/personalrobotics/aikido/pull/266)
 
 * Perception
 
@@ -22,6 +23,10 @@
 * RViz
 
   * Added WorldInteractiveMarkerViewer: [#242](https://github.com/personalrobotics/aikido/pull/242)
+
+* IO
+
+  * Added support for new ErrorStr API in tinyxml2 6.0.0: [#290](https://github.com/personalrobotics/aikido/pull/290)
 
 * Build & Testing & ETC
 
