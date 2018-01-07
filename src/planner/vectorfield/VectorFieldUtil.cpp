@@ -13,7 +13,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 {
   using dart::common::make_unique;
 
-  std::size_t numDof = _stateSpace->getProperties().getNumDofs();
+  std::size_t numDof = _stateSpace->getMetaSkeleton()->getNumDofs();
   // Construct the output spline.
   Eigen::VectorXd times(_cacheIndex);
   std::transform(
@@ -78,7 +78,6 @@ void DesiredTwistFunction::evalGradient(
 bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    const dart::dynamics::MetaSkeletonPtr _metaskeleton,
     const dart::dynamics::BodyNodePtr _bodyNode,
     double _optimizationTolerance,
     double _timestep,
@@ -90,21 +89,21 @@ bool computeJointVelocityFromTwist(
   using dart::optimizer::Solver;
   using Eigen::VectorXd;
 
+  const dart::dynamics::MetaSkeletonPtr skeleton
+      = _stateSpace->getMetaSkeleton();
   // Use LBFGS to find joint angles that won't violate the joint limits.
-  const Jacobian jacobian = _metaskeleton->getWorldJacobian(_bodyNode);
-  const auto properties = _stateSpace->getProperties();
+  const Jacobian jacobian = skeleton->getWorldJacobian(_bodyNode);
 
-  const std::size_t numDofs = properties.getNumDofs();
-  const VectorXd positionLowerLimits = properties.getPositionLowerLimits();
-  const VectorXd positionUpperLimits = properties.getPositionUpperLimits();
-  VectorXd velocityLowerLimits = properties.getVelocityLowerLimits();
-  VectorXd velocityUpperLimits = properties.getVelocityUpperLimits();
+  const std::size_t numDofs = skeleton->getNumDofs();
+  const VectorXd positions = skeleton->getPositions();
+  VectorXd initialGuess = skeleton->getVelocities();
+  const VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
+  const VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
+  VectorXd velocityLowerLimits = skeleton->getVelocityLowerLimits();
+  VectorXd velocityUpperLimits = skeleton->getVelocityUpperLimits();
 
-  auto currentState
-      = _stateSpace->getScopedStateFromMetaSkeleton(_metaskeleton.get());
-  VectorXd positions(numDofs);
-  _stateSpace->convertStateToPositions(currentState, positions);
-  VectorXd initialGuess = _metaskeleton->getVelocities();
+  auto currentState = _stateSpace->createState();
+  _stateSpace->convertPositionsToState(positions, currentState);
 
   for (std::size_t i = 0; i < numDofs; ++i)
   {

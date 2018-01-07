@@ -44,13 +44,11 @@ public:
   /// Vectorfield callback function
   ///
   /// \param[in] _stateSpace MetaSkeleton state space
-  /// \param[in] _metaskeleton MetaSkeleton for planning
   /// \param[in] _t Current time being planned
   /// \param[out] _dq Joint velocities
   /// \return Whether joint velocities are successfully computed
   bool operator()(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-      dart::dynamics::MetaSkeletonPtr _metaSkeleton,
       double _t,
       Eigen::VectorXd& _dq);
 

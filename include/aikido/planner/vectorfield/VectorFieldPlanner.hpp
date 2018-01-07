@@ -22,14 +22,12 @@ enum class VectorFieldPlannerStatus
 /// MetaSkeleton.
 ///
 /// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _metaskeleton MetaSkeleton to plan with
 /// \param[in] _t Planned time of a given duration
 /// \param[out] _dq Joint velocity calculated by a vector field and meta
 /// skeleton
 /// \return Whether vectorfield evaluation succeeds
 using VectorFieldCallback = std::function<bool(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     double _t,
     Eigen::VectorXd& _dq)>;
 
@@ -45,7 +43,6 @@ using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus(
 /// Plan to a trajectory by a given vector field.
 ///
 /// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _metaskeleton MetaSkeleton to plan with
 /// \param[in] _constraint Trajectory-wide constraint that must be satisfied
 /// \param[in] _timestep How long an evaluation step is
 /// \param[in] _vectorField Callback of vector field calculation
@@ -53,7 +50,6 @@ using VectorFieldStatusCallback = std::function<VectorFieldPlannerStatus(
 /// \return Trajectory or \c nullptr if planning failed
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     const aikido::constraint::TestablePtr& _constraint,
     double _timestep,
     const VectorFieldCallback& _vectorFieldCb,
@@ -63,7 +59,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 /// distance.
 ///
 /// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _metaskeleton MetaSkeleton to plan with
 /// \param[in] _bn Body node of the end-effector
 /// \param[in] _constraint Trajectory-wide constraint that must be satisfied
 /// \param[in] _direction Direction of moving the end-effector
@@ -83,7 +78,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 /// \return Trajectory or \c nullptr if planning failed
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     const dart::dynamics::BodyNodePtr& _bn,
     const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Vector3d& _direction,

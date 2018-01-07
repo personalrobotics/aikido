@@ -25,17 +25,18 @@ class DofLimitError : public VectorFieldTerminated
 public:
   /// Constructor
   ///
-  /// \param[in] _dof Degree of freedom name
+  /// \param[in] _dof Degree of freedom
   /// \param[in] _whatArg Error string
-  DofLimitError(const std::string& _dof, const std::string& _whatArg);
+  DofLimitError(
+      const dart::dynamics::DegreeOfFreedom* _dof, const std::string& _whatArg);
 
-  /// Get degree of freedom name
+  /// Get degree of freedom
   ///
-  /// \return Degree of freedom name
-  const std::string dof() const;
+  /// \return Degree of freedom
+  const dart::dynamics::DegreeOfFreedom* dof() const;
 
 private:
-  const std::string mDof;
+  const dart::dynamics::DegreeOfFreedom* mDof;
 };
 
 } // namespace vectorfield

@@ -61,7 +61,6 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 //==============================================================================
 bool MoveEndEffectorOffsetVectorField::operator()(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     double,
     Eigen::VectorXd& _dq)
 {
@@ -96,7 +95,6 @@ bool MoveEndEffectorOffsetVectorField::operator()(
   bool result = computeJointVelocityFromTwist(
       desiredTwist,
       _stateSpace,
-      _metaskeleton,
       mBodynode,
       mOptimizationTolerance,
       mTimestep,

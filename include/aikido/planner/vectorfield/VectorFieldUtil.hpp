@@ -69,7 +69,6 @@ private:
 /// \param[in] _desiredTwist Desired twist, which consists of angular velocity
 /// and linear velocity
 /// \param[in] _stateSpace MetaSkeleton state space
-/// \param[in] _metaskeleton MetaSkeleton to read position and velocity from
 /// \param[in]  _bodyNode Body node of the end-effector
 /// \param[in] _optimizationTolerance Callback of vector field calculation
 /// \param[in] _timestep How long will the computed joint velocities be executed
@@ -78,7 +77,6 @@ private:
 bool computeJointVelocityFromTwist(
     const Eigen::Vector6d& _desiredTwist,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
-    const dart::dynamics::MetaSkeletonPtr _metaskeleton,
     const dart::dynamics::BodyNodePtr _bodyNode,
     double _optimizationTolerance,
     double _timestep,

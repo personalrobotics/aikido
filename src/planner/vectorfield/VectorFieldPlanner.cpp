@@ -18,49 +18,47 @@ static void checkDofLimits(
     Eigen::VectorXd const& q,
     Eigen::VectorXd const& qd)
 {
-  const auto properties = stateSpace->getProperties();
-  const auto dofNames = properties.getDofNames();
-  const auto positionLowerLimits = properties.getPositionLowerLimits();
-  const auto positionUpperLimits = properties.getPositionUpperLimits();
-  const auto velocityLowerLimits = properties.getVelocityLowerLimits();
-  const auto velocityUpperLimits = properties.getVelocityUpperLimits();
-
+  using dart::dynamics::DegreeOfFreedom;
   std::stringstream ss;
 
-  for (std::size_t i = 0; i < properties.getNumDofs(); ++i)
+  for (std::size_t i = 0; i < stateSpace->getMetaSkeleton()->getNumDofs(); ++i)
   {
-    if (q[i] < positionLowerLimits[i])
+    DegreeOfFreedom* const dof = stateSpace->getMetaSkeleton()->getDof(i);
+
+    if (q[i] < dof->getPositionLowerLimit())
     {
-      ss << "DOF " << dofNames[i] << " exceeds lower position limit: ";
-      ss << q[i] << " < " << positionLowerLimits[i];
-      throw DofLimitError(dofNames[i], ss.str());
+      ss << "DOF " << dof->getName() << " exceeds lower position limit: ";
+      ss << q[i] << " < " << dof->getPositionLowerLimit();
+      throw DofLimitError(dof, ss.str());
     }
-    else if (q[i] > positionUpperLimits[i])
+    else if (q[i] > dof->getPositionUpperLimit())
     {
-      ss << "DOF " << dofNames[i] << " exceeds upper position limit: ";
-      ss << q[i] << " > " << positionUpperLimits[i];
-      throw DofLimitError(dofNames[i], ss.str());
+      ss << "DOF " << dof->getName() << " exceeds upper position limit: ";
+      ss << q[i] << " > " << dof->getPositionUpperLimit();
+      throw DofLimitError(dof, ss.str());
     }
-    else if (qd[i] < velocityLowerLimits[i])
+    else if (qd[i] < dof->getVelocityLowerLimit())
     {
-      ss << "DOF " << dofNames[i] << " exceeds lower velocity limit: ";
-      ss << qd[i] << " < " << velocityLowerLimits[i];
-      throw DofLimitError(dofNames[i], ss.str());
+      ss << "DOF " << dof->getName() << " exceeds lower velocity limit: ";
+      ss << qd[i] << " < " << dof->getVelocityLowerLimit();
+      throw DofLimitError(dof, ss.str());
     }
-    else if (qd[i] > velocityUpperLimits[i])
+    else if (qd[i] > dof->getVelocityUpperLimit())
     {
-      ss << "DOF " << dofNames[i] << " exceeds upper velocity limit: ";
-      ss << qd[i] << " > " << velocityUpperLimits[i];
-      throw DofLimitError(dofNames[i], ss.str());
+      ss << "DOF " << dof->getName() << " exceeds upper velocity limit: ";
+      ss << qd[i] << " > " << dof->getVelocityUpperLimit();
+      throw DofLimitError(dof, ss.str());
     }
   }
 }
 
 //==============================================================================
 static void checkCollision(
-    const aikido::statespace::dart::MetaSkeletonStateSpace::State* state,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     const aikido::constraint::TestablePtr& constraint)
 {
+  // Get current position
+  auto state = stateSpace->getScopedStateFromMetaSkeleton();
   // Throw a termination if in collision
   if (!constraint->isSatisfied(state))
   {
@@ -71,49 +69,41 @@ static void checkCollision(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     const aikido::constraint::TestablePtr& _constraint,
     double _dt,
-    const VectorFieldCallback& _vectorFieldCb,
+    const VectorFieldCallback& _vectorFiledCb,
     const VectorFieldStatusCallback& _statusCb)
 {
-  auto saver = MetaSkeletonStateSaver(_metaskeleton);
+  auto saver = MetaSkeletonStateSaver(_stateSpace->getMetaSkeleton());
   DART_UNUSED(saver);
 
-  const auto metaSkeletonProperties = _stateSpace->getProperties();
-  const std::size_t numDof = metaSkeletonProperties.getNumDofs();
-  const auto positionLowerLimits
-      = metaSkeletonProperties.getPositionLowerLimits();
-  const auto positionUpperLimits
-      = metaSkeletonProperties.getPositionUpperLimits();
-  const auto velocityLowerLimits
-      = metaSkeletonProperties.getVelocityLowerLimits();
-  const auto velocityUpperLimits
-      = metaSkeletonProperties.getVelocityUpperLimits();
+  dart::dynamics::MetaSkeletonPtr skeleton = _stateSpace->getMetaSkeleton();
 
-  if (positionUpperLimits == positionLowerLimits)
+  if (skeleton->getPositionUpperLimits() == skeleton->getPositionLowerLimits())
   {
     throw std::invalid_argument("State space volume zero");
   }
-  if (velocityUpperLimits == velocityLowerLimits)
+  if (skeleton->getVelocityUpperLimits() == skeleton->getVelocityLowerLimits())
   {
     throw std::invalid_argument("Velocity space volume zero");
   }
 
-  for (std::size_t i = 0; i < numDof; ++i)
+  for (std::size_t i = 0; i < skeleton->getNumDofs(); ++i)
   {
     std::stringstream ss;
-    if (positionLowerLimits[i] > positionUpperLimits[i])
+    if (skeleton->getPositionLowerLimit(i) > skeleton->getPositionUpperLimit(i))
     {
       ss << "Position lower limit is larger than upper limit at DOF " << i;
       throw std::invalid_argument(ss.str());
     }
-    if (velocityLowerLimits[i] > velocityUpperLimits[i])
+    if (skeleton->getVelocityLowerLimit(i) > skeleton->getVelocityUpperLimit(i))
     {
       ss << "Velocity lower limit is larger than upper limit at DOF " << i;
       throw std::invalid_argument(ss.str());
     }
   }
+
+  const std::size_t numDof = _stateSpace->getDimension();
 
   std::vector<Knot> knots;
   VectorFieldPlannerStatus terminationStatus
@@ -123,7 +113,10 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
   int cacheIndex = -1;
   int index = 0;
   double t = 0;
-  Eigen::VectorXd q = _metaskeleton->getPositions();
+  Eigen::VectorXd q = _stateSpace->getMetaSkeleton()->getPositions();
+
+  auto startState = _stateSpace->createState();
+  _stateSpace->convertPositionsToState(q, startState);
   Eigen::VectorXd dq(numDof);
   assert(static_cast<std::size_t>(q.size()) == numDof);
 
@@ -132,7 +125,7 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     // Evaluate the vector field.
     try
     {
-      if (!_vectorFieldCb(_stateSpace, _metaskeleton, t, dq))
+      if (!_vectorFiledCb(_stateSpace, t, dq))
       {
         throw VectorFieldTerminated("Failed evaluating VectorField.");
       }
@@ -157,13 +150,11 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
     // Compute the number of collision checks we need.
     for (std::size_t istep = 0; istep < numSteps; ++istep)
     {
-      auto currentState = _stateSpace->createState();
-
       try
       {
         checkDofLimits(_stateSpace, q, dq);
-        _stateSpace->convertPositionsToState(q, currentState);
-        checkCollision(currentState, _constraint);
+        _stateSpace->getMetaSkeleton()->setPositions(q);
+        checkCollision(_stateSpace, _constraint);
       }
       catch (const VectorFieldTerminated& e)
       {
@@ -183,12 +174,12 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
       knots.push_back(knot);
 
       // Take a step.
+      auto currentState = _stateSpace->createState();
+      _stateSpace->convertPositionsToState(q, currentState);
       auto deltaState = _stateSpace->createState();
       _stateSpace->convertPositionsToState(_dt * dq, deltaState);
-
       auto nextState = _stateSpace->createState();
       _stateSpace->compose(currentState, deltaState, nextState);
-
       _stateSpace->convertStateToPositions(nextState, q);
 
       t += _dt;
@@ -236,7 +227,6 @@ std::unique_ptr<aikido::trajectory::Spline> planPathByVectorField(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     const dart::dynamics::BodyNodePtr& _bn,
     const aikido::constraint::TestablePtr& _constraint,
     const Eigen::Vector3d& _direction,
@@ -282,12 +272,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       _angularTolerance);
 
   return planPathByVectorField(
-      _stateSpace,
-      _metaskeleton,
-      _constraint,
-      _timestep,
-      vectorfield,
-      vectorfield);
+      _stateSpace, _constraint, _timestep, vectorfield, vectorfield);
 }
 
 } // namespace vectorfield

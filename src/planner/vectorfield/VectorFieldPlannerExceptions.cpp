@@ -12,14 +12,14 @@ VectorFieldTerminated::VectorFieldTerminated(const std::string& _whatArg)
 
 //==============================================================================
 DofLimitError::DofLimitError(
-    const std::string& _dof, const std::string& _whatArg)
+    const dart::dynamics::DegreeOfFreedom* _dof, const std::string& _whatArg)
   : VectorFieldTerminated(_whatArg), mDof(_dof)
 {
   // Do nothing
 }
 
 //==============================================================================
-const std::string DofLimitError::dof() const
+const dart::dynamics::DegreeOfFreedom* DofLimitError::dof() const
 {
   return mDof;
 }
