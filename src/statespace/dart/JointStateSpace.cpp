@@ -33,13 +33,13 @@ JointStateSpace::Properties::Properties(::dart::dynamics::Joint* _joint)
 }
 
 //==============================================================================
-const std::string JointStateSpace::Properties::getName() const
+const std::string& JointStateSpace::Properties::getName() const
 {
   return mName;
 }
 
 //==============================================================================
-const std::string JointStateSpace::Properties::getType() const
+const std::string& JointStateSpace::Properties::getType() const
 {
   return mType;
 }
@@ -51,7 +51,7 @@ std::size_t JointStateSpace::Properties::getNumDofs() const
 }
 
 //==============================================================================
-std::vector<std::string> JointStateSpace::Properties::getDofNames() const
+const std::vector<std::string>& JointStateSpace::Properties::getDofNames() const
 {
   return mDofNames;
 }
@@ -77,28 +77,28 @@ bool JointStateSpace::Properties::isPositionLimited() const
 }
 
 //==============================================================================
-const Eigen::VectorXd JointStateSpace::Properties::getPositionLowerLimits()
+const Eigen::VectorXd& JointStateSpace::Properties::getPositionLowerLimits()
     const
 {
   return mPositionLowerLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd JointStateSpace::Properties::getPositionUpperLimits()
+const Eigen::VectorXd& JointStateSpace::Properties::getPositionUpperLimits()
     const
 {
   return mPositionUpperLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd JointStateSpace::Properties::getVelocityLowerLimits()
+const Eigen::VectorXd& JointStateSpace::Properties::getVelocityLowerLimits()
     const
 {
   return mVelocityLowerLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd JointStateSpace::Properties::getVelocityUpperLimits()
+const Eigen::VectorXd& JointStateSpace::Properties::getVelocityUpperLimits()
     const
 {
   return mVelocityUpperLimits;
@@ -112,7 +112,7 @@ JointStateSpace::JointStateSpace(::dart::dynamics::Joint* _joint)
 }
 
 //==============================================================================
-const JointStateSpace::Properties JointStateSpace::getProperties() const
+const JointStateSpace::Properties& JointStateSpace::getProperties() const
 {
   return mProperties;
 }

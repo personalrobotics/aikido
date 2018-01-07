@@ -29,16 +29,16 @@ public:
     explicit Properties(::dart::dynamics::Joint* _joint);
 
     /// Return the name of the joint.
-    const std::string getName() const;
+    const std::string& getName() const;
 
     /// Return the type of the joint.
-    const std::string getType() const;
+    const std::string& getType() const;
 
     /// Return the number of DOFs in the joint.
     std::size_t getNumDofs() const;
 
     /// Return the names of DOFs in the joint.
-    std::vector<std::string> getDofNames() const;
+    const std::vector<std::string>& getDofNames() const;
 
     /// Return whether the index DOF is position-limited.
     bool hasPositionLimit(std::size_t index) const;
@@ -47,16 +47,16 @@ public:
     bool isPositionLimited() const;
 
     /// Return the vector of position lower limits.
-    const Eigen::VectorXd getPositionLowerLimits() const;
+    const Eigen::VectorXd& getPositionLowerLimits() const;
 
     /// Return the vector of position upper limits.
-    const Eigen::VectorXd getPositionUpperLimits() const;
+    const Eigen::VectorXd& getPositionUpperLimits() const;
 
     /// Return the vector of velocity lower limits.
-    const Eigen::VectorXd getVelocityLowerLimits() const;
+    const Eigen::VectorXd& getVelocityLowerLimits() const;
 
     /// Return the vector of velocity upper limits.
-    const Eigen::VectorXd getVelocityUpperLimits() const;
+    const Eigen::VectorXd& getVelocityUpperLimits() const;
 
   protected:
     /// Name of the joint
@@ -98,7 +98,7 @@ public:
   /// Gets the joint properties associated with this state space.
   ///
   /// \return joint properties associated with this state space
-  const Properties getProperties() const;
+  const Properties& getProperties() const;
 
   /// Converts DART \c Joint positions, e.g. those returned by
   /// \c getPositions, to a \c State in this state space.

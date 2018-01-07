@@ -113,6 +113,12 @@ MetaSkeletonStateSpace::Properties::Properties(
 }
 
 //==============================================================================
+const std::string& MetaSkeletonStateSpace::Properties::getName() const
+{
+  return mName;
+}
+
+//==============================================================================
 std::size_t MetaSkeletonStateSpace::Properties::getNumJoints() const
 {
   return mNumJoints;
@@ -125,7 +131,8 @@ std::size_t MetaSkeletonStateSpace::Properties::getNumDofs() const
 }
 
 //==============================================================================
-std::vector<std::string> MetaSkeletonStateSpace::Properties::getDofNames() const
+const std::vector<std::string>&
+MetaSkeletonStateSpace::Properties::getDofNames() const
 {
   return mDofNames;
 }
@@ -168,28 +175,28 @@ std::size_t MetaSkeletonStateSpace::Properties::getDofIndex(
 }
 
 //==============================================================================
-const Eigen::VectorXd
+const Eigen::VectorXd&
 MetaSkeletonStateSpace::Properties::getPositionLowerLimits() const
 {
   return mPositionLowerLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd
+const Eigen::VectorXd&
 MetaSkeletonStateSpace::Properties::getPositionUpperLimits() const
 {
   return mPositionUpperLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd
+const Eigen::VectorXd&
 MetaSkeletonStateSpace::Properties::getVelocityLowerLimits() const
 {
   return mVelocityLowerLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd
+const Eigen::VectorXd&
 MetaSkeletonStateSpace::Properties::getVelocityUpperLimits() const
 {
   return mVelocityUpperLimits;
@@ -206,8 +213,8 @@ MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeleton* _metaskeleton)
 }
 
 //==============================================================================
-const MetaSkeletonStateSpace::Properties MetaSkeletonStateSpace::getProperties()
-    const
+const MetaSkeletonStateSpace::Properties&
+MetaSkeletonStateSpace::getProperties() const
 {
   return mProperties;
 }

@@ -31,7 +31,7 @@ public:
     explicit Properties(::dart::dynamics::MetaSkeleton* _metaskeleton);
 
     /// Return the name of the MetaSkeleton.
-    const std::string getName() const;
+    const std::string& getName() const;
 
     /// Return the number of joints in the MetaSkeleton.
     std::size_t getNumJoints() const;
@@ -40,7 +40,7 @@ public:
     std::size_t getNumDofs() const;
 
     /// Return the names of DOFs in the MetaSkeleton.
-    std::vector<std::string> getDofNames() const;
+    const std::vector<std::string>& getDofNames() const;
 
     /// Return the MetaSkeleton DOF index.
     std::size_t getDofIndex(std::size_t ijoint, std::size_t ijointdof) const;
@@ -49,16 +49,16 @@ public:
     std::size_t getDofIndex(const std::string& dofName) const;
 
     /// Return the vector of position lower limits.
-    const Eigen::VectorXd getPositionLowerLimits() const;
+    const Eigen::VectorXd& getPositionLowerLimits() const;
 
     /// Return the vector of position upper limits.
-    const Eigen::VectorXd getPositionUpperLimits() const;
+    const Eigen::VectorXd& getPositionUpperLimits() const;
 
     /// Return the vector of velocity lower limits.
-    const Eigen::VectorXd getVelocityLowerLimits() const;
+    const Eigen::VectorXd& getVelocityLowerLimits() const;
 
     /// Return the vector of velocity upper limits.
-    const Eigen::VectorXd getVelocityUpperLimits() const;
+    const Eigen::VectorXd& getVelocityUpperLimits() const;
 
   protected:
     /// Name of the MetaSkeleton
@@ -100,7 +100,7 @@ public:
   /// Gets the MetaSkeleton properties associated with this state space.
   ///
   /// \return MetaSkeleton properties associated with this state space
-  const Properties getProperties() const;
+  const Properties& getProperties() const;
 
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
   ///
