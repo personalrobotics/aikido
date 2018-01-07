@@ -2,6 +2,7 @@
 #define AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
 #include <unordered_map>
 #include <dart/dynamics/dynamics.hpp>
+#include <aikido/common/pair.hpp>
 #include "../CartesianProduct.hpp"
 #include "JointStateSpace.hpp"
 
@@ -70,8 +71,9 @@ public:
     std::vector<std::string> mDofNames;
 
     /// Mapping from Joint index and Joint DOF index to MetaSkeleton DOF index
-    std::unordered_map<std::size_t,
-                       std::unordered_map<std::size_t, std::size_t>>
+    std::unordered_map<std::pair<std::size_t, std::size_t>,
+                       std::size_t,
+                       aikido::common::PairHash>
         mIndexMap;
 
     /// The metaskeleton's position lower limits

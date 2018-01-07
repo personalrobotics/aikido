@@ -92,7 +92,6 @@ MetaSkeletonStateSpace::Properties::Properties(
     const auto joint = _metaskeleton->getJoint(ijoint);
 
     // FIXME: This duplicates some of the logic in createStateSpace above.
-    std::unordered_map<std::size_t, std::size_t> jointDofMap;
     for (std::size_t idof = 0; idof < joint->getNumDofs(); ++idof)
     {
       const auto dof = joint->getDof(idof);
@@ -108,10 +107,8 @@ MetaSkeletonStateSpace::Properties::Properties(
       }
 
       mDofNames[dofIndex] = dofName;
-      jointDofMap[idof] = dofIndex;
+      mIndexMap[std::make_pair(ijoint, idof)] = dofIndex;
     }
-
-    mIndexMap[ijoint] = jointDofMap;
   }
 }
 
@@ -137,7 +134,7 @@ std::vector<std::string> MetaSkeletonStateSpace::Properties::getDofNames() const
 std::size_t MetaSkeletonStateSpace::Properties::getDofIndex(
     std::size_t ijoint, std::size_t ijointdof) const
 {
-  return mIndexMap.at(ijoint).at(ijointdof);
+  return mIndexMap.at(std::make_pair(ijoint, ijointdof));
 }
 
 //==============================================================================
