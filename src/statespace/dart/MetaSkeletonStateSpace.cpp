@@ -95,7 +95,7 @@ MetaSkeletonStateSpace::Properties::Properties(
     for (std::size_t idof = 0; idof < joint->getNumDofs(); ++idof)
     {
       const auto dof = joint->getDof(idof);
-      const auto dofName = dof->getName();
+      const auto& dofName = dof->getName();
       const auto dofIndex = _metaskeleton->getIndexOf(dof, false);
       if (dofIndex == INVALID_INDEX)
       {
@@ -149,6 +149,8 @@ std::size_t MetaSkeletonStateSpace::Properties::getDofIndex(
     const std::string& dofName) const
 {
   std::vector<std::size_t> indices;
+  indices.reserve(mDofNames.size());
+
   for (std::size_t idof = 0; idof < mDofNames.size(); ++idof)
   {
     if (mDofNames[idof] == dofName)

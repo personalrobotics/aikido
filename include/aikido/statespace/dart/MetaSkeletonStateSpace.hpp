@@ -95,7 +95,8 @@ public:
   /// Constructs a state space for a DART \c MetaSkeleton.
   ///
   /// \param _metaskeleton target \c MetaSkeleton
-  MetaSkeletonStateSpace(::dart::dynamics::MetaSkeleton* _metaskeleton);
+  explicit MetaSkeletonStateSpace(
+      ::dart::dynamics::MetaSkeleton* _metaskeleton);
 
   /// Gets the MetaSkeleton properties associated with this state space.
   ///
