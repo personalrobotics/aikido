@@ -4,6 +4,7 @@
 
 * State Space
   * Moved MetaSkeletonStateSpaceSaver implementation to src: [#273](https://github.com/personalrobotics/aikido/pull/273)
+  * Refactor JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
 
 * Constraint
 
