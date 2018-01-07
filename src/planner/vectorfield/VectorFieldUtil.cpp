@@ -65,7 +65,7 @@ private:
 bool computeJointVelocityFromTwist(
     Eigen::VectorXd& jointVelocity,
     const Eigen::Vector6d& desiredTwist,
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    const dart::dynamics::MetaSkeletonPtr skeleton,
     const dart::dynamics::BodyNodePtr bodyNode,
     double jointLimitPadding,
     const Eigen::VectorXd& jointVelocityLowerLimits,
@@ -78,8 +78,6 @@ bool computeJointVelocityFromTwist(
   using dart::optimizer::Solver;
   using Eigen::VectorXd;
 
-  const dart::dynamics::MetaSkeletonPtr skeleton
-      = stateSpace->getMetaSkeleton();
   // Use LBFGS to find joint angles that won't violate the joint limits.
   const Jacobian jacobian = skeleton->getWorldJacobian(bodyNode);
 
@@ -92,9 +90,6 @@ bool computeJointVelocityFromTwist(
   VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
   VectorXd velocityLowerLimits = jointVelocityLowerLimits;
   VectorXd velocityUpperLimits = jointVelocityUpperLimits;
-
-  auto currentState = stateSpace->createState();
-  stateSpace->convertPositionsToState(positions, currentState);
 
   const auto problem = std::make_shared<Problem>(numDofs);
   if (enforceJointVelocityLimits)
