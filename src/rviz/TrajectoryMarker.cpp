@@ -2,6 +2,7 @@
 
 #include "aikido/rviz/shape_conversions.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp"
 
 namespace aikido {
 namespace rviz {
@@ -217,12 +218,13 @@ void TrajectoryMarker::updatePoints()
     return;
   }
 
-  Eigen::VectorXd savedPositions = mSkeleton.getPositions();
-
   statespace::StateSpacePtr statespace = mTrajectory->getStateSpace();
   auto metaSkeletonSs
       = std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
           statespace);
+
+  auto saver = statespace::dart::MetaSkeletonStateSpaceSaver(metaSkeletonSs);
+  DART_UNUSED(saver);
 
   auto state = metaSkeletonSs->createState();
   double t = mTrajectory->getStartTime();
@@ -242,9 +244,6 @@ void TrajectoryMarker::updatePoints()
   metaSkeletonSs->setState(state);
   pose = mFrame.getTransform().translation();
   points.emplace_back(convertEigenToROSPoint(pose));
-
-  const_cast<dart::dynamics::MetaSkeleton&>(mSkeleton).setPositions(
-      savedPositions);
 
   mNeedPointsUpdate = false;
 
