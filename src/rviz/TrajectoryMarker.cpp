@@ -10,6 +10,7 @@ namespace rviz {
 TrajectoryMarker::TrajectoryMarker(
     interactive_markers::InteractiveMarkerServer* markerServer,
     const std::string& frameId,
+    const std::string& markerName,
     trajectory::ConstTrajectoryPtr trajectory,
     const dart::dynamics::MetaSkeleton& targetSkeleton,
     const dart::dynamics::Frame& frame,
@@ -31,7 +32,7 @@ TrajectoryMarker::TrajectoryMarker(
 
   // Setting invariant properties
   mInteractiveMarker.header.frame_id = mFrameId;
-  mInteractiveMarker.name = "Frame[Trajectory]";
+  mInteractiveMarker.name = markerName;
   // TODO: Assign trajectory name once available
   mInteractiveMarker.pose.orientation.w = 1;
   mInteractiveMarker.scale = 1;

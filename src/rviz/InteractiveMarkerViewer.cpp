@@ -17,11 +17,12 @@ namespace rviz {
 InteractiveMarkerViewer::InteractiveMarkerViewer(
     const std::string& topicNamespace, const std::string& frameId)
   : mMarkerServer(topicNamespace, "", true)
+  , mTrajectoryNameManager("Trajectory Name Manager", "Trajectory")
   , mRunning(false)
   , mUpdating(false)
   , mFrameId(frameId)
 {
-  // Do nothing
+  mTrajectoryNameManager.setPattern("Frame[%s(%d)]");
 }
 
 //==============================================================================
@@ -119,6 +120,7 @@ TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
   auto marker = std::make_shared<TrajectoryMarker>(
       &mMarkerServer,
       mFrameId,
+      mTrajectoryNameManager.issueNewNameAndAdd("", trajectory),
       std::move(trajectory),
       skeleton,
       frame,

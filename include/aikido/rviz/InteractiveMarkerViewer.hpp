@@ -5,6 +5,7 @@
 #include <set>
 #include <thread>
 
+#include <dart/common/NameManager.hpp>
 #include <dart/dynamics/Frame.hpp>
 #include <dart/dynamics/SmartPointer.hpp>
 #include <interactive_markers/interactive_marker_server.h>
@@ -84,6 +85,11 @@ protected:
   std::set<SkeletonMarkerPtr> mSkeletonMarkers;
   std::set<FrameMarkerPtr> mFrameMarkers;
   std::set<TrajectoryMarkerPtr> mTrajectoryMarkers;
+
+  /// NameManager for name uniqueness of trajectories in the same
+  /// InteractiveMarkerServer.
+  dart::common::NameManager<trajectory::ConstTrajectoryPtr>
+      mTrajectoryNameManager;
 
   std::atomic_bool mRunning;
   std::atomic_bool mUpdating;

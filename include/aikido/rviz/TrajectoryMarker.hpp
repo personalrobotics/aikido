@@ -17,6 +17,10 @@ public:
   /// Constructor.
   /// \param[in] markerServer RViz marker server.
   /// \param[in] frameId RViz frame ID.
+  /// \param[in] markerName Name of the RViz InteractiveMarker associated with
+  /// this TrajectoryMarker. The name must be unique in the same
+  /// InteractiveMarkerServer. AIKIDO InteractiveMarkerViewer uses a name
+  /// manager for the name uniqueness.
   /// \param[in] trajectory C-space (or joint-space) trajectory.
   /// \param[in] skeleton DART meta skeleton for visualizing the trajectory in
   /// task space.
@@ -31,6 +35,7 @@ public:
   TrajectoryMarker(
       interactive_markers::InteractiveMarkerServer* markerServer,
       const std::string& frameId,
+      const std::string& markerName,
       trajectory::ConstTrajectoryPtr trajectory,
       const dart::dynamics::MetaSkeleton& skeleton,
       const dart::dynamics::Frame& frame,
