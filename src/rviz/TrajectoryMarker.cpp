@@ -166,10 +166,10 @@ double TrajectoryMarker::getThickness() const
 //==============================================================================
 void TrajectoryMarker::setNumLineSegments(std::size_t numLineSegments)
 {
-  if (numLineSegments < 2)
+  if (numLineSegments == 0u)
   {
-    throw std::invalid_argument(
-        "Number of line segments should be greater than 2");
+    dtwarn << "[TrajectoryMarker::setNumLineSegments] numLineSegments is set to"
+              "zero. This trajectory will not be rendered.";
   }
 
   mNumLineSegments = numLineSegments;
@@ -209,8 +209,12 @@ void TrajectoryMarker::updatePoints()
   auto& points = marker.points;
   points.clear();
 
-  if (!mTrajectory)
+  if (!mTrajectory || mNumLineSegments == 0u)
+  {
+    mNeedPointsUpdate = false;
+    mNeedUpdate = true;
     return;
+  }
 
   Eigen::VectorXd savedPositions = mSkeleton.getPositions();
 
