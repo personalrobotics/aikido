@@ -155,7 +155,7 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
   }
 }
 
-} // namesapce detail
+} // namespace detail
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

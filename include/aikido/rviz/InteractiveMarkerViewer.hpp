@@ -54,17 +54,17 @@ public:
 
   /// Adds trajectory marker to this viewer.
   ///
-  /// \param[in] trajectory C-sapce (or joint-space) trajectory.
+  /// \param[in] trajectory C-space (or joint-space) trajectory.
   /// \param[in] skeleton Target DART meta skeleton that the C-space trajectory
   /// will be applied to compute the visualizing task-space trajectory.
   /// \param[in] frame Target DART frame where the trajectory of its origin
   /// will be visualized.
-  /// \param[in] rgba Color and alpha of the visualizing task-space trajectory.
-  /// Default is [RGBA: 0.75, 0.75, 0.75, 0.75].
-  /// \param[in] thickness Thickness of the visualizing task-space trajectory.
-  /// Default is 0.01.
-  /// \param[in] numLineSegments Number of line-segments of the visualizing
-  /// task-space trajectory. Default is 16.
+  /// \param[in] rgba Color and alpha of the visualized trajectory. Default is
+  /// [RGBA: 0.75, 0.75, 0.75, 0.75].
+  /// \param[in] thickness Thickness of the visualized trajectory. Default is
+  /// 0.01.
+  /// \param[in] numLineSegments Number of line segments in the visualized
+  /// trajectory. Default is 16.
   /// \return Trajectory marker added to this viewer.
   TrajectoryMarkerPtr addTrajectoryMarker(
       trajectory::ConstTrajectoryPtr trajectory,
