@@ -26,7 +26,7 @@
 
 * IO
 
-  * Added support for new ErrorStr API in tinyxml2 6.0.0: [#290](https://github.com/personalrobotics/aikido/pull/290)
+  * Added support for new ErrorStr API in tinyxml2 6.0.0: [#290](https://github.com/personalrobotics/aikido/pull/290), [#295](https://github.com/personalrobotics/aikido/pull/295)
 
 * Build & Testing & ETC
 
