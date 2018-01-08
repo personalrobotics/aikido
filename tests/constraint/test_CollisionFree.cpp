@@ -9,6 +9,8 @@
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::constraint::CollisionFree;
+using aikido::constraint::CollisionFreeOutcome;
+using aikido::constraint::TestableOutcome;
 using aikido::statespace::SO2;
 using aikido::statespace::SE3;
 
@@ -104,7 +106,9 @@ TEST_F(CollisionFreeTest, EmptyCollisionGroup_IsSatisfiedReturnsTrue)
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
   mStateSpace->setState(state);
 
-  EXPECT_TRUE(constraint.isSatisfied(state));
+  std::unique_ptr<TestableOutcome> outcome = constraint.createOutcome();
+  EXPECT_TRUE(constraint.isSatisfied(state, outcome.get()));
+  EXPECT_TRUE(outcome->isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddPairwiseCheckPasses_IsSatisfied)
@@ -119,7 +123,9 @@ TEST_F(CollisionFreeTest, AddPairwiseCheckPasses_IsSatisfied)
   mStateSpace->convertPositionsToState(position, state);
   mStateSpace->setState(state);
 
-  EXPECT_TRUE(constraint.isSatisfied(state));
+  std::unique_ptr<TestableOutcome> outcome = constraint.createOutcome();
+  EXPECT_TRUE(constraint.isSatisfied(state, outcome.get()));
+  EXPECT_TRUE(outcome->isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
@@ -129,7 +135,21 @@ TEST_F(CollisionFreeTest, AddPairwiseCheckFails_IsSatisfied)
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
 
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
-  EXPECT_FALSE(constraint.isSatisfied(state));
+  CollisionFreeOutcome outcome;
+  EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
+  EXPECT_FALSE(outcome.isSatisfied());
+  EXPECT_EQ(0, outcome.getSelfContacts().size());
+
+  auto pairwiseContacts = outcome.getPairwiseContacts();
+  EXPECT_EQ(1, pairwiseContacts.size());
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(
+          pairwiseContacts.front().collisionObject1));
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(
+          pairwiseContacts.front().collisionObject2));
 }
 
 TEST_F(CollisionFreeTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
@@ -137,18 +157,25 @@ TEST_F(CollisionFreeTest, AddAndRemovePairwiseCheckFails_IsSatisfied)
   CollisionFree constraint(mStateSpace, mCollisionDetector);
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
+  // Also reuse this outcome object and ensure the correct result
+  // is still returned,
+  CollisionFreeOutcome outcome;
 
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
-  EXPECT_FALSE(constraint.isSatisfied(state));
+  EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
+  EXPECT_FALSE(outcome.isSatisfied());
 
   constraint.removePairwiseCheck(mCollisionGroup1, mCollisionGroup3);
-  EXPECT_TRUE(constraint.isSatisfied(state));
+  EXPECT_TRUE(constraint.isSatisfied(state, &outcome));
+  EXPECT_TRUE(outcome.isSatisfied());
 
   constraint.addPairwiseCheck(mCollisionGroup1, mCollisionGroup3);
-  EXPECT_FALSE(constraint.isSatisfied(state));
+  EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
+  EXPECT_FALSE(outcome.isSatisfied());
 
   constraint.removePairwiseCheck(mCollisionGroup3, mCollisionGroup1);
-  EXPECT_TRUE(constraint.isSatisfied(state));
+  EXPECT_TRUE(constraint.isSatisfied(state, &outcome));
+  EXPECT_TRUE(outcome.isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddSelfCheckPasses_IsSatisfied)
@@ -157,7 +184,10 @@ TEST_F(CollisionFreeTest, AddSelfCheckPasses_IsSatisfied)
 
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
   constraint.addSelfCheck(mCollisionGroup1);
-  EXPECT_TRUE(constraint.isSatisfied(state));
+
+  std::unique_ptr<TestableOutcome> outcome = constraint.createOutcome();
+  EXPECT_TRUE(constraint.isSatisfied(state, outcome.get()));
+  EXPECT_TRUE(outcome->isSatisfied());
 }
 
 TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
@@ -167,7 +197,19 @@ TEST_F(CollisionFreeTest, AddSelfCheckFails_IsSatisfied)
   auto state = mStateSpace->getScopedStateFromMetaSkeleton();
 
   constraint.addSelfCheck(mCollisionGroup3);
-  EXPECT_FALSE(constraint.isSatisfied(state));
+  CollisionFreeOutcome outcome;
+  EXPECT_FALSE(constraint.isSatisfied(state, &outcome));
+  EXPECT_FALSE(outcome.isSatisfied());
+  EXPECT_EQ(0, outcome.getPairwiseContacts().size());
+
+  auto selfContacts = outcome.getSelfContacts();
+  EXPECT_EQ(1, selfContacts.size());
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(selfContacts.front().collisionObject1));
+  EXPECT_EQ(
+      "BodyNode",
+      outcome.getCollisionObjectName(selfContacts.front().collisionObject2));
 }
 
 TEST_F(CollisionFreeTest, AddAndRemoveSelfCheckFails_IsSatisfied)
