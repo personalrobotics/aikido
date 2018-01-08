@@ -29,9 +29,6 @@ TrajectoryMarker::TrajectoryMarker(
   using visualization_msgs::InteractiveMarkerControl;
   using visualization_msgs::Marker;
 
-  // TODO(JS): Check the compatibility of statespaces of the skeleton and the
-  // spline
-
   // Setting invariant properties
   mInteractiveMarker.header.frame_id = mFrameId;
   mInteractiveMarker.name = "Frame[Trajectory]";
@@ -78,6 +75,15 @@ void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
       throw std::invalid_argument(
           "The statespace in the trajectory should be MetaSkeletonStateSpace");
     }
+
+    if (statespace->getDimension() != mSkeleton.getNumDofs())
+    {
+      throw std::invalid_argument(
+          "The statespace in the trajectory is not compatible (dimensions are "
+          "different) to DART meta skeleton for visualizing the trajectory");
+    }
+    // TODO: Use more comprehensive compatibility check once available than
+    // just checking the dimensions.
   }
 
   mTrajectory = std::move(trajectory);
