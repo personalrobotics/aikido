@@ -34,6 +34,7 @@ geometry_msgs::Quaternion convertEigenToROSQuaternion(
     const Eigen::Quaterniond& v);
 geometry_msgs::Pose convertEigenToROSPose(const Eigen::Isometry3d& v);
 std_msgs::ColorRGBA convertEigenToROSColorRGBA(const Eigen::Vector4d& v);
+Eigen::Vector4d convertROSColorRGBAToEigen(const std_msgs::ColorRGBA& v);
 
 bool convertAssimpMeshToROSTriangleList(
     const aiMesh& mesh, std::vector<geometry_msgs::Point>* triangle_list);

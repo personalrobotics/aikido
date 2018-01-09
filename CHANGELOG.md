@@ -24,6 +24,7 @@
 * RViz
 
   * Added WorldInteractiveMarkerViewer: [#242](https://github.com/personalrobotics/aikido/pull/242)
+  * Added TrajectoryMarker: [#288](https://github.com/personalrobotics/aikido/pull/288)
 
 * IO
 
