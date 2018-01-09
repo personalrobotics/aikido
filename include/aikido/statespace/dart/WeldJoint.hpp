@@ -1,7 +1,8 @@
 #ifndef AIKIDO_STATESPACE_DART_WELDJOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_WELDJOINTSTATESPACE_HPP_
-#include "../Rn.hpp"
-#include "JointStateSpace.hpp"
+
+#include "aikido/statespace/Rn.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -16,20 +17,20 @@ class WeldJoint : public R0,
 public:
   using R::State;
 
-  /// Create a real vector state space for \c _joint.
+  /// Create a real vector state space for \c joint.
   ///
-  /// \param _joint joint to create a state space for
-  explicit WeldJoint(::dart::dynamics::WeldJoint* _joint);
+  /// \param joint joint to create a state space for
+  explicit WeldJoint(const ::dart::dynamics::WeldJoint* joint);
 
   // Documentation inherited.
   void convertPositionsToState(
-      const Eigen::VectorXd& _positions,
-      StateSpace::State* _state) const override;
+      const Eigen::VectorXd& positions,
+      StateSpace::State* state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-      const StateSpace::State* _state,
-      Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* state,
+      Eigen::VectorXd& positions) const override;
 };
 
 } // namespace dart

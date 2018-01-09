@@ -1,29 +1,29 @@
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include <cassert>
 #include <sstream>
 #include <dart/common/Console.hpp>
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/statespace/dart/JointStateSpaceHelpers.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-
-using ::dart::dynamics::MetaSkeleton;
-using ::dart::dynamics::INVALID_INDEX;
+#include "aikido/statespace/dart/JointStateSpaceHelpers.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
-using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
-
 namespace {
+
+using ::dart::dynamics::MetaSkeleton;
+using ::dart::dynamics::INVALID_INDEX;
+
+using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
 
 //==============================================================================
 template <class Input, class Output>
-std::vector<Output> convertVectorType(const std::vector<Input>& _input)
+std::vector<Output> convertVectorType(const std::vector<Input>& input)
 {
   std::vector<Output> output;
-  output.reserve(_input.size());
+  output.reserve(input.size());
 
-  for (const auto& x : _input)
+  for (const auto& x : input)
     output.emplace_back(x);
 
   return std::move(output);
@@ -31,33 +31,33 @@ std::vector<Output> convertVectorType(const std::vector<Input>& _input)
 
 //==============================================================================
 template <class T>
-T* isJointOfType(::dart::dynamics::Joint* _joint)
+T* isJointOfType(const ::dart::dynamics::Joint* joint)
 {
   // It's safe to do a pointer comparison here, since getType is guaranteed to
   // return the same reference to the corresponding getStaticType method.
-  if (&_joint->getType() == &T::getStaticType())
-    return static_cast<T*>(_joint);
+  if (&joint->getType() == &T::getStaticType())
+    return static_cast<T*>(joint);
   else
     return nullptr;
 }
 
 //==============================================================================
 std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
-    MetaSkeleton& _metaskeleton)
+    const MetaSkeleton& metaskeleton)
 {
   std::vector<std::shared_ptr<JointStateSpace>> spaces;
-  spaces.reserve(_metaskeleton.getNumJoints());
+  spaces.reserve(metaskeleton.getNumJoints());
 
-  for (std::size_t ijoint = 0; ijoint < _metaskeleton.getNumJoints(); ++ijoint)
+  for (std::size_t ijoint = 0; ijoint < metaskeleton.getNumJoints(); ++ijoint)
   {
-    const auto joint = _metaskeleton.getJoint(ijoint);
+    const auto joint = metaskeleton.getJoint(ijoint);
 
     // Verify that the joint is not missing any DOFs. This could alter the
     // topology of the space that we create.
     for (std::size_t idof = 0; idof < joint->getNumDofs(); ++idof)
     {
       const auto dof = joint->getDof(idof);
-      if (_metaskeleton.getIndexOf(dof, false) == INVALID_INDEX)
+      if (metaskeleton.getIndexOf(dof, false) == INVALID_INDEX)
       {
         std::stringstream msg;
         msg << "MetaSkeleton is missing DegreeOfFreedom '" << dof->getName()
@@ -77,26 +77,25 @@ std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
 
 //==============================================================================
 MetaSkeletonStateSpace::Properties::Properties(
-    ::dart::dynamics::MetaSkeleton* _metaskeleton)
-  : mName(_metaskeleton->getName())
-  , mNumJoints(_metaskeleton->getNumJoints())
-  , mPositionLowerLimits(_metaskeleton->getPositionLowerLimits())
-  , mPositionUpperLimits(_metaskeleton->getPositionUpperLimits())
-  , mVelocityLowerLimits(_metaskeleton->getVelocityLowerLimits())
-  , mVelocityUpperLimits(_metaskeleton->getVelocityUpperLimits())
+    const ::dart::dynamics::MetaSkeleton* metaskeleton)
+  : mName(metaskeleton->getName())
+  , mNumJoints(metaskeleton->getNumJoints())
+  , mDofNames(metaskeleton->getNumDofs())
+  , mPositionLowerLimits(metaskeleton->getPositionLowerLimits())
+  , mPositionUpperLimits(metaskeleton->getPositionUpperLimits())
+  , mVelocityLowerLimits(metaskeleton->getVelocityLowerLimits())
+  , mVelocityUpperLimits(metaskeleton->getVelocityUpperLimits())
 {
-  mDofNames.resize(_metaskeleton->getNumDofs());
-
-  for (std::size_t ijoint = 0; ijoint < _metaskeleton->getNumJoints(); ++ijoint)
+  for (std::size_t ijoint = 0; ijoint < metaskeleton->getNumJoints(); ++ijoint)
   {
-    const auto joint = _metaskeleton->getJoint(ijoint);
+    const auto joint = metaskeleton->getJoint(ijoint);
 
     // FIXME: This duplicates some of the logic in createStateSpace above.
     for (std::size_t idof = 0; idof < joint->getNumDofs(); ++idof)
     {
       const auto dof = joint->getDof(idof);
       const auto& dofName = dof->getName();
-      const auto dofIndex = _metaskeleton->getIndexOf(dof, false);
+      const auto dofIndex = metaskeleton->getIndexOf(dof, false);
       if (dofIndex == INVALID_INDEX)
       {
         std::stringstream msg;
@@ -205,11 +204,11 @@ MetaSkeletonStateSpace::Properties::getVelocityUpperLimits() const
 }
 
 //==============================================================================
-MetaSkeletonStateSpace::MetaSkeletonStateSpace(MetaSkeleton* _metaskeleton)
+MetaSkeletonStateSpace::MetaSkeletonStateSpace(const MetaSkeleton* metaskeleton)
   : CartesianProduct(
         convertVectorType<JointStateSpacePtr, StateSpacePtr>(
-            createStateSpace(*_metaskeleton)))
-  , mProperties(MetaSkeletonStateSpace::Properties(_metaskeleton))
+            createStateSpace(*metaskeleton)))
+  , mProperties(MetaSkeletonStateSpace::Properties(metaskeleton))
 {
   // Do nothing.
 }

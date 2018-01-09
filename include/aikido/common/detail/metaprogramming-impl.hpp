@@ -62,14 +62,18 @@ struct DynamicCastFactory<Factory,
               std::forward<Parameters>(_params)...))
   {
     if (auto derived = Pointer<BaseParameter>::template cast<Arg>(_base))
+    {
       return Factory<Arg>::create(
           std::move(derived), std::forward<Parameters>(_params)...);
+    }
     else
+    {
       return DynamicCastFactory<Factory,
                                 Pointer,
                                 BaseParameter,
                                 common::type_list<Args...>>::
           create(std::move(_base), std::forward<Parameters>(_params)...);
+    }
   }
 };
 

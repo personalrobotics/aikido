@@ -1,34 +1,30 @@
-#include <aikido/statespace/dart/JointStateSpace.hpp>
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
 //==============================================================================
-JointStateSpace::Properties::Properties(::dart::dynamics::Joint* _joint)
-  : mName(_joint->getName()), mType(_joint->getType())
+JointStateSpace::Properties::Properties(const ::dart::dynamics::Joint* joint)
+  : mName(joint->getName())
+  , mType(joint->getType())
+  , mDofNames(joint->getNumDofs())
+  , mPositionLowerLimits(joint->getNumDofs())
+  , mPositionUpperLimits(joint->getNumDofs())
+  , mPositionHasLimits(joint->getNumDofs())
+  , mVelocityLowerLimits(joint->getNumDofs())
+  , mVelocityUpperLimits(joint->getNumDofs())
 {
-  const std::size_t numDofs = _joint->getNumDofs();
-
-  mDofNames.resize(numDofs);
-
-  mPositionLowerLimits.resize(numDofs);
-  mPositionUpperLimits.resize(numDofs);
-  mPositionHasLimits.resize(numDofs);
-
-  mVelocityLowerLimits.resize(numDofs);
-  mVelocityUpperLimits.resize(numDofs);
-
-  for (std::size_t index = 0; index < numDofs; ++index)
+  for (std::size_t index = 0; index < joint->getNumDofs(); ++index)
   {
-    mDofNames[index] = _joint->getDofName(index);
+    mDofNames[index] = joint->getDofName(index);
 
-    mPositionLowerLimits[index] = _joint->getPositionLowerLimit(index);
-    mPositionUpperLimits[index] = _joint->getPositionUpperLimit(index);
-    mPositionHasLimits[index] = _joint->hasPositionLimit(index);
+    mPositionLowerLimits[index] = joint->getPositionLowerLimit(index);
+    mPositionUpperLimits[index] = joint->getPositionUpperLimit(index);
+    mPositionHasLimits[index] = joint->hasPositionLimit(index);
 
-    mVelocityLowerLimits[index] = _joint->getVelocityLowerLimit(index);
-    mVelocityUpperLimits[index] = _joint->getVelocityUpperLimit(index);
+    mVelocityLowerLimits[index] = joint->getVelocityLowerLimit(index);
+    mVelocityUpperLimits[index] = joint->getVelocityUpperLimit(index);
   }
 }
 
@@ -105,8 +101,8 @@ const Eigen::VectorXd& JointStateSpace::Properties::getVelocityUpperLimits()
 }
 
 //==============================================================================
-JointStateSpace::JointStateSpace(::dart::dynamics::Joint* _joint)
-  : mProperties(JointStateSpace::Properties(_joint))
+JointStateSpace::JointStateSpace(const ::dart::dynamics::Joint* joint)
+  : mProperties(JointStateSpace::Properties(joint))
 {
   // Do nothing.
 }
@@ -119,18 +115,18 @@ const JointStateSpace::Properties& JointStateSpace::getProperties() const
 
 //==============================================================================
 void JointStateSpace::getState(
-    const ::dart::dynamics::Joint* _joint, StateSpace::State* _state) const
+    const ::dart::dynamics::Joint* joint, StateSpace::State* state) const
 {
-  convertPositionsToState(_joint->getPositions(), _state);
+  convertPositionsToState(joint->getPositions(), state);
 }
 
 //==============================================================================
 void JointStateSpace::setState(
-    ::dart::dynamics::Joint* _joint, const StateSpace::State* _state) const
+    ::dart::dynamics::Joint* joint, const StateSpace::State* state) const
 {
   Eigen::VectorXd positions;
-  convertStateToPositions(_state, positions);
-  _joint->setPositions(positions);
+  convertStateToPositions(state, positions);
+  joint->setPositions(positions);
 }
 
 } // namespace dart

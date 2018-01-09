@@ -6,19 +6,19 @@ namespace dart {
 
 //==============================================================================
 std::unique_ptr<JointStateSpace> createJointStateSpace(
-    ::dart::dynamics::Joint* _joint)
+    const ::dart::dynamics::Joint* joint)
 {
   auto space
       = common::DynamicCastFactory<detail::createJointStateSpaceFor_impl,
                                    common::DynamicCastFactory_raw_ptr,
-                                   ::dart::dynamics::Joint,
-                                   detail::SupportedJoints>::create(_joint);
+                                   const ::dart::dynamics::Joint,
+                                   detail::ConstSupportedJoints>::create(joint);
 
   if (!space)
   {
     std::stringstream msg;
-    msg << "Joint '" << _joint->getName() << "' has unsupported type '"
-        << _joint->getType() << "'.";
+    msg << "Joint '" << joint->getName() << "' has unsupported type '"
+        << joint->getType() << "'.";
     throw std::runtime_error(msg.str());
   }
 

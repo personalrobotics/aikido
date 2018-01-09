@@ -1,7 +1,8 @@
 #ifndef AIKIDO_STATESPACE_DART_SO3JOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_SO3JOINTSTATESPACE_HPP_
-#include "../SO3.hpp"
-#include "JointStateSpace.hpp"
+
+#include "aikido/statespace/SO3.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -19,18 +20,18 @@ public:
   /// Creates a state space for a \c BallJoint. This class does not support
   /// position limits.
   ///
-  /// \param _joint joint to create a state space for
-  explicit SO3Joint(::dart::dynamics::BallJoint* _joint);
+  /// \param joint joint to create a state space for
+  explicit SO3Joint(const ::dart::dynamics::BallJoint* joint);
 
   // Documentation inherited.
   void convertPositionsToState(
-      const Eigen::VectorXd& _positions,
-      StateSpace::State* _state) const override;
+      const Eigen::VectorXd& positions,
+      StateSpace::State* state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-      const StateSpace::State* _state,
-      Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* state,
+      Eigen::VectorXd& positions) const override;
 };
 
 } // namespace dart
