@@ -11,8 +11,6 @@ namespace planner {
 namespace vectorfield {
 namespace detail {
 
-constexpr double defaultConstraintCheckResolution = 1e-3;
-
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const std::vector<Knot>& knots,
