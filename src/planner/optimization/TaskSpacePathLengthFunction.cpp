@@ -15,7 +15,7 @@ TaskSpacePathLengthFunction::TaskSpacePathLengthFunction(
 //==============================================================================
 UniqueFunctionPtr TaskSpacePathLengthFunction::clone() const
 {
-  return dart::common::make_unique<TaskSpacePathLengthFunction>(mVariable);
+  return dart::common::make_unique<TaskSpacePathLengthFunction>(*this);
 }
 
 //==============================================================================

@@ -206,6 +206,9 @@ std::shared_ptr<const dart::optimizer::Problem> Optimizer::getProblem() const
 void Optimizer::setSolver(
     const std::shared_ptr<dart::optimizer::Solver>& newSolver)
 {
+  // TODO(JS): Check if the given solver is compatible or one of the best
+  // solvers based on the objective function and constraint function types.
+
   mSolver = newSolver;
 
   if (mSolver)

@@ -15,8 +15,10 @@ namespace optimization {
 class CompositeFunction : public Function
 {
 public:
-  CompositeFunction(VariablePtr variable);
+  /// Constructor
+  explicit CompositeFunction(VariablePtr variable);
 
+  /// Destructor
   virtual ~CompositeFunction();
 
   /// Clones this Function.
@@ -28,6 +30,7 @@ public:
   // Documentation inherited.
   double eval(const Eigen::VectorXd& x) override;
 
+  /// Adds a sub-function to this CompositeFunction.
   void addSubFunction(FunctionPtr function, VariablePtr variable);
 
 protected:

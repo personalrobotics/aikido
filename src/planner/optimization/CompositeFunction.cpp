@@ -20,7 +20,7 @@ CompositeFunction::~CompositeFunction()
 //==============================================================================
 UniqueFunctionPtr CompositeFunction::clone() const
 {
-  return dart::common::make_unique<CompositeFunction>(getVariable());
+  return dart::common::make_unique<CompositeFunction>(*this);
 }
 
 //==============================================================================

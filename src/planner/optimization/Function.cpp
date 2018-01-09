@@ -7,7 +7,7 @@ namespace optimization {
 //==============================================================================
 Function::Function(VariablePtr variable) : mVariable(std::move(variable))
 {
-  if (!variable)
+  if (!mVariable)
     throw std::invalid_argument("nullptr variable is not allowed");
 }
 

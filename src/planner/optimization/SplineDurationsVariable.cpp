@@ -40,7 +40,7 @@ Eigen::VectorXd SplineDurationsVariables::getValue() const
 }
 
 //==============================================================================
-void SplineDurationsVariables::updateDimension()
+void SplineDurationsVariables::updateDimension() const
 {
   mDimension = mSpline.getNumSegments();
 }

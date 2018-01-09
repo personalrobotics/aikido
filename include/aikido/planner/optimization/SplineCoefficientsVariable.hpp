@@ -12,7 +12,10 @@ class SplineCoefficientsVariables : public SplineVariable
 {
 public:
   /// Constructor
-  explicit SplineCoefficientsVariables(const trajectory::Spline& splineToClone);
+  SplineCoefficientsVariables(
+      const trajectory::Spline& splineToClone,
+      bool fixedStartPoint = true,
+      bool fixedEndPoint = true);
 
   // Documentation inherited.
   std::unique_ptr<Variable> clone() const override;
@@ -23,9 +26,25 @@ public:
   // Documentation inherited.
   Eigen::VectorXd getValue() const override;
 
+  void freeStartPoint();
+
+  void fixStartPoint();
+
+  bool isStartPointFixed() const;
+
+  void freeEndPoint();
+
+  void fixEndPoint();
+
+  bool isEndPointFixed() const;
+
 protected:
   // Documentation inherited.
-  void updateDimension() override;
+  void updateDimension() const override;
+
+  bool mIsFixedStartPoint;
+
+  bool mIsFixedEndPoint;
 };
 
 } // namespace optimization

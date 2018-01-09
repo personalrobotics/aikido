@@ -23,11 +23,17 @@ public:
   using Index = std::size_t;
   static Index InvalidIndex;
 
+  /// Constructor
+  CompositeVariable();
+
+  /// Destructor
+  virtual ~CompositeVariable() = default;
+
+  // Documentation inherited.
+  std::size_t getDimension() const override;
+
   /// Clones this CompositeVariable.
   UniqueVariablePtr clone() const override;
-
-  /// Returns the dimension of optimization variables.
-  std::size_t getDimension() const override;
 
   /// Sets the optimization variables.
   void setValue(const Eigen::VectorXd& value) override;
@@ -53,11 +59,13 @@ protected:
   /// Updates the dimension of this CompositeVariable.
   ///
   /// This function should be called when sub variables are added or removed.
-  void updateDimension();
+  void updateDimension() const;
+
+  bool mNeedDimensionUpdate;
+
+  mutable std::size_t mDimension;
 
   std::vector<VariablePtr> mSubVariables;
-
-  std::size_t mDimension;
 };
 
 } // namespace optimization

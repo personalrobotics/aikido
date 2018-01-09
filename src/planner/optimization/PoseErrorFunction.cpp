@@ -14,7 +14,7 @@ PoseErrorFunction::PoseErrorFunction(TrajectoryVariablePtr variable)
 //==============================================================================
 UniqueFunctionPtr PoseErrorFunction::clone() const
 {
-  return dart::common::make_unique<PoseErrorFunction>(mVariable);
+  return dart::common::make_unique<PoseErrorFunction>(*this);
 }
 
 //==============================================================================
