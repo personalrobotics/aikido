@@ -20,7 +20,7 @@ project(aikido)
 
 # If you change the version, please update the <version> tag in package.xml.
 set(AIKIDO_MAJOR_VERSION "0")
-set(AIKIDO_MINOR_VERSION "2")
+set(AIKIDO_MINOR_VERSION "3")
 set(AIKIDO_PATCH_VERSION "0")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 

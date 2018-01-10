@@ -32,6 +32,7 @@ set(sources
   ShapeFrameMarker.cpp
   SkeletonMarker.cpp
   shape_conversions.cpp
+  TrajectoryMarker.cpp
   TSRMarker.cpp
   WorldInteractiveMarkerViewer.cpp
 )
