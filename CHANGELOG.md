@@ -1,8 +1,9 @@
 ## Aikido 0 (prerelease)
 
-### 0.2.0 (201X-XX-XX)
+### 0.2.0 (2018-01-09)
 
 * State Space
+
   * Moved MetaSkeletonStateSpaceSaver implementation to src: [#273](https://github.com/personalrobotics/aikido/pull/273)
   * Refactor JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
 
@@ -18,12 +19,13 @@
 
 * Planner
 
-  * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243), [#252](https://github.com/personalrobotics/aikido/pull/252)
+  * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243), [#252](https://github.com/personalrobotics/aikido/pull/252), [#265](https://github.com/personalrobotics/aikido/pull/265)
   * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262), [#268](https://github.com/personalrobotics/aikido/pull/268)
 
 * RViz
 
   * Added WorldInteractiveMarkerViewer: [#242](https://github.com/personalrobotics/aikido/pull/242)
+  * Added TrajectoryMarker: [#288](https://github.com/personalrobotics/aikido/pull/288)
 
 * IO
 

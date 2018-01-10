@@ -49,7 +49,7 @@ public:
     return isSatisfiedResult;
   }
 
-  std::unique_ptr<TestableOutcome> createOutcome() const
+  std::unique_ptr<TestableOutcome> createOutcome() const override
   {
     return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }

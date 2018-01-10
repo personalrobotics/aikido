@@ -5,6 +5,7 @@
 #include <set>
 #include <thread>
 
+#include <dart/common/NameManager.hpp>
 #include <dart/dynamics/Frame.hpp>
 #include <dart/dynamics/SmartPointer.hpp>
 #include <interactive_markers/interactive_marker_server.h>
@@ -13,6 +14,7 @@
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/rviz/SmartPointers.hpp>
 #include <aikido/rviz/TSRMarker.hpp>
+#include <aikido/trajectory/Trajectory.hpp>
 
 namespace aikido {
 namespace rviz {
@@ -51,6 +53,28 @@ public:
       int nSamples = 10,
       const std::string& basename = "");
 
+  /// Adds trajectory marker to this viewer.
+  ///
+  /// \param[in] trajectory C-space (or joint-space) trajectory.
+  /// \param[in] skeleton Target DART meta skeleton that the C-space trajectory
+  /// will be applied to compute the visualizing task-space trajectory.
+  /// \param[in] frame Target DART frame where the trajectory of its origin
+  /// will be visualized.
+  /// \param[in] rgba Color and alpha of the visualized trajectory. Default is
+  /// [RGBA: 0.75, 0.75, 0.75, 0.75].
+  /// \param[in] thickness Thickness of the visualized trajectory. Default is
+  /// 0.01.
+  /// \param[in] numLineSegments Number of line segments in the visualized
+  /// trajectory. Default is 16.
+  /// \return Trajectory marker added to this viewer.
+  TrajectoryMarkerPtr addTrajectoryMarker(
+      trajectory::ConstTrajectoryPtr trajectory,
+      const dart::dynamics::MetaSkeleton& skeleton,
+      const dart::dynamics::Frame& frame,
+      const Eigen::Vector4d& rgba = Eigen::Vector4d::Constant(0.75),
+      double thickness = 0.01,
+      std::size_t numLineSegments = 16u);
+
   void setAutoUpdate(bool flag);
   void update();
 
@@ -60,6 +84,12 @@ protected:
   interactive_markers::InteractiveMarkerServer mMarkerServer;
   std::set<SkeletonMarkerPtr> mSkeletonMarkers;
   std::set<FrameMarkerPtr> mFrameMarkers;
+  std::set<TrajectoryMarkerPtr> mTrajectoryMarkers;
+
+  /// NameManager for name uniqueness of trajectories in the same
+  /// InteractiveMarkerServer.
+  dart::common::NameManager<trajectory::ConstTrajectoryPtr>
+      mTrajectoryNameManager;
 
   std::atomic_bool mRunning;
   std::atomic_bool mUpdating;
