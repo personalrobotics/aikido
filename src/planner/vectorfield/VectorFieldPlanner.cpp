@@ -158,6 +158,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error("Direction vector is a zero vector");
   }
 
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+
   // Save the current state of the space
   auto saver = MetaSkeletonStateSaver(metaskeleton);
   DART_UNUSED(saver);
@@ -207,6 +209,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     std::chrono::duration<double> timelimit,
     planner::PlanningResult* planningResult)
 {
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+
   // Save the current state of the space
   auto saver = MetaSkeletonStateSaver(metaskeleton);
   DART_UNUSED(saver);

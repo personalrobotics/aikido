@@ -65,7 +65,7 @@ private:
 bool computeJointVelocityFromTwist(
     Eigen::VectorXd& jointVelocity,
     const Eigen::Vector6d& desiredTwist,
-    const dart::dynamics::MetaSkeletonPtr skeleton,
+    const dart::dynamics::MetaSkeletonPtr metaSkeleton,
     const dart::dynamics::BodyNodePtr bodyNode,
     double jointLimitPadding,
     const Eigen::VectorXd& jointVelocityLowerLimits,
@@ -79,15 +79,15 @@ bool computeJointVelocityFromTwist(
   using Eigen::VectorXd;
 
   // Use LBFGS to find joint angles that won't violate the joint limits.
-  const Jacobian jacobian = skeleton->getWorldJacobian(bodyNode);
+  const Jacobian jacobian = metaSkeleton->getWorldJacobian(bodyNode);
 
-  const std::size_t numDofs = skeleton->getNumDofs();
+  const std::size_t numDofs = metaSkeleton->getNumDofs();
 
   jointVelocity = Eigen::VectorXd::Zero(numDofs);
-  VectorXd positions = skeleton->getPositions();
-  VectorXd initialGuess = skeleton->getVelocities();
-  VectorXd positionLowerLimits = skeleton->getPositionLowerLimits();
-  VectorXd positionUpperLimits = skeleton->getPositionUpperLimits();
+  VectorXd positions = metaSkeleton->getPositions();
+  VectorXd initialGuess = metaSkeleton->getVelocities();
+  VectorXd positionLowerLimits = metaSkeleton->getPositionLowerLimits();
+  VectorXd positionUpperLimits = metaSkeleton->getPositionUpperLimits();
   VectorXd velocityLowerLimits = jointVelocityLowerLimits;
   VectorXd velocityUpperLimits = jointVelocityUpperLimits;
 

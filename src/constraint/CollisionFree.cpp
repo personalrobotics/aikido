@@ -17,6 +17,7 @@ CollisionFree::CollisionFree(
   if (!mMetaSkeletonStateSpace)
     throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
 
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
   if (!mMetaSkeleton)
     throw std::invalid_argument("_metaskeleton is nullptr.");
 
