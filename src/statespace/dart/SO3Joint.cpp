@@ -1,10 +1,5 @@
 #include "aikido/statespace/dart/SO3Joint.hpp"
 
-// TODO: This will not be necessary once we switch to using
-// BallJoint::convertToRotation instead of calling dart::math::logMap directly.
-// See the comment below for more information.
-#include <dart/math/Geometry.hpp>
-
 using ::dart::dynamics::BallJoint;
 
 namespace aikido {
@@ -31,9 +26,7 @@ void SO3Joint::convertPositionsToState(
 void SO3Joint::convertStateToPositions(
     const StateSpace::State* state, Eigen::VectorXd& positions) const
 {
-  // TODO: We should call BallJoint::convertToRotation instead of logMap once
-  // the convertToRotation method is fixed in DART.
-  positions = ::dart::math::logMap(
+  positions = BallJoint::convertToPositions(
       getQuaternion(static_cast<const State*>(state)).toRotationMatrix());
 }
 
