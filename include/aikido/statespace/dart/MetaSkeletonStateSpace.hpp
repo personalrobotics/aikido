@@ -27,8 +27,8 @@ public:
   public:
     /// Constructs the MetaSkeleton properties for \c _metaskeleton.
     ///
-    /// \param _metaskeleton \c MetaSkeleton to create properties for
-    explicit Properties(::dart::dynamics::MetaSkeleton* _metaskeleton);
+    /// \param metaskeleton \c MetaSkeleton to create properties for
+    explicit Properties(const ::dart::dynamics::MetaSkeleton* metaskeleton);
 
     /// Return the name of the MetaSkeleton.
     const std::string& getName() const;
@@ -94,9 +94,9 @@ public:
 
   /// Constructs a state space for a DART \c MetaSkeleton.
   ///
-  /// \param _metaskeleton target \c MetaSkeleton
+  /// \param metaskeleton target \c MetaSkeleton
   explicit MetaSkeletonStateSpace(
-      ::dart::dynamics::MetaSkeleton* _metaskeleton);
+      const ::dart::dynamics::MetaSkeleton* metaskeleton);
 
   /// Gets the MetaSkeleton properties associated with this state space.
   ///

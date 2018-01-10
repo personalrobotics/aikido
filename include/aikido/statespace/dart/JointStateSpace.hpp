@@ -1,7 +1,8 @@
 #ifndef AIKIDO_STATESPACE_DART_JOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_JOINTSTATESPACE_HPP_
+
 #include <dart/dynamics/dynamics.hpp>
-#include "../StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -23,10 +24,10 @@ public:
   class Properties
   {
   public:
-    /// Constructs the joint properties for \c _joint.
+    /// Constructs the joint properties for \c joint.
     ///
-    /// \param _joint \c Joint to create properties for
-    explicit Properties(::dart::dynamics::Joint* _joint);
+    /// \param joint \c Joint to create properties for
+    explicit Properties(const ::dart::dynamics::Joint* joint);
 
     /// Return the name of the joint.
     const std::string& getName() const;
@@ -88,11 +89,12 @@ public:
     // Eigen::Matrix<bool, Eigen::Dynamic, 1> mVelocityHasLimits;
   };
 
-  /// Constructs a state space for \c _joint.
+  /// Constructs a state space for \c joint.
   ///
-  /// \param _joint joint to create a \c StateSpace for
-  explicit JointStateSpace(::dart::dynamics::Joint* _joint);
+  /// \param joint joint to create a \c StateSpace for
+  explicit JointStateSpace(const ::dart::dynamics::Joint* joint);
 
+  /// Destructor
   virtual ~JointStateSpace() = default;
 
   /// Gets the joint properties associated with this state space.
@@ -103,32 +105,32 @@ public:
   /// Converts DART \c Joint positions, e.g. those returned by
   /// \c getPositions, to a \c State in this state space.
   ///
-  /// \param _positions input DART \c Joint positions
-  /// \param[out] _state output state
+  /// \param positions input DART \c Joint positions
+  /// \param[out] state output state
   virtual void convertPositionsToState(
-      const Eigen::VectorXd& _positions, StateSpace::State* _state) const = 0;
+      const Eigen::VectorXd& positions, StateSpace::State* state) const = 0;
 
   /// Converts a \c State in this state space to DART \c Joint positions, e.g.
   /// that may be passed to \c setPositions.
   ///
-  /// \param _state input state
-  /// \param[out] _positions output DART \c Joint positions
+  /// \param state input state
+  /// \param[out] positions output DART \c Joint positions
   virtual void convertStateToPositions(
-      const StateSpace::State* _state, Eigen::VectorXd& _positions) const = 0;
+      const StateSpace::State* state, Eigen::VectorXd& positions) const = 0;
 
-  /// Gets the positions of the \c _joint and store them in \c _state.
+  /// Gets the positions of the \c joint and store them in \c state.
   ///
-  /// \param _joint \c Joint to get position from
-  /// \param[out] _state output state
+  /// \param joint \c Joint to get position from
+  /// \param[out] state output state
   virtual void getState(
-      const ::dart::dynamics::Joint* _joint, StateSpace::State* _state) const;
+      const ::dart::dynamics::Joint* joint, StateSpace::State* state) const;
 
-  /// Sets the positions of the \c _joint to \c _state.
+  /// Sets the positions of the \c joint to \c state.
   ///
-  /// \param _joint \c Joint to set position for
-  /// \param _state input state
+  /// \param joint \c Joint to set position for
+  /// \param state input state
   virtual void setState(
-      ::dart::dynamics::Joint* _joint, const StateSpace::State* _state) const;
+      ::dart::dynamics::Joint* joint, const StateSpace::State* state) const;
 
 protected:
   Properties mProperties;
