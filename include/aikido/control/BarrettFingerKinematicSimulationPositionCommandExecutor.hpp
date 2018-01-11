@@ -66,6 +66,13 @@ public:
     return kMimicRatio;
   }
 
+  /// Open/close fingers to goal configuration.
+  /// Proximal dof moves to goalPosition, joint limit, or until collision.
+  /// Distal dof follows with mimic ratio.
+  /// \param goalPosition Desired angle of proximal joint.
+  /// \param dt Step time
+  void jump(const Eigen::VectorXd& goalPosition, double dt);
+
   /// Moves the joints of the finger by dofVelocity*timeSincePreviousCall
   /// until execute's goalPosition by primary dof or collision is detected.
   /// If proximal link is in collision, distal link moves until

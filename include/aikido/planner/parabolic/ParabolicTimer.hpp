@@ -34,6 +34,11 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration);
 
+std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
+    const aikido::trajectory::Spline& _inputTrajectory,
+    const Eigen::VectorXd& _maxVelocity,
+    const Eigen::VectorXd& _maxAcceleration);
+
 /// Convert an interpolated trajectory to a piecewise linear spline trajectory
 /// This function requires the \c _inputTrajectory to use a \c
 /// GeodesicInterpolator.

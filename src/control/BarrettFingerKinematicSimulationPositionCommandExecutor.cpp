@@ -232,6 +232,106 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 }
 
 //==============================================================================
+void BarrettFingerKinematicSimulationPositionCommandExecutor::jump(
+    const Eigen::VectorXd& goalPosition, double dt)
+{
+  if (!mFinger->isAssembled())
+    throw std::runtime_error("Finger is disassembled.");
+
+  std::lock_guard<std::mutex> lock(mMutex);
+  double goalPositionValue = goalPosition[0];
+
+  if (mInExecution)
+    throw std::runtime_error("Another command in execution.");
+
+  bool distalOnly = false;
+
+  // Set goalPositionValue.
+  if (goalPositionValue < mProximalLimits.first)
+    goalPositionValue = mProximalLimits.first;
+  else if (goalPositionValue > mProximalLimits.second)
+    goalPositionValue = mProximalLimits.second;
+
+  while (true)
+  {
+    double distalPosition = mDistalDof->getPosition();
+    double proximalPosition = mProximalDof->getPosition();
+
+    // Check distal collision
+    bool distalCollision = mCollisionDetector->collide(
+      mDistalCollisionGroup.get(),
+      mCollideWith.get(),
+      mCollisionOptions,
+      nullptr);
+
+    if (distalCollision)
+      return;
+
+    double newDistal;
+    bool distalLimitReached = false;
+
+    if (proximalPosition < goalPositionValue)
+    {
+      newDistal = distalPosition + dt * kDistalSpeed;
+      if (mDistalLimits.second <= newDistal)
+      {
+        newDistal = mDistalLimits.second;
+        distalLimitReached = true;
+      }
+    }
+    else
+    {
+      newDistal = distalPosition - dt * kDistalSpeed;
+      if (mDistalLimits.first >= newDistal)
+      {
+        newDistal = mDistalLimits.first;
+        distalLimitReached = true;
+      }
+    }
+
+    mDistalDof->setPosition(newDistal);
+
+    if (distalLimitReached || distalOnly)
+      return;
+
+    // Check proximal collision
+    bool proximalCollision = mCollisionDetector->collide(
+      mProximalCollisionGroup.get(),
+      mCollideWith.get(),
+      mCollisionOptions,
+      nullptr);
+
+    if (proximalCollision)
+      distalOnly = true;
+
+    double newProximal;
+    bool proximalGoalReached = false;
+    if (proximalPosition < goalPositionValue)
+    {
+      newProximal = proximalPosition + dt * kProximalSpeed;
+      if (goalPositionValue <= newProximal)
+      {
+        newProximal = goalPositionValue;
+        proximalGoalReached = true;
+      }
+    }
+    else
+    {
+      newProximal = proximalPosition - dt * kProximalSpeed;
+      if (goalPositionValue >= newProximal)
+      {
+        newProximal = goalPositionValue;
+        proximalGoalReached = true;
+      }
+    }
+
+    mProximalDof->setPosition(newProximal);
+    if (proximalGoalReached)
+      return;
+  }
+}
+
+//==============================================================================
 bool BarrettFingerKinematicSimulationPositionCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {
@@ -242,6 +342,12 @@ bool BarrettFingerKinematicSimulationPositionCommandExecutor::setCollideWith(
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
+
+  mProximalCollisionGroup = mCollisionDetector->createCollisionGroup(
+      mProximalDof->getChildBodyNode());
+  mDistalCollisionGroup = mCollisionDetector->createCollisionGroup(
+      mDistalDof->getChildBodyNode());
+
   return true;
 }
 

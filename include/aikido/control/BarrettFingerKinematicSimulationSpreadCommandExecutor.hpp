@@ -55,6 +55,12 @@ public:
   /// calling this method.
   void step() override;
 
+  /// Move the spread joint by goalPosition until goalPosition or
+  /// joint limits are reached, or until collision is detected.
+  /// \param goalPosition Desired angle of spread joint.
+  /// \param dt Step time
+  void jump(const Eigen::VectorXd& goalPosition, double dt);
+
   /// Resets CollisionGroup to check collision.
   /// \param collideWith CollisionGroup to check collision with fingers.
   /// \return false if fails to change collideWith (during execution).

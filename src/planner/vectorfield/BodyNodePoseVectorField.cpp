@@ -105,8 +105,10 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
   }
   auto state = mMetaSkeletonStateSpace->createState();
 
+  // HACK: ignoring excludeEndTime temporarily, since it seems to have the wrong
+  // behavior.
   aikido::common::StepSequence seq(
-      evalStepSize, excludeEndTime, evalTimePivot, trajectory.getEndTime());
+      evalStepSize, true, evalTimePivot, trajectory.getEndTime());
 
   for (double t : seq)
   {
