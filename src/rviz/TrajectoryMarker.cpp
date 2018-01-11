@@ -1,14 +1,15 @@
 #include "aikido/rviz/TrajectoryMarker.hpp"
 
 #include "aikido/rviz/shape_conversions.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace rviz {
 
 //==============================================================================
-TrajectoryMarker::TrajectoryMarker(interactive_markers::InteractiveMarkerServer* markerServer,
+TrajectoryMarker::TrajectoryMarker(
+    interactive_markers::InteractiveMarkerServer* markerServer,
     const std::string& frameId,
     const std::string& markerName,
     trajectory::ConstTrajectoryPtr trajectory,
