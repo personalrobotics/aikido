@@ -274,20 +274,20 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     throw std::invalid_argument{message.str()};
   }
 
-  // Check that all joints are R1Joint or SO2JOint state spaces.
+  // Check that all joints are R1Joint or SO2Joint state spaces.
   for (std::size_t i = 0; i < numControlledJoints; ++i)
   {
-    auto joint = space->getJointSpace(i)->getJoint();
-    auto jointSpace = space->getSubspace(i);
-    auto r1Joint = dynamic_cast<R1Joint*>(jointSpace.get());
-    auto so2Joint = dynamic_cast<SO2Joint*>(jointSpace.get());
+    auto jointSpace = space->getJointSpace(i);
+    auto properties = jointSpace->getProperties();
+    auto r1Joint = std::dynamic_pointer_cast<R1Joint>(jointSpace);
+    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(jointSpace);
 
-    if (joint->getNumDofs() != 1 || (!r1Joint && !so2Joint))
+    if (properties.getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
       std::stringstream message;
       message << "Only R1Joint and SO2Joint are supported. Joint "
-              << joint->getName() << "(index: " << i << ") is a "
-              << joint->getType() << " with " << joint->getNumDofs()
+              << properties.getName() << "(index: " << i << ") is a "
+              << properties.getType() << " with " << properties.getNumDofs()
               << " DOFs.";
       throw std::invalid_argument{message.str()};
     }
@@ -303,31 +303,11 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   std::vector<std::pair<std::size_t, std::size_t>> rosJointToMetaSkeletonJoint;
   std::unordered_set<std::size_t> specifiedMetaSkeletonJoints;
 
-  auto metaSkeleton = space->getMetaSkeleton();
-
+  const auto metaSkeletonProperties = space->getProperties();
   for (std::size_t trajIndex = 0; trajIndex < numTrajectoryJoints; ++trajIndex)
   {
-    const auto& jointName = jointTrajectory.joint_names[trajIndex];
-    auto joints = metaSkeleton->getJoints(jointName);
-
-    if (joints.size() == 0)
-    {
-      std::stringstream message;
-      message << "Joint " << jointName << " (index: " << trajIndex << ")"
-              << " does not exist in metaSkeleton.";
-      throw std::invalid_argument{message.str()};
-    }
-    else if (joints.size() > 1)
-    {
-      std::stringstream message;
-      message << "Multiple (" << joints.size()
-              << ") joints have the same name [" << jointName << "].";
-      throw std::invalid_argument{message.str()};
-    }
-
-    auto joint = joints[0];
-    auto metaSkeletonIndex = metaSkeleton->getIndexOf(joint);
-    assert(metaSkeletonIndex != dart::dynamics::INVALID_INDEX);
+    const auto& dofName = jointTrajectory.joint_names[trajIndex];
+    auto metaSkeletonIndex = metaSkeletonProperties.getDofIndex(dofName);
 
     rosJointToMetaSkeletonJoint.emplace_back(
         std::make_pair(trajIndex, metaSkeletonIndex));
@@ -469,21 +449,23 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 
   for (std::size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
+    auto jointSpace = space->getJointSpace(i);
+
     // Supports only R1Joints and SO2Joints.
-    auto rnJoint = std::dynamic_pointer_cast<R1Joint>(space->getSubspace(i));
-    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(space->getSubspace(i));
-    if (!rnJoint && !so2Joint)
+    auto r1Joint = std::dynamic_pointer_cast<R1Joint>(jointSpace);
+    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(jointSpace);
+    if (!r1Joint && !so2Joint)
     {
       throw std::invalid_argument(
-          "MetaSkeletonStateSpace must contain only RnJonts and SO2Joints.");
+          "MetaSkeletonStateSpace must contain only R1Joints and SO2Joints.");
     }
 
     // For RnJoint, supports only 1D.
-    if (rnJoint && rnJoint->getDimension() != 1)
+    if (r1Joint && r1Joint->getDimension() != 1)
     {
       std::stringstream message;
-      message << "RnJoint must be 1D. Joint " << i << " has "
-              << rnJoint->getDimension() << " dimensions.";
+      message << "R1Joint must be 1D. Joint " << i << " has "
+              << r1Joint->getDimension() << " dimensions.";
       throw std::invalid_argument{message.str()};
     }
   }
@@ -492,23 +474,25 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
       timestep, true, 0., trajectory->getDuration()};
   const auto numJoints = space->getNumSubspaces();
   const auto numWaypoints = timeSequence.getMaxSteps();
-  const auto metaSkeleton = space->getMetaSkeleton();
   trajectory_msgs::JointTrajectory jointTrajectory;
   jointTrajectory.joint_names.reserve(numJoints);
 
   for (std::size_t i = 0; i < numJoints; ++i)
   {
-    const auto joint = space->getJointSpace(i)->getJoint();
-    const auto jointName = joint->getName();
-    auto joints = metaSkeleton->getJoints(jointName);
-    if (joints.size() > 1)
+    const auto jointProperties = space->getJointSpace(i)->getProperties();
+    const auto jointDofNames = jointProperties.getDofNames();
+
+    if (jointDofNames.size() != 1)
     {
       std::stringstream message;
-      message << "Metaskeleton has multiple joints with same name ["
-              << jointName << "].";
+      message << "Joint " << jointProperties.getName() << " of type "
+              << jointProperties.getType() << " has " << jointDofNames.size()
+              << " DOFs.";
       throw std::invalid_argument{message.str()};
     }
-    jointTrajectory.joint_names.emplace_back(jointName);
+
+    const auto jointDofName = jointDofNames[0];
+    jointTrajectory.joint_names.emplace_back(jointDofName);
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
@@ -530,7 +514,7 @@ sensor_msgs::JointState positionsToJointState(
     const Eigen::VectorXd& goalPositions,
     const std::vector<std::string>& jointNames)
 {
-  if ((std::size_t)goalPositions.size() != jointNames.size())
+  if (static_cast<std::size_t>(goalPositions.size()) != jointNames.size())
   {
     std::stringstream message;
     message << "The size of goalPositions (" << goalPositions.size()

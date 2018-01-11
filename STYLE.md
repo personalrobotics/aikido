@@ -94,9 +94,9 @@ using ExamplePtr = std::shared_ptr<Example>;
 
 // In certain cases, such as heavily templated code, implementations must be included
 // in headers. In this case, a "detail" header should be created in the "./detail"
-// subdirectory with the same name as the main header file, but an "_impl" suffix.
+// subdirectory with the same name as the main header file, but an "-impl" suffix.
 // Private declarations in this header can use a "detail" sub-namespace.
-#include "./detail/ExampleClass_impl.hpp"
+#include "./detail/ExampleClass-impl.hpp"
 
 #endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```

@@ -7,14 +7,23 @@ namespace constraint {
 //==============================================================================
 FramePairDifferentiable::FramePairDifferentiable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode1,
     dart::dynamics::ConstJacobianNodePtr _jacobianNode2,
     DifferentiablePtr _relPoseConstraint)
-  : mJacobianNode1(std::move(_jacobianNode1))
+  : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(_metaskeleton))
+  , mJacobianNode1(std::move(_jacobianNode1))
   , mJacobianNode2(std::move(_jacobianNode2))
   , mRelPoseConstraint(std::move(_relPoseConstraint))
-  , mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
 {
+  if (!mMetaSkeletonStateSpace)
+    throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
+
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("_metaskeleton is nullptr.");
+
   if (!mRelPoseConstraint)
     throw std::invalid_argument("_relPoseConstraint is nullptr.");
 
@@ -24,23 +33,12 @@ FramePairDifferentiable::FramePairDifferentiable(
   if (!mJacobianNode2)
     throw std::invalid_argument("_jacobianNode2 is nullptr.");
 
-  if (!mMetaSkeletonStateSpace)
-    throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
-
   using SE3 = statespace::SE3;
 
   auto space = dynamic_cast<SE3*>(mRelPoseConstraint->getStateSpace().get());
 
   if (!space)
     throw std::invalid_argument("_relPoseConstraint is not in SE3.");
-
-  mMetaSkeleton = mMetaSkeletonStateSpace->getMetaSkeleton();
-
-  if (!mMetaSkeleton)
-  {
-    throw std::invalid_argument(
-        "_metaSkeletonStateSpace does not have skeleton.");
-  }
 
   // TODO: check that _jacobianNode1 and _jacobianNode2
   // are influenced by at least one DegreeOfFreedom of _metaSkeletonStateSpace.
@@ -61,7 +59,7 @@ void FramePairDifferentiable::getValue(
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setState(state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Relative transform of mJacobianNode1 w.r.t. mJacobianNode2,
   // expressed in mJacobianNode2 frame.
@@ -77,11 +75,10 @@ void FramePairDifferentiable::getJacobian(
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
-  using dart::dynamics::MetaSkeletonPtr;
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setState(state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Relative transform of mJacobianNode1 w.r.t. mJacobianNode2,
   // expressed in mJacobianNode2's frame.
@@ -112,11 +109,10 @@ void FramePairDifferentiable::getValueAndJacobian(
 {
   using State = statespace::CartesianProduct::State;
   using SE3State = statespace::SE3::State;
-  using dart::dynamics::MetaSkeletonPtr;
 
   auto state = static_cast<const State*>(_s);
 
-  mMetaSkeletonStateSpace->setState(state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Relative transform of mJacobianNode1 w.r.t. mJacobianNode2,
   // expressed in mJacobianNode2's frame.

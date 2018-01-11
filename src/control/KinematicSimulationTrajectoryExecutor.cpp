@@ -61,13 +61,10 @@ void KinematicSimulationTrajectoryExecutor::validate(
         "Trajectory does not operate in this Executor's"
         " MetaSkeletonStateSpace.");
 
-  auto metaSkeleton = space->getMetaSkeleton();
-
-  // Check if metaSkeleton contains Dofs only in mSkeleton.
+  // Check if the space only contains DOFs in mSkeleton.
   std::unique_lock<std::mutex> skeleton_lock(mSkeleton->getMutex());
-  for (auto dof : metaSkeleton->getDofs())
+  for (const auto& name : space->getProperties().getDofNames())
   {
-    auto name = dof->getName();
     auto dof_in_skeleton = mSkeleton->getDof(name);
 
     if (!dof_in_skeleton)
@@ -137,12 +134,11 @@ void KinematicSimulationTrajectoryExecutor::step()
   // CartesianProduct which inherits virtual StateSpace
   auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
       mTraj->getStateSpace());
-  auto metaSkeleton = space->getMetaSkeleton();
   auto state = space->createState();
 
   mTraj->evaluate(tsec, state);
 
-  space->setState(state);
+  space->setState(mSkeleton.get(), state);
 
   // Check if trajectory has completed.
   bool const is_done = (tsec >= mTraj->getEndTime());

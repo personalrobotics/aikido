@@ -5,9 +5,10 @@ namespace dart {
 //==============================================================================
 template <class Space>
 std::shared_ptr<Space> MetaSkeletonStateSpace::getJointSpace(
+    const ::dart::dynamics::MetaSkeleton* _metaskeleton,
     const ::dart::dynamics::Joint* _joint) const
 {
-  const auto index = mMetaSkeleton->getIndexOf(_joint, true);
+  const auto index = _metaskeleton->getIndexOf(_joint, true);
   if (index == ::dart::dynamics::INVALID_INDEX)
     throw std::invalid_argument("Joint is not in MetaSkeleton.");
 

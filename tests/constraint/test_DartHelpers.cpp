@@ -60,19 +60,19 @@ TEST_F(RnJointHelpersTests, createTestableBoundsFor)
   EXPECT_EQ(mStateSpace, constraint->getStateSpace());
 
   mJoint->setPosition(0, -0.9);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   EXPECT_TRUE(constraint->isSatisfied(state));
 
   mJoint->setPosition(0, 1.9);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   EXPECT_TRUE(constraint->isSatisfied(state));
 
   mJoint->setPosition(0, -1.1);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   EXPECT_FALSE(constraint->isSatisfied(state));
 
   mJoint->setPosition(0, 2.1);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   EXPECT_FALSE(constraint->isSatisfied(state));
 }
 
@@ -89,23 +89,23 @@ TEST_F(RnJointHelpersTests, createProjectableBounds)
 
   // Doesn't change the value if the constraint is satisfied.
   mJoint->setPosition(0, -0.9);
-  mStateSpace->getState(inState);
+  mStateSpace->getState(mJoint, inState);
   EXPECT_TRUE(projectableConstraint->project(inState, outState));
   EXPECT_TRUE(inState.getValue().isApprox(outState.getValue()));
 
   mJoint->setPosition(0, 1.9);
-  mStateSpace->getState(inState);
+  mStateSpace->getState(mJoint, inState);
   EXPECT_TRUE(projectableConstraint->project(inState, outState));
   EXPECT_TRUE(inState.getValue().isApprox(outState.getValue()));
 
   // Output is feasible if the constriant is not satisfied.
   mJoint->setPosition(0, -1.1);
-  mStateSpace->getState(inState);
+  mStateSpace->getState(mJoint, inState);
   EXPECT_TRUE(projectableConstraint->project(inState, outState));
   EXPECT_TRUE(testableConstraint->isSatisfied(outState));
 
   mJoint->setPosition(0, 2.1);
-  mStateSpace->getState(inState);
+  mStateSpace->getState(mJoint, inState);
   EXPECT_TRUE(projectableConstraint->project(inState, outState));
   EXPECT_TRUE(testableConstraint->isSatisfied(outState));
 }
@@ -122,24 +122,24 @@ TEST_F(RnJointHelpersTests, createDifferentiableBounds)
 
   // Value is zero when the constraint is satisfied.
   mJoint->setPosition(0, -0.9);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   Eigen::VectorXd constraintValue;
   differentiableConstraint->getValue(state, constraintValue);
   EXPECT_TRUE(Vector1d::Zero().isApprox(constraintValue));
 
   mJoint->setPosition(0, 1.9);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   differentiableConstraint->getValue(state, constraintValue);
   EXPECT_TRUE(Vector1d::Zero().isApprox(constraintValue));
 
   // Value is non-zero when the constraint is not satisfied.
   mJoint->setPosition(0, -1.1);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   differentiableConstraint->getValue(state, constraintValue);
   EXPECT_FALSE(Vector1d::Zero().isApprox(constraintValue));
 
   mJoint->setPosition(0, 2.1);
-  mStateSpace->getState(state);
+  mStateSpace->getState(mJoint, state);
   differentiableConstraint->getValue(state, constraintValue);
   EXPECT_FALSE(Vector1d::Zero().isApprox(constraintValue));
 }

@@ -109,7 +109,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
 //==============================================================================
 TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
     trajectory::ConstTrajectoryPtr trajectory,
-    const dart::dynamics::MetaSkeleton& skeleton,
+    dart::dynamics::MetaSkeletonPtr skeleton,
     const dart::dynamics::Frame& frame,
     const Eigen::Vector4d& rgba,
     double thickness,
@@ -122,7 +122,7 @@ TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
       mFrameId,
       mTrajectoryNameManager.issueNewNameAndAdd("", trajectory),
       std::move(trajectory),
-      skeleton,
+      std::move(skeleton),
       frame,
       rgba,
       thickness,

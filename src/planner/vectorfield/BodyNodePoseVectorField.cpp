@@ -11,13 +11,14 @@ namespace vectorfield {
 //==============================================================================
 BodyNodePoseVectorField::BodyNodePoseVectorField(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr metaSkeleton,
     dart::dynamics::BodyNodePtr bodyNode,
     double maxStepSize,
     double jointLimitPadding,
     bool enforceJointVelocityLimits)
   : VectorField(metaSkeletonStateSpace)
-  , mMetaSkeletonStateSpace(metaSkeletonStateSpace)
-  , mMetaSkeleton(metaSkeletonStateSpace->getMetaSkeleton())
+  , mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(metaSkeleton))
   , mBodyNode(bodyNode)
   , mMaxStepSize(maxStepSize)
   , mJointLimitPadding(jointLimitPadding)
@@ -63,7 +64,7 @@ bool BodyNodePoseVectorField::evaluateVelocity(
   bool result = computeJointVelocityFromTwist(
       qd,
       desiredTwist,
-      mMetaSkeletonStateSpace,
+      mMetaSkeleton,
       mBodyNode,
       mJointLimitPadding,
       mVelocityLowerLimits,
