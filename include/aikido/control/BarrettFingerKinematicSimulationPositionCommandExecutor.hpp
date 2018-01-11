@@ -81,6 +81,9 @@ public:
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
+  /// Creates a CollisionGroup in the CollisionDetector for the fingers.
+  void setFingerCollisionGroup();
+
   constexpr static double kMimicRatio = 0.333;
   // TODO: read velocity limit from herb_description
   constexpr static double kProximalSpeed = 2.0;

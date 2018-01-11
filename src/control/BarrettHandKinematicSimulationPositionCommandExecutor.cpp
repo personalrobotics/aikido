@@ -218,6 +218,11 @@ bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
+
+  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+    mPositionCommandExecutors[i]->setCollideWith(mCollideWith);
+  mSpreadCommandExecutor->setCollideWith(mCollideWith);
+
   return true;
 }
 

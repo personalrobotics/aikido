@@ -77,11 +77,7 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::
     mCollideWith = mCollisionDetector->createCollisionGroup();
   }
 
-  mProximalCollisionGroup = mCollisionDetector->createCollisionGroup(
-      mProximalDof->getChildBodyNode());
-
-  mDistalCollisionGroup = mCollisionDetector->createCollisionGroup(
-      mDistalDof->getChildBodyNode());
+  setFingerCollisionGroup();
 
   mProximalLimits = mProximalDof->getPositionLimits();
   mDistalLimits = mDistalDof->getPositionLimits();
@@ -242,7 +238,26 @@ bool BarrettFingerKinematicSimulationPositionCommandExecutor::setCollideWith(
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
+
+  setFingerCollisionGroup();
+
   return true;
+}
+
+//==============================================================================
+void BarrettFingerKinematicSimulationPositionCommandExecutor::
+    setFingerCollisionGroup()
+{
+  if (mProximalCollisionGroup
+      && mProximalCollisionGroup->getCollisionDetector() == mCollisionDetector
+      && mDistalCollisionGroup
+      && mDistalCollisionGroup->getCollisionDetector() == mCollisionDetector)
+    return;
+
+  mProximalCollisionGroup = mCollisionDetector->createCollisionGroup(
+      mProximalDof->getChildBodyNode());
+  mDistalCollisionGroup = mCollisionDetector->createCollisionGroup(
+      mDistalDof->getChildBodyNode());
 }
 
 } // namespace control
