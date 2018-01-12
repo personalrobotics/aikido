@@ -28,9 +28,12 @@ class Robot
 {
 public:
 
-  /// Create a new Robot
-  /// \param name Name for the new Robot
-  virtual static std::unique_ptr<Robot> create(const std::string &name) = 0;
+  struct Configuration
+  {
+    const statespace::MetaSkeletonStateSpacePtr metaSkeletonStateSpace;
+    const dart::dynamics::MetaSkeletonPtr metaSkeleton;
+    const Eigen::VectorXd positions;
+  }
 
   /// Clones this Robot.
   /// \param newName New name for this robot
@@ -38,6 +41,7 @@ public:
 
   virtual aikido::trajectory::TrajectoryPtr planToConfiguration(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const MetaSkeletonPtr &metaSkeleton,
     const statespace::StateSpace::State *startState,
     const statespace::StateSpace::State *goalState,
     const CollisionFreePtr& collisionFree,
@@ -46,13 +50,21 @@ public:
   /// Wrapper for planToConfiguration using Eigen vectors.
   virtual aikido::trajectory::TrajectoryPtr planToConfiguration(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const MetaSkeletonPtr &metaSkeleton,
     const Eigen::VectorXd &start,
     const Eigen::VectorXd &goal,
     const CollisionFreePtr &collisionFree,
     double timeLimit);
 
+  /// Wrapper for planToConfiguration using Cnofiguration.
+  virtual aikido::trajectory::TrajectoryPtr planToConfiguration(
+    const Configuration &configuration,
+    const CollisionFreePtr &collisionFree,
+    double timeLimit);
+
   virtual aikido::trajectory::TrajectoryPtr planToConfigurations(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const MetaSkeletonPtr &metaSkeleton,
     const statespace::StateSpace::State *startState,
     const std::vector<statespace::StateSpace::State*> &goalStates,
     const CollisionFreePtr &collisionFree,
@@ -61,6 +73,7 @@ public:
   /// Wrapper for planToConfigurations using Eigen vectors.
   virtual aikido::trajectory::TrajectoryPtr planToConfigurations(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const MetaSkeletonPtr &metaSkeleton,
     const Eigen::VectorXd &start,
     const std::vector<Eigen::VectorXd> &goals,
     const CollisionFreePtr &collisionFree,
@@ -68,6 +81,7 @@ public:
 
   virtual aikido::trajectory::TrajectoryPtr planToTSR(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const MetaSkeletonPtr &metaSkeleton,
     const statespace::StateSpace::State *startState,
     const aikido::constraint::TSR &tsr,
     const CollisionFreePtr &collisionFree,
@@ -76,6 +90,7 @@ public:
   /// Wrapper for planToTSR using Eigen vectors.
   virtual aikido::trajectory::TrajectoryPtr planToTSR(
     const statespace::MetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonPtr &metaSkeleton,
     const Eigen::VectorXd &start,
     const aikido::constraint::TSR &tsr,
     const CollisionFreePtr &collisionFree,
@@ -97,9 +112,26 @@ public:
     const aikido::trajectory::TrajectoryPtr &trajectory);
 
   /// Postprocesses and executes a path
+  /// \param timelimit Timelimit for postprocessing.
   virtual void executePath(
     const aikido::trajectory::TrajectoryPtr &path,
-    const CollisionFreePtr &collisionFree);
+    const CollisionFreePtr &collisionFree,
+    double timelimit);
+
+  /// Set the configuration of the predefined metaskeleton
+  /// \param name Name of the predefined metaSkeleton
+  /// \param configuration The configuration to set
+  /// \throws invalid_argument error if name does not exist.
+  void setConfiguration(
+    const std::string& name, const Eigen::VectorXd& configuration);
+
+  // Get configuration of the predefined metaskeleton
+  /// \throws invalid_argument error if name does not exist.
+  Eigen::VectorXd getConfiguration(
+    const std::string& name);
+
+  // Get configruation of the whole robot
+  Eigen::VectorXd getConfiguration();
 
   /// \return World containing this robot.
   aikido::planner::WorldPtr getParentWorld();
@@ -107,35 +139,40 @@ public:
   /// \return Name of this Robot
   std::string getName();
 
+  dart::dynamics::SkeletonPtr getRobot();
+
+  /// Returns the metaSkeleton and stateSpace pair corresponding to name.
+  std::pair<dart::dynamics::MetaSkeletonPtr,
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr>>
+  getMetaSkeletonStateSpacePair(
+    const std::string& name);
+
 protected:
 
-  struct Configuration
-  {
-    const MetaSkeletonStateSpacePtr metaSkeletonStateSpace;
-    const Eigen::VectorXd configuration;
-  }
+  /// Returns true if this Robot contains this metaSkeleton.
+  virtual bool checkIfMetaSkeletonBelongs(
+    const MetaSkeletonPtr &metaSkeleton);
 
-  /// Returns true if this Robot contains
-  /// a skeleton with matching statespace
-  virtual bool checkIfStateSpaceBelongs(
-    const statespace::MetaSkeletonStateSpacePtr& stateSpace);
-
-  bool switchControllers(
+  virtual bool switchControllers(
       const std::vector<std::string>& start_controllers,
       const std::vector<std::string>& stop_controllers);
 
   // Simulation step
-  void step();
+  virtual void step() = 0;
+
+  aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr &space) const;
+
+  aikido::constraint::TestablePtr getTestableCollisionConstraint(
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr &space,
+      const aikido::constraint::CollisionFreePtr &collisionFree) const;
+
 
   /// Name of this robot
   std::string mName;
 
-
   double mSmootherFeasibilityCheckResolution;
   double mSmootherFeasibilityApproxTolerance;
-
-  // For trajectory executions.
-  std::unique_ptr<aikido::common::ExecutorThread> mThread;
 
   /// MetaPlanner
   std::unique_ptr<aikido::planner::Planner> mPlanner;
@@ -143,13 +180,12 @@ protected:
   /// World this Robot belongs to. Every robot must be tied to one world.
   aikido::planner::WorldPtr mWorld;
 
-  /// List of meta skeletons maintained by this Robot.
-  std::vector<const dart::dynamics::MetaSkeletonPtr> mSkeletons;
+  dart::dynamics::SkeletonPtr mRobot;
 
-  /// List of statespaces maintained by this Robot.
-  /// This has one-to-one mapping with mSkeletons.
-  std::vector<
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr> mStateSpaces;
+  /// Set of commonly used metaskeletons and statespaces maintained by this Robot.
+  std::unordered_map<std::string,
+    std::pair<dart::dynamics::MetaSkeletonPtr,
+      aikido::statespace::dart::MetaSkeletonStateSpacePtr>> mMetaSkeletons;
 
   /// Named configurations.
   std::unordered_map<std::string, Configuration> mNamedConfigurations;
@@ -162,6 +198,18 @@ protected:
   std::unique_ptr<aikido::planner::postprocessor::Retimer> mRetimer;
 
   std::unique_ptr<aikido::planner::postprocessor::Smoother> mSmoother;
+
+  // For trajectory executions.
+  std::unique_ptr<aikido::common::ExecutorThread> mThread;
+
+  // For ROS
+  std::unique_ptr<::ros::NodeHandle> mNode;
+
+  std::unordered_map<std::string,
+    std::unique_ptr<::ros::ServiceClient>> mServiceClients;
+
+  std::unique_ptr<aikido::control::ros::RosJointStateClient> mJointStateClient;
+  std::unique_ptr<aikido::common::ExecutorThread> mJointStateThread;
 
 }
 

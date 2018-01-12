@@ -4,6 +4,7 @@
 #include <dart/dart.hpp>
 #include <string>
 #include <aikido/robot/Robot.hpp>
+#include <aikido/robot/Hand.hpp>
 
 namespace aikido {
 namespace robot {
@@ -13,18 +14,17 @@ class Manipulator : public Robot
 {
 public:
 
-  /// Create a new Robot
-  /// \param name Name for the new Robot
-  virtual static std::unique_ptr<Robot> create(const std::string &name) = 0;
-
   /// Clones this Robot.
   /// \param newName New name for this robot
-  virtual std::unique_ptr<Robot> clone(const std::string& newName) = 0;
+  virtual std::unique_ptr<Robot> clone(const std::string& newName) override;
+
+  std::unique_ptr<aikido::robot::Hand> getHand();
+
+  dart::dynamics::MetaSkeletonPtr getArm();
+
 
 protected:
 
-  /// Name of this robot
-  std::string mName;
 }
 
 using ManipulatorPtr = std::shared_ptr<Manipulator>;
