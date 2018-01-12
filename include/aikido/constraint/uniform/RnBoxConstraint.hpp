@@ -46,7 +46,13 @@ public:
   std::vector<constraint::ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  bool isSatisfied(const statespace::StateSpace::State* state) const override;
+  bool isSatisfied(
+      const statespace::StateSpace::State* state,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// Return an instance of DefaultTestableOutcome, since this class doesn't
+  /// have a more specialized TestableOutcome derivative assigned to it.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   // Documentation inherited.
   bool project(

@@ -21,7 +21,7 @@ public:
   /// position limits on the rotational \c DegreeOfFreedom.
   ///
   /// \param _joint joint to create a state space for
-  explicit SE2Joint(::dart::dynamics::PlanarJoint* _joint);
+  explicit SE2Joint(const ::dart::dynamics::PlanarJoint* joint);
 
   // Documentation inherited.
   void convertPositionsToState(

@@ -56,6 +56,13 @@ if(YAMLCPP_NODE_HAS_MARK)
     PUBLIC YAMLCPP_NODE_HAS_MARK)
 endif()
 
+# Define TINYXML2_MAJOR_VERSION_GE_6 to support API breaking changes of
+# tinyxml2 6
+if (NOT TinyXML2_VERSION VERSION_LESS "6.0.0")
+  target_compile_definitions("${PROJECT_NAME}_io"
+    PRIVATE "TINYXML2_MAJOR_VERSION_GE_6")
+endif()
+
 add_component(${PROJECT_NAME} io)
 add_component_targets(${PROJECT_NAME} io "${PROJECT_NAME}_io")
 add_component_dependencies(${PROJECT_NAME} io common)

@@ -72,7 +72,8 @@ protected:
               .second;
 
     mInverseKinematics1 = InverseKinematics::create(bn2);
-    mStateSpace1 = std::make_shared<MetaSkeletonStateSpace>(mManipulator1);
+    mStateSpace1
+        = std::make_shared<MetaSkeletonStateSpace>(mManipulator1.get());
 
     // Manipulator with 1 free joint and 1 revolute joint.
     mManipulator2 = Skeleton::create("Manipulator2");
@@ -96,10 +97,12 @@ protected:
               .second;
 
     mInverseKinematics2 = InverseKinematics::create(bn4);
-    mStateSpace2 = std::make_shared<MetaSkeletonStateSpace>(mManipulator2);
+    mStateSpace2
+        = std::make_shared<MetaSkeletonStateSpace>(mManipulator2.get());
 
     // Set FiniteSampleable to generate pose close to the actual solution.
-    auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+    auto seedState
+        = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
     seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
     seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
     seedConstraint
@@ -125,7 +128,7 @@ TEST_F(InverseKinematicsSampleableTest, ConstructorThrowsOnNullStateSpace)
 {
   EXPECT_THROW(
       InverseKinematicsSampleable(
-          nullptr, mTsr, seedConstraint, mInverseKinematics1, 1),
+          nullptr, nullptr, mTsr, seedConstraint, mInverseKinematics1, 1),
       std::invalid_argument);
 }
 
@@ -134,7 +137,7 @@ TEST_F(
 {
   EXPECT_THROW(
       InverseKinematicsSampleable(
-          mStateSpace1, mTsr, seedConstraint, nullptr, 1),
+          mStateSpace1, mManipulator1, mTsr, seedConstraint, nullptr, 1),
       std::invalid_argument);
 }
 
@@ -142,7 +145,12 @@ TEST_F(InverseKinematicsSampleableTest, ConstructorThrowsOnNullPoseConstraint)
 {
   EXPECT_THROW(
       InverseKinematicsSampleable(
-          mStateSpace1, nullptr, seedConstraint, mInverseKinematics1, 1),
+          mStateSpace1,
+          mManipulator1,
+          nullptr,
+          seedConstraint,
+          mInverseKinematics1,
+          1),
       std::invalid_argument);
 }
 
@@ -150,19 +158,19 @@ TEST_F(InverseKinematicsSampleableTest, ConstructorThrowsOnNullSeedConstraint)
 {
   EXPECT_THROW(
       InverseKinematicsSampleable(
-          mStateSpace1, mTsr, nullptr, mInverseKinematics1, 1),
+          mStateSpace1, mManipulator1, mTsr, nullptr, mInverseKinematics1, 1),
       std::invalid_argument);
 }
 
 TEST_F(
     InverseKinematicsSampleableTest, ConstructorThrowsOnSeedConstraintMismatch)
 {
-  auto ss = std::make_shared<MetaSkeletonStateSpace>(mManipulator1);
+  auto ss = std::make_shared<MetaSkeletonStateSpace>(mManipulator1.get());
   auto st = ss->createState();
   auto sc = std::make_shared<FiniteSampleable>(ss, st);
   EXPECT_THROW(
       InverseKinematicsSampleable(
-          mStateSpace1, mTsr, sc, mInverseKinematics1, 1),
+          mStateSpace1, mManipulator1, mTsr, sc, mInverseKinematics1, 1),
       std::invalid_argument);
 }
 
@@ -170,7 +178,12 @@ TEST_F(InverseKinematicsSampleableTest, ConstructorThrowsOnNegativeTrials)
 {
   EXPECT_THROW(
       InverseKinematicsSampleable(
-          mStateSpace1, mTsr, seedConstraint, mInverseKinematics1, -1),
+          mStateSpace1,
+          mManipulator1,
+          mTsr,
+          seedConstraint,
+          mInverseKinematics1,
+          -1),
       std::invalid_argument);
 }
 
@@ -187,7 +200,12 @@ TEST_F(InverseKinematicsSampleableTest, ConstructorThrowsOnInvalidSeed)
 
   EXPECT_THROW(
       InverseKinematicsSampleable(
-          mStateSpace1, mTsr, invalid_seed_constraint, mInverseKinematics1, 1),
+          mStateSpace1,
+          mManipulator1,
+          mTsr,
+          invalid_seed_constraint,
+          mInverseKinematics1,
+          1),
       std::invalid_argument);
 }
 
@@ -199,7 +217,12 @@ TEST_F(InverseKinematicsSampleableTest, Constructor)
       new FiniteSampleable(mStateSpace1, seedStateValid));
 
   InverseKinematicsSampleable ikConstraint(
-      mStateSpace1, mTsr, valid_seed_constraint, mInverseKinematics1, 1);
+      mStateSpace1,
+      mManipulator1,
+      mTsr,
+      valid_seed_constraint,
+      mInverseKinematics1,
+      1);
 }
 
 TEST_F(InverseKinematicsSampleableTest, SingleSampleGenerator)
@@ -211,7 +234,8 @@ TEST_F(InverseKinematicsSampleableTest, SingleSampleGenerator)
   mTsr->mT0_w = T0_w;
 
   // Set FiniteSampleable to generate pose close to the actual solution.
-  auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+  auto seedState
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
   seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
   seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
 
@@ -220,14 +244,20 @@ TEST_F(InverseKinematicsSampleableTest, SingleSampleGenerator)
 
   // Construct InverseKinematicsSampleable
   InverseKinematicsSampleable ikConstraint(
-      mStateSpace1, mTsr, seedConstraint, mInverseKinematics1, 1);
+      mStateSpace1,
+      mManipulator1,
+      mTsr,
+      seedConstraint,
+      mInverseKinematics1,
+      1);
 
   // Get IkSampleGenerator
   auto generator = ikConstraint.createSampleGenerator();
 
   ASSERT_TRUE(generator->canSample());
   ASSERT_EQ(generator->getNumSamples(), 1);
-  auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
+  auto state
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
 
   ASSERT_TRUE(generator->sample(state));
   ASSERT_NEAR(state.getSubStateHandle<SO2>(0).getAngle(), 0, 1e-5);
@@ -247,7 +277,8 @@ TEST_F(InverseKinematicsSampleableTest, CyclicSampleGenerator)
 
   // Set CyclicSampleable to generate
   // pose close to the actual solution.
-  auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+  auto seedState
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
   seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
   seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
 
@@ -261,7 +292,12 @@ TEST_F(InverseKinematicsSampleableTest, CyclicSampleGenerator)
 
   // Construct InverseKinematicsSampleable
   InverseKinematicsSampleable ikConstraint(
-      mStateSpace1, tsrConstraint, seedConstraint, mInverseKinematics1, 1);
+      mStateSpace1,
+      mManipulator1,
+      tsrConstraint,
+      seedConstraint,
+      mInverseKinematics1,
+      1);
 
   // Get IkSampleGenerator
   auto generator = ikConstraint.createSampleGenerator();
@@ -270,7 +306,8 @@ TEST_F(InverseKinematicsSampleableTest, CyclicSampleGenerator)
   {
     ASSERT_TRUE(generator->canSample());
     ASSERT_EQ(generator->getNumSamples(), SampleGenerator::NO_LIMIT);
-    auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
+    auto state
+        = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
 
     ASSERT_TRUE(generator->sample(state));
     ASSERT_NEAR(state.getSubStateHandle<SO2>(0).getAngle(), 0, 1e-5);
@@ -288,7 +325,8 @@ TEST_F(InverseKinematicsSampleableTest, MultipleGeneratorsSampleSameSequence)
 
   // Set CyclicSampleable to generate
   // pose close to the actual solution.
-  auto seedState = mStateSpace2->getScopedStateFromMetaSkeleton();
+  auto seedState
+      = mStateSpace2->getScopedStateFromMetaSkeleton(mManipulator2.get());
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
   isometry.translation() = Eigen::Vector3d(0.1, 0.1, 0.1);
   seedState.getSubStateHandle<SE3>(0).setIsometry(isometry);
@@ -301,7 +339,12 @@ TEST_F(InverseKinematicsSampleableTest, MultipleGeneratorsSampleSameSequence)
       new CyclicSampleable(finiteSampleConstraint));
 
   InverseKinematicsSampleable ikConstraint(
-      mStateSpace2, mTsr, seedConstraint, mInverseKinematics2, 1);
+      mStateSpace2,
+      mManipulator2,
+      mTsr,
+      seedConstraint,
+      mInverseKinematics2,
+      1);
 
   // Get 2 IkSampleGenerator
   auto generator1 = ikConstraint.createSampleGenerator();
@@ -313,8 +356,10 @@ TEST_F(InverseKinematicsSampleableTest, MultipleGeneratorsSampleSameSequence)
     ASSERT_TRUE(generator1->canSample());
     ASSERT_TRUE(generator2->canSample());
 
-    auto state1 = mStateSpace2->getScopedStateFromMetaSkeleton();
-    auto state2 = mStateSpace2->getScopedStateFromMetaSkeleton();
+    auto state1
+        = mStateSpace2->getScopedStateFromMetaSkeleton(mManipulator2.get());
+    auto state2
+        = mStateSpace2->getScopedStateFromMetaSkeleton(mManipulator2.get());
 
     ASSERT_TRUE(generator1->sample(state1));
     ASSERT_TRUE(generator2->sample(state2));
@@ -341,7 +386,8 @@ TEST_F(InverseKinematicsSampleableTest, SampleGeneratorIkInfeasible)
   bn1->getParentJoint()->setPositionUpperLimit(0, 0);
 
   // Set CyclicSampleable.
-  auto seedState = mStateSpace1->getScopedStateFromMetaSkeleton();
+  auto seedState
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
   seedState.getSubStateHandle<SO2>(0).setAngle(0);
   seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
 
@@ -352,12 +398,18 @@ TEST_F(InverseKinematicsSampleableTest, SampleGeneratorIkInfeasible)
       new CyclicSampleable(finiteSampleConstraint));
 
   InverseKinematicsSampleable ikConstraint(
-      mStateSpace1, mTsr, seedConstraint, mInverseKinematics1, 1);
+      mStateSpace1,
+      mManipulator1,
+      mTsr,
+      seedConstraint,
+      mInverseKinematics1,
+      1);
 
   auto generator = ikConstraint.createSampleGenerator();
 
   ASSERT_TRUE(generator->canSample());
 
-  auto state = mStateSpace1->getScopedStateFromMetaSkeleton();
+  auto state
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
   ASSERT_FALSE(generator->sample(state));
 }

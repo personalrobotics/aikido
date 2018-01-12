@@ -39,13 +39,10 @@ void InstantaneousTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
         "Trajectory does not operate in this Executor's"
         " MetaSkeletonStateSpace.");
 
-  auto metaSkeleton = space->getMetaSkeleton();
-
-  // Check if metaSkeleton contains Dofs only in mSkeleton.
+  // Check if the space only contains DOFs in mSkeleton.
   std::unique_lock<std::mutex> skeleton_lock(mSkeleton->getMutex());
-  for (auto dof : metaSkeleton->getDofs())
+  for (const auto& name : space->getProperties().getDofNames())
   {
-    auto name = dof->getName();
     auto dof_in_skeleton = mSkeleton->getDof(name);
 
     if (!dof_in_skeleton)
@@ -76,7 +73,7 @@ std::future<void> InstantaneousTrajectoryExecutor::execute(
 
     auto state = space->createState();
     traj->evaluate(traj->getEndTime(), state);
-    space->setState(state);
+    space->setState(mSkeleton.get(), state);
     mPromise->set_value();
   }
 

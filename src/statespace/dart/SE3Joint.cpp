@@ -1,30 +1,31 @@
-#include <aikido/statespace/dart/SE3Joint.hpp>
+#include "aikido/statespace/dart/SE3Joint.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
 
 //==============================================================================
-SE3Joint::SE3Joint(::dart::dynamics::FreeJoint* _joint)
-  : SE3(), JointStateSpace(_joint)
+SE3Joint::SE3Joint(const ::dart::dynamics::FreeJoint* joint)
+  : SE3(), JointStateSpace(joint)
 {
+  // Do nothing.
 }
 
 //==============================================================================
 void SE3Joint::convertPositionsToState(
-    const Eigen::VectorXd& _positions, StateSpace::State* _state) const
+    const Eigen::VectorXd& positions, StateSpace::State* state) const
 {
   setIsometry(
-      static_cast<State*>(_state),
-      ::dart::dynamics::FreeJoint::convertToTransform(_positions));
+      static_cast<State*>(state),
+      ::dart::dynamics::FreeJoint::convertToTransform(positions));
 }
 
 //==============================================================================
 void SE3Joint::convertStateToPositions(
-    const StateSpace::State* _state, Eigen::VectorXd& _positions) const
+    const StateSpace::State* state, Eigen::VectorXd& positions) const
 {
-  _positions = ::dart::dynamics::FreeJoint::convertToPositions(
-      getIsometry(static_cast<const SE3::State*>(_state)));
+  positions = ::dart::dynamics::FreeJoint::convertToPositions(
+      getIsometry(static_cast<const SE3::State*>(state)));
 }
 
 } // namespace dart

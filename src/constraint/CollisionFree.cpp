@@ -5,15 +5,21 @@ namespace constraint {
 
 //==============================================================================
 CollisionFree::CollisionFree(
-    statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
     dart::collision::CollisionOption _collisionOptions)
-  : mStatespace(std::move(_statespace))
+  : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(_metaskeleton))
   , mCollisionDetector(std::move(_collisionDetector))
   , mCollisionOptions(std::move(_collisionOptions))
 {
-  if (!mStatespace)
-    throw std::invalid_argument("_statespace is nullptr.");
+  if (!mMetaSkeletonStateSpace)
+    throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
+
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("_metaskeleton is nullptr.");
 
   if (!mCollisionDetector)
     throw std::invalid_argument("_collisionDetector is nullptr.");
@@ -22,38 +28,66 @@ CollisionFree::CollisionFree(
 //==============================================================================
 statespace::StateSpacePtr CollisionFree::getStateSpace() const
 {
-  return mStatespace;
+  return mMetaSkeletonStateSpace;
 }
 
 //==============================================================================
 bool CollisionFree::isSatisfied(
-    const aikido::statespace::StateSpace::State* _state) const
+    const aikido::statespace::StateSpace::State* _state,
+    TestableOutcome* outcome) const
 {
+  auto collisionFreeOutcome
+      = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
+
+  if (collisionFreeOutcome)
+  {
+    collisionFreeOutcome->clear();
+  }
+
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
-  mStatespace->setState(skelStatePtr);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
 
   bool collision = false;
   dart::collision::CollisionResult collisionResult;
-  for (auto groups : mGroupsToPairwiseCheck)
+  for (const auto& groups : mGroupsToPairwiseCheck)
   {
     collision = mCollisionDetector->collide(
         groups.first.get(),
         groups.second.get(),
         mCollisionOptions,
         &collisionResult);
+
     if (collision)
+    {
+      if (collisionFreeOutcome)
+      {
+        collisionFreeOutcome->mPairwiseContacts = collisionResult.getContacts();
+      }
       return false;
+    }
   }
 
-  for (auto group : mGroupsToSelfCheck)
+  for (const auto& group : mGroupsToSelfCheck)
   {
     collision = mCollisionDetector->collide(
         group.get(), mCollisionOptions, &collisionResult);
     if (collision)
+    {
+      if (collisionFreeOutcome)
+      {
+        collisionFreeOutcome->mSelfContacts = collisionResult.getContacts();
+      }
       return false;
+    }
   }
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> CollisionFree::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new CollisionFreeOutcome);
 }
 
 //==============================================================================

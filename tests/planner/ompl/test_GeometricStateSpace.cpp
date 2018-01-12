@@ -48,7 +48,7 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullInterpolator)
 
 TEST_F(GeometricStateSpaceTest, ThrowsOnInterpolatorMismatch)
 {
-  auto sspace = std::make_shared<StateSpace>(robot);
+  auto sspace = std::make_shared<StateSpace>(robot.get());
   auto binterpolator
       = std::make_shared<aikido::statespace::GeodesicInterpolator>(sspace);
 
@@ -107,7 +107,7 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullSampler)
 
 TEST_F(GeometricStateSpaceTest, ThrowsOnSamplerMismatch)
 {
-  auto sspace = std::make_shared<StateSpace>(robot);
+  auto sspace = std::make_shared<StateSpace>(robot.get());
   auto bsampler
       = aikido::constraint::createSampleableBounds(sspace, make_rng());
 
@@ -137,7 +137,7 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullBoundsConstraint)
 
 TEST_F(GeometricStateSpaceTest, ThrowsOnBoundsConstraintMismatch)
 {
-  auto sspace = std::make_shared<StateSpace>(robot);
+  auto sspace = std::make_shared<StateSpace>(robot.get());
   auto bconstraint = aikido::constraint::createTestableBounds(sspace);
 
   EXPECT_THROW(
@@ -166,7 +166,7 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullBoundsProjection)
 
 TEST_F(GeometricStateSpaceTest, ThrowsOnBoundsProjectionMismatch)
 {
-  auto sspace = std::make_shared<StateSpace>(robot);
+  auto sspace = std::make_shared<StateSpace>(robot.get());
   auto bconstraint = aikido::constraint::createProjectableBounds(sspace);
 
   EXPECT_THROW(

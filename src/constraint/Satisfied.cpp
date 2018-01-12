@@ -31,9 +31,21 @@ std::vector<constraint::ConstraintType> Satisfied::getConstraintTypes() const
 
 //==============================================================================
 bool Satisfied::isSatisfied(
-    const statespace::StateSpace::State* /*state*/) const
+    const statespace::StateSpace::State* /*state*/,
+    TestableOutcome* outcome) const
 {
+  auto defaultOutcomeObject
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> Satisfied::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================
