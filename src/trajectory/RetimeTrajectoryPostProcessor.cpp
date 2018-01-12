@@ -1,8 +1,8 @@
-#include <magi/util/RetimeTrajectoryPostProcessor.hpp>
-#include <magi/util/postprocess.hpp>
+#include <aikido/trajectory/RetimeTrajectoryPostProcessor.hpp>
+#include <aikido/trajectory/postprocess.hpp>
 
-namespace magi {
-namespace util {
+namespace aikido {
+namespace trajectory {
 
 RetimeTrajectoryPostProcessor::RetimeTrajectoryPostProcessor(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr _space,
@@ -21,13 +21,5 @@ RetimeTrajectoryPostProcessor::postprocess(
                                      mAccelerationLimits);
 }
 
-std::unique_ptr<aikido::trajectory::Spline>
-RetimeTrajectoryPostProcessor::postprocess(
-    const std::unique_ptr<aikido::trajectory::Spline> &_inputTraj,
-    aikido::common::RNG *_rng) {
-  return postprocess::timeTrajectory(std::move(_inputTraj), mVelocityLimits,
-                                     mAccelerationLimits);
-}
-
-} // namespace util
-} // namespace magi
+} // namespace trajectory
+} // namespace aikido

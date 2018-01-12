@@ -1,5 +1,7 @@
 set(sources
   Interpolated.cpp
+  postprocess.cpp
+  RetimeTrajectoryPostProcessor.cpp
   Spline.cpp
 )
 
