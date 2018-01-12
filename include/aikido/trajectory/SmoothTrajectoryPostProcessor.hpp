@@ -1,12 +1,12 @@
-#ifndef MAGI_UTIL_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
-#define MAGI_UTIL_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
+#ifndef AIKIDO_TRAJECTORY_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
+#define AIKIDO_TRAJECTORY_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
 
-#include <aikido/constraint/Testable.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <magi/util/TrajectoryPostProcessor.hpp>
+#include "../constraint/Testable.hpp"
+#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "TrajectoryPostProcessor.hpp"
 
-namespace magi {
-namespace util {
+namespace aikido {
+namespace trajectory {
 
 class SmoothTrajectoryPostProcessor : public TrajectoryPostProcessor {
 public:
@@ -34,11 +34,6 @@ public:
   postprocess(const aikido::trajectory::InterpolatedPtr &_inputTraj,
               aikido::common::RNG *_rng) override;
 
-  // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline>
-  postprocess(const std::unique_ptr<aikido::trajectory::Spline> &_inputTraj,
-              aikido::common::RNG *_rng) override;
-
 private:
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mSpace;
   double mSmootherFeasibilityCheckResolution;
@@ -54,7 +49,7 @@ private:
   int mBlendIterations;
 };
 
-} // util
-} // magi
+} // trajectory
+} // aikido
 
-#endif
+#endif // AIKIDO_TRAJECTORY_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_

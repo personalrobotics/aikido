@@ -1,10 +1,10 @@
-#ifndef MAGI_UTIL_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
-#define MAGI_UTIL_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
+#ifndef AIKIDO_TRAJECTORY_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
+#define AIKIDO_TRAJECTORY_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
 
-#include <magi/util/TrajectoryPostProcessor.hpp>
+#include "TrajectoryPostProcessor.hpp"
 
-namespace magi {
-namespace util {
+namespace aikido {
+namespace trajectory {
 
 class RetimeTrajectoryPostProcessor : public TrajectoryPostProcessor {
 public:
@@ -17,10 +17,6 @@ public:
   postprocess(const aikido::trajectory::InterpolatedPtr &_inputTraj,
               aikido::common::RNG *_rng) override;
 
-  virtual std::unique_ptr<aikido::trajectory::Spline>
-  postprocess(const std::unique_ptr<aikido::trajectory::Spline> &_inputTraj,
-              aikido::common::RNG *_rng) override;
-
 private:
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mSpace;
 
@@ -28,7 +24,7 @@ private:
   const Eigen::VectorXd mAccelerationLimits;
 };
 
-} // util
-} // magi
+} // trajectory
+} // aikido
 
-#endif // MAGI_UTIL_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
+#endif // AIKIDO_TRAJECTORY_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
