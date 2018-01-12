@@ -37,7 +37,7 @@ public:
       const std::string& frameId,
       const std::string& markerName,
       trajectory::ConstTrajectoryPtr trajectory,
-      const dart::dynamics::MetaSkeleton& skeleton,
+      dart::dynamics::MetaSkeletonPtr skeleton,
       const dart::dynamics::Frame& frame,
       const Eigen::Vector4d& rgba = Eigen::Vector4d::Constant(0.75),
       double thickness = 0.01,
@@ -125,7 +125,7 @@ private:
 
   /// Target DART meta skeleton that the C-space trajectory will be applied to
   /// compute the visualizing task-space trajectory.
-  const dart::dynamics::MetaSkeleton& mSkeleton;
+  dart::dynamics::MetaSkeletonPtr mSkeleton;
 
   /// Target DART frame where the trajectory of its origin will be visualized.
   const dart::dynamics::Frame& mFrame;

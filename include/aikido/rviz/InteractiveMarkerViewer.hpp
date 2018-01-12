@@ -69,7 +69,7 @@ public:
   /// \return Trajectory marker added to this viewer.
   TrajectoryMarkerPtr addTrajectoryMarker(
       trajectory::ConstTrajectoryPtr trajectory,
-      const dart::dynamics::MetaSkeleton& skeleton,
+      dart::dynamics::MetaSkeletonPtr skeleton,
       const dart::dynamics::Frame& frame,
       const Eigen::Vector4d& rgba = Eigen::Vector4d::Constant(0.75),
       double thickness = 0.01,

@@ -19,7 +19,7 @@ public:
   virtual void SetUp()
   {
     auto robot = createTranslationalRobot();
-    stateSpace = std::make_shared<MetaSkeletonStateSpace>(robot);
+    stateSpace = std::make_shared<MetaSkeletonStateSpace>(robot.get());
 
     auto mockTestable = std::make_shared<PassingConstraint>(stateSpace);
     si = aikido::planner::ompl::createSpaceInformation(
@@ -124,7 +124,7 @@ TEST_F(MotionValidatorTest, BadValidationSmallResolution)
   setTranslationalState(Eigen::Vector3d(-0.2, -0.2, 0), stateSpace, state1);
   setTranslationalState(Eigen::Vector3d(5, 5, 0), stateSpace, state2);
 
-  // Set stepsize large enough that validation shoudl succeed even with obstacle
+  // Set stepsize large enough that validation should succeed even with obstacle
   // in the way
   auto validator1
       = std::make_shared<aikido::planner::ompl::MotionValidator>(si, 0.5);

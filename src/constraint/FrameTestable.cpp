@@ -5,16 +5,21 @@ namespace constraint {
 
 //==============================================================================
 FrameTestable::FrameTestable(
-    statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     dart::dynamics::ConstJacobianNodePtr _frame,
     TestablePtr _poseConstraint)
-  : mStateSpace(std::move(_stateSpace))
+  : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(_metaskeleton))
   , mFrame(_frame)
   , mPoseConstraint(std::move(_poseConstraint))
   , mPoseStateSpace()
 {
-  if (!mStateSpace)
-    throw std::invalid_argument("_stateSpace is nullptr.");
+  if (!mMetaSkeletonStateSpace)
+    throw std::invalid_argument("_metaSkeletonStateSpace is nullptr.");
+
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("_metaskeleton is nullptr.");
 
   if (!mPoseConstraint)
     throw std::invalid_argument("_poseConstraint is nullptr.");
@@ -29,7 +34,7 @@ FrameTestable::FrameTestable(
     throw std::invalid_argument("_poseConstraint is not in SE3.");
 
   // TODO: If possible, check that _frame is influenced by at least
-  // one DegreeOfFreedom in the _stateSpace's Skeleton.
+  // one DegreeOfFreedom in the _metaSkeletonStateSpace's Skeleton.
 }
 
 //==============================================================================
@@ -40,7 +45,7 @@ bool FrameTestable::isSatisfied(
   auto state
       = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
           _state);
-  mStateSpace->setState(state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Check the pose constraint
   auto st = mPoseStateSpace->createState();
@@ -57,7 +62,7 @@ std::unique_ptr<TestableOutcome> FrameTestable::createOutcome() const
 //==============================================================================
 std::shared_ptr<statespace::StateSpace> FrameTestable::getStateSpace() const
 {
-  return mStateSpace;
+  return mMetaSkeletonStateSpace;
 }
 
 } // namespace constraint

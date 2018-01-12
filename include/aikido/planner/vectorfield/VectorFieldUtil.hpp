@@ -16,7 +16,7 @@ namespace vectorfield {
 /// \param[out] jointVelocity Calculated joint velocities.
 /// \param[in] desiredTwist Desired twist, which consists of angular velocity
 /// and linear velocity.
-/// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] metaSkeleton MetaSkeleton to plan with
 /// \param[in] bodyNode Body node of the end-effector.
 /// \param[in] jointLimitPadding If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
@@ -31,8 +31,8 @@ namespace vectorfield {
 bool computeJointVelocityFromTwist(
     Eigen::VectorXd& jointVelocity,
     const Eigen::Vector6d& desiredTwist,
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    dart::dynamics::BodyNodePtr bodyNode,
+    const dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    const dart::dynamics::BodyNodePtr bodyNode,
     double jointLimitPadding,
     const Eigen::VectorXd& jointVelocityLowerLimits,
     const Eigen::VectorXd& jointVelocityUpperLimits,

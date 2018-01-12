@@ -1,8 +1,8 @@
 #include "aikido/rviz/TrajectoryMarker.hpp"
 
 #include "aikido/rviz/shape_conversions.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp"
 
 namespace aikido {
 namespace rviz {
@@ -13,7 +13,7 @@ TrajectoryMarker::TrajectoryMarker(
     const std::string& frameId,
     const std::string& markerName,
     trajectory::ConstTrajectoryPtr trajectory,
-    const dart::dynamics::MetaSkeleton& targetSkeleton,
+    dart::dynamics::MetaSkeletonPtr targetSkeleton,
     const dart::dynamics::Frame& frame,
     const Eigen::Vector4d& rgba,
     double thickness,
@@ -23,7 +23,7 @@ TrajectoryMarker::TrajectoryMarker(
   , mFrameId(frameId)
   , mTrajectory(nullptr)
   , mNumLineSegments()
-  , mSkeleton(targetSkeleton)
+  , mSkeleton(std::move(targetSkeleton))
   , mFrame(frame)
   , mNeedUpdate(true)
   , mNeedPointsUpdate(true)
@@ -78,7 +78,7 @@ void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
           "The statespace in the trajectory should be MetaSkeletonStateSpace");
     }
 
-    if (statespace->getDimension() != mSkeleton.getNumDofs())
+    if (statespace->getDimension() != mSkeleton->getNumDofs())
     {
       throw std::invalid_argument(
           "The statespace in the trajectory is not compatible (dimensions are "
@@ -223,7 +223,7 @@ void TrajectoryMarker::updatePoints()
       = std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
           statespace);
 
-  auto saver = statespace::dart::MetaSkeletonStateSpaceSaver(metaSkeletonSs);
+  auto saver = statespace::dart::MetaSkeletonStateSaver(mSkeleton);
   DART_UNUSED(saver);
 
   auto state = metaSkeletonSs->createState();
@@ -235,13 +235,13 @@ void TrajectoryMarker::updatePoints()
   for (std::size_t i = 0u; i < mNumLineSegments - 1u; ++i)
   {
     mTrajectory->evaluate(t, state);
-    metaSkeletonSs->setState(state);
+    metaSkeletonSs->setState(mSkeleton.get(), state);
     pose = mFrame.getTransform().translation();
     points.emplace_back(convertEigenToROSPoint(pose));
     t += dt;
   }
   mTrajectory->evaluate(mTrajectory->getEndTime(), state);
-  metaSkeletonSs->setState(state);
+  metaSkeletonSs->setState(mSkeleton.get(), state);
   pose = mFrame.getTransform().translation();
   points.emplace_back(convertEigenToROSPoint(pose));
 

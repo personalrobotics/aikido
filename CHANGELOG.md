@@ -1,5 +1,11 @@
 ## Aikido 0 (prerelease)
 
+### 0.3.0 (201X-XX-XX)
+
+* State Space
+
+  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
+
 ### 0.2.0 (2018-01-09)
 
 * State Space
