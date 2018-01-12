@@ -410,5 +410,3 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::getMimicRatio();
   EXPECT_NEAR(0.636173, primal, eps);
   EXPECT_NEAR(primal*mimicRatio, distal, eps);
 }
-
-*/
