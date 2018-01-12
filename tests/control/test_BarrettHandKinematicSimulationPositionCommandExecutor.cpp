@@ -352,7 +352,7 @@ TEST_F(BarrettHandKinematicSimulationPositionCommandExecutorTest,
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-    mRobot, mPrefix, mCollisionDetector, mCollideWith);
+    mRobot, mPrefix, mCollisionDetector, collideWith);
 
   auto future = executor.execute(position);
 
@@ -387,7 +387,7 @@ TEST_F(BarrettHandKinematicSimulationPositionCommandExecutorTest,
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-    mRobot, mPrefix, mCollisionDetector, mCollideWith);
+    mRobot, mPrefix, mCollisionDetector, collideWith);
 
   auto future = executor.execute(position);
   std::future_status status;
