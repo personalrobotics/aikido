@@ -21,6 +21,9 @@ BarrettHandKinematicSimulationPositionCommandExecutor::
   , mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
 {
+  if (!robot)
+    throw std::invalid_argument("Robot is null");
+
   if (mCollisionDetector && mCollideWith)
   {
     // If a collision group is given and its collision detector does not match
@@ -74,7 +77,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
     std::stringstream message;
     message << "Invalid prefix '" << prefix << "', "
             << "must be either '/left/' or '/right/'";
-    throw std::runtime_error(message.str());
+    throw std::invalid_argument(message.str());
   }
 
   const auto fingerChains = std::array<ChainPtr, 3>{{
