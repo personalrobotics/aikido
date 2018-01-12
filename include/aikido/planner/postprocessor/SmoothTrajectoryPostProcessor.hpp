@@ -1,12 +1,13 @@
-#ifndef AIKIDO_TRAJECTORY_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
-#define AIKIDO_TRAJECTORY_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
+#ifndef AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
+#define AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
 
-#include "../constraint/Testable.hpp"
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "../../constraint/Testable.hpp"
+#include "../../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "TrajectoryPostProcessor.hpp"
 
 namespace aikido {
-namespace trajectory {
+namespace planner {
+namespace postprocessor {
 
 class SmoothTrajectoryPostProcessor : public TrajectoryPostProcessor {
 public:
@@ -49,7 +50,8 @@ private:
   int mBlendIterations;
 };
 
-} // trajectory
+} // postprocessor
+} // planner
 } // aikido
 
-#endif // AIKIDO_TRAJECTORY_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
+#endif // AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_

@@ -10,6 +10,7 @@ add_library("${PROJECT_NAME}_trajectory" SHARED ${sources})
 target_link_libraries("${PROJECT_NAME}_trajectory"
   PUBLIC
     "${PROJECT_NAME}_common"
+    "${PROJECT_NAME}_planner"
     "${PROJECT_NAME}_statespace"
 )
 target_compile_options("${PROJECT_NAME}_trajectory"

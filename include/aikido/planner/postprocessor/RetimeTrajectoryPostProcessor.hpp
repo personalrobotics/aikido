@@ -1,10 +1,11 @@
-#ifndef AIKIDO_TRAJECTORY_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
-#define AIKIDO_TRAJECTORY_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
+#ifndef AIKIDO_PLANNER_POSTPROCESSOR_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
+#define AIKIDO_PLANNER_POSTPROCESSOR_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
 
 #include "TrajectoryPostProcessor.hpp"
 
 namespace aikido {
-namespace trajectory {
+namespace planner {
+namespace postprocessor {
 
 class RetimeTrajectoryPostProcessor : public TrajectoryPostProcessor {
 public:
@@ -24,7 +25,8 @@ private:
   const Eigen::VectorXd mAccelerationLimits;
 };
 
-} // trajectory
+} // postprocessor
+} // planner
 } // aikido
 
-#endif // AIKIDO_TRAJECTORY_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
+#endif // AIKIDO_PLANNER_POSTPROCESSOR_RETIMETRAJECTORYPOSTPROCESSOR_HPP_

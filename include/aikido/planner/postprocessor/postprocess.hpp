@@ -1,14 +1,15 @@
-#ifndef AIKIDO_TRAJECTORY_POSTPROCESS_HPP_
-#define AIKIDO_TRAJECTORY_POSTPROCESS_HPP_
+#ifndef AIKIDO_PLANNER_POSTPROCESSOR_POSTPROCESS_HPP_
+#define AIKIDO_PLANNER_POSTPROCESSOR_POSTPROCESS_HPP_
 
-#include "../common/RNG.hpp"
-#include "../constraint/Testable.hpp"
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "../trajectory/Interpolated.hpp"
-#include "../trajectory/Spline.hpp"
+#include "../../common/RNG.hpp"
+#include "../../constraint/Testable.hpp"
+#include "../../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "../../trajectory/Interpolated.hpp"
+#include "../../trajectory/Spline.hpp"
 
 namespace aikido {
-namespace trajectory {
+namespace planner {
+namespace postprocessor {
 namespace postprocess {
 /// Simplify a given interpolated trajectory
 /// \param _space The StateSpace for the metaskeleton
@@ -60,7 +61,8 @@ smoothTrajectory(const aikido::trajectory::InterpolatedPtr &_inputTraj,
                  int _blendIterations = 1);
 
 } // namespace postprocess
-} // namespcae trajectory
+} // namespace postprocessor
+} // namespcae planner
 } // namespace aikido
 
-#endif // AIKIDO_TRAJECTORY_POSTPROCESS_HPP_
+#endif // AIKIDO_PLANNER_POSTPROCESSOR_POSTPROCESS_HPP_
