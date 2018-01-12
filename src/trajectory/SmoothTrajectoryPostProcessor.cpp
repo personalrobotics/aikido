@@ -1,8 +1,8 @@
-#include <magi/util/SmoothTrajectoryPostProcessor.hpp>
-#include <magi/util/postprocess.hpp>
+#include <aikido/trajectory/SmoothTrajectoryPostProcessor.hpp>
+#include <aikido/trajectory/postprocess.hpp>
 
-namespace magi {
-namespace util {
+namespace aikido {
+namespace trajectory {
 
 using aikido::trajectory::Spline;
 using aikido::trajectory::InterpolatedPtr;
@@ -41,16 +41,5 @@ SmoothTrajectoryPostProcessor::postprocess(const InterpolatedPtr &_inputTraj,
   return timedTrajectory;
 }
 
-std::unique_ptr<Spline> SmoothTrajectoryPostProcessor::postprocess(
-    const std::unique_ptr<aikido::trajectory::Spline> &_inputTraj, RNG *_rng) {
-
-  auto timedTrajectory = postprocess::smoothTrajectory(
-      _inputTraj, mEnableShortcut, mEnableBlend, mCollisionTestable,
-      _rng->clone(), mVelocityLimits, mAccelerationLimits,
-      mSmootherFeasibilityCheckResolution, mSmootherFeasibilityApproxTolerance,
-      mShortcutTimelimit, mBlendRadius, mBlendIterations);
-
-  return timedTrajectory;
-}
 }
 }

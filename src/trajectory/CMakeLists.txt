@@ -2,6 +2,7 @@ set(sources
   Interpolated.cpp
   postprocess.cpp
   RetimeTrajectoryPostProcessor.cpp
+  SmoothTrajectoryPostProcessor.cpp
   Spline.cpp
 )
 
