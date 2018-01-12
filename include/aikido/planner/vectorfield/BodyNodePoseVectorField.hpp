@@ -71,7 +71,7 @@ public:
       const aikido::constraint::Testable* constraint,
       double evalStepSize,
       double& evalTimePivot,
-      bool excludeEndTime) const override;
+      bool includeEndTime) const override;
 
   /// Return meta skeleton state space.
   aikido::statespace::dart::MetaSkeletonStateSpacePtr

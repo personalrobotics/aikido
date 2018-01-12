@@ -131,7 +131,7 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
             mConstraint,
             mConstraintCheckResolution,
             mLastEvaluationTime,
-            true))
+            false))
     {
       throw ConstraintViolatedError();
     }
