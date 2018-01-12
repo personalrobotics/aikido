@@ -1,8 +1,9 @@
-#include <aikido/trajectory/RetimeTrajectoryPostProcessor.hpp>
-#include <aikido/trajectory/postprocess.hpp>
+#include <aikido/planner/postprocessor/postprocess.hpp>
+#include <aikido/planner/postprocessor/RetimeTrajectoryPostProcessor.hpp>
 
 namespace aikido {
-namespace trajectory {
+namespace planner {
+namespace postprocessor {
 
 RetimeTrajectoryPostProcessor::RetimeTrajectoryPostProcessor(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr _space,
@@ -21,5 +22,6 @@ RetimeTrajectoryPostProcessor::postprocess(
                                      mAccelerationLimits);
 }
 
-} // namespace trajectory
-} // namespace aikido
+} // postprocessor
+} // planner
+} // aikido

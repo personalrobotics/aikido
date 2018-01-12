@@ -3,13 +3,14 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
+#include <aikido/planner/postprocessor/postprocess.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
-#include <aikido/trajectory/postprocess.hpp>
 #include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
-namespace trajectory {
+namespace planner {
+namespace postprocessor {
 namespace postprocess {
 
 using aikido::constraint::TestablePtr;
@@ -112,5 +113,6 @@ std::unique_ptr<Spline> smoothTrajectory(
 }
 
 } // namespace postprocess
-} // namespace trajectory
+} // namespace postprocessor
+} // namespace planner
 } // namespace aikido

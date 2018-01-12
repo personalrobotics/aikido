@@ -1,8 +1,9 @@
-#include <aikido/trajectory/SmoothTrajectoryPostProcessor.hpp>
-#include <aikido/trajectory/postprocess.hpp>
+#include <aikido/planner/postprocessor/postprocess.hpp>
+#include <aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp>
 
 namespace aikido {
-namespace trajectory {
+namespace planner {
+namespace postprocessor {
 
 using aikido::trajectory::Spline;
 using aikido::trajectory::InterpolatedPtr;
@@ -41,5 +42,6 @@ SmoothTrajectoryPostProcessor::postprocess(const InterpolatedPtr &_inputTraj,
   return timedTrajectory;
 }
 
-}
-}
+} // postprocessor
+} // planner
+} // aikido
