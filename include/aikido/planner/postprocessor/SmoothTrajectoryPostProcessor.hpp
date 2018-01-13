@@ -8,7 +8,8 @@ namespace aikido {
 namespace planner {
 namespace postprocessor {
 
-class SmoothTrajectoryPostProcessor : public TrajectoryPostProcessor {
+class SmoothTrajectoryPostProcessor : public TrajectoryPostProcessor
+{
 public:
   /// Perform parabolic smoothing on trajectory
   /// \param _enableShortcut Whether shortcutting is used in smoothing.
@@ -23,16 +24,19 @@ public:
       aikido::statespace::StateSpacePtr _space,
       double _smootherFeasibilityCheckResolution,
       double _smootherFeasibilityApproxTolerance,
-      const Eigen::VectorXd &_velocityLimits,
-      const Eigen::VectorXd &_accelerationLimits,
-      const aikido::constraint::TestablePtr &_collisionTestable,
-      bool _enableShortcut, bool _enableBlend, double _shortcutTimelimit,
-      double _blendRadius, int _blendIterations);
+      const Eigen::VectorXd& _velocityLimits,
+      const Eigen::VectorXd& _accelerationLimits,
+      const aikido::constraint::TestablePtr& _collisionTestable,
+      bool _enableShortcut,
+      bool _enableBlend,
+      double _shortcutTimelimit,
+      double _blendRadius,
+      int _blendIterations);
 
   // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline>
-  postprocess(const aikido::trajectory::InterpolatedPtr &_inputTraj,
-              aikido::common::RNG *_rng) override;
+  virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const aikido::trajectory::InterpolatedPtr& _inputTraj,
+      aikido::common::RNG* _rng) override;
 
 private:
   aikido::statespace::StateSpacePtr mSpace;

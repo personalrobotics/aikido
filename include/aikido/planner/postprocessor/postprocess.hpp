@@ -14,10 +14,10 @@ namespace postprocess {
 /// Perform parabolic retiming on an interpolated trajectory
 /// \param _inputTraj The untimed trajectory to retime
 /// \return The timed trajectory subject to limits
-std::unique_ptr<aikido::trajectory::Spline>
-timeTrajectory(const aikido::trajectory::InterpolatedPtr &_inputTraj,
-               const Eigen::VectorXd &velocityLimit,
-               const Eigen::VectorXd &accelerationLimits);
+std::unique_ptr<aikido::trajectory::Spline> timeTrajectory(
+    const aikido::trajectory::InterpolatedPtr& _inputTraj,
+    const Eigen::VectorXd& velocityLimit,
+    const Eigen::VectorXd& accelerationLimits);
 
 /// Perform parabolic smoothing on trajectory
 /// \param _inputTraj The untimed trajectory for the arm to smooth.
@@ -32,17 +32,19 @@ timeTrajectory(const aikido::trajectory::InterpolatedPtr &_inputTraj,
 /// \param _blendIterations Blend iterations for blending. It is
 /// ineffective when _enableBlend is false.
 /// \return The smoothed trajectory subject to limits
-std::unique_ptr<aikido::trajectory::Spline>
-smoothTrajectory(const aikido::trajectory::InterpolatedPtr &_inputTraj,
-                 bool _enableShortcut, bool _enableBlend,
-                 const aikido::constraint::TestablePtr &_collisionTestable,
-                 std::unique_ptr<aikido::common::RNG> _rng,
-                 const Eigen::VectorXd &_velocityLimit,
-                 const Eigen::VectorXd &_accelerationLimits,
-                 double _smootherFeasibilityCheckResolution,
-                 double _smootherFeasibilityApproxTolerance,
-                 double _shortcutTimelimit = 0.6, double _blendRadius = 0.4,
-                 int _blendIterations = 1);
+std::unique_ptr<aikido::trajectory::Spline> smoothTrajectory(
+    const aikido::trajectory::InterpolatedPtr& _inputTraj,
+    bool _enableShortcut,
+    bool _enableBlend,
+    const aikido::constraint::TestablePtr& _collisionTestable,
+    std::unique_ptr<aikido::common::RNG> _rng,
+    const Eigen::VectorXd& _velocityLimit,
+    const Eigen::VectorXd& _accelerationLimits,
+    double _smootherFeasibilityCheckResolution,
+    double _smootherFeasibilityApproxTolerance,
+    double _shortcutTimelimit = 0.6,
+    double _blendRadius = 0.4,
+    int _blendIterations = 1);
 
 } // namespace postprocess
 } // namespace postprocessor

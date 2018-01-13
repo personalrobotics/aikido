@@ -34,8 +34,7 @@ protected:
 
   double initNonStraightLine()
   {
-    mTrajectory
-        = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
+    mTrajectory = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
     Vector2d p1(1., 1.), p2(2., 1.2), p3(2.2, 2.), p4(3., 2.2), p5(3.2, 3.),
@@ -100,20 +99,21 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
   bool enableBlend = false;
 
   SmoothTrajectoryPostProcessor testSmoothPostProcessor(
-    mStateSpace,
-    mFeasibilityCheckResolution,
-    mFeasibilityApproxTolerance,
-    mMaxVelocity,
-    mMaxAcceleration,
-    testable,
-    enableShortcut,
-    enableBlend,
-    mTimelimit,
-    mBlendRadius,
-    mBlendIterations);
+      mStateSpace,
+      mFeasibilityCheckResolution,
+      mFeasibilityApproxTolerance,
+      mMaxVelocity,
+      mMaxAcceleration,
+      testable,
+      enableShortcut,
+      enableBlend,
+      mTimelimit,
+      mBlendRadius,
+      mBlendIterations);
 
   auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
-  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
+  auto smoothedTrajectory
+      = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
 
   // Position.
   auto state = mStateSpace->createState();
@@ -143,20 +143,21 @@ TEST_F(SmoothPostProcessorTests, useBlend)
   bool enableBlend = true;
 
   SmoothTrajectoryPostProcessor testSmoothPostProcessor(
-    mStateSpace,
-    mFeasibilityCheckResolution,
-    mFeasibilityApproxTolerance,
-    mMaxVelocity,
-    mMaxAcceleration,
-    testable,
-    enableShortcut,
-    enableBlend,
-    mTimelimit,
-    mBlendRadius,
-    mBlendIterations);
+      mStateSpace,
+      mFeasibilityCheckResolution,
+      mFeasibilityApproxTolerance,
+      mMaxVelocity,
+      mMaxAcceleration,
+      testable,
+      enableShortcut,
+      enableBlend,
+      mTimelimit,
+      mBlendRadius,
+      mBlendIterations);
 
   auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
-  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
+  auto smoothedTrajectory
+      = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
 
   // Position.
   auto state = mStateSpace->createState();
@@ -186,20 +187,21 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
   bool enableBlend = true;
 
   SmoothTrajectoryPostProcessor testSmoothPostProcessor(
-    mStateSpace,
-    mFeasibilityCheckResolution,
-    mFeasibilityApproxTolerance,
-    mMaxVelocity,
-    mMaxAcceleration,
-    testable,
-    enableShortcut,
-    enableBlend,
-    mTimelimit,
-    mBlendRadius,
-    mBlendIterations);
+      mStateSpace,
+      mFeasibilityCheckResolution,
+      mFeasibilityApproxTolerance,
+      mMaxVelocity,
+      mMaxAcceleration,
+      testable,
+      enableShortcut,
+      enableBlend,
+      mTimelimit,
+      mBlendRadius,
+      mBlendIterations);
 
   auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
-  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
+  auto smoothedTrajectory
+      = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
 
   // Position.
   auto state = mStateSpace->createState();

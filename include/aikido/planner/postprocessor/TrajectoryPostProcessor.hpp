@@ -9,13 +9,15 @@ namespace aikido {
 namespace planner {
 namespace postprocessor {
 
-class TrajectoryPostProcessor {
+class TrajectoryPostProcessor
+{
 public:
   /// \param _inputTraj The untimed trajectory for the arm to process.
   /// \param _rng Random number generator.
-  virtual std::unique_ptr<aikido::trajectory::Spline>
-  postprocess(const aikido::trajectory::InterpolatedPtr &_inputTraj,
-              aikido::common::RNG *_rng) = 0;
+  virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const aikido::trajectory::InterpolatedPtr& _inputTraj,
+      aikido::common::RNG* _rng)
+      = 0;
 };
 
 } // postprocessor
