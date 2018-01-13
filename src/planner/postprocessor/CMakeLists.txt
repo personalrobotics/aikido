@@ -9,8 +9,10 @@ target_include_directories("${PROJECT_NAME}_planner_postprocessor" SYSTEM
 )
 target_link_libraries("${PROJECT_NAME}_planner_postprocessor"
   PUBLIC
+    "${PROJECT_NAME}_planner_parabolic"
     "${PROJECT_NAME}_trajectory"
     "${PROJECT_NAME}_common"
+    "${PROJECT_NAME}_constraint"
     "${PROJECT_NAME}_statespace"
     ${DART_LIBRARIES}
 )
