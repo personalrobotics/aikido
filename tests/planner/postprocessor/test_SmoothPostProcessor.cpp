@@ -29,29 +29,29 @@ protected:
     mMaxAcceleration = Eigen::Vector2d(10., 10.);
 
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
-    mNonStraightLineLength = initNonStraightLine();
+    mOriginalTrajectoryLength = initNonStraightLine();
   }
 
   double initNonStraightLine()
   {
-    mNonStraightLine
+    mTrajectory
         = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
     Vector2d p1(1., 1.), p2(2., 1.2), p3(2.2, 2.), p4(3., 2.2), p5(3.2, 3.),
         p6(4., 3.2);
     state.setValue(p1);
-    mNonStraightLine->addWaypoint(0., state);
+    mTrajectory->addWaypoint(0., state);
     state.setValue(p2);
-    mNonStraightLine->addWaypoint(1., state);
+    mTrajectory->addWaypoint(1., state);
     state.setValue(p3);
-    mNonStraightLine->addWaypoint(2., state);
+    mTrajectory->addWaypoint(2., state);
     state.setValue(p4);
-    mNonStraightLine->addWaypoint(3., state);
+    mTrajectory->addWaypoint(3., state);
     state.setValue(p5);
-    mNonStraightLine->addWaypoint(4., state);
+    mTrajectory->addWaypoint(4., state);
     state.setValue(p6);
-    mNonStraightLine->addWaypoint(5, state);
+    mTrajectory->addWaypoint(5, state);
 
     double length = (p2 - p1).norm() + (p3 - p2).norm() + (p4 - p3).norm()
                     + (p5 - p4).norm() + (p6 - p5).norm();
@@ -81,9 +81,9 @@ protected:
   Eigen::Vector2d mMaxAcceleration;
 
   std::shared_ptr<GeodesicInterpolator> mInterpolator;
-  std::shared_ptr<Interpolated> mNonStraightLine;
+  std::shared_ptr<Interpolated> mTrajectory;
 
-  double mNonStraightLineLength;
+  double mOriginalTrajectoryLength;
   double mFeasibilityCheckResolution = 1e-4;
   double mFeasibilityApproxTolerance = 1e-3;
   double mBlendRadius = 0.5;
@@ -113,24 +113,24 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
     mBlendIterations);
 
   auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
-  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mNonStraightLine, clonedRNG.get());
+  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
 
   // Position.
   auto state = mStateSpace->createState();
   smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
   auto startState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getStartTime(), startState);
+  mTrajectory->evaluate(mTrajectory->getStartTime(), startState);
   EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
 
   smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
   auto goalState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
+  mTrajectory->evaluate(mTrajectory->getEndTime(), goalState);
   EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
-  EXPECT_TRUE(shortenLength < mNonStraightLineLength);
+  EXPECT_TRUE(shortenLength < mOriginalTrajectoryLength);
 
-  double originTime = mNonStraightLine->getDuration();
+  double originTime = mTrajectory->getDuration();
   double shortenTime = smoothedTrajectory->getDuration();
   EXPECT_TRUE(shortenTime < originTime);
 }
@@ -156,24 +156,24 @@ TEST_F(SmoothPostProcessorTests, useBlend)
     mBlendIterations);
 
   auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
-  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mNonStraightLine, clonedRNG.get());
+  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
 
   // Position.
   auto state = mStateSpace->createState();
   smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
   auto startState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getStartTime(), startState);
+  mTrajectory->evaluate(mTrajectory->getStartTime(), startState);
   EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
 
   smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
   auto goalState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
+  mTrajectory->evaluate(mTrajectory->getEndTime(), goalState);
   EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
-  EXPECT_TRUE(shortenLength < mNonStraightLineLength);
+  EXPECT_TRUE(shortenLength < mOriginalTrajectoryLength);
 
-  double originTime = mNonStraightLine->getDuration();
+  double originTime = mTrajectory->getDuration();
   double shortenTime = smoothedTrajectory->getDuration();
   EXPECT_TRUE(shortenTime < originTime);
 }
@@ -199,24 +199,24 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
     mBlendIterations);
 
   auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
-  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mNonStraightLine, clonedRNG.get());
+  auto smoothedTrajectory = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
 
   // Position.
   auto state = mStateSpace->createState();
   smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
   auto startState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getStartTime(), startState);
+  mTrajectory->evaluate(mTrajectory->getStartTime(), startState);
   EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
 
   smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
   auto goalState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
+  mTrajectory->evaluate(mTrajectory->getEndTime(), goalState);
   EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
-  EXPECT_TRUE(shortenLength < mNonStraightLineLength);
+  EXPECT_TRUE(shortenLength < mOriginalTrajectoryLength);
 
-  double originTime = mNonStraightLine->getDuration();
+  double originTime = mTrajectory->getDuration();
   double shortenTime = smoothedTrajectory->getDuration();
   EXPECT_TRUE(shortenTime < originTime);
 }
