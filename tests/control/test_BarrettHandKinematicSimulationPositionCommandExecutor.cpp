@@ -390,3 +390,147 @@ TEST_F(
   EXPECT_NEAR(0.636173, proximal, eps);
   EXPECT_NEAR(proximal * mimicRatio, distal, eps);
 }
+
+TEST_F(
+    BarrettHandKinematicSimulationPositionCommandExecutorTest,
+    setCollideWith_SameCollisionDetector_ProximalStopsAtCollisionDistalContinues)
+{
+  Eigen::Isometry3d transform(Eigen::Isometry3d::Identity());
+  transform.translation() = Eigen::Vector3d(0.3, 0, 0.3);
+  auto ball = createBall(transform, mCollisionDetector);
+  auto collideWith = mCollisionDetector->createCollisionGroupAsSharedPtr(ball);
+
+  Eigen::VectorXd position(Eigen::VectorXd::Zero(4));
+  double goal = M_PI;
+  position(0) = goal;
+
+  BarrettHandKinematicSimulationPositionCommandExecutor executor(
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+  executor.setCollideWith(collideWith);
+
+  auto future = executor.execute(position);
+  std::future_status status;
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while (status != std::future_status::ready);
+  future.get();
+
+  double proximal = mFingerChains[0]->getDof(1)->getPosition();
+  double distal = mFingerChains[0]->getDof(2)->getPosition();
+
+  // Values made by visual inspection
+  EXPECT_NEAR(0.55506, proximal, eps);
+  EXPECT_NEAR(2.81718, distal, eps);
+}
+
+TEST_F(
+    BarrettHandKinematicSimulationPositionCommandExecutorTest,
+    setCollideWith_SameCollisionDetector_DistalStopsAtCollisionProximalAlsoStops)
+{
+  Eigen::Isometry3d transform(Eigen::Isometry3d::Identity());
+  transform.translation() = Eigen::Vector3d(1.3, 0, 1.3);
+  auto ball = createBall(transform, mCollisionDetector);
+  auto collideWith = mCollisionDetector->createCollisionGroupAsSharedPtr(ball);
+
+  Eigen::VectorXd position(Eigen::VectorXd::Zero(4));
+  double goal = M_PI / 4;
+  position(0) = goal;
+
+  BarrettHandKinematicSimulationPositionCommandExecutor executor(
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+  executor.setCollideWith(collideWith);
+
+  auto future = executor.execute(position);
+  std::future_status status;
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while (status != std::future_status::ready);
+  future.get();
+
+  double proximal = mFingerChains[0]->getDof(1)->getPosition();
+  double distal = mFingerChains[0]->getDof(2)->getPosition();
+  double mimicRatio = BarrettFingerKinematicSimulationPositionCommandExecutor::
+      getMimicRatio();
+
+  // Values made by visual inspection
+  EXPECT_NEAR(0.211845, distal, eps);
+  EXPECT_NEAR(0.636173, proximal, eps);
+  EXPECT_NEAR(proximal * mimicRatio, distal, eps);
+}
+
+TEST_F(
+    BarrettHandKinematicSimulationPositionCommandExecutorTest,
+    setCollideWith_DifferentCollisionDetector_ProximalStopsAtCollisionDistalContinues)
+{
+  Eigen::Isometry3d transform(Eigen::Isometry3d::Identity());
+  transform.translation() = Eigen::Vector3d(0.3, 0, 0.3);
+  auto newDetector = FCLCollisionDetector::create();
+  auto ball = createBall(transform, newDetector);
+  auto collideWith = newDetector->createCollisionGroupAsSharedPtr(ball);
+
+  Eigen::VectorXd position(Eigen::VectorXd::Zero(4));
+  double goal = M_PI;
+  position(0) = goal;
+
+  BarrettHandKinematicSimulationPositionCommandExecutor executor(
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+  executor.setCollideWith(collideWith);
+
+  auto future = executor.execute(position);
+  std::future_status status;
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while (status != std::future_status::ready);
+  future.get();
+
+  double proximal = mFingerChains[0]->getDof(1)->getPosition();
+  double distal = mFingerChains[0]->getDof(2)->getPosition();
+
+  // Values made by visual inspection
+  EXPECT_NEAR(0.55506, proximal, eps);
+  EXPECT_NEAR(2.81718, distal, eps);
+}
+
+TEST_F(
+    BarrettHandKinematicSimulationPositionCommandExecutorTest,
+    setCollideWith_DifferentCollisionDetector_DistalStopsAtCollisionProximalAlsoStops)
+{
+  Eigen::Isometry3d transform(Eigen::Isometry3d::Identity());
+  transform.translation() = Eigen::Vector3d(1.3, 0, 1.3);
+  auto newDetector = FCLCollisionDetector::create();
+  auto ball = createBall(transform, newDetector);
+  auto collideWith = newDetector->createCollisionGroupAsSharedPtr(ball);
+
+  Eigen::VectorXd position(Eigen::VectorXd::Zero(4));
+  double goal = M_PI / 4;
+  position(0) = goal;
+
+  BarrettHandKinematicSimulationPositionCommandExecutor executor(
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+  executor.setCollideWith(collideWith);
+
+  auto future = executor.execute(position);
+  std::future_status status;
+  do
+  {
+    executor.step();
+    status = future.wait_for(stepTime);
+  } while (status != std::future_status::ready);
+  future.get();
+
+  double proximal = mFingerChains[0]->getDof(1)->getPosition();
+  double distal = mFingerChains[0]->getDof(2)->getPosition();
+  double mimicRatio = BarrettFingerKinematicSimulationPositionCommandExecutor::
+      getMimicRatio();
+
+  // Values made by visual inspection
+  EXPECT_NEAR(0.211845, distal, eps);
+  EXPECT_NEAR(0.636173, proximal, eps);
+  EXPECT_NEAR(proximal * mimicRatio, distal, eps);
+}
