@@ -2,7 +2,6 @@
 #define AIKIDO_PLANNER_POSTPROCESSOR_TRAJECTORYPOSTPROCESSOR_HPP_
 
 #include "../../common/RNG.hpp"
-#include "../../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "../../trajectory/Interpolated.hpp"
 #include "../../trajectory/Spline.hpp"
 

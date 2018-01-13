@@ -1,10 +1,6 @@
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/distance/defaults.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/planner/postprocessor/postprocess.hpp>
-#include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
 #include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
@@ -13,22 +9,10 @@ namespace postprocessor {
 namespace postprocess {
 
 using aikido::constraint::TestablePtr;
-using aikido::constraint::createProjectableBounds;
-using aikido::constraint::createSampleableBounds;
-using aikido::constraint::createTestableBounds;
-using aikido::distance::createDistanceMetric;
-using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
 using aikido::trajectory::Interpolated;
 using aikido::trajectory::InterpolatedPtr;
 using aikido::common::RNG;
 using aikido::trajectory::Spline;
-
-using dart::common::make_unique;
-using dart::dynamics::BodyNodePtr;
-using dart::dynamics::MetaSkeleton;
-using dart::dynamics::MetaSkeletonPtr;
 
 //==============================================================================
 std::unique_ptr<Spline>
@@ -36,7 +20,6 @@ timeTrajectory(const InterpolatedPtr &_inputTraj,
                const Eigen::VectorXd &_velocityLimits,
                const Eigen::VectorXd &_accelerationLimits) {
   using aikido::planner::parabolic::computeParabolicTiming;
-  using aikido::statespace::dart::MetaSkeletonStateSpace;
 
   // Get timed trajectory for arm
   return computeParabolicTiming(*_inputTraj, _velocityLimits,

@@ -2,7 +2,6 @@
 #define AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
 
 #include "../../constraint/Testable.hpp"
-#include "../../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "TrajectoryPostProcessor.hpp"
 
 namespace aikido {
