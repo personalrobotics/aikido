@@ -113,7 +113,7 @@ protected:
   {
     const MetaSkeletonStateSpacePtr metaSkeletonStateSpace;
     const Eigen::VectorXd configuration;
-  }
+  };
 
   /// Returns true if this Robot contains
   /// a skeleton with matching statespace
@@ -163,9 +163,7 @@ protected:
 
   std::unique_ptr<aikido::planner::postprocessor::Smoother> mSmoother;
 
-}
-
-using RobotPtr = std::shared_ptr<Robot>;
+};
 
 } // namespace robot
 } // namespace aikido

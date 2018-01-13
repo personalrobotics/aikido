@@ -23,9 +23,7 @@ public:
 
 protected:
 
-}
-
-using MobileBasePtr = std::shared_ptr<MobileBase>;
+};
 
 } // namespace robot
 } // namespace aikido

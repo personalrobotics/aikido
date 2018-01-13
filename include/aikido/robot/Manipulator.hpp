@@ -25,9 +25,7 @@ protected:
 
   /// Name of this robot
   std::string mName;
-}
-
-using ManipulatorPtr = std::shared_ptr<Manipulator>;
+};
 
 } // namespace robot
 } // namespace aikido
