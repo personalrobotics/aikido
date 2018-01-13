@@ -8,6 +8,8 @@ namespace planner {
 /// [Gilwoo] Created a strawman for Robot class
 class Planner
 {
+public:
+  bool canSolve();
 
   aikido::trajectory::TrajectoryPtr planToConfiguration(
       const statespace::StateSpacePtr& stateSpace,
@@ -29,9 +31,7 @@ class Planner
       const aikido::constraint::TSR& tsr,
       const CollisionFreePtr& collisionFree,
       double timelimit);
-}
-
-using PlannerPtr = std::shared_ptr<Planner>;
+};
 
 } // namespace planner
 } // namespace aikido
