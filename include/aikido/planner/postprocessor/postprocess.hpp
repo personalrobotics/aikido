@@ -3,7 +3,7 @@
 
 #include "../../common/RNG.hpp"
 #include "../../constraint/Testable.hpp"
-#include "../../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "../../statespace/StateSpace.hpp"
 #include "../../trajectory/Interpolated.hpp"
 #include "../../trajectory/Spline.hpp"
 
@@ -11,22 +11,6 @@ namespace aikido {
 namespace planner {
 namespace postprocessor {
 namespace postprocess {
-/// Simplify a given interpolated trajectory
-/// \param _space The StateSpace for the metaskeleton
-/// \param _collisionTestable Testable constraint to check for collision.
-/// \param _timeOut Max time in seconds before simplification is terminated
-/// \param _maxEmptySteps Max number of consecutive failures in
-/// simplification before the process terminates
-/// \param _originalTrajectory The interpolated trajectory to simplify
-/// \return Pair of possibly shortened interpolated trajectory and a
-/// bool to notify if the shortening was successful
-std::pair<std::unique_ptr<aikido::trajectory::Interpolated>, bool>
-simplifyTrajectory(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr &_space,
-    const aikido::constraint::TestablePtr &_collisionTestable, double _timeOut,
-    size_t _maxEmptySteps, aikido::trajectory::InterpolatedPtr _originalTraj,
-    std::unique_ptr<aikido::common::RNG> _rng, double _collisionResolution);
-
 /// Perform parabolic retiming on an interpolated trajectory
 /// \param _inputTraj The untimed trajectory to retime
 /// \return The timed trajectory subject to limits

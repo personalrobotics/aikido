@@ -10,7 +10,7 @@ using aikido::trajectory::InterpolatedPtr;
 using aikido::common::RNG;
 
 SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr _space,
+    aikido::statespace::StateSpacePtr _space,
     double _smootherFeasibilityCheckResolution,
     double _smootherFeasibilityApproxTolerance,
     const Eigen::VectorXd &_velocityLimits,

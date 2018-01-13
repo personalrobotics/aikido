@@ -10,7 +10,7 @@ namespace postprocessor {
 class RetimeTrajectoryPostProcessor : public TrajectoryPostProcessor {
 public:
   RetimeTrajectoryPostProcessor(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _space,
+      aikido::statespace::StateSpacePtr _space,
       const Eigen::VectorXd &_velocityLimits,
       const Eigen::VectorXd &_accelerationLimits);
 
@@ -19,7 +19,7 @@ public:
               aikido::common::RNG *_rng) override;
 
 private:
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr mSpace;
+  aikido::statespace::StateSpacePtr mSpace;
 
   const Eigen::VectorXd mVelocityLimits;
   const Eigen::VectorXd mAccelerationLimits;

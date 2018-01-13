@@ -21,7 +21,7 @@ public:
   /// \param _blendIterations Blend iterations for blending. It is
   /// ineffective when _enableBlend is false.
   SmoothTrajectoryPostProcessor(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _space,
+      aikido::statespace::StateSpacePtr _space,
       double _smootherFeasibilityCheckResolution,
       double _smootherFeasibilityApproxTolerance,
       const Eigen::VectorXd &_velocityLimits,
@@ -36,7 +36,7 @@ public:
               aikido::common::RNG *_rng) override;
 
 private:
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr mSpace;
+  aikido::statespace::StateSpacePtr mSpace;
   double mSmootherFeasibilityCheckResolution;
   double mSmootherFeasibilityApproxTolerance;
   const Eigen::VectorXd mVelocityLimits;

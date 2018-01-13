@@ -1,6 +1,5 @@
 #include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/planner/postprocessor/postprocess.hpp>
@@ -32,34 +31,12 @@ using dart::dynamics::MetaSkeleton;
 using dart::dynamics::MetaSkeletonPtr;
 
 //==============================================================================
-std::pair<std::unique_ptr<Interpolated>, bool>
-simplifyTrajectory(const MetaSkeletonStateSpacePtr &_space,
-                   const TestablePtr &_collisionTestable, double _timeOut,
-                   size_t _maxEmptySteps, const InterpolatedPtr &_originalTraj,
-                   std::unique_ptr<RNG> _rng, double _collisionResolution) {
-  using aikido::planner::ompl::simplifyOMPL;
-
-  auto simplifiedPair = simplifyOMPL(
-      _space, std::make_shared<GeodesicInterpolator>(_space),
-      createDistanceMetric(_space),
-      createSampleableBounds(_space, std::move(_rng)), _collisionTestable,
-      createTestableBounds(_space), createProjectableBounds(_space),
-      _collisionResolution, _timeOut, _maxEmptySteps, _originalTraj);
-
-  return simplifiedPair;
-}
-
-//==============================================================================
 std::unique_ptr<Spline>
 timeTrajectory(const InterpolatedPtr &_inputTraj,
                const Eigen::VectorXd &_velocityLimits,
                const Eigen::VectorXd &_accelerationLimits) {
   using aikido::planner::parabolic::computeParabolicTiming;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
-
-  MetaSkeletonStateSpacePtr space =
-      std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
-          _inputTraj->getStateSpace());
 
   // Get timed trajectory for arm
   return computeParabolicTiming(*_inputTraj, _velocityLimits,
@@ -75,17 +52,10 @@ std::unique_ptr<Spline> smoothTrajectory(
     double _smootherFeasibilityCheckResolution,
     double _smootherFeasibilityApproxTolerance, double _shortcutTimelimit,
     double _blendRadius, int _blendIterations) {
-  using aikido::statespace::dart::MetaSkeletonStateSpace;
   using aikido::planner::parabolic::computeParabolicTiming;
   using aikido::planner::parabolic::doShortcut;
   using aikido::planner::parabolic::doBlend;
   using aikido::planner::parabolic::doShortcutAndBlend;
-
-  MetaSkeletonStateSpacePtr space =
-      std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
-          _inputTraj->getStateSpace());
-  auto saver = MetaSkeletonStateSpaceSaver(space);
-  DART_UNUSED(saver);
 
   // Get timed trajectory for arm
   auto timedTrajectory =
