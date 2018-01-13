@@ -159,8 +159,6 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
 {
   std::shared_ptr<Satisfied> testable
       = std::make_shared<Satisfied>(mStateSpace);
-
-  // Test Smooth Parameters
   bool enableShortcut = true;
   bool enableBlend = false;
 
@@ -170,7 +168,7 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
     mFeasibilityApproxTolerance,
     mMaxVelocity,
     mMaxAcceleration,
-    nullptr,
+    testable,
     enableShortcut,
     enableBlend,
     mTimelimit,
