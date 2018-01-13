@@ -123,6 +123,9 @@ private:
   /// Desired end-position of proximal dof.
   double mProximalGoalPosition;
 
+  /// Desired end-position of distal dof.
+  double mDistalGoalPosition;
+
   /// Indicator that only distal finger is to be moved.
   bool mDistalOnly;
 

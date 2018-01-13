@@ -26,7 +26,7 @@ using namespace dart::dynamics;
 using namespace dart::collision;
 using namespace dart::simulation;
 
-const static std::chrono::milliseconds stepTime{100};
+const static std::chrono::milliseconds stepTime{1};
 
 static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
 {
@@ -369,7 +369,7 @@ TEST_F(BarrettHandKinematicSimulationPositionCommandExecutorTest,
   double distal = mFingerChains[0]->getDof(2)->getPosition();
 
   // Values made by visual inspection
-  EXPECT_NEAR(0.56548, primal, eps);
+  EXPECT_NEAR(0.55506, primal, eps);
   EXPECT_NEAR(2.81718, distal, eps);
 
 }

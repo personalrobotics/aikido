@@ -111,6 +111,8 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::execute(
     else
       mProximalGoalPosition = goalPositionValue;
 
+    mDistalGoalPosition = mProximalGoalPosition * kMimicRatio;
+
     return mPromise->get_future();
   }
 }
@@ -163,6 +165,10 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
       newDistal = mDistalLimits.second;
       distalLimitReached = true;
     }
+    if (!mDistalOnly && mDistalGoalPosition <= newDistal)
+    {
+      newDistal = mDistalGoalPosition;
+    }
   }
   else
   {
@@ -171,6 +177,11 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
     {
       newDistal = mDistalLimits.first;
       distalLimitReached = true;
+    }
+
+    if (!mDistalOnly && mDistalGoalPosition >= newDistal)
+    {
+      newDistal = mDistalGoalPosition;
     }
   }
 
