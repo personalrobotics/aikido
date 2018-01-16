@@ -1,4 +1,7 @@
 set(sources
+  Planner.cpp
+  PlanToConfiguration.cpp
+  Problem.cpp
   SnapPlanner.cpp
   World.cpp
   WorldStateSaver.cpp)

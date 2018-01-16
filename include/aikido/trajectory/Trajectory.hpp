@@ -3,7 +3,8 @@
 
 #include <Eigen/Core>
 #include <aikido/trajectory/TrajectoryMetadata.hpp>
-#include "../statespace/StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/smart_pointer.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -21,7 +22,7 @@ public:
   /// Gets the \c StateSpace that this trajectory is defined in.
   ///
   /// \return state space this trajectory is defined in.
-  virtual aikido::statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Gets an upper bound on the number of non-zero derivatives available in
   /// this parameterization. Note that \c evaluateDerivative may return zero

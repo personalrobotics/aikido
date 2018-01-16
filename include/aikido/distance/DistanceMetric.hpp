@@ -1,7 +1,8 @@
 #ifndef AIKIDO_DISTANCE_DISTANCEMETRIC_HPP_
 #define AIKIDO_DISTANCE_DISTANCEMETRIC_HPP_
 
-#include "../statespace/StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/smart_pointer.hpp"
 
 namespace aikido {
 namespace distance {

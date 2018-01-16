@@ -282,7 +282,7 @@ auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton(
 
 //==============================================================================
 void MetaSkeletonStateSpace::setState(
-    ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state)
+    ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state) const
 {
   Eigen::VectorXd positions;
   convertStateToPositions(_state, positions);

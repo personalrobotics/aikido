@@ -25,7 +25,7 @@ public:
   ///
   /// \param _stateSpace state space this trajectory is defined in
   /// \param _startTime start time of the trajectory
-  Spline(statespace::StateSpacePtr _stateSpace, double _startTime = 0.);
+  Spline(statespace::ConstStateSpacePtr _stateSpace, double _startTime = 0.);
 
   virtual ~Spline();
 
@@ -78,7 +78,7 @@ public:
   std::size_t getNumSegments() const;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::size_t getNumDerivatives() const override;
@@ -141,7 +141,7 @@ private:
 
   std::pair<std::size_t, double> getSegmentForTime(double _t) const;
 
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   double mStartTime;
   std::vector<PolynomialSegment> mSegments;
 };

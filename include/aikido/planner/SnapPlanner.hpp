@@ -1,11 +1,13 @@
 #ifndef AIKIDO_PLANNER_SNAP_PLANNER_HPP_
 #define AIKIDO_PLANNER_SNAP_PLANNER_HPP_
 
-#include "../constraint/Testable.hpp"
-#include "../statespace/Interpolator.hpp"
-#include "../statespace/StateSpace.hpp"
-#include "../trajectory/Interpolated.hpp"
-#include "PlanningResult.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/PlanToConfiguration.hpp"
+#include "aikido/planner/Planner.hpp"
+#include "aikido/planner/PlanningResult.hpp"
+#include "aikido/statespace/Interpolator.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
 namespace planner {
@@ -30,6 +32,24 @@ trajectory::InterpolatedPtr planSnap(
     const std::shared_ptr<statespace::Interpolator>& interpolator,
     const std::shared_ptr<constraint::Testable>& constraint,
     planner::PlanningResult& planningResult);
+
+class SnapPlanner : public Planner
+{
+public:
+  SnapPlanner();
+
+  trajectory::InterpolatedPtr planToConfiguration(
+      const PlanToConfiguration* problem, PlanToConfiguration::Result* result);
+
+  trajectory::InterpolatedPtr planToConfiguration(
+      const Problem* problem, Problem::Result* result);
+
+protected:
+  PlanningFunctionMap& getPlanningFunctionMap() override;
+
+  static bool mRegisteredPlanningFunctions;
+  static PlanningFunctionMap mPlanningFunctionMap;
+};
 
 } // namespace planner
 } // namespace aikido

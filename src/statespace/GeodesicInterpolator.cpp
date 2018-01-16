@@ -1,4 +1,4 @@
-#include <aikido/statespace/GeodesicInterpolator.hpp>
+#include "aikido/statespace/GeodesicInterpolator.hpp"
 
 namespace aikido {
 namespace statespace {

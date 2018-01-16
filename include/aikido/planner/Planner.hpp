@@ -1,6 +1,13 @@
 #ifndef AIKIDO_PLANNER_PLANNER_HPP_
 #define AIKIDO_PLANNER_PLANNER_HPP_
 
+#include <functional>
+#include <map>
+#include <string>
+#include <unordered_map>
+#include "aikido/planner/Problem.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
+
 namespace aikido {
 namespace planner {
 
@@ -9,29 +16,36 @@ namespace planner {
 class Planner
 {
 public:
-  bool canSolve();
+  virtual bool canSolve(const Problem* problem);
 
-  aikido::trajectory::TrajectoryPtr planToConfiguration(
-      const statespace::StateSpacePtr& stateSpace,
-      const statespace::StateSpace::State* startState,
-      const statespace::StateSpace::State* goalState,
-      const CollisionFreePtr& collisionFree,
-      double timeLimit);
+  virtual trajectory::TrajectoryPtr solve(
+      const Problem* problem, Problem::Result* result = nullptr);
 
-  aikido::trajectory::TrajectoryPtr planToConfigurations(
-      const statespace::StateSpacePtr& stateSpace,
-      const statespace::StateSpace::State* startState,
-      const std::vector<statespace::StateSpace::State*> goalStates,
-      const CollisionFreePtr& collisionFree,
-      double timeLimit);
+protected:
+  using PlanningFunction = std::function<trajectory::TrajectoryPtr(
+      const Problem*, Problem::Result*)>;
+  using PlanningFunctionMap = std::map<std::string, PlanningFunction>;
 
-  aikido::trajectory::TrajectoryPtr planToTSR(
-      const statespace::StateSpacePtr& stateSpace,
-      const statespace::StateSpace::State* startState,
-      const aikido::constraint::TSR& tsr,
-      const CollisionFreePtr& collisionFree,
-      double timelimit);
+  virtual PlanningFunctionMap& getPlanningFunctionMap() = 0;
+
+  template <class ProblemT, typename T, typename R, typename... Args>
+  void registerPlanningFunction(R (T::*func)(Args...))
+  {
+//    static_assert(std::is_same<typename ProblemT::ReturnTrajectoryType,
+//                               typename std::pointer_traits<R>::element_type>::value, "TODO: error message");
+
+    auto& map = getPlanningFunctionMap();
+    auto func2 = std::bind(
+        func,
+        static_cast<T*>(this),
+        std::placeholders::_1,
+        std::placeholders::_2);
+
+    map.insert(std::make_pair(ProblemT::getStaticName(), func2));
+  }
 };
 
 } // namespace planner
 } // namespace aikido
+
+#endif

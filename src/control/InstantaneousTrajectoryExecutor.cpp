@@ -31,7 +31,7 @@ void InstantaneousTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
   if (traj->metadata.executorValidated)
     return;
 
-  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   if (!space)
@@ -63,7 +63,7 @@ std::future<void> InstantaneousTrajectoryExecutor::execute(
 {
   validate(traj);
 
-  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   {
