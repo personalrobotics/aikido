@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_PLANTOCONFIGURATION_HPP_
-#define AIKIDO_PLANNER_PLANTOCONFIGURATION_HPP_
+#ifndef AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
+#define AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
 
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/StateSpace.hpp"
