@@ -1,6 +1,7 @@
 set(sources
   Planner.cpp
   PlanToConfiguration.cpp
+  PlanToConfigurations.cpp
   Problem.cpp
   SnapPlanner.cpp
   World.cpp
