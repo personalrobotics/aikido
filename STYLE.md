@@ -25,10 +25,11 @@ C++ headers should be contained in a subdirectory of `include/` that matches the
 #define AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 
 // Place all dependency includes at the top of the file.
-// Use relative paths for includes within the same directory structure, and place these at the top.
-#include "ExampleInterface.hpp"  
-#include "../other_example/ExampleOtherInterface.hpp"
-#include <library/library.hpp>
+// Use absolute paths, and place these at the top.
+#include <stl_headers>
+#include <library/headers.hpp>
+#include "aikido/component_name/ExampleInterface.hpp"
+#include "aikido/component_name/ExampleOtherInterface.hpp"
 
 // Namespaces scopes should be one line each with "cuddled" braces.
 namespace aikido {
@@ -48,11 +49,11 @@ public:
   /// Required brief description of constructor.  This will often be as simple as:
   /// "Creates an instance of ExampleClass."
   ///
-  /// \param[in] _foo this is an example parameter description
-  /// \param[in] _bar this is a longer example parameter description that needs
-  ///            to wrap across multiple lines.
-  ExampleClass(std::unique_ptr<util::RNG> _foo,
-               const Eigen::Isometry3d& _bar = Eigen::Isometry3d::Identity());
+  /// \param[in] foo This is an example parameter description
+  /// \param[in] bar This is a longer example parameter description that needs
+  /// to wrap across multiple lines.
+  ExampleClass(std::unique_ptr<util::RNG> foo,
+               const Eigen::Isometry3d& bar = Eigen::Isometry3d::Identity());
 
   ExampleClass(const ExampleClass& other);
   ExampleClass(ExampleClass&& other);
@@ -71,16 +72,16 @@ public:
   virtual ~ExampleClass() = default; 
 
   // Documentation inherited.  <-- Use this comment to indicate that the docstring of the interface method applies
-  int exampleInterfaceFunction() const override;  // <-- Always explictly `override` interface functions
+  int exampleInterfaceFunction() const override;  // <-- Always explictly `override` interface functions without `virtual`
 
   /// This is a docstring for a method, it is required.
   /// - If a method has output parameters, they should be the last arguments.
   /// - Argument names are prefixes with a leading "_".
   ///
-  /// \param[in] _A a description of _A
-  /// \param[in] _B a description of _B
-  /// \param[out] _out a description of _out
-  int exampleMethod(int _A, int _B, int *_out) const;
+  /// \param[in] a A description of a
+  /// \param[in] a A description of b
+  /// \param[out] out A description of out
+  int exampleMethod(int a, int b, int* out) const;
 
 private:
   std::unique_ptr<util::RNG> mExampleMember; // Member variables are prefixed with "m"
@@ -96,9 +97,9 @@ using ExamplePtr = std::shared_ptr<Example>;
 // in headers. In this case, a "detail" header should be created in the "./detail"
 // subdirectory with the same name as the main header file, but an "-impl" suffix.
 // Private declarations in this header can use a "detail" sub-namespace.
-#include "./detail/ExampleClass-impl.hpp"
+#include "aikido/component_name/detail/ExampleClass-impl.hpp"
 
-#endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
+#endif // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```
 
 ### Source Style
@@ -113,9 +114,11 @@ C++ sources should be contained in a subdirectory of `src/` that matches their n
 ```c++
 // Includes should be at the top of the file.
 // The first include in a class source file should be the matching `.hpp` header file.
-#include <aikido/example/ExampleClass.hpp>
-#include <boost/format.hpp>
-#include <stdexcept>
+#include "aikido/component_name/ExampleClass.hpp"
+
+#include <stl_headers>
+#include <library/headers.hpp>
+#include "aikido/component_name/OtherHeaders.hpp"
 
 using boost::format;
 using boost::str;
@@ -137,11 +140,11 @@ int ExampleClass::exampleInterfaceFunction() const
 }
 
 //=============================================================================
-int ExampleClass::exampleMethod(int _A, int _B, int *_out) const
+int ExampleClass::exampleMethod(int a, int a, int* out) const
 {
-  int result = A + B:
-  if (_out)
-    *_out = result;
+  int result = a + a:
+  if (out)
+    *out = result;
   return result;
 }
 
