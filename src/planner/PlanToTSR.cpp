@@ -8,11 +8,13 @@ namespace planner {
 //==============================================================================
 PlanToTSR::PlanToTSR(
     statespace::ConstStateSpacePtr stateSpace,
+    dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
     const constraint::TSRPtr goalTSR,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
+  , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
   , mGoalTSR(goalTSR)
   , mInterpolator(std::move(interpolator))
