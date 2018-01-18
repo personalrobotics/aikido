@@ -6,6 +6,10 @@
 
   * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
 
+* Control
+
+  * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
+
 ### 0.2.0 (2018-01-09)
 
 * State Space
