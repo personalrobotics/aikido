@@ -17,6 +17,7 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const aikido::trajectory::Interpolated& _inputTrajectory)
 {
@@ -77,6 +78,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   return outputTrajectory;
 }
 
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
     const aikido::trajectory::Interpolated& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
@@ -113,6 +115,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   return outputTrajectory;
 }
 
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
     const aikido::trajectory::Spline& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
