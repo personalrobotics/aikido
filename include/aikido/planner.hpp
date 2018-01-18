@@ -1,5 +1,6 @@
 #include "planner/PlanningResult.hpp"
 #include "planner/SnapPlanner.hpp"
+#include "planner/TrajectoryPostProcessor.hpp"
 #include "planner/World.hpp"
 #include "planner/ompl/BackwardCompatibility.hpp"
 #include "planner/ompl/CRRT.hpp"
@@ -13,6 +14,3 @@
 #include "planner/ompl/dart.hpp"
 #include "planner/parabolic/ParabolicSmoother.hpp"
 #include "planner/parabolic/ParabolicTimer.hpp"
-#include "planner/postprocessor/RetimeTrajectoryPostProcessor.hpp"
-#include "planner/postprocessor/SmoothTrajectoryPostProcessor.hpp"
-#include "planner/postprocessor/TrajectoryPostProcessor.hpp"
