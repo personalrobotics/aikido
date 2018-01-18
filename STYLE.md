@@ -76,10 +76,9 @@ public:
 
   /// This is a docstring for a method, it is required.
   /// - If a method has output parameters, they should be the last arguments.
-  /// - Argument names are prefixes with a leading "_".
   ///
   /// \param[in] a A description of a
-  /// \param[in] a A description of b
+  /// \param[in] b A description of b
   /// \param[out] out A description of out
   int exampleMethod(int a, int b, int* out) const;
 
@@ -140,9 +139,9 @@ int ExampleClass::exampleInterfaceFunction() const
 }
 
 //=============================================================================
-int ExampleClass::exampleMethod(int a, int a, int* out) const
+int ExampleClass::exampleMethod(int a, int b, int* out) const
 {
-  int result = a + a:
+  int result = a + b;
   if (out)
     *out = result;
   return result;
