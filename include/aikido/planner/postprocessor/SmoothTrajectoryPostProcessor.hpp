@@ -11,7 +11,18 @@ namespace postprocessor {
 class SmoothTrajectoryPostProcessor : public TrajectoryPostProcessor
 {
 public:
-  /// Perform parabolic smoothing on trajectory
+  /// Class for performing parabolic smoothing on trajectories
+  /// \param _space pointer to statespace trajectories correspond to.
+  /// \param _smootherFeasibilityCheckResolution the resolution in discretizing
+  /// a segment in checking the feasibility of the segment.
+  /// \param _smootherFeasibilityApproxTolerance this tolerance is used in a
+  /// piecewise linear discretization that deviates no more than
+  /// \c _smootherFeasibilityApproxTolerance from the parabolic ramp along any
+  /// axis, and then checks for configuration and segment feasibility along that
+  /// piecewise linear path.
+  /// \param _velocityLimits maximum velocity for each dimension.
+  /// \param _accelerationLimits maximum acceleration for each dimension.
+  /// \param _collisionTestable Check whether a position is feasible.
   /// \param _enableShortcut Whether shortcutting is used in smoothing.
   /// \param _enableBlend Whether blending is used in smoothing.
   /// \param _shortcutTimelimit Timelimit for shortcutting. It is ineffective
