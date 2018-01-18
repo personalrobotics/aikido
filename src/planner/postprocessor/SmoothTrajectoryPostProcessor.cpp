@@ -1,5 +1,6 @@
+#include <aikido/planner/parabolic/ParabolicSmoother.hpp>
+#include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp>
-#include <aikido/planner/postprocessor/postprocess.hpp>
 
 namespace aikido {
 namespace planner {
@@ -39,20 +40,53 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
 std::unique_ptr<Spline> SmoothTrajectoryPostProcessor::postprocess(
     const InterpolatedPtr& _inputTraj, RNG* _rng)
 {
+  using aikido::planner::parabolic::computeParabolicTiming;
+  using aikido::planner::parabolic::doShortcut;
+  using aikido::planner::parabolic::doBlend;
+  using aikido::planner::parabolic::doShortcutAndBlend;
 
-  auto timedTrajectory = postprocess::smoothTrajectory(
-      _inputTraj,
-      mEnableShortcut,
-      mEnableBlend,
-      mCollisionTestable,
-      _rng->clone(),
-      mVelocityLimits,
-      mAccelerationLimits,
-      mSmootherFeasibilityCheckResolution,
-      mSmootherFeasibilityApproxTolerance,
-      mShortcutTimelimit,
-      mBlendRadius,
-      mBlendIterations);
+  // Get timed trajectory for arm
+  auto timedTrajectory = computeParabolicTiming(
+      *_inputTraj, mVelocityLimits, mAccelerationLimits);
+
+  if (mEnableShortcut && mEnableBlend)
+  {
+    return doShortcutAndBlend(
+        *timedTrajectory,
+        mCollisionTestable,
+        mVelocityLimits,
+        mAccelerationLimits,
+        *_rng->clone(),
+        mShortcutTimelimit,
+        mBlendRadius,
+        mBlendIterations,
+        mSmootherFeasibilityCheckResolution,
+        mSmootherFeasibilityApproxTolerance);
+  }
+  else if (mEnableShortcut)
+  {
+    return doShortcut(
+        *timedTrajectory,
+        mCollisionTestable,
+        mVelocityLimits,
+        mAccelerationLimits,
+        *_rng->clone(),
+        mShortcutTimelimit,
+        mSmootherFeasibilityCheckResolution,
+        mSmootherFeasibilityApproxTolerance);
+  }
+  else if (mEnableBlend)
+  {
+    return doBlend(
+        *timedTrajectory,
+        mCollisionTestable,
+        mVelocityLimits,
+        mAccelerationLimits,
+        mBlendRadius,
+        mBlendIterations,
+        mSmootherFeasibilityCheckResolution,
+        mSmootherFeasibilityApproxTolerance);
+  }
 
   return timedTrajectory;
 }

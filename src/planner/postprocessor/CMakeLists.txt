@@ -1,5 +1,4 @@
 set(sources
-  postprocess.cpp
   RetimeTrajectoryPostProcessor.cpp
   SmoothTrajectoryPostProcessor.cpp)
 
