@@ -21,6 +21,7 @@ public:
   /// Constructor.
   /// \param _metaSkeletonStateSpace StateSpace whose states define
   ///        _jacobianNodeTarget and _jacobianNodeBase's relative transform.
+  /// \param _metaskeleton MetaSkeleton to test with
   /// \param _jacobianNodeTarget The frame whose relative transform w.r.t.
   ///        _jacobianNodeBase is being constrained.
   /// \param _jacobianNodeBase The base frame for this constraint.
@@ -28,6 +29,7 @@ public:
   ///        w.r.t. _jacobianNodeBase.
   FramePairDifferentiable(
       statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       dart::dynamics::ConstJacobianNodePtr _jacobianNodeTarget,
       dart::dynamics::ConstJacobianNodePtr _jacobianNodeBase,
       DifferentiablePtr _relPoseConstraint);
@@ -57,11 +59,11 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
 private:
+  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   dart::dynamics::ConstJacobianNodePtr mJacobianNode1;
   dart::dynamics::ConstJacobianNodePtr mJacobianNode2;
   DifferentiablePtr mRelPoseConstraint;
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
 } // namespace constraint

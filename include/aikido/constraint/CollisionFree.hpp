@@ -9,6 +9,7 @@
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "CollisionFreeOutcome.hpp"
 #include "Testable.hpp"
 
 namespace aikido {
@@ -24,11 +25,14 @@ public:
   /// for collision. You should call \c addPairWiseCheck and \c addSelfCheck
   /// to register collision checks before calling \c isSatisfied.
   ///
-  /// \param _statespace state space on which the constraint operates
+  /// \param _metaSkeletonStateSpace state space on which the constraint
+  /// operates
+  /// \param _metaskeleton MetaSkeleton to test with
   /// \param _collisionDetector collision detector used to test for collision
   /// \param _collisionOptions options passed to \c _collisionDetector
   CollisionFree(
-      statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
       dart::collision::CollisionOption _collisionOptions
       = dart::collision::CollisionOption(
@@ -39,9 +43,17 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  // Documentation inherited.
+  /// \copydoc Testable::isSatisfied()
+  /// \note Outcome is expected to be an instance of CollisionFreeOutcome.
+  /// This method will cast outcome to a pointer of this type, and then populate
+  /// the collision information (which bodies are in self/pairwise collision).
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* _state) const override;
+      const aikido::statespace::StateSpace::State* _state,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// \copydoc Testable::createOutcome()
+  /// \note Returns an instance of CollisionFreeOutcome.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   /// Checks collision between group1 and group2.
   /// \param group1 First collision group.
@@ -68,7 +80,8 @@ public:
 private:
   using CollisionGroup = dart::collision::CollisionGroup;
 
-  std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> mStatespace;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<dart::collision::CollisionDetector> mCollisionDetector;
   dart::collision::CollisionOption mCollisionOptions;
   std::vector<std::pair<std::shared_ptr<CollisionGroup>,

@@ -1,9 +1,9 @@
 #ifndef AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_REALVECTORJOINTSTATESPACE_HPP_
 
+#include "aikido/statespace/Rn.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 #include "aikido/statespace/dart/detail/RnJointTraits.hpp"
-#include "../Rn.hpp"
-#include "JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -34,17 +34,17 @@ public:
   /// Create a real vector state space for \c _joint.
   ///
   /// \param _joint joint to create a state space for
-  explicit RJoint(DartJoint* _joint);
+  explicit RJoint(const DartJoint* joint);
 
   // Documentation inherited.
   void convertPositionsToState(
-      const Eigen::VectorXd& _positions,
-      StateSpace::State* _state) const override;
+      const Eigen::VectorXd& positions,
+      StateSpace::State* state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-      const StateSpace::State* _state,
-      Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* state,
+      Eigen::VectorXd& positions) const override;
 };
 
 using R0Joint = RJoint<0>;

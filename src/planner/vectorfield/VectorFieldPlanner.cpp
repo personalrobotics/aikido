@@ -5,7 +5,7 @@
 #include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpaceSaver.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
 #include <aikido/trajectory/Spline.hpp>
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
@@ -13,7 +13,7 @@
 using aikido::planner::vectorfield::detail::VectorFieldIntegrator;
 using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
 using aikido::planner::vectorfield::MoveEndEffectorPoseVectorField;
-using aikido::statespace::dart::MetaSkeletonStateSpaceSaver;
+using aikido::statespace::dart::MetaSkeletonStateSaver;
 
 namespace aikido {
 namespace planner {
@@ -127,6 +127,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,
     const Eigen::Vector3d& direction,
@@ -157,12 +158,15 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error("Direction vector is a zero vector");
   }
 
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+
   // Save the current state of the space
-  auto saver = MetaSkeletonStateSpaceSaver(stateSpace);
+  auto saver = MetaSkeletonStateSaver(metaskeleton);
   DART_UNUSED(saver);
 
   auto vectorfield = std::make_shared<MoveEndEffectorOffsetVectorField>(
       stateSpace,
+      metaskeleton,
       bn,
       direction,
       minDistance,
@@ -178,7 +182,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(
       aikido::constraint::createTestableBounds(stateSpace));
 
-  auto startState = stateSpace->getScopedStateFromMetaSkeleton();
+  auto startState
+      = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
   return followVectorField(
       *vectorfield,
       *startState,
@@ -192,6 +197,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
@@ -203,12 +209,15 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     std::chrono::duration<double> timelimit,
     planner::PlanningResult* planningResult)
 {
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+
   // Save the current state of the space
-  auto saver = MetaSkeletonStateSpaceSaver(stateSpace);
+  auto saver = MetaSkeletonStateSaver(metaskeleton);
   DART_UNUSED(saver);
 
   auto vectorfield = std::make_shared<MoveEndEffectorPoseVectorField>(
       stateSpace,
+      metaskeleton,
       bn,
       goalPose,
       poseErrorTolerance,
@@ -222,7 +231,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
   compoundConstraint->addConstraint(
       aikido::constraint::createTestableBounds(stateSpace));
 
-  auto startState = stateSpace->getScopedStateFromMetaSkeleton();
+  auto startState
+      = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
   return followVectorField(
       *vectorfield,
       *startState,

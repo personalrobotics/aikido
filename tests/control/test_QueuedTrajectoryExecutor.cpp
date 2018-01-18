@@ -61,14 +61,14 @@ public:
     mSkeleton->createJointAndBodyNodePair<RevoluteJoint>(
         bn1, jointProperties2, bodyProperties2);
 
-    mSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton);
+    mSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton.get());
     interpolator = std::make_shared<GeodesicInterpolator>(mSpace);
 
-    auto s1 = mSpace->getScopedStateFromMetaSkeleton();
+    auto s1 = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
     s1.getSubStateHandle<SO2>(0).setAngle(0);
-    auto s2 = mSpace->getScopedStateFromMetaSkeleton();
+    auto s2 = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
     s2.getSubStateHandle<SO2>(0).setAngle(1);
-    auto s3 = mSpace->getScopedStateFromMetaSkeleton();
+    auto s3 = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
     s3.getSubStateHandle<SO2>(0).setAngle(2);
 
     mTraj1 = std::make_shared<Interpolated>(mSpace, interpolator);

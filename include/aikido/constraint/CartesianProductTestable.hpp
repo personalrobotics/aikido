@@ -26,7 +26,12 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* _state) const override;
+      const aikido::statespace::StateSpace::State* _state,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// Return an instance of DefaultTestableOutcome, since this class doesn't
+  /// have a more specialized TestableOutcome derivative assigned to it.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
 private:
   std::shared_ptr<statespace::CartesianProduct> mStateSpace;

@@ -16,6 +16,7 @@ namespace rviz {
 AIKIDO_DEFINE_SHARED_PTR(FrameMarker)
 AIKIDO_DEFINE_SHARED_PTR(BodyNodeMarker)
 AIKIDO_DEFINE_SHARED_PTR(SkeletonMarker)
+AIKIDO_DEFINE_SHARED_PTR(TrajectoryMarker)
 AIKIDO_DEFINE_SHARED_PTR(TSRMarker)
 
 } // namespace rviz

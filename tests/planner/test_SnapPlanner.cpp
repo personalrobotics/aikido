@@ -18,7 +18,6 @@ class SnapPlannerTest : public ::testing::Test
 {
 public:
   using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
-  using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
   using CollisionFree = aikido::constraint::CollisionFree;
   using DistanceMetric = aikido::distance::DistanceMetric;
   using MetaSkeletonStateSpace
@@ -34,7 +33,7 @@ public:
   SnapPlannerTest()
     : skel{dart::dynamics::Skeleton::create("skel")}
     , jn_bn{skel->createJointAndBodyNodePair<dart::dynamics::RevoluteJoint>()}
-    , stateSpace{make_shared<MetaSkeletonStateSpace>(skel)}
+    , stateSpace{make_shared<MetaSkeletonStateSpace>(skel.get())}
     , startState{make_shared<ScopedState>(stateSpace->createState())}
     , goalState{make_shared<ScopedState>(stateSpace->createState())}
     , passingConstraint{make_shared<PassingConstraint>(stateSpace)}
@@ -60,7 +59,8 @@ public:
 TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 {
   SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
-  auto differentStateSpace = make_shared<MetaSkeletonStateSpace>(empty_skel);
+  auto differentStateSpace
+      = make_shared<MetaSkeletonStateSpace>(empty_skel.get());
   EXPECT_THROW(
       {
         planSnap(
@@ -76,9 +76,9 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 
 TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
-  stateSpace->getState(*startState);
-  stateSpace->getMetaSkeleton()->setPosition(0, 2.0);
-  stateSpace->setState(*goalState);
+  stateSpace->getState(skel.get(), *startState);
+  skel->setPosition(0, 2.0);
+  stateSpace->setState(skel.get(), *goalState);
 
   auto traj = planSnap(
       stateSpace,

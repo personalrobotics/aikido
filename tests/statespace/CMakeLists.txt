@@ -21,9 +21,9 @@ aikido_add_test(test_MetaSkeletonStateSpace
 target_link_libraries(test_MetaSkeletonStateSpace
   "${PROJECT_NAME}_statespace")
 
-aikido_add_test(test_MetaSkeletonStateSpaceSaver
-  dart/test_MetaSkeletonStateSpaceSaver.cpp)
-target_link_libraries(test_MetaSkeletonStateSpaceSaver
+aikido_add_test(test_MetaSkeletonStateSaver
+  dart/test_MetaSkeletonStateSaver.cpp)
+target_link_libraries(test_MetaSkeletonStateSaver
   "${PROJECT_NAME}_statespace")
 
 aikido_add_test(test_DartJointStateSpaces dart/test_DartJointStateSpaces.cpp)

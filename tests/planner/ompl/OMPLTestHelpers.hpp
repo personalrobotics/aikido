@@ -15,6 +15,8 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 using dart::common::make_unique;
+using aikido::constraint::DefaultTestableOutcome;
+using aikido::constraint::TestableOutcome;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R3;
 using aikido::planner::ompl::GeometricStateSpace;
@@ -154,11 +156,25 @@ public:
   }
 
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* _s) const override
+      const aikido::statespace::StateSpace::State* _s,
+      TestableOutcome* outcome = nullptr) const override
   {
+    auto defaultOutcomeObject
+        = aikido::constraint::dynamic_cast_or_throw<DefaultTestableOutcome>(
+            outcome);
+
     auto state = static_cast<const CartesianProduct::State*>(_s);
     auto val = mStateSpace->getSubStateHandle<R3>(state, 0).getValue();
-    return std::fabs(val[0] - mValue) < 1e-6;
+
+    bool isSatisfiedResult = std::fabs(val[0] - mValue) < 1e-6;
+    if (defaultOutcomeObject)
+      defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
+    return isSatisfiedResult;
+  }
+
+  std::unique_ptr<TestableOutcome> createOutcome() const override
+  {
+    return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }
 
   std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator()
@@ -190,8 +206,13 @@ public:
 
   // Documentation inherited
   bool isSatisfied(
-      const aikido::statespace::StateSpace::State* _state) const override
+      const aikido::statespace::StateSpace::State* _state,
+      TestableOutcome* outcome = nullptr) const override
   {
+    auto defaultOutcomeObject
+        = aikido::constraint::dynamic_cast_or_throw<DefaultTestableOutcome>(
+            outcome);
+
     auto cst = static_cast<const CartesianProduct::State*>(_state);
     auto subState = mStateSpace->getSubStateHandle<R3>(cst, 0);
     auto val = subState.getValue();
@@ -200,14 +221,23 @@ public:
     {
       if (val[i] < mLowerBounds[i] || val[i] > mUpperBounds[i])
       {
+        if (defaultOutcomeObject)
+          defaultOutcomeObject->setSatisfiedFlag(true);
         return true;
       }
     }
 
+    if (defaultOutcomeObject)
+      defaultOutcomeObject->setSatisfiedFlag(false);
     return false;
   }
 
-  // Documentatoin inherited
+  std::unique_ptr<TestableOutcome> createOutcome() const override
+  {
+    return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
+  }
+
+  // Documentation inherited
   std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
   {
     return mStateSpace;
@@ -289,7 +319,7 @@ public:
     // Create robot
     robot = createTranslationalRobot();
 
-    stateSpace = std::make_shared<StateSpace>(robot);
+    stateSpace = std::make_shared<StateSpace>(robot.get());
     interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
         stateSpace);
 
@@ -333,7 +363,7 @@ public:
     // Create robot
     robot = createTranslationalRobot();
 
-    stateSpace = std::make_shared<StateSpace>(robot);
+    stateSpace = std::make_shared<StateSpace>(robot.get());
     interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
         stateSpace);
 

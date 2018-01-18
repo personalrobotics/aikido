@@ -40,7 +40,7 @@ protected:
 
     tsr->mBw = Bw;
 
-    skeleton = Skeleton::create("manipulator");
+    mSkeleton = Skeleton::create("manipulator");
 
     // Root joint
     FreeJoint::Properties jointProperties1;
@@ -49,7 +49,7 @@ protected:
     BodyNode::Properties bodyProperties1;
     bodyProperties1.mName = "body1";
 
-    bn1 = skeleton
+    bn1 = mSkeleton
               ->createJointAndBodyNodePair<FreeJoint>(
                   nullptr, jointProperties1, bodyProperties1)
               .second;
@@ -64,37 +64,39 @@ protected:
     BodyNode::Properties bodyProperties2;
     bodyProperties2.mName = "body2";
 
-    bn2 = skeleton
+    bn2 = mSkeleton
               ->createJointAndBodyNodePair<RevoluteJoint>(
                   bn1, jointProperties2, bodyProperties2)
               .second;
 
-    MetaSkeletonStateSpace space(skeleton);
-    spacePtr = std::make_shared<MetaSkeletonStateSpace>(space);
+    mSpace = std::make_shared<MetaSkeletonStateSpace>(mSkeleton.get());
   }
 
   BodyNodePtr bn1, bn2;
-  SkeletonPtr skeleton;
-  MetaSkeletonStateSpacePtr spacePtr;
+  SkeletonPtr mSkeleton;
+  MetaSkeletonStateSpacePtr mSpace;
   std::shared_ptr<TSR> tsr;
 };
 
 TEST_F(FrameDifferentiableTest, ConstructorThrowsOnNullStateSpace)
 {
   EXPECT_THROW(
-      FrameDifferentiable(nullptr, bn2.get(), tsr), std::invalid_argument);
+      FrameDifferentiable(nullptr, nullptr, bn2.get(), tsr),
+      std::invalid_argument);
 }
 
 TEST_F(FrameDifferentiableTest, ConstructorThrowsOnNullJacobianNode)
 {
   EXPECT_THROW(
-      FrameDifferentiable(spacePtr, nullptr, tsr), std::invalid_argument);
+      FrameDifferentiable(mSpace, mSkeleton, nullptr, tsr),
+      std::invalid_argument);
 }
 
 TEST_F(FrameDifferentiableTest, ConstructorThrowsOnNullPoseConstraint)
 {
   EXPECT_THROW(
-      FrameDifferentiable(spacePtr, bn2.get(), nullptr), std::invalid_argument);
+      FrameDifferentiable(mSpace, mSkeleton, bn2.get(), nullptr),
+      std::invalid_argument);
 }
 
 TEST_F(FrameDifferentiableTest, ConstructorThrowsOnInvalidPoseConstraint)
@@ -102,25 +104,25 @@ TEST_F(FrameDifferentiableTest, ConstructorThrowsOnInvalidPoseConstraint)
   auto so2 = std::make_shared<SO2>();
   auto pconstraint = std::make_shared<aikido::constraint::Satisfied>(so2);
   EXPECT_THROW(
-      FrameDifferentiable(spacePtr, bn2.get(), pconstraint),
+      FrameDifferentiable(mSpace, mSkeleton, bn2.get(), pconstraint),
       std::invalid_argument);
 }
 
 TEST_F(FrameDifferentiableTest, ConstraintDimension)
 {
-  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);
+  FrameDifferentiable adaptor(mSpace, mSkeleton, bn2.get(), tsr);
   EXPECT_EQ(tsr->getConstraintDimension(), adaptor.getConstraintDimension());
 }
 
 TEST_F(FrameDifferentiableTest, StateSpaceMatch)
 {
-  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);
-  EXPECT_EQ(spacePtr, adaptor.getStateSpace());
+  FrameDifferentiable adaptor(mSpace, mSkeleton, bn2.get(), tsr);
+  EXPECT_EQ(mSpace, adaptor.getStateSpace());
 }
 
 TEST_F(FrameDifferentiableTest, ConstraintTypes)
 {
-  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);
+  FrameDifferentiable adaptor(mSpace, mSkeleton, bn2.get(), tsr);
   std::vector<aikido::constraint::ConstraintType> ctypes
       = adaptor.getConstraintTypes();
   std::vector<aikido::constraint::ConstraintType> tsrTypes
@@ -132,8 +134,8 @@ TEST_F(FrameDifferentiableTest, ConstraintTypes)
 
 TEST_F(FrameDifferentiableTest, Value)
 {
-  FrameDifferentiable adaptor(spacePtr, bn2.get(), tsr);
-  auto state = spacePtr->getScopedStateFromMetaSkeleton();
+  FrameDifferentiable adaptor(mSpace, mSkeleton, bn2.get(), tsr);
+  auto state = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
   state.getSubStateHandle<SE3>(0).setIsometry(Eigen::Isometry3d::Identity());
   state.getSubStateHandle<SO2>(1).setAngle(0);
 
@@ -174,10 +176,10 @@ TEST_F(FrameDifferentiableTest, Jacobian)
 
   tsr->mBw = Bw;
 
-  FrameDifferentiable adaptor(spacePtr, bn1.get(), tsr);
+  FrameDifferentiable adaptor(mSpace, mSkeleton, bn1.get(), tsr);
 
   // state strictly inside tsr
-  auto state = spacePtr->getScopedStateFromMetaSkeleton();
+  auto state = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
   isometry.translation() = Eigen::Vector3d(0, 0, 1);
   state.getSubStateHandle<SE3>(0).setIsometry(isometry);

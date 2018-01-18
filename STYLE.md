@@ -94,9 +94,9 @@ using ExamplePtr = std::shared_ptr<Example>;
 
 // In certain cases, such as heavily templated code, implementations must be included
 // in headers. In this case, a "detail" header should be created in the "./detail"
-// subdirectory with the same name as the main header file, but an "_impl" suffix.
+// subdirectory with the same name as the main header file, but an "-impl" suffix.
 // Private declarations in this header can use a "detail" sub-namespace.
-#include "./detail/ExampleClass_impl.hpp"
+#include "./detail/ExampleClass-impl.hpp"
 
 #endif  // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
 ```
@@ -148,6 +148,20 @@ int ExampleClass::exampleMethod(int _A, int _B, int *_out) const
 } // namespace example
 } // namespace aikido
 ```
+
+### Smart Pointers
+
+> This guidelines is based on [this article](https://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/). Consider looking at the article for the details.
+
+* General Rules
+  * Use a by-value `std::shared_ptr` as a parameter if the function surely takes the shared ownership.
+  * Use a `const std::shared_ptr&` as a parameter only if you're not sure whether or not you'll take a copy and share ownership.
+  * Use a non-const `std::shared_ptr&` parameter only to modify the `std::shared_ptr`.
+  * Use `std::unique_ptr` anytime you want to use a `std::shared_ptr` but don't need to share ownership.
+  * Otherwise use `Object*` instead, or `Object&` if not nullable.
+
+* Exception: 
+  * Always pass AIKIDO `State`s by raw pointer. This is due to some of the tricks we play with placement-`new` to reduce `State` memory overhead, deferencing a `State *` could theoretically invoke undefined behavior even if you store it in a reference.
 
 ### Autoformatting using ClangFormat
 

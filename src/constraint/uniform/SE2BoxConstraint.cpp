@@ -137,17 +137,33 @@ statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
 
 //==============================================================================
 bool SE2BoxConstraint::isSatisfied(
-    const statespace::StateSpace::State* state) const
+    const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
+  auto defaultOutcomeObject
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
+
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);
 
   for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
   {
     if (tangent[i] < mLowerLimits[i] || tangent[i] > mUpperLimits[i])
+    {
+      if (defaultOutcomeObject)
+        defaultOutcomeObject->setSatisfiedFlag(false);
       return false;
+    }
   }
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> SE2BoxConstraint::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================

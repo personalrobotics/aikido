@@ -33,18 +33,18 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds_CreatesSO2)
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<RevoluteJoint>();
 
-  MetaSkeletonStateSpace space(skeleton);
+  MetaSkeletonStateSpace space(skeleton.get());
   ASSERT_EQ(1, space.getNumSubspaces());
 
   auto state = space.createState();
   auto substate = state.getSubStateHandle<SO2>(0);
 
   skeleton->setPosition(0, 5.);
-  space.getState(state);
+  space.getState(skeleton.get(), state);
   EXPECT_DOUBLE_EQ(5., substate.getAngle());
 
   substate.setAngle(6.);
-  space.setState(state);
+  space.setState(skeleton.get(), state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
@@ -54,7 +54,7 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
   auto joint = skeleton->createJointAndBodyNodePair<RevoluteJoint>().first;
   joint->setPositionLowerLimit(0, -1.);
 
-  MetaSkeletonStateSpace space(skeleton);
+  MetaSkeletonStateSpace space(skeleton.get());
   ASSERT_EQ(1, space.getNumSubspaces());
 
   auto subspace = space.getSubspace<R1>(0);
@@ -64,11 +64,11 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
   auto substate = state.getSubStateHandle<R1>(0);
 
   skeleton->setPosition(0, 5.);
-  space.getState(state);
+  space.getState(skeleton.get(), state);
   EXPECT_DOUBLE_EQ(5., substate.getValue()[0]);
 
   substate.setValue(make_scalar(6.));
-  space.setState(state);
+  space.setState(skeleton.get(), state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
@@ -77,7 +77,7 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint_CreatesRealVector)
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<PrismaticJoint>();
 
-  MetaSkeletonStateSpace space(skeleton);
+  MetaSkeletonStateSpace space(skeleton.get());
   ASSERT_EQ(1, space.getNumSubspaces());
 
   auto subspace = space.getSubspace<R1>(0);
@@ -87,11 +87,11 @@ TEST(MetaSkeletonStateSpace, PrismaticJoint_CreatesRealVector)
   auto substate = state.getSubStateHandle<R1>(0);
 
   skeleton->setPosition(0, 5.);
-  space.getState(state);
+  space.getState(skeleton.get(), state);
   EXPECT_DOUBLE_EQ(5., substate.getValue()[0]);
 
   substate.setValue(make_scalar(6.));
-  space.setState(state);
+  space.setState(skeleton.get(), state);
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
@@ -103,7 +103,7 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint_CreatesRealVector)
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<TranslationalJoint>();
 
-  MetaSkeletonStateSpace space(skeleton);
+  MetaSkeletonStateSpace space(skeleton.get());
   ASSERT_EQ(1, space.getNumSubspaces());
 
   auto subspace = space.getSubspace<R3>(0);
@@ -113,11 +113,11 @@ TEST(MetaSkeletonStateSpace, TranslationalJoint_CreatesRealVector)
   auto substate = state.getSubStateHandle<R3>(0);
 
   skeleton->setPositions(value1);
-  space.getState(state);
+  space.getState(skeleton.get(), state);
   EXPECT_TRUE(value1.isApprox(substate.getValue()));
 
   substate.setValue(value2);
-  space.setState(state);
+  space.setState(skeleton.get(), state);
   EXPECT_TRUE(value2.isApprox(skeleton->getPositions()));
 }
 
@@ -134,18 +134,18 @@ TEST(MetaSkeletonStateSpace, FreeJoint_CreatesSE3)
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<FreeJoint>();
 
-  MetaSkeletonStateSpace space(skeleton);
+  MetaSkeletonStateSpace space(skeleton.get());
   ASSERT_EQ(1, space.getNumSubspaces());
 
   auto state = space.createState();
   auto substate = state.getSubStateHandle<SE3>(0);
 
   skeleton->setPositions(FreeJoint::convertToPositions(value1));
-  space.getState(state);
+  space.getState(skeleton.get(), state);
   EXPECT_TRUE(value1.isApprox(substate.getIsometry()));
 
   substate.setIsometry(value2);
-  space.setState(state);
+  space.setState(skeleton.get(), state);
   EXPECT_TRUE(
       value2.isApprox(FreeJoint::convertToTransform(skeleton->getPositions())));
 }
@@ -160,7 +160,7 @@ TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCartesianProduct)
   auto joint2
       = skeleton->createJointAndBodyNodePair<TranslationalJoint>().first;
 
-  MetaSkeletonStateSpace space(skeleton);
+  MetaSkeletonStateSpace space(skeleton.get());
   ASSERT_EQ(2, space.getNumSubspaces());
 
   auto state = space.createState();
@@ -169,13 +169,13 @@ TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCartesianProduct)
 
   joint1->setPosition(0, 1.);
   joint2->setPositions(value1);
-  space.getState(state);
+  space.getState(skeleton.get(), state);
   EXPECT_EQ(1., substate1.getAngle());
   EXPECT_TRUE(value1.isApprox(value1));
 
   substate1.setAngle(5.);
   substate2.setValue(value2);
-  space.setState(state);
+  space.setState(skeleton.get(), state);
   EXPECT_EQ(5., substate1.getAngle());
   EXPECT_TRUE(value2.isApprox(substate2.getValue()));
 }

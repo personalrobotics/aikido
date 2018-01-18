@@ -1,7 +1,8 @@
 #ifndef AIKIDO_STATESPACE_DART_SO2JOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_SO2JOINTSTATESPACE_HPP_
-#include "../SO2.hpp"
-#include "JointStateSpace.hpp"
+
+#include "aikido/statespace/SO2.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -19,19 +20,19 @@ public:
   /// Creates a state space for a \c FreeJoint. This class does not support
   /// position limits.
   ///
-  /// \param _joint joint to create a state space for
+  /// \param joint joint to create a state space for
   explicit SO2Joint(
-      ::dart::dynamics::GenericJoint<::dart::math::R1Space>* _joint);
+      const ::dart::dynamics::GenericJoint<::dart::math::R1Space>* joint);
 
   // Documentation inherited.
   void convertPositionsToState(
-      const Eigen::VectorXd& _positions,
-      StateSpace::State* _state) const override;
+      const Eigen::VectorXd& positions,
+      StateSpace::State* state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-      const StateSpace::State* _state,
-      Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* state,
+      Eigen::VectorXd& positions) const override;
 };
 
 } // namespace dart
