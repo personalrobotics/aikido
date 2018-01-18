@@ -113,7 +113,6 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
 }
 
 SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
-    aikido::statespace::StateSpacePtr _space,
     const Eigen::VectorXd& _velocityLimits,
     const Eigen::VectorXd& _accelerationLimits,
     const aikido::constraint::TestablePtr& _collisionTestable,
@@ -124,8 +123,7 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
     int _blendIterations,
     double _smootherFeasibilityCheckResolution,
     double _smootherFeasibilityApproxTolerance)
-  : mSpace{std::move(_space)}
-  , mSmootherFeasibilityCheckResolution{_smootherFeasibilityCheckResolution}
+  : mSmootherFeasibilityCheckResolution{_smootherFeasibilityCheckResolution}
   , mSmootherFeasibilityApproxTolerance{_smootherFeasibilityApproxTolerance}
   , mVelocityLimits{_velocityLimits}
   , mAccelerationLimits{_accelerationLimits}

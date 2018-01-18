@@ -99,7 +99,6 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
   bool enableBlend = false;
 
   SmoothTrajectoryPostProcessor testSmoothPostProcessor(
-      mStateSpace,
       mMaxVelocity,
       mMaxAcceleration,
       testable,
@@ -143,7 +142,6 @@ TEST_F(SmoothPostProcessorTests, useBlend)
   bool enableBlend = true;
 
   SmoothTrajectoryPostProcessor testSmoothPostProcessor(
-      mStateSpace,
       mMaxVelocity,
       mMaxAcceleration,
       testable,
@@ -187,7 +185,6 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
   bool enableBlend = true;
 
   SmoothTrajectoryPostProcessor testSmoothPostProcessor(
-      mStateSpace,
       mMaxVelocity,
       mMaxAcceleration,
       testable,

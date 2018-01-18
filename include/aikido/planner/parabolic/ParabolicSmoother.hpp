@@ -135,14 +135,6 @@ class SmoothTrajectoryPostProcessor
     : public aikido::planner::TrajectoryPostProcessor
 {
 public:
-  /// \param _space pointer to statespace trajectories correspond to.
-  /// \param _smootherFeasibilityCheckResolution the resolution in discretizing
-  /// a segment in checking the feasibility of the segment.
-  /// \param _smootherFeasibilityApproxTolerance this tolerance is used in a
-  /// piecewise linear discretization that deviates no more than
-  /// \c _smootherFeasibilityApproxTolerance from the parabolic ramp along any
-  /// axis, and then checks for configuration and segment feasibility along that
-  /// piecewise linear path.
   /// \param _velocityLimits maximum velocity for each dimension.
   /// \param _accelerationLimits maximum acceleration for each dimension.
   /// \param _collisionTestable Check whether a position is feasible.
@@ -154,8 +146,14 @@ public:
   /// when _enableBlend is false.
   /// \param _blendIterations Blend iterations for blending. It is
   /// ineffective when _enableBlend is false.
+  /// \param _smootherFeasibilityCheckResolution the resolution in discretizing
+  /// a segment in checking the feasibility of the segment.
+  /// \param _smootherFeasibilityApproxTolerance this tolerance is used in a
+  /// piecewise linear discretization that deviates no more than
+  /// \c _smootherFeasibilityApproxTolerance from the parabolic ramp along any
+  /// axis, and then checks for configuration and segment feasibility along that
+  /// piecewise linear path.
   SmoothTrajectoryPostProcessor(
-      aikido::statespace::StateSpacePtr _space,
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits,
       const aikido::constraint::TestablePtr& _collisionTestable,
@@ -173,7 +171,6 @@ public:
       const aikido::common::RNG* _rng) override;
 
 private:
-  aikido::statespace::StateSpacePtr mSpace;
   double mSmootherFeasibilityCheckResolution;
   double mSmootherFeasibilityApproxTolerance;
   const Eigen::VectorXd mVelocityLimits;

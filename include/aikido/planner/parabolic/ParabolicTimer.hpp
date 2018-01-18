@@ -49,11 +49,9 @@ class RetimeTrajectoryPostProcessor
     : public aikido::planner::TrajectoryPostProcessor
 {
 public:
-  /// \param _space pointer to statespace trajectories correspond to.
   /// \param _velocityLimits maximum velocity for each dimension.
   /// \param _accelerationLimits maximum acceleration for each dimension.
   RetimeTrajectoryPostProcessor(
-      aikido::statespace::StateSpacePtr _space,
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits);
 
@@ -64,8 +62,6 @@ public:
       const aikido::common::RNG* _rng) override;
 
 private:
-  aikido::statespace::StateSpacePtr mSpace;
-
   const Eigen::VectorXd mVelocityLimits;
   const Eigen::VectorXd mAccelerationLimits;
 };
