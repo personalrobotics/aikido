@@ -37,9 +37,9 @@ their namespace, with the extension `.hpp`.
 namespace aikido {
 namespace example {
 
-/// A required Doxygen comment description for this class.  This can be extended
+/// A required Doxygen comment description for this class. This can be extended
 /// to include various useful details about the class, and can use the standard
-/// Doxygen tag set to refer to other classes or documentation.  It should use
+/// Doxygen tag set to refer to other classes or documentation. It should use
 /// the '///' style of block comment.
 class ExampleClass
     : public ExampleInterface
@@ -89,7 +89,7 @@ private:
   std::unique_ptr<util::RNG> mExampleMember; // Member variables are prefixed with "m"
 };
 
-// Use "using" directive to declare a shared pointer helper type.  It should not be `const`.
+// Use "using" directive to declare a shared pointer helper type. It should not be `const`.
 using ExamplePtr = std::shared_ptr<Example>; 
 
 } // namespace example
