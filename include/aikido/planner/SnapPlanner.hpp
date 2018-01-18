@@ -3,6 +3,8 @@
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/PlanToConfiguration.hpp"
+#include "aikido/planner/PlanToConfigurations.hpp"
+#include "aikido/planner/PlanToTSR.hpp"
 #include "aikido/planner/Planner.hpp"
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/statespace/Interpolator.hpp"
@@ -42,6 +44,18 @@ public:
       const PlanToConfiguration* problem, PlanToConfiguration::Result* result);
 
   trajectory::InterpolatedPtr planToConfiguration(
+      const Problem* problem, Problem::Result* result);
+
+  trajectory::InterpolatedPtr planToConfigurations(
+      const PlanToConfigurations* problem, PlanToConfigurations::Result* result);
+
+  trajectory::InterpolatedPtr planToConfigurations(
+      const Problem* problem, Problem::Result* result);
+
+  trajectory::InterpolatedPtr planToTSR(
+      const PlanToTSR* problem, PlanToTSR::Result* result);
+
+  trajectory::InterpolatedPtr planToTSR(
       const Problem* problem, Problem::Result* result);
 
 protected:
