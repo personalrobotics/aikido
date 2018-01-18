@@ -114,12 +114,9 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
 }
 
 RetimeTrajectoryPostProcessor::RetimeTrajectoryPostProcessor(
-    aikido::statespace::StateSpacePtr _space,
     const Eigen::VectorXd& _velocityLimits,
     const Eigen::VectorXd& _accelerationLimits)
-  : mSpace{std::move(_space)}
-  , mVelocityLimits{_velocityLimits}
-  , mAccelerationLimits{_accelerationLimits}
+  : mVelocityLimits{_velocityLimits}, mAccelerationLimits{_accelerationLimits}
 {
   // Do nothing
 }
