@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
 
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/postprocessor/TrajectoryPostProcessor.hpp"
 
 namespace aikido {
@@ -33,16 +34,19 @@ public:
   /// ineffective when _enableBlend is false.
   SmoothTrajectoryPostProcessor(
       aikido::statespace::StateSpacePtr _space,
-      double _smootherFeasibilityCheckResolution,
-      double _smootherFeasibilityApproxTolerance,
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits,
       const aikido::constraint::TestablePtr& _collisionTestable,
-      bool _enableShortcut,
-      bool _enableBlend,
-      double _shortcutTimelimit,
-      double _blendRadius,
-      int _blendIterations);
+      bool _enableShortcut = true,
+      bool _enableBlend = true,
+      double _shortcutTimelimit = aikido::planner::parabolic::DEFAULT_TIMELIMT,
+      double _blendRadius = aikido::planner::parabolic::DEFAULT_BLEND_RADIUS,
+      int _blendIterations
+      = aikido::planner::parabolic::DEFAULT_BLEND_ITERATIONS,
+      double _smootherFeasibilityCheckResolution
+      = aikido::planner::parabolic::DEFAULT_CHECK_RESOLUTION,
+      double _smootherFeasibilityApproxTolerance
+      = aikido::planner::parabolic::DEFAULT_TOLERANCE);
 
   // Documentation inherited.
   std::unique_ptr<aikido::trajectory::Spline> postprocess(

@@ -1,5 +1,4 @@
 #include "aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp"
-#include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 
 namespace aikido {
@@ -12,8 +11,6 @@ using aikido::common::RNG;
 
 SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
     aikido::statespace::StateSpacePtr _space,
-    double _smootherFeasibilityCheckResolution,
-    double _smootherFeasibilityApproxTolerance,
     const Eigen::VectorXd& _velocityLimits,
     const Eigen::VectorXd& _accelerationLimits,
     const aikido::constraint::TestablePtr& _collisionTestable,
@@ -21,7 +18,9 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
     bool _enableBlend,
     double _shortcutTimelimit,
     double _blendRadius,
-    int _blendIterations)
+    int _blendIterations,
+    double _smootherFeasibilityCheckResolution,
+    double _smootherFeasibilityApproxTolerance)
   : mSpace{std::move(_space)}
   , mSmootherFeasibilityCheckResolution{_smootherFeasibilityCheckResolution}
   , mSmootherFeasibilityApproxTolerance{_smootherFeasibilityApproxTolerance}
