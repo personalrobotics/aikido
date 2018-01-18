@@ -1,5 +1,4 @@
 add_subdirectory("parabolic")
-add_subdirectory("postprocessor")
 add_subdirectory("ompl")
 add_subdirectory("vectorfield")
 

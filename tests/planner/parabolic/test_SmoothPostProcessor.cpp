@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Satisfied.hpp>
-#include <aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp>
+#include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include "eigen_tests.hpp"
@@ -14,7 +14,7 @@ using aikido::statespace::R2;
 using aikido::statespace::StateSpacePtr;
 using aikido::constraint::Satisfied;
 using aikido::common::cloneRNGFrom;
-using aikido::planner::postprocessor::SmoothTrajectoryPostProcessor;
+using aikido::planner::parabolic::SmoothTrajectoryPostProcessor;
 
 class SmoothPostProcessorTests : public ::testing::Test
 {
