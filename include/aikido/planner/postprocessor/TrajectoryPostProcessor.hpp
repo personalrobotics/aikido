@@ -1,9 +1,9 @@
 #ifndef AIKIDO_PLANNER_POSTPROCESSOR_TRAJECTORYPOSTPROCESSOR_HPP_
 #define AIKIDO_PLANNER_POSTPROCESSOR_TRAJECTORYPOSTPROCESSOR_HPP_
 
-#include "../../common/RNG.hpp"
-#include "../../trajectory/Interpolated.hpp"
-#include "../../trajectory/Spline.hpp"
+#include "aikido/common/RNG.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
@@ -20,8 +20,8 @@ public:
       = 0;
 };
 
-} // postprocessor
-} // planner
-} // aikido
+} // namespace postprocessor
+} // namespace planner
+} // namespace aikido
 
 #endif // AIKIDO_PLANNER_POSTPROCESSOR_TRAJECTORYPOSTPROCESSOR_HPP_

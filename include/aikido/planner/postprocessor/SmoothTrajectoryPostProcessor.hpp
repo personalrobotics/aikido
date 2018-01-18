@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
 #define AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_
 
-#include "../../constraint/Testable.hpp"
-#include "TrajectoryPostProcessor.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/postprocessor/TrajectoryPostProcessor.hpp"
 
 namespace aikido {
 namespace planner {
@@ -34,7 +34,7 @@ public:
       int _blendIterations);
 
   // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
+  std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::InterpolatedPtr& _inputTraj,
       aikido::common::RNG* _rng) override;
 
@@ -53,8 +53,8 @@ private:
   int mBlendIterations;
 };
 
-} // postprocessor
-} // planner
-} // aikido
+} // namespace postprocessor
+} // namespace planner
+} // namespace aikido
 
 #endif // AIKIDO_PLANNER_POSTPROCESSOR_SMOOTHTRAJECTORYPOSTPROCESSOR_HPP_

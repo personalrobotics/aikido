@@ -1,6 +1,7 @@
-#include <aikido/planner/parabolic/ParabolicSmoother.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
-#include <aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp>
+#include <stdexcept>
+#include "aikido/planner/parabolic/ParabolicSmoother.hpp"
+#include "aikido/planner/parabolic/ParabolicTimer.hpp"
+#include "aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp"
 
 namespace aikido {
 namespace planner {
@@ -22,7 +23,7 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
     double _shortcutTimelimit,
     double _blendRadius,
     int _blendIterations)
-  : mSpace{_space}
+  : mSpace{std::move(_space)}
   , mSmootherFeasibilityCheckResolution{_smootherFeasibilityCheckResolution}
   , mSmootherFeasibilityApproxTolerance{_smootherFeasibilityApproxTolerance}
   , mVelocityLimits{_velocityLimits}
@@ -37,6 +38,7 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
   // Do nothing
 }
 
+//==============================================================================
 std::unique_ptr<Spline> SmoothTrajectoryPostProcessor::postprocess(
     const InterpolatedPtr& _inputTraj, RNG* _rng)
 {
@@ -44,6 +46,12 @@ std::unique_ptr<Spline> SmoothTrajectoryPostProcessor::postprocess(
   using aikido::planner::parabolic::doShortcut;
   using aikido::planner::parabolic::doBlend;
   using aikido::planner::parabolic::doShortcutAndBlend;
+
+  if (!_rng)
+    throw std::invalid_argument("Passed nullptr _rng to SmoothTrajectoryPostProcessor::postprocess");
+  if (!_inputTraj)
+    throw std::invalid_argument("Passed nullptr _inputTraj to SmoothTrajectoryPostProcessor::postprocess");
+
 
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
@@ -90,7 +98,6 @@ std::unique_ptr<Spline> SmoothTrajectoryPostProcessor::postprocess(
 
   return timedTrajectory;
 }
-
-} // postprocessor
-} // planner
-} // aikido
+} // namespace postprocessor
+} // namespace planner
+} // namespace aikido

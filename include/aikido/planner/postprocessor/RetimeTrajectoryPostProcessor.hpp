@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PLANNER_POSTPROCESSOR_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
 #define AIKIDO_PLANNER_POSTPROCESSOR_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
 
-#include "TrajectoryPostProcessor.hpp"
+#include "aikido/planner/postprocessor/TrajectoryPostProcessor.hpp"
 
 namespace aikido {
 namespace planner {
@@ -15,7 +15,7 @@ public:
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits);
 
-  virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
+  std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::InterpolatedPtr& _inputTraj,
       aikido::common::RNG* _rng) override;
 
@@ -26,8 +26,8 @@ private:
   const Eigen::VectorXd mAccelerationLimits;
 };
 
-} // postprocessor
-} // planner
-} // aikido
+} // namespace postprocessor
+} // namespace planner
+} // namespace aikido
 
 #endif // AIKIDO_PLANNER_POSTPROCESSOR_RETIMETRAJECTORYPOSTPROCESSOR_HPP_
