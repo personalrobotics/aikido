@@ -21,7 +21,7 @@ RetimeTrajectoryPostProcessor::RetimeTrajectoryPostProcessor(
 std::unique_ptr<aikido::trajectory::Spline>
 RetimeTrajectoryPostProcessor::postprocess(
     const aikido::trajectory::InterpolatedPtr& _inputTraj,
-    aikido::common::RNG* /*_rng*/)
+    const aikido::common::RNG* /*_rng*/)
 {
   using aikido::planner::parabolic::computeParabolicTiming;
 

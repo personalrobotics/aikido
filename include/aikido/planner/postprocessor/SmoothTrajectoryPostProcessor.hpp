@@ -36,7 +36,7 @@ public:
   // Documentation inherited.
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::InterpolatedPtr& _inputTraj,
-      aikido::common::RNG* _rng) override;
+      const aikido::common::RNG* _rng) override;
 
 private:
   aikido::statespace::StateSpacePtr mSpace;

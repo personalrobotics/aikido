@@ -39,7 +39,7 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
 
 //==============================================================================
 std::unique_ptr<Spline> SmoothTrajectoryPostProcessor::postprocess(
-    const InterpolatedPtr& _inputTraj, RNG* _rng)
+    const InterpolatedPtr& _inputTraj, const RNG* _rng)
 {
   using aikido::planner::parabolic::computeParabolicTiming;
   using aikido::planner::parabolic::doShortcut;

@@ -16,7 +16,7 @@ public:
   /// \param _rng Random number generator.
   virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::InterpolatedPtr& _inputTraj,
-      aikido::common::RNG* _rng)
+      const aikido::common::RNG* _rng)
       = 0;
 };
 
