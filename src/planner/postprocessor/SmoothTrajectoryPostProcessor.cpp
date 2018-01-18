@@ -1,7 +1,6 @@
-#include <stdexcept>
+#include "aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
-#include "aikido/planner/postprocessor/SmoothTrajectoryPostProcessor.hpp"
 
 namespace aikido {
 namespace planner {
@@ -48,10 +47,12 @@ std::unique_ptr<Spline> SmoothTrajectoryPostProcessor::postprocess(
   using aikido::planner::parabolic::doShortcutAndBlend;
 
   if (!_rng)
-    throw std::invalid_argument("Passed nullptr _rng to SmoothTrajectoryPostProcessor::postprocess");
+    throw std::invalid_argument(
+        "Passed nullptr _rng to SmoothTrajectoryPostProcessor::postprocess");
   if (!_inputTraj)
-    throw std::invalid_argument("Passed nullptr _inputTraj to SmoothTrajectoryPostProcessor::postprocess");
-
+    throw std::invalid_argument(
+        "Passed nullptr _inputTraj to "
+        "SmoothTrajectoryPostProcessor::postprocess");
 
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(

@@ -1,5 +1,5 @@
-#include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/planner/postprocessor/RetimeTrajectoryPostProcessor.hpp"
+#include "aikido/planner/parabolic/ParabolicTimer.hpp"
 
 namespace aikido {
 namespace planner {
@@ -26,7 +26,9 @@ RetimeTrajectoryPostProcessor::postprocess(
   using aikido::planner::parabolic::computeParabolicTiming;
 
   if (!_inputTraj)
-    throw std::invalid_argument("Passed nullptr _inputTraj to RetimeTrajectoryPostProcessor::postprocess");
+    throw std::invalid_argument(
+        "Passed nullptr _inputTraj to "
+        "RetimeTrajectoryPostProcessor::postprocess");
 
   return computeParabolicTiming(
       *_inputTraj, mVelocityLimits, mAccelerationLimits);
