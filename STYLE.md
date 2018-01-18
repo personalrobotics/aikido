@@ -1,6 +1,7 @@
 # AIKIDO Style Guide #
 
-The code in this library generally follows the same coding convention as the [DART](https://github.com/dartsim/dart).
+The code in this library generally follows the same coding conventions
+as [DART](https://github.com/dartsim/dart).
 
 * [C++ Style](#c-style)
   * [C++ Header Style](#header-style)
@@ -13,7 +14,8 @@ The code in this library generally follows the same coding convention as the [DA
 
 ### Header Style
 
-C++ headers should be contained in a subdirectory of `include/` that matches their namespace, with the extension `.hpp`.
+C++ headers should be contained in a subdirectory of `include/` that matches
+their namespace, with the extension `.hpp`.
 
 * Use **two-space** indentation
 * Use **camelCase** function names
@@ -35,10 +37,10 @@ C++ headers should be contained in a subdirectory of `include/` that matches the
 namespace aikido {
 namespace example {
 
-/// A required doxygen comment descripion for this class.  This can be extended to
-/// include various useful detail about the class, and can use the standard doxygen
-/// tag set to refer to other classes or documentation.  It should use the '\\\'
-/// style of block comment.
+/// A required Doxygen comment description for this class.  This can be extended
+/// to include various useful details about the class, and can use the standard
+/// Doxygen tag set to refer to other classes or documentation.  It should use
+/// the '///' style of block comment.
 class ExampleClass
     : public ExampleInterface
     , public ExampleOtherInterface
@@ -46,10 +48,10 @@ class ExampleClass
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW   // Many classes that require Eigen will also need this macro
 
-  /// Required brief description of constructor.  This will often be as simple as:
+  /// Required brief description of constructor. This will often be as simple as:
   /// "Creates an instance of ExampleClass."
   ///
-  /// \param[in] foo This is an example parameter description
+  /// \param[in] foo This is an example parameter description.
   /// \param[in] bar This is a longer example parameter description that needs
   /// to wrap across multiple lines.
   ExampleClass(std::unique_ptr<util::RNG> foo,
@@ -72,10 +74,11 @@ public:
   virtual ~ExampleClass() = default; 
 
   // Documentation inherited.  <-- Use this comment to indicate that the docstring of the interface method applies
-  int exampleInterfaceFunction() const override;  // <-- Always explictly `override` interface functions without `virtual`
+  int exampleInterfaceFunction() const override;  // <-- Always explicitly `override` interface functions without `virtual`
 
-  /// This is a docstring for a method, it is required.
-  /// - If a method has output parameters, they should be the last arguments.
+  /// Required brief description of method.
+  /// \note If a method has output parameters, they should be the last
+  /// arguments.
   ///
   /// \param[in] a A description of a
   /// \param[in] b A description of b
@@ -103,7 +106,8 @@ using ExamplePtr = std::shared_ptr<Example>;
 
 ### Source Style
 
-C++ sources should be contained in a subdirectory of `src/` that matches their namespace, with the extension `.cpp`.
+C++ sources should be contained in a subdirectory of `src/` that matches their
+namespace, with the extension `.cpp`.
 
 * Use **two-space** indentation
 * Use **camelCase** function names
@@ -113,11 +117,11 @@ C++ sources should be contained in a subdirectory of `src/` that matches their n
 ```c++
 // Includes should be at the top of the file.
 // The first include in a class source file should be the matching `.hpp` header file.
-#include "aikido/component_name/ExampleClass.hpp"
+#include "aikido/example/ExampleClass.hpp"
 
 #include <stl_headers>
 #include <library/headers.hpp>
-#include "aikido/component_name/OtherHeaders.hpp"
+#include "aikido/example/OtherHeaders.hpp"
 
 using boost::format;
 using boost::str;
@@ -129,7 +133,7 @@ namespace aikido {
 namespace example {
 
 // Each function is separated by an 80 column line of "=" characters.
-//=============================================================================
+//==============================================================================
 int ExampleClass::exampleInterfaceFunction() const
 {
   if (mExampleMember)
@@ -138,7 +142,7 @@ int ExampleClass::exampleInterfaceFunction() const
   return -1;
 }
 
-//=============================================================================
+//==============================================================================
 int ExampleClass::exampleMethod(int a, int b, int* out) const
 {
   int result = a + b;
@@ -153,21 +157,33 @@ int ExampleClass::exampleMethod(int a, int b, int* out) const
 
 ### Smart Pointers
 
-> This guidelines is based on [this article](https://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/). Consider looking at the article for the details.
+> These guidelines are based on [this article][sutter-smart-pointers]. Consider
+> looking at the full article for the details.
+
+[sutter-smart-pointers]: https://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/
 
 * General Rules
-  * Use a by-value `std::shared_ptr` as a parameter if the function surely takes the shared ownership.
-  * Use a `const std::shared_ptr&` as a parameter only if you're not sure whether or not you'll take a copy and share ownership.
-  * Use a non-const `std::shared_ptr&` parameter only to modify the `std::shared_ptr`.
-  * Use `std::unique_ptr` anytime you want to use a `std::shared_ptr` but don't need to share ownership.
+  * Use a by-value `std::shared_ptr` as a parameter if the function surely takes
+    the shared ownership.
+  * Use a `const std::shared_ptr&` as a parameter only if you're not sure
+    whether or not you'll take a copy and share ownership.
+  * Use a non-const `std::shared_ptr&` parameter only to modify the
+    `std::shared_ptr`.
+  * Use `std::unique_ptr` anytime you want to use a `std::shared_ptr` but don't
+    need to share ownership.
   * Otherwise use `Object*` instead, or `Object&` if not nullable.
 
 * Exception: 
-  * Always pass AIKIDO `State`s by raw pointer. This is due to some of the tricks we play with placement-`new` to reduce `State` memory overhead, deferencing a `State *` could theoretically invoke undefined behavior even if you store it in a reference.
+  * Always pass AIKIDO `State`s by raw pointer. This is due to some of the
+    tricks we play with placement-`new` to reduce `State` memory overhead,
+    deferencing a `State *` could theoretically invoke undefined behavior even
+    if you store it in a reference.
 
 ### Autoformatting using ClangFormat
 
-You can automatically format the entire Aikido code using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) through CMake. Make sure `clang-format 3.8` is installed.
+You can automatically format all AIKIDO code
+using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) through
+CMake. Make sure `clang-format 3.8` is installed.
 
 #### Using CMake
 
