@@ -7,6 +7,7 @@
 #include "aikido/constraint/smart_pointer.hpp"
 #include "aikido/constraint/TSR.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
+#include <dart/dart.hpp>
 
 namespace aikido {
 namespace planner {
@@ -21,6 +22,7 @@ public:
 
   PlanToTSR(
       statespace::ConstStateSpacePtr stateSpace,
+      dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
       const constraint::TSRPtr goalTSR,
       statespace::InterpolatorPtr interpolator,
@@ -29,6 +31,8 @@ public:
   const std::string& getName() const override;
 
   static const std::string& getStaticName();
+
+  dart::dynamics::BodyNodePtr getBodyNode();
 
   const statespace::StateSpace::State* getStartState() const;
 
@@ -43,6 +47,9 @@ public:
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
+
+  dart::dynamics::BodyNodePtr mBodyNode;
+
   const statespace::StateSpace::State* mStartState;
   const constraint::TSRPtr mGoalTSR;
 

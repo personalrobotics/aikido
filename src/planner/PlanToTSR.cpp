@@ -39,6 +39,12 @@ const std::string& PlanToTSR::getStaticName()
 }
 
 //==============================================================================
+dart::dynamics::BodyNodePtr PlanToTSR::getBodyNode()
+{
+  return mBodyNode;
+}
+
+//==============================================================================
 const statespace::StateSpace::State* PlanToTSR::getStartState() const
 {
   return mStartState;
