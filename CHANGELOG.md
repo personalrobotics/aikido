@@ -30,6 +30,7 @@
 
   * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243), [#252](https://github.com/personalrobotics/aikido/pull/252), [#265](https://github.com/personalrobotics/aikido/pull/265)
   * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262), [#268](https://github.com/personalrobotics/aikido/pull/268)
+  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302)
 
 * RViz
 
