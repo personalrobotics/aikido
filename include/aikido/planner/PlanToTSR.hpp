@@ -12,7 +12,7 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to given Task Space Region (TSR).
+/// Planning problem to plan to given single Task Space Region (TSR).
 class PlanToTSR : public Problem
 {
 public:
