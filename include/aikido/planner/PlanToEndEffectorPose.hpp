@@ -15,8 +15,6 @@ namespace planner {
 class PlanToEndEffectorPose : public Problem
 {
 public:
-  using ReturnTrajectoryType = trajectory::Interpolated;
-
   class Result;
 
   PlanToEndEffectorPose(

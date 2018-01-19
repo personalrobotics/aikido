@@ -17,6 +17,7 @@ target_link_libraries("${PROJECT_NAME}_planner_vectorfield"
     "${PROJECT_NAME}_distance"
     "${PROJECT_NAME}_trajectory"
     "${PROJECT_NAME}_statespace"
+    "${PROJECT_NAME}_planner"
     ${DART_LIBRARIES}
     ${Boost_LIBRARIES}
 )
@@ -37,6 +38,7 @@ add_component_dependencies(${PROJECT_NAME} planner_vectorfield
   distance
   statespace
   trajectory
+  planner
 )
 
 format_add_sources(${sources})

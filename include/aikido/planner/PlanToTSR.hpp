@@ -16,8 +16,6 @@ namespace planner {
 class PlanToTSR : public Problem
 {
 public:
-  using ReturnTrajectoryType = trajectory::Interpolated;
-
   class Result;
 
   PlanToTSR(

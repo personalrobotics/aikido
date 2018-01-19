@@ -10,14 +10,6 @@ namespace planner {
 template <class ProblemT, typename T, typename R, typename... Args>
 void ConcretePlanner::registerPlanningFunction(R (T::*func)(Args...))
 {
-  static_assert(
-      std::is_same<typename ProblemT::ReturnTrajectoryType,
-                   typename std::pointer_traits<R>::element_type>::value,
-      "TODO: error message");
-  // TODO(JS): Not sure if returning trajectory type should be tied to problem
-  // or planner. If it's not, this check and ReturnTrajectoryType should be
-  // removed.
-
   auto& map = getPlanningFunctionMap();
   auto bindedFunc = std::bind(
       func,

@@ -58,7 +58,7 @@ PlannerPtr MetaPlanner::getPlanner(std::size_t index)
 }
 
 //==============================================================================
-bool MetaPlanner::canSolve(const Problem* problem)
+bool MetaPlanner::canSolve(const Problem* problem) const
 {
   for (const auto& planner : mPlanners)
   {

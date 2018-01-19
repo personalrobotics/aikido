@@ -9,6 +9,7 @@
 #include <aikido/trajectory/Spline.hpp>
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
+#include "aikido/planner/PlanToEndEffectorOffset.hpp"
 
 using aikido::planner::vectorfield::detail::VectorFieldIntegrator;
 using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
@@ -241,6 +242,52 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       initialStepSize,
       constraintCheckResolution,
       planningResult);
+}
+
+//==============================================================================
+VectorFieldPlanner::PlanningFunctionMap VectorFieldPlanner::mPlanningFunctionMap;
+bool VectorFieldPlanner::mIsRegisteredPlanningFunctions = false;
+
+//==============================================================================
+VectorFieldPlanner::VectorFieldPlanner()
+  : ConcretePlanner()
+{
+  if (!mIsRegisteredPlanningFunctions)
+  {
+    registerPlanningFunction<PlanToEndEffectorOffset>(
+        &VectorFieldPlanner::planToEndEffectorOffset);
+
+    mIsRegisteredPlanningFunctions = true;
+  }
+}
+
+//==============================================================================
+trajectory::SplinePtr VectorFieldPlanner::planToEndEffectorOffset(
+    const Problem* problem, Problem::Result* result)
+{
+  if (!problem)
+    return nullptr;
+
+  const auto* castedProblem = dynamic_cast<const PlanToEndEffectorOffset*>(problem);
+  if (!castedProblem)
+    throw std::invalid_argument("problem is not PlanToConfiguration type");
+
+  auto* castedResult = dynamic_cast<PlanToEndEffectorOffset::Result*>(result);
+  if (result && !castedResult)
+  {
+    throw std::invalid_argument(
+        "result is not PlanToConfiguration::Result type");
+  }
+
+  // TODO: Not implemented yet.
+
+  return nullptr;
+}
+
+//==============================================================================
+VectorFieldPlanner::PlanningFunctionMap& VectorFieldPlanner::getPlanningFunctionMap()
+{
+  return mPlanningFunctionMap;
 }
 
 } // namespace vectorfield

@@ -14,7 +14,7 @@ class Planner
 {
 public:
   /// Returns true if this planner can solve \c problem.
-  virtual bool canSolve(const Problem* problem) = 0;
+  virtual bool canSolve(const Problem* problem) const = 0;
 
   /// Returns all the problems that this planner can solve.
   virtual std::unordered_set<std::string> getSolvableProblems() const = 0;

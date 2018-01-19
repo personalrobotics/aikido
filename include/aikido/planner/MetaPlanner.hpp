@@ -31,7 +31,7 @@ public:
   PlannerPtr getPlanner(std::size_t index);
 
   // Documentation inherited.
-  bool canSolve(const Problem* problem) override;
+  bool canSolve(const Problem* problem) const override;
 
   // Documentation inherited.
   std::unordered_set<std::string> getSolvableProblems() const override;

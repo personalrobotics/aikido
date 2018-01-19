@@ -13,8 +13,14 @@ namespace planner {
 class ConcretePlanner : public Planner
 {
 public:
+  /// Constructor
+  ConcretePlanner() = default;
+
+  /// Destructor
+  virtual ~ConcretePlanner() = default;
+
   // Documentation inherited.
-  bool canSolve(const Problem* problem) override;
+  bool canSolve(const Problem* problem) const override;
 
   // Documentation inherited.
   std::unordered_set<std::string> getSolvableProblems() const override;
