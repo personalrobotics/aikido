@@ -39,13 +39,13 @@ const std::string& PlanToConfiguration::getStaticName()
 }
 
 //==============================================================================
-const statespace::StateSpace::State*PlanToConfiguration::getStartState() const
+const statespace::StateSpace::State* PlanToConfiguration::getStartState() const
 {
   return mStartState;
 }
 
 //==============================================================================
-const statespace::StateSpace::State*PlanToConfiguration::getGoalState() const
+const statespace::StateSpace::State* PlanToConfiguration::getGoalState() const
 {
   return mGoalState;
 }

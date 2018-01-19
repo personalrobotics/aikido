@@ -36,7 +36,9 @@ public:
 
   const statespace::StateSpace::State* getStartState() const;
 
-  const std::vector<statespace::StateSpace::State*> getGoalStates() const;
+  const statespace::StateSpace::State* getGoalState() const;
+
+  const Eigen::Vector3d& getDirection() const;
 
   statespace::InterpolatorPtr getInterpolator();
 
@@ -50,7 +52,9 @@ protected:
   dart::dynamics::BodyNodePtr mBodyNode;
 
   const statespace::StateSpace::State* mStartState;
-  const std::vector<statespace::StateSpace::State*> mGoalStates;
+  const statespace::StateSpace::State* mGoalState;
+
+  const Eigen::Vector3d mDirection;
 
   statespace::InterpolatorPtr mInterpolator;
   constraint::TestablePtr mConstraint;
