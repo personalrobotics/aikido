@@ -171,34 +171,34 @@ public:
       const aikido::common::RNG* _rng) override;
 
 private:
-  /// Set to te value of \c _feasibilityCheckResolution.
+  /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;
 
-  /// Set to te value of \c _feasibilityApproxTolerance.
+  /// Set to the value of \c _feasibilityApproxTolerance.
   double mFeasibilityApproxTolerance;
 
-  /// Set to te value of \c _velocityLimits.
+  /// Set to the value of \c _velocityLimits.
   const Eigen::VectorXd mVelocityLimits;
 
-  /// Set to te value of \c _accelerationLimits.
+  /// Set to the value of \c _accelerationLimits.
   const Eigen::VectorXd mAccelerationLimits;
 
-  /// Set to te value of \c _collisionTestable.
+  /// Set to the value of \c _collisionTestable.
   aikido::constraint::TestablePtr mCollisionTestable;
 
-  /// Set to te value of \c _enableShortcut.
+  /// Set to the value of \c _enableShortcut.
   bool mEnableShortcut;
 
-  /// Set to te value of \c _enableBlend.
+  /// Set to the value of \c _enableBlend.
   bool mEnableBlend;
 
-  /// Set to te value of \c _shortcutTimelimit.
+  /// Set to the value of \c _shortcutTimelimit.
   double mShortcutTimelimit;
 
-  /// Set to te value of \c _blendRadius.
+  /// Set to the value of \c _blendRadius.
   double mBlendRadius;
 
-  /// Set to te value of \c _blendIterations.
+  /// Set to the value of \c _blendIterations.
   int mBlendIterations;
 };
 

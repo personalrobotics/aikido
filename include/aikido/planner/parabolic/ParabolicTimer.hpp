@@ -61,10 +61,10 @@ public:
       const aikido::common::RNG* _rng) override;
 
 private:
-  /// Set to te value of \c _velocityLimits.
+  /// Set to the value of \c _velocityLimits.
   const Eigen::VectorXd mVelocityLimits;
-  
-  /// Set to te value of \c _accelerationLimits.
+
+  /// Set to the value of \c _accelerationLimits.
   const Eigen::VectorXd mAccelerationLimits;
 };
 
