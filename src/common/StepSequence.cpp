@@ -61,8 +61,11 @@ int StepSequence::getMaxSteps() const
   int numSteps = (mEndPoint - mStartPoint) / mStepSize;
   if (!mIncludeEndpoints)
   {
-    // Return numSteps + 1 for the start
-    return numSteps + 1;
+    if (fabs(mStartPoint + mStepSize * numSteps - mEndPoint) < 1e-7)
+      return numSteps;
+    else
+      // Return numSteps + 1 for the start
+      return numSteps + 1;
   }
   else
   {
