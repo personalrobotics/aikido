@@ -10,19 +10,15 @@ PlanToEndEffectorPose::PlanToEndEffectorPose(
     statespace::ConstStateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState,
-    const Eigen::Vector3d& direction,
+    const Eigen::Isometry3d& goalPose,
     statespace::InterpolatorPtr interpolator,
-    constraint::TestablePtr constraint,
-    const Eigen::Isometry3d& goalPose)
+    constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
-  , mGoalState(goalState)
-  , mDirection(direction)
+  , mGoalPose(goalPose)
   , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
-  , mGoalPose(goalPose)
 {
   if (mStateSpace != mConstraint->getStateSpace())
   {
@@ -58,15 +54,9 @@ const statespace::StateSpace::State* PlanToEndEffectorPose::getStartState()
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToEndEffectorPose::getGoalState() const
+const Eigen::Isometry3d& PlanToEndEffectorPose::getGoalPose() const
 {
-  return mStartState;
-}
-
-//==============================================================================
-const Eigen::Vector3d& PlanToEndEffectorPose::getDirection() const
-{
-  return mDirection;
+  return mGoalPose;
 }
 
 //==============================================================================
@@ -91,12 +81,6 @@ constraint::TestablePtr PlanToEndEffectorPose::getConstraint()
 constraint::ConstTestablePtr PlanToEndEffectorPose::getConstraint() const
 {
   return mConstraint;
-}
-
-//==============================================================================
-const Eigen::Isometry3d&PlanToEndEffectorPose::getGoalPose() const
-{
-  return mGoalPose;
 }
 
 } // namespace planner

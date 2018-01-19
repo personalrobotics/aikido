@@ -11,7 +11,10 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to a multiple goal configurations.
+/// Planning problem to plan to a given end effector pose.
+///
+/// Plan a trajectory from start state to goal state by using an interpolator to
+/// interpolate between them.
 class PlanToEndEffectorPose : public Problem
 {
 public:
@@ -19,15 +22,22 @@ public:
 
   class Result;
 
+  /// Constructor.
+  ///
+  /// \param stateSpace State space.
+  /// \param bodyNode Body Node or Robot for which the path is to be planned.
+  /// \param startState Start state.
+  /// \param goalPose Goal pose.
+  /// \param interpolator Interpolator used to produce the output trajectory.
+  /// \param constraint Trajectory-wide constraint that must be satisfied.
+  /// \throw If \c stateSpace is not compatible to \c constraint's state space.
   PlanToEndEffectorPose(
       statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
-      const statespace::StateSpace::State* goalState,
-      const Eigen::Vector3d& direction,
+      const Eigen::Isometry3d& goalPose,
       statespace::InterpolatorPtr interpolator,
-      constraint::TestablePtr constraint,
-      const Eigen::Isometry3d& goalPose);
+      constraint::TestablePtr constraint);
 
   const std::string& getName() const override;
 
@@ -37,9 +47,7 @@ public:
 
   const statespace::StateSpace::State* getStartState() const;
 
-  const statespace::StateSpace::State* getGoalState() const;
-
-  const Eigen::Vector3d& getDirection() const;
+  const Eigen::Isometry3d& getGoalPose() const;
 
   statespace::InterpolatorPtr getInterpolator();
 
@@ -49,19 +57,21 @@ public:
 
   constraint::ConstTestablePtr getConstraint() const;
 
-  const Eigen::Isometry3d& getGoalPose() const;
-
 protected:
+  /// Body Node or Robot.
   dart::dynamics::BodyNodePtr mBodyNode;
 
+  /// Start state.
   const statespace::StateSpace::State* mStartState;
-  const statespace::StateSpace::State* mGoalState;
 
-  const Eigen::Vector3d mDirection;
+  /// Goal pose.
+  const Eigen::Isometry3d mGoalPose;
 
+  /// Interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr mInterpolator;
+
+  /// Trajectory-wide constraint that must be satisfied.
   constraint::TestablePtr mConstraint;
-  Eigen::Isometry3d mGoalPose;
 };
 
 class PlanToEndEffectorPose::Result : public Problem::Result
