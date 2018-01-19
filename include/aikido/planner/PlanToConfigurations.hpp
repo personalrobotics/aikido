@@ -36,20 +36,22 @@ public:
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
+  /// Returns the name of the planner problem.
   const std::string& getName() const override;
-
   static const std::string& getStaticName();
 
+  /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
+  /// Returns the vector of goal states.
   const std::vector<statespace::StateSpace::State*> getGoalStates() const;
 
+  /// Returns the interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr getInterpolator();
-
   statespace::ConstInterpolatorPtr getInterpolator() const;
 
+  /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::TestablePtr getConstraint();
-
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:

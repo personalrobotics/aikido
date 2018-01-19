@@ -10,15 +10,13 @@ PlanToEndEffectorOffset::PlanToEndEffectorOffset(
     statespace::ConstStateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState,
     const Eigen::Vector3d& direction,
-    const double distance,
+    const double& distance,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
-  , mGoalState(goalState)
   , mDirection(direction)
   , mDistance(distance)
   , mInterpolator(std::move(interpolator))
@@ -58,20 +56,13 @@ const statespace::StateSpace::State* PlanToEndEffectorOffset::getStartState()
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToEndEffectorOffset::getGoalState()
-    const
-{
-  return mStartState;
-}
-
-//==============================================================================
 const Eigen::Vector3d& PlanToEndEffectorOffset::getDirection() const
 {
   return mDirection;
 }
 
 //==============================================================================
-const double PlanToEndEffectorOffset::getDistance() const
+const double& PlanToEndEffectorOffset::getDistance() const
 {
   return mDistance;
 }

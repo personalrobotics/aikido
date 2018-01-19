@@ -34,32 +34,33 @@ public:
       statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
-      const statespace::StateSpace::State* goalState,
       const Eigen::Vector3d& direction,
-      const double distance,
+      const double& distance,
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
+  /// Returns the name of the planner problem.
   const std::string& getName() const override;
-
   static const std::string& getStaticName();
 
+  /// Returns the body node or robot for which the path is to be planned.
   dart::dynamics::BodyNodePtr getBodyNode();
 
+  /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
-  const statespace::StateSpace::State* getGoalState() const;
-
+  /// Returns the direction of motion specified in the world frame.
   const Eigen::Vector3d& getDirection() const;
 
-  const double getDistance() const;
+  /// Returns the distance to move in the specified direction [meters]
+  const double& getDistance() const;
 
+  /// Returns the interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr getInterpolator();
-
   statespace::ConstInterpolatorPtr getInterpolator() const;
 
+  /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::TestablePtr getConstraint();
-
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
@@ -68,9 +69,6 @@ protected:
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;
-
-  /// Goal state.
-  const statespace::StateSpace::State* mGoalState;
 
   /// Direction of motion.
   const Eigen::Vector3d mDirection;

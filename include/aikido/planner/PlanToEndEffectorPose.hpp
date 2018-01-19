@@ -39,22 +39,25 @@ public:
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
+  /// Returns the name of the planner problem.
   const std::string& getName() const override;
-
   static const std::string& getStaticName();
 
+  /// Returns the body node or robot for which the path is to be planned.
   dart::dynamics::BodyNodePtr getBodyNode();
 
+  /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
+  /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
 
+  /// Returns the interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr getInterpolator();
-
   statespace::ConstInterpolatorPtr getInterpolator() const;
 
+  /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::TestablePtr getConstraint();
-
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
