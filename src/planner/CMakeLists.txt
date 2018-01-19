@@ -1,6 +1,9 @@
 set(sources
   Planner.cpp
   PlanToConfiguration.cpp
+  PlanToConfigurations.cpp
+  PlanToTSR.cpp
+  PlanToEndEffectorOffset.cpp
   Problem.cpp
   SnapPlanner.cpp
   World.cpp

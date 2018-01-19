@@ -3,6 +3,8 @@
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/PlanToConfiguration.hpp"
+#include "aikido/planner/PlanToConfigurations.hpp"
+#include "aikido/planner/PlanToTSR.hpp"
 #include "aikido/planner/Planner.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -29,6 +31,18 @@ public:
   /// \throw If \c result is not PlanToConfiguration::Result.
   trajectory::InterpolatedPtr planToConfiguration(
       const Problem* problem, Problem::Result* result = nullptr);
+
+  trajectory::InterpolatedPtr planToConfigurations(
+      const PlanToConfigurations* problem, PlanToConfigurations::Result* result);
+
+  trajectory::InterpolatedPtr planToConfigurations(
+      const Problem* problem, Problem::Result* result);
+
+  trajectory::InterpolatedPtr planToTSR(
+      const PlanToTSR* problem, PlanToTSR::Result* result);
+
+  trajectory::InterpolatedPtr planToTSR(
+      const Problem* problem, Problem::Result* result);
 
 protected:
   PlanningFunctionMap& getPlanningFunctionMap() override;
