@@ -10,6 +10,10 @@
 
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
 
+* Planner 
+  
+  * Fixed step sequence iteration in VPF [#303](https://github.com/personalrobotics/aikido/pull/303)
+
 ### 0.2.0 (2018-01-09)
 
 * State Space
@@ -29,7 +33,7 @@
 * Planner
 
   * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243), [#252](https://github.com/personalrobotics/aikido/pull/252), [#265](https://github.com/personalrobotics/aikido/pull/265)
-  * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262), [#268](https://github.com/personalrobotics/aikido/pull/268), [#303](https://github.com/personalrobotics/aikido/pull/303)
+  * Added vector field planner [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262), [#268](https://github.com/personalrobotics/aikido/pull/268)
 
 * RViz
 
