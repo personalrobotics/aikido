@@ -11,6 +11,8 @@ namespace planner {
 class MetaPlanner : public Planner
 {
 public:
+  // TODO: Add constructor (with planners), setter/getter for planners.
+
   // Documentation inherited.
   bool canSolve(const Problem* problem) override;
 

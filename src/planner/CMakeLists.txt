@@ -1,5 +1,6 @@
 set(sources
   ConcretePlanner.cpp
+  FirstSupportedMetaPlanner.cpp
   MetaPlanner.cpp
   Planner.cpp
   PlanToConfiguration.cpp
@@ -7,6 +8,7 @@ set(sources
   PlanToTSR.cpp
   PlanToEndEffectorOffset.cpp
   Problem.cpp
+  RankedMetaPlanner.cpp
   SnapPlanner.cpp
   SequenceMetaPlanner.cpp
   World.cpp
