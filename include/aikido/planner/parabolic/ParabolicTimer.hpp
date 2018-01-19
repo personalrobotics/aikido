@@ -2,8 +2,9 @@
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICTIMER_HPP_
 
 #include <Eigen/Dense>
-#include "../../trajectory/Interpolated.hpp"
-#include "../../trajectory/Spline.hpp"
+#include "aikido/planner/TrajectoryPostProcessor.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
@@ -67,6 +68,30 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
 /// \return a spline trajectory
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const aikido::trajectory::Interpolated& _inputTrajectory);
+
+/// Class for performing parabolic retiming on trajectories.
+class ParabolicTimer : public aikido::planner::TrajectoryPostProcessor
+{
+public:
+  /// \param _velocityLimits Maximum velocity for each dimension.
+  /// \param _accelerationLimits Maximum acceleration for each dimension.
+  ParabolicTimer(
+      const Eigen::VectorXd& _velocityLimits,
+      const Eigen::VectorXd& _accelerationLimits);
+
+  /// Performs parabolic retiming on an input trajectory.
+  /// \copydoc TrajectoryPostProcessor::postprocess
+  std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const aikido::trajectory::InterpolatedPtr& _inputTraj,
+      const aikido::common::RNG* _rng) override;
+
+private:
+  /// Set to the value of \c _velocityLimits.
+  const Eigen::VectorXd mVelocityLimits;
+
+  /// Set to the value of \c _accelerationLimits.
+  const Eigen::VectorXd mAccelerationLimits;
+};
 
 } // namespace parabolic
 } // namespace planner

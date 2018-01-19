@@ -1,9 +1,10 @@
+#include "aikido/planner/parabolic/ParabolicTimer.hpp"
+
 #include <cassert>
 #include <set>
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/common/Spline.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
 
@@ -150,6 +151,29 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   auto outputTrajectory
       = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
   return outputTrajectory;
+}
+
+//==============================================================================
+ParabolicTimer::ParabolicTimer(
+    const Eigen::VectorXd& _velocityLimits,
+    const Eigen::VectorXd& _accelerationLimits)
+  : mVelocityLimits{_velocityLimits}, mAccelerationLimits{_accelerationLimits}
+{
+  // Do nothing
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
+    const aikido::trajectory::InterpolatedPtr& _inputTraj,
+    const aikido::common::RNG* /*_rng*/)
+{
+  if (!_inputTraj)
+    throw std::invalid_argument(
+        "Passed nullptr _inputTraj to "
+        "ParabolicTimer::postprocess");
+
+  return computeParabolicTiming(
+      *_inputTraj, mVelocityLimits, mAccelerationLimits);
 }
 
 } // namespace parabolic
