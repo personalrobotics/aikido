@@ -1,9 +1,9 @@
+#include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include <cassert>
 #include <set>
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/common/Spline.hpp>
-#include <aikido/planner/parabolic/ParabolicSmoother.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "DynamicPath.h"
 #include "HauserParabolicSmootherHelpers.hpp"
 #include "ParabolicUtil.hpp"
@@ -112,7 +112,8 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
   return outputTrajectory;
 }
 
-SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
+//==============================================================================
+ParabolicSmoother::ParabolicSmoother(
     const Eigen::VectorXd& _velocityLimits,
     const Eigen::VectorXd& _accelerationLimits,
     const aikido::constraint::TestablePtr& _collisionTestable,
@@ -121,10 +122,10 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
     double _shortcutTimelimit,
     double _blendRadius,
     int _blendIterations,
-    double _smootherFeasibilityCheckResolution,
-    double _smootherFeasibilityApproxTolerance)
-  : mSmootherFeasibilityCheckResolution{_smootherFeasibilityCheckResolution}
-  , mSmootherFeasibilityApproxTolerance{_smootherFeasibilityApproxTolerance}
+    double _feasibilityCheckResolution,
+    double _feasibilityApproxTolerance)
+  : mFeasibilityCheckResolution{_feasibilityCheckResolution}
+  , mFeasibilityApproxTolerance{_feasibilityApproxTolerance}
   , mVelocityLimits{_velocityLimits}
   , mAccelerationLimits{_accelerationLimits}
   , mCollisionTestable{_collisionTestable}
@@ -137,18 +138,18 @@ SmoothTrajectoryPostProcessor::SmoothTrajectoryPostProcessor(
   // Do nothing
 }
 
-std::unique_ptr<aikido::trajectory::Spline>
-SmoothTrajectoryPostProcessor::postprocess(
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
     const aikido::trajectory::InterpolatedPtr& _inputTraj,
     const aikido::common::RNG* _rng)
 {
   if (!_rng)
     throw std::invalid_argument(
-        "Passed nullptr _rng to SmoothTrajectoryPostProcessor::postprocess");
+        "Passed nullptr _rng to ParabolicSmoother::postprocess");
   if (!_inputTraj)
     throw std::invalid_argument(
         "Passed nullptr _inputTraj to "
-        "SmoothTrajectoryPostProcessor::postprocess");
+        "ParabolicSmoother::postprocess");
 
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
@@ -165,8 +166,8 @@ SmoothTrajectoryPostProcessor::postprocess(
         mShortcutTimelimit,
         mBlendRadius,
         mBlendIterations,
-        mSmootherFeasibilityCheckResolution,
-        mSmootherFeasibilityApproxTolerance);
+        mFeasibilityCheckResolution,
+        mFeasibilityApproxTolerance);
   }
   else if (mEnableShortcut)
   {
@@ -177,8 +178,8 @@ SmoothTrajectoryPostProcessor::postprocess(
         mAccelerationLimits,
         *_rng->clone(),
         mShortcutTimelimit,
-        mSmootherFeasibilityCheckResolution,
-        mSmootherFeasibilityApproxTolerance);
+        mFeasibilityCheckResolution,
+        mFeasibilityApproxTolerance);
   }
   else if (mEnableBlend)
   {
@@ -189,8 +190,8 @@ SmoothTrajectoryPostProcessor::postprocess(
         mAccelerationLimits,
         mBlendRadius,
         mBlendIterations,
-        mSmootherFeasibilityCheckResolution,
-        mSmootherFeasibilityApproxTolerance);
+        mFeasibilityCheckResolution,
+        mFeasibilityApproxTolerance);
   }
 
   return timedTrajectory;

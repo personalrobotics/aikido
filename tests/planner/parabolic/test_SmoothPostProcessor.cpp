@@ -14,7 +14,7 @@ using aikido::statespace::R2;
 using aikido::statespace::StateSpacePtr;
 using aikido::constraint::Satisfied;
 using aikido::common::cloneRNGFrom;
-using aikido::planner::parabolic::SmoothTrajectoryPostProcessor;
+using aikido::planner::parabolic::ParabolicSmoother;
 
 class SmoothPostProcessorTests : public ::testing::Test
 {
@@ -98,7 +98,7 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
   bool enableShortcut = true;
   bool enableBlend = false;
 
-  SmoothTrajectoryPostProcessor testSmoothPostProcessor(
+  ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
       testable,
@@ -141,7 +141,7 @@ TEST_F(SmoothPostProcessorTests, useBlend)
   bool enableShortcut = false;
   bool enableBlend = true;
 
-  SmoothTrajectoryPostProcessor testSmoothPostProcessor(
+  ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
       testable,
@@ -184,7 +184,7 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
   bool enableShortcut = true;
   bool enableBlend = true;
 
-  SmoothTrajectoryPostProcessor testSmoothPostProcessor(
+  ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
       testable,

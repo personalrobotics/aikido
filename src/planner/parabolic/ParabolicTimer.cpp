@@ -113,7 +113,8 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   return outputTrajectory;
 }
 
-RetimeTrajectoryPostProcessor::RetimeTrajectoryPostProcessor(
+//==============================================================================
+ParabolicTimer::ParabolicTimer(
     const Eigen::VectorXd& _velocityLimits,
     const Eigen::VectorXd& _accelerationLimits)
   : mVelocityLimits{_velocityLimits}, mAccelerationLimits{_accelerationLimits}
@@ -121,15 +122,15 @@ RetimeTrajectoryPostProcessor::RetimeTrajectoryPostProcessor(
   // Do nothing
 }
 
-std::unique_ptr<aikido::trajectory::Spline>
-RetimeTrajectoryPostProcessor::postprocess(
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
     const aikido::trajectory::InterpolatedPtr& _inputTraj,
     const aikido::common::RNG* /*_rng*/)
 {
   if (!_inputTraj)
     throw std::invalid_argument(
         "Passed nullptr _inputTraj to "
-        "RetimeTrajectoryPostProcessor::postprocess");
+        "ParabolicTimer::postprocess");
 
   return computeParabolicTiming(
       *_inputTraj, mVelocityLimits, mAccelerationLimits);

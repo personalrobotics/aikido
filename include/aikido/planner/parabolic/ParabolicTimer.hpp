@@ -45,24 +45,25 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const aikido::trajectory::Interpolated& _inputTrajectory);
 
 /// Class for performing parabolic retiming on trajectories.
-class RetimeTrajectoryPostProcessor
-    : public aikido::planner::TrajectoryPostProcessor
+class ParabolicTimer : public aikido::planner::TrajectoryPostProcessor
 {
 public:
-  /// \param _velocityLimits maximum velocity for each dimension.
-  /// \param _accelerationLimits maximum acceleration for each dimension.
-  RetimeTrajectoryPostProcessor(
+  /// \param _velocityLimits Maximum velocity for each dimension.
+  /// \param _accelerationLimits Maximum acceleration for each dimension.
+  ParabolicTimer(
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits);
 
   /// Performs parabolic retiming on an input trajectory.
-  /// Documentation inherited.
+  /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::InterpolatedPtr& _inputTraj,
       const aikido::common::RNG* _rng) override;
 
 private:
+  /// Set to te value of \c _velocityLimits.
   const Eigen::VectorXd mVelocityLimits;
+  /// Set to te value of \c _accelerationLimits.
   const Eigen::VectorXd mAccelerationLimits;
 };
 
