@@ -12,6 +12,7 @@ PlanToEndEffectorOffset::PlanToEndEffectorOffset(
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
     const Eigen::Vector3d& direction,
+    const double distance,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
@@ -19,6 +20,7 @@ PlanToEndEffectorOffset::PlanToEndEffectorOffset(
   , mStartState(startState)
   , mGoalState(goalState)
   , mDirection(direction)
+  , mDistance(distance)
   , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
@@ -66,6 +68,12 @@ const statespace::StateSpace::State* PlanToEndEffectorOffset::getGoalState()
 const Eigen::Vector3d& PlanToEndEffectorOffset::getDirection() const
 {
   return mDirection;
+}
+
+//==============================================================================
+const double PlanToEndEffectorOffset::getDistance() const
+{
+  return mDistance;
 }
 
 //==============================================================================

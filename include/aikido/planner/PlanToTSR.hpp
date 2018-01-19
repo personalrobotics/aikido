@@ -20,6 +20,15 @@ public:
 
   class Result;
 
+  /// Constructor.
+  ///
+  /// \param stateSpace State space.
+  /// \param bodyNode Body Node or robot for which the path is to be planned.
+  /// \param startState Start state.
+  /// \param goalTSR Goal TSR.
+  /// \param interpolator Interpolator used to produce the output trajectory.
+  /// \param constraint Trajectory-wide constraint that must be satisfied.
+  /// \throw If \c stateSpace is not compatible to \c constraint's state space.
   PlanToTSR(
       statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
@@ -47,12 +56,19 @@ public:
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
+  /// Body Node or Robot
   dart::dynamics::BodyNodePtr mBodyNode;
 
+  /// Start State
   const statespace::StateSpace::State* mStartState;
+
+  /// Goal TSR
   const constraint::TSRPtr mGoalTSR;
 
+  /// Interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr mInterpolator;
+
+  /// Trajectory-wide constraint that must be satisfied.
   constraint::TestablePtr mConstraint;
 };
 
