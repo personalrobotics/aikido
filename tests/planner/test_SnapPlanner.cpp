@@ -15,6 +15,7 @@
 using std::shared_ptr;
 using std::make_shared;
 
+//==============================================================================
 class SnapPlannerTest : public ::testing::Test
 {
 public:
@@ -57,11 +58,47 @@ public:
   aikido::planner::PlanToConfiguration::Result planningResult;
 };
 
+//==============================================================================
+class UnknownProblem : public aikido::planner::Problem
+{
+public:
+  UnknownProblem()
+    : aikido::planner::Problem(nullptr)
+  {
+    // Do nothing
+  }
+
+  const std::string& getName() const override
+  {
+    return getStaticName();
+  }
+
+  static const std::string& getStaticName()
+  {
+    static std::string name("UnknownProblem");
+    return name;
+  }
+};
+
+//==============================================================================
+TEST_F(SnapPlannerTest, CanSolveProblems)
+{
+  auto planner = std::make_shared<aikido::planner::SnapPlanner>();
+
+  auto problem = aikido::planner::PlanToConfiguration(
+      stateSpace, *startState, *goalState, interpolator, failingConstraint);
+  auto unknownProblem = UnknownProblem();
+
+  EXPECT_TRUE(planner->canSolve(&problem));
+  EXPECT_FALSE(planner->canSolve(&unknownProblem));
+}
+
+//==============================================================================
 TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 {
-  SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
+  SkeletonPtr emptySkel = dart::dynamics::Skeleton::create("skel");
   auto differentStateSpace
-      = make_shared<MetaSkeletonStateSpace>(empty_skel.get());
+      = make_shared<MetaSkeletonStateSpace>(emptySkel.get());
   EXPECT_THROW(
       {
         auto problem = aikido::planner::PlanToConfiguration(
@@ -75,6 +112,7 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
       std::invalid_argument);
 }
 
+//==============================================================================
 TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
   stateSpace->getState(skel.get(), *startState);
@@ -107,6 +145,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
       << "on success final element of trajectory should be goal state.";
 }
 
+//==============================================================================
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
   auto problem = aikido::planner::PlanToConfiguration(
