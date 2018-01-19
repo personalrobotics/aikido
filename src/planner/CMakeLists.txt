@@ -7,6 +7,7 @@ set(sources
   PlanToConfigurations.cpp
   PlanToTSR.cpp
   PlanToEndEffectorOffset.cpp
+  PlanToEndEffectorPose.cpp
   Problem.cpp
   RankedMetaPlanner.cpp
   SnapPlanner.cpp
