@@ -1,4 +1,6 @@
 set(sources
+  ConcretePlanner.cpp
+  MetaPlanner.cpp
   Planner.cpp
   PlanToConfiguration.cpp
   PlanToConfigurations.cpp
@@ -6,6 +8,7 @@ set(sources
   PlanToEndEffectorOffset.cpp
   Problem.cpp
   SnapPlanner.cpp
+  SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp)
 

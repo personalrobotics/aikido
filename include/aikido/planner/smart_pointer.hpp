@@ -4,11 +4,11 @@
 #include "aikido/common/smart_pointer.hpp"
 
 namespace aikido {
-namespace common {
+namespace planner {
 
 AIKIDO_COMMON_DECLARE_SMART_POINTERS(Planner)
 
-} // namespace rviz
+} // namespace planner
 } // namespace aikido
 
 #endif // AIKIDO_PLANNER_SMARTPOINTER_HPP_

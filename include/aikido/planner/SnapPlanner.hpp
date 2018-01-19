@@ -2,10 +2,10 @@
 #define AIKIDO_PLANNER_SNAPPLANNER_HPP_
 
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/ConcretePlanner.hpp"
 #include "aikido/planner/PlanToConfiguration.hpp"
 #include "aikido/planner/PlanToConfigurations.hpp"
 #include "aikido/planner/PlanToTSR.hpp"
-#include "aikido/planner/Planner.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
@@ -22,7 +22,7 @@ namespace planner {
 /// planning between nearby configurations. This planner is most commonly used
 /// as the first item in a Sequence meta-planner to avoid calling a motion
 /// planner when the trivial solution is valid.
-class SnapPlanner : public Planner
+class SnapPlanner : public ConcretePlanner
 {
 public:
   /// Constructor

@@ -1,14 +1,14 @@
-#ifndef AIKIDO_PLANNER_DETAIL_PLANNER_IMPL_HPP_
-#define AIKIDO_PLANNER_DETAIL_PLANNER_IMPL_HPP_
+#ifndef AIKIDO_PLANNER_DETAIL_CONCRETEPLANNER_IMPL_HPP_
+#define AIKIDO_PLANNER_DETAIL_CONCRETEPLANNER_IMPL_HPP_
 
-#include "aikido/planner/Planner.hpp"
+#include "aikido/planner/ConcretePlanner.hpp"
 
 namespace aikido {
 namespace planner {
 
 //==============================================================================
 template <class ProblemT, typename T, typename R, typename... Args>
-void Planner::registerPlanningFunction(R (T::*func)(Args...))
+void ConcretePlanner::registerPlanningFunction(R (T::*func)(Args...))
 {
   static_assert(
       std::is_same<typename ProblemT::ReturnTrajectoryType,
@@ -31,4 +31,4 @@ void Planner::registerPlanningFunction(R (T::*func)(Args...))
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_DETAIL_PLANNER_IMPL_HPP_
+#endif // AIKIDO_PLANNER_DETAIL_CONCRETEPLANNER_IMPL_HPP_
