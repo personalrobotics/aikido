@@ -61,6 +61,9 @@ public:
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
+  /// Creates a CollisionGroup in the CollisionDetector for the fingers.
+  void setFingerCollisionGroup();
+
   constexpr static double kDofSpeed = 1;
 
   /// If (current dof - goalPosition) execution terminates.

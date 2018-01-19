@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/TrajectoryPostProcessor.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
@@ -128,6 +129,78 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
     double _tolerance = DEFAULT_TOLERANCE);
+
+/// Class for performing parabolic smoothing on trajectories
+class ParabolicSmoother : public aikido::planner::TrajectoryPostProcessor
+{
+public:
+  /// \param _velocityLimits Maximum velocity for each dimension.
+  /// \param _accelerationLimits Maximum acceleration for each dimension.
+  /// \param _collisionTestable Check whether a position is feasible.
+  /// \param _enableShortcut Whether shortcutting is used in smoothing.
+  /// \param _enableBlend Whether blending is used in smoothing.
+  /// \param _shortcutTimelimit Timelimit for shortcutting. It is ineffective
+  /// when _enableShortcut is false.
+  /// \param _blendRadius Blend radius for blending. It is ineffective
+  /// when _enableBlend is false.
+  /// \param _blendIterations Blend iterations for blending. It is
+  /// ineffective when _enableBlend is false.
+  /// \param _feasibilityCheckResolution The resolution in discretizing
+  /// a segment in checking the feasibility of the segment.
+  /// \param _feasibilityApproxTolerance This tolerance is used in a
+  /// piecewise linear discretization that deviates no more than
+  /// \c _feasibilityApproxTolerance from the parabolic ramp along any
+  /// axis, and then checks for configuration and segment feasibility along that
+  /// piecewise linear path.
+  ParabolicSmoother(
+      const Eigen::VectorXd& _velocityLimits,
+      const Eigen::VectorXd& _accelerationLimits,
+      const aikido::constraint::TestablePtr& _collisionTestable,
+      bool _enableShortcut = true,
+      bool _enableBlend = true,
+      double _shortcutTimelimit = DEFAULT_TIMELIMT,
+      double _blendRadius = DEFAULT_BLEND_RADIUS,
+      int _blendIterations = DEFAULT_BLEND_ITERATIONS,
+      double _feasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION,
+      double _feasibilityApproxTolerance = DEFAULT_TOLERANCE);
+
+  /// Performs parabolic smoothing on an input trajectory.
+  /// \copydoc TrajectoryPostProcessor::postprocess
+  std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const aikido::trajectory::InterpolatedPtr& _inputTraj,
+      const aikido::common::RNG* _rng) override;
+
+private:
+  /// Set to the value of \c _feasibilityCheckResolution.
+  double mFeasibilityCheckResolution;
+
+  /// Set to the value of \c _feasibilityApproxTolerance.
+  double mFeasibilityApproxTolerance;
+
+  /// Set to the value of \c _velocityLimits.
+  const Eigen::VectorXd mVelocityLimits;
+
+  /// Set to the value of \c _accelerationLimits.
+  const Eigen::VectorXd mAccelerationLimits;
+
+  /// Set to the value of \c _collisionTestable.
+  aikido::constraint::TestablePtr mCollisionTestable;
+
+  /// Set to the value of \c _enableShortcut.
+  bool mEnableShortcut;
+
+  /// Set to the value of \c _enableBlend.
+  bool mEnableBlend;
+
+  /// Set to the value of \c _shortcutTimelimit.
+  double mShortcutTimelimit;
+
+  /// Set to the value of \c _blendRadius.
+  double mBlendRadius;
+
+  /// Set to the value of \c _blendIterations.
+  int mBlendIterations;
+};
 
 } // namespace parabolic
 } // namespace planner
