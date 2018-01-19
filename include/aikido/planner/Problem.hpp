@@ -27,8 +27,10 @@ protected:
 class Problem::Result
 {
 public:
+  virtual ~Result() = default;
   void setMessage(const std::string& message);
   const std::string& getMessage() const;
+
 protected:
   std::string mMessage;
 };

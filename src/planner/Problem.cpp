@@ -23,7 +23,7 @@ void Problem::Result::setMessage(const std::string& message)
 }
 
 //==============================================================================
-const std::string&Problem::Result::getMessage() const
+const std::string& Problem::Result::getMessage() const
 {
   return mMessage;
 }

@@ -8,7 +8,8 @@ namespace trajectory {
 using State = aikido::statespace::StateSpace::State;
 
 //==============================================================================
-Interpolated::Interpolated(aikido::statespace::ConstStateSpacePtr _sspace,
+Interpolated::Interpolated(
+    aikido::statespace::ConstStateSpacePtr _sspace,
     aikido::statespace::ConstInterpolatorPtr _interpolator)
   : mStateSpace(std::move(_sspace)), mInterpolator(std::move(_interpolator))
 {

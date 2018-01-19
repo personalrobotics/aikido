@@ -2,9 +2,9 @@
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 
 #include <Eigen/Core>
-#include <aikido/trajectory/TrajectoryMetadata.hpp>
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/smart_pointer.hpp"
+#include "aikido/trajectory/TrajectoryMetadata.hpp"
 
 namespace aikido {
 namespace trajectory {

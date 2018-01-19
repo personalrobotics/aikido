@@ -31,8 +31,10 @@ protected:
   template <class ProblemT, typename T, typename R, typename... Args>
   void registerPlanningFunction(R (T::*func)(Args...))
   {
-//    static_assert(std::is_same<typename ProblemT::ReturnTrajectoryType,
-//                               typename std::pointer_traits<R>::element_type>::value, "TODO: error message");
+    //    static_assert(std::is_same<typename ProblemT::ReturnTrajectoryType,
+    //                               typename
+    //                               std::pointer_traits<R>::element_type>::value,
+    //                               "TODO: error message");
 
     auto& map = getPlanningFunctionMap();
     auto func2 = std::bind(
