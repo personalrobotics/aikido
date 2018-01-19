@@ -104,7 +104,7 @@ public:
   ///
   /// \param[in,out] _state1 left input state, overwritten by output
   /// \param _state2 right input state
-  virtual void compose(State* _state1, const State* _state2);
+  virtual void compose(State* _state1, const State* _state2) const;
 
   /// Gets the identity element for this Lie group, such that:
   /// \code
@@ -165,9 +165,6 @@ public:
   /// \param _os The stream to print to
   virtual void print(const State* _state, std::ostream& _os) const = 0;
 };
-
-using StateSpacePtr = std::shared_ptr<StateSpace>;
-using ConstStateSpacePtr = std::shared_ptr<const StateSpace>;
 
 } // namespace statespace
 } // namespace aikido

@@ -1,8 +1,9 @@
-#ifndef AIKIDO_CONSTRAINT_PROJECTABLE_H
-#define AIKIDO_CONSTRAINT_PROJECTABLE_H
+#ifndef AIKIDO_CONSTRAINT_PROJECTABLE_HPP_
+#define AIKIDO_CONSTRAINT_PROJECTABLE_HPP_
 
 #include <Eigen/Dense>
-#include "../statespace/StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/smart_pointer.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -34,4 +35,4 @@ using ProjectablePtr = std::shared_ptr<Projectable>;
 } // namespace constraint
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_CONSTRAINT_PROJECTABLE_HPP_

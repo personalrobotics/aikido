@@ -71,8 +71,8 @@ void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
   if (trajectory)
   {
     auto statespace = trajectory->getStateSpace();
-    if (!std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-            statespace))
+    if (!std::dynamic_pointer_cast<const statespace::dart::
+                                       MetaSkeletonStateSpace>(statespace))
     {
       throw std::invalid_argument(
           "The statespace in the trajectory should be MetaSkeletonStateSpace");
@@ -218,9 +218,9 @@ void TrajectoryMarker::updatePoints()
     return;
   }
 
-  statespace::StateSpacePtr statespace = mTrajectory->getStateSpace();
-  auto metaSkeletonSs
-      = std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
+  auto statespace = mTrajectory->getStateSpace();
+  auto metaSkeletonSs = std::
+      dynamic_pointer_cast<const statespace::dart::MetaSkeletonStateSpace>(
           statespace);
 
   auto saver = statespace::dart::MetaSkeletonStateSaver(mSkeleton);
@@ -232,6 +232,7 @@ void TrajectoryMarker::updatePoints()
 
   points.reserve(mNumLineSegments + 1u);
   Eigen::Vector3d pose;
+  assert(mNumLineSegments != 0u);
   for (std::size_t i = 0u; i < mNumLineSegments - 1u; ++i)
   {
     mTrajectory->evaluate(t, state);

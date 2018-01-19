@@ -2,8 +2,9 @@
 #define AIKIDO_CONSTRAINT_TESTABLE_HPP_
 
 #include <memory>
-#include "../statespace/StateSpace.hpp"
-#include "DefaultTestableOutcome.hpp"
+#include "aikido/constraint/DefaultTestableOutcome.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/smart_pointer.hpp"
 
 namespace aikido {
 namespace constraint {

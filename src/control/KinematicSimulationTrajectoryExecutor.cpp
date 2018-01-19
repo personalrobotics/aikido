@@ -53,7 +53,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
   if (traj->metadata.executorValidated)
     return;
 
-  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   if (!space)
@@ -132,7 +132,7 @@ void KinematicSimulationTrajectoryExecutor::step()
 
   // Can't do static here because MetaSkeletonStateSpace inherits
   // CartesianProduct which inherits virtual StateSpace
-  auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       mTraj->getStateSpace());
   auto state = space->createState();
 

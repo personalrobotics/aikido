@@ -6,6 +6,8 @@
 #include <aikido/planner/vectorfield/VectorField.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
+#include "aikido/trajectory/smart_pointer.hpp"
+#include "aikido/planner/ConcretePlanner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -103,6 +105,26 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
     planner::PlanningResult* planningResult = nullptr);
+
+class VectorFieldPlanner : public ConcretePlanner
+{
+public:
+  /// Constructor
+  VectorFieldPlanner();
+
+  trajectory::SplinePtr planToEndEffectorOffset(
+      const Problem* problem, Problem::Result* result = nullptr);
+
+protected:
+  // Documentation inherited.
+  PlanningFunctionMap& getPlanningFunctionMap() override;
+
+  /// Whether planning function map is set.
+  static bool mIsRegisteredPlanningFunctions;
+
+  /// Planning function map.
+  static PlanningFunctionMap mPlanningFunctionMap;
+};
 
 } // namespace vectorfield
 } // namespace planner
