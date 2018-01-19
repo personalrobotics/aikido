@@ -12,8 +12,6 @@ public:
   // Documentation inherited.
   trajectory::TrajectoryPtr solve(
       const Problem* problem, Problem::Result* result = nullptr) override;
-
-protected:
 };
 
 } // namespace planner

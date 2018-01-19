@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_METAPLANNER_HPP_
 #define AIKIDO_PLANNER_METAPLANNER_HPP_
 
+#include <unordered_set>
 #include <vector>
 #include "aikido/planner/Planner.hpp"
 #include "aikido/planner/smart_pointer.hpp"
@@ -11,7 +12,23 @@ namespace planner {
 class MetaPlanner : public Planner
 {
 public:
-  // TODO: Add constructor (with planners), setter/getter for planners.
+  /// Constructor.
+  explicit MetaPlanner(const std::vector<PlannerPtr>& planners);
+
+  /// Adds planner.
+  void addPlanner(PlannerPtr planner);
+
+  /// Returns true if this MetaPlanner contains \c planner.
+  bool hasPlanner(const Planner* planner);
+
+  /// Returns all the planners in this MetaPlanner.
+  const std::vector<PlannerPtr>& getPlanners() const;
+
+  /// Returns planner given \c index.
+  ///
+  /// \throw If index is equal to or greater than the number of planners in this
+  /// MetaPlanner.
+  PlannerPtr getPlanner(std::size_t index);
 
   // Documentation inherited.
   bool canSolve(const Problem* problem) override;
@@ -24,6 +41,7 @@ public:
       const Problem* problem) const;
 
 protected:
+  /// Planners
   std::vector<PlannerPtr> mPlanners;
 };
 
