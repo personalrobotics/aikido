@@ -59,27 +59,12 @@ StepSequence::const_iterator StepSequence::end()
 int StepSequence::getMaxSteps() const
 {
   int numSteps = (mEndPoint - mStartPoint) / mStepSize;
-  if (!mIncludeEndpoints)
+
+  if (std::abs(mStartPoint + mStepSize * numSteps - mEndPoint) > 1e-7)
   {
-    if (std::abs(mStartPoint + mStepSize * numSteps - mEndPoint) < 1e-7)
-      return numSteps;
-    else
-      // Return numSteps + 1 for the start
-      return numSteps + 1;
+    numSteps++;
   }
-  else
-  {
-    if (std::abs(mStartPoint + mStepSize * numSteps - mEndPoint) < 1e-7)
-    {
-      // Return numSteps + 1 for the start (endpt already included)
-      return numSteps + 1;
-    }
-    else
-    {
-      // Return numSteps + 1 for the start + 1 for the end
-      return numSteps + 2;
-    }
-  }
+  return numSteps + mIncludeEndpoints;
 }
 
 //==============================================================================
