@@ -1,12 +1,12 @@
 #ifndef AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
 #define AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
 
+#include <dart/dart.hpp>
+#include "aikido/constraint/smart_pointer.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/smart_pointer.hpp"
-#include "aikido/constraint/smart_pointer.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
-#include <dart/dart.hpp>
 
 namespace aikido {
 namespace planner {

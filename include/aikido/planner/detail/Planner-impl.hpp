@@ -10,9 +10,10 @@ namespace planner {
 template <class ProblemT, typename T, typename R, typename... Args>
 void Planner::registerPlanningFunction(R (T::*func)(Args...))
 {
-  static_assert(std::is_same<typename ProblemT::ReturnTrajectoryType,
-                typename std::pointer_traits<R>::element_type>::value,
-                "TODO: error message");
+  static_assert(
+      std::is_same<typename ProblemT::ReturnTrajectoryType,
+                   typename std::pointer_traits<R>::element_type>::value,
+      "TODO: error message");
   // TODO(JS): Not sure if returning trajectory type should be tied to problem
   // or planner. If it's not, this check and ReturnTrajectoryType should be
   // removed.

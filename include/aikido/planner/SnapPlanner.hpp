@@ -33,7 +33,8 @@ public:
       const Problem* problem, Problem::Result* result = nullptr);
 
   trajectory::InterpolatedPtr planToConfigurations(
-      const PlanToConfigurations* problem, PlanToConfigurations::Result* result);
+      const PlanToConfigurations* problem,
+      PlanToConfigurations::Result* result);
 
   trajectory::InterpolatedPtr planToConfigurations(
       const Problem* problem, Problem::Result* result);

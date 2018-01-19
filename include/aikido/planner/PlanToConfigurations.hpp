@@ -1,10 +1,10 @@
 #ifndef AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
 #define AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
 
+#include "aikido/constraint/smart_pointer.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/smart_pointer.hpp"
-#include "aikido/constraint/smart_pointer.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {

@@ -49,13 +49,15 @@ dart::dynamics::BodyNodePtr PlanToEndEffectorOffset::getBodyNode()
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToEndEffectorOffset::getStartState() const
+const statespace::StateSpace::State* PlanToEndEffectorOffset::getStartState()
+    const
 {
   return mStartState;
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToEndEffectorOffset::getGoalState() const
+const statespace::StateSpace::State* PlanToEndEffectorOffset::getGoalState()
+    const
 {
   return mStartState;
 }
@@ -73,7 +75,8 @@ statespace::InterpolatorPtr PlanToEndEffectorOffset::getInterpolator()
 }
 
 //==============================================================================
-statespace::ConstInterpolatorPtr PlanToEndEffectorOffset::getInterpolator() const
+statespace::ConstInterpolatorPtr PlanToEndEffectorOffset::getInterpolator()
+    const
 {
   return mInterpolator;
 }

@@ -45,7 +45,8 @@ const statespace::StateSpace::State* PlanToConfigurations::getStartState() const
 }
 
 //==============================================================================
-const std::vector<statespace::StateSpace::State*> PlanToConfigurations::getGoalStates() const
+const std::vector<statespace::StateSpace::State*>
+PlanToConfigurations::getGoalStates() const
 {
   return mGoalStates;
 }

@@ -62,8 +62,7 @@ public:
 class UnknownProblem : public aikido::planner::Problem
 {
 public:
-  UnknownProblem()
-    : aikido::planner::Problem(nullptr)
+  UnknownProblem() : aikido::planner::Problem(nullptr)
   {
     // Do nothing
   }
