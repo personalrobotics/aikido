@@ -63,6 +63,7 @@ public:
 private:
   /// Set to te value of \c _velocityLimits.
   const Eigen::VectorXd mVelocityLimits;
+  
   /// Set to te value of \c _accelerationLimits.
   const Eigen::VectorXd mAccelerationLimits;
 };

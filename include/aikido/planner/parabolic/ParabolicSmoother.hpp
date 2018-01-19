@@ -145,9 +145,9 @@ public:
   /// when _enableBlend is false.
   /// \param _blendIterations Blend iterations for blending. It is
   /// ineffective when _enableBlend is false.
-  /// \param _feasibilityCheckResolution the resolution in discretizing
+  /// \param _feasibilityCheckResolution The resolution in discretizing
   /// a segment in checking the feasibility of the segment.
-  /// \param _feasibilityApproxTolerance this tolerance is used in a
+  /// \param _feasibilityApproxTolerance This tolerance is used in a
   /// piecewise linear discretization that deviates no more than
   /// \c _feasibilityApproxTolerance from the parabolic ramp along any
   /// axis, and then checks for configuration and segment feasibility along that
@@ -173,23 +173,31 @@ public:
 private:
   /// Set to te value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;
+
   /// Set to te value of \c _feasibilityApproxTolerance.
   double mFeasibilityApproxTolerance;
+
   /// Set to te value of \c _velocityLimits.
   const Eigen::VectorXd mVelocityLimits;
+
   /// Set to te value of \c _accelerationLimits.
   const Eigen::VectorXd mAccelerationLimits;
+
   /// Set to te value of \c _collisionTestable.
   aikido::constraint::TestablePtr mCollisionTestable;
 
   /// Set to te value of \c _enableShortcut.
   bool mEnableShortcut;
+
   /// Set to te value of \c _enableBlend.
   bool mEnableBlend;
+
   /// Set to te value of \c _shortcutTimelimit.
   double mShortcutTimelimit;
+
   /// Set to te value of \c _blendRadius.
   double mBlendRadius;
+
   /// Set to te value of \c _blendIterations.
   int mBlendIterations;
 };

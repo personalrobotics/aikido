@@ -1,9 +1,10 @@
+#include "aikido/planner/parabolic/ParabolicTimer.hpp"
+
 #include <cassert>
 #include <set>
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/common/Spline.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
 

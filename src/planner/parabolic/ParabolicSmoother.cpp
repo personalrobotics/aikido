@@ -1,4 +1,5 @@
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
+
 #include <cassert>
 #include <set>
 #include <dart/common/StlHelpers.hpp>
