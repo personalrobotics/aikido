@@ -54,7 +54,7 @@ public:
   shared_ptr<PassingConstraint> passingConstraint;
   shared_ptr<FailingConstraint> failingConstraint;
   shared_ptr<GeodesicInterpolator> interpolator;
-  aikido::planner::PlanningResult planningResult;
+  aikido::planner::PlanToConfiguration::Result planningResult;
 };
 
 TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
@@ -71,13 +71,6 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
             interpolator,
             passingConstraint);
         DART_UNUSED(problem);
-        //        planSnap(
-        //            differentStateSpace,
-        //            *startState,
-        //            *goalState,
-        //            interpolator,
-        //            passingConstraint,
-        //            planningResult);
       },
       std::invalid_argument);
 }
@@ -90,22 +83,12 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
   auto problem = aikido::planner::PlanToConfiguration(
       stateSpace, *startState, *goalState, interpolator, passingConstraint);
-
-  //  auto traj = planSnap(
-  //      stateSpace,
-  //      *startState,
-  //      *goalState,
-  //      interpolator,
-  //      passingConstraint,
-  //      planningResult);
-
   auto planner = std::make_shared<aikido::planner::SnapPlanner>();
-  auto traj = planner->solve(&problem);
+  auto traj = planner->planToConfiguration(&problem, &planningResult);
 
   auto subSpace = stateSpace->getSubspace<SO2>(0);
   DART_UNUSED(subSpace);
-  //  EXPECT_EQ(2, traj->getNumWaypoints());
-  //  planner->planToConfiguration(nullptr, nullptr);
+  EXPECT_EQ(2, traj->getNumWaypoints());
 
   auto startValue = startState->getSubStateHandle<SO2>(0).getRotation();
 
@@ -126,12 +109,9 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
-  auto traj = planSnap(
-      stateSpace,
-      *startState,
-      *goalState,
-      interpolator,
-      failingConstraint,
-      planningResult);
+  auto problem = aikido::planner::PlanToConfiguration(
+      stateSpace, *startState, *goalState, interpolator, failingConstraint);
+  auto planner = std::make_shared<aikido::planner::SnapPlanner>();
+  auto traj = planner->planToConfiguration(&problem, &planningResult);
   EXPECT_EQ(nullptr, traj);
 }

@@ -11,6 +11,9 @@ namespace aikido {
 namespace planner {
 
 /// Planning problem to plan to a single goal configuration.
+///
+/// Plan a trajectory from start state to goal state by using an interpolator to
+/// interpolate between them.
 class PlanToConfiguration : public Problem
 {
 public:
@@ -18,6 +21,14 @@ public:
 
   class Result;
 
+  /// Constructor.
+  ///
+  /// \param stateSpace State space.
+  /// \param startState Start state.
+  /// \param goalState Goal state.
+  /// \param interpolator Interpolator used to produce the output trajectory.
+  /// \param constraint Trajectory-wide constraint that must be satisfied.
+  /// \throw If \c stateSpace is not compatible to \c constraint's state space.
   PlanToConfiguration(
       statespace::ConstStateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
@@ -42,10 +53,16 @@ public:
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
+  /// Start state.
   const statespace::StateSpace::State* mStartState;
+
+  /// Goal state.
   const statespace::StateSpace::State* mGoalState;
 
+  /// Interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr mInterpolator;
+
+  /// Trajectory-wide constraint that must be satisfied.
   constraint::TestablePtr mConstraint;
 };
 

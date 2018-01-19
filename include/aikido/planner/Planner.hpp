@@ -11,8 +11,7 @@
 namespace aikido {
 namespace planner {
 
-/// Base class for a meta-planner, to be implemented.
-/// [Gilwoo] Created a strawman for Robot class
+/// Base class for a meta-planner
 class Planner
 {
 public:
@@ -29,25 +28,12 @@ protected:
   virtual PlanningFunctionMap& getPlanningFunctionMap() = 0;
 
   template <class ProblemT, typename T, typename R, typename... Args>
-  void registerPlanningFunction(R (T::*func)(Args...))
-  {
-    //    static_assert(std::is_same<typename ProblemT::ReturnTrajectoryType,
-    //                               typename
-    //                               std::pointer_traits<R>::element_type>::value,
-    //                               "TODO: error message");
-
-    auto& map = getPlanningFunctionMap();
-    auto func2 = std::bind(
-        func,
-        static_cast<T*>(this),
-        std::placeholders::_1,
-        std::placeholders::_2);
-
-    map.insert(std::make_pair(ProblemT::getStaticName(), func2));
-  }
+  void registerPlanningFunction(R (T::*func)(Args...));
 };
 
 } // namespace planner
 } // namespace aikido
 
-#endif
+#include "aikido/planner/detail/Planner-impl.hpp"
+
+#endif // AIKIDO_PLANNER_PLANNER_HPP_
