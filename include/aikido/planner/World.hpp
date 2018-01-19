@@ -37,7 +37,7 @@ public:
 
   virtual ~World();
 
-  /// Create a new World ptr
+  /// Create a new World inside of a shared_ptr
   /// \param name Name for the new World
   static std::unique_ptr<World> create(const std::string& name = "");
 
