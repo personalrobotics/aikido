@@ -2,6 +2,10 @@
 
 ### 0.3.0 (201X-XX-XX)
 
+* Common
+  
+  * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
+
 * State Space
 
   * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
