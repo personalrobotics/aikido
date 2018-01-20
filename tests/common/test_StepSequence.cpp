@@ -72,6 +72,15 @@ TEST(StepSequence, IteratorStop)
   }
 
   EXPECT_EQ(5, count);
+
+  std::size_t count2 = 0;
+  StepSequence seq2(0.2, false);
+  for (double v : seq2)
+  {
+    DART_UNUSED(v);
+    count2++;
+  }
+  EXPECT_EQ(5, count2);
 }
 
 TEST(StepSequence, IteratorStopAlternateRange)
@@ -93,7 +102,7 @@ TEST(StepSequence, MaxSteps)
   EXPECT_EQ(6, seq1.getMaxSteps());
 
   StepSequence seq2(0.2, false);
-  EXPECT_EQ(6, seq2.getMaxSteps());
+  EXPECT_EQ(5, seq2.getMaxSteps());
 
   StepSequence seq3(0.3, true);
   EXPECT_EQ(5, seq3.getMaxSteps());
@@ -108,11 +117,11 @@ TEST(StepSequence, MaxStepsAlternateRanges)
   EXPECT_EQ(21, seq1.getMaxSteps());
 
   StepSequence seq2(0.2, false, 3, 7);
-  EXPECT_EQ(21, seq2.getMaxSteps());
+  EXPECT_EQ(20, seq2.getMaxSteps());
 
   StepSequence seq3(0.3, true, 2, 4);
   EXPECT_EQ(8, seq3.getMaxSteps());
 
   StepSequence seq4(0.3, false, 2, 5);
-  EXPECT_EQ(11, seq4.getMaxSteps());
+  EXPECT_EQ(10, seq4.getMaxSteps());
 }
