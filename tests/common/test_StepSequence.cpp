@@ -7,20 +7,26 @@ using aikido::common::StepSequence;
 TEST(StepSequence, IncludesEndpoints)
 {
   StepSequence seq(0.55, true);
-  EXPECT_DOUBLE_EQ(0.0, seq[-1]);
+  // suport index [0, 1, 2]
+  // seq[0] = 0.0; seq[1] = 0.55; seq[2] = 1.0;
+  EXPECT_THROW(seq[-1], std::out_of_range);
   EXPECT_DOUBLE_EQ(1.0, seq[2]);
 }
 
 TEST(StepSequence, DefaultConstructorIncludesEndpoints)
 {
   StepSequence seq(0.55);
-  EXPECT_DOUBLE_EQ(0.0, seq[-1]);
+  // suport index [0, 1, 2]
+  // seq[0] = 0.0; seq[1] = 0.55; seq[2] = 1.0;
+  EXPECT_THROW(seq[-1], std::out_of_range);
   EXPECT_DOUBLE_EQ(1.0, seq[2]);
 }
 
 TEST(StepSequence, ExcludesEndpoints)
 {
   StepSequence seq(0.55, false);
+  // suport index [0, 1]
+  // seq[0] = 0.0; seq[1] = 0.55
   EXPECT_THROW(seq[-1], std::out_of_range);
   EXPECT_THROW(seq[2], std::out_of_range);
 }
@@ -70,17 +76,34 @@ TEST(StepSequence, IteratorStop)
     DART_UNUSED(v);
     count++;
   }
-
   EXPECT_EQ(5, count);
 
+  std::size_t count1 = 0;
+  StepSequence seq1(0.3, false);
+  for (double v : seq1)
+  {
+    DART_UNUSED(v);
+    count1++;
+  }
+  EXPECT_EQ(4, count1);
+
   std::size_t count2 = 0;
-  StepSequence seq2(0.2, false);
+  StepSequence seq2(0.2, true);
   for (double v : seq2)
   {
     DART_UNUSED(v);
     count2++;
   }
-  EXPECT_EQ(5, count2);
+  EXPECT_EQ(6, count2);
+
+  std::size_t count3 = 0;
+  StepSequence seq3(0.2, false);
+  for (double v : seq3)
+  {
+    DART_UNUSED(v);
+    count3++;
+  }
+  EXPECT_EQ(5, count3);
 }
 
 TEST(StepSequence, IteratorStopAlternateRange)

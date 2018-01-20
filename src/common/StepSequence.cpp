@@ -33,10 +33,7 @@ double StepSequence::operator[](int n)
   }
   else if (val < mStartPoint)
   {
-    if (mIncludeEndpoints)
-      return mStartPoint;
-    else
-      throw std::out_of_range("Invalid index.");
+    throw std::out_of_range("Invalid index.");
   }
   return val;
 }
@@ -51,7 +48,16 @@ StepSequence::const_iterator StepSequence::begin()
 //==============================================================================
 StepSequence::const_iterator StepSequence::end()
 {
-  StepSequence::const_iterator itr(this, getMaxSteps());
+  int endIdx = getMaxSteps();
+  if(this->mIncludeEndpoints == false)
+  {
+    endIdx -= 1;
+  }
+  StepSequence::const_iterator itr(this, endIdx);
+  if(this->mIncludeEndpoints == false)
+  {
+    itr.mStep = endIdx + 1;
+  }
   return itr;
 }
 
@@ -60,7 +66,7 @@ int StepSequence::getMaxSteps() const
 {
   int numSteps = (mEndPoint - mStartPoint) / mStepSize;
 
-  if (std::abs(mStartPoint + mStepSize * numSteps - mEndPoint) > 1e-7)
+  if (mEndPoint - (mStartPoint + mStepSize * numSteps) > 1e-7)
   {
     numSteps++;
   }
@@ -76,7 +82,13 @@ double StepSequence::const_iterator::dereference() const
 //==============================================================================
 void StepSequence::const_iterator::increment()
 {
-  mStep = std::min(mSeq->getMaxSteps(), mStep + 1);
+  int maxSteps = mSeq->getMaxSteps();
+  mStep = std::min(maxSteps, mStep + 1);
+  if (mSeq->mIncludeEndpoints==false && mStep > maxSteps-1)
+  {
+    mValue = (*mSeq)[mStep-1];
+    return;
+  }
   mValue = (*mSeq)[mStep];
 }
 
