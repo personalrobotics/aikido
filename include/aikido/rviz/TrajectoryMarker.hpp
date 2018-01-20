@@ -5,6 +5,7 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include "aikido/trajectory/Trajectory.hpp"
+#include "aikido/trajectory/smart_pointer.hpp"
 
 namespace aikido {
 namespace rviz {

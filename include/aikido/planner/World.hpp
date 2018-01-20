@@ -107,8 +107,6 @@ protected:
   dart::common::NameManager<dart::dynamics::SkeletonPtr> mSkeletonNameManager;
 };
 
-using WorldPtr = std::shared_ptr<World>;
-
 } // namespace planner
 } // namespace aikido
 

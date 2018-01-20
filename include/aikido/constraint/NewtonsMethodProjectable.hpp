@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_NEWTONSMETHODPROJECTABLE_HPP_
 
 #include <Eigen/Dense>
+#include "aikido/constraint/smart_pointer.hpp"
 #include "Differentiable.hpp"
 #include "Projectable.hpp"
 

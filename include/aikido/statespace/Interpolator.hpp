@@ -2,6 +2,7 @@
 #define AIKIDO_STATESPACE_INTERPOLATOR_HPP_
 
 #include <memory>
+#include "aikido/statespace/smart_pointer.hpp"
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -50,8 +51,6 @@ public:
       double _alpha,
       Eigen::VectorXd& _tangentVector) const = 0;
 };
-
-using InterpolatorPtr = std::shared_ptr<Interpolator>;
 
 } // namespace statespace
 } // namespace aikido

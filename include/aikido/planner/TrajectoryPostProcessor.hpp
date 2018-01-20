@@ -2,8 +2,8 @@
 #define AIKIDO_PLANNER_TRAJECTORYPOSTPROCESSOR_HPP_
 
 #include "aikido/common/RNG.hpp"
-#include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
+#include "aikido/trajectory/smart_pointer.hpp"
 
 namespace aikido {
 namespace planner {

@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLEABLE_HPP_
 
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/constraint/smart_pointer.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "Sampleable.hpp"
 

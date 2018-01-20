@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_TESTABLE_HPP_
 
 #include <memory>
+#include "aikido/statespace/smart_pointer.hpp"
 #include "../statespace/StateSpace.hpp"
 #include "DefaultTestableOutcome.hpp"
 
@@ -35,8 +36,6 @@ public:
   /// to isSatisfied (and casts, etc do not explode).
   virtual std::unique_ptr<TestableOutcome> createOutcome() const = 0;
 };
-
-using TestablePtr = std::shared_ptr<Testable>;
 
 } // namespace constraint
 } // namespace aikido

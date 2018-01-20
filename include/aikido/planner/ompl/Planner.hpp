@@ -4,6 +4,7 @@
 #include <chrono>
 #include <utility> // std::pair
 
+#include "aikido/trajectory/smart_pointer.hpp"
 #include "../../constraint/Projectable.hpp"
 #include "../../constraint/Sampleable.hpp"
 #include "../../constraint/Testable.hpp"

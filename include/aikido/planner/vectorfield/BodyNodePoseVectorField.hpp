@@ -119,8 +119,6 @@ protected:
   bool mEnforceJointVelocityLimits;
 };
 
-using BodyNodePoseVectorFieldPtr = std::shared_ptr<BodyNodePoseVectorField>;
-
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

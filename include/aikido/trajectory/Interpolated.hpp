@@ -94,8 +94,6 @@ private:
   std::vector<Waypoint> mWaypoints;
 };
 
-using InterpolatedPtr = std::shared_ptr<Interpolated>;
-
 } // namespace trajectory
 } // namespace aikido
 

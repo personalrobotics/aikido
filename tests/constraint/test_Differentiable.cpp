@@ -2,6 +2,7 @@
 #include "../eigen_tests.hpp"
 
 #include <aikido/constraint/Differentiable.hpp>
+#include <aikido/constraint/smart_pointer.hpp>
 #include "PolynomialConstraint.hpp"
 
 using aikido::constraint::DifferentiablePtr;

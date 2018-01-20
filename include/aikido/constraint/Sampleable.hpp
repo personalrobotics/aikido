@@ -5,6 +5,7 @@
 #include <memory>
 #include <boost/optional.hpp>
 
+#include "aikido/statespace/smart_pointer.hpp"
 #include "../common/RNG.hpp"
 #include "../statespace/StateSpace.hpp"
 
@@ -57,8 +58,6 @@ public:
   /// Returns whether getNumSamples() > 0.
   virtual bool canSample() const = 0;
 };
-
-using SampleablePtr = std::shared_ptr<Sampleable>;
 
 } // namespace constraint
 } // namespace aikido

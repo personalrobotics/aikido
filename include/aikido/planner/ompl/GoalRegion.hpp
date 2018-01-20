@@ -2,6 +2,7 @@
 #define AIKIDO_OMPL_GOALREGION_HPP_
 
 #include <ompl/base/goals/GoalSampleableRegion.h>
+#include "aikido/constraint/smart_pointer.hpp"
 #include "../../constraint/Sampleable.hpp"
 #include "../../constraint/Testable.hpp"
 

@@ -1,6 +1,7 @@
 #ifndef AIKIDO_DISTANCE_DISTANCEMETRIC_HPP_
 #define AIKIDO_DISTANCE_DISTANCEMETRIC_HPP_
 
+#include "aikido/statespace/smart_pointer.hpp"
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -26,8 +27,6 @@ public:
       const statespace::StateSpace::State* _state1,
       const statespace::StateSpace::State* _state2) const = 0;
 };
-
-using DistanceMetricPtr = std::shared_ptr<DistanceMetric>;
 
 } // namespace distance
 } // namespace aikido
