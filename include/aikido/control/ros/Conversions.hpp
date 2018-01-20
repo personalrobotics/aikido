@@ -4,6 +4,7 @@
 #include <memory>
 #include <sensor_msgs/JointState.h>
 #include <trajectory_msgs/JointTrajectory.h>
+#include "aikido/trajectory/smart_pointer.hpp"
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
 

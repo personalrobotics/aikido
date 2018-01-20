@@ -69,8 +69,6 @@ protected:
   aikido::statespace::StateSpacePtr mStateSpace;
 };
 
-using VectorFieldPtr = std::shared_ptr<VectorField>;
-
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

@@ -11,6 +11,7 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include <ros/ros.h>
 
+#include "aikido/trajectory/smart_pointer.hpp"
 #include <aikido/constraint/TSR.hpp>
 #include <aikido/rviz/SmartPointers.hpp>
 #include <aikido/rviz/TSRMarker.hpp>

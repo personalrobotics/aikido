@@ -1,6 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_CYCLICSAMPLEABLE_HPP_
 #define AIKIDO_CONSTRAINT_CYCLICSAMPLEABLE_HPP_
 
+#include "aikido/constraint/smart_pointer.hpp"
 #include "Sampleable.hpp"
 
 namespace aikido {

@@ -26,8 +26,6 @@ public:
   virtual void step() = 0;
 };
 
-using PositionCommandExecutorPtr = std::shared_ptr<PositionCommandExecutor>;
-
 } // namespace control
 } // namespace aikido
 

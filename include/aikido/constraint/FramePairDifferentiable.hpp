@@ -3,6 +3,8 @@
 
 #include <Eigen/Dense>
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/constraint/smart_pointer.hpp"
+#include "aikido/statespace/smart_pointer.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "Differentiable.hpp"
 

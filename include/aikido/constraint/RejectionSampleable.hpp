@@ -1,6 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP_
 #define AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP_
 
+#include "aikido/constraint/smart_pointer.hpp"
 #include "../statespace/StateSpace.hpp"
 #include "Sampleable.hpp"
 #include "Testable.hpp"

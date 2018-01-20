@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include "aikido/constraint/smart_pointer.hpp"
 #include "Testable.hpp"
 
 namespace aikido {
@@ -44,8 +45,6 @@ private:
 
   void testConstraintStateSpaceOrThrow(const TestablePtr& constraint);
 };
-
-using TestableIntersectionPtr = std::shared_ptr<TestableIntersection>;
 
 } // namespace constraint
 } // namespace aikido

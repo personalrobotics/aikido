@@ -7,6 +7,7 @@ namespace aikido {
 namespace planner {
 
 AIKIDO_COMMON_DECLARE_SMART_POINTERS(Planner)
+AIKIDO_COMMON_DECLARE_SMART_POINTERS(World)
 
 } // namespace planner
 } // namespace aikido

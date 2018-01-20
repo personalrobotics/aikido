@@ -9,6 +9,13 @@ namespace statespace {
 AIKIDO_COMMON_DECLARE_SMART_POINTERS(Interpolator)
 AIKIDO_COMMON_DECLARE_SMART_POINTERS(StateSpace)
 
+namespace dart {
+
+AIKIDO_COMMON_DECLARE_SMART_POINTERS(JointStateSpace)
+AIKIDO_COMMON_DECLARE_SMART_POINTERS(MetaSkeletonStateSpace)
+
+} // namespace dart
+
 } // namespace statespace
 } // namespace aikido
 

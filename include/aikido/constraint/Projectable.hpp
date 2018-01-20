@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_PROJECTABLE_H
 
 #include <Eigen/Dense>
+#include "aikido/statespace/smart_pointer.hpp"
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -28,8 +29,6 @@ public:
   /// \param _s state to be projected and mutated.
   virtual bool project(statespace::StateSpace::State* _s) const;
 };
-
-using ProjectablePtr = std::shared_ptr<Projectable>;
 
 } // namespace constraint
 } // namespace aikido

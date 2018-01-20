@@ -6,6 +6,7 @@
 namespace aikido {
 namespace trajectory {
 
+AIKIDO_COMMON_DECLARE_SMART_POINTERS(Trajectory)
 AIKIDO_COMMON_DECLARE_SMART_POINTERS(Spline)
 AIKIDO_COMMON_DECLARE_SMART_POINTERS(Interpolated)
 

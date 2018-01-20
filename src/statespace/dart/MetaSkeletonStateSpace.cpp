@@ -14,8 +14,6 @@ namespace {
 using ::dart::dynamics::MetaSkeleton;
 using ::dart::dynamics::INVALID_INDEX;
 
-using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
-
 //==============================================================================
 template <class Input, class Output>
 std::vector<Output> convertVectorType(const std::vector<Input>& input)

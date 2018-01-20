@@ -166,9 +166,6 @@ public:
   virtual void print(const State* _state, std::ostream& _os) const = 0;
 };
 
-using StateSpacePtr = std::shared_ptr<StateSpace>;
-using ConstStateSpacePtr = std::shared_ptr<const StateSpace>;
-
 } // namespace statespace
 } // namespace aikido
 

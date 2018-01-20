@@ -148,8 +148,6 @@ private:
   std::shared_ptr<statespace::SE3> mStateSpace;
 };
 
-using TSRPtr = std::shared_ptr<TSR>;
-
 } // namespace constraint
 } // namespace aikido
 

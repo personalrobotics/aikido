@@ -1,6 +1,7 @@
 #ifndef AIKIDO_DISTANCE_CARTESIANPRODUCTWEIGHTED_HPP_
 #define AIKIDO_DISTANCE_CARTESIANPRODUCTWEIGHTED_HPP_
 
+#include "aikido/distance/smart_pointer.hpp"
 #include "../statespace/CartesianProduct.hpp"
 #include "DistanceMetric.hpp"
 

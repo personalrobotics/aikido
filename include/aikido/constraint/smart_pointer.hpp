@@ -6,7 +6,10 @@
 namespace aikido {
 namespace constraint {
 
+AIKIDO_COMMON_DECLARE_SMART_POINTERS(Differentiable)
+AIKIDO_COMMON_DECLARE_SMART_POINTERS(Projectable)
 AIKIDO_COMMON_DECLARE_SMART_POINTERS(Testable)
+AIKIDO_COMMON_DECLARE_SMART_POINTERS(Sampleable)
 
 } // namespace constraint
 } // namespace aikido
