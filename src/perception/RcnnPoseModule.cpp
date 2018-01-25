@@ -6,6 +6,7 @@
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+#include "aikido/planner/World.hpp"
 #include <aikido/io/CatkinResourceRetriever.hpp>
 #include <aikido/perception/shape_conversions.hpp>
 

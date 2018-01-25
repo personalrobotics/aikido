@@ -12,8 +12,6 @@ public:
   virtual ~TrajectoryResult() = default;
 };
 
-using TrajectoryResultPtr = std::shared_ptr<TrajectoryResult>;
-
 } // namespace control
 } // namespace aikido
 

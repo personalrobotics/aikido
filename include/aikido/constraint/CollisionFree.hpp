@@ -90,8 +90,6 @@ private:
   std::vector<std::shared_ptr<CollisionGroup>> mGroupsToSelfCheck;
 };
 
-using CollisionFreePtr = std::shared_ptr<CollisionFree>;
-
 } // namespace constraint
 } // namespace aikido
 

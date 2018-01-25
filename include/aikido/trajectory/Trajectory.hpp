@@ -2,6 +2,7 @@
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 
 #include <Eigen/Core>
+#include "aikido/statespace/smart_pointer.hpp"
 #include <aikido/trajectory/TrajectoryMetadata.hpp>
 #include "../statespace/StateSpace.hpp"
 
@@ -71,9 +72,6 @@ public:
   /// Trajectory metadata
   TrajectoryMetadata metadata;
 };
-
-using TrajectoryPtr = std::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
 
 } // namespace trajectory
 } // namespace aikido

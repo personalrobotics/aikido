@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <Eigen/Dense>
+#include "aikido/statespace/smart_pointer.hpp"
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -66,8 +67,6 @@ public:
       Eigen::VectorXd& _val,
       Eigen::MatrixXd& _jac) const;
 };
-
-using DifferentiablePtr = std::shared_ptr<Differentiable>;
 
 } // namespace constraint
 } // namespace aikido
