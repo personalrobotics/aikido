@@ -52,6 +52,7 @@ public:
 };
 
 using InterpolatorPtr = std::shared_ptr<Interpolator>;
+using ConstInterpolatorPtr = std::shared_ptr<const Interpolator>;
 
 } // namespace statespace
 } // namespace aikido

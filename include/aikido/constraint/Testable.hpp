@@ -37,6 +37,7 @@ public:
 };
 
 using TestablePtr = std::shared_ptr<Testable>;
+using ConstTestablePtr = std::shared_ptr<const Testable>;
 
 } // namespace constraint
 } // namespace aikido
