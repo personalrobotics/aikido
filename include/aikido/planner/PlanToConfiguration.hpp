@@ -27,7 +27,8 @@ public:
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible to \c constraint's state space.
-  PlanToConfiguration(statespace::StateSpacePtr stateSpace,
+  PlanToConfiguration(
+      statespace::StateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
       const statespace::StateSpace::State* goalState,
       statespace::InterpolatorPtr interpolator,

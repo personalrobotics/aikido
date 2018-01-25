@@ -11,7 +11,8 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to desired en-effector offset with fixed orientation
+/// Planning problem to plan to desired en-effector offset with fixed
+/// orientation
 class PlanToEndEffectorOffset : public Problem
 {
 public:
@@ -28,7 +29,8 @@ public:
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible to \c constraint's state space.
-  PlanToEndEffectorOffset(statespace::StateSpacePtr stateSpace,
+  PlanToEndEffectorOffset(
+      statespace::StateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Vector3d& direction,

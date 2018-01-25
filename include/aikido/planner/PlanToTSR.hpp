@@ -8,7 +8,6 @@
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/smart_pointer.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
-#include "aikido/constraint/smart_pointer.hpp"
 
 namespace aikido {
 namespace planner {
@@ -28,7 +27,8 @@ public:
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible to \c constraint's state space.
-  PlanToTSR(statespace::StateSpacePtr stateSpace,
+  PlanToTSR(
+      statespace::StateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
       const constraint::TSRPtr goalTSR,

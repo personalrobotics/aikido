@@ -29,7 +29,8 @@ public:
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible to \c constraint's state space.
-  PlanToEndEffectorPose(statespace::StateSpacePtr stateSpace,
+  PlanToEndEffectorPose(
+      statespace::StateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Isometry3d& goalPose,
