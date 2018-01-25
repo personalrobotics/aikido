@@ -14,6 +14,10 @@
 
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
 
+* Planner
+
+  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302)
+
 ### 0.2.0 (2018-01-09)
 
 * State Space
