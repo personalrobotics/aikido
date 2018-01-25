@@ -37,7 +37,7 @@ public:
   /// \throws invalid_argument if traj is invalid.
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
-  /// \copydoc PositionCommandExecutor::step()
+  /// \copydoc TrajectoryExecutor::step()
   ///
   /// If multiple threads are accessing this function or the skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
