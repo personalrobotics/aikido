@@ -2,10 +2,10 @@
 #define AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
 
 #include <dart/dart.hpp>
+#include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
-#include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {

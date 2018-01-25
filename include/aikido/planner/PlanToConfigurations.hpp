@@ -3,8 +3,8 @@
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
-#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/Interpolator.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace planner {
