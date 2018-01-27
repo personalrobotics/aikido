@@ -24,6 +24,7 @@ public:
   /// Constructor.
   ///
   /// \param[in] stateSpace MetaSkeleton state space.
+  /// \param[in] metaskeleton MetaSkeleton to plan with
   /// \param[in] bn Body node of end-effector.
   /// \param[in] goalPose Desired end-effector pose.
   /// \param[in] poseErrorTolerance Constraint error tolerance in meters.
@@ -35,6 +36,7 @@ public:
   /// limit, velocity is bounded in that direction to 0.
   MoveEndEffectorPoseVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+      dart::dynamics::MetaSkeletonPtr metaskeleton,
       dart::dynamics::BodyNodePtr bn,
       const Eigen::Isometry3d& goalPose,
       double poseErrorTolerance,

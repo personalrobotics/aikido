@@ -1,6 +1,7 @@
 #include "LRAstar.hpp"
 #include "planner/PlanningResult.hpp"
 #include "planner/SnapPlanner.hpp"
+#include "planner/TrajectoryPostProcessor.hpp"
 #include "planner/World.hpp"
 #include "planner/ompl/BackwardCompatibility.hpp"
 #include "planner/ompl/CRRT.hpp"

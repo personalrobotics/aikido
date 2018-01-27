@@ -2,6 +2,7 @@
 #include <aikido/rviz/FrameMarker.hpp>
 #include <aikido/rviz/InteractiveMarkerViewer.hpp>
 #include <aikido/rviz/SkeletonMarker.hpp>
+#include <aikido/rviz/TrajectoryMarker.hpp>
 #include <aikido/rviz/WorldInteractiveMarkerViewer.hpp>
 
 using aikido::rviz::InteractiveMarkerViewer;
@@ -90,6 +91,9 @@ void WorldInteractiveMarkerViewer::update()
 
   // TODO: Merge this into a unified update loop.
   for (const FrameMarkerPtr& marker : mFrameMarkers)
+    marker->update();
+
+  for (const auto& marker : mTrajectoryMarkers)
     marker->update();
 
   mMarkerServer.applyChanges();

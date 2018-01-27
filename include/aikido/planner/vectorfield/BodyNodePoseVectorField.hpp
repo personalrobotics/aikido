@@ -24,6 +24,7 @@ public:
   /// Constructor.
   ///
   /// \param[in] stateSpace MetaSkeleton state space.
+  /// \param[in] metaskeleton MetaSkeleton to plan with
   /// \param[in] bn Body node of end-effector.
   /// \param[in] maxStepSize The maximum step size used to guarantee
   /// that the integrator does not step out of joint limits.
@@ -34,6 +35,7 @@ public:
   BodyNodePoseVectorField(
       aikido::statespace::dart::MetaSkeletonStateSpacePtr
           metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr metaSkeleton,
       dart::dynamics::BodyNodePtr bodyNode,
       double maxStepSize,
       double jointLimitPadding,

@@ -29,9 +29,9 @@ protected:
     skeleton->createJointAndBodyNodePair<RevoluteJoint>();
     skeleton->getJoint(0)->setName("Joint1");
 
-    mStateSpace = std::make_shared<MetaSkeletonStateSpace>(skeleton);
+    mStateSpace = std::make_shared<MetaSkeletonStateSpace>(skeleton.get());
     auto startState = mStateSpace->createState();
-    mStateSpace->getState(startState);
+    mStateSpace->getState(skeleton.get(), startState);
 
     // Spline trajectory
     mTrajectory = std::make_shared<Spline>(mStateSpace, 0.);
@@ -58,9 +58,9 @@ protected:
     skeleton2->getJoint(1)->setName("Joint2");
     skeleton2->getJoint(1)->setPosition(0, 1);
 
-    mStateSpace2DOF = std::make_shared<MetaSkeletonStateSpace>(skeleton2);
+    mStateSpace2DOF = std::make_shared<MetaSkeletonStateSpace>(skeleton2.get());
     auto startState2DOF = mStateSpace2DOF->createState();
-    mStateSpace2DOF->getState(startState2DOF);
+    mStateSpace2DOF->getState(skeleton2.get(), startState2DOF);
 
     // Spline trajectory
     mTrajectory2DOF = std::make_shared<Spline>(mStateSpace2DOF, 0.);
@@ -100,7 +100,7 @@ TEST_F(ToRosJointTrajectoryTests, SkeletonHasUnsupportedJoint_Throws)
 {
   auto skeleton = Skeleton::create();
   skeleton->createJointAndBodyNodePair<BallJoint>();
-  auto space = std::make_shared<MetaSkeletonStateSpace>(skeleton);
+  auto space = std::make_shared<MetaSkeletonStateSpace>(skeleton.get());
 
   auto trajectory = std::make_shared<Spline>(space, 0.0);
   EXPECT_THROW(

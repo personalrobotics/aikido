@@ -332,7 +332,7 @@ TEST_F(PlannerTest, PlanThrowsOnGoalTestableMismatch)
       = aikido::constraint::createSampleableBounds(stateSpace, make_rng());
 
   // Easiest testable to get
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto goalTestable = std::make_shared<PassingConstraint>(ss);
 
   // Plan
@@ -391,7 +391,7 @@ TEST_F(PlannerTest, PlanThrowsOnGoalSamplerMismatch)
   subState1.setValue(startPose);
 
   // Easiest sampleable to get
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto goalSampleable
       = aikido::constraint::createSampleableBounds(ss, make_rng());
 
@@ -482,7 +482,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullDistanceMetric)
 
 TEST_F(PlannerTest, GetSpaceInformationThrowsOnDistanceMetricMismatch)
 {
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto dm = aikido::distance::createDistanceMetric(ss);
 
   EXPECT_THROW(
@@ -515,7 +515,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullSampler)
 
 TEST_F(PlannerTest, GetSpaceInformationThrowsOnSamplerMismatch)
 {
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto ds = aikido::constraint::createSampleableBounds(ss, make_rng());
 
   EXPECT_THROW(
@@ -548,7 +548,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullValidityConstraint)
 
 TEST_F(PlannerTest, GetSpaceInformationThrowsOnValidityConstraintMismatch)
 {
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto dv = std::make_shared<MockTranslationalRobotConstraint>(
       ss, Eigen::Vector3d(-0.1, -0.1, -0.1), Eigen::Vector3d(0.1, 0.1, 0.1));
   EXPECT_THROW(
@@ -581,7 +581,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullBoundsConstraint)
 
 TEST_F(PlannerTest, GetSpaceInformationThrowsOnBoundsConstraintMismatch)
 {
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto ds = aikido::constraint::createTestableBounds(ss);
 
   EXPECT_THROW(
@@ -614,7 +614,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnNullBoundsProjector)
 
 TEST_F(PlannerTest, GetSpaceInformationThrowsOnBoundsProjectorMismatch)
 {
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto ds = aikido::constraint::createProjectableBounds(ss);
 
   EXPECT_THROW(
@@ -632,7 +632,7 @@ TEST_F(PlannerTest, GetSpaceInformationThrowsOnBoundsProjectorMismatch)
 
 TEST_F(PlannerTest, GetSpaceInformationThrowsOnNegativeDistanceBetweenChecks)
 {
-  auto ss = std::make_shared<StateSpace>(robot);
+  auto ss = std::make_shared<StateSpace>(robot.get());
   auto ds = aikido::constraint::createProjectableBounds(ss);
 
   EXPECT_THROW(

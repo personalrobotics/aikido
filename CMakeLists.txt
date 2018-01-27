@@ -20,7 +20,7 @@ project(aikido)
 
 # If you change the version, please update the <version> tag in package.xml.
 set(AIKIDO_MAJOR_VERSION "0")
-set(AIKIDO_MINOR_VERSION "2")
+set(AIKIDO_MINOR_VERSION "3")
 set(AIKIDO_PATCH_VERSION "0")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
@@ -226,11 +226,20 @@ if(${DOXYGEN_FOUND})
   add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
     COMMAND "${DOXYGEN_EXECUTABLE}"
     DEPENDS "${DOXYGEN_WORKING_DIR}/Doxyfile"
-    WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}")
+    WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}"
+  )
 
   add_custom_target(docs
     DEPENDS "${DOXYGEN_HTML_INDEX}"
-    COMMENT "Generating documentation.")
+    COMMENT "Generating documentation."
+  )
+  add_custom_target(
+    docs_forced
+    COMMAND ${CMAKE_COMMAND} -E echo_append "Generating documentation..."
+    COMMAND ${DOXYGEN_EXECUTABLE} -u ${DOXYGEN_DOXYFILE}
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_DOXYFILE}
+    WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}"
+  )
 
   # Create the "view_docs" target that opens the documentation.
   if(APPLE)

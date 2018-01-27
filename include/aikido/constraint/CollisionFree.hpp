@@ -25,11 +25,14 @@ public:
   /// for collision. You should call \c addPairWiseCheck and \c addSelfCheck
   /// to register collision checks before calling \c isSatisfied.
   ///
-  /// \param _statespace state space on which the constraint operates
+  /// \param _metaSkeletonStateSpace state space on which the constraint
+  /// operates
+  /// \param _metaskeleton MetaSkeleton to test with
   /// \param _collisionDetector collision detector used to test for collision
   /// \param _collisionOptions options passed to \c _collisionDetector
   CollisionFree(
-      statespace::dart::MetaSkeletonStateSpacePtr _statespace,
+      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
       dart::collision::CollisionOption _collisionOptions
       = dart::collision::CollisionOption(
@@ -77,7 +80,8 @@ public:
 private:
   using CollisionGroup = dart::collision::CollisionGroup;
 
-  std::shared_ptr<aikido::statespace::dart::MetaSkeletonStateSpace> mStatespace;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<dart::collision::CollisionDetector> mCollisionDetector;
   dart::collision::CollisionOption mCollisionOptions;
   std::vector<std::pair<std::shared_ptr<CollisionGroup>,

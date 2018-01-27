@@ -13,13 +13,15 @@ namespace vectorfield {
 //==============================================================================
 MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    dart::dynamics::MetaSkeletonPtr metaskeleton,
     dart::dynamics::BodyNodePtr bn,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double r,
     double maxStepSize,
     double jointLimitPadding)
-  : BodyNodePoseVectorField(stateSpace, bn, maxStepSize, jointLimitPadding)
+  : BodyNodePoseVectorField(
+        stateSpace, metaskeleton, bn, maxStepSize, jointLimitPadding)
   , mGoalPose(goalPose)
   , mPoseErrorTolerance(poseErrorTolerance)
   , mConversionRatioFromRadiusToMeter(r)
