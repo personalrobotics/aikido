@@ -153,7 +153,7 @@ const JointStateSpace::Properties& JointStateSpace::getProperties() const
 }
 
 //==============================================================================
-void JointStateSpace::checkJoint(const ::dart::dynamics::Joint* joint) const
+void JointStateSpace::isCompatible(const ::dart::dynamics::Joint* joint) const
 {
   const JointStateSpace::Properties otherProperties(joint);
   if (mProperties == otherProperties)

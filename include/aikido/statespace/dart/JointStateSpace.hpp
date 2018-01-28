@@ -114,7 +114,7 @@ public:
   ///
   /// \param joint Joint to check
   /// \throws invalid_argument if the Joint does not match the state space
-  void checkJoint(const ::dart::dynamics::Joint* joint) const;
+  void isCompatible(const ::dart::dynamics::Joint* joint) const;
 
   /// Converts DART \c Joint positions, e.g. those returned by
   /// \c getPositions, to a \c State in this state space.

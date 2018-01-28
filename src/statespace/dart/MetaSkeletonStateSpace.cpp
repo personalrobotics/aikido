@@ -259,7 +259,7 @@ MetaSkeletonStateSpace::getProperties() const
 }
 
 //==============================================================================
-void MetaSkeletonStateSpace::checkMetaSkeleton(
+void MetaSkeletonStateSpace::isCompatible(
     const ::dart::dynamics::MetaSkeleton* metaskeleton) const
 {
   const MetaSkeletonStateSpace::Properties otherProperties(metaskeleton);

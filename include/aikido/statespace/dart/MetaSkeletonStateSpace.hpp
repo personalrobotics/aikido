@@ -117,7 +117,7 @@ public:
   /// \param metaskeleton MetaSkeleton to check
   /// \throws invalid_argument if the MetaSkeleton does not match the state
   /// space
-  void checkMetaSkeleton(
+  void isCompatible(
       const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
 
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
