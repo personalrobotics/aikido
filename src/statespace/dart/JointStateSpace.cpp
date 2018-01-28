@@ -101,6 +101,45 @@ const Eigen::VectorXd& JointStateSpace::Properties::getVelocityUpperLimits()
 }
 
 //==============================================================================
+bool JointStateSpace::Properties::operator==(
+    const Properties& otherProperties) const
+{
+  if (mName != otherProperties.mName)
+    return false;
+
+  if (mType != otherProperties.mType)
+    return false;
+
+  if (mDofNames != otherProperties.mDofNames)
+    return false;
+
+  for (std::size_t i = 0; i < mDofNames.size(); ++i)
+  {
+    if (mPositionLowerLimits[i] != otherProperties.mPositionLowerLimits[i])
+      return false;
+    if (mPositionUpperLimits[i] != otherProperties.mPositionUpperLimits[i])
+      return false;
+    if (mPositionHasLimits[i] != otherProperties.mPositionHasLimits[i])
+      return false;
+    if (mVelocityLowerLimits[i] != otherProperties.mVelocityLowerLimits[i])
+      return false;
+    if (mVelocityUpperLimits[i] != otherProperties.mVelocityUpperLimits[i])
+      return false;
+    // if (mVelocityHasLimits[i] != otherProperties.mVelocityHasLimits[i])
+    //   return false;
+  }
+
+  return true;
+}
+
+//==============================================================================
+bool JointStateSpace::Properties::operator!=(
+    const Properties& otherProperties) const
+{
+  return !(*this == otherProperties);
+}
+
+//==============================================================================
 JointStateSpace::JointStateSpace(const ::dart::dynamics::Joint* joint)
   : mProperties(JointStateSpace::Properties(joint))
 {
@@ -111,6 +150,20 @@ JointStateSpace::JointStateSpace(const ::dart::dynamics::Joint* joint)
 const JointStateSpace::Properties& JointStateSpace::getProperties() const
 {
   return mProperties;
+}
+
+//==============================================================================
+void JointStateSpace::checkJoint(const ::dart::dynamics::Joint* joint) const
+{
+  const JointStateSpace::Properties otherProperties(joint);
+  if (mProperties == otherProperties)
+    return;
+
+  std::stringstream ss;
+  ss << joint->getType() << " '" << joint->getName()
+     << "' does not match this JointStateSpace's " << mProperties.getType()
+     << " '" << mProperties.getName() << "'.";
+  throw std::invalid_argument(ss.str());
 }
 
 //==============================================================================

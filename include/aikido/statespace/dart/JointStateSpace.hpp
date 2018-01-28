@@ -59,6 +59,14 @@ public:
     /// Return the vector of velocity upper limits.
     const Eigen::VectorXd& getVelocityUpperLimits() const;
 
+    /// Return whether two JointStateSpace::Properties are identical.
+    /// \param otherProperties Other Properties to compare against
+    bool operator==(const Properties& otherProperties) const;
+
+    /// Return whether two JointStateSpace::Properties are different.
+    /// \param otherProperties Other Properties to compare against
+    bool operator!=(const Properties& otherProperties) const;
+
   protected:
     /// Name of the joint
     std::string mName;
@@ -91,7 +99,7 @@ public:
 
   /// Constructs a state space for \c joint.
   ///
-  /// \param joint joint to create a \c StateSpace for
+  /// \param joint joint to create a \c StateSpace from
   explicit JointStateSpace(const ::dart::dynamics::Joint* joint);
 
   /// Destructor
@@ -101,6 +109,12 @@ public:
   ///
   /// \return joint properties associated with this state space
   const Properties& getProperties() const;
+
+  /// Throws an error if the Joint cannot be used with this state space.
+  ///
+  /// \param joint Joint to check
+  /// \throws invalid_argument if the Joint does not match the state space
+  void checkJoint(const ::dart::dynamics::Joint* joint) const;
 
   /// Converts DART \c Joint positions, e.g. those returned by
   /// \c getPositions, to a \c State in this state space.
