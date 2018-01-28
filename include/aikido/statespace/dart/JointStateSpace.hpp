@@ -110,11 +110,16 @@ public:
   /// \return joint properties associated with this state space
   const Properties& getProperties() const;
 
+  /// Returns whether the Joint can be used with this state space.
+  ///
+  /// \param joint Joint to check
+  bool isCompatible(const ::dart::dynamics::Joint* joint) const;
+
   /// Throws an error if the Joint cannot be used with this state space.
   ///
   /// \param joint Joint to check
   /// \throws invalid_argument if the Joint does not match the state space
-  void isCompatible(const ::dart::dynamics::Joint* joint) const;
+  void checkCompatibility(const ::dart::dynamics::Joint* joint) const;
 
   /// Converts DART \c Joint positions, e.g. those returned by
   /// \c getPositions, to a \c State in this state space.

@@ -259,11 +259,18 @@ MetaSkeletonStateSpace::getProperties() const
 }
 
 //==============================================================================
-void MetaSkeletonStateSpace::isCompatible(
+bool MetaSkeletonStateSpace::isCompatible(
     const ::dart::dynamics::MetaSkeleton* metaskeleton) const
 {
   const MetaSkeletonStateSpace::Properties otherProperties(metaskeleton);
-  if (mProperties == otherProperties)
+  return mProperties == otherProperties;
+}
+
+//==============================================================================
+void MetaSkeletonStateSpace::checkCompatibility(
+    const ::dart::dynamics::MetaSkeleton* metaskeleton) const
+{
+  if (isCompatible(metaskeleton))
     return;
 
   std::stringstream ss;

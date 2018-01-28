@@ -153,10 +153,17 @@ const JointStateSpace::Properties& JointStateSpace::getProperties() const
 }
 
 //==============================================================================
-void JointStateSpace::isCompatible(const ::dart::dynamics::Joint* joint) const
+bool JointStateSpace::isCompatible(const ::dart::dynamics::Joint* joint) const
 {
   const JointStateSpace::Properties otherProperties(joint);
-  if (mProperties == otherProperties)
+  return mProperties == otherProperties;
+}
+
+//==============================================================================
+void JointStateSpace::checkCompatibility(
+    const ::dart::dynamics::Joint* joint) const
+{
+  if (isCompatible(joint))
     return;
 
   std::stringstream ss;

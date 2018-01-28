@@ -112,12 +112,18 @@ public:
   /// \return MetaSkeleton properties associated with this state space
   const Properties& getProperties() const;
 
+  /// Returns whether the MetaSkeleton can be used with this state space.
+  ///
+  /// \param metaskeleton MetaSkeleton to check
+  /// \return true if MetaSkeleton is compatible
+  bool isCompatible(const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
+
   /// Throws an error if the MetaSkeleton cannot be used with this state space.
   ///
   /// \param metaskeleton MetaSkeleton to check
   /// \throws invalid_argument if the MetaSkeleton does not match the state
   /// space
-  void isCompatible(
+  void checkCompatibility(
       const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
 
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
