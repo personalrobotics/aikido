@@ -1,10 +1,11 @@
 #ifndef AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
+
 #include <unordered_map>
 #include <dart/dynamics/dynamics.hpp>
-#include <aikido/common/pair.hpp>
-#include "../CartesianProduct.hpp"
-#include "JointStateSpace.hpp"
+#include "aikido/common/pair.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -60,6 +61,14 @@ public:
     /// Return the vector of velocity upper limits.
     const Eigen::VectorXd& getVelocityUpperLimits() const;
 
+    /// Return whether two MetaSkeletonStateSpace::Properties are identical.
+    /// \param otherProperties Other Properties to compare against
+    bool operator==(const Properties& otherProperties) const;
+
+    /// Return whether two MetaSkeletonStateSpace::Properties are different.
+    /// \param otherProperties Other Properties to compare against
+    bool operator!=(const Properties& otherProperties) const;
+
   protected:
     /// Name of the MetaSkeleton
     std::string mName;
@@ -102,6 +111,20 @@ public:
   ///
   /// \return MetaSkeleton properties associated with this state space
   const Properties& getProperties() const;
+
+  /// Returns whether the MetaSkeleton can be used with this state space.
+  ///
+  /// \param metaskeleton MetaSkeleton to check
+  /// \return true if MetaSkeleton is compatible
+  bool isCompatible(const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
+
+  /// Throws an error if the MetaSkeleton cannot be used with this state space.
+  ///
+  /// \param metaskeleton MetaSkeleton to check
+  /// \throws invalid_argument if the MetaSkeleton does not match the state
+  /// space
+  void checkCompatibility(
+      const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
 
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
   ///
