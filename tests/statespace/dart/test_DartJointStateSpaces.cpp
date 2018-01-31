@@ -40,4 +40,21 @@ TEST(DartJointStateSpaces, WeldJointStateSpaceProperties)
   EXPECT_EQ(weldJoint->getNumDofs(), statespace.getProperties().getNumDofs());
 }
 
+//==============================================================================
+TEST(DartJointStateSpaces, WeldJointStateSpace_CompatibleJoints)
+{
+  auto skeleton = dart::dynamics::Skeleton::create();
+  skeleton->createJointAndBodyNodePair<dart::dynamics::WeldJoint>();
+  skeleton->createJointAndBodyNodePair<dart::dynamics::WeldJoint>();
+
+  auto j0 = dynamic_cast<dart::dynamics::WeldJoint*>(skeleton->getJoint(0u));
+  statespace::dart::WeldJoint statespace(j0);
+  EXPECT_TRUE(statespace.isCompatible(j0));
+  EXPECT_NO_THROW(statespace.checkCompatibility(j0));
+
+  auto j1 = dynamic_cast<dart::dynamics::WeldJoint*>(skeleton->getJoint(1u));
+  EXPECT_FALSE(statespace.isCompatible(j1));
+  EXPECT_THROW(statespace.checkCompatibility(j1), std::invalid_argument);
+}
+
 // TODO: Add tests for other JointStateSpaces with limits
