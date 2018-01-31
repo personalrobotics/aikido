@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <Eigen/Dense>
+#include "aikido/constraint/smart_pointer.hpp"
 #include "../statespace/StateSpace.hpp"
 #include "Differentiable.hpp"
 

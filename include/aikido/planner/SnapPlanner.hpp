@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_SNAP_PLANNER_HPP_
 #define AIKIDO_PLANNER_SNAP_PLANNER_HPP_
 
+#include "aikido/trajectory/smart_pointer.hpp"
 #include "../constraint/Testable.hpp"
 #include "../statespace/Interpolator.hpp"
 #include "../statespace/StateSpace.hpp"

@@ -2,6 +2,7 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
 #include <aikido/planner/World.hpp>
+#include <aikido/planner/smart_pointer.hpp>
 
 using std::shared_ptr;
 using std::make_shared;

@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/constraint/smart_pointer.hpp"
 #include "aikido/planner/TrajectoryPostProcessor.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"

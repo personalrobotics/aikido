@@ -5,6 +5,7 @@
 #include <ompl/datastructures/NearestNeighbors.h>
 #include <ompl/geometric/planners/PlannerIncludes.h>
 
+#include "aikido/constraint/smart_pointer.hpp"
 #include "../../constraint/Projectable.hpp"
 #include "../../planner/ompl/BackwardCompatibility.hpp"
 

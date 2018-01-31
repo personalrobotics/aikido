@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 #define AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 
-#include <aikido/planner/World.hpp>
+#include "aikido/planner/smart_pointer.hpp"
 
 namespace aikido {
 namespace perception {

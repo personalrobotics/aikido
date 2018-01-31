@@ -2,6 +2,8 @@
 #define AIKIDO_OMPL_AIKIDOGEOMETRICSTATESPACE_HPP_
 
 #include <ompl/base/StateSpace.h>
+#include "aikido/constraint/smart_pointer.hpp"
+#include "aikido/distance/smart_pointer.hpp"
 #include "aikido/planner/ompl/BackwardCompatibility.hpp"
 #include "../../constraint/Projectable.hpp"
 #include "../../constraint/Sampleable.hpp"
@@ -145,8 +147,6 @@ private:
   constraint::TestablePtr mBoundsConstraint;
   constraint::ProjectablePtr mBoundsProjection;
 };
-
-using GeometricStateSpacePtr = std::shared_ptr<GeometricStateSpace>;
 
 } // namespace ompl
 } // namespace planner

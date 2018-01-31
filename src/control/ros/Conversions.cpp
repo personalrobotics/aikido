@@ -3,6 +3,7 @@
 #include <sstream>
 #include <unordered_set>
 #include <dart/dynamics/Joint.hpp>
+#include "aikido/trajectory/smart_pointer.hpp"
 #include <aikido/common/Spline.hpp>
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/control/ros/Conversions.hpp>

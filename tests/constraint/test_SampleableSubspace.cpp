@@ -2,6 +2,7 @@
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/Sampleable.hpp>
+#include <aikido/constraint/smart_pointer.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/Rn.hpp>

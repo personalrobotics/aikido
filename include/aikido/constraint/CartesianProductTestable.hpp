@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_TESTABLESUBSPACE_HPP_
 
 #include <vector>
+#include "aikido/constraint/smart_pointer.hpp"
 #include "../statespace/CartesianProduct.hpp"
 #include "Testable.hpp"
 

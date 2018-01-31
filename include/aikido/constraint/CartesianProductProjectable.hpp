@@ -1,6 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_CARTESIANPRODUCTPROJECTABLE_HPP_
 #define AIKIDO_CONSTRAINT_CARTESIANPRODUCTPROJECTABLE_HPP_
 
+#include "aikido/constraint/smart_pointer.hpp"
 #include "../statespace/CartesianProduct.hpp"
 #include "Projectable.hpp"
 

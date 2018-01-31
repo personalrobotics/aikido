@@ -6,6 +6,7 @@
 #include "aikido/trajectory/Spline.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "DynamicPath.h"
+#include "aikido/constraint/smart_pointer.hpp"
 
 namespace aikido {
 namespace planner {
