@@ -70,15 +70,17 @@ void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
 
   if (trajectory)
   {
-    auto statespace = trajectory->getStateSpace();
-    if (!std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-            statespace))
+    auto statespace
+        = std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
+            trajectory->getStateSpace());
+
+    if (!statespace)
     {
       throw std::invalid_argument(
           "The statespace in the trajectory should be MetaSkeletonStateSpace");
     }
 
-    statespace->checkCompatibility(mSkeleton);
+    statespace->checkCompatibility(mSkeleton.get());
   }
 
   mTrajectory = std::move(trajectory);
