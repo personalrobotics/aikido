@@ -70,22 +70,17 @@ void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
 
   if (trajectory)
   {
-    auto statespace = trajectory->getStateSpace();
-    if (!std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-            statespace))
+    auto statespace
+        = std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
+            trajectory->getStateSpace());
+
+    if (!statespace)
     {
       throw std::invalid_argument(
           "The statespace in the trajectory should be MetaSkeletonStateSpace");
     }
 
-    if (statespace->getDimension() != mSkeleton->getNumDofs())
-    {
-      throw std::invalid_argument(
-          "The statespace in the trajectory is not compatible (dimensions are "
-          "different) to DART meta skeleton for visualizing the trajectory");
-    }
-    // TODO: Use more comprehensive compatibility check once available than
-    // just checking the dimensions.
+    statespace->checkCompatibility(mSkeleton.get());
   }
 
   mTrajectory = std::move(trajectory);
