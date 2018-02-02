@@ -5,11 +5,6 @@
 #include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
 #include <aikido/control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp>
 
-using aikido::control::
-    BarrettFingerKinematicSimulationPositionCommandExecutorPtr;
-using aikido::control::BarrettHandKinematicSimulationPositionCommandExecutorPtr;
-using aikido::control::BarrettFingerKinematicSimulationSpreadCommandExecutorPtr;
-
 using aikido::control::BarrettHandKinematicSimulationPositionCommandExecutor;
 using aikido::control::BarrettFingerKinematicSimulationPositionCommandExecutor;
 using aikido::control::BarrettFingerKinematicSimulationSpreadCommandExecutor;
@@ -26,6 +21,7 @@ using namespace dart::dynamics;
 using namespace dart::collision;
 using namespace dart::simulation;
 
+const static std::chrono::milliseconds waitTime{0};
 const static std::chrono::milliseconds stepTime{1};
 
 static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
@@ -226,7 +222,7 @@ TEST_F(
 {
   EXPECT_THROW(
       BarrettHandKinematicSimulationPositionCommandExecutor(
-          nullptr, mPrefix, mCollisionDetector, mCollideWith),
+          nullptr, mPrefix, stepTime, mCollisionDetector, mCollideWith),
       std::invalid_argument);
 }
 
@@ -236,7 +232,7 @@ TEST_F(
 {
   EXPECT_THROW(
       BarrettHandKinematicSimulationPositionCommandExecutor(
-          mRobot, "/invalid/", mCollisionDetector, mCollideWith),
+          mRobot, "/invalid/", stepTime, mCollisionDetector, mCollideWith),
       std::invalid_argument);
 }
 
@@ -246,7 +242,7 @@ TEST_F(
 {
   EXPECT_NO_THROW(
       BarrettHandKinematicSimulationPositionCommandExecutor(
-          mRobot, mPrefix, mCollisionDetector, mCollideWith));
+          mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith));
 }
 
 TEST_F(
@@ -255,7 +251,7 @@ TEST_F(
 {
   // Setup
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
 
   double mimicRatio = BarrettFingerKinematicSimulationPositionCommandExecutor::
       getMimicRatio();
@@ -266,7 +262,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 
@@ -295,7 +291,7 @@ TEST_F(
     execute_CommandIsAlreadyRunning_Throws)
 {
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
 
   // Execute trajectory
   auto future = executor.execute(mPositions);
@@ -307,7 +303,7 @@ TEST_F(
     execute_PrevCommandFinished_DoesNotThrow)
 {
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
 
   // Execute trajectory
   auto future = executor.execute(mPositions);
@@ -315,7 +311,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 
@@ -336,14 +332,14 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, collideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, collideWith);
 
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 
@@ -369,14 +365,14 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, collideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, collideWith);
 
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 
@@ -405,7 +401,7 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
   auto future = executor.execute(position);
@@ -413,7 +409,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 
@@ -439,7 +435,7 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
   auto future = executor.execute(position);
@@ -447,7 +443,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 
@@ -477,7 +473,7 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
   auto future = executor.execute(position);
@@ -485,7 +481,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 
@@ -512,7 +508,7 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
   auto future = executor.execute(position);
@@ -520,7 +516,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
 

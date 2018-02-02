@@ -7,13 +7,14 @@ namespace control {
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : TrajectoryExecutor(executor->getTimestep())
+  : TrajectoryExecutor(std::chrono::milliseconds(0))
   , mExecutor{std::move(executor)}
   , mInProgress{false}
   , mMutex{}
 {
   if (!mExecutor)
     throw std::invalid_argument("Executor is null.");
+  mTimestep = mExecutor->getTimestep();
 }
 
 //==============================================================================

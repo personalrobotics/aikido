@@ -25,7 +25,7 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
-const static std::chrono::milliseconds zeroTime{0};
+const static std::chrono::milliseconds waitTime{0};
 const static std::chrono::milliseconds stepTime{100};
 
 class QueuedTrajectoryExecutorTest : public testing::Test
@@ -79,8 +79,8 @@ public:
     mTraj2->addWaypoint(0, s2);
     mTraj2->addWaypoint(1, s3);
 
-    mExecutor
-        = std::make_shared<KinematicSimulationTrajectoryExecutor>(mSkeleton);
+    mExecutor = std::make_shared<KinematicSimulationTrajectoryExecutor>(
+        mSkeleton, stepTime);
   }
 
 protected:
@@ -118,7 +118,7 @@ TEST_F(QueuedTrajectoryExecutorTest, execute_WaitOnFuture_TrajectoryWasExecuted)
   do
   {
     executor.step();
-    status = future.wait_for(stepTime);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   future.get();
@@ -141,7 +141,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = f1.wait_for(stepTime);
+    status = f1.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   f1.get();
@@ -151,7 +151,7 @@ TEST_F(
   do
   {
     executor.step();
-    status = f2.wait_for(stepTime);
+    status = f2.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   f2.get();
@@ -174,14 +174,14 @@ TEST_F(
   do
   {
     executor.step();
-    status = f2.wait_for(stepTime);
+    status = f2.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   f2.get();
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 2.0);
 
-  EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
+  EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
 }
 
 TEST_F(
@@ -197,8 +197,8 @@ TEST_F(
 
   executor.abort();
 
-  EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
-  EXPECT_EQ(f2.wait_for(zeroTime), std::future_status::ready);
+  EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
+  EXPECT_EQ(f2.wait_for(waitTime), std::future_status::ready);
 
   EXPECT_THROW(f1.get(), std::runtime_error);
   EXPECT_THROW(f2.get(), std::runtime_error);
@@ -219,13 +219,13 @@ TEST_F(
 
   executor.step(); // dequeue trajectory
 
-  f1.wait_for(stepTime);
+  f1.wait_for(waitTime);
   executor.step();
 
   executor.abort();
 
-  EXPECT_EQ(f1.wait_for(zeroTime), std::future_status::ready);
-  EXPECT_EQ(f2.wait_for(zeroTime), std::future_status::ready);
+  EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
+  EXPECT_EQ(f2.wait_for(waitTime), std::future_status::ready);
 
   EXPECT_THROW(f1.get(), std::runtime_error);
   EXPECT_THROW(f2.get(), std::runtime_error);

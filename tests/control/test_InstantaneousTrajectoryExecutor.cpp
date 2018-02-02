@@ -22,6 +22,7 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
+const static std::chrono::milliseconds waitTime{0};
 const static std::chrono::milliseconds stepTime{0};
 
 class InstantaneousTrajectoryExecutorTest : public testing::Test
@@ -82,17 +83,20 @@ protected:
 
 TEST_F(InstantaneousTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
 {
-  EXPECT_THROW(InstantaneousTrajectoryExecutor(nullptr), std::invalid_argument);
+  EXPECT_THROW(
+      InstantaneousTrajectoryExecutor(nullptr, stepTime),
+      std::invalid_argument);
 }
 
 TEST_F(InstantaneousTrajectoryExecutorTest, constructor_Passes)
 {
-  EXPECT_NO_THROW(InstantaneousTrajectoryExecutor executor(mSkeleton));
+  EXPECT_NO_THROW(
+      InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime));
 }
 
 TEST_F(InstantaneousTrajectoryExecutorTest, execute_NullTrajectory_Throws)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
   EXPECT_THROW(executor.execute(nullptr), std::invalid_argument);
 }
 
@@ -100,7 +104,7 @@ TEST_F(
     InstantaneousTrajectoryExecutorTest,
     execute_NonMetaSkeletonStateSpace_Throws)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
 
   auto space = std::make_shared<SO2>();
   auto interpolator = std::make_shared<GeodesicInterpolator>(space);
@@ -115,7 +119,7 @@ TEST_F(
 {
   auto skeleton = Skeleton::create("Skeleton");
 
-  InstantaneousTrajectoryExecutor executor(skeleton);
+  InstantaneousTrajectoryExecutor executor(skeleton, stepTime);
   EXPECT_THROW(executor.execute(mTraj), std::invalid_argument);
 }
 
@@ -123,12 +127,12 @@ TEST_F(
     InstantaneousTrajectoryExecutorTest,
     execute_WaitOnFuture_TrajectoryWasExecutedInstantly)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-  std::future_status status = future.wait_for(stepTime);
+  std::future_status status = future.wait_for(waitTime);
   EXPECT_EQ(status, std::future_status::ready);
 
   future.get();
@@ -140,12 +144,12 @@ TEST_F(
     InstantaneousTrajectoryExecutorTest,
     execute_TrajectoryFinished_DoesNotThrow)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton);
+  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-  std::future_status status = future.wait_for(stepTime);
+  std::future_status status = future.wait_for(waitTime);
   EXPECT_EQ(status, std::future_status::ready);
 
   future.get();
@@ -156,7 +160,7 @@ TEST_F(
 
   // Execute second traj.
   future = executor.execute(mTraj);
-  status = future.wait_for(stepTime);
+  status = future.wait_for(waitTime);
   EXPECT_EQ(status, std::future_status::ready);
 
   future.get();

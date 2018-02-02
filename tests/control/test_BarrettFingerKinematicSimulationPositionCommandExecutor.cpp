@@ -24,7 +24,8 @@ static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
   return properties;
 }
 
-const static std::chrono::nanoseconds waitTime{1};
+const static std::chrono::milliseconds waitTime{0};
+const static std::chrono::milliseconds stepTime{1};
 
 class BarrettFingerKinematicSimulationPositionCommandExecutorTest
     : public testing::Test
@@ -178,7 +179,6 @@ protected:
 
   int mProximalDof, mDistalDof;
 
-  std::chrono::milliseconds mDuration;
   CollisionDetectorPtr mCollisionDetector;
   CollisionGroupPtr mCollideWith;
 
@@ -192,7 +192,12 @@ TEST_F(
 {
   EXPECT_THROW(
       BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-          nullptr, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith),
+          nullptr,
+          mProximalDof,
+          mDistalDof,
+          stepTime,
+          mCollisionDetector,
+          mCollideWith),
       std::invalid_argument);
 }
 
@@ -205,6 +210,7 @@ TEST_F(
           mFingerChain,
           mProximalDof,
           mDistalDof,
+          stepTime,
           mCollisionDetector,
           mCollideWith));
 }
@@ -219,6 +225,7 @@ TEST_F(
           mFingerChain,
           proximalDof,
           mDistalDof,
+          stepTime,
           mCollisionDetector,
           mCollideWith),
       std::invalid_argument);
@@ -234,6 +241,7 @@ TEST_F(
           mFingerChain,
           mProximalDof,
           distalDof,
+          stepTime,
           mCollisionDetector,
           mCollideWith),
       std::invalid_argument);
@@ -244,7 +252,12 @@ TEST_F(
     execute_WaitOnFuture_CommandExecuted)
 {
   BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-      mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith);
+      mFingerChain,
+      mProximalDof,
+      mDistalDof,
+      stepTime,
+      mCollisionDetector,
+      mCollideWith);
 
   double mimicRatio = BarrettFingerKinematicSimulationPositionCommandExecutor::
       getMimicRatio();
@@ -284,7 +297,12 @@ TEST_F(
   goal << M_PI;
 
   BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-      mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, collideWith);
+      mFingerChain,
+      mProximalDof,
+      mDistalDof,
+      stepTime,
+      mCollisionDetector,
+      collideWith);
 
   auto future = executor.execute(goal);
 
@@ -319,7 +337,12 @@ TEST_F(
 
   // Executor
   BarrettFingerKinematicSimulationPositionCommandExecutor executor(
-      mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, collideWith);
+      mFingerChain,
+      mProximalDof,
+      mDistalDof,
+      stepTime,
+      mCollisionDetector,
+      collideWith);
   Vector1d goal;
   goal << M_PI / 4;
 
