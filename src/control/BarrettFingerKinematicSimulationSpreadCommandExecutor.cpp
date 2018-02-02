@@ -1,7 +1,6 @@
-#include <exception>
-#include <thread>
+#include "aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp"
 #include <dart/collision/fcl/FCLCollisionDetector.hpp>
-#include <aikido/control/BarrettFingerKinematicSimulationSpreadCommandExecutor.hpp>
+#include "aikido/common/algorithm.hpp"
 
 namespace aikido {
 namespace control {
@@ -11,14 +10,16 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
     BarrettFingerKinematicSimulationSpreadCommandExecutor(
         std::array<::dart::dynamics::ChainPtr, 2> fingers,
         std::size_t spread,
+        std::chrono::milliseconds timestep,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
         ::dart::collision::CollisionGroupPtr collideWith,
         ::dart::collision::CollisionOption collisionOptions)
-  : mFingers(std::move(fingers))
+  : PositionCommandExecutor(timestep)
+  , mFingers(std::move(fingers))
   , mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
   , mCollisionOptions(std::move(collisionOptions))
-  , mInExecution(false)
+  , mInProgress(false)
 {
   if (mFingers.size() != kNumFingers)
   {
@@ -39,7 +40,7 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
     }
 
     const auto numDofs = mFingers[i]->getNumDofs();
-    if (static_cast<std::size_t>(spread) >= numDofs)
+    if (spread >= numDofs)
       throw std::invalid_argument("Finger does not have spread dof.");
 
     mSpreadDofs.push_back(mFingers[i]->getDof(spread));
@@ -57,7 +58,7 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
     // mCollisionDetector, set the collision group to an empty collision group.
     if (mCollisionDetector != mCollideWith->getCollisionDetector())
     {
-      std::cerr << "[BarrettHandKinematicSimulationPositionCommandExecutor] "
+      std::cerr << "[BarrettFingerKinematicSimulationSpreadCommandExecutor] "
                 << "CollisionDetector of type " << mCollisionDetector->getType()
                 << " does not match CollisionGroup's CollisionDetector of type "
                 << mCollideWith->getCollisionDetector()->getType() << std::endl;
@@ -91,11 +92,11 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
 
   for (std::size_t i = 1; i < kNumFingers; ++i)
   {
-    auto limits = mSpreadDofs[i]->getPositionLimits();
+    const auto limits = mSpreadDofs[i]->getPositionLimits();
     if (std::abs(limits.first - mDofLimits.first) > kDofTolerance)
     {
       std::stringstream msg;
-      msg << "LowerJointLimit for the fingers should be the same. "
+      msg << "Lower joint limit for the fingers should be the same. "
           << "Expecting " << mDofLimits.first << "; got " << limits.first;
       throw std::invalid_argument(msg.str());
     }
@@ -103,7 +104,7 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
     if (std::abs(limits.second - mDofLimits.second) > kDofTolerance)
     {
       std::stringstream msg;
-      msg << "UpperJointLimit for the fingers should be the same. "
+      msg << "Upper joint limit for the fingers should be the same. "
           << "Expecting " << mDofLimits.second << "; got " << limits.second;
       throw std::invalid_argument(msg.str());
     }
@@ -127,22 +128,15 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::execute(
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
-    double goalPositionValue = goalPosition[0];
 
-    if (mInExecution)
-      throw std::runtime_error("Another command in execution.");
+    if (mInProgress)
+      throw std::runtime_error("Another position command is in progress.");
 
     mPromise.reset(new std::promise<void>());
-    mTimeOfPreviousCall = std::chrono::system_clock::now();
 
-    if (goalPositionValue < mDofLimits.first)
-      mGoalPosition = mDofLimits.first;
-    else if (goalPositionValue > mDofLimits.second)
-      mGoalPosition = mDofLimits.second;
-    else
-      mGoalPosition = goalPositionValue;
-
-    mInExecution = true;
+    mGoalPosition
+        = common::clamp(goalPosition[0], mDofLimits.first, mDofLimits.second);
+    mInProgress = true;
 
     return mPromise->get_future();
   }
@@ -151,17 +145,12 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::execute(
 //==============================================================================
 void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
 {
-  using namespace std::chrono;
-
-  // Terminate the thread if mRunning is false.
   std::lock_guard<std::mutex> lock(mMutex);
 
-  auto timeSincePreviousCall = system_clock::now() - mTimeOfPreviousCall;
-  mTimeOfPreviousCall = system_clock::now();
-  auto period = duration<double>(timeSincePreviousCall).count();
-
-  if (!mInExecution)
+  if (!mInProgress)
     return;
+
+  const auto period = std::chrono::duration<double>(mTimestep).count();
 
   // Current spread. Check that all spreads have same values.
   double spread = mSpreadDofs[0]->getPosition();
@@ -175,7 +164,7 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
           << "Expecting " << spread << ", got " << spread;
       auto expr = std::make_exception_ptr(std::runtime_error(msg.str()));
       mPromise->set_exception(expr);
-      mInExecution = false;
+      mInProgress = false;
       return;
     }
   }
@@ -191,16 +180,16 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
   if (collision || std::abs(spread - mGoalPosition) < kTolerance)
   {
     mPromise->set_value();
-    mInExecution = false;
+    mInProgress = false;
     return;
   }
 
   // Move spread
   double newSpread;
   if (spread > mGoalPosition)
-    newSpread = std::max(mGoalPosition, spread + -kDofSpeed * period);
+    newSpread = std::max(mGoalPosition, spread - period * kDofSpeed);
   else
-    newSpread = std::min(mGoalPosition, spread + kDofSpeed * period);
+    newSpread = std::min(mGoalPosition, spread + period * kDofSpeed);
 
   for (auto spreadDof : mSpreadDofs)
     spreadDof->setPosition(newSpread);
@@ -210,9 +199,9 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
 bool BarrettFingerKinematicSimulationSpreadCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {
-  std::lock_guard<std::mutex> lockSpin(mMutex);
+  std::lock_guard<std::mutex> lock(mMutex);
 
-  if (mInExecution)
+  if (mInProgress)
     return false;
 
   mCollideWith = std::move(collideWith);

@@ -4,10 +4,22 @@ namespace aikido {
 namespace control {
 
 //==============================================================================
-PositionCommandExecutor::PositionCommandExecutor(double timestep)
-  : mTimestep(timestep)
+PositionCommandExecutor::PositionCommandExecutor(
+    std::chrono::milliseconds timestep)
 {
-  // Do nothing.
+  setTimestep(timestep);
+}
+
+//==============================================================================
+std::chrono::milliseconds PositionCommandExecutor::getTimestep() const
+{
+  return mTimestep;
+}
+
+//==============================================================================
+void PositionCommandExecutor::setTimestep(std::chrono::milliseconds timestep)
+{
+  mTimestep = timestep;
 }
 
 } // namespace control

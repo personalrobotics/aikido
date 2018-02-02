@@ -86,6 +86,8 @@ MetaSkeletonStateSpace::Properties::Properties(
   , mVelocityLowerLimits(metaskeleton->getVelocityLowerLimits())
   , mVelocityUpperLimits(metaskeleton->getVelocityUpperLimits())
 {
+  // TODO: Acquire the metaskeleton's mutex once DART supports it.
+
   for (std::size_t ijoint = 0; ijoint < metaskeleton->getNumJoints(); ++ijoint)
   {
     const auto joint = metaskeleton->getJoint(ijoint);

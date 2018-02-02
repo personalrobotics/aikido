@@ -1,6 +1,6 @@
-#include <aikido/control/ros/Conversions.hpp>
-#include <aikido/control/ros/RosPositionCommandExecutor.hpp>
-#include <aikido/control/ros/util.hpp>
+#include "aikido/control/ros/RosPositionCommandExecutor.hpp"
+#include "aikido/control/ros/Conversions.hpp"
+#include "aikido/control/ros/util.hpp"
 
 namespace aikido {
 namespace control {
@@ -15,13 +15,16 @@ RosPositionCommandExecutor::RosPositionCommandExecutor(
     std::vector<std::string> jointNames,
     const std::chrono::milliseconds connectionTimeout,
     const std::chrono::milliseconds connectionPollingPeriod)
-  : mNode(std::move(node))
+  : PositionCommandExecutor(std::chrono::milliseconds(0))
+  , mNode(std::move(node))
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
+  , mJointNames(std::move(jointNames))
   , mConnectionTimeout{connectionTimeout}
   , mConnectionPollingPeriod{connectionPollingPeriod}
   , mInProgress{false}
-  , mJointNames(std::move(jointNames))
+  , mPromise{nullptr}
+  , mMutex{}
 {
   // Do nothing.
 }
@@ -36,10 +39,11 @@ RosPositionCommandExecutor::~RosPositionCommandExecutor()
 std::future<void> RosPositionCommandExecutor::execute(
     const Eigen::VectorXd& goalPositions)
 {
-  pr_control_msgs::SetPositionGoal goal;
+  using aikido::control::ros::positionsToJointState;
 
   // Convert goal positions and joint names to jointstate
   // Will check for size matching in the positionsToJointState function
+  pr_control_msgs::SetPositionGoal goal;
   goal.command = positionsToJointState(goalPositions, mJointNames);
 
   bool waitForServer = waitForActionServer<pr_control_msgs::SetPositionAction,
@@ -55,15 +59,15 @@ std::future<void> RosPositionCommandExecutor::execute(
     DART_UNUSED(lock); // Suppress unused variable warning
 
     if (mInProgress)
-      throw std::runtime_error("Another trajectory is in progress.");
+      throw std::runtime_error("Another position command is in progress.");
 
-    mPromise = std::promise<void>();
+    mPromise.reset(new std::promise<void>());
     mInProgress = true;
     mGoalHandle = mClient.sendGoal(
         goal,
         boost::bind(&RosPositionCommandExecutor::transitionCallback, this, _1));
 
-    return mPromise.get_future();
+    return mPromise->get_future();
   }
 }
 
@@ -84,7 +88,7 @@ void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
       if (!terminalMessage.empty())
         message << " (" << terminalMessage << ")";
 
-      mPromise.set_exception(
+      mPromise->set_exception(
           std::make_exception_ptr(std::runtime_error(message.str())));
 
       isSuccessful = false;
@@ -100,14 +104,14 @@ void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
       if (!result->message.empty())
         message << " (" << result->message << ")";
 
-      mPromise.set_exception(
+      mPromise->set_exception(
           std::make_exception_ptr(std::runtime_error(message.str())));
 
       isSuccessful = false;
     }
 
     if (isSuccessful)
-      mPromise.set_value();
+      mPromise->set_value();
 
     mInProgress = false;
   }
@@ -123,7 +127,7 @@ void RosPositionCommandExecutor::step()
 
   if (!::ros::ok() && mInProgress)
   {
-    mPromise.set_exception(
+    mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Detected ROS shutdown.")));
     mInProgress = false;
   }

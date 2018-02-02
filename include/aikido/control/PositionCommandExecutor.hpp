@@ -1,6 +1,7 @@
 #ifndef AIKIDO_CONTROL_POSITIONCOMANDEXECUTOR_HPP_
 #define AIKIDO_CONTROL_POSITIONCOMANDEXECUTOR_HPP_
 
+#include <chrono>
 #include <future>
 #include <Eigen/Dense>
 
@@ -20,7 +21,7 @@ public:
   /// Constructor.
   ///
   /// \param timestep The time period that each call to step() should simulate
-  PositionCommandExecutor(double timestep);
+  PositionCommandExecutor(std::chrono::milliseconds timestep);
 
   virtual ~PositionCommandExecutor() = default;
 
@@ -33,9 +34,15 @@ public:
   // Step once.
   virtual void step() = 0;
 
+  /// Get the current timestep.
+  virtual std::chrono::milliseconds getTimestep() const;
+
+  /// Set the current timestep.
+  virtual void setTimestep(std::chrono::milliseconds timestep);
+
 protected:
   /// Time period that each call to step() should simulate
-  double mTimestep;
+  std::chrono::milliseconds mTimestep;
 };
 
 using PositionCommandExecutorPtr = std::shared_ptr<PositionCommandExecutor>;

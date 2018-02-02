@@ -8,9 +8,8 @@
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <ros/callback_queue.h>
 #include <ros/ros.h>
-#include <aikido/control/TrajectoryExecutor.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/trajectory/Trajectory.hpp>
+#include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace control {
@@ -23,14 +22,14 @@ public:
   /// Constructor.
   /// \param[in] node ROS node handle for action client.
   /// \param[in] serverName Name of the server to send traejctory to.
-  /// \param[in] timestep Step size for interpolating trajectories.
+  /// \param[in] waypointTimestep Step size for interpolating trajectories.
   /// \param[in] goalTimeTolerance
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosTrajectoryExecutor(
       ::ros::NodeHandle node,
       const std::string& serverName,
-      double timestep,
+      double waypointTimestep,
       double goalTimeTolerance,
       const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
@@ -73,7 +72,7 @@ private:
   TrajectoryActionClient mClient;
   TrajectoryActionClient::GoalHandle mGoalHandle;
 
-  double mTimestep;
+  double mWaypointTimestep;
   double mGoalTimeTolerance;
 
   std::chrono::milliseconds mConnectionTimeout;
@@ -82,7 +81,7 @@ private:
   bool mInProgress;
   std::unique_ptr<std::promise<void>> mPromise;
 
-  /// Manages access on mInProgress, mPromise
+  /// Manages access to mInProgress, mPromise
   std::mutex mMutex;
 };
 

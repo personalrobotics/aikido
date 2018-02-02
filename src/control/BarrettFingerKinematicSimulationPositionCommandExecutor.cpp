@@ -1,6 +1,6 @@
-#include <thread>
+#include "aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp"
 #include <dart/collision/fcl/FCLCollisionDetector.hpp>
-#include <aikido/control/BarrettFingerKinematicSimulationPositionCommandExecutor.hpp>
+#include "aikido/common/algorithm.hpp"
 
 namespace aikido {
 namespace control {
@@ -11,16 +11,18 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::
         ::dart::dynamics::ChainPtr finger,
         std::size_t proximal,
         std::size_t distal,
+        std::chrono::milliseconds timestep,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
         ::dart::collision::CollisionGroupPtr collideWith,
         ::dart::collision::CollisionOption collisionOptions)
-  : mFinger(std::move(finger))
+  : PositionCommandExecutor(timestep)
+  , mFinger(std::move(finger))
   , mProximalDof(nullptr)
   , mDistalDof(nullptr)
   , mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
   , mCollisionOptions(std::move(collisionOptions))
-  , mInExecution(false)
+  , mInProgress(false)
 {
   if (!mFinger)
     throw std::invalid_argument("Finger is null.");
@@ -93,25 +95,17 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::execute(
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
-    double goalPositionValue = goalPosition[0];
 
-    if (mInExecution)
-      throw std::runtime_error("Another command in execution.");
+    if (mInProgress)
+      throw std::runtime_error("Another position command is in progress.");
 
     mPromise.reset(new std::promise<void>());
-    mInExecution = true;
-    mDistalOnly = false;
-    mTimeOfPreviousCall = std::chrono::system_clock::now();
 
-    // Set mProximalGoalPosition.
-    if (goalPositionValue < mProximalLimits.first)
-      mProximalGoalPosition = mProximalLimits.first;
-    else if (goalPositionValue > mProximalLimits.second)
-      mProximalGoalPosition = mProximalLimits.second;
-    else
-      mProximalGoalPosition = goalPositionValue;
-
+    mProximalGoalPosition = common::clamp(
+        goalPosition[0], mProximalLimits.first, mProximalLimits.second);
     mDistalGoalPosition = mProximalGoalPosition * kMimicRatio;
+    mDistalOnly = false;
+    mInProgress = true;
 
     return mPromise->get_future();
   }
@@ -121,22 +115,18 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::execute(
 void BarrettFingerKinematicSimulationPositionCommandExecutor::terminate()
 {
   mPromise->set_value();
-  mInExecution = false;
+  mInProgress = false;
 }
 
 //==============================================================================
 void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 {
-  using namespace std::chrono;
-
   std::lock_guard<std::mutex> lock(mMutex);
 
-  auto timeSincePreviousCall = system_clock::now() - mTimeOfPreviousCall;
-  mTimeOfPreviousCall = system_clock::now();
-  auto period = duration<double>(timeSincePreviousCall).count();
-
-  if (!mInExecution)
+  if (!mInProgress)
     return;
+
+  const auto period = std::chrono::duration<double>(mTimestep).count();
 
   double distalPosition = mDistalDof->getPosition();
   double proximalPosition = mProximalDof->getPosition();
@@ -242,9 +232,9 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
 bool BarrettFingerKinematicSimulationPositionCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {
-  std::lock_guard<std::mutex> lockSpin(mMutex);
+  std::lock_guard<std::mutex> lock(mMutex);
 
-  if (mInExecution)
+  if (mInProgress)
     return false;
 
   mCollideWith = std::move(collideWith);

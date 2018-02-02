@@ -1,6 +1,7 @@
 #ifndef AIKIDO_CONTROL_TRAJECTORYEXECUTOR_HPP_
 #define AIKIDO_CONTROL_TRAJECTORYEXECUTOR_HPP_
 
+#include <chrono>
 #include <future>
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -14,7 +15,7 @@ public:
   /// Constructor.
   ///
   /// \param timestep The time period that each call to step() should simulate
-  TrajectoryExecutor(double timestep);
+  TrajectoryExecutor(std::chrono::milliseconds timestep);
 
   virtual ~TrajectoryExecutor() = default;
 
@@ -28,6 +29,8 @@ public:
   /// queuing.
   ///
   /// \param traj Trajectory to be executed.
+  /// \return future<void> for trajectory execution. If trajectory terminates
+  ///        before completion, future will be set to a runtime_error.
   virtual std::future<void> execute(trajectory::TrajectoryPtr _traj) = 0;
 
   /// Step once.
@@ -37,9 +40,15 @@ public:
   /// \note This is currently only supported in simulation.
   virtual void abort() = 0;
 
+  /// Get the current timestep.
+  virtual std::chrono::milliseconds getTimestep() const;
+
+  /// Set the current timestep.
+  virtual void setTimestep(std::chrono::milliseconds timestep);
+
 protected:
   /// Time period that each call to step() should simulate
-  double mTimestep;
+  std::chrono::milliseconds mTimestep;
 };
 
 using TrajectoryExecutorPtr = std::shared_ptr<TrajectoryExecutor>;

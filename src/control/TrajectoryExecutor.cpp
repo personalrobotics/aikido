@@ -4,9 +4,21 @@ namespace aikido {
 namespace control {
 
 //==============================================================================
-TrajectoryExecutor::TrajectoryExecutor(double timestep) : mTimestep(timestep)
+TrajectoryExecutor::TrajectoryExecutor(std::chrono::milliseconds timestep)
 {
-  // Do nothing.
+  setTimestep(timestep);
+}
+
+//==============================================================================
+std::chrono::milliseconds TrajectoryExecutor::getTimestep() const
+{
+  return mTimestep;
+}
+
+//==============================================================================
+void TrajectoryExecutor::setTimestep(std::chrono::milliseconds timestep)
+{
+  mTimestep = timestep;
 }
 
 } // namespace control

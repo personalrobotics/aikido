@@ -1,5 +1,5 @@
+#include "aikido/control/QueuedTrajectoryExecutor.hpp"
 #include <chrono>
-#include <aikido/control/QueuedTrajectoryExecutor.hpp>
 
 namespace aikido {
 namespace control {
@@ -7,7 +7,10 @@ namespace control {
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : mExecutor{std::move(executor)}, mInProgress{false}, mMutex{}
+  : TrajectoryExecutor(executor->getTimestep())
+  , mExecutor{std::move(executor)}
+  , mInProgress{false}
+  , mMutex{}
 {
   if (!mExecutor)
     throw std::invalid_argument("Executor is null.");
@@ -120,6 +123,19 @@ void QueuedTrajectoryExecutor::abort()
   }
 
   mFuture = std::future<void>();
+}
+
+//==============================================================================
+std::chrono::milliseconds QueuedTrajectoryExecutor::getTimestep() const
+{
+  return mTimestep;
+}
+
+//==============================================================================
+void QueuedTrajectoryExecutor::setTimestep(std::chrono::milliseconds timestep)
+{
+  mExecutor->setTimestep(timestep);
+  mTimestep = mExecutor->getTimestep();
 }
 
 } // namespace control

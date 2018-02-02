@@ -3,25 +3,27 @@
 
 #include <future>
 #include <mutex>
-
-#include <aikido/control/TrajectoryExecutor.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/trajectory/Trajectory.hpp>
+#include <dart/dynamics/Skeleton.hpp>
+#include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace control {
 
-/// Executes trajectories in DART. This will spin a new thread
-/// and simulate trajectories by setting dof positions
-/// without running dynamic simulation.
+/// Executes trajectories in DART. This simulates trajectories by setting
+/// interpolated DOF positions, without running dynamic simulation.
 class KinematicSimulationTrajectoryExecutor : public TrajectoryExecutor
 {
 public:
   /// Constructor.
+  ///
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
+  /// \param timestep The time period that each call to step() should simulate
   explicit KinematicSimulationTrajectoryExecutor(
-      ::dart::dynamics::SkeletonPtr skeleton);
+      ::dart::dynamics::SkeletonPtr skeleton,
+      std::chrono::milliseconds timestep);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
@@ -29,9 +31,10 @@ public:
   void validate(trajectory::TrajectoryPtr traj) override;
 
   /// Execute traj and set future upon completion.
-  /// \param traj Trajectory to be executed. Its StateSpace should be a
-  ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton
-  ///        should be all in skeleton passed to the constructor.
+  ///
+  /// \param traj Trajectory to be executed.
+  ///        Its StateSpace should be a MetaSkeletonStateSpace, where the dofs
+  ///        are all in the skeleton passed to this constructor.
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   /// \throws invalid_argument if traj is invalid.
@@ -48,15 +51,25 @@ public:
   void abort() override;
 
 private:
+  /// Skeleton to execute trajectories on
   ::dart::dynamics::SkeletonPtr mSkeleton;
 
-  bool mInProgress;
-  std::unique_ptr<std::promise<void>> mPromise;
+  /// Trajectory being executed
   trajectory::TrajectoryPtr mTraj;
 
-  std::chrono::system_clock::time_point mExecutionStartTime;
+  /// Trajectory's MetaSkeletonStateSpace
+  statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
 
-  /// Manages access on mInProgress, mPromise, mTraj
+  /// Whether a trajectory is being executed
+  bool mInProgress;
+
+  /// Duration that the trajectory has been executed
+  double mExecutionTime;
+
+  /// Promise whose future is returned by execute()
+  std::unique_ptr<std::promise<void>> mPromise;
+
+  /// Manages access to mTraj, mInProgress, mPromise
   std::mutex mMutex;
 };
 

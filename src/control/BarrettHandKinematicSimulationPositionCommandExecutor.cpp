@@ -1,8 +1,5 @@
-#include <exception>
-#include <stdexcept>
-#include <thread>
+#include "aikido/control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp"
 #include <dart/collision/fcl/FCLCollisionDetector.hpp>
-#include <aikido/control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp>
 
 namespace aikido {
 namespace control {
@@ -15,11 +12,15 @@ BarrettHandKinematicSimulationPositionCommandExecutor::
     BarrettHandKinematicSimulationPositionCommandExecutor(
         dart::dynamics::SkeletonPtr robot,
         const std::string& prefix,
+        std::chrono::milliseconds timestep,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
-        ::dart::collision::CollisionGroupPtr collideWith)
-  : mInExecution(false)
+        ::dart::collision::CollisionGroupPtr collideWith,
+        ::dart::collision::CollisionOption collisionOptions)
+  : PositionCommandExecutor(timestep)
   , mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
+  , mCollisionOptions(std::move(collisionOptions))
+  , mInProgress(false)
 {
   if (!robot)
     throw std::invalid_argument("Robot is null");
@@ -80,7 +81,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
     throw std::invalid_argument(message.str());
   }
 
-  const auto fingerChains = std::array<ChainPtr, 3>{{
+  const auto fingerChains = std::array<ChainPtr, kNumPositionExecutors>{{
       Chain::create(
           robot->getBodyNode(prefix + "finger0_0"), // finger0Spread
           robot->getBodyNode(prefix + "finger0_2"), // finger0Distal
@@ -100,7 +101,12 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
 
   std::size_t spreadDof = 0;
   mSpreadCommandExecutor = std::make_shared<FingerSpreadCommandExecutor>(
-      spreadFingers, spreadDof, mCollisionDetector, mCollideWith);
+      spreadFingers,
+      spreadDof,
+      mTimestep,
+      mCollisionDetector,
+      mCollideWith,
+      mCollisionOptions);
 
   constexpr auto primalDof = std::array<std::size_t, 3>{{1, 1, 0}};
   constexpr auto distalDof = std::array<std::size_t, 3>{{2, 2, 1}};
@@ -111,8 +117,10 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
             fingerChains[i],
             primalDof[i],
             distalDof[i],
+            mTimestep,
             mCollisionDetector,
-            mCollideWith);
+            mCollideWith,
+            mCollisionOptions);
   }
 }
 
@@ -121,32 +129,34 @@ std::future<void>
 BarrettHandKinematicSimulationPositionCommandExecutor::execute(
     const Eigen::VectorXd& goalPositions)
 {
-  std::lock_guard<std::mutex> lockSpin(mMutex);
+  std::lock_guard<std::mutex> lock(mMutex);
 
-  if (mInExecution)
-    throw std::runtime_error("Another command in execution.");
+  if (mInProgress)
+    throw std::runtime_error("Another position command is in progress.");
 
   if (goalPositions.size() != 4)
   {
     std::stringstream message;
-    message << "GoalPositions must have 4 elements, but ["
+    message << "BarrettHand goal positions must have 4 elements, but ["
             << goalPositions.size() << "] given.";
     throw std::invalid_argument(message.str());
   }
 
   mPromise.reset(new std::promise<void>());
-  mProximalGoalPositions = goalPositions.head<3>();
-  mSpreadGoalPosition = goalPositions.row(3);
-  mInExecution = true;
+
+  Eigen::VectorXd proximalGoalPositions = goalPositions.head<3>();
+  Eigen::VectorXd spreadGoalPosition = goalPositions.row(3);
   mFingerFutures.clear();
 
-  mFingerFutures.reserve(kNumPositionExecutor + kNumSpreadExecutor);
-  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+  mFingerFutures.reserve(kNumPositionExecutors + kNumSpreadExecutor);
+  for (std::size_t i = 0; i < kNumPositionExecutors; ++i)
     mFingerFutures.emplace_back(
-        mPositionCommandExecutors[i]->execute(mProximalGoalPositions.row(i)));
+        mPositionCommandExecutors[i]->execute(proximalGoalPositions.row(i)));
 
   mFingerFutures.emplace_back(
-      mSpreadCommandExecutor->execute(mSpreadGoalPosition));
+      mSpreadCommandExecutor->execute(spreadGoalPosition));
+
+  mInProgress = true;
 
   return mPromise->get_future();
 }
@@ -156,7 +166,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
-  if (!mInExecution)
+  if (!mInProgress)
     return;
 
   // Check whether fingers have completed.
@@ -199,14 +209,13 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
     else if (allFingersCompleted)
       mPromise->set_value();
 
-    mInExecution = false;
+    mInProgress = false;
     return;
   }
 
   // Call the finger executors' step function.
-  for (int i = 0; i < kNumPositionExecutor; ++i)
+  for (int i = 0; i < kNumPositionExecutors; ++i)
     mPositionCommandExecutors[i]->step();
-
   mSpreadCommandExecutor->step();
 }
 
@@ -214,15 +223,15 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
 bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {
-  std::lock_guard<std::mutex> lockSpin(mMutex);
+  std::lock_guard<std::mutex> lock(mMutex);
 
-  if (mInExecution)
+  if (mInProgress)
     return false;
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
 
-  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+  for (std::size_t i = 0; i < kNumPositionExecutors; ++i)
     mPositionCommandExecutors[i]->setCollideWith(mCollideWith);
   mSpreadCommandExecutor->setCollideWith(mCollideWith);
 
