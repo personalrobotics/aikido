@@ -72,6 +72,56 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
   EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
 }
 
+TEST(MetaSkeletonStateSpace, RevoluteJoint_CompatibleSkeletons)
+{
+  auto withoutBound = Skeleton::create();
+  withoutBound->createJointAndBodyNodePair<RevoluteJoint>();
+  MetaSkeletonStateSpace withoutBoundSpace(withoutBound.get());
+
+  auto withBound = Skeleton::create();
+  withBound->createJointAndBodyNodePair<RevoluteJoint>()
+      .first->setPositionLowerLimit(0, -1.);
+  MetaSkeletonStateSpace withBoundSpace(withBound.get());
+
+  EXPECT_TRUE(withoutBoundSpace.isCompatible(withoutBound.get()));
+  EXPECT_FALSE(withoutBoundSpace.isCompatible(withBound.get()));
+  EXPECT_NO_THROW(withoutBoundSpace.checkCompatibility(withoutBound.get()));
+  EXPECT_THROW(
+      withoutBoundSpace.checkCompatibility(withBound.get()),
+      std::invalid_argument);
+
+  EXPECT_TRUE(withBoundSpace.isCompatible(withBound.get()));
+  EXPECT_FALSE(withBoundSpace.isCompatible(withoutBound.get()));
+  EXPECT_NO_THROW(withBoundSpace.checkCompatibility(withBound.get()));
+  EXPECT_THROW(
+      withBoundSpace.checkCompatibility(withoutBound.get()),
+      std::invalid_argument);
+
+  auto withoutBoundClone = withoutBound->clone();
+  EXPECT_TRUE(withoutBoundSpace.isCompatible(withoutBoundClone.get()));
+  EXPECT_NO_THROW(
+      withoutBoundSpace.checkCompatibility(withoutBoundClone.get()));
+
+  auto withBoundClone = withBound->clone();
+  EXPECT_TRUE(withBoundSpace.isCompatible(withBoundClone.get()));
+  EXPECT_NO_THROW(withBoundSpace.checkCompatibility(withBoundClone.get()));
+
+  auto withoutBoundDiffName = Skeleton::create("diff");
+  withoutBoundDiffName->createJointAndBodyNodePair<RevoluteJoint>();
+  EXPECT_FALSE(withoutBoundSpace.isCompatible(withoutBoundDiffName.get()));
+  EXPECT_THROW(
+      withoutBoundSpace.checkCompatibility(withoutBoundDiffName.get()),
+      std::invalid_argument);
+
+  auto withBoundDiffName = Skeleton::create("diff");
+  withBoundDiffName->createJointAndBodyNodePair<RevoluteJoint>()
+      .first->setPositionLowerLimit(0, -1.);
+  EXPECT_FALSE(withBoundSpace.isCompatible(withBoundDiffName.get()));
+  EXPECT_THROW(
+      withBoundSpace.checkCompatibility(withBoundDiffName.get()),
+      std::invalid_argument);
+}
+
 TEST(MetaSkeletonStateSpace, PrismaticJoint_CreatesRealVector)
 {
   auto skeleton = Skeleton::create();

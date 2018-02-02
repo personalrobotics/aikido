@@ -9,10 +9,15 @@
 * State Space
 
   * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
+  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
 
 * Control
 
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
+
+* Planner
+
+  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302)
 
 ### 0.2.0 (2018-01-09)
 
