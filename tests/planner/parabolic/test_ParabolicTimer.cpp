@@ -126,6 +126,41 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
   EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
 }
 
+TEST_F(ParabolicTimerTests, InterploatedSplineEquivalence)
+{
+  Interpolated interpolated(mStateSpace, mInterpolator);
+
+  auto state = mStateSpace->createState();
+  auto state2 = mStateSpace->createState();
+
+  // This is the same test as StraightLine_TriangularProfile, except that the
+  // trajectory starts at a non-zero time.
+  state.setValue(Vector2d(1., 2.));
+  interpolated.addWaypoint(1., state);
+
+  state.setValue(Vector2d(2., 3.));
+  interpolated.addWaypoint(3., state);
+
+  auto spline = convertToSpline(interpolated);
+
+  auto timedInterpolated = computeParabolicTiming(
+      interpolated, Vector2d::Constant(2.), Vector2d::Constant(1.));
+  auto timedSpline = computeParabolicTiming(
+      *spline, Vector2d::Constant(2.), Vector2d::Constant(1.));
+
+  timedInterpolated->evaluate(1., state);
+  timedSpline->evaluate(1., state2);
+  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+
+  timedInterpolated->evaluate(2., state);
+  timedSpline->evaluate(2., state2);
+  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+
+  timedInterpolated->evaluate(3., state);
+  timedSpline->evaluate(3., state2);
+  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+}
+
 TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
 {
   Interpolated inputTrajectory(mStateSpace, mInterpolator);

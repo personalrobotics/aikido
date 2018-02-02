@@ -204,6 +204,44 @@ MetaSkeletonStateSpace::Properties::getVelocityUpperLimits() const
 }
 
 //==============================================================================
+bool MetaSkeletonStateSpace::Properties::operator==(
+    const Properties& otherProperties) const
+{
+  if (mName != otherProperties.mName)
+    return false;
+
+  if (mNumJoints != otherProperties.mNumJoints)
+    return false;
+
+  if (mDofNames != otherProperties.mDofNames)
+    return false;
+
+  if (mIndexMap != otherProperties.mIndexMap)
+    return false;
+
+  for (std::size_t i = 0; i < mNumJoints; ++i)
+  {
+    if (mPositionLowerLimits[i] != otherProperties.mPositionLowerLimits[i])
+      return false;
+    if (mPositionUpperLimits[i] != otherProperties.mPositionUpperLimits[i])
+      return false;
+    if (mVelocityLowerLimits[i] != otherProperties.mVelocityLowerLimits[i])
+      return false;
+    if (mVelocityUpperLimits[i] != otherProperties.mVelocityUpperLimits[i])
+      return false;
+  }
+
+  return true;
+}
+
+//==============================================================================
+bool MetaSkeletonStateSpace::Properties::operator!=(
+    const Properties& otherProperties) const
+{
+  return !(*this == otherProperties);
+}
+
+//==============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(const MetaSkeleton* metaskeleton)
   : CartesianProduct(
         convertVectorType<JointStateSpacePtr, StateSpacePtr>(
@@ -218,6 +256,28 @@ const MetaSkeletonStateSpace::Properties&
 MetaSkeletonStateSpace::getProperties() const
 {
   return mProperties;
+}
+
+//==============================================================================
+bool MetaSkeletonStateSpace::isCompatible(
+    const ::dart::dynamics::MetaSkeleton* metaskeleton) const
+{
+  const MetaSkeletonStateSpace::Properties otherProperties(metaskeleton);
+  return mProperties == otherProperties;
+}
+
+//==============================================================================
+void MetaSkeletonStateSpace::checkCompatibility(
+    const ::dart::dynamics::MetaSkeleton* metaskeleton) const
+{
+  if (isCompatible(metaskeleton))
+    return;
+
+  std::stringstream ss;
+  ss << "MetaSkeleton '" << metaskeleton->getName()
+     << "' does not match this MetaSkeletonStateSpace's MetaSkeleton '"
+     << mProperties.getName() << "'.";
+  throw std::invalid_argument(ss.str());
 }
 
 //==============================================================================

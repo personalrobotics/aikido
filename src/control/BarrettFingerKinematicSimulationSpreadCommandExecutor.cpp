@@ -85,12 +85,7 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
     mCollideWith = mCollisionDetector->createCollisionGroup();
   }
 
-  mSpreadCollisionGroup = mCollisionDetector->createCollisionGroup();
-  for (auto finger : mFingers)
-  {
-    for (auto body : finger->getBodyNodes())
-      mSpreadCollisionGroup->addShapeFramesOf(body);
-  }
+  setFingerCollisionGroup();
 
   mDofLimits = mSpreadDofs[0]->getPositionLimits();
 
@@ -222,7 +217,26 @@ bool BarrettFingerKinematicSimulationSpreadCommandExecutor::setCollideWith(
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
+
+  setFingerCollisionGroup();
+
   return true;
+}
+
+//==============================================================================
+void BarrettFingerKinematicSimulationSpreadCommandExecutor::
+    setFingerCollisionGroup()
+{
+  if (mSpreadCollisionGroup
+      && mSpreadCollisionGroup->getCollisionDetector() == mCollisionDetector)
+    return;
+
+  mSpreadCollisionGroup = mCollisionDetector->createCollisionGroup();
+  for (const auto& finger : mFingers)
+  {
+    for (const auto& body : finger->getBodyNodes())
+      mSpreadCollisionGroup->addShapeFramesOf(body);
+  }
 }
 
 } // namespace control
