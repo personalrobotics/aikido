@@ -182,6 +182,7 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
   set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
+  set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
   # Strip include_directories() being used by CMake from #include paths.
   # TODO: Add per-target INCLUDE_DIRECTORIES properties to this list.
