@@ -10,8 +10,8 @@
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/dynamics/dynamics.hpp>
-#include <aikido/control/PositionCommandExecutor.hpp>
 #include "aikido/common/pointers.hpp"
+#include <aikido/control/PositionCommandExecutor.hpp>
 
 namespace aikido {
 namespace control {

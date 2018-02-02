@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <dart/dynamics/dynamics.hpp>
 #include "aikido/common/pair.hpp"
+#include "aikido/common/pointers.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/dart/JointStateSpace.hpp"
-#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace statespace {

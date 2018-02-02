@@ -8,10 +8,10 @@
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
+#include "aikido/common/pointers.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "CollisionFreeOutcome.hpp"
 #include "Testable.hpp"
-#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace constraint {

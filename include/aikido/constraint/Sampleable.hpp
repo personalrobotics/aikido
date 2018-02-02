@@ -5,9 +5,9 @@
 #include <memory>
 #include <boost/optional.hpp>
 
+#include "aikido/common/pointers.hpp"
 #include "../common/RNG.hpp"
 #include "../statespace/StateSpace.hpp"
-#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace constraint {

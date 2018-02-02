@@ -1,8 +1,8 @@
 #ifndef AIKIDO_TRAJECTORY_SPLINETRAJECTORY2_HPP_
 #define AIKIDO_TRAJECTORY_SPLINETRAJECTORY2_HPP_
 
-#include "Trajectory.hpp"
 #include "aikido/common/pointers.hpp"
+#include "Trajectory.hpp"
 
 namespace aikido {
 namespace trajectory {

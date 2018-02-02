@@ -2,8 +2,8 @@
 #define AIKIDO_STATESPACE_INTERPOLATOR_HPP_
 
 #include <memory>
-#include "../statespace/StateSpace.hpp"
 #include "aikido/common/pointers.hpp"
+#include "../statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {

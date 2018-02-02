@@ -2,8 +2,8 @@
 #define AIKIDO_CONTROL_TRAJECTORYEXECUTOR_HPP_
 
 #include <future>
-#include <aikido/trajectory/Trajectory.hpp>
 #include "aikido/common/pointers.hpp"
+#include <aikido/trajectory/Trajectory.hpp>
 
 namespace aikido {
 namespace control {

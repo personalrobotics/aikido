@@ -3,8 +3,8 @@
 
 #include <memory>
 #include <Eigen/Dense>
-#include "../statespace/StateSpace.hpp"
 #include "aikido/common/pointers.hpp"
+#include "../statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace constraint {

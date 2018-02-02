@@ -4,8 +4,8 @@
 #include <memory>
 #include <Eigen/Dense>
 #include "aikido/common/RNG.hpp"
-#include "aikido/statespace/ScopedState.hpp"
 #include "aikido/common/pointers.hpp"
+#include "aikido/statespace/ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
