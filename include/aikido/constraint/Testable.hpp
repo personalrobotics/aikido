@@ -4,10 +4,12 @@
 #include <memory>
 #include "../statespace/StateSpace.hpp"
 #include "DefaultTestableOutcome.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace constraint {
 
+AIKIDO_DECLARE_POINTERS(Testable)
 class TestableOutcome;
 
 /// Constraint which can be tested.
@@ -35,8 +37,6 @@ public:
   /// to isSatisfied (and casts, etc do not explode).
   virtual std::unique_ptr<TestableOutcome> createOutcome() const = 0;
 };
-
-using TestablePtr = std::shared_ptr<Testable>;
 
 } // namespace constraint
 } // namespace aikido

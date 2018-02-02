@@ -11,9 +11,12 @@
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/dynamics/dynamics.hpp>
 #include <aikido/control/PositionCommandExecutor.hpp>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(BarrettFingerKinematicSimulationPositionCommandExecutor)
 
 /// This executor mimics the behavior of BarretFinger.
 /// It moves a finger to a desired point; it may stop early if
@@ -132,9 +135,6 @@ private:
   /// Helper method for step() to set variables for terminating an execution.
   void terminate();
 };
-
-using BarrettFingerKinematicSimulationPositionCommandExecutorPtr
-    = std::shared_ptr<BarrettFingerKinematicSimulationPositionCommandExecutor>;
 
 } // namespace control
 } // namespace aikido

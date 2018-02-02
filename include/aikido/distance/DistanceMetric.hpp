@@ -2,9 +2,12 @@
 #define AIKIDO_DISTANCE_DISTANCEMETRIC_HPP_
 
 #include "../statespace/StateSpace.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace distance {
+
+AIKIDO_DECLARE_POINTERS(DistanceMetric)
 
 /// Implements a distance metric defined on a StateSpace
 class DistanceMetric
@@ -26,8 +29,6 @@ public:
       const statespace::StateSpace::State* _state1,
       const statespace::StateSpace::State* _state2) const = 0;
 };
-
-using DistanceMetricPtr = std::shared_ptr<DistanceMetric>;
 
 } // namespace distance
 } // namespace aikido

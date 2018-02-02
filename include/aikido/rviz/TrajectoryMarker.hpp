@@ -5,9 +5,12 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include "aikido/trajectory/Trajectory.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(TrajectoryMarker)
 
 /// A wrapper class of RViz InteractiveMarker for visualizing AIKIDO trajectory
 /// in RViz.

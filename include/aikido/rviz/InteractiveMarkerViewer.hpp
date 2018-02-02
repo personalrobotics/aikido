@@ -12,12 +12,14 @@
 #include <ros/ros.h>
 
 #include <aikido/constraint/TSR.hpp>
-#include <aikido/rviz/SmartPointers.hpp>
+#include <aikido/rviz/pointers.hpp>
 #include <aikido/rviz/TSRMarker.hpp>
 #include <aikido/trajectory/Trajectory.hpp>
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(InteractiveMarkerViewer)
 
 class InteractiveMarkerViewer
 {

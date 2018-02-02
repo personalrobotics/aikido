@@ -3,9 +3,12 @@
 
 #include <memory>
 #include "../statespace/StateSpace.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace statespace {
+
+AIKIDO_DECLARE_POINTERS(Interpolator)
 
 /// Method of interpolating between two states in a \c StateSpace.
 class Interpolator
@@ -50,8 +53,6 @@ public:
       double _alpha,
       Eigen::VectorXd& _tangentVector) const = 0;
 };
-
-using InterpolatorPtr = std::shared_ptr<Interpolator>;
 
 } // namespace statespace
 } // namespace aikido

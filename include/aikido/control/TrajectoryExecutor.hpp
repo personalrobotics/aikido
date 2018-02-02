@@ -3,9 +3,12 @@
 
 #include <future>
 #include <aikido/trajectory/Trajectory.hpp>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(TrajectoryExecutor)
 
 class TrajectoryExecutor
 {
@@ -29,8 +32,6 @@ public:
   /// simulation.
   virtual void abort() = 0;
 };
-
-using TrajectoryExecutorPtr = std::shared_ptr<TrajectoryExecutor>;
 
 } // namespace control
 } // namespace aikido

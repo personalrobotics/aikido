@@ -4,9 +4,12 @@
 #include <string>
 #include <unordered_map>
 #include <dart/dart.hpp>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace planner {
+
+AIKIDO_DECLARE_POINTERS(World)
 
 /// A Kinematic world that contains a set of skeletons.
 /// It is expected that worlds do not share the same skeletons.
@@ -106,8 +109,6 @@ protected:
   /// NameManager for keeping track of Skeletons
   dart::common::NameManager<dart::dynamics::SkeletonPtr> mSkeletonNameManager;
 };
-
-using WorldPtr = std::shared_ptr<World>;
 
 } // namespace planner
 } // namespace aikido

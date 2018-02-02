@@ -7,9 +7,12 @@
 #include <visualization_msgs/InteractiveMarker.h>
 #include "ResourceServer.hpp"
 #include "ShapeFrameMarker.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(BodyNodeMarker)
 
 class BodyNodeMarker
 {

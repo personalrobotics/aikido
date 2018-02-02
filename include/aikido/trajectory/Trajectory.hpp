@@ -4,9 +4,12 @@
 #include <Eigen/Core>
 #include <aikido/trajectory/TrajectoryMetadata.hpp>
 #include "../statespace/StateSpace.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace trajectory {
+
+AIKIDO_DECLARE_POINTERS(Trajectory)
 
 /// Time-parameterized path in a \c StateSpace. The parameterization, number of
 /// derivatives available, and continuity of this trajectory is defined by the
@@ -71,9 +74,6 @@ public:
   /// Trajectory metadata
   TrajectoryMetadata metadata;
 };
-
-using TrajectoryPtr = std::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
 
 } // namespace trajectory
 } // namespace aikido

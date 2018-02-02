@@ -4,9 +4,12 @@
 #include <memory>
 #include <Eigen/Dense>
 #include "../statespace/StateSpace.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace constraint {
+
+AIKIDO_DECLARE_POINTERS(Differentiable)
 
 /// Enum for classifying constraints used in Differentiable.
 /// Equality constraint is satisfied by f(x) = 0.
@@ -66,8 +69,6 @@ public:
       Eigen::VectorXd& _val,
       Eigen::MatrixXd& _jac) const;
 };
-
-using DifferentiablePtr = std::shared_ptr<Differentiable>;
 
 } // namespace constraint
 } // namespace aikido

@@ -3,9 +3,12 @@
 
 #include <future>
 #include <Eigen/Dense>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(PositionCommandExecutor)
 
 /// Abstract class for executing position commands. A position command requests
 /// several degrees of freedom to move to a specified configuration and provides
@@ -25,8 +28,6 @@ public:
   // Step once.
   virtual void step() = 0;
 };
-
-using PositionCommandExecutorPtr = std::shared_ptr<PositionCommandExecutor>;
 
 } // namespace control
 } // namespace aikido

@@ -7,10 +7,12 @@
 #include <visualization_msgs/InteractiveMarker.h>
 #include "BodyNodeMarker.hpp"
 #include "ResourceServer.hpp"
-#include "SmartPointers.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(SkeletonMarker)
 
 class SkeletonMarker
 {

@@ -7,9 +7,12 @@
 
 #include "../common/RNG.hpp"
 #include "../statespace/StateSpace.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace constraint {
+
+AIKIDO_DECLARE_POINTERS(Sampleable)
 
 class SampleGenerator;
 
@@ -57,8 +60,6 @@ public:
   /// Returns whether getNumSamples() > 0.
   virtual bool canSample() const = 0;
 };
-
-using SampleablePtr = std::shared_ptr<Sampleable>;
 
 } // namespace constraint
 } // namespace aikido

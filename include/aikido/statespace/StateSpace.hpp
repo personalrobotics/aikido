@@ -5,9 +5,12 @@
 #include <Eigen/Dense>
 #include "aikido/common/RNG.hpp"
 #include "aikido/statespace/ScopedState.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace statespace {
+
+AIKIDO_DECLARE_POINTERS(StateSpace)
 
 /// Represents a Lie group and its associated Lie algebra, i.e. a
 /// differentiable manifold embedded in Euclidean space. This is a base class
@@ -165,9 +168,6 @@ public:
   /// \param _os The stream to print to
   virtual void print(const State* _state, std::ostream& _os) const = 0;
 };
-
-using StateSpacePtr = std::shared_ptr<StateSpace>;
-using ConstStateSpacePtr = std::shared_ptr<const StateSpace>;
 
 } // namespace statespace
 } // namespace aikido

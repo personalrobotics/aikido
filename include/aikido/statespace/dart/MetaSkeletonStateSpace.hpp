@@ -6,10 +6,13 @@
 #include "aikido/common/pair.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/dart/JointStateSpace.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
+
+AIKIDO_DECLARE_POINTERS(MetaSkeletonStateSpace)
 
 /// \c StateSpace of a DART \c MetaSkeleton. This is a \c CartesianProduct,
 /// where the i-th subspace is a \c JointStateSpace for the i-th \c Joint of
@@ -185,10 +188,6 @@ public:
 private:
   Properties mProperties;
 };
-
-using MetaSkeletonStateSpacePtr = std::shared_ptr<MetaSkeletonStateSpace>;
-using ConstMetaSkeletonStateSpacePtr
-    = std::shared_ptr<const MetaSkeletonStateSpace>;
 
 } // namespace dart
 } // namespace statespace
