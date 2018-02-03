@@ -175,8 +175,7 @@ find_package(Doxygen QUIET)
 if(${DOXYGEN_FOUND})
   message(STATUS "Looking for Doxygen - version ${DOXYGEN_VERSION} found")
 
-  set(DOXYGEN_INPUT_ROOT
-    "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
+  set(DOXYGEN_INPUT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/include)
   set(DOXYGEN_OUTPUT_ROOT "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
   set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_OUTPUT_ROOT}/aikido.tag")
   set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/index.html")
