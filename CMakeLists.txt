@@ -181,7 +181,8 @@ if(${DOXYGEN_FOUND})
   set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_OUTPUT_ROOT}/aikido.tag")
   set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
-  set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
+  set(DOXYGEN_EXCLUDE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/external ${CMAKE_CURRENT_SOURCE_DIR}/src/python")
   set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
   # Strip include_directories() being used by CMake from #include paths.
@@ -218,6 +219,7 @@ if(${DOXYGEN_FOUND})
   # - DOXYGEN_GENERATE_TAGFILE
   # - DOXYGEN_INPUT_ROOT
   # - DOXYGEN_OUTPUT_ROOT
+  # - DOXYGEN_STRIP_FROM_PATH
   # - DOXYGEN_STRIP_FROM_INC_PATH
   # - DOXYGEN_TAGFILES
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Doxyfile.in"
@@ -226,6 +228,7 @@ if(${DOXYGEN_FOUND})
   # Create the "docs" target that runs Doxygen.
   add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
     COMMAND "${DOXYGEN_EXECUTABLE}"
+    COMMAND sed -i s:${DOXYGEN_STRIP_FROM_PATH}::g ${DOXYGEN_GENERATE_TAGFILE}
     DEPENDS "${DOXYGEN_WORKING_DIR}/Doxyfile"
     WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}"
   )
