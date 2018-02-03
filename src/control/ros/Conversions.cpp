@@ -473,7 +473,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   common::StepSequence timeSequence{
       timestep, true, 0., trajectory->getDuration()};
   const auto numJoints = space->getNumSubspaces();
-  const auto numWaypoints = timeSequence.getMaxSteps();
+  const auto numWaypoints = timeSequence.getLength();
   trajectory_msgs::JointTrajectory jointTrajectory;
   jointTrajectory.joint_names.reserve(numJoints);
 

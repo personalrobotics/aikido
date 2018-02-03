@@ -6,34 +6,43 @@
 namespace aikido {
 namespace common {
 
+constexpr double precision = 1e-7;
+
 //==============================================================================
 StepSequence::StepSequence(
-    double _stepSize,
-    bool _includeEndpoints,
-    double _startPoint,
-    double _endPoint)
-  : mStepSize(_stepSize)
-  , mStartPoint(_startPoint)
-  , mEndPoint(_endPoint)
-  , mIncludeEndpoints(_includeEndpoints)
+    double stepSize,
+    bool includeStartpoint,
+    bool includeEndpoint,
+    double startPoint,
+    double endPoint)
+  : mStepSize(stepSize)
+  , mStartPoint(startPoint)
+  , mEndPoint(endPoint)
+  , mIncludeStartPoint(includeStartpoint)
+  , mIncludeEndpoint(includeEndpoint)
 {
-  // Do nothing
+  if (mStartPoint > mEndPoint)
+    throw std::runtime_error("Start point is larger than end point");
 }
 
 //==============================================================================
 double StepSequence::operator[](int n)
 {
+  int length = getLength();
+  if (n < 0 || n >= length)
+    throw std::out_of_range("Invalid index.");
+
+  if (!mIncludeStartPoint)
+  {
+    ++n;
+  }
   double val = mStartPoint + mStepSize * n;
   if (val > mEndPoint)
   {
-    if (mIncludeEndpoints)
+    if (mIncludeEndpoint)
       return mEndPoint;
     else
       throw std::out_of_range("Indexed maximum intenger.");
-  }
-  else if (val < mStartPoint)
-  {
-    throw std::out_of_range("Invalid index.");
   }
   return val;
 }
@@ -41,36 +50,53 @@ double StepSequence::operator[](int n)
 //==============================================================================
 StepSequence::const_iterator StepSequence::begin()
 {
-  StepSequence::const_iterator itr(this, 0);
+  StepSequence::const_iterator itr(this);
   return itr;
 }
 
 //==============================================================================
 StepSequence::const_iterator StepSequence::end()
 {
-  int endIdx = getMaxSteps();
-  if(this->mIncludeEndpoints == false)
-  {
-    endIdx -= 1;
-  }
-  StepSequence::const_iterator itr(this, endIdx);
-  if(this->mIncludeEndpoints == false)
-  {
-    itr.mStep = endIdx + 1;
-  }
+  StepSequence::const_iterator itr(this);
+  itr.mStep = getLength();
+  itr.mValue = last();
   return itr;
 }
 
 //==============================================================================
-int StepSequence::getMaxSteps() const
+std::size_t StepSequence::getLength() const
 {
-  int numSteps = (mEndPoint - mStartPoint) / mStepSize;
-
-  if (mEndPoint - (mStartPoint + mStepSize * numSteps) > 1e-7)
+  double stepRatio = (mEndPoint - mStartPoint) / mStepSize;
+  double floorStepRatio = floor(stepRatio);
+  std::size_t stepNum = static_cast<std::size_t>(floorStepRatio);
+  if (mIncludeStartPoint)
   {
-    numSteps++;
+    ++stepNum;
   }
-  return numSteps + mIncludeEndpoints;
+  double endPivot = mStartPoint + floorStepRatio * mStepSize;
+  if (mEndPoint > endPivot)
+  {
+    if (mIncludeEndpoint)
+      ++stepNum;
+  }
+  else
+  {
+    if (!mIncludeEndpoint && stepNum > 0)
+      --stepNum;
+  }
+
+  return stepNum;
+}
+
+//==============================================================================
+double StepSequence::last() const
+{
+  if (mIncludeEndpoint)
+    return mEndPoint;
+  std::size_t length = getLength();
+  if (length == 0)
+    return mStartPoint;
+  return mStartPoint + mStepSize * (length - 1);
 }
 
 //==============================================================================
@@ -82,14 +108,15 @@ double StepSequence::const_iterator::dereference() const
 //==============================================================================
 void StepSequence::const_iterator::increment()
 {
-  int maxSteps = mSeq->getMaxSteps();
-  mStep = std::min(maxSteps, mStep + 1);
-  if (mSeq->mIncludeEndpoints==false && mStep > maxSteps-1)
+  ++mStep;
+  if (mStep >= mSeq->getLength())
   {
-    mValue = (*mSeq)[mStep-1];
-    return;
+    mValue = mSeq->last();
   }
-  mValue = (*mSeq)[mStep];
+  else
+  {
+    mValue = (*mSeq)[mStep];
+  }
 }
 
 //==============================================================================
@@ -100,9 +127,10 @@ bool StepSequence::const_iterator::equal(
 }
 
 //==============================================================================
-StepSequence::const_iterator::const_iterator(StepSequence* seq, int step)
-  : mSeq(seq), mStep(step)
+StepSequence::const_iterator::const_iterator(StepSequence* seq)
+  : mSeq(seq), mStep(0), mValue(0.0)
 {
+  assert(seq);
   mValue = (*mSeq)[mStep];
 }
 

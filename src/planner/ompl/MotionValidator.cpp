@@ -62,7 +62,7 @@ bool MotionValidator::checkMotion(
   // more than mSequenceResolution of distance between successive points
   aikido::common::StepSequence seq(
       mSequenceResolution / dist,
-      true); // include endpoints
+      true, true); // include endpoints
 
   auto stateSpace = si_->getStateSpace();
   auto iState = stateSpace->allocState();
