@@ -10,7 +10,7 @@ namespace aikido {
 namespace common {
 
 /// An iterator that returns a sequence of numbers between 0 and 1 stepping at a
-/// fixed stepsize
+/// fixed stepsize.
 class StepSequence
 {
 public:
@@ -27,8 +27,8 @@ public:
   /// \param includeEndpoint If includeEndpoint is true then the final point in
   /// the sequence will be the end point, even if it is at less than stepSize
   /// from the second to last point.
-  /// \param startPoint The start point that defines the sequence
-  /// \param endPoint The end point that defines the sequence
+  /// \param startPoint The start point that defines the sequence.
+  /// \param endPoint The end point that defines the sequence.
   StepSequence(
       double stepSize,
       bool includeStartpoint = true,
@@ -38,18 +38,18 @@ public:
 
   /// Returns an iterator to the first element of the sequence.
   ///
-  /// \return Iterator to the first element of the sequence
+  /// \return Iterator to the first element of the sequence.
   const_iterator begin();
 
   /// Returns an iterator to the element following the last element of the
   /// sequence.
   ///
-  /// \return Iterator followin the last element of the sequence
+  /// \return Iterator followin the last element of the sequence.
   const_iterator end();
 
   /// Returns the \c n-th element of the sequence.
   ///
-  /// \return Element in the sequence
+  /// \return Element in the sequence.
   double operator[](int n);
 
   /// Returns the total length of sequence.
@@ -82,7 +82,7 @@ public:
 
   /// Equal implementation for boost::iterator_facade.
   ///
-  /// \return True if two iterators are at the same point in the sequence
+  /// \return True if two iterators are at the same point in the sequence.
   bool equal(const StepSequence::const_iterator& other) const;
 
 private:
