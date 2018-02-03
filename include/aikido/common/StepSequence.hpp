@@ -39,18 +39,18 @@ public:
   /// Returns an iterator to the first element of the sequence.
   ///
   /// \return Iterator to the first element of the sequence.
-  const_iterator begin();
+  const_iterator begin() const;
 
   /// Returns an iterator to the element following the last element of the
   /// sequence.
   ///
   /// \return Iterator followin the last element of the sequence.
-  const_iterator end();
+  const_iterator end() const;
 
   /// Returns the \c n-th element of the sequence.
   ///
   /// \return Element in the sequence.
-  double operator[](int n);
+  double operator[](std::size_t n) const;
 
   /// Returns the total length of sequence.
   ///
@@ -58,13 +58,16 @@ public:
   std::size_t getLength() const;
 
 private:
-  double last() const;
+  /// Computes the total length of sequence. This is only called in the
+  /// contructor.
+  void updateLength();
 
-  double mStepSize;
-  double mStartPoint;
-  double mEndPoint;
-  bool mIncludeStartPoint;
-  bool mIncludeEndpoint;
+  const double mStepSize;
+  const double mStartPoint;
+  const double mEndPoint;
+  const bool mIncludeStartPoint;
+  const bool mIncludeEndpoint;
+  std::size_t mNumSteps;
 };
 
 class StepSequence::const_iterator
@@ -90,9 +93,9 @@ private:
 
   /// Private constructor that should always be constructed from
   /// StepSequence::begin().
-  const_iterator(StepSequence* seq);
+  const_iterator(const StepSequence& seq, std::size_t step);
 
-  StepSequence* mSeq;
+  const StepSequence& mSeq;
   std::size_t mStep;
   double mValue;
 };

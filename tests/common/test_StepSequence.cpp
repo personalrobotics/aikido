@@ -6,7 +6,9 @@ using aikido::common::StepSequence;
 
 TEST(StepSequence, Constructor)
 {
-  EXPECT_THROW(StepSequence seq(0.2, true, true, 1.0, 0.0), std::runtime_error);
+  EXPECT_THROW(StepSequence(0.2, true, true, 1.0, 0.0), std::runtime_error);
+  EXPECT_THROW(StepSequence(-0.2, true, true, 0.0, 1.0), std::runtime_error);
+  EXPECT_THROW(StepSequence(0.0), std::runtime_error);
 }
 
 TEST(StepSequence, GetLength)
@@ -75,6 +77,32 @@ TEST(StepSequence, GetLength)
   StepSequence seq54(0.2, false, false, 0.2, 0.4);
   // []
   EXPECT_EQ(0, seq54.getLength());
+
+  StepSequence seq61(0.2, true, true, -1.0, 0.0);
+  // [-1.0 -0.8 -0.6 -0.4 -0.2 0.0]
+  EXPECT_EQ(6, seq61.getLength());
+  StepSequence seq62(0.2, true, false, -1.0, 0.0);
+  // [-1.0 -0.8 -0.6 -0.4 -0.2]
+  EXPECT_EQ(5, seq62.getLength());
+  StepSequence seq63(0.2, false, true, -1.0, 0.0);
+  // [-0.8 -0.6 -0.4 -0.2 0.0]
+  EXPECT_EQ(5, seq63.getLength());
+  StepSequence seq64(0.2, false, false, -1.0, 0.0);
+  // [-0.8 -0.6 -0.4 -0.2]
+  EXPECT_EQ(4, seq64.getLength());
+
+  StepSequence seq71(-0.2, true, true, 1.0, 0.0);
+  // [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+  EXPECT_EQ(6, seq71.getLength());
+  StepSequence seq72(-0.2, true, false, 1.0, 0.0);
+  // [0.0, 0.2, 0.4, 0.6, 0.8]
+  EXPECT_EQ(5, seq72.getLength());
+  StepSequence seq73(-0.2, false, true, 1.0, 0.0);
+  // [0.2, 0.4, 0.6, 0.8, 1.0]
+  EXPECT_EQ(5, seq73.getLength());
+  StepSequence seq74(-0.2, false, false, 1.0, 0.0);
+  // [0.2, 0.4, 0.6, 0.8]
+  EXPECT_EQ(4, seq74.getLength());
 }
 
 TEST(StepSequence, MaxStepsAlternateRanges)
@@ -199,57 +227,60 @@ TEST(StepSequence, ExcludesStartEndpoint)
 
 TEST(StepSequence, Iterator)
 {
-  StepSequence seq(0.2, true, true);
+  StepSequence seq1(0.2, true, true);
   // [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-  auto itr = seq.begin();
-  EXPECT_DOUBLE_EQ(0, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(0.2, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(0.4, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(0.6, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(0.8, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(1.0, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(1.0, *itr);
+  auto itr1 = seq1.begin();
+  EXPECT_DOUBLE_EQ(0, *itr1++);
+  EXPECT_DOUBLE_EQ(0.2, *itr1++);
+  EXPECT_DOUBLE_EQ(0.4, *itr1++);
+  EXPECT_DOUBLE_EQ(0.6, *itr1++);
+  EXPECT_DOUBLE_EQ(0.8, *itr1++);
+  EXPECT_DOUBLE_EQ(1.0, *itr1++);
+  EXPECT_DOUBLE_EQ(1.0, *itr1);
 
   StepSequence seq2(0.2, true, false);
   // [0.0, 0.2, 0.4, 0.6, 0.8]
   auto itr2 = seq2.begin();
-  EXPECT_DOUBLE_EQ(0, *itr2);
-  ++itr2;
-  EXPECT_DOUBLE_EQ(0.2, *itr2);
-  ++itr2;
-  EXPECT_DOUBLE_EQ(0.4, *itr2);
-  ++itr2;
-  EXPECT_DOUBLE_EQ(0.6, *itr2);
-  ++itr2;
+  EXPECT_DOUBLE_EQ(0, *itr2++);
+  EXPECT_DOUBLE_EQ(0.2, *itr2++);
+  EXPECT_DOUBLE_EQ(0.4, *itr2++);
+  EXPECT_DOUBLE_EQ(0.6, *itr2++);
+  EXPECT_DOUBLE_EQ(0.8, *itr2++);
+  EXPECT_DOUBLE_EQ(0.8, *itr2++);
   EXPECT_DOUBLE_EQ(0.8, *itr2);
-  ++itr2;
-  EXPECT_DOUBLE_EQ(0.8, *itr2);
-  ++itr2;
-  EXPECT_DOUBLE_EQ(0.8, *itr2);
+
+  StepSequence seq3(-0.2, true, true, 1.0, 0.0);
+  // [1.0 0.8 0.6 0.4 0.2 0.0]
+  auto itr3 = seq3.begin();
+  EXPECT_DOUBLE_EQ(1.0, *itr3++);
+  EXPECT_DOUBLE_EQ(0.8, *itr3++);
+  EXPECT_DOUBLE_EQ(0.6, *itr3++);
+  EXPECT_DOUBLE_EQ(0.4, *itr3++);
+  EXPECT_DOUBLE_EQ(0.2, *itr3++);
+  EXPECT_DOUBLE_EQ(0.0, *itr3);
 }
 
 TEST(StepSequence, IteratorAlternateRange)
 {
-  StepSequence seq(0.2, true, true, 24, 24.5);
+  StepSequence seq1(0.2, true, true, -1.0, 0.0);
+  // [-1.0 -0.8 -0.6 -0.4 -0.2 0.0]
+  auto itr1 = seq1.begin();
+  EXPECT_DOUBLE_EQ(-1.0, *itr1++);
+  EXPECT_DOUBLE_EQ(-0.8, *itr1++);
+  EXPECT_DOUBLE_EQ(-0.6, *itr1++);
+  EXPECT_DOUBLE_EQ(-0.4, *itr1++);
+  EXPECT_DOUBLE_EQ(-0.2, *itr1++);
+  EXPECT_DOUBLE_EQ(0.0, *itr1);
+
+  StepSequence seq2(0.2, true, true, 24, 24.5);
   // [24, 24.2, 24.4, 24.5]
-  auto itr = seq.begin();
-  EXPECT_DOUBLE_EQ(24, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(24.2, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(24.4, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(24.5, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(24.5, *itr);
-  ++itr;
-  EXPECT_DOUBLE_EQ(24.5, *itr);
+  auto itr2 = seq2.begin();
+  EXPECT_DOUBLE_EQ(24, *itr2++);
+  EXPECT_DOUBLE_EQ(24.2, *itr2++);
+  EXPECT_DOUBLE_EQ(24.4, *itr2++);
+  EXPECT_DOUBLE_EQ(24.5, *itr2++);
+  EXPECT_DOUBLE_EQ(24.5, *itr2++);
+  EXPECT_DOUBLE_EQ(24.5, *itr2);
 }
 
 TEST(StepSequence, IteratorStop)
@@ -337,14 +368,17 @@ TEST(StepSequence, IteratorStop)
 
 TEST(StepSequence, IteratorStopAlternateRange)
 {
-  std::size_t count = 0;
-  StepSequence seq(0.3, true, true, 3, 3.7);
-  double ref[4] = {3.0, 3.3, 3.6, 3.7};
-  for (double v : seq)
-  {
-    EXPECT_DOUBLE_EQ(ref[count], v);
-    count++;
-  }
+  std::size_t count1 = 0;
+  StepSequence seq1(-0.2, true, true, 1.0, 0.0);
+  double ref1[6] = {1.0, 0.8, 0.6, 0.4, 0.2, 0.0};
+  for (double v : seq1)
+    EXPECT_DOUBLE_EQ(ref1[count1++], v);
+  EXPECT_EQ(6, count1);
 
-  EXPECT_EQ(4, count);
+  std::size_t count2 = 0;
+  StepSequence seq2(0.3, true, true, 3, 3.7);
+  double ref2[4] = {3.0, 3.3, 3.6, 3.7};
+  for (double v : seq2)
+    EXPECT_DOUBLE_EQ(ref2[count2++], v);
+  EXPECT_EQ(4, count2);
 }
