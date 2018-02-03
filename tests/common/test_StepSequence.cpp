@@ -4,12 +4,12 @@
 
 using aikido::common::StepSequence;
 
-TEST(StepSequence, constructor)
+TEST(StepSequence, Constructor)
 {
   EXPECT_THROW(StepSequence seq(0.2, true, true, 1.0, 0.0), std::runtime_error);
 }
 
-TEST(StepSequence, getLength)
+TEST(StepSequence, GetLength)
 {
   StepSequence seq11(0.2, true, true);
   // [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
