@@ -88,10 +88,7 @@ private:
 
   /// Private constructor that should always be constructed from
   /// VanDerCorput::begin()
-  ///
-  /// \param[in] seq VanDerCorput associated with this iterator.
-  /// \param[in] n Initial step number.
-  const_iterator(const VanDerCorput* seq, int n = -1);
+  const_iterator(const VanDerCorput* seq);
 
   const VanDerCorput* mSeq;
   int mN;
