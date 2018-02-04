@@ -9,7 +9,8 @@ namespace constraint {
 class FiniteCyclicSampleGenerator : public SampleGenerator
 {
 public:
-  FiniteCyclicSampleGenerator(std::unique_ptr<SampleGenerator> _generator);
+  explicit FiniteCyclicSampleGenerator(
+      std::unique_ptr<SampleGenerator> _generator);
 
   FiniteCyclicSampleGenerator(const FiniteCyclicSampleGenerator&) = delete;
   FiniteCyclicSampleGenerator(FiniteCyclicSampleGenerator&& other) = delete;

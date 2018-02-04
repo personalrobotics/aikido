@@ -28,7 +28,7 @@ public:
   public:
     /// Constructor.
     /// \param _st The state to wrap
-    StateType(statespace::StateSpace::State* _st);
+    explicit StateType(statespace::StateSpace::State* _st);
 
     /// The wrapped aikido state
     statespace::StateSpace::State* mState;
