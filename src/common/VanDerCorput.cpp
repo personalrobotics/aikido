@@ -134,14 +134,13 @@ VanDerCorput::const_iterator VanDerCorput::begin() const
 //==============================================================================
 VanDerCorput::const_iterator VanDerCorput::end() const
 {
-  VanDerCorput::const_iterator itr{this};
-  itr.mN = VanDerCorput::MAX;
+  VanDerCorput::const_iterator itr{this, VanDerCorput::MAX};
   return itr;
 }
 
 //==============================================================================
-VanDerCorput::const_iterator::const_iterator(const VanDerCorput* seq)
-  : mSeq(seq), mN(-1), mFinalIter(false)
+VanDerCorput::const_iterator::const_iterator(const VanDerCorput* seq, int n)
+  : mSeq(seq), mN(n), mFinalIter(false)
 {
   assert(mSeq);
   increment();
