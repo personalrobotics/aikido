@@ -29,7 +29,7 @@ public:
   PlanToConfigurations(
       statespace::StateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
-      const std::vector<statespace::StateSpace::State*> goalStates,
+      const std::vector<statespace::StateSpace::State*>& goalStates,
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
