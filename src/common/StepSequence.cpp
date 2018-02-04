@@ -70,7 +70,7 @@ double StepSequence::operator[](std::size_t n) const
   {
     if (val < mEndPoint)
     {
-      if (mIncludeStartPoint)
+      if (mIncludeEndPoint)
         return mEndPoint;
       else
         throw std::out_of_range("Indexed maximum intenger.");
