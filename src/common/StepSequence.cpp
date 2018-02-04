@@ -16,10 +16,10 @@ StepSequence::StepSequence(
     double startPoint,
     double endPoint)
   : mStepSize(stepSize)
+  , mIncludeStartPoint(includeStartpoint)
+  , mIncludeEndPoint(includeEndpoint)
   , mStartPoint(startPoint)
   , mEndPoint(endPoint)
-  , mIncludeStartPoint(includeStartpoint)
-  , mIncludeEndpoint(includeEndpoint)
 {
   if (mStepSize > 0.0)
   {
@@ -60,7 +60,7 @@ double StepSequence::operator[](std::size_t n) const
   {
     if (val > mEndPoint)
     {
-      if (mIncludeEndpoint)
+      if (mIncludeEndPoint)
         return mEndPoint;
       else
         throw std::out_of_range("Indexed maximum intenger.");
@@ -115,12 +115,12 @@ void StepSequence::updateLength()
 
   if (mEndPoint > endPivot)
   {
-    if (mIncludeEndpoint)
+    if (mIncludeEndPoint)
       ++mNumSteps;
   }
   else
   {
-    if (!mIncludeEndpoint && mNumSteps > 0)
+    if (!mIncludeEndPoint && mNumSteps > 0)
       --mNumSteps;
   }
 }

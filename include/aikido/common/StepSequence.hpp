@@ -9,8 +9,8 @@
 namespace aikido {
 namespace common {
 
-/// An iterator that returns a sequence of numbers between 0 and 1 stepping at a
-/// fixed stepsize.
+/// An iterator that returns a sequence of numbers between start point and end
+/// point stepping at a fixed stepsize.
 class StepSequence
 {
 public:
@@ -62,11 +62,22 @@ private:
   /// contructor.
   void updateLength();
 
+  /// Step size increments from the start point to the end point.
   const double mStepSize;
-  const double mStartPoint;
-  const double mEndPoint;
+
+  /// Whether the start point in the sequence will be the start point.
   const bool mIncludeStartPoint;
-  const bool mIncludeEndpoint;
+
+  /// Whether the end point in the sequence will be the end point.
+  const bool mIncludeEndPoint;
+
+  /// The start point that defines the sequence.
+  const double mStartPoint;
+
+  /// The end point that defines the sequence.
+  const double mEndPoint;
+
+  /// The total length of sequence.
   std::size_t mNumSteps;
 };
 
@@ -95,8 +106,13 @@ private:
   /// StepSequence::begin().
   const_iterator(const StepSequence& seq, std::size_t step);
 
+  /// StepSequence associated with this iterator.
   const StepSequence& mSeq;
+
+  /// Current step number.
   std::size_t mStep;
+
+  /// Value of the current step.
   double mValue;
 };
 
