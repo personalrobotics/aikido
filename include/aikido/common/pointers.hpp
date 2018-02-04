@@ -7,7 +7,6 @@
 
 // This macro must be used in the class' namespace. For example,
 //
-//   // aikido/constraint/Testable.hpp
 //   namespace aikido {
 //   namespace constraint {
 //
@@ -15,7 +14,10 @@
 //
 //   class Testable
 //   { ... };
-//
+//   
+//   } // namespace constraint
+//   } // namespace aikido
+//  
 #define AIKIDO_DECLARE_POINTERS(X)                                             \
   DART_COMMON_MAKE_SHARED_WEAK(X)                                              \
   using Unique ## X ## Ptr      = std::unique_ptr< X >;                        \
