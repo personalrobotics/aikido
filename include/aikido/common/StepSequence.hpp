@@ -9,28 +9,26 @@
 namespace aikido {
 namespace common {
 
-/// An iterator that returns a sequence of numbers between 0 and 1 stepping at a
-/// fixed stepsize
+/// An iterator that returns a sequence of numbers between start point and end
+/// point stepping at a fixed stepsize.
 class StepSequence
 {
 public:
   class const_iterator;
 
-  /// Constructor
-  /// \param stepSize step size increments from the start point to the end
+  /// Constructor.
+  ///
+  /// \param stepSize Step size increments from the start point to the end
   /// point.
   /// \param includeStartpoint If includeStartpoint is true then the start point
-  /// in the sequence will be
-  /// the start point; else the start point in the sequence will be the start
-  /// point
-  /// plus the stepSize (if it is larger than the end point, it will be the end
-  /// point.
+  /// in the sequence will be the start point; else the start point in the
+  /// sequence will be the start point plus the stepSize (if it is larger than
+  /// the end point, it will be the end point.
   /// \param includeEndpoint If includeEndpoint is true then the final point in
-  /// the sequence
-  /// will be the end point, even if it is at less than stepSize from the second
-  /// to last point.
-  /// \param startPoint the start point that defines the sequence
-  /// \param endPoint the end point that defines the sequence
+  /// the sequence will be the end point, even if it is at less than stepSize
+  /// from the second to last point.
+  /// \param startPoint The start point that defines the sequence.
+  /// \param endPoint The end point that defines the sequence.
   StepSequence(
       double stepSize,
       bool includeStartpoint = true,
@@ -40,19 +38,19 @@ public:
 
   /// Returns an iterator to the first element of the sequence.
   ///
-  /// \return iterator to the first element of the sequence
-  const_iterator begin();
+  /// \return Iterator to the first element of the sequence.
+  const_iterator begin() const;
 
   /// Returns an iterator to the element following the last element of the
   /// sequence.
   ///
-  /// \return iterator followin the last element of the sequence
-  const_iterator end();
+  /// \return Iterator followin the last element of the sequence.
+  const_iterator end() const;
 
-  /// Returns the \c n-th element of the sequence
+  /// Returns the \c n-th element of the sequence.
   ///
-  /// \return element in the sequence
-  double operator[](int n);
+  /// \return Element in the sequence.
+  double operator[](std::size_t n) const;
 
   /// Returns the total length of sequence.
   ///
@@ -60,13 +58,27 @@ public:
   std::size_t getLength() const;
 
 private:
-  double last() const;
+  /// Computes the total length of sequence. This is only called in the
+  /// contructor.
+  void updateLength();
 
-  double mStepSize;
-  double mStartPoint;
-  double mEndPoint;
-  bool mIncludeStartPoint;
-  bool mIncludeEndpoint;
+  /// Step size increments from the start point to the end point.
+  const double mStepSize;
+
+  /// Whether the start point in the sequence will be the start point.
+  const bool mIncludeStartPoint;
+
+  /// Whether the end point in the sequence will be the end point.
+  const bool mIncludeEndPoint;
+
+  /// The start point that defines the sequence.
+  const double mStartPoint;
+
+  /// The end point that defines the sequence.
+  const double mEndPoint;
+
+  /// The total length of sequence.
+  std::size_t mNumSteps;
 };
 
 class StepSequence::const_iterator
@@ -76,25 +88,31 @@ class StepSequence::const_iterator
                                     double>
 {
 public:
-  /// Dereference implementation for boost::iterator_facade
+  /// Dereference implementation for boost::iterator_facade.
   double dereference() const;
 
-  /// Increment implementation for boost::iterator_facade
+  /// Increment implementation for boost::iterator_facade.
   void increment();
 
-  /// equal implementation for boost::iterator_facade
-  /// \return True if two iterators are at the same point in the sequence
+  /// Equal implementation for boost::iterator_facade.
+  ///
+  /// \return True if two iterators are at the same point in the sequence.
   bool equal(const StepSequence::const_iterator& other) const;
 
 private:
   friend class StepSequence;
 
   /// Private constructor that should always be constructed from
-  /// StepSequence::begin()
-  const_iterator(StepSequence* seq);
+  /// StepSequence::begin().
+  const_iterator(const StepSequence& seq, std::size_t step);
 
-  StepSequence* mSeq;
+  /// StepSequence associated with this iterator.
+  const StepSequence& mSeq;
+
+  /// Current step number.
   std::size_t mStep;
+
+  /// Value of the current step.
   double mValue;
 };
 
