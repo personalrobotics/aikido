@@ -170,6 +170,12 @@ public:
       const aikido::trajectory::InterpolatedPtr& _inputTraj,
       const aikido::common::RNG* _rng) override;
 
+  /// Performs parabolic smoothing on an input *spline* trajectory.
+  /// \copydoc TrajectoryPostProcessor::postprocess
+  std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const std::unique_ptr<trajectory::Spline>& _inputTraj,
+      const aikido::common::RNG* _rng) override;
+
 private:
   /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;

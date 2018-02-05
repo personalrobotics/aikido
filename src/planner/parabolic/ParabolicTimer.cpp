@@ -176,6 +176,20 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
       *_inputTraj, mVelocityLimits, mAccelerationLimits);
 }
 
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
+    const std::unique_ptr<trajectory::Spline>& _inputTraj,
+    const aikido::common::RNG* /*_rng*/)
+{
+  if (!_inputTraj)
+    throw std::invalid_argument(
+        "Passed nullptr _inputTraj to "
+        "ParabolicTimer::postprocess");
+
+  return computeParabolicTiming(
+      *_inputTraj, mVelocityLimits, mAccelerationLimits);
+}
+
 } // namespace parabolic
 } // namespace planner
 } // namespace aikido
