@@ -80,7 +80,13 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
   // Documentation inherited.
-  bool isSatisfied(const statespace::StateSpace::State* _s) const override;
+  bool isSatisfied(
+      const statespace::StateSpace::State* _s,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// Return an instance of DefaultTestableOutcome, since this class doesn't
+  /// have a more specialized TestableOutcome derivative assigned to it.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   /// Throws an invalid_argument exception if this TSR is invalid.
   /// For a TSR to be valid, mBw(i, 0) <= mBw(i, 1).

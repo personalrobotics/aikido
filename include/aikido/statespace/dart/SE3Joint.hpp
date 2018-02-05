@@ -1,7 +1,8 @@
 #ifndef AIKIDO_STATESPACE_DART_SE3JOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_SE3JOINTSTATESPACE_HPP_
-#include "../SE3.hpp"
-#include "JointStateSpace.hpp"
+
+#include "aikido/statespace/SE3.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -19,18 +20,18 @@ public:
   /// Creates a state space for a \c FreeJoint. This class does not support
   /// position limits on the rotational <tt>DegreeOfFreedom</tt>s.
   ///
-  /// \param _joint joint to create a state space for
-  explicit SE3Joint(::dart::dynamics::FreeJoint* _joint);
+  /// \param joint joint to create a state space for
+  explicit SE3Joint(const ::dart::dynamics::FreeJoint* joint);
 
   // Documentation inherited.
   void convertPositionsToState(
-      const Eigen::VectorXd& _positions,
-      StateSpace::State* _state) const override;
+      const Eigen::VectorXd& positions,
+      StateSpace::State* state) const override;
 
   // Documentation inherited.
   void convertStateToPositions(
-      const StateSpace::State* _state,
-      Eigen::VectorXd& _positions) const override;
+      const StateSpace::State* state,
+      Eigen::VectorXd& positions) const override;
 };
 
 } // namespace dart

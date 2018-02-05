@@ -36,6 +36,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 /// distance.
 ///
 /// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] metaskeleton MetaSkeleton to plan with
 /// \param[in] bn Body node of the end-effector.
 /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
 /// \param[in] direction Direction of moving the end-effector.
@@ -55,6 +56,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,
     const Eigen::Vector3d& direction,
@@ -72,6 +74,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// in SE(3) via an optimized Jacobian.
 ///
 /// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] metaskeleton MetaSkeleton to plan with
 /// \param[in] bn Body node of the end-effector.
 /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
 /// \param[in] goalPose Desired end-effector pose.
@@ -89,6 +92,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,

@@ -175,17 +175,34 @@ std::vector<ConstraintType> RBoxConstraint<N>::getConstraintTypes() const
 //==============================================================================
 template <int N>
 bool RBoxConstraint<N>::isSatisfied(
-    const statespace::StateSpace::State* state) const
+    const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
+  auto defaultOutcomeObject
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
+
   const auto value = mSpace->getValue(
       static_cast<const typename statespace::R<N>::State*>(state));
 
   for (auto i = 0; i < value.size(); ++i)
   {
     if (value[i] < mLowerLimits[i] || value[i] > mUpperLimits[i])
+    {
+      if (defaultOutcomeObject)
+        defaultOutcomeObject->setSatisfiedFlag(false);
       return false;
+    }
   }
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+template <int N>
+std::unique_ptr<TestableOutcome> RBoxConstraint<N>::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================
