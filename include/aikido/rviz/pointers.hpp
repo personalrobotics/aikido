@@ -1,5 +1,5 @@
-#ifndef AIKIDO_RVIZ_SMARTPOINTERS_HPP_
-#define AIKIDO_RVIZ_SMARTPOINTERS_HPP_
+#ifndef AIKIDO_RVIZ_POINTERS_HPP_
+#define AIKIDO_RVIZ_POINTERS_HPP_
 
 #include "aikido/common/pointers.hpp"
 
@@ -15,4 +15,4 @@ AIKIDO_DECLARE_POINTERS(TSRMarker)
 } // namespace rviz
 } // namespace aikido
 
-#endif // ifndef AIKIDO_RVIZ_SMARTPOINTERS_HPP_
+#endif // ifndef AIKIDO_RVIZ_POINTERS_HPP_
