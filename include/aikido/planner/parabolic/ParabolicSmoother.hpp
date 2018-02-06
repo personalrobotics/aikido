@@ -168,20 +168,20 @@ public:
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Interpolated& _inputTraj,
-      const aikido::common::RNG* _rng) override;
+      const aikido::common::RNG& _rng) override;
 
   /// Performs parabolic smoothing on an input *spline* trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG* _rng) override;
+      const aikido::common::RNG& _rng) override;
 
 private:
   /// Common logic to do shortcutting and/or blending on the input trajectory
   /// as dictated by mEnableShortcut and mEnableBlend.
   std::unique_ptr<aikido::trajectory::Spline> handleShortcutOrBlend(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG* _rng);
+      const aikido::common::RNG&_rng);
 
   /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;

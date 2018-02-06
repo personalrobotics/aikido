@@ -83,13 +83,13 @@ public:
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Interpolated& _inputTraj,
-      const aikido::common::RNG* _rng) override;
+      const aikido::common::RNG& _rng) override;
 
   /// Performs parabolic retiming on an input *spline* trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG* _rng) override;
+      const aikido::common::RNG& _rng) override;
 
 private:
   /// Set to the value of \c _velocityLimits.

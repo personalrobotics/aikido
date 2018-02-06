@@ -110,9 +110,8 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
       mFeasibilityCheckResolution,
       mFeasibilityApproxTolerance);
 
-  auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(*mTrajectory, clonedRNG.get());
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -153,9 +152,8 @@ TEST_F(SmoothPostProcessorTests, useBlend)
       mFeasibilityCheckResolution,
       mFeasibilityApproxTolerance);
 
-  auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(*mTrajectory, clonedRNG.get());
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -196,9 +194,8 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
       mFeasibilityCheckResolution,
       mFeasibilityApproxTolerance);
 
-  auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(*mTrajectory, clonedRNG.get());
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng);
 
   // Position.
   auto state = mStateSpace->createState();

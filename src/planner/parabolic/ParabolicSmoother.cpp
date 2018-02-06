@@ -142,12 +142,8 @@ ParabolicSmoother::ParabolicSmoother(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
     const aikido::trajectory::Interpolated& _inputTraj,
-    const aikido::common::RNG* _rng)
+    const aikido::common::RNG& _rng)
 {
-  if (!_rng)
-    throw std::invalid_argument(
-        "Passed nullptr _rng to ParabolicSmoother::postprocess");
-
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
@@ -163,12 +159,8 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
     const aikido::trajectory::Spline& _inputTraj,
-    const aikido::common::RNG* _rng)
+    const aikido::common::RNG& _rng)
 {
-  if (!_rng)
-    throw std::invalid_argument(
-        "Passed nullptr _rng to ParabolicSmoother::postprocess");
-
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
@@ -185,7 +177,7 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
 std::unique_ptr<aikido::trajectory::Spline>
 ParabolicSmoother::handleShortcutOrBlend(
     const aikido::trajectory::Spline& _inputTraj,
-    const aikido::common::RNG* _rng)
+    const aikido::common::RNG& _rng)
 {
   if (mEnableShortcut && mEnableBlend)
   {
@@ -194,7 +186,7 @@ ParabolicSmoother::handleShortcutOrBlend(
         mCollisionTestable,
         mVelocityLimits,
         mAccelerationLimits,
-        *_rng->clone(),
+        *_rng.clone(),
         mShortcutTimelimit,
         mBlendRadius,
         mBlendIterations,
@@ -208,7 +200,7 @@ ParabolicSmoother::handleShortcutOrBlend(
         mCollisionTestable,
         mVelocityLimits,
         mAccelerationLimits,
-        *_rng->clone(),
+        *_rng.clone(),
         mShortcutTimelimit,
         mFeasibilityCheckResolution,
         mFeasibilityApproxTolerance);
