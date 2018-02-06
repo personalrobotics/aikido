@@ -97,7 +97,7 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
     const aikido::constraint::Testable* constraint,
     double evalStepSize,
     double& evalTimePivot,
-    bool excludeEndTime) const
+    bool includeEndTime) const
 {
   if (constraint == nullptr)
   {
@@ -108,7 +108,7 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
   aikido::common::StepSequence seq(
       evalStepSize,
       true,
-      excludeEndTime,
+      includeEndTime,
       evalTimePivot,
       trajectory.getEndTime());
 
