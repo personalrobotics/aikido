@@ -10,10 +10,13 @@
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/common/pointers.hpp"
 #include <aikido/control/PositionCommandExecutor.hpp>
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(BarrettFingerKinematicSimulationSpreadCommandExecutor)
 
 /// This executor mimics the spread behavior of BarretFinger.
 /// It moves two finger spreads simultaneously to certain goal value;
@@ -100,9 +103,6 @@ private:
   /// Desired end spread value
   double mGoalPosition;
 };
-
-using BarrettFingerKinematicSimulationSpreadCommandExecutorPtr
-    = std::shared_ptr<BarrettFingerKinematicSimulationSpreadCommandExecutor>;
 
 } // namespace control
 } // namespace aikido

@@ -19,6 +19,8 @@ using Vector1d = Eigen::Matrix<double, 1, 1>;
 namespace aikido {
 namespace control {
 
+AIKIDO_DECLARE_POINTERS(BarrettHandKinematicSimulationPositionCommandExecutor)
+
 /// Position command executor for simulating BarrettHand fingers.
 /// Assumes that fingers are underactuated: proximal joint is actuated
 /// and distal joint moves with certain mimic ratio until collision.
@@ -97,9 +99,6 @@ private:
   ::dart::collision::CollisionDetectorPtr mCollisionDetector;
   ::dart::collision::CollisionGroupPtr mCollideWith;
 };
-
-using BarrettHandKinematicSimulationPositionCommandExecutorPtr
-    = std::shared_ptr<BarrettHandKinematicSimulationPositionCommandExecutor>;
 
 } // namespace control
 } // namespace aikido
