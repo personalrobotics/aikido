@@ -12,7 +12,7 @@ set(CMAKE_REQUIRED_FLAGS "")
 set(sources
   Robot.cpp
   Manipulator.cpp
-  MobileBase.cpp
+  MetaRobot.cpp
 )
 
 add_library("${PROJECT_NAME}_io" SHARED ${sources})
