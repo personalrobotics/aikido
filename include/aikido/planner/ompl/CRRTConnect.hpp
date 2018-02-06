@@ -16,7 +16,7 @@ class CRRTConnect : public CRRT
 public:
   /// Constructor
   /// \param si Information about the planning instance
-  CRRTConnect(const ::ompl::base::SpaceInformationPtr& si);
+  explicit CRRTConnect(const ::ompl::base::SpaceInformationPtr& si);
 
   /// Destructor
   virtual ~CRRTConnect();
