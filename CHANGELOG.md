@@ -5,6 +5,7 @@
 * Common
   
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
+  * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
 
 * State Space
 

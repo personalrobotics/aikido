@@ -106,7 +106,11 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
   auto state = mMetaSkeletonStateSpace->createState();
 
   aikido::common::StepSequence seq(
-      evalStepSize, excludeEndTime, evalTimePivot, trajectory.getEndTime());
+      evalStepSize,
+      true,
+      excludeEndTime,
+      evalTimePivot,
+      trajectory.getEndTime());
 
   for (double t : seq)
   {
