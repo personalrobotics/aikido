@@ -82,13 +82,13 @@ public:
   /// Performs parabolic retiming on an input trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
-      const aikido::trajectory::InterpolatedPtr& _inputTraj,
+      const aikido::trajectory::Interpolated& _inputTraj,
       const aikido::common::RNG* _rng) override;
 
   /// Performs parabolic retiming on an input *spline* trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
-      const std::unique_ptr<trajectory::Spline>& _inputTraj,
+      const aikido::trajectory::Spline& _inputTraj,
       const aikido::common::RNG* _rng) override;
 
 private:

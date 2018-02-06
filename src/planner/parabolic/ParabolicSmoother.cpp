@@ -141,23 +141,19 @@ ParabolicSmoother::ParabolicSmoother(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
-    const aikido::trajectory::InterpolatedPtr& _inputTraj,
+    const aikido::trajectory::Interpolated& _inputTraj,
     const aikido::common::RNG* _rng)
 {
   if (!_rng)
     throw std::invalid_argument(
         "Passed nullptr _rng to ParabolicSmoother::postprocess");
-  if (!_inputTraj)
-    throw std::invalid_argument(
-        "Passed nullptr _inputTraj to "
-        "ParabolicSmoother::postprocess");
 
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
-      *_inputTraj, mVelocityLimits, mAccelerationLimits);
+      _inputTraj, mVelocityLimits, mAccelerationLimits);
 
   auto shortcutOrBlendTrajectory
-      = handleShortcutOrBlend(std::move(timedTrajectory), _rng);
+      = handleShortcutOrBlend(*timedTrajectory, _rng);
   if (shortcutOrBlendTrajectory)
     return shortcutOrBlendTrajectory;
 
@@ -166,23 +162,19 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
-    const std::unique_ptr<trajectory::Spline>& _inputTraj,
+    const aikido::trajectory::Spline& _inputTraj,
     const aikido::common::RNG* _rng)
 {
   if (!_rng)
     throw std::invalid_argument(
         "Passed nullptr _rng to ParabolicSmoother::postprocess");
-  if (!_inputTraj)
-    throw std::invalid_argument(
-        "Passed nullptr _inputTraj to "
-        "ParabolicSmoother::postprocess");
 
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
-      *_inputTraj, mVelocityLimits, mAccelerationLimits);
+      _inputTraj, mVelocityLimits, mAccelerationLimits);
 
   auto shortcutOrBlendTrajectory
-      = handleShortcutOrBlend(std::move(timedTrajectory), _rng);
+      = handleShortcutOrBlend(*timedTrajectory, _rng);
   if (shortcutOrBlendTrajectory)
     return shortcutOrBlendTrajectory;
 
@@ -192,13 +184,13 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline>
 ParabolicSmoother::handleShortcutOrBlend(
-    const std::unique_ptr<trajectory::Spline>& _inputTraj,
+    const aikido::trajectory::Spline& _inputTraj,
     const aikido::common::RNG* _rng)
 {
   if (mEnableShortcut && mEnableBlend)
   {
     return doShortcutAndBlend(
-        *_inputTraj,
+        _inputTraj,
         mCollisionTestable,
         mVelocityLimits,
         mAccelerationLimits,
@@ -212,7 +204,7 @@ ParabolicSmoother::handleShortcutOrBlend(
   else if (mEnableShortcut)
   {
     return doShortcut(
-        *_inputTraj,
+        _inputTraj,
         mCollisionTestable,
         mVelocityLimits,
         mAccelerationLimits,
@@ -224,7 +216,7 @@ ParabolicSmoother::handleShortcutOrBlend(
   else if (mEnableBlend)
   {
     return doBlend(
-        *_inputTraj,
+        _inputTraj,
         mCollisionTestable,
         mVelocityLimits,
         mAccelerationLimits,
