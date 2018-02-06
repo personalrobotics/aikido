@@ -181,7 +181,7 @@ private:
   /// as dictated by mEnableShortcut and mEnableBlend.
   std::unique_ptr<aikido::trajectory::Spline> handleShortcutOrBlend(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG&_rng);
+      const aikido::common::RNG& _rng);
 
   /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;
