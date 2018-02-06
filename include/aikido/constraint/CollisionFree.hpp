@@ -8,12 +8,15 @@
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
+#include "aikido/common/pointers.hpp"
 #include "../statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "CollisionFreeOutcome.hpp"
 #include "Testable.hpp"
 
 namespace aikido {
 namespace constraint {
+
+AIKIDO_DECLARE_POINTERS(CollisionFree)
 
 /// A testable that uses a collision detector to check whether
 /// a metakeleton state (configuration) results in collision between and within
@@ -89,8 +92,6 @@ private:
       mGroupsToPairwiseCheck;
   std::vector<std::shared_ptr<CollisionGroup>> mGroupsToSelfCheck;
 };
-
-using CollisionFreePtr = std::shared_ptr<CollisionFree>;
 
 } // namespace constraint
 } // namespace aikido
