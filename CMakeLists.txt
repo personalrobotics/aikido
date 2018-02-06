@@ -199,7 +199,7 @@ if(${DOXYGEN_FOUND})
     message(STATUS "Downloading DART Doxygen tagfile from: ${tagfile_url}")
     file(DOWNLOAD "${tagfile_url}" "${DOXYGEN_WORKING_DIR}/dart.tag")
     set(DOXYGEN_TAGFILES
-      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/")
+      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/v6.3.0")
 
     is_component(needs_ompl aikido planner_ompl)
     if(needs_ompl)
