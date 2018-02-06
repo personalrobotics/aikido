@@ -4,9 +4,12 @@
 #include <memory>
 
 #include <dart/dynamics/SimpleFrame.hpp>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(TSRMarker)
 
 class TSRMarker
 {
