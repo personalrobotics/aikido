@@ -195,7 +195,7 @@ if(${DOXYGEN_FOUND})
   # Optionally download Doxygen tagfiles for dependencies.
   set(DOXYGEN_TAGFILES "")
   if(DOWNLOAD_TAGFILES)
-    set(tagfile_url "http://dartsim.github.io/dart/dart.tag")
+    set(tagfile_url "http://dartsim.github.io/dart/v6.3.0/dart.tag")
     message(STATUS "Downloading DART Doxygen tagfile from: ${tagfile_url}")
     file(DOWNLOAD "${tagfile_url}" "${DOXYGEN_WORKING_DIR}/dart.tag")
     set(DOXYGEN_TAGFILES
