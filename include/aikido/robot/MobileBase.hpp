@@ -13,17 +13,11 @@ class MobileBase : public Robot
 {
 public:
 
-  /// Create a new Robot
-  /// \param name Name for the new Robot
-  virtual static std::unique_ptr<Robot> create(const std::string &name) override;
-
   /// Clones this Robot.
   /// \param newName New name for this robot
   virtual std::unique_ptr<Robot> clone(const std::string& newName) override;
 
-protected:
-
-}
+};
 
 using MobileBasePtr = std::shared_ptr<MobileBase>;
 
