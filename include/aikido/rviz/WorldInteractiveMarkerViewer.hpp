@@ -4,10 +4,12 @@
 #include <map>
 #include <aikido/planner/World.hpp>
 #include <aikido/rviz/InteractiveMarkerViewer.hpp>
-#include <aikido/rviz/SmartPointers.hpp>
+#include <aikido/rviz/pointers.hpp>
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(WorldInteractiveMarkerViewer)
 
 class WorldInteractiveMarkerViewer : public InteractiveMarkerViewer
 {

@@ -12,6 +12,8 @@
 namespace aikido {
 namespace constraint {
 
+AIKIDO_DECLARE_POINTERS(TSR)
+
 /// TSRs describe end-effector constraint sets as subsets of SE(3).
 /// A TSR consists of three parts:
 ///     T0_w: transform from the origin to the TSR frame w
@@ -147,8 +149,6 @@ private:
   std::unique_ptr<common::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
 };
-
-using TSRPtr = std::shared_ptr<TSR>;
 
 } // namespace constraint
 } // namespace aikido

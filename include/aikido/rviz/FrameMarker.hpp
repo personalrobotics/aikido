@@ -4,6 +4,7 @@
 #include <memory>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
+#include "aikido/common/pointers.hpp"
 
 namespace dart {
 namespace dynamics {
@@ -15,6 +16,8 @@ class Frame;
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(FrameMarker)
 
 class FrameMarker
 {
