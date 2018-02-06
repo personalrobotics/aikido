@@ -26,4 +26,4 @@ public:
 } // namespace control
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_CONTROL_ROS_ROSTRAJECTORYEXECUTIONEXCEPTION_HPP_

@@ -9,6 +9,8 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+AIKIDO_DECLARE_POINTERS(BodyNodePoseVectorField)
+
 /// This class is a vector field over a MetaSkeletonStateSpace that is
 ///  defined in terms of a Cartesian vector field over the pose of a
 /// BodyNode in that MetaSkeleton.
@@ -118,8 +120,6 @@ protected:
   /// Enfoce joint velocity limits
   bool mEnforceJointVelocityLimits;
 };
-
-using BodyNodePoseVectorFieldPtr = std::shared_ptr<BodyNodePoseVectorField>;
 
 } // namespace vectorfield
 } // namespace planner

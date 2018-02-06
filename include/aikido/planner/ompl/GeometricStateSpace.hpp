@@ -14,6 +14,8 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
+AIKIDO_DECLARE_POINTERS(GeometricStateSpace)
+
 /// The maximum distance between two states for them to still be considered
 /// equal
 constexpr double EQUALITY_EPSILON = 1e-7;
@@ -145,8 +147,6 @@ private:
   constraint::TestablePtr mBoundsConstraint;
   constraint::ProjectablePtr mBoundsProjection;
 };
-
-using GeometricStateSpacePtr = std::shared_ptr<GeometricStateSpace>;
 
 } // namespace ompl
 } // namespace planner
