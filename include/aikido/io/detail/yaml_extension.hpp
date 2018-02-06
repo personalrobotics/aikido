@@ -138,7 +138,7 @@ struct convert<Eigen::
       const auto cols = node[0].size();
 
       if (MatrixType::ColsAtCompileTime != Eigen::Dynamic
-          && cols != MatrixType::ColsAtCompileTime)
+          && cols != static_cast<std::size_t>(MatrixType::ColsAtCompileTime))
       {
         std::stringstream ss;
         ss << "Matrix has incorrect number of cols: expected "

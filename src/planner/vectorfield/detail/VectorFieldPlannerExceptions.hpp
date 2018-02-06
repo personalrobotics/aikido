@@ -36,7 +36,7 @@ public:
   /// Constructor.
   ///
   /// \param[in] whatArg Error string.
-  VectorFieldError(const std::string& whatArg);
+  explicit VectorFieldError(const std::string& whatArg);
 };
 
 /// Define state in collision for the termination of vector field planner.
