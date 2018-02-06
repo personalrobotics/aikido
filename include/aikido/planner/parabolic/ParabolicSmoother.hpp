@@ -177,6 +177,12 @@ public:
       const aikido::common::RNG* _rng) override;
 
 private:
+  /// Common logic to do shortcutting and/or blending on the input trajectory
+  /// as dictated by mEnableShortcut and mEnableBlend.
+  std::unique_ptr<aikido::trajectory::Spline> handleShortcutOrBlend(
+      const std::unique_ptr<trajectory::Spline>& _inputTraj,
+      const aikido::common::RNG* _rng);
+
   /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;
 
