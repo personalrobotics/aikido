@@ -167,7 +167,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
 
   // Check all intermediate waypoints adhere to constraint
   aikido::common::StepSequence seq(
-      0.1, true, traj->getStartTime(), traj->getEndTime());
+      0.1, true, true, traj->getStartTime(), traj->getEndTime());
   for (double t : seq)
   {
     traj->evaluate(t, s0);
@@ -235,7 +235,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
 
   // Check all intermediate waypoints adhere to constraint
   aikido::common::StepSequence seq(
-      0.1, true, traj->getStartTime(), traj->getEndTime());
+      0.1, true, true, traj->getStartTime(), traj->getEndTime());
   for (double t : seq)
   {
     traj->evaluate(t, s0);
