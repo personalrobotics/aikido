@@ -78,4 +78,5 @@ private:
 
 } // namespace perception
 } // namespace aikido
+
 #endif // AIKIDO_PERCEPTION_RCNNPOSEMODULE_HPP_

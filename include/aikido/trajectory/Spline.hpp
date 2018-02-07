@@ -1,9 +1,13 @@
 #ifndef AIKIDO_TRAJECTORY_SPLINETRAJECTORY2_HPP_
 #define AIKIDO_TRAJECTORY_SPLINETRAJECTORY2_HPP_
+
+#include "aikido/common/pointers.hpp"
 #include "Trajectory.hpp"
 
 namespace aikido {
 namespace trajectory {
+
+AIKIDO_DECLARE_POINTERS(Spline)
 
 /// Polynomial spline trajectory defined in a \c StateSpace. The trajectory is
 /// represented as a sequence of polynomial segments between knot points. Each
