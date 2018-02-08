@@ -1,19 +1,14 @@
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
-#include <aikido/constraint/Satisfied.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include "eigen_tests.hpp"
 
 using Eigen::Vector2d;
-using Eigen::Vector3d;
 using aikido::trajectory::Interpolated;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R2;
-using aikido::statespace::StateSpacePtr;
-using aikido::constraint::Satisfied;
-using aikido::common::cloneRNGFrom;
 using aikido::planner::parabolic::convertToSpline;
 using aikido::planner::parabolic::ParabolicTimer;
 
@@ -26,28 +21,12 @@ protected:
   {
     mRng = aikido::common::RNGWrapper<std::mt19937>(0);
     mStateSpace = std::make_shared<R2>();
-    mMaxVelocity = Eigen::Vector2d(1., 1.);
-    mMaxAcceleration = Eigen::Vector2d(2., 2.);
-
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
-    mStraightLine = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
-
-    auto state = mStateSpace->createState();
-
-    state.setValue(Vector2d(1., 2.));
-    mStraightLine->addWaypoint(0., state);
-
-    state.setValue(Vector2d(3., 4.));
-    mStraightLine->addWaypoint(1., state);
   }
 
   aikido::common::RNGWrapper<std::mt19937> mRng;
   std::shared_ptr<R2> mStateSpace;
-  Eigen::Vector2d mMaxVelocity;
-  Eigen::Vector2d mMaxAcceleration;
-
   std::shared_ptr<GeodesicInterpolator> mInterpolator;
-  std::shared_ptr<Interpolated> mStraightLine;
 };
 
 TEST_F(TimePostProcessorTests, testTime)
