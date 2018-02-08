@@ -164,16 +164,20 @@ ParabolicTimer::ParabolicTimer(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
-    const aikido::trajectory::InterpolatedPtr& _inputTraj,
-    const aikido::common::RNG* /*_rng*/)
+    const aikido::trajectory::Interpolated& _inputTraj,
+    const aikido::common::RNG& /*_rng*/)
 {
-  if (!_inputTraj)
-    throw std::invalid_argument(
-        "Passed nullptr _inputTraj to "
-        "ParabolicTimer::postprocess");
-
   return computeParabolicTiming(
-      *_inputTraj, mVelocityLimits, mAccelerationLimits);
+      _inputTraj, mVelocityLimits, mAccelerationLimits);
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
+    const aikido::trajectory::Spline& _inputTraj,
+    const aikido::common::RNG& /*_rng*/)
+{
+  return computeParabolicTiming(
+      _inputTraj, mVelocityLimits, mAccelerationLimits);
 }
 
 } // namespace parabolic
