@@ -18,7 +18,7 @@ class CRRT : public ::ompl::base::Planner
 public:
   /// Constructor
   /// \param _si Information about the planning space
-  CRRT(const ::ompl::base::SpaceInformationPtr& _si);
+  explicit CRRT(const ::ompl::base::SpaceInformationPtr& _si);
 
   /// Constructor
   /// \param _si Information about the planning space
@@ -129,7 +129,7 @@ protected:
     }
 
     /// Constructor that allocates memory for the state
-    Motion(const ::ompl::base::SpaceInformationPtr& _si)
+    explicit Motion(const ::ompl::base::SpaceInformationPtr& _si)
       : state(_si->allocState()), parent(nullptr)
     {
       // Do nothing

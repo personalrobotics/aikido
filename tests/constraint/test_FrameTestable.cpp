@@ -20,7 +20,7 @@ using dart::dynamics::BodyNode;
 class EndEffectorTestable : public aikido::constraint::Testable
 {
 public:
-  EndEffectorTestable(std::shared_ptr<SE3> mStateSpace)
+  explicit EndEffectorTestable(std::shared_ptr<SE3> mStateSpace)
     : mStateSpace(mStateSpace)
   {
   }
