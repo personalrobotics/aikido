@@ -227,7 +227,14 @@ if(${DOXYGEN_FOUND})
   # Create the "docs" target that runs Doxygen.
   add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
     COMMAND "${DOXYGEN_EXECUTABLE}"
+    # Strip path prefix from all paths in aikido.tag
+    COMMAND ${CMAKE_COMMAND} -E echo "Stripping paths from"
+        "${DOXYGEN_GENERATE_TAGFILE}"
     COMMAND sed -i s:${DOXYGEN_STRIP_FROM_PATH}::g ${DOXYGEN_GENERATE_TAGFILE}
+    # Strip all doxygen="path" HTML tags
+    COMMAND ${CMAKE_COMMAND} -E echo "Stripping Doxygen HTML tags"
+    COMMAND find "${DOXYGEN_OUTPUT_ROOT}" -type f -name "*.html"
+        -exec sed -i 's: doxygen=\"[^\"]*\"::g' {} \\$<SEMICOLON>
     DEPENDS "${DOXYGEN_WORKING_DIR}/Doxyfile"
     WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}"
   )
