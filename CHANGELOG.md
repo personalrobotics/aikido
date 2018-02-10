@@ -18,7 +18,7 @@
 
 * Planner
 
-  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302)
+  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
 
 ### 0.2.0 (2018-01-09)
