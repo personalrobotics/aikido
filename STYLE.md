@@ -30,12 +30,18 @@ their namespace, with the extension `.hpp`.
 // Use absolute paths, and place these at the top.
 #include <stl_headers>
 #include <library/headers.hpp>
+#include "aikido/common/pointers.hpp"
 #include "aikido/component_name/ExampleInterface.hpp"
 #include "aikido/component_name/ExampleOtherInterface.hpp"
 
 // Namespaces scopes should be one line each with "cuddled" braces.
 namespace aikido {
 namespace example {
+
+// Use the following macro (defined in aikido/common/pointers.hpp) to declare
+// STL "smart" pointers. Pointers should be declared ahead of the class so
+// that the class itself can use the pointers.
+AIKIDO_DECLARE_POINTERS(ExampleClass)
 
 /// A required Doxygen comment description for this class. This can be extended
 /// to include various useful details about the class, and can use the standard
@@ -88,9 +94,6 @@ public:
 private:
   std::unique_ptr<util::RNG> mExampleMember; // Member variables are prefixed with "m"
 };
-
-// Use "using" directive to declare a shared pointer helper type. It should not be `const`.
-using ExamplePtr = std::shared_ptr<Example>; 
 
 } // namespace example
 } // namespace aikido
