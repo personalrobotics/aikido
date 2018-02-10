@@ -38,9 +38,9 @@ their namespace, with the extension `.hpp`.
 namespace aikido {
 namespace example {
 
-// Use following macro to declare STL "smart" pointers, which is defined in 
-// aikido/common/pointers.hpp. Pointers should be declared in ahead of the 
-// class so that the class itself can use the pointers.
+// Use the following macro (defined in aikido/common/pointers.hpp) to declare
+// STL "smart" pointers. Pointers should be declared ahead of the class so
+// that the class itself can use the pointers.
 AIKIDO_DECLARE_POINTERS(ExampleClass)
 
 /// A required Doxygen comment description for this class. This can be extended
