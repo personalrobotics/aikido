@@ -8,3 +8,10 @@ set -e
 # Organize into "master" subdirectory
 mkdir -p "${TRAVIS_BUILD_DIR}/gh-pages"
 mv "${HOME}/workspace/build/aikido/doxygen" "${TRAVIS_BUILD_DIR}/gh-pages/master"
+
+# Generate hard-coded list of API versions
+cat <<EOF > "${TRAVIS_BUILD_DIR}/gh-pages/README.md"
+## AIKIDO API Documentation
+
+* [master](https://personalrobotics.github.io/aikido/master/)
+EOF
