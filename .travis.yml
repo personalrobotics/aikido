@@ -34,7 +34,6 @@ install:
 script:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/script_linux.sh"; fi
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then . "${TRAVIS_BUILD_DIR}/.ci/script_macos.sh"; fi
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"; fi
 
 after_script:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./scripts/view-all-results.sh test_results; fi
@@ -44,14 +43,3 @@ after_failure:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then cat ./build/aikido/Testing/Temporary/LastTestsFailed.log; fi
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then cat Testing/Temporary/LastTest.log; fi
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then cat Testing/Temporary/LastTestsFailed.log; fi
-
-deploy:
-  github-token: $GITHUB_TOKEN
-  provider: pages
-  skip-cleanup: true
-  local-dir: gh-pages
-  keep-history: false
-  verbose: true
-  on:
-    branch: master
-    condition: $BUILD_TYPE = Release
