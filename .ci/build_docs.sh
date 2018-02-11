@@ -3,7 +3,7 @@
 set -e
 
 # Build documentation
-./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args docs -- aikido > /dev/null
+./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DDOWNLOAD_TAGFILES=$DOWNLOAD_TAGFILES --make-args docs -- aikido > /dev/null
 
 # Organize into "master" subdirectory
 mkdir -p "${TRAVIS_BUILD_DIR}/gh-pages"
