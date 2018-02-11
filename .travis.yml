@@ -48,6 +48,8 @@ after_failure:
 deploy:
   github-token: $GITHUB_TOKEN
   provider: pages
+  # edge: true is necessary due to a Travis bug (https://github.com/travis-ci/travis-ci/issues/9047)
+  edge: true
   skip-cleanup: true
   local-dir: "${HOME}/gh-pages"
   keep-history: false
