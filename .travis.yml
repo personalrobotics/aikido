@@ -34,10 +34,10 @@ install:
 script:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/script_linux.sh"; fi
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then . "${TRAVIS_BUILD_DIR}/.ci/script_macos.sh"; fi
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"; fi
 
 after_script:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./scripts/view-all-results.sh test_results; fi
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"; fi
 
 after_failure:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then cat ./build/aikido/Testing/Temporary/LastTest.log; fi
@@ -54,3 +54,4 @@ deploy:
   verbose: true
   on:
     branch: master
+    condition: $BUILD_TYPE = Release
