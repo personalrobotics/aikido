@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ev
+set -e
 
 # Build documentation
 ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args docs -- aikido > /dev/null
