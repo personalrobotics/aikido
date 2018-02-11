@@ -4,15 +4,17 @@
 #include <string>
 #include <unordered_map>
 #include <dart/dart.hpp>
-#include <aikido/robot/Robot.hpp>
+#include "aikido/robot/Robot.hpp"
 
 namespace aikido {
 namespace robot {
 
 /// A base class for a meta robot which has a list of robots
-class MetaRobot : public Robot
+class CompositeRobot : public Robot
 {
 public:
+
+  CompositeRobot(std::unordered_map<std::string, std::unique_ptr<Robot>> robots);
 
   /// Clones this Robot.
   /// \param newName New name for this robot
@@ -23,10 +25,13 @@ public:
 
 protected:
 
-  std::unordered_map<std::string, Robot> mRobots;
+  std::unordered_map<std::string, std::unique_ptr<Robot>> mRobots;
 };
 
-using MetaRobotPtr = std::shared_ptr<MetaRobot>;
+using CompositeRobotPtr = std::shared_ptr<CompositeRobot>;
 
 } // namespace robot
 } // namespace aikido
+
+#endif
+

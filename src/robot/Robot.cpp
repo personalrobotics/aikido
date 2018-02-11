@@ -1,31 +1,78 @@
-#include <aikido/robot/Robot.hpp>
+#include "aikido/robot/Robot.hpp"
+#include "aikido/robot/util.hpp"
 
 namespace aikido {
 namespace robot {
 
+// TODO: Temporary constants for planning calls.
+// These should be defined when we construct planner adapter classes
+static const double timelimit = 3.0;
+static const double maxNumTrials = 10;
+
 //==============================================================================
-aikido::trajectory::TrajectoryPtr Robot::planToConfiguration(
+Robot::Robot(
+  const std::string& name,
+  MetaSkeletonPtr robot,
+  MetaSkeletonStateSpacePtr statespace,
+  bool simulation,
+  aikido::common::RNG::result_type rngSeed,
+  std::unique_ptr<control::TrajectoryExecutor> trajectoryExecutor,
+  std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
+  std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
+  double collisionResolution)
+: mRootRobot(this)
+: mName(name)
+, mRobot(robot)
+, mStateSpace(statespace)
+, mSimulation(simulation)
+, mRng(rngSeed)
+, mTrajectoryExecutor(std::move(trajectoryExecutor))
+, mRetimer(std::move(retimer))
+, mSmoother(std::move(smoother))
+, mCollisionResolution(collisionResolution)
+, mThread(nullptr)
+{
+  if (!mSimulation)
+    throw std::error("Not implemented");
+
+  mCollisionDetector = FCLCollisionDetector::create();
+  mCollideWith = mCollisionDetector->createCollisionGroupAsSharedPtr();
+  mSelfCollisionFilter
+      = std::make_shared<dart::collision::BodyNodeCollisionFilter>();
+  mSelfCollisionConstraint = createSelfCollisionConstraint();
+}
+
+//==============================================================================
+Robot::~Robot()
+{
+  // Do nothing
+}
+
+//==============================================================================
+trajectory::TrajectoryPtr Robot::planToConfiguration(
     const statespace::StateSpacePtr& stateSpace,
     const MetaSkeletonPtr &metaSkeleton,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
-    double timelimit)
+    const constraint::CollisionFreePtr &collisionFree)
 {
   if (!checkIfMetaSkeletonBelongs(metaSkeleton))
     throw std::runtime_error("Statespace is incompatible with this robot.");
 
-  return mPlanner->planToConfiguration(
-    stateSpace, metaSkeleton, startState, goalState, timelimit);
+  auto collisionConstraint = getCollisionConstraint(stateSpace, collisionFree);
+
+  return util::planToConfiguration(
+    stateSpace, metaSkeleton, startState, goalState, timelimit,
+    collisionConstraint, mRng->clone(), mCollisionResolution);
 }
 
 //==============================================================================
-aikido::trajectory::TrajectoryPtr Robot::planToConfiguration(
+trajectory::TrajectoryPtr Robot::planToConfiguration(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
     const MetaSkeletonPtr &metaSkeleton,
     const Eigen::VectorXd &start,
     const Eigen::VectorXd &goal,
-    const CollisionFreePtr &collisionFree,
-    double timelimit)
+    const CollisionFreePtr &collisionFree)
 {
   if (!checkIfMetaSkeletonBelongs(metaSkeleton))
     throw std::runtime_error("Statespace is incompatible with this robot.");
@@ -36,53 +83,33 @@ aikido::trajectory::TrajectoryPtr Robot::planToConfiguration(
   auto goalState = stateSpace.createState();
   stateSpace->convertPositionsToState(goal, goalState);
 
-  return planToConfiguration(stateSpace, metaSkeleton, startState, goalState, timelimit);
+  return planToConfiguration(stateSpace, metaSkeleton,
+    startState, goalState, collisionFree);
 }
 
 //==============================================================================
-aikido::trajectory::TrajectoryPtr planToConfiguration(
-    const Configuration &configuration,
-    const CollisionFreePtr &collisionFree,
-    double timelimit)
-{
-  auto stateSpace = configuration.metaSkeletonStateSpcae;
-  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
-    throw std::runtime_error("Statespace is incompatible with this robot.");
-
-  auto startState = stateSpace.createState();
-  stateSpace->convertPositionsToState(configuration.metaSkeleton.getPositions(),
-    startState);
-
-  auto goalState = stateSpace.createState();
-  stateSpace->convertPositionsToState(configuration.positions, goalState);
-
-  return planToConfiguration(stateSpace, configuration.metaSkeleton,
-    startState, goalState, timelimit);
-}
-
-//==============================================================================
-aikido::trajectory::TrajectoryPtr Robot::planToConfigurations(
+trajectory::TrajectoryPtr Robot::planToConfigurations(
     const statespace::StateSpacePtr& stateSpace,
     const MetaSkeletonPtr &metaSkeleton,
     const statespace::StateSpace::State* startState,
     const std::vector<statespace::StateSpace::State*> goalStates,
-    double timelimit)
+    const CollisionFreePtr &collisionFree)
 {
   if (!checkIfMetaSkeletonBelongs(metaSkeleton))
     throw std::runtime_error("Statespace is incompatible with this robot.");
 
-  return mPlanner->planToConfigurations(
-    statespace, metaSkeleton, startState, goalStates, timelimit);
+  return planToConfigurations(
+    statespace, metaSkeleton, startState, goalStates, timelimit,
+    collisionFree, mRng->clone(), mCollisionResolution);
 }
 
 //==============================================================================
-aikido::trajectory::TrajectoryPtr Robot::planToConfigurations(
+trajectory::TrajectoryPtr Robot::planToConfigurations(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
     const MetaSkeletonPtr &metaSkeleton,
     const Eigen::VectorXd &start,
     const std::vector<Eigen::VectorXd> &goals,
-    const CollisionFreePtr &collisionFree,
-    double timelimit)
+    const CollisionFreePtr &collisionFree)
 {
   using statespace::StateSpace::State;
 
@@ -100,32 +127,34 @@ aikido::trajectory::TrajectoryPtr Robot::planToConfigurations(
   }
 
   return planToConfigurations(stateSpace, metaSkeleton,
-    startState, goalStates, timelimit);
+    startState, goalStates, collisioNFree);
 }
 
 //==============================================================================
-aikido::trajectory::TrajectoryPtr Robot::planToTSR(
+trajectory::TrajectoryPtr Robot::planToTSR(
     const statespace::StateSpacePtr& stateSpace,
     const MetaSkeletonPtr &metaSkeleton,
     const statespace::StateSpace::State* startState,
-    const aikido::constraint::TSR& tsr,
-    double timelimit)
+    const constraint::TSR& tsr,
+    const constraint::CollisionFreePtr &collisionFree)
 {
   if (!checkIfMetaSkeletonBelongs(metaSkeleton))
     throw std::runtime_error("Statespace is incompatible with this robot.");
 
-  return mPlanner->planToTSR(statespace, metaSkeleton,
-    startState, tsr, timelimit);
+  auto collisionConstraint = getCollisionConstraint(stateSpace, collisionFree);
+
+  return util::planToTSR(statespace, metaSkeleton,
+    startState, tsr, maxNumTrials, timelimit, collisionConstraint, mRng->clone(),
+    mCollisionResolution);
 }
 
 //==============================================================================
- aikido::trajectory::TrajectoryPtr Robot::planToTSR(
+ trajectory::TrajectoryPtr Robot::planToTSR(
     const statespace::MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr &metaSkeleton,
     const Eigen::VectorXd &start,
-    const aikido::constraint::TSR &tsr,
-    const CollisionFreePtr &collisionFree,
-    double timelimit)
+    const constraint::TSR &tsr,
+    const CollisionFreePtr &collisionFree)
 {
   if (!checkIfMetaSkeletonBelongs(metaSkeleton))
     throw std::runtime_error("Statespace is incompatible with this robot.");
@@ -134,79 +163,62 @@ aikido::trajectory::TrajectoryPtr Robot::planToTSR(
   stateSpace->convertPositionsToState(start, startState);
 
   return planToTSR(stateSpace, metaSkeleton,
-    startState, tsr, timelimit);
+    startState, tsr, collisionFree);
 }
 
 //==============================================================================
-aikido::trajectory::TrajectoryPtr planToNamedConfiguration(
+trajectory::TrajectoryPtr Robot::
+  planToTSRwithTrajectoryConstraint(
+      const statespace::dart::MetaSkeletonStateSpacePtr &space,
+      const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
+      const dart::dynamics::BodyNodePtr &bodyNode,
+      const constraint::TSRPtr &goalTsr,
+      const constraint::TSRPtr &constraintTsr)
+{
+  throw std::runtime_error("Not implemented");
+}
+
+//==============================================================================
+trajectory::TrajectoryPtr Robot::planToNamedConfiguration(
+    const statespace::StateSpace::State* startState,
     const std::string &name,
-    const CollisionFreePtr &collisionFree,
-    double timelimit)
+    const CollisionFreePtr &collisionFree)
 {
   if (mNamedConfigurations.find(name) == mNamedConfigurations.end())
     throw std::runtime_error(name + " does not exist.");
 
+  auto goalState = stateSpace.createState();
+  stateSpace->convertPositionsToState(goal, goalState);
+
   auto configuration = mNamedConfigurations[name];
-  planToConfiguration(configuration, metaSkeleton,
-    collisionFree, timelimit);
+  planToConfiguration(configuration.metaSkeletonStateSpace,
+    configuration.metaSkeleton,
+    startState, goalState, collisionFree);
 }
 
 //==============================================================================
-aikido::trajectory::TrajectoryPtr Robot::postprocessPath(
-  const aikido::trajectory::TrajectoryPtr &path,
-  const CollisionFreePtr &collisionFree,
-  double timelimit)
+trajectory::TrajectoryPtr Robot::postprocessPath(
+  const trajectory::TrajectoryPtr &path)
 {
-  throw std::runtime_error("Not implemented");
+  // TODO: this needs to know whether to call smoothing or not.
+  auto untimedTrajectory = mSmoother->postprocess(path, mRng->clone());
+  auto timedTrajectory = mRetimer->postprocess(untimedTrajectory, mRng->clone());
+
+  return timedTrajectory;
 }
 
 //==============================================================================
 void Robot::executeTrajectory(
-    const aikido::trajectory::TrajectoryPtr &trajectory)
+    const trajectory::TrajectoryPtr &trajectory)
 {
-
+  mTrajectoryExecutor->execute(trajectory);
 }
 
 //==============================================================================
-void Robot::executePath(
-    const aikido::trajectory::TrajectoryPtr &path,
-    const CollisionFreePtr &collisionFree,
-    double timelimit)
+void Robot::executePath(const trajectory::TrajectoryPtr &path)
 {
-  auto traj = postprocessPath(path, collisionFree, timelimit);
+  auto traj = postprocessPath(path, timelimit);
   executeTrajectory(traj);
-}
-
-
-//==============================================================================
-bool Robot::checkIfMetaSkeletonBelongs(
-  const MetaSkeletonPtr &metaSkeleton,)
-{
-  // TODO: check if the robot can handle statespace.
-  throw std::runtime_error("Not implemented");
-}
-
-//==============================================================================
-bool Robot::switchControllers(
-    const std::vector<std::string>& start_controllers,
-    const std::vector<std::string>& stop_controllers)
-{
-  if (!mNode)
-    throw std::runtime_error("Ros node has not been instantiated.");
-
-  if (!mControllerServiceClient)
-    throw std::runtime_error("ServiceClient not instantiated.");
-
-  controller_manager_msgs::SwitchController srv;
-  srv.request.start_controllers = start_controllers;
-  srv.request.stop_controllers = stop_controllers;
-  srv.request.strictness
-      = controller_manager_msgs::SwitchControllerRequest::STRICT;
-
-  if (mControllerServiceClient->call(srv))
-    return srv.response.ok;
-  else
-    throw std::runtime_error("SwitchController failed.");
 }
 
 //==============================================================================
@@ -223,7 +235,7 @@ void Robot::setConfiguration(
 }
 
 //==============================================================================
-Eigen::VectorXd Robot::getConfiguration(
+Eigen::VectorXd Robot::getNamedConfiguration(
     const std::string& name)
 {
   if (mMetaSkeletons.find(name) == mMetaSkeletons.end())
@@ -241,37 +253,38 @@ Eigen::VectorXd Robot::getConfiguration()
 }
 
 //==============================================================================
-aikido::planner::WorldPtr Robot::getParentWorld()
-{
-  return mWorld;
-}
-
-//==============================================================================
 std::string Robot::getName()
 {
   return mName;
 }
 
 //==============================================================================
-dart::dynamics::SkeletonPtr Robot::getRobot()
+MetaSkeletonPtr Robot::getMetaSkeleton()
 {
   return mRobot;
 }
 
 //==============================================================================
-std::pair<dart::dynamics::MetaSkeletonPtr,
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr>>
-  Robot::getMetaSkeletonStateSpacePair(
-    const std::string& name)
+bool Robot::checkIfMetaSkeletonBelongs(
+  const MetaSkeletonPtr &metaSkeleton)
 {
-  return mMetaSkeletons[name];
+  // TODO: check if the robot can handle statespace.
+  throw std::runtime_error("Not implemented");
 }
 
 // ==============================================================================
-CollisionFreePtr Robot::getSelfCollisionConstraint(
-    const MetaSkeletonStateSpacePtr &space) const
+CollisionFreePtr Robot::getSelfCollisionConstraint() const
 {
-  using aikido::constraint::CollisionFree;
+  return mSelfCollisionConstraint;
+}
+
+// ==============================================================================
+CollisionFreePtr Robot::createSelfCollisionConstraint() const
+{
+  using constraint::CollisionFree;
+
+  if (mRootRobot != this)
+    return mRootRobot->getSelfCollisionConstraint();
 
   mRobot->enableSelfCollisionCheck();
   mRobot->disableAdjacentBodyCheck();
@@ -280,7 +293,6 @@ CollisionFreePtr Robot::getSelfCollisionConstraint(
 
   // TODO: Switch to PRIMITIVE once this is fixed in DART.
   // collisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
-
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
   auto collisionFreeConstraint = std::make_shared<CollisionFree>(
@@ -291,13 +303,16 @@ CollisionFreePtr Robot::getSelfCollisionConstraint(
 }
 
 //=============================================================================
-TestablePtr Robot::getTestableCollisionConstraint(
+TestablePtr Robot::getCollisionConstraint(
     const MetaSkeletonStateSpacePtr &space,
     const CollisionFreePtr &collisionFree) const
 {
-  using aikido::constraint::TestableIntersection;
+  using constraint::TestableIntersection;
 
-  auto selfCollisionFree = getSelfCollisionConstraint(space);
+  if (mRootRobot != this)
+    return mRootRobot->getCollisionConstraint(space, collisionFree);
+
+  auto selfCollisionFree = getSelfCollisionConstraint();
 
   // Make testable constraints for collision check
   std::vector<TestablePtr> constraints;
@@ -315,5 +330,22 @@ TestablePtr Robot::getTestableCollisionConstraint(
   return std::make_shared<TestableIntersection>(space, constraints);
 }
 
+//=============================================================================
+void Robot::setRoot(Robot *robot)
+{
+  if (robot == nullptr)
+    throw std::invalid_argument("Robot is null.");
+
+  mRootRobot = robot;
+}
+
+//==============================================================================
+void Robot::step()
+{
+  std::lock_guard<std::mutex> lock(mRobot->getMutex());
+  mTrajectoryExecutor->step();
+}
+
 } // namespace robot
 } // namespace aikido
+

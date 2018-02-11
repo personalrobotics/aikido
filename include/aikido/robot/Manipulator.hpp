@@ -3,8 +3,8 @@
 
 #include <dart/dart.hpp>
 #include <string>
-#include <aikido/robot/Robot.hpp>
-#include <aikido/robot/Hand.hpp>
+#include "aikido/robot/Robot.hpp"
+#include "aikido/robot/Hand.hpp"
 
 namespace aikido {
 namespace robot {
@@ -14,23 +14,32 @@ class Manipulator : public Robot
 {
 public:
 
-  /// Clones this Robot.
-  /// \param newName New name for this robot
-  virtual std::unique_ptr<Robot> clone(const std::string &newName) override;
+  Manipulator(
+      const std::string& name,
+      MetaSkeletonPtr robot,
+      MetaSkeletonStateSpacePtr statespace,
+      bool simulation,
+      common::RNG::result_type rngSeed,
+      std::unique_ptr<control::TrajectoryExecutor> executor,
+      std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
+      std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
+      double collisionResolution,
+      double smootherFeasibilityCheckResolution,
+      double smootherFeasibilityApproxTolerance,
+      std::unique_ptr<Hand> hand);
 
-  std::unique_ptr<Hand> getHand();
+  virtual ~Manipulator();
+
+  std::shared_ptr<Hand> getHand();
 
   /// Plan to a desired end-effector offset with fixed orientation.
-  /// \param space The StateSpace for the metaskeleton
+  /// \param space StateSpace for the metaskeleton
   /// \param body Bodynode for the end effector
+  /// \param metaSkeleton Metaskeleton to plan with
   /// \param direction Direction unit vector in the world frame
   /// \param distance Distance distance to move, in meters
-  /// \param maxNumTrials Max number of trials for solving for IK
-  /// \param timelimit Max time (seconds) to spend per planning
   /// \param collisionFree CollisionFree constraint to check. Self-collision
   /// is checked by default.
-  /// \param positionTolerance Position tolerance for constraint TSR
-  /// \param angularTolerance Angular tolerance for constraint TSR
   /// \return Output trajectory
   virtual trajectory::TrajectoryPtr planToEndEffectorOffset(
       const statespace::dart::MetaSkeletonStateSpacePtr &space,
@@ -39,15 +48,7 @@ public:
       const Eigen::Vector3d &direction,
       const constraint::CollisionFreePtr &collisionFree,
       double distance,
-      double linearVelocity,
-      int maxNumTrials,
-      double timelimit,
-      double positionTolerance = 1e-3,
-      double angularTolerance = 1e-3,
-      double linearGain = 1.0,
-      double angularGain = 0.2,
-      double timestep = 0.1);
-
+      double linearVelocity);
 
   /// Get the direction of an end effector (along z axis) in the world frame
   /// \param bodynode Bodynode for the end effector
@@ -59,26 +60,23 @@ public:
   /// end-effector. Tries VF and then CRRT.
   /// \return Output trajectory
   virtual trajectory::TrajectoryPtr planEndEffectorStraight(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr space,
+      statespace::dart::MetaSkeletonStateSpacePtr &space,
       const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
       const dart::dynamics::BodyNodePtr &body,
       const constraint::CollisionFreePtr &collisionFree,
       double distance,
-      double linearVelocity,
-      int maxNumTrials,
-      double timelimit,
-      double positionTolerance = 1e-3,
-      double angularTolerance = 1e-3,
-      double linearGain = 1.0,
-      double angularGain = 0.2,
-      double timestep = 0.1);
+      double linearVelocity);
+
+  virtual void step() override;
 
 protected:
-
-  Hand mHand;
+  std::shared_ptr<Hand> mHand;
 };
 
 using ManipulatorPtr = std::shared_ptr<Manipulator>;
 
 } // namespace robot
 } // namespace aikido
+
+#endif
+

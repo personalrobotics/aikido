@@ -1,33 +1,33 @@
-#ifndef AIKIDO_ROBOT_GRABINFO_HPP_
-#define AIKIDO_ROBOT_GRABINFO_HPP_
+#ifndef AIKIDO_ROBOT_GRABMETADATA_HPP_
+#define AIKIDO_ROBOT_GRABMETADATA_HPP_
+
+#include <dart/dart.hpp>
+#include <dart/dynamics/dynamics.hpp>
 
 namespace aikido {
 namespace robot {
 
-/// To store metadata for grabbed objects
-class GrabInfo
+/// Stores metadata for grabbed objects
+class GrabMetadata
 {
 public:
 
-  GrabInfo(
+  GrabMetadata(
       dart::dynamics::BodyNodePtr bodyNode,
       const std::string &oldName,
-      dart::dynamics::SkeletonPtr skeleton,
-      const dart::dynamics::FreeJoint::Properties& jointProperties);
+      dart::dynamics::SkeletonPtr parentSkeleton,
+      const dart::dynamics::FreeJoint::Properties &jointProperties);
 
 
   /// Update existing properties.
   void update(
       dart::dynamics::BodyNodePtr bodyNode,
       const std::string& oldName,
-      dart::dynamics::SkeletonPtr skeleton,
+      dart::dynamics::SkeletonPtr parentSkeleton,
       const dart::dynamics::FreeJoint::Properties& jointProperties);
 
   /// Clears existing properties
   void clear();
-
-  /// Returns true if grabbing an object
-  bool isGrabbing();
 
 private:
 
