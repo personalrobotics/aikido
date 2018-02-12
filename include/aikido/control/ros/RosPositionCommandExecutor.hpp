@@ -48,7 +48,8 @@ public:
   ///
   /// To be executed on a separate thread.
   /// Regularly checks for the completion of a sent trajectory.
-  void step() override;
+  void step(
+      const std::chrono::system_clock::time_point& /*timepoint*/) override;
 
 private:
   using RosPositionActionClient

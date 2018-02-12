@@ -34,18 +34,12 @@ public:
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
   // Documentation inherited.
-  void step() override;
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
 
   /// Abort the current trajectory, as well as all trajectories currently in the
   /// queue. Does NOT stop the trajectory that is currently executing if the
   /// underlying executor does not support it.
   void abort() override;
-
-  /// Get the current timestep.
-  std::chrono::milliseconds getTimestep() const override;
-
-  /// Set the current timestep.
-  void setTimestep(std::chrono::milliseconds timestep) override;
 
 private:
   /// Underlying TrajectoryExecutor

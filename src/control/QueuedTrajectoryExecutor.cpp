@@ -7,14 +7,10 @@ namespace control {
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : TrajectoryExecutor(std::chrono::milliseconds(0))
-  , mExecutor{std::move(executor)}
-  , mInProgress{false}
-  , mMutex{}
+  : mExecutor{std::move(executor)}, mInProgress{false}, mMutex{}
 {
   if (!mExecutor)
     throw std::invalid_argument("Executor is null.");
-  mTimestep = mExecutor->getTimestep();
 }
 
 //==============================================================================
@@ -47,9 +43,10 @@ std::future<void> QueuedTrajectoryExecutor::execute(
 }
 
 //==============================================================================
-void QueuedTrajectoryExecutor::step()
+void QueuedTrajectoryExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
-  mExecutor->step();
+  mExecutor->step(timepoint);
 
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning
@@ -124,19 +121,6 @@ void QueuedTrajectoryExecutor::abort()
   }
 
   mFuture = std::future<void>();
-}
-
-//==============================================================================
-std::chrono::milliseconds QueuedTrajectoryExecutor::getTimestep() const
-{
-  return mTimestep;
-}
-
-//==============================================================================
-void QueuedTrajectoryExecutor::setTimestep(std::chrono::milliseconds timestep)
-{
-  mExecutor->setTimestep(timestep);
-  mTimestep = mExecutor->getTimestep();
 }
 
 } // namespace control

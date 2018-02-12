@@ -10,12 +10,10 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::
     BarrettFingerKinematicSimulationSpreadCommandExecutor(
         std::array<::dart::dynamics::ChainPtr, 2> fingers,
         std::size_t spread,
-        std::chrono::milliseconds timestep,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
         ::dart::collision::CollisionGroupPtr collideWith,
         ::dart::collision::CollisionOption collisionOptions)
-  : PositionCommandExecutor(timestep)
-  , mFingers(std::move(fingers))
+  : mFingers(std::move(fingers))
   , mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
   , mCollisionOptions(std::move(collisionOptions))
@@ -137,20 +135,26 @@ BarrettFingerKinematicSimulationSpreadCommandExecutor::execute(
     mGoalPosition
         = common::clamp(goalPosition[0], mDofLimits.first, mDofLimits.second);
     mInProgress = true;
+    mTimeOfPreviousCall = std::chrono::system_clock::now();
 
     return mPromise->get_future();
   }
 }
 
 //==============================================================================
-void BarrettFingerKinematicSimulationSpreadCommandExecutor::step()
+void BarrettFingerKinematicSimulationSpreadCommandExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
   if (!mInProgress)
     return;
 
-  const auto period = std::chrono::duration<double>(mTimestep).count();
+  const auto timeSincePreviousCall = timepoint - mTimeOfPreviousCall;
+  mTimeOfPreviousCall = timepoint;
+
+  const auto period
+      = std::chrono::duration<double>(timeSincePreviousCall).count();
 
   // Current spread. Check that all spreads have same values.
   double spread = mSpreadDofs[0]->getPosition();

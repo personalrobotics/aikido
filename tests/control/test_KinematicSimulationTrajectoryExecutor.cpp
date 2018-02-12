@@ -83,19 +83,17 @@ TEST_F(
     KinematicSimulationTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
 {
   EXPECT_THROW(
-      KinematicSimulationTrajectoryExecutor(nullptr, stepTime),
-      std::invalid_argument);
+      KinematicSimulationTrajectoryExecutor(nullptr), std::invalid_argument);
 }
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, constructor_Passes)
 {
-  EXPECT_NO_THROW(
-      KinematicSimulationTrajectoryExecutor executor(mSkeleton, stepTime));
+  EXPECT_NO_THROW(KinematicSimulationTrajectoryExecutor executor(mSkeleton));
 }
 
 TEST_F(KinematicSimulationTrajectoryExecutorTest, execute_NullTrajectory_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, stepTime);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
   EXPECT_THROW(executor.execute(nullptr), std::invalid_argument);
 }
 
@@ -103,7 +101,7 @@ TEST_F(
     KinematicSimulationTrajectoryExecutorTest,
     execute_NonMetaSkeletonStateSpace_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, stepTime);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   auto space = std::make_shared<SO2>();
   auto interpolator = std::make_shared<GeodesicInterpolator>(space);
@@ -118,7 +116,7 @@ TEST_F(
 {
   auto skeleton = Skeleton::create("Skeleton");
 
-  KinematicSimulationTrajectoryExecutor executor(skeleton, stepTime);
+  KinematicSimulationTrajectoryExecutor executor(skeleton);
   EXPECT_THROW(executor.execute(mTraj), std::invalid_argument);
 }
 
@@ -126,16 +124,18 @@ TEST_F(
     KinematicSimulationTrajectoryExecutorTest,
     execute_WaitOnFuture_TrajectoryWasExecuted)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, stepTime);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -148,17 +148,19 @@ TEST_F(
     KinematicSimulationTrajectoryExecutorTest,
     execute_TrajectoryIsAlreadyRunning_Throws)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, stepTime);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
 
   EXPECT_THROW(executor.execute(mTraj), std::runtime_error);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -171,16 +173,18 @@ TEST_F(
     KinematicSimulationTrajectoryExecutorTest,
     execute_TrajectoryFinished_DoesNotThrow)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, stepTime);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -191,11 +195,13 @@ TEST_F(
   mSkeleton->getDof(0)->setPosition(-1.0);
 
   // Execute second traj.
+  simulationClock = std::chrono::system_clock::now();
   future = executor.execute(mTraj);
 
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -207,11 +213,12 @@ TEST_F(
 TEST_F(
     KinematicSimulationTrajectoryExecutorTest, abort_TrajectoryInProgress_Halts)
 {
-  KinematicSimulationTrajectoryExecutor executor(mSkeleton, stepTime);
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
   future.wait_for(waitTime);
-  executor.step();
+  executor.step(simulationClock + stepTime);
   executor.abort();
 
   EXPECT_THROW(future.get(), std::runtime_error);

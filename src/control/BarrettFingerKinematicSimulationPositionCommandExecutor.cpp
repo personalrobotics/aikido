@@ -11,12 +11,10 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::
         ::dart::dynamics::ChainPtr finger,
         std::size_t proximal,
         std::size_t distal,
-        std::chrono::milliseconds timestep,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
         ::dart::collision::CollisionGroupPtr collideWith,
         ::dart::collision::CollisionOption collisionOptions)
-  : PositionCommandExecutor(timestep)
-  , mFinger(std::move(finger))
+  : mFinger(std::move(finger))
   , mProximalDof(nullptr)
   , mDistalDof(nullptr)
   , mCollisionDetector(std::move(collisionDetector))
@@ -106,6 +104,7 @@ BarrettFingerKinematicSimulationPositionCommandExecutor::execute(
     mDistalGoalPosition = mProximalGoalPosition * kMimicRatio;
     mDistalOnly = false;
     mInProgress = true;
+    mTimeOfPreviousCall = std::chrono::system_clock::now();
 
     return mPromise->get_future();
   }
@@ -119,14 +118,19 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::terminate()
 }
 
 //==============================================================================
-void BarrettFingerKinematicSimulationPositionCommandExecutor::step()
+void BarrettFingerKinematicSimulationPositionCommandExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
   if (!mInProgress)
     return;
 
-  const auto period = std::chrono::duration<double>(mTimestep).count();
+  const auto timeSincePreviousCall = timepoint - mTimeOfPreviousCall;
+  mTimeOfPreviousCall = timepoint;
+
+  const auto period
+      = std::chrono::duration<double>(timeSincePreviousCall).count();
 
   double distalPosition = mDistalDof->getPosition();
   double proximalPosition = mProximalDof->getPosition();

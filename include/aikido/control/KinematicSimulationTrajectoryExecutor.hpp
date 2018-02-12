@@ -20,10 +20,8 @@ public:
   ///
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
-  /// \param timestep The time period that each call to step() should simulate
   explicit KinematicSimulationTrajectoryExecutor(
-      ::dart::dynamics::SkeletonPtr skeleton,
-      std::chrono::milliseconds timestep);
+      ::dart::dynamics::SkeletonPtr skeleton);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
@@ -45,7 +43,7 @@ public:
   /// If multiple threads are accessing this function or the skeleton associated
   /// with this executor, it is necessary to lock the skeleton before
   /// calling this method.
-  void step() override;
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
 
   /// Aborts the current trajectory.
   void abort() override;
@@ -62,9 +60,6 @@ private:
 
   /// Whether a trajectory is being executed
   bool mInProgress;
-
-  /// Duration that the trajectory has been executed
-  double mExecutionTime;
 
   /// Promise whose future is returned by execute()
   std::unique_ptr<std::promise<void>> mPromise;

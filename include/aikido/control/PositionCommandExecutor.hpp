@@ -18,11 +18,6 @@ namespace control {
 class PositionCommandExecutor
 {
 public:
-  /// Constructor.
-  ///
-  /// \param timestep The time period that each call to step() should simulate
-  PositionCommandExecutor(std::chrono::milliseconds timestep);
-
   virtual ~PositionCommandExecutor() = default;
 
   /// Move hand to goalPosition.
@@ -31,18 +26,16 @@ public:
   /// \return future which becomes available when movement stops
   virtual std::future<void> execute(const Eigen::VectorXd& goalPositions) = 0;
 
-  // Step once.
-  virtual void step() = 0;
-
-  /// Get the current timestep.
-  virtual std::chrono::milliseconds getTimestep() const;
-
-  /// Set the current timestep.
-  virtual void setTimestep(std::chrono::milliseconds timestep);
+  /// Step to a point in time.
+  /// \note \c timepoint can be a time in the future to enable faster than
+  /// real-time execution.
+  ///
+  /// \param timepoint Time to simulate to
+  virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
 protected:
-  /// Time period that each call to step() should simulate
-  std::chrono::milliseconds mTimestep;
+  /// Time of previous call
+  std::chrono::system_clock::time_point mTimeOfPreviousCall;
 };
 
 using PositionCommandExecutorPtr = std::shared_ptr<PositionCommandExecutor>;

@@ -28,7 +28,6 @@ public:
   ///
   /// \param robot Robot to construct executor for
   /// \param prefix String (either "/right/" or "/left/") to specify hand
-  /// \param timestep The time period that each call to step() should simulate
   /// \param collisionDetector CollisionDetector to check finger collisions
   ///        If nullptr, default to FCLCollisionDetector.
   /// \param collideWith CollisionGroup to check finger collisions
@@ -40,7 +39,6 @@ public:
   BarrettHandKinematicSimulationPositionCommandExecutor(
       dart::dynamics::SkeletonPtr robot,
       const std::string& prefix,
-      std::chrono::milliseconds timestep,
       ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
       ::dart::collision::CollisionGroupPtr collideWith = nullptr,
       ::dart::collision::CollisionOption collisionOptions
@@ -58,7 +56,7 @@ public:
   /// \copydoc PositionCommandExecutor::step()
   /// \note Lock the Skeleton associated with this executor before calling this
   /// method.
-  void step() override;
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
 
   /// Sets CollisionGroup to check against for finger collisions.
   ///

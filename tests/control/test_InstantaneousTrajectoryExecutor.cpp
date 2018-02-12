@@ -83,20 +83,17 @@ protected:
 
 TEST_F(InstantaneousTrajectoryExecutorTest, constructor_NullSkeleton_Throws)
 {
-  EXPECT_THROW(
-      InstantaneousTrajectoryExecutor(nullptr, stepTime),
-      std::invalid_argument);
+  EXPECT_THROW(InstantaneousTrajectoryExecutor(nullptr), std::invalid_argument);
 }
 
 TEST_F(InstantaneousTrajectoryExecutorTest, constructor_Passes)
 {
-  EXPECT_NO_THROW(
-      InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime));
+  EXPECT_NO_THROW(InstantaneousTrajectoryExecutor executor(mSkeleton));
 }
 
 TEST_F(InstantaneousTrajectoryExecutorTest, execute_NullTrajectory_Throws)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
   EXPECT_THROW(executor.execute(nullptr), std::invalid_argument);
 }
 
@@ -104,7 +101,7 @@ TEST_F(
     InstantaneousTrajectoryExecutorTest,
     execute_NonMetaSkeletonStateSpace_Throws)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
 
   auto space = std::make_shared<SO2>();
   auto interpolator = std::make_shared<GeodesicInterpolator>(space);
@@ -119,7 +116,7 @@ TEST_F(
 {
   auto skeleton = Skeleton::create("Skeleton");
 
-  InstantaneousTrajectoryExecutor executor(skeleton, stepTime);
+  InstantaneousTrajectoryExecutor executor(skeleton);
   EXPECT_THROW(executor.execute(mTraj), std::invalid_argument);
 }
 
@@ -127,7 +124,7 @@ TEST_F(
     InstantaneousTrajectoryExecutorTest,
     execute_WaitOnFuture_TrajectoryWasExecutedInstantly)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
@@ -144,7 +141,7 @@ TEST_F(
     InstantaneousTrajectoryExecutorTest,
     execute_TrajectoryFinished_DoesNotThrow)
 {
-  InstantaneousTrajectoryExecutor executor(mSkeleton, stepTime);
+  InstantaneousTrajectoryExecutor executor(mSkeleton);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 

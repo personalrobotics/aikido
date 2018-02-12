@@ -12,12 +12,10 @@ BarrettHandKinematicSimulationPositionCommandExecutor::
     BarrettHandKinematicSimulationPositionCommandExecutor(
         dart::dynamics::SkeletonPtr robot,
         const std::string& prefix,
-        std::chrono::milliseconds timestep,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
         ::dart::collision::CollisionGroupPtr collideWith,
         ::dart::collision::CollisionOption collisionOptions)
-  : PositionCommandExecutor(timestep)
-  , mCollisionDetector(std::move(collisionDetector))
+  : mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
   , mCollisionOptions(std::move(collisionOptions))
   , mInProgress(false)
@@ -103,7 +101,6 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
   mSpreadCommandExecutor = std::make_shared<FingerSpreadCommandExecutor>(
       spreadFingers,
       spreadDof,
-      mTimestep,
       mCollisionDetector,
       mCollideWith,
       mCollisionOptions);
@@ -117,7 +114,6 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
             fingerChains[i],
             primalDof[i],
             distalDof[i],
-            mTimestep,
             mCollisionDetector,
             mCollideWith,
             mCollisionOptions);
@@ -162,7 +158,8 @@ BarrettHandKinematicSimulationPositionCommandExecutor::execute(
 }
 
 //==============================================================================
-void BarrettHandKinematicSimulationPositionCommandExecutor::step()
+void BarrettHandKinematicSimulationPositionCommandExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
@@ -215,8 +212,8 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
 
   // Call the finger executors' step function.
   for (int i = 0; i < kNumPositionExecutors; ++i)
-    mPositionCommandExecutors[i]->step();
-  mSpreadCommandExecutor->step();
+    mPositionCommandExecutors[i]->step(timepoint);
+  mSpreadCommandExecutor->step(timepoint);
 }
 
 //==============================================================================

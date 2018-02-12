@@ -54,8 +54,7 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
     double goalTimeTolerance,
     const std::chrono::milliseconds& connectionTimeout,
     const std::chrono::milliseconds& connectionPollingPeriod)
-  : TrajectoryExecutor(std::chrono::milliseconds(0))
-  , mNode{std::move(node)}
+  : mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mWaypointTimestep{waypointTimestep}
@@ -215,7 +214,8 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
 }
 
 //==============================================================================
-void RosTrajectoryExecutor::step()
+void RosTrajectoryExecutor::step(
+    const std::chrono::system_clock::time_point& /*timepoint*/)
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.

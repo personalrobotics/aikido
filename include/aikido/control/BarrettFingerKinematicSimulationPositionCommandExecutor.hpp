@@ -32,7 +32,6 @@ public:
   /// \param finger Finger to be controlled by this Executor.
   /// \param proximal Index of proximal dof
   /// \param distal Index of distal dof
-  /// \param timestep The time period that each call to step() should simulate
   /// \param collisionDetector CollisionDetector to check finger collisions
   ///        If nullptr, default to FCLCollisionDetector.
   /// \param collideWith CollisionGroup to check finger collisions
@@ -45,7 +44,6 @@ public:
       ::dart::dynamics::ChainPtr finger,
       std::size_t proximal,
       std::size_t distal,
-      std::chrono::milliseconds timestep,
       ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
       ::dart::collision::CollisionGroupPtr collideWith = nullptr,
       ::dart::collision::CollisionOption collisionOptions
@@ -71,14 +69,14 @@ public:
 
   /// \copydoc BarrettHandKinematicSimulationPositionCommandExecutor::step()
   ///
-  /// Moves the finger joint positions by dofVelocity * mTimestep until either
-  /// the proximal dof reaches goalPosition, a joint limit is reached, or
-  /// collision is detected.
+  /// Moves the finger joint positions by dofVelocity * timeSincePreviousCall
+  /// until either the proximal dof reaches goalPosition, a joint limit is
+  /// reached, or collision is detected.
   /// When collision is detected on the distal link, the finger stops.
   /// When collision is detected on the proximal link, the distal link continues
   /// to move until it either reaches mimicRatio * goalPosition, a joint limit
   /// is reached, or collision is detected.
-  void step() override;
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
 
   /// \copydoc
   /// BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith()

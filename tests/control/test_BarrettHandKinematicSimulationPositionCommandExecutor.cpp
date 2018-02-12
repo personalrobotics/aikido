@@ -222,7 +222,7 @@ TEST_F(
 {
   EXPECT_THROW(
       BarrettHandKinematicSimulationPositionCommandExecutor(
-          nullptr, mPrefix, stepTime, mCollisionDetector, mCollideWith),
+          nullptr, mPrefix, mCollisionDetector, mCollideWith),
       std::invalid_argument);
 }
 
@@ -232,7 +232,7 @@ TEST_F(
 {
   EXPECT_THROW(
       BarrettHandKinematicSimulationPositionCommandExecutor(
-          mRobot, "/invalid/", stepTime, mCollisionDetector, mCollideWith),
+          mRobot, "/invalid/", mCollisionDetector, mCollideWith),
       std::invalid_argument);
 }
 
@@ -242,7 +242,7 @@ TEST_F(
 {
   EXPECT_NO_THROW(
       BarrettHandKinematicSimulationPositionCommandExecutor(
-          mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith));
+          mRobot, mPrefix, mCollisionDetector, mCollideWith));
 }
 
 TEST_F(
@@ -251,17 +251,19 @@ TEST_F(
 {
   // Setup
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
 
   double mimicRatio = BarrettFingerKinematicSimulationPositionCommandExecutor::
       getMimicRatio();
 
   // Execute trajectory
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPositions);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
@@ -291,7 +293,7 @@ TEST_F(
     execute_CommandIsAlreadyRunning_Throws)
 {
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
 
   // Execute trajectory
   auto future = executor.execute(mPositions);
@@ -303,14 +305,16 @@ TEST_F(
     execute_PrevCommandFinished_DoesNotThrow)
 {
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
 
   // Execute trajectory
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPositions);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
@@ -332,13 +336,15 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, collideWith);
+      mRobot, mPrefix, mCollisionDetector, collideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
@@ -365,13 +371,15 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, collideWith);
+      mRobot, mPrefix, mCollisionDetector, collideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
@@ -401,14 +409,16 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
@@ -435,14 +445,16 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
@@ -473,14 +485,16 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();
@@ -508,14 +522,16 @@ TEST_F(
   position(0) = goal;
 
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
-      mRobot, mPrefix, stepTime, mCollisionDetector, mCollideWith);
+      mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
   future.get();

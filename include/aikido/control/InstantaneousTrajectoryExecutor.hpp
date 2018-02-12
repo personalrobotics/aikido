@@ -19,10 +19,8 @@ public:
   ///
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
-  /// \param timestep The time period that each call to step() should simulate
   explicit InstantaneousTrajectoryExecutor(
-      ::dart::dynamics::SkeletonPtr skeleton,
-      std::chrono::milliseconds timestep);
+      ::dart::dynamics::SkeletonPtr skeleton);
 
   virtual ~InstantaneousTrajectoryExecutor();
 
@@ -40,7 +38,7 @@ public:
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
   // Do nothing.
-  void step() override;
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
 
   // Do nothing.
   void abort() override;

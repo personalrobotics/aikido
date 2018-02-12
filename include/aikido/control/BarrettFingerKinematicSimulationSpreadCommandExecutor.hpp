@@ -25,7 +25,6 @@ public:
   ///
   /// \param fingers 2 fingers to be controlled by this Executor.
   /// \param spread Index of spread dof
-  /// \param timestep The time period that each call to step() should simulate
   /// \param collisionDetector CollisionDetector to check finger collisions
   ///        If nullptr, default to FCLCollisionDetector.
   /// \param collideWith CollisionGroup to check finger collisions
@@ -37,7 +36,6 @@ public:
   BarrettFingerKinematicSimulationSpreadCommandExecutor(
       std::array<::dart::dynamics::ChainPtr, 2> fingers,
       std::size_t spread,
-      std::chrono::milliseconds timestep,
       ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
       ::dart::collision::CollisionGroupPtr collideWith = nullptr,
       ::dart::collision::CollisionOption collisionOptions
@@ -54,10 +52,10 @@ public:
 
   /// \copydoc BarrettHandKinematicSimulationPositionCommandExecutor::step()
   ///
-  /// Moves the spread joint by dofVelocity * mTimestep until either the spread
-  /// dof reaches goalPosition, a joint limit is reached, or collision is
-  /// detected.
-  void step() override;
+  /// Moves the spread joint by dofVelocity * timeSincePreviousCall until either
+  /// the spread dof reaches goalPosition, a joint limit is reached, or
+  /// collision is detected.
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
 
   /// \copydoc
   /// BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith()
@@ -105,9 +103,6 @@ private:
 
   /// Whether a position command is being executed
   bool mInProgress;
-
-  /// Duration that the position command has been executed
-  double mExecutionTime;
 
   /// Promise whose future is returned by execute()
   std::unique_ptr<std::promise<void>> mPromise;

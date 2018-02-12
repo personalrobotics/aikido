@@ -9,9 +9,8 @@ namespace control {
 
 //==============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton, std::chrono::milliseconds timestep)
-  : TrajectoryExecutor(timestep)
-  , mSkeleton{std::move(skeleton)}
+    ::dart::dynamics::SkeletonPtr skeleton)
+  : mSkeleton{std::move(skeleton)}
   , mTraj{nullptr}
   , mStateSpace{nullptr}
   , mInProgress{false}
@@ -81,14 +80,15 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     mStateSpace = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
         traj->getStateSpace());
     mInProgress = true;
-    mExecutionTime = 0;
+    mExecutionStartTime = std::chrono::system_clock::now();
   }
 
   return mPromise->get_future();
 }
 
 //==============================================================================
-void KinematicSimulationTrajectoryExecutor::step()
+void KinematicSimulationTrajectoryExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
@@ -111,20 +111,20 @@ void KinematicSimulationTrajectoryExecutor::step()
     mInProgress = false;
   }
 
-  const auto period = std::chrono::duration<double>(mTimestep).count();
-  mExecutionTime += period;
+  const auto timeSinceBeginning = timepoint - mExecutionStartTime;
+  const auto executionTime
+      = std::chrono::duration<double>(timeSinceBeginning).count();
 
   auto state = mStateSpace->createState();
-  mTraj->evaluate(mExecutionTime, state);
+  mTraj->evaluate(executionTime, state);
   mStateSpace->setState(mSkeleton.get(), state);
 
   // Check if trajectory has completed.
-  if (mExecutionTime >= mTraj->getEndTime())
+  if (executionTime >= mTraj->getEndTime())
   {
     mTraj.reset();
     mStateSpace.reset();
     mInProgress = false;
-    mExecutionTime = 0;
     mPromise->set_value();
   }
 }
@@ -139,7 +139,6 @@ void KinematicSimulationTrajectoryExecutor::abort()
     mTraj.reset();
     mStateSpace.reset();
     mInProgress = false;
-    mExecutionTime = 0;
     mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
   }

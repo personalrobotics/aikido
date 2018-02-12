@@ -15,8 +15,7 @@ RosPositionCommandExecutor::RosPositionCommandExecutor(
     std::vector<std::string> jointNames,
     const std::chrono::milliseconds connectionTimeout,
     const std::chrono::milliseconds connectionPollingPeriod)
-  : PositionCommandExecutor(std::chrono::milliseconds(0))
-  , mNode(std::move(node))
+  : mNode(std::move(node))
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mJointNames(std::move(jointNames))
@@ -118,7 +117,8 @@ void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
 }
 
 //==============================================================================
-void RosPositionCommandExecutor::step()
+void RosPositionCommandExecutor::step(
+    const std::chrono::system_clock::time_point& /*timepoint*/)
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.

@@ -1,10 +1,8 @@
 set(sources
-  TrajectoryExecutor.cpp
   TrajectoryRunningException.cpp
   InstantaneousTrajectoryExecutor.cpp
   KinematicSimulationTrajectoryExecutor.cpp
   QueuedTrajectoryExecutor.cpp
-  PositionCommandExecutor.cpp
   BarrettHandKinematicSimulationPositionCommandExecutor.cpp
   BarrettFingerKinematicSimulationPositionCommandExecutor.cpp
   BarrettFingerKinematicSimulationSpreadCommandExecutor.cpp

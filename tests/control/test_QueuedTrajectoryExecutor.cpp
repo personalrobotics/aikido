@@ -79,8 +79,8 @@ public:
     mTraj2->addWaypoint(0, s2);
     mTraj2->addWaypoint(1, s3);
 
-    mExecutor = std::make_shared<KinematicSimulationTrajectoryExecutor>(
-        mSkeleton, stepTime);
+    mExecutor
+        = std::make_shared<KinematicSimulationTrajectoryExecutor>(mSkeleton);
   }
 
 protected:
@@ -112,12 +112,14 @@ TEST_F(QueuedTrajectoryExecutorTest, execute_WaitOnFuture_TrajectoryWasExecuted)
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj1);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -134,13 +136,15 @@ TEST_F(
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto f1 = executor.execute(mTraj1);
   auto f2 = executor.execute(mTraj2);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = f1.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -150,7 +154,8 @@ TEST_F(
 
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = f2.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -167,13 +172,15 @@ TEST_F(
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto f1 = executor.execute(mTraj1);
   auto f2 = executor.execute(mTraj2);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = f2.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -217,10 +224,13 @@ TEST_F(
   auto f1 = executor.execute(mTraj1);
   auto f2 = executor.execute(mTraj2);
 
-  executor.step(); // dequeue trajectory
+  auto simulationClock = std::chrono::system_clock::now();
+  simulationClock += stepTime;
+  executor.step(simulationClock); // dequeue trajectory
 
   f1.wait_for(waitTime);
-  executor.step();
+  simulationClock += stepTime;
+  executor.step(simulationClock);
 
   executor.abort();
 

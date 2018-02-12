@@ -158,11 +158,7 @@ TEST_F(BarrettFingerKinematicSimulationSpreadCommandExecutorTest, constructor)
 {
   EXPECT_NO_THROW(
       BarrettFingerKinematicSimulationSpreadCommandExecutor(
-          mFingerChains,
-          mSpreadDof,
-          stepTime,
-          mCollisionDetector,
-          mCollideWith));
+          mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith));
 }
 
 TEST_F(
@@ -172,7 +168,7 @@ TEST_F(
   int spreadDof = 3;
   EXPECT_THROW(
       BarrettFingerKinematicSimulationSpreadCommandExecutor(
-          mFingerChains, spreadDof, stepTime, mCollisionDetector, mCollideWith),
+          mFingerChains, spreadDof, mCollisionDetector, mCollideWith),
       std::invalid_argument);
 }
 
@@ -183,7 +179,7 @@ TEST_F(
   int spreadDof = 0;
   EXPECT_NO_THROW(
       BarrettFingerKinematicSimulationSpreadCommandExecutor(
-          mFingerChains, spreadDof, stepTime, mCollisionDetector, nullptr));
+          mFingerChains, spreadDof, mCollisionDetector, nullptr));
 }
 
 TEST_F(
@@ -193,7 +189,7 @@ TEST_F(
   int spreadDof = 0;
   EXPECT_NO_THROW(
       BarrettFingerKinematicSimulationSpreadCommandExecutor(
-          mFingerChains, spreadDof, stepTime, nullptr, mCollideWith));
+          mFingerChains, spreadDof, nullptr, mCollideWith));
 }
 
 TEST_F(
@@ -201,14 +197,16 @@ TEST_F(
     execute_WaitOnFuture_CommandExecuted)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-      mFingerChains, mSpreadDof, stepTime, mCollisionDetector, mCollideWith);
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPosition);
-  std::future_status status;
 
+  std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -234,17 +232,18 @@ TEST_F(
   mCollideWith = mCollisionDetector->createCollisionGroup(ball);
 
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-      mFingerChains, mSpreadDof, stepTime, mCollisionDetector, mCollideWith);
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
   Vector1d goal;
   goal << 1.0;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
-
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -273,17 +272,18 @@ TEST_F(
   mCollideWith = mCollisionDetector->createCollisionGroup(ball);
 
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-      mFingerChains, mSpreadDof, stepTime, mCollisionDetector, mCollideWith);
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
   Vector1d goal;
   goal << 1.0;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
-
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -305,7 +305,7 @@ TEST_F(
     execute_ThrowsWhenFingerSpreadValuesDiffer)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-      mFingerChains, mSpreadDof, stepTime, mCollisionDetector, mCollideWith);
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
   mFingerChains[0]->getBodyNode(0)->getParentJoint()->getDof(0)->setPosition(0);
   mFingerChains[1]->getBodyNode(0)->getParentJoint()->getDof(0)->setPosition(
@@ -313,13 +313,14 @@ TEST_F(
 
   Vector1d goal;
   goal << M_PI * 0.5;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
-
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -331,16 +332,18 @@ TEST_F(
     execute_GoalAboveUpperLimitStopsAtUpperJointLimit)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-      mFingerChains, mSpreadDof, stepTime, mCollisionDetector, mCollideWith);
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
   Vector1d goal;
   goal << M_PI * 1.5;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -365,16 +368,18 @@ TEST_F(
     execute_GoalBelowLowerLimitStopsAtLowerJointLimit)
 {
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
-      mFingerChains, mSpreadDof, stepTime, mCollisionDetector, mCollideWith);
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
   Vector1d goal;
   goal << -M_PI * 0.5;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 

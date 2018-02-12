@@ -9,11 +9,8 @@ namespace control {
 
 //==============================================================================
 InstantaneousTrajectoryExecutor::InstantaneousTrajectoryExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton, std::chrono::milliseconds timestep)
-  : TrajectoryExecutor(timestep)
-  , mSkeleton{std::move(skeleton)}
-  , mPromise{nullptr}
-  , mMutex{}
+    ::dart::dynamics::SkeletonPtr skeleton)
+  : mSkeleton{std::move(skeleton)}, mPromise{nullptr}, mMutex{}
 {
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
@@ -72,7 +69,8 @@ std::future<void> InstantaneousTrajectoryExecutor::execute(
 }
 
 //==============================================================================
-void InstantaneousTrajectoryExecutor::step()
+void InstantaneousTrajectoryExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
   // Do nothing
 }
