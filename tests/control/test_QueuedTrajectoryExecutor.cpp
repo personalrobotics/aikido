@@ -200,6 +200,7 @@ TEST_F(QueuedTrajectoryExecutorTest, step_NegativeTimepoint_Throws)
   auto simulationClock = std::chrono::system_clock::now();
   auto f1 = executor.execute(mTraj1);
   auto f2 = executor.execute(mTraj2);
+  executor.step(simulationClock); // dequeue trajectory
 
   EXPECT_THROW(
       executor.step(simulationClock - stepTime), std::invalid_argument);
@@ -214,7 +215,7 @@ TEST_F(QueuedTrajectoryExecutorTest, step_NegativeTimepoint_Throws)
 
   f2.get();
 
-  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 2.0);
 
   EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
 }
