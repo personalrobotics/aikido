@@ -70,7 +70,7 @@ std::future<void> InstantaneousTrajectoryExecutor::execute(
 
 //==============================================================================
 void InstantaneousTrajectoryExecutor::step(
-    const std::chrono::system_clock::time_point& timepoint)
+    const std::chrono::system_clock::time_point& /*timepoint*/)
 {
   // Do nothing
 }
