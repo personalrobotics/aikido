@@ -398,3 +398,34 @@ TEST_F(
     EXPECT_NEAR(expected, spread, eps);
   }
 }
+
+TEST_F(
+    BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
+    step_NegativeTimepoint_Throws)
+{
+  BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
+
+  auto simulationClock = std::chrono::system_clock::now();
+  auto future = executor.execute(mPosition);
+
+  std::future_status status;
+  do
+  {
+    EXPECT_THROW(
+        executor.step(simulationClock - stepTime), std::invalid_argument);
+
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
+  } while (status != std::future_status::ready);
+
+  future.get();
+
+  for (auto finger : mFingerChains)
+  {
+    auto dof = finger->getBodyNode(0)->getParentJoint()->getDof(mSpreadDof);
+    double spread = dof->getPosition();
+    EXPECT_NEAR(mPosition[0], spread, eps);
+  }
+}

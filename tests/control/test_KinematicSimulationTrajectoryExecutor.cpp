@@ -210,6 +210,31 @@ TEST_F(
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
 }
 
+TEST_F(KinematicSimulationTrajectoryExecutorTest, step_NegativeTimepoint_Throws)
+{
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+
+  auto simulationClock = std::chrono::system_clock::now();
+  auto future = executor.execute(mTraj);
+
+  EXPECT_THROW(
+      executor.step(simulationClock - stepTime), std::invalid_argument);
+
+  std::future_status status;
+  do
+  {
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
+  } while (status != std::future_status::ready);
+
+  future.get();
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
+}
+
 TEST_F(
     KinematicSimulationTrajectoryExecutorTest, abort_TrajectoryInProgress_Halts)
 {

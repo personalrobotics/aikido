@@ -127,10 +127,13 @@ void BarrettFingerKinematicSimulationPositionCommandExecutor::step(
     return;
 
   const auto timeSincePreviousCall = timepoint - mTimeOfPreviousCall;
-  mTimeOfPreviousCall = timepoint;
-
   const auto period
       = std::chrono::duration<double>(timeSincePreviousCall).count();
+
+  if (period < 0)
+    throw std::invalid_argument("Timepoint is before previous call.");
+
+  mTimeOfPreviousCall = timepoint;
 
   double distalPosition = mDistalDof->getPosition();
   double proximalPosition = mProximalDof->getPosition();

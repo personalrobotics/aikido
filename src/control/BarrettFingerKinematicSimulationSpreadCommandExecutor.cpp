@@ -151,10 +151,13 @@ void BarrettFingerKinematicSimulationSpreadCommandExecutor::step(
     return;
 
   const auto timeSincePreviousCall = timepoint - mTimeOfPreviousCall;
-  mTimeOfPreviousCall = timepoint;
-
   const auto period
       = std::chrono::duration<double>(timeSincePreviousCall).count();
+
+  if (period < 0)
+    throw std::invalid_argument("Timepoint is before previous call.");
+
+  mTimeOfPreviousCall = timepoint;
 
   // Current spread. Check that all spreads have same values.
   double spread = mSpreadDofs[0]->getPosition();

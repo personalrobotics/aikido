@@ -191,6 +191,34 @@ TEST_F(
   EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
 }
 
+TEST_F(QueuedTrajectoryExecutorTest, step_NegativeTimepoint_Throws)
+{
+  QueuedTrajectoryExecutor executor(std::move(mExecutor));
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+
+  auto simulationClock = std::chrono::system_clock::now();
+  auto f1 = executor.execute(mTraj1);
+  auto f2 = executor.execute(mTraj2);
+
+  EXPECT_THROW(
+      executor.step(simulationClock - stepTime), std::invalid_argument);
+
+  std::future_status status;
+  do
+  {
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = f2.wait_for(waitTime);
+  } while (status != std::future_status::ready);
+
+  f2.get();
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
+
+  EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
+}
+
 TEST_F(
     QueuedTrajectoryExecutorTest,
     abort_NoRunningTrajectories_QueuedTrajectoriesAborted)

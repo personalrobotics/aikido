@@ -350,3 +350,38 @@ TEST_F(
   EXPECT_NEAR(proximalExpected, proximalActual, eps);
   EXPECT_NEAR(distalExpected, distalActual, eps);
 }
+
+TEST_F(
+    BarrettFingerKinematicSimulationPositionCommandExecutorTest,
+    step_NegativeTimepoint_Throws)
+{
+  BarrettFingerKinematicSimulationPositionCommandExecutor executor(
+      mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, mCollideWith);
+
+  double mimicRatio = BarrettFingerKinematicSimulationPositionCommandExecutor::
+      getMimicRatio();
+
+  double goalProximal = mPosition[0];
+  double goalDistal = mPosition[0] * mimicRatio;
+
+  auto simulationClock = std::chrono::system_clock::now();
+  auto future = executor.execute(mPosition);
+
+  std::future_status status;
+  do
+  {
+    EXPECT_THROW(
+        executor.step(simulationClock - stepTime), std::invalid_argument);
+
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
+  } while (status != std::future_status::ready);
+
+  future.wait();
+
+  EXPECT_NEAR(
+      goalProximal, mBn2->getParentJoint()->getDof(0)->getPosition(), eps);
+  EXPECT_NEAR(
+      goalDistal, mBn3->getParentJoint()->getDof(0)->getPosition(), eps);
+}
