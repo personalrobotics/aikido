@@ -8,10 +8,13 @@
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/common/pointers.hpp"
 #include "aikido/control/PositionCommandExecutor.hpp"
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(BarrettFingerKinematicSimulationPositionCommandExecutor)
 
 /// This executor mimics the behavior of a BarrettHand finger.
 ///
@@ -146,9 +149,6 @@ private:
   /// mDistalGoalPosition, mDistalOnly, mInProgress, mPromise
   std::mutex mMutex;
 };
-
-using BarrettFingerKinematicSimulationPositionCommandExecutorPtr
-    = std::shared_ptr<BarrettFingerKinematicSimulationPositionCommandExecutor>;
 
 } // namespace control
 } // namespace aikido

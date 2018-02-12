@@ -4,9 +4,12 @@
 #include <chrono>
 #include <future>
 #include <Eigen/Dense>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(PositionCommandExecutor)
 
 /// Abstract class for executing position commands.
 ///
@@ -37,8 +40,6 @@ protected:
   /// Time of previous call
   std::chrono::system_clock::time_point mTimeOfPreviousCall;
 };
-
-using PositionCommandExecutorPtr = std::shared_ptr<PositionCommandExecutor>;
 
 } // namespace control
 } // namespace aikido

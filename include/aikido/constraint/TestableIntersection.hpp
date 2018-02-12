@@ -8,6 +8,8 @@
 namespace aikido {
 namespace constraint {
 
+AIKIDO_DECLARE_POINTERS(TestableIntersection)
+
 /// A testable constraint grouping a set of testable constraint.
 /// This constriant is satisfied only if all constraints in the set
 /// are satisfied.
@@ -44,8 +46,6 @@ private:
 
   void testConstraintStateSpaceOrThrow(const TestablePtr& constraint);
 };
-
-using TestableIntersectionPtr = std::shared_ptr<TestableIntersection>;
 
 } // namespace constraint
 } // namespace aikido

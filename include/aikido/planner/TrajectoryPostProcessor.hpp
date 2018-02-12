@@ -14,8 +14,14 @@ public:
   /// \param _inputTraj The untimed trajectory for the arm to process.
   /// \param _rng Random number generator.
   virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
-      const aikido::trajectory::InterpolatedPtr& _inputTraj,
-      const aikido::common::RNG* _rng)
+      const aikido::trajectory::Interpolated& _inputTraj,
+      const aikido::common::RNG& _rng)
+      = 0;
+
+  /// \param _inputTraj The untimed *spline* trajectory for the arm to process.
+  /// \param _rng Random number generator.
+  virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const trajectory::Spline& _inputTraj, const aikido::common::RNG& _rng)
       = 0;
 };
 

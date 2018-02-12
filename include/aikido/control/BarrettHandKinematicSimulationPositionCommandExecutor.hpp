@@ -16,6 +16,8 @@
 namespace aikido {
 namespace control {
 
+AIKIDO_DECLARE_POINTERS(BarrettHandKinematicSimulationPositionCommandExecutor)
+
 /// Position command executor for simulating BarrettHand.
 ///
 /// See BarrettFingerKinematicSimulationPositionCommandExecutor and
@@ -110,9 +112,6 @@ private:
   /// Manages access to mCollideWith, mInProgress, mPromise
   std::mutex mMutex;
 };
-
-using BarrettHandKinematicSimulationPositionCommandExecutorPtr
-    = std::shared_ptr<BarrettHandKinematicSimulationPositionCommandExecutor>;
 
 } // namespace control
 } // namespace aikido

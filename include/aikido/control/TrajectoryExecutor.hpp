@@ -3,10 +3,13 @@
 
 #include <chrono>
 #include <future>
+#include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(TrajectoryExecutor)
 
 /// Abstract class for executing trajectories.
 class TrajectoryExecutor
@@ -43,8 +46,6 @@ protected:
   /// Time of previous call
   std::chrono::system_clock::time_point mExecutionStartTime;
 };
-
-using TrajectoryExecutorPtr = std::shared_ptr<TrajectoryExecutor>;
 
 } // namespace control
 } // namespace aikido
