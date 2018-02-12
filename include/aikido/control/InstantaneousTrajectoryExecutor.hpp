@@ -38,7 +38,8 @@ public:
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
   // Do nothing.
-  void step(const std::chrono::system_clock::time_point& /*timepoint*/) override;
+  void step(
+      const std::chrono::system_clock::time_point& /*timepoint*/) override;
 
   // Do nothing.
   void abort() override;
