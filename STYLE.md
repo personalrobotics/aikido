@@ -102,7 +102,7 @@ class TemplatedExampleClass
 {
 public:
   /// Brief description.
-  void exampleMethod();
+  T exampleMethod();
 };
 
 } // namespace example
@@ -128,9 +128,9 @@ namespace example {
 
 //==============================================================================
 template <typename T>
-TemplatedExampleClass<T>::exampleMethod()
+T TemplatedExampleClass<T>::exampleMethod()
 {
-  // Do something.
+  return T();
 }
 
 } // namespace example
