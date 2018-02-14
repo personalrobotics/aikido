@@ -252,7 +252,7 @@ private:
 class EmptySampleGenerator : public aikido::constraint::SampleGenerator
 {
 public:
-  EmptySampleGenerator(aikido::statespace::StateSpacePtr sspace)
+  explicit EmptySampleGenerator(aikido::statespace::StateSpacePtr sspace)
     : mStateSpace(sspace)
   {
   }
@@ -282,7 +282,7 @@ private:
 class FailedSampleGenerator : public aikido::constraint::SampleGenerator
 {
 public:
-  FailedSampleGenerator(aikido::statespace::StateSpacePtr sspace)
+  explicit FailedSampleGenerator(aikido::statespace::StateSpacePtr sspace)
     : mStateSpace(sspace)
   {
   }
