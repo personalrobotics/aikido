@@ -58,7 +58,7 @@ public:
   }
 
   ChainPtr create3DoFFinger(
-      const std::string fingerName,
+      const std::string& fingerName,
       Eigen::Isometry3d transform = Eigen::Isometry3d::Identity(),
       Eigen::Vector3d spreadAxis = Eigen::Vector3d::UnitX())
   {
