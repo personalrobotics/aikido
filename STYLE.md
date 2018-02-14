@@ -95,6 +95,16 @@ private:
   std::unique_ptr<util::RNG> mExampleMember; // Member variables are prefixed with "m"
 };
 
+/// This is a template class description.
+/// \tparam T This is an example template parameter description.
+template <typename T>
+class TemplatedExampleClass
+{
+public:
+  /// Brief description.
+  T exampleMethod();
+};
+
 } // namespace example
 } // namespace aikido
 
@@ -105,6 +115,28 @@ private:
 #include "aikido/component_name/detail/ExampleClass-impl.hpp"
 
 #endif // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
+```
+
+```c++
+#ifndef AIKIDO_EXAMPLE_DETAIL_EXAMPLECLASS_IMPL_HPP_
+#define AIKIDO_EXAMPLE_DETAIL_EXAMPLECLASS_IMPL_HPP_
+
+#include "aikido/example/ExampleClass.hpp"
+
+namespace aikido {
+namespace example {
+
+//==============================================================================
+template <typename T>
+T TemplatedExampleClass<T>::exampleMethod()
+{
+  return T();
+}
+
+} // namespace example
+} // namespace aikido
+
+#endif // AIKIDO_EXAMPLE_DETAIL_EXAMPLECLASS_IMPL_HPP_
 ```
 
 ### Source Style
