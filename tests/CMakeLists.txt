@@ -12,3 +12,5 @@ add_subdirectory("distance")
 add_subdirectory("planner")
 add_subdirectory("statespace")
 add_subdirectory("trajectory")
+
+format_add_sources(eigen_tests.hpp)

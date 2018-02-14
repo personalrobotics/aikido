@@ -5,10 +5,13 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
+#include "aikido/common/pointers.hpp"
 #include "ResourceServer.hpp"
 
 namespace aikido {
 namespace rviz {
+
+AIKIDO_DECLARE_POINTERS(ShapeFrameMarker)
 
 class ShapeFrameMarker
 {
@@ -41,7 +44,7 @@ private:
 
   bool mExists;
   bool mForceUpdate;
-  size_t mVersion;
+  std::size_t mVersion;
 
   bool mShowVisual;
   bool mShowCollision;

@@ -61,7 +61,7 @@ RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
   const auto dimension = mSpace->getDimension();
   mDistributions.reserve(dimension);
 
-  for (size_t i = 0; i < dimension; ++i)
+  for (std::size_t i = 0; i < dimension; ++i)
     mDistributions.emplace_back(_lowerLimits[i], _upperLimits[i]);
 }
 
@@ -136,7 +136,7 @@ RBoxConstraint<N>::RBoxConstraint(
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < dimension; ++i)
+  for (std::size_t i = 0; i < dimension; ++i)
   {
     if (mLowerLimits[i] > mUpperLimits[i])
     {
@@ -158,7 +158,7 @@ statespace::StateSpacePtr RBoxConstraint<N>::getStateSpace() const
 
 //==============================================================================
 template <int N>
-size_t RBoxConstraint<N>::getConstraintDimension() const
+std::size_t RBoxConstraint<N>::getConstraintDimension() const
 {
   // TODO: Only create constraints for bounded dimensions.
   return mSpace->getDimension();
@@ -175,17 +175,34 @@ std::vector<ConstraintType> RBoxConstraint<N>::getConstraintTypes() const
 //==============================================================================
 template <int N>
 bool RBoxConstraint<N>::isSatisfied(
-    const statespace::StateSpace::State* state) const
+    const statespace::StateSpace::State* state, TestableOutcome* outcome) const
 {
+  auto defaultOutcomeObject
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
+
   const auto value = mSpace->getValue(
       static_cast<const typename statespace::R<N>::State*>(state));
 
   for (auto i = 0; i < value.size(); ++i)
   {
     if (value[i] < mLowerLimits[i] || value[i] > mUpperLimits[i])
+    {
+      if (defaultOutcomeObject)
+        defaultOutcomeObject->setSatisfiedFlag(false);
       return false;
+    }
   }
+
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(true);
   return true;
+}
+
+//==============================================================================
+template <int N>
+std::unique_ptr<TestableOutcome> RBoxConstraint<N>::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================
@@ -218,10 +235,10 @@ void RBoxConstraint<N>::getValue(
   auto stateValue = mSpace->getValue(
       static_cast<const typename statespace::R<N>::State*>(_s));
 
-  const size_t dimension = mSpace->getDimension();
+  const std::size_t dimension = mSpace->getDimension();
   _out.resize(dimension);
 
-  for (size_t i = 0; i < dimension; ++i)
+  for (std::size_t i = 0; i < dimension; ++i)
   {
     if (stateValue[i] < mLowerLimits[i])
       _out[i] = stateValue[i] - mLowerLimits[i];
@@ -240,7 +257,7 @@ void RBoxConstraint<N>::getJacobian(
   auto stateValue = mSpace->getValue(
       static_cast<const typename statespace::R<N>::State*>(_s));
 
-  const size_t dimension = mSpace->getDimension();
+  const std::size_t dimension = mSpace->getDimension();
   _out = Eigen::MatrixXd::Zero(dimension, dimension);
 
   for (auto i = 0; i < _out.rows(); ++i)
@@ -262,7 +279,7 @@ RBoxConstraint<N>::createSampleGenerator() const
   if (!mRng)
     throw std::invalid_argument("mRng is null.");
 
-  for (size_t i = 0; i < mSpace->getDimension(); ++i)
+  for (std::size_t i = 0; i < mSpace->getDimension(); ++i)
   {
     if (!std::isfinite(mLowerLimits[i]) || !std::isfinite(mUpperLimits[i]))
     {

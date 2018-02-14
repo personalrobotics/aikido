@@ -30,7 +30,7 @@ public:
 
     auto state = static_cast<statespace::CartesianProduct::State*>(_state);
 
-    for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
+    for (std::size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
     {
       auto subState = mStateSpace->getSubState<>(state, i);
 
@@ -91,7 +91,7 @@ CartesianProductSampleable::CartesianProductSampleable(
     throw std::invalid_argument(msg.str());
   }
 
-  for (size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
+  for (std::size_t i = 0; i < mStateSpace->getNumSubspaces(); ++i)
   {
     if (!mConstraints[i])
     {

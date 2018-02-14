@@ -1,4 +1,4 @@
-#include <aikido/io/CatkinResourceRetriever.hpp>
+#include "aikido/io/CatkinResourceRetriever.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -27,7 +27,11 @@ std::string getPackageNameFromXML(const std::string& _path)
   if (document.LoadFile(_path.c_str()))
   {
     dtwarn << "[CatkinResourceRetriever] Failed loading package.xml file '"
+#ifdef TINYXML2_MAJOR_VERSION_GE_6
+           << _path << "': " << document.ErrorStr() << "\n";
+#else
            << _path << "': " << document.GetErrorStr1() << "\n";
+#endif
     return "";
   }
 
@@ -204,7 +208,7 @@ auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
     const ResourcePtr marker_resource = mDelegate->retrieve(marker_uri);
     if (marker_resource)
     {
-      const size_t filesize = marker_resource->getSize();
+      const std::size_t filesize = marker_resource->getSize();
 
       std::string contents;
       contents.resize(filesize);

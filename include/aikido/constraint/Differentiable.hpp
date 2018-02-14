@@ -3,10 +3,13 @@
 
 #include <memory>
 #include <Eigen/Dense>
+#include "aikido/common/pointers.hpp"
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
+
+AIKIDO_DECLARE_POINTERS(Differentiable)
 
 /// Enum for classifying constraints used in Differentiable.
 /// Equality constraint is satisfied by f(x) = 0.
@@ -32,7 +35,7 @@ public:
   virtual std::vector<ConstraintType> getConstraintTypes() const = 0;
 
   /// Size of constraints
-  virtual size_t getConstraintDimension() const = 0;
+  virtual std::size_t getConstraintDimension() const = 0;
 
   /// Get the value of constraints at _s.
   /// Should be 0 to satisfy equality constraints.
@@ -66,8 +69,6 @@ public:
       Eigen::VectorXd& _val,
       Eigen::MatrixXd& _jac) const;
 };
-
-using DifferentiablePtr = std::shared_ptr<Differentiable>;
 
 } // namespace constraint
 } // namespace aikido

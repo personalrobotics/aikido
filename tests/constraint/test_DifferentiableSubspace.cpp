@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include "PolynomialConstraint.hpp"
-#include "../eigen_tests.hpp"
 #include <aikido/constraint/DifferentiableSubspace.hpp>
 #include <aikido/constraint/Satisfied.hpp>
-#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
+#include "../eigen_tests.hpp"
+#include "PolynomialConstraint.hpp"
 
 using aikido::constraint::DifferentiableSubspace;
 using aikido::constraint::Satisfied;
@@ -19,8 +19,8 @@ public:
   virtual void SetUp()
   {
     auto so2 = std::make_shared<SO2>();
-    constraint =
-        std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(-1, 0, 1));
+    constraint
+        = std::make_shared<PolynomialConstraint<1>>(Eigen::Vector3d(-1, 0, 1));
     auto rv = constraint->getStateSpace();
 
     cs = std::make_shared<CartesianProduct>(
@@ -35,8 +35,8 @@ public:
 
 TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(DifferentiableSubspace(nullptr, constraint, 1),
-               std::invalid_argument);
+  EXPECT_THROW(
+      DifferentiableSubspace(nullptr, constraint, 1), std::invalid_argument);
 }
 
 TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullConstraint)
@@ -58,8 +58,8 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnInvalidIndex)
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
-  EXPECT_THROW(DifferentiableSubspace(cs, constraint, 2),
-               std::invalid_argument);
+  EXPECT_THROW(
+      DifferentiableSubspace(cs, constraint, 2), std::invalid_argument);
 }
 
 TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnMismatchStateSpace)
@@ -70,8 +70,8 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnMismatchStateSpace)
   auto cs = std::make_shared<CartesianProduct>(
       std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
 
-  EXPECT_THROW(DifferentiableSubspace(cs, constraint, 0),
-               std::invalid_argument);
+  EXPECT_THROW(
+      DifferentiableSubspace(cs, constraint, 0), std::invalid_argument);
 }
 
 TEST_F(DifferentiableSubspaceTest, StateSpace)
@@ -135,8 +135,7 @@ TEST_F(DifferentiableSubspaceTest, ConstraintValueAndJacobian)
 
   Eigen::VectorXd val;
   Eigen::MatrixXd jac;
-  ds->getValueAndJacobian(st, val, jac)
-  ;
+  ds->getValueAndJacobian(st, val, jac);
   EXPECT_TRUE(val.isApprox(expectedVal));
   EXPECT_TRUE(jac.isApprox(expectedJac));
 }

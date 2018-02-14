@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include <aikido/statespace/Rn.hpp>
+#include <aikido/planner/parabolic/ParabolicTimer.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
+#include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
-#include <aikido/statespace/CartesianProduct.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
@@ -28,8 +28,7 @@ protected:
     mMaxAcceleration = Eigen::Vector2d(2., 2.);
 
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
-    mStraightLine = std::make_shared<Interpolated>(
-      mStateSpace, mInterpolator);
+    mStraightLine = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
 
@@ -52,43 +51,51 @@ TEST_F(ParabolicTimerTests, InputTrajectoryIsEmpty_Throws)
 {
   Interpolated emptyTrajectory(mStateSpace, mInterpolator);
 
-  EXPECT_THROW({convertToSpline(emptyTrajectory);}, std::invalid_argument);
+  EXPECT_THROW({ convertToSpline(emptyTrajectory); }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxVelocityIsZero_Throws)
 {
   Vector2d zeroMaxVelocity(1., 0.);
-  EXPECT_THROW({
-    computeParabolicTiming(
-      *mStraightLine, zeroMaxVelocity, mMaxAcceleration);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      {
+        computeParabolicTiming(
+            *mStraightLine, zeroMaxVelocity, mMaxAcceleration);
+      },
+      std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxVelocityIsNegative_Throws)
 {
   Vector2d negativeMaxVelocity(1., -1);
-  EXPECT_THROW({
-    computeParabolicTiming(
-      *mStraightLine, negativeMaxVelocity, mMaxAcceleration);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      {
+        computeParabolicTiming(
+            *mStraightLine, negativeMaxVelocity, mMaxAcceleration);
+      },
+      std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxAccelerationIsZero_Throws)
 {
   Vector2d zeroMaxAcceleration(1., 0.);
-  EXPECT_THROW({
-    computeParabolicTiming(
-      *mStraightLine, mMaxVelocity, zeroMaxAcceleration);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      {
+        computeParabolicTiming(
+            *mStraightLine, mMaxVelocity, zeroMaxAcceleration);
+      },
+      std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, MaxAccelerationIsNegative_Throws)
 {
   Vector2d negativeMaxAcceleration(1., -1);
-  EXPECT_THROW({
-    computeParabolicTiming(
-      *mStraightLine, mMaxVelocity, negativeMaxAcceleration);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      {
+        computeParabolicTiming(
+            *mStraightLine, mMaxVelocity, negativeMaxAcceleration);
+      },
+      std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
@@ -107,9 +114,9 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
   inputTrajectory.addWaypoint(3., state);
 
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
+      inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
-  timedTrajectory->evaluate(1., state);  
+  timedTrajectory->evaluate(1., state);
   EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
 
   timedTrajectory->evaluate(2., state);
@@ -117,7 +124,41 @@ TEST_F(ParabolicTimerTests, StartsAtNonZeroTime)
 
   timedTrajectory->evaluate(3., state);
   EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
+}
 
+TEST_F(ParabolicTimerTests, InterploatedSplineEquivalence)
+{
+  Interpolated interpolated(mStateSpace, mInterpolator);
+
+  auto state = mStateSpace->createState();
+  auto state2 = mStateSpace->createState();
+
+  // This is the same test as StraightLine_TriangularProfile, except that the
+  // trajectory starts at a non-zero time.
+  state.setValue(Vector2d(1., 2.));
+  interpolated.addWaypoint(1., state);
+
+  state.setValue(Vector2d(2., 3.));
+  interpolated.addWaypoint(3., state);
+
+  auto spline = convertToSpline(interpolated);
+
+  auto timedInterpolated = computeParabolicTiming(
+      interpolated, Vector2d::Constant(2.), Vector2d::Constant(1.));
+  auto timedSpline = computeParabolicTiming(
+      *spline, Vector2d::Constant(2.), Vector2d::Constant(1.));
+
+  timedInterpolated->evaluate(1., state);
+  timedSpline->evaluate(1., state2);
+  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+
+  timedInterpolated->evaluate(2., state);
+  timedSpline->evaluate(2., state2);
+  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+
+  timedInterpolated->evaluate(3., state);
+  timedSpline->evaluate(3., state2);
+  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
 }
 
 TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
@@ -137,7 +178,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TriangularProfile)
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
+      inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
@@ -190,7 +231,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d::Constant(1.), Vector2d::Constant(1.));
+      inputTrajectory, Vector2d::Constant(1.), Vector2d::Constant(1.));
 
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
@@ -228,7 +269,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
 
   timedTrajectory->evaluateDerivative(3.0, 1, tangentVector);
   // TODO: isApprox does not work when comparing against zero.
-  //EXPECT_TRUE(Vector2d(0.0, 0.0).isApprox(tangentVector));
+  // EXPECT_TRUE(Vector2d(0.0, 0.0).isApprox(tangentVector));
 
   // Acceleration.
   timedTrajectory->evaluateDerivative(0.5, 2, tangentVector);
@@ -236,7 +277,7 @@ TEST_F(ParabolicTimerTests, StraightLine_TrapezoidalProfile)
 
   timedTrajectory->evaluateDerivative(1.5, 2, tangentVector);
   // TODO: isApprox does not work when comparing against zero.
-  //EXPECT_TRUE(Vector2d(0., 0.).isApprox(tangentVector));
+  // EXPECT_TRUE(Vector2d(0., 0.).isApprox(tangentVector));
 
   timedTrajectory->evaluateDerivative(2.5, 2, tangentVector);
   EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector));
@@ -264,7 +305,7 @@ TEST_F(ParabolicTimerTests, StraightLine_DifferentAccelerationLimits)
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeParabolicTiming(
-    inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
+      inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
 
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   EXPECT_EQ(3, timedTrajectory->getNumSegments());
@@ -276,54 +317,52 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
   auto stateSpace = std::make_shared<SO3>();
   auto state = stateSpace->createState();
 
-  std::shared_ptr<GeodesicInterpolator> interpolator =
-  std::make_shared<GeodesicInterpolator>(stateSpace);
+  std::shared_ptr<GeodesicInterpolator> interpolator
+      = std::make_shared<GeodesicInterpolator>(stateSpace);
 
   Interpolated inputTrajectory(stateSpace, interpolator);
 
   state.setQuaternion(Eigen::Quaterniond::Identity());
   inputTrajectory.addWaypoint(0., state);
 
-  state.setQuaternion(Eigen::Quaterniond(
-    Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
+  state.setQuaternion(
+      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
   inputTrajectory.addWaypoint(1., state);
 
-  EXPECT_THROW({convertToSpline(inputTrajectory);}, std::invalid_argument);
+  EXPECT_THROW({ convertToSpline(inputTrajectory); }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
 {
   auto stateSpace = std::make_shared<CartesianProduct>(
-    std::vector<StateSpacePtr> { std::make_shared<SO3>() });
+      std::vector<StateSpacePtr>{std::make_shared<SO3>()});
   auto state = stateSpace->createState();
 
-  std::shared_ptr<GeodesicInterpolator> interpolator =
-  std::make_shared<GeodesicInterpolator>(stateSpace);
+  std::shared_ptr<GeodesicInterpolator> interpolator
+      = std::make_shared<GeodesicInterpolator>(stateSpace);
 
   Interpolated inputTrajectory(stateSpace, interpolator);
 
-  state.getSubStateHandle<SO3>(0).setQuaternion(
-    Eigen::Quaterniond::Identity());
+  state.getSubStateHandle<SO3>(0).setQuaternion(Eigen::Quaterniond::Identity());
   inputTrajectory.addWaypoint(0., state);
 
-  state.getSubStateHandle<SO3>(0).setQuaternion(Eigen::Quaterniond(
-    Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
+  state.getSubStateHandle<SO3>(0).setQuaternion(
+      Eigen::Quaterniond(Eigen::AngleAxisd(M_PI_2, Vector3d::UnitX())));
   inputTrajectory.addWaypoint(1., state);
 
-  EXPECT_THROW({convertToSpline(inputTrajectory);}, std::invalid_argument);
+  EXPECT_THROW({ convertToSpline(inputTrajectory); }, std::invalid_argument);
 }
 
 TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
 {
   auto stateSpace = std::make_shared<CartesianProduct>(
-    std::vector<StateSpacePtr> {
-      std::make_shared<R2>(),
-      std::make_shared<SO2>(),
-    });
+      std::vector<StateSpacePtr>{
+          std::make_shared<R2>(), std::make_shared<SO2>(),
+      });
   auto state = stateSpace->createState();
 
-  std::shared_ptr<GeodesicInterpolator> interpolator =
-  std::make_shared<GeodesicInterpolator>(stateSpace);
+  std::shared_ptr<GeodesicInterpolator> interpolator
+      = std::make_shared<GeodesicInterpolator>(stateSpace);
 
   Interpolated inputTrajectory(stateSpace, interpolator);
 
@@ -336,10 +375,8 @@ TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
   inputTrajectory.addWaypoint(1., state);
 
   EXPECT_NO_THROW({
-    computeParabolicTiming(
-      inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
+    computeParabolicTiming(inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
   });
-
 }
 
 // TODO: Test what happens when two waypoints are coincident.

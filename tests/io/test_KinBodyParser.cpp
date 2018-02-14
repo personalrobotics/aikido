@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include <dart/utils/utils.hpp>
+#include <gtest/gtest.h>
 #include <aikido/io/KinBodyParser.hpp>
 #include "eigen_tests.hpp"
 
@@ -15,16 +15,16 @@ static std::string TEST_RESOURCES_PATH = STR(AIKIDO_TEST_RESOURCES_PATH);
 //==============================================================================
 TEST(KinBodyParser, LoadBoxGeomFromString)
 {
-  const std::string str =
-      "<KinBody name=\"paper_box\">                \n"
-      "  <Body type=\"static\" name=\"paper_box\"> \n"
-      "    <Geom type=\"box\">                     \n"
-      "      <Translation>0 0 0</Translation>      \n"
-      "      <Extents>0.1 0.145 0.055</Extents>    \n"
-      "      <DiffuseColor>0 0 1.0</DiffuseColor>  \n"
-      "    </Geom>                                 \n"
-      "  </Body>                                   \n"
-      "</KinBody>                                    ";
+  const std::string str
+      = "<KinBody name=\"paper_box\">                \n"
+        "  <Body type=\"static\" name=\"paper_box\"> \n"
+        "    <Geom type=\"box\">                     \n"
+        "      <Translation>0 0 0</Translation>      \n"
+        "      <Extents>0.1 0.145 0.055</Extents>    \n"
+        "      <DiffuseColor>0 0 1.0</DiffuseColor>  \n"
+        "    </Geom>                                 \n"
+        "  </Body>                                   \n"
+        "</KinBody>                                    ";
 
   auto skel = readKinbodyString(str);
   EXPECT_TRUE(skel != nullptr);
@@ -45,7 +45,7 @@ TEST(KinBodyParser, LoadBoxGeomFromString)
 
   auto boxShape = static_cast<dart::dynamics::BoxShape*>(shape.get());
   EXPECT_EIGEN_EQUAL(
-      boxShape->getSize(), 2.0*Eigen::Vector3d(0.1, 0.145, 0.055), EPS);
+      boxShape->getSize(), 2.0 * Eigen::Vector3d(0.1, 0.145, 0.055), EPS);
   // The extents is multiplied by 2.0 because OpenRAVE uses extents to refer to
   // half extents whereas DART's BoxShape refers to full extents.
 
@@ -56,24 +56,23 @@ TEST(KinBodyParser, LoadBoxGeomFromString)
 //==============================================================================
 TEST(KinBodyParser, MeshAndScale)
 {
-  std::string prefix =
-      "<KinBody name=\"paper_box\">                \n"
-      "  <Body type=\"static\" name=\"paper_box\"> \n"
-      "    <Geom type=\"trimesh\">                 \n"
-      "      <Data>";
+  std::string prefix
+      = "<KinBody name=\"paper_box\">                \n"
+        "  <Body type=\"static\" name=\"paper_box\"> \n"
+        "    <Geom type=\"trimesh\">                 \n"
+        "      <Data>";
   std::string fileName = "kinbody/objects/bowl.stl";
-  std::string postfix =
-                                         "</Data>  \n"
-      "    </Geom>                                 \n"
-      "  </Body>                                   \n"
-      "</KinBody>                                    ";
+  std::string postfix
+      = "</Data>  \n"
+        "    </Geom>                                 \n"
+        "  </Body>                                   \n"
+        "</KinBody>                                    ";
 
   double uniScale = 0.5;
   Eigen::Vector3d scale = Eigen::Vector3d(0.1, 0.2, 0.3);
 
   // <Data>path/to/file.stl</Data>
-  std::string testFileName
-      = prefix + fileName + postfix;
+  std::string testFileName = prefix + fileName + postfix;
 
   // <Data>path/to/file.stl 0.5</Data>
   std::string testFileNameUniScale
@@ -83,12 +82,10 @@ TEST(KinBodyParser, MeshAndScale)
   std::string testFileNameScale
       = prefix + fileName + " " + dart::utils::toString(scale) + postfix;
 
-  auto skel1
-      = readKinbodyString(testFileName, TEST_RESOURCES_PATH + "/");
+  auto skel1 = readKinbodyString(testFileName, TEST_RESOURCES_PATH + "/");
   auto skel2
       = readKinbodyString(testFileNameUniScale, TEST_RESOURCES_PATH + "/");
-  auto skel3
-      = readKinbodyString(testFileNameScale, TEST_RESOURCES_PATH + "/");
+  auto skel3 = readKinbodyString(testFileNameScale, TEST_RESOURCES_PATH + "/");
 
   EXPECT_TRUE(skel1 != nullptr);
   EXPECT_TRUE(skel2 != nullptr);
@@ -102,20 +99,17 @@ TEST(KinBodyParser, MeshAndScale)
   auto meshShape2 = static_cast<dart::dynamics::MeshShape*>(shape2.get());
   auto meshShape3 = static_cast<dart::dynamics::MeshShape*>(shape3.get());
 
-  EXPECT_EIGEN_EQUAL(
-      meshShape1->getScale(), Eigen::Vector3d::Ones(), EPS);
+  EXPECT_EIGEN_EQUAL(meshShape1->getScale(), Eigen::Vector3d::Ones(), EPS);
   EXPECT_EIGEN_EQUAL(
       meshShape2->getScale(), Eigen::Vector3d::Constant(uniScale), EPS);
-  EXPECT_EIGEN_EQUAL(
-      meshShape3->getScale(), scale, EPS);
+  EXPECT_EIGEN_EQUAL(meshShape3->getScale(), scale, EPS);
 }
 
 //==============================================================================
 TEST(KinBodyParser, LoadBoxGeom)
 {
-  auto uri = std::string("file://")
-      + TEST_RESOURCES_PATH
-      + std::string("/kinbody/objects/block.kinbody.xml");
+  auto uri = std::string("file://") + TEST_RESOURCES_PATH
+             + std::string("/kinbody/objects/block.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
   auto skel = readKinbody(uri);
@@ -136,8 +130,8 @@ TEST(KinBodyParser, LoadBoxGeom)
   EXPECT_TRUE(shape->is<dart::dynamics::BoxShape>());
 
   auto boxShape = static_cast<dart::dynamics::BoxShape*>(shape.get());
-  EXPECT_EIGEN_EQUAL(boxShape->getSize(),
-                     2.0*Eigen::Vector3d(0.0127, 0.0127, 0.0127), EPS);
+  EXPECT_EIGEN_EQUAL(
+      boxShape->getSize(), 2.0 * Eigen::Vector3d(0.0127, 0.0127, 0.0127), EPS);
   // The extents is multiplied by 2.0 because OpenRAVE uses extents to refer to
   // half extents whereas DART's BoxShape refers to full extents.
 
@@ -148,9 +142,8 @@ TEST(KinBodyParser, LoadBoxGeom)
 //==============================================================================
 TEST(KinBodyParser, LoadSphereGeom)
 {
-  auto uri = std::string("file://")
-      + TEST_RESOURCES_PATH
-      + std::string("/kinbody/objects/smallsphere.kinbody.xml");
+  auto uri = std::string("file://") + TEST_RESOURCES_PATH
+             + std::string("/kinbody/objects/smallsphere.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
   auto skel = readKinbody(uri);
@@ -180,9 +173,8 @@ TEST(KinBodyParser, LoadSphereGeom)
 //==============================================================================
 TEST(KinBodyParser, LoadCylinderGeom)
 {
-  auto uri = std::string("file://")
-      + TEST_RESOURCES_PATH
-      + std::string("/kinbody/objects/stamp.kinbody.xml");
+  auto uri = std::string("file://") + TEST_RESOURCES_PATH
+             + std::string("/kinbody/objects/stamp.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
   auto skel = readKinbody(uri);
@@ -213,9 +205,8 @@ TEST(KinBodyParser, LoadCylinderGeom)
 //==============================================================================
 TEST(KinBodyParser, LoadTriMeshGeomBowl)
 {
-  auto uri = std::string("file://")
-      + TEST_RESOURCES_PATH
-      + std::string("/kinbody/objects/bowl.kinbody.xml");
+  auto uri = std::string("file://") + TEST_RESOURCES_PATH
+             + std::string("/kinbody/objects/bowl.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
   auto skel = readKinbody(uri);
@@ -247,9 +238,8 @@ TEST(KinBodyParser, LoadTriMeshGeomBowl)
 //==============================================================================
 TEST(KinBodyParser, LoadTriMeshGeomKinovaTool)
 {
-  auto uri = std::string("file://")
-      + TEST_RESOURCES_PATH
-      + std::string("/kinbody/objects/kinova_tool.kinbody.xml");
+  auto uri = std::string("file://") + TEST_RESOURCES_PATH
+             + std::string("/kinbody/objects/kinova_tool.kinbody.xml");
   EXPECT_TRUE(dart::common::LocalResourceRetriever().exists(uri));
 
   auto skel = readKinbody(uri);

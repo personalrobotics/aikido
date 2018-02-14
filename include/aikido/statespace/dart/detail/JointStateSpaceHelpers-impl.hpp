@@ -24,9 +24,9 @@ struct createJointStateSpaceFor_impl
 
 //==============================================================================
 template <>
-struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
+struct createJointStateSpaceFor_impl<const ::dart::dynamics::RevoluteJoint>
 {
-  static Ptr create(::dart::dynamics::RevoluteJoint* _joint)
+  static Ptr create(const ::dart::dynamics::RevoluteJoint* _joint)
   {
     if (_joint->isCyclic(0))
       return make_unique<SO2Joint>(_joint);
@@ -37,9 +37,9 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::RevoluteJoint>
 
 //==============================================================================
 template <>
-struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
+struct createJointStateSpaceFor_impl<const ::dart::dynamics::PrismaticJoint>
 {
-  static Ptr create(::dart::dynamics::PrismaticJoint* _joint)
+  static Ptr create(const ::dart::dynamics::PrismaticJoint* _joint)
   {
     return make_unique<R1Joint>(_joint);
   }
@@ -47,9 +47,9 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PrismaticJoint>
 
 //==============================================================================
 template <>
-struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
+struct createJointStateSpaceFor_impl<const ::dart::dynamics::TranslationalJoint>
 {
-  static Ptr create(::dart::dynamics::TranslationalJoint* _joint)
+  static Ptr create(const ::dart::dynamics::TranslationalJoint* _joint)
   {
     return make_unique<R3Joint>(_joint);
   }
@@ -57,9 +57,9 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::TranslationalJoint>
 
 //==============================================================================
 template <>
-struct createJointStateSpaceFor_impl<::dart::dynamics::BallJoint>
+struct createJointStateSpaceFor_impl<const ::dart::dynamics::BallJoint>
 {
-  static Ptr create(::dart::dynamics::BallJoint* _joint)
+  static Ptr create(const ::dart::dynamics::BallJoint* _joint)
   {
     return make_unique<SO3Joint>(_joint);
   }
@@ -67,9 +67,9 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::BallJoint>
 
 //==============================================================================
 template <>
-struct createJointStateSpaceFor_impl<::dart::dynamics::PlanarJoint>
+struct createJointStateSpaceFor_impl<const ::dart::dynamics::PlanarJoint>
 {
-  static Ptr create(::dart::dynamics::PlanarJoint* _joint)
+  static Ptr create(const ::dart::dynamics::PlanarJoint* _joint)
   {
     return make_unique<SE2Joint>(_joint);
   }
@@ -77,9 +77,9 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::PlanarJoint>
 
 //==============================================================================
 template <>
-struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
+struct createJointStateSpaceFor_impl<const ::dart::dynamics::FreeJoint>
 {
-  static Ptr create(::dart::dynamics::FreeJoint* _joint)
+  static Ptr create(const ::dart::dynamics::FreeJoint* _joint)
   {
     return make_unique<SE3Joint>(_joint);
   }
@@ -87,26 +87,27 @@ struct createJointStateSpaceFor_impl<::dart::dynamics::FreeJoint>
 
 //==============================================================================
 template <>
-struct createJointStateSpaceFor_impl<::dart::dynamics::WeldJoint>
+struct createJointStateSpaceFor_impl<const ::dart::dynamics::WeldJoint>
 {
-  static Ptr create(::dart::dynamics::WeldJoint* _joint)
+  static Ptr create(const ::dart::dynamics::WeldJoint* _joint)
   {
     return make_unique<WeldJoint>(_joint);
   }
 };
 
 //==============================================================================
-using SupportedJoints = common::type_list<::dart::dynamics::BallJoint,
-                                          ::dart::dynamics::FreeJoint,
-                                          ::dart::dynamics::PlanarJoint,
-                                          ::dart::dynamics::PrismaticJoint,
-                                          ::dart::dynamics::RevoluteJoint,
-                                          ::dart::dynamics::TranslationalJoint,
-                                          ::dart::dynamics::WeldJoint
-                                          // TODO: Support ScrewJoint.
-                                          // TODO: Support UniversalJoint.
-                                          // TODO: Support EulerJoint.
-                                          >;
+using ConstSupportedJoints
+    = common::type_list<const ::dart::dynamics::BallJoint,
+                        const ::dart::dynamics::FreeJoint,
+                        const ::dart::dynamics::PlanarJoint,
+                        const ::dart::dynamics::PrismaticJoint,
+                        const ::dart::dynamics::RevoluteJoint,
+                        const ::dart::dynamics::TranslationalJoint,
+                        const ::dart::dynamics::WeldJoint
+                        // TODO: Support ScrewJoint.
+                        // TODO: Support UniversalJoint.
+                        // TODO: Support EulerJoint.
+                        >;
 
 } // namespace detail
 

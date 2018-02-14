@@ -1,6 +1,6 @@
+#include <dart/common/StlHelpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
-#include <dart/common/StlHelpers.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
@@ -15,8 +15,8 @@ using dart::common::make_unique;
 class SO2UniformSamplerTests : public ::testing::Test
 {
 protected:
-  static constexpr size_t NUM_SAMPLES = 10000;
-  static constexpr size_t NUM_TARGETS = 20;
+  static constexpr std::size_t NUM_SAMPLES = 10000;
+  static constexpr std::size_t NUM_TARGETS = 20;
   static constexpr double DISTANCE_THRESHOLD = M_PI / NUM_TARGETS;
 
   void SetUp() override
@@ -26,7 +26,7 @@ protected:
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
-    for (size_t i = 0; i < NUM_TARGETS; ++i)
+    for (std::size_t i = 0; i < NUM_TARGETS; ++i)
     {
       const double angle = (2 * M_PI * i) / NUM_TARGETS;
 
@@ -43,16 +43,14 @@ protected:
 
 TEST_F(SO2UniformSamplerTests, constructor_StateSpaceIsNull_Throws)
 {
-  EXPECT_THROW({
-    SO2UniformSampler(nullptr, mRng->clone());
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { SO2UniformSampler(nullptr, mRng->clone()); }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, constructor_RNGIsNull_Throws)
 {
-  EXPECT_THROW({
-    SO2UniformSampler(mStateSpace, nullptr);
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      { SO2UniformSampler(mStateSpace, nullptr); }, std::invalid_argument);
 }
 
 TEST_F(SO2UniformSamplerTests, getStateSpace)
@@ -69,7 +67,12 @@ TEST_F(SO2UniformSamplerTests, createSampleGenerator)
   ASSERT_TRUE(!!generator);
   EXPECT_EQ(mStateSpace, generator->getStateSpace());
 
-  auto result = SampleGeneratorCoverage(*generator, *mDistance,
-    std::begin(mTargets), std::end(mTargets), DISTANCE_THRESHOLD, NUM_SAMPLES);
+  auto result = SampleGeneratorCoverage(
+      *generator,
+      *mDistance,
+      std::begin(mTargets),
+      std::end(mTargets),
+      DISTANCE_THRESHOLD,
+      NUM_SAMPLES);
   ASSERT_TRUE(result);
 }

@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
 # Install test fixture dependencies.
 mkdir -p "${HOME}/workspace/src"
 cd "${HOME}/workspace"

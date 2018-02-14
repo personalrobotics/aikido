@@ -1,10 +1,10 @@
+#include <dart/common/Console.hpp>
 #include <gtest/gtest.h>
-#include "../eigen_tests.hpp"
-#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/Projectable.hpp>
+#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/statespace/Rn.hpp>
-#include <dart/common/Console.hpp>
+#include "../eigen_tests.hpp"
 
 using aikido::constraint::CartesianProductProjectable;
 using aikido::constraint::ProjectablePtr;
@@ -20,7 +20,7 @@ TEST(Project, ProjectInPlaceDefault)
 
   auto rvss = std::make_shared<R3>();
   auto rvBox = std::make_shared<R3BoxConstraint>(
-    rvss, nullptr, Eigen::Vector3d(1, 1, 1), Eigen::Vector3d(2, 1, 1));
+      rvss, nullptr, Eigen::Vector3d(1, 1, 1), Eigen::Vector3d(2, 1, 1));
 
   auto state = rvss->createState();
   auto out = rvss->createState();
@@ -33,4 +33,3 @@ TEST(Project, ProjectInPlaceDefault)
   EXPECT_TRUE(state.getValue().isApprox(out.getValue()));
   EXPECT_TRUE(state.getValue().isApprox(Eigen::Vector3d(1, 1, 1)));
 }
-

@@ -210,11 +210,25 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
 }
 
 //==============================================================================
-bool TSR::isSatisfied(const statespace::StateSpace::State* _s) const
+bool TSR::isSatisfied(
+    const statespace::StateSpace::State* _s, TestableOutcome* outcome) const
 {
+  auto defaultOutcomeObject
+      = dynamic_cast_or_throw<DefaultTestableOutcome>(outcome);
+
   Eigen::VectorXd dist;
   getValue(_s, dist);
-  return dist.norm() < mTestableTolerance;
+
+  bool isSatisfiedResult = dist.norm() < mTestableTolerance;
+  if (defaultOutcomeObject)
+    defaultOutcomeObject->setSatisfiedFlag(isSatisfiedResult);
+  return isSatisfiedResult;
+}
+
+//==============================================================================
+std::unique_ptr<TestableOutcome> TSR::createOutcome() const
+{
+  return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
 }
 
 //==============================================================================
@@ -241,7 +255,7 @@ void TSR::setRNG(std::unique_ptr<common::RNG> rng)
 }
 
 //==============================================================================
-size_t TSR::getConstraintDimension() const
+std::size_t TSR::getConstraintDimension() const
 {
   return 6;
 }

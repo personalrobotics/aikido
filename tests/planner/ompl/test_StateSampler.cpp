@@ -1,7 +1,7 @@
-#include "OMPLTestHelpers.hpp"
-#include <aikido/planner/ompl/StateSampler.hpp>
 #include <boost/make_shared.hpp>
 #include <ompl/base/spaces/SO2StateSpace.h>
+#include <aikido/planner/ompl/StateSampler.hpp>
+#include "OMPLTestHelpers.hpp"
 
 using aikido::planner::ompl::GeometricStateSpace;
 using aikido::planner::ompl::StateSampler;
@@ -14,7 +14,11 @@ public:
   {
     PlannerTest::SetUp();
     gSpace = std::make_shared<GeometricStateSpace>(
-        stateSpace, interpolator, dmetric, sampler, boundsConstraint,
+        stateSpace,
+        interpolator,
+        dmetric,
+        sampler,
+        boundsConstraint,
         boundsProjection);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
@@ -22,8 +26,8 @@ public:
 
 TEST_F(StateSamplerTest, ThrowsOnNullStateSpace)
 {
-  EXPECT_THROW(StateSampler(0, sampler->createSampleGenerator()),
-               std::invalid_argument);
+  EXPECT_THROW(
+      StateSampler(0, sampler->createSampleGenerator()), std::invalid_argument);
 }
 
 TEST_F(StateSamplerTest, ThrowsOnNullGenerator)
@@ -67,8 +71,9 @@ TEST_F(StateSamplerTest, SampleUniformValid)
   // Ensure we get two different states if we sample twice
   ssampler.sampleUniform(s1);
   ssampler.sampleUniform(s2);
-  EXPECT_FALSE(getTranslationalState(stateSpace, s1)
-                   .isApprox(getTranslationalState(stateSpace, s2)));
+  EXPECT_FALSE(
+      getTranslationalState(stateSpace, s1)
+          .isApprox(getTranslationalState(stateSpace, s2)));
   gSpace->freeState(s1);
   gSpace->freeState(s2);
 }

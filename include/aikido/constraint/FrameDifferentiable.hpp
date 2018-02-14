@@ -22,16 +22,18 @@ public:
   /// Constructor.
   /// \param _metaSkeletonStateSpace StateSpace whose state
   ///        defines _jacobianNode's transform.
+  /// \param _metaskeleton MetaSkeleton to test with
   /// \param _jacobianNode The frame being constrained.
   /// \param _poseConstraint Constraint on _jacobian. This should be
   ///        in SE3.
   FrameDifferentiable(
       statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       dart::dynamics::ConstJacobianNodePtr _jacobianNode,
       DifferentiablePtr _poseConstraint);
 
   // Documentation inherited.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   // Documentation inherited.
   void getValue(const statespace::StateSpace::State* _s, Eigen::VectorXd& _out)
@@ -62,10 +64,10 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
 private:
-  dart::dynamics::ConstJacobianNodePtr mJacobianNode;
-  DifferentiablePtr mPoseConstraint;
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  dart::dynamics::ConstJacobianNodePtr mJacobianNode;
+  DifferentiablePtr mPoseConstraint;
 };
 
 } // namespace constraint

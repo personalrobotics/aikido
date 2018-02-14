@@ -38,13 +38,15 @@ public:
 private:
   // For internal use only.
   IkSampleGenerator(
-      statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       std::unique_ptr<SampleGenerator> _poseSampler,
       std::unique_ptr<SampleGenerator> _seedSampler,
       int _maxNumTrials);
 
-  statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<statespace::SE3> mPoseStateSpace;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<SampleGenerator> mPoseSampler;
@@ -56,35 +58,39 @@ private:
 
 //==============================================================================
 InverseKinematicsSampleable::InverseKinematicsSampleable(
-    MetaSkeletonStateSpacePtr _stateSpace,
+    MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     SampleablePtr _poseConstraint,
     SampleablePtr _seedConstraint,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     int _maxNumTrials)
-  : mStateSpace(std::move(_stateSpace))
+  : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(_metaskeleton))
   , mPoseConstraint(std::move(_poseConstraint))
   , mSeedConstraint(std::move(_seedConstraint))
   , mInverseKinematics(std::move(_inverseKinematics))
   , mMaxNumTrials(_maxNumTrials)
 {
-  if (!mStateSpace)
+  if (!mMetaSkeletonStateSpace)
     throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
+
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("_metaskeleton is nullptr.");
 
   if (!mInverseKinematics)
     throw std::invalid_argument("InverseKinematics is nullptr.");
 
-  const auto stateMetaSkeleton = mStateSpace->getMetaSkeleton();
   const auto ikSkeleton = mInverseKinematics->getNode()->getSkeleton();
-  for (const size_t dofIndex : mInverseKinematics->getDofs())
+  for (const std::size_t dofIndex : mInverseKinematics->getDofs())
   {
     const auto dof = ikSkeleton->getDof(dofIndex);
-    if (stateMetaSkeleton->getIndexOf(dof, false) == INVALID_INDEX)
+    if (mMetaSkeleton->getIndexOf(dof, false) == INVALID_INDEX)
     {
       std::stringstream msg;
       msg << "DegreeOfFreedom '" << dof->getName()
           << "' is used by the"
              " InverseKinematics solver, but is absent from the"
-             " MetaSkeletonStateSpace this constraint is defined over.";
+             " MetaSkeleton this constraint is defined with.";
       throw std::invalid_argument(msg.str());
     }
   }
@@ -98,7 +104,7 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
   if (!mSeedConstraint)
     throw std::invalid_argument("Seed Sampleable is nullptr.");
 
-  if (mSeedConstraint->getStateSpace() != mStateSpace)
+  if (mSeedConstraint->getStateSpace() != mMetaSkeletonStateSpace)
     throw std::invalid_argument(
         "Seed SampleGenerator is not for this StateSpace.");
 
@@ -109,7 +115,7 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 //==============================================================================
 statespace::StateSpacePtr InverseKinematicsSampleable::getStateSpace() const
 {
-  return mStateSpace;
+  return mMetaSkeletonStateSpace;
 }
 
 //==============================================================================
@@ -118,7 +124,8 @@ InverseKinematicsSampleable::createSampleGenerator() const
 {
   return std::unique_ptr<IkSampleGenerator>(
       new IkSampleGenerator(
-          mStateSpace,
+          mMetaSkeletonStateSpace,
+          mMetaSkeleton,
           mInverseKinematics,
           mPoseConstraint->createSampleGenerator(),
           mSeedConstraint->createSampleGenerator(),
@@ -127,12 +134,14 @@ InverseKinematicsSampleable::createSampleGenerator() const
 
 //==============================================================================
 IkSampleGenerator::IkSampleGenerator(
-    statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    dart::dynamics::MetaSkeletonPtr _metaskeleton,
     dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<SampleGenerator> _poseSampler,
     std::unique_ptr<SampleGenerator> _seedSampler,
     int _maxNumTrials)
-  : mStateSpace(std::move(_stateSpace))
+  : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(_metaskeleton))
   , mPoseStateSpace(
         std::dynamic_pointer_cast<SE3>(_poseSampler->getStateSpace()))
   , mInverseKinematics(std::move(_inverseKinematics))
@@ -140,12 +149,13 @@ IkSampleGenerator::IkSampleGenerator(
   , mSeedSampler(std::move(_seedSampler))
   , mMaxNumTrials(_maxNumTrials)
 {
-  assert(mStateSpace);
+  assert(mMetaSkeletonStateSpace);
+  assert(mMetaSkeleton);
   assert(mPoseStateSpace);
   assert(mInverseKinematics);
   assert(mPoseSampler);
   assert(mSeedSampler);
-  assert(mSeedSampler->getStateSpace() == mStateSpace);
+  assert(mSeedSampler->getStateSpace() == mMetaSkeletonStateSpace);
   assert(mMaxNumTrials > 0);
 
   if (mPoseSampler->getNumSamples() != NO_LIMIT)
@@ -172,7 +182,7 @@ IkSampleGenerator::IkSampleGenerator(
 //==============================================================================
 statespace::StateSpacePtr IkSampleGenerator::getStateSpace() const
 {
-  return mStateSpace;
+  return mMetaSkeletonStateSpace;
 }
 
 //==============================================================================
@@ -181,7 +191,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
   if (!mSeedSampler->canSample() || !mPoseSampler->canSample())
     return false;
 
-  auto seedState = mStateSpace->createState();
+  auto seedState = mMetaSkeletonStateSpace->createState();
   auto poseState = mPoseStateSpace->createState();
   auto outputState = static_cast<MetaSkeletonStateSpace::State*>(_state);
 
@@ -192,7 +202,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
     if (!mSeedSampler->sample(seedState))
       continue;
 
-    mStateSpace->setState(seedState);
+    mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), seedState);
 
     // Sample a goal for the IK solver.
     if (!mPoseSampler->sample(poseState))
@@ -203,7 +213,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
     // Run the IK solver. If it succeeds, return the solution.
     if (mInverseKinematics->solve(true))
     {
-      mStateSpace->getState(outputState);
+      mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), outputState);
       return true;
     }
   }

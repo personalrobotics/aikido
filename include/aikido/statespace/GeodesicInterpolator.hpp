@@ -23,7 +23,7 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
-  size_t getNumDerivatives() const override;
+  std::size_t getNumDerivatives() const override;
 
   /// Gets the tangent vector that defines the geodesic, scaled such that:
   ///
@@ -49,7 +49,7 @@ public:
   void getDerivative(
       const statespace::StateSpace::State* _from,
       const statespace::StateSpace::State* _to,
-      size_t _derivative,
+      std::size_t _derivative,
       double _alpha,
       Eigen::VectorXd& _tangentVector) const override;
 

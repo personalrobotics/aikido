@@ -325,7 +325,7 @@ int ResourceServer::processConnection(
     char const* method,
     char const* /*version*/,
     char const* /*upload_data*/,
-    size_t* upload_data_size,
+    std::size_t* upload_data_size,
     void** ptr)
 {
   static int headerReceived = 0;

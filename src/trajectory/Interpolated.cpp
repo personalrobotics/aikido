@@ -29,7 +29,7 @@ statespace::InterpolatorPtr Interpolated::getInterpolator() const
 }
 
 //==============================================================================
-size_t Interpolated::getNumDerivatives() const
+std::size_t Interpolated::getNumDerivatives() const
 {
   return mInterpolator->getNumDerivatives();
 }
@@ -102,7 +102,8 @@ void Interpolated::evaluateDerivative(
     throw std::invalid_argument(
         "0th derivative not available. Use evaluate(t, state).");
 
-  if (static_cast<size_t>(_derivative) > mInterpolator->getNumDerivatives())
+  if (static_cast<std::size_t>(_derivative)
+      > mInterpolator->getNumDerivatives())
   {
     _tangentVector.resize(mStateSpace->getDimension());
     _tangentVector.setZero();
@@ -154,7 +155,7 @@ void Interpolated::addWaypoint(double _t, const State* _state)
 
 //==============================================================================
 const statespace::StateSpace::State* Interpolated::getWaypoint(
-    size_t _index) const
+    std::size_t _index) const
 {
   if (_index < mWaypoints.size())
     return mWaypoints[_index].state;
@@ -163,7 +164,7 @@ const statespace::StateSpace::State* Interpolated::getWaypoint(
 }
 
 //==============================================================================
-double Interpolated::getWaypointTime(size_t _index) const
+double Interpolated::getWaypointTime(std::size_t _index) const
 {
   if (_index < mWaypoints.size())
     return mWaypoints[_index].t;
@@ -172,7 +173,7 @@ double Interpolated::getWaypointTime(size_t _index) const
 }
 
 //==============================================================================
-size_t Interpolated::getNumWaypoints() const
+std::size_t Interpolated::getNumWaypoints() const
 {
   return mWaypoints.size();
 }

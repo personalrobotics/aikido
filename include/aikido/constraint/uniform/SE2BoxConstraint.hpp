@@ -35,8 +35,14 @@ public:
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
 
-  // Documentation inherited.
-  bool isSatisfied(const statespace::StateSpace::State* state) const override;
+  /// Documentation inherited.
+  bool isSatisfied(
+      const statespace::StateSpace::State* state,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// Return an instance of DefaultTestableOutcome, since this class doesn't
+  /// have a more specialized TestableOutcome derivative assigned to it.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   // Documentation inherited.
   bool project(
@@ -68,10 +74,10 @@ private:
 
   // DOFs of joint that have limits, in this case translational DOFs.
   // TODO: Confirm this with Gilwoo
-  size_t mRnDimension;
+  std::size_t mRnDimension;
 
   // DOF of the joint
-  size_t mDimension;
+  std::size_t mDimension;
 };
 
 } // namespace constraint

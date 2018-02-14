@@ -26,7 +26,7 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
   /// Returns \c 0.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   /// Returns an empty vector.
   std::vector<constraint::ConstraintType> getConstraintTypes() const override;
@@ -34,7 +34,13 @@ public:
   /// Returns \c true.
   ///
   /// \param state a state in \c getStateSpace()
-  bool isSatisfied(const statespace::StateSpace::State* state) const override;
+  bool isSatisfied(
+      const statespace::StateSpace::State* state,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// Return an instance of DefaultTestableOutcome, since this class doesn't
+  /// have a more specialized TestableOutcome derivative assigned to it.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   /// Sets \c _out to \c _s.
   ///

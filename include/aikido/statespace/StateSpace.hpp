@@ -3,11 +3,14 @@
 
 #include <memory>
 #include <Eigen/Dense>
-#include "../common/RNG.hpp"
-#include "ScopedState.hpp"
+#include "aikido/common/RNG.hpp"
+#include "aikido/common/pointers.hpp"
+#include "aikido/statespace/ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
+
+AIKIDO_DECLARE_POINTERS(StateSpace)
 
 /// Represents a Lie group and its associated Lie algebra, i.e. a
 /// differentiable manifold embedded in Euclidean space. This is a base class
@@ -70,7 +73,7 @@ public:
   /// Gets the size of a State, in bytes.
   ///
   /// \return size, in bytes, requires to store a \c State
-  virtual size_t getStateSizeInBytes() const = 0;
+  virtual std::size_t getStateSizeInBytes() const = 0;
 
   /// Create a new state in a pre-allocated buffer. The input argument must
   /// contain at least \c getStateSizeInBytes() bytes of memory. This state
@@ -134,7 +137,7 @@ public:
   /// tangent space, i.e. the Lie algebra, associated with this group.
   ///
   /// \return dimension of this state space
-  virtual size_t getDimension() const = 0;
+  virtual std::size_t getDimension() const = 0;
 
   /// Copy a state.
   ///
@@ -165,8 +168,6 @@ public:
   /// \param _os The stream to print to
   virtual void print(const State* _state, std::ostream& _os) const = 0;
 };
-
-using StateSpacePtr = std::shared_ptr<StateSpace>;
 
 } // namespace statespace
 } // namespace aikido

@@ -2,10 +2,14 @@
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 
 #include <Eigen/Core>
+#include "aikido/common/pointers.hpp"
+#include <aikido/trajectory/TrajectoryMetadata.hpp>
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace trajectory {
+
+AIKIDO_DECLARE_POINTERS(Trajectory)
 
 /// Time-parameterized path in a \c StateSpace. The parameterization, number of
 /// derivatives available, and continuity of this trajectory is defined by the
@@ -27,7 +31,7 @@ public:
   /// before this value for some trajectories.
   ///
   /// \return upper bound on the number of non-zero derivatives
-  virtual size_t getNumDerivatives() const = 0;
+  virtual std::size_t getNumDerivatives() const = 0;
 
   /// Duration of the trajectory. Note that \c getStartTime() may not be zero.
   ///
@@ -66,10 +70,10 @@ public:
   /// \param[out] _tangentVector output tangent vector in the local frame
   virtual void evaluateDerivative(
       double _t, int _derivative, Eigen::VectorXd& _tangentVector) const = 0;
-};
 
-using TrajectoryPtr = std::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
+  /// Trajectory metadata
+  TrajectoryMetadata metadata;
+};
 
 } // namespace trajectory
 } // namespace aikido

@@ -2,6 +2,8 @@ dist: trusty
 
 sudo: required
 
+group: travis_lts
+
 language: generic
 
 env:
@@ -9,22 +11,18 @@ env:
     - TIMEOUT=30
 
 cache:
-  - apt
+  apt: true
+  directories:
+    - /usr/local/Cellar
 
 matrix:
   include:
     - os: linux
       compiler: gcc
-      env: BUILD_TYPE=Debug CODECOV=ON COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON"
+      env: BUILD_TYPE=Debug CODECOV=ON COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=OFF
     - os: linux
       compiler: gcc
-      env: BUILD_TYPE=Release CODECOV=OFF COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
-    - os: osx
-      compiler: clang
-      env: BUILD_TYPE=Debug CODECOV=OFF COMPILER=CLANG CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON"
-    - os: osx
-      compiler: clang
-      env: BUILD_TYPE=Release CODECOV=OFF COMPILER=CLANG CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+      env: BUILD_TYPE=Release CODECOV=OFF COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=ON
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/before_install_linux.sh"; fi
@@ -36,6 +34,7 @@ install:
 script:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/script_linux.sh"; fi
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then . "${TRAVIS_BUILD_DIR}/.ci/script_macos.sh"; fi
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"; fi
 
 after_script:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./scripts/view-all-results.sh test_results; fi
@@ -45,3 +44,14 @@ after_failure:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then cat ./build/aikido/Testing/Temporary/LastTestsFailed.log; fi
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then cat Testing/Temporary/LastTest.log; fi
   - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then cat Testing/Temporary/LastTestsFailed.log; fi
+
+deploy:
+  github-token: $GITHUB_TOKEN
+  provider: pages
+  skip-cleanup: true
+  local-dir: gh-pages
+  keep-history: false
+  verbose: true
+  on:
+    branch: master
+    condition: $BUILD_TYPE = Release

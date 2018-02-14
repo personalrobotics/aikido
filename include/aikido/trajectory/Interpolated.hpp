@@ -1,11 +1,14 @@
 #ifndef AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_
 #define AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_
 
+#include "aikido/common/pointers.hpp"
 #include "../statespace/GeodesicInterpolator.hpp"
 #include "Trajectory.hpp"
 
 namespace aikido {
 namespace trajectory {
+
+AIKIDO_DECLARE_POINTERS(Interpolated)
 
 /// Trajectory that uses an \c Interpolator to interpolate between waypoints.
 class Interpolated : public Trajectory
@@ -30,15 +33,15 @@ public:
   ///
   /// \param _index waypoint index
   /// \return state of the waypoint at index \c _index
-  const statespace::StateSpace::State* getWaypoint(size_t _index) const;
+  const statespace::StateSpace::State* getWaypoint(std::size_t _index) const;
 
   /// Gets the time of a waypoint.
   /// \param _index waypoint index
   /// \return time of the waypoint at index \c _index
-  double getWaypointTime(size_t _index) const;
+  double getWaypointTime(std::size_t _index) const;
 
   /// Gets the number of waypoints.
-  size_t getNumWaypoints() const;
+  std::size_t getNumWaypoints() const;
 
   // Documentation inherited
   aikido::statespace::StateSpacePtr getStateSpace() const override;
@@ -47,7 +50,7 @@ public:
   aikido::statespace::InterpolatorPtr getInterpolator() const;
 
   // Documentation inherited
-  size_t getNumDerivatives() const override;
+  std::size_t getNumDerivatives() const override;
 
   // Documentation inherited
   double getStartTime() const override;
@@ -93,8 +96,6 @@ private:
   aikido::statespace::InterpolatorPtr mInterpolator;
   std::vector<Waypoint> mWaypoints;
 };
-
-using InterpolatedPtr = std::shared_ptr<Interpolated>;
 
 } // namespace trajectory
 } // namespace aikido

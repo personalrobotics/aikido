@@ -44,7 +44,7 @@ Eigen::VectorXd toEigen(const ParabolicRamp::Vector& _x)
 {
   Eigen::VectorXd output(_x.size());
 
-  for (size_t i = 0; i < _x.size(); ++i)
+  for (std::size_t i = 0; i < _x.size(); ++i)
     output[i] = _x[i];
 
   return output;
@@ -106,7 +106,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   }
   else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
   {
-    for (size_t isubspace = 0; isubspace < space->getNumSubspaces();
+    for (std::size_t isubspace = 0; isubspace < space->getNumSubspaces();
          ++isubspace)
     {
       if (!checkStateSpace(space->getSubspace<>(isubspace).get()))
@@ -188,7 +188,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     const aikido::trajectory::Spline& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
-    const Eigen::VectorXd& _maxAcceleration)
+    const Eigen::VectorXd& _maxAcceleration,
+    bool _preserveWaypointVelocity)
 {
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
@@ -200,7 +201,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   Eigen::VectorXd tangentVector, currVec;
 
-  for (size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
+  for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
     auto currentState = stateSpace->createState();
     _inputTrajectory.getWaypoint(iwaypoint, currentState);
@@ -214,7 +215,14 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
-  outputPath->SetMilestones(milestones, velocities);
+  if (_preserveWaypointVelocity)
+  {
+    outputPath->SetMilestones(milestones, velocities);
+  }
+  else
+  {
+    outputPath->SetMilestones(milestones);
+  }
   if (!outputPath->IsValid())
     throw std::runtime_error("Converted DynamicPath is not valid");
   return outputPath;
@@ -235,7 +243,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   Eigen::VectorXd currVec;
 
-  for (size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
+  for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
     auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
     stateSpace->logMap(currentState, currVec);

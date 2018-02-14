@@ -32,7 +32,9 @@ set(sources
   ShapeFrameMarker.cpp
   SkeletonMarker.cpp
   shape_conversions.cpp
+  TrajectoryMarker.cpp
   TSRMarker.cpp
+  WorldInteractiveMarkerViewer.cpp
 )
 
 add_library("${PROJECT_NAME}_rviz" SHARED ${sources})
@@ -49,6 +51,8 @@ target_include_directories("${PROJECT_NAME}_rviz" SYSTEM
 )
 target_link_libraries("${PROJECT_NAME}_rviz"
   PUBLIC
+    "${PROJECT_NAME}_constraint"
+    "${PROJECT_NAME}_planner"
     ${Boost_FILESYSTEM_LIBRARY}
     ${DART_LIBRARIES}
     ${geometry_msgs_LIBRARIES}
@@ -64,6 +68,10 @@ target_compile_options("${PROJECT_NAME}_rviz"
 
 add_component(${PROJECT_NAME} rviz)
 add_component_targets(${PROJECT_NAME} rviz "${PROJECT_NAME}_rviz")
+add_component_dependencies(${PROJECT_NAME} rviz
+  constraint
+  planner
+)
 
 # Intentionally omit tests for or_rviz. It's not clear how to test a viewer.
 

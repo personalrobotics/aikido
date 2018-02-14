@@ -1,7 +1,7 @@
 #include <aikido/control/ros/Conversions.hpp>
 
-#include <unordered_set>
 #include <sstream>
+#include <unordered_set>
 #include <dart/dynamics/Joint.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/common/StepSequence.hpp>
@@ -20,7 +20,7 @@ namespace ros {
 namespace {
 
 void reorder(
-    const std::vector<std::pair<size_t, size_t>>& indexMap,
+    const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
     const Eigen::VectorXd& inVector,
     Eigen::VectorXd& outVector);
 
@@ -28,7 +28,7 @@ void reorder(
 void checkVector(
     const std::string& _name,
     const std::vector<double>& _values,
-    size_t _expectedLength,
+    std::size_t _expectedLength,
     bool _isRequired,
     Eigen::VectorXd& _output)
 {
@@ -62,7 +62,7 @@ Eigen::MatrixXd fitPolynomial(
     const Eigen::VectorXd& _nextPosition,
     const Eigen::VectorXd& _nextVelocity,
     const Eigen::VectorXd& _nextAcceleration,
-    size_t _numCoefficients)
+    std::size_t _numCoefficients)
 {
   using aikido::common::SplineProblem;
 
@@ -101,16 +101,17 @@ Eigen::MatrixXd fitPolynomial(
 //==============================================================================
 void extractJointTrajectoryPoint(
     const trajectory_msgs::JointTrajectory& _trajectory,
-    size_t _index,
-    size_t _numDofs,
+    std::size_t _index,
+    std::size_t _numDofs,
     Eigen::VectorXd& _positions,
     bool _positionsRequired,
     Eigen::VectorXd& _velocities,
     bool _velocitiesRequired,
     Eigen::VectorXd& _accelerations,
     bool _accelerationsRequired,
-    const std::vector<std::pair<size_t, size_t>>& indexMap,
-    const std::vector<size_t>& unspecifiedJoints,  // joints to get from startPositions
+    const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
+    const std::vector<std::size_t>&
+        unspecifiedJoints, // joints to get from startPositions
     const Eigen::VectorXd& startPositions)
 {
   const auto& waypoint = _trajectory.points[_index];
@@ -133,18 +134,9 @@ void extractJointTrajectoryPoint(
   try
   {
     Eigen::VectorXd trajPos, trajVel, trajAccel;
+    checkVector("positions", positions, _numDofs, _positionsRequired, trajPos);
     checkVector(
-        "positions",
-        positions,
-        _numDofs,
-        _positionsRequired,
-        trajPos);
-    checkVector(
-        "velocities",
-        velocities,
-        _numDofs,
-        _velocitiesRequired,
-        trajVel);
+        "velocities", velocities, _numDofs, _velocitiesRequired, trajVel);
     checkVector(
         "accelerations",
         accelerations,
@@ -206,7 +198,7 @@ void extractTrajectoryPoint(
 //==============================================================================
 // The rows of inVector is reordered in outVector.
 void reorder(
-    const std::vector<std::pair<size_t, size_t>>& indexMap,
+    const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
     const Eigen::VectorXd& inVector,
     Eigen::VectorXd& outVector)
 {
@@ -282,20 +274,20 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     throw std::invalid_argument{message.str()};
   }
 
-  // Check that all joints are R1Joint or SO2JOint state spaces.
-  for (size_t i = 0; i < numControlledJoints; ++i)
+  // Check that all joints are R1Joint or SO2Joint state spaces.
+  for (std::size_t i = 0; i < numControlledJoints; ++i)
   {
-    auto joint = space->getJointSpace(i)->getJoint();
-    auto jointSpace = space->getSubspace(i);
-    auto r1Joint = dynamic_cast<R1Joint*>(jointSpace.get());
-    auto so2Joint = dynamic_cast<SO2Joint*>(jointSpace.get());
+    auto jointSpace = space->getJointSpace(i);
+    auto properties = jointSpace->getProperties();
+    auto r1Joint = std::dynamic_pointer_cast<R1Joint>(jointSpace);
+    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(jointSpace);
 
-    if (joint->getNumDofs() != 1 || (!r1Joint && !so2Joint))
+    if (properties.getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
       std::stringstream message;
       message << "Only R1Joint and SO2Joint are supported. Joint "
-              << joint->getName() << "(index: " << i << ") is a "
-              << joint->getType() << " with " << joint->getNumDofs()
+              << properties.getName() << "(index: " << i << ") is a "
+              << properties.getType() << " with " << properties.getNumDofs()
               << " DOFs.";
       throw std::invalid_argument{message.str()};
     }
@@ -308,34 +300,14 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   }
 
   // Map joint indices between jointTrajectory and space subspaces.
-  std::vector<std::pair<size_t, size_t>> rosJointToMetaSkeletonJoint;
-  std::unordered_set<size_t> specifiedMetaSkeletonJoints;
+  std::vector<std::pair<std::size_t, std::size_t>> rosJointToMetaSkeletonJoint;
+  std::unordered_set<std::size_t> specifiedMetaSkeletonJoints;
 
-  auto metaSkeleton = space->getMetaSkeleton();
-
-  for (size_t trajIndex = 0; trajIndex < numTrajectoryJoints; ++trajIndex)
+  const auto metaSkeletonProperties = space->getProperties();
+  for (std::size_t trajIndex = 0; trajIndex < numTrajectoryJoints; ++trajIndex)
   {
-    const auto& jointName = jointTrajectory.joint_names[trajIndex];
-    auto joints = metaSkeleton->getJoints(jointName);
-
-    if (joints.size() == 0)
-    {
-      std::stringstream message;
-      message << "Joint " << jointName << " (index: " << trajIndex << ")"
-              << " does not exist in metaSkeleton.";
-      throw std::invalid_argument{message.str()};
-    }
-    else if (joints.size() > 1)
-    {
-      std::stringstream message;
-      message << "Multiple (" << joints.size()
-              << ") joints have the same name [" << jointName << "].";
-      throw std::invalid_argument{message.str()};
-    }
-
-    auto joint = joints[0];
-    auto metaSkeletonIndex = metaSkeleton->getIndexOf(joint);
-    assert(metaSkeletonIndex != dart::dynamics::INVALID_INDEX);
+    const auto& dofName = jointTrajectory.joint_names[trajIndex];
+    auto metaSkeletonIndex = metaSkeletonProperties.getDofIndex(dofName);
 
     rosJointToMetaSkeletonJoint.emplace_back(
         std::make_pair(trajIndex, metaSkeletonIndex));
@@ -343,11 +315,14 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   }
 
   // Add unspecified joint mappings to rosJointToMetaSkeletonJoint
-  std::vector<size_t> unspecifiedMetaSkeletonJoints;
-  unspecifiedMetaSkeletonJoints.reserve(numControlledJoints - numTrajectoryJoints);
+
+  std::vector<std::size_t> unspecifiedMetaSkeletonJoints;
+  unspecifiedMetaSkeletonJoints.reserve(
+      numControlledJoints - numTrajectoryJoints);
   if (paddingMode)
   {
-    for (size_t metaSkeletonIndex = 0; metaSkeletonIndex < numControlledJoints;
+    for (std::size_t metaSkeletonIndex = 0;
+         metaSkeletonIndex < numControlledJoints;
          ++metaSkeletonIndex)
     {
       if (specifiedMetaSkeletonJoints.find(metaSkeletonIndex)
@@ -403,7 +378,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   auto currState = space->createState();
 
   const auto& waypoints = jointTrajectory.points;
-  for (size_t iWaypoint = 1; iWaypoint < waypoints.size(); ++iWaypoint)
+  for (std::size_t iWaypoint = 1; iWaypoint < waypoints.size(); ++iWaypoint)
   {
     Eigen::VectorXd nextPosition;
     Eigen::VectorXd nextVelocity;
@@ -472,48 +447,52 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
         "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
-  for (size_t i = 0; i < space->getNumSubspaces(); ++i)
+  for (std::size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
+    auto jointSpace = space->getJointSpace(i);
+
     // Supports only R1Joints and SO2Joints.
-    auto rnJoint = std::dynamic_pointer_cast<R1Joint>(space->getSubspace(i));
-    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(space->getSubspace(i));
-    if (!rnJoint && !so2Joint)
+    auto r1Joint = std::dynamic_pointer_cast<R1Joint>(jointSpace);
+    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(jointSpace);
+    if (!r1Joint && !so2Joint)
     {
       throw std::invalid_argument(
-          "MetaSkeletonStateSpace must contain only RnJonts and SO2Joints.");
+          "MetaSkeletonStateSpace must contain only R1Joints and SO2Joints.");
     }
 
     // For RnJoint, supports only 1D.
-    if (rnJoint && rnJoint->getDimension() != 1)
+    if (r1Joint && r1Joint->getDimension() != 1)
     {
       std::stringstream message;
-      message << "RnJoint must be 1D. Joint " << i << " has "
-              << rnJoint->getDimension() << " dimensions.";
+      message << "R1Joint must be 1D. Joint " << i << " has "
+              << r1Joint->getDimension() << " dimensions.";
       throw std::invalid_argument{message.str()};
     }
   }
 
   common::StepSequence timeSequence{
-      timestep, true, 0., trajectory->getDuration()};
+      timestep, true, true, 0., trajectory->getDuration()};
   const auto numJoints = space->getNumSubspaces();
-  const auto numWaypoints = timeSequence.getMaxSteps();
-  const auto metaSkeleton = space->getMetaSkeleton();
+  const auto numWaypoints = timeSequence.getLength();
   trajectory_msgs::JointTrajectory jointTrajectory;
   jointTrajectory.joint_names.reserve(numJoints);
 
-  for (size_t i = 0; i < numJoints; ++i)
+  for (std::size_t i = 0; i < numJoints; ++i)
   {
-    const auto joint = space->getJointSpace(i)->getJoint();
-    const auto jointName = joint->getName();
-    auto joints = metaSkeleton->getJoints(jointName);
-    if (joints.size() > 1)
+    const auto jointProperties = space->getJointSpace(i)->getProperties();
+    const auto jointDofNames = jointProperties.getDofNames();
+
+    if (jointDofNames.size() != 1)
     {
       std::stringstream message;
-      message << "Metaskeleton has multiple joints with same name ["
-              << jointName << "].";
+      message << "Joint " << jointProperties.getName() << " of type "
+              << jointProperties.getType() << " has " << jointDofNames.size()
+              << " DOFs.";
       throw std::invalid_argument{message.str()};
     }
-    jointTrajectory.joint_names.emplace_back(jointName);
+
+    const auto jointDofName = jointDofNames[0];
+    jointTrajectory.joint_names.emplace_back(jointDofName);
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
@@ -535,7 +514,7 @@ sensor_msgs::JointState positionsToJointState(
     const Eigen::VectorXd& goalPositions,
     const std::vector<std::string>& jointNames)
 {
-  if ((size_t)goalPositions.size() != jointNames.size())
+  if (static_cast<std::size_t>(goalPositions.size()) != jointNames.size())
   {
     std::stringstream message;
     message << "The size of goalPositions (" << goalPositions.size()

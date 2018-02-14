@@ -19,8 +19,9 @@ class InverseKinematicsSampleable : public Sampleable
 {
 public:
   /// Constructor.
-  /// \param _stateSpace StateSpace of a skeleton
+  /// \param _metaSkeletonStateSpace StateSpace of a skeleton
   ///        one of whose frame is being constrained by _poseConstraint.
+  /// \param _metaskeleton MetaSkeleton to test with
   /// \param _poseConstraint This samples poses for a frame in the skeleton.
   /// \param _seedConstraint This samples configurations for the skeleton.
   ///        These samples are used as seeds when solving inverse kinematics.
@@ -29,7 +30,8 @@ public:
   /// \param _maxNumTrials Max number of trials for its sample generator
   ///        to retry sampling and finding an inverse kinematics solution.
   InverseKinematicsSampleable(
-      statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       SampleablePtr _poseConstraint,
       SampleablePtr _seedConstraint,
       dart::dynamics::InverseKinematicsPtr _inverseKinematics,
@@ -44,7 +46,8 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   SampleablePtr mPoseConstraint;
   SampleablePtr mSeedConstraint;
   dart::dynamics::InverseKinematicsPtr mInverseKinematics;

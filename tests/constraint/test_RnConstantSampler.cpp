@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include <dart/dart.hpp>
+#include <gtest/gtest.h>
 #include <aikido/constraint/uniform/RnConstantSampler.hpp>
 #include <aikido/constraint/uniform/RnConstantSampler.hpp>
 #include "eigen_tests.hpp"
@@ -10,9 +10,11 @@ using namespace aikido;
 template <int N>
 void testConstructorThrowsForNullStateSpace()
 {
-  EXPECT_THROW({
-    constraint::RConstantSampler<N>(nullptr, Eigen::Matrix<double, N, 1>());
-  }, std::invalid_argument);
+  EXPECT_THROW(
+      {
+        constraint::RConstantSampler<N>(nullptr, Eigen::Matrix<double, N, 1>());
+      },
+      std::invalid_argument);
 }
 
 //==============================================================================
@@ -33,21 +35,24 @@ void testConstructorThrowsForWrongSizeValue()
 #ifndef NDEBUG // debug mode
   if (N != Eigen::Dynamic)
   {
-    EXPECT_DEATH({
-      constraint::RConstantSampler<N>(
-          std::make_shared<statespace::R<N>>(),
-          Eigen::VectorXd::Zero(N+1));
-    }, ".*Invalid sizes when resizing a matrix or array..*");
+    EXPECT_DEATH(
+        {
+          constraint::RConstantSampler<N>(
+              std::make_shared<statespace::R<N>>(),
+              Eigen::VectorXd::Zero(N + 1));
+        },
+        ".*Invalid sizes when resizing a matrix or array..*");
   }
 #endif
 
   if (N == Eigen::Dynamic)
   {
-    EXPECT_THROW({
-      constraint::RConstantSampler<N>(
-          std::make_shared<statespace::R<N>>(3),
-          Eigen::VectorXd::Zero(4));
-    }, std::invalid_argument);
+    EXPECT_THROW(
+        {
+          constraint::RConstantSampler<N>(
+              std::make_shared<statespace::R<N>>(3), Eigen::VectorXd::Zero(4));
+        },
+        std::invalid_argument);
   }
 }
 
@@ -90,8 +95,9 @@ void testSampleGenerator(int dimension = N)
     auto state = stateSpace->createState();
     EXPECT_TRUE(generator->sample(state));
 
-    EXPECT_TRUE(tests::CompareEigenMatrices(
-        state.getValue(), sampler->getConstantValue(), 1e-6));
+    EXPECT_TRUE(
+        tests::CompareEigenMatrices(
+            state.getValue(), sampler->getConstantValue(), 1e-6));
   }
 }
 

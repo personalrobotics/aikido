@@ -12,6 +12,8 @@
 namespace aikido {
 namespace constraint {
 
+AIKIDO_DECLARE_POINTERS(TSR)
+
 /// TSRs describe end-effector constraint sets as subsets of SE(3).
 /// A TSR consists of three parts:
 ///     T0_w: transform from the origin to the TSR frame w
@@ -80,7 +82,13 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
   // Documentation inherited.
-  bool isSatisfied(const statespace::StateSpace::State* _s) const override;
+  bool isSatisfied(
+      const statespace::StateSpace::State* _s,
+      TestableOutcome* outcome = nullptr) const override;
+
+  /// Return an instance of DefaultTestableOutcome, since this class doesn't
+  /// have a more specialized TestableOutcome derivative assigned to it.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   /// Throws an invalid_argument exception if this TSR is invalid.
   /// For a TSR to be valid, mBw(i, 0) <= mBw(i, 1).
@@ -90,7 +98,7 @@ public:
   void setRNG(std::unique_ptr<common::RNG> rng);
 
   // Documentation inherited.
-  size_t getConstraintDimension() const override;
+  std::size_t getConstraintDimension() const override;
 
   // Documentation inherited.
   void getValue(const statespace::StateSpace::State* _s, Eigen::VectorXd& _out)
@@ -141,8 +149,6 @@ private:
   std::unique_ptr<common::RNG> mRng;
   std::shared_ptr<statespace::SE3> mStateSpace;
 };
-
-using TSRPtr = std::shared_ptr<TSR>;
 
 } // namespace constraint
 } // namespace aikido

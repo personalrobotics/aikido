@@ -44,7 +44,7 @@ public:
   /// Gets number of subspaces.
   ///
   /// \return number of subspaces
-  size_t getNumSubspaces() const;
+  std::size_t getNumSubspaces() const;
 
   /// Gets subspace of type \c Space by at \c _index.
   ///
@@ -52,7 +52,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return subspace at \c _index
   template <class Space = StateSpace>
-  std::shared_ptr<Space> getSubspace(size_t _index) const;
+  std::shared_ptr<Space> getSubspace(std::size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index.
   ///
@@ -61,7 +61,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = StateSpace>
-  typename Space::State* getSubState(State* _state, size_t _index) const;
+  typename Space::State* getSubState(State* _state, std::size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index. This
   /// is an overload for when \c _state is \c const.
@@ -72,7 +72,7 @@ public:
   /// \return state at \c _index
   template <class Space = StateSpace>
   const typename Space::State* getSubState(
-      const State* _state, size_t _index) const;
+      const State* _state, std::size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index and
   /// wraps it in a \c Space::StateHandle helper class.
@@ -83,7 +83,7 @@ public:
   /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::StateHandle getSubStateHandle(
-      State* _state, size_t _index) const;
+      State* _state, std::size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index and
   /// wraps it in a \c Space::ConstStateHandle helper class. This is an
@@ -95,10 +95,10 @@ public:
   /// \return state at \c _index
   template <class Space = StateSpace>
   typename Space::StateHandleConst getSubStateHandle(
-      const State* _state, size_t _index) const;
+      const State* _state, std::size_t _index) const;
 
   // Documentation inherited.
-  size_t getStateSizeInBytes() const override;
+  std::size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
   StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
@@ -120,7 +120,7 @@ public:
       const StateSpace::State* _in, StateSpace::State* _out) const override;
 
   // Documentation inherited
-  size_t getDimension() const override;
+  std::size_t getDimension() const override;
 
   // Documentation inherited
   void copyState(
@@ -154,7 +154,7 @@ public:
 private:
   std::vector<StateSpacePtr> mSubspaces;
   std::vector<std::size_t> mOffsets;
-  size_t mSizeInBytes;
+  std::size_t mSizeInBytes;
 };
 
 } // namespace statespace

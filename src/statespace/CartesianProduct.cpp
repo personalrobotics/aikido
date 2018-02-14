@@ -18,7 +18,7 @@ CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
 
   if (!mSubspaces.empty())
   {
-    for (size_t i = 1; i < mSubspaces.size(); ++i)
+    for (std::size_t i = 1; i < mSubspaces.size(); ++i)
       mOffsets[i] = mOffsets[i - 1] + mSubspaces[i - 1]->getStateSizeInBytes();
 
     mSizeInBytes = mOffsets.back() + mSubspaces.back()->getStateSizeInBytes();
@@ -32,13 +32,13 @@ auto CartesianProduct::createState() const -> ScopedState
 }
 
 //==============================================================================
-size_t CartesianProduct::getNumSubspaces() const
+std::size_t CartesianProduct::getNumSubspaces() const
 {
   return mSubspaces.size();
 }
 
 //==============================================================================
-size_t CartesianProduct::getStateSizeInBytes() const
+std::size_t CartesianProduct::getStateSizeInBytes() const
 {
   return mSizeInBytes;
 }
@@ -48,7 +48,7 @@ StateSpace::State* CartesianProduct::allocateStateInBuffer(void* _buffer) const
 {
   auto state = reinterpret_cast<State*>(_buffer);
 
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
     mSubspaces[i]->allocateStateInBuffer(getSubState<>(state, i));
 
   return state;
@@ -59,7 +59,7 @@ void CartesianProduct::freeStateInBuffer(StateSpace::State* _state) const
 {
   auto state = static_cast<State*>(_state);
 
-  for (size_t i = mSubspaces.size(); i > 0; --i)
+  for (std::size_t i = mSubspaces.size(); i > 0; --i)
     mSubspaces[i - 1]->freeStateInBuffer(getSubState<>(state, i - 1));
 }
 
@@ -77,7 +77,7 @@ void CartesianProduct::compose(
   auto state2 = static_cast<const State*>(_state2);
   auto out = static_cast<State*>(_out);
 
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
   {
     mSubspaces[i]->compose(
         getSubState<>(state1, i),
@@ -91,7 +91,7 @@ void CartesianProduct::getIdentity(StateSpace::State* _out) const
 {
   auto state = static_cast<State*>(_out);
 
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
   {
     mSubspaces[i]->getIdentity(getSubState<>(state, i));
   }
@@ -108,16 +108,16 @@ void CartesianProduct::getInverse(
   auto in = static_cast<const State*>(_in);
   auto out = static_cast<State*>(_out);
 
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
   {
     mSubspaces[i]->getInverse(getSubState<>(in, i), getSubState<>(out, i));
   }
 }
 
 //==============================================================================
-size_t CartesianProduct::getDimension() const
+std::size_t CartesianProduct::getDimension() const
 {
-  size_t dim = 0;
+  std::size_t dim = 0;
   for (auto const& sspace : mSubspaces)
   {
     dim += sspace->getDimension();
@@ -131,7 +131,7 @@ void CartesianProduct::copyState(
 {
   auto destination = static_cast<State*>(_destination);
   auto source = static_cast<const State*>(_source);
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
   {
     mSubspaces[i]->copyState(
         getSubState<>(source, i), getSubState<>(destination, i));
@@ -146,7 +146,7 @@ void CartesianProduct::expMap(
   auto dimension = getDimension();
 
   // TODO: Skip these checks in release mode.
-  if (static_cast<size_t>(_tangent.rows()) != dimension)
+  if (static_cast<std::size_t>(_tangent.rows()) != dimension)
   {
     std::stringstream msg;
     msg << "_tangent has incorrect size: expected " << dimension << ", got "
@@ -155,7 +155,7 @@ void CartesianProduct::expMap(
   }
 
   int index = 0;
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
   {
     auto dim = mSubspaces[i]->getDimension();
     mSubspaces[i]->expMap(
@@ -170,7 +170,7 @@ void CartesianProduct::logMap(
 {
   auto dimension = getDimension();
 
-  if (static_cast<size_t>(_tangent.rows()) != dimension)
+  if (static_cast<std::size_t>(_tangent.rows()) != dimension)
   {
     _tangent.resize(dimension);
   }
@@ -178,7 +178,7 @@ void CartesianProduct::logMap(
   auto in = static_cast<const State*>(_in);
 
   int index = 0;
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
   {
     auto dim = mSubspaces[i]->getDimension();
     Eigen::VectorXd segment(dim);
@@ -196,7 +196,7 @@ void CartesianProduct::print(
 {
 
   auto state = static_cast<const State*>(_state);
-  for (size_t i = 0; i < mSubspaces.size(); ++i)
+  for (std::size_t i = 0; i < mSubspaces.size(); ++i)
   {
     _os << "[ " << i << ":";
     getSubspace<>(i)->print(getSubState<>(state, i), _os);

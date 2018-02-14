@@ -1,13 +1,12 @@
 #ifndef AIKIDO_CONTROL_KINEMATICSIMULATIONTRAJECTORYEXECUTOR_HPP_
 #define AIKIDO_CONTROL_KINEMATICSIMULATIONTRAJECTORYEXECUTOR_HPP_
 
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/trajectory/Trajectory.hpp>
-#include "TrajectoryExecutor.hpp"
-
-#include <condition_variable>
 #include <future>
 #include <mutex>
+
+#include <aikido/control/TrajectoryExecutor.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/trajectory/Trajectory.hpp>
 
 namespace aikido {
 namespace control {
@@ -21,9 +20,13 @@ public:
   /// Constructor.
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
-  KinematicSimulationTrajectoryExecutor(::dart::dynamics::SkeletonPtr skeleton);
+  explicit KinematicSimulationTrajectoryExecutor(
+      ::dart::dynamics::SkeletonPtr skeleton);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
+
+  // Documentation inherited.
+  void validate(trajectory::TrajectoryPtr traj) override;
 
   /// Execute traj and set future upon completion.
   /// \param traj Trajectory to be executed. Its StateSpace should be a
@@ -41,17 +44,20 @@ public:
   /// calling this method.
   void step() override;
 
+  /// Aborts the current trajectory.
+  void abort() override;
+
 private:
   ::dart::dynamics::SkeletonPtr mSkeleton;
+
+  bool mInProgress;
   std::unique_ptr<std::promise<void>> mPromise;
   trajectory::TrajectoryPtr mTraj;
 
   std::chrono::system_clock::time_point mExecutionStartTime;
 
-  /// Manages access on mTraj, mPromise, mInExecution
+  /// Manages access on mInProgress, mPromise, mTraj
   std::mutex mMutex;
-
-  bool mInExecution;
 };
 
 } // namespace control

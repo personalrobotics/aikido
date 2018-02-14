@@ -15,12 +15,14 @@ namespace constraint {
 class FrameTestable : public Testable
 {
 public:
-  /// Creat a Testable for the MetaSkeleton.
-  /// \param _stateSpace Configuration space of the metaskeleton.
+  /// Create a Testable for the MetaSkeleton.
+  /// \param _metaSkeletonStateSpace Configuration space of the metaskeleton.
+  /// \param _metaskeleton MetaSkeleton to test with
   /// \param _frame Frame constrained by _poseConstraint.
   /// \param _poseConstraint A testable constraint on _frame.
   FrameTestable(
-      statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      dart::dynamics::MetaSkeletonPtr _metaskeleton,
       dart::dynamics::ConstJacobianNodePtr _frame,
       TestablePtr _poseConstraint);
 
@@ -29,13 +31,24 @@ public:
   /// \param _state a MetaskeletonState to set the configuration of this
   ///        constraint's metaskeketon. This state's StateSpace should match
   ///        StateSpace returend by getStateSpace().
-  bool isSatisfied(const statespace::StateSpace::State* _state) const override;
+  /// \param outcome Testable outcome derivative class. Passed to the
+  ///        isSatisfied method of mPoseConstraint to allow "pass through" of
+  ///        debugging information.
+  bool isSatisfied(
+      const statespace::StateSpace::State* _state,
+      TestableOutcome* outcome = nullptr) const override;
 
-  // Documentation inhereted
+  /// Return the outcome of mPoseConstraint->createOutcome(). Reason:
+  /// isSatisfied in this class will just pass outcome to the isSatisfied
+  /// method of of mPoseConstraint.
+  std::unique_ptr<TestableOutcome> createOutcome() const override;
+
+  // Documentation inherited
   std::shared_ptr<statespace::StateSpace> getStateSpace() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   dart::dynamics::ConstJacobianNodePtr mFrame;
   TestablePtr mPoseConstraint;
   std::shared_ptr<statespace::SE3> mPoseStateSpace;

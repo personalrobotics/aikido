@@ -21,6 +21,9 @@ BarrettHandKinematicSimulationPositionCommandExecutor::
   , mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
 {
+  if (!robot)
+    throw std::invalid_argument("Robot is null");
+
   if (mCollisionDetector && mCollideWith)
   {
     // If a collision group is given and its collision detector does not match
@@ -74,7 +77,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
     std::stringstream message;
     message << "Invalid prefix '" << prefix << "', "
             << "must be either '/left/' or '/right/'";
-    throw std::runtime_error(message.str());
+    throw std::invalid_argument(message.str());
   }
 
   const auto fingerChains = std::array<ChainPtr, 3>{{
@@ -95,13 +98,13 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
   const auto spreadFingers
       = std::array<ChainPtr, 2>{{fingerChains[0], fingerChains[1]}};
 
-  size_t spreadDof = 0;
+  std::size_t spreadDof = 0;
   mSpreadCommandExecutor = std::make_shared<FingerSpreadCommandExecutor>(
       spreadFingers, spreadDof, mCollisionDetector, mCollideWith);
 
-  constexpr auto primalDof = std::array<size_t, 3>{{1, 1, 0}};
-  constexpr auto distalDof = std::array<size_t, 3>{{2, 2, 1}};
-  for (size_t i = 0; i < fingerChains.size(); ++i)
+  constexpr auto primalDof = std::array<std::size_t, 3>{{1, 1, 0}};
+  constexpr auto distalDof = std::array<std::size_t, 3>{{2, 2, 1}};
+  for (std::size_t i = 0; i < fingerChains.size(); ++i)
   {
     mPositionCommandExecutors[i]
         = std::make_shared<FingerPositionCommandExecutor>(
@@ -138,7 +141,7 @@ BarrettHandKinematicSimulationPositionCommandExecutor::execute(
   mFingerFutures.clear();
 
   mFingerFutures.reserve(kNumPositionExecutor + kNumSpreadExecutor);
-  for (size_t i = 0; i < kNumPositionExecutor; ++i)
+  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
     mFingerFutures.emplace_back(
         mPositionCommandExecutors[i]->execute(mProximalGoalPositions.row(i)));
 
@@ -161,7 +164,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
   std::exception_ptr expr;
   bool allFingersCompleted = true;
 
-  for (size_t i = 0; i < mFingerFutures.size(); ++i)
+  for (std::size_t i = 0; i < mFingerFutures.size(); ++i)
   {
     // Check the status of each finger
     auto status = mFingerFutures[i].wait_for(kWaitPeriod);
@@ -174,7 +177,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
 
   if (allFingersCompleted)
   {
-    for (size_t i = 0; i < mFingerFutures.size(); ++i)
+    for (std::size_t i = 0; i < mFingerFutures.size(); ++i)
     {
       try
       {
@@ -218,6 +221,11 @@ bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
+
+  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+    mPositionCommandExecutors[i]->setCollideWith(mCollideWith);
+  mSpreadCommandExecutor->setCollideWith(mCollideWith);
+
   return true;
 }
 

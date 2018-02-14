@@ -1,8 +1,61 @@
 ## Aikido 0 (prerelease)
 
-### 0.2.0 (201X-XX-XX)
+### 0.3.0 (201X-XX-XX)
 
+* Common
+  
+  * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
+  * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
 
+* State Space
+
+  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
+  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
+
+* Control
+
+  * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
+
+* Planner
+
+  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
+  * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
+
+### 0.2.0 (2018-01-09)
+
+* State Space
+
+  * Moved MetaSkeletonStateSpaceSaver implementation to src: [#273](https://github.com/personalrobotics/aikido/pull/273)
+
+* Constraint
+
+  * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
+  * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
+  * Added TestableOutcome class: [#266](https://github.com/personalrobotics/aikido/pull/266)
+
+* Perception
+
+  * Added RcnnPoseModule: [#264](https://github.com/personalrobotics/aikido/pull/264)
+
+* Planner
+
+  * Added World class: [#243](https://github.com/personalrobotics/aikido/pull/243), [#252](https://github.com/personalrobotics/aikido/pull/252), [#265](https://github.com/personalrobotics/aikido/pull/265)
+  * Added vector field planner: [#246](https://github.com/personalrobotics/aikido/pull/246), [#262](https://github.com/personalrobotics/aikido/pull/262), [#268](https://github.com/personalrobotics/aikido/pull/268)
+
+* RViz
+
+  * Added WorldInteractiveMarkerViewer: [#242](https://github.com/personalrobotics/aikido/pull/242)
+  * Added TrajectoryMarker: [#288](https://github.com/personalrobotics/aikido/pull/288)
+
+* IO
+
+  * Added support for new ErrorStr API in tinyxml2 6.0.0: [#290](https://github.com/personalrobotics/aikido/pull/290), [#295](https://github.com/personalrobotics/aikido/pull/295)
+
+* Build & Testing & ETC
+
+  * Changed to use size_t over std::size_t: [#230](https://github.com/personalrobotics/aikido/pull/230)
+  * Included test code to formatting code list: [#239](https://github.com/personalrobotics/aikido/pull/239)
+  * Fixed RViz component dependencies: [#253](https://github.com/personalrobotics/aikido/pull/253)
 
 ### [0.1.0 (2017-10-02)](https://github.com/personalrobotics/aikido/milestone/4?closed=1)
 

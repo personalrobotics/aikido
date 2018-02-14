@@ -6,7 +6,7 @@ using aikido::statespace::SO2;
 using aikido::tests::make_vector;
 using Eigen::Rotation2Dd;
 
-static constexpr double TOLERANCE { 1e-6 };
+static constexpr double TOLERANCE{1e-6};
 
 TEST(SO2, Compose)
 {
@@ -62,15 +62,15 @@ TEST(SO2, ExpMap)
 
   so2.expMap(make_vector(0.), &out);
   EXPECT_EIGEN_EQUAL(
-    Rotation2Dd(0.).matrix(), expected.getRotation().matrix(), TOLERANCE);
+      Rotation2Dd(0.).matrix(), expected.getRotation().matrix(), TOLERANCE);
 
   so2.expMap(make_vector(2 * M_PI), &out);
   EXPECT_EIGEN_EQUAL(
-    Rotation2Dd(0.).matrix(), out.getRotation().matrix(), TOLERANCE);
+      Rotation2Dd(0.).matrix(), out.getRotation().matrix(), TOLERANCE);
 
   so2.expMap(make_vector(-3 * M_PI), &out);
   EXPECT_EIGEN_EQUAL(
-    Rotation2Dd(M_PI).matrix(), out.getRotation().matrix(), TOLERANCE);
+      Rotation2Dd(M_PI).matrix(), out.getRotation().matrix(), TOLERANCE);
 }
 
 TEST(SO2, LogMap)

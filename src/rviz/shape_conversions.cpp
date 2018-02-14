@@ -51,6 +51,17 @@ std_msgs::ColorRGBA convertEigenToROSColorRGBA(const Eigen::Vector4d& v)
 }
 
 //==============================================================================
+Eigen::Vector4d convertROSColorRGBAToEigen(const std_msgs::ColorRGBA& v)
+{
+  Eigen::Vector4d vec4;
+  vec4[0] = v.r;
+  vec4[1] = v.g;
+  vec4[2] = v.b;
+  vec4[3] = v.a;
+  return vec4;
+}
+
+//==============================================================================
 geometry_msgs::Quaternion convertEigenToROSQuaternion(
     const Eigen::Quaterniond& v)
 {
@@ -158,8 +169,8 @@ bool convertShape(
 
   for (const Eigen::Vector2i& connection : connections)
   {
-    const size_t& i1 = connection[0];
-    const size_t& i2 = connection[1];
+    const std::size_t& i1 = connection[0];
+    const std::size_t& i2 = connection[1];
 
     if (i1 >= connections.size() || i2 >= connections.size())
     {

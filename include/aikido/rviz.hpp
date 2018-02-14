@@ -6,4 +6,5 @@
 #include "rviz/SkeletonMarker.hpp"
 #include "rviz/SmartPointers.hpp"
 #include "rviz/TSRMarker.hpp"
+#include "rviz/WorldInteractiveMarkerViewer.hpp"
 #include "rviz/shape_conversions.hpp"

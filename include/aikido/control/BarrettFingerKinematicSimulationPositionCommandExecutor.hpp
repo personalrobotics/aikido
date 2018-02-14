@@ -10,10 +10,13 @@
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/common/pointers.hpp"
 #include <aikido/control/PositionCommandExecutor.hpp>
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(BarrettFingerKinematicSimulationPositionCommandExecutor)
 
 /// This executor mimics the behavior of BarretFinger.
 /// It moves a finger to a desired point; it may stop early if
@@ -42,8 +45,8 @@ public:
   ///        See dart/collison/Option.h for more information
   BarrettFingerKinematicSimulationPositionCommandExecutor(
       ::dart::dynamics::ChainPtr finger,
-      size_t proximal,
-      size_t distal,
+      std::size_t proximal,
+      std::size_t distal,
       ::dart::collision::CollisionDetectorPtr collisionDetector = nullptr,
       ::dart::collision::CollisionGroupPtr collideWith = nullptr,
       ::dart::collision::CollisionOption collisionOptions
@@ -81,6 +84,9 @@ public:
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
+  /// Creates a CollisionGroup in the CollisionDetector for the fingers.
+  void setFingerCollisionGroup();
+
   constexpr static double kMimicRatio = 0.333;
   // TODO: read velocity limit from herb_description
   constexpr static double kProximalSpeed = 2.0;
@@ -120,15 +126,15 @@ private:
   /// Desired end-position of proximal dof.
   double mProximalGoalPosition;
 
+  /// Desired end-position of distal dof.
+  double mDistalGoalPosition;
+
   /// Indicator that only distal finger is to be moved.
   bool mDistalOnly;
 
   /// Helper method for step() to set variables for terminating an execution.
   void terminate();
 };
-
-using BarrettFingerKinematicSimulationPositionCommandExecutorPtr
-    = std::shared_ptr<BarrettFingerKinematicSimulationPositionCommandExecutor>;
 
 } // namespace control
 } // namespace aikido

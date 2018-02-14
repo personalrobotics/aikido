@@ -77,7 +77,7 @@ public:
   void setQuaternion(State* _state, const Quaternion& _quaternion) const;
 
   // Documentation inherited.
-  size_t getStateSizeInBytes() const override;
+  std::size_t getStateSizeInBytes() const override;
 
   // Documentation inherited.
   StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
@@ -99,7 +99,7 @@ public:
       const StateSpace::State* _in, StateSpace::State* _out) const override;
 
   // Documentation inherited
-  size_t getDimension() const override;
+  std::size_t getDimension() const override;
 
   // Documentation inherited
   void copyState(

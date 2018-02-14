@@ -21,7 +21,7 @@ protected:
     mTimesA << 0., 1., 2.;
 
     mCoefficientsA.resize(2, LinearSpline::SolutionMatrix(2, 2));
-    mCoefficientsA[0] << 0.,  1., 1.,  1.;
+    mCoefficientsA[0] << 0., 1., 1., 1.;
     mCoefficientsA[1] << 3., -2., 4., -2.;
 
     mSplineA = LinearSpline(mTimesA, mCoefficientsA);
@@ -112,17 +112,18 @@ TEST_F(SplineNDTests, LinearSpline_getSegmentIndex_OutOfBounds)
 
 TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative0)
 {
-  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), mSplineA.evaluate(0.0, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector( 0.5, 1.5), mSplineA.evaluate(0.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector( 0.0, 1.0), mSplineA.evaluate(1.5, 0), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector(-1.0, 0.0), mSplineA.evaluate(2.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(0.0, 1.0), mSplineA.evaluate(0.0, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(0.5, 1.5), mSplineA.evaluate(0.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(0.0, 1.0), mSplineA.evaluate(1.5, 0), EPSILON);
+  EXPECT_EIGEN_EQUAL(
+      make_vector(-1.0, 0.0), mSplineA.evaluate(2.0, 0), EPSILON);
 }
 
 TEST_F(SplineNDTests, LinearSpline_evaluate_Derivative1)
 {
   LinearSpline spline(mTimesA, mCoefficientsA);
 
-  EXPECT_EIGEN_EQUAL(make_vector( 1.,  1.), spline.evaluate(0.5, 1), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(1., 1.), spline.evaluate(0.5, 1), EPSILON);
   EXPECT_EIGEN_EQUAL(make_vector(-2., -2.), spline.evaluate(1.5, 1), EPSILON);
 }
 
@@ -156,8 +157,7 @@ TEST_F(SplineNDTests, CubicSpline_getTimes)
 TEST_F(SplineNDTests, CubicSpline_getCoefficients)
 {
   ASSERT_EQ(1, mSplineB.getCoefficients().size());
-  EXPECT_EIGEN_EQUAL(mCoefficientsB[0], mSplineB.getCoefficients()[0],
-    EPSILON);
+  EXPECT_EIGEN_EQUAL(mCoefficientsB[0], mSplineB.getCoefficients()[0], EPSILON);
 }
 
 TEST_F(SplineNDTests, CubicSpline_getNumKnots)
@@ -187,7 +187,7 @@ TEST_F(SplineNDTests, CubicSpline_getDuration)
 
 TEST_F(SplineNDTests, CubicSpline_getSegmentIndex)
 {
-  EXPECT_EQ(0, mSplineB.getSegmentIndex( 0.5));
+  EXPECT_EQ(0, mSplineB.getSegmentIndex(0.5));
 }
 
 TEST_F(SplineNDTests, CubicSpline_getSegmentIndex_OutOfBounds)
@@ -213,8 +213,8 @@ TEST_F(SplineNDTests, CubicSpline_evaluate_Derivative1)
 TEST_F(SplineNDTests, CubicSpline_evaluate_Derivative2)
 {
   EXPECT_EIGEN_EQUAL(make_vector(-2.), mSplineB.evaluate(0.0, 2), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector( 1.), mSplineB.evaluate(0.5, 2), EPSILON);
-  EXPECT_EIGEN_EQUAL(make_vector( 4.), mSplineB.evaluate(1.0, 2), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(1.), mSplineB.evaluate(0.5, 2), EPSILON);
+  EXPECT_EIGEN_EQUAL(make_vector(4.), mSplineB.evaluate(1.0, 2), EPSILON);
 }
 
 TEST_F(SplineNDTests, CubicSpline_evaluate_Derivative3)
