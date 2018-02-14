@@ -148,8 +148,9 @@ BarrettHandKinematicSimulationPositionCommandExecutor::execute(
 
   mPromise.reset(new std::promise<void>());
 
-  Eigen::VectorXd proximalGoalPositions = goalPositions.head<3>();
-  Eigen::VectorXd spreadGoalPosition = goalPositions.row(3);
+  const Eigen::Vector3d proximalGoalPositions = goalPositions.head<3>();
+  const Eigen::Matrix<double, 1, 1> spreadGoalPosition
+      = goalPositions.tail<1>();
   mFingerFutures.clear();
 
   mFingerFutures.reserve(kNumPositionExecutors + kNumSpreadExecutor);
