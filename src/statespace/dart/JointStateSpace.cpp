@@ -15,6 +15,8 @@ JointStateSpace::Properties::Properties(const ::dart::dynamics::Joint* joint)
   , mVelocityLowerLimits(joint->getNumDofs())
   , mVelocityUpperLimits(joint->getNumDofs())
 {
+  // TODO: Acquire the joint's mutex once DART supports it.
+
   for (std::size_t index = 0; index < joint->getNumDofs(); ++index)
   {
     mDofNames[index] = joint->getDofName(index);

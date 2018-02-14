@@ -20,6 +20,7 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
+const static std::chrono::milliseconds waitTime{0};
 const static std::chrono::milliseconds stepTime{100};
 
 class KinematicSimulationTrajectoryExecutorTest : public testing::Test
@@ -127,13 +128,15 @@ TEST_F(
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
 
   std::future_status status;
   do
   {
-    executor.step();
-    status = future.wait_for(stepTime);
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   future.get();
@@ -149,14 +152,16 @@ TEST_F(
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
 
   EXPECT_THROW(executor.execute(mTraj), std::runtime_error);
   std::future_status status;
   do
   {
-    executor.step();
-    status = future.wait_for(stepTime);
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   future.get();
@@ -172,13 +177,15 @@ TEST_F(
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
 
   std::future_status status;
   do
   {
-    executor.step();
-    status = future.wait_for(stepTime);
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   future.get();
@@ -188,12 +195,39 @@ TEST_F(
   mSkeleton->getDof(0)->setPosition(-1.0);
 
   // Execute second traj.
+  simulationClock = std::chrono::system_clock::now();
   future = executor.execute(mTraj);
 
   do
   {
-    executor.step();
-    status = future.wait_for(stepTime);
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
+  } while (status != std::future_status::ready);
+
+  future.get();
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
+}
+
+TEST_F(KinematicSimulationTrajectoryExecutorTest, step_NegativeTimepoint_Throws)
+{
+  KinematicSimulationTrajectoryExecutor executor(mSkeleton);
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+
+  auto simulationClock = std::chrono::system_clock::now();
+  auto future = executor.execute(mTraj);
+
+  EXPECT_THROW(
+      executor.step(simulationClock - stepTime), std::invalid_argument);
+
+  std::future_status status;
+  do
+  {
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
   future.get();
@@ -206,9 +240,10 @@ TEST_F(
 {
   KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mTraj);
-  future.wait_for(stepTime);
-  executor.step();
+  future.wait_for(waitTime);
+  executor.step(simulationClock + stepTime);
   executor.abort();
 
   EXPECT_THROW(future.get(), std::runtime_error);
