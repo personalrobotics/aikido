@@ -74,7 +74,8 @@ public:
   ///
   /// Moves the finger joint positions by dofVelocity * timeSincePreviousCall
   /// until either the proximal dof reaches goalPosition, a joint limit is
-  /// reached, or collision is detected.
+  /// reached, or collision is detected. timeSincePreviousCall is computed by
+  /// subtracting the timepoint of the previous call from the current timepoint.
   /// When collision is detected on the distal link, the finger stops.
   /// When collision is detected on the proximal link, the distal link continues
   /// to move until it either reaches mimicRatio * goalPosition, a joint limit
@@ -97,7 +98,6 @@ private:
   constexpr static double kMimicRatio = 0.333;
 
   /// Proximal joint velocity limit
-  // TODO: read velocity limit from herb_description
   constexpr static double kProximalSpeed = 2.0;
 
   /// Distal joint velocity limit

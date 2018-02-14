@@ -37,7 +37,9 @@ public:
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
 protected:
-  /// Time of previous call
+  /// Time of previous call to \c step.
+  /// \note If \c step has not yet been called, this is the time that \c execute
+  /// was called.
   std::chrono::system_clock::time_point mTimeOfPreviousCall;
 };
 

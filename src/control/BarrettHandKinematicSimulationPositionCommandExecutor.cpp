@@ -6,6 +6,16 @@ namespace control {
 
 constexpr std::chrono::milliseconds
     BarrettHandKinematicSimulationPositionCommandExecutor::kWaitPeriod;
+constexpr int BarrettHandKinematicSimulationPositionCommandExecutor::
+    kNumPositionExecutors;
+constexpr std::array<std::size_t,
+                     BarrettHandKinematicSimulationPositionCommandExecutor::
+                         kNumPositionExecutors>
+    BarrettHandKinematicSimulationPositionCommandExecutor::kPrimalDofs;
+constexpr std::array<std::size_t,
+                     BarrettHandKinematicSimulationPositionCommandExecutor::
+                         kNumPositionExecutors>
+    BarrettHandKinematicSimulationPositionCommandExecutor::kDistalDofs;
 
 //==============================================================================
 BarrettHandKinematicSimulationPositionCommandExecutor::
@@ -94,8 +104,8 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
           Chain::IncludeBoth),
   }};
 
-  const auto spreadFingers
-      = std::array<ChainPtr, 2>{{fingerChains[0], fingerChains[1]}};
+  const auto spreadFingers = std::array<ChainPtr, kNumSpreadJoints>{
+      {fingerChains[0], fingerChains[1]}};
 
   std::size_t spreadDof = 0;
   mSpreadCommandExecutor = std::make_shared<FingerSpreadCommandExecutor>(
@@ -105,15 +115,13 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
       mCollideWith,
       mCollisionOptions);
 
-  constexpr auto primalDof = std::array<std::size_t, 3>{{1, 1, 0}};
-  constexpr auto distalDof = std::array<std::size_t, 3>{{2, 2, 1}};
   for (std::size_t i = 0; i < fingerChains.size(); ++i)
   {
     mPositionCommandExecutors[i]
         = std::make_shared<FingerPositionCommandExecutor>(
             fingerChains[i],
-            primalDof[i],
-            distalDof[i],
+            kPrimalDofs[i],
+            kDistalDofs[i],
             mCollisionDetector,
             mCollideWith,
             mCollisionOptions);

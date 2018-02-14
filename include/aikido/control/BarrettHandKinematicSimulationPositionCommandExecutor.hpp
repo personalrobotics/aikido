@@ -79,6 +79,17 @@ private:
   /// Number of finger spread executors
   constexpr static int kNumSpreadExecutor = 1;
 
+  /// Indices of primal dofs
+  constexpr static auto kPrimalDofs
+      = std::array<std::size_t, kNumPositionExecutors>{{1, 1, 0}};
+
+  /// Indices of distal dofs
+  constexpr static auto kDistalDofs
+      = std::array<std::size_t, kNumPositionExecutors>{{2, 2, 1}};
+
+  /// Number of spread joints
+  constexpr static int kNumSpreadJoints = 2;
+
   /// Executor for proximal and distal joints
   std::array<BarrettFingerKinematicSimulationPositionCommandExecutorPtr,
              kNumPositionExecutors>
