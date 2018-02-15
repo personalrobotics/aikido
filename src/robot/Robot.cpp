@@ -30,7 +30,6 @@ Robot::Robot(
 , mRetimer(std::move(retimer))
 , mSmoother(std::move(smoother))
 , mCollisionResolution(collisionResolution)
-, mThread(nullptr)
 {
   if (!mSimulation)
     throw std::error("Not implemented");
@@ -63,7 +62,7 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
 
   return util::planToConfiguration(
     stateSpace, metaSkeleton, startState, goalState, timelimit,
-    collisionConstraint, mRng->clone(), mCollisionResolution);
+    collisionConstraint, cloneRNG(), mCollisionResolution);
 }
 
 //==============================================================================
@@ -100,7 +99,7 @@ trajectory::TrajectoryPtr Robot::planToConfigurations(
 
   return planToConfigurations(
     statespace, metaSkeleton, startState, goalStates, timelimit,
-    collisionFree, mRng->clone(), mCollisionResolution);
+    collisionFree, cloneRNG(), mCollisionResolution);
 }
 
 //==============================================================================
@@ -144,7 +143,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
   auto collisionConstraint = getCollisionConstraint(stateSpace, collisionFree);
 
   return util::planToTSR(statespace, metaSkeleton,
-    startState, tsr, maxNumTrials, timelimit, collisionConstraint, mRng->clone(),
+    startState, tsr, maxNumTrials, timelimit, collisionConstraint, cloneRNG(),
     mCollisionResolution);
 }
 
@@ -173,9 +172,21 @@ trajectory::TrajectoryPtr Robot::
       const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
       const dart::dynamics::BodyNodePtr &bodyNode,
       const constraint::TSRPtr &goalTsr,
-      const constraint::TSRPtr &constraintTsr)
+      const constraint::TSRPtr &constraintTsr,
+      const CollisionFreePtr &collisionFree)
 {
-  throw std::runtime_error("Not implemented");
+  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
+    throw std::runtime_error("Statespace is incompatible with this robot.");
+
+  auto collisionConstraint = getCollisionConstraint(stateSpace, collisionFree);
+
+  util::planToTSRwithTrajectoryConstraint(
+    space,
+    metaSkeleton,
+    bodyNode,
+    goalTsr,
+    constraintTsr,
+    collisionConstraint);
 }
 
 //==============================================================================
@@ -201,8 +212,8 @@ trajectory::TrajectoryPtr Robot::postprocessPath(
   const trajectory::TrajectoryPtr &path)
 {
   // TODO: this needs to know whether to call smoothing or not.
-  auto untimedTrajectory = mSmoother->postprocess(path, mRng->clone());
-  auto timedTrajectory = mRetimer->postprocess(untimedTrajectory, mRng->clone());
+  auto untimedTrajectory = mSmoother->postprocess(path, cloneRNG());
+  auto timedTrajectory = mRetimer->postprocess(untimedTrajectory, cloneRNG());
 
   return timedTrajectory;
 }
@@ -219,19 +230,6 @@ void Robot::executePath(const trajectory::TrajectoryPtr &path)
 {
   auto traj = postprocessPath(path, timelimit);
   executeTrajectory(traj);
-}
-
-//==============================================================================
-void Robot::setConfiguration(
-    const std::string &name,
-    const Eigen::VectorXd &configuration)
-{
-  if (mMetaSkeletons.find(name) == mMetaSkeletons.end())
-    throw std::runtime_error(name + " does not exist.");
-
-  auto metaSkeleton = mMetaSkeletons[name].first;
-
-  metaSkeleton->setPositions(configuration);
 }
 
 //==============================================================================
@@ -262,6 +260,25 @@ std::string Robot::getName()
 MetaSkeletonPtr Robot::getMetaSkeleton()
 {
   return mRobot;
+}
+
+//==============================================================================
+void Robot::step(const std::chrono::system_clock::time_point& timepoint)
+{
+  std::lock_guard<std::mutex> lock(mRobot->getMutex());
+  mTrajectoryExecutor->step(timepoint);
+}
+
+//==============================================================================
+void Robot::update()
+{
+  step(std::chrono::system_clock::now());
+}
+
+//==============================================================================
+std::unique_ptr<common::RNG> Robot::cloneRNG()
+{
+  return std::move(cloneRNGFrom(mRng)[0]);
 }
 
 //==============================================================================
@@ -337,13 +354,6 @@ void Robot::setRoot(Robot *robot)
     throw std::invalid_argument("Robot is null.");
 
   mRootRobot = robot;
-}
-
-//==============================================================================
-void Robot::step()
-{
-  std::lock_guard<std::mutex> lock(mRobot->getMutex());
-  mTrajectoryExecutor->step();
 }
 
 } // namespace robot

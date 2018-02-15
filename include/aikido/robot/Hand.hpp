@@ -22,40 +22,41 @@ public:
       dart::dynamics::BodyNode* endEffectorBodyNode);
 
   /// \param newName New name for this robot
-  virtual std::unique_ptr<Hand> clone(const std::string& newName);
+  virtual std::unique_ptr<Hand> clone(const std::string& newName) = 0;
 
-  /// Get the end-effector body node.
+  /// Returns the end-effector body node.
   /// \return DART body node of end-effector
   dart::dynamics::BodyNode* getBodyNode() const;
 
-  /// Get the hand skeleton.
+  /// Returns the hand skeleton.
   /// \return DART Branch rooted at the palm
   dart::dynamics::BranchPtr getHand();
 
-  /// Get the hand's offset from a TSR of a specific object type (as registered
-  /// in \c tsrEndEffectorTransformsUri). Each object's TSR.mTw_e must be
-  /// right-multiplied with this.
-  /// \param[in] objectType Type of the object (e.g. "cylinder")
+  /// Returns the hand's offset from a TSR of a specific object type
+  /// (as registered in \c tsrEndEffectorTransformsUri).
+  /// Each object's TSR.mTw_e must be right-multiplied with this.
+  /// \param objectType Type of the object (e.g. "cylinder")
   /// \return hand's transform if it exists, boost::none if not
   boost::optional<Eigen::Isometry3d> getEndEffectorTransform(
       const std::string& objectType) const;
 
-  /// Grab an object. Immediately executes.
-  /// \param[in] bodyToGrab The object to grab
+  /// Grabs an object. Immediately executes.
+  /// \param bodyToGrab The object to grab
   /// \return bool for success
   void grab(const dart::dynamics::SkeletonPtr& bodyToGrab);
 
-  /// Ungrab an object. Immediately ungrabs.
+  /// Ungrabs an object. Immediately ungrabs.
   /// Throws a runtime_error if fails.
   void ungrab();
 
-  /// Set the hand to the corresponding preshape (from \c preshapesUri).
-  /// \param[in] preshapeName Name of preshape (e.g. "open")
+  /// Sets the hand to the corresponding preshape (from \c preshapesUri).
+  /// \param preshapeName Name of preshape (e.g. "open")
   /// \throw a runtime_error if execution fails.
   void executePreshape(const std::string& preshapeName);
 
-  /// Execute one step of the preshape trajectory.
-  virtual void step();
+  /// Executes the preshape trajectory upto timepoint..
+  // \param timepoint Time to simulate to.
+  virtual void step()const std::chrono::system_clock::time_point& timepoint;
 
 private:
   // Preshapes and end-effector transforms are read from YAML files
@@ -68,17 +69,17 @@ private:
                     Eigen::aligned_allocator<std::pair<const std::string,
                                                        Eigen::Isometry3d>>>;
 
-  /// Load preshapes from YAML file (retrieved from \c preshapesUri).
-  /// \param[in] node The YAML node to read from
+  /// Loads preshapes from YAML file (retrieved from \c preshapesUri).
+  /// \param node The YAML node to read from
   void parseYAMLToPreshapes(const YAML::Node& node);
 
-  /// Load end-effector transforms from YAML file (retrieved from
+  /// Loads end-effector transforms from YAML file (retrieved from
   /// \c tsrEndEffectorTransformsUri).
-  /// \param[in] node The YAML node to read from
+  /// \param node The YAML node to read from
   void parseYAMLToEndEffectorTransforms(const YAML::Node& node);
 
-  /// Return the corresponding preshape (from \c preshapesUri).
-  /// \param[in] preshapeName Name of preshape (e.g. "open")
+  /// Returns the corresponding preshape (from \c preshapesUri).
+  /// \param preshapeName Name of preshape (e.g. "open")
   /// \return preshape if it exists, boost::none if not
   boost::optional<Eigen::VectorXd> getPreshape(
       const std::string& preshapeName);

@@ -14,15 +14,16 @@
 
 namespace aikido {
 namespace robot {
+
+// TODO: These are planning methods used in Robot classes. These will be
+// removed once we have a Planner API.
 namespace util {
 
-// TODO: These are temporary methods until we have Planner API.
   trajectory::InterpolatedPtr planToConfiguration(
                     const MetaSkeletonStateSpacePtr &space,
                     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
                     const statespace::StateSpace::State* startState,
                     const statespace::StateSpace::State* goalState,
-                    double timelimit,
                     const TestablePtr &collisionTestable, RNG *rng,
                     double collisionResolution);
 
@@ -32,7 +33,6 @@ namespace util {
                     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
                     const statespace::StateSpace::State* startState,
                     const std::vector<tatespace::StateSpace::State*> goalStates,
-                    double timelimit,
                     const TestablePtr &collisionTestable, RNG *rng,
                     double collisionResolution);
 
@@ -41,7 +41,6 @@ namespace util {
                           const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
                           const MetaSkeletonStateSpacePtr &space,
                           const BodyNodePtr &bn, const TSRPtr &tsr,
-                          int maxNumTrials, double timelimit,
                           const TestablePtr &collisionTestable, RNG *rng,
                           double collisionResolution);
 

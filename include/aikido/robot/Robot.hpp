@@ -1,6 +1,7 @@
 #ifndef AIKIDO_ROBOT_ROBOT_HPP_
 #define AIKIDO_ROBOT_ROBOT_HPP_
 
+#include <chrono>
 #include <string>
 #include <unordered_map>
 #include <Eigen/Core>
@@ -11,10 +12,10 @@
 #include "aikido/constraint/TSR.hpp"
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/trajectory/Trajectory.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace robot {
@@ -27,6 +28,16 @@ class Robot
 {
 public:
 
+  /// Constructor.
+  /// \param name Name of the robot.
+  /// \param robot Metaskeleton of the robot.
+  /// \param statespace StateSpace this robot belongs to.
+  /// \param simulation True if running in simulation.
+  /// \param rngSeed seed for initializing random generator.
+  /// \param trajectoryExecutor Trajectory executor.
+  /// \param retimer Postprocessor used for retiming paths.
+  /// \param smoother Postprocessor used for smoothing paths.
+  /// \param collisionResolution Resolution to check collision.
   Robot::Robot(
     const std::string& name,
     MetaSkeletonPtr robot,
@@ -39,10 +50,6 @@ public:
     double collisionResolution);
 
   virtual ~Robot();
-
-  /// Clones this Robot.
-  /// \param newName New name for this robot
-  virtual std::unique_ptr<Robot> clone(const std::string& newName) = 0;
 
   /// Plans a trajectory to the specified configuration
   virtual trajectory::TrajectoryPtr planToConfiguration(
@@ -76,7 +83,7 @@ public:
     const std::vector<Eigen::VectorXd> &goals,
     const constraint::CollisionFreePtr &collisionFree);
 
-  /// Plan to a TSR.
+  /// Plans to a TSR.
   virtual trajectory::TrajectoryPtr planToTSR(
     const statespace::MetaSkeletonStateSpacePtr &stateSpace,
     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
@@ -109,7 +116,7 @@ public:
       const constraint::TSRPtr &constraintTsr,
       const constraint::CollisionFreePtr &collisionFree);
 
-  /// Plan to a named configuration.
+  /// Plans to a named configuration.
   /// \param startState Starting state
   /// \param name Name of the configuration to plan to
   /// \param collisionFree Collision constraint
@@ -120,10 +127,12 @@ public:
     const CollisionFreePtr &collisionFree);
 
   /// Returns a timed trajectory that can be executed by the robot
+  /// \param path Geometric path to execute
   virtual trajectory::TrajectoryPtr postprocessPath(
     const trajectory::TrajectoryPtr &path);
 
   /// Executes a trajectory
+  /// \param trajectory Timed trajectory to execute
   virtual void executeTrajectory(
     const trajectory::TrajectoryPtr &trajectory);
 
@@ -132,30 +141,31 @@ public:
   virtual void executePath(
     const trajectory::TrajectoryPtr &path);
 
-  /// Set the configuration of the predefined metaskeleton
-  /// \param name Name of the predefined metaSkeleton
-  /// \param configuration The configuration to set
-  /// \throws invalid_argument error if name does not exist.
-  void setConfiguration(
-    const std::string &name, const Eigen::VectorXd &configuration);
-
-  // Get configuration of the predefined metaskeleton
+  // Returns a named configuration
   /// \throws invalid_argument error if name does not exist.
   Eigen::VectorXd getNamedConfiguration(
     const std::string &name);
 
-  // Get configuration of the whole robot
+  // Returns the configuration of the whole robot
   Eigen::VectorXd getConfiguration();
 
   /// \return Name of this Robot
   std::string getName();
 
+  /// Returns the MetaSkeleton of this robot.
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
   void setRoot(Robot *robot);
 
-  // Simulation step
-  virtual void step();
+  // Simulates up to the provided timepoint.
+  // \param timepoint Time to simulate to.
+  virtual void step(const std::chrono::system_clock::time_point& timepoint);
+
+  // Calls step with current time.
+  void update();
+
+  // Clones RNG
+  std::unique_ptr<common::RNG> cloneRNG();
 
 protected:
 
@@ -194,7 +204,7 @@ protected:
   // True if running in simulation mode
   bool mSimulation;
 
-  /// Random generator, used for planning and postprocessing
+  /// Random generator
   common::RNGWrapper<std::mt19937> mRng;
 
   std::shared_ptr<control::TrajectoryExecutor> mTrajectoryExecutor;
@@ -214,9 +224,6 @@ protected:
       mSelfCollisionFilter;
 
   constraint::CollisionFree::CollisionFreePtr mSelfCollisionConstraint;
-
-  // For trajectory executions.
-  std::unique_ptr<common::ExecutorThread> mThread;
 
 };
 

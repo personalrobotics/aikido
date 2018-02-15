@@ -7,19 +7,27 @@
 namespace aikido {
 namespace robot {
 
-/// Stores metadata for grabbed objects
+/// Stores metadata for grabbed objects.
 class GrabMetadata
 {
 public:
 
+  /// Constructor.
+  // \param bodyNode BodyNode of the grabbed object.
+  // \param oldName Name of the grabbed object.
+  // \param parentSkeleton Parent skeleton of bodyNode.
+  // \param joitnProperties Joint properties of the grabbed object.
   GrabMetadata(
       dart::dynamics::BodyNodePtr bodyNode,
       const std::string &oldName,
       dart::dynamics::SkeletonPtr parentSkeleton,
       const dart::dynamics::FreeJoint::Properties &jointProperties);
 
-
   /// Update existing properties.
+  // \param bodyNode BodyNode of the grabbed object.
+  // \param oldName Name of the grabbed object.
+  // \param parentSkeleton Parent skeleton of bodyNode.
+  // \param joitnProperties Joint properties of the grabbed object.
   void update(
       dart::dynamics::BodyNodePtr bodyNode,
       const std::string& oldName,

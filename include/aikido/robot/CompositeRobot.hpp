@@ -16,10 +16,6 @@ public:
 
   CompositeRobot(std::unordered_map<std::string, std::unique_ptr<Robot>> robots);
 
-  /// Clones this Robot.
-  /// \param newName New name for this robot
-  virtual std::unique_ptr<Robot> clone(const std::string &newName) override;
-
   /// \return the named robot or nullptr if it doesn't exist
   std::unique_ptr<Robot> getRobot(const std::string &name);
 

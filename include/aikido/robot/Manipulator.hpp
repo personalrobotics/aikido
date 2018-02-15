@@ -24,8 +24,6 @@ public:
       std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
       std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
       double collisionResolution,
-      double smootherFeasibilityCheckResolution,
-      double smootherFeasibilityApproxTolerance,
       std::unique_ptr<Hand> hand);
 
   virtual ~Manipulator();
@@ -67,7 +65,9 @@ public:
       double distance,
       double linearVelocity);
 
-  virtual void step() override;
+  // Documentation inherited.
+  virtual void step(
+    const std::chrono::system_clock::time_point& timepoint) override;
 
 protected:
   std::shared_ptr<Hand> mHand;
