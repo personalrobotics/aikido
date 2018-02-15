@@ -10,7 +10,7 @@
 #include <ros/callback_queue.h>
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
-#include <aikido/control/PositionCommandExecutor.hpp>
+#include "aikido/control/PositionCommandExecutor.hpp"
 
 namespace aikido {
 namespace control {
@@ -48,14 +48,12 @@ public:
   ///
   /// To be executed on a separate thread.
   /// Regularly checks for the completion of a sent trajectory.
-  void step() override;
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
 
 private:
   using RosPositionActionClient
       = actionlib::ActionClient<pr_control_msgs::SetPositionAction>;
   using GoalHandle = RosPositionActionClient::GoalHandle;
-
-  bool waitForServer();
 
   void transitionCallback(GoalHandle handle);
 
@@ -64,14 +62,15 @@ private:
   RosPositionActionClient mClient;
   RosPositionActionClient::GoalHandle mGoalHandle;
 
+  std::vector<std::string> mJointNames;
+
   std::chrono::milliseconds mConnectionTimeout;
   std::chrono::milliseconds mConnectionPollingPeriod;
 
   bool mInProgress;
-  std::promise<void> mPromise;
-  Eigen::VectorXd mGoalPositions;
-  std::vector<std::string> mJointNames;
+  std::unique_ptr<std::promise<void>> mPromise;
 
+  /// Manages access to mInProgress, mPromise
   std::mutex mMutex;
 };
 

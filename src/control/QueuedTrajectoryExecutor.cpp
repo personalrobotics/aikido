@@ -1,5 +1,5 @@
+#include "aikido/control/QueuedTrajectoryExecutor.hpp"
 #include <chrono>
-#include <aikido/control/QueuedTrajectoryExecutor.hpp>
 
 namespace aikido {
 namespace control {
@@ -43,9 +43,10 @@ std::future<void> QueuedTrajectoryExecutor::execute(
 }
 
 //==============================================================================
-void QueuedTrajectoryExecutor::step()
+void QueuedTrajectoryExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
-  mExecutor->step();
+  mExecutor->step(timepoint);
 
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning
