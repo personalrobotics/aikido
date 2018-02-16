@@ -3,6 +3,7 @@
 
 #include <dart/dart.hpp>
 #include <dart/dynamics/dynamics.hpp>
+#include <functional>
 
 namespace aikido {
 namespace robot {
@@ -22,22 +23,6 @@ public:
       const std::string &oldName,
       dart::dynamics::SkeletonPtr parentSkeleton,
       const dart::dynamics::FreeJoint::Properties &jointProperties);
-
-  /// Update existing properties.
-  // \param bodyNode BodyNode of the grabbed object.
-  // \param oldName Name of the grabbed object.
-  // \param parentSkeleton Parent skeleton of bodyNode.
-  // \param joitnProperties Joint properties of the grabbed object.
-  void update(
-      dart::dynamics::BodyNodePtr bodyNode,
-      const std::string& oldName,
-      dart::dynamics::SkeletonPtr parentSkeleton,
-      const dart::dynamics::FreeJoint::Properties& jointProperties);
-
-  /// Clears existing properties
-  void clear();
-
-private:
 
   // BodyNode of grabbed object
   dart::dynamics::BodyNodePtr mBodyNode;

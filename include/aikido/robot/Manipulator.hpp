@@ -16,17 +16,16 @@ public:
 
   Manipulator(
       const std::string& name,
-      MetaSkeletonPtr robot,
-      MetaSkeletonStateSpacePtr statespace,
+      dart::dynamics::MetaSkeletonPtr robot,
+      statespace::dart::MetaSkeletonStateSpacePtr statespace,
       bool simulation,
       common::RNG::result_type rngSeed,
       std::unique_ptr<control::TrajectoryExecutor> executor,
       std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
       std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
-      double collisionResolution,
-      std::unique_ptr<Hand> hand);
+      std::shared_ptr<Hand> hand);
 
-  virtual ~Manipulator();
+  virtual ~Manipulator() = default;
 
   std::shared_ptr<Hand> getHand();
 

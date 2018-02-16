@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 #include <dart/dart.hpp>
 #include "aikido/robot/GrabMetadata.hpp"
 #include "aikido/io/yaml.hpp"
@@ -19,7 +19,12 @@ public:
 
   Hand(const std::string &name,
       dart::dynamics::BranchPtr hand,
-      dart::dynamics::BodyNode* endEffectorBodyNode);
+      bool simulation,
+      dart::dynamics::BodyNode* endEffectorBodyNode,
+      std::shared_ptr<aikido::control::PositionCommandExecutor> executor,
+      std::unordered_map<std::string, size_t> fingerJointNameToPositionIndexMap);
+
+  virtual ~Hand() = default;
 
   /// \param newName New name for this robot
   virtual std::unique_ptr<Hand> clone(const std::string& newName) = 0;
@@ -30,7 +35,7 @@ public:
 
   /// Returns the hand skeleton.
   /// \return DART Branch rooted at the palm
-  dart::dynamics::BranchPtr getHand();
+  dart::dynamics::BranchPtr getMetaSkeleton() const;
 
   /// Returns the hand's offset from a TSR of a specific object type
   /// (as registered in \c tsrEndEffectorTransformsUri).
@@ -56,7 +61,7 @@ public:
 
   /// Executes the preshape trajectory upto timepoint..
   // \param timepoint Time to simulate to.
-  virtual void step()const std::chrono::system_clock::time_point& timepoint;
+  virtual void step(const std::chrono::system_clock::time_point& timepoint);
 
 private:
   // Preshapes and end-effector transforms are read from YAML files
@@ -85,13 +90,15 @@ private:
       const std::string& preshapeName);
 
   const std::string mName;
-  const bool mSimulation;
-  dart::dynamics::BodyNodePtr mEndEffectorBodyNode;
+
   dart::dynamics::BranchPtr mHand;
+
+  const bool mSimulation;
+
+  dart::dynamics::BodyNodePtr mEndEffectorBodyNode;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
 
-  std::unique_ptr<::ros::NodeHandle> mNode;
   std::shared_ptr<aikido::control::PositionCommandExecutor> mExecutor;
 
   // Used to find the final pose before actual execution
@@ -99,7 +106,11 @@ private:
   PreshapeMap mPreshapeConfigurations;
   EndEffectorTransformMap mEndEffectorTransforms;
 
-  std::unordered_set<GrabMetadata> mGrabMetadatas;
+  std::unordered_map<std::string, size_t> mFingerJointNameToPositionIndexMap;
+
+  // TODO: change this to grab multiple objects
+  std::unique_ptr<GrabMetadata> mGrabMetadata;
+
 };
 
 using HandPtr = std::shared_ptr<Hand>;

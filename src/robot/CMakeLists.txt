@@ -12,11 +12,14 @@ set(CMAKE_REQUIRED_FLAGS "")
 set(sources
   Robot.cpp
   Manipulator.cpp
-  MetaRobot.cpp
+  GrabMetadata.cpp
+  util.cpp
+  Hand.cpp
+  CompositeRobot.cpp
 )
 
-add_library("${PROJECT_NAME}_io" SHARED ${sources})
-target_include_directories("${PROJECT_NAME}_io" SYSTEM
+add_library("${PROJECT_NAME}_robot" SHARED ${sources})
+target_include_directories("${PROJECT_NAME}_robot" SYSTEM
   PUBLIC
     ${DART_INCLUDE_DIRS}
 )

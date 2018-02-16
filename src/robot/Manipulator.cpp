@@ -1,8 +1,32 @@
 #include "aikido/robot/Manipulator.hpp"
 #include "aikido/robot/util.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
+
+using common::RNG;
+using constraint::CollisionFreePtr;
+using constraint::TSR;
+using constraint::TSRPtr;
+using constraint::TestablePtr;
+using statespace::dart::MetaSkeletonStateSpacePtr;
+using statespace::dart::MetaSkeletonStateSaver;
+using statespace::StateSpace;
+using statespace::StateSpacePtr;
+using trajectory::TrajectoryPtr;
+using trajectory::Interpolated;
+using trajectory::InterpolatedPtr;
+using common::cloneRNGFrom;
+
+using dart::collision::FCLCollisionDetector;
+using dart::common::make_unique;
+using dart::dynamics::BodyNodePtr;
+using dart::dynamics::ChainPtr;
+using dart::dynamics::InverseKinematics;
+using dart::dynamics::MetaSkeleton;
+using dart::dynamics::MetaSkeletonPtr;
+using dart::dynamics::SkeletonPtr;
 
 //==============================================================================
 Manipulator::Manipulator(
@@ -14,35 +38,28 @@ Manipulator::Manipulator(
       std::unique_ptr<control::TrajectoryExecutor> executor,
       std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
       std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
-      double collisionResolution,
-      std::unique_ptr<Hand> hand)
+      std::shared_ptr<Hand> hand)
   : Robot(name,
     robot,
     statespace,
     simulation,
     rngSeed,
-    executor,
-    retimer,
-    collisionResolution)
-  , mHand(std::move(hand))
+    std::move(executor),
+    std::move(retimer),
+    std::move(smoother))
+  , mHand(hand)
 {
   if (!mHand)
     throw std::invalid_argument("Hand is null");
 }
 
 //==============================================================================
-Manipulator::~Manipulator()
-{
-  // Do nothing
-}
-
-//==============================================================================
-trajectory::TrajectoryPtr Manipulator::planToEndEffectorOffset(
-  const statespace::dart::MetaSkeletonStateSpacePtr &space,
-   const dart::dynamics::MetaSkeletonptr &metaSkeleton,
-   const dart::dynamics::BodyNodePtr &body,
+TrajectoryPtr Manipulator::planToEndEffectorOffset(
+  const MetaSkeletonStateSpacePtr &space,
+   const MetaSkeletonPtr &metaSkeleton,
+   const BodyNodePtr &body,
    const Eigen::Vector3d &direction,
-   const constraint::CollisionFreePtr &collisionFree,
+   const CollisionFreePtr &collisionFree,
    double distance,
    double linearVelocity)
 {
@@ -61,7 +78,7 @@ trajectory::TrajectoryPtr Manipulator::planToEndEffectorOffset(
 
 //==============================================================================
 Eigen::Vector3d Manipulator::getEndEffectorDirection(
-      const dart::dynamics::BodyNodePtr &body)
+      const dart::dynamics::BodyNodePtr &body) const
 {
   const size_t zDirection = 2;
   return body->getWorldTransform().linear().col(zDirection).normalized();
@@ -69,22 +86,33 @@ Eigen::Vector3d Manipulator::getEndEffectorDirection(
 }
 
 //==============================================================================
-trajectory::TrajectoryPtr Manipulator::planEndEffectorStraight(
-      statespace::dart::MetaSkeletonStateSpacePtr &space,
-      const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-      const dart::dynamics::BodyNodePtr &body,
-      const constraint::CollisionFreePtr &collisionFree,
+TrajectoryPtr Manipulator::planEndEffectorStraight(
+      MetaSkeletonStateSpacePtr &space,
+      const MetaSkeletonPtr &metaSkeleton,
+      const BodyNodePtr &body,
+      const CollisionFreePtr &collisionFree,
       double distance,
       double linearVelocity)
 {
   auto collision = getCollisionConstraint(space, collisionFree);
-  auto trajectory = util::planEndEffectorStraight(
+
+  Eigen::Vector3d direction = getEndEffectorDirection(body);
+
+  if (distance < 0)
+  {
+    distance = distance * -1;
+    direction = direction * -1;
+  }
+
+  auto trajectory = util::planToEndEffectorOffset(
     space,
     metaSkeleton,
     body,
+    direction,
     collision,
     distance,
     linearVelocity);
+  return trajectory;
 }
 
 //==============================================================================
@@ -96,7 +124,7 @@ std::shared_ptr<Hand> Manipulator::getHand()
 //==============================================================================
 void Manipulator::step(const std::chrono::system_clock::time_point& timepoint)
 {
-  std::lock_guard<std::mutex> lock(mRobot->getMutex());
+  std::lock_guard<std::mutex> lock(mParentRobot->getMutex());
   mHand->step(timepoint);
   mTrajectoryExecutor->step(timepoint);
 }

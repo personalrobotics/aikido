@@ -15,7 +15,7 @@
 namespace aikido {
 namespace io {
 
-/// Retrieve and read all data from a YAML file.
+/// Retrieves and read all data from a YAML file.
 /// \param[in] yamlUri URI for a YAML file
 /// \param[in] retriever Resource retriever to retrieve yamlUri
 /// \return root YAML::Node of the document

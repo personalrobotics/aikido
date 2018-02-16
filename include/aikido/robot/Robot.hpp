@@ -28,6 +28,13 @@ class Robot
 {
 public:
 
+  struct Configuration
+  {
+    const statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace;
+    const dart::dynamics::MetaSkeletonPtr metaSkeleton;
+    const Eigen::VectorXd position;
+  };
+
   /// Constructor.
   /// \param name Name of the robot.
   /// \param robot Metaskeleton of the robot.
@@ -37,66 +44,52 @@ public:
   /// \param trajectoryExecutor Trajectory executor.
   /// \param retimer Postprocessor used for retiming paths.
   /// \param smoother Postprocessor used for smoothing paths.
-  /// \param collisionResolution Resolution to check collision.
-  Robot::Robot(
+  Robot(
     const std::string& name,
-    MetaSkeletonPtr robot,
-    MetaSkeletonStateSpacePtr statespace,
+    dart::dynamics::MetaSkeletonPtr robot,
+    statespace::dart::MetaSkeletonStateSpacePtr statespace,
     bool simulation,
     aikido::common::RNG::result_type rngSeed,
     std::unique_ptr<control::TrajectoryExecutor> trajectoryExecutor,
     std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
-    std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
-    double collisionResolution);
+    std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother);
 
-  virtual ~Robot();
+  virtual ~Robot() = default;
 
   /// Plans a trajectory to the specified configuration
   virtual trajectory::TrajectoryPtr planToConfiguration(
-    const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const statespace::dart::MetaSkeletonStateSpacePtr &stateSpace,
     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-    const statespace::StateSpace::State *startState,
     const statespace::StateSpace::State *goalState,
     const constraint::CollisionFreePtr &collisionFree);
 
   /// Wrapper for planToConfiguration using Eigen vectors.
   virtual trajectory::TrajectoryPtr planToConfiguration(
-    const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const statespace::dart::MetaSkeletonStateSpacePtr &stateSpace,
     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-    const Eigen::VectorXd &start,
     const Eigen::VectorXd &goal,
     const constraint::CollisionFreePtr &collisionFree);
 
   /// Plans a trajectory to one of the spcified configurations.
   virtual trajectory::TrajectoryPtr planToConfigurations(
-    const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const statespace::dart::MetaSkeletonStateSpacePtr &stateSpace,
     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-    const statespace::StateSpace::State *startState,
     const std::vector<statespace::StateSpace::State*> &goalStates,
     const constraint::CollisionFreePtr &collisionFree);
 
   /// Wrapper for planToConfigurations using Eigen vectors.
   virtual trajectory::TrajectoryPtr planToConfigurations(
-    const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const statespace::dart::MetaSkeletonStateSpacePtr &stateSpace,
     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-    const Eigen::VectorXd &start,
     const std::vector<Eigen::VectorXd> &goals,
     const constraint::CollisionFreePtr &collisionFree);
 
   /// Plans to a TSR.
   virtual trajectory::TrajectoryPtr planToTSR(
-    const statespace::MetaSkeletonStateSpacePtr &stateSpace,
+    const statespace::dart::MetaSkeletonStateSpacePtr &stateSpace,
     const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-    const statespace::StateSpace::State *startState,
-    const constraint::TSR &tsr,
-    const constraint::CollisionFreePtr &collisionFree);
-
-  /// Wrapper for planToTSR using Eigen vectors.
-  virtual trajectory::TrajectoryPtr planToTSR(
-    const statespace::MetaSkeletonStateSpacePtr &stateSpace,
-    const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-    const Eigen::VectorXd &start,
-    const constraint::TSR &tsr,
+    const dart::dynamics::BodyNodePtr& bn,
+    const constraint::TSRPtr &tsr,
     const constraint::CollisionFreePtr &collisionFree);
 
   /// Returns a Trajectory that moves the configuration of the metakeleton such
@@ -122,9 +115,8 @@ public:
   /// \param collisionFree Collision constraint
   /// \return Trajectory to the configuration, or nullptr if planning fails
   virtual trajectory::TrajectoryPtr planToNamedConfiguration(
-    const statespace::StateSpace::State* startState,
     const std::string &name,
-    const CollisionFreePtr &collisionFree);
+    const constraint::CollisionFreePtr &collisionFree);
 
   /// Returns a timed trajectory that can be executed by the robot
   /// \param path Geometric path to execute
@@ -143,7 +135,7 @@ public:
 
   // Returns a named configuration
   /// \throws invalid_argument error if name does not exist.
-  Eigen::VectorXd getNamedConfiguration(
+  Configuration getNamedConfiguration(
     const std::string &name);
 
   // Returns the configuration of the whole robot
@@ -155,6 +147,7 @@ public:
   /// Returns the MetaSkeleton of this robot.
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
+  /// Sets the root of this robot.
   void setRoot(Robot *robot);
 
   // Simulates up to the provided timepoint.
@@ -167,15 +160,8 @@ public:
   // Clones RNG
   std::unique_ptr<common::RNG> cloneRNG();
 
+
 protected:
-
-  struct Configuration
-  {
-    const statespace::MetaSkeletonStateSpacePtr metaSkeletonStateSpace;
-    const dart::dynamics::dart::dynamics::MetaSkeletonPtr metaSkeleton;
-    const Eigen::VectorXd position;
-  };
-
   /// Returns true if this Robot contains this metaSkeleton.
   virtual bool checkIfMetaSkeletonBelongs(
     const dart::dynamics::MetaSkeletonPtr &metaSkeleton);
@@ -188,9 +174,6 @@ protected:
       const statespace::dart::MetaSkeletonStateSpacePtr &space,
       const constraint::CollisionFreePtr &collisionFree) const;
 
-  /// Sets the root of this robot.
-  void setRoot(Robot* robot);
-
   /// If this robot belongs to another (Composite)Robot,
   /// mRootRobot is the topmost robot containing this robot.
   Robot* mRootRobot;
@@ -200,6 +183,9 @@ protected:
 
   dart::dynamics::MetaSkeletonPtr mRobot;
   statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+
+  // Skeleton containing mRobot
+  dart::dynamics::SkeletonPtr mParentRobot;
 
   // True if running in simulation mode
   bool mSimulation;
@@ -223,7 +209,7 @@ protected:
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
 
-  constraint::CollisionFree::CollisionFreePtr mSelfCollisionConstraint;
+  constraint::CollisionFreePtr mSelfCollisionConstraint;
 
 };
 
