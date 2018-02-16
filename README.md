@@ -94,6 +94,23 @@ with `catkin_make_isolated`. This may dramatically increase your build time, so 
 *strongly recommend* that you use `catkin build`, which is provided by the
 [`catkin_tools` package][Catkin Tools], if possible.
 
+### On macOS using CMake
+
+Please install [Homebrew] as described above, then you can easily install the dependencies:
+```shell
+$ brew tap personalrobotics/tap
+$ brew install aikdio --only-dependencies
+```
+
+Once the dependencies are installed, you can build and install AIKIDO using [CMake]:
+```shell
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make  # you may want to build AIKIDO using multi-core by executing `make -j4`
+$ sudo make install
+```
+
 ## Code Style
 
 Please follow the [AIKIDO style guidelines](https://github.com/personalrobotics/aikido/blob/master/STYLE.md) when making a contribution.
