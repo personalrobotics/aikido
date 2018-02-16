@@ -3,7 +3,7 @@
 ### 0.3.0 (201X-XX-XX)
 
 * Common
-  
+
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
 
@@ -16,6 +16,10 @@
 
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
+
+* Perception
+
+  * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
 
 * Planner
 
