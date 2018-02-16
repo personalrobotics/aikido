@@ -98,7 +98,8 @@ with `catkin_make_isolated`. This may dramatically increase your build time, so 
 
 Please install [Homebrew] as described above, then you can easily install the dependencies:
 ```shell
-$ brew bundle
+$ brew tap personalrobotics/tap
+$ brew install aikdio --only-dependencies
 ```
 
 Once the dependencies are installed, you can build and install AIKIDO using [CMake]:
