@@ -36,7 +36,7 @@ public:
 
   /// Construct a kinematic World.
   /// \param name Name for the new World
-  World(const std::string& name = "");
+  explicit World(const std::string& name = "");
 
   virtual ~World();
 

@@ -4,7 +4,7 @@ if [ "$#" -lt 2 ]; then
   exit 0
 fi
 
-num_changes=`$1 -style=file -output-replacements-xml "${@:2}" | grep -c "<replacement "`
+num_changes=$($1 -style=file -output-replacements-xml "${@:2}" | grep -c "<replacement ")
 
 if [ "$num_changes" = "0" ]; then
   echo "Every file seems to comply with our code convention."

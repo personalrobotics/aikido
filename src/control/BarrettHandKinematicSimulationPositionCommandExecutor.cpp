@@ -1,14 +1,21 @@
-#include <exception>
-#include <stdexcept>
-#include <thread>
+#include "aikido/control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp"
 #include <dart/collision/fcl/FCLCollisionDetector.hpp>
-#include <aikido/control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp>
 
 namespace aikido {
 namespace control {
 
 constexpr std::chrono::milliseconds
     BarrettHandKinematicSimulationPositionCommandExecutor::kWaitPeriod;
+constexpr int BarrettHandKinematicSimulationPositionCommandExecutor::
+    kNumPositionExecutors;
+constexpr std::array<std::size_t,
+                     BarrettHandKinematicSimulationPositionCommandExecutor::
+                         kNumPositionExecutors>
+    BarrettHandKinematicSimulationPositionCommandExecutor::kPrimalDofs;
+constexpr std::array<std::size_t,
+                     BarrettHandKinematicSimulationPositionCommandExecutor::
+                         kNumPositionExecutors>
+    BarrettHandKinematicSimulationPositionCommandExecutor::kDistalDofs;
 
 //==============================================================================
 BarrettHandKinematicSimulationPositionCommandExecutor::
@@ -16,10 +23,12 @@ BarrettHandKinematicSimulationPositionCommandExecutor::
         dart::dynamics::SkeletonPtr robot,
         const std::string& prefix,
         ::dart::collision::CollisionDetectorPtr collisionDetector,
-        ::dart::collision::CollisionGroupPtr collideWith)
-  : mInExecution(false)
-  , mCollisionDetector(std::move(collisionDetector))
+        ::dart::collision::CollisionGroupPtr collideWith,
+        ::dart::collision::CollisionOption collisionOptions)
+  : mCollisionDetector(std::move(collisionDetector))
   , mCollideWith(std::move(collideWith))
+  , mCollisionOptions(std::move(collisionOptions))
+  , mInProgress(false)
 {
   if (!robot)
     throw std::invalid_argument("Robot is null");
@@ -80,7 +89,7 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
     throw std::invalid_argument(message.str());
   }
 
-  const auto fingerChains = std::array<ChainPtr, 3>{{
+  const auto fingerChains = std::array<ChainPtr, kNumPositionExecutors>{{
       Chain::create(
           robot->getBodyNode(prefix + "finger0_0"), // finger0Spread
           robot->getBodyNode(prefix + "finger0_2"), // finger0Distal
@@ -95,24 +104,27 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::setupExecutors(
           Chain::IncludeBoth),
   }};
 
-  const auto spreadFingers
-      = std::array<ChainPtr, 2>{{fingerChains[0], fingerChains[1]}};
+  const auto spreadFingers = std::array<ChainPtr, kNumSpreadJoints>{
+      {fingerChains[0], fingerChains[1]}};
 
   std::size_t spreadDof = 0;
   mSpreadCommandExecutor = std::make_shared<FingerSpreadCommandExecutor>(
-      spreadFingers, spreadDof, mCollisionDetector, mCollideWith);
+      spreadFingers,
+      spreadDof,
+      mCollisionDetector,
+      mCollideWith,
+      mCollisionOptions);
 
-  constexpr auto primalDof = std::array<std::size_t, 3>{{1, 1, 0}};
-  constexpr auto distalDof = std::array<std::size_t, 3>{{2, 2, 1}};
   for (std::size_t i = 0; i < fingerChains.size(); ++i)
   {
     mPositionCommandExecutors[i]
         = std::make_shared<FingerPositionCommandExecutor>(
             fingerChains[i],
-            primalDof[i],
-            distalDof[i],
+            kPrimalDofs[i],
+            kDistalDofs[i],
             mCollisionDetector,
-            mCollideWith);
+            mCollideWith,
+            mCollisionOptions);
   }
 }
 
@@ -121,42 +133,46 @@ std::future<void>
 BarrettHandKinematicSimulationPositionCommandExecutor::execute(
     const Eigen::VectorXd& goalPositions)
 {
-  std::lock_guard<std::mutex> lockSpin(mMutex);
+  std::lock_guard<std::mutex> lock(mMutex);
 
-  if (mInExecution)
-    throw std::runtime_error("Another command in execution.");
+  if (mInProgress)
+    throw std::runtime_error("Another position command is in progress.");
 
   if (goalPositions.size() != 4)
   {
     std::stringstream message;
-    message << "GoalPositions must have 4 elements, but ["
+    message << "BarrettHand goal positions must have 4 elements, but ["
             << goalPositions.size() << "] given.";
     throw std::invalid_argument(message.str());
   }
 
   mPromise.reset(new std::promise<void>());
-  mProximalGoalPositions = goalPositions.head<3>();
-  mSpreadGoalPosition = goalPositions.row(3);
-  mInExecution = true;
+
+  const Eigen::Vector3d proximalGoalPositions = goalPositions.head<3>();
+  const Eigen::Matrix<double, 1, 1> spreadGoalPosition
+      = goalPositions.tail<1>();
   mFingerFutures.clear();
 
-  mFingerFutures.reserve(kNumPositionExecutor + kNumSpreadExecutor);
-  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+  mFingerFutures.reserve(kNumPositionExecutors + kNumSpreadExecutor);
+  for (std::size_t i = 0; i < kNumPositionExecutors; ++i)
     mFingerFutures.emplace_back(
-        mPositionCommandExecutors[i]->execute(mProximalGoalPositions.row(i)));
+        mPositionCommandExecutors[i]->execute(proximalGoalPositions.row(i)));
 
   mFingerFutures.emplace_back(
-      mSpreadCommandExecutor->execute(mSpreadGoalPosition));
+      mSpreadCommandExecutor->execute(spreadGoalPosition));
+
+  mInProgress = true;
 
   return mPromise->get_future();
 }
 
 //==============================================================================
-void BarrettHandKinematicSimulationPositionCommandExecutor::step()
+void BarrettHandKinematicSimulationPositionCommandExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
-  if (!mInExecution)
+  if (!mInProgress)
     return;
 
   // Check whether fingers have completed.
@@ -199,30 +215,29 @@ void BarrettHandKinematicSimulationPositionCommandExecutor::step()
     else if (allFingersCompleted)
       mPromise->set_value();
 
-    mInExecution = false;
+    mInProgress = false;
     return;
   }
 
   // Call the finger executors' step function.
-  for (int i = 0; i < kNumPositionExecutor; ++i)
-    mPositionCommandExecutors[i]->step();
-
-  mSpreadCommandExecutor->step();
+  for (int i = 0; i < kNumPositionExecutors; ++i)
+    mPositionCommandExecutors[i]->step(timepoint);
+  mSpreadCommandExecutor->step(timepoint);
 }
 
 //==============================================================================
 bool BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith(
     ::dart::collision::CollisionGroupPtr collideWith)
 {
-  std::lock_guard<std::mutex> lockSpin(mMutex);
+  std::lock_guard<std::mutex> lock(mMutex);
 
-  if (mInExecution)
+  if (mInProgress)
     return false;
 
   mCollideWith = std::move(collideWith);
   mCollisionDetector = mCollideWith->getCollisionDetector();
 
-  for (std::size_t i = 0; i < kNumPositionExecutor; ++i)
+  for (std::size_t i = 0; i < kNumPositionExecutors; ++i)
     mPositionCommandExecutors[i]->setCollideWith(mCollideWith);
   mSpreadCommandExecutor->setCollideWith(mCollideWith);
 
