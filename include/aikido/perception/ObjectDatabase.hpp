@@ -44,7 +44,8 @@ public:
   void getObjectByKey(
       const std::string& _obj_key,
       std::string& obj_name,
-      dart::common::Uri& obj_resource);
+      dart::common::Uri& obj_resource,
+      Eigen::Isometry3d& obj_offset);
 
 private:
   /// The map of object keys to object names and resources for models

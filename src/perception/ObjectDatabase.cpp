@@ -33,7 +33,8 @@ ObjectDatabase::ObjectDatabase(
 void ObjectDatabase::getObjectByKey(
     const std::string& _obj_key,
     std::string& obj_name,
-    dart::common::Uri& obj_resource)
+    dart::common::Uri& obj_resource,
+    Eigen::Isometry3d& obj_offset)
 {
   // Get name of object and pose for a given tag ID
   YAML::Node obj_node = mObjData[_obj_key];
@@ -62,6 +63,17 @@ void ObjectDatabase::getObjectByKey(
   {
     throw std::runtime_error(
         "[ObjectDatabase] Error in converting [name] field");
+  }
+
+  // Convert offset field
+  try
+  {
+    obj_offset = obj_node["offset"].as<Eigen::Isometry3d>();
+  }
+  catch (const YAML::ParserException& ex)
+  {
+    throw std::runtime_error(
+        "[ObjectDatabase] Error in converting [offset] field");
   }
 }
 

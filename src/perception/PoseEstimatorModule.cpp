@@ -1,4 +1,4 @@
-#include <aikido/perception/RcnnPoseModule.hpp>
+#include <aikido/perception/PoseEstimatorModule.hpp>
 
 #include <Eigen/Geometry>
 #include <dart/utils/urdf/DartLoader.hpp>
@@ -12,7 +12,8 @@
 namespace aikido {
 namespace perception {
 
-RcnnPoseModule::RcnnPoseModule(
+//=============================================================================
+PoseEstimatorModule::PoseEstimatorModule(
     ros::NodeHandle nodeHandle,
     std::string markerTopic,
     std::shared_ptr<ObjectDatabase> configData,
@@ -30,7 +31,8 @@ RcnnPoseModule::RcnnPoseModule(
   // Do nothing
 }
 
-bool RcnnPoseModule::detectObjects(
+//=============================================================================
+bool PoseEstimatorModule::detectObjects(
     const aikido::planner::WorldPtr& env,
     ros::Duration timeout,
     ros::Time timestamp)
@@ -45,14 +47,14 @@ bool RcnnPoseModule::detectObjects(
   // Making sure the Message from RcnnPose is non empty
   if (marker_message == nullptr)
   {
-    dtwarn << "[RcnnPoseModule::detectObjects] nullptr Marker Message "
+    dtwarn << "[PoseEstimatorModule::detectObjects] nullptr Marker Message "
            << mMarkerTopic << std::endl;
     return false;
   }
 
   if (marker_message->markers.size() == 0)
   {
-    dtwarn << "[RcnnPoseModule::detectObjects] No markers on topic "
+    dtwarn << "[PoseEstimatorModule::detectObjects] No markers on topic "
            << mMarkerTopic << std::endl;
     return false;
   }
@@ -85,10 +87,11 @@ bool RcnnPoseModule::detectObjects(
 
     std::string obj_name;
     dart::common::Uri obj_resource;
+    Eigen::Isometry3d obj_offset;
     ros::Time t0 = ros::Time(0);
 
     // get the object name and resource from database
-    mConfigData->getObjectByKey(obj_key, obj_name, obj_resource);
+    mConfigData->getObjectByKey(obj_key, obj_name, obj_resource, obj_offset);
 
     tf::StampedTransform transform;
     try
@@ -101,7 +104,7 @@ bool RcnnPoseModule::detectObjects(
     }
     catch (const tf::ExtrapolationException& ex)
     {
-      dtwarn << "[RcnnPoseModule::detectObjects] TF timestamp is "
+      dtwarn << "[PoseEstimatorModule::detectObjects] TF timestamp is "
                 "out-of-date compared to marker timestamp "
              << ex.what() << std::endl;
       continue;
@@ -114,7 +117,8 @@ bool RcnnPoseModule::detectObjects(
     Eigen::Isometry3d frame_pose
         = aikido::perception::convertStampedTransformToEigen(transform);
     // Compose to get actual skeleton pose
-    Eigen::Isometry3d obj_pose = frame_pose * marker_pose;
+    Eigen::Isometry3d obj_pose = frame_pose * marker_pose * obj_offset;
+
     Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
     obj_pose = link_offset * obj_pose;
 
@@ -133,7 +137,7 @@ bool RcnnPoseModule::detectObjects(
 
       if (!obj_skeleton)
       {
-        dtwarn << "[RcnnPoseModule::detectObjects] Failed to load skeleton "
+        dtwarn << "[PoseEstimatorModule::detectObjects] Failed to load skeleton "
                << "for URI " << obj_resource.toString() << std::endl;
         continue;
       }
@@ -152,7 +156,7 @@ bool RcnnPoseModule::detectObjects(
     }
     else
     {
-      dtwarn << "[RcnnPoseModule::detectObjects] Skeleton " << obj_name
+      dtwarn << "[PoseEstimatorModule::detectObjects] Skeleton " << obj_name
              << " has 0 DOFs! \n";
       continue;
     }
@@ -163,7 +167,7 @@ bool RcnnPoseModule::detectObjects(
 
     if (freejtptr == nullptr)
     {
-      dtwarn << "[RcnnPoseModule::detectObjects] Could not cast the joint "
+      dtwarn << "[PoseEstimatorModule::detectObjects] Could not cast the joint "
                 "of the body to a Free Joint so ignoring the object "
              << obj_name << std::endl;
       continue;
@@ -181,7 +185,7 @@ bool RcnnPoseModule::detectObjects(
 
   if (!any_detected)
   {
-    dtwarn << "[RcnnPoseModule::detectObjects] No marker up-to-date with "
+    dtwarn << "[PoseEstimatorModule::detectObjects] No marker up-to-date with "
               "timestamp parameter"
            << std::endl;
     return false;

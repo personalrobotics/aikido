@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PERCEPTION_RCNNPOSEMODULE_HPP_
-#define AIKIDO_PERCEPTION_RCNNPOSEMODULE_HPP_
+#ifndef AIKIDO_PERCEPTION_POSEESTIMATORMODULE_HPP_
+#define AIKIDO_PERCEPTION_POSEESTIMATORMODULE_HPP_
 
 #include <string>
 #include <dart/dart.hpp>
@@ -12,17 +12,17 @@
 namespace aikido {
 namespace perception {
 
-/// Instantiates the \c PerceptionModule specifically for RcnnPose.
+/// Instantiates the \c PerceptionModule specifically for PoseEstimator.
 ///
-/// It receives input from the RcnnPose running in a separate process,
+/// It receives input from the PoseEstimator running in a separate process,
 /// by subscribing to a \c visualization_msg::MarkerArray ROS topic published by
-/// the RcnnPose node. It uses a \c ObjectDatabase to resolve each marker to a
+/// the PoseEstimator node. It uses a \c ObjectDatabase to resolve each marker to a
 /// \c dart::common::Uri, and updates the environment which is an
 /// \c aikido::planner::World.
-class RcnnPoseModule : public PerceptionModule
+class PoseEstimatorModule : public PerceptionModule
 {
 public:
-  /// Construct an RcnnPose receiver that subscribes to the specified topic
+  /// Construct a PoseEstimator receiver that subscribes to the specified topic
   /// where objects' pose information is being published as a
   /// \c visualization_msg::MarkerArray, uses a database loader for
   /// configuration information related to tags.
@@ -37,7 +37,7 @@ public:
   /// object pose
   ///	\param[in] referenceLink A link on the robot with respect to which the
   /// pose is transformed
-  RcnnPoseModule(
+  PoseEstimatorModule(
       ros::NodeHandle nodeHandle,
       std::string markerTopic,
       std::shared_ptr<ObjectDatabase> configData,
@@ -45,7 +45,7 @@ public:
       std::string referenceFrameId,
       dart::dynamics::Frame* referenceLink);
 
-  virtual ~RcnnPoseModule() = default;
+  virtual ~PoseEstimatorModule() = default;
 
   // Documentation inherited
   bool detectObjects(
@@ -79,4 +79,4 @@ private:
 } // namespace perception
 } // namespace aikido
 
-#endif // AIKIDO_PERCEPTION_RCNNPOSEMODULE_HPP_
+#endif // AIKIDO_PERCEPTION_POSEESTIMATORMODULE_HPP_

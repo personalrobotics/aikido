@@ -28,10 +28,8 @@ aikido_check_package(tf "perception" "tf")
 # Libraries
 #
 set(sources
-  AprilTagsModule.cpp
-  RcnnPoseModule.cpp
+  PoseEstimatorModule.cpp
   shape_conversions.cpp
-  YamlAprilTagsDatabase.cpp
   ObjectDatabase.cpp
 )
 
