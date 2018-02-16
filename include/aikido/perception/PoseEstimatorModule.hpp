@@ -15,8 +15,9 @@ namespace perception {
 /// Instantiates the \c PerceptionModule specifically for PoseEstimator.
 ///
 /// It receives input from the PoseEstimator running in a separate process,
-/// by subscribing to a \c visualization_msg::MarkerArray ROS topic published by
-/// the PoseEstimator node. It uses a \c ObjectDatabase to resolve each marker to a
+/// by subscribing to a \c visualization_msg::MarkerArray ROS topic
+/// published by the PoseEstimator node.
+/// It uses a \c ObjectDatabase to resolve each marker to a
 /// \c dart::common::Uri, and updates the environment which is an
 /// \c aikido::planner::World.
 class PoseEstimatorModule : public PerceptionModule

@@ -137,8 +137,9 @@ bool PoseEstimatorModule::detectObjects(
 
       if (!obj_skeleton)
       {
-        dtwarn << "[PoseEstimatorModule::detectObjects] Failed to load skeleton "
-               << "for URI " << obj_resource.toString() << std::endl;
+        dtwarn
+            << "[PoseEstimatorModule::detectObjects] Failed to load skeleton "
+            << "for URI " << obj_resource.toString() << std::endl;
         continue;
       }
       obj_skeleton->setName(obj_id);
