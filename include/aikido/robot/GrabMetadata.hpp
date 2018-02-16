@@ -1,7 +1,6 @@
 #ifndef AIKIDO_ROBOT_GRABMETADATA_HPP_
 #define AIKIDO_ROBOT_GRABMETADATA_HPP_
 
-#include <functional>
 #include <dart/dart.hpp>
 #include <dart/dynamics/dynamics.hpp>
 

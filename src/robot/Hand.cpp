@@ -67,13 +67,13 @@ Hand::Hand(
 }
 
 //==============================================================================
-dart::dynamics::BodyNode* Hand::getBodyNode() const
+dart::dynamics::BodyNode* Hand::getBodyNode()
 {
   return mEndEffectorBodyNode.get();
 }
 
 //==============================================================================
-dart::dynamics::BranchPtr Hand::getMetaSkeleton() const
+dart::dynamics::BranchPtr Hand::getMetaSkeleton()
 {
   return mHand;
 }

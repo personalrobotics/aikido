@@ -20,6 +20,8 @@
 namespace aikido {
 namespace robot {
 
+AIKIDO_DECLARE_POINTERS(Robot)
+
 /// A base class for robots.
 /// A robot has single metaSkeleton.
 /// All planning calls made on this robot should be made on a subset of

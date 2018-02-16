@@ -9,6 +9,8 @@
 namespace aikido {
 namespace robot {
 
+AIKIDO_DECLARE_POINTERS(Manipulator)
+
 /// A base class for a manipulator which has a hand.
 class Manipulator : public Robot
 {
@@ -70,8 +72,6 @@ public:
 protected:
   std::shared_ptr<Hand> mHand;
 };
-
-using ManipulatorPtr = std::shared_ptr<Manipulator>;
 
 } // namespace robot
 } // namespace aikido

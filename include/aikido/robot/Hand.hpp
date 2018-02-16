@@ -12,6 +12,8 @@
 namespace aikido {
 namespace robot {
 
+AIKIDO_DECLARE_POINTERS(Hand)
+
 /// A base class for a hand used by manipulators
 class Hand
 {
@@ -32,11 +34,11 @@ public:
 
   /// Returns the end-effector body node.
   /// \return DART body node of end-effector
-  dart::dynamics::BodyNode* getBodyNode() const;
+  dart::dynamics::BodyNode* getBodyNode();
 
   /// Returns the hand skeleton.
   /// \return DART Branch rooted at the palm
-  dart::dynamics::BranchPtr getMetaSkeleton() const;
+  dart::dynamics::BranchPtr getMetaSkeleton();
 
   /// Returns the hand's offset from a TSR of a specific object type
   /// (as registered in \c tsrEndEffectorTransformsUri).
@@ -111,8 +113,6 @@ private:
   // TODO: change this to grab multiple objects
   std::unique_ptr<GrabMetadata> mGrabMetadata;
 };
-
-using HandPtr = std::shared_ptr<Hand>;
 
 } // namespace robot
 } // namespace aikido
