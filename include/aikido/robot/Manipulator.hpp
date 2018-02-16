@@ -1,10 +1,10 @@
 #ifndef AIKIDO_ROBOT_MANIPULATOR_HPP_
 #define AIKIDO_ROBOT_MANIPULATOR_HPP_
 
-#include <dart/dart.hpp>
 #include <string>
-#include "aikido/robot/Robot.hpp"
+#include <dart/dart.hpp>
 #include "aikido/robot/Hand.hpp"
+#include "aikido/robot/Robot.hpp"
 
 namespace aikido {
 namespace robot {
@@ -13,7 +13,6 @@ namespace robot {
 class Manipulator : public Robot
 {
 public:
-
   Manipulator(
       const std::string& name,
       dart::dynamics::MetaSkeletonPtr robot,
@@ -39,11 +38,11 @@ public:
   /// is checked by default.
   /// \return Output trajectory
   virtual trajectory::TrajectoryPtr planToEndEffectorOffset(
-      const statespace::dart::MetaSkeletonStateSpacePtr &space,
-      const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-      const dart::dynamics::BodyNodePtr &body,
-      const Eigen::Vector3d &direction,
-      const constraint::CollisionFreePtr &collisionFree,
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const dart::dynamics::BodyNodePtr& body,
+      const Eigen::Vector3d& direction,
+      const constraint::CollisionFreePtr& collisionFree,
       double distance,
       double linearVelocity);
 
@@ -51,22 +50,22 @@ public:
   /// \param bodynode Bodynode for the end effector
   /// \return Output The direction of the end effector (z axis of the frame)
   Eigen::Vector3d getEndEffectorDirection(
-      const dart::dynamics::BodyNodePtr &body) const;
+      const dart::dynamics::BodyNodePtr& body) const;
 
   /// Plan to a desired end-effector offset along the z axis of the
   /// end-effector. Tries VF and then CRRT.
   /// \return Output trajectory
   virtual trajectory::TrajectoryPtr planEndEffectorStraight(
-      statespace::dart::MetaSkeletonStateSpacePtr &space,
-      const dart::dynamics::MetaSkeletonPtr &metaSkeleton,
-      const dart::dynamics::BodyNodePtr &body,
-      const constraint::CollisionFreePtr &collisionFree,
+      statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const dart::dynamics::BodyNodePtr& body,
+      const constraint::CollisionFreePtr& collisionFree,
       double distance,
       double linearVelocity);
 
   // Documentation inherited.
   virtual void step(
-    const std::chrono::system_clock::time_point& timepoint) override;
+      const std::chrono::system_clock::time_point& timepoint) override;
 
 protected:
   std::shared_ptr<Hand> mHand;
@@ -78,4 +77,3 @@ using ManipulatorPtr = std::shared_ptr<Manipulator>;
 } // namespace aikido
 
 #endif
-

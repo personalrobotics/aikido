@@ -4,7 +4,7 @@ namespace aikido {
 namespace robot {
 
 //=============================================================================
-  CompositeRobot::CompositeRobot(
+CompositeRobot::CompositeRobot(
     const std::string& name,
     dart::dynamics::MetaSkeletonPtr robot,
     statespace::dart::MetaSkeletonStateSpacePtr statespace,
@@ -14,20 +14,19 @@ namespace robot {
     std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
     std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
     std::unordered_map<std::string, std::unique_ptr<Robot>> robots)
-  : Robot(name,
-    robot,
-    statespace,
-    simulation,
-    rngSeed,
-    std::move(trajectoryExecutor),
-    std::move(retimer),
-    std::move(smoother))
-    ,mRobots(std::move(robots))
-  {
-    // Do nothing
-  }
-
+  : Robot(
+        name,
+        robot,
+        statespace,
+        simulation,
+        rngSeed,
+        std::move(trajectoryExecutor),
+        std::move(retimer),
+        std::move(smoother))
+  , mRobots(std::move(robots))
+{
+  // Do nothing
+}
 
 } // namespace robot
 } // namespace aikido
-

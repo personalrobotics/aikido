@@ -1,13 +1,13 @@
 #ifndef AIKIDO_ROBOT_HAND_HPP_
 #define AIKIDO_ROBOT_HAND_HPP_
 
+#include <set>
 #include <string>
 #include <unordered_map>
-#include <set>
 #include <dart/dart.hpp>
-#include "aikido/robot/GrabMetadata.hpp"
-#include "aikido/io/yaml.hpp"
 #include "aikido/control/PositionCommandExecutor.hpp"
+#include "aikido/io/yaml.hpp"
+#include "aikido/robot/GrabMetadata.hpp"
 
 namespace aikido {
 namespace robot {
@@ -16,13 +16,14 @@ namespace robot {
 class Hand
 {
 public:
-
-  Hand(const std::string &name,
+  Hand(
+      const std::string& name,
       dart::dynamics::BranchPtr hand,
       bool simulation,
       dart::dynamics::BodyNode* endEffectorBodyNode,
       std::shared_ptr<aikido::control::PositionCommandExecutor> executor,
-      std::unordered_map<std::string, size_t> fingerJointNameToPositionIndexMap);
+      std::unordered_map<std::string, size_t>
+          fingerJointNameToPositionIndexMap);
 
   virtual ~Hand() = default;
 
@@ -86,8 +87,7 @@ private:
   /// Returns the corresponding preshape (from \c preshapesUri).
   /// \param preshapeName Name of preshape (e.g. "open")
   /// \return preshape if it exists, boost::none if not
-  boost::optional<Eigen::VectorXd> getPreshape(
-      const std::string& preshapeName);
+  boost::optional<Eigen::VectorXd> getPreshape(const std::string& preshapeName);
 
   const std::string mName;
 
@@ -110,7 +110,6 @@ private:
 
   // TODO: change this to grab multiple objects
   std::unique_ptr<GrabMetadata> mGrabMetadata;
-
 };
 
 using HandPtr = std::shared_ptr<Hand>;
@@ -119,4 +118,3 @@ using HandPtr = std::shared_ptr<Hand>;
 } // namespace aikido
 
 #endif
-

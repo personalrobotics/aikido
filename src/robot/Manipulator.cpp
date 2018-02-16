@@ -30,23 +30,24 @@ using dart::dynamics::SkeletonPtr;
 
 //==============================================================================
 Manipulator::Manipulator(
-      const std::string& name,
-      MetaSkeletonPtr robot,
-      MetaSkeletonStateSpacePtr statespace,
-      bool simulation,
-      common::RNG::result_type rngSeed,
-      std::unique_ptr<control::TrajectoryExecutor> executor,
-      std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
-      std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
-      std::shared_ptr<Hand> hand)
-  : Robot(name,
-    robot,
-    statespace,
-    simulation,
-    rngSeed,
-    std::move(executor),
-    std::move(retimer),
-    std::move(smoother))
+    const std::string& name,
+    MetaSkeletonPtr robot,
+    MetaSkeletonStateSpacePtr statespace,
+    bool simulation,
+    common::RNG::result_type rngSeed,
+    std::unique_ptr<control::TrajectoryExecutor> executor,
+    std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
+    std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother,
+    std::shared_ptr<Hand> hand)
+  : Robot(
+        name,
+        robot,
+        statespace,
+        simulation,
+        rngSeed,
+        std::move(executor),
+        std::move(retimer),
+        std::move(smoother))
   , mHand(hand)
 {
   if (!mHand)
@@ -55,44 +56,43 @@ Manipulator::Manipulator(
 
 //==============================================================================
 TrajectoryPtr Manipulator::planToEndEffectorOffset(
-  const MetaSkeletonStateSpacePtr &space,
-   const MetaSkeletonPtr &metaSkeleton,
-   const BodyNodePtr &body,
-   const Eigen::Vector3d &direction,
-   const CollisionFreePtr &collisionFree,
-   double distance,
-   double linearVelocity)
+    const MetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonPtr& metaSkeleton,
+    const BodyNodePtr& body,
+    const Eigen::Vector3d& direction,
+    const CollisionFreePtr& collisionFree,
+    double distance,
+    double linearVelocity)
 {
   auto collision = getCollisionConstraint(space, collisionFree);
   auto trajectory = util::planToEndEffectorOffset(
-    space,
-    metaSkeleton,
-    body,
-    direction,
-    collision,
-    distance,
-    linearVelocity);
+      space,
+      metaSkeleton,
+      body,
+      direction,
+      collision,
+      distance,
+      linearVelocity);
 
   return trajectory;
 }
 
 //==============================================================================
 Eigen::Vector3d Manipulator::getEndEffectorDirection(
-      const dart::dynamics::BodyNodePtr &body) const
+    const dart::dynamics::BodyNodePtr& body) const
 {
   const size_t zDirection = 2;
   return body->getWorldTransform().linear().col(zDirection).normalized();
-
 }
 
 //==============================================================================
 TrajectoryPtr Manipulator::planEndEffectorStraight(
-      MetaSkeletonStateSpacePtr &space,
-      const MetaSkeletonPtr &metaSkeleton,
-      const BodyNodePtr &body,
-      const CollisionFreePtr &collisionFree,
-      double distance,
-      double linearVelocity)
+    MetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonPtr& metaSkeleton,
+    const BodyNodePtr& body,
+    const CollisionFreePtr& collisionFree,
+    double distance,
+    double linearVelocity)
 {
   auto collision = getCollisionConstraint(space, collisionFree);
 
@@ -105,13 +105,13 @@ TrajectoryPtr Manipulator::planEndEffectorStraight(
   }
 
   auto trajectory = util::planToEndEffectorOffset(
-    space,
-    metaSkeleton,
-    body,
-    direction,
-    collision,
-    distance,
-    linearVelocity);
+      space,
+      metaSkeleton,
+      body,
+      direction,
+      collision,
+      distance,
+      linearVelocity);
   return trajectory;
 }
 
@@ -128,6 +128,5 @@ void Manipulator::step(const std::chrono::system_clock::time_point& timepoint)
   mHand->step(timepoint);
   mTrajectoryExecutor->step(timepoint);
 }
-
 }
 }

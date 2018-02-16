@@ -10,10 +10,10 @@ using dart::dynamics::SkeletonPtr;
 namespace {
 
 void disablePairwiseSelfCollision(
-    const BodyNodePtr &singleNode,
-    const BodyNodePtr &rootNode,
-    const std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
-        &selfCollisionFilter)
+    const BodyNodePtr& singleNode,
+    const BodyNodePtr& rootNode,
+    const std::shared_ptr<dart::collision::BodyNodeCollisionFilter>&
+        selfCollisionFilter)
 {
 #ifndef NDEBUG
   std::cout << "Disabling collision between " << rootNode->getName() << " and "
@@ -29,10 +29,10 @@ void disablePairwiseSelfCollision(
 }
 
 void enablePairwiseSelfCollision(
-    const BodyNodePtr &singleNode,
-    const BodyNodePtr &rootNode,
-    const std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
-        &selfCollisionFilter)
+    const BodyNodePtr& singleNode,
+    const BodyNodePtr& rootNode,
+    const std::shared_ptr<dart::collision::BodyNodeCollisionFilter>&
+        selfCollisionFilter)
 {
 #ifndef NDEBUG
   std::cout << "Enabling collision between " << rootNode->getName() << " and "
@@ -46,23 +46,23 @@ void enablePairwiseSelfCollision(
   }
 }
 
-
 } // namespace
 
 //==============================================================================
-Hand::Hand(const std::string &name,
+Hand::Hand(
+    const std::string& name,
     dart::dynamics::BranchPtr hand,
     bool simulation,
     dart::dynamics::BodyNode* endEffectorBodyNode,
     std::shared_ptr<aikido::control::PositionCommandExecutor> executor,
     std::unordered_map<std::string, size_t> fingerJointNameToPositionIndexMap)
-: mName(name)
-, mHand(hand)
-, mSimulation(simulation)
-, mEndEffectorBodyNode(endEffectorBodyNode)
-, mExecutor(executor)
-, mFingerJointNameToPositionIndexMap(fingerJointNameToPositionIndexMap)
-, mGrabMetadata(nullptr)
+  : mName(name)
+  , mHand(hand)
+  , mSimulation(simulation)
+  , mEndEffectorBodyNode(endEffectorBodyNode)
+  , mExecutor(executor)
+  , mFingerJointNameToPositionIndexMap(fingerJointNameToPositionIndexMap)
+  , mGrabMetadata(nullptr)
 {
 }
 
@@ -153,12 +153,11 @@ void Hand::grab(const dart::dynamics::SkeletonPtr& bodyToGrab)
   // Moving the grabbed object into the same skeleton as the hand means that it
   // will be considered during self-collision checking. Therefore, we need to
   // disable self-collision checking between grabbed object and hand.
-  disablePairwiseSelfCollision(bodyNode, mEndEffectorBodyNode, mSelfCollisionFilter);
+  disablePairwiseSelfCollision(
+      bodyNode, mEndEffectorBodyNode, mSelfCollisionFilter);
 
   mGrabMetadata = dart::common::make_unique<GrabMetadata>(
       bodyNode, bodyNodeName, bodyToGrab, jointProperties);
-
-
 }
 
 //==============================================================================
@@ -173,8 +172,9 @@ void Hand::ungrab()
     std::stringstream ss;
 
     // TODO: use proper logging
-    ss << "[BarrettHand::ungrab] End effector \"" << mEndEffectorBodyNode->getName()
-       << "\" is not grabbing an object." << std::endl;
+    ss << "[BarrettHand::ungrab] End effector \""
+       << mEndEffectorBodyNode->getName() << "\" is not grabbing an object."
+       << std::endl;
     throw std::runtime_error(ss.str());
   }
 
@@ -214,15 +214,15 @@ void Hand::ungrab()
 }
 
 //==============================================================================
-void Hand::executePreshape(const std::string &preshapeName)
+void Hand::executePreshape(const std::string& preshapeName)
 {
   boost::optional<Eigen::VectorXd> preshape = getPreshape(preshapeName);
 
   if (!preshape)
   {
     std::stringstream message;
-    message << "[Hand::executePreshape] Unknown preshape name '"
-            << preshapeName << "' specified.";
+    message << "[Hand::executePreshape] Unknown preshape name '" << preshapeName
+            << "' specified.";
     throw std::runtime_error(message.str());
   }
 
@@ -248,8 +248,7 @@ void Hand::parseYAMLToPreshapes(const YAML::Node& node)
     for (auto joint : jointNodes)
     {
       auto jointName = joint.first.as<std::string>();
-      auto jointIndex
-          = mFingerJointNameToPositionIndexMap.find(jointName);
+      auto jointIndex = mFingerJointNameToPositionIndexMap.find(jointName);
       if (jointIndex == mFingerJointNameToPositionIndexMap.end())
       {
         std::stringstream message;
@@ -279,7 +278,5 @@ boost::optional<Eigen::VectorXd> Hand::getPreshape(
 
   return preshape->second;
 }
-
 }
 }
-

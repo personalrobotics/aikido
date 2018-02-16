@@ -1,8 +1,8 @@
 #ifndef AIKIDO_IO_YAML_HPP_
 #define AIKIDO_IO_YAML_HPP_
 
-#include <yaml-cpp/yaml.h>
 #include <dart/dart.hpp>
+#include <yaml-cpp/yaml.h>
 
 // This header allows extended value types for yaml-cpp.
 //

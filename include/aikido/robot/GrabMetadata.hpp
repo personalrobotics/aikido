@@ -1,9 +1,9 @@
 #ifndef AIKIDO_ROBOT_GRABMETADATA_HPP_
 #define AIKIDO_ROBOT_GRABMETADATA_HPP_
 
+#include <functional>
 #include <dart/dart.hpp>
 #include <dart/dynamics/dynamics.hpp>
-#include <functional>
 
 namespace aikido {
 namespace robot {
@@ -12,7 +12,6 @@ namespace robot {
 class GrabMetadata
 {
 public:
-
   /// Constructor.
   // \param bodyNode BodyNode of the grabbed object.
   // \param oldName Name of the grabbed object.
@@ -20,9 +19,9 @@ public:
   // \param joitnProperties Joint properties of the grabbed object.
   GrabMetadata(
       dart::dynamics::BodyNodePtr bodyNode,
-      const std::string &oldName,
+      const std::string& oldName,
       dart::dynamics::SkeletonPtr parentSkeleton,
-      const dart::dynamics::FreeJoint::Properties &jointProperties);
+      const dart::dynamics::FreeJoint::Properties& jointProperties);
 
   // BodyNode of grabbed object
   dart::dynamics::BodyNodePtr mBodyNode;
@@ -35,7 +34,6 @@ public:
 
   // Original joint properties
   dart::dynamics::FreeJoint::Properties mJointProperties;
-
 };
 
 } // namespace robot
