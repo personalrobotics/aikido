@@ -1,6 +1,8 @@
 set (CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 add_library("${PROJECT_NAME}_external_mintos" STATIC
+  include/mintos/math/math.h
+  include/mintos/math/function.h
   Timer.cpp
   src/AABB.cpp
   src/ASCIIShade.cpp
@@ -59,5 +61,10 @@ set_target_properties("${PROJECT_NAME}_external_mintos" PROPERTIES
 # any system version of GLPK, which is likely too recent for MinTOS.
 target_include_directories("${PROJECT_NAME}_external_mintos" BEFORE
   PRIVATE ${glpk_EXTERNAL_INCLUDE_DIRS})
+
+target_compile_options("${PROJECT_NAME}_external_mintos"
+  PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
+  PRIVATE -w
+)
 
 message(STATUS "INCLUDE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}/include")
