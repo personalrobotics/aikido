@@ -1,23 +1,25 @@
 #ifndef AIKIDO_PLANNER_MINTOS_MINTOS_HPP_
 #define AIKIDO_PLANNER_MINTOS_MINTOS_HPP_
 #include <memory>
-#include <aikido/constraint/Differentiable.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/trajectory/Spline.hpp>
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
 namespace mintos {
 
+// TODO(avk): Needs growth factor?
+// TODO(avk): Does this need/require separation into smoother and timer?
 std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
-  const trajectory::Interpolated& _inputTrajectory,
-  const constraint::Differentiable& _constraint,
-  const Eigen::VectorXd& _minVelocity,
-  const Eigen::VectorXd& _maxVelocity,
-  const Eigen::VectorXd& _minAcceleration,
-  const Eigen::VectorXd& _maxAcceleration,
-  double _constraintTolerance,
-  double _interpolationTimestep);
+  const trajectory::Interpolated& inputTrajectory,
+  const constraint::Differentiable& constraint,
+  const Eigen::VectorXd& minVelocity,
+  const Eigen::VectorXd& maxVelocity,
+  const Eigen::VectorXd& minAcceleration,
+  const Eigen::VectorXd& maxAcceleration,
+  double constraintTolerance,
+  double interpolationTimestep);
 
 } // namespace mintos
 } // namespace planner
