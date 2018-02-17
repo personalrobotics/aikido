@@ -1,50 +1,50 @@
-#include <aikido/planner/mintos/MinTOS.hpp>
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/common/Spline.hpp>
-#include <mintos/Mintos.h>
+#include "aikido/planner/mintos/MinTOS.hpp"
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/common/Spline.hpp"
+#include "mintos/Mintos.h"
 
 namespace aikido {
 namespace planner {
 namespace mintos {
 namespace {
 
-void vectorToEigen(const Math::Vector& _input, Eigen::VectorXd& _output)
+void vectorToEigen(const Math::Vector& input, Eigen::VectorXd& output)
 {
-  _output.resize(_input.size());
+  output.resize(input.size());
 
-  for (int i = 0; i < _input.size(); ++i)
-    _output[i] = _input[i];
+  for (int i = 0; i < input.size(); ++i)
+    output[i] = input[i];
 }
 
-void eigenToVector(const Eigen::VectorXd& _input, Math::Vector& _output)
+void eigenToVector(const Eigen::VectorXd& input, Math::Vector& output)
 {
-  _output.resize(_input.size());
+  output.resize(input.size());
 
-  for (int i = 0; i < _input.size(); ++i)
-    _output[i] = _input[i];
+  for (int i = 0; i < input.size(); ++i)
+    output[i] = input[i];
 }
 
-void sampleAtTime(Mintos::TimeScaledBezierCurve& _curve, double _t,
-  Eigen::VectorXd& _position, Eigen::VectorXd& _velocity,
-  Eigen::VectorXd& _acceleration)
+void sampleAtTime(Mintos::TimeScaledBezierCurve& curve, double t,
+  Eigen::VectorXd& position, Eigen::VectorXd& velocity,
+  Eigen::VectorXd& acceleration)
 {
   Math::Vector outputVector;
 
-  _curve.Eval(_t, outputVector);
-  vectorToEigen(outputVector, _position);
+  curve.Eval(t, outputVector);
+  vectorToEigen(outputVector, position);
 
-  _curve.Deriv(_t, outputVector);
-  vectorToEigen(outputVector, _velocity);
+  curve.Deriv(t, outputVector);
+  vectorToEigen(outputVector, velocity);
 
-  _curve.Accel(_t, outputVector);
-  vectorToEigen(outputVector, _acceleration);
+  curve.Accel(t, outputVector);
+  vectorToEigen(outputVector, acceleration);
 }
 
 class DifferentiableWrapper : public Math::VectorFieldFunction
 {
 public:
-  explicit DifferentiableWrapper(const constraint::Differentiable* _constraint)
-    : mConstraint{_constraint}
+  explicit DifferentiableWrapper(const constraint::Differentiable* constraint)
+    : mConstraint{constraint}
     , mStateSpace{mConstraint->getStateSpace()}
     , mState{mStateSpace->allocateState()}
   {
@@ -154,35 +154,36 @@ class StateSpaceWrapper : public Mintos::GeodesicManifold
 
 } // namespace
 
+//TODO(avk): change variable names to consider the current convention followed
 std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
-  const trajectory::Interpolated& _inputTrajectory,
-  const constraint::Differentiable& _constraint,
+  const trajectory::Interpolated& inputTrajectory,
+  const constraint::Differentiable& constraint,
   const Eigen::VectorXd& _minVelocity,
   const Eigen::VectorXd& _maxVelocity,
   const Eigen::VectorXd& _minAcceleration,
   const Eigen::VectorXd& _maxAcceleration,
-  double _constraintTolerance,
-  double _interpolationTimestep)
+  double constraintTolerance,
+  double interpolationTimestep)
 {
   using QuinticSegmentProblem
     = common::SplineProblem<double, int, 6, Eigen::Dynamic, 2>;
 
-  const auto stateSpace = _inputTrajectory.getStateSpace();
+  const auto stateSpace = inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
   Eigen::VectorXd tangentVector;
 
   // Convert the trajectory into a sequence of milestones.
   std::vector<Mintos::Config> milestones;
-  milestones.reserve(_inputTrajectory.getNumWaypoints());
+  milestones.reserve(inputTrajectory.getNumWaypoints());
 
   for (size_t iwaypoint = 0;
-       iwaypoint < _inputTrajectory.getNumWaypoints();
+       iwaypoint < inputTrajectory.getNumWaypoints();
        ++iwaypoint)
   {
     // This assumes that the StateSpace consists of Rn and SO(2) components.
     // TODO: This should work on all StateSpaces if we implement a custom
     // GeodesicManifold that defers all operations correctly.
-    const auto state = _inputTrajectory.getWaypoint(iwaypoint);
+    const auto state = inputTrajectory.getWaypoint(iwaypoint);
     stateSpace->logMap(state, tangentVector);
 
     // Convert the Eigen::Vector into a Config (a Math::VectorTemplate).
@@ -192,7 +193,7 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   std::cout << "Created " << milestones.size() << " milestones." << std::endl;
 
   // Convert the Aikido constraint to a MinTOS VectorFieldFunction.
-  DifferentiableWrapper constraintWrapper{&_constraint};
+  DifferentiableWrapper constraintWrapper{&constraint};
 
   // Convert velocity and acceleration bounds to MinTOS types.
   const Mintos::Vector minVelocity(_minVelocity.size(), _minVelocity.data());
@@ -208,7 +209,7 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
   auto const success = Mintos::InterpolateAndTimeOptimize(
     milestones,
     nullptr, // TODO: Replace this with a GeodesicManifold from the StateSpace.
-    &constraintWrapper, _constraintTolerance,
+    &constraintWrapper, constraintTolerance,
     minVelocity, maxVelocity,
     minAcceleration, maxAcceleration,
     outputCurve);
@@ -220,7 +221,7 @@ std::unique_ptr<trajectory::Spline> interpolateAndTimeOptimizeTrajectory(
 
   // Convert the output of MinTOS to an Aikido trajectory.
   common::StepSequence timeSequence{
-    _interpolationTimestep, true, 0., outputCurve.EndTime()};
+    interpolationTimestep, true, 0., outputCurve.EndTime()};
 
   auto timeIterator = std::begin(timeSequence);
   auto currTime = *timeIterator;
