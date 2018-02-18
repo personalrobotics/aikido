@@ -51,7 +51,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
         const ParabolicRamp::DynamicPath& _inputPath,
         double _startTime,
-        aikido::statespace::StateSpacePtr _stateSpace);
+        aikido::statespace::ConstStateSpacePtr _stateSpace);
 
 /// Convert a spline trajectory to a dynamic path
 /// \param _inputTrajectory a spline trajectory
