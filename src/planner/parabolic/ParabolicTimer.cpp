@@ -24,7 +24,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 {
   using aikido::statespace::GeodesicInterpolator;
 
-  if (nullptr == dynamic_cast<GeodesicInterpolator*>(
+  if (nullptr == dynamic_cast<const GeodesicInterpolator*>(
                      _inputTrajectory.getInterpolator().get()))
   {
     throw std::invalid_argument(
@@ -41,7 +41,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
         "computeParabolicTiming only supports Rn, "
         "SO2, and CartesianProducts consisting of those types.");
 
-  const auto interpolator = _inputTrajectory.getInterpolator();
+  auto interpolator = _inputTrajectory.getInterpolator();
   if (dynamic_cast<const GeodesicInterpolator*>(interpolator.get()) == nullptr)
     throw std::invalid_argument(
         "computeParabolicTiming only supports geodesic interpolation.");
