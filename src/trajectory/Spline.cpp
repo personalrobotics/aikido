@@ -6,7 +6,7 @@ namespace aikido {
 namespace trajectory {
 
 //==============================================================================
-Spline::Spline(statespace::StateSpacePtr _stateSpace, double _startTime)
+Spline::Spline(const statespace::StateSpacePtr _stateSpace, double _startTime)
   : mStateSpace(std::move(_stateSpace)), mStartTime(_startTime)
 {
   if (mStateSpace == nullptr)
@@ -68,7 +68,7 @@ std::size_t Spline::getNumSegments() const
 }
 
 //==============================================================================
-statespace::StateSpacePtr Spline::getStateSpace() const
+const statespace::StateSpacePtr Spline::getStateSpace() const
 {
   return mStateSpace;
 }

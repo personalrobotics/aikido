@@ -19,8 +19,8 @@ public:
   /// \param _stateSpace state space this trajectory is defined in
   /// \param _interpolator interpolator used to interpolate between waypoints
   Interpolated(
-      aikido::statespace::StateSpacePtr _sspace,
-      aikido::statespace::InterpolatorPtr _interpolator);
+      const aikido::statespace::StateSpacePtr _stateSpace,
+      const aikido::statespace::InterpolatorPtr _interpolator);
 
   /// Add a waypoint to the trajectory at the given time.
   ///
@@ -44,10 +44,10 @@ public:
   std::size_t getNumWaypoints() const;
 
   // Documentation inherited
-  aikido::statespace::StateSpacePtr getStateSpace() const override;
+  const aikido::statespace::StateSpacePtr getStateSpace() const override;
 
   /// Gets the interpolator used to interpolate between waypoints.
-  aikido::statespace::InterpolatorPtr getInterpolator() const;
+  const aikido::statespace::InterpolatorPtr getInterpolator() const;
 
   // Documentation inherited
   std::size_t getNumDerivatives() const override;
@@ -92,8 +92,8 @@ private:
   /// trajectory.
   int getWaypointIndexAfterTime(double _t) const;
 
-  aikido::statespace::StateSpacePtr mStateSpace;
-  aikido::statespace::InterpolatorPtr mInterpolator;
+  const aikido::statespace::StateSpacePtr mStateSpace;
+  const aikido::statespace::InterpolatorPtr mInterpolator;
   std::vector<Waypoint> mWaypoints;
 };
 
