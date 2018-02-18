@@ -123,7 +123,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const ParabolicRamp::DynamicPath& _inputPath,
     double _startTime,
-    aikido::statespace::ConstStateSpacePtr _stateSpace)
+    statespace::ConstStateSpacePtr _stateSpace)
 {
   const auto dimension = _stateSpace->getDimension();
 

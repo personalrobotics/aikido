@@ -35,7 +35,7 @@ void evaluateAtTime(ParabolicRamp::DynamicPath& _path, double _t,
 /// Check wether the state space is supported
 /// \param _stateSpace the state space to be checked
 /// \return whether the state space is supported
-bool checkStateSpace(const aikido::statespace::StateSpace* _stateSpace);
+bool checkStateSpace(const statespace::StateSpace* _stateSpace);
 
 /// Convert an interpolated trajectory to a spline trajectory
 /// \param _inputTrajectory interpolated trajectory
@@ -51,7 +51,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
         const ParabolicRamp::DynamicPath& _inputPath,
         double _startTime,
-        aikido::statespace::ConstStateSpacePtr _stateSpace);
+        statespace::ConstStateSpacePtr _stateSpace);
 
 /// Convert a spline trajectory to a dynamic path
 /// \param _inputTrajectory a spline trajectory
