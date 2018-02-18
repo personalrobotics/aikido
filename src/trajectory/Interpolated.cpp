@@ -9,7 +9,7 @@ using State = aikido::statespace::StateSpace::State;
 
 //==============================================================================
 Interpolated::Interpolated(
-    const aikido::statespace::StateSpacePtr _stateSpace,
+    aikido::statespace::ConstStateSpacePtr _stateSpace,
     const aikido::statespace::InterpolatorPtr _interpolator)
   : mStateSpace(std::move(_stateSpace)), mInterpolator(std::move(_interpolator))
 {
@@ -17,7 +17,7 @@ Interpolated::Interpolated(
 }
 
 //==============================================================================
-const statespace::StateSpacePtr Interpolated::getStateSpace() const
+statespace::ConstStateSpacePtr Interpolated::getStateSpace() const
 {
   return mStateSpace;
 }
