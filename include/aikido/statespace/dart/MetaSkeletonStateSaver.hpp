@@ -7,6 +7,13 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
+/// Options to specify what MetaSkeletonStateSaver should save.
+enum MetaSkeletonStateSaverOptions
+{
+  POSITIONS = 1 << 0,
+  POSITION_LIMITS = 1 << 1,
+};
+
 /// RAII class to save and restore a MetaSkeleton's state.
 /// FIXME: currently only saves position and joint limits.
 class MetaSkeletonStateSaver
@@ -16,9 +23,11 @@ public:
   /// MetaSkeleton. This state will be restored when MetaSkeletonStateSaver is
   /// destructed.
   ///
-  /// \param _metaskeleton MetaSkeleton to save/restore
+  /// \param metaskeleton MetaSkeleton to save/restore
+  /// \param options Options to specify what should be saved
   explicit MetaSkeletonStateSaver(
-      ::dart::dynamics::MetaSkeletonPtr _metaskeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+      int options = POSITIONS | POSITION_LIMITS);
 
   virtual ~MetaSkeletonStateSaver();
 
@@ -30,9 +39,19 @@ public:
   MetaSkeletonStateSaver& operator=(MetaSkeletonStateSaver&&) = default;
 
 private:
+  /// MetaSkeleton to save the state of
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+
+  /// Options to specify what should be saved
+  int mOptions;
+
+  /// Saved positions
   Eigen::VectorXd mPositions;
+
+  /// Saved position lower limits
   Eigen::VectorXd mPositionLowerLimits;
+
+  /// Saved position upper limits
   Eigen::VectorXd mPositionUpperLimits;
 };
 
