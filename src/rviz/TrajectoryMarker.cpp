@@ -71,9 +71,8 @@ void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
 
   if (trajectory)
   {
-    auto statespace
-        = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-            trajectory->getStateSpace());
+    auto statespace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+        trajectory->getStateSpace());
 
     if (!statespace)
     {

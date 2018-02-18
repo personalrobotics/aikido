@@ -80,11 +80,11 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
 
     mTraj = traj;
 
-    auto nonConstStateSpace = 
-      std::const_pointer_cast<aikido::statespace::StateSpace>(
-        traj->getStateSpace());
-    mStateSpace = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
-        nonConstStateSpace);
+    auto nonConstStateSpace
+        = std::const_pointer_cast<aikido::statespace::StateSpace>(
+            traj->getStateSpace());
+    mStateSpace
+        = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(nonConstStateSpace);
 
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
