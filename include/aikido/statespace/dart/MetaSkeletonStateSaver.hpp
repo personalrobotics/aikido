@@ -7,18 +7,18 @@ namespace aikido {
 namespace statespace {
 namespace dart {
 
-/// Options to specify what MetaSkeletonStateSaver should save.
-enum MetaSkeletonStateSaverOptions
-{
-  POSITIONS = 1 << 0,
-  POSITION_LIMITS = 1 << 1,
-};
-
 /// RAII class to save and restore a MetaSkeleton's state.
 /// FIXME: currently only saves position and joint limits.
 class MetaSkeletonStateSaver
 {
 public:
+  /// Options to specify what MetaSkeletonStateSaver should save.
+  enum Options
+  {
+    POSITIONS = 1 << 0,
+    POSITION_LIMITS = 1 << 1,
+  };
+
   /// Construct a MetaSkeletonStateSaver and save the current state of the \c
   /// MetaSkeleton. This state will be restored when MetaSkeletonStateSaver is
   /// destructed.

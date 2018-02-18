@@ -10,10 +10,10 @@ MetaSkeletonStateSaver::MetaSkeletonStateSaver(
     ::dart::dynamics::MetaSkeletonPtr metaskeleton, int options)
   : mMetaSkeleton(std::move(metaskeleton)), mOptions(std::move(options))
 {
-  if (mOptions & MetaSkeletonStateSaverOptions::POSITIONS)
+  if (mOptions & Options::POSITIONS)
     mPositions = mMetaSkeleton->getPositions();
 
-  if (mOptions & MetaSkeletonStateSaverOptions::POSITION_LIMITS)
+  if (mOptions & Options::POSITION_LIMITS)
   {
     mPositionLowerLimits = mMetaSkeleton->getPositionLowerLimits();
     mPositionUpperLimits = mMetaSkeleton->getPositionUpperLimits();
@@ -23,7 +23,7 @@ MetaSkeletonStateSaver::MetaSkeletonStateSaver(
 //==============================================================================
 MetaSkeletonStateSaver::~MetaSkeletonStateSaver()
 {
-  if (mOptions & MetaSkeletonStateSaverOptions::POSITIONS)
+  if (mOptions & Options::POSITIONS)
   {
     if (static_cast<std::size_t>(mPositions.size())
         != mMetaSkeleton->getNumDofs())
@@ -35,7 +35,7 @@ MetaSkeletonStateSaver::~MetaSkeletonStateSaver()
     mMetaSkeleton->setPositions(mPositions);
   }
 
-  if (mOptions & MetaSkeletonStateSaverOptions::POSITION_LIMITS)
+  if (mOptions & Options::POSITION_LIMITS)
   {
     if (static_cast<std::size_t>(mPositionLowerLimits.size())
         != mMetaSkeleton->getNumDofs())

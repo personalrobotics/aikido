@@ -9,13 +9,13 @@ WorldStateSaver::WorldStateSaver(World* const world, int options)
   if (!world)
     throw std::invalid_argument("World must not be nullptr.");
 
-  if (mOptions & WorldStateSaverOptions::CONFIGURATIONS)
+  if (mOptions & Options::CONFIGURATIONS)
     mWorldState = mWorld->getState();
 }
 
 WorldStateSaver::~WorldStateSaver()
 {
-  if (mOptions & WorldStateSaverOptions::CONFIGURATIONS)
+  if (mOptions & Options::CONFIGURATIONS)
     mWorld->setState(mWorldState);
 }
 

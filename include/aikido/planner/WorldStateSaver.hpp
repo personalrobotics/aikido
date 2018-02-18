@@ -6,16 +6,16 @@
 namespace aikido {
 namespace planner {
 
-/// Options to specify what WorldStateSaver should save.
-enum WorldStateSaverOptions
-{
-  CONFIGURATIONS = 1 << 0,
-};
-
 /// RAII class to save and restore a World's state.
 class WorldStateSaver
 {
 public:
+  /// Options to specify what WorldStateSaver should save.
+  enum Options
+  {
+    CONFIGURATIONS = 1 << 0,
+  };
+
   /// Construct a WorldStateSaver and save the current state of the \c World.
   /// This state will be restored when WorldStateSaver is destructed.
   ///

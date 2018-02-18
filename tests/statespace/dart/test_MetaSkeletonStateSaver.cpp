@@ -5,7 +5,6 @@
 using dart::dynamics::Skeleton;
 using dart::dynamics::RevoluteJoint;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
-using aikido::statespace::dart::MetaSkeletonStateSaverOptions;
 
 class MetaSkeletonStateSaverTest : public testing::Test
 {
@@ -80,7 +79,7 @@ TEST_F(MetaSkeletonStateSaverTest, Flags_PositionsOnly)
 
   {
     auto saver = MetaSkeletonStateSaver(
-        mSkeleton, MetaSkeletonStateSaverOptions::POSITIONS);
+        mSkeleton, MetaSkeletonStateSaver::Options::POSITIONS);
     DART_UNUSED(saver);
 
     mSkeleton->setPositionLowerLimit(0, 1.);
@@ -105,7 +104,7 @@ TEST_F(MetaSkeletonStateSaverTest, Flags_PositionLimitsOnly)
 
   {
     auto saver = MetaSkeletonStateSaver(
-        mSkeleton, MetaSkeletonStateSaverOptions::POSITION_LIMITS);
+        mSkeleton, MetaSkeletonStateSaver::Options::POSITION_LIMITS);
     DART_UNUSED(saver);
 
     mSkeleton->setPositionLowerLimit(0, 1.);
