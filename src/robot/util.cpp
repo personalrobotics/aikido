@@ -370,10 +370,8 @@ trajectory::SplinePtr planToEndEffectorOffset(
     const Eigen::Vector3d& direction,
     const constraint::TestablePtr& collisionTestable,
     double distance,
-    double linearVelocity,
     double timelimit,
-    double minDistance,
-    double maxDistance,
+    double distanceTolerance,
     double positionTolerance,
     double angularTolerance,
     double initialStepSize,
@@ -383,6 +381,9 @@ trajectory::SplinePtr planToEndEffectorOffset(
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
+
+  auto minDistance = distance - distanceTolerance;
+  auto maxDistance = distance + distanceTolerance;
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       space,
