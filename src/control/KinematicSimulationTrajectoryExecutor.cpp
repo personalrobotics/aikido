@@ -47,7 +47,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
   if (traj->metadata.executorValidated)
     return;
 
-  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   if (!space)
@@ -65,6 +65,8 @@ void KinematicSimulationTrajectoryExecutor::validate(
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     trajectory::TrajectoryPtr traj)
 {
+  using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+
   validate(traj);
 
   {
@@ -77,8 +79,13 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     mPromise.reset(new std::promise<void>());
 
     mTraj = traj;
-    mStateSpace = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+
+    auto nonConstStateSpace = 
+      std::const_pointer_cast<aikido::statespace::StateSpace>(
         traj->getStateSpace());
+    mStateSpace = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+        nonConstStateSpace);
+
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
   }
