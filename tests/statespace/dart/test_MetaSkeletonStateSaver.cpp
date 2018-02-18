@@ -1,37 +1,123 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
-#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 using dart::dynamics::Skeleton;
 using dart::dynamics::RevoluteJoint;
-using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
-using aikido::statespace::SO2;
+using aikido::statespace::dart::MetaSkeletonStateSaverOptions;
 
-TEST(MetaSkeletonStateSaver, MetaSkeletonStateSpaceReturnsToOriginal)
+class MetaSkeletonStateSaverTest : public testing::Test
 {
-  auto skeleton = Skeleton::create();
-  skeleton->createJointAndBodyNodePair<RevoluteJoint>();
+public:
+  void SetUp()
+  {
+    mSkeleton = Skeleton::create();
+    mSkeleton->createJointAndBodyNodePair<RevoluteJoint>();
 
-  auto space = std::make_shared<MetaSkeletonStateSpace>(skeleton.get());
-  ASSERT_EQ(1, space->getNumSubspaces());
+    mSkeleton->setPosition(0, 1.);
+    mSkeleton->setPositionLowerLimit(0, 0.);
+    mSkeleton->setPositionUpperLimit(0, 3.);
+  }
 
-  auto state = space->createState();
-  auto substate = state.getSubStateHandle<SO2>(0);
+protected:
+  ::dart::dynamics::SkeletonPtr mSkeleton;
+};
 
-  substate.setAngle(1.);
-  space->setState(skeleton.get(), state);
-  EXPECT_DOUBLE_EQ(1., skeleton->getPosition(0));
+TEST_F(MetaSkeletonStateSaverTest, MetaSkeletonStateSpaceReturnsToOriginal)
+{
+  EXPECT_DOUBLE_EQ(0., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(3., mSkeleton->getPositionUpperLimit(0));
 
   {
-    auto saver = MetaSkeletonStateSaver(skeleton);
+    auto saver = MetaSkeletonStateSaver(mSkeleton);
     DART_UNUSED(saver);
 
-    substate.setAngle(6.);
-    space->setState(skeleton.get(), state);
-    EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
+    mSkeleton->setPositionLowerLimit(0, 1.);
+    mSkeleton->setPositionUpperLimit(0, 5.);
+    mSkeleton->setPosition(0, 4.);
+
+    EXPECT_DOUBLE_EQ(1., mSkeleton->getPositionLowerLimit(0));
+    EXPECT_DOUBLE_EQ(4., mSkeleton->getPosition(0));
+    EXPECT_DOUBLE_EQ(5., mSkeleton->getPositionUpperLimit(0));
   }
-  EXPECT_DOUBLE_EQ(1., skeleton->getPosition(0));
+
+  EXPECT_DOUBLE_EQ(0., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(3., mSkeleton->getPositionUpperLimit(0));
+}
+
+TEST_F(MetaSkeletonStateSaverTest, Flags_None)
+{
+  EXPECT_DOUBLE_EQ(0., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(3., mSkeleton->getPositionUpperLimit(0));
+
+  {
+    auto saver = MetaSkeletonStateSaver(mSkeleton, 0);
+    DART_UNUSED(saver);
+
+    mSkeleton->setPositionLowerLimit(0, 1.);
+    mSkeleton->setPositionUpperLimit(0, 5.);
+    mSkeleton->setPosition(0, 4.);
+
+    EXPECT_DOUBLE_EQ(1., mSkeleton->getPositionLowerLimit(0));
+    EXPECT_DOUBLE_EQ(4., mSkeleton->getPosition(0));
+    EXPECT_DOUBLE_EQ(5., mSkeleton->getPositionUpperLimit(0));
+  }
+
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(4., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(5., mSkeleton->getPositionUpperLimit(0));
+}
+
+TEST_F(MetaSkeletonStateSaverTest, Flags_PositionsOnly)
+{
+  EXPECT_DOUBLE_EQ(0., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(3., mSkeleton->getPositionUpperLimit(0));
+
+  {
+    auto saver = MetaSkeletonStateSaver(
+        mSkeleton, MetaSkeletonStateSaverOptions::POSITIONS);
+    DART_UNUSED(saver);
+
+    mSkeleton->setPositionLowerLimit(0, 1.);
+    mSkeleton->setPositionUpperLimit(0, 5.);
+    mSkeleton->setPosition(0, 4.);
+
+    EXPECT_DOUBLE_EQ(1., mSkeleton->getPositionLowerLimit(0));
+    EXPECT_DOUBLE_EQ(4., mSkeleton->getPosition(0));
+    EXPECT_DOUBLE_EQ(5., mSkeleton->getPositionUpperLimit(0));
+  }
+
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(5., mSkeleton->getPositionUpperLimit(0));
+}
+
+TEST_F(MetaSkeletonStateSaverTest, Flags_PositionLimitsOnly)
+{
+  EXPECT_DOUBLE_EQ(0., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(1., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(3., mSkeleton->getPositionUpperLimit(0));
+
+  {
+    auto saver = MetaSkeletonStateSaver(
+        mSkeleton, MetaSkeletonStateSaverOptions::POSITION_LIMITS);
+    DART_UNUSED(saver);
+
+    mSkeleton->setPositionLowerLimit(0, 1.);
+    mSkeleton->setPositionUpperLimit(0, 5.);
+    mSkeleton->setPosition(0, 2.);
+
+    EXPECT_DOUBLE_EQ(1., mSkeleton->getPositionLowerLimit(0));
+    EXPECT_DOUBLE_EQ(2., mSkeleton->getPosition(0));
+    EXPECT_DOUBLE_EQ(5., mSkeleton->getPositionUpperLimit(0));
+  }
+
+  EXPECT_DOUBLE_EQ(0., mSkeleton->getPositionLowerLimit(0));
+  EXPECT_DOUBLE_EQ(2., mSkeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(3., mSkeleton->getPositionUpperLimit(0));
 }
