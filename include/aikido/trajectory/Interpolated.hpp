@@ -26,8 +26,7 @@ public:
   ///
   /// \param _t time of the waypoint
   /// \param _state state at the waypoint
-  void addWaypoint(
-      double _t, const statespace::StateSpace::State* _state);
+  void addWaypoint(double _t, const statespace::StateSpace::State* _state);
 
   /// Gets a waypoint.
   ///
