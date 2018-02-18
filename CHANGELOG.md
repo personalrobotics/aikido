@@ -15,10 +15,11 @@
 * Control
 
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
+  * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
 
 * Planner
 
-  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302)
+  * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
 
 ### 0.2.0 (2018-01-09)

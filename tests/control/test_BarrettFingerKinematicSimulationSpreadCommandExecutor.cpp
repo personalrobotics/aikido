@@ -25,7 +25,8 @@ static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
   return properties;
 }
 
-const static std::chrono::nanoseconds waitTime{1};
+const static std::chrono::milliseconds waitTime{0};
+const static std::chrono::milliseconds stepTime{1};
 
 class BarrettFingerKinematicSimulationSpreadCommandExecutorTest
     : public testing::Test
@@ -198,12 +199,14 @@ TEST_F(
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
       mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPosition);
-  std::future_status status;
 
+  std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -233,13 +236,14 @@ TEST_F(
 
   Vector1d goal;
   goal << 1.0;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
-
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -272,13 +276,14 @@ TEST_F(
 
   Vector1d goal;
   goal << 1.0;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
-
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -308,13 +313,14 @@ TEST_F(
 
   Vector1d goal;
   goal << M_PI * 0.5;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
-
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -330,12 +336,14 @@ TEST_F(
 
   Vector1d goal;
   goal << M_PI * 1.5;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -364,12 +372,14 @@ TEST_F(
 
   Vector1d goal;
   goal << -M_PI * 0.5;
+  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
 
   std::future_status status;
   do
   {
-    executor.step();
+    simulationClock += stepTime;
+    executor.step(simulationClock);
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
@@ -386,5 +396,36 @@ TEST_F(
                           ->getDof(mSpreadDof)
                           ->getPositionLowerLimit();
     EXPECT_NEAR(expected, spread, eps);
+  }
+}
+
+TEST_F(
+    BarrettFingerKinematicSimulationSpreadCommandExecutorTest,
+    step_NegativeTimepoint_Throws)
+{
+  BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
+      mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
+
+  auto simulationClock = std::chrono::system_clock::now();
+  auto future = executor.execute(mPosition);
+
+  std::future_status status;
+  do
+  {
+    EXPECT_THROW(
+        executor.step(simulationClock - stepTime), std::invalid_argument);
+
+    simulationClock += stepTime;
+    executor.step(simulationClock);
+    status = future.wait_for(waitTime);
+  } while (status != std::future_status::ready);
+
+  future.get();
+
+  for (auto finger : mFingerChains)
+  {
+    auto dof = finger->getBodyNode(0)->getParentJoint()->getDof(mSpreadDof);
+    double spread = dof->getPosition();
+    EXPECT_NEAR(mPosition[0], spread, eps);
   }
 }

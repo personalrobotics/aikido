@@ -15,7 +15,7 @@ public:
   ///
   /// \param space The SE2 this distance metric operates on
   /// The weights have been set to 1 as default
-  SE2Weighted(std::shared_ptr<statespace::SE2> space);
+  explicit SE2Weighted(std::shared_ptr<statespace::SE2> space);
 
   /// Constructor.
   ///
