@@ -1,4 +1,4 @@
-#include "aikido/robot/Robot.hpp"
+#include "aikido/robot/ConcreteRobot.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
@@ -37,48 +37,44 @@ static const double maxNumTrials = 10;
 static const double collisionResolution = 0.1;
 
 //==============================================================================
-Robot::Robot(
+ConcreteRobot::ConcreteRobot(
     const std::string& name,
     MetaSkeletonPtr robot,
     MetaSkeletonStateSpacePtr statespace,
     bool simulation,
-    aikido::common::RNG::result_type rngSeed,
-    std::unique_ptr<control::TrajectoryExecutor> trajectoryExecutor,
-    std::unique_ptr<planner::parabolic::ParabolicTimer> retimer,
-    std::unique_ptr<planner::parabolic::ParabolicSmoother> smoother)
+    std::unique_ptr<aikido::common::RNG> rng,
+    std::shared_ptr<control::TrajectoryExecutor> trajectoryExecutor,
+    std::shared_ptr<planner::parabolic::ParabolicTimer> retimer,
+    std::shared_ptr<planner::parabolic::ParabolicSmoother> smoother,
+    dart::collision::CollisionDetectorPtr collisionDetector,
+    dart::collision::CollisionGroupPtr collideWith,
+    std::shared_ptr<dart::collision::BodyNodeCollisionFilter> selfCollisionFilter)
   : mRootRobot(this)
   , mName(name)
   , mRobot(robot)
   , mStateSpace(statespace)
   , mParentRobot(mRobot->getBodyNode(0)->getSkeleton())
   , mSimulation(simulation)
-  , mRng(rngSeed)
+  , mRng(std::move(rng))
   , mTrajectoryExecutor(std::move(trajectoryExecutor))
   , mRetimer(std::move(retimer))
   , mSmoother(std::move(smoother))
   , mCollisionResolution(collisionResolution)
+  , mCollisionDetector(collisionDetector)
+  , mCollideWith(collideWith)
+  , mSelfCollisionFilter(selfCollisionFilter)
 {
-  if (!mSimulation)
-    throw std::invalid_argument("Not implemented");
-
-  mCollisionDetector = FCLCollisionDetector::create();
-  mCollideWith = mCollisionDetector->createCollisionGroupAsSharedPtr();
-  mSelfCollisionFilter
-      = std::make_shared<dart::collision::BodyNodeCollisionFilter>();
   mSelfCollisionConstraint = createSelfCollisionConstraint();
 }
 
 //==============================================================================
-TrajectoryPtr Robot::planToConfiguration(
+TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
     const CollisionFreePtr& collisionFree)
 {
-  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
-    throw std::runtime_error("Statespace is incompatible with this robot.");
-
-  auto collisionConstraint = getCollisionConstraint(stateSpace, collisionFree);
+  auto collisionConstraint = getFullCollisionConstraint(stateSpace, collisionFree);
 
   return util::planToConfiguration(
       stateSpace,
@@ -89,15 +85,12 @@ TrajectoryPtr Robot::planToConfiguration(
 }
 
 //==============================================================================
-TrajectoryPtr Robot::planToConfiguration(
+TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const Eigen::VectorXd& goal,
     const CollisionFreePtr& collisionFree)
 {
-  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
-    throw std::runtime_error("Statespace is incompatible with this robot.");
-
   auto goalState = stateSpace->createState();
   stateSpace->convertPositionsToState(goal, goalState);
 
@@ -106,30 +99,23 @@ TrajectoryPtr Robot::planToConfiguration(
 }
 
 //==============================================================================
-TrajectoryPtr Robot::planToConfigurations(
+TrajectoryPtr ConcreteRobot::planToConfigurations(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<StateSpace::State*>& goalStates,
     const CollisionFreePtr& collisionFree)
 {
-  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
-    throw std::runtime_error("Statespace is incompatible with this robot.");
-
   return util::planToConfigurations(
       stateSpace, metaSkeleton, goalStates, collisionFree, cloneRNG().get());
 }
 
 //==============================================================================
-TrajectoryPtr Robot::planToConfigurations(
+TrajectoryPtr ConcreteRobot::planToConfigurations(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<Eigen::VectorXd>& goals,
     const CollisionFreePtr& collisionFree)
 {
-
-  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
-    throw std::runtime_error("Statespace is incompatible with this robot.");
-
   std::vector<StateSpace::State*> goalStates;
   for (const auto goal : goals)
   {
@@ -142,17 +128,14 @@ TrajectoryPtr Robot::planToConfigurations(
 }
 
 //==============================================================================
-TrajectoryPtr Robot::planToTSR(
+TrajectoryPtr ConcreteRobot::planToTSR(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const TSRPtr& tsr,
     const CollisionFreePtr& collisionFree)
 {
-  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
-    throw std::runtime_error("Statespace is incompatible with this robot.");
-
-  auto collisionConstraint = getCollisionConstraint(stateSpace, collisionFree);
+  auto collisionConstraint = getFullCollisionConstraint(stateSpace, collisionFree);
 
   // Todo: ignoring startstate
   return util::planToTSR(
@@ -160,7 +143,7 @@ TrajectoryPtr Robot::planToTSR(
 }
 
 //==============================================================================
-TrajectoryPtr Robot::planToTSRwithTrajectoryConstraint(
+TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bodyNode,
@@ -168,10 +151,7 @@ TrajectoryPtr Robot::planToTSRwithTrajectoryConstraint(
     const TSRPtr& constraintTsr,
     const CollisionFreePtr& collisionFree)
 {
-  if (!checkIfMetaSkeletonBelongs(metaSkeleton))
-    throw std::runtime_error("Statespace is incompatible with this robot.");
-
-  auto collisionConstraint = getCollisionConstraint(stateSpace, collisionFree);
+  auto collisionConstraint = getFullCollisionConstraint(stateSpace, collisionFree);
 
   return util::planToTSRwithTrajectoryConstraint(
       stateSpace,
@@ -183,25 +163,23 @@ TrajectoryPtr Robot::planToTSRwithTrajectoryConstraint(
 }
 
 //==============================================================================
-TrajectoryPtr Robot::planToNamedConfiguration(
+TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
     const std::string& name, const CollisionFreePtr& collisionFree)
 {
   if (mNamedConfigurations.find(name) == mNamedConfigurations.end())
     throw std::runtime_error(name + " does not exist.");
 
   auto configuration = mNamedConfigurations[name];
-  auto goalState = configuration.metaSkeletonStateSpace->createState();
-  auto stateSpace = configuration.metaSkeletonStateSpace;
-  stateSpace->convertPositionsToState(configuration.position, goalState);
+  auto goalState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(configuration, goalState);
 
   return planToConfiguration(
-      stateSpace, configuration.metaSkeleton, goalState, collisionFree);
+      mStateSpace, mRobot, goalState, collisionFree);
 }
 
 //==============================================================================
-TrajectoryPtr Robot::postprocessPath(const TrajectoryPtr& path)
+TrajectoryPtr ConcreteRobot::postprocessPath(const TrajectoryPtr& path)
 {
-
   // TODO: this needs to know whether to call smoothing or not.
   std::unique_ptr<aikido::trajectory::Spline> untimedTrajectory;
 
@@ -226,79 +204,70 @@ TrajectoryPtr Robot::postprocessPath(const TrajectoryPtr& path)
 }
 
 //==============================================================================
-void Robot::executeTrajectory(const TrajectoryPtr& trajectory)
+void ConcreteRobot::executeTrajectory(const TrajectoryPtr& trajectory)
 {
   mTrajectoryExecutor->execute(trajectory);
 }
 
 //==============================================================================
-void Robot::executePath(const TrajectoryPtr& path)
+void ConcreteRobot::executePath(const TrajectoryPtr& path)
 {
   auto traj = postprocessPath(path);
   executeTrajectory(traj);
 }
 
 //==============================================================================
-Robot::Configuration Robot::getNamedConfiguration(const std::string& name)
+boost::optional<Eigen::VectorXd> ConcreteRobot::getNamedConfiguration(
+    const std::string& name) const
 {
-  if (mNamedConfigurations.find(name) == mNamedConfigurations.end())
-    throw std::runtime_error(name + " does not exist.");
+  auto configuration = mNamedConfigurations.find(name);
+  if (configuration == mNamedConfigurations.end())
+    return boost::none;
 
-  return mNamedConfigurations[name];
+  return configuration->second;
 }
 
 //==============================================================================
-Eigen::VectorXd Robot::getConfiguration()
+void ConcreteRobot::setNamedConfigurations(
+      std::unordered_map<std::string,
+      const Eigen::VectorXd> namedConfigurations)
 {
-  return mRobot->getPositions();
+  mNamedConfigurations = namedConfigurations;
 }
 
 //==============================================================================
-std::string Robot::getName()
+std::string ConcreteRobot::getName() const
 {
   return mName;
 }
 
 //==============================================================================
-MetaSkeletonPtr Robot::getMetaSkeleton()
+MetaSkeletonPtr ConcreteRobot::getMetaSkeleton()
 {
   return mRobot;
 }
 
 //==============================================================================
-void Robot::step(const std::chrono::system_clock::time_point& timepoint)
+void ConcreteRobot::step(const std::chrono::system_clock::time_point& timepoint)
 {
-  std::lock_guard<std::mutex> lock(mParentRobot->getMutex());
+  // Assumes that the parent robot is locked
   mTrajectoryExecutor->step(timepoint);
 }
 
 //==============================================================================
-void Robot::update()
+std::unique_ptr<common::RNG> ConcreteRobot::cloneRNG()
 {
-  step(std::chrono::system_clock::now());
-}
-
-//==============================================================================
-std::unique_ptr<common::RNG> Robot::cloneRNG()
-{
-  return std::move(cloneRNGFrom(mRng)[0]);
-}
-
-//==============================================================================
-bool Robot::checkIfMetaSkeletonBelongs(const MetaSkeletonPtr& metaSkeleton)
-{
-  // TODO: check if the robot can handle statespace.
-  throw std::runtime_error("Not implemented");
+  return mRng->clone();
 }
 
 // ==============================================================================
-CollisionFreePtr Robot::getSelfCollisionConstraint() const
+CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint()
 {
   return mSelfCollisionConstraint;
 }
 
 // ==============================================================================
-CollisionFreePtr Robot::createSelfCollisionConstraint() const
+CollisionFreePtr ConcreteRobot::createSelfCollisionConstraint()
 {
   using constraint::CollisionFree;
 
@@ -322,14 +291,14 @@ CollisionFreePtr Robot::createSelfCollisionConstraint() const
 }
 
 //=============================================================================
-TestablePtr Robot::getCollisionConstraint(
+TestablePtr ConcreteRobot::getFullCollisionConstraint(
     const MetaSkeletonStateSpacePtr& space,
-    const CollisionFreePtr& collisionFree) const
+    const CollisionFreePtr& collisionFree)
 {
   using constraint::TestableIntersection;
 
   if (mRootRobot != this)
-    return mRootRobot->getCollisionConstraint(space, collisionFree);
+    return mRootRobot->getFullCollisionConstraint(space, collisionFree);
 
   auto selfCollisionFree = getSelfCollisionConstraint();
 
@@ -350,10 +319,10 @@ TestablePtr Robot::getCollisionConstraint(
 }
 
 //=============================================================================
-void Robot::setRoot(Robot* robot)
+void ConcreteRobot::setRoot(Robot* robot)
 {
   if (robot == nullptr)
-    throw std::invalid_argument("Robot is null.");
+    throw std::invalid_argument("ConcreteRobot is null.");
 
   mRootRobot = robot;
 }

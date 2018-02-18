@@ -9,6 +9,7 @@
 #include "aikido/constraint/TSR.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/io/yaml.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
@@ -96,6 +97,10 @@ trajectory::SplinePtr planToEndEffectorOffset(
     double initialStepSize = 3.0,
     double jointLimitTolerance = 3.0,
     double constraintCheckResolution = 3.0);
+
+std::unordered_map<std::string, const Eigen::VectorXd>
+  parseYAMLToNamedConfigurations(const YAML::Node& node);
+
 }
 }
 }
