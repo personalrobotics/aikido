@@ -5,13 +5,10 @@ namespace aikido {
 namespace robot {
 
 //==============================================================================
-ConcreteManipulator::ConcreteManipulator(RobotPtr robot,
-        HandPtr hand)
-  :mRobot(robot)
-  , mHand(hand)
-  {
-  }
-
+ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
+  : mRobot(robot), mHand(hand)
+{
+}
 
 //==============================================================================
 HandPtr ConcreteManipulator::getHand()
@@ -19,18 +16,18 @@ HandPtr ConcreteManipulator::getHand()
   return mHand;
 }
 
-
 //==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& body,
-      const Eigen::Vector3d& direction,
-      const constraint::CollisionFreePtr& collisionFree,
-      double distance,
-      double linearVelocity){
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector3d& direction,
+    const constraint::CollisionFreePtr& collisionFree,
+    double distance,
+    double linearVelocity)
+{
 
-    auto collision = getFullCollisionConstraint(space, collisionFree);
+  auto collision = getFullCollisionConstraint(space, collisionFree);
   auto trajectory = util::planToEndEffectorOffset(
       space,
       metaSkeleton,
@@ -41,29 +38,26 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
       linearVelocity);
 
   return trajectory;
-
 }
-
 
 //==============================================================================
 Eigen::Vector3d ConcreteManipulator::getEndEffectorDirection(
-      const dart::dynamics::BodyNodePtr& body) const
+    const dart::dynamics::BodyNodePtr& body) const
 {
   const size_t zDirection = 2;
   return body->getWorldTransform().linear().col(zDirection).normalized();
-
 }
 
 //==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
-      statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& body,
-      const constraint::CollisionFreePtr& collisionFree,
-      double distance,
-      double linearVelocity)
+    statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const constraint::CollisionFreePtr& collisionFree,
+    double distance,
+    double linearVelocity)
 {
-    auto collision = getFullCollisionConstraint(space, collisionFree);
+  auto collision = getFullCollisionConstraint(space, collisionFree);
 
   Eigen::Vector3d direction = getEndEffectorDirection(body);
 
@@ -86,12 +80,14 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
 
 //==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::postprocessPath(
-      const trajectory::TrajectoryPtr& path){
+    const trajectory::TrajectoryPtr& path)
+{
   return mRobot->postprocessPath(path);
 }
 
 //==============================================================================
-void ConcreteManipulator::executeTrajectory(const trajectory::TrajectoryPtr& trajectory)
+void ConcreteManipulator::executeTrajectory(
+    const trajectory::TrajectoryPtr& trajectory)
 {
   mRobot->executeTrajectory(trajectory);
 }
@@ -104,15 +100,14 @@ void ConcreteManipulator::executePath(const trajectory::TrajectoryPtr& path)
 
 //==============================================================================
 boost::optional<Eigen::VectorXd> ConcreteManipulator::getNamedConfiguration(
-      const std::string& name) const
+    const std::string& name) const
 {
   return mRobot->getNamedConfiguration(name);
 }
 
 //==============================================================================
 void ConcreteManipulator::setNamedConfigurations(
-      std::unordered_map<std::string,
-      const Eigen::VectorXd> namedConfigurations)
+    std::unordered_map<std::string, const Eigen::VectorXd> namedConfigurations)
 {
   mRobot->setNamedConfigurations(namedConfigurations);
 }
@@ -124,10 +119,10 @@ std::string ConcreteManipulator::getName() const
 }
 
 //==============================================================================
-dart::dynamics::MetaSkeletonPtr ConcreteManipulator::getMetaSkeleton(){
+dart::dynamics::MetaSkeletonPtr ConcreteManipulator::getMetaSkeleton()
+{
   return mRobot->getMetaSkeleton();
 }
-
 
 //==============================================================================
 void ConcreteManipulator::setRoot(Robot* robot)
@@ -135,28 +130,27 @@ void ConcreteManipulator::setRoot(Robot* robot)
   mRobot->setRoot(robot);
 }
 
-
 //==============================================================================
-void ConcreteManipulator::step(const std::chrono::system_clock::time_point& timepoint){
+void ConcreteManipulator::step(
+    const std::chrono::system_clock::time_point& timepoint)
+{
   return mRobot->step(timepoint);
 }
 
-
 //==============================================================================
-aikido::constraint::CollisionFreePtr ConcreteManipulator::getSelfCollisionConstraint()
+aikido::constraint::CollisionFreePtr
+ConcreteManipulator::getSelfCollisionConstraint()
 {
   return mRobot->getSelfCollisionConstraint();
 }
 
 //==============================================================================
 aikido::constraint::TestablePtr ConcreteManipulator::getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const constraint::CollisionFreePtr& collisionFree)
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const constraint::CollisionFreePtr& collisionFree)
 {
   return mRobot->getFullCollisionConstraint(space, collisionFree);
 }
 
-
 } // namespace robot
 } // namespace aikido
-

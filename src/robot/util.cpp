@@ -404,11 +404,11 @@ trajectory::SplinePtr planToEndEffectorOffset(
 
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
-  parseYAMLToNamedConfigurations(const YAML::Node& node)
+parseYAMLToNamedConfigurations(const YAML::Node& node)
 {
   std::unordered_map<std::string, const Eigen::VectorXd> namedConfigurations;
 
-    for (const auto configurationNode : node)
+  for (const auto configurationNode : node)
   {
     auto configurationName = configurationNode.first.as<std::string>();
     auto configuration = configurationNode.second.as<Eigen::VectorXd>();
@@ -416,7 +416,7 @@ std::unordered_map<std::string, const Eigen::VectorXd>
     namedConfigurations.emplace(configurationName, configuration);
   }
 
-    return namedConfigurations;
+  return namedConfigurations;
 }
 
 } // namespace util

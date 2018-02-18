@@ -1,8 +1,8 @@
 #ifndef AIKIDO_ROBOT_CONCRETEMANIPULATOR_HPP_
 #define AIKIDO_ROBOT_CONCRETEMANIPULATOR_HPP_
 
-#include "aikido/robot/Manipulator.hpp"
 #include "aikido/robot/Hand.hpp"
+#include "aikido/robot/Manipulator.hpp"
 
 namespace aikido {
 namespace robot {
@@ -11,13 +11,12 @@ AIKIDO_DECLARE_POINTERS(ConcreteManipulator)
 
 class ConcreteManipulator : public Manipulator
 {
-  public:
-    ConcreteManipulator(RobotPtr robot,
-        HandPtr hand);
+public:
+  ConcreteManipulator(RobotPtr robot, HandPtr hand);
 
-    virtual ~ConcreteManipulator() = default;
+  virtual ~ConcreteManipulator() = default;
 
-    virtual HandPtr getHand() override;
+  virtual HandPtr getHand() override;
 
   trajectory::TrajectoryPtr planToEndEffectorOffset(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -46,7 +45,8 @@ class ConcreteManipulator : public Manipulator
 
   /// Executes a trajectory
   /// \param trajectory Timed trajectory to execute
-  virtual void executeTrajectory(const trajectory::TrajectoryPtr& trajectory) override;
+  virtual void executeTrajectory(
+      const trajectory::TrajectoryPtr& trajectory) override;
 
   /// Postprocesses and executes a path
   /// \param timelimit Timelimit for postprocessing.
@@ -59,8 +59,8 @@ class ConcreteManipulator : public Manipulator
   /// Sets the list of named configurations
   /// \param namedConfigurations Map of name, configuration
   virtual void setNamedConfigurations(
-      std::unordered_map<std::string,
-      const Eigen::VectorXd> namedConfigurations) override;
+      std::unordered_map<std::string, const Eigen::VectorXd>
+          namedConfigurations) override;
 
   /// \return Name of this Robot
   virtual std::string getName() const override;
@@ -74,17 +74,19 @@ class ConcreteManipulator : public Manipulator
   /// Simulates up to the provided timepoint.
   /// Assumes that parent robot is locked.
   /// \param timepoint Time to simulate to.
-  virtual void step(const std::chrono::system_clock::time_point& timepoint) override;
+  virtual void step(
+      const std::chrono::system_clock::time_point& timepoint) override;
 
-  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint() override;
+  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint()
+      override;
 
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const constraint::CollisionFreePtr& collisionFree) override;
 
-  private:
-    RobotPtr mRobot;
-    HandPtr mHand;
+private:
+  RobotPtr mRobot;
+  HandPtr mHand;
 };
 
 } // namespace robot

@@ -48,7 +48,8 @@ ConcreteRobot::ConcreteRobot(
     std::shared_ptr<planner::parabolic::ParabolicSmoother> smoother,
     dart::collision::CollisionDetectorPtr collisionDetector,
     dart::collision::CollisionGroupPtr collideWith,
-    std::shared_ptr<dart::collision::BodyNodeCollisionFilter> selfCollisionFilter)
+    std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
+        selfCollisionFilter)
   : mRootRobot(this)
   , mName(name)
   , mRobot(robot)
@@ -74,7 +75,8 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const StateSpace::State* goalState,
     const CollisionFreePtr& collisionFree)
 {
-  auto collisionConstraint = getFullCollisionConstraint(stateSpace, collisionFree);
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, collisionFree);
 
   return util::planToConfiguration(
       stateSpace,
@@ -135,7 +137,8 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const TSRPtr& tsr,
     const CollisionFreePtr& collisionFree)
 {
-  auto collisionConstraint = getFullCollisionConstraint(stateSpace, collisionFree);
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, collisionFree);
 
   // Todo: ignoring startstate
   return util::planToTSR(
@@ -151,7 +154,8 @@ TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
     const TSRPtr& constraintTsr,
     const CollisionFreePtr& collisionFree)
 {
-  auto collisionConstraint = getFullCollisionConstraint(stateSpace, collisionFree);
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, collisionFree);
 
   return util::planToTSRwithTrajectoryConstraint(
       stateSpace,
@@ -173,8 +177,7 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
   auto goalState = mStateSpace->createState();
   mStateSpace->convertPositionsToState(configuration, goalState);
 
-  return planToConfiguration(
-      mStateSpace, mRobot, goalState, collisionFree);
+  return planToConfiguration(mStateSpace, mRobot, goalState, collisionFree);
 }
 
 //==============================================================================
@@ -229,8 +232,7 @@ boost::optional<Eigen::VectorXd> ConcreteRobot::getNamedConfiguration(
 
 //==============================================================================
 void ConcreteRobot::setNamedConfigurations(
-      std::unordered_map<std::string,
-      const Eigen::VectorXd> namedConfigurations)
+    std::unordered_map<std::string, const Eigen::VectorXd> namedConfigurations)
 {
   mNamedConfigurations = namedConfigurations;
 }

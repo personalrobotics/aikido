@@ -29,17 +29,18 @@ AIKIDO_DECLARE_POINTERS(Robot)
 class Robot
 {
 public:
-
   virtual ~Robot() = default;
 
   /// Returns a timed trajectory that can be executed by the robot
   /// \param path Geometric path to execute
   virtual trajectory::TrajectoryPtr postprocessPath(
-      const trajectory::TrajectoryPtr& path) = 0;
+      const trajectory::TrajectoryPtr& path)
+      = 0;
 
   /// Executes a trajectory
   /// \param trajectory Timed trajectory to execute
-  virtual void executeTrajectory(const trajectory::TrajectoryPtr& trajectory) = 0;
+  virtual void executeTrajectory(const trajectory::TrajectoryPtr& trajectory)
+      = 0;
 
   /// Postprocesses and executes a path
   /// \param timelimit Timelimit for postprocessing.
@@ -52,8 +53,9 @@ public:
   /// Sets the list of named configurations
   /// \param namedConfigurations Map of name, configuration
   virtual void setNamedConfigurations(
-      std::unordered_map<std::string,
-      const Eigen::VectorXd> namedConfigurations) = 0;
+      std::unordered_map<std::string, const Eigen::VectorXd>
+          namedConfigurations)
+      = 0;
 
   /// \return Name of this Robot
   virtual std::string getName() const = 0;
@@ -73,10 +75,9 @@ public:
 
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const constraint::CollisionFreePtr& collisionFree) = 0;
-
+      const constraint::CollisionFreePtr& collisionFree)
+      = 0;
 };
-
 
 } // namespace robot
 } // namespace aikido

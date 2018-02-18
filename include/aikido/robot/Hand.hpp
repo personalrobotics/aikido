@@ -18,7 +18,6 @@ AIKIDO_DECLARE_POINTERS(Hand)
 class Hand
 {
 public:
-
   virtual ~Hand() = default;
 
   /// Grabs an object. Immediately executes.

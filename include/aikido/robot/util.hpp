@@ -99,8 +99,7 @@ trajectory::SplinePtr planToEndEffectorOffset(
     double constraintCheckResolution = 3.0);
 
 std::unordered_map<std::string, const Eigen::VectorXd>
-  parseYAMLToNamedConfigurations(const YAML::Node& node);
-
+parseYAMLToNamedConfigurations(const YAML::Node& node);
 }
 }
 }

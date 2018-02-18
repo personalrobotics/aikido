@@ -15,7 +15,6 @@ AIKIDO_DECLARE_POINTERS(Manipulator)
 class Manipulator : public Robot
 {
 public:
-
   virtual ~Manipulator() = default;
 
   virtual HandPtr getHand() = 0;

@@ -1,7 +1,6 @@
 #ifndef AIKIDO_ROBOT_CONCRETEROBOT_HPP_
 #define AIKIDO_ROBOT_CONCRETEROBOT_HPP_
 
-#include "aikido/robot/Robot.hpp"
 #include <chrono>
 #include <string>
 #include <unordered_map>
@@ -15,6 +14,7 @@
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
+#include "aikido/robot/Robot.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -25,19 +25,20 @@ AIKIDO_DECLARE_POINTERS(ConcreteRobot)
 
 class ConcreteRobot : public Robot
 {
-  public:
+public:
   ConcreteRobot(
-    const std::string& name,
-    dart::dynamics::MetaSkeletonPtr robot,
-    statespace::dart::MetaSkeletonStateSpacePtr statespace,
-    bool simulation,
-    std::unique_ptr<aikido::common::RNG> rng,
-    std::shared_ptr<control::TrajectoryExecutor> trajectoryExecutor,
-    std::shared_ptr<planner::parabolic::ParabolicTimer> retimer,
-    std::shared_ptr<planner::parabolic::ParabolicSmoother> smoother,
-    dart::collision::CollisionDetectorPtr collisionDetector,
-    dart::collision::CollisionGroupPtr collideWith,
-    std::shared_ptr<dart::collision::BodyNodeCollisionFilter> selfCollisionFilter);
+      const std::string& name,
+      dart::dynamics::MetaSkeletonPtr robot,
+      statespace::dart::MetaSkeletonStateSpacePtr statespace,
+      bool simulation,
+      std::unique_ptr<aikido::common::RNG> rng,
+      std::shared_ptr<control::TrajectoryExecutor> trajectoryExecutor,
+      std::shared_ptr<planner::parabolic::ParabolicTimer> retimer,
+      std::shared_ptr<planner::parabolic::ParabolicSmoother> smoother,
+      dart::collision::CollisionDetectorPtr collisionDetector,
+      dart::collision::CollisionGroupPtr collideWith,
+      std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
+          selfCollisionFilter);
 
   virtual ~ConcreteRobot() = default;
 
@@ -48,7 +49,8 @@ class ConcreteRobot : public Robot
 
   /// Executes a trajectory
   /// \param trajectory Timed trajectory to execute
-  virtual void executeTrajectory(const trajectory::TrajectoryPtr& trajectory) override;
+  virtual void executeTrajectory(
+      const trajectory::TrajectoryPtr& trajectory) override;
 
   /// Postprocesses and executes a path
   /// \param timelimit Timelimit for postprocessing.
@@ -61,8 +63,8 @@ class ConcreteRobot : public Robot
   /// Sets the list of named configurations
   /// \param namedConfigurations Map of name, configuration
   virtual void setNamedConfigurations(
-      std::unordered_map<std::string,
-      const Eigen::VectorXd> namedConfigurations) override;
+      std::unordered_map<std::string, const Eigen::VectorXd>
+          namedConfigurations) override;
 
   /// \return Name of this Robot
   virtual std::string getName() const override;
@@ -76,8 +78,8 @@ class ConcreteRobot : public Robot
   /// Simulates up to the provided timepoint.
   /// Assumes that parent robot is locked.
   /// \param timepoint Time to simulate to.
-  virtual void step(const std::chrono::system_clock::time_point& timepoint) override;
-
+  virtual void step(
+      const std::chrono::system_clock::time_point& timepoint) override;
 
   /// Plans a trajectory to the specified configuration
   aikido::trajectory::TrajectoryPtr planToConfiguration(
@@ -147,10 +149,9 @@ class ConcreteRobot : public Robot
       const constraint::CollisionFreePtr& collisionFree) override;
 
 private:
-
   // Named Configurations are read from a YAML file
-  using ConfigurationMap = std::unordered_map<
-    std::string, const Eigen::VectorXd>;
+  using ConfigurationMap
+      = std::unordered_map<std::string, const Eigen::VectorXd>;
 
   std::unique_ptr<aikido::common::RNG> cloneRNG();
 
@@ -192,8 +193,6 @@ private:
 
   constraint::CollisionFreePtr mSelfCollisionConstraint;
 };
-
-
 }
 }
 
