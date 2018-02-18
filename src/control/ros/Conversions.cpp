@@ -161,7 +161,7 @@ void extractJointTrajectoryPoint(
 
 //==============================================================================
 void extractTrajectoryPoint(
-    const std::shared_ptr<MetaSkeletonStateSpace>& space,
+    const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::TrajectoryPtr& trajectory,
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint)
