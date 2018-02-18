@@ -14,15 +14,14 @@ namespace robot {
 
 AIKIDO_DECLARE_POINTERS(Hand)
 
-/// A base class for a hand used by manipulators
+/// Abstract class for Hand interface.
 class Hand
 {
 public:
   virtual ~Hand() = default;
 
   /// Grabs an object. Immediately executes.
-  /// \param bodyToGrab The object to grab
-  /// \return bool for success
+  /// \param[in] bodyToGrab The object to grab
   virtual void grab(const dart::dynamics::SkeletonPtr& bodyToGrab) = 0;
 
   /// Ungrabs an object. Immediately ungrabs.

@@ -21,8 +21,8 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
-    const Eigen::Vector3d& direction,
     const constraint::CollisionFreePtr& collisionFree,
+    const Eigen::Vector3d& direction,
     double distance,
     double linearVelocity)
 {

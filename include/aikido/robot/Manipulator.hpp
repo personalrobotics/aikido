@@ -11,7 +11,8 @@ namespace robot {
 
 AIKIDO_DECLARE_POINTERS(Manipulator)
 
-/// A base class for a manipulator which has a hand.
+/// Base interface for manipulator.
+/// A manipulator has a hand.
 class Manipulator : public Robot
 {
 public:
