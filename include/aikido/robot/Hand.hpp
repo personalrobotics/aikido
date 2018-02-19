@@ -39,6 +39,10 @@ public:
 
   /// Returns the metaskeleton corresponding to this hand.
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
+
+  /// Get the end-effector body node.
+  /// \return DART body node of end-effector
+  virtual dart::dynamics::BodyNode* getBodyNode() = 0;
 };
 
 } // namespace robot

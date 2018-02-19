@@ -22,7 +22,73 @@ namespace robot {
 // removed once we have a Planner API.
 namespace util {
 
-static const double kTimelimit = 3.0;
+struct VectorFieldPlannerParameters
+{
+  VectorFieldPlannerParameters() = default;
+  VectorFieldPlannerParameters(
+      double linearVelocity,
+      double negativeDistanceTolerance,
+      double positiveDistanceTolerance,
+      double initialStepSize,
+      double jointLimitTolerance,
+      double constraintCheckResolution,
+      double linearGain = 1.0,
+      double angularGain = 0.2,
+      double timestep = 0.1)
+    : linearVelocity(linearVelocity)
+    , negativeDistanceTolerance(negativeDistanceTolerance)
+    , positiveDistanceTolerance(positiveDistanceTolerance)
+    , initialStepSize(initialStepSize)
+    , jointLimitTolerance(jointLimitTolerance)
+    , constraintCheckResolution(constraintCheckResolution)
+    , linearGain(linearGain)
+    , angularGain(angularGain)
+    , timestep(timestep){
+          // Do nothing
+      };
+
+  double linearVelocity;
+  double negativeDistanceTolerance;
+  double positiveDistanceTolerance;
+  double initialStepSize;
+  double jointLimitTolerance;
+  double constraintCheckResolution;
+  double linearGain;
+  double angularGain;
+  double timestep;
+};
+
+struct CRRTPlannerParameters
+{
+  CRRTPlannerParameters(
+      common::RNG* rng = nullptr,
+      size_t maxNumTrials = 5,
+      double maxExtensionDistance = std::numeric_limits<double>::infinity(),
+      double maxDistanceBtwProjections = 0.1,
+      double minStepSize = 0.05,
+      double minTreeConnectionDistance = 0.1,
+      size_t projectionMaxIteration = 20,
+      double projectionTolerance = 1e-4)
+    : rng(rng)
+    , maxNumTrials(maxNumTrials)
+    , maxExtensionDistance(maxExtensionDistance)
+    , maxDistanceBtwProjections(maxDistanceBtwProjections)
+    , minStepSize(minStepSize)
+    , minTreeConnectionDistance(minTreeConnectionDistance)
+    , projectionMaxIteration(projectionMaxIteration)
+    , projectionTolerance(projectionTolerance){
+          // Do nothing
+      };
+
+  common::RNG* rng;
+  size_t maxNumTrials;
+  double maxExtensionDistance;
+  double maxDistanceBtwProjections;
+  double minStepSize;
+  double minTreeConnectionDistance;
+  size_t projectionMaxIteration;
+  double projectionTolerance;
+};
 
 /// Plan the robot to a specific configuration.
 /// Restores the robot to its initial configuration after planning.
@@ -38,7 +104,7 @@ trajectory::InterpolatedPtr planToConfiguration(
     const statespace::StateSpace::State* goalState,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
-    double timlimit = kTimelimit);
+    double timlimit);
 
 /// Plan the robot to a set of configurations.
 /// Restores the robot to its initial configuration after planning.
@@ -54,7 +120,7 @@ trajectory::InterpolatedPtr planToConfigurations(
     const std::vector<statespace::StateSpace::State*> goalStates,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
-    double timlimit = kTimelimit);
+    double timlimit);
 
 /// Plan the configuration of the metakeleton such that
 /// the specified bodynode is set to a sample in TSR
@@ -71,12 +137,14 @@ trajectory::InterpolatedPtr planToTSR(
     const dart::dynamics::BodyNodePtr& bodyNode,
     const constraint::TSRPtr& tsr,
     const constraint::TestablePtr& collisionTestable,
-    common::RNG* RNG,
-    double timelimit = kTimelimit);
+    common::RNG* rng,
+    double timelimit,
+    size_t maxNumTrials);
 
 /// Returns a Trajectory that moves the configuration of the metakeleton such
 /// that the specified bodynode is set to a sample in a goal TSR and
 /// the trajectory is constrained to a constraint TSR
+/// Uses CRRTPlanner.
 /// \param[in] space The StateSpace for the metaskeleton
 /// \param[in] metaSkeleton MetaSkeleton to plan with.
 /// \param[in] body Bodynode whose frame is meant for TSR
@@ -86,10 +154,6 @@ trajectory::InterpolatedPtr planToTSR(
 /// \param[in] projectionMaxIteration Parameter for maximum iteration of
 /// constraint projection
 /// \param[in] projectionTolerance Parameter for projection tolerance
-/// \param[in] maxExtensionDistance Parameter for CRRTConnect
-/// \param[in] maxDistanceBtwProjections Parameter for CRRTConnect
-/// \param[in] minStepsize Parameter for CRRTConnect
-/// \param[in] minTreeConnectionDistance Parameter for CRRTConnect
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -98,15 +162,11 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
     const constraint::TSRPtr& goalTsr,
     const constraint::TSRPtr& constraintTsr,
     const constraint::TestablePtr& collisionTestable,
-    double timelimit = kTimelimit,
-    int projectionMaxIteration = 20,
-    double projectionTolerance = 1e-4,
-    double maxExtensionDistance = std::numeric_limits<double>::infinity(),
-    double maxDistanceBtwProjections = 0.1,
-    double minStepsize = 0.05,
-    double minTreeConnectionDistance = 0.1);
+    double timelimit,
+    const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
 /// Plan to a desired end-effector offset with fixed orientation.
+/// Uses VF Planner.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
 /// \param[in] body Bodynode for the end effector
@@ -115,30 +175,47 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
 /// is checked by default.
 /// \param[in] distance Distance distance to move, in meters
 /// \param[in] timelimit Timelimit for planning
-/// \param[in] disanceTolearance Distance tolerance
-/// \param[in] positionTolerance Position tolerance
-/// \param[in] angularTolerance Angular tolerance
-/// \param[in] initialStepSize Initial step size.
-/// \param[in] jointLimitTolerance If less then this distance to joint.
-/// \param[in] constraintCheckResolution Resolution used in constraint checking.
 /// \return Output trajectory
-trajectory::SplinePtr planToEndEffectorOffset(
+trajectory::TrajectoryPtr planToEndEffectorOffset(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
     const Eigen::Vector3d& direction,
     const constraint::TestablePtr& collisionTestable,
     double distance,
-    double timelimit = kTimelimit,
-    double distanceTolerance = 0.1,
+    double timelimit,
     double positionTolerance = 1e-3,
     double angularTolerance = 1e-3,
-    double initialStepSize = 3.0,            // TODO: find the right default
-    double jointLimitTolerance = 3.0,        // TODO: find the right default
-    double constraintCheckResolution = 3.0); // TODO: find the right default
+    const VectorFieldPlannerParameters& vfParameters
+    = VectorFieldPlannerParameters(),
+    const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
+
+trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const constraint::TestablePtr& collisionTestable,
+    const Eigen::Vector3d& direction,
+    double distance,
+    double timelimit,
+    double positionTolerance = 1e-3,
+    double angularTolerance = 1e-3,
+    const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node);
+
+bool getGoalAndConstraintTSRForEndEffectorOffset(
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Vector3d& direction,
+    double distance,
+    const constraint::TSRPtr& goal,
+    const constraint::TSRPtr& constraint,
+    double positionTolerance,
+    double angularTolerance);
+
+Eigen::Isometry3d getLookAtIsometry(
+    const Eigen::Vector3d& pos_from, const Eigen::Vector3d& pos_to_diff);
 }
 }
 }

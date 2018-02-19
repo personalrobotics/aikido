@@ -64,6 +64,10 @@ public:
   /// \return MetaSkeleton of this robot.
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
 
+  /// \return MetaSkeletonStateSpace of this robot.
+  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
+      = 0;
+
   /// Sets the root of this robot.
   /// \param[in] robot Parent robot
   virtual void setRoot(Robot* robot) = 0;

@@ -69,118 +69,6 @@ ConcreteRobot::ConcreteRobot(
 }
 
 //==============================================================================
-TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const StateSpace::State* goalState,
-    const CollisionFreePtr& collisionFree)
-{
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, collisionFree);
-
-  return util::planToConfiguration(
-      stateSpace,
-      metaSkeleton,
-      goalState,
-      collisionConstraint,
-      cloneRNG().get());
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const Eigen::VectorXd& goal,
-    const CollisionFreePtr& collisionFree)
-{
-  auto goalState = stateSpace->createState();
-  stateSpace->convertPositionsToState(goal, goalState);
-
-  return planToConfiguration(
-      stateSpace, metaSkeleton, goalState, collisionFree);
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<StateSpace::State*>& goalStates,
-    const CollisionFreePtr& collisionFree)
-{
-  return util::planToConfigurations(
-      stateSpace, metaSkeleton, goalStates, collisionFree, cloneRNG().get());
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<Eigen::VectorXd>& goals,
-    const CollisionFreePtr& collisionFree)
-{
-  std::vector<StateSpace::State*> goalStates;
-  for (const auto goal : goals)
-  {
-    auto goalState = stateSpace->createState();
-    stateSpace->convertPositionsToState(goal, goalState);
-  }
-
-  return planToConfigurations(
-      stateSpace, metaSkeleton, goalStates, collisionFree);
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToTSR(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bn,
-    const TSRPtr& tsr,
-    const CollisionFreePtr& collisionFree)
-{
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, collisionFree);
-
-  // Todo: ignoring startstate
-  return util::planToTSR(
-      stateSpace, metaSkeleton, bn, tsr, collisionConstraint, cloneRNG().get());
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const BodyNodePtr& bodyNode,
-    const TSRPtr& goalTsr,
-    const TSRPtr& constraintTsr,
-    const CollisionFreePtr& collisionFree)
-{
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, collisionFree);
-
-  return util::planToTSRwithTrajectoryConstraint(
-      stateSpace,
-      metaSkeleton,
-      bodyNode,
-      goalTsr,
-      constraintTsr,
-      collisionConstraint);
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
-    const std::string& name, const CollisionFreePtr& collisionFree)
-{
-  if (mNamedConfigurations.find(name) == mNamedConfigurations.end())
-    throw std::runtime_error(name + " does not exist.");
-
-  auto configuration = mNamedConfigurations[name];
-  auto goalState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(configuration, goalState);
-
-  return planToConfiguration(mStateSpace, mRobot, goalState, collisionFree);
-}
-
-//==============================================================================
 TrajectoryPtr ConcreteRobot::postprocessPath(const TrajectoryPtr& path)
 {
   // TODO: this needs to know whether to call smoothing or not.
@@ -250,46 +138,31 @@ MetaSkeletonPtr ConcreteRobot::getMetaSkeleton()
 }
 
 //==============================================================================
+MetaSkeletonStateSpacePtr ConcreteRobot::getStateSpace()
+{
+  return mStateSpace;
+}
+
+//=============================================================================
+void ConcreteRobot::setRoot(Robot* robot)
+{
+  if (robot == nullptr)
+    throw std::invalid_argument("ConcreteRobot is null.");
+
+  mRootRobot = robot;
+}
+
+//==============================================================================
 void ConcreteRobot::step(const std::chrono::system_clock::time_point& timepoint)
 {
   // Assumes that the parent robot is locked
   mTrajectoryExecutor->step(timepoint);
 }
 
-//==============================================================================
-std::unique_ptr<common::RNG> ConcreteRobot::cloneRNG()
-{
-  return mRng->clone();
-}
-
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint()
 {
   return mSelfCollisionConstraint;
-}
-
-// ==============================================================================
-CollisionFreePtr ConcreteRobot::createSelfCollisionConstraint()
-{
-  using constraint::CollisionFree;
-
-  if (mRootRobot != this)
-    return mRootRobot->getSelfCollisionConstraint();
-
-  mParentRobot->enableSelfCollisionCheck();
-  mParentRobot->disableAdjacentBodyCheck();
-
-  auto collisionDetector = FCLCollisionDetector::create();
-
-  // TODO: Switch to PRIMITIVE once this is fixed in DART.
-  // collisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
-  auto collisionOption
-      = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
-  auto collisionFreeConstraint = std::make_shared<CollisionFree>(
-      mStateSpace, mRobot, collisionDetector, collisionOption);
-  collisionFreeConstraint->addSelfCheck(
-      collisionDetector->createCollisionGroupAsSharedPtr(mRobot.get()));
-  return collisionFreeConstraint;
 }
 
 //=============================================================================
@@ -320,13 +193,178 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
   return std::make_shared<TestableIntersection>(space, constraints);
 }
 
-//=============================================================================
-void ConcreteRobot::setRoot(Robot* robot)
+//==============================================================================
+TrajectoryPtr ConcreteRobot::planToConfiguration(
+    const MetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonPtr& metaSkeleton,
+    const StateSpace::State* goalState,
+    const CollisionFreePtr& collisionFree,
+    double timelimit)
 {
-  if (robot == nullptr)
-    throw std::invalid_argument("ConcreteRobot is null.");
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, collisionFree);
 
-  mRootRobot = robot;
+  return util::planToConfiguration(
+      stateSpace,
+      metaSkeleton,
+      goalState,
+      collisionConstraint,
+      cloneRNG().get(),
+      timelimit);
+}
+
+//==============================================================================
+TrajectoryPtr ConcreteRobot::planToConfiguration(
+    const MetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonPtr& metaSkeleton,
+    const Eigen::VectorXd& goal,
+    const CollisionFreePtr& collisionFree,
+    double timelimit)
+{
+  auto goalState = stateSpace->createState();
+  stateSpace->convertPositionsToState(goal, goalState);
+
+  return planToConfiguration(
+      stateSpace, metaSkeleton, goalState, collisionFree, timelimit);
+}
+
+//==============================================================================
+TrajectoryPtr ConcreteRobot::planToConfigurations(
+    const MetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonPtr& metaSkeleton,
+    const std::vector<StateSpace::State*>& goalStates,
+    const CollisionFreePtr& collisionFree,
+    double timelimit)
+{
+  return util::planToConfigurations(
+      stateSpace,
+      metaSkeleton,
+      goalStates,
+      collisionFree,
+      cloneRNG().get(),
+      timelimit);
+}
+
+//==============================================================================
+TrajectoryPtr ConcreteRobot::planToConfigurations(
+    const MetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonPtr& metaSkeleton,
+    const std::vector<Eigen::VectorXd>& goals,
+    const CollisionFreePtr& collisionFree,
+    double timelimit)
+{
+  std::vector<StateSpace::State*> goalStates;
+  for (const auto goal : goals)
+  {
+    auto goalState = stateSpace->createState();
+    stateSpace->convertPositionsToState(goal, goalState);
+  }
+
+  return planToConfigurations(
+      stateSpace, metaSkeleton, goalStates, collisionFree, timelimit);
+}
+
+//==============================================================================
+TrajectoryPtr ConcreteRobot::planToTSR(
+    const MetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bn,
+    const TSRPtr& tsr,
+    const CollisionFreePtr& collisionFree,
+    double timelimit,
+    size_t maxNumTrials)
+{
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, collisionFree);
+
+  return util::planToTSR(
+      stateSpace,
+      metaSkeleton,
+      bn,
+      tsr,
+      collisionConstraint,
+      cloneRNG().get(),
+      timelimit,
+      maxNumTrials);
+}
+
+//==============================================================================
+TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
+    const MetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonPtr& metaSkeleton,
+    const BodyNodePtr& bodyNode,
+    const TSRPtr& goalTsr,
+    const TSRPtr& constraintTsr,
+    const CollisionFreePtr& collisionFree,
+    double timelimit)
+{
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, collisionFree);
+
+  // Uses CRRT.
+  return util::planToTSRwithTrajectoryConstraint(
+      stateSpace,
+      metaSkeleton,
+      bodyNode,
+      goalTsr,
+      constraintTsr,
+      collisionConstraint,
+      timelimit,
+      mCRRTParameters);
+}
+
+//==============================================================================
+TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
+    const std::string& name,
+    const CollisionFreePtr& collisionFree,
+    double timelimit)
+{
+  if (mNamedConfigurations.find(name) == mNamedConfigurations.end())
+    throw std::runtime_error(name + " does not exist.");
+
+  auto configuration = mNamedConfigurations[name];
+  auto goalState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(configuration, goalState);
+
+  return planToConfiguration(
+      mStateSpace, mRobot, goalState, collisionFree, timelimit);
+}
+
+//=============================================================================
+void ConcreteRobot::setCRRTPlannerParameters(
+    const util::CRRTPlannerParameters& crrtParameters)
+{
+  mCRRTParameters = crrtParameters;
+}
+
+//==============================================================================
+std::unique_ptr<common::RNG> ConcreteRobot::cloneRNG()
+{
+  return mRng->clone();
+}
+
+// ==============================================================================
+CollisionFreePtr ConcreteRobot::createSelfCollisionConstraint()
+{
+  using constraint::CollisionFree;
+
+  if (mRootRobot != this)
+    return mRootRobot->getSelfCollisionConstraint();
+
+  mParentRobot->enableSelfCollisionCheck();
+  mParentRobot->disableAdjacentBodyCheck();
+
+  auto collisionDetector = FCLCollisionDetector::create();
+
+  // TODO: Switch to PRIMITIVE once this is fixed in DART.
+  // collisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
+  auto collisionOption
+      = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
+  auto collisionFreeConstraint = std::make_shared<CollisionFree>(
+      mStateSpace, mRobot, collisionDetector, collisionOption);
+  collisionFreeConstraint->addSelfCheck(
+      collisionDetector->createCollisionGroupAsSharedPtr(mRobot.get()));
+  return collisionFreeConstraint;
 }
 
 } // namespace robot

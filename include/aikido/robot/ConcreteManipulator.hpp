@@ -3,6 +3,7 @@
 
 #include "aikido/robot/Hand.hpp"
 #include "aikido/robot/Manipulator.hpp"
+#include "aikido/robot/util.hpp"
 
 namespace aikido {
 namespace robot {
@@ -21,49 +22,6 @@ public:
 
   /// \copydoc Manipulator::getHand()
   virtual HandPtr getHand() override;
-
-  /// Plan to a desired end-effector offset with fixed orientation.
-  /// \param[in] space The StateSpace for the metaskeleton.
-  /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] body Bodynode for the end effector.
-  /// \param[in] collisionFree CollisionFree constraint to check.
-  /// Self-collision is checked by default.
-  /// \param[in] direction Direction unit vector in the world frame.
-  /// \param[in] distance Distance distance to move, in meters.
-  /// \param[in] linearVelocity Velocity to move
-  /// \return Output trajectory
-  trajectory::TrajectoryPtr planToEndEffectorOffset(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& body,
-      const constraint::CollisionFreePtr& collisionFree,
-      const Eigen::Vector3d& direction,
-      double distance,
-      double linearVelocity);
-
-  /// Get the direction of an end effector (along z axis) in the world frame
-  /// \param body Bodynode for the end effector
-  /// \return Output The direction of the end effector (z axis of the frame)
-  Eigen::Vector3d getEndEffectorDirection(
-      const dart::dynamics::BodyNodePtr& body) const;
-
-  /// Plan to a desired end-effector offset along the z axis of the
-  /// end-effector.
-  /// \param[in] space The StateSpace for the metaskeleton.
-  /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] body Bodynode for the end effector.
-  /// \param[in] collisionFree CollisionFree constraint to check.
-  /// Self-collision is checked by default.
-  /// \param[in] distance Distance distance to move, in meters.
-  /// \param[in] linearVelocity Velocity to move
-  /// \return Output trajectory
-  trajectory::TrajectoryPtr planEndEffectorStraight(
-      statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& body,
-      const constraint::CollisionFreePtr& collisionFree,
-      double distance,
-      double linearVelocity);
 
   /// \copydoc Robot::postprocessPath
   virtual trajectory::TrajectoryPtr postprocessPath(
@@ -91,6 +49,10 @@ public:
   /// \copydoc Robot::getMetaSkeleton
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
 
+  /// Returns the MetaSkeleton of this robot.
+  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
+      override;
+
   /// \copydoc Robot::setRoot
   virtual void setRoot(Robot* robot) override;
 
@@ -107,9 +69,70 @@ public:
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const constraint::CollisionFreePtr& collisionFree) override;
 
+  /// Plan to a desired end-effector offset with fixed orientation.
+  /// \param[in] space The StateSpace for the metaskeleton.
+  /// \param[in] metaSkeleton Metaskeleton to plan with.
+  /// \param[in] body Bodynode for the end effector.
+  /// \param[in] collisionFree CollisionFree constraint to check.
+  /// Self-collision is checked by default.
+  /// \param[in] direction Direction unit vector in the world frame.
+  /// \param[in] distance Distance distance to move, in meters.
+  /// \param[in] timelimit Timelimit for planning
+  /// \return Output trajectory
+  trajectory::TrajectoryPtr planToEndEffectorOffset(
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const dart::dynamics::BodyNodePtr& body,
+      const constraint::CollisionFreePtr& collisionFree,
+      const Eigen::Vector3d& direction,
+      double distance,
+      double timelimit,
+      double positionTolerance,
+      double angularTolerance);
+
+  /// Get the direction of an end effector (along z axis) in the world frame
+  /// \param body Bodynode for the end effector
+  /// \return Output The direction of the end effector (z axis of the frame)
+  Eigen::Vector3d getEndEffectorDirection(
+      const dart::dynamics::BodyNodePtr& body) const;
+
+  /// Plan to a desired end-effector offset along the z axis of the
+  /// end-effector.
+  /// \param[in] space The StateSpace for the metaskeleton.
+  /// \param[in] metaSkeleton Metaskeleton to plan with.
+  /// \param[in] body Bodynode for the end effector.
+  /// \param[in] collisionFree CollisionFree constraint to check.
+  /// Self-collision is checked by default.
+  /// \param[in] distance Distance distance to move, in meters.
+  /// \param[in] timelimit Timelimit for plannnig.
+  /// \return Output trajectory
+  trajectory::TrajectoryPtr planEndEffectorStraight(
+      statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const dart::dynamics::BodyNodePtr& body,
+      const constraint::CollisionFreePtr& collisionFree,
+      double distance,
+      double timelimit,
+      double positionTolerance,
+      double angularTolerance);
+
+  /// Sets VectorFieldPlanner parameters.
+  /// TODO: To be removed with Planner API.
+  /// \param[in] vfParameters VectorField Parameters
+  void setVectorFieldPlannerParamters(
+      const util::VectorFieldPlannerParameters& vfParameters);
+
+  /// Sets CRRTPlanner parameters.
+  /// TODO: To be removed when PlannerAdapters are in place.
+  /// \param[in] crrtParameters CRRT planner parameters
+  void setCRRTPlannerParameters(
+      const util::CRRTPlannerParameters& crrtParameters);
+
 private:
   RobotPtr mRobot;
   HandPtr mHand;
+  util::VectorFieldPlannerParameters mVectorFieldParameters;
+  util::CRRTPlannerParameters mCRRTParameters;
 };
 
 } // namespace robot

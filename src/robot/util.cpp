@@ -59,10 +59,8 @@ using dart::dynamics::MetaSkeletonPtr;
 using dart::dynamics::SkeletonPtr;
 
 static const double collisionResolution = 0.1;
-static const size_t maxNumTrials = 3;
 
 //==============================================================================
-// TODO: These are temporary methods until we have Planner API.
 InterpolatedPtr planToConfiguration(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
@@ -178,7 +176,8 @@ InterpolatedPtr planToTSR(
     const TSRPtr& tsr,
     const TestablePtr& collisionTestable,
     RNG* rng,
-    double timelimit)
+    double timelimit,
+    size_t maxNumTrials)
 {
   using constraint::InverseKinematicsSampleable;
 
@@ -280,14 +279,8 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
     const constraint::TSRPtr& goalTsr,
     const constraint::TSRPtr& constraintTsr,
     const constraint::TestablePtr& collisionTestable,
-    RNG* rng,
     double timelimit,
-    int projectionMaxIteration,
-    double projectionTolerance,
-    double maxExtensionDistance,
-    double maxDistanceBtwProjections,
-    double minStepsize,
-    double minTreeConnectionDistance)
+    const CRRTPlannerParameters& crrtParameters)
 {
   using aikido::constraint::Sampleable;
   using aikido::constraint::InverseKinematicsSampleable;
@@ -296,6 +289,9 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
   using aikido::constraint::FrameTestable;
   using aikido::constraint::NewtonsMethodProjectable;
   using aikido::planner::ompl::planCRRTConnect;
+
+  size_t projectionMaxIteration = crrtParameters.projectionMaxIteration;
+  double projectionTolerance = crrtParameters.projectionTolerance;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
@@ -306,7 +302,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
   // Create seed constraint
   std::shared_ptr<Sampleable> seedConstraint
-      = std::move(createSampleableBounds(space, rng->clone()));
+      = std::move(createSampleableBounds(space, crrtParameters.rng->clone()));
 
   // crate IK
   auto ik = InverseKinematics::create(bodyNode);
@@ -318,7 +314,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       std::make_shared<CyclicSampleable>(goalTsr),
       seedConstraint,
       ik,
-      maxNumTrials);
+      crrtParameters.maxNumTrials);
 
   // create goal testable
   auto goalTestable = std::make_shared<FrameTestable>(
@@ -326,7 +322,12 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
   // create constraint sampleable
   auto constraintSampleable = std::make_shared<InverseKinematicsSampleable>(
-      space, metaSkeleton, constraintTsr, seedConstraint, ik, maxNumTrials);
+      space,
+      metaSkeleton,
+      constraintTsr,
+      seedConstraint,
+      ik,
+      crrtParameters.maxNumTrials);
 
   // create constraint projectable
   auto frameDiff = std::make_shared<FrameDifferentiable>(
@@ -354,16 +355,16 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       createTestableBounds(space),
       createProjectableBounds(space),
       timelimit,
-      maxExtensionDistance,
-      maxDistanceBtwProjections,
-      minStepsize,
-      minTreeConnectionDistance);
+      crrtParameters.maxExtensionDistance,
+      crrtParameters.maxDistanceBtwProjections,
+      crrtParameters.minStepSize,
+      crrtParameters.minTreeConnectionDistance);
 
   return traj;
 }
 
 //==============================================================================
-trajectory::SplinePtr planToEndEffectorOffset(
+trajectory::TrajectoryPtr planToEndEffectorOffset(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
@@ -371,21 +372,22 @@ trajectory::SplinePtr planToEndEffectorOffset(
     const constraint::TestablePtr& collisionTestable,
     double distance,
     double timelimit,
-    double distanceTolerance,
     double positionTolerance,
     double angularTolerance,
-    double initialStepSize,
-    double jointLimitTolerance,
-    double constraintCheckResolution)
+    const VectorFieldPlannerParameters& vfParameters,
+    const CRRTPlannerParameters& crrtParameters)
 {
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
 
-  auto minDistance = distance - distanceTolerance;
-  auto maxDistance = distance + distanceTolerance;
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
 
-  auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
+  auto minDistance = distance - vfParameters.negativeDistanceTolerance;
+  auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
+
+  auto traj = planner::vectorfield::planToEndEffectorOffset(
       space,
       metaSkeleton,
       bodyNode,
@@ -395,14 +397,82 @@ trajectory::SplinePtr planToEndEffectorOffset(
       maxDistance,
       positionTolerance,
       angularTolerance,
-      initialStepSize,
-      jointLimitTolerance,
-      constraintCheckResolution,
+      vfParameters.initialStepSize,
+      vfParameters.jointLimitTolerance,
+      vfParameters.constraintCheckResolution,
       std::chrono::duration<double>(timelimit));
 
-  return std::move(traj);
+  if (traj)
+    return std::move(traj);
+
+  return planToEndEffectorOffsetByCRRT(
+      space,
+      metaSkeleton,
+      bodyNode,
+      collisionTestable,
+      direction,
+      distance,
+      timelimit,
+      positionTolerance,
+      angularTolerance,
+      crrtParameters);
 }
 
+//==============================================================================
+InterpolatedPtr planToEndEffectorOffsetByCRRT(
+    const MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const BodyNodePtr& bodyNode,
+    const TestablePtr& collisionTestable,
+    const Eigen::Vector3d& direction,
+    double distance,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance,
+    const CRRTPlannerParameters& crrtParameters)
+{
+  // if direction vector is a zero vector
+  if (direction.norm() == 0.0)
+  {
+    throw std::runtime_error("Direction vector is a zero vector");
+  }
+
+  // normalize direction vector
+  Eigen::Vector3d directionCopy = direction;
+  directionCopy.normalize();
+
+  if (distance < 0.0)
+  {
+    distance = -distance;
+    directionCopy = -directionCopy;
+  }
+
+  auto goalTsr = std::make_shared<TSR>();
+  auto constraintTsr = std::make_shared<TSR>();
+  bool success = getGoalAndConstraintTSRForEndEffectorOffset(
+      bodyNode,
+      directionCopy,
+      distance,
+      goalTsr,
+      constraintTsr,
+      positionTolerance,
+      angularTolerance);
+
+  if (!success)
+    throw std::runtime_error("failed in creating TSR");
+
+  auto untimedTrajectory = planToTSRwithTrajectoryConstraint(
+      space,
+      metaSkeleton,
+      bodyNode,
+      goalTsr,
+      constraintTsr,
+      collisionTestable,
+      timelimit,
+      crrtParameters);
+
+  return untimedTrajectory;
+}
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node)
@@ -420,6 +490,59 @@ parseYAMLToNamedConfigurations(const YAML::Node& node)
   return namedConfigurations;
 }
 
+//==============================================================================
+bool getGoalAndConstraintTSRForEndEffectorOffset(
+    const BodyNodePtr& bodyNode,
+    const Eigen::Vector3d& direction,
+    double distance,
+    const TSRPtr& goal,
+    const TSRPtr& constraint,
+    double positionTolerance,
+    double angularTolerance)
+{
+  if (goal == nullptr || constraint == nullptr)
+    return false;
+
+  // create goal TSR
+  // 'object frame w' is at end-effector, z pointed along direction to move
+  Eigen::Isometry3d H_world_ee = bodyNode->getWorldTransform();
+  Eigen::Isometry3d H_world_w
+      = getLookAtIsometry(H_world_ee.translation(), direction);
+  Eigen::Isometry3d H_w_ee = H_world_w.inverse() * H_world_ee;
+
+  Eigen::Isometry3d Hw_end = Eigen::Isometry3d::Identity();
+  Hw_end.translation()[2] = distance;
+
+  goal->mT0_w = H_world_w * Hw_end;
+  goal->mTw_e = H_w_ee;
+  goal->mBw.setZero();
+
+  // create constraint TSR
+  constraint->mT0_w = H_world_w;
+  constraint->mTw_e = H_w_ee;
+  constraint->mBw << -positionTolerance, positionTolerance, -positionTolerance,
+      positionTolerance, 0.0, distance, -angularTolerance, angularTolerance,
+      -angularTolerance, angularTolerance, -angularTolerance, angularTolerance;
+
+  return true;
+}
+
+//==============================================================================
+Eigen::Isometry3d getLookAtIsometry(
+    const Eigen::Vector3d& pos_from, const Eigen::Vector3d& pos_to_diff)
+{
+  if (pos_to_diff.norm() < 1e-6)
+  {
+    throw std::runtime_error("pos_to_diff cannot be a zero vector");
+  }
+  Eigen::Isometry3d H = Eigen::Isometry3d::Identity();
+  H.translation() = pos_from;
+  // original z axis direction
+  H.linear() = Eigen::Quaterniond::FromTwoVectors(
+                   Eigen::Vector3d::UnitZ(), pos_to_diff)
+                   .toRotationMatrix();
+  return H;
+}
 } // namespace util
 } // namespace robot
 } // namespace aikido
