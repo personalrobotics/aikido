@@ -23,8 +23,8 @@ public:
   /// MetaSkeleton. This state will be restored when MetaSkeletonStateSaver is
   /// destructed.
   ///
-  /// \param metaskeleton MetaSkeleton to save/restore
-  /// \param options Options to specify what should be saved
+  /// \param[in] metaskeleton MetaSkeleton to save/restore
+  /// \param[in] options Options to specify what should be saved
   explicit MetaSkeletonStateSaver(
       ::dart::dynamics::MetaSkeletonPtr metaskeleton,
       int options = POSITIONS | POSITION_LIMITS);

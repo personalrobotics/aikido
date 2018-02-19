@@ -19,9 +19,9 @@ public:
   /// Construct a WorldStateSaver and save the current state of the \c World.
   /// This state will be restored when WorldStateSaver is destructed.
   ///
-  /// \param world World to save state from and restore to.
-  /// \param options Options to specify what should be saved
-  explicit WorldStateSaver(World* const world, int options = CONFIGURATIONS);
+  /// \param[in] world World to save state from and restore to.
+  /// \param[in] options Options to specify what should be saved
+  explicit WorldStateSaver(const World* world, int options = CONFIGURATIONS);
 
   virtual ~WorldStateSaver();
 
