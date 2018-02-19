@@ -3,10 +3,10 @@
 namespace aikido {
 namespace planner {
 
-WorldStateSaver::WorldStateSaver(World* const world, int options)
-  : mWorld{world}, mOptions{options}
+WorldStateSaver::WorldStateSaver(World* world, int options)
+  : mWorld{std::move(world)}, mOptions{options}
 {
-  if (!world)
+  if (!mWorld)
     throw std::invalid_argument("World must not be nullptr.");
 
   if (mOptions & Options::CONFIGURATIONS)

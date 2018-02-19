@@ -21,7 +21,7 @@ public:
   ///
   /// \param[in] world World to save state from and restore to.
   /// \param[in] options Options to specify what should be saved
-  explicit WorldStateSaver(const World* world, int options = CONFIGURATIONS);
+  explicit WorldStateSaver(World* world, int options = CONFIGURATIONS);
 
   virtual ~WorldStateSaver();
 
