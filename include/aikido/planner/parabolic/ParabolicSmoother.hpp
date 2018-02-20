@@ -136,7 +136,6 @@ class ParabolicSmoother : public aikido::planner::TrajectoryPostProcessor
 public:
   /// \param _velocityLimits Maximum velocity for each dimension.
   /// \param _accelerationLimits Maximum acceleration for each dimension.
-  /// \param _collisionTestable Check whether a position is feasible.
   /// \param _enableShortcut Whether shortcutting is used in smoothing.
   /// \param _enableBlend Whether blending is used in smoothing.
   /// \param _shortcutTimelimit Timelimit for shortcutting. It is ineffective
@@ -155,7 +154,6 @@ public:
   ParabolicSmoother(
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits,
-      const aikido::constraint::TestablePtr& _collisionTestable,
       bool _enableShortcut = true,
       bool _enableBlend = true,
       double _shortcutTimelimit = DEFAULT_TIMELIMT,
@@ -168,20 +166,23 @@ public:
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Interpolated& _inputTraj,
-      const aikido::common::RNG& _rng) override;
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _collisionTestable) override;
 
   /// Performs parabolic smoothing on an input *spline* trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG& _rng) override;
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _collisionTestable) override;
 
 private:
   /// Common logic to do shortcutting and/or blending on the input trajectory
   /// as dictated by mEnableShortcut and mEnableBlend.
   std::unique_ptr<aikido::trajectory::Spline> handleShortcutOrBlend(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG& _rng);
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _collisionTestable);
 
   /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;
@@ -194,9 +195,6 @@ private:
 
   /// Set to the value of \c _accelerationLimits.
   const Eigen::VectorXd mAccelerationLimits;
-
-  /// Set to the value of \c _collisionTestable.
-  aikido::constraint::TestablePtr mCollisionTestable;
 
   /// Set to the value of \c _enableShortcut.
   bool mEnableShortcut;

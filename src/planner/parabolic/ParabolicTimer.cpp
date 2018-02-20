@@ -165,7 +165,8 @@ ParabolicTimer::ParabolicTimer(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
     const aikido::trajectory::Interpolated& _inputTraj,
-    const aikido::common::RNG& /*_rng*/)
+    const aikido::common::RNG& /*_rng*/,
+    const aikido::constraint::TestablePtr& /*_constraint*/)
 {
   return computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
@@ -174,7 +175,8 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
     const aikido::trajectory::Spline& _inputTraj,
-    const aikido::common::RNG& /*_rng*/)
+    const aikido::common::RNG& /*_rng*/,
+    const aikido::constraint::TestablePtr& /*_constraint*/)
 {
   return computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
