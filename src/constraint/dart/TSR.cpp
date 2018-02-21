@@ -1,5 +1,4 @@
-#include <aikido/constraint/TSR.hpp>
-
+#include "aikido/constraint/dart/TSR.hpp"
 #include <cmath>
 #include <random>
 #include <stdexcept>
@@ -9,12 +8,16 @@
 #include <dart/common/StlHelpers.hpp>
 #include <dart/math/Geometry.hpp>
 
+#undef dtwarn
+#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
+
 using boost::format;
 using boost::str;
 using aikido::statespace::SE3;
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 class TSRSampleGenerator : public SampleGenerator
 {
@@ -277,7 +280,7 @@ void TSR::getValue(
   Eigen::Isometry3d Tw_s = T0_w_inv * se3 * Tw_e_inv;
 
   Eigen::Vector3d translation = Tw_s.translation();
-  Eigen::Vector3d eulerOrig = dart::math::matrixToEulerZYX(Tw_s.linear());
+  Eigen::Vector3d eulerOrig = ::dart::math::matrixToEulerZYX(Tw_s.linear());
   Eigen::Vector3d eulerZYX = eulerOrig.reverse();
 
   _out.resize(6);
@@ -443,7 +446,7 @@ bool TSRSampleGenerator::sample(statespace::StateSpace::State* _state)
   Eigen::Isometry3d Tw_s;
   Tw_s.setIdentity();
   Tw_s.translation() = translation;
-  Tw_s.linear() = dart::math::eulerZYXToMatrix(angles.reverse());
+  Tw_s.linear() = ::dart::math::eulerZYXToMatrix(angles.reverse());
 
   Eigen::Isometry3d T0_s(mT0_w * Tw_s * mTw_e);
   mStateSpace->setIsometry(static_cast<SE3::State*>(_state), T0_s);
@@ -484,5 +487,6 @@ int TSRSampleGenerator::getNumSamples() const
   return NO_LIMIT;
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido

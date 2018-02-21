@@ -16,7 +16,10 @@
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 namespace detail {
+
+using ::dart::common::make_unique;
 
 //==============================================================================
 using JointStateSpaceTypeList = common::type_list<statespace::dart::R0Joint,
@@ -65,7 +68,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 
   if (properties.isPositionLimited())
   {
-    return dart::common::make_unique<uniform::RBoxConstraint<N>>(
+    return make_unique<uniform::RBoxConstraint<N>>(
         std::move(_stateSpace),
         std::move(_rng),
         properties.getPositionLowerLimits(),
@@ -73,7 +76,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   }
   else
   {
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 }
 
@@ -131,7 +134,7 @@ struct createSampleableFor_impl<statespace::dart::RJoint<N>>
 
     if (properties.isPositionLimited())
     {
-      return dart::common::make_unique<uniform::RBoxConstraint<N>>(
+      return make_unique<uniform::RBoxConstraint<N>>(
           std::move(_stateSpace),
           std::move(_rng),
           properties.getPositionLowerLimits(),
@@ -156,7 +159,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -172,7 +175,7 @@ struct createTestableFor_impl<statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -188,7 +191,7 @@ struct createProjectableFor_impl<statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -205,7 +208,7 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<uniform::SO2UniformSampler>(
+    return make_unique<uniform::SO2UniformSampler>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -222,7 +225,7 @@ struct createDifferentiableFor_impl<statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -238,7 +241,7 @@ struct createTestableFor_impl<statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -254,7 +257,7 @@ struct createProjectableFor_impl<statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -271,7 +274,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<uniform::SO3UniformSampler>(
+    return make_unique<uniform::SO3UniformSampler>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -286,7 +289,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 
   if (properties.isPositionLimited())
   {
-    return dart::common::make_unique<uniform::SE2BoxConstraint>(
+    return make_unique<uniform::SE2BoxConstraint>(
         std::move(_stateSpace),
         std::move(_rng),
         properties.getPositionLowerLimits().tail<2>(),
@@ -294,7 +297,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   }
   else
   {
-    return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+    return make_unique<Satisfied>(std::move(_stateSpace));
   }
 }
 
@@ -376,7 +379,7 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
     }
     else
     {
-      return dart::common::make_unique<uniform::SE2BoxConstraint>(
+      return make_unique<uniform::SE2BoxConstraint>(
           std::move(stateSpace),
           std::move(rng),
           properties.getPositionLowerLimits().tail<2>(),
@@ -445,7 +448,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<statespace::dart::WeldJoint> _stateSpace,
     std::unique_ptr<common::RNG> /*_rng*/)
 {
-  return dart::common::make_unique<Satisfied>(std::move(_stateSpace));
+  return make_unique<Satisfied>(std::move(_stateSpace));
 }
 
 //==============================================================================
@@ -500,7 +503,7 @@ struct createSampleableFor_impl<statespace::dart::WeldJoint>
     // A WeldJoint has zero DOFs
     Eigen::VectorXd positions = Eigen::Matrix<double, 0, 1>();
 
-    return dart::common::make_unique<uniform::R0ConstantSampler>(
+    return make_unique<uniform::R0ConstantSampler>(
         std::move(_stateSpace), positions);
   }
 };
@@ -542,5 +545,6 @@ std::unique_ptr<Sampleable> createSampleableBoundsFor(
       std::move(_stateSpace), std::move(_rng));
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido

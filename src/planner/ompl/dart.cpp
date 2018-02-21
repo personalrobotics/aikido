@@ -1,4 +1,4 @@
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
+#include <aikido/constraint/dart/JointStateSpaceHelpers.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ompl/dart.hpp>
@@ -21,13 +21,14 @@ namespace ompl {
 
   // State sampler
   auto sampler
-      = constraint::createSampleableBounds(_stateSpace, std::move(_rng));
+      = constraint::dart::createSampleableBounds(_stateSpace, std::move(_rng));
 
   // Bounds constraint
-  auto boundsConstraint = constraint::createTestableBounds(_stateSpace);
+  auto boundsConstraint = constraint::dart::createTestableBounds(_stateSpace);
 
   // Projectable constraint - project to statespace
-  auto boundsProjection = constraint::createProjectableBounds(_stateSpace);
+  auto boundsProjection
+      = constraint::dart::createProjectableBounds(_stateSpace);
 
   // Interpolator
   auto interpolator

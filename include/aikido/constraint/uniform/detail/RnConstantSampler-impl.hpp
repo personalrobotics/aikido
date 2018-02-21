@@ -2,6 +2,9 @@
 #include <dart/dart.hpp>
 #include "aikido/constraint/uniform/RnConstantSampler.hpp"
 
+#undef dtwarn
+#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
+
 namespace aikido {
 namespace constraint {
 namespace uniform {
@@ -118,7 +121,7 @@ template <int N>
 std::unique_ptr<constraint::SampleGenerator>
 RConstantSampler<N>::createSampleGenerator() const
 {
-  return dart::common::make_unique<RnConstantSamplerSampleGenerator<N>>(
+  return ::dart::common::make_unique<RnConstantSamplerSampleGenerator<N>>(
       mSpace, mValue);
 }
 

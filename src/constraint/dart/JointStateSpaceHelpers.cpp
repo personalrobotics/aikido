@@ -1,17 +1,17 @@
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
-
+#include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/constraint/CartesianProductProjectable.hpp>
-#include <aikido/constraint/CartesianProductSampleable.hpp>
-#include <aikido/constraint/CartesianProductTestable.hpp>
-#include <aikido/constraint/DifferentiableIntersection.hpp>
-#include <aikido/constraint/DifferentiableSubspace.hpp>
-#include <aikido/constraint/TestableIntersection.hpp>
+#include "aikido/constraint/CartesianProductProjectable.hpp"
+#include "aikido/constraint/CartesianProductSampleable.hpp"
+#include "aikido/constraint/CartesianProductTestable.hpp"
+#include "aikido/constraint/DifferentiableIntersection.hpp"
+#include "aikido/constraint/DifferentiableSubspace.hpp"
+#include "aikido/constraint/TestableIntersection.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
-using dart::common::make_unique;
+using ::dart::common::make_unique;
 
 //==============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
@@ -154,5 +154,6 @@ std::unique_ptr<Sampleable> createSampleableBounds(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
