@@ -1,4 +1,4 @@
-/#include "aikido/robot/ConcreteRobot.hpp"
+#include "aikido/robot/ConcreteRobot.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"

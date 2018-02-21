@@ -53,10 +53,6 @@ public:
   virtual void executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) override;
 
-  /// Postprocesses and executes a path
-  /// \param timelimit Timelimit for postprocessing.
-  virtual void executePath(const trajectory::TrajectoryPtr& path) override;
-
   // Returns a named configuration
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
       const std::string& name) const override;

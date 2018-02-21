@@ -167,7 +167,7 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
 }
 
 //==============================================================================
-void ConcreteManipulator::setVectorFieldPlannerParamters(
+void ConcreteManipulator::setVectorFieldPlannerParameters(
     const util::VectorFieldPlannerParameters& vfParameters)
 {
   mVectorFieldParameters = vfParameters;

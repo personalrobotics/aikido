@@ -32,9 +32,6 @@ public:
   virtual void executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) override;
 
-  /// \copydoc Robot::executePath
-  virtual void executePath(const trajectory::TrajectoryPtr& path) override;
-
   /// \copydoc Robot::getNamedConfiguration
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
       const std::string& name) const override;
@@ -120,7 +117,7 @@ public:
   /// Sets VectorFieldPlanner parameters.
   /// TODO: To be removed with Planner API.
   /// \param[in] vfParameters VectorField Parameters
-  void setVectorFieldPlannerParamters(
+  void setVectorFieldPlannerParameters(
       const util::VectorFieldPlannerParameters& vfParameters);
 
   /// Sets CRRTPlanner parameters.
