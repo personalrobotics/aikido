@@ -1,11 +1,10 @@
-#include <aikido/constraint/uniform/RnConstantSampler.hpp>
-
 #include <stdexcept>
-
 #include <dart/dart.hpp>
+#include "aikido/constraint/uniform/RnConstantSampler.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 //==============================================================================
 extern template class RConstantSampler<0>;
@@ -131,5 +130,6 @@ RConstantSampler<N>::getConstantValue() const
   return mValue;
 }
 
+} // namespace uniform
 } // namespace constraint
 } // namespace aikido

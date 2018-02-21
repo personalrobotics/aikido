@@ -1,18 +1,18 @@
 #include <sstream>
 #include <dart/common/StlHelpers.hpp>
-#include "../../common/metaprogramming.hpp"
-#include "../../statespace/dart/RnJoint.hpp"
-#include "../../statespace/dart/SE2Joint.hpp"
-#include "../../statespace/dart/SE3Joint.hpp"
-#include "../../statespace/dart/SO2Joint.hpp"
-#include "../../statespace/dart/SO3Joint.hpp"
-#include "../../statespace/dart/WeldJoint.hpp"
-#include "../Satisfied.hpp"
-#include "../uniform/RnBoxConstraint.hpp"
-#include "../uniform/RnConstantSampler.hpp"
-#include "../uniform/SE2BoxConstraint.hpp"
-#include "../uniform/SO2UniformSampler.hpp"
-#include "../uniform/SO3UniformSampler.hpp"
+#include "aikido/common/metaprogramming.hpp"
+#include "aikido/constraint/Satisfied.hpp"
+#include "aikido/constraint/uniform/RnBoxConstraint.hpp"
+#include "aikido/constraint/uniform/RnConstantSampler.hpp"
+#include "aikido/constraint/uniform/SE2BoxConstraint.hpp"
+#include "aikido/constraint/uniform/SO2UniformSampler.hpp"
+#include "aikido/constraint/uniform/SO3UniformSampler.hpp"
+#include "aikido/statespace/dart/RnJoint.hpp"
+#include "aikido/statespace/dart/SE2Joint.hpp"
+#include "aikido/statespace/dart/SE3Joint.hpp"
+#include "aikido/statespace/dart/SO2Joint.hpp"
+#include "aikido/statespace/dart/SO3Joint.hpp"
+#include "aikido/statespace/dart/WeldJoint.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -65,7 +65,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 
   if (properties.isPositionLimited())
   {
-    return dart::common::make_unique<RBoxConstraint<N>>(
+    return dart::common::make_unique<uniform::RBoxConstraint<N>>(
         std::move(_stateSpace),
         std::move(_rng),
         properties.getPositionLowerLimits(),
@@ -131,7 +131,7 @@ struct createSampleableFor_impl<statespace::dart::RJoint<N>>
 
     if (properties.isPositionLimited())
     {
-      return dart::common::make_unique<RBoxConstraint<N>>(
+      return dart::common::make_unique<uniform::RBoxConstraint<N>>(
           std::move(_stateSpace),
           std::move(_rng),
           properties.getPositionLowerLimits(),
@@ -205,7 +205,7 @@ struct createSampleableFor_impl<statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return dart::common::make_unique<SO2UniformSampler>(
+    return dart::common::make_unique<uniform::SO2UniformSampler>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -271,7 +271,7 @@ struct createSampleableFor_impl<statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return dart::common::make_unique<SO3UniformSampler>(
+    return dart::common::make_unique<uniform::SO3UniformSampler>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -286,7 +286,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 
   if (properties.isPositionLimited())
   {
-    return dart::common::make_unique<SE2BoxConstraint>(
+    return dart::common::make_unique<uniform::SE2BoxConstraint>(
         std::move(_stateSpace),
         std::move(_rng),
         properties.getPositionLowerLimits().tail<2>(),
@@ -376,7 +376,7 @@ struct createSampleableFor_impl<statespace::dart::SE2Joint>
     }
     else
     {
-      return dart::common::make_unique<SE2BoxConstraint>(
+      return dart::common::make_unique<uniform::SE2BoxConstraint>(
           std::move(stateSpace),
           std::move(rng),
           properties.getPositionLowerLimits().tail<2>(),
@@ -500,7 +500,7 @@ struct createSampleableFor_impl<statespace::dart::WeldJoint>
     // A WeldJoint has zero DOFs
     Eigen::VectorXd positions = Eigen::Matrix<double, 0, 1>();
 
-    return dart::common::make_unique<R0ConstantSampler>(
+    return dart::common::make_unique<uniform::R0ConstantSampler>(
         std::move(_stateSpace), positions);
   }
 };

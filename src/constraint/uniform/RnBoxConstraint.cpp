@@ -1,7 +1,8 @@
-#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
+#include "aikido/constraint/uniform/RnBoxConstraint.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 template class RBoxConstraint<0>;
 
@@ -15,5 +16,6 @@ template class RBoxConstraint<6>;
 
 template class RBoxConstraint<Eigen::Dynamic>;
 
-} // namespace statespace
+} // namespace uniform
+} // namespace constraint
 } // namespace aikido
