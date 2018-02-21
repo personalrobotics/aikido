@@ -31,33 +31,33 @@ namespace constraint {
 
 // Add aliases for long class names here.
 
-using R0BoxConstraint = uniform::R0BoxConstraint;
-using R1BoxConstraint = uniform::R1BoxConstraint;
-using R2BoxConstraint = uniform::R2BoxConstraint;
-using R3BoxConstraint = uniform::R3BoxConstraint;
-using R6BoxConstraint = uniform::R6BoxConstraint;
-using RnBoxConstraint = uniform::RnBoxConstraint;
-using R0ConstantSampler = uniform::R0ConstantSampler;
-using R1ConstantSampler = uniform::R1ConstantSampler;
-using R2ConstantSampler = uniform::R2ConstantSampler;
-using R3ConstantSampler = uniform::R3ConstantSampler;
-using R6ConstantSampler = uniform::R6ConstantSampler;
-using RnConstantSampler = uniform::RnConstantSampler;
-using SO2UniformSampler = uniform::SO2UniformSampler;
-using SO3UniformSampler = uniform::SO3UniformSampler;
-using SE2BoxConstraint = uniform::SE2BoxConstraint;
+using uniform::R0BoxConstraint;
+using uniform::R1BoxConstraint;
+using uniform::R2BoxConstraint;
+using uniform::R3BoxConstraint;
+using uniform::R6BoxConstraint;
+using uniform::RnBoxConstraint;
+using uniform::R0ConstantSampler;
+using uniform::R1ConstantSampler;
+using uniform::R2ConstantSampler;
+using uniform::R3ConstantSampler;
+using uniform::R6ConstantSampler;
+using uniform::RnConstantSampler;
+using uniform::SO2UniformSampler;
+using uniform::SO3UniformSampler;
+using uniform::SE2BoxConstraint;
 
-using CollisionFree = dart::CollisionFree;
-using CollisionFreeOutcome = dart::CollisionFreeOutcome;
-using FrameDifferentiable = dart::FrameDifferentiable;
-using FramePairDifferentiable = dart::FramePairDifferentiable;
-using FrameTestable = dart::FrameTestable;
-using InverseKinematicsSampleable = dart::InverseKinematicsSampleable;
-using TSR = dart::TSR;
-using createDifferentiableBounds = dart::createDifferentiableBounds;
-using createProjectableBounds = dart::createProjectableBounds;
-using createTestableBounds = dart::createTestableBounds;
-using createSampleableBounds = dart::createSampleableBounds;
+using dart::CollisionFree;
+using dart::CollisionFreeOutcome;
+using dart::FrameDifferentiable;
+using dart::FramePairDifferentiable;
+using dart::FrameTestable;
+using dart::InverseKinematicsSampleable;
+using dart::TSR;
+using dart::createDifferentiableBounds;
+using dart::createProjectableBounds;
+using dart::createTestableBounds;
+using dart::createSampleableBounds;
 
 } // namespace constraint
 } // namespace aikido
