@@ -18,9 +18,10 @@ HandPtr ConcreteManipulator::getHand()
 
 //==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::postprocessPath(
-    const trajectory::TrajectoryPtr& path)
+    const trajectory::TrajectoryPtr& path,
+    const constraint::TestablePtr& constraint)
 {
-  return mRobot->postprocessPath(path);
+  return mRobot->postprocessPath(path, constraint);
 }
 
 //==============================================================================
@@ -28,12 +29,6 @@ void ConcreteManipulator::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory)
 {
   mRobot->executeTrajectory(trajectory);
-}
-
-//==============================================================================
-void ConcreteManipulator::executePath(const trajectory::TrajectoryPtr& path)
-{
-  mRobot->executePath(path);
 }
 
 //==============================================================================

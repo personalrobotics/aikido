@@ -32,18 +32,18 @@ public:
 
   /// Returns a timed trajectory that can be executed by the robot
   /// \param[in] path Geometric path to execute
+  /// \param[in] Must be satisfied after postprocessing. Typically
+  /// collision constraint is passed.
   virtual trajectory::TrajectoryPtr postprocessPath(
-      const trajectory::TrajectoryPtr& path)
+      const trajectory::TrajectoryPtr& path,
+      const constraint::TestablePtr& constraint)
       = 0;
 
   /// Executes a trajectory
   /// \param[in] trajectory Timed trajectory to execute
-  virtual void executeTrajectory(const trajectory::TrajectoryPtr& trajectory)
+  virtual void executeTrajectory(
+      const trajectory::TrajectoryPtr& trajectory)
       = 0;
-
-  /// Postprocesses and executes a path
-  /// \param[in] path Geometric path to be executed
-  virtual void executePath(const trajectory::TrajectoryPtr& path) = 0;
 
   // Returns a named configuration
   /// \param[in] name Name of the configuration

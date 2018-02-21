@@ -1,4 +1,4 @@
-#include "aikido/robot/ConcreteRobot.hpp"
+/#include "aikido/robot/ConcreteRobot.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
@@ -69,7 +69,8 @@ ConcreteRobot::ConcreteRobot(
 }
 
 //==============================================================================
-TrajectoryPtr ConcreteRobot::postprocessPath(const TrajectoryPtr& path)
+TrajectoryPtr ConcreteRobot::postprocessPath(const TrajectoryPtr& path,
+    const constraint::TestablePtr& constraint)
 {
   // TODO: this needs to know whether to call smoothing or not.
   std::unique_ptr<aikido::trajectory::Spline> untimedTrajectory;
@@ -77,19 +78,23 @@ TrajectoryPtr ConcreteRobot::postprocessPath(const TrajectoryPtr& path)
   auto spline = std::dynamic_pointer_cast<trajectory::Spline>(path);
   if (spline)
     auto untimedTrajectory
-        = mSmoother->postprocess(*(spline.get()), *(cloneRNG().get()));
+        = mSmoother->postprocess(*(spline.get()),
+            *(cloneRNG().get()), constraint);
 
   auto interpolated = std::dynamic_pointer_cast<trajectory::Interpolated>(path);
   if (interpolated)
     untimedTrajectory
-        = mSmoother->postprocess(*(interpolated.get()), *(cloneRNG().get()));
+        = mSmoother->postprocess(*(interpolated.get()),
+            *(cloneRNG().get()), constraint);
 
   if (!untimedTrajectory)
+
     throw std::invalid_argument(
-        "_inputTraj must be either Spline or Interpolated");
+        "Path must be either Spline or Interpolated");
 
   auto timedTrajectory
-      = mRetimer->postprocess(*(untimedTrajectory.get()), *(cloneRNG().get()));
+      = mRetimer->postprocess(*(untimedTrajectory.get()),
+          *(cloneRNG().get()), nullptr);
 
   return std::move(timedTrajectory);
 }
@@ -98,13 +103,6 @@ TrajectoryPtr ConcreteRobot::postprocessPath(const TrajectoryPtr& path)
 void ConcreteRobot::executeTrajectory(const TrajectoryPtr& trajectory)
 {
   mTrajectoryExecutor->execute(trajectory);
-}
-
-//==============================================================================
-void ConcreteRobot::executePath(const TrajectoryPtr& path)
-{
-  auto traj = postprocessPath(path);
-  executeTrajectory(traj);
 }
 
 //==============================================================================

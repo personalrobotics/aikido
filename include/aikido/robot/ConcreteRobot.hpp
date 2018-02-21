@@ -43,10 +43,10 @@ public:
 
   virtual ~ConcreteRobot() = default;
 
-  /// Returns a timed trajectory that can be executed by the robot
-  /// \param path Geometric path to execute
+  /// \copydoc Robot::postprocessPath
   virtual trajectory::TrajectoryPtr postprocessPath(
-      const trajectory::TrajectoryPtr& path) override;
+      const trajectory::TrajectoryPtr& path,
+      const constraint::TestablePtr& constraint) override;
 
   /// Executes a trajectory
   /// \param trajectory Timed trajectory to execute

@@ -25,7 +25,8 @@ public:
 
   /// \copydoc Robot::postprocessPath
   virtual trajectory::TrajectoryPtr postprocessPath(
-      const trajectory::TrajectoryPtr& path) override;
+      const trajectory::TrajectoryPtr& path,
+      const constraint::TestablePtr& constraint) override;
 
   /// \copydoc Robot::executeTrajectory
   virtual void executeTrajectory(
