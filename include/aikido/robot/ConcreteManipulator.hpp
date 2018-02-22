@@ -20,63 +20,63 @@ public:
 
   virtual ~ConcreteManipulator() = default;
 
-  /// \copydoc Manipulator::getHand()
+  // Documentation inherited.
   virtual HandPtr getHand() override;
 
-  /// \copydoc Robot::smoothPath
+  // Documentation inherited.
   virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint) override;
 
-  /// \copydoc Robot::retimePath
+  // Documentation inherited.
   virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path) override;
 
-  /// \copydoc Robot::executeTrajectory
+  // Documentation inherited.
   virtual void executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) override;
 
+  // Documentation inherited.
   /// \copydoc Robot::getNamedConfiguration
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
       const std::string& name) const override;
 
-  /// \copydoc Robot::setNamedConfigurations
+  // Documentation inherited.
   virtual void setNamedConfigurations(
       std::unordered_map<std::string, const Eigen::VectorXd>
           namedConfigurations) override;
 
-  /// \copydoc Robot::getName
+  // Documentation inherited.
   virtual std::string getName() const override;
 
-  /// \copydoc Robot::getMetaSkeleton
+  // Documentation inherited.
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
 
-  /// Returns the MetaSkeleton of this robot.
+  // Documentation inherited.
   virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
       override;
 
-  /// \copydoc Robot::setRoot
+  // Documentation inherited.
   virtual void setRoot(Robot* robot) override;
 
-  /// \copydoc Robot::step
+  // Documentation inherited.
   virtual void step(
       const std::chrono::system_clock::time_point& timepoint) override;
 
-  /// \copydoc Robot::getSelfCollisionConstraint
+  // Documentation inherited.
   virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
-      override;
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
 
-  /// \copydoc Robot::getFullSelfCollisionConstraint
+  // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::CollisionFreePtr& collisionFree) override;
 
-  /// Plan to a desired end-effector offset with fixed orientation.
+  /// Plans to a desired end-effector offset with fixed orientation.
   /// \param[in] space The StateSpace for the metaskeleton.
   /// \param[in] metaSkeleton Metaskeleton to plan with.
   /// \param[in] body Bodynode for the end effector.
@@ -97,13 +97,13 @@ public:
       double positionTolerance,
       double angularTolerance);
 
-  /// Get the direction of an end effector (along z axis) in the world frame
+  /// Returns the direction of an end effector (along z axis) in the world frame
   /// \param body Bodynode for the end effector
-  /// \return Output The direction of the end effector (z axis of the frame)
+  /// \return The direction of the end effector (z axis of the frame)
   Eigen::Vector3d getEndEffectorDirection(
       const dart::dynamics::BodyNodePtr& body) const;
 
-  /// Plan to a desired end-effector offset along the z axis of the
+  /// Plans to a desired end-effector offset along the z axis of the
   /// end-effector.
   /// \param[in] space The StateSpace for the metaskeleton.
   /// \param[in] metaSkeleton Metaskeleton to plan with.

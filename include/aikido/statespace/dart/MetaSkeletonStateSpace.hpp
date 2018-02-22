@@ -188,7 +188,7 @@ public:
   /// Returns MetaSkeleton this space operates on.
   /// \param _skeleton \c Skeleton to create MetaSkeleton from.
   ::dart::dynamics::MetaSkeletonPtr getControlledMetaSkeleton(
-    const ::dart::dynamics::SkeletonPtr& _skeleton) const;
+      const ::dart::dynamics::SkeletonPtr& _skeleton) const;
 
 private:
   Properties mProperties;

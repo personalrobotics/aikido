@@ -41,64 +41,66 @@ public:
 
   virtual ~ConcreteRobot() = default;
 
-  /// \copydoc Robot::smoothPath
+  // Documentation inherited.
   virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint) override;
 
-  /// \copydoc Robot::retimePath
+  // Documentation inherited.
   virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path) override;
 
-  /// Executes a trajectory
-  /// \param trajectory Timed trajectory to execute
+  // Documentation inherited.
   virtual void executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) override;
 
-  // Returns a named configuration
+  // Documentation inherited.
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
       const std::string& name) const override;
 
-  /// Sets the list of named configurations
-  /// \param namedConfigurations Map of name, configuration
+  // Documentation inherited.
   virtual void setNamedConfigurations(
       std::unordered_map<std::string, const Eigen::VectorXd>
           namedConfigurations) override;
 
-  /// \return Name of this Robot
+  // Documentation inherited.
   virtual std::string getName() const override;
 
-  /// Returns the MetaSkeleton of this robot.
+  // Documentation inherited.
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
 
-  /// \return MetaSkeletonStateSpace of this robot.
+  // Documentation inherited.
   virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
       override;
 
-  /// Sets the root of this robot.
+  // Documentation inherited.
   virtual void setRoot(Robot* robot) override;
 
-  /// Simulates up to the provided timepoint.
-  /// Assumes that parent robot is locked.
-  /// \param timepoint Time to simulate to.
+  // Documentation inherited.
   virtual void step(
       const std::chrono::system_clock::time_point& timepoint) override;
 
-  /// \copydoc Robot::getSelfCollisionConstraint
+  // Documentation inherited.
   virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
-      override;
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
 
-  /// \copydoc Robot::getFullCollisionConstraint
+  // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::CollisionFreePtr& collisionFree) override;
 
-  /// Plans a trajectory to the specified configuration
+  /// Plan the robot to a specific configuration. Restores the robot to its
+  /// initial configuration after planning.
+  /// \param[in] stateSpace The StateSpace for the metaskeleton
+  /// \param[in] metaSkeleton Metaskeleton to plan with.
+  /// \param[in] goalState Goal state
+  /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] timelimit Max time to spend per planning to each IK
+  /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfiguration(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -107,6 +109,14 @@ public:
       double timelimit);
 
   /// Wrapper for planToConfiguration using Eigen vectors.
+  /// Plan the robot to a specific configuration. Restores the robot to its
+  /// initial configuration after planning.
+  /// \param[in] stateSpace The StateSpace for the metaskeleton
+  /// \param[in] metaSkeleton Metaskeleton to plan with.
+  /// \param[in] goal Goal position
+  /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] timelimit Max time to spend per planning to each IK
+  /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfiguration(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -114,7 +124,14 @@ public:
       const aikido::constraint::CollisionFreePtr& collisionFree,
       double timelimit);
 
-  /// Plans a trajectory to one of the spcified configurations.
+  /// Plan the robot to a set of configurations. Restores the robot to its
+  /// initial configuration after planning.
+  /// \param[in] stateSpace The StateSpace for the metaskeleton
+  /// \param[in] metaSkeleton Metaskeleton to plan with.
+  /// \param[in] goalStates A set of goal states.
+  /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] timelimit Max time to spend per planning to each IK
+  /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfigurations(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -122,7 +139,14 @@ public:
       const aikido::constraint::CollisionFreePtr& collisionFree,
       double timelimit);
 
-  /// Wrapper for planToConfigurations using Eigen vectors.
+  /// Plan the robot to a set of configurations. Restores the robot to its
+  /// initial configuration after planning.
+  /// \param[in] stateSpace The StateSpace for the metaskeleton
+  /// \param[in] metaSkeleton Metaskeleton to plan with.
+  /// \param[in] goals A set of goals.
+  /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] timelimit Max time to spend per planning to each IK
+  /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfigurations(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -130,13 +154,20 @@ public:
       const aikido::constraint::CollisionFreePtr& collisionFree,
       double timelimit);
 
-  /// Plans to a TSR.
-  /// \param timelimit Max time (seconds) to spend per planning to each IK
-  /// \param maxNumTrials Max number of trials for solving for IK
+  /// Plans the configuration of the metakeleton such that
+  /// the specified bodynode is set to a sample in TSR
+  /// \param[in] stateSpace The StateSpace for the metaskeleton.
+  /// \param[in] metaSkeleton The MetaSkeleton to plan with.
+  /// \param[in] bodyNode Bodynode whose frame for which TSR is constructed.
+  /// \param[in] tsr TSR
+  /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
+  /// \param[in] maxNumTrials Max numer of trials to plan.
+  /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSR(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& bn,
+      const dart::dynamics::BodyNodePtr& bodyNode,
       const aikido::constraint::TSRPtr& tsr,
       const aikido::constraint::CollisionFreePtr& collisionFree,
       double timelimit,
@@ -145,17 +176,16 @@ public:
   /// Returns a Trajectory that moves the configuration of the metakeleton such
   /// that the specified bodynode is set to a sample in a goal TSR and
   /// the trajectory is constrained to a constraint TSR
-  /// \param space The StateSpace for the metaskeleton
-  /// \param body Bodynode whose frame is meant for TSR
-  /// \param goalTsr The goal TSR to move to
-  /// \param constraintTsr The constraint TSR for the trajectory
-  /// \param collisionFree Collision constraint
-  /// \param projectionMaxIteration Parameter for maximum iteration of
-  /// constraint projection
-  /// \param projectionTolerance Parameter for projection tolerance
+  /// \param[in] stateSpace The StateSpace for the metaskeleton
+  /// \param[in] metaSkeleton The MetaSkeleton to plan with.
+  /// \param[in] bodyNode Bodynode whose frame is meant for TSR
+  /// \param[in] goalTsr The goal TSR to move to
+  /// \param[in] constraintTsr The constraint TSR for the trajectory
+  /// \param[in] collisionFree Collision constraint
+  /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSRwithTrajectoryConstraint(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& bodyNode,
       const aikido::constraint::TSRPtr& goalTsr,
@@ -164,9 +194,9 @@ public:
       double timelimit);
 
   /// Plans to a named configuration.
-  /// \param startState Starting state
-  /// \param name Name of the configuration to plan to
-  /// \param collisionFree Collision constraint
+  /// \param[in] name Name of the configuration to plan to
+  /// \param[in] collisionFree Collision constraint
+  /// \param[in] timelimit Max time (seconds) to spend
   /// \return Trajectory to the configuration, or nullptr if planning fails
   aikido::trajectory::TrajectoryPtr planToNamedConfiguration(
       const std::string& name,

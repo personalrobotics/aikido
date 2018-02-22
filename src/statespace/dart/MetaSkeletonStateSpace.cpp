@@ -352,7 +352,8 @@ void MetaSkeletonStateSpace::setState(
 }
 
 //==============================================================================
-::dart::dynamics::MetaSkeletonPtr MetaSkeletonStateSpace::getControlledMetaSkeleton(
+::dart::dynamics::MetaSkeletonPtr
+MetaSkeletonStateSpace::getControlledMetaSkeleton(
     const ::dart::dynamics::SkeletonPtr& skeleton) const
 {
   using ::dart::dynamics::Group;
@@ -367,17 +368,17 @@ void MetaSkeletonStateSpace::setState(
     if (!dof)
     {
       throw std::invalid_argument(
-        "Skeleton has no DegreeOfFreedom named '" + dofName + "'.");
+          "Skeleton has no DegreeOfFreedom named '" + dofName + "'.");
     }
     dofs.emplace_back(dof);
   }
 
-  auto controlledMetaSkeleton = Group::create(
-    mProperties.getName(), dofs, false, true);
+  auto controlledMetaSkeleton
+      = Group::create(mProperties.getName(), dofs, false, true);
   if (!controlledMetaSkeleton)
   {
     throw std::runtime_error(
-      "Failed creating MetaSkeleton of controlled DOFs.");
+        "Failed creating MetaSkeleton of controlled DOFs.");
   }
 
   if (controlledMetaSkeleton->getNumDofs() != mProperties.getNumDofs())
@@ -386,9 +387,7 @@ void MetaSkeletonStateSpace::setState(
   }
 
   return controlledMetaSkeleton;
-
 }
-
 
 } // namespace dart
 } // namespace statespace

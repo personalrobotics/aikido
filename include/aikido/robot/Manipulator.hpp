@@ -18,6 +18,7 @@ class Manipulator : public Robot
 public:
   virtual ~Manipulator() = default;
 
+  /// Returns the hand.
   virtual HandPtr getHand() = 0;
 };
 

@@ -33,7 +33,7 @@ public:
   /// Returns a timed trajectory that can be executed by the robot.
   /// \param[in] metaSkeleton Metaskeleton of the path.
   /// \param[in] path Geometric path to execute.
-  /// \param[in] Must be satisfied after postprocessing. Typically
+  /// \param[in] constraint Must be satisfied after postprocessing. Typically
   /// collision constraint is passed.
   virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -51,13 +51,12 @@ public:
 
   /// Executes a trajectory
   /// \param[in] trajectory Timed trajectory to execute
-  virtual void executeTrajectory(
-      const trajectory::TrajectoryPtr& trajectory)
+  virtual void executeTrajectory(const trajectory::TrajectoryPtr& trajectory)
       = 0;
 
   // Returns a named configuration
   /// \param[in] name Name of the configuration
-  /// \return COnfiguration
+  /// \return Configuration
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
       const std::string& name) const = 0;
 
@@ -91,12 +90,14 @@ public:
   /// \param[in] space Space in which this collision constraint operates.
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
   virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton) = 0;
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+      = 0;
 
   /// Combines provided collision constraint with relf collision
   /// constraint.
   /// \param[in] space Space in which this collision constraint operates.
+  /// \param[in] metaSkeleton Metaskeleton for the statespace.
   /// \param[in] collisionFree Collision constraint.
   /// \return Combined constraint.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(

@@ -29,12 +29,12 @@ public:
   virtual void ungrab() = 0;
 
   /// Sets the hand to the corresponding preshape (from \c preshapesUri).
-  /// \param preshapeName Name of preshape (e.g. "open")
-  /// \throw a runtime_error if execution fails.
+  /// \param[in] preshapeName Name of preshape (e.g. "open")
+  /// Throws a runtime_error if execution fails.
   virtual void executePreshape(const std::string& preshapeName) = 0;
 
   /// Executes the preshape trajectory upto timepoint..
-  // \param timepoint Time to simulate to.
+  // \param[in] timepoint Time to simulate to.
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Returns the metaskeleton corresponding to this hand.

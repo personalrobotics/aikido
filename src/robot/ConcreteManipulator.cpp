@@ -18,17 +18,17 @@ HandPtr ConcreteManipulator::getHand()
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::smoothPath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      const constraint::TestablePtr& constraint)
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path,
+    const constraint::TestablePtr& constraint)
 {
   return mRobot->smoothPath(metaSkeleton, path, constraint);
 }
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::retimePath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path)
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path)
 {
   return mRobot->retimePath(metaSkeleton, path);
 }
@@ -89,8 +89,8 @@ void ConcreteManipulator::step(
 //==============================================================================
 aikido::constraint::CollisionFreePtr
 ConcreteManipulator::getSelfCollisionConstraint(
-  const statespace::dart::MetaSkeletonStateSpacePtr& space,
-  const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
 {
   return mRobot->getSelfCollisionConstraint(space, metaSkeleton);
 }
@@ -117,8 +117,8 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     double angularTolerance)
 {
 
-  auto collision = getFullCollisionConstraint(
-    space, metaSkeleton, collisionFree);
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
   auto trajectory = util::planToEndEffectorOffset(
       space,
       metaSkeleton,
@@ -154,7 +154,8 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     double positionTolerance,
     double angularTolerance)
 {
-  auto collision = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 
   Eigen::Vector3d direction = getEndEffectorDirection(body);
 

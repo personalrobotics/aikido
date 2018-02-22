@@ -93,7 +93,6 @@ Eigen::VectorXd getSymmetricAccelerationLimits(
       "acceleration",
       asymmetryTolerance);
 }
-
 }
 //==============================================================================
 ConcreteRobot::ConcreteRobot(
@@ -125,47 +124,44 @@ ConcreteRobot::ConcreteRobot(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::smoothPath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      const constraint::TestablePtr& constraint)
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path,
+    const constraint::TestablePtr& constraint)
 {
   Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto smoother =
-     std::make_shared<ParabolicSmoother>(velocityLimits, accelerationLimits);
+  auto smoother
+      = std::make_shared<ParabolicSmoother>(velocityLimits, accelerationLimits);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
-    return smoother->postprocess(*interpolated,
-          *(cloneRNG().get()), constraint);
+    return smoother->postprocess(
+        *interpolated, *(cloneRNG().get()), constraint);
 
   auto spline = dynamic_cast<const Spline*>(path);
   if (spline)
-    return smoother->postprocess(*spline,
-          *(cloneRNG().get()), constraint);
+    return smoother->postprocess(*spline, *(cloneRNG().get()), constraint);
 
   throw std::invalid_argument("Path should be either Spline or Interpolated.");
 }
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::retimePath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path)
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path)
 {
   Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto retimer =
-     std::make_shared<ParabolicTimer>(velocityLimits, accelerationLimits);
+  auto retimer
+      = std::make_shared<ParabolicTimer>(velocityLimits, accelerationLimits);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
-    return retimer->postprocess(*interpolated,
-          *(cloneRNG().get()));
+    return retimer->postprocess(*interpolated, *(cloneRNG().get()));
 
   auto spline = dynamic_cast<const Spline*>(path);
   if (spline)
-    return retimer->postprocess(*spline,
-          *(cloneRNG().get()));
+    return retimer->postprocess(*spline, *(cloneRNG().get()));
 
   throw std::invalid_argument("Path should be either Spline or Interpolated.");
 }
@@ -230,23 +226,22 @@ void ConcreteRobot::step(const std::chrono::system_clock::time_point& timepoint)
 
 //==============================================================================
 Eigen::VectorXd ConcreteRobot::getVelocityLimits(
-  const MetaSkeleton& metaSkeleton) const
+    const MetaSkeleton& metaSkeleton) const
 {
   return getSymmetricVelocityLimits(metaSkeleton, asymmetryTolerance);
 }
 
 //==============================================================================
 Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
-  const MetaSkeleton& metaSkeleton) const
+    const MetaSkeleton& metaSkeleton) const
 {
   return getSymmetricAccelerationLimits(metaSkeleton, asymmetryTolerance);
 }
 
-
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-  const statespace::dart::MetaSkeletonStateSpacePtr& space,
-  const MetaSkeletonPtr& metaSkeleton)
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonPtr& metaSkeleton)
 {
   using constraint::CollisionFree;
 
@@ -278,8 +273,8 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
   using constraint::TestableIntersection;
 
   if (mRootRobot != this)
-    return mRootRobot->getFullCollisionConstraint(space, metaSkeleton,
-      collisionFree);
+    return mRootRobot->getFullCollisionConstraint(
+        space, metaSkeleton, collisionFree);
 
   auto selfCollisionFree = getSelfCollisionConstraint(space, metaSkeleton);
 

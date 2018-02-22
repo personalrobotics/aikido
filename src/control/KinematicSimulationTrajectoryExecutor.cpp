@@ -66,7 +66,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
     if (!mSkeleton->getDof(name))
     {
       std::stringstream ss;
-      ss << "DegreeOfFreedom[" <<  name << "] does not exist in mSkeleton.";
+      ss << "DegreeOfFreedom[" << name << "] does not exist in mSkeleton.";
       throw std::invalid_argument(ss.str());
     }
   }
