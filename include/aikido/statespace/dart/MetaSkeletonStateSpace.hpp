@@ -185,6 +185,11 @@ public:
   ScopedState getScopedStateFromMetaSkeleton(
       const ::dart::dynamics::MetaSkeleton* _metaskeleton) const;
 
+  /// Returns MetaSkeleton this space operates on.
+  /// \param _skeleton \c Skeleton to create MetaSkeleton from.
+  ::dart::dynamics::MetaSkeletonPtr getControlledMetaSkeleton(
+    const ::dart::dynamics::SkeletonPtr& _skeleton) const;
+
 private:
   Properties mProperties;
 };

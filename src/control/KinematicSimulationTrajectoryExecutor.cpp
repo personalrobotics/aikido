@@ -56,8 +56,20 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
-  space->checkCompatibility(mSkeleton.get());
 
+  // Check if the metaskeleton of traj is containd in mSkeleton.
+  // TODO: Name-uniqueness is allowed only within the same skeleton,
+  // so we should check for skeleton-equality.
+  auto dofNames = space->getProperties().getDofNames();
+  for (const auto& name : dofNames)
+  {
+    if (!mSkeleton->getDof(name))
+    {
+      std::stringstream ss;
+      ss << "DegreeOfFreedom[" <<  name << "] does not exist in mSkeleton.";
+      throw std::invalid_argument(ss.str());
+    }
+  }
   traj->metadata.executorValidated = true;
 }
 
@@ -120,7 +132,13 @@ void KinematicSimulationTrajectoryExecutor::step(
 
   auto state = mStateSpace->createState();
   mTraj->evaluate(executionTime, state);
-  mStateSpace->setState(mSkeleton.get(), state);
+
+  auto metaSkeleton = mStateSpace->getControlledMetaSkeleton(mSkeleton);
+
+  if (!metaSkeleton)
+    throw std::invalid_argument("Failed to create MetaSkeleton");
+
+  mStateSpace->setState(metaSkeleton.get(), state);
 
   // Check if trajectory has completed.
   if (executionTime >= mTraj->getEndTime())

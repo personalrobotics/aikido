@@ -351,6 +351,45 @@ void MetaSkeletonStateSpace::setState(
   _metaskeleton->setPositions(positions);
 }
 
+//==============================================================================
+::dart::dynamics::MetaSkeletonPtr MetaSkeletonStateSpace::getControlledMetaSkeleton(
+    const ::dart::dynamics::SkeletonPtr& skeleton) const
+{
+  using ::dart::dynamics::Group;
+  using ::dart::dynamics::DegreeOfFreedom;
+
+  std::vector<DegreeOfFreedom*> dofs;
+  dofs.reserve(mProperties.getNumDofs());
+
+  for (const auto& dofName : mProperties.getDofNames())
+  {
+    DegreeOfFreedom* dof = skeleton->getDof(dofName);
+    if (!dof)
+    {
+      throw std::invalid_argument(
+        "Skeleton has no DegreeOfFreedom named '" + dofName + "'.");
+    }
+    dofs.emplace_back(dof);
+  }
+
+  auto controlledMetaSkeleton = Group::create(
+    mProperties.getName(), dofs, false, true);
+  if (!controlledMetaSkeleton)
+  {
+    throw std::runtime_error(
+      "Failed creating MetaSkeleton of controlled DOFs.");
+  }
+
+  if (controlledMetaSkeleton->getNumDofs() != mProperties.getNumDofs())
+  {
+    throw std::runtime_error("Only single-DOF joints are supported.");
+  }
+
+  return controlledMetaSkeleton;
+
+}
+
+
 } // namespace dart
 } // namespace statespace
 } // namespace aikido
