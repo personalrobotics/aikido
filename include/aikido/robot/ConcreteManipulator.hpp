@@ -23,10 +23,16 @@ public:
   /// \copydoc Manipulator::getHand()
   virtual HandPtr getHand() override;
 
-  /// \copydoc Robot::postprocessPath
-  virtual trajectory::TrajectoryPtr postprocessPath(
-      const trajectory::TrajectoryPtr& path,
+  /// \copydoc Robot::smoothPath
+  virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint) override;
+
+  /// \copydoc Robot::retimePath
+  virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path) override;
 
   /// \copydoc Robot::executeTrajectory
   virtual void executeTrajectory(
@@ -59,12 +65,15 @@ public:
       const std::chrono::system_clock::time_point& timepoint) override;
 
   /// \copydoc Robot::getSelfCollisionConstraint
-  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint()
+  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
       override;
 
   /// \copydoc Robot::getFullSelfCollisionConstraint
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::CollisionFreePtr& collisionFree) override;
 
   /// Plan to a desired end-effector offset with fixed orientation.

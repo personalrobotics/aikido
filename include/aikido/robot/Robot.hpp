@@ -30,13 +30,23 @@ class Robot
 public:
   virtual ~Robot() = default;
 
-  /// Returns a timed trajectory that can be executed by the robot
-  /// \param[in] path Geometric path to execute
+  /// Returns a timed trajectory that can be executed by the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] path Geometric path to execute.
   /// \param[in] Must be satisfied after postprocessing. Typically
   /// collision constraint is passed.
-  virtual trajectory::TrajectoryPtr postprocessPath(
-      const trajectory::TrajectoryPtr& path,
+  virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint)
+      = 0;
+
+  /// Returns a timed trajectory that can be executed by the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] path Geometric path to execute.
+  virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path)
       = 0;
 
   /// Executes a trajectory
@@ -78,7 +88,11 @@ public:
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Returns self-collision constraint.
-  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint() = 0;
+  /// \param[in] space Space in which this collision constraint operates.
+  /// \param[in] metaSkeleton Metaskeleton for the statespace.
+  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton) = 0;
 
   /// Combines provided collision constraint with relf collision
   /// constraint.
@@ -87,6 +101,7 @@ public:
   /// \return Combined constraint.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::CollisionFreePtr& collisionFree)
       = 0;
 };

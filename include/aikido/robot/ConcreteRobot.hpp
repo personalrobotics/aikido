@@ -34,8 +34,6 @@ public:
       bool simulation,
       std::unique_ptr<aikido::common::RNG> rng,
       std::shared_ptr<control::TrajectoryExecutor> trajectoryExecutor,
-      std::shared_ptr<planner::parabolic::ParabolicTimer> retimer,
-      std::shared_ptr<planner::parabolic::ParabolicSmoother> smoother,
       dart::collision::CollisionDetectorPtr collisionDetector,
       dart::collision::CollisionGroupPtr collideWith,
       std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
@@ -43,10 +41,16 @@ public:
 
   virtual ~ConcreteRobot() = default;
 
-  /// \copydoc Robot::postprocessPath
-  virtual trajectory::TrajectoryPtr postprocessPath(
-      const trajectory::TrajectoryPtr& path,
+  /// \copydoc Robot::smoothPath
+  virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint) override;
+
+  /// \copydoc Robot::retimePath
+  virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path) override;
 
   /// Executes a trajectory
   /// \param trajectory Timed trajectory to execute
@@ -83,12 +87,15 @@ public:
       const std::chrono::system_clock::time_point& timepoint) override;
 
   /// \copydoc Robot::getSelfCollisionConstraint
-  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint()
+  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
       override;
 
   /// \copydoc Robot::getFullCollisionConstraint
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::CollisionFreePtr& collisionFree) override;
 
   /// Plans a trajectory to the specified configuration
@@ -179,7 +186,13 @@ private:
 
   std::unique_ptr<aikido::common::RNG> cloneRNG();
 
-  aikido::constraint::CollisionFreePtr createSelfCollisionConstraint();
+  /// Compute velocity limits from the MetaSkeleton
+  Eigen::VectorXd getVelocityLimits(
+      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
+
+  /// Compute acceleration limits from the MetaSkeleton
+  Eigen::VectorXd getAccelerationLimits(
+      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
 
   /// If this robot belongs to another (Composite)Robot,
   /// mRootRobot is the topmost robot containing this robot.
@@ -201,10 +214,6 @@ private:
 
   std::shared_ptr<control::TrajectoryExecutor> mTrajectoryExecutor;
 
-  std::shared_ptr<planner::parabolic::ParabolicTimer> mRetimer;
-
-  std::shared_ptr<planner::parabolic::ParabolicSmoother> mSmoother;
-
   double mCollisionResolution;
 
   /// Commonly used configurations.
@@ -214,8 +223,6 @@ private:
   dart::collision::CollisionGroupPtr mCollideWith;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
-
-  constraint::CollisionFreePtr mSelfCollisionConstraint;
 
   util::CRRTPlannerParameters mCRRTParameters;
 };

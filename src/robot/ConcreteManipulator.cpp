@@ -17,11 +17,20 @@ HandPtr ConcreteManipulator::getHand()
 }
 
 //==============================================================================
-trajectory::TrajectoryPtr ConcreteManipulator::postprocessPath(
-    const trajectory::TrajectoryPtr& path,
-    const constraint::TestablePtr& constraint)
+std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::smoothPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint)
 {
-  return mRobot->postprocessPath(path, constraint);
+  return mRobot->smoothPath(metaSkeleton, path, constraint);
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::retimePath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path)
+{
+  return mRobot->retimePath(metaSkeleton, path);
 }
 
 //==============================================================================
@@ -73,22 +82,26 @@ void ConcreteManipulator::setRoot(Robot* robot)
 void ConcreteManipulator::step(
     const std::chrono::system_clock::time_point& timepoint)
 {
-  return mRobot->step(timepoint);
+  mHand->step(timepoint);
+  mRobot->step(timepoint);
 }
 
 //==============================================================================
 aikido::constraint::CollisionFreePtr
-ConcreteManipulator::getSelfCollisionConstraint()
+ConcreteManipulator::getSelfCollisionConstraint(
+  const statespace::dart::MetaSkeletonStateSpacePtr& space,
+  const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
 {
-  return mRobot->getSelfCollisionConstraint();
+  return mRobot->getSelfCollisionConstraint(space, metaSkeleton);
 }
 
 //==============================================================================
 aikido::constraint::TestablePtr ConcreteManipulator::getFullCollisionConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const constraint::CollisionFreePtr& collisionFree)
 {
-  return mRobot->getFullCollisionConstraint(space, collisionFree);
+  return mRobot->getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 }
 
 //==============================================================================
@@ -104,7 +117,8 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     double angularTolerance)
 {
 
-  auto collision = getFullCollisionConstraint(space, collisionFree);
+  auto collision = getFullCollisionConstraint(
+    space, metaSkeleton, collisionFree);
   auto trajectory = util::planToEndEffectorOffset(
       space,
       metaSkeleton,
@@ -140,7 +154,7 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     double positionTolerance,
     double angularTolerance)
 {
-  auto collision = getFullCollisionConstraint(space, collisionFree);
+  auto collision = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 
   Eigen::Vector3d direction = getEndEffectorDirection(body);
 

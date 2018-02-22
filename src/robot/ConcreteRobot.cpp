@@ -12,6 +12,8 @@ using constraint::CollisionFreePtr;
 using constraint::TSR;
 using constraint::TSRPtr;
 using constraint::TestablePtr;
+using planner::parabolic::ParabolicSmoother;
+using planner::parabolic::ParabolicTimer;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
 using statespace::StateSpace;
@@ -19,6 +21,7 @@ using statespace::StateSpacePtr;
 using trajectory::TrajectoryPtr;
 using trajectory::Interpolated;
 using trajectory::InterpolatedPtr;
+using trajectory::Spline;
 using common::cloneRNGFrom;
 
 using dart::collision::FCLCollisionDetector;
@@ -35,7 +38,63 @@ using dart::dynamics::SkeletonPtr;
 static const double timelimit = 3.0;
 static const double maxNumTrials = 10;
 static const double collisionResolution = 0.1;
+static const double asymmetryTolerance = 1e-3;
 
+namespace {
+
+// TODO: These may not generalize to many robots.
+Eigen::VectorXd getSymmetricLimits(
+    const MetaSkeleton& metaSkeleton,
+    const Eigen::VectorXd& lowerLimits,
+    const Eigen::VectorXd& upperLimits,
+    const std::string& limitName,
+    double asymmetryTolerance)
+{
+  const auto numDofs = metaSkeleton.getNumDofs();
+  assert(static_cast<std::size_t>(lowerLimits.size()) == numDofs);
+  assert(static_cast<std::size_t>(upperLimits.size()) == numDofs);
+
+  Eigen::VectorXd symmetricLimits(numDofs);
+  for (size_t iDof = 0; iDof < numDofs; ++iDof)
+  {
+    symmetricLimits[iDof] = std::min(-lowerLimits[iDof], upperLimits[iDof]);
+    if (std::abs(lowerLimits[iDof] + upperLimits[iDof]) > asymmetryTolerance)
+    {
+      dtwarn << "MetaSkeleton '" << metaSkeleton.getName()
+             << "' has asymmetric " << limitName << " limits ["
+             << lowerLimits[iDof] << ", " << upperLimits[iDof]
+             << "] for DegreeOfFreedom '"
+             << metaSkeleton.getDof(iDof)->getName() << "' (index: " << iDof
+             << "). Using a conservative limit of" << symmetricLimits[iDof]
+             << ".";
+    }
+  }
+  return symmetricLimits;
+}
+
+Eigen::VectorXd getSymmetricVelocityLimits(
+    const MetaSkeleton& metaSkeleton, double asymmetryTolerance)
+{
+  return getSymmetricLimits(
+      metaSkeleton,
+      metaSkeleton.getVelocityLowerLimits(),
+      metaSkeleton.getVelocityUpperLimits(),
+      "velocity",
+      asymmetryTolerance);
+}
+
+Eigen::VectorXd getSymmetricAccelerationLimits(
+    const MetaSkeleton& metaSkeleton, double asymmetryTolerance)
+{
+  return getSymmetricLimits(
+      metaSkeleton,
+      metaSkeleton.getAccelerationLowerLimits(),
+      metaSkeleton.getAccelerationUpperLimits(),
+      "acceleration",
+      asymmetryTolerance);
+}
+
+}
 //==============================================================================
 ConcreteRobot::ConcreteRobot(
     const std::string& name,
@@ -44,8 +103,6 @@ ConcreteRobot::ConcreteRobot(
     bool simulation,
     std::unique_ptr<aikido::common::RNG> rng,
     std::shared_ptr<control::TrajectoryExecutor> trajectoryExecutor,
-    std::shared_ptr<planner::parabolic::ParabolicTimer> retimer,
-    std::shared_ptr<planner::parabolic::ParabolicSmoother> smoother,
     dart::collision::CollisionDetectorPtr collisionDetector,
     dart::collision::CollisionGroupPtr collideWith,
     std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
@@ -58,45 +115,59 @@ ConcreteRobot::ConcreteRobot(
   , mSimulation(simulation)
   , mRng(std::move(rng))
   , mTrajectoryExecutor(std::move(trajectoryExecutor))
-  , mRetimer(std::move(retimer))
-  , mSmoother(std::move(smoother))
   , mCollisionResolution(collisionResolution)
   , mCollisionDetector(collisionDetector)
   , mCollideWith(collideWith)
   , mSelfCollisionFilter(selfCollisionFilter)
 {
-  mSelfCollisionConstraint = createSelfCollisionConstraint();
+  // Do nothing
 }
 
 //==============================================================================
-TrajectoryPtr ConcreteRobot::postprocessPath(const TrajectoryPtr& path,
-    const constraint::TestablePtr& constraint)
+std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::smoothPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint)
 {
-  // TODO: this needs to know whether to call smoothing or not.
-  std::unique_ptr<aikido::trajectory::Spline> untimedTrajectory;
+  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
+  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
+  auto smoother =
+     std::make_shared<ParabolicSmoother>(velocityLimits, accelerationLimits);
 
-  auto spline = std::dynamic_pointer_cast<trajectory::Spline>(path);
-  if (spline)
-    auto untimedTrajectory
-        = mSmoother->postprocess(*(spline.get()),
-            *(cloneRNG().get()), constraint);
-
-  auto interpolated = std::dynamic_pointer_cast<trajectory::Interpolated>(path);
+  auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
-    untimedTrajectory
-        = mSmoother->postprocess(*(interpolated.get()),
-            *(cloneRNG().get()), constraint);
+    return smoother->postprocess(*interpolated,
+          *(cloneRNG().get()), constraint);
 
-  if (!untimedTrajectory)
+  auto spline = dynamic_cast<const Spline*>(path);
+  if (spline)
+    return smoother->postprocess(*spline,
+          *(cloneRNG().get()), constraint);
 
-    throw std::invalid_argument(
-        "Path must be either Spline or Interpolated");
+  throw std::invalid_argument("Path should be either Spline or Interpolated.");
+}
 
-  auto timedTrajectory
-      = mRetimer->postprocess(*(untimedTrajectory.get()),
-          *(cloneRNG().get()), nullptr);
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::retimePath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path)
+{
+  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
+  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
+  auto retimer =
+     std::make_shared<ParabolicTimer>(velocityLimits, accelerationLimits);
 
-  return std::move(timedTrajectory);
+  auto interpolated = dynamic_cast<const Interpolated*>(path);
+  if (interpolated)
+    return retimer->postprocess(*interpolated,
+          *(cloneRNG().get()));
+
+  auto spline = dynamic_cast<const Spline*>(path);
+  if (spline)
+    return retimer->postprocess(*spline,
+          *(cloneRNG().get()));
+
+  throw std::invalid_argument("Path should be either Spline or Interpolated.");
 }
 
 //==============================================================================
@@ -157,23 +228,63 @@ void ConcreteRobot::step(const std::chrono::system_clock::time_point& timepoint)
   mTrajectoryExecutor->step(timepoint);
 }
 
-// ==============================================================================
-CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint()
+//==============================================================================
+Eigen::VectorXd ConcreteRobot::getVelocityLimits(
+  const MetaSkeleton& metaSkeleton) const
 {
-  return mSelfCollisionConstraint;
+  return getSymmetricVelocityLimits(metaSkeleton, asymmetryTolerance);
+}
+
+//==============================================================================
+Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
+  const MetaSkeleton& metaSkeleton) const
+{
+  return getSymmetricAccelerationLimits(metaSkeleton, asymmetryTolerance);
+}
+
+
+// ==============================================================================
+CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
+  const statespace::dart::MetaSkeletonStateSpacePtr& space,
+  const MetaSkeletonPtr& metaSkeleton)
+{
+  using constraint::CollisionFree;
+
+  if (mRootRobot != this)
+    return mRootRobot->getSelfCollisionConstraint(space, metaSkeleton);
+
+  mParentRobot->enableSelfCollisionCheck();
+  mParentRobot->disableAdjacentBodyCheck();
+
+  auto collisionDetector = FCLCollisionDetector::create();
+
+  // TODO: Switch to PRIMITIVE once this is fixed in DART.
+  // collisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
+  auto collisionOption
+      = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
+  auto collisionFreeConstraint = std::make_shared<CollisionFree>(
+      space, metaSkeleton, collisionDetector, collisionOption);
+  collisionFreeConstraint->addSelfCheck(
+      collisionDetector->createCollisionGroupAsSharedPtr(mRobot.get()));
+  return collisionFreeConstraint;
 }
 
 //=============================================================================
 TestablePtr ConcreteRobot::getFullCollisionConstraint(
     const MetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonPtr& metaSkeleton,
     const CollisionFreePtr& collisionFree)
 {
   using constraint::TestableIntersection;
 
   if (mRootRobot != this)
-    return mRootRobot->getFullCollisionConstraint(space, collisionFree);
+    return mRootRobot->getFullCollisionConstraint(space, metaSkeleton,
+      collisionFree);
 
-  auto selfCollisionFree = getSelfCollisionConstraint();
+  auto selfCollisionFree = getSelfCollisionConstraint(space, metaSkeleton);
+
+  if (!collisionFree)
+    return selfCollisionFree;
 
   // Make testable constraints for collision check
   std::vector<TestablePtr> constraints;
@@ -200,7 +311,7 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     double timelimit)
 {
   auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, collisionFree);
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
   return util::planToConfiguration(
       stateSpace,
@@ -273,7 +384,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     size_t maxNumTrials)
 {
   auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, collisionFree);
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
   return util::planToTSR(
       stateSpace,
@@ -297,7 +408,7 @@ TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
     double timelimit)
 {
   auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, collisionFree);
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
   // Uses CRRT.
   return util::planToTSRwithTrajectoryConstraint(
@@ -339,30 +450,6 @@ void ConcreteRobot::setCRRTPlannerParameters(
 std::unique_ptr<common::RNG> ConcreteRobot::cloneRNG()
 {
   return mRng->clone();
-}
-
-// ==============================================================================
-CollisionFreePtr ConcreteRobot::createSelfCollisionConstraint()
-{
-  using constraint::CollisionFree;
-
-  if (mRootRobot != this)
-    return mRootRobot->getSelfCollisionConstraint();
-
-  mParentRobot->enableSelfCollisionCheck();
-  mParentRobot->disableAdjacentBodyCheck();
-
-  auto collisionDetector = FCLCollisionDetector::create();
-
-  // TODO: Switch to PRIMITIVE once this is fixed in DART.
-  // collisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
-  auto collisionOption
-      = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
-  auto collisionFreeConstraint = std::make_shared<CollisionFree>(
-      mStateSpace, mRobot, collisionDetector, collisionOption);
-  collisionFreeConstraint->addSelfCheck(
-      collisionDetector->createCollisionGroupAsSharedPtr(mRobot.get()));
-  return collisionFreeConstraint;
 }
 
 } // namespace robot
