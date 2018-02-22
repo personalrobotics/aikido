@@ -199,6 +199,7 @@ void TrajectoryMarker::updatePoints()
 {
   using visualization_msgs::Marker;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
+  using aikido::statespace::dart::MetaSkeletonStateSaver;
 
   if (!mNeedPointsUpdate)
     return;
@@ -218,7 +219,8 @@ void TrajectoryMarker::updatePoints()
   const auto metaSkeletonSs
       = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(statespace);
 
-  auto saver = statespace::dart::MetaSkeletonStateSaver(mSkeleton);
+  auto saver = MetaSkeletonStateSaver(
+      mSkeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
   auto state = metaSkeletonSs->createState();
