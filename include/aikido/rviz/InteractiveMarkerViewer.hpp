@@ -51,7 +51,7 @@ public:
   /// \param basename Basename for markers
   /// \return TSRMarkerPtr contains sampled frames of TSR.
   TSRMarkerPtr addTSRMarker(
-      const aikido::constraint::dart::TSR& tsr,
+      const constraint::dart::TSR& tsr,
       int nSamples = 10,
       const std::string& basename = "");
 

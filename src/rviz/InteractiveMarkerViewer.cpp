@@ -61,13 +61,10 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrame(
 
 //==============================================================================
 TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
-    const aikido::constraint::dart::TSR& tsr,
-    int nSamples,
-    const std::string& basename)
+    const constraint::dart::TSR& tsr, int nSamples, const std::string& basename)
 {
   using dart::dynamics::Frame;
   using dart::dynamics::SimpleFrame;
-  using aikido::constraint::dart::TSR;
 
   auto sampler = tsr.createSampleGenerator();
   auto state = tsr.getSE3()->createState();

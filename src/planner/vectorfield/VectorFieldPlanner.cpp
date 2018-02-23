@@ -178,10 +178,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       jointLimitTolerance);
 
   auto compoundConstraint
-      = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);
+      = std::make_shared<constraint::TestableIntersection>(stateSpace);
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
-      aikido::constraint::dart::createTestableBounds(stateSpace));
+      constraint::dart::createTestableBounds(stateSpace));
 
   auto startState
       = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
@@ -231,7 +231,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
-      aikido::constraint::dart::createTestableBounds(stateSpace));
+      constraint::dart::createTestableBounds(stateSpace));
 
   auto startState
       = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
