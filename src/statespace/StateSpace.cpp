@@ -10,7 +10,7 @@ auto StateSpace::createState() const -> ScopedState
 }
 
 //==============================================================================
-void StateSpace::compose(State* _state1, const State* _state2)
+void StateSpace::compose(State* _state1, const State* _state2) const
 {
   auto tempState = createState();
   compose(_state1, _state2, tempState);

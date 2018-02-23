@@ -1,19 +1,22 @@
-#include <aikido/planner/WorldStateSaver.hpp>
+#include "aikido/planner/WorldStateSaver.hpp"
 
 namespace aikido {
 namespace planner {
 
-WorldStateSaver::WorldStateSaver(World* const world) : mWorld{world}
+WorldStateSaver::WorldStateSaver(World* world, int options)
+  : mWorld{std::move(world)}, mOptions{options}
 {
-  if (!world)
+  if (!mWorld)
     throw std::invalid_argument("World must not be nullptr.");
 
-  mWorldState = mWorld->getState();
+  if (mOptions & Options::CONFIGURATIONS)
+    mWorldState = mWorld->getState();
 }
 
 WorldStateSaver::~WorldStateSaver()
 {
-  mWorld->setState(mWorldState);
+  if (mOptions & Options::CONFIGURATIONS)
+    mWorld->setState(mWorldState);
 }
 
 } // namespace planner

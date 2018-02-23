@@ -161,7 +161,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
   // Save the current state of the space
-  auto saver = MetaSkeletonStateSaver(metaskeleton);
+  auto saver = MetaSkeletonStateSaver(
+      metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
   auto vectorfield = std::make_shared<MoveEndEffectorOffsetVectorField>(
@@ -212,7 +213,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
   // Save the current state of the space
-  auto saver = MetaSkeletonStateSaver(metaskeleton);
+  auto saver = MetaSkeletonStateSaver(
+      metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
   auto vectorfield = std::make_shared<MoveEndEffectorPoseVectorField>(
