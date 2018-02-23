@@ -3,7 +3,7 @@
 ### 0.3.0 (201X-XX-XX)
 
 * Common
-  
+
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
 
@@ -20,6 +20,7 @@
 
 * Planner
 
+  * Make TrajectoryPostProcessor take testable pointer in postprocess(): [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
@@ -131,4 +132,3 @@
 ### 0.0.1 (2017-03-10)
 
   * Initial release
-
