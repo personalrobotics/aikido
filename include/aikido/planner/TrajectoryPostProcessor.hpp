@@ -14,7 +14,7 @@ class TrajectoryPostProcessor
 public:
   /// \param _inputTraj The untimed trajectory for the arm to process.
   /// \param _rng Random number generator.
-  /// \param _constraint Must be satisfied after prcoessing.
+  /// \param _constraint Must be satisfied after processing.
   virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Interpolated& _inputTraj,
       const aikido::common::RNG& _rng,
@@ -23,7 +23,7 @@ public:
 
   /// \param _inputTraj The untimed *spline* trajectory for the arm to process.
   /// \param _rng Random number generator.
-  /// \param _constraint Must be satisfied after prcoessing.
+  /// \param _constraint Must be satisfied after processing.
   virtual std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const trajectory::Spline& _inputTraj,
       const aikido::common::RNG& _rng,
