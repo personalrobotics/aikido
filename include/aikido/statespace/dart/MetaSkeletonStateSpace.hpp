@@ -176,7 +176,7 @@ public:
   /// \param _metaskeleton \c MetaSkeleton to set position for
   /// \param _state input state
   void setState(
-      ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state);
+      ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state) const;
 
   /// Wrapper for \c getStateFromMetaSkeleton that returns a ScopedState.
   ///
