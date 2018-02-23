@@ -161,7 +161,7 @@ void extractJointTrajectoryPoint(
 
 //==============================================================================
 void extractTrajectoryPoint(
-    const std::shared_ptr<MetaSkeletonStateSpace>& space,
+    const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::TrajectoryPtr& trajectory,
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint)
@@ -439,7 +439,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   if (timestep <= 0)
     throw std::invalid_argument("Timestep must be positive.");
 
-  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       trajectory->getStateSpace());
   if (!space)
   {

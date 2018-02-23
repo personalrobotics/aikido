@@ -9,21 +9,21 @@ using State = aikido::statespace::StateSpace::State;
 
 //==============================================================================
 Interpolated::Interpolated(
-    aikido::statespace::StateSpacePtr _sspace,
-    aikido::statespace::InterpolatorPtr _interpolator)
-  : mStateSpace(std::move(_sspace)), mInterpolator(std::move(_interpolator))
+    statespace::ConstStateSpacePtr _stateSpace,
+    statespace::ConstInterpolatorPtr _interpolator)
+  : mStateSpace(std::move(_stateSpace)), mInterpolator(std::move(_interpolator))
 {
   // Do nothing
 }
 
 //==============================================================================
-statespace::StateSpacePtr Interpolated::getStateSpace() const
+statespace::ConstStateSpacePtr Interpolated::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //==============================================================================
-statespace::InterpolatorPtr Interpolated::getInterpolator() const
+statespace::ConstInterpolatorPtr Interpolated::getInterpolator() const
 {
   return mInterpolator;
 }
@@ -193,7 +193,7 @@ int Interpolated::getWaypointIndexAfterTime(double _t) const
 
 //==============================================================================
 Interpolated::Waypoint::Waypoint(
-    double _t, aikido::statespace::StateSpace::State* _state)
+    double _t, statespace::StateSpace::State* _state)
   : t(_t), state(_state)
 {
 }
