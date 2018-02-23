@@ -24,7 +24,7 @@ public:
   /// Gets the \c StateSpace that this trajectory is defined in.
   ///
   /// \return state space this trajectory is defined in.
-  virtual aikido::statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Gets an upper bound on the number of non-zero derivatives available in
   /// this parameterization. Note that \c evaluateDerivative may return zero
