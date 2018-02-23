@@ -24,8 +24,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 {
   using aikido::statespace::GeodesicInterpolator;
 
-  if (!dynamic_cast<const GeodesicInterpolator*>(
-          _inputTrajectory.getInterpolator().get()))
+  if (!std::dynamic_pointer_cast<const GeodesicInterpolator>(
+          _inputTrajectory.getInterpolator()))
   {
     throw std::invalid_argument(
         "The interpolator of _inputTrajectory should be a "
