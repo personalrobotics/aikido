@@ -1,8 +1,8 @@
 #include <dart/common/StlHelpers.hpp>
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/constraint/Satisfied.hpp>
+#include <aikido/constraint/dart/JointStateSpaceHelpers.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
 #include <aikido/statespace/dart/SO3Joint.hpp>
@@ -24,10 +24,10 @@ using aikido::statespace::dart::SO2Joint;
 using aikido::statespace::dart::SO3Joint;
 using aikido::common::RNGWrapper;
 
-using aikido::constraint::createDifferentiableBoundsFor;
-using aikido::constraint::createProjectableBoundsFor;
-using aikido::constraint::createTestableBoundsFor;
-using aikido::constraint::createSampleableBoundsFor;
+using aikido::constraint::dart::createDifferentiableBoundsFor;
+using aikido::constraint::dart::createProjectableBoundsFor;
+using aikido::constraint::dart::createTestableBoundsFor;
+using aikido::constraint::dart::createSampleableBoundsFor;
 
 //==============================================================================
 class RnJointHelpersTests : public ::testing::Test

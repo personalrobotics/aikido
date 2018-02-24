@@ -1,11 +1,11 @@
-#include <aikido/constraint/uniform/SE2BoxConstraint.hpp>
-
+#include "aikido/constraint/uniform/SE2BoxConstraint.hpp"
 #include <stdexcept>
-#include <aikido/constraint/uniform/SO2UniformSampler.hpp>
-#include <aikido/statespace/SO2.hpp>
+#include "aikido/constraint/uniform/SO2UniformSampler.hpp"
+#include "aikido/statespace/SO2.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 using constraint::ConstraintType;
 
@@ -222,5 +222,6 @@ Eigen::Vector2d SE2BoxConstraint::getUpperLimits() const
   return mUpperLimits.tail<2>();
 }
 
-} // namespace statespace
+} // namespace uniform
+} // namespace constraint
 } // namespace aikido

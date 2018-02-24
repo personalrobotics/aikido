@@ -1,15 +1,16 @@
-#ifndef AIKIDO_CONSTRAINT_DART_HPP_
-#define AIKIDO_CONSTRAINT_DART_HPP_
+#ifndef AIKIDO_CONSTRAINT_DART_JOINTSTATESPACEHELPERS_HPP_
+#define AIKIDO_CONSTRAINT_DART_JOINTSTATESPACEHELPERS_HPP_
 
-#include "../statespace/dart/JointStateSpace.hpp"
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "Differentiable.hpp"
-#include "Projectable.hpp"
-#include "Sampleable.hpp"
-#include "Testable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 /// Create differentiable bounds that can be applied to the given StateSpace
 /// \param _stateSpace The StateSpace where the Differentiable will be applied
@@ -107,9 +108,10 @@ std::unique_ptr<Sampleable> createSampleableBounds(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
     std::unique_ptr<common::RNG> _rng);
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
 
 #include "detail/JointStateSpaceHelpers-impl.hpp"
 
-#endif // ifndef AIKIDO_CONSTRAINT_DART_HPP_
+#endif // AIKIDO_CONSTRAINT_DART_JOINTSTATESPACEHELPERS_HPP_
