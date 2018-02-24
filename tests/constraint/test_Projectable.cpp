@@ -10,7 +10,7 @@ using aikido::constraint::CartesianProductProjectable;
 using aikido::constraint::ProjectablePtr;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R3;
-using aikido::constraint::R3BoxConstraint;
+using aikido::constraint::uniform::R3BoxConstraint;
 
 TEST(Project, ProjectInPlaceDefault)
 {

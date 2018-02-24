@@ -1,12 +1,13 @@
-#ifndef AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLEABLE_HPP_
-#define AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLEABLE_HPP_
+#ifndef AIKIDO_CONSTRAINT_DART_INVERSEKINEMATICSSAMPLEABLE_HPP_
+#define AIKIDO_CONSTRAINT_DART_INVERSEKINEMATICSSAMPLEABLE_HPP_
 
 #include <dart/dynamics/dynamics.hpp>
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "Sampleable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 /// Transforms a SE3-Sampleable into a MetaSkeleton-Sampleable
 /// that samples a configuration of a metaskeleton.
@@ -31,10 +32,10 @@ public:
   ///        to retry sampling and finding an inverse kinematics solution.
   InverseKinematicsSampleable(
       statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-      dart::dynamics::MetaSkeletonPtr _metaskeleton,
+      ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
       SampleablePtr _poseConstraint,
       SampleablePtr _seedConstraint,
-      dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+      ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       int _maxNumTrials);
 
   virtual ~InverseKinematicsSampleable() = default;
@@ -47,14 +48,15 @@ public:
 
 private:
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   SampleablePtr mPoseConstraint;
   SampleablePtr mSeedConstraint;
-  dart::dynamics::InverseKinematicsPtr mInverseKinematics;
+  ::dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   int mMaxNumTrials;
 };
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_INVERSEKINEMATICSSAMPLEABLE_HPP_
+#endif // AIKIDO_CONSTRAINT_DART_INVERSEKINEMATICSSAMPLEABLE_HPP_

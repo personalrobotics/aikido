@@ -1,14 +1,15 @@
-#include <aikido/constraint/CollisionFree.hpp>
+#include "aikido/constraint/dart/CollisionFree.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 //==============================================================================
 CollisionFree::CollisionFree(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
-    std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
-    dart::collision::CollisionOption _collisionOptions)
+    ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+    std::shared_ptr<::dart::collision::CollisionDetector> _collisionDetector,
+    ::dart::collision::CollisionOption _collisionOptions)
   : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(_metaskeleton))
   , mCollisionDetector(std::move(_collisionDetector))
@@ -49,7 +50,7 @@ bool CollisionFree::isSatisfied(
   mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
 
   bool collision = false;
-  dart::collision::CollisionResult collisionResult;
+  ::dart::collision::CollisionResult collisionResult;
   for (const auto& groups : mGroupsToPairwiseCheck)
   {
     collision = mCollisionDetector->collide(
@@ -92,8 +93,8 @@ std::unique_ptr<TestableOutcome> CollisionFree::createOutcome() const
 
 //==============================================================================
 void CollisionFree::addPairwiseCheck(
-    std::shared_ptr<dart::collision::CollisionGroup> _group1,
-    std::shared_ptr<dart::collision::CollisionGroup> _group2)
+    std::shared_ptr<::dart::collision::CollisionGroup> _group1,
+    std::shared_ptr<::dart::collision::CollisionGroup> _group2)
 {
   if (_group1 < _group2)
     mGroupsToPairwiseCheck.emplace_back(std::move(_group1), std::move(_group2));
@@ -103,8 +104,8 @@ void CollisionFree::addPairwiseCheck(
 
 //==============================================================================
 void CollisionFree::removePairwiseCheck(
-    std::shared_ptr<dart::collision::CollisionGroup> _group1,
-    std::shared_ptr<dart::collision::CollisionGroup> _group2)
+    std::shared_ptr<::dart::collision::CollisionGroup> _group1,
+    std::shared_ptr<::dart::collision::CollisionGroup> _group2)
 {
   if (_group1 < _group2)
     mGroupsToPairwiseCheck.erase(
@@ -124,19 +125,20 @@ void CollisionFree::removePairwiseCheck(
 
 //==============================================================================
 void CollisionFree::addSelfCheck(
-    std::shared_ptr<dart::collision::CollisionGroup> _group)
+    std::shared_ptr<::dart::collision::CollisionGroup> _group)
 {
   mGroupsToSelfCheck.emplace_back(std::move(_group));
 }
 
 //==============================================================================
 void CollisionFree::removeSelfCheck(
-    std::shared_ptr<dart::collision::CollisionGroup> _group)
+    std::shared_ptr<::dart::collision::CollisionGroup> _group)
 {
   mGroupsToSelfCheck.erase(
       std::remove(mGroupsToSelfCheck.begin(), mGroupsToSelfCheck.end(), _group),
       mGroupsToSelfCheck.end());
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido

@@ -1,9 +1,6 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <aikido/common/StepSequence.hpp>
-#include <aikido/constraint/CartesianProductSampleable.hpp>
-#include <aikido/constraint/CartesianProductTestable.hpp>
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
+#include <aikido/constraint.hpp>
 #include <aikido/planner/ompl/CRRT.hpp>
 #include <aikido/planner/ompl/CRRTConnect.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>

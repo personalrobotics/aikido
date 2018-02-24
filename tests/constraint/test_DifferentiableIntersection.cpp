@@ -2,12 +2,12 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <aikido/constraint/DifferentiableIntersection.hpp>
-#include <aikido/constraint/TSR.hpp>
+#include <aikido/constraint/dart/TSR.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include "PolynomialConstraint.hpp"
 
 using aikido::constraint::DifferentiableIntersection;
-using aikido::constraint::TSR;
+using aikido::constraint::dart::TSR;
 using aikido::constraint::DifferentiablePtr;
 
 using aikido::statespace::R1;

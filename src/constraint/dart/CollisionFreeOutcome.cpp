@@ -1,8 +1,9 @@
+#include "aikido/constraint/dart/CollisionFreeOutcome.hpp"
 #include <sstream>
-#include <aikido/constraint/CollisionFreeOutcome.hpp>
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 //==============================================================================
 bool CollisionFreeOutcome::isSatisfied() const
@@ -41,14 +42,14 @@ void CollisionFreeOutcome::clear()
 }
 
 //==============================================================================
-std::vector<dart::collision::Contact>
+std::vector<::dart::collision::Contact>
 CollisionFreeOutcome::getPairwiseContacts() const
 {
   return mPairwiseContacts;
 }
 
 //==============================================================================
-std::vector<dart::collision::Contact> CollisionFreeOutcome::getSelfContacts()
+std::vector<::dart::collision::Contact> CollisionFreeOutcome::getSelfContacts()
     const
 {
   return mSelfContacts;
@@ -56,13 +57,13 @@ std::vector<dart::collision::Contact> CollisionFreeOutcome::getSelfContacts()
 
 //==============================================================================
 std::string CollisionFreeOutcome::getCollisionObjectName(
-    const dart::collision::CollisionObject* object) const
+    const ::dart::collision::CollisionObject* object) const
 {
-  const dart::dynamics::ShapeFrame* frame = object->getShapeFrame();
+  const ::dart::dynamics::ShapeFrame* frame = object->getShapeFrame();
 
   if (frame->isShapeNode())
   {
-    const dart::dynamics::ShapeNode* node = frame->asShapeNode();
+    const ::dart::dynamics::ShapeNode* node = frame->asShapeNode();
     return node->getBodyNodePtr()->getName();
   }
   else
@@ -71,5 +72,6 @@ std::string CollisionFreeOutcome::getCollisionObjectName(
   }
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
