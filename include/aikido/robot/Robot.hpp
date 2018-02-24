@@ -9,8 +9,8 @@
 #include <dart/dynamics/dynamics.hpp>
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
-#include "aikido/constraint/CollisionFree.hpp"
-#include "aikido/constraint/TSR.hpp"
+#include "aikido/constraint/dart/CollisionFree.hpp"
+#include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
@@ -89,7 +89,7 @@ public:
   /// Returns self-collision constraint.
   /// \param[in] space Space in which this collision constraint operates.
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
-  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
+  virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
       = 0;
@@ -100,10 +100,10 @@ public:
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
   /// \param[in] collisionFree Collision constraint.
   /// \return Combined constraint.
-  virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
+  virtual constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::CollisionFreePtr& collisionFree)
+      const constraint::dart::CollisionFreePtr& collisionFree)
       = 0;
 };
 

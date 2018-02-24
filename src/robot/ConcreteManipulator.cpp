@@ -87,7 +87,7 @@ void ConcreteManipulator::step(
 }
 
 //==============================================================================
-aikido::constraint::CollisionFreePtr
+constraint::dart::CollisionFreePtr
 ConcreteManipulator::getSelfCollisionConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
@@ -99,7 +99,7 @@ ConcreteManipulator::getSelfCollisionConstraint(
 aikido::constraint::TestablePtr ConcreteManipulator::getFullCollisionConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const constraint::CollisionFreePtr& collisionFree)
+    const constraint::dart::CollisionFreePtr& collisionFree)
 {
   return mRobot->getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 }
@@ -109,7 +109,7 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
-    const constraint::CollisionFreePtr& collisionFree,
+    const constraint::dart::CollisionFreePtr& collisionFree,
     const Eigen::Vector3d& direction,
     double distance,
     double timelimit,
@@ -148,7 +148,7 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
-    const constraint::CollisionFreePtr& collisionFree,
+    const constraint::dart::CollisionFreePtr& collisionFree,
     double distance,
     double timelimit,
     double positionTolerance,

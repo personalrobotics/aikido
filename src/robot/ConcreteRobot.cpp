@@ -8,9 +8,9 @@ namespace aikido {
 namespace robot {
 
 using common::RNG;
-using constraint::CollisionFreePtr;
-using constraint::TSR;
-using constraint::TSRPtr;
+using constraint::dart::CollisionFreePtr;
+using constraint::dart::TSR;
+using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
@@ -243,7 +243,7 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton)
 {
-  using constraint::CollisionFree;
+  using constraint::dart::CollisionFree;
 
   if (mRootRobot != this)
     return mRootRobot->getSelfCollisionConstraint(space, metaSkeleton);

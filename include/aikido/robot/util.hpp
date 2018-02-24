@@ -5,8 +5,8 @@
 #include <dart/dynamics/dynamics.hpp>
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
-#include "aikido/constraint/CollisionFree.hpp"
-#include "aikido/constraint/TSR.hpp"
+#include "aikido/constraint/dart/CollisionFree.hpp"
+#include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/io/yaml.hpp"
@@ -135,7 +135,7 @@ trajectory::InterpolatedPtr planToTSR(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
-    const constraint::TSRPtr& tsr,
+    const constraint::dart::TSRPtr& tsr,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
     double timelimit,
@@ -159,8 +159,8 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
-    const constraint::TSRPtr& goalTsr,
-    const constraint::TSRPtr& constraintTsr,
+    const constraint::dart::TSRPtr& goalTsr,
+    const constraint::dart::TSRPtr& constraintTsr,
     const constraint::TestablePtr& collisionTestable,
     double timelimit,
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
@@ -209,8 +209,8 @@ bool getGoalAndConstraintTSRForEndEffectorOffset(
     const dart::dynamics::BodyNodePtr& bodyNode,
     const Eigen::Vector3d& direction,
     double distance,
-    const constraint::TSRPtr& goal,
-    const constraint::TSRPtr& constraint,
+    const constraint::dart::TSRPtr& goal,
+    const constraint::dart::TSRPtr& constraint,
     double positionTolerance,
     double angularTolerance);
 

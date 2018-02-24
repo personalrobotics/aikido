@@ -9,8 +9,8 @@
 #include <dart/dynamics/dynamics.hpp>
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
-#include "aikido/constraint/CollisionFree.hpp"
-#include "aikido/constraint/TSR.hpp"
+#include "aikido/constraint/dart/CollisionFree.hpp"
+#include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
@@ -83,7 +83,7 @@ public:
       const std::chrono::system_clock::time_point& timepoint) override;
 
   // Documentation inherited.
-  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
+  virtual aikido::constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
 
@@ -91,7 +91,7 @@ public:
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::CollisionFreePtr& collisionFree) override;
+      const constraint::dart::CollisionFreePtr& collisionFree) override;
 
   /// Plan the robot to a specific configuration. Restores the robot to its
   /// initial configuration after planning.
@@ -105,7 +105,7 @@ public:
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::statespace::StateSpace::State* goalState,
-      const aikido::constraint::CollisionFreePtr& collisionFree,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
   /// Wrapper for planToConfiguration using Eigen vectors.
@@ -121,7 +121,7 @@ public:
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const Eigen::VectorXd& goal,
-      const aikido::constraint::CollisionFreePtr& collisionFree,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
   /// Plan the robot to a set of configurations. Restores the robot to its
@@ -136,7 +136,7 @@ public:
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::vector<aikido::statespace::StateSpace::State*>& goalStates,
-      const aikido::constraint::CollisionFreePtr& collisionFree,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
   /// Plan the robot to a set of configurations. Restores the robot to its
@@ -151,7 +151,7 @@ public:
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::vector<Eigen::VectorXd>& goals,
-      const aikido::constraint::CollisionFreePtr& collisionFree,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
   /// Plans the configuration of the metakeleton such that
@@ -168,8 +168,8 @@ public:
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& bodyNode,
-      const aikido::constraint::TSRPtr& tsr,
-      const aikido::constraint::CollisionFreePtr& collisionFree,
+      const aikido::constraint::dart::TSRPtr& tsr,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit,
       size_t maxNumTrials);
 
@@ -188,9 +188,9 @@ public:
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& bodyNode,
-      const aikido::constraint::TSRPtr& goalTsr,
-      const aikido::constraint::TSRPtr& constraintTsr,
-      const aikido::constraint::CollisionFreePtr& collisionFree,
+      const aikido::constraint::dart::TSRPtr& goalTsr,
+      const aikido::constraint::dart::TSRPtr& constraintTsr,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
   /// Plans to a named configuration.
@@ -200,7 +200,7 @@ public:
   /// \return Trajectory to the configuration, or nullptr if planning fails
   aikido::trajectory::TrajectoryPtr planToNamedConfiguration(
       const std::string& name,
-      const aikido::constraint::CollisionFreePtr& collisionFree,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
   /// Sets CRRTPlanner parameters.
@@ -249,8 +249,8 @@ private:
   /// Commonly used configurations.
   ConfigurationMap mNamedConfigurations;
 
-  dart::collision::CollisionDetectorPtr mCollisionDetector;
-  dart::collision::CollisionGroupPtr mCollideWith;
+  ::dart::collision::CollisionDetectorPtr mCollisionDetector;
+  ::dart::collision::CollisionGroupPtr mCollideWith;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
 

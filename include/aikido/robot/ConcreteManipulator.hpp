@@ -66,7 +66,7 @@ public:
       const std::chrono::system_clock::time_point& timepoint) override;
 
   // Documentation inherited.
-  virtual aikido::constraint::CollisionFreePtr getSelfCollisionConstraint(
+  virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
 
@@ -74,7 +74,7 @@ public:
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::CollisionFreePtr& collisionFree) override;
+      const constraint::dart::CollisionFreePtr& collisionFree) override;
 
   /// Plans to a desired end-effector offset with fixed orientation.
   /// \param[in] space The StateSpace for the metaskeleton.
@@ -90,7 +90,7 @@ public:
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& body,
-      const constraint::CollisionFreePtr& collisionFree,
+      const constraint::dart::CollisionFreePtr& collisionFree,
       const Eigen::Vector3d& direction,
       double distance,
       double timelimit,
@@ -117,7 +117,7 @@ public:
       statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& body,
-      const constraint::CollisionFreePtr& collisionFree,
+      const constraint::dart::CollisionFreePtr& collisionFree,
       double distance,
       double timelimit,
       double positionTolerance,

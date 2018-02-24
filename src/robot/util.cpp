@@ -6,10 +6,10 @@
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
-#include "aikido/constraint/FrameDifferentiable.hpp"
-#include "aikido/constraint/FrameTestable.hpp"
-#include "aikido/constraint/InverseKinematicsSampleable.hpp"
-#include "aikido/constraint/JointStateSpaceHelpers.hpp"
+#include "aikido/constraint/dart/FrameDifferentiable.hpp"
+#include "aikido/constraint/dart/FrameTestable.hpp"
+#include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
+#include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
@@ -30,13 +30,14 @@ namespace aikido {
 namespace robot {
 namespace util {
 
-using constraint::CollisionFreePtr;
-using constraint::TSR;
-using constraint::TSRPtr;
+using constraint::dart::CollisionFreePtr;
+using constraint::dart::InverseKinematicsSampleable;
+using constraint::dart::TSR;
+using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
-using constraint::createProjectableBounds;
-using constraint::createSampleableBounds;
-using constraint::createTestableBounds;
+using constraint::dart::createProjectableBounds;
+using constraint::dart::createSampleableBounds;
+using constraint::dart::createTestableBounds;
 using distance::createDistanceMetric;
 using statespace::GeodesicInterpolator;
 using statespace::dart::MetaSkeletonStateSpacePtr;
@@ -179,8 +180,6 @@ InterpolatedPtr planToTSR(
     double timelimit,
     size_t maxNumTrials)
 {
-  using constraint::InverseKinematicsSampleable;
-
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       space,
@@ -273,20 +272,20 @@ InterpolatedPtr planToTSR(
 
 //==============================================================================
 InterpolatedPtr planToTSRwithTrajectoryConstraint(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bodyNode,
-    const constraint::TSRPtr& goalTsr,
-    const constraint::TSRPtr& constraintTsr,
-    const constraint::TestablePtr& collisionTestable,
+    const MetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonPtr& metaSkeleton,
+    const BodyNodePtr& bodyNode,
+    const TSRPtr& goalTsr,
+    const TSRPtr& constraintTsr,
+    const TestablePtr& collisionTestable,
     double timelimit,
     const CRRTPlannerParameters& crrtParameters)
 {
   using aikido::constraint::Sampleable;
-  using aikido::constraint::InverseKinematicsSampleable;
+  using aikido::constraint::dart::InverseKinematicsSampleable;
   using aikido::constraint::CyclicSampleable;
-  using aikido::constraint::FrameDifferentiable;
-  using aikido::constraint::FrameTestable;
+  using aikido::constraint::dart::FrameDifferentiable;
+  using aikido::constraint::dart::FrameTestable;
   using aikido::constraint::NewtonsMethodProjectable;
   using aikido::planner::ompl::planCRRTConnect;
 
@@ -365,11 +364,11 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
 //==============================================================================
 trajectory::TrajectoryPtr planToEndEffectorOffset(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bodyNode,
+    const MetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonPtr& metaSkeleton,
+    const BodyNodePtr& bodyNode,
     const Eigen::Vector3d& direction,
-    const constraint::TestablePtr& collisionTestable,
+    const TestablePtr& collisionTestable,
     double distance,
     double timelimit,
     double positionTolerance,
