@@ -1,13 +1,14 @@
-#ifndef AIKIDO_CONSTRAINT_FRAMETESTABLE_HPP_
-#define AIKIDO_CONSTRAINT_FRAMETESTABLE_HPP_
+#ifndef AIKIDO_CONSTRAINT_DART_FRAMETESTABLE_HPP_
+#define AIKIDO_CONSTRAINT_DART_FRAMETESTABLE_HPP_
 
 #include <dart/dynamics/dynamics.hpp>
-#include "../statespace/SE3.hpp"
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "Testable.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/statespace/SE3.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 /// Transforms a SE(3) Testable into a MetaSkeleton-Testable by
 /// performing forward kinematics on a configuration (metaskeleton state)
@@ -22,8 +23,8 @@ public:
   /// \param _poseConstraint A testable constraint on _frame.
   FrameTestable(
       statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-      dart::dynamics::MetaSkeletonPtr _metaskeleton,
-      dart::dynamics::ConstJacobianNodePtr _frame,
+      ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+      ::dart::dynamics::ConstJacobianNodePtr _frame,
       TestablePtr _poseConstraint);
 
   /// Check if the constraint is satisfied by performing forward
@@ -48,13 +49,14 @@ public:
 
 private:
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
-  dart::dynamics::ConstJacobianNodePtr mFrame;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  ::dart::dynamics::ConstJacobianNodePtr mFrame;
   TestablePtr mPoseConstraint;
   std::shared_ptr<statespace::SE3> mPoseStateSpace;
 };
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_FRAMETESTABLE_HPP_
+#endif // AIKIDO_CONSTRAINT_DART_FRAMETESTABLE_HPP_

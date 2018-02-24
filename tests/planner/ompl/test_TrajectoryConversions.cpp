@@ -1,8 +1,4 @@
 #include <aikido/common/StepSequence.hpp>
-#include <aikido/constraint/CartesianProductSampleable.hpp>
-#include <aikido/constraint/CartesianProductTestable.hpp>
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
 #include "../../constraint/MockConstraints.hpp"
