@@ -1,8 +1,6 @@
 #ifndef AIKIDO_ROBOT_MANIPULATOR_HPP_
 #define AIKIDO_ROBOT_MANIPULATOR_HPP_
 
-#include <string>
-#include <dart/dart.hpp>
 #include "aikido/robot/Hand.hpp"
 #include "aikido/robot/Robot.hpp"
 

@@ -28,7 +28,7 @@ public:
   /// \param _poseConstraint Constraint on _jacobian. This should be
   ///        in SE3.
   FrameDifferentiable(
-      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
       ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
       ::dart::dynamics::ConstJacobianNodePtr _jacobianNode,
       DifferentiablePtr _poseConstraint);
@@ -65,7 +65,7 @@ public:
   statespace::StateSpacePtr getStateSpace() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   ::dart::dynamics::ConstJacobianNodePtr mJacobianNode;
   DifferentiablePtr mPoseConstraint;

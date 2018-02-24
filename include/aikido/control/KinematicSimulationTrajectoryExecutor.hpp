@@ -58,6 +58,8 @@ private:
   /// Trajectory's MetaSkeletonStateSpace
   statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
 
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+
   /// Whether a trajectory is being executed
   bool mInProgress;
 

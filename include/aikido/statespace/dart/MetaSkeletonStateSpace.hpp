@@ -129,6 +129,14 @@ public:
   void checkCompatibility(
       const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
 
+  /// Checks whether this \c skeleton contains all dofs defined
+  /// in this state space.
+  ///
+  /// \throws invalid_argument if \c skeleton does not contain
+  ///  all dofs if this state space.
+  void checkIfContained(
+    const ::dart::dynamics::Skeleton* skeleton) const;
+
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
   ///
   /// \tparam Space type of \c StateSpace to return

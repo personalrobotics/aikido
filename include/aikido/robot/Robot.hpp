@@ -2,20 +2,16 @@
 #define AIKIDO_ROBOT_ROBOT_HPP_
 
 #include <chrono>
-#include <string>
 #include <unordered_map>
 #include <Eigen/Core>
-#include <dart/dart.hpp>
 #include <dart/dynamics/dynamics.hpp>
-#include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
-#include "aikido/planner/parabolic/ParabolicSmoother.hpp"
-#include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace robot {
@@ -51,7 +47,8 @@ public:
 
   /// Executes a trajectory
   /// \param[in] trajectory Timed trajectory to execute
-  virtual void executeTrajectory(const trajectory::TrajectoryPtr& trajectory)
+  virtual std::future<void> executeTrajectory(
+      const trajectory::TrajectoryPtr& trajectory)
       = 0;
 
   // Returns a named configuration
@@ -74,8 +71,8 @@ public:
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
 
   /// \return MetaSkeletonStateSpace of this robot.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
-      = 0;
+  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+   getStateSpace() const = 0;
 
   /// Sets the root of this robot.
   /// \param[in] robot Parent robot
@@ -90,18 +87,19 @@ public:
   /// \param[in] space Space in which this collision constraint operates.
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
       = 0;
 
-  /// Combines provided collision constraint with relf collision
+  /// TODO: Consider changing this to return a CollisionFreePtr.
+  /// Combines provided collision constraint with self collision
   /// constraint.
   /// \param[in] space Space in which this collision constraint operates.
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
   /// \param[in] collisionFree Collision constraint.
   /// \return Combined constraint.
   virtual constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree)
       = 0;

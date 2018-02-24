@@ -16,6 +16,9 @@ AIKIDO_DECLARE_POINTERS(ConcreteManipulator)
 class ConcreteManipulator : public Manipulator
 {
 public:
+  /// Constructor.
+  /// \param[in] robot Robot corresponding to this manipulator.
+  /// \param[in] hand Hand of this manipulator.
   ConcreteManipulator(RobotPtr robot, HandPtr hand);
 
   virtual ~ConcreteManipulator() = default;
@@ -35,11 +38,10 @@ public:
       const aikido::trajectory::Trajectory* path) override;
 
   // Documentation inherited.
-  virtual void executeTrajectory(
+  virtual std::future<void> executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) override;
 
   // Documentation inherited.
-  /// \copydoc Robot::getNamedConfiguration
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
       const std::string& name) const override;
 
@@ -55,8 +57,8 @@ public:
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
 
   // Documentation inherited.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
-      override;
+  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+    getStateSpace() const override;
 
   // Documentation inherited.
   virtual void setRoot(Robot* robot) override;
@@ -67,15 +69,16 @@ public:
 
   // Documentation inherited.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) override;
 
+  /// TODO: Replace this with Problem interface.
   /// Plans to a desired end-effector offset with fixed orientation.
   /// \param[in] space The StateSpace for the metaskeleton.
   /// \param[in] metaSkeleton Metaskeleton to plan with.
@@ -87,7 +90,7 @@ public:
   /// \param[in] timelimit Timelimit for planning
   /// \return Output trajectory
   trajectory::TrajectoryPtr planToEndEffectorOffset(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& body,
       const constraint::dart::CollisionFreePtr& collisionFree,
@@ -97,12 +100,7 @@ public:
       double positionTolerance,
       double angularTolerance);
 
-  /// Returns the direction of an end effector (along z axis) in the world frame
-  /// \param body Bodynode for the end effector
-  /// \return The direction of the end effector (z axis of the frame)
-  Eigen::Vector3d getEndEffectorDirection(
-      const dart::dynamics::BodyNodePtr& body) const;
-
+  /// TODO: Replace this with Problem interface.
   /// Plans to a desired end-effector offset along the z axis of the
   /// end-effector.
   /// \param[in] space The StateSpace for the metaskeleton.
@@ -114,7 +112,7 @@ public:
   /// \param[in] timelimit Timelimit for plannnig.
   /// \return Output trajectory
   trajectory::TrajectoryPtr planEndEffectorStraight(
-      statespace::dart::MetaSkeletonStateSpacePtr& space,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& body,
       const constraint::dart::CollisionFreePtr& collisionFree,
@@ -123,14 +121,14 @@ public:
       double positionTolerance,
       double angularTolerance);
 
+  /// TODO: This should be revisited once we have Planner API.
   /// Sets VectorFieldPlanner parameters.
-  /// TODO: To be removed with Planner API.
   /// \param[in] vfParameters VectorField Parameters
   void setVectorFieldPlannerParameters(
       const util::VectorFieldPlannerParameters& vfParameters);
 
+  /// TODO: This should be revisited once we have Planner API.
   /// Sets CRRTPlanner parameters.
-  /// TODO: To be removed when PlannerAdapters are in place.
   /// \param[in] crrtParameters CRRT planner parameters
   void setCRRTPlannerParameters(
       const util::CRRTPlannerParameters& crrtParameters);
@@ -140,6 +138,13 @@ private:
   HandPtr mHand;
   util::VectorFieldPlannerParameters mVectorFieldParameters;
   util::CRRTPlannerParameters mCRRTParameters;
+
+  /// Returns the direction of an end effector (along z axis) in the world frame
+  /// \param body Bodynode for the end effector
+  /// \return The direction of the end effector (z axis of the frame)
+  Eigen::Vector3d getEndEffectorDirection(
+      const dart::dynamics::BodyNodePtr& body) const;
+
 };
 
 } // namespace robot

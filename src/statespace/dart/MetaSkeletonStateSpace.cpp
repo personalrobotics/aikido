@@ -283,6 +283,24 @@ void MetaSkeletonStateSpace::checkCompatibility(
 }
 
 //==============================================================================
+void MetaSkeletonStateSpace::checkIfContained(
+  const ::dart::dynamics::Skeleton* skeleton) const
+{
+  // TODO: Name-uniqueness is allowed only within the same skeleton,
+  // so we should check for skeleton-equality.
+  auto dofNames = mProperties.getDofNames();
+  for (const auto& name : dofNames)
+  {
+    if (!skeleton->getDof(name))
+    {
+      std::stringstream ss;
+      ss << "DegreeOfFreedom[" << name << "] does not exist in mSkeleton.";
+      throw std::invalid_argument(ss.str());
+    }
+  }
+}
+
+//==============================================================================
 void MetaSkeletonStateSpace::convertPositionsToState(
     const Eigen::VectorXd& _positions, State* _state) const
 {

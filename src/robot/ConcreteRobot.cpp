@@ -14,8 +14,10 @@ using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
+using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
+using statespace::dart::MetaSkeletonStateSpace;
 using statespace::StateSpace;
 using statespace::StateSpacePtr;
 using trajectory::TrajectoryPtr;
@@ -98,10 +100,9 @@ Eigen::VectorXd getSymmetricAccelerationLimits(
 ConcreteRobot::ConcreteRobot(
     const std::string& name,
     MetaSkeletonPtr robot,
-    MetaSkeletonStateSpacePtr statespace,
     bool simulation,
     std::unique_ptr<aikido::common::RNG> rng,
-    std::shared_ptr<control::TrajectoryExecutor> trajectoryExecutor,
+    control::TrajectoryExecutorPtr trajectoryExecutor,
     dart::collision::CollisionDetectorPtr collisionDetector,
     dart::collision::CollisionGroupPtr collideWith,
     std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
@@ -109,7 +110,7 @@ ConcreteRobot::ConcreteRobot(
   : mRootRobot(this)
   , mName(name)
   , mRobot(robot)
-  , mStateSpace(statespace)
+  , mStateSpace(std::make_shared<MetaSkeletonStateSpace>(mRobot.get()))
   , mParentRobot(mRobot->getBodyNode(0)->getSkeleton())
   , mSimulation(simulation)
   , mRng(std::move(rng))
@@ -167,9 +168,10 @@ std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::retimePath(
 }
 
 //==============================================================================
-void ConcreteRobot::executeTrajectory(const TrajectoryPtr& trajectory)
+std::future<void> ConcreteRobot::executeTrajectory(
+  const TrajectoryPtr& trajectory)
 {
-  mTrajectoryExecutor->execute(trajectory);
+  return mTrajectoryExecutor->execute(trajectory);
 }
 
 //==============================================================================
@@ -203,7 +205,7 @@ MetaSkeletonPtr ConcreteRobot::getMetaSkeleton()
 }
 
 //==============================================================================
-MetaSkeletonStateSpacePtr ConcreteRobot::getStateSpace()
+ConstMetaSkeletonStateSpacePtr ConcreteRobot::getStateSpace() const
 {
   return mStateSpace;
 }
@@ -240,7 +242,7 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
 
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const ConstMetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton)
 {
   using constraint::dart::CollisionFree;
@@ -266,7 +268,7 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
 
 //=============================================================================
 TestablePtr ConcreteRobot::getFullCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space,
+    const ConstMetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const CollisionFreePtr& collisionFree)
 {
@@ -299,7 +301,7 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const MetaSkeletonStateSpacePtr& stateSpace,
+    const ConstMetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
     const CollisionFreePtr& collisionFree,
@@ -319,7 +321,7 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const MetaSkeletonStateSpacePtr& stateSpace,
+    const ConstMetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const Eigen::VectorXd& goal,
     const CollisionFreePtr& collisionFree,
@@ -334,7 +336,7 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const MetaSkeletonStateSpacePtr& stateSpace,
+    const ConstMetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<StateSpace::State*>& goalStates,
     const CollisionFreePtr& collisionFree,
@@ -351,7 +353,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const MetaSkeletonStateSpacePtr& stateSpace,
+    const ConstMetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<Eigen::VectorXd>& goals,
     const CollisionFreePtr& collisionFree,
@@ -370,13 +372,13 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToTSR(
-    const MetaSkeletonStateSpacePtr& stateSpace,
+    const ConstMetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const TSRPtr& tsr,
     const CollisionFreePtr& collisionFree,
     double timelimit,
-    size_t maxNumTrials)
+    std::size_t maxNumTrials)
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
@@ -394,7 +396,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
-    const MetaSkeletonStateSpacePtr& stateSpace,
+    const ConstMetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bodyNode,
     const TSRPtr& goalTsr,

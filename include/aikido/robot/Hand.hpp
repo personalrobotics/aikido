@@ -25,13 +25,12 @@ public:
   virtual void grab(const dart::dynamics::SkeletonPtr& bodyToGrab) = 0;
 
   /// Ungrabs an object. Immediately ungrabs.
-  /// Throws a runtime_error if fails.
+  /// \throws a runtime_error if fails.
   virtual void ungrab() = 0;
 
   /// Sets the hand to the corresponding preshape (from \c preshapesUri).
   /// \param[in] preshapeName Name of preshape (e.g. "open")
-  /// Throws a runtime_error if execution fails.
-  virtual void executePreshape(const std::string& preshapeName) = 0;
+  virtual std::future<void> executePreshape(const std::string& preshapeName) = 0;
 
   /// Executes the preshape trajectory upto timepoint..
   // \param[in] timepoint Time to simulate to.
