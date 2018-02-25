@@ -54,6 +54,6 @@ add_component_dependencies(${PROJECT_NAME} robot
   distance
   statespace
   trajectory
-  )
+)
 
 format_add_sources(${sources})

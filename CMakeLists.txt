@@ -24,7 +24,7 @@ set(AIKIDO_MINOR_VERSION "3")
 set(AIKIDO_PATCH_VERSION "0")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
-list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
+list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 
 #==============================================================================
 # Configuration Options
@@ -126,7 +126,7 @@ include(FindPkgConfig)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DART 6.2.0 REQUIRED
+find_package(DART 6.3.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
