@@ -80,14 +80,14 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 }
 
 //==============================================================================
-std::future<void> RosTrajectoryExecutor::execute(trajectory::TrajectoryPtr traj)
+std::future<void> RosTrajectoryExecutor::execute(trajectory::ConstTrajectoryPtr traj)
 {
   static const ::ros::Time invalidTime;
   return execute(traj, invalidTime);
 }
 
 //==============================================================================
-void RosTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
+void RosTrajectoryExecutor::validate(const trajectory::ConstTrajectoryPtr& traj)
 {
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
@@ -108,7 +108,7 @@ void RosTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
 }
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
+    trajectory::ConstTrajectoryPtr traj, const ::ros::Time& startTime)
 {
   using aikido::control::ros::toRosJointTrajectory;
 

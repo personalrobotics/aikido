@@ -39,17 +39,17 @@ public:
   virtual ~RosTrajectoryExecutor();
 
   // Documentation inherited.
-  void validate(trajectory::TrajectoryPtr traj) override;
+  void validate(const trajectory::ConstTrajectoryPtr& traj) override;
 
   /// Sends trajectory to ROS server for execution.
   /// \param[in] traj Trajectory to be executed.
-  std::future<void> execute(trajectory::TrajectoryPtr traj) override;
+  std::future<void> execute(trajectory::ConstTrajectoryPtr traj) override;
 
   /// Sends trajectory to ROS server for execution.
   /// \param[in] traj Trajectory to be executed.
   /// \param[in] startTime Start time for the trajectory.
   std::future<void> execute(
-      trajectory::TrajectoryPtr traj, const ::ros::Time& startTime);
+      trajectory::ConstTrajectoryPtr traj, const ::ros::Time& startTime);
 
   /// \copydoc TrajectoryExecutor::step()
   ///

@@ -39,7 +39,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 
 //==============================================================================
 void KinematicSimulationTrajectoryExecutor::validate(
-    trajectory::TrajectoryPtr traj)
+    const trajectory::ConstTrajectoryPtr& traj)
 {
   if (!traj)
     throw std::invalid_argument("Traj is null.");
@@ -63,7 +63,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
 //==============================================================================
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj)
+    trajectory::ConstTrajectoryPtr traj)
 {
   using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 

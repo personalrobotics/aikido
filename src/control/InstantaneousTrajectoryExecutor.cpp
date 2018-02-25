@@ -23,7 +23,7 @@ InstantaneousTrajectoryExecutor::~InstantaneousTrajectoryExecutor()
 }
 
 //==============================================================================
-void InstantaneousTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
+void InstantaneousTrajectoryExecutor::validate(const trajectory::ConstTrajectoryPtr& traj)
 {
   if (!traj)
     throw std::invalid_argument("Traj is null.");
@@ -47,7 +47,7 @@ void InstantaneousTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
 
 //==============================================================================
 std::future<void> InstantaneousTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj)
+    trajectory::ConstTrajectoryPtr traj)
 {
   validate(traj);
 
