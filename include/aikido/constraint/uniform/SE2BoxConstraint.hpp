@@ -1,14 +1,15 @@
 #ifndef AIKIDO_CONSTRAINT_UNIFORM_SE2BOXCONSTRAINT_HPP_
 #define AIKIDO_CONSTRAINT_UNIFORM_SE2BOXCONSTRAINT_HPP_
 
-#include "../../statespace/SE2.hpp"
-#include "../Differentiable.hpp"
-#include "../Projectable.hpp"
-#include "../Sampleable.hpp"
-#include "../Testable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/statespace/SE2.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 /// A BoxConstraint on SE2.
 ///
@@ -80,6 +81,7 @@ private:
   std::size_t mDimension;
 };
 
+} // namespace uniform
 } // namespace constraint
 } // namespace aikido
 

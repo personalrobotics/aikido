@@ -11,7 +11,7 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include <ros/ros.h>
 
-#include <aikido/constraint/TSR.hpp>
+#include <aikido/constraint/dart/TSR.hpp>
 #include <aikido/rviz/TSRMarker.hpp>
 #include <aikido/rviz/pointers.hpp>
 #include <aikido/trajectory/Trajectory.hpp>
@@ -51,7 +51,7 @@ public:
   /// \param basename Basename for markers
   /// \return TSRMarkerPtr contains sampled frames of TSR.
   TSRMarkerPtr addTSRMarker(
-      const aikido::constraint::TSR& tsr,
+      const constraint::dart::TSR& tsr,
       int nSamples = 10,
       const std::string& basename = "");
 
