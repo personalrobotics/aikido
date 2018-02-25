@@ -57,7 +57,7 @@ Eigen::VectorXd getSymmetricLimits(
   assert(static_cast<std::size_t>(upperLimits.size()) == numDofs);
 
   Eigen::VectorXd symmetricLimits(numDofs);
-  for (size_t iDof = 0; iDof < numDofs; ++iDof)
+  for (std::size_t iDof = 0; iDof < numDofs; ++iDof)
   {
     symmetricLimits[iDof] = std::min(-lowerLimits[iDof], upperLimits[iDof]);
     if (std::abs(lowerLimits[iDof] + upperLimits[iDof]) > asymmetryTolerance)
@@ -96,6 +96,7 @@ Eigen::VectorXd getSymmetricAccelerationLimits(
       asymmetryTolerance);
 }
 }
+
 //==============================================================================
 ConcreteRobot::ConcreteRobot(
     const std::string& name,
@@ -111,7 +112,7 @@ ConcreteRobot::ConcreteRobot(
   , mName(name)
   , mRobot(robot)
   , mStateSpace(std::make_shared<MetaSkeletonStateSpace>(mRobot.get()))
-  , mParentRobot(mRobot->getBodyNode(0)->getSkeleton())
+  , mParentRobot(nullptr)
   , mSimulation(simulation)
   , mRng(std::move(rng))
   , mTrajectoryExecutor(std::move(trajectoryExecutor))
@@ -120,7 +121,10 @@ ConcreteRobot::ConcreteRobot(
   , mCollideWith(collideWith)
   , mSelfCollisionFilter(selfCollisionFilter)
 {
-  // Do nothing
+  if (!robot)
+    throw std::invalid_argument("Robot is nullptr.");
+
+  mParentRobot = mRobot->getBodyNode(0)->getSkeleton();
 }
 
 //==============================================================================
@@ -359,10 +363,13 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
     double timelimit)
 {
   std::vector<StateSpace::State*> goalStates;
-  for (const auto goal : goals)
+  goalStates.reserve(goals.size());
+
+  for (const auto& goal : goals)
   {
     auto goalState = stateSpace->createState();
     stateSpace->convertPositionsToState(goal, goalState);
+    goalStates.emplace_back(goalState);
   }
 
   return planToConfigurations(

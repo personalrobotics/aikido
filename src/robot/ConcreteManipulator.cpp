@@ -140,7 +140,7 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
 Eigen::Vector3d ConcreteManipulator::getEndEffectorDirection(
     const dart::dynamics::BodyNodePtr& body) const
 {
-  const size_t zDirection = 2;
+  const std::size_t zDirection = 2;
   return body->getWorldTransform().linear().col(zDirection).normalized();
 }
 

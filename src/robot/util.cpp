@@ -132,7 +132,7 @@ InterpolatedPtr planToConfigurations(
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
-  for (const auto goalState : goalStates)
+  for (const auto& goalState : goalStates)
   {
     // First test with Snap Planner
     planner::PlanningResult pResult;
@@ -178,7 +178,7 @@ InterpolatedPtr planToTSR(
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit,
-    size_t maxNumTrials)
+    std::size_t maxNumTrials)
 {
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
@@ -289,7 +289,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
   using aikido::constraint::NewtonsMethodProjectable;
   using aikido::planner::ompl::planCRRTConnect;
 
-  size_t projectionMaxIteration = crrtParameters.projectionMaxIteration;
+  std::size_t projectionMaxIteration = crrtParameters.projectionMaxIteration;
   double projectionTolerance = crrtParameters.projectionTolerance;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -478,7 +478,7 @@ parseYAMLToNamedConfigurations(const YAML::Node& node)
 {
   std::unordered_map<std::string, const Eigen::VectorXd> namedConfigurations;
 
-  for (const auto configurationNode : node)
+  for (const auto& configurationNode : node)
   {
     auto configurationName = configurationNode.first.as<std::string>();
     auto configuration = configurationNode.second.as<Eigen::VectorXd>();
