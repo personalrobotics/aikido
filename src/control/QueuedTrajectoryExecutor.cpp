@@ -20,7 +20,8 @@ QueuedTrajectoryExecutor::~QueuedTrajectoryExecutor()
 }
 
 //==============================================================================
-void QueuedTrajectoryExecutor::validate(const trajectory::ConstTrajectoryPtr& traj)
+void QueuedTrajectoryExecutor::validate(
+    const trajectory::ConstTrajectoryPtr& traj)
 {
   mExecutor->validate(traj);
 }

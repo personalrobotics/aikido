@@ -80,7 +80,8 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 }
 
 //==============================================================================
-std::future<void> RosTrajectoryExecutor::execute(trajectory::ConstTrajectoryPtr traj)
+std::future<void> RosTrajectoryExecutor::execute(
+    trajectory::ConstTrajectoryPtr traj)
 {
   static const ::ros::Time invalidTime;
   return execute(traj, invalidTime);
