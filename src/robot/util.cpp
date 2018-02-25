@@ -40,7 +40,7 @@ using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
 using distance::createDistanceMetric;
 using statespace::GeodesicInterpolator;
-using statespace::dart::ConstMetaSkeletonStateSpacePtr;
+using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::StateSpace;
@@ -63,7 +63,7 @@ static const double collisionResolution = 0.1;
 
 //==============================================================================
 InterpolatedPtr planToConfiguration(
-    const ConstMetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
     const TestablePtr& collisionTestable,
@@ -115,7 +115,7 @@ InterpolatedPtr planToConfiguration(
 
 //==============================================================================
 InterpolatedPtr planToConfigurations(
-    const ConstMetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<StateSpace::State*> goalStates,
     const TestablePtr& collisionTestable,
@@ -171,7 +171,7 @@ InterpolatedPtr planToConfigurations(
 
 //==============================================================================
 InterpolatedPtr planToTSR(
-    const ConstMetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bn,
     const TSRPtr& tsr,
@@ -272,7 +272,7 @@ InterpolatedPtr planToTSR(
 
 //==============================================================================
 InterpolatedPtr planToTSRwithTrajectoryConstraint(
-    const ConstMetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
     const TSRPtr& goalTsr,
@@ -364,7 +364,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
 //==============================================================================
 trajectory::TrajectoryPtr planToEndEffectorOffset(
-    const ConstMetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
     const Eigen::Vector3d& direction,

@@ -14,7 +14,7 @@ using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
-using statespace::dart::ConstMetaSkeletonStateSpacePtr;
+using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
@@ -205,7 +205,7 @@ MetaSkeletonPtr ConcreteRobot::getMetaSkeleton()
 }
 
 //==============================================================================
-ConstMetaSkeletonStateSpacePtr ConcreteRobot::getStateSpace() const
+MetaSkeletonStateSpacePtr ConcreteRobot::getStateSpace() const
 {
   return mStateSpace;
 }
@@ -242,7 +242,7 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
 
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-    const ConstMetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton)
 {
   using constraint::dart::CollisionFree;
@@ -268,7 +268,7 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
 
 //=============================================================================
 TestablePtr ConcreteRobot::getFullCollisionConstraint(
-    const ConstMetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const CollisionFreePtr& collisionFree)
 {
@@ -301,7 +301,7 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
     const CollisionFreePtr& collisionFree,
@@ -321,7 +321,7 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const Eigen::VectorXd& goal,
     const CollisionFreePtr& collisionFree,
@@ -336,7 +336,7 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<StateSpace::State*>& goalStates,
     const CollisionFreePtr& collisionFree,
@@ -353,7 +353,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<Eigen::VectorXd>& goals,
     const CollisionFreePtr& collisionFree,
@@ -372,7 +372,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToTSR(
-    const ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const TSRPtr& tsr,
@@ -396,7 +396,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
-    const ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bodyNode,
     const TSRPtr& goalTsr,

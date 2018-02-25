@@ -99,7 +99,7 @@ struct CRRTPlannerParameters
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
 trajectory::InterpolatedPtr planToConfiguration(
-    const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const statespace::StateSpace::State* goalState,
     const constraint::TestablePtr& collisionTestable,
@@ -115,7 +115,7 @@ trajectory::InterpolatedPtr planToConfiguration(
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
 trajectory::InterpolatedPtr planToConfigurations(
-    const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const std::vector<statespace::StateSpace::State*> goalStates,
     const constraint::TestablePtr& collisionTestable,
@@ -132,7 +132,7 @@ trajectory::InterpolatedPtr planToConfigurations(
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::InterpolatedPtr planToTSR(
-    const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
     const constraint::dart::TSRPtr& tsr,
@@ -156,7 +156,7 @@ trajectory::InterpolatedPtr planToTSR(
 /// \param[in] projectionTolerance Parameter for projection tolerance
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
-    const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
     const constraint::dart::TSRPtr& goalTsr,
@@ -177,7 +177,7 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
 /// \param[in] timelimit Timelimit for planning
 /// \return Output trajectory
 trajectory::TrajectoryPtr planToEndEffectorOffset(
-    const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
     const Eigen::Vector3d& direction,
@@ -191,7 +191,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
 trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
-    const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
     const constraint::TestablePtr& collisionTestable,

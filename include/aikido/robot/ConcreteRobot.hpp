@@ -70,7 +70,7 @@ public:
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
 
   // Documentation inherited.
-  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr
    getStateSpace() const override;
 
   // Documentation inherited.
@@ -82,12 +82,12 @@ public:
 
   // Documentation inherited.
   virtual aikido::constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) override;
 
@@ -101,7 +101,7 @@ public:
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfiguration(
-      const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::statespace::StateSpace::State* goalState,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
@@ -118,7 +118,7 @@ public:
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfiguration(
-      const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const Eigen::VectorXd& goal,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
@@ -134,7 +134,7 @@ public:
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfigurations(
-      const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::vector<aikido::statespace::StateSpace::State*>& goalStates,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
@@ -150,7 +150,7 @@ public:
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfigurations(
-      const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::vector<Eigen::VectorXd>& goals,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
@@ -168,7 +168,7 @@ public:
   /// \param[in] maxNumTrials Max numer of trials to plan.
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSR(
-      const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& bodyNode,
       const aikido::constraint::dart::TSRPtr& tsr,
@@ -189,7 +189,7 @@ public:
   /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSRwithTrajectoryConstraint(
-      const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& bodyNode,
       const aikido::constraint::dart::TSRPtr& goalTsr,

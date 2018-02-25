@@ -57,7 +57,7 @@ public:
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
 
   // Documentation inherited.
-  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr
     getStateSpace() const override;
 
   // Documentation inherited.
@@ -69,12 +69,12 @@ public:
 
   // Documentation inherited.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) override;
 
@@ -90,7 +90,7 @@ public:
   /// \param[in] timelimit Timelimit for planning
   /// \return Output trajectory
   trajectory::TrajectoryPtr planToEndEffectorOffset(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& body,
       const constraint::dart::CollisionFreePtr& collisionFree,
@@ -112,7 +112,7 @@ public:
   /// \param[in] timelimit Timelimit for plannnig.
   /// \return Output trajectory
   trajectory::TrajectoryPtr planEndEffectorStraight(
-      statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
+      statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& body,
       const constraint::dart::CollisionFreePtr& collisionFree,

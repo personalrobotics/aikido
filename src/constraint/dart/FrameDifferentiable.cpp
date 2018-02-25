@@ -7,7 +7,7 @@ namespace dart {
 
 //==============================================================================
 FrameDifferentiable::FrameDifferentiable(
-    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
     ::dart::dynamics::ConstJacobianNodePtr _jacobianNode,
     DifferentiablePtr _poseConstraint)
