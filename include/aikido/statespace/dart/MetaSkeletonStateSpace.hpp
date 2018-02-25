@@ -134,8 +134,7 @@ public:
   ///
   /// \throws invalid_argument if \c skeleton does not contain
   ///  all dofs if this state space.
-  void checkIfContained(
-    const ::dart::dynamics::Skeleton* skeleton) const;
+  void checkIfContained(const ::dart::dynamics::Skeleton* skeleton) const;
 
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
   ///

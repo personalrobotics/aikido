@@ -5,9 +5,9 @@
 #include <dart/dynamics/dynamics.hpp>
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
+#include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
-#include "aikido/constraint/Testable.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/io/yaml.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"

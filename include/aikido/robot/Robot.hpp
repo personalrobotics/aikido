@@ -10,8 +10,8 @@
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/trajectory/Trajectory.hpp"
 #include "aikido/trajectory/Spline.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace robot {
@@ -71,8 +71,8 @@ public:
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
 
   /// \return MetaSkeletonStateSpace of this robot.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr
-   getStateSpace() const = 0;
+  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
+      const = 0;
 
   /// Sets the root of this robot.
   /// \param[in] robot Parent robot

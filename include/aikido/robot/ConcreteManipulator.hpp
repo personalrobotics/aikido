@@ -57,8 +57,8 @@ public:
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
 
   // Documentation inherited.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr
-    getStateSpace() const override;
+  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
+      const override;
 
   // Documentation inherited.
   virtual void setRoot(Robot* robot) override;
@@ -144,7 +144,6 @@ private:
   /// \return The direction of the end effector (z axis of the frame)
   Eigen::Vector3d getEndEffectorDirection(
       const dart::dynamics::BodyNodePtr& body) const;
-
 };
 
 } // namespace robot

@@ -169,7 +169,7 @@ std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::retimePath(
 
 //==============================================================================
 std::future<void> ConcreteRobot::executeTrajectory(
-  const TrajectoryPtr& trajectory)
+    const TrajectoryPtr& trajectory)
 {
   return mTrajectoryExecutor->execute(trajectory);
 }
@@ -242,8 +242,7 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
 
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space,
-    const MetaSkeletonPtr& metaSkeleton)
+    const MetaSkeletonStateSpacePtr& space, const MetaSkeletonPtr& metaSkeleton)
 {
   using constraint::dart::CollisionFree;
 

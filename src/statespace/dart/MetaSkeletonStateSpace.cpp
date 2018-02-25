@@ -284,7 +284,7 @@ void MetaSkeletonStateSpace::checkCompatibility(
 
 //==============================================================================
 void MetaSkeletonStateSpace::checkIfContained(
-  const ::dart::dynamics::Skeleton* skeleton) const
+    const ::dart::dynamics::Skeleton* skeleton) const
 {
   // TODO: Name-uniqueness is allowed only within the same skeleton,
   // so we should check for skeleton-equality.

@@ -30,7 +30,8 @@ public:
 
   /// Sets the hand to the corresponding preshape (from \c preshapesUri).
   /// \param[in] preshapeName Name of preshape (e.g. "open")
-  virtual std::future<void> executePreshape(const std::string& preshapeName) = 0;
+  virtual std::future<void> executePreshape(const std::string& preshapeName)
+      = 0;
 
   /// Executes the preshape trajectory upto timepoint..
   // \param[in] timepoint Time to simulate to.

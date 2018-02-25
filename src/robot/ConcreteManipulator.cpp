@@ -67,7 +67,8 @@ dart::dynamics::MetaSkeletonPtr ConcreteManipulator::getMetaSkeleton()
 }
 
 //==============================================================================
-statespace::dart::MetaSkeletonStateSpacePtr ConcreteManipulator::getStateSpace() const
+statespace::dart::MetaSkeletonStateSpacePtr ConcreteManipulator::getStateSpace()
+    const
 {
   return mRobot->getStateSpace();
 }
