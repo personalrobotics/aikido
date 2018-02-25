@@ -34,7 +34,7 @@ public:
 
   /// Vectorfield planning status callback function.
   ///
-  /// \praram[in] state State to evaluate.
+  /// \param[in] state State to evaluate.
   /// \return Status of planning.
   virtual VectorFieldPlannerStatus evaluateStatus(
       const aikido::statespace::StateSpace::State* state) const = 0;
