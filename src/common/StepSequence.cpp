@@ -6,8 +6,6 @@
 namespace aikido {
 namespace common {
 
-constexpr double precision = 1e-7;
-
 //==============================================================================
 StepSequence::StepSequence(
     double stepSize,

@@ -23,7 +23,6 @@ using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
 const static std::chrono::milliseconds waitTime{0};
-const static std::chrono::milliseconds stepTime{0};
 
 class InstantaneousTrajectoryExecutorTest : public testing::Test
 {
