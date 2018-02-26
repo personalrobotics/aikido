@@ -117,7 +117,7 @@ InterpolatedPtr planToConfiguration(
 InterpolatedPtr planToConfigurations(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<StateSpace::State*> goalStates,
+    const std::vector<StateSpace::State*>& goalStates,
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit)

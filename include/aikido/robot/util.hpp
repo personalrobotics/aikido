@@ -117,7 +117,7 @@ trajectory::InterpolatedPtr planToConfiguration(
 trajectory::InterpolatedPtr planToConfigurations(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const std::vector<statespace::StateSpace::State*> goalStates,
+    const std::vector<statespace::StateSpace::State*>& goalStates,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
     double timlimit);
