@@ -79,9 +79,8 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     mPromise.reset(new std::promise<void>());
 
     mTraj = std::move(traj);
-    mStateSpace = std::move(
-        std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-            mTraj->getStateSpace()));
+    mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+        mTraj->getStateSpace());
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
   }
