@@ -38,7 +38,7 @@ using dart::dynamics::SkeletonPtr;
 // TODO: Temporary constants for planning calls.
 // These should be defined when we construct planner adapter classes
 static const double timelimit = 3.0;
-static const double maxNumTrials = 10;
+static const std::size_t maxNumTrials = 10;
 static const double collisionResolution = 0.1;
 static const double asymmetryTolerance = 1e-3;
 
