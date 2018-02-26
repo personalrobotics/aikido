@@ -3,7 +3,7 @@
 ### 0.3.0 (201X-XX-XX)
 
 * Common
-  
+
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
 
@@ -17,9 +17,11 @@
 
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
+  * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
 
 * Planner
 
+  * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
@@ -131,4 +133,3 @@
 ### 0.0.1 (2017-03-10)
 
   * Initial release
-

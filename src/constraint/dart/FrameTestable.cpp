@@ -1,13 +1,14 @@
-#include <aikido/constraint/FrameTestable.hpp>
+#include "aikido/constraint/dart/FrameTestable.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 //==============================================================================
 FrameTestable::FrameTestable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
-    dart::dynamics::ConstJacobianNodePtr _frame,
+    ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+    ::dart::dynamics::ConstJacobianNodePtr _frame,
     TestablePtr _poseConstraint)
   : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(_metaskeleton))
@@ -65,5 +66,6 @@ std::shared_ptr<statespace::StateSpace> FrameTestable::getStateSpace() const
   return mMetaSkeletonStateSpace;
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido

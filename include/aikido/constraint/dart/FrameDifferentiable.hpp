@@ -1,14 +1,15 @@
-#ifndef AIKIDO_CONSTRAINT_FRAMEDIFFERENTIABLE_HPP_
-#define AIKIDO_CONSTRAINT_FRAMEDIFFERENTIABLE_HPP_
+#ifndef AIKIDO_CONSTRAINT_DART_FRAMEDIFFERENTIABLE_HPP_
+#define AIKIDO_CONSTRAINT_DART_FRAMEDIFFERENTIABLE_HPP_
 
 #include <dart/dynamics/dynamics.hpp>
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "Differentiable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 #include <Eigen/Dense>
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 /// A pose constraint on _jacobianNode's transform
 /// w.r.t. MetaSkeletonState of _jacobianNode.
@@ -28,8 +29,8 @@ public:
   ///        in SE3.
   FrameDifferentiable(
       statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-      dart::dynamics::MetaSkeletonPtr _metaskeleton,
-      dart::dynamics::ConstJacobianNodePtr _jacobianNode,
+      ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+      ::dart::dynamics::ConstJacobianNodePtr _jacobianNode,
       DifferentiablePtr _poseConstraint);
 
   // Documentation inherited.
@@ -65,12 +66,13 @@ public:
 
 private:
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
-  dart::dynamics::ConstJacobianNodePtr mJacobianNode;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  ::dart::dynamics::ConstJacobianNodePtr mJacobianNode;
   DifferentiablePtr mPoseConstraint;
 };
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_FRAMEDIFFERENTIABLE_HPP_
+#endif // AIKIDO_CONSTRAINT_DART_FRAMEDIFFERENTIABLE_HPP_

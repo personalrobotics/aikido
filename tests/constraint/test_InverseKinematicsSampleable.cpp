@@ -4,8 +4,8 @@
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>
-#include <aikido/constraint/InverseKinematicsSampleable.hpp>
-#include <aikido/constraint/TSR.hpp>
+#include <aikido/constraint/dart/InverseKinematicsSampleable.hpp>
+#include <aikido/constraint/dart/TSR.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
@@ -14,13 +14,13 @@
 
 using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
-using aikido::constraint::InverseKinematicsSampleable;
+using aikido::constraint::dart::InverseKinematicsSampleable;
 using aikido::constraint::CyclicSampleable;
 using aikido::statespace::SE3;
 using aikido::statespace::SO2;
 using dart::dynamics::FreeJoint;
 using aikido::constraint::SampleGenerator;
-using aikido::constraint::TSR;
+using aikido::constraint::dart::TSR;
 using aikido::common::RNGWrapper;
 using aikido::common::RNG;
 using aikido::statespace::dart::MetaSkeletonStateSpace;

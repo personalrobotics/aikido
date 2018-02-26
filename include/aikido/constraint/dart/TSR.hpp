@@ -1,16 +1,17 @@
-#ifndef AIKIDO_CONSTRAINT_TSR_HPP_
-#define AIKIDO_CONSTRAINT_TSR_HPP_
+#ifndef AIKIDO_CONSTRAINT_DART_TSR_HPP_
+#define AIKIDO_CONSTRAINT_DART_TSR_HPP_
 
 #include <Eigen/Dense>
 #include <dart/math/MathTypes.hpp>
-#include "../statespace/SE3.hpp"
-#include "Differentiable.hpp"
-#include "Projectable.hpp"
-#include "Sampleable.hpp"
-#include "Testable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/statespace/SE3.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 AIKIDO_DECLARE_POINTERS(TSR)
 
@@ -150,7 +151,8 @@ private:
   std::shared_ptr<statespace::SE3> mStateSpace;
 };
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_TSR_HPP_
+#endif // AIKIDO_CONSTRAINT_DART_TSR_HPP_

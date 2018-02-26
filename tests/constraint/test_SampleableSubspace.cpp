@@ -12,9 +12,9 @@ using aikido::constraint::CartesianProductSampleable;
 using aikido::constraint::SampleablePtr;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
-using aikido::constraint::SO2UniformSampler;
+using aikido::constraint::uniform::SO2UniformSampler;
 using aikido::statespace::R3;
-using aikido::constraint::R3BoxConstraint;
+using aikido::constraint::uniform::R3BoxConstraint;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
 

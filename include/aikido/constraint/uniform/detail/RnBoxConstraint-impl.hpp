@@ -1,9 +1,9 @@
-#include <aikido/constraint/uniform/RnBoxConstraint.hpp>
-
 #include <stdexcept>
+#include "aikido/constraint/uniform/RnBoxConstraint.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 using constraint::ConstraintType;
 
@@ -309,5 +309,6 @@ auto RBoxConstraint<N>::getUpperLimits() const -> const VectorNd&
   return mUpperLimits;
 }
 
-} // namespace statespace
+} // namespace uniform
+} // namespace constraint
 } // namespace aikido
