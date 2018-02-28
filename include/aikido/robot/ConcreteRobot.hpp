@@ -38,7 +38,7 @@ public:
       const std::string& name,
       dart::dynamics::MetaSkeletonPtr metaSkeleton,
       bool simulation,
-      std::unique_ptr<aikido::common::RNG> rng,
+      aikido::common::UniqueRNGPtr rng,
       aikido::control::TrajectoryExecutorPtr trajectoryExecutor,
       dart::collision::CollisionDetectorPtr collisionDetector,
       std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
@@ -47,13 +47,13 @@ public:
   virtual ~ConcreteRobot() = default;
 
   // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
+  virtual aikido::trajectory::UniqueSplinePtr smoothPath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint) override;
 
   // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
+  virtual aikido::trajectory::UniqueSplinePtr retimePath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path) override;
 

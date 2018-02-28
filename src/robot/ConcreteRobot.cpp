@@ -2,38 +2,28 @@
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
 
-using common::RNG;
 using constraint::dart::CollisionFreePtr;
-using constraint::dart::TSR;
 using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
-using statespace::dart::MetaSkeletonStateSpacePtr;
-using statespace::dart::MetaSkeletonStateSpacePtr;
-using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
-using statespace::StateSpace;
+using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::StateSpacePtr;
+using statespace::StateSpace;
 using trajectory::TrajectoryPtr;
 using trajectory::Interpolated;
 using trajectory::InterpolatedPtr;
 using trajectory::Spline;
-using common::cloneRNGFrom;
+using trajectory::UniqueSplinePtr;
 
-using dart::collision::FCLCollisionDetector;
-using dart::common::make_unique;
 using dart::dynamics::BodyNodePtr;
-using dart::dynamics::ChainPtr;
-using dart::dynamics::InverseKinematics;
 using dart::dynamics::MetaSkeleton;
 using dart::dynamics::MetaSkeletonPtr;
-using dart::dynamics::SkeletonPtr;
 
 // TODO: Temporary constants for planning calls.
 // These should be defined when we construct planner adapter classes
@@ -103,7 +93,7 @@ ConcreteRobot::ConcreteRobot(
     const std::string& name,
     MetaSkeletonPtr metaSkeleton,
     bool simulation,
-    std::unique_ptr<aikido::common::RNG> rng,
+    common::UniqueRNGPtr rng,
     control::TrajectoryExecutorPtr trajectoryExecutor,
     dart::collision::CollisionDetectorPtr collisionDetector,
     std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
@@ -127,7 +117,7 @@ ConcreteRobot::ConcreteRobot(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::smoothPath(
+UniqueSplinePtr ConcreteRobot::smoothPath(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const aikido::trajectory::Trajectory* path,
     const constraint::TestablePtr& constraint)
@@ -150,7 +140,7 @@ std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::smoothPath(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::retimePath(
+UniqueSplinePtr ConcreteRobot::retimePath(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const aikido::trajectory::Trajectory* path)
 {
@@ -377,7 +367,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
 TrajectoryPtr ConcreteRobot::planToTSR(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bn,
+    const BodyNodePtr& bn,
     const TSRPtr& tsr,
     const CollisionFreePtr& collisionFree,
     double timelimit,
