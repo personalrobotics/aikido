@@ -33,8 +33,7 @@ public:
   virtual std::future<void> executePreshape(const std::string& preshapeName)
       = 0;
 
-  /// Executes the preshape trajectory upto timepoint..
-  // \param[in] timepoint Time to simulate to.
+  /// \copydoc Robot::step
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Returns the metaskeleton corresponding to this hand.
@@ -48,4 +47,4 @@ public:
 } // namespace robot
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_ROBOT_HAND_HPP_

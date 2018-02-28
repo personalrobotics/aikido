@@ -28,6 +28,26 @@
 
 namespace aikido {
 namespace robot {
+
+namespace {
+/// Gets Goal and Constraint TSR for End Effector.
+/// \param[in] bodyNode End-effector body node
+/// \param[in] direction End-effector direction
+/// \param[in] distance Offset to move
+/// \param[in] goal Goal TSR
+/// \param[in] constraint Constraint TSR
+/// \param[in] positionTolerance Tolerance in position
+/// \param[in] angularTolerance Tolerance in angle
+bool getGoalAndConstraintTSRForEndEffectorOffset(
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Vector3d& direction,
+    double distance,
+    const constraint::dart::TSRPtr& goal,
+    const constraint::dart::TSRPtr& constraint,
+    double positionTolerance = 1e-3,
+    double angularTolerance = 1e-3);
+}
+
 namespace util {
 
 using constraint::dart::CollisionFreePtr;
@@ -528,20 +548,22 @@ bool getGoalAndConstraintTSRForEndEffectorOffset(
 
 //==============================================================================
 Eigen::Isometry3d getLookAtIsometry(
-    const Eigen::Vector3d& pos_from, const Eigen::Vector3d& pos_to_diff)
+    const Eigen::Vector3d& positionFrom, const Eigen::Vector3d& positionTo)
 {
-  if (pos_to_diff.norm() < 1e-6)
+  if (positionTo.norm() < 1e-6)
   {
-    throw std::runtime_error("pos_to_diff cannot be a zero vector");
+    throw std::runtime_error("positionTo cannot be a zero vector.");
   }
   Eigen::Isometry3d H = Eigen::Isometry3d::Identity();
-  H.translation() = pos_from;
+  H.translation() = positionFrom;
+
   // original z axis direction
-  H.linear() = Eigen::Quaterniond::FromTwoVectors(
-                   Eigen::Vector3d::UnitZ(), pos_to_diff)
-                   .toRotationMatrix();
+  H.linear()
+      = Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d::UnitZ(), positionTo)
+            .toRotationMatrix();
   return H;
 }
+
 } // namespace util
 } // namespace robot
 } // namespace aikido

@@ -134,9 +134,16 @@ public:
       const util::CRRTPlannerParameters& crrtParameters);
 
 private:
+  /// The robot whose metaSkeleton corresponds to this manipulator
   RobotPtr mRobot;
+
+  /// Hand of this manipulator
   HandPtr mHand;
+
+  /// VectorFieldPlanenr-related parameters
   util::VectorFieldPlannerParameters mVectorFieldParameters;
+
+  /// CRRTPlanner-related parameters
   util::CRRTPlannerParameters mCRRTParameters;
 
   /// Returns the direction of an end effector (along z axis) in the world frame
@@ -149,4 +156,4 @@ private:
 } // namespace robot
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_ROBOT_CONCRETEMANIPULATOR_HPP_

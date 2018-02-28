@@ -104,7 +104,7 @@ trajectory::InterpolatedPtr planToConfiguration(
     const statespace::StateSpace::State* goalState,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
-    double timlimit);
+    double timelimit);
 
 /// Plan the robot to a set of configurations.
 /// Restores the robot to its initial configuration after planning.
@@ -120,7 +120,7 @@ trajectory::InterpolatedPtr planToConfigurations(
     const std::vector<statespace::StateSpace::State*>& goalStates,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
-    double timlimit);
+    double timelimit);
 
 /// Plan the configuration of the metakeleton such that
 /// the specified bodynode is set to a sample in TSR
@@ -166,7 +166,6 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
 /// Plan to a desired end-effector offset with fixed orientation.
-/// Uses VF Planner.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
 /// \param[in] body Bodynode for the end effector
@@ -175,6 +174,10 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
 /// is checked by default.
 /// \param[in] distance Distance distance to move, in meters
 /// \param[in] timelimit Timelimit for planning
+/// \param[in] positionTolerance Tolerance in position
+/// \param[in] angularTolerance Tolerance in angle
+/// \param[in] vfParameters VectorFieldPlanenr parameters
+/// \param[in] crrtParameters CRRTPlanner parameters
 /// \return Output trajectory
 trajectory::TrajectoryPtr planToEndEffectorOffset(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -190,6 +193,19 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
     = VectorFieldPlannerParameters(),
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
+/// Plan to a desired end-effector offset with fixed orientation using CRRT.
+/// \param[in] space StateSpace for the metaskeleton
+/// \param[in] metaSkeleton Metaskeleton to plan with
+/// \param[in] body Bodynode for the end effector
+/// \param[in] direction Direction unit vector in the world frame
+/// \param[in] collisionTestable Collision constraint to check. Self-collision
+/// is checked by default.
+/// \param[in] distance Distance distance to move, in meters
+/// \param[in] timelimit Timelimit for planning
+/// \param[in] positionTolerance Tolerance in position
+/// \param[in] angularTolerance Tolerance in angle
+/// \param[in] crrtParameters CRRTPlanner parameters
+/// \return Output trajectory
 trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -202,22 +218,39 @@ trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
     double angularTolerance = 1e-3,
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
+/// Parses YAML node for named configurtaions
+/// \param[in] node YAML node containing named configurations
+/// \return Unordered map of (name, configuration) pairs.
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node);
 
+/// Gets Goal and Constraint TSR for End Effector.
+/// \param[in] bodyNode End-effector body node
+/// \param[in] direction End-effector direction
+/// \param[in] distance Offset to move
+/// \param[out] goal Goal TSR
+/// \param[out] constraint Constraint TSR
+/// \param[in] positionTolerance Tolerance in position, used in TSR
+/// \param[in] angularTolerance Tolerance in angle, used in TSR
+/// \return True if all outputs are successfully made.
 bool getGoalAndConstraintTSRForEndEffectorOffset(
     const dart::dynamics::BodyNodePtr& bodyNode,
     const Eigen::Vector3d& direction,
     double distance,
     const constraint::dart::TSRPtr& goal,
     const constraint::dart::TSRPtr& constraint,
-    double positionTolerance,
-    double angularTolerance);
+    double positionTolerance = 1e-3,
+    double angularTolerance = 1e-3);
 
+/// Get a pose at a point looking at another point.
+/// \param[in] positionFrom Position to look from
+/// \param[in] positionTo Position to look to
+/// \return Pose at positionFrom, looking at positionTo.
 Eigen::Isometry3d getLookAtIsometry(
-    const Eigen::Vector3d& pos_from, const Eigen::Vector3d& pos_to_diff);
-}
-}
-}
+    const Eigen::Vector3d& positionFrom, const Eigen::Vector3d& positionTo);
 
-#endif
+} // namespace util
+} // namespace robot
+} // namespace aikido
+
+#endif // AIKIDO_ROBOT_UTIL_HPP_

@@ -2,7 +2,6 @@
 # Dependencies
 #
 
-include(CheckCXXSourceCompiles)
 set(CMAKE_REQUIRED_DEFINITIONS "")
 set(CMAKE_REQUIRED_FLAGS "")
 

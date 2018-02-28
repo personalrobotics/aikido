@@ -36,4 +36,4 @@ struct GrabMetadata
 } // namespace robot
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_ROBOT_GRABMETADATA_HPP_

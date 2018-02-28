@@ -8,6 +8,7 @@ namespace robot {
 ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
   : mRobot(robot), mHand(hand)
 {
+  // Do nothing
 }
 
 //==============================================================================

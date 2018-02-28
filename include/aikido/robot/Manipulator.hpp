@@ -23,4 +23,4 @@ public:
 } // namespace robot
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_ROBOT_MANIPULATOR_HPP_

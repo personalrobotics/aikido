@@ -58,6 +58,7 @@ private:
   /// Trajectory's MetaSkeletonStateSpace
   statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
 
+  /// The controlled subset of mSkeleton for the currently executing trajectory.
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   /// Whether a trajectory is being executed

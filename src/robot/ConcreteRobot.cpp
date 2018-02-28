@@ -112,7 +112,7 @@ ConcreteRobot::ConcreteRobot(
   , mName(name)
   , mRobot(robot)
   , mStateSpace(std::make_shared<MetaSkeletonStateSpace>(mRobot.get()))
-  , mParentRobot(nullptr)
+  , mParentSkeleton(nullptr)
   , mSimulation(simulation)
   , mRng(std::move(rng))
   , mTrajectoryExecutor(std::move(trajectoryExecutor))
@@ -124,7 +124,7 @@ ConcreteRobot::ConcreteRobot(
   if (!robot)
     throw std::invalid_argument("Robot is nullptr.");
 
-  mParentRobot = mRobot->getBodyNode(0)->getSkeleton();
+  mParentSkeleton = mRobot->getBodyNode(0)->getSkeleton();
 }
 
 //==============================================================================
@@ -253,8 +253,8 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
   if (mRootRobot != this)
     return mRootRobot->getSelfCollisionConstraint(space, metaSkeleton);
 
-  mParentRobot->enableSelfCollisionCheck();
-  mParentRobot->disableAdjacentBodyCheck();
+  mParentSkeleton->enableSelfCollisionCheck();
+  mParentSkeleton->disableAdjacentBodyCheck();
 
   auto collisionDetector = FCLCollisionDetector::create();
 

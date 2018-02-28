@@ -239,7 +239,7 @@ private:
   statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
 
   // Skeleton containing mRobot
-  dart::dynamics::SkeletonPtr mParentRobot;
+  dart::dynamics::SkeletonPtr mParentSkeleton;
 
   // True if running in simulation mode
   bool mSimulation;
@@ -260,7 +260,8 @@ private:
 
   util::CRRTPlannerParameters mCRRTParameters;
 };
-}
-}
 
-#endif
+} // namespace robot
+} // namespace aikido
+
+#endif // AIKIDO_ROBOT_CONCRETEROBOT_HPP_

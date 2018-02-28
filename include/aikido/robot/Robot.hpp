@@ -79,7 +79,7 @@ public:
   virtual void setRoot(Robot* robot) = 0;
 
   /// Simulates up to the provided timepoint.
-  /// Assumes that parent robot is locked.
+  /// \note Assumes that the robot's skeleton is locked.
   /// \param[in] timepoint Time to simulate to.
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
@@ -108,4 +108,4 @@ public:
 } // namespace robot
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_ROBOT_ROBOT_HPP_
