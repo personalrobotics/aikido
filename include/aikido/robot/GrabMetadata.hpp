@@ -13,7 +13,7 @@ struct GrabMetadata
   /// \param[in] bodyNode BodyNode of the grabbed object.
   /// \param[in] oldName Name of the grabbed object.
   /// \param[in] parentSkeleton Parent skeleton of bodyNode.
-  ///  \param[in] jointProperties Joint properties of the grabbed object.
+  /// \param[in] jointProperties Joint properties of the grabbed object.
   GrabMetadata(
       dart::dynamics::BodyNodePtr bodyNode,
       const std::string& oldName,

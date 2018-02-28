@@ -147,7 +147,7 @@ private:
   util::CRRTPlannerParameters mCRRTParameters;
 
   /// Returns the direction of an end effector (along z axis) in the world frame
-  /// \param body Bodynode for the end effector
+  /// \param[in] body Bodynode for the end effector
   /// \return The direction of the end effector (z axis of the frame)
   Eigen::Vector3d getEndEffectorDirection(
       const dart::dynamics::BodyNodePtr& body) const;

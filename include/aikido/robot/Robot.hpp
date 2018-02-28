@@ -50,7 +50,7 @@ public:
   virtual std::future<void> executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) const = 0;
 
-  // Returns a named configuration
+  /// Returns a named configuration
   /// \param[in] name Name of the configuration
   /// \return Configuration
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
