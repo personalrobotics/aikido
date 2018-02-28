@@ -95,7 +95,8 @@ Eigen::VectorXd getSymmetricAccelerationLimits(
       "acceleration",
       asymmetryTolerance);
 }
-}
+
+} // namespace
 
 //==============================================================================
 ConcreteRobot::ConcreteRobot(
