@@ -36,7 +36,7 @@ std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::retimePath(
 
 //==============================================================================
 std::future<void> ConcreteManipulator::executeTrajectory(
-    const trajectory::TrajectoryPtr& trajectory)
+    const trajectory::TrajectoryPtr& trajectory) const
 {
   return mRobot->executeTrajectory(trajectory);
 }

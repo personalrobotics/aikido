@@ -101,31 +101,29 @@ Eigen::VectorXd getSymmetricAccelerationLimits(
 //==============================================================================
 ConcreteRobot::ConcreteRobot(
     const std::string& name,
-    MetaSkeletonPtr robot,
+    MetaSkeletonPtr metaSkeleton,
     bool simulation,
     std::unique_ptr<aikido::common::RNG> rng,
     control::TrajectoryExecutorPtr trajectoryExecutor,
     dart::collision::CollisionDetectorPtr collisionDetector,
-    dart::collision::CollisionGroupPtr collideWith,
     std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
         selfCollisionFilter)
   : mRootRobot(this)
   , mName(name)
-  , mRobot(robot)
-  , mStateSpace(std::make_shared<MetaSkeletonStateSpace>(mRobot.get()))
+  , mMetaSkeleton(metaSkeleton)
+  , mStateSpace(std::make_shared<MetaSkeletonStateSpace>(mMetaSkeleton.get()))
   , mParentSkeleton(nullptr)
   , mSimulation(simulation)
   , mRng(std::move(rng))
   , mTrajectoryExecutor(std::move(trajectoryExecutor))
   , mCollisionResolution(collisionResolution)
   , mCollisionDetector(collisionDetector)
-  , mCollideWith(collideWith)
   , mSelfCollisionFilter(selfCollisionFilter)
 {
-  if (!robot)
+  if (!mMetaSkeleton)
     throw std::invalid_argument("Robot is nullptr.");
 
-  mParentSkeleton = mRobot->getBodyNode(0)->getSkeleton();
+  mParentSkeleton = mMetaSkeleton->getBodyNode(0)->getSkeleton();
 }
 
 //==============================================================================
@@ -174,7 +172,7 @@ std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::retimePath(
 
 //==============================================================================
 std::future<void> ConcreteRobot::executeTrajectory(
-    const TrajectoryPtr& trajectory)
+    const TrajectoryPtr& trajectory) const
 {
   return mTrajectoryExecutor->execute(trajectory);
 }
@@ -206,7 +204,7 @@ std::string ConcreteRobot::getName() const
 //==============================================================================
 MetaSkeletonPtr ConcreteRobot::getMetaSkeleton()
 {
-  return mRobot;
+  return mMetaSkeleton;
 }
 
 //==============================================================================
@@ -257,16 +255,14 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
   mParentSkeleton->enableSelfCollisionCheck();
   mParentSkeleton->disableAdjacentBodyCheck();
 
-  auto collisionDetector = FCLCollisionDetector::create();
-
   // TODO: Switch to PRIMITIVE once this is fixed in DART.
-  // collisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
+  // mCollisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
   auto collisionFreeConstraint = std::make_shared<CollisionFree>(
-      space, metaSkeleton, collisionDetector, collisionOption);
+      space, metaSkeleton, mCollisionDetector, collisionOption);
   collisionFreeConstraint->addSelfCheck(
-      collisionDetector->createCollisionGroupAsSharedPtr(mRobot.get()));
+      mCollisionDetector->createCollisionGroupAsSharedPtr(mMetaSkeleton.get()));
   return collisionFreeConstraint;
 }
 
@@ -440,7 +436,7 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
   mStateSpace->convertPositionsToState(configuration, goalState);
 
   return planToConfiguration(
-      mStateSpace, mRobot, goalState, collisionFree, timelimit);
+      mStateSpace, mMetaSkeleton, goalState, collisionFree, timelimit);
 }
 
 //=============================================================================

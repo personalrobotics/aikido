@@ -26,14 +26,21 @@ AIKIDO_DECLARE_POINTERS(ConcreteRobot)
 class ConcreteRobot : public Robot
 {
 public:
+  /// Constructor.
+  /// \param[in] name Name of the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
+  /// \param[in] simulation True for running in simulation.
+  /// \param[in] rng Random number generator.
+  /// \param[in] trajectoryExecutor Trajectory executor for the metaSkeleton.
+  /// \param[in] collisionDetector Collision detector.
+  /// \param[in] selfCollisionFilter Collision filter for self collision.
   ConcreteRobot(
       const std::string& name,
-      dart::dynamics::MetaSkeletonPtr robot,
+      dart::dynamics::MetaSkeletonPtr metaSkeleton,
       bool simulation,
       std::unique_ptr<aikido::common::RNG> rng,
       aikido::control::TrajectoryExecutorPtr trajectoryExecutor,
       dart::collision::CollisionDetectorPtr collisionDetector,
-      dart::collision::CollisionGroupPtr collideWith,
       std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
           selfCollisionFilter);
 
@@ -52,7 +59,7 @@ public:
 
   // Documentation inherited.
   virtual std::future<void> executeTrajectory(
-      const trajectory::TrajectoryPtr& trajectory) override;
+      const trajectory::TrajectoryPtr& trajectory) const override;
 
   // Documentation inherited.
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(
@@ -235,13 +242,14 @@ private:
   /// Name of this robot
   std::string mName;
 
-  dart::dynamics::MetaSkeletonPtr mRobot;
+  /// MetaSkeleton of this robot
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
 
-  // Skeleton containing mRobot
+  /// Skeleton containing mRobot
   dart::dynamics::SkeletonPtr mParentSkeleton;
 
-  // True if running in simulation mode
+  /// True if running in simulation mode
   bool mSimulation;
 
   std::unique_ptr<common::RNG> mRng;
@@ -254,7 +262,6 @@ private:
   ConfigurationMap mNamedConfigurations;
 
   ::dart::collision::CollisionDetectorPtr mCollisionDetector;
-  ::dart::collision::CollisionGroupPtr mCollideWith;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
 

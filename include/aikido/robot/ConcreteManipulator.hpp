@@ -39,7 +39,7 @@ public:
 
   // Documentation inherited.
   virtual std::future<void> executeTrajectory(
-      const trajectory::TrajectoryPtr& trajectory) override;
+      const trajectory::TrajectoryPtr& trajectory) const override;
 
   // Documentation inherited.
   virtual boost::optional<Eigen::VectorXd> getNamedConfiguration(

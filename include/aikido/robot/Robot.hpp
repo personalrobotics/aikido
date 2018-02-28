@@ -48,8 +48,7 @@ public:
   /// Executes a trajectory
   /// \param[in] trajectory Timed trajectory to execute
   virtual std::future<void> executeTrajectory(
-      const trajectory::TrajectoryPtr& trajectory)
-      = 0;
+      const trajectory::TrajectoryPtr& trajectory) const = 0;
 
   // Returns a named configuration
   /// \param[in] name Name of the configuration
