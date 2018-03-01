@@ -10,7 +10,7 @@ namespace aikido {
 namespace planner {
 
 trajectory::InterpolatedPtr planSnap(
-    const std::shared_ptr<aikido::statespace::StateSpace>& stateSpace,
+    const statespace::ConstStateSpacePtr& stateSpace,
     const aikido::statespace::StateSpace::State* startState,
     const aikido::statespace::StateSpace::State* goalState,
     const std::shared_ptr<aikido::statespace::Interpolator>& interpolator,

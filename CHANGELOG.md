@@ -26,6 +26,10 @@
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
 
+* Robot
+
+  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes. [#325] https://github.com/personalrobotics/aikido/pull/325)
+
 ### 0.2.0 (2018-01-09)
 
 * State Space

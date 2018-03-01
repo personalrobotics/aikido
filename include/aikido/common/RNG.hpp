@@ -7,9 +7,12 @@
 #include <memory>
 #include <random>
 #include <Eigen/Geometry>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace common {
+
+AIKIDO_DECLARE_POINTERS(RNG)
 
 /// Default number of seeds to by \c cloneRNGsFrom to seed new engines.
 constexpr int NUM_DEFAULT_SEEDS{100};
