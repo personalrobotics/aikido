@@ -16,7 +16,7 @@ class Interpolated : public Trajectory
 public:
   /// Constructs an empty trajectory.
   ///
-  /// \param _stateSpace state space this trajectory is defined in
+  /// \param _sspace state space this trajectory is defined in
   /// \param _interpolator interpolator used to interpolate between waypoints
   Interpolated(
       aikido::statespace::StateSpacePtr _sspace,

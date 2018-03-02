@@ -33,7 +33,7 @@ public:
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
   /// Construct the Cartesian product of a vector of subspaces.
-  /// \param subspaces vector of subspaces
+  /// \param _subspaces vector of subspaces
   explicit CartesianProduct(std::vector<StateSpacePtr> _subspaces);
 
   /// Helper function to create a \c ScopedState.
@@ -140,7 +140,7 @@ public:
   /// space is parameterized by stacking the tangent vector of each subspace
   /// in the order the subspaces are listed in.
   ///
-  /// \param _state element of this Lie group
+  /// \param _in element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
   void logMap(
       const StateSpace::State* _in, Eigen::VectorXd& _tangent) const override;

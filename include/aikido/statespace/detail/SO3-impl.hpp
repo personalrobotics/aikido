@@ -31,7 +31,6 @@ public:
 
   /// Constructs a point in SO(3) from a unit quaternion.
   ///
-  /// \param _quaternion unit quaternion representing orientation
   const Quaternion& getQuaternion()
   {
     return this->getStateSpace()->getQuaternion(this->getState());

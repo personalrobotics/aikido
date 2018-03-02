@@ -163,14 +163,20 @@ public:
       double _feasibilityApproxTolerance = DEFAULT_TOLERANCE);
 
   /// Performs parabolic smoothing on an input trajectory.
-  /// \copydoc TrajectoryPostProcessor::postprocess
+  /// \param _inputTraj The untimed trajectory for the arm to process.
+  /// \param _rng Random number generator.
+  /// \param _collisionTestable Collision constraint that must be satisfied
+  ///        after prcoessing.
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Interpolated& _inputTraj,
       const aikido::common::RNG& _rng,
       const aikido::constraint::TestablePtr& _collisionTestable) override;
 
   /// Performs parabolic smoothing on an input *spline* trajectory.
-  /// \copydoc TrajectoryPostProcessor::postprocess
+  /// \param _inputTraj The untimed trajectory for the arm to process.
+  /// \param _rng Random number generator.
+  /// \param _collisionTestable Collision constraint that must be satisfied
+  ///        after prcoessing.
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Spline& _inputTraj,
       const aikido::common::RNG& _rng,

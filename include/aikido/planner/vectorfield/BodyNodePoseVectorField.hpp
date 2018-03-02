@@ -25,12 +25,12 @@ class BodyNodePoseVectorField : public VectorField
 public:
   /// Constructor.
   ///
-  /// \param[in] stateSpace MetaSkeleton state space.
-  /// \param[in] metaskeleton MetaSkeleton to plan with
-  /// \param[in] bn Body node of end-effector.
+  /// \param[in] metaSkeletonStateSpace MetaSkeleton state space.
+  /// \param[in] metaSkeleton MetaSkeleton to plan with
+  /// \param[in] bodyNode Body node of end-effector.
   /// \param[in] maxStepSize The maximum step size used to guarantee
   /// that the integrator does not step out of joint limits.
-  /// \param[in] jointLimitpadding If less then this distance to joint
+  /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
   /// \param[in] enforceJointVelocityLimits Whether joint velocity limits
   /// are considered in computation.
