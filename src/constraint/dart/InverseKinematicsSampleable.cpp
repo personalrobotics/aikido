@@ -1,15 +1,17 @@
-#include <aikido/constraint/InverseKinematicsSampleable.hpp>
+#include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
+#include "aikido/statespace/SE3.hpp"
 
-#include <aikido/statespace/SE3.hpp>
+#undef dtwarn
+#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
-using statespace::SE3;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::SE3;
-using dart::dynamics::INVALID_INDEX;
+using ::dart::dynamics::INVALID_INDEX;
 
 // For internal use only.
 class IkSampleGenerator : public SampleGenerator
@@ -39,16 +41,16 @@ private:
   // For internal use only.
   IkSampleGenerator(
       statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-      dart::dynamics::MetaSkeletonPtr _metaskeleton,
-      dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+      ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+      ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       std::unique_ptr<SampleGenerator> _poseSampler,
       std::unique_ptr<SampleGenerator> _seedSampler,
       int _maxNumTrials);
 
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<statespace::SE3> mPoseStateSpace;
-  dart::dynamics::InverseKinematicsPtr mInverseKinematics;
+  ::dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<SampleGenerator> mPoseSampler;
   std::unique_ptr<SampleGenerator> mSeedSampler;
   int mMaxNumTrials;
@@ -59,10 +61,10 @@ private:
 //==============================================================================
 InverseKinematicsSampleable::InverseKinematicsSampleable(
     MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
+    ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
     SampleablePtr _poseConstraint,
     SampleablePtr _seedConstraint,
-    dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+    ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     int _maxNumTrials)
   : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(_metaskeleton))
@@ -135,8 +137,8 @@ InverseKinematicsSampleable::createSampleGenerator() const
 //==============================================================================
 IkSampleGenerator::IkSampleGenerator(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
-    dart::dynamics::InverseKinematicsPtr _inverseKinematics,
+    ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+    ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<SampleGenerator> _poseSampler,
     std::unique_ptr<SampleGenerator> _seedSampler,
     int _maxNumTrials)
@@ -233,5 +235,6 @@ int IkSampleGenerator::getNumSamples() const
   return std::min(mSeedSampler->getNumSamples(), mPoseSampler->getNumSamples());
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido

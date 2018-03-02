@@ -107,7 +107,7 @@ public:
   ///
   /// \param[in,out] _state1 left input state, overwritten by output
   /// \param _state2 right input state
-  virtual void compose(State* _state1, const State* _state2);
+  virtual void compose(State* _state1, const State* _state2) const;
 
   /// Gets the identity element for this Lie group, such that:
   /// \code

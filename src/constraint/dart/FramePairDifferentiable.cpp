@@ -1,15 +1,16 @@
-#include <aikido/constraint/FramePairDifferentiable.hpp>
-#include <aikido/statespace/SE3.hpp>
+#include "aikido/constraint/dart/FramePairDifferentiable.hpp"
+#include "aikido/statespace/SE3.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
 
 //==============================================================================
 FramePairDifferentiable::FramePairDifferentiable(
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    dart::dynamics::MetaSkeletonPtr _metaskeleton,
-    dart::dynamics::ConstJacobianNodePtr _jacobianNode1,
-    dart::dynamics::ConstJacobianNodePtr _jacobianNode2,
+    ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+    ::dart::dynamics::ConstJacobianNodePtr _jacobianNode1,
+    ::dart::dynamics::ConstJacobianNodePtr _jacobianNode2,
     DifferentiablePtr _relPoseConstraint)
   : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(_metaskeleton))
@@ -149,5 +150,6 @@ statespace::StateSpacePtr FramePairDifferentiable::getStateSpace() const
   return mMetaSkeletonStateSpace;
 }
 
+} // namespace dart
 } // namespace constraint
 } // namespace aikido

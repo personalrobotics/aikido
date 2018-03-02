@@ -19,15 +19,14 @@ public:
   /// \param _sspace state space this trajectory is defined in
   /// \param _interpolator interpolator used to interpolate between waypoints
   Interpolated(
-      aikido::statespace::StateSpacePtr _sspace,
-      aikido::statespace::InterpolatorPtr _interpolator);
+      statespace::ConstStateSpacePtr _stateSpace,
+      statespace::ConstInterpolatorPtr _interpolator);
 
   /// Add a waypoint to the trajectory at the given time.
   ///
   /// \param _t time of the waypoint
   /// \param _state state at the waypoint
-  void addWaypoint(
-      double _t, const aikido::statespace::StateSpace::State* _state);
+  void addWaypoint(double _t, const statespace::StateSpace::State* _state);
 
   /// Gets a waypoint.
   ///
@@ -44,10 +43,10 @@ public:
   std::size_t getNumWaypoints() const;
 
   // Documentation inherited
-  aikido::statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Gets the interpolator used to interpolate between waypoints.
-  aikido::statespace::InterpolatorPtr getInterpolator() const;
+  statespace::ConstInterpolatorPtr getInterpolator() const;
 
   // Documentation inherited
   std::size_t getNumDerivatives() const override;
@@ -75,7 +74,7 @@ private:
   /// Waypoint in the trajectory.
   struct Waypoint
   {
-    Waypoint(double _t, aikido::statespace::StateSpace::State* _state);
+    Waypoint(double _t, statespace::StateSpace::State* _state);
 
     /// Comparator to allow sorting waypoints based on time
     bool operator<(const Waypoint& rhs) const;
@@ -84,7 +83,7 @@ private:
     bool operator<(double rhs) const;
 
     double t;
-    aikido::statespace::StateSpace::State* state;
+    statespace::StateSpace::State* state;
   };
 
   /// Get the index of the first waypoint whose time value is larger than _t.
@@ -92,8 +91,8 @@ private:
   /// trajectory.
   int getWaypointIndexAfterTime(double _t) const;
 
-  aikido::statespace::StateSpacePtr mStateSpace;
-  aikido::statespace::InterpolatorPtr mInterpolator;
+  statespace::ConstStateSpacePtr mStateSpace;
+  statespace::ConstInterpolatorPtr mInterpolator;
   std::vector<Waypoint> mWaypoints;
 };
 

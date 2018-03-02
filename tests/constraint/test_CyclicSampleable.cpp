@@ -8,7 +8,7 @@
 #include <aikido/statespace/StateSpace.hpp>
 
 using aikido::statespace::SO2;
-using aikido::constraint::SO2UniformSampler;
+using aikido::constraint::uniform::SO2UniformSampler;
 using aikido::statespace::R1;
 using aikido::statespace::R2;
 using aikido::constraint::CyclicSampleable;

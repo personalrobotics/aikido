@@ -54,4 +54,4 @@ deploy:
   verbose: true
   on:
     branch: master
-    condition: $BUILD_TYPE = Release
+    condition: $BUILD_TYPE == Release && $TRAVIS_EVENT_TYPE != cron

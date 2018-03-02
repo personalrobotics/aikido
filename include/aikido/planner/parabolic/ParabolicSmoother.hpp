@@ -2,7 +2,6 @@
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICSMOOTHER_HPP_
 
 #include <Eigen/Dense>
-#include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/TrajectoryPostProcessor.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"

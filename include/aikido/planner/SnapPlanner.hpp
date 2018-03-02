@@ -24,7 +24,7 @@ namespace planner {
 /// \param[out] planningResult information about success or failure
 /// \return trajectory or \c nullptr if planning failed
 trajectory::InterpolatedPtr planSnap(
-    const std::shared_ptr<statespace::StateSpace>& stateSpace,
+    const statespace::ConstStateSpacePtr& stateSpace,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
     const std::shared_ptr<statespace::Interpolator>& interpolator,

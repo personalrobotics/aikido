@@ -5,10 +5,10 @@
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Differentiable.hpp>
-#include <aikido/constraint/TSR.hpp>
+#include <aikido/constraint/dart/TSR.hpp>
 #include <aikido/statespace/SE3.hpp>
 
-using aikido::constraint::TSR;
+using aikido::constraint::dart::TSR;
 using aikido::constraint::ConstraintType;
 using aikido::statespace::SE3;
 using aikido::common::RNGWrapper;
