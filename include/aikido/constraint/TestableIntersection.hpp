@@ -17,8 +17,8 @@ class TestableIntersection : public Testable
 {
 public:
   /// Construct a TestableIntersection on a specific StateSpace.
-  /// \param statespace StateSpace this constraint operates in.
-  /// \param constraints Set of constraints.
+  /// \param _stateSpace StateSpace this constraint operates in.
+  /// \param _constraints Set of constraints.
   TestableIntersection(
       statespace::StateSpacePtr _stateSpace,
       std::vector<TestablePtr> _constraints = std::vector<TestablePtr>());

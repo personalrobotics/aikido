@@ -124,7 +124,6 @@ public:
       statespace::StateSpace::State* _out) const override;
 
   /// Get the testable tolerance used in isSatisfiable.
-  /// \param[out] _out Testable tolerance, double.
   double getTestableTolerance();
 
   /// Set the testable tolerance used in isSatisfiable.
