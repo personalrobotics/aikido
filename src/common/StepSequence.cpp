@@ -6,6 +6,8 @@
 namespace aikido {
 namespace common {
 
+constexpr double COMPARE_PRECISION = 1e-7;
+
 //==============================================================================
 StepSequence::StepSequence(
     double stepSize,
@@ -111,7 +113,9 @@ void StepSequence::updateLength()
 
   double endPivot = mStartPoint + floorStepRatio * mStepSize;
 
-  if (mEndPoint > endPivot)
+  // When endPivot is close to mEndPoint (below COMPARE_PRECISION threshold), we
+  // will think endPivot equals to mEndPoint. This is because of numeric issue.
+  if (std::abs(mEndPoint-endPivot) > COMPARE_PRECISION)
   {
     if (mIncludeEndPoint)
       ++mNumSteps;
