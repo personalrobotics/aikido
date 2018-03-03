@@ -115,7 +115,7 @@ void StepSequence::updateLength()
 
   // When endPivot is close to mEndPoint (below COMPARE_PRECISION threshold), we
   // will think endPivot equals to mEndPoint. This is because of numeric issue.
-  if (std::abs(mEndPoint-endPivot) > COMPARE_PRECISION)
+  if (std::abs(mEndPoint - endPivot) > COMPARE_PRECISION)
   {
     if (mIncludeEndPoint)
       ++mNumSteps;
