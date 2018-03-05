@@ -75,11 +75,12 @@ public:
 
   /// Checks collision within group.
   /// \param _group Collision group.
-  void addSelfCheck(std::shared_ptr<dart::collision::CollisionGroup> _group);
+  void addSelfCheck(std::shared_ptr<::dart::collision::CollisionGroup> _group);
 
   /// Remove self-collision check within group.
   /// \param _group Collision group.
-  void removeSelfCheck(std::shared_ptr<dart::collision::CollisionGroup> _group);
+  void removeSelfCheck(
+      std::shared_ptr<::dart::collision::CollisionGroup> _group);
 
 private:
   using CollisionGroup = ::dart::collision::CollisionGroup;
