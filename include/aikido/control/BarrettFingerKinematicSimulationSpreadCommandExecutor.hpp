@@ -60,9 +60,9 @@ public:
   /// collision is detected.
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
-  /* clang-format off */
+  // clang-format off
   /// \copydoc BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith()
-  /* clang-format on */
+  // clang-format on
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
