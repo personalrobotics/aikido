@@ -48,10 +48,11 @@ public:
   /// \param _interpolator An aikido interpolator used by the interpolate method
   /// \param _dmetric The distance metric to use to compute distance between two
   /// states in the StateSpace
-  /// \param sampler A state sampler used to sample new states in the StateSpace
-  /// \param boundsConstraint A Testable used to determine whether
+  /// \param _sampler A state sampler used to sample new states in the
+  /// StateSpace
+  /// \param _boundsConstraint A Testable used to determine whether
   /// states fall with in bounds defined on the space.
-  /// \param boundsProjection A Projectable that can be used to project a state
+  /// \param _boundsProjection A Projectable that can be used to project a state
   /// back within the valid boundary defined on the space.
   GeometricStateSpace(
       statespace::StateSpacePtr _sspace,

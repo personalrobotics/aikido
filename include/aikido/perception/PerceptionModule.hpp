@@ -20,8 +20,7 @@ public:
   /// new objects, compute their pose, and update the list of DART Skeletons
   /// that represents the world.
   ///
-  /// \param[in,out] skeleton_list The set of skeletons currently in context. It
-  /// will either be added to or updated.
+  /// \param[in] env World to add perceived objects to.
   /// \param[in] timeout The duration up to which to wait for the transform.
   /// Returns false if none of the markers get correctly transformed
   /// \param[in] timestamp Only detections more recent than this timestamp will

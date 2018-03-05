@@ -33,7 +33,7 @@ public:
 
   /// Create a real vector state space for \c _joint.
   ///
-  /// \param _joint joint to create a state space for
+  /// \param joint joint to create a state space for
   explicit RJoint(const DartJoint* joint);
 
   // Documentation inherited.

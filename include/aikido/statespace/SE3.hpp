@@ -121,7 +121,7 @@ public:
   /// space is parameterized as a planar twist of the form (rotation,
   /// translation).
   ///
-  /// \param _state element of this Lie group
+  /// \param _in element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
   void logMap(
       const StateSpace::State* _in, Eigen::VectorXd& _tangent) const override;

@@ -26,7 +26,7 @@ public:
   /// Constructor
   /// \param[in] node ROS node handle for action client.
   /// \param[in] serverName Name of the server to send trajectory to.
-  /// \param[in] The names of the joints to set position targets for
+  /// \param[in] jointNames The names of the joints to set position targets for
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosPositionCommandExecutor(

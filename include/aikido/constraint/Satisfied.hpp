@@ -34,6 +34,8 @@ public:
   /// Returns \c true.
   ///
   /// \param state a state in \c getStateSpace()
+  /// \param outcome object to populate with information about satisfiability
+  ///        result.
   bool isSatisfied(
       const statespace::StateSpace::State* state,
       TestableOutcome* outcome = nullptr) const override;
