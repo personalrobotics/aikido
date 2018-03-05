@@ -82,10 +82,9 @@ public:
   /// is reached, or collision is detected.
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
-  /// Sets CollisionGroup to check against for finger collisions.
-  ///
-  /// \param collideWith CollisionGroup to check finger collisions
-  /// \return false if collideWith cannot be set (during execution)
+  /* clang-format off */
+  /// \copydoc BarrettHandKinematicSimulationPositionCommandExecutor::setCollideWith()
+  /* clang-format on */
   bool setCollideWith(::dart::collision::CollisionGroupPtr collideWith);
 
 private:
