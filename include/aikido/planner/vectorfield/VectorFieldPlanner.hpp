@@ -78,7 +78,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \param[in] bn Body node of the end-effector.
 /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
 /// \param[in] goalPose Desired end-effector pose.
-/// \param[in] positionErrorTolerance How a planned trajectory is allowed to
+/// \param[in] poseErrorTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
 /// distance.
 /// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radius to

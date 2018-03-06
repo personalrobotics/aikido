@@ -34,10 +34,6 @@ public:
   /// could be found.
   /// \param[in] positionTolerance Constraint tolerance in meters.
   /// \param[in] angularTolerance Constraint tolerance in radians.
-  /// \param[in] linearGain Proportional control gain that corrects linear
-  /// orthogonal error.
-  /// \param[in] rotationGain Proportional control gain that corrects
-  /// rotational error
   /// \param[in] maxStepSize The maximum step size used to guarantee
   /// that the integrator does not step out of joint limits.
   /// \param[in] jointLimitPadding If less then this distance to joint

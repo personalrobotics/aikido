@@ -4,14 +4,14 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-Problem::Problem(statespace::StateSpacePtr stateSpace)
+Problem::Problem(statespace::ConstStateSpacePtr stateSpace)
   : mStateSpace(std::move(stateSpace))
 {
   // Do nothing
 }
 
 //==============================================================================
-statespace::StateSpacePtr Problem::getStateSpace() const
+statespace::ConstStateSpacePtr Problem::getStateSpace() const
 {
   return mStateSpace;
 }

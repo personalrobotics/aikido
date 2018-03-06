@@ -136,7 +136,7 @@ public:
   /// Log mapping of Lie group element to a Lie algebra element. The tangent
   /// space is parameterized as a rotation angle.
   ///
-  /// \param _state element of this Lie group
+  /// \param _in element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
   void logMap(
       const StateSpace::State* _in, Eigen::VectorXd& _tangent) const override;

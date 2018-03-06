@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include <aikido/constraint/FrameTestable.hpp>
+#include <aikido/constraint/dart/FrameTestable.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include "MockConstraints.hpp"
 
 using aikido::constraint::DefaultTestableOutcome;
-using aikido::constraint::FrameTestable;
+using aikido::constraint::dart::FrameTestable;
 using aikido::constraint::Testable;
 using aikido::constraint::TestablePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;

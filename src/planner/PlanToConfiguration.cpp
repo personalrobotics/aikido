@@ -7,7 +7,7 @@ namespace planner {
 
 //==============================================================================
 PlanToConfiguration::PlanToConfiguration(
-    statespace::StateSpacePtr stateSpace,
+    const statespace::ConstStateSpacePtr& stateSpace,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
     statespace::InterpolatorPtr interpolator,

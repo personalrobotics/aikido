@@ -2,7 +2,7 @@
 #define AIKIDO_PLANNER_PLANTOTSR_HPP_
 
 #include <dart/dart.hpp>
-#include "aikido/constraint/TSR.hpp"
+#include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
@@ -29,7 +29,7 @@ public:
       statespace::StateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
-      const constraint::TSRPtr goalTSR,
+      const constraint::dart::TSRPtr goalTSR,
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
@@ -41,7 +41,7 @@ public:
 
   const statespace::StateSpace::State* getStartState() const;
 
-  const constraint::TSRPtr getGoalTSR() const;
+  const constraint::dart::TSRPtr getGoalTSR() const;
 
   statespace::InterpolatorPtr getInterpolator();
 
@@ -59,7 +59,7 @@ protected:
   const statespace::StateSpace::State* mStartState;
 
   /// Goal TSR
-  const constraint::TSRPtr mGoalTSR;
+  const constraint::dart::TSRPtr mGoalTSR;
 
   /// Interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr mInterpolator;

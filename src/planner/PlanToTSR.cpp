@@ -10,7 +10,7 @@ PlanToTSR::PlanToTSR(
     statespace::StateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
-    const constraint::TSRPtr goalTSR,
+    const constraint::dart::TSRPtr goalTSR,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
@@ -53,7 +53,7 @@ const statespace::StateSpace::State* PlanToTSR::getStartState() const
 }
 
 //==============================================================================
-const constraint::TSRPtr PlanToTSR::getGoalTSR() const
+const constraint::dart::TSRPtr PlanToTSR::getGoalTSR() const
 {
   return mGoalTSR;
 }

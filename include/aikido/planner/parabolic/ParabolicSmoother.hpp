@@ -2,7 +2,6 @@
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICSMOOTHER_HPP_
 
 #include <Eigen/Dense>
-#include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/TrajectoryPostProcessor.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
@@ -136,7 +135,6 @@ class ParabolicSmoother : public aikido::planner::TrajectoryPostProcessor
 public:
   /// \param _velocityLimits Maximum velocity for each dimension.
   /// \param _accelerationLimits Maximum acceleration for each dimension.
-  /// \param _collisionTestable Check whether a position is feasible.
   /// \param _enableShortcut Whether shortcutting is used in smoothing.
   /// \param _enableBlend Whether blending is used in smoothing.
   /// \param _shortcutTimelimit Timelimit for shortcutting. It is ineffective
@@ -155,7 +153,6 @@ public:
   ParabolicSmoother(
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits,
-      const aikido::constraint::TestablePtr& _collisionTestable,
       bool _enableShortcut = true,
       bool _enableBlend = true,
       double _shortcutTimelimit = DEFAULT_TIMELIMT,
@@ -165,23 +162,32 @@ public:
       double _feasibilityApproxTolerance = DEFAULT_TOLERANCE);
 
   /// Performs parabolic smoothing on an input trajectory.
-  /// \copydoc TrajectoryPostProcessor::postprocess
+  /// \param _inputTraj The untimed trajectory for the arm to process.
+  /// \param _rng Random number generator.
+  /// \param _collisionTestable Collision constraint that must be satisfied
+  ///        after prcoessing.
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Interpolated& _inputTraj,
-      const aikido::common::RNG& _rng) override;
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _collisionTestable) override;
 
   /// Performs parabolic smoothing on an input *spline* trajectory.
-  /// \copydoc TrajectoryPostProcessor::postprocess
+  /// \param _inputTraj The untimed trajectory for the arm to process.
+  /// \param _rng Random number generator.
+  /// \param _collisionTestable Collision constraint that must be satisfied
+  ///        after prcoessing.
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG& _rng) override;
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _collisionTestable) override;
 
 private:
   /// Common logic to do shortcutting and/or blending on the input trajectory
   /// as dictated by mEnableShortcut and mEnableBlend.
   std::unique_ptr<aikido::trajectory::Spline> handleShortcutOrBlend(
       const aikido::trajectory::Spline& _inputTraj,
-      const aikido::common::RNG& _rng);
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _collisionTestable);
 
   /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;
@@ -194,9 +200,6 @@ private:
 
   /// Set to the value of \c _accelerationLimits.
   const Eigen::VectorXd mAccelerationLimits;
-
-  /// Set to the value of \c _collisionTestable.
-  aikido::constraint::TestablePtr mCollisionTestable;
 
   /// Set to the value of \c _enableShortcut.
   bool mEnableShortcut;
