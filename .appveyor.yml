@@ -15,12 +15,14 @@ install:
   - sh: sudo apt-get --yes install cmake build-essential libboost-filesystem-dev libdart6-optimizer-nlopt-dev libdart6-utils-dev libdart6-utils-urdf-dev libmicrohttpd-dev libompl-dev libtinyxml2-dev libyaml-cpp-dev
   #- sh: sudo apt-get --yes install pr-control-msgs
   - sh: sudo apt-get --yes install ros-lunar-actionlib ros-lunar-geometry-msgs ros-lunar-interactive-markers ros-lunar-roscpp ros-lunar-std-msgs ros-lunar-tf ros-lunar-trajectory-msgs ros-lunar-visualization-msgs
+  - sh: sudo apt-get --yes install clang-format-3.8
 
 build_script:
   - sh: source /opt/ros/lunar/setup.bash
   - sh: mkdir build && cd build
   - sh: cmake -DCMAKE_BUILD_TYPE=%configuration% -DTREAT_WARNINGS_AS_ERRORS=ON ..
   - sh: make -j4 tests
+  - sh: make check-format
 
 test_script:
   - sh: ctest -j4
