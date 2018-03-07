@@ -25,4 +25,4 @@ build_script:
   - sh: make check-format
 
 test_script:
-  - sh: ctest -j4
+  - sh: ctest -j4 --output-on-failure
