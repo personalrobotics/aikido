@@ -87,7 +87,9 @@ public:
   /// Self-collision is checked by default.
   /// \param[in] direction Direction unit vector in the world frame.
   /// \param[in] distance Distance distance to move, in meters.
-  /// \param[in] timelimit Timelimit for planning
+  /// \param[in] timelimit Timelimit for planning.
+  /// \param[in] positionTolerance Constraint tolerance in meters.
+  /// \param[in] angularTolerance Constraint tolerance in radians.
   /// \return Output trajectory
   trajectory::TrajectoryPtr planToEndEffectorOffset(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -110,6 +112,8 @@ public:
   /// Self-collision is checked by default.
   /// \param[in] distance Distance distance to move, in meters.
   /// \param[in] timelimit Timelimit for plannnig.
+  /// \param[in] positionTolerance Constraint tolerance in meters.
+  /// \param[in] angularTolerance Constraint tolerance in radians.
   /// \return Output trajectory
   trajectory::TrajectoryPtr planEndEffectorStraight(
       statespace::dart::MetaSkeletonStateSpacePtr& space,

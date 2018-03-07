@@ -45,7 +45,7 @@ public:
   /// \param[in] trajectory Trajectory to be evaluated.
   /// \param[in] constraint Constraint to be satisfied.
   /// \param[in] evalStepSize The step size used in evaluating constraint.
-  /// \param[in/out] evalTimePivot Input provides the start time of the
+  /// \param[in,out] evalTimePivot Input provides the start time of the
   /// trajectory
   /// to evaluate; output returns the end time of the trajectory evaluate.
   /// \param[in] includeEndTime Whether end time is included in evaluation.

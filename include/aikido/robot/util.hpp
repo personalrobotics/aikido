@@ -110,7 +110,7 @@ trajectory::InterpolatedPtr planToConfiguration(
 /// Restores the robot to its initial configuration after planning.
 /// \param[in] space The StateSpace for the metaskeleton
 /// \param[in] metaSkeleton MetaSkeleton to plan with.
-/// \param[in] goalStateis Goal states
+/// \param[in] goalStates Goal states
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
@@ -127,9 +127,11 @@ trajectory::InterpolatedPtr planToConfigurations(
 /// \param[in] space The StateSpace for the metaskeleton.
 /// \param[in] metaSkeleton MetaSkeleton to plan with.
 /// \param[in] bodyNode Bodynode whose frame for which TSR is constructed.
+/// \param[in] tsr TSR to plan to.
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
+/// \param[in] maxNumTrials Number of retries before failure.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::InterpolatedPtr planToTSR(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -147,13 +149,12 @@ trajectory::InterpolatedPtr planToTSR(
 /// Uses CRRTPlanner.
 /// \param[in] space The StateSpace for the metaskeleton
 /// \param[in] metaSkeleton MetaSkeleton to plan with.
-/// \param[in] body Bodynode whose frame is meant for TSR
+/// \param[in] bodyNode Bodynode whose frame is meant for TSR
 /// \param[in] goalTsr The goal TSR to move to
 /// \param[in] constraintTsr The constraint TSR for the trajectory
+/// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] timelimit Timelimit for planning
-/// \param[in] projectionMaxIteration Parameter for maximum iteration of
-/// constraint projection
-/// \param[in] projectionTolerance Parameter for projection tolerance
+/// \param[in] crrtParameters Parameters to use in planning.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -196,7 +197,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
 /// Plan to a desired end-effector offset with fixed orientation using CRRT.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
-/// \param[in] body Bodynode for the end effector
+/// \param[in] bodyNode Bodynode for the end effector
 /// \param[in] direction Direction unit vector in the world frame
 /// \param[in] collisionTestable Collision constraint to check. Self-collision
 /// is checked by default.

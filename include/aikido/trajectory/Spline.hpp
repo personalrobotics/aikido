@@ -56,7 +56,7 @@ public:
   ///
   /// \param _coefficients polynomial coefficients
   /// \param _duration duration of this segment, must be positive
-  /// \param _startSTate start state of the segment
+  /// \param _startState start state of the segment
   void addSegment(
       const Eigen::MatrixXd& _coefficients,
       double _duration,
