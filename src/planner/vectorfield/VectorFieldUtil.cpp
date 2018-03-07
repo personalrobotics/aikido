@@ -17,6 +17,8 @@ namespace {
 class DesiredTwistFunction : public dart::optimizer::Function
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   using Twist = Eigen::Vector6d;
   using Jacobian = dart::math::Jacobian;
 

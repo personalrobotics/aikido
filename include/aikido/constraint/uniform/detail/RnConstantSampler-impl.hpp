@@ -29,6 +29,7 @@ template <int N>
 class RnConstantSamplerSampleGenerator : public constraint::SampleGenerator
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
   RnConstantSamplerSampleGenerator(

@@ -20,6 +20,8 @@ class RBoxConstraint : public constraint::Differentiable,
                        public constraint::Testable
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   using constraint::Projectable::project;
   using constraint::Differentiable::getValueAndJacobian;
 
