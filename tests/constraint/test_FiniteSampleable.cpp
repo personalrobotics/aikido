@@ -1,6 +1,7 @@
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+#include <Eigen/StdVector>
 #include "../eigen_tests.hpp"
 
 #include <gtest/gtest.h>
@@ -10,6 +11,8 @@ using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
+
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)
 
 TEST(FiniteSampleableTest, ConstructorThrowsOnNullStateSpace)
 {
@@ -80,7 +83,6 @@ TEST(FiniteSampleableTest, SingleSampleGenerator)
 
 TEST(FiniteSampleableTest, FiniteSampleGenerator)
 {
-
   // Finite-samples
   Eigen::Vector2d v1(0, 1);
   Eigen::Vector2d v2(2, 3);
