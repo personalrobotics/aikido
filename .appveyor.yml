@@ -4,7 +4,8 @@ install:
   - sudo apt-add-repository ppa:dartsim/ppa
   - sudo add-apt-repository ppa:personalrobotics/ppa
   - sudo apt-get update
-  - sudo apt-get --yes install cmake build-essential libboost-filesystem-dev libdart6-optimizer-nlopt-dev libdart6-utils-dev libdart6-utils-urdf-dev libmicrohttpd-dev libompl-dev libtinyxml2-dev libyaml-cpp-dev pr-control-msgs
+  - sudo apt-get --yes install cmake build-essential libboost-filesystem-dev libdart6-optimizer-nlopt-dev libdart6-utils-dev libdart6-utils-urdf-dev libmicrohttpd-dev libompl-dev libtinyxml2-dev libyaml-cpp-dev
+  #- sudo apt-get --yes install pr-control-msgs
 
 build_script:
   - mkdir build && cd build
