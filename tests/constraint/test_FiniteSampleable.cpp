@@ -1,7 +1,7 @@
+#include <Eigen/StdVector>
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-#include <Eigen/StdVector>
 #include "../eigen_tests.hpp"
 
 #include <gtest/gtest.h>
