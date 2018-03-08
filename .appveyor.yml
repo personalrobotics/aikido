@@ -25,4 +25,4 @@ build_script:
   - sh: make check-format
 
 test_script:
-  - sh: ctest -j4 --output-on-failure
+  - sh: ctest --output-on-failure # parallel execution is disabled until https://github.com/personalrobotics/aikido/pull/360#issuecomment-371339353 is resolved
