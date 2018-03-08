@@ -39,10 +39,24 @@ const std::string& ConfigurationToConfiguration::getStaticName()
 }
 
 //==============================================================================
+void ConfigurationToConfiguration::setStartState(
+    const statespace::StateSpace::State* state)
+{
+  mStartState = state;
+}
+
+//==============================================================================
 const statespace::StateSpace::State*
 ConfigurationToConfiguration::getStartState() const
 {
   return mStartState;
+}
+
+//==============================================================================
+void ConfigurationToConfiguration::setGoalState(
+    const statespace::StateSpace::State* state)
+{
+  mGoalState = state;
 }
 
 //==============================================================================

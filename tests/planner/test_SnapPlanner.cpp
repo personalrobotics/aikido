@@ -44,6 +44,7 @@ public:
     , failingConstraint{make_shared<FailingConstraint>(stateSpace)}
     , interpolator(make_shared<GeodesicInterpolator>(stateSpace))
   {
+    // Do nothing
   }
 
   // DART setup

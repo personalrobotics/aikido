@@ -15,7 +15,7 @@
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/planner/PlanningResult.hpp"
-#include "aikido/planner/SnapPlanner.hpp"
+#include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/CRRTConnect.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
@@ -64,11 +64,14 @@ using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::StateSpace;
+using trajectory::TrajectoryPtr;
 using trajectory::Interpolated;
 using trajectory::InterpolatedPtr;
 using trajectory::SplinePtr;
 using common::cloneRNGFrom;
 using common::RNG;
+using planner::ConfigurationToConfiguration;
+using planner::SnapConfigurationToConfigurationPlanner;
 
 using dart::collision::FCLCollisionDetector;
 using dart::common::make_unique;
@@ -82,7 +85,7 @@ using dart::dynamics::SkeletonPtr;
 static const double collisionResolution = 0.1;
 
 //==============================================================================
-InterpolatedPtr planToConfiguration(
+trajectory::TrajectoryPtr planToConfiguration(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
@@ -91,7 +94,8 @@ InterpolatedPtr planToConfiguration(
     double timelimit)
 {
   using planner::ompl::planOMPL;
-  using planner::planSnap;
+  using planner::ConfigurationToConfiguration;
+  using planner::SnapConfigurationToConfigurationPlanner;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
@@ -100,18 +104,19 @@ InterpolatedPtr planToConfiguration(
   DART_UNUSED(saver);
 
   // First test with Snap Planner
-  planner::PlanningResult pResult;
-  InterpolatedPtr untimedTrajectory;
+  SnapConfigurationToConfigurationPlanner::Result pResult;
+  TrajectoryPtr untimedTrajectory;
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
-  untimedTrajectory = planSnap(
+  auto problem = ConfigurationToConfiguration(
       space,
       startState,
       goalState,
       std::make_shared<GeodesicInterpolator>(space),
-      collisionTestable,
-      pResult);
+      collisionTestable);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+  untimedTrajectory = planner->plan(problem, &pResult);
 
   // Return if the trajectory is non-empty
   if (untimedTrajectory)
@@ -134,7 +139,7 @@ InterpolatedPtr planToConfiguration(
 }
 
 //==============================================================================
-InterpolatedPtr planToConfigurations(
+trajectory::TrajectoryPtr planToConfigurations(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<StateSpace::State*>& goalStates,
@@ -151,20 +156,20 @@ InterpolatedPtr planToConfigurations(
   DART_UNUSED(saver);
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+  SnapConfigurationToConfigurationPlanner::Result pResult;
+  auto problem = ConfigurationToConfiguration(
+      space,
+      startState,
+      nullptr,
+      std::make_shared<GeodesicInterpolator>(space),
+      collisionTestable);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
 
   for (const auto& goalState : goalStates)
   {
     // First test with Snap Planner
-    planner::PlanningResult pResult;
-    InterpolatedPtr untimedTrajectory;
-
-    untimedTrajectory = planner::planSnap(
-        space,
-        startState,
-        goalState,
-        std::make_shared<GeodesicInterpolator>(space),
-        collisionTestable,
-        pResult);
+    problem.setGoalState(goalState);
+    TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
 
     // Return if the trajectory is non-empty
     if (untimedTrajectory)
@@ -190,7 +195,7 @@ InterpolatedPtr planToConfigurations(
 }
 
 //==============================================================================
-InterpolatedPtr planToTSR(
+trajectory::TrajectoryPtr planToTSR(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bn,
@@ -230,6 +235,14 @@ InterpolatedPtr planToTSR(
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
+  SnapConfigurationToConfigurationPlanner::Result pResult;
+  auto problem = ConfigurationToConfiguration(
+      space,
+      startState,
+      goalState,
+      std::make_shared<GeodesicInterpolator>(space),
+      collisionTestable);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
   while (snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
@@ -246,14 +259,7 @@ InterpolatedPtr planToTSR(
     }
     ++snapSamples;
 
-    planner::PlanningResult pResult;
-    auto traj = planner::planSnap(
-        space,
-        startState,
-        goalState,
-        std::make_shared<GeodesicInterpolator>(space),
-        collisionTestable,
-        pResult);
+    auto traj = planner->plan(problem, &pResult);
 
     if (traj)
       return traj;

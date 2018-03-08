@@ -33,12 +33,20 @@ public:
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
-  /// Returns the name of the planner problem.
+  // Documentation inherited.
   const std::string& getName() const override;
+
+  /// Returns the name of the planner problem.
   static const std::string& getStaticName();
+
+  /// Sets the start state.
+  void setStartState(const statespace::StateSpace::State* state);
 
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
+
+  /// Sets the goal state.
+  void setGoalState(const statespace::StateSpace::State* state);
 
   /// Returns the goal state.
   const statespace::StateSpace::State* getGoalState() const;

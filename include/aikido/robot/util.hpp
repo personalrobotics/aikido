@@ -76,9 +76,10 @@ struct CRRTPlannerParameters
     , minStepSize(minStepSize)
     , minTreeConnectionDistance(minTreeConnectionDistance)
     , projectionMaxIteration(projectionMaxIteration)
-    , projectionTolerance(projectionTolerance){
-          // Do nothing
-      };
+    , projectionTolerance(projectionTolerance)
+  {
+    // Do nothing
+  }
 
   common::RNG* rng;
   std::size_t maxNumTrials;
@@ -98,7 +99,7 @@ struct CRRTPlannerParameters
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
-trajectory::InterpolatedPtr planToConfiguration(
+trajectory::TrajectoryPtr planToConfiguration(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const statespace::StateSpace::State* goalState,
@@ -114,7 +115,7 @@ trajectory::InterpolatedPtr planToConfiguration(
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
-trajectory::InterpolatedPtr planToConfigurations(
+trajectory::TrajectoryPtr planToConfigurations(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const std::vector<statespace::StateSpace::State*>& goalStates,
@@ -133,7 +134,7 @@ trajectory::InterpolatedPtr planToConfigurations(
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \param[in] maxNumTrials Number of retries before failure.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-trajectory::InterpolatedPtr planToTSR(
+trajectory::TrajectoryPtr planToTSR(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
