@@ -30,12 +30,18 @@ their namespace, with the extension `.hpp`.
 // Use absolute paths, and place these at the top.
 #include <stl_headers>
 #include <library/headers.hpp>
+#include "aikido/common/pointers.hpp"
 #include "aikido/component_name/ExampleInterface.hpp"
 #include "aikido/component_name/ExampleOtherInterface.hpp"
 
 // Namespaces scopes should be one line each with "cuddled" braces.
 namespace aikido {
 namespace example {
+
+// Use the following macro (defined in aikido/common/pointers.hpp) to declare
+// STL "smart" pointers. Pointers should be declared ahead of the class so
+// that the class itself can use the pointers.
+AIKIDO_DECLARE_POINTERS(ExampleClass)
 
 /// A required Doxygen comment description for this class. This can be extended
 /// to include various useful details about the class, and can use the standard
@@ -89,8 +95,15 @@ private:
   std::unique_ptr<util::RNG> mExampleMember; // Member variables are prefixed with "m"
 };
 
-// Use "using" directive to declare a shared pointer helper type. It should not be `const`.
-using ExamplePtr = std::shared_ptr<Example>; 
+/// This is a template class description.
+/// \tparam T This is an example template parameter description.
+template <typename T>
+class TemplatedExampleClass
+{
+public:
+  /// Brief description.
+  T exampleMethod();
+};
 
 } // namespace example
 } // namespace aikido
@@ -102,6 +115,28 @@ using ExamplePtr = std::shared_ptr<Example>;
 #include "aikido/component_name/detail/ExampleClass-impl.hpp"
 
 #endif // AIKIDO_EXAMPLE_EXAMPLECLASS_HPP_
+```
+
+```c++
+#ifndef AIKIDO_EXAMPLE_DETAIL_EXAMPLECLASS_IMPL_HPP_
+#define AIKIDO_EXAMPLE_DETAIL_EXAMPLECLASS_IMPL_HPP_
+
+#include "aikido/example/ExampleClass.hpp"
+
+namespace aikido {
+namespace example {
+
+//==============================================================================
+template <typename T>
+T TemplatedExampleClass<T>::exampleMethod()
+{
+  return T();
+}
+
+} // namespace example
+} // namespace aikido
+
+#endif // AIKIDO_EXAMPLE_DETAIL_EXAMPLECLASS_IMPL_HPP_
 ```
 
 ### Source Style

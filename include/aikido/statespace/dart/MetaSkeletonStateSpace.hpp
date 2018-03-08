@@ -4,12 +4,15 @@
 #include <unordered_map>
 #include <dart/dynamics/dynamics.hpp>
 #include "aikido/common/pair.hpp"
+#include "aikido/common/pointers.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
+
+AIKIDO_DECLARE_POINTERS(MetaSkeletonStateSpace)
 
 /// \c StateSpace of a DART \c MetaSkeleton. This is a \c CartesianProduct,
 /// where the i-th subspace is a \c JointStateSpace for the i-th \c Joint of
@@ -126,6 +129,13 @@ public:
   void checkCompatibility(
       const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
 
+  /// Checks whether this \c skeleton contains all dofs defined
+  /// in this state space.
+  ///
+  /// \throws invalid_argument if \c skeleton does not contain
+  ///  all dofs if this state space.
+  void checkIfContained(const ::dart::dynamics::Skeleton* skeleton) const;
+
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
   ///
   /// \tparam Space type of \c StateSpace to return
@@ -173,7 +183,7 @@ public:
   /// \param _metaskeleton \c MetaSkeleton to set position for
   /// \param _state input state
   void setState(
-      ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state);
+      ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state) const;
 
   /// Wrapper for \c getStateFromMetaSkeleton that returns a ScopedState.
   ///
@@ -182,13 +192,14 @@ public:
   ScopedState getScopedStateFromMetaSkeleton(
       const ::dart::dynamics::MetaSkeleton* _metaskeleton) const;
 
+  /// Returns MetaSkeleton this space operates on.
+  /// \param _skeleton \c Skeleton to create MetaSkeleton from.
+  ::dart::dynamics::MetaSkeletonPtr getControlledMetaSkeleton(
+      const ::dart::dynamics::SkeletonPtr& _skeleton) const;
+
 private:
   Properties mProperties;
 };
-
-using MetaSkeletonStateSpacePtr = std::shared_ptr<MetaSkeletonStateSpace>;
-using ConstMetaSkeletonStateSpacePtr
-    = std::shared_ptr<const MetaSkeletonStateSpace>;
 
 } // namespace dart
 } // namespace statespace

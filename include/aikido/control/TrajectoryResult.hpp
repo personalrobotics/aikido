@@ -2,17 +2,18 @@
 #define AIKIDO_CONTROL_TRAJECTORYRESULT_HPP_
 
 #include <memory>
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace control {
+
+AIKIDO_DECLARE_POINTERS(TrajectoryResult)
 
 class TrajectoryResult
 {
 public:
   virtual ~TrajectoryResult() = default;
 };
-
-using TrajectoryResultPtr = std::shared_ptr<TrajectoryResult>;
 
 } // namespace control
 } // namespace aikido

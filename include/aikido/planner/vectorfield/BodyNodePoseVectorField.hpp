@@ -9,6 +9,8 @@ namespace aikido {
 namespace planner {
 namespace vectorfield {
 
+AIKIDO_DECLARE_POINTERS(BodyNodePoseVectorField)
+
 /// This class is a vector field over a MetaSkeletonStateSpace that is
 ///  defined in terms of a Cartesian vector field over the pose of a
 /// BodyNode in that MetaSkeleton.
@@ -23,12 +25,12 @@ class BodyNodePoseVectorField : public VectorField
 public:
   /// Constructor.
   ///
-  /// \param[in] stateSpace MetaSkeleton state space.
-  /// \param[in] metaskeleton MetaSkeleton to plan with
-  /// \param[in] bn Body node of end-effector.
+  /// \param[in] metaSkeletonStateSpace MetaSkeleton state space.
+  /// \param[in] metaSkeleton MetaSkeleton to plan with
+  /// \param[in] bodyNode Body node of end-effector.
   /// \param[in] maxStepSize The maximum step size used to guarantee
   /// that the integrator does not step out of joint limits.
-  /// \param[in] jointLimitpadding If less then this distance to joint
+  /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
   /// \param[in] enforceJointVelocityLimits Whether joint velocity limits
   /// are considered in computation.
@@ -71,7 +73,7 @@ public:
       const aikido::constraint::Testable* constraint,
       double evalStepSize,
       double& evalTimePivot,
-      bool excludeEndTime) const override;
+      bool includeEndTime) const override;
 
   /// Return meta skeleton state space.
   aikido::statespace::dart::MetaSkeletonStateSpacePtr
@@ -118,8 +120,6 @@ protected:
   /// Enfoce joint velocity limits
   bool mEnforceJointVelocityLimits;
 };
-
-using BodyNodePoseVectorFieldPtr = std::shared_ptr<BodyNodePoseVectorField>;
 
 } // namespace vectorfield
 } // namespace planner

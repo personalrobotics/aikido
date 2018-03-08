@@ -1,13 +1,15 @@
-#ifndef AIKIDO_STATESPACE_RNBOXCONSTRAINT_HPP_
-#define AIKIDO_STATESPACE_RNBOXCONSTRAINT_HPP_
-#include "../../statespace/Rn.hpp"
-#include "../Differentiable.hpp"
-#include "../Projectable.hpp"
-#include "../Sampleable.hpp"
-#include "../Testable.hpp"
+#ifndef AIKIDO_CONSTRAINT_UNIFORM_RNBOXCONSTRAINT_HPP_
+#define AIKIDO_CONSTRAINT_UNIFORM_RNBOXCONSTRAINT_HPP_
+
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/statespace/Rn.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 /// A BoxConstraint on RealVectorStates.
 /// For each dimension, this constraint has lowerLimit and upperLimit.
@@ -92,9 +94,10 @@ using R3BoxConstraint = RBoxConstraint<3>;
 using R6BoxConstraint = RBoxConstraint<6>;
 using RnBoxConstraint = RBoxConstraint<Eigen::Dynamic>;
 
+} // namespace uniform
 } // namespace constraint
 } // namespace aikido
 
 #include "aikido/constraint/uniform/detail/RnBoxConstraint-impl.hpp"
 
-#endif // AIKIDO_STATESPACE_REALVECTORSTATESPACESAMPLEABLECONSTRAINT_HPP_
+#endif // AIKIDO_CONSTRAINT_UNIFORM_RNBOXCONSTRAINT_HPP_

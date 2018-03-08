@@ -18,12 +18,12 @@ class CRRT : public ::ompl::base::Planner
 public:
   /// Constructor
   /// \param _si Information about the planning space
-  CRRT(const ::ompl::base::SpaceInformationPtr& _si);
+  explicit CRRT(const ::ompl::base::SpaceInformationPtr& _si);
 
   /// Constructor
   /// \param _si Information about the planning space
   /// \param _name A name for this planner
-  CRRT(const ::ompl::base::SpaceInformationPtr& _si, const std::string& name);
+  CRRT(const ::ompl::base::SpaceInformationPtr& _si, const std::string& _name);
 
   /// Destructor
   virtual ~CRRT();
@@ -32,7 +32,7 @@ public:
   /// calls to this function will update data (only additions are made). This is
   /// useful to see what changed in the exploration datastructure, between calls
   /// to solve(), for example (without calling clear() in between).
-  /// \param[out] data Data about the current run of the motion planner
+  /// \param[out] _data Data about the current run of the motion planner
   void getPlannerData(::ompl::base::PlannerData& _data) const override;
 
   /// Function that can solve the motion planning problem. This function can be
@@ -44,12 +44,12 @@ public:
   /// addition of starting or goal states (but not changing previously added
   /// start/goal states). The function terminates if the call to ptc returns
   /// true.
-  /// \param ptc Conditions for terminating planning before a solution is found
+  /// \param _ptc Conditions for terminating planning before a solution is found
   ::ompl::base::PlannerStatus solve(
       const ::ompl::base::PlannerTerminationCondition& _ptc) override;
 
   /// Solve the motion planning problem in the given time
-  /// \param solveTime The maximum allowable time to solve the planning problem
+  /// \param _solveTime The maximum allowable time to solve the planning problem
   ::ompl::base::PlannerStatus solve(double _solveTime);
 
   /// Clear all internal datastructures. Planner settings are not affected.
@@ -70,7 +70,7 @@ public:
   /// Set the range the planner is supposed to use. This parameter greatly
   /// influences the runtime of the algorithm. It represents the maximum length
   /// of a motion to be added in the tree of motions.
-  /// \param distance The maximum length of a motion to be added in the tree of
+  /// \param _distance The maximum length of a motion to be added in the tree of
   /// motions
   void setRange(double _distance);
 
@@ -129,7 +129,7 @@ protected:
     }
 
     /// Constructor that allocates memory for the state
-    Motion(const ::ompl::base::SpaceInformationPtr& _si)
+    explicit Motion(const ::ompl::base::SpaceInformationPtr& _si)
       : state(_si->allocState()), parent(nullptr)
     {
       // Do nothing
@@ -172,7 +172,7 @@ protected:
   /// \param returnlast If true, return the last node added to the tree,
   /// otherwise return the node added that was nearest the goal
   /// \param[out] dist The closest distance this extension got to the goal
-  /// \param[out] True if the extension reached the goal.
+  /// \param[out] foundgoal True if the extension reached the goal.
   /// \return fmotion If returnlast is true, the last node on the extension,
   /// otherwise the closest node along the extension to the goal
   Motion* constrainedExtend(

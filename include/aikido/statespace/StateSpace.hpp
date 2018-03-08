@@ -4,10 +4,13 @@
 #include <memory>
 #include <Eigen/Dense>
 #include "aikido/common/RNG.hpp"
+#include "aikido/common/pointers.hpp"
 #include "aikido/statespace/ScopedState.hpp"
 
 namespace aikido {
 namespace statespace {
+
+AIKIDO_DECLARE_POINTERS(StateSpace)
 
 /// Represents a Lie group and its associated Lie algebra, i.e. a
 /// differentiable manifold embedded in Euclidean space. This is a base class
@@ -104,7 +107,7 @@ public:
   ///
   /// \param[in,out] _state1 left input state, overwritten by output
   /// \param _state2 right input state
-  virtual void compose(State* _state1, const State* _state2);
+  virtual void compose(State* _state1, const State* _state2) const;
 
   /// Gets the identity element for this Lie group, such that:
   /// \code
@@ -148,15 +151,15 @@ public:
   /// parameterization of the tangent space is defined by the concrete
   /// implementation of this class.
   ///
-  /// \param _state element of this Lie group
-  /// \param[out] _tangent corresponding element of the tangent space
+  /// \param _tangent corresponding element of the tangent space
+  /// \param[out] _out element of this Lie group
   virtual void expMap(const Eigen::VectorXd& _tangent, State* _out) const = 0;
 
   /// Log mapping of Lie group element to a Lie algebra element. The
   /// parameterization of the tangent space is defined by the concrete
   /// implementation of this class.
   ///
-  /// \param _state element of this Lie group
+  /// \param _in element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
   virtual void logMap(const State* _in, Eigen::VectorXd& _tangent) const = 0;
 
@@ -165,9 +168,6 @@ public:
   /// \param _os The stream to print to
   virtual void print(const State* _state, std::ostream& _os) const = 0;
 };
-
-using StateSpacePtr = std::shared_ptr<StateSpace>;
-using ConstStateSpacePtr = std::shared_ptr<const StateSpace>;
 
 } // namespace statespace
 } // namespace aikido

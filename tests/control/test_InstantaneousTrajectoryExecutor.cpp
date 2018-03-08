@@ -22,7 +22,7 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
 using ::dart::dynamics::RevoluteJoint;
 
-const static std::chrono::milliseconds stepTime{0};
+const static std::chrono::milliseconds waitTime{0};
 
 class InstantaneousTrajectoryExecutorTest : public testing::Test
 {
@@ -128,7 +128,7 @@ TEST_F(
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-  std::future_status status = future.wait_for(stepTime);
+  std::future_status status = future.wait_for(waitTime);
   EXPECT_EQ(status, std::future_status::ready);
 
   future.get();
@@ -145,7 +145,7 @@ TEST_F(
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
   auto future = executor.execute(mTraj);
-  std::future_status status = future.wait_for(stepTime);
+  std::future_status status = future.wait_for(waitTime);
   EXPECT_EQ(status, std::future_status::ready);
 
   future.get();
@@ -156,7 +156,7 @@ TEST_F(
 
   // Execute second traj.
   future = executor.execute(mTraj);
-  status = future.wait_for(stepTime);
+  status = future.wait_for(waitTime);
   EXPECT_EQ(status, std::future_status::ready);
 
   future.get();

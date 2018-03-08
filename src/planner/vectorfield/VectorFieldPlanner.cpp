@@ -1,6 +1,6 @@
 #include <boost/numeric/odeint.hpp>
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
+#include <aikido/constraint/dart/JointStateSpaceHelpers.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
@@ -115,7 +115,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
             &constraint,
             checkConstraintResolution,
             lastEvaluationTime,
-            false))
+            true))
     {
       planningResult->message = "Constraint violated.";
       return nullptr;
@@ -161,7 +161,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
   // Save the current state of the space
-  auto saver = MetaSkeletonStateSaver(metaskeleton);
+  auto saver = MetaSkeletonStateSaver(
+      metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
   auto vectorfield = std::make_shared<MoveEndEffectorOffsetVectorField>(
@@ -177,10 +178,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       jointLimitTolerance);
 
   auto compoundConstraint
-      = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);
+      = std::make_shared<constraint::TestableIntersection>(stateSpace);
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
-      aikido::constraint::createTestableBounds(stateSpace));
+      constraint::dart::createTestableBounds(stateSpace));
 
   auto startState
       = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
@@ -212,7 +213,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
   // Save the current state of the space
-  auto saver = MetaSkeletonStateSaver(metaskeleton);
+  auto saver = MetaSkeletonStateSaver(
+      metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
   auto vectorfield = std::make_shared<MoveEndEffectorPoseVectorField>(
@@ -229,7 +231,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
-      aikido::constraint::createTestableBounds(stateSpace));
+      constraint::dart::createTestableBounds(stateSpace));
 
   auto startState
       = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());

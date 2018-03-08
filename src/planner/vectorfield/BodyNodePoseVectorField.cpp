@@ -1,5 +1,4 @@
 #include <aikido/common/StepSequence.hpp>
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
 #include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include "detail/VectorFieldPlannerExceptions.hpp"
@@ -97,7 +96,7 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
     const aikido::constraint::Testable* constraint,
     double evalStepSize,
     double& evalTimePivot,
-    bool excludeEndTime) const
+    bool includeEndTime) const
 {
   if (constraint == nullptr)
   {
@@ -106,7 +105,11 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
   auto state = mMetaSkeletonStateSpace->createState();
 
   aikido::common::StepSequence seq(
-      evalStepSize, excludeEndTime, evalTimePivot, trajectory.getEndTime());
+      evalStepSize,
+      true,
+      includeEndTime,
+      evalTimePivot,
+      trajectory.getEndTime());
 
   for (double t : seq)
   {

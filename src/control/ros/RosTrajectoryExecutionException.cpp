@@ -1,9 +1,4 @@
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/control/ros/RosTrajectoryExecutionException.hpp>
-#include <aikido/control/ros/RosTrajectoryExecutor.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/dart/RnJoint.hpp>
-#include <aikido/statespace/dart/SO2Joint.hpp>
+#include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
 
 namespace aikido {
 namespace control {

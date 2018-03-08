@@ -91,13 +91,11 @@ public:
 
   /// Sets the times of all knot points.
   ///
-  /// \param _index index of a knot point.
   /// \param _t new times, must be monotone increasing
   void setTimes(TimeVector&& _t);
 
   /// Sets the times of all knot points.
   ///
-  /// \param _index index of a knot point.
   /// \param _t new times, must be monotone increasing
   void setTimes(const TimeVector& _t);
 

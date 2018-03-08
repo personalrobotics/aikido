@@ -1,15 +1,8 @@
-#include <chrono>
-#include <thread>
+#include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
-#include <aikido/control/TrajectoryRunningException.hpp>
-#include <aikido/statespace/SO2.hpp>
+#include "aikido/control/TrajectoryRunningException.hpp"
 
-using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using std::chrono::duration_cast;
-using std::chrono::milliseconds;
-using std::chrono::seconds;
 
 namespace aikido {
 namespace control {
@@ -18,9 +11,10 @@ namespace control {
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
   : mSkeleton{std::move(skeleton)}
+  , mTraj{nullptr}
+  , mStateSpace{nullptr}
   , mInProgress{false}
   , mPromise{nullptr}
-  , mTraj{nullptr}
   , mMutex{}
 {
   if (!mSkeleton)
@@ -53,36 +47,27 @@ void KinematicSimulationTrajectoryExecutor::validate(
   if (traj->metadata.executorValidated)
     return;
 
-  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   if (!space)
     throw std::invalid_argument(
-        "Trajectory does not operate in this Executor's"
-        " MetaSkeletonStateSpace.");
+        "Trajectory is not in a MetaSkeletonStateSpace.");
 
-  // Check if the space only contains DOFs in mSkeleton.
-  std::unique_lock<std::mutex> skeleton_lock(mSkeleton->getMutex());
-  for (const auto& name : space->getProperties().getDofNames())
-  {
-    auto dof_in_skeleton = mSkeleton->getDof(name);
+  // TODO: Delete this line once the skeleton is locked by isCompatible
+  std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
 
-    if (!dof_in_skeleton)
-    {
-      std::stringstream msg;
-      msg << "traj contains dof [" << name << "], which is not in mSkeleton.";
-
-      throw std::invalid_argument(msg.str());
-    }
-  }
-  skeleton_lock.unlock();
+  space->checkIfContained(mSkeleton.get());
 
   traj->metadata.executorValidated = true;
 }
+
 //==============================================================================
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     trajectory::TrajectoryPtr traj)
 {
+  using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+
   validate(traj);
 
   {
@@ -93,18 +78,25 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
       throw TrajectoryRunningException();
 
     mPromise.reset(new std::promise<void>());
-    mTraj = traj;
+
+    mTraj = std::move(traj);
+    mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+        mTraj->getStateSpace());
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
+    mMetaSkeleton = mStateSpace->getControlledMetaSkeleton(mSkeleton);
+
+    if (!mMetaSkeleton)
+      throw std::invalid_argument("Failed to create MetaSkeleton");
   }
 
   return mPromise->get_future();
 }
 
 //==============================================================================
-void KinematicSimulationTrajectoryExecutor::step()
+void KinematicSimulationTrajectoryExecutor::step(
+    const std::chrono::system_clock::time_point& timepoint)
 {
-  using namespace std::chrono;
   std::lock_guard<std::mutex> lock(mMutex);
 
   if (!mInProgress && !mTraj)
@@ -116,6 +108,7 @@ void KinematicSimulationTrajectoryExecutor::step()
         std::make_exception_ptr(
             std::runtime_error("Trajectory terminated while in execution.")));
     mTraj.reset();
+    mMetaSkeleton.reset();
   }
   else if (mInProgress && !mTraj)
   {
@@ -123,30 +116,30 @@ void KinematicSimulationTrajectoryExecutor::step()
         std::make_exception_ptr(
             std::runtime_error(
                 "Set for execution but no trajectory is provided.")));
+    mMetaSkeleton.reset();
     mInProgress = false;
   }
 
-  auto timeSinceBeginning = system_clock::now() - mExecutionStartTime;
-  auto tsec = duration_cast<std::chrono::duration<double>>(timeSinceBeginning)
-                  .count();
+  const auto timeSinceBeginning = timepoint - mExecutionStartTime;
+  const auto executionTime
+      = std::chrono::duration<double>(timeSinceBeginning).count();
 
-  // Can't do static here because MetaSkeletonStateSpace inherits
-  // CartesianProduct which inherits virtual StateSpace
-  auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
-      mTraj->getStateSpace());
-  auto state = space->createState();
+  if (executionTime < 0)
+    throw std::invalid_argument("Timepoint is before execution start time.");
 
-  mTraj->evaluate(tsec, state);
+  auto state = mStateSpace->createState();
+  mTraj->evaluate(executionTime, state);
 
-  space->setState(mSkeleton.get(), state);
+  mStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Check if trajectory has completed.
-  bool const is_done = (tsec >= mTraj->getEndTime());
-  if (is_done)
+  if (executionTime >= mTraj->getEndTime())
   {
     mTraj.reset();
-    mPromise->set_value();
+    mStateSpace.reset();
+    mMetaSkeleton.reset();
     mInProgress = false;
+    mPromise->set_value();
   }
 }
 
@@ -157,8 +150,10 @@ void KinematicSimulationTrajectoryExecutor::abort()
 
   if (mInProgress && mTraj)
   {
-    mInProgress = false;
     mTraj.reset();
+    mStateSpace.reset();
+    mMetaSkeleton.reset();
+    mInProgress = false;
     mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
   }

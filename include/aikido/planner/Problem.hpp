@@ -14,7 +14,7 @@ public:
   class Result;
 
   /// Constructor.
-  explicit Problem(statespace::StateSpacePtr stateSpace);
+  explicit Problem(statespace::ConstStateSpacePtr stateSpace);
 
   /// Destructor.
   virtual ~Problem() = default;
@@ -23,11 +23,11 @@ public:
   virtual const std::string& getName() const = 0;
 
   /// Returns const state space.
-  statespace::StateSpacePtr getStateSpace() const;
+  statespace::ConstStateSpacePtr getStateSpace() const;
 
 protected:
   /// State space associated with this problem.
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 };
 
 /// Base class for planning result of various planning problems.
