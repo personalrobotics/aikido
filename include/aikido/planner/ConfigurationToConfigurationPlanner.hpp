@@ -2,8 +2,8 @@
 #define AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
-#include "aikido/trajectory/Trajectory.hpp"
 #include "aikido/planner/PlanningResult.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace planner {
@@ -15,7 +15,8 @@ public:
   using Result = PlanningResult;
 
   virtual trajectory::TrajectoryPtr plan(
-      const Problem& problem, Result* result = nullptr) = 0;
+      const Problem& problem, Result* result = nullptr)
+      = 0;
 };
 
 } // namespace planner

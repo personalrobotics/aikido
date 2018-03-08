@@ -12,7 +12,6 @@ set(sources
   Problem.cpp
   RankedMetaPlanner.cpp
   SnapConfigurationToConfigurationPlanner.cpp
-  SnapPlanner.cpp
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp

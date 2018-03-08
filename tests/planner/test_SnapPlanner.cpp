@@ -5,14 +5,18 @@
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
 #include <aikido/planner/PlanningResult.hpp>
-#include <aikido/planner/SnapPlanner.hpp>
+#include <aikido/planner/SnapConfigurationToConfigurationPlanner.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 #include "../constraint/MockConstraints.hpp"
 
 using std::shared_ptr;
 using std::make_shared;
+using aikido::trajectory::Interpolated;
+using aikido::planner::ConfigurationToConfiguration;
+using aikido::planner::SnapConfigurationToConfigurationPlanner;
 
 //==============================================================================
 class SnapPlannerTest : public ::testing::Test
@@ -53,7 +57,7 @@ public:
   shared_ptr<PassingConstraint> passingConstraint;
   shared_ptr<FailingConstraint> failingConstraint;
   shared_ptr<GeodesicInterpolator> interpolator;
-  aikido::planner::ConfigurationToConfiguration::Result planningResult;
+  SnapConfigurationToConfigurationPlanner::Result planningResult;
 };
 
 //==============================================================================
@@ -78,19 +82,6 @@ public:
 };
 
 //==============================================================================
-TEST_F(SnapPlannerTest, CanSolveProblems)
-{
-  auto planner = std::make_shared<aikido::planner::SnapPlanner>();
-
-  auto problem = aikido::planner::ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, interpolator, failingConstraint);
-  auto unknownProblem = UnknownProblem();
-
-  EXPECT_TRUE(planner->canSolve(&problem));
-  EXPECT_FALSE(planner->canSolve(&unknownProblem));
-}
-
-//==============================================================================
 TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 {
   SkeletonPtr emptySkel = dart::dynamics::Skeleton::create("skel");
@@ -98,7 +89,7 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
       = make_shared<MetaSkeletonStateSpace>(emptySkel.get());
   EXPECT_THROW(
       {
-        auto problem = aikido::planner::ConfigurationToConfiguration(
+        auto problem = ConfigurationToConfiguration(
             differentStateSpace,
             *startState,
             *goalState,
@@ -116,14 +107,18 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   skel->setPosition(0, 2.0);
   stateSpace->setState(skel.get(), *goalState);
 
-  auto problem = aikido::planner::ConfigurationToConfiguration(
+  auto problem = ConfigurationToConfiguration(
       stateSpace, *startState, *goalState, interpolator, passingConstraint);
-  auto planner = std::make_shared<aikido::planner::SnapPlanner>();
-  auto traj = planner->planToConfiguration(&problem, &planningResult);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+  auto traj = planner->plan(problem, &planningResult);
 
   auto subSpace = stateSpace->getSubspace<SO2>(0);
   DART_UNUSED(subSpace);
-  EXPECT_EQ(2, traj->getNumWaypoints());
+
+  if (auto interpolated = std::dynamic_pointer_cast<Interpolated>(traj))
+  {
+    EXPECT_EQ(2, interpolated->getNumWaypoints());
+  }
 
   auto startValue = startState->getSubStateHandle<SO2>(0).getRotation();
 
@@ -145,9 +140,9 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 //==============================================================================
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
-  auto problem = aikido::planner::ConfigurationToConfiguration(
+  auto problem = ConfigurationToConfiguration(
       stateSpace, *startState, *goalState, interpolator, failingConstraint);
-  auto planner = std::make_shared<aikido::planner::SnapPlanner>();
-  auto traj = planner->planToConfiguration(&problem, &planningResult);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+  auto traj = planner->plan(problem, &planningResult);
   EXPECT_EQ(nullptr, traj);
 }
