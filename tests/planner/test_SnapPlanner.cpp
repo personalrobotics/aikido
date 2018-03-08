@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/planner/PlanToConfiguration.hpp>
+#include <aikido/planner/ConfigurationToConfiguration.hpp>
 #include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapPlanner.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -53,7 +53,7 @@ public:
   shared_ptr<PassingConstraint> passingConstraint;
   shared_ptr<FailingConstraint> failingConstraint;
   shared_ptr<GeodesicInterpolator> interpolator;
-  aikido::planner::PlanToConfiguration::Result planningResult;
+  aikido::planner::ConfigurationToConfiguration::Result planningResult;
 };
 
 //==============================================================================
@@ -82,7 +82,7 @@ TEST_F(SnapPlannerTest, CanSolveProblems)
 {
   auto planner = std::make_shared<aikido::planner::SnapPlanner>();
 
-  auto problem = aikido::planner::PlanToConfiguration(
+  auto problem = aikido::planner::ConfigurationToConfiguration(
       stateSpace, *startState, *goalState, interpolator, failingConstraint);
   auto unknownProblem = UnknownProblem();
 
@@ -98,7 +98,7 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
       = make_shared<MetaSkeletonStateSpace>(emptySkel.get());
   EXPECT_THROW(
       {
-        auto problem = aikido::planner::PlanToConfiguration(
+        auto problem = aikido::planner::ConfigurationToConfiguration(
             differentStateSpace,
             *startState,
             *goalState,
@@ -116,7 +116,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   skel->setPosition(0, 2.0);
   stateSpace->setState(skel.get(), *goalState);
 
-  auto problem = aikido::planner::PlanToConfiguration(
+  auto problem = aikido::planner::ConfigurationToConfiguration(
       stateSpace, *startState, *goalState, interpolator, passingConstraint);
   auto planner = std::make_shared<aikido::planner::SnapPlanner>();
   auto traj = planner->planToConfiguration(&problem, &planningResult);
@@ -145,7 +145,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 //==============================================================================
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
-  auto problem = aikido::planner::PlanToConfiguration(
+  auto problem = aikido::planner::ConfigurationToConfiguration(
       stateSpace, *startState, *goalState, interpolator, failingConstraint);
   auto planner = std::make_shared<aikido::planner::SnapPlanner>();
   auto traj = planner->planToConfiguration(&problem, &planningResult);

@@ -1,8 +1,8 @@
-#ifndef AIKIDO_PLANNER_PLANTOTSR_HPP_
-#define AIKIDO_PLANNER_PLANTOTSR_HPP_
+#ifndef AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
+#define AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
 
 #include <dart/dart.hpp>
-#include "aikido/constraint/dart/TSR.hpp"
+#include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
@@ -10,8 +10,9 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to given single Task Space Region (TSR).
-class PlanToTSR : public Problem
+/// Planning problem to plan to desired en-effector offset with fixed
+/// orientation
+class ConfigurationToEndEffectorOffset : public Problem
 {
 public:
   class Result;
@@ -21,45 +22,57 @@ public:
   /// \param stateSpace State space.
   /// \param bodyNode Body Node or robot for which the path is to be planned.
   /// \param startState Start state.
-  /// \param goalTSR Goal TSR.
+  /// \param goalState Goal state.
+  /// \param direction Direction of motion [unit vector in the world frame].
+  /// \param distance Distance to move, in meters.
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible to \c constraint's state space.
-  PlanToTSR(
+  ConfigurationToEndEffectorOffset(
       statespace::StateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
-      const constraint::dart::TSRPtr goalTSR,
+      const Eigen::Vector3d& direction,
+      const double& distance,
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
+  /// Returns the name of the planner problem.
   const std::string& getName() const override;
-
   static const std::string& getStaticName();
 
+  /// Returns the body node or robot for which the path is to be planned.
   dart::dynamics::BodyNodePtr getBodyNode();
 
+  /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
-  const constraint::dart::TSRPtr getGoalTSR() const;
+  /// Returns the direction of motion specified in the world frame.
+  const Eigen::Vector3d& getDirection() const;
 
+  /// Returns the distance to move in the specified direction [meters]
+  const double& getDistance() const;
+
+  /// Returns the interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr getInterpolator();
-
   statespace::ConstInterpolatorPtr getInterpolator() const;
 
+  /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::TestablePtr getConstraint();
-
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
-  /// Body Node or Robot
+  /// Body Node or Robot.
   dart::dynamics::BodyNodePtr mBodyNode;
 
-  /// Start State
+  /// Start state.
   const statespace::StateSpace::State* mStartState;
 
-  /// Goal TSR
-  const constraint::dart::TSRPtr mGoalTSR;
+  /// Direction of motion.
+  const Eigen::Vector3d mDirection;
+
+  /// Distance to move in the direction specified.
+  const double mDistance;
 
   /// Interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr mInterpolator;
@@ -68,7 +81,7 @@ protected:
   constraint::TestablePtr mConstraint;
 };
 
-class PlanToTSR::Result : public Problem::Result
+class ConfigurationToEndEffectorOffset::Result : public Problem::Result
 {
 public:
 protected:

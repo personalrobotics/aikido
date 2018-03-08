@@ -1,19 +1,19 @@
-#ifndef AIKIDO_PLANNER_PLANTOCONFIGURATION_HPP_
-#define AIKIDO_PLANNER_PLANTOCONFIGURATION_HPP_
+#ifndef AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
+#define AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
+#include "aikido/statespace/Interpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
-#include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to a single goal configuration.
+/// Planning problem to plan to a multiple goal configurations.
 ///
-/// Plan a trajectory from start state to goal state by using an interpolator to
-/// interpolate between them.
-class PlanToConfiguration : public Problem
+/// Plan a trajectory from start state to any of the goal states using an
+/// interpolator to interpolate between the states.
+class ConfigurationToConfigurations : public Problem
 {
 public:
   class Result;
@@ -22,14 +22,14 @@ public:
   ///
   /// \param stateSpace State space.
   /// \param startState Start state.
-  /// \param goalState Goal state.
+  /// \param goalStates Goal states.
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible to \c constraint's state space.
-  PlanToConfiguration(
-      const statespace::ConstStateSpacePtr& stateSpace,
+  ConfigurationToConfigurations(
+      statespace::StateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
-      const statespace::StateSpace::State* goalState,
+      const std::vector<statespace::StateSpace::State*>& goalStates,
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
@@ -40,40 +40,36 @@ public:
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
-  /// Returns the goal state.
-  const statespace::StateSpace::State* getGoalState() const;
+  /// Returns the vector of goal states.
+  const std::vector<statespace::StateSpace::State*> getGoalStates() const;
 
   /// Returns the interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr getInterpolator();
 
   /// Returns the interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr getInterpolator() const;
-  // TODO: Should return ConstInterpolatorPtr when resolving const correctness
-  // issues.
+  statespace::ConstInterpolatorPtr getInterpolator() const;
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::TestablePtr getConstraint();
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::TestablePtr getConstraint() const;
-  // TODO: Should return ConstInterpolatorPtr when resolving const correctness
-  // issues.
+  constraint::ConstTestablePtr getConstraint() const;
 
 protected:
   /// Start state.
   const statespace::StateSpace::State* mStartState;
 
-  /// Goal state.
-  const statespace::StateSpace::State* mGoalState;
+  /// Goal States.
+  const std::vector<statespace::StateSpace::State*> mGoalStates;
 
   /// Interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr mInterpolator;
 
-  /// Trajectory-wide constraint that must be satisfied.
+  /// Trajectory-wide constrained that must be satisfied.
   constraint::TestablePtr mConstraint;
 };
 
-class PlanToConfiguration::Result : public Problem::Result
+class ConfigurationToConfigurations::Result : public Problem::Result
 {
 public:
 protected:

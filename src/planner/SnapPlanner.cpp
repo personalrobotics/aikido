@@ -16,7 +16,7 @@ SnapPlanner::SnapPlanner()
 {
   if (!mIsRegisteredPlanningFunctions)
   {
-    registerPlanningFunction<PlanToConfiguration>(
+    registerPlanningFunction<ConfigurationToConfiguration>(
         &SnapPlanner::planToConfiguration);
 
     mIsRegisteredPlanningFunctions = true;
@@ -30,15 +30,18 @@ trajectory::InterpolatedPtr SnapPlanner::planToConfiguration(
   if (!problem)
     return nullptr;
 
-  const auto* castedProblem = dynamic_cast<const PlanToConfiguration*>(problem);
+  const auto* castedProblem
+      = dynamic_cast<const ConfigurationToConfiguration*>(problem);
   if (!castedProblem)
-    throw std::invalid_argument("problem is not PlanToConfiguration type");
+    throw std::invalid_argument(
+        "problem is not ConfigurationToConfiguration type");
 
-  auto* castedResult = dynamic_cast<PlanToConfiguration::Result*>(result);
+  auto* castedResult
+      = dynamic_cast<ConfigurationToConfiguration::Result*>(result);
   if (result && !castedResult)
   {
     throw std::invalid_argument(
-        "result is not PlanToConfiguration::Result type");
+        "result is not ConfigurationToConfiguration::Result type");
   }
 
   auto stateSpace = castedProblem->getStateSpace();

@@ -3,13 +3,15 @@ set(sources
   FirstSupportedMetaPlanner.cpp
   MetaPlanner.cpp
   Planner.cpp
-  PlanToConfiguration.cpp
-  PlanToConfigurations.cpp
-  PlanToTSR.cpp
-  PlanToEndEffectorOffset.cpp
-  PlanToEndEffectorPose.cpp
+  ConfigurationToConfiguration.cpp
+  ConfigurationToConfigurations.cpp
+  ConfigurationToTSR.cpp
+  ConfigurationToEndEffectorOffset.cpp
+  ConfigurationToEndEffectorPose.cpp
+  PlanningResult.cpp
   Problem.cpp
   RankedMetaPlanner.cpp
+  SnapConfigurationToConfigurationPlanner.cpp
   SnapPlanner.cpp
   SequenceMetaPlanner.cpp
   World.cpp

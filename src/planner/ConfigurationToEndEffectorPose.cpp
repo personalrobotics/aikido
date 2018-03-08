@@ -1,4 +1,4 @@
-#include "aikido/planner/PlanToTSR.hpp"
+#include "aikido/planner/ConfigurationToEndEffectorPose.hpp"
 
 #include "aikido/constraint/Testable.hpp"
 
@@ -6,17 +6,17 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-PlanToTSR::PlanToTSR(
+ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     statespace::StateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
-    const constraint::dart::TSRPtr goalTSR,
+    const Eigen::Isometry3d& goalPose,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
-  , mGoalTSR(goalTSR)
+  , mGoalPose(goalPose)
   , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
@@ -28,56 +28,59 @@ PlanToTSR::PlanToTSR(
 }
 
 //==============================================================================
-const std::string& PlanToTSR::getName() const
+const std::string& ConfigurationToEndEffectorPose::getName() const
 {
   return getStaticName();
 }
 
 //==============================================================================
-const std::string& PlanToTSR::getStaticName()
+const std::string& ConfigurationToEndEffectorPose::getStaticName()
 {
-  static std::string name("PlanToTSR");
+  static std::string name("ConfigurationToEndEffectorPose");
   return name;
 }
 
 //==============================================================================
-dart::dynamics::BodyNodePtr PlanToTSR::getBodyNode()
+dart::dynamics::BodyNodePtr ConfigurationToEndEffectorPose::getBodyNode()
 {
   return mBodyNode;
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToTSR::getStartState() const
+const statespace::StateSpace::State*
+ConfigurationToEndEffectorPose::getStartState() const
 {
   return mStartState;
 }
 
 //==============================================================================
-const constraint::dart::TSRPtr PlanToTSR::getGoalTSR() const
+const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
 {
-  return mGoalTSR;
+  return mGoalPose;
 }
 
 //==============================================================================
-statespace::InterpolatorPtr PlanToTSR::getInterpolator()
-{
-  return mInterpolator;
-}
-
-//==============================================================================
-statespace::ConstInterpolatorPtr PlanToTSR::getInterpolator() const
+statespace::InterpolatorPtr ConfigurationToEndEffectorPose::getInterpolator()
 {
   return mInterpolator;
 }
 
 //==============================================================================
-constraint::TestablePtr PlanToTSR::getConstraint()
+statespace::ConstInterpolatorPtr
+ConfigurationToEndEffectorPose::getInterpolator() const
+{
+  return mInterpolator;
+}
+
+//==============================================================================
+constraint::TestablePtr ConfigurationToEndEffectorPose::getConstraint()
 {
   return mConstraint;
 }
 
 //==============================================================================
-constraint::ConstTestablePtr PlanToTSR::getConstraint() const
+constraint::ConstTestablePtr ConfigurationToEndEffectorPose::getConstraint()
+    const
 {
   return mConstraint;
 }

@@ -6,9 +6,20 @@
 namespace aikido {
 namespace planner {
 
-struct PlanningResult
+class PlanningResult
 {
-  // TODO fill out
+public:
+  /// Sets message.
+  void setMessage(const std::string& message);
+
+  /// Returns message.
+  const std::string& getMessage() const;
+
+public: // TODO: Change this to protected
+  /// Message
+  std::string mMessage;
+
+  // TODO: Remove
   std::string message;
 };
 

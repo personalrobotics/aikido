@@ -3,11 +3,11 @@
 
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/ConcretePlanner.hpp"
-#include "aikido/planner/PlanToConfiguration.hpp"
-#include "aikido/planner/PlanToConfigurations.hpp"
-#include "aikido/planner/PlanToTSR.hpp"
-#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/planner/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/ConfigurationToConfigurations.hpp"
+#include "aikido/planner/ConfigurationToTSR.hpp"
 #include "aikido/planner/PlanningResult.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
 namespace planner {
@@ -29,7 +29,7 @@ public:
   /// Constructor
   SnapPlanner();
 
-  /// Solves PlanToConfiguration problem.
+  /// Solves ConfigurationToConfiguration problem.
   ///
   /// The planner returns success if the resulting trajectory satisfies
   /// constraint at some resolution and failure (returning \c nullptr)
@@ -39,8 +39,8 @@ public:
   /// \param problem Planning problem.
   /// \param[out] result Information about success or failure.
   /// \return Trajectory or \c nullptr if planning failed.
-  /// \throw If \c problem is not PlanToConfiguration.
-  /// \throw If \c result is not PlanToConfiguration::Result.
+  /// \throw If \c problem is not ConfigurationToConfiguration.
+  /// \throw If \c result is not ConfigurationToConfiguration::Result.
   trajectory::InterpolatedPtr planToConfiguration(
       const Problem* problem, Problem::Result* result = nullptr);
 

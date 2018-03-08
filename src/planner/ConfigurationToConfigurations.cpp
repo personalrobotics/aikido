@@ -1,4 +1,4 @@
-#include "aikido/planner/PlanToConfiguration.hpp"
+#include "aikido/planner/ConfigurationToConfigurations.hpp"
 
 #include "aikido/constraint/Testable.hpp"
 
@@ -6,15 +6,15 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-PlanToConfiguration::PlanToConfiguration(
-    const statespace::ConstStateSpacePtr& stateSpace,
+ConfigurationToConfigurations::ConfigurationToConfigurations(
+    statespace::StateSpacePtr stateSpace,
     const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState,
+    const std::vector<statespace::StateSpace::State*>& goalStates,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mStartState(startState)
-  , mGoalState(goalState)
+  , mGoalStates(goalStates)
   , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
@@ -26,50 +26,54 @@ PlanToConfiguration::PlanToConfiguration(
 }
 
 //==============================================================================
-const std::string& PlanToConfiguration::getName() const
+const std::string& ConfigurationToConfigurations::getName() const
 {
   return getStaticName();
 }
 
 //==============================================================================
-const std::string& PlanToConfiguration::getStaticName()
+const std::string& ConfigurationToConfigurations::getStaticName()
 {
-  static std::string name("PlanToConfiguration");
+  static std::string name("ConfigurationToConfigurations");
   return name;
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToConfiguration::getStartState() const
+const statespace::StateSpace::State*
+ConfigurationToConfigurations::getStartState() const
 {
   return mStartState;
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToConfiguration::getGoalState() const
+const std::vector<statespace::StateSpace::State*>
+ConfigurationToConfigurations::getGoalStates() const
 {
-  return mGoalState;
+  return mGoalStates;
 }
 
 //==============================================================================
-statespace::InterpolatorPtr PlanToConfiguration::getInterpolator()
-{
-  return mInterpolator;
-}
-
-//==============================================================================
-statespace::InterpolatorPtr PlanToConfiguration::getInterpolator() const
+statespace::InterpolatorPtr ConfigurationToConfigurations::getInterpolator()
 {
   return mInterpolator;
 }
 
 //==============================================================================
-constraint::TestablePtr PlanToConfiguration::getConstraint()
+statespace::ConstInterpolatorPtr
+ConfigurationToConfigurations::getInterpolator() const
+{
+  return mInterpolator;
+}
+
+//==============================================================================
+constraint::TestablePtr ConfigurationToConfigurations::getConstraint()
 {
   return mConstraint;
 }
 
 //==============================================================================
-constraint::TestablePtr PlanToConfiguration::getConstraint() const
+constraint::ConstTestablePtr ConfigurationToConfigurations::getConstraint()
+    const
 {
   return mConstraint;
 }

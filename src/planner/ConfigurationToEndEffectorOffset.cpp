@@ -1,4 +1,4 @@
-#include "aikido/planner/PlanToEndEffectorPose.hpp"
+#include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
 
 #include "aikido/constraint/Testable.hpp"
 
@@ -6,17 +6,19 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-PlanToEndEffectorPose::PlanToEndEffectorPose(
+ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::StateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
-    const Eigen::Isometry3d& goalPose,
+    const Eigen::Vector3d& direction,
+    const double& distance,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
-  , mGoalPose(goalPose)
+  , mDirection(direction)
+  , mDistance(distance)
   , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
@@ -28,57 +30,65 @@ PlanToEndEffectorPose::PlanToEndEffectorPose(
 }
 
 //==============================================================================
-const std::string& PlanToEndEffectorPose::getName() const
+const std::string& ConfigurationToEndEffectorOffset::getName() const
 {
   return getStaticName();
 }
 
 //==============================================================================
-const std::string& PlanToEndEffectorPose::getStaticName()
+const std::string& ConfigurationToEndEffectorOffset::getStaticName()
 {
-  static std::string name("PlanToEndEffectorPose");
+  static std::string name("ConfigurationToEndEffectorOffset");
   return name;
 }
 
 //==============================================================================
-dart::dynamics::BodyNodePtr PlanToEndEffectorPose::getBodyNode()
+dart::dynamics::BodyNodePtr ConfigurationToEndEffectorOffset::getBodyNode()
 {
   return mBodyNode;
 }
 
 //==============================================================================
-const statespace::StateSpace::State* PlanToEndEffectorPose::getStartState()
-    const
+const statespace::StateSpace::State*
+ConfigurationToEndEffectorOffset::getStartState() const
 {
   return mStartState;
 }
 
 //==============================================================================
-const Eigen::Isometry3d& PlanToEndEffectorPose::getGoalPose() const
+const Eigen::Vector3d& ConfigurationToEndEffectorOffset::getDirection() const
 {
-  return mGoalPose;
+  return mDirection;
 }
 
 //==============================================================================
-statespace::InterpolatorPtr PlanToEndEffectorPose::getInterpolator()
+const double& ConfigurationToEndEffectorOffset::getDistance() const
+{
+  return mDistance;
+}
+
+//==============================================================================
+statespace::InterpolatorPtr ConfigurationToEndEffectorOffset::getInterpolator()
 {
   return mInterpolator;
 }
 
 //==============================================================================
-statespace::ConstInterpolatorPtr PlanToEndEffectorPose::getInterpolator() const
+statespace::ConstInterpolatorPtr
+ConfigurationToEndEffectorOffset::getInterpolator() const
 {
   return mInterpolator;
 }
 
 //==============================================================================
-constraint::TestablePtr PlanToEndEffectorPose::getConstraint()
+constraint::TestablePtr ConfigurationToEndEffectorOffset::getConstraint()
 {
   return mConstraint;
 }
 
 //==============================================================================
-constraint::ConstTestablePtr PlanToEndEffectorPose::getConstraint() const
+constraint::ConstTestablePtr ConfigurationToEndEffectorOffset::getConstraint()
+    const
 {
   return mConstraint;
 }
