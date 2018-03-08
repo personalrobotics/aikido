@@ -1,13 +1,13 @@
 set(sources
-  ConcretePlanner.cpp
-  FirstSupportedMetaPlanner.cpp
-  MetaPlanner.cpp
-  Planner.cpp
   ConfigurationToConfiguration.cpp
   ConfigurationToConfigurations.cpp
   ConfigurationToTSR.cpp
   ConfigurationToEndEffectorOffset.cpp
   ConfigurationToEndEffectorPose.cpp
+  FirstSupportedMetaPlanner.cpp
+  CompositePlanner.cpp
+  PlannerForMultiProblem.cpp
+  Planner.cpp
   PlanningResult.cpp
   Problem.cpp
   RankedMetaPlanner.cpp

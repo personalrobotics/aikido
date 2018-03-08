@@ -1,4 +1,4 @@
-#include "aikido/planner/MetaPlanner.hpp"
+#include "aikido/planner/CompositePlanner.hpp"
 
 #include <algorithm>
 #include <dart/common/Console.hpp>
@@ -7,19 +7,25 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-MetaPlanner::MetaPlanner(const std::vector<PlannerPtr>& planners)
+CompositePlanner::CompositePlanner() : mPlanners()
+{
+  // Do nothing
+}
+
+//==============================================================================
+CompositePlanner::CompositePlanner(const std::vector<PlannerPtr>& planners)
   : mPlanners(planners)
 {
   // Do nothing
 }
 
 //==============================================================================
-void MetaPlanner::addPlanner(PlannerPtr planner)
+void CompositePlanner::addPlanner(PlannerPtr planner)
 {
   if (std::find(mPlanners.begin(), mPlanners.end(), planner) != mPlanners.end())
   {
-    dtwarn << "[MetaPlanner::addPlanner] Attempts to add a planner that "
-              "already exists in this MetaPlanner.\n";
+    dtwarn << "[CompositePlanner::addPlanner] Attempts to add a planner that "
+              "already exists in this CompositePlanner.\n";
     return;
   }
 
@@ -27,7 +33,7 @@ void MetaPlanner::addPlanner(PlannerPtr planner)
 }
 
 //==============================================================================
-bool MetaPlanner::hasPlanner(const Planner* planner)
+bool CompositePlanner::hasPlanner(const Planner* planner)
 {
   if (std::find_if(
           mPlanners.begin(),
@@ -44,13 +50,13 @@ bool MetaPlanner::hasPlanner(const Planner* planner)
 }
 
 //==============================================================================
-const std::vector<PlannerPtr>& MetaPlanner::getPlanners() const
+const std::vector<PlannerPtr>& CompositePlanner::getPlanners() const
 {
   return mPlanners;
 }
 
 //==============================================================================
-PlannerPtr MetaPlanner::getPlanner(std::size_t index)
+PlannerPtr CompositePlanner::getPlanner(std::size_t index)
 {
   if (index > mPlanners.size())
     throw std::invalid_argument("index is out of bound");
@@ -59,11 +65,11 @@ PlannerPtr MetaPlanner::getPlanner(std::size_t index)
 }
 
 //==============================================================================
-bool MetaPlanner::canSolve(const Problem* problem) const
+bool CompositePlanner::canPlan(const Problem* problem) const
 {
   for (const auto& planner : mPlanners)
   {
-    if (planner->canSolve(problem))
+    if (planner->canPlan(problem))
       return true;
   }
 
@@ -71,13 +77,13 @@ bool MetaPlanner::canSolve(const Problem* problem) const
 }
 
 //==============================================================================
-std::unordered_set<std::string> MetaPlanner::getSolvableProblems() const
+std::unordered_set<std::string> CompositePlanner::getPlannableProblems() const
 {
   std::unordered_set<std::string> problems;
 
   for (const auto& planner : mPlanners)
   {
-    const auto& subProblems = planner->getSolvableProblems();
+    const auto& subProblems = planner->getPlannableProblems();
     problems.insert(subProblems.begin(), subProblems.end());
   }
 
@@ -85,22 +91,22 @@ std::unordered_set<std::string> MetaPlanner::getSolvableProblems() const
 }
 
 //==============================================================================
-std::unordered_set<PlannerPtr> MetaPlanner::getPlannersCanSolve(
+std::unordered_set<PlannerPtr> CompositePlanner::getPlannersCanPlan(
     const Problem* problem) const
 {
   std::unordered_set<PlannerPtr> planners;
 
   for (const auto& planner : mPlanners)
   {
-    auto metaPlanner = std::dynamic_pointer_cast<MetaPlanner>(planner);
+    auto metaPlanner = std::dynamic_pointer_cast<CompositePlanner>(planner);
     if (metaPlanner)
     {
-      auto subPlanners = metaPlanner->getPlannersCanSolve(problem);
+      auto subPlanners = metaPlanner->getPlannersCanPlan(problem);
       planners.insert(subPlanners.begin(), subPlanners.end());
     }
     else
     {
-      if (planner->canSolve(problem))
+      if (planner->canPlan(problem))
         planners.insert(planner);
     }
   }

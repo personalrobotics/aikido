@@ -22,9 +22,6 @@ class SnapConfigurationToConfigurationPlanner
     : public ConfigurationToConfigurationPlanner
 {
 public:
-  /// Constructor
-  SnapConfigurationToConfigurationPlanner() = default;
-
   /// Solves ConfigurationToConfiguration problem.
   ///
   /// The planner returns success if the resulting trajectory satisfies
@@ -38,7 +35,7 @@ public:
   /// \throw If \c problem is not ConfigurationToConfiguration.
   /// \throw If \c result is not ConfigurationToConfiguration::Result.
   trajectory::TrajectoryPtr plan(
-      const Problem& problem, Result* result = nullptr) override;
+      const TheProblem& problem, TheResult* result = nullptr) override;
 };
 
 } // namespace planner

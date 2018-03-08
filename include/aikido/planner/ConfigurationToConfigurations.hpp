@@ -16,8 +16,6 @@ namespace planner {
 class ConfigurationToConfigurations : public Problem
 {
 public:
-  class Result;
-
   /// Constructor.
   ///
   /// \param stateSpace State space.
@@ -69,13 +67,7 @@ protected:
   constraint::TestablePtr mConstraint;
 };
 
-class ConfigurationToConfigurations::Result : public Problem::Result
-{
-public:
-protected:
-};
-
 } // namespace planner
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_

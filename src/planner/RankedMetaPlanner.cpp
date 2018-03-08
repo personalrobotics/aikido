@@ -4,8 +4,8 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-trajectory::TrajectoryPtr RankedMetaPlanner::solve(
-    const Problem* /*problem*/, Problem::Result* /*result*/)
+trajectory::TrajectoryPtr RankedMetaPlanner::plan(
+    const Problem& /*problem*/, Result* /*result*/)
 {
   // Not implemented
 

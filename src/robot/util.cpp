@@ -104,7 +104,7 @@ trajectory::TrajectoryPtr planToConfiguration(
   DART_UNUSED(saver);
 
   // First test with Snap Planner
-  SnapConfigurationToConfigurationPlanner::Result pResult;
+  SnapConfigurationToConfigurationPlanner::TheResult pResult;
   TrajectoryPtr untimedTrajectory;
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
@@ -156,7 +156,7 @@ trajectory::TrajectoryPtr planToConfigurations(
   DART_UNUSED(saver);
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-  SnapConfigurationToConfigurationPlanner::Result pResult;
+  SnapConfigurationToConfigurationPlanner::TheResult pResult;
   auto problem = ConfigurationToConfiguration(
       space,
       startState,
@@ -235,7 +235,7 @@ trajectory::TrajectoryPtr planToTSR(
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  SnapConfigurationToConfigurationPlanner::Result pResult;
+  SnapConfigurationToConfigurationPlanner::TheResult pResult;
   auto problem = ConfigurationToConfiguration(
       space,
       startState,

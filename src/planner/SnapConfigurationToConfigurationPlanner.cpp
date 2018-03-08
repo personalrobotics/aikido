@@ -9,7 +9,7 @@ namespace planner {
 
 //==============================================================================
 trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
-    const Problem& problem, Result* result)
+    const TheProblem& problem, TheResult* result)
 {
   auto stateSpace = problem.getStateSpace();
   auto interpolator = problem.getInterpolator();

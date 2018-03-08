@@ -14,8 +14,6 @@ namespace planner {
 class ConfigurationToTSR : public Problem
 {
 public:
-  class Result;
-
   /// Constructor.
   ///
   /// \param stateSpace State space.
@@ -66,12 +64,6 @@ protected:
 
   /// Trajectory-wide constraint that must be satisfied.
   constraint::TestablePtr mConstraint;
-};
-
-class ConfigurationToTSR::Result : public Problem::Result
-{
-public:
-protected:
 };
 
 } // namespace planner

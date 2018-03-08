@@ -1,14 +1,14 @@
 #ifndef AIKIDO_PLANNER_DETAIL_CONCRETEPLANNER_IMPL_HPP_
 #define AIKIDO_PLANNER_DETAIL_CONCRETEPLANNER_IMPL_HPP_
 
-#include "aikido/planner/ConcretePlanner.hpp"
+#include "aikido/planner/PlannerForMultiProblem.hpp"
 
 namespace aikido {
 namespace planner {
 
 //==============================================================================
 template <class ProblemT, typename T, typename R, typename... Args>
-void ConcretePlanner::registerPlanningFunction(R (T::*func)(Args...))
+void PlannerForMultiProblem::registerPlanningFunction(R (T::*func)(Args...))
 {
   auto& map = getPlanningFunctionMap();
   auto bindedFunc = std::bind(

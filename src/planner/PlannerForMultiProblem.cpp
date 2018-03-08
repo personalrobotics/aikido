@@ -1,4 +1,4 @@
-#include "aikido/planner/ConcretePlanner.hpp"
+#include "aikido/planner/PlannerForMultiProblem.hpp"
 
 #include <cassert>
 
@@ -6,7 +6,7 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-bool ConcretePlanner::canSolve(const Problem* problem) const
+bool PlannerForMultiProblem::canPlan(const Problem* problem) const
 {
   auto& map = getPlanningFunctionMap();
   const auto search = map.find(problem->getName());
@@ -18,7 +18,8 @@ bool ConcretePlanner::canSolve(const Problem* problem) const
 }
 
 //==============================================================================
-std::unordered_set<std::string> ConcretePlanner::getSolvableProblems() const
+std::unordered_set<std::string> PlannerForMultiProblem::getPlannableProblems()
+    const
 {
   auto& map = getPlanningFunctionMap();
 
@@ -32,21 +33,11 @@ std::unordered_set<std::string> ConcretePlanner::getSolvableProblems() const
 }
 
 //==============================================================================
-trajectory::TrajectoryPtr ConcretePlanner::solve(
-    const Problem* problem, Problem::Result* result)
+trajectory::TrajectoryPtr PlannerForMultiProblem::plan(
+    const Problem& problem, Result* result)
 {
-  if (!problem)
-  {
-    if (result)
-    {
-      // TODO(JS): not implemented
-    }
-
-    return nullptr;
-  }
-
   auto& map = getPlanningFunctionMap();
-  const auto search = map.find(problem->getName());
+  const auto search = map.find(problem.getName());
 
   if (search == map.end())
   {
@@ -59,14 +50,14 @@ trajectory::TrajectoryPtr ConcretePlanner::solve(
   }
 
   assert(search->second);
-  return search->second(problem, result);
+  return search->second(&problem, result);
 }
 
 //==============================================================================
-const ConcretePlanner::PlanningFunctionMap&
-ConcretePlanner::getPlanningFunctionMap() const
+const PlannerForMultiProblem::PlanningFunctionMap&
+PlannerForMultiProblem::getPlanningFunctionMap() const
 {
-  return const_cast<ConcretePlanner*>(this)->getPlanningFunctionMap();
+  return const_cast<PlannerForMultiProblem*>(this)->getPlanningFunctionMap();
 }
 
 } // namespace planner

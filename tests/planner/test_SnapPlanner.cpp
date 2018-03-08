@@ -58,7 +58,7 @@ public:
   shared_ptr<PassingConstraint> passingConstraint;
   shared_ptr<FailingConstraint> failingConstraint;
   shared_ptr<GeodesicInterpolator> interpolator;
-  SnapConfigurationToConfigurationPlanner::Result planningResult;
+  SnapConfigurationToConfigurationPlanner::TheResult planningResult;
 };
 
 //==============================================================================
@@ -81,6 +81,19 @@ public:
     return name;
   }
 };
+
+//==============================================================================
+TEST_F(SnapPlannerTest, CanSolveProblems)
+{
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, *startState, *goalState, interpolator, failingConstraint);
+  auto unknownProblem = UnknownProblem();
+
+  EXPECT_TRUE(planner->canPlan(&problem));
+  EXPECT_FALSE(planner->canPlan(&unknownProblem));
+}
 
 //==============================================================================
 TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)

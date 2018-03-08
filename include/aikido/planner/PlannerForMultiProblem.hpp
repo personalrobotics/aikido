@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_CONCRETEPLANNER_HPP_
-#define AIKIDO_PLANNER_CONCRETEPLANNER_HPP_
+#ifndef AIKIDO_PLANNER_MULTIPROBLEMPLANNER_HPP_
+#define AIKIDO_PLANNER_MULTIPROBLEMPLANNER_HPP_
 
 #include <functional>
 #include <unordered_map>
@@ -10,28 +10,24 @@
 namespace aikido {
 namespace planner {
 
-class ConcretePlanner : public Planner
+/// PlannerForMultiProblem is a base class for concrete planner classes that
+/// support multiple planning problems.
+class PlannerForMultiProblem : public Planner
 {
 public:
-  /// Constructor
-  ConcretePlanner() = default;
-
-  /// Destructor
-  virtual ~ConcretePlanner() = default;
+  // Documentation inherited.
+  bool canPlan(const Problem* problem) const final override;
 
   // Documentation inherited.
-  bool canSolve(const Problem* problem) const override;
+  std::unordered_set<std::string> getPlannableProblems() const final override;
 
   // Documentation inherited.
-  std::unordered_set<std::string> getSolvableProblems() const override;
-
-  // Documentation inherited.
-  trajectory::TrajectoryPtr solve(
-      const Problem* problem, Problem::Result* result = nullptr) override;
+  trajectory::TrajectoryPtr plan(
+      const Problem& problem, Result* result = nullptr) final override;
 
 protected:
-  using PlanningFunction = std::function<trajectory::TrajectoryPtr(
-      const Problem*, Problem::Result*)>;
+  using PlanningFunction
+      = std::function<trajectory::TrajectoryPtr(const Problem*, Result*)>;
   using PlanningFunctionMap = std::unordered_map<std::string, PlanningFunction>;
 
   /// Returns planning function map.
@@ -51,6 +47,6 @@ protected:
 } // namespace planner
 } // namespace aikido
 
-#include "aikido/planner/detail/ConcretePlanner-impl.hpp"
+#include "aikido/planner/detail/PlannerForMultiProblem-impl.hpp"
 
-#endif // AIKIDO_PLANNER_CONCRETEPLANNER_HPP_
+#endif // AIKIDO_PLANNER_MULTIPROBLEMPLANNER_HPP_

@@ -4,15 +4,15 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-trajectory::TrajectoryPtr FirstSupportedMetaPlanner::solve(
-    const Problem* problem, Problem::Result* result)
+trajectory::TrajectoryPtr FirstSupportedMetaPlanner::plan(
+    const Problem& problem, Result* result)
 {
   for (const auto& planner : mPlanners)
   {
-    if (!planner->canSolve(problem))
+    if (!planner->canPlan(&problem))
       continue;
 
-    return planner->solve(problem, result);
+    return planner->plan(problem, result);
   }
 
   // TODO: Set result "no supported planner".

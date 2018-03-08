@@ -1,17 +1,17 @@
 #ifndef AIKIDO_PLANNER_FIRSTSUPPORTEDMETAPLANNER_HPP_
 #define AIKIDO_PLANNER_FIRSTSUPPORTEDMETAPLANNER_HPP_
 
-#include "aikido/planner/MetaPlanner.hpp"
+#include "aikido/planner/CompositePlanner.hpp"
 
 namespace aikido {
 namespace planner {
 
-class FirstSupportedMetaPlanner : public MetaPlanner
+class FirstSupportedMetaPlanner : public CompositePlanner
 {
 public:
   // Documentation inherited.
-  trajectory::TrajectoryPtr solve(
-      const Problem* problem, Problem::Result* result = nullptr) override;
+  trajectory::TrajectoryPtr plan(
+      const Problem& problem, Result* result = nullptr) override;
 };
 
 } // namespace planner

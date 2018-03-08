@@ -4,12 +4,12 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-trajectory::TrajectoryPtr SequenceMetaPlanner::solve(
-    const Problem* problem, Problem::Result* result)
+trajectory::TrajectoryPtr SequenceMetaPlanner::plan(
+    const Problem& problem, Result* result)
 {
   for (const auto& planner : mPlanners)
   {
-    auto trajectory = planner->solve(problem, result);
+    auto trajectory = planner->plan(problem, result);
     if (trajectory)
       return trajectory;
   }

@@ -11,8 +11,6 @@ namespace planner {
 class Problem
 {
 public:
-  class Result;
-
   /// Constructor.
   explicit Problem(statespace::ConstStateSpacePtr stateSpace);
 
@@ -30,25 +28,7 @@ protected:
   statespace::ConstStateSpacePtr mStateSpace;
 };
 
-/// Base class for planning result of various planning problems.
-class Problem::Result
-{
-public:
-  /// Destructor.
-  virtual ~Result() = default;
-
-  /// Sets message.
-  void setMessage(const std::string& message);
-
-  /// Returns message.
-  const std::string& getMessage() const;
-
-protected:
-  /// Message.
-  std::string mMessage;
-};
-
 } // namespace planner
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_PLANNER_PROBLEM_HPP_
