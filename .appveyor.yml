@@ -15,11 +15,11 @@ environment:
       CATKIN_CONFIG_OPTIONS: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
 
 install:
-  - sh: . "${APPVEYOR_BUILD_FOLDER}/.ci/before_install_linux.sh"
-  - sh: . "${APPVEYOR_BUILD_FOLDER}/.ci/install_linux.sh"
+  - sh: . "${TRAVIS_BUILD_DIR}/.ci/before_install_linux.sh"
+  - sh: . "${TRAVIS_BUILD_DIR}/.ci/install_linux.sh"
 
 build_script:
-  - sh: . "${APPVEYOR_BUILD_FOLDER}/.ci/script_linux.sh"
+  - sh: . "${TRAVIS_BUILD_DIR}/.ci/script_linux.sh"
 
 on_failure:
   - sh: cat ./build/aikido/Testing/Temporary/LastTest.log
