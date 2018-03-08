@@ -1,7 +1,9 @@
 #==============================================================================
 # Dependencies
 #
-
+if(NOT TARGET ${PROJECT_NAME}_planner_ompl)
+  return()
+endif()
 set(CMAKE_REQUIRED_DEFINITIONS "")
 set(CMAKE_REQUIRED_FLAGS "")
 
