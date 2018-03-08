@@ -252,8 +252,8 @@ TEST_F(
   double goalProximal = mPosition[0];
   double goalDistal = mPosition[0] * mimicRatio;
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPosition);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -287,8 +287,8 @@ TEST_F(
   BarrettFingerKinematicSimulationPositionCommandExecutor executor(
       mFingerChain, mProximalDof, mDistalDof, mCollisionDetector, collideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -325,8 +325,8 @@ TEST_F(
   Vector1d goal;
   goal << M_PI / 4;
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -364,8 +364,8 @@ TEST_F(
   double goalProximal = mPosition[0];
   double goalDistal = mPosition[0] * mimicRatio;
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPosition);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
