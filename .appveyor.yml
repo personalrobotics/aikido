@@ -1,29 +1,29 @@
-# Reference: https://www.appveyor.com/docs/getting-started-with-appveyor-for-linux/
-
 image: ubuntu
 
 version: "{build}"
 
-environment:
-  CODECOV: OFF
-  COMPILER: GCC
-  DOWNLOAD_TAGFILES: OFF
-  matrix:
-    - BUILD_TYPE=Debug CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON"
-    - BUILD_TYPE=Release CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+configuration:
+  - Debug
+  - Release
 
 install:
-  - sh: . "${TRAVIS_BUILD_DIR}/.ci/before_install_linux.sh"
-  - sh: . "${TRAVIS_BUILD_DIR}/.ci/install_linux.sh"
+  - sh: sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+  - sh: sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+  - sh: sudo apt-add-repository ppa:dartsim/ppa
+  - sh: sudo add-apt-repository ppa:personalrobotics/ppa
+  - sh: sudo apt-get update
+  - sh: sudo apt-get --yes install cmake build-essential libboost-filesystem-dev libdart6-optimizer-nlopt-dev libdart6-utils-dev libdart6-utils-urdf-dev libmicrohttpd-dev libompl-dev libtinyxml2-dev libyaml-cpp-dev
+  #- sh: sudo apt-get --yes install pr-control-msgs
+  - sh: sudo apt-get --yes install ros-lunar-actionlib ros-lunar-geometry-msgs ros-lunar-interactive-markers ros-lunar-roscpp ros-lunar-std-msgs ros-lunar-tf ros-lunar-trajectory-msgs ros-lunar-visualization-msgs
+  - sh: sudo apt-get --yes install clang-format-3.8
 
 build_script:
-  - sh: . "${TRAVIS_BUILD_DIR}/.ci/script_linux.sh"
+  - sh: source /opt/ros/lunar/setup.bash
+  - sh: mkdir build && cd build
+  - sh: cmake -DCMAKE_BUILD_TYPE=%configuration% -DTREAT_WARNINGS_AS_ERRORS=ON ..
+  - sh: make -j4 tests
+  - sh: make check-format
 
-on_failure:
-  - sh: cat ./build/aikido/Testing/Temporary/LastTest.log
-  - sh: cat ./build/aikido/Testing/Temporary/LastTestsFailed.log
-  - sh: cat Testing/Temporary/LastTest.log
-  - sh: cat Testing/Temporary/LastTestsFailed.log
+test_script:
+  - sh: ctest -j4 --output-on-failure
 
-on_finish:
-  - sh: ./scripts/view-all-results.sh test_results
