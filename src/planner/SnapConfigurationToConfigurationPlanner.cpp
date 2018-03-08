@@ -8,8 +8,7 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-trajectory::TrajectoryPtr
-SnapConfigurationToConfigurationPlanner::plan(
+trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
     const Problem& problem, Result* result)
 {
   auto stateSpace = problem.getStateSpace();
