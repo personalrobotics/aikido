@@ -2,9 +2,9 @@
 
 set -e
 
-if [ ${TRAVIS} = "true" ]; then
+if [ "${TRAVIS}" = "true" ]; then
   AIKIDO_BUILD_DIR="${TRAVIS_BUILD_DIR}"
-elif [ ${APPVEYOR} = "True" ]; then
+elif [ "${APPVEYOR}" = "True" ]; then
   AIKIDO_BUILD_DIR="${APPVEYOR_BUILD_FOLDER}"
 fi
 
