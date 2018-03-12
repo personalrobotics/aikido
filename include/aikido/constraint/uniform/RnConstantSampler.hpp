@@ -15,6 +15,7 @@ class RConstantSampler : public constraint::Sampleable
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
   /// Constructor.
