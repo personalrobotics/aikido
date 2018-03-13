@@ -15,9 +15,7 @@ set -e
 if [ $CODECOV = ON ]; then
   ./scripts/internal-run.sh make -C build/aikido aikido_coverage
 else 
-  cd build/aikido
-  ../../scripts/internal-run.sh ctest --output-on-failure
-  cd ../..
+  ./scripts/internal-run.sh cd build/aikido && ctest --output-on-failure && cd ../..
 fi
 
 # Uploading report to CodeCov
