@@ -333,7 +333,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double initialStepSize = 0.001;
   double jointLimitTolerance = 1e-3;
   double constraintCheckResolution = 1e-3;
-  std::chrono::duration<double> timelimit(5.);
+  std::chrono::duration<double> timelimit(10.0);
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       mStateSpace,

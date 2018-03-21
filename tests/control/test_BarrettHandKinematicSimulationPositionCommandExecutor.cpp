@@ -259,8 +259,8 @@ TEST_F(
       getMimicRatio();
 
   // Execute trajectory
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPositions);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
@@ -310,8 +310,8 @@ TEST_F(
       mRobot, mPrefix, mCollisionDetector, mCollideWith);
 
   // Execute trajectory
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPositions);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
@@ -340,8 +340,8 @@ TEST_F(
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
       mRobot, mPrefix, mCollisionDetector, collideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
@@ -375,8 +375,8 @@ TEST_F(
   BarrettHandKinematicSimulationPositionCommandExecutor executor(
       mRobot, mPrefix, mCollisionDetector, collideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
@@ -414,8 +414,8 @@ TEST_F(
       mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
@@ -450,8 +450,8 @@ TEST_F(
       mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
@@ -490,8 +490,8 @@ TEST_F(
       mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
@@ -527,8 +527,8 @@ TEST_F(
       mRobot, mPrefix, mCollisionDetector, mCollideWith);
   executor.setCollideWith(collideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(position);
+  auto simulationClock = std::chrono::system_clock::now();
   std::future_status status;
   do
   {
