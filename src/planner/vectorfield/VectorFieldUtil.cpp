@@ -17,8 +17,6 @@ namespace {
 class DesiredTwistFunction : public dart::optimizer::Function
 {
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
   using Twist = Eigen::Vector6d;
   using Jacobian = dart::math::Jacobian;
 
@@ -54,12 +52,15 @@ public:
     grad = mJacobian.transpose() * (mJacobian * qd - mTwist);
   }
 
-private:
+protected:
   /// Twist.
   Twist mTwist;
 
   /// Jacobian of Meta Skeleton.
   Jacobian mJacobian;
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 }
 
@@ -81,58 +82,58 @@ bool computeJointVelocityFromTwist(
   using Eigen::VectorXd;
 
   // Use LBFGS to find joint angles that won't violate the joint limits.
-  const Jacobian jacobian = metaSkeleton->getWorldJacobian(bodyNode);
+//  const Jacobian jacobian = metaSkeleton->getWorldJacobian(bodyNode);
 
-  const std::size_t numDofs = metaSkeleton->getNumDofs();
+//  const std::size_t numDofs = metaSkeleton->getNumDofs();
 
-  jointVelocity = Eigen::VectorXd::Zero(numDofs);
-  VectorXd positions = metaSkeleton->getPositions();
-  VectorXd initialGuess = metaSkeleton->getVelocities();
-  VectorXd positionLowerLimits = metaSkeleton->getPositionLowerLimits();
-  VectorXd positionUpperLimits = metaSkeleton->getPositionUpperLimits();
-  VectorXd velocityLowerLimits = jointVelocityLowerLimits;
-  VectorXd velocityUpperLimits = jointVelocityUpperLimits;
+//  jointVelocity = Eigen::VectorXd::Zero(numDofs);
+//  VectorXd positions = metaSkeleton->getPositions();
+//  VectorXd initialGuess = metaSkeleton->getVelocities();
+//  VectorXd positionLowerLimits = metaSkeleton->getPositionLowerLimits();
+//  VectorXd positionUpperLimits = metaSkeleton->getPositionUpperLimits();
+//  VectorXd velocityLowerLimits = jointVelocityLowerLimits;
+//  VectorXd velocityUpperLimits = jointVelocityUpperLimits;
 
-  const auto problem = std::make_shared<Problem>(numDofs);
-  if (enforceJointVelocityLimits)
-  {
-    for (std::size_t i = 0; i < numDofs; ++i)
-    {
-      const double position = positions[i];
-      const double positionLowerLimit = positionLowerLimits[i];
-      const double positionUpperLimit = positionUpperLimits[i];
-      const double velocityLowerLimit = velocityLowerLimits[i];
-      const double velocityUpperLimit = velocityUpperLimits[i];
+//  const auto problem = std::make_shared<Problem>(numDofs);
+//  if (enforceJointVelocityLimits)
+//  {
+//    for (std::size_t i = 0; i < numDofs; ++i)
+//    {
+//      const double position = positions[i];
+//      const double positionLowerLimit = positionLowerLimits[i];
+//      const double positionUpperLimit = positionUpperLimits[i];
+//      const double velocityLowerLimit = velocityLowerLimits[i];
+//      const double velocityUpperLimit = velocityUpperLimits[i];
 
-      if (position + stepSize * velocityLowerLimit
-          <= positionLowerLimit + jointLimitPadding)
-      {
-        velocityLowerLimits[i] = 0.0;
-      }
+//      if (position + stepSize * velocityLowerLimit
+//          <= positionLowerLimit + jointLimitPadding)
+//      {
+//        velocityLowerLimits[i] = 0.0;
+//      }
 
-      if (position + stepSize * velocityUpperLimit
-          >= positionUpperLimit - jointLimitPadding)
-      {
-        velocityUpperLimits[i] = 0.0;
-      }
+//      if (position + stepSize * velocityUpperLimit
+//          >= positionUpperLimit - jointLimitPadding)
+//      {
+//        velocityUpperLimits[i] = 0.0;
+//      }
 
-      initialGuess[i] = common::clamp(
-          initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
-    }
-    problem->setLowerBounds(velocityLowerLimits);
-    problem->setUpperBounds(velocityUpperLimits);
-  }
+//      initialGuess[i] = common::clamp(
+//          initialGuess[i], velocityLowerLimits[i], velocityUpperLimits[i]);
+//    }
+//    problem->setLowerBounds(velocityLowerLimits);
+//    problem->setUpperBounds(velocityUpperLimits);
+//  }
 
-  problem->setInitialGuess(initialGuess);
-  problem->setObjective(
-      std::make_shared<DesiredTwistFunction>(desiredTwist, jacobian));
+//  problem->setInitialGuess(initialGuess);
+//  problem->setObjective(
+//      dart::common::make_aligned_shared<DesiredTwistFunction>(desiredTwist, jacobian));
 
-  dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
-  if (!solver.solve())
-  {
-    return false;
-  }
-  jointVelocity = problem->getOptimalSolution();
+//  dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
+//  if (!solver.solve())
+//  {
+//    return false;
+//  }
+//  jointVelocity = problem->getOptimalSolution();
   return true;
 }
 

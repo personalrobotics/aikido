@@ -20,7 +20,6 @@ namespace vectorfield {
 class MoveEndEffectorPoseVectorField : public BodyNodePoseVectorField
 {
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /// Constructor.
   ///
   /// \param[in] stateSpace MetaSkeleton state space.
@@ -62,6 +61,8 @@ protected:
 
   /// Conversion ratio from radius to meter.
   double mConversionRatioFromRadiusToMeter;
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace vectorfield

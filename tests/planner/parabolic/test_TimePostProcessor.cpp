@@ -14,8 +14,6 @@ using aikido::planner::parabolic::ParabolicTimer;
 
 class TimePostProcessorTests : public ::testing::Test
 {
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 protected:
   void SetUp() override
   {

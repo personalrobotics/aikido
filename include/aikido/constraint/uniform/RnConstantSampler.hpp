@@ -14,8 +14,6 @@ template <int N>
 class RConstantSampler : public constraint::Sampleable
 {
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
   /// Constructor.
@@ -37,6 +35,8 @@ public:
 private:
   std::shared_ptr<statespace::R<N>> mSpace;
   VectorNd mValue;
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(VectorNd::NeedsToAlign)
 };
 
 using R0ConstantSampler = RConstantSampler<0>;

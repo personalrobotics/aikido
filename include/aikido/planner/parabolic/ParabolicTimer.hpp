@@ -73,7 +73,6 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 class ParabolicTimer : public aikido::planner::TrajectoryPostProcessor
 {
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \param _velocityLimits Maximum velocity for each dimension.
   /// \param _accelerationLimits Maximum acceleration for each dimension.

@@ -40,7 +40,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
                          boost::numeric::odeint::vector_space_algebra>;
 
   std::size_t dimension = vectorField.getStateSpace()->getDimension();
-  auto integrator = std::make_shared<detail::VectorFieldIntegrator>(
+  auto integrator = dart::common::make_aligned_shared<detail::VectorFieldIntegrator>(
       &vectorField, &constraint, timelimit.count(), checkConstraintResolution);
 
   integrator->start();
@@ -165,7 +165,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
-  auto vectorfield = std::make_shared<MoveEndEffectorOffsetVectorField>(
+  auto vectorfield = dart::common::make_aligned_shared<MoveEndEffectorOffsetVectorField>(
       stateSpace,
       metaskeleton,
       bn,
@@ -217,7 +217,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
-  auto vectorfield = std::make_shared<MoveEndEffectorPoseVectorField>(
+  auto vectorfield = dart::common::make_aligned_shared<MoveEndEffectorPoseVectorField>(
       stateSpace,
       metaskeleton,
       bn,
