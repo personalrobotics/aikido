@@ -40,7 +40,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
                          boost::numeric::odeint::vector_space_algebra>;
 
   std::size_t dimension = vectorField.getStateSpace()->getDimension();
-  auto integrator = dart::common::make_aligned_shared<detail::VectorFieldIntegrator>(
+  auto integrator = std::make_shared<detail::VectorFieldIntegrator>(
       &vectorField, &constraint, timelimit.count(), checkConstraintResolution);
 
   integrator->start();

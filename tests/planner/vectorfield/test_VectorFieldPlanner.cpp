@@ -17,7 +17,6 @@ using std::make_shared;
 class VectorFieldPlannerTest : public ::testing::Test
 {
 public:
-
   using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
   using DistanceMetric = aikido::distance::DistanceMetric;
   using MetaSkeletonStateSpacePtr
