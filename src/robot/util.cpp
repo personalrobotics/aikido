@@ -28,26 +28,6 @@
 
 namespace aikido {
 namespace robot {
-
-namespace {
-/// Gets Goal and Constraint TSR for End Effector.
-/// \param[in] bodyNode End-effector body node
-/// \param[in] direction End-effector direction
-/// \param[in] distance Offset to move
-/// \param[in] goal Goal TSR
-/// \param[in] constraint Constraint TSR
-/// \param[in] positionTolerance Tolerance in position
-/// \param[in] angularTolerance Tolerance in angle
-bool getGoalAndConstraintTSRForEndEffectorOffset(
-    const dart::dynamics::BodyNodePtr& bodyNode,
-    const Eigen::Vector3d& direction,
-    double distance,
-    const constraint::dart::TSRPtr& goal,
-    const constraint::dart::TSRPtr& constraint,
-    double positionTolerance = 1e-3,
-    double angularTolerance = 1e-3);
-}
-
 namespace util {
 
 using constraint::dart::CollisionFreePtr;
