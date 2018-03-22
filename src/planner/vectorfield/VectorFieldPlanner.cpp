@@ -165,17 +165,18 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
-  auto vectorfield = dart::common::make_aligned_shared<MoveEndEffectorOffsetVectorField>(
-      stateSpace,
-      metaskeleton,
-      bn,
-      direction,
-      minDistance,
-      maxDistance,
-      positionTolerance,
-      angularTolerance,
-      initialStepSize,
-      jointLimitTolerance);
+  auto vectorfield
+      = dart::common::make_aligned_shared<MoveEndEffectorOffsetVectorField>(
+          stateSpace,
+          metaskeleton,
+          bn,
+          direction,
+          minDistance,
+          maxDistance,
+          positionTolerance,
+          angularTolerance,
+          initialStepSize,
+          jointLimitTolerance);
 
   auto compoundConstraint
       = std::make_shared<constraint::TestableIntersection>(stateSpace);
@@ -217,15 +218,16 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
-  auto vectorfield = dart::common::make_aligned_shared<MoveEndEffectorPoseVectorField>(
-      stateSpace,
-      metaskeleton,
-      bn,
-      goalPose,
-      poseErrorTolerance,
-      conversionRatioInGeodesicDistance,
-      initialStepSize,
-      jointLimitTolerance);
+  auto vectorfield
+      = dart::common::make_aligned_shared<MoveEndEffectorPoseVectorField>(
+          stateSpace,
+          metaskeleton,
+          bn,
+          goalPose,
+          poseErrorTolerance,
+          conversionRatioInGeodesicDistance,
+          initialStepSize,
+          jointLimitTolerance);
 
   auto compoundConstraint
       = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);

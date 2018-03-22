@@ -35,6 +35,7 @@ public:
 private:
   std::shared_ptr<statespace::R<N>> mSpace;
   VectorNd mValue;
+
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(VectorNd::NeedsToAlign)
 };

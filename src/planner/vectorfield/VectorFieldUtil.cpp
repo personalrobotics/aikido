@@ -126,7 +126,8 @@ bool computeJointVelocityFromTwist(
 
   problem->setInitialGuess(initialGuess);
   problem->setObjective(
-      dart::common::make_aligned_shared<DesiredTwistFunction>(desiredTwist, jacobian));
+      dart::common::make_aligned_shared<DesiredTwistFunction>(
+          desiredTwist, jacobian));
 
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
   if (!solver.solve())

@@ -76,6 +76,7 @@ protected:
 
   /// Start pose of the end-effector.
   Eigen::Isometry3d mStartPose;
+
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

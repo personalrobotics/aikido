@@ -61,6 +61,7 @@ protected:
 
   /// Conversion ratio from radius to meter.
   double mConversionRatioFromRadiusToMeter;
+
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
