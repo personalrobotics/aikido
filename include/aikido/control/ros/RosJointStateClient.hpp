@@ -26,7 +26,7 @@ public:
       dart::dynamics::SkeletonPtr _skeleton,
       ::ros::NodeHandle _nodeHandle,
       const std::string& _topicName,
-      std::size_t capacity);
+      std::size_t _capacity);
 
   /// Update mBuffer with any JointState messages that have been received.
   void spin();

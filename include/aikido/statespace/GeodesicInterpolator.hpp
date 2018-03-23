@@ -32,7 +32,7 @@ public:
   /// \endcode
   ///
   /// \param _from start state in \c getStateSpace()
-  /// \param _from start state in \c getStateSpace()
+  /// \param _to goal state in \c getStateSpace()
   /// \return tangent vector that defines the geodesic
   Eigen::VectorXd getTangentVector(
       const statespace::StateSpace::State* _from,

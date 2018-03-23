@@ -101,7 +101,6 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
   ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
-      testable,
       enableShortcut,
       enableBlend,
       mTimelimit,
@@ -111,7 +110,7 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
       mFeasibilityApproxTolerance);
 
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng);
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -143,7 +142,6 @@ TEST_F(SmoothPostProcessorTests, useBlend)
   ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
-      testable,
       enableShortcut,
       enableBlend,
       mTimelimit,
@@ -153,7 +151,7 @@ TEST_F(SmoothPostProcessorTests, useBlend)
       mFeasibilityApproxTolerance);
 
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng);
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -185,7 +183,6 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
   ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
-      testable,
       enableShortcut,
       enableBlend,
       mTimelimit,
@@ -195,7 +192,7 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
       mFeasibilityApproxTolerance);
 
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng);
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
   auto state = mStateSpace->createState();

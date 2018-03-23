@@ -14,8 +14,8 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr& _si) : CRRT(_si, "CRRT")
 
 //==============================================================================
 CRRT::CRRT(
-    const ::ompl::base::SpaceInformationPtr& _si, const std::string& name)
-  : ::ompl::base::Planner(_si, name)
+    const ::ompl::base::SpaceInformationPtr& _si, const std::string& _name)
+  : ::ompl::base::Planner(_si, _name)
   , mGoalBias(0.05)
   , mMaxDistance(0.1)
   , mLastGoalMotion(nullptr)
