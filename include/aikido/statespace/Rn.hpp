@@ -125,7 +125,7 @@ public:
   /// Log mapping of Lie group element to a Lie algebra element. This is simply
   /// an identity transformation on a real vector space.
   ///
-  /// \param _state element of this Lie group
+  /// \param _in element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space
   void logMap(
       const StateSpace::State* _in, Eigen::VectorXd& _tangent) const override;

@@ -18,7 +18,7 @@ public:
   /// Constructor.
   /// \param _stateSpace StateSpace in which both
   ///        sampleable and testable operate.
-  /// \prarm _sampleable Sampleable for robot configuration.
+  /// \param _sampleable Sampleable for robot configuration.
   /// \param _testable Testable for each configuration.
   /// \param _maxTrialPerSample Max number of trials to generate each sample.
   ///        If all _maxTrialPerSample fails to pass _testable,

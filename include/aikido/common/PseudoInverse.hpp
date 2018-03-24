@@ -9,6 +9,7 @@ namespace common {
 /// Computes the Moore-Penrose pseudoinverse of a matrix.
 ///
 /// \param mat input matrix
+/// \param eps represents tolerance
 /// \return pseudo-inverse of \c mat
 Eigen::MatrixXd pseudoinverse(const Eigen::MatrixXd& mat, double eps = 1e-6);
 

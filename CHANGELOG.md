@@ -4,6 +4,7 @@
 
 * Common
 
+  * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
 
@@ -25,6 +26,10 @@
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
+
+* Robot
+
+  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes. [#325] https://github.com/personalrobotics/aikido/pull/325)
 
 ### 0.2.0 (2018-01-09)
 
