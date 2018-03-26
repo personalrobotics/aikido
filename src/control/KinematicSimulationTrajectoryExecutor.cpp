@@ -39,8 +39,10 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 
 //==============================================================================
 void KinematicSimulationTrajectoryExecutor::validate(
-    const trajectory::ConstTrajectoryPtr& traj)
+    const trajectory::Trajectory* traj)
 {
+  // TODO (avk): Same as in InstantaneousTrajectoryExecutor
+
   if (!traj)
     throw std::invalid_argument("Traj is null.");
 
@@ -59,16 +61,16 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
   space->checkIfContained(mSkeleton.get());
 
-  traj->metadata.executorValidated = true;
+//  traj->metadata.executorValidated = true;
 }
 
 //==============================================================================
 std::future<void> KinematicSimulationTrajectoryExecutor::execute(
-    trajectory::ConstTrajectoryPtr traj)
+    const trajectory::ConstTrajectoryPtr& traj)
 {
   using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 
-  validate(traj);
+  validate(traj.get());
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -79,7 +81,8 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
 
     mPromise.reset(new std::promise<void>());
 
-    mTraj = std::move(traj);
+    mTraj = std::shared_ptr<const trajectory::Trajectory>(traj);
+//    mTraj = std::move(traj);
     mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
         mTraj->getStateSpace());
     mInProgress = true;

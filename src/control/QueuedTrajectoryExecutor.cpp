@@ -21,16 +21,16 @@ QueuedTrajectoryExecutor::~QueuedTrajectoryExecutor()
 
 //==============================================================================
 void QueuedTrajectoryExecutor::validate(
-    const trajectory::ConstTrajectoryPtr& traj)
+    const trajectory::Trajectory* traj)
 {
   mExecutor->validate(traj);
 }
 
 //==============================================================================
 std::future<void> QueuedTrajectoryExecutor::execute(
-    trajectory::ConstTrajectoryPtr traj)
+    const trajectory::ConstTrajectoryPtr& traj)
 {
-  validate(traj);
+  validate(traj.get());
 
   {
     std::lock_guard<std::mutex> lock(mMutex);

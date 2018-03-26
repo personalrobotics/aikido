@@ -26,7 +26,7 @@ public:
   virtual ~KinematicSimulationTrajectoryExecutor();
 
   // Documentation inherited.
-  void validate(const trajectory::ConstTrajectoryPtr& traj) override;
+  void validate(const trajectory::Trajectory* traj) override;
 
   /// Execute traj and set future upon completion.
   ///
@@ -36,7 +36,7 @@ public:
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   /// \throws invalid_argument if traj is invalid.
-  std::future<void> execute(trajectory::ConstTrajectoryPtr traj) override;
+  std::future<void> execute(const trajectory::ConstTrajectoryPtr& traj) override;
 
   /// \copydoc TrajectoryExecutor::step()
   ///

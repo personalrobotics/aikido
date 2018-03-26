@@ -81,14 +81,14 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
-    trajectory::ConstTrajectoryPtr traj)
+    const trajectory::ConstTrajectoryPtr& traj)
 {
   static const ::ros::Time invalidTime;
   return execute(traj, invalidTime);
 }
 
 //==============================================================================
-void RosTrajectoryExecutor::validate(const trajectory::ConstTrajectoryPtr& traj)
+void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 {
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
@@ -105,15 +105,15 @@ void RosTrajectoryExecutor::validate(const trajectory::ConstTrajectoryPtr& traj)
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
-  traj->metadata.executorValidated = true;
+//  traj->metadata.executorValidated = true;
 }
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
-    trajectory::ConstTrajectoryPtr traj, const ::ros::Time& startTime)
+    const trajectory::ConstTrajectoryPtr traj, const ::ros::Time& startTime)
 {
   using aikido::control::ros::toRosJointTrajectory;
 
-  validate(traj);
+  validate(traj.get());
 
   // Setup the goal properties.
   // TODO: Also set goal_tolerance, path_tolerance.
