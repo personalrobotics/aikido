@@ -81,8 +81,7 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
 
     mPromise.reset(new std::promise<void>());
 
-    mTraj = std::shared_ptr<const trajectory::Trajectory>(traj);
-//    mTraj = std::move(traj);
+    mTraj = std::move(traj);
     mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
         mTraj->getStateSpace());
     mInProgress = true;
