@@ -61,7 +61,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
   space->checkIfContained(mSkeleton.get());
 
-//  traj->metadata.executorValidated = true;
+  traj->metadata.executorValidated = true;
 }
 
 //==============================================================================

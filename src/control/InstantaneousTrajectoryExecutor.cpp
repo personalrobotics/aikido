@@ -26,15 +26,7 @@ InstantaneousTrajectoryExecutor::~InstantaneousTrajectoryExecutor()
 void InstantaneousTrajectoryExecutor::validate(
     const trajectory::Trajectory* traj)
 {
-  /*
-   * Introduce a data structure to store the trajectories that have been
-   * validated by the executor. In this function, check for the existence
-   * of the trajectory in the data structure. If it is present,
-   * consider it to already have been validated. Otherwise validate it.
-   * This is because the compatibility is being checked against the
-   * executor's mSkeleton's space against trajectory's space, and the
-   * executor validates.
-  */
+  // TODO (avk): Change from traj-perspective to executor-perspective
 
   if (!traj)
     throw std::invalid_argument("Traj is null.");
@@ -53,14 +45,13 @@ void InstantaneousTrajectoryExecutor::validate(
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
   space->checkCompatibility(mSkeleton.get());
 
-//  traj->metadata.executorValidated = true;
+  traj->metadata.executorValidated = true;
 }
 
 //==============================================================================
 std::future<void> InstantaneousTrajectoryExecutor::execute(
     const trajectory::ConstTrajectoryPtr& traj)
 {
-  // So validate traj can change member of executor, not traj
   validate(traj.get());
 
   const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(

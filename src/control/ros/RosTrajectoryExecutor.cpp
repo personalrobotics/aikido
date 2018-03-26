@@ -90,6 +90,8 @@ std::future<void> RosTrajectoryExecutor::execute(
 //==============================================================================
 void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 {
+  // TODO (avk): Same as in other executors
+
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
   if (!traj)
@@ -105,7 +107,7 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
-//  traj->metadata.executorValidated = true;
+  traj->metadata.executorValidated = true;
 }
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
