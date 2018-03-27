@@ -43,7 +43,8 @@ public:
 
   /// Sends trajectory to ROS server for execution.
   /// \param[in] traj Trajectory to be executed.
-  std::future<void> execute(const trajectory::ConstTrajectoryPtr& traj) override;
+  std::future<void> execute(
+      const trajectory::ConstTrajectoryPtr& traj) override;
 
   /// Sends trajectory to ROS server for execution.
   /// \param[in] traj Trajectory to be executed.

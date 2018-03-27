@@ -29,7 +29,8 @@ public:
   /// \param _traj Trajectory to be executed.
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
-  virtual std::future<void> execute(const trajectory::ConstTrajectoryPtr& traj) = 0;
+  virtual std::future<void> execute(const trajectory::ConstTrajectoryPtr& traj)
+      = 0;
 
   /// Step to a point in time.
   /// \note \c timepoint can be a time in the future to enable faster than
