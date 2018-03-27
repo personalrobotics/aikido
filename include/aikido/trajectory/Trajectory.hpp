@@ -72,7 +72,8 @@ public:
       double _t, int _derivative, Eigen::VectorXd& _tangentVector) const = 0;
 
   /// Trajectory metadata
-  mutable TrajectoryMetadata metadata;
+  // TODO: Is metadata required anymore? Delete if not.
+  TrajectoryMetadata metadata;
 };
 
 } // namespace trajectory

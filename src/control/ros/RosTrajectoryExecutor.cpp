@@ -103,10 +103,7 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
-  // TODO: Delete this line once the skeleton is locked by isCompatible
-  std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
-  space->checkCompatibility(mSkeleton.get());
-
+  // TODO: No check's happening here. Check if that's correct.
   mValidatedTrajectories.emplace(traj);
 }
 //==============================================================================
