@@ -79,7 +79,32 @@ public:
   /// \param skeleton Skeleton to remove from the World
   void removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton);
 
-  // TODO: Add methods for registering callbacks?
+  // TODO(?): Add methods for registering callbacks?
+
+  /// Find a Simple Frame by index
+  /// \param[in] index Index of desired simpleFrame
+  dart::dynamics::SimpleFramePtr getSimpleFrame(std::size_t index) const;
+
+  /// Find a Simple Frame by name
+  /// \param[in] name Name of the desired simple frame
+  dart::dynamics::SimpleFramePtr getSimpleFrame(const std::string& name) const;
+
+  /// Returns true if the Simple Frame is in the World
+  /// \param[in] simpleFrame Desired Simple Frame
+  /// \return True if succeeded to find the Simple Frame
+  bool hasSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame) const;
+
+  /// Get the number of Simple Frames
+  std::size_t getNumSimpleFrames() const;
+
+  /// Add a Simple Frame to this World
+  /// \param simpleFrame Simple Frame to add to the World
+  /// \return TODO (avk) : What is returned?
+  std::string addSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame);
+
+  /// Remove a Simple Frame from this World
+  /// \param simpleFrame Simple Frame to remove from the World
+  void removeSimpleFrame(const dart::dynamics::SimpleFramePtr& skeleton);
 
   /// Get the mutex that protects the state of this World.
   std::mutex& getMutex() const;
@@ -100,6 +125,9 @@ protected:
   /// Skeletons in this World
   std::vector<dart::dynamics::SkeletonPtr> mSkeletons;
 
+  /// Simple Frames in this World
+  std::vector<dart::dynamics::SimpleFramePtr> mSimpleFrames;
+
   /// Mutex to protect this World
   mutable std::mutex mMutex;
 
@@ -108,6 +136,9 @@ protected:
 
   /// NameManager for keeping track of Skeletons
   dart::common::NameManager<dart::dynamics::SkeletonPtr> mSkeletonNameManager;
+
+  /// NameManager for keeping track of Simple Frames
+  dart::common::NameManager<dart::dynamics::SimpleFramePtr> mSimpleFrameNameManager;
 };
 
 } // namespace planner
