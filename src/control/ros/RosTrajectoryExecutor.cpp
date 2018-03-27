@@ -90,14 +90,10 @@ std::future<void> RosTrajectoryExecutor::execute(
 //==============================================================================
 void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 {
-  // TODO (avk): Same as in other executors
-
-  using aikido::statespace::dart::MetaSkeletonStateSpace;
-
   if (!traj)
-    throw std::invalid_argument("Trajectory is null.");
+    throw std::invalid_argument("Traj is null.");
 
-  if (traj->metadata.executorValidated)
+  if (mValidatedTrajectories.find(traj) != mValidatedTrajectories.end())
     return;
 
   const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
@@ -107,7 +103,11 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
-  traj->metadata.executorValidated = true;
+  // TODO: Delete this line once the skeleton is locked by isCompatible
+  std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
+  space->checkCompatibility(mSkeleton.get());
+
+  mValidatedTrajectories.emplace(traj);
 }
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(

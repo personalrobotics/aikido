@@ -26,12 +26,10 @@ InstantaneousTrajectoryExecutor::~InstantaneousTrajectoryExecutor()
 void InstantaneousTrajectoryExecutor::validate(
     const trajectory::Trajectory* traj)
 {
-  // TODO (avk): Change from traj-perspective to executor-perspective
-
   if (!traj)
     throw std::invalid_argument("Traj is null.");
 
-  if (traj->metadata.executorValidated)
+  if (mValidatedTrajectories.find(traj) != mValidatedTrajectories.end())
     return;
 
   const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
@@ -45,7 +43,7 @@ void InstantaneousTrajectoryExecutor::validate(
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
   space->checkCompatibility(mSkeleton.get());
 
-  traj->metadata.executorValidated = true;
+  mValidatedTrajectories.emplace(traj);
 }
 
 //==============================================================================

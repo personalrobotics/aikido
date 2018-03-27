@@ -41,12 +41,10 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
 void KinematicSimulationTrajectoryExecutor::validate(
     const trajectory::Trajectory* traj)
 {
-  // TODO (avk): Same as in InstantaneousTrajectoryExecutor
-
   if (!traj)
     throw std::invalid_argument("Traj is null.");
 
-  if (traj->metadata.executorValidated)
+  if (mValidatedTrajectories.find(traj) != mValidatedTrajectories.end())
     return;
 
   const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
@@ -58,10 +56,9 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
+  space->checkCompatibility(mSkeleton.get());
 
-  space->checkIfContained(mSkeleton.get());
-
-  traj->metadata.executorValidated = true;
+  mValidatedTrajectories.emplace(traj);
 }
 
 //==============================================================================
