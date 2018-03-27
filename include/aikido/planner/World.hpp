@@ -64,9 +64,9 @@ public:
   dart::dynamics::SkeletonPtr getSkeleton(const std::string& name) const;
 
   /// Returns true if the Skeleton is in this World.
-  /// \param skel Desired Skeleton
+  /// \param skeleton Desired Skeleton
   /// \return True if succeeded to find the Skeleton
-  bool hasSkeleton(const dart::dynamics::SkeletonPtr& skel) const;
+  bool hasSkeleton(const dart::dynamics::SkeletonPtr& skeleton) const;
 
   /// Get the number of Skeletons
   std::size_t getNumSkeletons() const;
@@ -104,7 +104,7 @@ public:
 
   /// Remove a Simple Frame from this World
   /// \param simpleFrame Simple Frame to remove from the World
-  void removeSimpleFrame(const dart::dynamics::SimpleFramePtr& skeleton);
+  void removeSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame);
 
   /// Get the mutex that protects the state of this World.
   std::mutex& getMutex() const;

@@ -147,6 +147,63 @@ void World::removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 }
 
 //==============================================================================
+dart::dynamics::SimpleFramePtr World::getSimpleFrame(std::size_t index) const
+{
+
+}
+
+//==============================================================================
+dart::dynamics::SimpleFramePtr World::getSimpleFrame(const std::string& name) const
+{
+
+}
+
+//==============================================================================
+bool World::hasSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame) const
+{
+
+}
+
+//==============================================================================
+std::size_t World::getNumSimpleFrames() const
+{
+
+}
+
+//==============================================================================
+std::string World::addSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame)
+{
+
+}
+
+//==============================================================================
+void World::removeSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame)
+{
+  if (!simpleFrame)
+  {
+    std::cout << "[World::removeSimpleFrame] Attempting to remove a nullptr "
+              << "Simple Frame from the world!" << std::endl;
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mMutex);
+
+  // If mSimpleFrames doesn't have simpleFrame, then do nothing.
+  auto simpleFrameIter = std::find(mSkeletons.begin(), mSkeletons.end(), skeleton);
+  if (simpleFrameIter == mSkeletons.end())
+  {
+    std::cout << "[World::removeSimpleFrame] Simple Frame [" << simpleFrame->getName()
+              << "] is not in the world." << std::endl;
+    return;
+  }
+
+  // Remove simpleFrame from mSimpleFrames
+  mSimpleFrames.erase(simpleFrameIter);
+
+  mSimpleFrameNameManager.removeName(simpleFrame->getName());
+}
+
+//==============================================================================
 std::mutex& World::getMutex() const
 {
   return mMutex;
