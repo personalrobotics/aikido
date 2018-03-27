@@ -82,7 +82,7 @@ public:
   // TODO: Add methods for registering callbacks?
 
   /// Get the mutex that protects the state of this World.
-  std::mutex& getMutex() const;
+  const std::mutex& getMutex() const;
 
   /// Returns the state of this World.
   /// \return State
