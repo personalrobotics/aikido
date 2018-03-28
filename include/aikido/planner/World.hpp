@@ -92,7 +92,7 @@ public:
   /// Returns true if the Simple Frame is in the World
   /// \param[in] simpleFrame Desired Simple Frame
   /// \return True if succeeded to find the Simple Frame
-  bool hasSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame) const;
+  bool hasSimpleFrame(const dart::dynamics::SimpleFramePtr& frame) const;
 
   /// Get the number of Simple Frames
   std::size_t getNumSimpleFrames() const;
@@ -100,11 +100,11 @@ public:
   /// Add a Simple Frame to this World
   /// \param simpleFrame Simple Frame to add to the World
   /// \return TODO (avk) : What is returned?
-  std::string addSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame);
+  std::string addSimpleFrame(const dart::dynamics::SimpleFramePtr& frame);
 
   /// Remove a Simple Frame from this World
   /// \param simpleFrame Simple Frame to remove from the World
-  void removeSimpleFrame(const dart::dynamics::SimpleFramePtr& simpleFrame);
+  void removeSimpleFrame(const dart::dynamics::SimpleFramePtr& frame);
 
   /// Get the mutex that protects the state of this World.
   std::mutex& getMutex() const;
