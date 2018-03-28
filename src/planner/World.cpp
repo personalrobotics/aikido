@@ -147,7 +147,7 @@ void World::removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton)
 }
 
 //==============================================================================
-const std::mutex& World::getMutex() const
+std::mutex& World::getMutex() const
 {
   return mMutex;
 }
