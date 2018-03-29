@@ -30,6 +30,7 @@ set(sources
   InteractiveMarkerViewer.cpp
   ResourceServer.cpp
   ShapeFrameMarker.cpp
+  SimpleFrameMarker.cpp
   SkeletonMarker.cpp
   shape_conversions.cpp
   TrajectoryMarker.cpp
