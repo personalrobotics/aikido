@@ -12,7 +12,7 @@ ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
 }
 
 //==============================================================================
-HandPtr ConcreteManipulator::getHand()
+HandPtr ConcreteManipulator::getHand() const
 {
   return mHand;
 }
@@ -62,7 +62,7 @@ std::string ConcreteManipulator::getName() const
 }
 
 //==============================================================================
-dart::dynamics::MetaSkeletonPtr ConcreteManipulator::getMetaSkeleton()
+dart::dynamics::MetaSkeletonPtr ConcreteManipulator::getMetaSkeleton() const
 {
   return mRobot->getMetaSkeleton();
 }
@@ -92,7 +92,7 @@ void ConcreteManipulator::step(
 constraint::dart::CollisionFreePtr
 ConcreteManipulator::getSelfCollisionConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const
 {
   return mRobot->getSelfCollisionConstraint(space, metaSkeleton);
 }
@@ -101,7 +101,7 @@ ConcreteManipulator::getSelfCollisionConstraint(
 aikido::constraint::TestablePtr ConcreteManipulator::getFullCollisionConstraint(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const constraint::dart::CollisionFreePtr& collisionFree)
+    const constraint::dart::CollisionFreePtr& collisionFree) const
 {
   return mRobot->getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 }

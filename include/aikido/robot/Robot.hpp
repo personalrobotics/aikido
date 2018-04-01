@@ -67,7 +67,7 @@ public:
   virtual std::string getName() const = 0;
 
   /// \return MetaSkeleton of this robot.
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
+  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const = 0;
 
   /// \return MetaSkeletonStateSpace of this robot.
   virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
@@ -87,7 +87,7 @@ public:
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const
       = 0;
 
   /// TODO: Consider changing this to return a CollisionFreePtr.
@@ -100,7 +100,7 @@ public:
   virtual constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::dart::CollisionFreePtr& collisionFree)
+      const constraint::dart::CollisionFreePtr& collisionFree) const
       = 0;
 };
 
