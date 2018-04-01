@@ -10,6 +10,7 @@ namespace control {
 namespace ros {
 namespace {
 
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 using std::chrono::milliseconds;
 
 //==============================================================================
