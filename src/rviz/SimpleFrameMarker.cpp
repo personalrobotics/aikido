@@ -17,8 +17,8 @@ SimpleFrameMarker::SimpleFrameMarker(
   : mSimpleFrame(frame)
   , mResourceServer(resourceServer)
   , mMarkerServer(markerServer)
-  , mHasColor(false)
   , mFrameId(frameId)
+  , mHasColor(false)
 {
   // Do nothing
 }
@@ -29,37 +29,31 @@ dart::dynamics::SimpleFramePtr SimpleFrameMarker::getSimpleFrame() const
   return mSimpleFrame.lock();
 }
 
-////==============================================================================
-//bool SimpleFrameMarker::update()
-//{
-//  SimpleFramePtr const frame = mSimpleFrame.lock();
-//  if (!frame)
-//    return false;
+//==============================================================================
+bool SimpleFrameMarker::update()
+{
+  SimpleFramePtr const frame = mSimpleFrame.lock();
+  if (!frame)
+    return false;
 
-//    // Whatever is done in the bodynode marker update function
-//}
+  return true;
+}
 
-////==============================================================================
-//void SimpleFrameMarker::SetColor(const Eigen::Vector4d& color)
-//{
-//  mColor = color;
-//  mHasColor = true;
+//==============================================================================
+void SimpleFrameMarker::SetColor(const Eigen::Vector4d& color)
+{
+  mColor = color;
+  mHasColor = true;
 
+  mShapeFrameMarker->SetColor(color);
+}
 
-//  // Replace with whatever the bodynode logic is
-//  for (const auto& it : mBodyNodeMarkers)
-//    it.second->SetColor(color);
-//}
-
-////==============================================================================
-//void SimpleFrameMarker::ResetColor()
-//{
-//  mHasColor = false;
-
-//  // Whatever the logix is for bodynode marker
-//  for (const auto& it : mBodyNodeMarkers)
-//    it.second->ResetColor();
-//}
+//==============================================================================
+void SimpleFrameMarker::ResetColor()
+{
+  mHasColor = false;
+  mShapeFrameMarker->ResetColor();
+}
 
 } // namespace rviz
 } // namespace aikido

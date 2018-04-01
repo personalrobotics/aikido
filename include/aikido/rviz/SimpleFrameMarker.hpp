@@ -6,6 +6,7 @@
 #include <visualization_msgs/InteractiveMarker.h>
 #include "aikido/common/pointers.hpp"
 #include "ResourceServer.hpp"
+#include "ShapeFrameMarker.hpp"
 
 namespace aikido {
 namespace rviz {
@@ -28,16 +29,23 @@ public:
   void SetColor(const Eigen::Vector4d& color);
   void ResetColor();
 
-  void update();
+  bool update();
 
 private:
   dart::dynamics::WeakSimpleFramePtr mSimpleFrame;
+
   ResourceServer* mResourceServer;
   interactive_markers::InteractiveMarkerServer* mMarkerServer;
+  visualization_msgs::InteractiveMarker mInteractiveMarker;
+  visualization_msgs::InteractiveMarkerControl* mVisualControl;
+  std::string mFrameId;
+  std::string mName;
+  Eigen::Vector4d mColor;
+  std::unique_ptr<ShapeFrameMarker> mShapeFrameMarker;
 
   bool mHasColor;
-  std::string mFrameId;
-  Eigen::Vector4d mColor;
+  std::string getName(const dart::dynamics::SimpleFrame& frame) const;
+
 };
 
 } // namespace rviz
