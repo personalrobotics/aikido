@@ -1,5 +1,6 @@
 #include <aikido/rviz/SimpleFrameMarker.hpp>
 
+using dart::dynamics::SimpleFrame;
 using dart::dynamics::WeakSimpleFramePtr;
 using dart::dynamics::SimpleFramePtr;
 using aikido::rviz::SimpleFrameMarker;
@@ -20,7 +21,10 @@ SimpleFrameMarker::SimpleFrameMarker(
   , mFrameId(frameId)
   , mHasColor(false)
 {
-  // Do nothing
+  // Register callbacks on frame changes.
+  SimpleFramePtr const simpleFrame = mSimpleFrame.lock();
+  if (simpleFrame)
+    mName = getName(*simpleFrame);
 }
 
 //==============================================================================
@@ -53,6 +57,14 @@ void SimpleFrameMarker::ResetColor()
 {
   mHasColor = false;
   mShapeFrameMarker->ResetColor();
+}
+
+//==============================================================================
+std::string SimpleFrameMarker::getName(const dart::dynamics::SimpleFrame& frame) const
+{
+  std::stringstream ss;
+  ss << frame.getName();
+  return ss.str();
 }
 
 } // namespace rviz
