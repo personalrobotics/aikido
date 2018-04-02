@@ -36,10 +36,7 @@ dart::dynamics::SimpleFramePtr SimpleFrameMarker::getSimpleFrame() const
 //==============================================================================
 bool SimpleFrameMarker::update()
 {
-  SimpleFramePtr const frame = mSimpleFrame.lock();
-  if (!frame)
-    return false;
-
+  // do nothing
   return true;
 }
 
