@@ -3,6 +3,7 @@
 #include <dart/common/StlHelpers.hpp>
 #include <dart/dart.hpp>
 #include <aikido/rviz/FrameMarker.hpp>
+#include <aikido/rviz/SimpleFrameMarker.hpp>
 #include <aikido/rviz/SkeletonMarker.hpp>
 #include <aikido/rviz/TrajectoryMarker.hpp>
 
@@ -56,6 +57,16 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrame(
   const FrameMarkerPtr marker = std::make_shared<FrameMarker>(
       &mMarkerServer, frame, mFrameId, length, thickness, alpha);
   mFrameMarkers.insert(marker);
+  return marker;
+}
+
+//==============================================================================
+SimpleFrameMarkerPtr InteractiveMarkerViewer::addSimpleFrame(
+    const dart::dynamics::SimpleFramePtr& frame)
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  const SimpleFrameMarkerPtr marker = CreateSimpleFrameMarker(frame, mFrameId);
+  mSimpleFrameMarkers.insert(marker);
   return marker;
 }
 
@@ -135,6 +146,14 @@ SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
 {
   return std::make_shared<SkeletonMarker>(
       nullptr, &mMarkerServer, skeleton, frameId);
+}
+
+//==============================================================================
+SimpleFrameMarkerPtr InteractiveMarkerViewer::CreateSimpleFrameMarker(
+    const dart::dynamics::SimpleFramePtr& frame, const std::string& frameId)
+{
+  return std::make_shared<SimpleFrameMarker>(
+      &mMarkerServer, frameId, "", frame);
 }
 
 //==============================================================================

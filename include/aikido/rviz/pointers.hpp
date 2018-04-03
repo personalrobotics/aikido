@@ -7,6 +7,7 @@ namespace aikido {
 namespace rviz {
 
 AIKIDO_DECLARE_POINTERS(FrameMarker)
+AIKIDO_DECLARE_POINTERS(SimpleFrameMarker)
 AIKIDO_DECLARE_POINTERS(BodyNodeMarker)
 AIKIDO_DECLARE_POINTERS(SkeletonMarker)
 AIKIDO_DECLARE_POINTERS(TrajectoryMarker)

@@ -43,6 +43,9 @@ protected:
   /// Mapping of Skeletons to SkeletonMarkers
   std::map<dart::dynamics::SkeletonPtr, SkeletonMarkerPtr> mSkeletonMarkers;
 
+  /// Mapping of Simple Frames to SimpleFrameMarkers
+  std::map<dart::dynamics::SimpleFramePtr, SimpleFrameMarkerPtr> mSimpleFrameMarkers;
+
   /// World that automatically updates the viewer
   aikido::planner::WorldPtr mWorld;
 };

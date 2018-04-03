@@ -6,6 +6,7 @@
 #include <thread>
 
 #include <dart/common/NameManager.hpp>
+#include <dart/dynamics/SimpleFrame.hpp>
 #include <dart/dynamics/Frame.hpp>
 #include <dart/dynamics/SmartPointer.hpp>
 #include <interactive_markers/interactive_marker_server.h>
@@ -42,8 +43,13 @@ public:
       double thickness = 0.02,
       double alpha = 1.0);
 
+  SimpleFrameMarkerPtr addSimpleFrame(const dart::dynamics::SimpleFramePtr& frame);
+
   SkeletonMarkerPtr CreateSkeletonMarker(
       const dart::dynamics::SkeletonPtr& skeleton, const std::string& frameId);
+
+  SimpleFrameMarkerPtr CreateSimpleFrameMarker(
+      const dart::dynamics::SimpleFramePtr& frame, const std::string& frameId);
 
   /// Visualizes a TSR.
   /// \param tsr TSR constraint
@@ -85,6 +91,7 @@ protected:
 
   interactive_markers::InteractiveMarkerServer mMarkerServer;
   std::set<SkeletonMarkerPtr> mSkeletonMarkers;
+  std::set<SimpleFrameMarkerPtr> mSimpleFrameMarkers;
   std::set<FrameMarkerPtr> mFrameMarkers;
   std::set<TrajectoryMarkerPtr> mTrajectoryMarkers;
 
