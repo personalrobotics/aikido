@@ -3,6 +3,7 @@
 #include "control/BarrettHandKinematicSimulationPositionCommandExecutor.hpp"
 #include "control/InstantaneousTrajectoryExecutor.hpp"
 #include "control/KinematicSimulationTrajectoryExecutor.hpp"
+#include "control/PidTrajectoryExecutor.hpp"
 #include "control/PositionCommandExecutor.hpp"
 #include "control/QueuedTrajectoryExecutor.hpp"
 #include "control/TrajectoryExecutor.hpp"
