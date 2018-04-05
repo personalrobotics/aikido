@@ -1,7 +1,7 @@
 #==============================================================================
 # Dependencies
 #
-find_package(OMPL QUIET)
+find_package(OMPL)
 aikido_check_package(OMPL "planner_ompl" "OMPL")
 
 #==============================================================================
