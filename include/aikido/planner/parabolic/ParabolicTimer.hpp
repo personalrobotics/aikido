@@ -82,8 +82,16 @@ public:
   /// Performs parabolic retiming on an input trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
-      const aikido::trajectory::InterpolatedPtr& _inputTraj,
-      const aikido::common::RNG* _rng) override;
+      const aikido::trajectory::Interpolated& _inputTraj,
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _constraint = nullptr) override;
+
+  /// Performs parabolic retiming on an input *spline* trajectory.
+  /// \copydoc TrajectoryPostProcessor::postprocess
+  std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const aikido::trajectory::Spline& _inputTraj,
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _constraint = nullptr) override;
 
 private:
   /// Set to the value of \c _velocityLimits.

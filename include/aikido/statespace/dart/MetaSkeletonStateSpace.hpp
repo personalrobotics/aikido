@@ -1,14 +1,18 @@
 #ifndef AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_METASKELETONSTATESPACE_HPP_
+
 #include <unordered_map>
 #include <dart/dynamics/dynamics.hpp>
-#include <aikido/common/pair.hpp>
-#include "../CartesianProduct.hpp"
-#include "JointStateSpace.hpp"
+#include "aikido/common/pair.hpp"
+#include "aikido/common/pointers.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
+#include "aikido/statespace/dart/JointStateSpace.hpp"
 
 namespace aikido {
 namespace statespace {
 namespace dart {
+
+AIKIDO_DECLARE_POINTERS(MetaSkeletonStateSpace)
 
 /// \c StateSpace of a DART \c MetaSkeleton. This is a \c CartesianProduct,
 /// where the i-th subspace is a \c JointStateSpace for the i-th \c Joint of
@@ -60,6 +64,14 @@ public:
     /// Return the vector of velocity upper limits.
     const Eigen::VectorXd& getVelocityUpperLimits() const;
 
+    /// Return whether two MetaSkeletonStateSpace::Properties are identical.
+    /// \param otherProperties Other Properties to compare against
+    bool operator==(const Properties& otherProperties) const;
+
+    /// Return whether two MetaSkeletonStateSpace::Properties are different.
+    /// \param otherProperties Other Properties to compare against
+    bool operator!=(const Properties& otherProperties) const;
+
   protected:
     /// Name of the MetaSkeleton
     std::string mName;
@@ -102,6 +114,27 @@ public:
   ///
   /// \return MetaSkeleton properties associated with this state space
   const Properties& getProperties() const;
+
+  /// Returns whether the MetaSkeleton can be used with this state space.
+  ///
+  /// \param metaskeleton MetaSkeleton to check
+  /// \return true if MetaSkeleton is compatible
+  bool isCompatible(const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
+
+  /// Throws an error if the MetaSkeleton cannot be used with this state space.
+  ///
+  /// \param metaskeleton MetaSkeleton to check
+  /// \throws invalid_argument if the MetaSkeleton does not match the state
+  /// space
+  void checkCompatibility(
+      const ::dart::dynamics::MetaSkeleton* metaskeleton) const;
+
+  /// Checks whether this \c skeleton contains all dofs defined
+  /// in this state space.
+  ///
+  /// \throws invalid_argument if \c skeleton does not contain
+  ///  all dofs if this state space.
+  void checkIfContained(const ::dart::dynamics::Skeleton* skeleton) const;
 
   /// Gets the subspace corresponding to \c _joint in \c _metaskeleton.
   ///
@@ -150,7 +183,7 @@ public:
   /// \param _metaskeleton \c MetaSkeleton to set position for
   /// \param _state input state
   void setState(
-      ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state);
+      ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state) const;
 
   /// Wrapper for \c getStateFromMetaSkeleton that returns a ScopedState.
   ///
@@ -159,13 +192,14 @@ public:
   ScopedState getScopedStateFromMetaSkeleton(
       const ::dart::dynamics::MetaSkeleton* _metaskeleton) const;
 
+  /// Returns MetaSkeleton this space operates on.
+  /// \param _skeleton \c Skeleton to create MetaSkeleton from.
+  ::dart::dynamics::MetaSkeletonPtr getControlledMetaSkeleton(
+      const ::dart::dynamics::SkeletonPtr& _skeleton) const;
+
 private:
   Properties mProperties;
 };
-
-using MetaSkeletonStateSpacePtr = std::shared_ptr<MetaSkeletonStateSpace>;
-using ConstMetaSkeletonStateSpacePtr
-    = std::shared_ptr<const MetaSkeletonStateSpace>;
 
 } // namespace dart
 } // namespace statespace

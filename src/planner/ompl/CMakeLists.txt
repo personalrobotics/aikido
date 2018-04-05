@@ -1,13 +1,8 @@
-#============================================================================== # Dependencies
+#==============================================================================
+# Dependencies
 #
 find_package(OMPL QUIET)
-if(OMPL_FOUND)
-  message(STATUS "Looking for OMPL - version ${OMPL_VERSION} found")
-else()
-  message(STATUS
-    "Looking for OMPL - NOT found, skipping planner_ompl component")
-  return()
-endif()
+aikido_check_package(OMPL "planner_ompl" "OMPL")
 
 find_package(pr-ompl QUIET)
 #==============================================================================

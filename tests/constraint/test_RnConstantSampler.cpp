@@ -12,7 +12,8 @@ void testConstructorThrowsForNullStateSpace()
 {
   EXPECT_THROW(
       {
-        constraint::RConstantSampler<N>(nullptr, Eigen::Matrix<double, N, 1>());
+        constraint::uniform::RConstantSampler<N>(
+            nullptr, Eigen::Matrix<double, N, 1>());
       },
       std::invalid_argument);
 }
@@ -37,7 +38,7 @@ void testConstructorThrowsForWrongSizeValue()
   {
     EXPECT_DEATH(
         {
-          constraint::RConstantSampler<N>(
+          constraint::uniform::RConstantSampler<N>(
               std::make_shared<statespace::R<N>>(),
               Eigen::VectorXd::Zero(N + 1));
         },
@@ -49,7 +50,7 @@ void testConstructorThrowsForWrongSizeValue()
   {
     EXPECT_THROW(
         {
-          constraint::RConstantSampler<N>(
+          constraint::uniform::RConstantSampler<N>(
               std::make_shared<statespace::R<N>>(3), Eigen::VectorXd::Zero(4));
         },
         std::invalid_argument);
@@ -77,8 +78,8 @@ void testSampleGenerator(int dimension = N)
   auto stateSpace = std::make_shared<statespace::R<N>>(dimension);
   EXPECT_EQ(stateSpace->getDimension(), dimension);
 
-  auto sampler
-      = std::make_shared<constraint::RConstantSampler<N>>(stateSpace, value);
+  auto sampler = std::make_shared<constraint::uniform::RConstantSampler<N>>(
+      stateSpace, value);
   EXPECT_EQ(sampler->getStateSpace(), stateSpace);
   EXPECT_TRUE(
       tests::CompareEigenMatrices(sampler->getConstantValue(), value, 1e-6));

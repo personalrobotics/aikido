@@ -1,6 +1,6 @@
 #include <aikido/constraint/NewtonsMethodProjectable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
-#include <aikido/constraint/TSR.hpp>
+#include <aikido/constraint/dart/TSR.hpp>
 #include "PolynomialConstraint.hpp"
 
 #include <aikido/statespace/Rn.hpp>
@@ -10,7 +10,7 @@
 
 using aikido::constraint::NewtonsMethodProjectable;
 using aikido::constraint::Satisfied;
-using aikido::constraint::TSR;
+using aikido::constraint::dart::TSR;
 using aikido::statespace::R1;
 using aikido::statespace::R3;
 

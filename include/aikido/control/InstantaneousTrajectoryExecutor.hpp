@@ -3,10 +3,9 @@
 
 #include <future>
 #include <mutex>
-
 #include <dart/dynamics/Skeleton.hpp>
-#include <aikido/control/TrajectoryExecutor.hpp>
-#include <aikido/trajectory/Trajectory.hpp>
+#include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace control {
@@ -17,6 +16,7 @@ class InstantaneousTrajectoryExecutor : public TrajectoryExecutor
 {
 public:
   /// Constructor.
+  ///
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
   explicit InstantaneousTrajectoryExecutor(
@@ -28,26 +28,30 @@ public:
   void validate(trajectory::TrajectoryPtr traj) override;
 
   /// Instantaneously execute traj and set future upon completion.
-  /// \param traj Trajectory to be executed. Its StateSpace should be a
-  ///        MetaStateSpace over MetaSkeleton, and the dofs in the metaskeleton
-  ///        should be all in skeleton passed to the constructor.
+  ///
+  /// \param traj Trajectory to be executed.
+  ///        Its StateSpace should be a MetaSkeletonStateSpace, where the dofs
+  ///        are all in the skeleton passed to this constructor.
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   /// \throws invalid_argument if traj is invalid.
   std::future<void> execute(trajectory::TrajectoryPtr traj) override;
 
   // Do nothing.
-  void step() override;
+  void step(
+      const std::chrono::system_clock::time_point& /*timepoint*/) override;
 
   // Do nothing.
   void abort() override;
 
 private:
+  /// Skeleton to execute trajectories on
   ::dart::dynamics::SkeletonPtr mSkeleton;
 
+  /// Promise whose future is returned by execute()
   std::unique_ptr<std::promise<void>> mPromise;
 
-  /// Manages access on mPromise
+  /// Manages access to mPromise
   std::mutex mMutex;
 };
 

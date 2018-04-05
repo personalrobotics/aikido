@@ -1,13 +1,9 @@
-#include <aikido/control/ros/RosTrajectoryExecutor.hpp>
-
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/control/TrajectoryRunningException.hpp>
-#include <aikido/control/ros/Conversions.hpp>
-#include <aikido/control/ros/RosTrajectoryExecutionException.hpp>
-#include <aikido/control/ros/util.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/statespace/dart/RnJoint.hpp>
-#include <aikido/statespace/dart/SO2Joint.hpp>
+#include "aikido/control/ros/RosTrajectoryExecutor.hpp"
+#include "aikido/control/TrajectoryRunningException.hpp"
+#include "aikido/control/ros/Conversions.hpp"
+#include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
+#include "aikido/control/ros/util.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace control {
@@ -54,14 +50,14 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 RosTrajectoryExecutor::RosTrajectoryExecutor(
     ::ros::NodeHandle node,
     const std::string& serverName,
-    double timestep,
+    double waypointTimestep,
     double goalTimeTolerance,
     const std::chrono::milliseconds& connectionTimeout,
     const std::chrono::milliseconds& connectionPollingPeriod)
   : mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
-  , mTimestep{timestep}
+  , mWaypointTimestep{waypointTimestep}
   , mGoalTimeTolerance{goalTimeTolerance}
   , mConnectionTimeout{connectionTimeout}
   , mConnectionPollingPeriod{connectionPollingPeriod}
@@ -69,8 +65,8 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
   , mPromise{nullptr}
   , mMutex{}
 {
-  if (mTimestep <= 0)
-    throw std::invalid_argument("Timestep must be positive.");
+  if (mWaypointTimestep <= 0)
+    throw std::invalid_argument("Waypoint timestep must be positive.");
 
   if (mGoalTimeTolerance <= 0)
     throw std::invalid_argument("Goal time tolerance must be positive.");
@@ -101,7 +97,7 @@ void RosTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
   if (traj->metadata.executorValidated)
     return;
 
-  const auto space = std::dynamic_pointer_cast<MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   if (!space)
@@ -125,7 +121,7 @@ std::future<void> RosTrajectoryExecutor::execute(
   goal.goal_time_tolerance = ::ros::Duration(mGoalTimeTolerance);
 
   // Convert the Aikido trajectory into a ROS JointTrajectory.
-  goal.trajectory = toRosJointTrajectory(traj, mTimestep);
+  goal.trajectory = toRosJointTrajectory(traj, mWaypointTimestep);
 
   bool waitForServer
       = waitForActionServer<control_msgs::FollowJointTrajectoryAction,
@@ -218,7 +214,8 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
 }
 
 //==============================================================================
-void RosTrajectoryExecutor::step()
+void RosTrajectoryExecutor::step(
+    const std::chrono::system_clock::time_point& /*timepoint*/)
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.

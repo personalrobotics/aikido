@@ -1,7 +1,6 @@
 ﻿#include <gtest/gtest.h>
 #include <tuple>
 #include <dart/dart.hpp>
-#include <aikido/constraint/CollisionFree.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
@@ -19,7 +18,6 @@ class VectorFieldPlannerTest : public ::testing::Test
 {
 public:
   using FCLCollisionDetector = dart::collision::FCLCollisionDetector;
-  using CollisionFree = aikido::constraint::CollisionFree;
   using DistanceMetric = aikido::distance::DistanceMetric;
   using MetaSkeletonStateSpacePtr
       = aikido::statespace::dart::MetaSkeletonStateSpacePtr;
@@ -334,7 +332,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double initialStepSize = 0.001;
   double jointLimitTolerance = 1e-3;
   double constraintCheckResolution = 1e-3;
-  std::chrono::duration<double> timelimit(5.);
+  std::chrono::duration<double> timelimit(10.0);
 
   auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
       mStateSpace,

@@ -14,6 +14,8 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
+AIKIDO_DECLARE_POINTERS(GeometricStateSpace)
+
 /// The maximum distance between two states for them to still be considered
 /// equal
 constexpr double EQUALITY_EPSILON = 1e-7;
@@ -28,7 +30,7 @@ public:
   public:
     /// Constructor.
     /// \param _st The state to wrap
-    StateType(statespace::StateSpace::State* _st);
+    explicit StateType(statespace::StateSpace::State* _st);
 
     /// The wrapped aikido state
     statespace::StateSpace::State* mState;
@@ -46,10 +48,11 @@ public:
   /// \param _interpolator An aikido interpolator used by the interpolate method
   /// \param _dmetric The distance metric to use to compute distance between two
   /// states in the StateSpace
-  /// \param sampler A state sampler used to sample new states in the StateSpace
-  /// \param boundsConstraint A Testable used to determine whether
+  /// \param _sampler A state sampler used to sample new states in the
+  /// StateSpace
+  /// \param _boundsConstraint A Testable used to determine whether
   /// states fall with in bounds defined on the space.
-  /// \param boundsProjection A Projectable that can be used to project a state
+  /// \param _boundsProjection A Projectable that can be used to project a state
   /// back within the valid boundary defined on the space.
   GeometricStateSpace(
       statespace::StateSpacePtr _sspace,
@@ -145,8 +148,6 @@ private:
   constraint::TestablePtr mBoundsConstraint;
   constraint::ProjectablePtr mBoundsProjection;
 };
-
-using GeometricStateSpacePtr = std::shared_ptr<GeometricStateSpace>;
 
 } // namespace ompl
 } // namespace planner

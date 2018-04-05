@@ -20,11 +20,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 
   std::size_t dimension = stateSpace->getDimension();
 
-  // TODO: const cast will be removed after the spline constructor updated.
-  auto nonConstStateSpace
-      = std::const_pointer_cast<aikido::statespace::StateSpace>(stateSpace);
-  auto outputTrajectory
-      = make_unique<aikido::trajectory::Spline>(nonConstStateSpace);
+  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(stateSpace);
 
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
@@ -88,6 +84,7 @@ std::vector<Knot>& VectorFieldIntegrator::getKnots()
   return mKnots;
 }
 
+//==============================================================================
 double VectorFieldIntegrator::getLastEvaluationTime()
 {
   return mLastEvaluationTime;
@@ -131,7 +128,7 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
             mConstraint,
             mConstraintCheckResolution,
             mLastEvaluationTime,
-            true))
+            false))
     {
       throw ConstraintViolatedError();
     }

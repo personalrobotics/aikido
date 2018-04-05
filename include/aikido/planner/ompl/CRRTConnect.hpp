@@ -16,7 +16,7 @@ class CRRTConnect : public CRRT
 public:
   /// Constructor
   /// \param si Information about the planning instance
-  CRRTConnect(const ::ompl::base::SpaceInformationPtr& si);
+  explicit CRRTConnect(const ::ompl::base::SpaceInformationPtr& si);
 
   /// Destructor
   virtual ~CRRTConnect();
@@ -25,7 +25,7 @@ public:
   /// calls to this function will update data (only additions are made). This is
   /// useful to see what changed in the exploration datastructure, between calls
   /// to solve(), for example (without calling clear() in between).
-  /// \param[out] data Data about the current run of the motion planner
+  /// \param[out] _data Data about the current run of the motion planner
   void getPlannerData(::ompl::base::PlannerData& _data) const override;
 
   /// Function that can solve the motion planning problem. This function can be
@@ -37,19 +37,19 @@ public:
   /// addition of starting or goal states (but not changing previously added
   /// start/goal states). The function terminates if the call to ptc returns
   /// true.
-  /// \param ptc Conditions for terminating planning before a solution is found
+  /// \param _ptc Conditions for terminating planning before a solution is found
   ::ompl::base::PlannerStatus solve(
-      const ::ompl::base::PlannerTerminationCondition& p_tc) override;
+      const ::ompl::base::PlannerTerminationCondition& _ptc) override;
 
   /// Solve the motion planning problem in the given time
-  /// \param solveTime The maximum allowable time to solve the planning problem
+  /// \param _solveTime The maximum allowable time to solve the planning problem
   ::ompl::base::PlannerStatus solve(double _solveTime);
 
   /// Clear all internal datastructures. Planner settings are not affected.
   /// Subsequent calls to solve() will ignore all previous work.
   void clear() override;
 
-  /// \param radius The maximum distance between two trees for them to be
+  /// \param _radius The maximum distance between two trees for them to be
   /// considered connected
   void setConnectionRadius(double _radius);
 

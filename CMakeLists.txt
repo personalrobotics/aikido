@@ -126,7 +126,7 @@ include(FindPkgConfig)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DART 6.2.0 REQUIRED
+find_package(DART 6.3.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
@@ -175,13 +175,14 @@ find_package(Doxygen QUIET)
 if(${DOXYGEN_FOUND})
   message(STATUS "Looking for Doxygen - version ${DOXYGEN_VERSION} found")
 
-  set(DOXYGEN_INPUT_ROOT
-    "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
+  set(DOXYGEN_INPUT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/include)
   set(DOXYGEN_OUTPUT_ROOT "${CMAKE_CURRENT_BINARY_DIR}/doxygen")
   set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_OUTPUT_ROOT}/aikido.tag")
   set(DOXYGEN_HTML_INDEX "${DOXYGEN_OUTPUT_ROOT}/index.html")
   set(DOXYGEN_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/doxygen_working")
-  set(DOXYGEN_EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/external")
+  set(DOXYGEN_EXCLUDE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/external ${CMAKE_CURRENT_SOURCE_DIR}/src/python")
+  set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
   # Strip include_directories() being used by CMake from #include paths.
   # TODO: Add per-target INCLUDE_DIRECTORIES properties to this list.
@@ -194,11 +195,11 @@ if(${DOXYGEN_FOUND})
   # Optionally download Doxygen tagfiles for dependencies.
   set(DOXYGEN_TAGFILES "")
   if(DOWNLOAD_TAGFILES)
-    set(tagfile_url "http://dartsim.github.io/dart/dart.tag")
+    set(tagfile_url "http://dartsim.github.io/dart/v6.3.0/dart.tag")
     message(STATUS "Downloading DART Doxygen tagfile from: ${tagfile_url}")
     file(DOWNLOAD "${tagfile_url}" "${DOXYGEN_WORKING_DIR}/dart.tag")
     set(DOXYGEN_TAGFILES
-      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/")
+      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/v6.3.0")
 
     is_component(needs_ompl aikido planner_ompl)
     if(needs_ompl)
@@ -217,6 +218,7 @@ if(${DOXYGEN_FOUND})
   # - DOXYGEN_GENERATE_TAGFILE
   # - DOXYGEN_INPUT_ROOT
   # - DOXYGEN_OUTPUT_ROOT
+  # - DOXYGEN_STRIP_FROM_PATH
   # - DOXYGEN_STRIP_FROM_INC_PATH
   # - DOXYGEN_TAGFILES
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Doxyfile.in"
@@ -225,6 +227,20 @@ if(${DOXYGEN_FOUND})
   # Create the "docs" target that runs Doxygen.
   add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
     COMMAND "${DOXYGEN_EXECUTABLE}"
+
+    # Fix missing ^ in generated navtree.js for external DART link
+    COMMAND sed -i s:\"http:\"\^http:g ${DOXYGEN_OUTPUT_ROOT}/navtree.js
+
+    # Strip path prefix from all paths in aikido.tag
+    COMMAND ${CMAKE_COMMAND} -E echo "Stripping paths from"
+        "${DOXYGEN_GENERATE_TAGFILE}"
+    COMMAND sed -i s:${DOXYGEN_STRIP_FROM_PATH}::g ${DOXYGEN_GENERATE_TAGFILE}
+
+    # Strip all doxygen="path" HTML tags
+    COMMAND ${CMAKE_COMMAND} -E echo "Stripping Doxygen HTML tags"
+    COMMAND find "${DOXYGEN_OUTPUT_ROOT}" -type f -name "*.html"
+        -exec sed -i 's: doxygen=\"[^\"]*\"::g' {} \\$<SEMICOLON>
+
     DEPENDS "${DOXYGEN_WORKING_DIR}/Doxyfile"
     WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}"
   )

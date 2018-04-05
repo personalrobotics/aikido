@@ -28,6 +28,7 @@ check_cxx_source_compiles(
 set(sources
   CatkinResourceRetriever.cpp
   KinBodyParser.cpp
+  yaml.cpp
 )
 
 add_library("${PROJECT_NAME}_io" SHARED ${sources})

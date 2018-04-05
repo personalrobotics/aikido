@@ -5,8 +5,7 @@
 #include <gtest/gtest.h>
 #include <ompl/base/State.h>
 #include <aikido/common/RNG.hpp>
-#include <aikido/constraint/JointStateSpaceHelpers.hpp>
-#include <aikido/constraint/Testable.hpp>
+#include <aikido/constraint.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -252,7 +251,7 @@ private:
 class EmptySampleGenerator : public aikido::constraint::SampleGenerator
 {
 public:
-  EmptySampleGenerator(aikido::statespace::StateSpacePtr sspace)
+  explicit EmptySampleGenerator(aikido::statespace::StateSpacePtr sspace)
     : mStateSpace(sspace)
   {
   }
@@ -282,7 +281,7 @@ private:
 class FailedSampleGenerator : public aikido::constraint::SampleGenerator
 {
 public:
-  FailedSampleGenerator(aikido::statespace::StateSpacePtr sspace)
+  explicit FailedSampleGenerator(aikido::statespace::StateSpacePtr sspace)
     : mStateSpace(sspace)
   {
   }

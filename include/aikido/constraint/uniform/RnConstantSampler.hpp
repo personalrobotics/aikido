@@ -1,10 +1,12 @@
-#ifndef AIKIDO_CONSTRAINT_RNCONSTANTSAMPLER_HPP_
-#define AIKIDO_CONSTRAINT_RNCONSTANTSAMPLER_HPP_
-#include "../../statespace/Rn.hpp"
-#include "../Sampleable.hpp"
+#ifndef AIKIDO_CONSTRAINT_UNIFORM_RNCONSTANTSAMPLER_HPP_
+#define AIKIDO_CONSTRAINT_UNIFORM_RNCONSTANTSAMPLER_HPP_
+
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/statespace/Rn.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 /// ConstantSampler for RealVectorStates.
 /// Stub sampler for WeldJoint or any fixed constant state space.
@@ -42,9 +44,10 @@ using R3ConstantSampler = RConstantSampler<3>;
 using R6ConstantSampler = RConstantSampler<6>;
 using RnConstantSampler = RConstantSampler<Eigen::Dynamic>;
 
+} // namespace uniform
 } // namespace constraint
 } // namespace aikido
 
 #include "aikido/constraint/uniform/detail/RnConstantSampler-impl.hpp"
 
-#endif // AIKIDO_CONSTRAINT_RNCONSTANTSAMPLER_HPP_
+#endif // AIKIDO_CONSTRAINT_UNIFORM_RNCONSTANTSAMPLER_HPP_

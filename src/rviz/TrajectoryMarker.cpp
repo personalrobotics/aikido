@@ -67,25 +67,20 @@ TrajectoryMarker::~TrajectoryMarker()
 void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
 {
   using visualization_msgs::Marker;
+  using aikido::statespace::dart::MetaSkeletonStateSpace;
 
   if (trajectory)
   {
-    auto statespace = trajectory->getStateSpace();
-    if (!std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-            statespace))
+    auto statespace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+        trajectory->getStateSpace());
+
+    if (!statespace)
     {
       throw std::invalid_argument(
           "The statespace in the trajectory should be MetaSkeletonStateSpace");
     }
 
-    if (statespace->getDimension() != mSkeleton->getNumDofs())
-    {
-      throw std::invalid_argument(
-          "The statespace in the trajectory is not compatible (dimensions are "
-          "different) to DART meta skeleton for visualizing the trajectory");
-    }
-    // TODO: Use more comprehensive compatibility check once available than
-    // just checking the dimensions.
+    statespace->checkCompatibility(mSkeleton.get());
   }
 
   mTrajectory = std::move(trajectory);
@@ -203,6 +198,8 @@ void TrajectoryMarker::update()
 void TrajectoryMarker::updatePoints()
 {
   using visualization_msgs::Marker;
+  using aikido::statespace::dart::MetaSkeletonStateSpace;
+  using aikido::statespace::dart::MetaSkeletonStateSaver;
 
   if (!mNeedPointsUpdate)
     return;
@@ -218,12 +215,12 @@ void TrajectoryMarker::updatePoints()
     return;
   }
 
-  statespace::StateSpacePtr statespace = mTrajectory->getStateSpace();
-  auto metaSkeletonSs
-      = std::dynamic_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-          statespace);
+  statespace::ConstStateSpacePtr statespace = mTrajectory->getStateSpace();
+  const auto metaSkeletonSs
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(statespace);
 
-  auto saver = statespace::dart::MetaSkeletonStateSaver(mSkeleton);
+  auto saver = MetaSkeletonStateSaver(
+      mSkeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
   auto state = metaSkeletonSs->createState();

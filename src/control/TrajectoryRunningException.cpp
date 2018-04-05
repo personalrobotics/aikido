@@ -1,4 +1,4 @@
-#include <aikido/control/TrajectoryRunningException.hpp>
+#include "aikido/control/TrajectoryRunningException.hpp"
 
 namespace aikido {
 namespace control {

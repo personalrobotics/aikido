@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONSTRAINT_COLLISIONFREE_HPP_
-#define AIKIDO_CONSTRAINT_COLLISIONFREE_HPP_
+#ifndef AIKIDO_CONSTRAINT_DART_COLLISIONFREE_HPP_
+#define AIKIDO_CONSTRAINT_DART_COLLISIONFREE_HPP_
 
 #include <memory>
 #include <tuple>
@@ -8,12 +8,16 @@
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
-#include "../statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "CollisionFreeOutcome.hpp"
-#include "Testable.hpp"
+#include "aikido/common/pointers.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/constraint/dart/CollisionFreeOutcome.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace dart {
+
+AIKIDO_DECLARE_POINTERS(CollisionFree)
 
 /// A testable that uses a collision detector to check whether
 /// a metakeleton state (configuration) results in collision between and within
@@ -32,13 +36,13 @@ public:
   /// \param _collisionOptions options passed to \c _collisionDetector
   CollisionFree(
       statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-      dart::dynamics::MetaSkeletonPtr _metaskeleton,
-      std::shared_ptr<dart::collision::CollisionDetector> _collisionDetector,
-      dart::collision::CollisionOption _collisionOptions
-      = dart::collision::CollisionOption(
+      ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
+      std::shared_ptr<::dart::collision::CollisionDetector> _collisionDetector,
+      ::dart::collision::CollisionOption _collisionOptions
+      = ::dart::collision::CollisionOption(
           false,
           1,
-          std::make_shared<dart::collision::BodyNodeCollisionFilter>()));
+          std::make_shared<::dart::collision::BodyNodeCollisionFilter>()));
 
   // Documentation inherited.
   statespace::StateSpacePtr getStateSpace() const override;
@@ -56,43 +60,43 @@ public:
   std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   /// Checks collision between group1 and group2.
-  /// \param group1 First collision group.
-  /// \param group2 Second collision group.
+  /// \param _group1 First collision group.
+  /// \param _group2 Second collision group.
   void addPairwiseCheck(
-      std::shared_ptr<dart::collision::CollisionGroup> _group1,
-      std::shared_ptr<dart::collision::CollisionGroup> _group2);
+      std::shared_ptr<::dart::collision::CollisionGroup> _group1,
+      std::shared_ptr<::dart::collision::CollisionGroup> _group2);
 
   /// Remove collision check between group1 and group2.
-  /// \param group1 First collision group.
-  /// \param group2 Second collision group.
+  /// \param _group1 First collision group.
+  /// \param _group2 Second collision group.
   void removePairwiseCheck(
-      std::shared_ptr<dart::collision::CollisionGroup> _group1,
-      std::shared_ptr<dart::collision::CollisionGroup> _group2);
+      std::shared_ptr<::dart::collision::CollisionGroup> _group1,
+      std::shared_ptr<::dart::collision::CollisionGroup> _group2);
 
   /// Checks collision within group.
-  /// \param group Collision group.
-  void addSelfCheck(std::shared_ptr<dart::collision::CollisionGroup> _group);
+  /// \param _group Collision group.
+  void addSelfCheck(std::shared_ptr<::dart::collision::CollisionGroup> _group);
 
   /// Remove self-collision check within group.
-  /// \param group Collision group.
-  void removeSelfCheck(std::shared_ptr<dart::collision::CollisionGroup> _group);
+  /// \param _group Collision group.
+  void removeSelfCheck(
+      std::shared_ptr<::dart::collision::CollisionGroup> _group);
 
 private:
-  using CollisionGroup = dart::collision::CollisionGroup;
+  using CollisionGroup = ::dart::collision::CollisionGroup;
 
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
-  std::shared_ptr<dart::collision::CollisionDetector> mCollisionDetector;
-  dart::collision::CollisionOption mCollisionOptions;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  std::shared_ptr<::dart::collision::CollisionDetector> mCollisionDetector;
+  ::dart::collision::CollisionOption mCollisionOptions;
   std::vector<std::pair<std::shared_ptr<CollisionGroup>,
                         std::shared_ptr<CollisionGroup>>>
       mGroupsToPairwiseCheck;
   std::vector<std::shared_ptr<CollisionGroup>> mGroupsToSelfCheck;
 };
 
-using CollisionFreePtr = std::shared_ptr<CollisionFree>;
-
+} // namespace dart
 } // namespace constraint
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_COLLISIONFREE_HPP_
+#endif // AIKIDO_CONSTRAINT_DART_COLLISIONFREE_HPP_

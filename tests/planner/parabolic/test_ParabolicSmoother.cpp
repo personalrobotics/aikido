@@ -154,7 +154,7 @@ TEST_F(ParabolicSmootherTests, convertStraightInterpolatedToSpline)
 
   const double stepSize = 1e-3;
   aikido::common::StepSequence seq(
-      stepSize, true, spline->getStartTime(), spline->getEndTime());
+      stepSize, true, true, spline->getStartTime(), spline->getEndTime());
   for (double t : seq)
   {
     spline->evaluate(t, splineState);
@@ -176,7 +176,7 @@ TEST_F(ParabolicSmootherTests, convertNonStraightInterpolatedToSpline)
 
   const double stepSize = 1e-3;
   aikido::common::StepSequence seq(
-      stepSize, true, spline->getStartTime(), spline->getEndTime());
+      stepSize, true, true, spline->getStartTime(), spline->getEndTime());
   for (double t : seq)
   {
     spline->evaluate(t, splineState);
@@ -200,7 +200,7 @@ TEST_F(
 
   const double stepSize = 1e-3;
   aikido::common::StepSequence seq(
-      stepSize, true, spline->getStartTime(), spline->getEndTime());
+      stepSize, true, true, spline->getStartTime(), spline->getEndTime());
   for (double t : seq)
   {
     spline->evaluate(t, splineState);

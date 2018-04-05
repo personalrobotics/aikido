@@ -1,8 +1,9 @@
+#include "aikido/constraint/uniform/SO3UniformSampler.hpp"
 #include <cmath>
-#include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 //==============================================================================
 class SO3UniformSampleGenerator : public constraint::SampleGenerator
@@ -97,5 +98,6 @@ SO3UniformSampler::createSampleGenerator() const
       new SO3UniformSampleGenerator(mSpace, mRng->clone()));
 }
 
-} // namespace statespace
+} // namespace uniform
+} // namespace constraint
 } // namespace aikido

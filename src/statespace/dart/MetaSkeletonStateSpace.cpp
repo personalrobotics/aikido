@@ -86,6 +86,8 @@ MetaSkeletonStateSpace::Properties::Properties(
   , mVelocityLowerLimits(metaskeleton->getVelocityLowerLimits())
   , mVelocityUpperLimits(metaskeleton->getVelocityUpperLimits())
 {
+  // TODO: Acquire the metaskeleton's mutex once DART supports it.
+
   for (std::size_t ijoint = 0; ijoint < metaskeleton->getNumJoints(); ++ijoint)
   {
     const auto joint = metaskeleton->getJoint(ijoint);
@@ -204,6 +206,44 @@ MetaSkeletonStateSpace::Properties::getVelocityUpperLimits() const
 }
 
 //==============================================================================
+bool MetaSkeletonStateSpace::Properties::operator==(
+    const Properties& otherProperties) const
+{
+  if (mName != otherProperties.mName)
+    return false;
+
+  if (mNumJoints != otherProperties.mNumJoints)
+    return false;
+
+  if (mDofNames != otherProperties.mDofNames)
+    return false;
+
+  if (mIndexMap != otherProperties.mIndexMap)
+    return false;
+
+  for (std::size_t i = 0; i < mNumJoints; ++i)
+  {
+    if (mPositionLowerLimits[i] != otherProperties.mPositionLowerLimits[i])
+      return false;
+    if (mPositionUpperLimits[i] != otherProperties.mPositionUpperLimits[i])
+      return false;
+    if (mVelocityLowerLimits[i] != otherProperties.mVelocityLowerLimits[i])
+      return false;
+    if (mVelocityUpperLimits[i] != otherProperties.mVelocityUpperLimits[i])
+      return false;
+  }
+
+  return true;
+}
+
+//==============================================================================
+bool MetaSkeletonStateSpace::Properties::operator!=(
+    const Properties& otherProperties) const
+{
+  return !(*this == otherProperties);
+}
+
+//==============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(const MetaSkeleton* metaskeleton)
   : CartesianProduct(
         convertVectorType<JointStateSpacePtr, StateSpacePtr>(
@@ -218,6 +258,46 @@ const MetaSkeletonStateSpace::Properties&
 MetaSkeletonStateSpace::getProperties() const
 {
   return mProperties;
+}
+
+//==============================================================================
+bool MetaSkeletonStateSpace::isCompatible(
+    const ::dart::dynamics::MetaSkeleton* metaskeleton) const
+{
+  const MetaSkeletonStateSpace::Properties otherProperties(metaskeleton);
+  return mProperties == otherProperties;
+}
+
+//==============================================================================
+void MetaSkeletonStateSpace::checkCompatibility(
+    const ::dart::dynamics::MetaSkeleton* metaskeleton) const
+{
+  if (isCompatible(metaskeleton))
+    return;
+
+  std::stringstream ss;
+  ss << "MetaSkeleton '" << metaskeleton->getName()
+     << "' does not match this MetaSkeletonStateSpace's MetaSkeleton '"
+     << mProperties.getName() << "'.";
+  throw std::invalid_argument(ss.str());
+}
+
+//==============================================================================
+void MetaSkeletonStateSpace::checkIfContained(
+    const ::dart::dynamics::Skeleton* skeleton) const
+{
+  // TODO: Name-uniqueness is allowed only within the same skeleton,
+  // so we should check for skeleton-equality.
+  auto dofNames = mProperties.getDofNames();
+  for (const auto& name : dofNames)
+  {
+    if (!skeleton->getDof(name))
+    {
+      std::stringstream ss;
+      ss << "DegreeOfFreedom[" << name << "] does not exist in mSkeleton.";
+      throw std::invalid_argument(ss.str());
+    }
+  }
 }
 
 //==============================================================================
@@ -282,11 +362,49 @@ auto MetaSkeletonStateSpace::getScopedStateFromMetaSkeleton(
 
 //==============================================================================
 void MetaSkeletonStateSpace::setState(
-    ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state)
+    ::dart::dynamics::MetaSkeleton* _metaskeleton, const State* _state) const
 {
   Eigen::VectorXd positions;
   convertStateToPositions(_state, positions);
   _metaskeleton->setPositions(positions);
+}
+
+//==============================================================================
+::dart::dynamics::MetaSkeletonPtr
+MetaSkeletonStateSpace::getControlledMetaSkeleton(
+    const ::dart::dynamics::SkeletonPtr& skeleton) const
+{
+  using ::dart::dynamics::Group;
+  using ::dart::dynamics::DegreeOfFreedom;
+
+  std::vector<DegreeOfFreedom*> dofs;
+  dofs.reserve(mProperties.getNumDofs());
+
+  for (const auto& dofName : mProperties.getDofNames())
+  {
+    DegreeOfFreedom* dof = skeleton->getDof(dofName);
+    if (!dof)
+    {
+      throw std::invalid_argument(
+          "Skeleton has no DegreeOfFreedom named '" + dofName + "'.");
+    }
+    dofs.emplace_back(dof);
+  }
+
+  auto controlledMetaSkeleton
+      = Group::create(mProperties.getName(), dofs, false, true);
+  if (!controlledMetaSkeleton)
+  {
+    throw std::runtime_error(
+        "Failed creating MetaSkeleton of controlled DOFs.");
+  }
+
+  if (controlledMetaSkeleton->getNumDofs() != mProperties.getNumDofs())
+  {
+    throw std::runtime_error("Only single-DOF joints are supported.");
+  }
+
+  return controlledMetaSkeleton;
 }
 
 } // namespace dart

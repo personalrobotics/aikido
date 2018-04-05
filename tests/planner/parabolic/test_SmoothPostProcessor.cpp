@@ -101,7 +101,6 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
   ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
-      testable,
       enableShortcut,
       enableBlend,
       mTimelimit,
@@ -110,9 +109,8 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
       mFeasibilityCheckResolution,
       mFeasibilityApproxTolerance);
 
-  auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -144,7 +142,6 @@ TEST_F(SmoothPostProcessorTests, useBlend)
   ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
-      testable,
       enableShortcut,
       enableBlend,
       mTimelimit,
@@ -153,9 +150,8 @@ TEST_F(SmoothPostProcessorTests, useBlend)
       mFeasibilityCheckResolution,
       mFeasibilityApproxTolerance);
 
-  auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -187,7 +183,6 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
   ParabolicSmoother testSmoothPostProcessor(
       mMaxVelocity,
       mMaxAcceleration,
-      testable,
       enableShortcut,
       enableBlend,
       mTimelimit,
@@ -196,9 +191,8 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
       mFeasibilityCheckResolution,
       mFeasibilityApproxTolerance);
 
-  auto clonedRNG = std::move(cloneRNGFrom(mRng)[0]);
   auto smoothedTrajectory
-      = testSmoothPostProcessor.postprocess(mTrajectory, clonedRNG.get());
+      = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
   auto state = mStateSpace->createState();

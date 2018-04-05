@@ -24,8 +24,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 {
   using aikido::statespace::GeodesicInterpolator;
 
-  if (nullptr == dynamic_cast<GeodesicInterpolator*>(
-                     _inputTrajectory.getInterpolator().get()))
+  if (!std::dynamic_pointer_cast<const GeodesicInterpolator>(
+          _inputTrajectory.getInterpolator()))
   {
     throw std::invalid_argument(
         "The interpolator of _inputTrajectory should be a "
@@ -40,11 +40,6 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     throw std::invalid_argument(
         "computeParabolicTiming only supports Rn, "
         "SO2, and CartesianProducts consisting of those types.");
-
-  const auto interpolator = _inputTrajectory.getInterpolator();
-  if (dynamic_cast<const GeodesicInterpolator*>(interpolator.get()) == nullptr)
-    throw std::invalid_argument(
-        "computeParabolicTiming only supports geodesic interpolation.");
 
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
@@ -164,16 +159,22 @@ ParabolicTimer::ParabolicTimer(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
-    const aikido::trajectory::InterpolatedPtr& _inputTraj,
-    const aikido::common::RNG* /*_rng*/)
+    const aikido::trajectory::Interpolated& _inputTraj,
+    const aikido::common::RNG& /*_rng*/,
+    const aikido::constraint::TestablePtr& /*_constraint*/)
 {
-  if (!_inputTraj)
-    throw std::invalid_argument(
-        "Passed nullptr _inputTraj to "
-        "ParabolicTimer::postprocess");
-
   return computeParabolicTiming(
-      *_inputTraj, mVelocityLimits, mAccelerationLimits);
+      _inputTraj, mVelocityLimits, mAccelerationLimits);
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ParabolicTimer::postprocess(
+    const aikido::trajectory::Spline& _inputTraj,
+    const aikido::common::RNG& /*_rng*/,
+    const aikido::constraint::TestablePtr& /*_constraint*/)
+{
+  return computeParabolicTiming(
+      _inputTraj, mVelocityLimits, mAccelerationLimits);
 }
 
 } // namespace parabolic

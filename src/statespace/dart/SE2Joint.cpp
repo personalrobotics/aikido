@@ -5,8 +5,8 @@ namespace statespace {
 namespace dart {
 
 //==============================================================================
-SE2Joint::SE2Joint(const ::dart::dynamics::PlanarJoint* joint)
-  : SE2(), JointStateSpace(joint)
+SE2Joint::SE2Joint(const ::dart::dynamics::PlanarJoint* _joint)
+  : SE2(), JointStateSpace(_joint)
 {
   // Do nothing.
 }

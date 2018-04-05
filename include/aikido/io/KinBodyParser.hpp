@@ -26,14 +26,15 @@ namespace io {
 /// \endcode
 /// Elements marked with `*` are required.
 ///
-/// <render>, <data>, or <collision> contain the relative path to a mesh file
+/// "<render>", "<data>", or "<collision>" contain the relative path to a mesh
+/// file
 /// and optionally a single float (for all three axes) or three float's (for the
 /// x, y, and z-axes) for the scale.
 ///
 /// Example forms:
-///   <Render>my/mesh/file.stl<Render>
-///   <Render>my/mesh/file.stl 0.25<Render> <!--scale for all three axes-->
-///   <Render>my/mesh/file.stl 0.25 0.5 2.0<Render>
+///   "<Render>my/mesh/file.stl<Render>"
+///   "<Render>my/mesh/file.stl 0.25<Render> <!--scale for all three axes-->"
+///   "<Render>my/mesh/file.stl 0.25 0.5 2.0<Render>"
 ///
 /// If the scale is not provided then (1, 1, 1) is used by default.
 ///

@@ -1,7 +1,7 @@
 #include <aikido/common/RNG.hpp>
-#include <aikido/constraint/FramePairDifferentiable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
-#include <aikido/constraint/TSR.hpp>
+#include <aikido/constraint/dart/FramePairDifferentiable.hpp>
+#include <aikido/constraint/dart/TSR.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
@@ -10,8 +10,8 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
-using aikido::constraint::FramePairDifferentiable;
-using aikido::constraint::TSR;
+using aikido::constraint::dart::FramePairDifferentiable;
+using aikido::constraint::dart::TSR;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::statespace::SO2;

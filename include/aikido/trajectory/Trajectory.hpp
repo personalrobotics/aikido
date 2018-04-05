@@ -2,11 +2,14 @@
 #define AIKIDO_TRAJECTORY_TRAJECTORY_HPP_
 
 #include <Eigen/Core>
+#include "aikido/common/pointers.hpp"
 #include <aikido/trajectory/TrajectoryMetadata.hpp>
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace trajectory {
+
+AIKIDO_DECLARE_POINTERS(Trajectory)
 
 /// Time-parameterized path in a \c StateSpace. The parameterization, number of
 /// derivatives available, and continuity of this trajectory is defined by the
@@ -21,7 +24,7 @@ public:
   /// Gets the \c StateSpace that this trajectory is defined in.
   ///
   /// \return state space this trajectory is defined in.
-  virtual aikido::statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Gets an upper bound on the number of non-zero derivatives available in
   /// this parameterization. Note that \c evaluateDerivative may return zero
@@ -71,9 +74,6 @@ public:
   /// Trajectory metadata
   TrajectoryMetadata metadata;
 };
-
-using TrajectoryPtr = std::shared_ptr<Trajectory>;
-using ConstTrajectoryPtr = std::shared_ptr<const Trajectory>;
 
 } // namespace trajectory
 } // namespace aikido
