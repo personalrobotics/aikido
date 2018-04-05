@@ -24,7 +24,7 @@ set(AIKIDO_MINOR_VERSION "3")
 set(AIKIDO_PATCH_VERSION "0")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
-list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake") 
+list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 
 #==============================================================================
 # Configuration Options
@@ -126,7 +126,7 @@ include(FindPkgConfig)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DART 6.2.0 REQUIRED
+find_package(DART 6.3.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
@@ -227,14 +227,20 @@ if(${DOXYGEN_FOUND})
   # Create the "docs" target that runs Doxygen.
   add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
     COMMAND "${DOXYGEN_EXECUTABLE}"
+
+    # Fix missing ^ in generated navtree.js for external DART link
+    COMMAND sed -i s:\"http:\"\^http:g ${DOXYGEN_OUTPUT_ROOT}/navtree.js
+
     # Strip path prefix from all paths in aikido.tag
     COMMAND ${CMAKE_COMMAND} -E echo "Stripping paths from"
         "${DOXYGEN_GENERATE_TAGFILE}"
     COMMAND sed -i s:${DOXYGEN_STRIP_FROM_PATH}::g ${DOXYGEN_GENERATE_TAGFILE}
+
     # Strip all doxygen="path" HTML tags
     COMMAND ${CMAKE_COMMAND} -E echo "Stripping Doxygen HTML tags"
     COMMAND find "${DOXYGEN_OUTPUT_ROOT}" -type f -name "*.html"
         -exec sed -i 's: doxygen=\"[^\"]*\"::g' {} \\$<SEMICOLON>
+
     DEPENDS "${DOXYGEN_WORKING_DIR}/Doxyfile"
     WORKING_DIRECTORY "${DOXYGEN_WORKING_DIR}"
   )

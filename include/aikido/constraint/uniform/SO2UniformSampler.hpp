@@ -1,11 +1,12 @@
 #ifndef AIKIDO_CONSTRAINT_UNIFORM_SO2UNIFORMSAMPLER_HPP_
 #define AIKIDO_CONSTRAINT_UNIFORM_SO2UNIFORMSAMPLER_HPP_
 
-#include "../../statespace/SO2.hpp"
-#include "../Sampleable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/statespace/SO2.hpp"
 
 namespace aikido {
 namespace constraint {
+namespace uniform {
 
 /// Uniform sampler for SO2States. Its SampleGenerators will sample
 /// uniformly from SO2, and the sequence of samples is
@@ -33,6 +34,7 @@ private:
   std::unique_ptr<common::RNG> mRng;
 };
 
+} // namespace uniform
 } // namespace constraint
 } // namespace aikido
 

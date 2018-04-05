@@ -9,17 +9,17 @@ RosJointStateClient::RosJointStateClient(
     dart::dynamics::SkeletonPtr _skeleton,
     ::ros::NodeHandle _nodeHandle,
     const std::string& _topicName,
-    std::size_t capacity)
+    std::size_t _capacity)
   : mSkeleton{std::move(_skeleton)}
   , mBuffer{}
-  , mCapacity{capacity}
+  , mCapacity{_capacity}
   , mCallbackQueue{} // Must be after mNodeHandle for order of destruction.
   , mNodeHandle{std::move(_nodeHandle)}
 {
   if (!mSkeleton)
     throw std::invalid_argument("Skeleton is null.");
 
-  if (capacity < 1)
+  if (_capacity < 1)
     throw std::invalid_argument("Capacity must be positive.");
 
   mNodeHandle.setCallbackQueue(&mCallbackQueue);

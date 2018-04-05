@@ -6,8 +6,8 @@
 
 using aikido::statespace::R2;
 using aikido::statespace::Rn;
-using aikido::constraint::R2BoxConstraint;
-using aikido::constraint::RnBoxConstraint;
+using aikido::constraint::uniform::R2BoxConstraint;
+using aikido::constraint::uniform::RnBoxConstraint;
 using aikido::constraint::ConstraintType;
 using aikido::constraint::SampleGenerator;
 using aikido::distance::R2Euclidean;

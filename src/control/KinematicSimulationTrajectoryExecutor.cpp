@@ -56,7 +56,8 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
-  space->checkCompatibility(mSkeleton.get());
+
+  space->checkIfContained(mSkeleton.get());
 
   traj->metadata.executorValidated = true;
 }
@@ -79,11 +80,14 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     mPromise.reset(new std::promise<void>());
 
     mTraj = std::move(traj);
-    mStateSpace = std::move(
-        std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-            mTraj->getStateSpace()));
+    mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+        mTraj->getStateSpace());
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
+    mMetaSkeleton = mStateSpace->getControlledMetaSkeleton(mSkeleton);
+
+    if (!mMetaSkeleton)
+      throw std::invalid_argument("Failed to create MetaSkeleton");
   }
 
   return mPromise->get_future();
@@ -104,6 +108,7 @@ void KinematicSimulationTrajectoryExecutor::step(
         std::make_exception_ptr(
             std::runtime_error("Trajectory terminated while in execution.")));
     mTraj.reset();
+    mMetaSkeleton.reset();
   }
   else if (mInProgress && !mTraj)
   {
@@ -111,6 +116,7 @@ void KinematicSimulationTrajectoryExecutor::step(
         std::make_exception_ptr(
             std::runtime_error(
                 "Set for execution but no trajectory is provided.")));
+    mMetaSkeleton.reset();
     mInProgress = false;
   }
 
@@ -123,13 +129,15 @@ void KinematicSimulationTrajectoryExecutor::step(
 
   auto state = mStateSpace->createState();
   mTraj->evaluate(executionTime, state);
-  mStateSpace->setState(mSkeleton.get(), state);
+
+  mStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Check if trajectory has completed.
   if (executionTime >= mTraj->getEndTime())
   {
     mTraj.reset();
     mStateSpace.reset();
+    mMetaSkeleton.reset();
     mInProgress = false;
     mPromise->set_value();
   }
@@ -144,6 +152,7 @@ void KinematicSimulationTrajectoryExecutor::abort()
   {
     mTraj.reset();
     mStateSpace.reset();
+    mMetaSkeleton.reset();
     mInProgress = false;
     mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));

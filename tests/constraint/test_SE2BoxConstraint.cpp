@@ -5,7 +5,7 @@
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::statespace::SE2;
-using aikido::constraint::SE2BoxConstraint;
+using aikido::constraint::uniform::SE2BoxConstraint;
 using aikido::constraint::ConstraintType;
 using aikido::constraint::SampleGenerator;
 using aikido::distance::SE2Weighted;

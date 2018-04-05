@@ -98,7 +98,7 @@ double CRRTConnect::getConnectionRadius() const
 
 //==============================================================================
 ::ompl::base::PlannerStatus CRRTConnect::solve(
-    const ::ompl::base::PlannerTerminationCondition& ptc)
+    const ::ompl::base::PlannerTerminationCondition& _ptc)
 {
   checkValidity();
 
@@ -141,7 +141,7 @@ double CRRTConnect::getConnectionRadius() const
   bool solved = false;
   bool foundgoal = false;
 
-  while (ptc == false)
+  while (_ptc == false)
   {
     TreeData& tree = startTree ? mStartTree : mGoalTree;
     TreeData& otherTree = startTree ? mGoalTree : mStartTree;
@@ -150,9 +150,9 @@ double CRRTConnect::getConnectionRadius() const
     if (mGoalTree->size() == 0
         || pis_.getSampledGoalsCount() < mGoalTree->size() / 2)
     {
-      while (ptc == false)
+      while (_ptc == false)
       {
-        const ::ompl::base::State* st = pis_.nextGoal(ptc);
+        const ::ompl::base::State* st = pis_.nextGoal(_ptc);
         if (si_->isValid(st))
         {
           Motion* motion = new Motion(si_);
@@ -175,7 +175,7 @@ double CRRTConnect::getConnectionRadius() const
     // Grow one tree toward the random sample
     double bestdist = std::numeric_limits<double>::infinity();
     Motion* lastmotion = constrainedExtend(
-        ptc,
+        _ptc,
         tree,
         nmotion,
         rmotion->state,
@@ -194,7 +194,7 @@ double CRRTConnect::getConnectionRadius() const
     // Now grow the other tree
     nmotion = otherTree->nearest(lastmotion);
     Motion* newmotion = constrainedExtend(
-        ptc,
+        _ptc,
         otherTree,
         nmotion,
         lastmotion->state,

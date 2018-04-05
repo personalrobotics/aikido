@@ -199,8 +199,8 @@ TEST_F(
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
       mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPosition);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -236,8 +236,8 @@ TEST_F(
 
   Vector1d goal;
   goal << 1.0;
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -276,8 +276,8 @@ TEST_F(
 
   Vector1d goal;
   goal << 1.0;
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -313,8 +313,8 @@ TEST_F(
 
   Vector1d goal;
   goal << M_PI * 0.5;
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -336,8 +336,8 @@ TEST_F(
 
   Vector1d goal;
   goal << M_PI * 1.5;
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -372,8 +372,8 @@ TEST_F(
 
   Vector1d goal;
   goal << -M_PI * 0.5;
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(goal);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do
@@ -406,8 +406,8 @@ TEST_F(
   BarrettFingerKinematicSimulationSpreadCommandExecutor executor(
       mFingerChains, mSpreadDof, mCollisionDetector, mCollideWith);
 
-  auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mPosition);
+  auto simulationClock = std::chrono::system_clock::now();
 
   std::future_status status;
   do

@@ -26,7 +26,7 @@ public:
   /// is already running, raise an exception unless the executor supports
   /// queuing.
   ///
-  /// \param traj Trajectory to be executed.
+  /// \param _traj Trajectory to be executed.
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   virtual std::future<void> execute(trajectory::TrajectoryPtr _traj) = 0;

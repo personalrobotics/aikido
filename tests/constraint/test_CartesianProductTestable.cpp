@@ -14,7 +14,7 @@ using aikido::statespace::SO2;
 using aikido::statespace::R3;
 using aikido::constraint::TestablePtr;
 using aikido::constraint::Testable;
-using aikido::constraint::R3BoxConstraint;
+using aikido::constraint::uniform::R3BoxConstraint;
 
 class CartesianProductTestableTest : public testing::Test
 {
