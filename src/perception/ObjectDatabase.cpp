@@ -10,7 +10,7 @@ namespace perception {
 //==============================================================================
 ObjectDatabase::ObjectDatabase(
     const dart::common::ResourceRetrieverPtr& resourceRetriever,
-    dart::common::Uri configDataURI)
+    const dart::common::Uri configDataURI)
 {
   // Read the JSON file into string
   if (!resourceRetriever)
@@ -33,7 +33,7 @@ ObjectDatabase::ObjectDatabase(
 void ObjectDatabase::getObjectByKey(
     const std::string& _obj_key,
     std::string& obj_name,
-    dart::common::Uri& obj_resource)
+    dart::common::Uri& obj_resource) const
 {
   // Get name of object and pose for a given tag ID
   YAML::Node obj_node = mObjData[_obj_key];

@@ -37,14 +37,14 @@ public:
   /// \param[in] configDataURI The URI for the configuration information file
   ObjectDatabase(
       const dart::common::ResourceRetrieverPtr& resourceRetriever,
-      dart::common::Uri configDataURI);
+      const dart::common::Uri configDataURI);
 
   virtual ~ObjectDatabase() = default;
 
   void getObjectByKey(
       const std::string& _obj_key,
       std::string& obj_name,
-      dart::common::Uri& obj_resource);
+      dart::common::Uri& obj_resource) const;
 
 private:
   /// The map of object keys to object names and resources for models
