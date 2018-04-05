@@ -235,7 +235,8 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
 
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space, const MetaSkeletonPtr& metaSkeleton) const
+    const MetaSkeletonStateSpacePtr& space,
+    const MetaSkeletonPtr& metaSkeleton) const
 {
   using constraint::dart::CollisionFree;
 
