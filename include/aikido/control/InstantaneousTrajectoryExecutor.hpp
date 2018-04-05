@@ -53,7 +53,7 @@ private:
   std::unique_ptr<std::promise<void>> mPromise;
 
   /// Manages access to mPromise
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
 };
 
 } // namespace control

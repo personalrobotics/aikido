@@ -59,7 +59,7 @@ private:
   std::queue<std::shared_ptr<std::promise<void>>> mPromiseQueue;
 
   /// Manages access to mInProgress, mFuture, mTrajectoryQueue, mPromiseQueue
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
 };
 
 } // namespace control
