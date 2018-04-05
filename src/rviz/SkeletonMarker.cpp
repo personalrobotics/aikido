@@ -66,7 +66,7 @@ bool SkeletonMarker::update()
 
 //==============================================================================
 BodyNodeMarkerPtr SkeletonMarker::GetBodyNodeMarker(
-    dart::dynamics::BodyNode const* bodynode)
+    dart::dynamics::BodyNode const* bodynode) const
 {
   const auto it = mBodyNodeMarkers.find(bodynode);
   if (it != std::end(mBodyNodeMarkers))

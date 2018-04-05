@@ -192,7 +192,7 @@ std::string ConcreteRobot::getName() const
 }
 
 //==============================================================================
-MetaSkeletonPtr ConcreteRobot::getMetaSkeleton()
+MetaSkeletonPtr ConcreteRobot::getMetaSkeleton() const
 {
   return mMetaSkeleton;
 }
@@ -235,7 +235,7 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
 
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space, const MetaSkeletonPtr& metaSkeleton)
+    const MetaSkeletonStateSpacePtr& space, const MetaSkeletonPtr& metaSkeleton) const
 {
   using constraint::dart::CollisionFree;
 
@@ -260,7 +260,7 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
 TestablePtr ConcreteRobot::getFullCollisionConstraint(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
-    const CollisionFreePtr& collisionFree)
+    const CollisionFreePtr& collisionFree) const
 {
   using constraint::TestableIntersection;
 
