@@ -66,7 +66,7 @@ public:
   /// \param[in] configDataURI The URI for the configuration information file
   YamlAprilTagsDatabase(
       const dart::common::ResourceRetrieverPtr& resourceRetriever,
-      dart::common::Uri configDataURI);
+      const dart::common::Uri configDataURI);
 
   virtual ~YamlAprilTagsDatabase() = default;
 
