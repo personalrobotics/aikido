@@ -1,7 +1,7 @@
 #==============================================================================
 # Dependencies
 #
-find_package(ompl QUIET)
+find_package(OMPL QUIET)
 aikido_check_package(OMPL "planner_ompl" "OMPL")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
