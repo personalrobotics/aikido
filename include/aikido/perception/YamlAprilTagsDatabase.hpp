@@ -66,16 +66,16 @@ public:
   /// \param[in] configDataURI The URI for the configuration information file
   YamlAprilTagsDatabase(
       const dart::common::ResourceRetrieverPtr& resourceRetriever,
-      const dart::common::Uri configDataURI);
+      const dart::common::Uri& configDataURI);
 
   virtual ~YamlAprilTagsDatabase() = default;
 
   // Documentation inherited
   bool getTagNameOffset(
-      const std::string& _tagName,
-      std::string& body_name,
-      dart::common::Uri& body_resource,
-      Eigen::Isometry3d& body_offset) override;
+      const std::string& tagName,
+      std::string& bodyName,
+      dart::common::Uri& bodyResource,
+      Eigen::Isometry3d& bodyOffset) override;
 
 private:
   /// The map of tag IDs to object name, resource for model and offset

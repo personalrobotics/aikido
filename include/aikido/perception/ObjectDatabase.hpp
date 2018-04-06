@@ -37,7 +37,7 @@ public:
   /// \param[in] configDataURI The URI for the configuration information file
   ObjectDatabase(
       const dart::common::ResourceRetrieverPtr& resourceRetriever,
-      const dart::common::Uri configDataURI);
+      const dart::common::Uri& configDataURI);
 
   virtual ~ObjectDatabase() = default;
 

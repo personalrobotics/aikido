@@ -42,7 +42,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
     const trajectory::Trajectory* traj)
 {
   if (!traj)
-    throw std::invalid_argument("Traj is null.");
+    throw std::invalid_argument("Trajectory is null.");
 
   if (mValidatedTrajectories.find(traj) != mValidatedTrajectories.end())
     return;
@@ -51,8 +51,9 @@ void KinematicSimulationTrajectoryExecutor::validate(
       traj->getStateSpace());
 
   if (!space)
-    throw std::invalid_argument(
-        "Trajectory is not in a MetaSkeletonStateSpace.");
+  {
+    throw std::invalid_argument("Trajectory is not in a MetaSkeletonStateSpace.");
+  }
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());

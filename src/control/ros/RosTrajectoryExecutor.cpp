@@ -92,7 +92,7 @@ std::future<void> RosTrajectoryExecutor::execute(
 void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 {
   if (!traj)
-    throw std::invalid_argument("Traj is null.");
+    throw std::invalid_argument("Trajectory is null.");
 
   if (mValidatedTrajectories.find(traj) != mValidatedTrajectories.end())
     return;

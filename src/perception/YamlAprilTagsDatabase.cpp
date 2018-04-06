@@ -10,7 +10,7 @@ namespace perception {
 //==============================================================================
 YamlAprilTagsDatabase::YamlAprilTagsDatabase(
     const dart::common::ResourceRetrieverPtr& resourceRetriever,
-    dart::common::Uri configDataURI)
+    const dart::common::Uri& configDataURI)
 {
   // Read JSON file into string
   if (!resourceRetriever)
@@ -42,19 +42,19 @@ YamlAprilTagsDatabase::YamlAprilTagsDatabase(
 
 //==============================================================================
 bool YamlAprilTagsDatabase::getTagNameOffset(
-    const std::string& _tagName,
-    std::string& body_name,
-    dart::common::Uri& body_resource,
-    Eigen::Isometry3d& body_offset)
+    const std::string& tagName,
+    std::string& bodyName,
+    dart::common::Uri& bodyResource,
+    Eigen::Isometry3d& bodyOffset)
 {
   // Get name of object and pose for a given tag ID
-  YAML::Node name_offset = mTagData[_tagName];
+  YAML::Node name_offset = mTagData[tagName];
   if (name_offset)
   {
     // Convert resource field
     try
     {
-      body_resource.fromString(name_offset["resource"].as<std::string>());
+      bodyResource.fromString(name_offset["resource"].as<std::string>());
     }
     catch (const YAML::ParserException& ex)
     {
@@ -64,7 +64,7 @@ bool YamlAprilTagsDatabase::getTagNameOffset(
     // Convert name field
     try
     {
-      body_name = name_offset["name"].as<std::string>();
+      bodyName = name_offset["name"].as<std::string>();
     }
     catch (const YAML::ParserException& ex)
     {
@@ -74,7 +74,7 @@ bool YamlAprilTagsDatabase::getTagNameOffset(
     // Convert offset field
     try
     {
-      body_offset = name_offset["offset"].as<Eigen::Isometry3d>();
+      bodyOffset = name_offset["offset"].as<Eigen::Isometry3d>();
     }
     catch (const YAML::ParserException& ex)
     {

@@ -10,7 +10,7 @@ namespace perception {
 //==============================================================================
 ObjectDatabase::ObjectDatabase(
     const dart::common::ResourceRetrieverPtr& resourceRetriever,
-    const dart::common::Uri configDataURI)
+    const dart::common::Uri& configDataURI)
 {
   // Read the JSON file into string
   if (!resourceRetriever)

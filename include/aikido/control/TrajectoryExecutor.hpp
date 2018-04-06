@@ -46,6 +46,7 @@ public:
 protected:
   /// Set of trajectories validated by executor
   std::set<const trajectory::Trajectory*> mValidatedTrajectories;
+
   /// Time of previous call
   std::chrono::system_clock::time_point mExecutionStartTime;
 };
