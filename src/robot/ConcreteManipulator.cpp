@@ -12,7 +12,13 @@ ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
 }
 
 //==============================================================================
-HandPtr ConcreteManipulator::getHand() const
+ConstHandPtr ConcreteManipulator::getHand() const
+{
+  return mHand;
+}
+
+//==============================================================================
+HandPtr ConcreteManipulator::getHand()
 {
   return mHand;
 }

@@ -24,7 +24,10 @@ public:
   virtual ~ConcreteManipulator() = default;
 
   // Documentation inherited.
-  virtual HandPtr getHand() const override;
+  virtual ConstHandPtr getHand() const override;
+
+  // Documentation inherited.
+  virtual HandPtr getHand() override;
 
   // Documentation inherited.
   virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
