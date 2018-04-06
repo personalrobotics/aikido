@@ -77,8 +77,8 @@ public:
   virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const override;
 
   // Documentation inherited.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
-      const override;
+  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+  getStateSpace() const override;
 
   // Documentation inherited.
   virtual void setRoot(Robot* robot) override;

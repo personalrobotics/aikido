@@ -19,7 +19,6 @@ public:
   /// Returns the hand.
   virtual ConstHandPtr getHand() const = 0;
   HandPtr getHand();
-
 };
 
 } // namespace robot

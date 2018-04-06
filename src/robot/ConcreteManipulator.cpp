@@ -62,14 +62,15 @@ std::string ConcreteManipulator::getName() const
 }
 
 //==============================================================================
-dart::dynamics::ConstMetaSkeletonPtr ConcreteManipulator::getMetaSkeleton() const
+dart::dynamics::ConstMetaSkeletonPtr ConcreteManipulator::getMetaSkeleton()
+    const
 {
   return mRobot->getMetaSkeleton();
 }
 
 //==============================================================================
-statespace::dart::MetaSkeletonStateSpacePtr ConcreteManipulator::getStateSpace()
-    const
+statespace::dart::ConstMetaSkeletonStateSpacePtr
+ConcreteManipulator::getStateSpace() const
 {
   return mRobot->getStateSpace();
 }

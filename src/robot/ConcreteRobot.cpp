@@ -198,7 +198,8 @@ dart::dynamics::ConstMetaSkeletonPtr ConcreteRobot::getMetaSkeleton() const
 }
 
 //==============================================================================
-MetaSkeletonStateSpacePtr ConcreteRobot::getStateSpace() const
+statespace::dart::ConstMetaSkeletonStateSpacePtr ConcreteRobot::getStateSpace()
+    const
 {
   return mStateSpace;
 }
