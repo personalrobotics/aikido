@@ -42,9 +42,9 @@ public:
   virtual ~ObjectDatabase() = default;
 
   void getObjectByKey(
-      const std::string& _obj_key,
-      std::string& obj_name,
-      dart::common::Uri& obj_resource) const;
+      const std::string& objectKey,
+      std::string& objectName,
+      dart::common::Uri& objectResource) const;
 
 private:
   /// The map of object keys to object names and resources for models
