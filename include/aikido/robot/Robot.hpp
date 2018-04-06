@@ -67,7 +67,8 @@ public:
   virtual std::string getName() const = 0;
 
   /// \return MetaSkeleton of this robot.
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const = 0;
+  virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const = 0;
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
   /// \return MetaSkeletonStateSpace of this robot.
   virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()

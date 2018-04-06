@@ -192,7 +192,7 @@ std::string ConcreteRobot::getName() const
 }
 
 //==============================================================================
-MetaSkeletonPtr ConcreteRobot::getMetaSkeleton() const
+dart::dynamics::ConstMetaSkeletonPtr ConcreteRobot::getMetaSkeleton() const
 {
   return mMetaSkeleton;
 }

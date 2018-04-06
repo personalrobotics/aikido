@@ -17,10 +17,9 @@ public:
   virtual ~Manipulator() = default;
 
   /// Returns the hand.
+  virtual ConstHandPtr getHand() const = 0;
   HandPtr getHand();
 
-  /// Returns the hand.
-  virtual ConstHandPtr getHand() const = 0;
 };
 
 } // namespace robot

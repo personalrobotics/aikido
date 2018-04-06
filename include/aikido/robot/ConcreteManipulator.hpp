@@ -54,7 +54,7 @@ public:
   virtual std::string getName() const override;
 
   // Documentation inherited.
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const override;
+  virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const override;
 
   // Documentation inherited.
   virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
