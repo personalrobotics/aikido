@@ -27,9 +27,6 @@ public:
   virtual ConstHandPtr getHand() const override;
 
   // Documentation inherited.
-  virtual HandPtr getHand() override;
-
-  // Documentation inherited.
   virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,

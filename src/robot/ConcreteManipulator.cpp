@@ -18,12 +18,6 @@ ConstHandPtr ConcreteManipulator::getHand() const
 }
 
 //==============================================================================
-HandPtr ConcreteManipulator::getHand()
-{
-  return mHand;
-}
-
-//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::smoothPath(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const aikido::trajectory::Trajectory* path,

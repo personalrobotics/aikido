@@ -16,11 +16,11 @@ class Manipulator : public Robot
 public:
   virtual ~Manipulator() = default;
 
-  /// Returns the [const] hand.
-  virtual ConstHandPtr getHand() const = 0;
+  /// Returns the hand.
+  HandPtr getHand();
 
   /// Returns the hand.
-  virtual HandPtr getHand() = 0;
+  virtual ConstHandPtr getHand() const = 0;
 };
 
 } // namespace robot
