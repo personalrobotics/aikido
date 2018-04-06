@@ -10,6 +10,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         "For details, please see: "
         " https://github.com/personalrobotics/aikido/issues/363"
     )
+    return()
   endif()
 endif()
 
