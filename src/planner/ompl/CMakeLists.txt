@@ -1,10 +1,4 @@
 #==============================================================================
-# Dependencies
-#
-find_package(ompl QUIET)
-aikido_check_package(OMPL "planner_ompl" "OMPL")
-
-#==============================================================================
 # Libraries
 #
 set(sources 
