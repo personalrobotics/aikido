@@ -50,7 +50,7 @@ public:
   /// \param[in] traj Trajectory to be executed.
   /// \param[in] startTime Start time for the trajectory.
   std::future<void> execute(
-      const trajectory::ConstTrajectoryPtr traj, const ::ros::Time& startTime);
+      const trajectory::ConstTrajectoryPtr& traj, const ::ros::Time& startTime);
 
   /// \copydoc TrajectoryExecutor::step()
   ///

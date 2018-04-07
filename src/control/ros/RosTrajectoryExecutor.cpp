@@ -109,7 +109,7 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 }
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
-    const trajectory::ConstTrajectoryPtr traj, const ::ros::Time& startTime)
+    const trajectory::ConstTrajectoryPtr& traj, const ::ros::Time& startTime)
 {
   using aikido::control::ros::toRosJointTrajectory;
 
