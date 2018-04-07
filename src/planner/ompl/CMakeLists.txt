@@ -1,9 +1,3 @@
-#==============================================================================
-# Dependencies
-#
-find_package(OMPL QUIET)
-aikido_check_package(OMPL "planner_ompl" "OMPL")
-
 if(CMAKE_COMPILER_IS_GNUCXX)
   if(OMPL_VERSION VERSION_GREATER 1.2.0 OR OMPL_VERSION VERSION_EQUAL 1.2.0)
     message(STATUS "OMPL planners are disabled for OMPL (>=1.2.0) + GCC. "
