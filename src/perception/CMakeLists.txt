@@ -7,22 +7,22 @@ if(NOT DART_utils-urdf_FOUND)
   return()
 endif()
 
-find_package(geometry_msgs QUIET)
-aikido_check_package(geometry_msgs "perception" "geometry_msgs")
-
 find_package(roscpp QUIET)
-aikido_check_package(roscpp "perception" "roscpp")
+aikido_check_package(roscpp "aikido::perception" "roscpp")
+
+find_package(geometry_msgs QUIET)
+aikido_check_package(geometry_msgs "aikido::perception" "geometry_msgs")
 
 find_package(std_msgs QUIET)
-aikido_check_package(std_msgs "perception" "std_msgs")
+aikido_check_package(std_msgs "aikido::perception" "std_msgs")
 
 find_package(visualization_msgs QUIET)
-aikido_check_package(visualization_msgs "perception" "visualization_msgs")
+aikido_check_package(visualization_msgs "aikido::perception" "visualization_msgs")
 
 # Note: Intentionally use "Module" mode because the config file imports "gtest",
 # "tests", and "run_tests" that conflict with the targets defined by Aikido.
 find_package(tf QUIET MODULE)
-aikido_check_package(tf "perception" "tf")
+aikido_check_package(tf "aikido::perception" "tf")
 
 #==============================================================================
 # Libraries
