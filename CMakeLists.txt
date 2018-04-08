@@ -132,7 +132,7 @@ find_package(DART 6.3.0 REQUIRED
   CONFIG
 )
 
-find_package(OMPL REQUIRED)
+find_package(ompl REQUIRED)
 
 #==============================================================================
 # Compiler settings
