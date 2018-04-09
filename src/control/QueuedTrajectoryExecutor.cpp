@@ -20,16 +20,16 @@ QueuedTrajectoryExecutor::~QueuedTrajectoryExecutor()
 }
 
 //==============================================================================
-void QueuedTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
+void QueuedTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 {
   mExecutor->validate(traj);
 }
 
 //==============================================================================
 std::future<void> QueuedTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj)
+    const trajectory::ConstTrajectoryPtr& traj)
 {
-  validate(traj);
+  validate(traj.get());
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -81,7 +81,7 @@ void QueuedTrajectoryExecutor::step(
   // No trajectory currently executing, execute a trajectory from the queue
   if (!mTrajectoryQueue.empty())
   {
-    trajectory::TrajectoryPtr traj = mTrajectoryQueue.front();
+    trajectory::ConstTrajectoryPtr traj = mTrajectoryQueue.front();
     mTrajectoryQueue.pop();
 
     mFuture = mExecutor->execute(std::move(traj));

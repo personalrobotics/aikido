@@ -67,11 +67,13 @@ public:
   virtual std::string getName() const = 0;
 
   /// \return MetaSkeleton of this robot.
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
+  virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const = 0;
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
   /// \return MetaSkeletonStateSpace of this robot.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
-      const = 0;
+  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+  getStateSpace() const = 0;
+  aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace();
 
   /// Sets the root of this robot.
   /// \param[in] robot Parent robot
@@ -87,8 +89,7 @@ public:
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
-      = 0;
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const = 0;
 
   /// TODO: Consider changing this to return a CollisionFreePtr.
   /// Combines provided collision constraint with self collision
@@ -100,8 +101,7 @@ public:
   virtual constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::dart::CollisionFreePtr& collisionFree)
-      = 0;
+      const constraint::dart::CollisionFreePtr& collisionFree) const = 0;
 };
 
 } // namespace robot

@@ -25,7 +25,7 @@ public:
   virtual ~InstantaneousTrajectoryExecutor();
 
   // Documentation inherited.
-  void validate(trajectory::TrajectoryPtr traj) override;
+  void validate(const trajectory::Trajectory* traj) override;
 
   /// Instantaneously execute traj and set future upon completion.
   ///
@@ -35,7 +35,8 @@ public:
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   /// \throws invalid_argument if traj is invalid.
-  std::future<void> execute(trajectory::TrajectoryPtr traj) override;
+  std::future<void> execute(
+      const trajectory::ConstTrajectoryPtr& traj) override;
 
   // Do nothing.
   void step(
@@ -52,7 +53,7 @@ private:
   std::unique_ptr<std::promise<void>> mPromise;
 
   /// Manages access to mPromise
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
 };
 
 } // namespace control

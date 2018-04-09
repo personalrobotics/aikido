@@ -10,6 +10,7 @@ namespace control {
 namespace ros {
 namespace {
 
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 using std::chrono::milliseconds;
 
 //==============================================================================
@@ -80,21 +81,20 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 }
 
 //==============================================================================
-std::future<void> RosTrajectoryExecutor::execute(trajectory::TrajectoryPtr traj)
+std::future<void> RosTrajectoryExecutor::execute(
+    const trajectory::ConstTrajectoryPtr& traj)
 {
   static const ::ros::Time invalidTime;
   return execute(traj, invalidTime);
 }
 
 //==============================================================================
-void RosTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
+void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 {
-  using aikido::statespace::dart::MetaSkeletonStateSpace;
-
   if (!traj)
     throw std::invalid_argument("Trajectory is null.");
 
-  if (traj->metadata.executorValidated)
+  if (mValidatedTrajectories.find(traj) != mValidatedTrajectories.end())
     return;
 
   const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
@@ -104,15 +104,16 @@ void RosTrajectoryExecutor::validate(trajectory::TrajectoryPtr traj)
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
-  traj->metadata.executorValidated = true;
+  // TODO: No check's happening here. Check if that's correct.
+  mValidatedTrajectories.emplace(traj);
 }
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
-    trajectory::TrajectoryPtr traj, const ::ros::Time& startTime)
+    const trajectory::ConstTrajectoryPtr& traj, const ::ros::Time& startTime)
 {
   using aikido::control::ros::toRosJointTrajectory;
 
-  validate(traj);
+  validate(traj.get());
 
   // Setup the goal properties.
   // TODO: Also set goal_tolerance, path_tolerance.
