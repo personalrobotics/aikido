@@ -79,9 +79,6 @@ private:
 
   // DOF of the joint
   std::size_t mDimension;
-
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace uniform
