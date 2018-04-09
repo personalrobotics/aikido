@@ -74,11 +74,11 @@ public:
   virtual std::string getName() const override;
 
   // Documentation inherited.
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
+  virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const override;
 
   // Documentation inherited.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
-      const override;
+  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+  getStateSpace() const override;
 
   // Documentation inherited.
   virtual void setRoot(Robot* robot) override;
@@ -90,13 +90,13 @@ public:
   // Documentation inherited.
   virtual aikido::constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::dart::CollisionFreePtr& collisionFree) override;
+      const constraint::dart::CollisionFreePtr& collisionFree) const override;
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its

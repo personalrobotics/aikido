@@ -13,13 +13,13 @@ namespace perception {
 /// Convert a ROS Pose (position + quaternion) to a 4 x 4 pose matrix
 /// \param[in] p the geometry_msgs::Pose pose value
 /// return the 4 x 4 homogeneous matrix for the pose
-Eigen::Isometry3d convertROSPoseToEigen(geometry_msgs::Pose const& p);
+Eigen::Isometry3d convertROSPoseToEigen(const geometry_msgs::Pose& p);
 
 /// Convert a time-stamped ROS transform to a 4 x 4 pose matrix
 /// \param[in] t The time-stamped ROS transform (position + quaternion)
 /// \return The 4 x 4 homogeneous matrix corresponding to the time-stamped
 /// transform
-Eigen::Isometry3d convertStampedTransformToEigen(tf::StampedTransform const& t);
+Eigen::Isometry3d convertStampedTransformToEigen(const tf::StampedTransform& t);
 
 } // namespace perception
 } // namespace aikido

@@ -162,7 +162,7 @@ void extractJointTrajectoryPoint(
 //==============================================================================
 void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
-    const aikido::trajectory::TrajectoryPtr& trajectory,
+    const aikido::trajectory::ConstTrajectoryPtr& trajectory,
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint)
 {
@@ -427,7 +427,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
 
 //==============================================================================
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
-    const aikido::trajectory::TrajectoryPtr& trajectory, double timestep)
+    const aikido::trajectory::ConstTrajectoryPtr& trajectory, double timestep)
 {
   using statespace::dart::MetaSkeletonStateSpace;
   using statespace::dart::SO2Joint;

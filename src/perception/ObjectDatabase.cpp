@@ -10,7 +10,7 @@ namespace perception {
 //==============================================================================
 ObjectDatabase::ObjectDatabase(
     const dart::common::ResourceRetrieverPtr& resourceRetriever,
-    dart::common::Uri configDataURI)
+    const dart::common::Uri& configDataURI)
 {
   // Read the JSON file into string
   if (!resourceRetriever)
@@ -31,12 +31,12 @@ ObjectDatabase::ObjectDatabase(
 
 //==============================================================================
 void ObjectDatabase::getObjectByKey(
-    const std::string& _obj_key,
-    std::string& obj_name,
-    dart::common::Uri& obj_resource)
+    const std::string& objectKey,
+    std::string& objectName,
+    dart::common::Uri& objectResource) const
 {
   // Get name of object and pose for a given tag ID
-  YAML::Node obj_node = mObjData[_obj_key];
+  YAML::Node obj_node = mObjData[objectKey];
   if (!obj_node)
   {
     throw std::runtime_error("[ObjectDatabase] Error: invalid object key");
@@ -45,7 +45,7 @@ void ObjectDatabase::getObjectByKey(
   // Convert resource field
   try
   {
-    obj_resource.fromString(obj_node["resource"].as<std::string>());
+    objectResource.fromString(obj_node["resource"].as<std::string>());
   }
   catch (const YAML::ParserException& ex)
   {
@@ -56,7 +56,7 @@ void ObjectDatabase::getObjectByKey(
   // Convert name field
   try
   {
-    obj_name = obj_node["name"].as<std::string>();
+    objectName = obj_node["name"].as<std::string>();
   }
   catch (const YAML::ParserException& ex)
   {

@@ -45,7 +45,7 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 /// \param[in] trajectory Aikido trajectory to be converted.
 /// \param[in] timestep Timestep between two consecutive waypoints.
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
-    const aikido::trajectory::TrajectoryPtr& trajectory, double timestep);
+    const aikido::trajectory::ConstTrajectoryPtr& trajectory, double timestep);
 
 /// Converts Eigen VectorXd and joint names to JointState
 /// \param[in] goalPositions The required positions for the fingers

@@ -47,7 +47,7 @@ public:
 private:
   /// Mutex for the list of callbacks. The array of callbacks will be locked
   /// during it's modified and the callbacks are called.
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
 
   /// Array of callbacks.
   std::vector<std::function<void()>> mCallbacks;

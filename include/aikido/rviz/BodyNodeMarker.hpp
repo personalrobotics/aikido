@@ -49,7 +49,7 @@ private:
   std::string mName;
   ShapeFrameMarkerMap mShapeFrameMarkers;
 
-  std::string getName(const dart::dynamics::BodyNode& bodyNode);
+  std::string getName(const dart::dynamics::BodyNode& bodyNode) const;
 };
 
 } // namespace rviz
