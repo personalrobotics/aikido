@@ -2,24 +2,24 @@
 # Dependencies
 #
 find_package(roscpp QUIET)
-aikido_check_package(roscpp "rviz" "roscpp")
+aikido_check_package(roscpp "aikido::rviz" "roscpp")
 
 find_package(geometry_msgs QUIET)
-aikido_check_package(geometry_msgs "rviz" "geometry_msgs")
+aikido_check_package(geometry_msgs "aikido::rviz" "geometry_msgs")
 
 # Note: Intentionally use "Module" mode because the config file imports "gtest",
 # "tests", and "run_tests" that conflict with the targets defined by Aikido.
 find_package(interactive_markers QUIET MODULE)
-aikido_check_package(interactive_markers "rviz" "interactive_markers")
+aikido_check_package(interactive_markers "aikido::rviz" "interactive_markers")
 
 find_package(std_msgs QUIET)
-aikido_check_package(std_msgs "rviz" "std_msgs")
+aikido_check_package(std_msgs "aikido::rviz" "std_msgs")
 
 find_package(visualization_msgs QUIET)
-aikido_check_package(visualization_msgs "rviz" "visualization_msgs")
+aikido_check_package(visualization_msgs "aikido::rviz" "visualization_msgs")
 
 pkg_check_modules(libmicrohttpd QUIET libmicrohttpd)
-aikido_check_package(libmicrohttpd "rviz" "libmicrohttpd")
+aikido_check_package(libmicrohttpd "aikido::rviz" "libmicrohttpd")
 
 #==============================================================================
 # Libraries
