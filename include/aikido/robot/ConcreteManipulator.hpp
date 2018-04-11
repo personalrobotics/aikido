@@ -16,7 +16,7 @@ AIKIDO_DECLARE_POINTERS(ConcreteManipulator)
 class ConcreteManipulator : public Manipulator
 {
 public:
-  /// Expose base class functions
+  // Expose base class functions
   using Robot::getMetaSkeleton;
   using Robot::getStateSpace;
   using Manipulator::getHand;

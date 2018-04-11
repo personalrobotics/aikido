@@ -66,13 +66,17 @@ public:
   /// \return Name of this Robot
   virtual std::string getName() const = 0;
 
-  /// \return MetaSkeleton of this robot.
+  /// \return [const] MetaSkeleton of this robot.
   virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const = 0;
+
+  /// \return MetaSkeleton of this robot.
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
-  /// \return MetaSkeletonStateSpace of this robot.
+  /// \return [const] MetaSkeletonStateSpace of this robot.
   virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
   getStateSpace() const = 0;
+
+  /// \return MetaSkeletonStateSpace of this robot.
   aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace();
 
   /// Sets the root of this robot.
