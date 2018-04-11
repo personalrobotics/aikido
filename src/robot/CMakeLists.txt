@@ -14,6 +14,8 @@ set(sources
   ConcreteRobot.cpp
   ConcreteManipulator.cpp
   GrabMetadata.cpp
+  Manipulator.cpp
+  Robot.cpp
   util.cpp
 )
 
