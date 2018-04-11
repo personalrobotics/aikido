@@ -29,11 +29,11 @@
 
 * Robot
 
-  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes. [#325] https://github.com/personalrobotics/aikido/pull/325)
+  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325] https://github.com/personalrobotics/aikido/pull/325)
 
 * Build & Testing & ETC
 
-  * Fixed Eigen memory alignment issues on 32bit Ubuntu. [#368](https://github.com/personalrobotics/aikido/pull/368)
+  * Fixed Eigen memory alignment issues on 32bit Ubuntu: [#368](https://github.com/personalrobotics/aikido/pull/368)
 
 ### 0.2.0 (2018-01-09)
 
