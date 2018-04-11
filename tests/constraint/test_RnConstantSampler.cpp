@@ -78,8 +78,9 @@ void testSampleGenerator(int dimension = N)
   auto stateSpace = std::make_shared<statespace::R<N>>(dimension);
   EXPECT_EQ(stateSpace->getDimension(), dimension);
 
-  auto sampler = std::make_shared<constraint::uniform::RConstantSampler<N>>(
-      stateSpace, value);
+  auto sampler = dart::common::
+      make_aligned_shared<constraint::uniform::RConstantSampler<N>>(
+          stateSpace, value);
   EXPECT_EQ(sampler->getStateSpace(), stateSpace);
   EXPECT_TRUE(
       tests::CompareEigenMatrices(sampler->getConstantValue(), value, 1e-6));

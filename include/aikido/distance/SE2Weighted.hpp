@@ -41,6 +41,9 @@ private:
   std::shared_ptr<statespace::SE2> mStateSpace;
 
   Eigen::Vector2d mWeights;
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace distance
