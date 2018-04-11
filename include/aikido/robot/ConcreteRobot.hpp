@@ -26,6 +26,10 @@ AIKIDO_DECLARE_POINTERS(ConcreteRobot)
 class ConcreteRobot : public Robot
 {
 public:
+  /// Expose base class functions
+  using Robot::getMetaSkeleton;
+  using Robot::getStateSpace;
+
   /// Constructor.
   /// \param[in] name Name of the robot.
   /// \param[in] metaSkeleton Metaskeleton of the robot.
