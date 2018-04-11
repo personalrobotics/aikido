@@ -52,12 +52,15 @@ public:
     grad = mJacobian.transpose() * (mJacobian * qd - mTwist);
   }
 
-private:
+protected:
   /// Twist.
   Twist mTwist;
 
   /// Jacobian of Meta Skeleton.
   Jacobian mJacobian;
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 }
 
@@ -123,7 +126,8 @@ bool computeJointVelocityFromTwist(
 
   problem->setInitialGuess(initialGuess);
   problem->setObjective(
-      std::make_shared<DesiredTwistFunction>(desiredTwist, jacobian));
+      dart::common::make_aligned_shared<DesiredTwistFunction>(
+          desiredTwist, jacobian));
 
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
   if (!solver.solve())

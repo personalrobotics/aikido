@@ -20,6 +20,8 @@ using aikido::planner::parabolic::convertToSpline;
 
 class ParabolicTimerTests : public ::testing::Test
 {
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 protected:
   void SetUp() override
   {

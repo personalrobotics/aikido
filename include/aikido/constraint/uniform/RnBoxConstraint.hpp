@@ -85,6 +85,9 @@ private:
   std::unique_ptr<common::RNG> mRng;
   VectorNd mLowerLimits;
   VectorNd mUpperLimits;
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(VectorNd::NeedsToAlign)
 };
 
 using R0BoxConstraint = RBoxConstraint<0>;

@@ -1,3 +1,4 @@
+#include <dart/common/Memory.hpp>
 #include <gtest/gtest.h>
 #include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/Projectable.hpp>
@@ -23,9 +24,9 @@ public:
     rvss2 = std::make_shared<R2>();
 
     // Constraints
-    rvBox1 = std::make_shared<R3BoxConstraint>(
+    rvBox1 = dart::common::make_aligned_shared<R3BoxConstraint>(
         rvss1, nullptr, Eigen::Vector3d(1, 1, 1), Eigen::Vector3d(2, 1, 1));
-    rvBox2 = std::make_shared<R2BoxConstraint>(
+    rvBox2 = dart::common::make_aligned_shared<R2BoxConstraint>(
         rvss2, nullptr, Eigen::Vector2d(1, 1), Eigen::Vector2d(2, 2));
 
     projectables.push_back(rvBox1);

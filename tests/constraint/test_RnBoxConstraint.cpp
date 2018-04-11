@@ -592,7 +592,7 @@ TEST_F(
 //==============================================================================
 TEST_F(RnBoxConstraintTests, R2_createSampleGenerator)
 {
-  auto constraint = std::make_shared<R2BoxConstraint>(
+  auto constraint = dart::common::make_aligned_shared<R2BoxConstraint>(
       mR2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto generator = constraint->createSampleGenerator();
@@ -632,7 +632,7 @@ TEST_F(RnBoxConstraintTests, R2_createSampleGenerator_RNGIsNull_Throws)
 {
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
-  auto constraint = std::make_shared<R2BoxConstraint>(
+  auto constraint = dart::common::make_aligned_shared<R2BoxConstraint>(
       mR2StateSpace, nullptr, mLowerLimits, mUpperLimits);
 
   EXPECT_THROW({ constraint->createSampleGenerator(); }, std::invalid_argument);
@@ -660,11 +660,11 @@ TEST_F(RnBoxConstraintTests, R2_createSampleGenerator_Unbounded_Throws)
 
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
-  auto unbounded1 = std::make_shared<R2BoxConstraint>(
+  auto unbounded1 = dart::common::make_aligned_shared<R2BoxConstraint>(
       mR2StateSpace, mRng->clone(), noLowerBound, mUpperLimits);
   EXPECT_THROW({ unbounded1->createSampleGenerator(); }, std::runtime_error);
 
-  auto unbounded2 = std::make_shared<R2BoxConstraint>(
+  auto unbounded2 = dart::common::make_aligned_shared<R2BoxConstraint>(
       mR2StateSpace, mRng->clone(), mLowerLimits, noUpperBound);
   EXPECT_THROW({ unbounded2->createSampleGenerator(); }, std::runtime_error);
 }
