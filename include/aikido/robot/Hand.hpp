@@ -38,7 +38,7 @@ public:
 
   /// Returns the metaskeleton corresponding to this hand.
   virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const = 0;
-  
+
   /// Returns the metaskeleton corresponding to this hand.
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
 
