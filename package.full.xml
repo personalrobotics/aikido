@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>aikido</name>
+  <version>0.3.0</version>
+  <description>description</description>
+  <maintainer email="mkoval@cs.cmu.edu">Michael Koval</maintainer>
+  <maintainer email="pkv@cs.cmu.edu">Pras Velagapudi</maintainer>
+  <author email="mkoval@cs.cmu.edu">Michael Koval</author>
+  <author email="pkv@cs.cmu.edu">Pras Velagapudi</author>
+  <license>BSD</license>
+
+  <!-- Required dependencies -->
+  <depend>boost</depend>
+  <depend>dart</depend>
+  <depend>eigen</depend>
+  <depend>ompl</depend>
+  <depend>python</depend>
+  <depend>tinyxml2</depend>
+  <depend>yaml-cpp</depend>
+  <!-- Workaround to build DART with optional features enabled. -->
+  <depend>nlopt</depend>
+
+  <!-- Optional dependencies. -->
+  <depend>libmicrohttpd</depend>
+  <depend>roscpp</depend>
+  <depend>actionlib</depend>
+  <depend>control_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>interactive_markers</depend>
+  <depend>std_msgs</depend>
+  <depend>tf</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>pr_control_msgs</depend>
+
+  <doc_depend>doxygen</doc_depend>
+
+  <!-- Coveralls dependencies. -->
+  <test_depend>curl</test_depend>
+
+  <!-- This is required by REP-136. -->
+  <exec_depend>catkin</exec_depend>
+
+  <buildtool_depend>cmake</buildtool_depend>
+  <buildtool_depend>clang-format-3.8</buildtool_depend>
+  <buildtool_depend>lcov</buildtool_depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>

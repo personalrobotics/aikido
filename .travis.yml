@@ -23,6 +23,12 @@ matrix:
     - os: linux
       compiler: gcc
       env: BUILD_TYPE=Release CODECOV=OFF COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=ON
+    - os: linux
+      compiler: gcc
+      env: BUILD_MODE=FULL BUILD_TYPE=Debug CODECOV=ON COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=OFF
+    - os: linux
+      compiler: gcc
+      env: BUILD_MODE=FULL BUILD_TYPE=Release CODECOV=OFF COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=ON
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/before_install_linux.sh"; fi
