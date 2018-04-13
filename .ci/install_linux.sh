@@ -9,8 +9,4 @@ elif [ ${APPVEYOR} ]; then
 fi
 
 cp -r "${AIKIDO_BUILD_DIR}" src
-if [ ${BUILD_MODE} = FULL ]; then
-  ./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}" --manifest_name=package.full.xml
-else
-  ./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}"
-if
+./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}" --manifest_file=${MANIFEST_FILE}
