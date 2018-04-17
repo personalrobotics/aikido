@@ -20,7 +20,8 @@
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>
 
-  <!-- Optional dependencies. Uncomment these if you have them installed. -->
+  <!-- BEGIN OPTIONAL DEPENDENCIES -->
+  <!-- Uncomment these if you have them installed. -->
   <!-- <depend>libmicrohttpd</depend> -->
   <!-- <depend>roscpp</depend> -->
   <!-- <depend>actionlib</depend> -->
@@ -32,6 +33,7 @@
   <!-- <depend>trajectory_msgs</depend> -->
   <!-- <depend>visualization_msgs</depend> -->
   <!-- <depend>pr_control_msgs</depend> -->
+  <!-- END OPTIONAL DEPENDENCIES -->
 
   <doc_depend>doxygen</doc_depend>
 
