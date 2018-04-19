@@ -148,7 +148,7 @@ private:
 
   /// Manages access to mCollideWith, mProximalGoalPosition,
   /// mDistalGoalPosition, mDistalOnly, mInProgress, mPromise
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
 };
 
 } // namespace control

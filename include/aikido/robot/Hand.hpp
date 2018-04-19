@@ -37,11 +37,14 @@ public:
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Returns the metaskeleton corresponding to this hand.
+  virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const = 0;
+
+  /// Returns the metaskeleton corresponding to this hand.
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
 
   /// Get the end-effector body node.
   /// \return DART body node of end-effector
-  virtual dart::dynamics::BodyNode* getBodyNode() = 0;
+  virtual dart::dynamics::BodyNode* getBodyNode() const = 0;
 };
 
 } // namespace robot

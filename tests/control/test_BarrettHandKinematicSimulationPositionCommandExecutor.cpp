@@ -35,6 +35,8 @@ class BarrettHandKinematicSimulationPositionCommandExecutorTest
     : public testing::Test
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   void setGeometry(const BodyNodePtr& bn)
   {
     // Create a BoxShape to be used for both visualization and collision

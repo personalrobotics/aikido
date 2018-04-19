@@ -113,7 +113,7 @@ void BodyNodeMarker::ResetColor()
 }
 
 //==============================================================================
-std::string BodyNodeMarker::getName(const BodyNode& bodyNode)
+std::string BodyNodeMarker::getName(const BodyNode& bodyNode) const
 {
   std::stringstream ss;
   ss << bodyNode.getSkeleton()->getName() << ":" << bodyNode.getName();

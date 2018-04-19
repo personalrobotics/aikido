@@ -16,6 +16,11 @@ AIKIDO_DECLARE_POINTERS(ConcreteManipulator)
 class ConcreteManipulator : public Manipulator
 {
 public:
+  // Expose base class functions
+  using Robot::getMetaSkeleton;
+  using Robot::getStateSpace;
+  using Manipulator::getHand;
+
   /// Constructor.
   /// \param[in] robot Robot corresponding to this manipulator.
   /// \param[in] hand Hand of this manipulator.
@@ -24,7 +29,7 @@ public:
   virtual ~ConcreteManipulator() = default;
 
   // Documentation inherited.
-  virtual HandPtr getHand() override;
+  virtual ConstHandPtr getHand() const override;
 
   // Documentation inherited.
   virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
@@ -54,11 +59,11 @@ public:
   virtual std::string getName() const override;
 
   // Documentation inherited.
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() override;
+  virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const override;
 
   // Documentation inherited.
-  virtual aikido::statespace::dart::MetaSkeletonStateSpacePtr getStateSpace()
-      const override;
+  virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+  getStateSpace() const override;
 
   // Documentation inherited.
   virtual void setRoot(Robot* robot) override;
@@ -70,13 +75,13 @@ public:
   // Documentation inherited.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) override;
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
       const statespace::dart::MetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::dart::CollisionFreePtr& collisionFree) override;
+      const constraint::dart::CollisionFreePtr& collisionFree) const override;
 
   /// TODO: Replace this with Problem interface.
   /// Plans to a desired end-effector offset with fixed orientation.
