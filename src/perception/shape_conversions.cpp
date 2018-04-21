@@ -6,7 +6,7 @@ namespace aikido {
 namespace perception {
 
 //==============================================================================
-Eigen::Isometry3d convertROSPoseToEigen(geometry_msgs::Pose const& p)
+Eigen::Isometry3d convertROSPoseToEigen(const geometry_msgs::Pose& p)
 {
   Eigen::Quaterniond eigen_quat(
       p.orientation.w, p.orientation.x, p.orientation.y, p.orientation.z);
@@ -20,7 +20,7 @@ Eigen::Isometry3d convertROSPoseToEigen(geometry_msgs::Pose const& p)
 }
 
 //==============================================================================
-Eigen::Isometry3d convertStampedTransformToEigen(tf::StampedTransform const& t)
+Eigen::Isometry3d convertStampedTransformToEigen(const tf::StampedTransform& t)
 {
   tf::Quaternion tf_quat(t.getRotation());
   Eigen::Quaterniond eigen_quat(

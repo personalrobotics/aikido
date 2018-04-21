@@ -37,15 +37,20 @@ public:
   /// \param[in] configDataURI The URI for the configuration information file
   ObjectDatabase(
       const dart::common::ResourceRetrieverPtr& resourceRetriever,
-      dart::common::Uri configDataURI);
+      const dart::common::Uri& configDataURI);
 
   virtual ~ObjectDatabase() = default;
 
+  /// Get the object name, resource, and offset from database by objectKey
+  /// \param[in]  objectKey: The key(string) of an object in ObjectDatabase
+  /// \param[out] objectName: The retrieved object name from ObjectDatabase
+  /// \param[out] objectResource: The retrieved uri of the object
+  /// \param[out] objectOffset: The retrieved offset matrix of the object
   void getObjectByKey(
-      const std::string& _obj_key,
-      std::string& obj_name,
-      dart::common::Uri& obj_resource,
-      Eigen::Isometry3d& obj_offset);
+      const std::string& objectKey,
+      std::string& objectName,
+      dart::common::Uri& objectResource,
+      Eigen::Isometry3d& objectOffset) const;
 
 private:
   /// The map of object keys to object names and resources for models

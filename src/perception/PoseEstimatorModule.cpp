@@ -90,7 +90,7 @@ bool PoseEstimatorModule::detectObjects(
     Eigen::Isometry3d obj_offset;
     ros::Time t0 = ros::Time(0);
 
-    // get the object name and resource from database
+    // get the object name, resource, and offset from database by objectKey
     mConfigData->getObjectByKey(obj_key, obj_name, obj_resource, obj_offset);
 
     tf::StampedTransform transform;

@@ -28,7 +28,8 @@ public:
 
   bool update();
 
-  BodyNodeMarkerPtr GetBodyNodeMarker(dart::dynamics::BodyNode const* bodynode);
+  BodyNodeMarkerPtr GetBodyNodeMarker(
+      dart::dynamics::BodyNode const* bodynode) const;
 
   void SetColor(const Eigen::Vector4d& color);
   void ResetColor();

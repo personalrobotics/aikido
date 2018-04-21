@@ -95,7 +95,7 @@ protected:
 
   std::atomic_bool mRunning;
   std::atomic_bool mUpdating;
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
   std::thread mThread;
 
   std::string mFrameId;

@@ -28,8 +28,9 @@ protected:
 
   void SetUp() override
   {
-    mSE2StateSpace = std::make_shared<SE2>();
-    mSE2Distance = std::make_shared<SE2Weighted>(mSE2StateSpace);
+    mSE2StateSpace = dart::common::make_aligned_shared<SE2>();
+    mSE2Distance
+        = dart::common::make_aligned_shared<SE2Weighted>(mSE2StateSpace);
     mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mLowerLimits = Vector2d(-1., 1.);
@@ -211,7 +212,7 @@ TEST_F(SE2BoxConstraintTests, projectUnSatisfiedConstraintProjects)
 //==============================================================================
 TEST_F(SE2BoxConstraintTests, createSampleGenerator)
 {
-  auto constraint = std::make_shared<SE2BoxConstraint>(
+  auto constraint = dart::common::make_aligned_shared<SE2BoxConstraint>(
       mSE2StateSpace, mRng->clone(), mLowerLimits, mUpperLimits);
 
   auto generator = constraint->createSampleGenerator();
@@ -232,7 +233,7 @@ TEST_F(SE2BoxConstraintTests, createSampleGeneratorThrowOnNUllRNG)
 {
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
-  auto constraint = std::make_shared<SE2BoxConstraint>(
+  auto constraint = dart::common::make_aligned_shared<SE2BoxConstraint>(
       mSE2StateSpace, nullptr, mLowerLimits, mUpperLimits);
 
   EXPECT_THROW({ constraint->createSampleGenerator(); }, std::invalid_argument);
@@ -249,11 +250,11 @@ TEST_F(SE2BoxConstraintTests, createSampleGeneratorThrowsIfUnbounded)
 
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
-  auto unbounded1 = std::make_shared<SE2BoxConstraint>(
+  auto unbounded1 = dart::common::make_aligned_shared<SE2BoxConstraint>(
       mSE2StateSpace, mRng->clone(), noLowerBound, mUpperLimits);
   EXPECT_THROW({ unbounded1->createSampleGenerator(); }, std::runtime_error);
 
-  auto unbounded2 = std::make_shared<SE2BoxConstraint>(
+  auto unbounded2 = dart::common::make_aligned_shared<SE2BoxConstraint>(
       mSE2StateSpace, mRng->clone(), mLowerLimits, noUpperBound);
   EXPECT_THROW({ unbounded2->createSampleGenerator(); }, std::runtime_error);
 }

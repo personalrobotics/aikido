@@ -73,7 +73,7 @@ private:
   std::string mHost;
   unsigned short mPort;
 
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
   std::unordered_map<aiScene const*, MeshResourcePtr> mScenes;
   std::unordered_map<std::string, WeakResourcePtr> mResources;
 
