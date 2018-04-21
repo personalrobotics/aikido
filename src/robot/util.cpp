@@ -303,7 +303,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
   std::shared_ptr<Sampleable> seedConstraint
       = std::move(createSampleableBounds(space, crrtParameters.rng->clone()));
 
-  // Create an IK solver with metaSkeleton dofs.
+  // Create an IK solver with metaSkeleton dofs
   auto ik = InverseKinematics::create(bodyNode);
   ik->setDofs(metaSkeleton->getDofs());
 

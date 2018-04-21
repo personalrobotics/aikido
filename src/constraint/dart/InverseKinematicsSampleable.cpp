@@ -86,7 +86,8 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 
   if (mInverseKinematics->getDofs().size() == 0)
   {
-    throw std::invalid_argument("Zero degree of freedom for InverseKinematics solver.");
+    throw std::invalid_argument(
+      "Zero degree of freedom for InverseKinematics solver.");
   }
 
   for (const std::size_t dofIndex : mInverseKinematics->getDofs())
