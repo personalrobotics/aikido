@@ -46,6 +46,7 @@ public:
   /// \param[out] objectName: The retrieved object name from ObjectDatabase
   /// \param[out] objectResource: The retrieved uri of the object
   /// \param[out] objectOffset: The retrieved offset matrix of the object
+  ///     e.g. the offset between a tag and the actual origin of an object
   void getObjectByKey(
       const std::string& objectKey,
       std::string& objectName,
