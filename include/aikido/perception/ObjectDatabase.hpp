@@ -24,7 +24,13 @@ namespace perception {
 /// \code
 /// "obj_key": {
 ///    "resource": "package://pr_ordata/data/objects/obj_filename.urdf",
-///    "name": "obj_name"
+///    "name": "obj_name",
+///    "offset": [
+///      [1.0, 0.0, 0.0, 0.0],
+///      [0.0, 1.0, 0.0, 0.0],
+///      [0.0, 0.0, 1.0, 0.0],
+///      [0.0, 0.0, 0.0, 1.0]
+///    ]
 ///  }
 /// \endcode
 
