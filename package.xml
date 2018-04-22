@@ -3,8 +3,8 @@
   <name>aikido</name>
   <version>0.3.0</version>
   <description>description</description>
-  <maintainer email="mkoval@cs.cmu.edu">Michael Koval</maintainer>
-  <maintainer email="pkv@cs.cmu.edu">Pras Velagapudi</maintainer>
+  <maintainer email="bhou@cs.uw.edu">Brian Hou</maintainer>
+  <maintainer email="gilwoo@cs.uw.edu">Gilwoo Lee</maintainer>
   <author email="mkoval@cs.cmu.edu">Michael Koval</author>
   <author email="pkv@cs.cmu.edu">Pras Velagapudi</author>
   <license>BSD</license>
@@ -20,18 +20,18 @@
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>
 
-  <!-- Optional dependencies. Uncomment these if you have them installed. -->
-  <!-- <depend>libmicrohttpd</depend> -->
-  <!-- <depend>roscpp</depend> -->
-  <!-- <depend>actionlib</depend> -->
-  <!-- <depend>control_msgs</depend> -->
-  <!-- <depend>geometry_msgs</depend> -->
-  <!-- <depend>interactive_markers</depend> -->
-  <!-- <depend>std_msgs</depend> -->
-  <!-- <depend>tf</depend> -->
-  <!-- <depend>trajectory_msgs</depend> -->
-  <!-- <depend>visualization_msgs</depend> -->
-  <!-- <depend>pr_control_msgs</depend> -->
+  <!-- Optional dependencies. Delete these if you don't have them. -->
+  <depend>libmicrohttpd</depend>
+  <depend>roscpp</depend>
+  <depend>actionlib</depend>
+  <depend>control_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>interactive_markers</depend>
+  <depend>std_msgs</depend>
+  <depend>tf</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>pr_control_msgs</depend>
 
   <doc_depend>doxygen</doc_depend>
 
@@ -47,5 +47,18 @@
 
   <export>
     <build_type>cmake</build_type>
+
+    <!-- Optional dependencies. -->
+    <optional>libmicrohttpd</optional>
+    <optional>roscpp</optional>
+    <optional>actionlib</optional>
+    <optional>control_msgs</optional>
+    <optional>geometry_msgs</optional>
+    <optional>interactive_markers</optional>
+    <optional>std_msgs</optional>
+    <optional>tf</optional>
+    <optional>trajectory_msgs</optional>
+    <optional>visualization_msgs</optional>
+    <optional>pr_control_msgs</optional>
   </export>
 </package>
