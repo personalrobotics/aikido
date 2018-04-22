@@ -3,9 +3,6 @@ set(sources
   InstantaneousTrajectoryExecutor.cpp
   KinematicSimulationTrajectoryExecutor.cpp
   QueuedTrajectoryExecutor.cpp
-  BarrettHandKinematicSimulationPositionCommandExecutor.cpp
-  BarrettFingerKinematicSimulationPositionCommandExecutor.cpp
-  BarrettFingerKinematicSimulationSpreadCommandExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control" SHARED ${sources})
