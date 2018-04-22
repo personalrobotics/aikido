@@ -19,6 +19,7 @@
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
+  * Removed Barrett-specific hand controllers: [#380](https://github.com/personalrobotics/aikido/pull/380)
 
 * Planner
 
