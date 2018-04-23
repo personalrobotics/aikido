@@ -26,6 +26,7 @@ trajectory::InterpolatedPtr planViaConstraint(
 
     // concatenate two path
 
+    return nullptr;
 }
 
 } // namespace kinodynamics

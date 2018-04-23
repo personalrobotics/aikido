@@ -62,7 +62,6 @@ trajectory::InterpolatedPtr planViaConstraint(
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks);
 
-
 } // namespace kinodynamics
 } // namespace planner
 } // namespace aikido
