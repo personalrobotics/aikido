@@ -69,6 +69,13 @@ dart::dynamics::ConstMetaSkeletonPtr ConcreteManipulator::getMetaSkeleton()
 }
 
 //==============================================================================
+dart::dynamics::MetaSkeletonPtr ConcreteManipulator::getMetaSkeleton()
+{
+  return std::const_pointer_cast<dart::dynamics::MetaSkeleton>(
+      const_cast<const ConcreteManipulator*>(this)->getMetaSkeleton());
+}
+
+//==============================================================================
 statespace::dart::ConstMetaSkeletonStateSpacePtr
 ConcreteManipulator::getStateSpace() const
 {

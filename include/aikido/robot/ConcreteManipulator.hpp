@@ -16,11 +16,6 @@ AIKIDO_DECLARE_POINTERS(ConcreteManipulator)
 class ConcreteManipulator : public Manipulator
 {
 public:
-  // Expose base class functions
-  using Robot::getMetaSkeleton;
-  using Robot::getStateSpace;
-  using Manipulator::getHand;
-
   /// Constructor.
   /// \param[in] robot Robot corresponding to this manipulator.
   /// \param[in] hand Hand of this manipulator.
@@ -60,6 +55,7 @@ public:
 
   // Documentation inherited.
   virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const override;
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
   // Documentation inherited.
   virtual aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
