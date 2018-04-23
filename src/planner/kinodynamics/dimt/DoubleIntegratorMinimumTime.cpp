@@ -201,11 +201,22 @@ protected:
 };
 
 
-DoubleIntegratorMinimumTime::DoubleIntegratorMinimumTime(std::vector<double>& maxAccelerations,
-                                                         std::vector<double>& maxVelocities)
+DoubleIntegratorMinimumTime::DoubleIntegratorMinimumTime(std::size_t _numDofs,
+                                                         std::vector<double>& _maxAccelerations,
+                                                         std::vector<double>& _maxVelocities)
+    : mNumDofs(_numDofs)
 {
-    doubleIntegratorImpl_ = std::make_shared<DoubleIntegratorTobiasImpl>(maxAccelerations,
-                                                                         maxVelocities);
+  if (_numDofs != _maxVelocities.size())
+  {
+    throw std::invalid_argument("_numDofs not equal to _maxVelocities size");
+  }
+  if (_numDofs != _maxAccelerations.size())
+  {
+    throw std::invalid_argument("_numDofs not equal to _maxAccelerations size");
+  }
+
+  doubleIntegratorImpl_ = std::make_shared<DoubleIntegratorTobiasImpl>(_maxAccelerations,
+                                                                       _maxVelocities);
 }
 
 

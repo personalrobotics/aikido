@@ -50,8 +50,9 @@ public:
     /// @param maxAccelerations Max accelerations of all DOFs
     /// @param maxVelocities Velocity limits of all DOFs
     ///
-    DoubleIntegratorMinimumTime(std::vector<double>& maxAccelerations,
-                                std::vector<double>& maxVelocities);
+    DoubleIntegratorMinimumTime(std::size_t _numDofs,
+                                std::vector<double>& _maxAccelerations,
+                                std::vector<double>& _maxVelocities);
 
     /// This function calculates the maximum time given a set number of joints
     /// x = [x_1, x_1_dot,...,x_n,x_n_dot]
@@ -105,6 +106,13 @@ public:
         return doubleIntegratorImpl_->discretize(x1, x2, step_t);
     }
 
+    std::size_t getNumDofs() const
+    {
+      return mNumDofs;
+    }
+
+protected:
+    std::size_t mNumDofs;
 };
 
 using DIMT = DoubleIntegratorMinimumTime;
