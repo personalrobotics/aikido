@@ -58,7 +58,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
-  space->checkCompatibility(mSkeleton.get());
+  space->checkIfContained(mSkeleton.get());
 
   mValidatedTrajectories.emplace(traj);
 }
