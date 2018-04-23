@@ -5,9 +5,9 @@
 #include <dart/dart.hpp>
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
-#include <aikido/io/CatkinResourceRetriever.hpp>
-#include <aikido/perception/ObjectDatabase.hpp>
-#include <aikido/perception/PerceptionModule.hpp>
+#include "aikido/io/CatkinResourceRetriever.hpp"
+#include "aikido/perception/ObjectDatabase.hpp"
+#include "aikido/perception/PerceptionModule.hpp"
 
 namespace aikido {
 namespace perception {

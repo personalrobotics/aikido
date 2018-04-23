@@ -1,4 +1,4 @@
-#include <aikido/perception/ObjectDatabase.hpp>
+#include "aikido/perception/ObjectDatabase.hpp"
 
 #include <dart/common/Console.hpp>
 #include <dart/common/LocalResourceRetriever.hpp>

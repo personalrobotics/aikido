@@ -1,4 +1,4 @@
-#include <aikido/perception/PoseEstimatorModule.hpp>
+#include "aikido/perception/PoseEstimatorModule.hpp"
 
 #include <Eigen/Geometry>
 #include <dart/utils/urdf/DartLoader.hpp>
@@ -6,8 +6,8 @@
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <aikido/io/CatkinResourceRetriever.hpp>
-#include <aikido/perception/shape_conversions.hpp>
+#include "aikido/io/CatkinResourceRetriever.hpp"
+#include "aikido/perception/shape_conversions.hpp"
 
 namespace aikido {
 namespace perception {
@@ -44,7 +44,7 @@ bool PoseEstimatorModule::detectObjects(
       = ros::topic::waitForMessage<visualization_msgs::MarkerArray>(
           mMarkerTopic, mNodeHandle, timeout);
 
-  // Making sure the Message from RcnnPose is non empty
+  // Making sure the Message from a pose estimator is non empty
   if (marker_message == nullptr)
   {
     dtwarn << "[PoseEstimatorModule::detectObjects] nullptr Marker Message "
@@ -52,7 +52,7 @@ bool PoseEstimatorModule::detectObjects(
     return false;
   }
 
-  if (marker_message->markers.size() == 0)
+  if (marker_message->markers.empty())
   {
     dtwarn << "[PoseEstimatorModule::detectObjects] No markers on topic "
            << mMarkerTopic << std::endl;
@@ -128,7 +128,7 @@ bool PoseEstimatorModule::detectObjects(
     // Check if skel in World
     // If there is, update its pose
     // If not, add skeleton to env
-    // RcnnPose module should provide the unique obj_id per object
+    // A pose estimator module should provide the unique obj_id per object
     if (env_skeleton == nullptr)
     {
       is_new_obj = true;
