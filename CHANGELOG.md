@@ -19,6 +19,7 @@
   * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
+  * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
 
 * Planner
 
@@ -34,6 +35,7 @@
 * Build & Testing & ETC
 
   * Fixed Eigen memory alignment issues on 32bit Ubuntu: [#368](https://github.com/personalrobotics/aikido/pull/368)
+  * Defined optional dependencies: [#376](https://github.com/personalrobotics/aikido/pull/376)
 
 ### 0.2.0 (2018-01-09)
 

@@ -9,4 +9,4 @@ elif [ ${APPVEYOR} ]; then
 fi
 
 cp -r "${AIKIDO_BUILD_DIR}" src
-./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}"
+./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}" ${REQUIRED_ONLY}
