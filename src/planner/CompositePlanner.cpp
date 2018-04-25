@@ -33,7 +33,7 @@ void CompositePlanner::addPlanner(PlannerPtr planner)
 }
 
 //==============================================================================
-bool CompositePlanner::hasPlanner(const Planner* planner)
+bool CompositePlanner::hasPlanner(const Planner* planner) const
 {
   if (std::find_if(
           mPlanners.begin(),
@@ -50,9 +50,15 @@ bool CompositePlanner::hasPlanner(const Planner* planner)
 }
 
 //==============================================================================
-const std::vector<PlannerPtr>& CompositePlanner::getPlanners() const
+const std::vector<PlannerPtr>& CompositePlanner::getPlanners()
 {
   return mPlanners;
+}
+
+//==============================================================================
+std::size_t CompositePlanner::getNumPlanners() const
+{
+  return mPlanners.size();
 }
 
 //==============================================================================
@@ -62,6 +68,12 @@ PlannerPtr CompositePlanner::getPlanner(std::size_t index)
     throw std::invalid_argument("index is out of bound");
 
   return mPlanners[index];
+}
+
+//==============================================================================
+ConstPlannerPtr CompositePlanner::getPlanner(std::size_t index) const
+{
+  return const_cast<CompositePlanner*>(this)->getPlanner(index);
 }
 
 //==============================================================================

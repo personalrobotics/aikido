@@ -25,16 +25,25 @@ public:
   void addPlanner(PlannerPtr planner);
 
   /// Returns true if this CompositePlanner contains \c planner.
-  bool hasPlanner(const Planner* planner);
+  bool hasPlanner(const Planner* planner) const;
 
   /// Returns all the planners in this CompositePlanner.
-  const std::vector<PlannerPtr>& getPlanners() const;
+  const std::vector<PlannerPtr>& getPlanners();
+
+  /// Returns number of planners that this CompositePlanner contains.
+  std::size_t getNumPlanners() const;
 
   /// Returns planner given \c index.
   ///
   /// \throw If index is equal to or greater than the number of planners in this
   /// CompositePlanner.
   PlannerPtr getPlanner(std::size_t index);
+
+  /// Returns planner given \c index.
+  ///
+  /// \throw If index is equal to or greater than the number of planners in this
+  /// CompositePlanner.
+  ConstPlannerPtr getPlanner(std::size_t index) const;
 
   // Documentation inherited.
   virtual bool canPlan(const Problem* problem) const override;
