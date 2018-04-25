@@ -18,21 +18,6 @@ bool PlannerForMultiProblem::canPlan(const Problem* problem) const
 }
 
 //==============================================================================
-std::unordered_set<std::string> PlannerForMultiProblem::getPlannableProblems()
-    const
-{
-  auto& map = getPlanningFunctionMap();
-
-  std::unordered_set<std::string> problems;
-  problems.reserve(map.size());
-
-  for (auto& item : map)
-    problems.insert(item.first);
-
-  return problems;
-}
-
-//==============================================================================
 trajectory::TrajectoryPtr PlannerForMultiProblem::plan(
     const Problem& problem, Result* result)
 {

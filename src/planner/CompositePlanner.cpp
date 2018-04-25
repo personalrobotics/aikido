@@ -76,43 +76,5 @@ bool CompositePlanner::canPlan(const Problem* problem) const
   return false;
 }
 
-//==============================================================================
-std::unordered_set<std::string> CompositePlanner::getPlannableProblems() const
-{
-  std::unordered_set<std::string> problems;
-
-  for (const auto& planner : mPlanners)
-  {
-    const auto& subProblems = planner->getPlannableProblems();
-    problems.insert(subProblems.begin(), subProblems.end());
-  }
-
-  return problems;
-}
-
-//==============================================================================
-std::unordered_set<PlannerPtr> CompositePlanner::getPlannersCanPlan(
-    const Problem* problem) const
-{
-  std::unordered_set<PlannerPtr> planners;
-
-  for (const auto& planner : mPlanners)
-  {
-    auto metaPlanner = std::dynamic_pointer_cast<CompositePlanner>(planner);
-    if (metaPlanner)
-    {
-      auto subPlanners = metaPlanner->getPlannersCanPlan(problem);
-      planners.insert(subPlanners.begin(), subPlanners.end());
-    }
-    else
-    {
-      if (planner->canPlan(problem))
-        planners.insert(planner);
-    }
-  }
-
-  return planners;
-}
-
 } // namespace planner
 } // namespace aikido

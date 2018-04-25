@@ -39,13 +39,6 @@ public:
   // Documentation inherited.
   virtual bool canPlan(const Problem* problem) const override;
 
-  // Documentation inherited.
-  std::unordered_set<std::string> getPlannableProblems() const override;
-
-  /// Returns set of planners that can solve \c problem.
-  virtual std::unordered_set<PlannerPtr> getPlannersCanPlan(
-      const Problem* problem) const;
-
 protected:
   /// Planners.
   std::vector<PlannerPtr> mPlanners;

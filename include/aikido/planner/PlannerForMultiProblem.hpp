@@ -19,9 +19,6 @@ public:
   bool canPlan(const Problem* problem) const final override;
 
   // Documentation inherited.
-  std::unordered_set<std::string> getPlannableProblems() const final override;
-
-  // Documentation inherited.
   trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr) final override;
 

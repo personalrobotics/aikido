@@ -22,9 +22,6 @@ public:
   virtual bool canPlan(const Problem* problem) const = 0;
   // TODO: Change parameter type to const reference
 
-  /// Returns all the problems that this planner can solve.
-  virtual std::unordered_set<std::string> getPlannableProblems() const = 0;
-
   /// Solves \c problem returning the result to \c result.
   virtual trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr)

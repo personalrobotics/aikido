@@ -16,14 +16,6 @@ bool PlannerForSingleProblem<Derived, ProblemT>::canPlan(
 
 //==============================================================================
 template <typename Derived, typename ProblemT>
-std::unordered_set<std::string>
-PlannerForSingleProblem<Derived, ProblemT>::getPlannableProblems() const
-{
-  return std::unordered_set<std::string>({ProblemT::getStaticName()});
-}
-
-//==============================================================================
-template <typename Derived, typename ProblemT>
 trajectory::TrajectoryPtr PlannerForSingleProblem<Derived, ProblemT>::plan(
     const Problem& problem, Result* result)
 {
