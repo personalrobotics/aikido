@@ -180,13 +180,17 @@ InterpolatedPtr planToTSR(
     double timelimit,
     std::size_t maxNumTrials)
 {
+  // Create an IK solver with metaSkeleton dofs.
+  auto ik = InverseKinematics::create(bn);
+  ik->setDofs(metaSkeleton->getDofs());
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       space,
       metaSkeleton,
       tsr,
       createSampleableBounds(space, rng->clone()),
-      InverseKinematics::create(bn),
+      ik,
       maxNumTrials);
 
   auto generator = ikSampleable.createSampleGenerator();
@@ -195,8 +199,6 @@ InterpolatedPtr planToTSR(
   auto goalState = space->createState();
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-
-  Eigen::VectorXd goal;
 
   // TODO: Change this to timelimit once we use a fail-fast planner
   double timelimitPerSample = timelimit / maxNumTrials;
@@ -218,8 +220,6 @@ InterpolatedPtr planToTSR(
       bool sampled = generator->sample(goalState);
       if (!sampled)
         continue;
-
-      space->convertStateToPositions(goalState, goal);
 
       // Set to start state
       space->setState(metaSkeleton.get(), startState);
@@ -303,8 +303,9 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
   std::shared_ptr<Sampleable> seedConstraint
       = std::move(createSampleableBounds(space, crrtParameters.rng->clone()));
 
-  // crate IK
+  // Create an IK solver with metaSkeleton dofs
   auto ik = InverseKinematics::create(bodyNode);
+  ik->setDofs(metaSkeleton->getDofs());
 
   // create goal sampleable
   auto goalSampleable = std::make_shared<InverseKinematicsSampleable>(
