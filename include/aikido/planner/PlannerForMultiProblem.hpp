@@ -16,7 +16,7 @@ class PlannerForMultiProblem : public Planner
 {
 public:
   // Documentation inherited.
-  bool canPlan(const Problem* problem) const final override;
+  bool canSolve(const Problem* problem) const final override;
 
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(

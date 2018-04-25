@@ -10,25 +10,21 @@ namespace aikido {
 namespace planner {
 
 /// Planning problem to plan to a single goal configuration.
-///
-/// Plan a trajectory from start state to goal state by using an interpolator to
-/// interpolate between them.
 class ConfigurationToConfiguration : public Problem
 {
 public:
   /// Constructor.
   ///
-  /// \param stateSpace State space.
-  /// \param startState Start state.
-  /// \param goalState Goal state.
-  /// \param interpolator Interpolator used to produce the output trajectory.
-  /// \param constraint Trajectory-wide constraint that must be satisfied.
-  /// \throw If \c stateSpace is not compatible to \c constraint's state space.
+  /// \param[in] stateSpace State space that this problem associated with.
+  /// \param[in] startState Start state.
+  /// \param[in] goalState Goal state.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+  /// \throw If \c stateSpace is not compatible with \c constraint's state
+  /// space.
   ConfigurationToConfiguration(
       const statespace::ConstStateSpacePtr& stateSpace,
       const statespace::StateSpace::State* startState,
       const statespace::StateSpace::State* goalState,
-      statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
   // Documentation inherited.
@@ -49,14 +45,6 @@ public:
   /// Returns the goal state.
   const statespace::StateSpace::State* getGoalState() const;
 
-  /// Returns the interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr getInterpolator();
-
-  /// Returns the interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr getInterpolator() const;
-  // TODO: Should return ConstInterpolatorPtr when resolving const correctness
-  // issues.
-
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::TestablePtr getConstraint();
 
@@ -71,9 +59,6 @@ protected:
 
   /// Goal state.
   const statespace::StateSpace::State* mGoalState;
-
-  /// Interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr mInterpolator;
 
   /// Trajectory-wide constraint that must be satisfied.
   constraint::TestablePtr mConstraint;

@@ -5,7 +5,7 @@ namespace statespace {
 
 //==============================================================================
 GeodesicInterpolator::GeodesicInterpolator(
-    statespace::StateSpacePtr _stateSpace)
+    statespace::ConstStateSpacePtr _stateSpace)
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
@@ -13,7 +13,7 @@ GeodesicInterpolator::GeodesicInterpolator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr GeodesicInterpolator::getStateSpace() const
+statespace::ConstStateSpacePtr GeodesicInterpolator::getStateSpace() const
 {
   return mStateSpace;
 }

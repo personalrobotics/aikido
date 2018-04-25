@@ -10,12 +10,10 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     const statespace::ConstStateSpacePtr& stateSpace,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
-    statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mStartState(startState)
   , mGoalState(goalState)
-  , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
   if (mStateSpace != mConstraint->getStateSpace())
@@ -64,19 +62,6 @@ const statespace::StateSpace::State*
 ConfigurationToConfiguration::getGoalState() const
 {
   return mGoalState;
-}
-
-//==============================================================================
-statespace::InterpolatorPtr ConfigurationToConfiguration::getInterpolator()
-{
-  return mInterpolator;
-}
-
-//==============================================================================
-statespace::InterpolatorPtr ConfigurationToConfiguration::getInterpolator()
-    const
-{
-  return mInterpolator;
 }
 
 //==============================================================================

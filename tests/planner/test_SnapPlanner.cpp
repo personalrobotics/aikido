@@ -85,14 +85,15 @@ public:
 //==============================================================================
 TEST_F(SnapPlannerTest, CanSolveProblems)
 {
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+  auto planner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(stateSpace, interpolator);
 
   auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, interpolator, failingConstraint);
+      stateSpace, *startState, *goalState, failingConstraint);
   auto unknownProblem = UnknownProblem();
 
-  EXPECT_TRUE(planner->canPlan(&problem));
-  EXPECT_FALSE(planner->canPlan(&unknownProblem));
+  EXPECT_TRUE(planner->canSolve(&problem));
+  EXPECT_FALSE(planner->canSolve(&unknownProblem));
 }
 
 //==============================================================================
@@ -107,7 +108,6 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
             differentStateSpace,
             *startState,
             *goalState,
-            interpolator,
             passingConstraint);
         DART_UNUSED(problem);
       },
@@ -122,8 +122,9 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   stateSpace->setState(skel.get(), *goalState);
 
   auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, interpolator, passingConstraint);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+      stateSpace, *startState, *goalState, passingConstraint);
+  auto planner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(stateSpace, interpolator);
   auto traj = planner->plan(problem, &planningResult);
 
   auto subSpace = stateSpace->getSubspace<SO2>(0);
@@ -155,8 +156,9 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
   auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, interpolator, failingConstraint);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+      stateSpace, *startState, *goalState, failingConstraint);
+  auto planner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(stateSpace, interpolator);
   auto traj = planner->plan(problem, &planningResult);
   EXPECT_EQ(nullptr, traj);
 }

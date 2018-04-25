@@ -12,6 +12,8 @@ class Problem
 {
 public:
   /// Constructor.
+  ///
+  /// \param[in] stateSpace State space that this problem associated with.
   explicit Problem(statespace::ConstStateSpacePtr stateSpace);
 
   /// Destructor.

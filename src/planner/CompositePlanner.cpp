@@ -7,14 +7,10 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-CompositePlanner::CompositePlanner() : mPlanners()
-{
-  // Do nothing
-}
-
-//==============================================================================
-CompositePlanner::CompositePlanner(const std::vector<PlannerPtr>& planners)
-  : mPlanners(planners)
+CompositePlanner::CompositePlanner(
+    const statespace::ConstStateSpacePtr& stateSpace,
+    const std::vector<PlannerPtr>& planners)
+  : Planner(std::move(stateSpace)), mPlanners(planners)
 {
   // Do nothing
 }
@@ -77,11 +73,11 @@ ConstPlannerPtr CompositePlanner::getPlanner(std::size_t index) const
 }
 
 //==============================================================================
-bool CompositePlanner::canPlan(const Problem* problem) const
+bool CompositePlanner::canSolve(const Problem* problem) const
 {
   for (const auto& planner : mPlanners)
   {
-    if (planner->canPlan(problem))
+    if (planner->canSolve(problem))
       return true;
   }
 

@@ -8,7 +8,16 @@ namespace planner {
 
 //==============================================================================
 template <typename Derived, typename ProblemT>
-bool PlannerForSingleProblem<Derived, ProblemT>::canPlan(
+PlannerForSingleProblem<Derived, ProblemT>::PlannerForSingleProblem(
+    const statespace::ConstStateSpacePtr& stateSpace)
+  : Planner(std::move(stateSpace))
+{
+  // Do nothing
+}
+
+//==============================================================================
+template <typename Derived, typename ProblemT>
+bool PlannerForSingleProblem<Derived, ProblemT>::canSolve(
     const Problem* problem) const
 {
   return problem->getName() == ProblemT::getStaticName();
@@ -19,7 +28,7 @@ template <typename Derived, typename ProblemT>
 trajectory::TrajectoryPtr PlannerForSingleProblem<Derived, ProblemT>::plan(
     const Problem& problem, Result* result)
 {
-  if (!canPlan(&problem))
+  if (!canSolve(&problem))
     return nullptr;
 
   return static_cast<Derived*>(this)->plan(

@@ -8,14 +8,32 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
+SnapConfigurationToConfigurationPlanner::
+    SnapConfigurationToConfigurationPlanner(
+        const statespace::ConstStateSpacePtr& stateSpace,
+        statespace::InterpolatorPtr interpolator)
+  : ConfigurationToConfigurationPlanner(std::move(stateSpace))
+  , mInterpolator(std::move(interpolator))
+{
+  if (!mInterpolator)
+  {
+    mInterpolator
+        = std::make_shared<statespace::GeodesicInterpolator>(mStateSpace);
+    // TODO(JS): Not sure if it's a good choice to default as
+    // GeodesicInterpolator.
+  }
+}
+
+//==============================================================================
 trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
     const TheProblem& problem, TheResult* result)
 {
-  auto stateSpace = problem.getStateSpace();
-  auto interpolator = problem.getInterpolator();
+  // TODO(JS): Check equality between state space of this planner and given
+  // problem.
+
   auto returnTraj
-      = std::make_shared<trajectory::Interpolated>(stateSpace, interpolator);
-  auto testState = stateSpace->createState();
+      = std::make_shared<trajectory::Interpolated>(mStateSpace, mInterpolator);
+  auto testState = mStateSpace->createState();
   auto startState = problem.getStartState();
   auto goalState = problem.getGoalState();
   auto constraint = problem.getConstraint();
@@ -23,7 +41,7 @@ trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
   aikido::common::VanDerCorput vdc{1, true, true, 0.02}; // TODO junk resolution
   for (const auto alpha : vdc)
   {
-    interpolator->interpolate(startState, goalState, alpha, testState);
+    mInterpolator->interpolate(startState, goalState, alpha, testState);
     if (!constraint->isSatisfied(testState))
     {
       if (result)
@@ -37,6 +55,21 @@ trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
   returnTraj->addWaypoint(1, goalState);
 
   return returnTraj;
+}
+
+//==============================================================================
+statespace::InterpolatorPtr
+SnapConfigurationToConfigurationPlanner::getInterpolator()
+{
+  return mInterpolator;
+}
+
+//==============================================================================
+statespace::ConstInterpolatorPtr
+SnapConfigurationToConfigurationPlanner::getInterpolator() const
+{
+  return const_cast<SnapConfigurationToConfigurationPlanner*>(this)
+      ->getInterpolator();
 }
 
 } // namespace planner

@@ -15,11 +15,13 @@ namespace planner {
 class CompositePlanner : public Planner
 {
 public:
-  /// Constructor.
-  CompositePlanner();
-
   /// Constructs given list of planners.
-  explicit CompositePlanner(const std::vector<PlannerPtr>& planners);
+  ///
+  /// \param[in] stateSpace State space that this planner associated with.
+  /// \param[in] planners Planners that this CompositePlanner will contain.
+  CompositePlanner(
+      const statespace::ConstStateSpacePtr& stateSpace,
+      const std::vector<PlannerPtr>& planners = std::vector<PlannerPtr>());
 
   /// Adds planner.
   void addPlanner(PlannerPtr planner);
@@ -46,16 +48,16 @@ public:
   ConstPlannerPtr getPlanner(std::size_t index) const;
 
   // Documentation inherited.
-  virtual bool canPlan(const Problem* problem) const override;
+  virtual bool canSolve(const Problem* problem) const override;
 
 protected:
   /// Planners.
   std::vector<PlannerPtr> mPlanners;
   // We use std::vector to keep the order of planners. This is because some
-  // concrete rely on the order. Alternatively, we could remove mPlanners from
-  // here and let the concrete classes maintain the planner containers
-  // accordingly. In that case, we should also remove getPlanner and make
-  // addPlanner/hasPlanner/getPlanners as pure virtual functions.
+  // concrete planners rely on the order. Alternatively, we could remove
+  // mPlanners from here and let the concrete classes maintain the planner
+  // containers accordingly. In that case, we should also remove getPlanner and
+  // make addPlanner/hasPlanner/getPlanners as pure virtual functions.
 };
 
 } // namespace planner

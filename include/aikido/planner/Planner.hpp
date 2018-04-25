@@ -18,14 +18,29 @@ class Planner
 public:
   class Result;
 
+  /// Constructs from a state space.
+  ///
+  /// \param[in] stateSpace State space that this planner associated with.
+  Planner(const statespace::ConstStateSpacePtr& stateSpace);
+
+  /// Default destructor.
+  virtual ~Planner() = default;
+
+  /// Returns const state space.
+  statespace::ConstStateSpacePtr getStateSpace() const;
+
   /// Returns true if this planner can solve \c problem.
-  virtual bool canPlan(const Problem* problem) const = 0;
+  virtual bool canSolve(const Problem* problem) const = 0;
   // TODO: Change parameter type to const reference
 
   /// Solves \c problem returning the result to \c result.
   virtual trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr)
       = 0;
+
+protected:
+  /// State space associated with this planner.
+  statespace::ConstStateSpacePtr mStateSpace;
 };
 
 /// Base class for planning result of various planning problems.

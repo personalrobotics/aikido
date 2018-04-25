@@ -21,8 +21,13 @@ public:
   using TheResult = Result;
   // TODO: Better naming
 
+  /// Constructor
+  ///
+  /// \param[in] stateSpace State space that this planner associated with.
+  PlannerForSingleProblem(const statespace::ConstStateSpacePtr& stateSpace);
+
   // Documentation inherited.
-  bool canPlan(const Problem* problem) const final override;
+  bool canSolve(const Problem* problem) const final override;
 
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(

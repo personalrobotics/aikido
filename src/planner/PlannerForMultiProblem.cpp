@@ -6,7 +6,7 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-bool PlannerForMultiProblem::canPlan(const Problem* problem) const
+bool PlannerForMultiProblem::canSolve(const Problem* problem) const
 {
   auto& map = getPlanningFunctionMap();
   const auto search = map.find(problem->getName());

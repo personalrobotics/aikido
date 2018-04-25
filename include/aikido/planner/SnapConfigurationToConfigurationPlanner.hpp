@@ -22,7 +22,18 @@ class SnapConfigurationToConfigurationPlanner
     : public ConfigurationToConfigurationPlanner
 {
 public:
-  /// Solves ConfigurationToConfiguration problem.
+  /// Constructor.
+  ///
+  /// \param[in] stateSpace State space that this planner associated with.
+  /// \param[in] interpolator Interpolator used to produce the output
+  /// trajectory. If nullptr is passed in, GeodesicInterpolator is used by
+  /// default.
+  SnapConfigurationToConfigurationPlanner(
+      const statespace::ConstStateSpacePtr& stateSpace,
+      statespace::InterpolatorPtr interpolator = nullptr);
+
+  /// Plans a trajectory from start state to goal state by using an interpolator
+  /// to interpolate between them.
   ///
   /// The planner returns success if the resulting trajectory satisfies
   /// constraint at some resolution and failure (returning \c nullptr)
@@ -36,6 +47,18 @@ public:
   /// \throw If \c result is not ConfigurationToConfiguration::Result.
   trajectory::TrajectoryPtr plan(
       const TheProblem& problem, TheResult* result = nullptr) override;
+
+  // TODO(JS): Add setInterpolator()
+
+  /// Returns the interpolator used to produce the output trajectory.
+  statespace::InterpolatorPtr getInterpolator();
+
+  /// Returns the interpolator used to produce the output trajectory.
+  statespace::ConstInterpolatorPtr getInterpolator() const;
+
+protected:
+  /// Interpolator used to produce the output trajectory.
+  statespace::InterpolatorPtr mInterpolator;
 };
 
 } // namespace planner

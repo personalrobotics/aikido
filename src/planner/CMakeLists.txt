@@ -1,5 +1,6 @@
 set(sources
   ConfigurationToConfiguration.cpp
+  ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp
   ConfigurationToTSR.cpp
   ConfigurationToEndEffectorOffset.cpp

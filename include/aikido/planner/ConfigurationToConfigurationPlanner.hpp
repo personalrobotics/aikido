@@ -17,6 +17,13 @@ public:
   using TheProblem = ConfigurationToConfiguration;
   using TheResult = Result;
 
+  /// Constructor
+  ///
+  /// \param[in] stateSpace State space that this planner associated with.
+  ConfigurationToConfigurationPlanner(
+      const statespace::ConstStateSpacePtr& stateSpace);
+
+  // TODO(JS): Docstring
   virtual trajectory::TrajectoryPtr plan(
       const TheProblem& problem, TheResult* result = nullptr)
       = 0;

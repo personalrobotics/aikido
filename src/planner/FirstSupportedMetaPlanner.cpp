@@ -9,7 +9,7 @@ trajectory::TrajectoryPtr FirstSupportedMetaPlanner::plan(
 {
   for (const auto& planner : mPlanners)
   {
-    if (!planner->canPlan(&problem))
+    if (!planner->canSolve(&problem))
       continue;
 
     return planner->plan(problem, result);
