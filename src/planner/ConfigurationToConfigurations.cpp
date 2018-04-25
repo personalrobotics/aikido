@@ -26,13 +26,13 @@ ConfigurationToConfigurations::ConfigurationToConfigurations(
 }
 
 //==============================================================================
-const std::string& ConfigurationToConfigurations::getName() const
+const std::string& ConfigurationToConfigurations::getType() const
 {
-  return getStaticName();
+  return getStaticType();
 }
 
 //==============================================================================
-const std::string& ConfigurationToConfigurations::getStaticName()
+const std::string& ConfigurationToConfigurations::getStaticType()
 {
   static std::string name("ConfigurationToConfigurations");
   return name;

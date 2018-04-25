@@ -10,7 +10,7 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     const statespace::ConstStateSpacePtr& stateSpace,
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
-    constraint::TestablePtr constraint)
+    constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mStartState(startState)
   , mGoalState(goalState)
@@ -24,13 +24,13 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
 }
 
 //==============================================================================
-const std::string& ConfigurationToConfiguration::getName() const
+const std::string& ConfigurationToConfiguration::getType() const
 {
-  return getStaticName();
+  return getStaticType();
 }
 
 //==============================================================================
-const std::string& ConfigurationToConfiguration::getStaticName()
+const std::string& ConfigurationToConfiguration::getStaticType()
 {
   static std::string name("ConfigurationToConfiguration");
   return name;
@@ -65,13 +65,7 @@ ConfigurationToConfiguration::getGoalState() const
 }
 
 //==============================================================================
-constraint::TestablePtr ConfigurationToConfiguration::getConstraint()
-{
-  return mConstraint;
-}
-
-//==============================================================================
-constraint::TestablePtr ConfigurationToConfiguration::getConstraint() const
+constraint::ConstTestablePtr ConfigurationToConfiguration::getConstraint() const
 {
   return mConstraint;
 }

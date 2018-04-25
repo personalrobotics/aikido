@@ -32,8 +32,8 @@ public:
       constraint::TestablePtr constraint);
 
   /// Returns the name of the planner problem.
-  const std::string& getName() const override;
-  static const std::string& getStaticName();
+  const std::string& getType() const override;
+  static const std::string& getStaticType();
 
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;

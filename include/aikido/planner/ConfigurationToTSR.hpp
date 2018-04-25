@@ -31,9 +31,9 @@ public:
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
-  const std::string& getName() const override;
+  const std::string& getType() const override;
 
-  static const std::string& getStaticName();
+  static const std::string& getStaticType();
 
   dart::dynamics::BodyNodePtr getBodyNode();
 

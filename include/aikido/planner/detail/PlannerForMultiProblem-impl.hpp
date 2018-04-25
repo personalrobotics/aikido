@@ -17,7 +17,7 @@ void PlannerForMultiProblem::registerPlanningFunction(R (T::*func)(Args...))
       std::placeholders::_1,  // problem
       std::placeholders::_2); // result
 
-  map.insert(std::make_pair(ProblemT::getStaticName(), bindedFunc));
+  map.insert(std::make_pair(ProblemT::getStaticType(), bindedFunc));
 }
 
 } // namespace planner

@@ -36,8 +36,8 @@ public:
       constraint::TestablePtr constraint);
 
   /// Returns the name of the planner problem.
-  const std::string& getName() const override;
-  static const std::string& getStaticName();
+  const std::string& getType() const override;
+  static const std::string& getStaticType();
 
   /// Returns the body node or robot for which the path is to be planned.
   dart::dynamics::BodyNodePtr getBodyNode();

@@ -28,13 +28,13 @@ ConfigurationToTSR::ConfigurationToTSR(
 }
 
 //==============================================================================
-const std::string& ConfigurationToTSR::getName() const
+const std::string& ConfigurationToTSR::getType() const
 {
-  return getStaticName();
+  return getStaticType();
 }
 
 //==============================================================================
-const std::string& ConfigurationToTSR::getStaticName()
+const std::string& ConfigurationToTSR::getStaticType()
 {
   static std::string name("ConfigurationToTSR");
   return name;

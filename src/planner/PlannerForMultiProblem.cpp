@@ -9,7 +9,7 @@ namespace planner {
 bool PlannerForMultiProblem::canSolve(const Problem* problem) const
 {
   auto& map = getPlanningFunctionMap();
-  const auto search = map.find(problem->getName());
+  const auto search = map.find(problem->getType());
 
   if (search != map.end())
     return true;
@@ -22,7 +22,7 @@ trajectory::TrajectoryPtr PlannerForMultiProblem::plan(
     const Problem& problem, Result* result)
 {
   auto& map = getPlanningFunctionMap();
-  const auto search = map.find(problem.getName());
+  const auto search = map.find(problem.getType());
 
   if (search == map.end())
   {

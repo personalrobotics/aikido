@@ -19,8 +19,8 @@ public:
   /// Destructor.
   virtual ~Problem() = default;
 
-  /// Returns name.
-  virtual const std::string& getName() const = 0;
+  /// Returns type of this planning problem.
+  virtual const std::string& getType() const = 0;
 
   /// Returns const state space.
   statespace::ConstStateSpacePtr getStateSpace() const;

@@ -25,13 +25,13 @@ public:
       const statespace::ConstStateSpacePtr& stateSpace,
       const statespace::StateSpace::State* startState,
       const statespace::StateSpace::State* goalState,
-      constraint::TestablePtr constraint);
+      constraint::ConstTestablePtr constraint);
 
   // Documentation inherited.
-  const std::string& getName() const override;
+  const std::string& getType() const override;
 
-  /// Returns the name of the planner problem.
-  static const std::string& getStaticName();
+  /// Returns the type of the planning problem.
+  static const std::string& getStaticType();
 
   /// Sets the start state.
   void setStartState(const statespace::StateSpace::State* state);
@@ -46,12 +46,7 @@ public:
   const statespace::StateSpace::State* getGoalState() const;
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::TestablePtr getConstraint();
-
-  /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::TestablePtr getConstraint() const;
-  // TODO: Should return ConstInterpolatorPtr when resolving const correctness
-  // issues.
+  constraint::ConstTestablePtr getConstraint() const;
 
 protected:
   /// Start state.
@@ -61,7 +56,7 @@ protected:
   const statespace::StateSpace::State* mGoalState;
 
   /// Trajectory-wide constraint that must be satisfied.
-  constraint::TestablePtr mConstraint;
+  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner

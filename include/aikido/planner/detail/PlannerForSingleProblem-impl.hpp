@@ -20,7 +20,7 @@ template <typename Derived, typename ProblemT>
 bool PlannerForSingleProblem<Derived, ProblemT>::canSolve(
     const Problem* problem) const
 {
-  return problem->getName() == ProblemT::getStaticName();
+  return problem->getType() == ProblemT::getStaticType();
 }
 
 //==============================================================================

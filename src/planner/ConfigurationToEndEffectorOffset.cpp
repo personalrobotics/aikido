@@ -30,13 +30,13 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
 }
 
 //==============================================================================
-const std::string& ConfigurationToEndEffectorOffset::getName() const
+const std::string& ConfigurationToEndEffectorOffset::getType() const
 {
-  return getStaticName();
+  return getStaticType();
 }
 
 //==============================================================================
-const std::string& ConfigurationToEndEffectorOffset::getStaticName()
+const std::string& ConfigurationToEndEffectorOffset::getStaticType()
 {
   static std::string name("ConfigurationToEndEffectorOffset");
   return name;

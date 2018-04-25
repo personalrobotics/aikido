@@ -28,13 +28,13 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
 }
 
 //==============================================================================
-const std::string& ConfigurationToEndEffectorPose::getName() const
+const std::string& ConfigurationToEndEffectorPose::getType() const
 {
-  return getStaticName();
+  return getStaticType();
 }
 
 //==============================================================================
-const std::string& ConfigurationToEndEffectorPose::getStaticName()
+const std::string& ConfigurationToEndEffectorPose::getStaticType()
 {
   static std::string name("ConfigurationToEndEffectorPose");
   return name;
