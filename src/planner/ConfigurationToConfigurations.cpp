@@ -58,11 +58,39 @@ void ConfigurationToConfigurations::setGoalStates(
 }
 
 //==============================================================================
+void ConfigurationToConfigurations::setGoalState(
+    const statespace::StateSpace::State* goalState)
+{
+  mGoalStates.clear();
+  mGoalStates.insert(goalState);
+}
+
+//==============================================================================
 void ConfigurationToConfigurations::addGoalState(
     const statespace::StateSpace::State* goalState)
 {
   // TODO(JS): Do we want to report the success?
   mGoalStates.insert(goalState);
+}
+
+//==============================================================================
+void ConfigurationToConfigurations::removeGoalState(
+    const statespace::StateSpace::State* goalState)
+{
+  // TODO(JS): Do we want to report the success?
+  mGoalStates.erase(goalState);
+}
+
+//==============================================================================
+void ConfigurationToConfigurations::removeAllGoalStates()
+{
+  mGoalStates.clear();
+}
+
+//==============================================================================
+std::size_t ConfigurationToConfigurations::getNumGoalStates() const
+{
+  return mGoalStates.size();
 }
 
 //==============================================================================
