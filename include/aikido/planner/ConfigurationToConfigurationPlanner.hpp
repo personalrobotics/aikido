@@ -3,7 +3,6 @@
 
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
 #include "aikido/planner/PlannerForSingleProblem.hpp"
-#include "aikido/planner/PlanningResult.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {

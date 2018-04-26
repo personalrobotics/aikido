@@ -10,7 +10,7 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to given single Task Space Region (TSR).
+/// Planning problem to plan to a given single Task Space Region (TSR).
 class ConfigurationToTSR : public Problem
 {
 public:
@@ -20,7 +20,6 @@ public:
   /// \param bodyNode Body Node or robot for which the path is to be planned.
   /// \param startState Start state.
   /// \param goalTSR Goal TSR.
-  /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
@@ -28,43 +27,51 @@ public:
       statespace::StateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
-      const constraint::dart::TSRPtr goalTSR,
-      statespace::InterpolatorPtr interpolator,
-      constraint::TestablePtr constraint);
+      constraint::dart::ConstTSRPtr goalTSR,
+      constraint::ConstTestablePtr constraint);
 
+  // Documentation inherited.
   const std::string& getType() const override;
 
+  /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
+  /// Sets BodyNode for which the path is to be planned.
+  void setBodyNode(dart::dynamics::BodyNodePtr bodyNode);
+
+  /// Returns BodyNode for which the path is to be planned.
   dart::dynamics::BodyNodePtr getBodyNode();
 
+  /// Sets start state.
+  void setStartState(const statespace::StateSpace::State* startState);
+
+  /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
-  const constraint::dart::TSRPtr getGoalTSR() const;
+  /// Sets goal TSR.
+  void setGoalTSR(constraint::dart::ConstTSRPtr goalTSR);
 
-  statespace::InterpolatorPtr getInterpolator();
+  /// Returns the goal TSR.
+  constraint::dart::ConstTSRPtr getGoalTSR() const;
 
-  statespace::ConstInterpolatorPtr getInterpolator() const;
+  /// Sets constraint that must be satisfied throughout the trajectory.
+  void setConstraint(constraint::ConstTestablePtr constraint);
 
-  constraint::TestablePtr getConstraint();
-
+  /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
   /// Body Node or Robot
   dart::dynamics::BodyNodePtr mBodyNode;
 
-  /// Start State
+  /// Start state.
   const statespace::StateSpace::State* mStartState;
 
   /// Goal TSR
-  const constraint::dart::TSRPtr mGoalTSR;
-
-  /// Interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr mInterpolator;
+  constraint::dart::ConstTSRPtr mGoalTSR;
 
   /// Trajectory-wide constraint that must be satisfied.
-  constraint::TestablePtr mConstraint;
+  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner

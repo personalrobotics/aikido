@@ -10,14 +10,12 @@ ConfigurationToTSR::ConfigurationToTSR(
     statespace::StateSpacePtr stateSpace,
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
-    const constraint::dart::TSRPtr goalTSR,
-    statespace::InterpolatorPtr interpolator,
-    constraint::TestablePtr constraint)
+    constraint::dart::ConstTSRPtr goalTSR,
+    constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
   , mGoalTSR(goalTSR)
-  , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
   if (mStateSpace != mConstraint->getStateSpace())
@@ -41,9 +39,22 @@ const std::string& ConfigurationToTSR::getStaticType()
 }
 
 //==============================================================================
+void ConfigurationToTSR::setBodyNode(dart::dynamics::BodyNodePtr bodyNode)
+{
+  mBodyNode = std::move(bodyNode);
+}
+
+//==============================================================================
 dart::dynamics::BodyNodePtr ConfigurationToTSR::getBodyNode()
 {
   return mBodyNode;
+}
+
+//==============================================================================
+void ConfigurationToTSR::setStartState(
+    const statespace::StateSpace::State* startState)
+{
+  mStartState = startState;
 }
 
 //==============================================================================
@@ -53,27 +64,21 @@ const statespace::StateSpace::State* ConfigurationToTSR::getStartState() const
 }
 
 //==============================================================================
-const constraint::dart::TSRPtr ConfigurationToTSR::getGoalTSR() const
+void ConfigurationToTSR::setGoalTSR(constraint::dart::ConstTSRPtr goalTSR)
+{
+  mGoalTSR = std::move(goalTSR);
+}
+
+//==============================================================================
+constraint::dart::ConstTSRPtr ConfigurationToTSR::getGoalTSR() const
 {
   return mGoalTSR;
 }
 
 //==============================================================================
-statespace::InterpolatorPtr ConfigurationToTSR::getInterpolator()
+void ConfigurationToTSR::setConstraint(constraint::ConstTestablePtr constraint)
 {
-  return mInterpolator;
-}
-
-//==============================================================================
-statespace::ConstInterpolatorPtr ConfigurationToTSR::getInterpolator() const
-{
-  return mInterpolator;
-}
-
-//==============================================================================
-constraint::TestablePtr ConfigurationToTSR::getConstraint()
-{
-  return mConstraint;
+  mConstraint = std::move(constraint);
 }
 
 //==============================================================================

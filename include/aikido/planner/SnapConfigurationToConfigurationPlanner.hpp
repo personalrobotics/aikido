@@ -7,7 +7,7 @@
 namespace aikido {
 namespace planner {
 
-/// Planner that checks the straight-line trajectory to the goal.
+/// Planner that plans the straight-line trajectory to the goal.
 ///
 /// SnapPlanner is a utility planner class that collision checks the
 /// straight-line trajectory to the goal. If that trajectory is invalid, e.g.,

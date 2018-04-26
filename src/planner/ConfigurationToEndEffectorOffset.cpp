@@ -11,15 +11,13 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Vector3d& direction,
-    const double& distance,
-    statespace::InterpolatorPtr interpolator,
-    constraint::TestablePtr constraint)
+    double distance,
+    constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
   , mDirection(direction)
   , mDistance(distance)
-  , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
   if (mStateSpace != mConstraint->getStateSpace())
@@ -43,9 +41,23 @@ const std::string& ConfigurationToEndEffectorOffset::getStaticType()
 }
 
 //==============================================================================
+void ConfigurationToEndEffectorOffset::setBodyNode(
+    dart::dynamics::BodyNodePtr bodyNode)
+{
+  mBodyNode = std::move(bodyNode);
+}
+
+//==============================================================================
 dart::dynamics::BodyNodePtr ConfigurationToEndEffectorOffset::getBodyNode()
 {
   return mBodyNode;
+}
+
+//==============================================================================
+void ConfigurationToEndEffectorOffset::setStartState(
+    const statespace::StateSpace::State* startState)
+{
+  mStartState = startState;
 }
 
 //==============================================================================
@@ -56,34 +68,30 @@ ConfigurationToEndEffectorOffset::getStartState() const
 }
 
 //==============================================================================
+void ConfigurationToEndEffectorOffset::setDirection(
+    const Eigen::Vector3d& direction)
+{
+  mDirection = direction.normalized();
+}
+
+//==============================================================================
 const Eigen::Vector3d& ConfigurationToEndEffectorOffset::getDirection() const
 {
   return mDirection;
 }
 
 //==============================================================================
-const double& ConfigurationToEndEffectorOffset::getDistance() const
+void ConfigurationToEndEffectorOffset::setDistance(double distance)
+{
+  // TODO(JS): Check validity of distance.
+
+  mDistance = distance;
+}
+
+//==============================================================================
+double ConfigurationToEndEffectorOffset::getDistance() const
 {
   return mDistance;
-}
-
-//==============================================================================
-statespace::InterpolatorPtr ConfigurationToEndEffectorOffset::getInterpolator()
-{
-  return mInterpolator;
-}
-
-//==============================================================================
-statespace::ConstInterpolatorPtr
-ConfigurationToEndEffectorOffset::getInterpolator() const
-{
-  return mInterpolator;
-}
-
-//==============================================================================
-constraint::TestablePtr ConfigurationToEndEffectorOffset::getConstraint()
-{
-  return mConstraint;
 }
 
 //==============================================================================

@@ -91,7 +91,7 @@ public:
                        bn1, properties2, create_BodyNodeProperties("b2"))
                    .second;
 
-    // End effector
+    // End-effector
     RevoluteJoint::Properties propertiesEE;
     propertiesEE.mAxis = Eigen::Vector3d::UnitZ();
     propertiesEE.mName = "ee";

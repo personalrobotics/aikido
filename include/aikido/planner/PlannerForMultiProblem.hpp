@@ -37,6 +37,7 @@ protected:
   const PlanningFunctionMap& getPlanningFunctionMap() const;
 
   /// Registers planning function to this planner.
+  // TODO(JS): Add docstring for template parameter.
   template <class ProblemT, typename T, typename R, typename... Args>
   void registerPlanningFunction(R (T::*func)(Args...));
 };

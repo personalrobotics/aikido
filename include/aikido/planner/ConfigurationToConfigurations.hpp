@@ -34,7 +34,7 @@ public:
   // Documentation inherited.
   const std::string& getType() const override;
 
-  /// Returns the name of the planning problem.
+  /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
   /// Returns the start state.

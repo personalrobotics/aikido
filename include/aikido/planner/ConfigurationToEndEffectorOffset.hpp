@@ -10,8 +10,8 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to desired en-effector offset with fixed
-/// orientation
+/// Planning problem to plan to desired end-effector offset while maintaining
+/// the current end-effector orientation.
 class ConfigurationToEndEffectorOffset : public Problem
 {
 public:
@@ -20,7 +20,6 @@ public:
   /// \param stateSpace State space.
   /// \param bodyNode Body Node or robot for which the path is to be planned.
   /// \param startState Start state.
-  /// \param goalState Goal state.
   /// \param direction Direction of motion [unit vector in the world frame].
   /// \param distance Distance to move, in meters.
   /// \param interpolator Interpolator used to produce the output trajectory.
@@ -32,32 +31,40 @@ public:
       dart::dynamics::BodyNodePtr bodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Vector3d& direction,
-      const double& distance,
-      statespace::InterpolatorPtr interpolator,
-      constraint::TestablePtr constraint);
+      double distance,
+      constraint::ConstTestablePtr constraint);
 
-  /// Returns the name of the planner problem.
+  // Documentation inherited.
   const std::string& getType() const override;
+
+  /// Returns the type of the planning problem.
   static const std::string& getStaticType();
+
+  /// Sets body node or robot for which the path is to be planned.
+  void setBodyNode(dart::dynamics::BodyNodePtr bodyNode);
 
   /// Returns the body node or robot for which the path is to be planned.
   dart::dynamics::BodyNodePtr getBodyNode();
 
+  /// Sets start state.
+  void setStartState(const statespace::StateSpace::State* startState);
+
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
+
+  /// Sets direction of motion specified in the world frame.
+  void setDirection(const Eigen::Vector3d& direction);
 
   /// Returns the direction of motion specified in the world frame.
   const Eigen::Vector3d& getDirection() const;
 
-  /// Returns the distance to move in the specified direction [meters]
-  const double& getDistance() const;
+  /// Sets distance in meters to move in the specified direction.
+  void setDistance(double distance);
 
-  /// Returns the interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr getInterpolator();
-  statespace::ConstInterpolatorPtr getInterpolator() const;
+  /// Returns the distance in meters to move in the specified direction.
+  double getDistance() const;
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::TestablePtr getConstraint();
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
@@ -68,16 +75,13 @@ protected:
   const statespace::StateSpace::State* mStartState;
 
   /// Direction of motion.
-  const Eigen::Vector3d mDirection;
+  Eigen::Vector3d mDirection;
 
   /// Distance to move in the direction specified.
-  const double mDistance;
-
-  /// Interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr mInterpolator;
+  double mDistance;
 
   /// Trajectory-wide constraint that must be satisfied.
-  constraint::TestablePtr mConstraint;
+  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner

@@ -4,7 +4,6 @@
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
-#include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/SnapConfigurationToConfigurationPlanner.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>

@@ -17,6 +17,12 @@ statespace::ConstStateSpacePtr Planner::getStateSpace() const
 }
 
 //==============================================================================
+Planner::Result::Result(const std::string& message) : mMessage(message)
+{
+  // Do nothing
+}
+
+//==============================================================================
 void Planner::Result::setMessage(const std::string& message)
 {
   mMessage = message;

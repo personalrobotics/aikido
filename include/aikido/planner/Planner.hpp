@@ -47,6 +47,11 @@ protected:
 class Planner::Result
 {
 public:
+  /// Constructor.
+  ///
+  /// \param[in] message Planning result message.
+  Result(const std::string& message = "");
+
   /// Destructor.
   virtual ~Result() = default;
 

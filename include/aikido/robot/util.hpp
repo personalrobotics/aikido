@@ -170,7 +170,7 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
 /// Plan to a desired end-effector offset with fixed orientation.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
-/// \param[in] body Bodynode for the end effector
+/// \param[in] body Bodynode for the end-effector
 /// \param[in] direction Direction unit vector in the world frame
 /// \param[in] collisionTestable Collision constraint to check. Self-collision
 /// is checked by default.
@@ -198,7 +198,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
 /// Plan to a desired end-effector offset with fixed orientation using CRRT.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
-/// \param[in] bodyNode Bodynode for the end effector
+/// \param[in] bodyNode Bodynode for the end-effector
 /// \param[in] direction Direction unit vector in the world frame
 /// \param[in] collisionTestable Collision constraint to check. Self-collision
 /// is checked by default.
@@ -226,7 +226,7 @@ trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node);
 
-/// Gets Goal and Constraint TSR for End Effector.
+/// Gets Goal and Constraint TSR for end-effector.
 /// \param[in] bodyNode End-effector body node
 /// \param[in] direction End-effector direction
 /// \param[in] distance Offset to move

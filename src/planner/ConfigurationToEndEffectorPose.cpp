@@ -11,13 +11,11 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     dart::dynamics::BodyNodePtr bodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Isometry3d& goalPose,
-    statespace::InterpolatorPtr interpolator,
-    constraint::TestablePtr constraint)
+    constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mBodyNode(std::move(bodyNode))
   , mStartState(startState)
   , mGoalPose(goalPose)
-  , mInterpolator(std::move(interpolator))
   , mConstraint(std::move(constraint))
 {
   if (mStateSpace != mConstraint->getStateSpace())
@@ -47,10 +45,24 @@ dart::dynamics::BodyNodePtr ConfigurationToEndEffectorPose::getBodyNode()
 }
 
 //==============================================================================
+void ConfigurationToEndEffectorPose::setStartState(
+    const statespace::StateSpace::State* startState)
+{
+  mStartState = startState;
+}
+
+//==============================================================================
 const statespace::StateSpace::State*
 ConfigurationToEndEffectorPose::getStartState() const
 {
   return mStartState;
+}
+
+//==============================================================================
+void ConfigurationToEndEffectorPose::setGoalPose(
+    const Eigen::Isometry3d& goalPose)
+{
+  mGoalPose = goalPose;
 }
 
 //==============================================================================
@@ -60,22 +72,10 @@ const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
 }
 
 //==============================================================================
-statespace::InterpolatorPtr ConfigurationToEndEffectorPose::getInterpolator()
+void ConfigurationToEndEffectorPose::setConstraint(
+    constraint::ConstTestablePtr constraint)
 {
-  return mInterpolator;
-}
-
-//==============================================================================
-statespace::ConstInterpolatorPtr
-ConfigurationToEndEffectorPose::getInterpolator() const
-{
-  return mInterpolator;
-}
-
-//==============================================================================
-constraint::TestablePtr ConfigurationToEndEffectorPose::getConstraint()
-{
-  return mConstraint;
+  mConstraint = std::move(constraint);
 }
 
 //==============================================================================

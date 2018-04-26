@@ -11,8 +11,8 @@ namespace aikido {
 namespace planner {
 
 /// PlannerForSingleProblem is a base class for concrete planner classes that
-/// only
-/// support one planning problem.
+/// only support one planning problem.
+// TODO(JS): Add docstring for template arguments.
 template <typename Derived, typename ProblemT>
 class PlannerForSingleProblem : public Planner
 {

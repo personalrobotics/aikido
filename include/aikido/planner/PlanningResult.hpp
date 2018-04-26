@@ -6,6 +6,8 @@
 namespace aikido {
 namespace planner {
 
+// TODO(JS): This should be removed once all the legacy planning functions are
+// converted to the new planning API.
 class PlanningResult
 {
 public:
