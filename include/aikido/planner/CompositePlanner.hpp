@@ -20,7 +20,7 @@ public:
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] planners Planners that this CompositePlanner will contain.
   CompositePlanner(
-      const statespace::ConstStateSpacePtr& stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       const std::vector<PlannerPtr>& planners = std::vector<PlannerPtr>());
 
   /// Adds planner.
@@ -48,7 +48,7 @@ public:
   ConstPlannerPtr getPlanner(std::size_t index) const;
 
   // Documentation inherited.
-  virtual bool canSolve(const Problem* problem) const override;
+  bool canSolve(const Problem* problem) const override;
 
 protected:
   /// Planners.

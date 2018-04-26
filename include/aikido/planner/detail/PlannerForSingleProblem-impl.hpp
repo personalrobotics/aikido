@@ -3,13 +3,15 @@
 
 #include "aikido/planner/PlannerForSingleProblem.hpp"
 
+#include <utility>
+
 namespace aikido {
 namespace planner {
 
 //==============================================================================
 template <typename Derived, typename ProblemT>
 PlannerForSingleProblem<Derived, ProblemT>::PlannerForSingleProblem(
-    const statespace::ConstStateSpacePtr& stateSpace)
+    statespace::ConstStateSpacePtr stateSpace)
   : Planner(std::move(stateSpace))
 {
   // Do nothing

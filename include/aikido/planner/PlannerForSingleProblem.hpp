@@ -1,8 +1,6 @@
 #ifndef AIKIDO_PLANNER_SINGLEPROBLEMPLANNER_HPP_
 #define AIKIDO_PLANNER_SINGLEPROBLEMPLANNER_HPP_
 
-#include <functional>
-#include <unordered_map>
 #include "aikido/planner/Planner.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
@@ -23,9 +21,8 @@ public:
 
   /// Constructor
   ///
-  /// \param[in] stateSpace State space that this planner associated with.
-  explicit PlannerForSingleProblem(
-      const statespace::ConstStateSpacePtr& stateSpace);
+  /// \param[in] stateSpace State space associated with this planner.
+  explicit PlannerForSingleProblem(statespace::ConstStateSpacePtr stateSpace);
 
   // Documentation inherited.
   bool canSolve(const Problem* problem) const final override;

@@ -8,7 +8,7 @@ namespace planner {
 
 //==============================================================================
 CompositePlanner::CompositePlanner(
-    const statespace::ConstStateSpacePtr& stateSpace,
+    statespace::ConstStateSpacePtr stateSpace,
     const std::vector<PlannerPtr>& planners)
   : Planner(std::move(stateSpace)), mPlanners(planners)
 {
