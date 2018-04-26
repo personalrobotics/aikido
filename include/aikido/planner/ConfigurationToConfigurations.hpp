@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
 #define AIKIDO_PLANNER_PLANTOCONFIGURATIONS_HPP_
 
+#include <unordered_set>
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/Interpolator.hpp"
@@ -9,7 +10,7 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to a multiple goal configurations.
+/// Planning problem to plan to multiple goal configurations.
 ///
 /// Plan a trajectory from start state to any of the goal states using an
 /// interpolator to interpolate between the states.
@@ -23,11 +24,11 @@ public:
   /// \param goalStates Goal states.
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
-  /// \throw If \c stateSpace is not compatible to \c constraint's state space.
+  /// \throw If \c stateSpace is not compatible with \c constraint's state space.
   ConfigurationToConfigurations(
       statespace::StateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
-      const std::vector<statespace::StateSpace::State*>& goalStates,
+      const std::unordered_set<statespace::StateSpace::State*>& goalStates,
       statespace::InterpolatorPtr interpolator,
       constraint::TestablePtr constraint);
 
@@ -39,7 +40,7 @@ public:
   const statespace::StateSpace::State* getStartState() const;
 
   /// Returns the vector of goal states.
-  const std::vector<statespace::StateSpace::State*> getGoalStates() const;
+  const std::unordered_set<statespace::StateSpace::State*> getGoalStates() const;
 
   /// Returns the interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr getInterpolator();
@@ -58,7 +59,7 @@ protected:
   const statespace::StateSpace::State* mStartState;
 
   /// Goal States.
-  const std::vector<statespace::StateSpace::State*> mGoalStates;
+  const std::unordered_set<statespace::StateSpace::State*> mGoalStates;
 
   /// Interpolator used to produce the output trajectory.
   statespace::InterpolatorPtr mInterpolator;

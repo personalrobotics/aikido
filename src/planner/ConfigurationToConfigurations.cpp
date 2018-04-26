@@ -9,7 +9,7 @@ namespace planner {
 ConfigurationToConfigurations::ConfigurationToConfigurations(
     statespace::StateSpacePtr stateSpace,
     const statespace::StateSpace::State* startState,
-    const std::vector<statespace::StateSpace::State*>& goalStates,
+    const std::unordered_set<statespace::StateSpace::State*>& goalStates,
     statespace::InterpolatorPtr interpolator,
     constraint::TestablePtr constraint)
   : Problem(std::move(stateSpace))
@@ -46,7 +46,7 @@ ConfigurationToConfigurations::getStartState() const
 }
 
 //==============================================================================
-const std::vector<statespace::StateSpace::State*>
+const std::unordered_set<statespace::StateSpace::State*>
 ConfigurationToConfigurations::getGoalStates() const
 {
   return mGoalStates;
