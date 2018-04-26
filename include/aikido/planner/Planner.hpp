@@ -50,7 +50,7 @@ public:
   /// Constructor.
   ///
   /// \param[in] message Planning result message.
-  Result(const std::string& message = "");
+  explicit Result(const std::string& message = "");
 
   /// Destructor.
   virtual ~Result() = default;

@@ -24,7 +24,8 @@ public:
   /// Constructor
   ///
   /// \param[in] stateSpace State space that this planner associated with.
-  PlannerForSingleProblem(const statespace::ConstStateSpacePtr& stateSpace);
+  explicit PlannerForSingleProblem(
+      const statespace::ConstStateSpacePtr& stateSpace);
 
   // Documentation inherited.
   bool canSolve(const Problem* problem) const final override;
