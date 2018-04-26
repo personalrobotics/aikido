@@ -8,13 +8,13 @@ namespace planner {
 //==============================================================================
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::StateSpacePtr stateSpace,
-    dart::dynamics::BodyNodePtr bodyNode,
+    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Vector3d& direction,
     double distance,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
-  , mBodyNode(std::move(bodyNode))
+  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mDirection(direction)
   , mDistance(distance)
@@ -41,16 +41,17 @@ const std::string& ConfigurationToEndEffectorOffset::getStaticType()
 }
 
 //==============================================================================
-void ConfigurationToEndEffectorOffset::setBodyNode(
-    dart::dynamics::BodyNodePtr bodyNode)
+void ConfigurationToEndEffectorOffset::setEndEffectorBodyNode(
+    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
 {
-  mBodyNode = std::move(bodyNode);
+  mEndEffectorBodyNode = std::move(endEffectorBodyNode);
 }
 
 //==============================================================================
-dart::dynamics::BodyNodePtr ConfigurationToEndEffectorOffset::getBodyNode()
+dart::dynamics::ConstBodyNodePtr
+ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
 {
-  return mBodyNode;
+  return mEndEffectorBodyNode;
 }
 
 //==============================================================================

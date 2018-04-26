@@ -9,7 +9,7 @@ namespace planner {
 ConfigurationToConfigurations::ConfigurationToConfigurations(
     statespace::StateSpacePtr stateSpace,
     const statespace::StateSpace::State* startState,
-    const std::unordered_set<statespace::StateSpace::State*>& goalStates,
+    const GoalStates& goalStates,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
   , mStartState(startState)
@@ -37,6 +37,13 @@ const std::string& ConfigurationToConfigurations::getStaticType()
 }
 
 //==============================================================================
+void ConfigurationToConfigurations::setStartState(
+    statespace::StateSpace::State* startState)
+{
+  mStartState = startState;
+}
+
+//==============================================================================
 const statespace::StateSpace::State*
 ConfigurationToConfigurations::getStartState() const
 {
@@ -44,10 +51,32 @@ ConfigurationToConfigurations::getStartState() const
 }
 
 //==============================================================================
-const std::unordered_set<statespace::StateSpace::State*>&
+void ConfigurationToConfigurations::setGoalStates(
+    const ConfigurationToConfigurations::GoalStates& goalStates)
+{
+  mGoalStates = goalStates;
+}
+
+//==============================================================================
+void ConfigurationToConfigurations::addGoalState(
+    const statespace::StateSpace::State* goalState)
+{
+  // TODO(JS): Do we want to report the success?
+  mGoalStates.insert(goalState);
+}
+
+//==============================================================================
+const ConfigurationToConfigurations::GoalStates&
 ConfigurationToConfigurations::getGoalStates() const
 {
   return mGoalStates;
+}
+
+//==============================================================================
+void ConfigurationToConfigurations::setConstraint(
+    constraint::ConstTestablePtr constraint)
+{
+  mConstraint = std::move(constraint);
 }
 
 //==============================================================================

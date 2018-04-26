@@ -17,6 +17,8 @@ namespace planner {
 class ConfigurationToConfigurations : public Problem
 {
 public:
+  using GoalStates = std::unordered_set<const statespace::StateSpace::State*>;
+
   /// Constructor.
   ///
   /// \param stateSpace State space.
@@ -28,7 +30,7 @@ public:
   ConfigurationToConfigurations(
       statespace::StateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
-      const std::unordered_set<statespace::StateSpace::State*>& goalStates,
+      const GoalStates& goalStates,
       constraint::ConstTestablePtr constraint);
 
   // Documentation inherited.
@@ -37,12 +39,23 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
+  /// Sets start state.
+  void setStartState(statespace::StateSpace::State* startState);
+
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
+  /// Sets vector of goal states.
+  void setGoalStates(const GoalStates& goalStates);
+
+  /// Add a goal state, if this class doesn't already contain the goal state.
+  void addGoalState(const statespace::StateSpace::State* goalState);
+
   /// Returns the vector of goal states.
-  const std::unordered_set<statespace::StateSpace::State*>& getGoalStates()
-      const;
+  const GoalStates& getGoalStates() const;
+
+  /// Sets constraint that must be satisfied throughout the trajectory.
+  void setConstraint(constraint::ConstTestablePtr constraint);
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::ConstTestablePtr getConstraint() const;
@@ -52,7 +65,7 @@ protected:
   const statespace::StateSpace::State* mStartState;
 
   /// Goal States.
-  std::unordered_set<statespace::StateSpace::State*> mGoalStates;
+  GoalStates mGoalStates;
 
   /// Trajectory-wide constrained that must be satisfied.
   constraint::ConstTestablePtr mConstraint;

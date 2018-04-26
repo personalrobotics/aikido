@@ -8,12 +8,12 @@ namespace planner {
 //==============================================================================
 ConfigurationToTSR::ConfigurationToTSR(
     statespace::StateSpacePtr stateSpace,
-    dart::dynamics::BodyNodePtr bodyNode,
+    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
-  , mBodyNode(std::move(bodyNode))
+  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mGoalTSR(goalTSR)
   , mConstraint(std::move(constraint))
@@ -39,15 +39,17 @@ const std::string& ConfigurationToTSR::getStaticType()
 }
 
 //==============================================================================
-void ConfigurationToTSR::setBodyNode(dart::dynamics::BodyNodePtr bodyNode)
+void ConfigurationToTSR::setEndEffectorBodyNode(
+    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
 {
-  mBodyNode = std::move(bodyNode);
+  mEndEffectorBodyNode = std::move(endEffectorBodyNode);
 }
 
 //==============================================================================
-dart::dynamics::BodyNodePtr ConfigurationToTSR::getBodyNode()
+dart::dynamics::ConstBodyNodePtr ConfigurationToTSR::getEndEffectorBodyNode()
+    const
 {
-  return mBodyNode;
+  return mEndEffectorBodyNode;
 }
 
 //==============================================================================

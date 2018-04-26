@@ -18,7 +18,8 @@ public:
   /// Constructor.
   ///
   /// \param stateSpace State space.
-  /// \param bodyNode Body Node or robot for which the path is to be planned.
+  /// \param endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// offest while maintaining the current orientation.
   /// \param startState Start state.
   /// \param direction Direction of motion [unit vector in the world frame].
   /// \param distance Distance to move, in meters.
@@ -28,7 +29,7 @@ public:
   /// space.
   ConfigurationToEndEffectorOffset(
       statespace::StateSpacePtr stateSpace,
-      dart::dynamics::BodyNodePtr bodyNode,
+      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Vector3d& direction,
       double distance,
@@ -40,11 +41,14 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Sets body node or robot for which the path is to be planned.
-  void setBodyNode(dart::dynamics::BodyNodePtr bodyNode);
+  /// Sets the end-effector BodyNode to be planned to move a desired offest
+  /// while maintaining the current orientation.
+  void setEndEffectorBodyNode(
+      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
 
-  /// Returns the body node or robot for which the path is to be planned.
-  dart::dynamics::BodyNodePtr getBodyNode();
+  /// Returns the end-effector BodyNode to be planned to move a desired offest
+  /// while maintaining the current orientation.
+  dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Sets start state.
   void setStartState(const statespace::StateSpace::State* startState);
@@ -68,8 +72,8 @@ public:
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
-  /// Body Node or Robot.
-  dart::dynamics::BodyNodePtr mBodyNode;
+  /// End-effector body node.
+  dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;

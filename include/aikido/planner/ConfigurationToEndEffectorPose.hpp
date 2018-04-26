@@ -10,17 +10,15 @@
 namespace aikido {
 namespace planner {
 
-/// Planning problem to plan to a given end-effector pose.
-///
-/// Plan a trajectory from start state to goal state by using an interpolator to
-/// interpolate between them.
+/// Planning problem to plan to a desired end-effector pose.
 class ConfigurationToEndEffectorPose : public Problem
 {
 public:
   /// Constructor.
   ///
   /// \param stateSpace State space.
-  /// \param bodyNode Body Node or Robot for which the path is to be planned.
+  /// \param endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// pose.
   /// \param startState Start state.
   /// \param goalPose Goal pose.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
@@ -28,7 +26,7 @@ public:
   /// space.
   ConfigurationToEndEffectorPose(
       statespace::StateSpacePtr stateSpace,
-      dart::dynamics::BodyNodePtr bodyNode,
+      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Isometry3d& goalPose,
       constraint::ConstTestablePtr constraint);
@@ -39,8 +37,12 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Returns the body node or robot for which the path is to be planned.
-  dart::dynamics::BodyNodePtr getBodyNode();
+  /// Sets the end-effector BodyNode to be planned to move to a desired pose.
+  void setEndEffectorBodyNode(
+      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
+
+  /// Returns the end-effector BodyNode to be planned to move to a desired pose.
+  dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Sets start state.
   void setStartState(const statespace::StateSpace::State* startState);
@@ -61,8 +63,8 @@ public:
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
-  /// Body Node or Robot.
-  dart::dynamics::BodyNodePtr mBodyNode;
+  /// End-effector body node.
+  dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;

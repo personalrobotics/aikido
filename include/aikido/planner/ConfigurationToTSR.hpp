@@ -17,7 +17,8 @@ public:
   /// Constructor.
   ///
   /// \param stateSpace State space.
-  /// \param bodyNode Body Node or robot for which the path is to be planned.
+  /// \param endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// TSR.
   /// \param startState Start state.
   /// \param goalTSR Goal TSR.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
@@ -25,7 +26,7 @@ public:
   /// space.
   ConfigurationToTSR(
       statespace::StateSpacePtr stateSpace,
-      dart::dynamics::BodyNodePtr bodyNode,
+      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint);
@@ -36,11 +37,12 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Sets BodyNode for which the path is to be planned.
-  void setBodyNode(dart::dynamics::BodyNodePtr bodyNode);
+  /// Sets the end-effector BodyNode to be planned to move to a desired TSR.
+  void setEndEffectorBodyNode(
+      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
 
-  /// Returns BodyNode for which the path is to be planned.
-  dart::dynamics::BodyNodePtr getBodyNode();
+  /// Returns the end-effector BodyNode to be planned to move to a desired TSR.
+  dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Sets start state.
   void setStartState(const statespace::StateSpace::State* startState);
@@ -61,8 +63,8 @@ public:
   constraint::ConstTestablePtr getConstraint() const;
 
 protected:
-  /// Body Node or Robot
-  dart::dynamics::BodyNodePtr mBodyNode;
+  /// End-effector body node.
+  dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;

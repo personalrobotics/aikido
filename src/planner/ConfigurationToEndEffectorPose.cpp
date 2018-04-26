@@ -8,12 +8,12 @@ namespace planner {
 //==============================================================================
 ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     statespace::StateSpacePtr stateSpace,
-    dart::dynamics::BodyNodePtr bodyNode,
+    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace))
-  , mBodyNode(std::move(bodyNode))
+  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mGoalPose(goalPose)
   , mConstraint(std::move(constraint))
@@ -39,9 +39,17 @@ const std::string& ConfigurationToEndEffectorPose::getStaticType()
 }
 
 //==============================================================================
-dart::dynamics::BodyNodePtr ConfigurationToEndEffectorPose::getBodyNode()
+void ConfigurationToEndEffectorPose::setEndEffectorBodyNode(
+    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
 {
-  return mBodyNode;
+  mEndEffectorBodyNode = std::move(endEffectorBodyNode);
+}
+
+//==============================================================================
+dart::dynamics::ConstBodyNodePtr
+ConfigurationToEndEffectorPose::getEndEffectorBodyNode() const
+{
+  return mEndEffectorBodyNode;
 }
 
 //==============================================================================
