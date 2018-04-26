@@ -22,7 +22,8 @@ public:
   /// \param goalTSR Goal TSR.
   /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
-  /// \throw If \c stateSpace is not compatible with \c constraint's state space.
+  /// \throw If \c stateSpace is not compatible with \c constraint's state
+  /// space.
   ConfigurationToTSR(
       statespace::StateSpacePtr stateSpace,
       dart::dynamics::BodyNodePtr bodyNode,

@@ -23,7 +23,8 @@ public:
   /// \param startState Start state.
   /// \param goalStates Goal states.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
-  /// \throw If \c stateSpace is not compatible with \c constraint's state space.
+  /// \throw If \c stateSpace is not compatible with \c constraint's state
+  /// space.
   ConfigurationToConfigurations(
       statespace::StateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
@@ -41,7 +42,7 @@ public:
 
   /// Returns the vector of goal states.
   const std::unordered_set<statespace::StateSpace::State*>& getGoalStates()
-  const;
+      const;
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::ConstTestablePtr getConstraint() const;
