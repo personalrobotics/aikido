@@ -22,34 +22,26 @@ public:
   /// \param stateSpace State space.
   /// \param startState Start state.
   /// \param goalStates Goal states.
-  /// \param interpolator Interpolator used to produce the output trajectory.
   /// \param constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state space.
   ConfigurationToConfigurations(
       statespace::StateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
       const std::unordered_set<statespace::StateSpace::State*>& goalStates,
-      statespace::InterpolatorPtr interpolator,
-      constraint::TestablePtr constraint);
+      constraint::ConstTestablePtr constraint);
 
-  /// Returns the name of the planner problem.
+  // Documentation inherited.
   const std::string& getType() const override;
+
+  /// Returns the name of the planning problem.
   static const std::string& getStaticType();
 
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
   /// Returns the vector of goal states.
-  const std::unordered_set<statespace::StateSpace::State*> getGoalStates() const;
-
-  /// Returns the interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr getInterpolator();
-
-  /// Returns the interpolator used to produce the output trajectory.
-  statespace::ConstInterpolatorPtr getInterpolator() const;
-
-  /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::TestablePtr getConstraint();
+  const std::unordered_set<statespace::StateSpace::State*>& getGoalStates()
+  const;
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::ConstTestablePtr getConstraint() const;
@@ -59,13 +51,10 @@ protected:
   const statespace::StateSpace::State* mStartState;
 
   /// Goal States.
-  const std::unordered_set<statespace::StateSpace::State*> mGoalStates;
-
-  /// Interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr mInterpolator;
+  std::unordered_set<statespace::StateSpace::State*> mGoalStates;
 
   /// Trajectory-wide constrained that must be satisfied.
-  constraint::TestablePtr mConstraint;
+  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner
