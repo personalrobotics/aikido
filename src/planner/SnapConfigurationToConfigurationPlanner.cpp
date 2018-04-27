@@ -10,7 +10,7 @@ namespace planner {
 //==============================================================================
 SnapConfigurationToConfigurationPlanner::
     SnapConfigurationToConfigurationPlanner(
-        const statespace::ConstStateSpacePtr& stateSpace,
+        statespace::ConstStateSpacePtr stateSpace,
         statespace::InterpolatorPtr interpolator)
   : ConfigurationToConfigurationPlanner(std::move(stateSpace))
   , mInterpolator(std::move(interpolator))
@@ -26,7 +26,7 @@ SnapConfigurationToConfigurationPlanner::
 
 //==============================================================================
 trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
-    const TheProblem& problem, TheResult* result)
+    const SolverbleProblem& problem, Result* result)
 {
   // TODO(JS): Check equality between state space of this planner and given
   // problem.

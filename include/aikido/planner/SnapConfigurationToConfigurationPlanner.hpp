@@ -29,7 +29,7 @@ public:
   /// trajectory. If nullptr is passed in, GeodesicInterpolator is used by
   /// default.
   SnapConfigurationToConfigurationPlanner(
-      const statespace::ConstStateSpacePtr& stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       statespace::InterpolatorPtr interpolator = nullptr);
 
   /// Plans a trajectory from start state to goal state by using an interpolator
@@ -46,7 +46,7 @@ public:
   /// \throw If \c problem is not ConfigurationToConfiguration.
   /// \throw If \c result is not ConfigurationToConfiguration::Result.
   trajectory::TrajectoryPtr plan(
-      const TheProblem& problem, TheResult* result = nullptr) override;
+      const SolverbleProblem& problem, Result* result = nullptr) override;
 
   // TODO(JS): Add setInterpolator()
 

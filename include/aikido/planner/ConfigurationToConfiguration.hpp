@@ -22,7 +22,7 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToConfiguration(
-      const statespace::ConstStateSpacePtr& stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
       const statespace::StateSpace::State* goalState,
       constraint::ConstTestablePtr constraint);

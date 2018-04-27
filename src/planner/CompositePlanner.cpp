@@ -32,12 +32,12 @@ void CompositePlanner::addPlanner(PlannerPtr planner)
 bool CompositePlanner::hasPlanner(const Planner* planner) const
 {
   return std::find_if(
-          mPlanners.begin(),
-          mPlanners.end(),
-          [&planner](const PlannerPtr& val) -> bool {
-            return (val.get() == planner);
-          })
-      != mPlanners.end();
+             mPlanners.begin(),
+             mPlanners.end(),
+             [&planner](const PlannerPtr& val) -> bool {
+               return (val.get() == planner);
+             })
+         != mPlanners.end();
 }
 
 //==============================================================================

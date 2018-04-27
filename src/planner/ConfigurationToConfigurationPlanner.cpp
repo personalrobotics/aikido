@@ -5,7 +5,7 @@ namespace planner {
 
 //==============================================================================
 ConfigurationToConfigurationPlanner::ConfigurationToConfigurationPlanner(
-    const statespace::ConstStateSpacePtr& stateSpace)
+    statespace::ConstStateSpacePtr stateSpace)
   : SingleProblemPlanner<ConfigurationToConfigurationPlanner,
                          ConfigurationToConfiguration>(std::move(stateSpace))
 {

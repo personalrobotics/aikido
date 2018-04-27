@@ -34,8 +34,8 @@ trajectory::TrajectoryPtr SingleProblemPlanner<Derived, ProblemT>::plan(
     return nullptr;
 
   return static_cast<Derived*>(this)->plan(
-      static_cast<const typename Derived::TheProblem&>(problem),
-      static_cast<typename Derived::TheResult*>(result));
+      static_cast<const typename Derived::SolverbleProblem&>(problem),
+      static_cast<typename Derived::Result*>(result));
 }
 
 } // namespace planner

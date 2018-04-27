@@ -57,7 +57,7 @@ public:
   shared_ptr<PassingConstraint> passingConstraint;
   shared_ptr<FailingConstraint> failingConstraint;
   shared_ptr<GeodesicInterpolator> interpolator;
-  SnapConfigurationToConfigurationPlanner::TheResult planningResult;
+  SnapConfigurationToConfigurationPlanner::Result planningResult;
 };
 
 //==============================================================================

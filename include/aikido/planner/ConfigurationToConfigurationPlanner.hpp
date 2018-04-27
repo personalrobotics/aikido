@@ -13,18 +13,15 @@ class ConfigurationToConfigurationPlanner
                                   ConfigurationToConfiguration>
 {
 public:
-  using TheProblem = ConfigurationToConfiguration;
-  using TheResult = Result;
-
   /// Constructor
   ///
   /// \param[in] stateSpace State space that this planner associated with.
-  ConfigurationToConfigurationPlanner(
-      const statespace::ConstStateSpacePtr& stateSpace);
+  explicit ConfigurationToConfigurationPlanner(
+      statespace::ConstStateSpacePtr stateSpace);
 
-  // TODO(JS): Docstring
+  /// Solves \c problem returning the result to \c result.
   virtual trajectory::TrajectoryPtr plan(
-      const TheProblem& problem, TheResult* result = nullptr)
+      const SolverbleProblem& problem, Result* result = nullptr)
       = 0;
 };
 

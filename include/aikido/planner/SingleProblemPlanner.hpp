@@ -15,9 +15,7 @@ template <typename Derived, typename ProblemT>
 class SingleProblemPlanner : public Planner
 {
 public:
-  using TheProblem = ProblemT;
-  using TheResult = Result;
-  // TODO: Better naming
+  using SolverbleProblem = ProblemT;
 
   /// Constructor
   ///
