@@ -83,6 +83,13 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
     throw std::invalid_argument("InverseKinematics is nullptr.");
 
   const auto ikSkeleton = mInverseKinematics->getNode()->getSkeleton();
+
+  if (mInverseKinematics->getDofs().size() == 0)
+  {
+    throw std::invalid_argument(
+      "Zero degree of freedom for InverseKinematics solver.");
+  }
+
   for (const std::size_t dofIndex : mInverseKinematics->getDofs())
   {
     const auto dof = ikSkeleton->getDof(dofIndex);
