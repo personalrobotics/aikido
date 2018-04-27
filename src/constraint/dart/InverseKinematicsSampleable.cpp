@@ -84,10 +84,10 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 
   const auto ikSkeleton = mInverseKinematics->getNode()->getSkeleton();
 
-  if (mInverseKinematics->getDofs().size() == 0)
+  if (mInverseKinematics->getDofs().empty())
   {
     throw std::invalid_argument(
-      "Zero degree of freedom for InverseKinematics solver.");
+        "Zero degree of freedom for InverseKinematics solver.");
   }
 
   for (const std::size_t dofIndex : mInverseKinematics->getDofs())
