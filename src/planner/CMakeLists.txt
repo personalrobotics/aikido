@@ -7,7 +7,6 @@ set(sources
   ConfigurationToEndEffectorPose.cpp
   FirstSupportedMetaPlanner.cpp
   CompositePlanner.cpp
-  PlannerForMultiProblem.cpp
   Planner.cpp
   PlanningResult.cpp
   Problem.cpp

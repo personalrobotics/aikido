@@ -2,15 +2,15 @@
 #define AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
-#include "aikido/planner/PlannerForSingleProblem.hpp"
+#include "aikido/planner/SingleProblemPlanner.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace planner {
 
 class ConfigurationToConfigurationPlanner
-    : public PlannerForSingleProblem<ConfigurationToConfigurationPlanner,
-                                     ConfigurationToConfiguration>
+    : public SingleProblemPlanner<ConfigurationToConfigurationPlanner,
+                                  ConfigurationToConfiguration>
 {
 public:
   using TheProblem = ConfigurationToConfiguration;

@@ -8,11 +8,11 @@
 namespace aikido {
 namespace planner {
 
-/// PlannerForSingleProblem is a base class for concrete planner classes that
+/// SingleProblemPlanner is a base class for concrete planner classes that
 /// only support one planning problem.
 // TODO(JS): Add docstring for template arguments.
 template <typename Derived, typename ProblemT>
-class PlannerForSingleProblem : public Planner
+class SingleProblemPlanner : public Planner
 {
 public:
   using TheProblem = ProblemT;
@@ -22,7 +22,7 @@ public:
   /// Constructor
   ///
   /// \param[in] stateSpace State space associated with this planner.
-  explicit PlannerForSingleProblem(statespace::ConstStateSpacePtr stateSpace);
+  explicit SingleProblemPlanner(statespace::ConstStateSpacePtr stateSpace);
 
   // Documentation inherited.
   bool canSolve(const Problem* problem) const final override;
@@ -35,6 +35,6 @@ public:
 } // namespace planner
 } // namespace aikido
 
-#include "aikido/planner/detail/PlannerForSingleProblem-impl.hpp"
+#include "aikido/planner/detail/SingleProblemPlanner-impl.hpp"
 
 #endif // AIKIDO_PLANNER_SINGLEPROBLEMPLANNER_HPP_

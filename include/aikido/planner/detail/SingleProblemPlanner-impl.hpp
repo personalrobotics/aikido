@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PLANNER_DETAIL_SINGLEPROBLEMPLANNER_IMPL_HPP_
 #define AIKIDO_PLANNER_DETAIL_SINGLEPROBLEMPLANNER_IMPL_HPP_
 
-#include "aikido/planner/PlannerForSingleProblem.hpp"
+#include "aikido/planner/SingleProblemPlanner.hpp"
 
 #include <utility>
 
@@ -10,7 +10,7 @@ namespace planner {
 
 //==============================================================================
 template <typename Derived, typename ProblemT>
-PlannerForSingleProblem<Derived, ProblemT>::PlannerForSingleProblem(
+SingleProblemPlanner<Derived, ProblemT>::SingleProblemPlanner(
     statespace::ConstStateSpacePtr stateSpace)
   : Planner(std::move(stateSpace))
 {
@@ -19,7 +19,7 @@ PlannerForSingleProblem<Derived, ProblemT>::PlannerForSingleProblem(
 
 //==============================================================================
 template <typename Derived, typename ProblemT>
-bool PlannerForSingleProblem<Derived, ProblemT>::canSolve(
+bool SingleProblemPlanner<Derived, ProblemT>::canSolve(
     const Problem* problem) const
 {
   return problem->getType() == ProblemT::getStaticType();
@@ -27,7 +27,7 @@ bool PlannerForSingleProblem<Derived, ProblemT>::canSolve(
 
 //==============================================================================
 template <typename Derived, typename ProblemT>
-trajectory::TrajectoryPtr PlannerForSingleProblem<Derived, ProblemT>::plan(
+trajectory::TrajectoryPtr SingleProblemPlanner<Derived, ProblemT>::plan(
     const Problem& problem, Result* result)
 {
   if (!canSolve(&problem))
