@@ -16,19 +16,6 @@ CompositePlanner::CompositePlanner(
 }
 
 //==============================================================================
-void CompositePlanner::addPlanner(PlannerPtr planner)
-{
-  if (std::find(mPlanners.begin(), mPlanners.end(), planner) != mPlanners.end())
-  {
-    dtwarn << "[CompositePlanner::addPlanner] Attempts to add a planner that "
-              "already exists in this CompositePlanner.\n";
-    return;
-  }
-
-  mPlanners.emplace_back(std::move(planner));
-}
-
-//==============================================================================
 bool CompositePlanner::hasPlanner(const Planner* planner) const
 {
   return std::find_if(

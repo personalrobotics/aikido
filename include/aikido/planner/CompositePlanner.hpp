@@ -23,9 +23,6 @@ public:
       statespace::ConstStateSpacePtr stateSpace,
       const std::vector<PlannerPtr>& planners = std::vector<PlannerPtr>());
 
-  /// Adds planner.
-  void addPlanner(PlannerPtr planner);
-
   /// Returns true if this CompositePlanner contains \c planner.
   bool hasPlanner(const Planner* planner) const;
 
