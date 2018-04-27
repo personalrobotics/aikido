@@ -23,6 +23,7 @@ public:
   virtual trajectory::TrajectoryPtr plan(
       const SolverbleProblem& problem, Result* result = nullptr)
       = 0;
+  // Note: SolverbleProblem is defined in SingleProblemPlanner.
 };
 
 } // namespace planner

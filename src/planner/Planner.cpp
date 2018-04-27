@@ -4,7 +4,7 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-Planner::Planner(const statespace::ConstStateSpacePtr& stateSpace)
+Planner::Planner(statespace::ConstStateSpacePtr stateSpace)
   : mStateSpace(std::move(stateSpace))
 {
   // Do nothing

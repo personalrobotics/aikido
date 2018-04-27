@@ -48,7 +48,7 @@ public:
   ConstPlannerPtr getPlanner(std::size_t index) const;
 
   // Documentation inherited.
-  bool canSolve(const Problem* problem) const override;
+  bool canSolve(const Problem& problem) const override;
 
 protected:
   /// Planners.

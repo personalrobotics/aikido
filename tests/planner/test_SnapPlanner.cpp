@@ -91,8 +91,8 @@ TEST_F(SnapPlannerTest, CanSolveProblems)
       stateSpace, *startState, *goalState, failingConstraint);
   auto unknownProblem = UnknownProblem();
 
-  EXPECT_TRUE(planner->canSolve(&problem));
-  EXPECT_FALSE(planner->canSolve(&unknownProblem));
+  EXPECT_TRUE(planner->canSolve(problem));
+  EXPECT_FALSE(planner->canSolve(unknownProblem));
 }
 
 //==============================================================================

@@ -20,9 +20,9 @@ SingleProblemPlanner<Derived, ProblemT>::SingleProblemPlanner(
 //==============================================================================
 template <typename Derived, typename ProblemT>
 bool SingleProblemPlanner<Derived, ProblemT>::canSolve(
-    const Problem* problem) const
+    const Problem& problem) const
 {
-  return problem->getType() == ProblemT::getStaticType();
+  return problem.getType() == ProblemT::getStaticType();
 }
 
 //==============================================================================
@@ -30,7 +30,7 @@ template <typename Derived, typename ProblemT>
 trajectory::TrajectoryPtr SingleProblemPlanner<Derived, ProblemT>::plan(
     const Problem& problem, Result* result)
 {
-  if (!canSolve(&problem))
+  if (!canSolve(problem))
     return nullptr;
 
   return static_cast<Derived*>(this)->plan(

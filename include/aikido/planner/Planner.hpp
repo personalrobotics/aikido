@@ -21,7 +21,7 @@ public:
   /// Constructs from a state space.
   ///
   /// \param[in] stateSpace State space that this planner associated with.
-  Planner(const statespace::ConstStateSpacePtr& stateSpace);
+  explicit Planner(statespace::ConstStateSpacePtr stateSpace);
 
   /// Default destructor.
   virtual ~Planner() = default;
@@ -30,8 +30,7 @@ public:
   statespace::ConstStateSpacePtr getStateSpace() const;
 
   /// Returns true if this planner can solve \c problem.
-  virtual bool canSolve(const Problem* problem) const = 0;
-  // TODO: Change parameter type to const reference
+  virtual bool canSolve(const Problem& problem) const = 0;
 
   /// Solves \c problem returning the result to \c result.
   virtual trajectory::TrajectoryPtr plan(

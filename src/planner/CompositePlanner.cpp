@@ -68,7 +68,7 @@ ConstPlannerPtr CompositePlanner::getPlanner(std::size_t index) const
 }
 
 //==============================================================================
-bool CompositePlanner::canSolve(const Problem* problem) const
+bool CompositePlanner::canSolve(const Problem& problem) const
 {
   for (const auto& planner : mPlanners)
   {
