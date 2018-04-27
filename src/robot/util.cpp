@@ -378,9 +378,6 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
     const CRRTPlannerParameters& crrtParameters)
 {
 
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
-
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 

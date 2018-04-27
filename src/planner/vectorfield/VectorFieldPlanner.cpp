@@ -141,6 +141,11 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     std::chrono::duration<double> timelimit,
     planner::PlanningResult* planningResult)
 {
+
+  // ensure that no two planners run at the same time
+  auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+
   if (minDistance < 0.)
   {
     std::stringstream ss;
