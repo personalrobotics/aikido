@@ -37,54 +37,10 @@ const std::string& ConfigurationToConfigurations::getStaticType()
 }
 
 //==============================================================================
-void ConfigurationToConfigurations::setStartState(
-    statespace::StateSpace::State* startState)
-{
-  mStartState = startState;
-}
-
-//==============================================================================
 const statespace::StateSpace::State*
 ConfigurationToConfigurations::getStartState() const
 {
   return mStartState;
-}
-
-//==============================================================================
-void ConfigurationToConfigurations::setGoalStates(
-    const ConfigurationToConfigurations::GoalStates& goalStates)
-{
-  mGoalStates = goalStates;
-}
-
-//==============================================================================
-void ConfigurationToConfigurations::setGoalState(
-    const statespace::StateSpace::State* goalState)
-{
-  mGoalStates.clear();
-  mGoalStates.insert(goalState);
-}
-
-//==============================================================================
-void ConfigurationToConfigurations::addGoalState(
-    const statespace::StateSpace::State* goalState)
-{
-  // TODO(JS): Do we want to report the success?
-  mGoalStates.insert(goalState);
-}
-
-//==============================================================================
-void ConfigurationToConfigurations::removeGoalState(
-    const statespace::StateSpace::State* goalState)
-{
-  // TODO(JS): Do we want to report the success?
-  mGoalStates.erase(goalState);
-}
-
-//==============================================================================
-void ConfigurationToConfigurations::removeAllGoalStates()
-{
-  mGoalStates.clear();
 }
 
 //==============================================================================
@@ -98,13 +54,6 @@ const ConfigurationToConfigurations::GoalStates&
 ConfigurationToConfigurations::getGoalStates() const
 {
   return mGoalStates;
-}
-
-//==============================================================================
-void ConfigurationToConfigurations::setConstraint(
-    constraint::ConstTestablePtr constraint)
-{
-  mConstraint = std::move(constraint);
 }
 
 //==============================================================================

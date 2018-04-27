@@ -37,27 +37,14 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Sets the end-effector BodyNode to be planned to move to a desired TSR.
-  void setEndEffectorBodyNode(
-      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
-
   /// Returns the end-effector BodyNode to be planned to move to a desired TSR.
   dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
-
-  /// Sets start state.
-  void setStartState(const statespace::StateSpace::State* startState);
 
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
-  /// Sets goal TSR.
-  void setGoalTSR(constraint::dart::ConstTSRPtr goalTSR);
-
   /// Returns the goal TSR.
   constraint::dart::ConstTSRPtr getGoalTSR() const;
-
-  /// Sets constraint that must be satisfied throughout the trajectory.
-  void setConstraint(constraint::ConstTestablePtr constraint);
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::ConstTestablePtr getConstraint() const;
@@ -79,4 +66,4 @@ protected:
 } // namespace planner
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_PLANNER_PLANTOTSR_HPP_

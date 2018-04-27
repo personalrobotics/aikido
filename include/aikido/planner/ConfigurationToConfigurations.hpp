@@ -39,35 +39,14 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Sets start state.
-  void setStartState(statespace::StateSpace::State* startState);
-
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
-
-  /// Sets goal states.
-  void setGoalStates(const GoalStates& goalStates);
-
-  /// Sets the goal states as a single state.
-  void setGoalState(const statespace::StateSpace::State* goalState);
-
-  /// Adds a goal state, if this class doesn't already contain the goal state.
-  void addGoalState(const statespace::StateSpace::State* goalState);
-
-  /// Removes a goal state, if this class contains the goal state.
-  void removeGoalState(const statespace::StateSpace::State* goalState);
-
-  /// Removes all the goal states.
-  void removeAllGoalStates();
 
   /// Returns the number of the goal states.
   std::size_t getNumGoalStates() const;
 
   /// Returns goal states.
   const GoalStates& getGoalStates() const;
-
-  /// Sets constraint that must be satisfied throughout the trajectory.
-  void setConstraint(constraint::ConstTestablePtr constraint);
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::ConstTestablePtr getConstraint() const;

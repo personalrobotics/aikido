@@ -16,7 +16,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   : Problem(std::move(stateSpace))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
-  , mDirection(direction)
+  , mDirection(direction.normalized())
   , mDistance(distance)
   , mConstraint(std::move(constraint))
 {
@@ -25,6 +25,8 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     throw std::invalid_argument(
         "StateSpace of constraint not equal to StateSpace of planning space");
   }
+
+  // TODO(JS): Check validity of direction and distance
 }
 
 //==============================================================================
@@ -41,24 +43,10 @@ const std::string& ConfigurationToEndEffectorOffset::getStaticType()
 }
 
 //==============================================================================
-void ConfigurationToEndEffectorOffset::setEndEffectorBodyNode(
-    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
-{
-  mEndEffectorBodyNode = std::move(endEffectorBodyNode);
-}
-
-//==============================================================================
 dart::dynamics::ConstBodyNodePtr
 ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
-}
-
-//==============================================================================
-void ConfigurationToEndEffectorOffset::setStartState(
-    const statespace::StateSpace::State* startState)
-{
-  mStartState = startState;
 }
 
 //==============================================================================
@@ -69,24 +57,9 @@ ConfigurationToEndEffectorOffset::getStartState() const
 }
 
 //==============================================================================
-void ConfigurationToEndEffectorOffset::setDirection(
-    const Eigen::Vector3d& direction)
-{
-  mDirection = direction.normalized();
-}
-
-//==============================================================================
 const Eigen::Vector3d& ConfigurationToEndEffectorOffset::getDirection() const
 {
   return mDirection;
-}
-
-//==============================================================================
-void ConfigurationToEndEffectorOffset::setDistance(double distance)
-{
-  // TODO(JS): Check validity of distance.
-
-  mDistance = distance;
 }
 
 //==============================================================================

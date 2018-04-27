@@ -33,14 +33,8 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Sets the start state.
-  void setStartState(const statespace::StateSpace::State* state);
-
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
-
-  /// Sets the goal state.
-  void setGoalState(const statespace::StateSpace::State* state);
 
   /// Returns the goal state.
   const statespace::StateSpace::State* getGoalState() const;

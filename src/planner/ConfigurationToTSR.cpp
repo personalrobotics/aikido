@@ -39,24 +39,10 @@ const std::string& ConfigurationToTSR::getStaticType()
 }
 
 //==============================================================================
-void ConfigurationToTSR::setEndEffectorBodyNode(
-    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
-{
-  mEndEffectorBodyNode = std::move(endEffectorBodyNode);
-}
-
-//==============================================================================
 dart::dynamics::ConstBodyNodePtr ConfigurationToTSR::getEndEffectorBodyNode()
     const
 {
   return mEndEffectorBodyNode;
-}
-
-//==============================================================================
-void ConfigurationToTSR::setStartState(
-    const statespace::StateSpace::State* startState)
-{
-  mStartState = startState;
 }
 
 //==============================================================================
@@ -66,21 +52,9 @@ const statespace::StateSpace::State* ConfigurationToTSR::getStartState() const
 }
 
 //==============================================================================
-void ConfigurationToTSR::setGoalTSR(constraint::dart::ConstTSRPtr goalTSR)
-{
-  mGoalTSR = std::move(goalTSR);
-}
-
-//==============================================================================
 constraint::dart::ConstTSRPtr ConfigurationToTSR::getGoalTSR() const
 {
   return mGoalTSR;
-}
-
-//==============================================================================
-void ConfigurationToTSR::setConstraint(constraint::ConstTestablePtr constraint)
-{
-  mConstraint = std::move(constraint);
 }
 
 //==============================================================================

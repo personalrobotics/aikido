@@ -29,6 +29,10 @@ protected:
   /// State space associated with this problem.
   statespace::ConstStateSpacePtr mStateSpace;
 };
+// Note: All the problem classes intentionally don't have setters. This is
+// because we assume creating a new problem for different problem settings makes
+// sense. We can revisit this design decision if we find a compelling reason to
+// have setters.
 
 } // namespace planner
 } // namespace aikido

@@ -37,27 +37,14 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Sets the end-effector BodyNode to be planned to move to a desired pose.
-  void setEndEffectorBodyNode(
-      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
-
   /// Returns the end-effector BodyNode to be planned to move to a desired pose.
   dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
-
-  /// Sets start state.
-  void setStartState(const statespace::StateSpace::State* startState);
 
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
-  /// Sets goal pose.
-  void setGoalPose(const Eigen::Isometry3d& goalPose);
-
   /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
-
-  /// Sets constraint that must be satisfied throughout the trajectory.
-  void setConstraint(constraint::ConstTestablePtr constraint);
 
   /// Returns the constraint that must be satisfied throughout the trajectory.
   constraint::ConstTestablePtr getConstraint() const;

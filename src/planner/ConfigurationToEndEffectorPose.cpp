@@ -39,24 +39,10 @@ const std::string& ConfigurationToEndEffectorPose::getStaticType()
 }
 
 //==============================================================================
-void ConfigurationToEndEffectorPose::setEndEffectorBodyNode(
-    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
-{
-  mEndEffectorBodyNode = std::move(endEffectorBodyNode);
-}
-
-//==============================================================================
 dart::dynamics::ConstBodyNodePtr
 ConfigurationToEndEffectorPose::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
-}
-
-//==============================================================================
-void ConfigurationToEndEffectorPose::setStartState(
-    const statespace::StateSpace::State* startState)
-{
-  mStartState = startState;
 }
 
 //==============================================================================
@@ -67,23 +53,9 @@ ConfigurationToEndEffectorPose::getStartState() const
 }
 
 //==============================================================================
-void ConfigurationToEndEffectorPose::setGoalPose(
-    const Eigen::Isometry3d& goalPose)
-{
-  mGoalPose = goalPose;
-}
-
-//==============================================================================
 const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
 {
   return mGoalPose;
-}
-
-//==============================================================================
-void ConfigurationToEndEffectorPose::setConstraint(
-    constraint::ConstTestablePtr constraint)
-{
-  mConstraint = std::move(constraint);
 }
 
 //==============================================================================

@@ -41,29 +41,15 @@ public:
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
 
-  /// Sets the end-effector BodyNode to be planned to move a desired offest
-  /// while maintaining the current orientation.
-  void setEndEffectorBodyNode(
-      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
-
   /// Returns the end-effector BodyNode to be planned to move a desired offest
   /// while maintaining the current orientation.
   dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-  /// Sets start state.
-  void setStartState(const statespace::StateSpace::State* startState);
-
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
 
-  /// Sets direction of motion specified in the world frame.
-  void setDirection(const Eigen::Vector3d& direction);
-
   /// Returns the direction of motion specified in the world frame.
   const Eigen::Vector3d& getDirection() const;
-
-  /// Sets distance in meters to move in the specified direction.
-  void setDistance(double distance);
 
   /// Returns the distance in meters to move in the specified direction.
   double getDistance() const;
@@ -91,4 +77,4 @@ protected:
 } // namespace planner
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
