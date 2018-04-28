@@ -48,18 +48,12 @@ public:
   /// Returns goal states.
   const GoalStates& getGoalStates() const;
 
-  /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::ConstTestablePtr getConstraint() const;
-
 protected:
   /// Start state.
   const statespace::StateSpace::State* mStartState;
 
   /// Goal States.
   GoalStates mGoalStates;
-
-  /// Trajectory-wide constrained that must be satisfied.
-  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner

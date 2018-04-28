@@ -64,7 +64,8 @@ public:
 class UnknownProblem : public aikido::planner::Problem
 {
 public:
-  UnknownProblem() : aikido::planner::Problem(nullptr)
+  UnknownProblem()
+    : aikido::planner::Problem(std::make_shared<aikido::statespace::SO2>())
   {
     // Do nothing
   }

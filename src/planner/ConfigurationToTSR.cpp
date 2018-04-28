@@ -52,11 +52,5 @@ constraint::dart::ConstTSRPtr ConfigurationToTSR::getGoalTSR() const
   return mGoalTSR;
 }
 
-//==============================================================================
-constraint::ConstTestablePtr ConfigurationToTSR::getConstraint() const
-{
-  return mConstraint;
-}
-
 } // namespace planner
 } // namespace aikido

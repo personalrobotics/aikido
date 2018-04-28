@@ -51,12 +51,5 @@ ConfigurationToConfigurations::getGoalStates() const
   return mGoalStates;
 }
 
-//==============================================================================
-constraint::ConstTestablePtr ConfigurationToConfigurations::getConstraint()
-    const
-{
-  return mConstraint;
-}
-
 } // namespace planner
 } // namespace aikido

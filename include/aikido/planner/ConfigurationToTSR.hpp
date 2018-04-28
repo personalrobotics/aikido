@@ -46,9 +46,6 @@ public:
   /// Returns the goal TSR.
   constraint::dart::ConstTSRPtr getGoalTSR() const;
 
-  /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::ConstTestablePtr getConstraint() const;
-
 protected:
   /// End-effector body node.
   dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
@@ -58,9 +55,6 @@ protected:
 
   /// Goal TSR
   constraint::dart::ConstTSRPtr mGoalTSR;
-
-  /// Trajectory-wide constraint that must be satisfied.
-  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner
