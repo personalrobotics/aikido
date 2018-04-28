@@ -16,12 +16,12 @@ class ConfigurationToTSR : public Problem
 public:
   /// Constructor.
   ///
-  /// \param stateSpace State space.
-  /// \param endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// \param[in] stateSpace State space.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
-  /// \param startState Start state.
-  /// \param goalTSR Goal TSR.
-  /// \param constraint Trajectory-wide constraint that must be satisfied.
+  /// \param[in] startState Start state.
+  /// \param[in] goalTSR Goal TSR.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToTSR(

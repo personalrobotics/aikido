@@ -21,10 +21,10 @@ public:
 
   /// Constructor.
   ///
-  /// \param stateSpace State space.
-  /// \param startState Start state.
-  /// \param goalStates Goal states.
-  /// \param constraint Trajectory-wide constraint that must be satisfied.
+  /// \param[in] stateSpace State space.
+  /// \param[in] startState Start state.
+  /// \param[in] goalStates Goal states.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToConfigurations(

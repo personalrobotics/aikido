@@ -17,14 +17,15 @@ class ConfigurationToEndEffectorOffset : public Problem
 public:
   /// Constructor.
   ///
-  /// \param stateSpace State space.
-  /// \param endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// \param[in] stateSpace State space.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// offest while maintaining the current orientation.
-  /// \param startState Start state.
-  /// \param direction Direction of motion [unit vector in the world frame].
-  /// \param distance Distance to move, in meters.
-  /// \param interpolator Interpolator used to produce the output trajectory.
-  /// \param constraint Trajectory-wide constraint that must be satisfied.
+  /// \param[in] startState Start state.
+  /// \param[in] direction Direction of motion [unit vector in the world frame].
+  /// \param[in] distance Distance to move, in meters.
+  /// \param[in] interpolator Interpolator used to produce the output
+  /// trajectory.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorOffset(

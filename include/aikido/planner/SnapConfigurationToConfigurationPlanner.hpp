@@ -40,7 +40,7 @@ public:
   /// otherwise. The reason for the failure is stored in the \c result output
   /// parameter.
   ///
-  /// \param problem Planning problem.
+  /// \param[in] problem Planning problem.
   /// \param[out] result Information about success or failure.
   /// \return Trajectory or \c nullptr if planning failed.
   /// \throw If \c problem is not ConfigurationToConfiguration.
