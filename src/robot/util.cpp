@@ -90,12 +90,9 @@ trajectory::TrajectoryPtr planToConfiguration(
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   auto problem = ConfigurationToConfiguration(
-      space,
-      startState,
-      goalState,
-      std::make_shared<GeodesicInterpolator>(space),
-      collisionTestable);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+      space, startState, goalState, collisionTestable);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      space, std::make_shared<GeodesicInterpolator>(space));
   untimedTrajectory = planner->plan(problem, &pResult);
 
   // Return if the trajectory is non-empty
@@ -137,18 +134,14 @@ trajectory::TrajectoryPtr planToConfigurations(
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
   SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto problem = ConfigurationToConfiguration(
-      space,
-      startState,
-      nullptr,
-      std::make_shared<GeodesicInterpolator>(space),
-      collisionTestable);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      space, std::make_shared<GeodesicInterpolator>(space));
 
   for (const auto& goalState : goalStates)
   {
     // First test with Snap Planner
-    problem.setGoalState(goalState);
+    auto problem = ConfigurationToConfiguration(
+        space, startState, goalState, collisionTestable);
     TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
 
     // Return if the trajectory is non-empty
@@ -217,12 +210,9 @@ trajectory::TrajectoryPtr planToTSR(
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   SnapConfigurationToConfigurationPlanner::Result pResult;
   auto problem = ConfigurationToConfiguration(
-      space,
-      startState,
-      goalState,
-      std::make_shared<GeodesicInterpolator>(space),
-      collisionTestable);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>();
+      space, startState, goalState, collisionTestable);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      space, std::make_shared<GeodesicInterpolator>(space));
   while (snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
