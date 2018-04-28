@@ -2,7 +2,6 @@
 #define AIKIDO_PLANNER_PLANTOENDEFFECTORPOSE_HPP_
 
 #include <dart/dart.hpp>
-#include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
@@ -16,12 +15,11 @@ class ConfigurationToEndEffectorPose : public Problem
 public:
   /// Constructor.
   ///
-  /// \param stateSpace State space.
-  /// \param endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// \param[in] stateSpace State space.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// pose.
-  /// \param startState Start state.
-  /// \param goalPose Goal pose.
-  /// \param constraint Trajectory-wide constraint that must be satisfied.
+  /// \param[in] startState Start state.
+  /// \param[in] goalPose Goal pose.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorPose(
@@ -46,10 +44,10 @@ public:
   /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
 
-  /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::ConstTestablePtr getConstraint() const;
-
 protected:
+  // Need this due to mGoalPose.
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   /// End-effector body node.
   dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
@@ -58,9 +56,6 @@ protected:
 
   /// Goal pose.
   Eigen::Isometry3d mGoalPose;
-
-  /// Trajectory-wide constraint that must be satisfied.
-  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner

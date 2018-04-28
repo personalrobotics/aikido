@@ -12,17 +12,12 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     const statespace::StateSpace::State* startState,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : Problem(std::move(stateSpace))
+  : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mGoalPose(goalPose)
-  , mConstraint(std::move(constraint))
 {
-  if (mStateSpace != mConstraint->getStateSpace())
-  {
-    throw std::invalid_argument(
-        "StateSpace of constraint not equal to StateSpace of planning space");
-  }
+  // Do nothing
 }
 
 //==============================================================================
@@ -56,13 +51,6 @@ ConfigurationToEndEffectorPose::getStartState() const
 const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
 {
   return mGoalPose;
-}
-
-//==============================================================================
-constraint::ConstTestablePtr ConfigurationToEndEffectorPose::getConstraint()
-    const
-{
-  return mConstraint;
 }
 
 } // namespace planner

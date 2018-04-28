@@ -9,10 +9,8 @@ trajectory::TrajectoryPtr FirstSupportedMetaPlanner::plan(
 {
   for (const auto& planner : mPlanners)
   {
-    if (!planner->canSolve(problem))
-      continue;
-
-    return planner->plan(problem, result);
+    if (planner->canSolve(problem))
+      return planner->plan(problem, result);
   }
 
   // TODO: Set result "no supported planner".

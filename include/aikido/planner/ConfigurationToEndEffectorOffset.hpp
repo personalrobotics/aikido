@@ -54,9 +54,6 @@ public:
   /// Returns the distance in meters to move in the specified direction.
   double getDistance() const;
 
-  /// Returns the constraint that must be satisfied throughout the trajectory.
-  constraint::ConstTestablePtr getConstraint() const;
-
 protected:
   /// End-effector body node.
   dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
@@ -69,9 +66,6 @@ protected:
 
   /// Distance to move in the direction specified.
   double mDistance;
-
-  /// Trajectory-wide constraint that must be satisfied.
-  constraint::ConstTestablePtr mConstraint;
 };
 
 } // namespace planner

@@ -12,17 +12,12 @@ ConfigurationToTSR::ConfigurationToTSR(
     const statespace::StateSpace::State* startState,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
-  : Problem(std::move(stateSpace))
+  : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mGoalTSR(goalTSR)
-  , mConstraint(std::move(constraint))
 {
-  if (mStateSpace != mConstraint->getStateSpace())
-  {
-    throw std::invalid_argument(
-        "StateSpace of constraint not equal to StateSpace of planning space");
-  }
+  // Do nothing
 }
 
 //==============================================================================

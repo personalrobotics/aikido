@@ -13,18 +13,13 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     const Eigen::Vector3d& direction,
     double distance,
     constraint::ConstTestablePtr constraint)
-  : Problem(std::move(stateSpace))
+  : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mDirection(direction.normalized())
   , mDistance(distance)
-  , mConstraint(std::move(constraint))
 {
-  if (mStateSpace != mConstraint->getStateSpace())
-  {
-    throw std::invalid_argument(
-        "StateSpace of constraint not equal to StateSpace of planning space");
-  }
+  // Do nothing
 
   // TODO(JS): Check validity of direction and distance
 }
@@ -66,13 +61,6 @@ const Eigen::Vector3d& ConfigurationToEndEffectorOffset::getDirection() const
 double ConfigurationToEndEffectorOffset::getDistance() const
 {
   return mDistance;
-}
-
-//==============================================================================
-constraint::ConstTestablePtr ConfigurationToEndEffectorOffset::getConstraint()
-    const
-{
-  return mConstraint;
 }
 
 } // namespace planner

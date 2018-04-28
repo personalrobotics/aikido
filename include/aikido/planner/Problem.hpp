@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_PROBLEM_HPP_
 
 #include <string>
+#include "aikido/constraint/Testable.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -14,7 +15,10 @@ public:
   /// Constructor.
   ///
   /// \param[in] stateSpace State space that this problem associated with.
-  explicit Problem(statespace::ConstStateSpacePtr stateSpace);
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+  Problem(
+      statespace::ConstStateSpacePtr stateSpace,
+      constraint::ConstTestablePtr constraint = nullptr);
 
   /// Destructor.
   virtual ~Problem() = default;
@@ -25,9 +29,15 @@ public:
   /// Returns const state space.
   statespace::ConstStateSpacePtr getStateSpace() const;
 
+  /// Returns the constraint that must be satisfied throughout the trajectory.
+  constraint::ConstTestablePtr getConstraint() const;
+
 protected:
   /// State space associated with this problem.
   statespace::ConstStateSpacePtr mStateSpace;
+
+  /// Trajectory-wide constraint that must be satisfied.
+  constraint::ConstTestablePtr mConstraint;
 };
 // Note: All the problem classes intentionally don't have setters. This is
 // because we assume creating a new problem for different problem settings makes

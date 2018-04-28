@@ -11,16 +11,11 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     const statespace::StateSpace::State* startState,
     const statespace::StateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
-  : Problem(std::move(stateSpace))
+  : Problem(std::move(stateSpace), std::move(constraint))
   , mStartState(startState)
   , mGoalState(goalState)
-  , mConstraint(std::move(constraint))
 {
-  if (mStateSpace != mConstraint->getStateSpace())
-  {
-    throw std::invalid_argument(
-        "StateSpace of constraint not equal to StateSpace of planning space");
-  }
+  // Do nothing
 }
 
 //==============================================================================
