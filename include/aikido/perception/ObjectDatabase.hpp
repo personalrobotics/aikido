@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <dart/common/LocalResourceRetriever.hpp>
 #include <dart/dart.hpp>
-#include <aikido/io/CatkinResourceRetriever.hpp>
-#include <aikido/io/yaml.hpp>
+#include "aikido/io/CatkinResourceRetriever.hpp"
+#include "aikido/io/yaml.hpp"
 
 namespace aikido {
 namespace perception {
@@ -24,7 +24,13 @@ namespace perception {
 /// \code
 /// "obj_key": {
 ///    "resource": "package://pr_ordata/data/objects/obj_filename.urdf",
-///    "name": "obj_name"
+///    "name": "obj_name",
+///    "offset": [
+///      [1.0, 0.0, 0.0, 0.0],
+///      [0.0, 1.0, 0.0, 0.0],
+///      [0.0, 0.0, 1.0, 0.0],
+///      [0.0, 0.0, 0.0, 1.0]
+///    ]
 ///  }
 /// \endcode
 
@@ -41,10 +47,17 @@ public:
 
   virtual ~ObjectDatabase() = default;
 
+  /// Get the object name, resource, and offset from database by objectKey
+  /// \param[in]  objectKey The key (string) of an object in ObjectDatabase
+  /// \param[out] objectName The retrieved object name from ObjectDatabase
+  /// \param[out] objectResource The retrieved uri of the object
+  /// \param[out] objectOffset The retrieved offset matrix of the object
+  ///     i.e. the offset between a tag and the actual origin of an object
   void getObjectByKey(
       const std::string& objectKey,
       std::string& objectName,
-      dart::common::Uri& objectResource) const;
+      dart::common::Uri& objectResource,
+      Eigen::Isometry3d& objectOffset) const;
 
 private:
   /// The map of object keys to object names and resources for models
