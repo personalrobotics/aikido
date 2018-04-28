@@ -11,7 +11,7 @@ namespace planner {
 SnapConfigurationToConfigurationPlanner::
     SnapConfigurationToConfigurationPlanner(
         statespace::ConstStateSpacePtr stateSpace,
-        statespace::InterpolatorPtr interpolator)
+        statespace::ConstInterpolatorPtr interpolator)
   : ConfigurationToConfigurationPlanner(std::move(stateSpace))
   , mInterpolator(std::move(interpolator))
 {
@@ -19,8 +19,8 @@ SnapConfigurationToConfigurationPlanner::
   {
     mInterpolator
         = std::make_shared<statespace::GeodesicInterpolator>(mStateSpace);
-    // TODO(JS): Not sure if it's a good choice to default as
-    // GeodesicInterpolator.
+    // TODO(JS): Not sure if GeodesicInterpolator is a good choice as the
+    // default.
   }
 }
 
@@ -58,10 +58,10 @@ trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
 }
 
 //==============================================================================
-statespace::InterpolatorPtr
-SnapConfigurationToConfigurationPlanner::getInterpolator()
+void SnapConfigurationToConfigurationPlanner::setInterpolator(
+    statespace::ConstInterpolatorPtr interpolator)
 {
-  return mInterpolator;
+  mInterpolator = std::move(interpolator);
 }
 
 //==============================================================================

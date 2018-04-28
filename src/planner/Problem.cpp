@@ -12,9 +12,7 @@ Problem::Problem(
   : mStateSpace(std::move(stateSpace)), mConstraint(std::move(constraint))
 {
   if (!mStateSpace)
-  {
     throw std::invalid_argument("StateSpace shouldn't be nullptr.");
-  }
 
   if (!mConstraint)
   {

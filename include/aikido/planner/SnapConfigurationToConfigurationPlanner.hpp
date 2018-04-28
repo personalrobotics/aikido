@@ -30,7 +30,7 @@ public:
   /// default.
   SnapConfigurationToConfigurationPlanner(
       statespace::ConstStateSpacePtr stateSpace,
-      statespace::InterpolatorPtr interpolator = nullptr);
+      statespace::ConstInterpolatorPtr interpolator = nullptr);
 
   /// Plans a trajectory from start state to goal state by using an interpolator
   /// to interpolate between them.
@@ -48,17 +48,15 @@ public:
   trajectory::TrajectoryPtr plan(
       const SolverbleProblem& problem, Result* result = nullptr) override;
 
-  // TODO(JS): Add setInterpolator()
-
-  /// Returns the interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr getInterpolator();
+  /// Sets interpolator used to produce the output trajectory.
+  void setInterpolator(statespace::ConstInterpolatorPtr interpolator);
 
   /// Returns the interpolator used to produce the output trajectory.
   statespace::ConstInterpolatorPtr getInterpolator() const;
 
 protected:
   /// Interpolator used to produce the output trajectory.
-  statespace::InterpolatorPtr mInterpolator;
+  statespace::ConstInterpolatorPtr mInterpolator;
 };
 
 } // namespace planner

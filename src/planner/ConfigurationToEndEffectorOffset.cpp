@@ -19,9 +19,11 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   , mDirection(direction.normalized())
   , mDistance(distance)
 {
-  // Do nothing
+  if (direction.norm() < 1e-6)
+    throw std::invalid_argument("Length of direction shouldn't be zero.");
 
-  // TODO(JS): Check validity of direction and distance
+  if (distance < 0.0)
+    throw std::invalid_argument("Distance shouldn't be a negative value.");
 }
 
 //==============================================================================
