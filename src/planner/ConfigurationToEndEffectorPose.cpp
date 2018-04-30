@@ -7,7 +7,7 @@ namespace planner {
 
 //==============================================================================
 ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
-    statespace::StateSpacePtr stateSpace,
+    statespace::ConstStateSpacePtr stateSpace,
     dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Isometry3d& goalPose,

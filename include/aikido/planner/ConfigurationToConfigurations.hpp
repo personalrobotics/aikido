@@ -28,7 +28,7 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToConfigurations(
-      statespace::StateSpacePtr stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       const statespace::StateSpace::State* startState,
       const GoalStates& goalStates,
       constraint::ConstTestablePtr constraint);
@@ -53,7 +53,7 @@ protected:
   const statespace::StateSpace::State* mStartState;
 
   /// Goal States.
-  GoalStates mGoalStates;
+  const GoalStates mGoalStates;
 };
 
 } // namespace planner

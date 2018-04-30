@@ -23,7 +23,7 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorPose(
-      statespace::StateSpacePtr stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Isometry3d& goalPose,
@@ -49,13 +49,13 @@ protected:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// End-effector body node.
-  dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+  const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;
 
   /// Goal pose.
-  Eigen::Isometry3d mGoalPose;
+  const Eigen::Isometry3d mGoalPose;
 };
 
 } // namespace planner

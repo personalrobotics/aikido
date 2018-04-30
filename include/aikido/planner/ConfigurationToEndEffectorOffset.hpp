@@ -29,7 +29,7 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorOffset(
-      statespace::StateSpacePtr stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Vector3d& direction,
@@ -57,16 +57,16 @@ public:
 
 protected:
   /// End-effector body node.
-  dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+  const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;
 
   /// Direction of motion.
-  Eigen::Vector3d mDirection;
+  const Eigen::Vector3d mDirection;
 
   /// Distance to move in the direction specified.
-  double mDistance;
+  const double mDistance;
 };
 
 } // namespace planner

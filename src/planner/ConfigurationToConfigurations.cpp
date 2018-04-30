@@ -7,7 +7,7 @@ namespace planner {
 
 //==============================================================================
 ConfigurationToConfigurations::ConfigurationToConfigurations(
-    statespace::StateSpacePtr stateSpace,
+    statespace::ConstStateSpacePtr stateSpace,
     const statespace::StateSpace::State* startState,
     const GoalStates& goalStates,
     constraint::ConstTestablePtr constraint)

@@ -25,7 +25,7 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToTSR(
-      statespace::StateSpacePtr stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       constraint::dart::ConstTSRPtr goalTSR,
@@ -48,13 +48,13 @@ public:
 
 protected:
   /// End-effector body node.
-  dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+  const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;
 
   /// Goal TSR
-  constraint::dart::ConstTSRPtr mGoalTSR;
+  const constraint::dart::ConstTSRPtr mGoalTSR;
 };
 
 } // namespace planner

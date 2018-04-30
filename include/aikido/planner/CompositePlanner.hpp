@@ -49,7 +49,7 @@ public:
 
 protected:
   /// Planners.
-  std::vector<PlannerPtr> mPlanners;
+  const std::vector<PlannerPtr> mPlanners;
   // We use std::vector to keep the order of planners. This is because some
   // concrete planners rely on the order. Alternatively, we could remove
   // mPlanners from here and let the concrete classes maintain the planner

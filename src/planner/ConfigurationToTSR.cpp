@@ -7,7 +7,7 @@ namespace planner {
 
 //==============================================================================
 ConfigurationToTSR::ConfigurationToTSR(
-    statespace::StateSpacePtr stateSpace,
+    statespace::ConstStateSpacePtr stateSpace,
     dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     constraint::dart::ConstTSRPtr goalTSR,

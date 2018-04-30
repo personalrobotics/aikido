@@ -7,11 +7,11 @@ namespace planner {
 
 //==============================================================================
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
-    statespace::StateSpacePtr stateSpace,
+    statespace::ConstStateSpacePtr stateSpace,
     dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Vector3d& direction,
-    double distance,
+    const double distance,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
