@@ -182,6 +182,18 @@ InterpolatedPtr planToTSR(
 {
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
+
+  // TODO: DART may be updated to check for single skeleton
+  if (metaSkeleton->getNumDofs() == 0)
+    throw std::invalid_argument("MetaSkeleton has 0 degree of freedon.");
+
+  auto skeleton = metaSkeleton->getDof(0)->getSkeleton();
+  for (size_t i = 1; i < metaSkeleton->getNumDofs(); ++i)
+  {
+    if (metaSkeleton->getDof(i)->getSkeleton() != skeleton)
+      throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
+  }
+
   ik->setDofs(metaSkeleton->getDofs());
 
   // Convert TSR constraint into IK constraint
