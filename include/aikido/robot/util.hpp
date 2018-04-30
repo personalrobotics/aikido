@@ -24,13 +24,14 @@ namespace util {
 
 struct VectorFieldPlannerParameters
 {
+  VectorFieldPlannerParameters() = default;
   VectorFieldPlannerParameters(
-      double linearVelocity = 0.2,
-      double negativeDistanceTolerance = 0.001,
-      double positiveDistanceTolerance = 0.001,
-      double initialStepSize = 0.001,
-      double jointLimitTolerance = 1e-3,
-      double constraintCheckResolution = 1e-3,
+      double linearVelocity,
+      double negativeDistanceTolerance,
+      double positiveDistanceTolerance,
+      double initialStepSize,
+      double jointLimitTolerance,
+      double constraintCheckResolution,
       double linearGain = 1.0,
       double angularGain = 0.2,
       double timestep = 0.1)
