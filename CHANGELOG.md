@@ -21,6 +21,10 @@
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
   * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
 
+* Perception
+
+  * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
+
 * Planner
 
   * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
