@@ -444,9 +444,5 @@ std::unique_ptr<common::RNG> ConcreteRobot::cloneRNG()
   return mRng->clone();
 }
 
-aikido::common::RNG* ConcreteRobot::getRNGPtr() {
-  return &*mRng;
-}
-
 } // namespace robot
 } // namespace aikido

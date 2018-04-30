@@ -224,10 +224,6 @@ public:
   void setCRRTPlannerParameters(
       const util::CRRTPlannerParameters& crrtParameters);
 
-  // Returns a pointer of the RNG belonging to this robot
-  // The ConcreteRobot is still responsible for cleaning this RNG, so use it only while the ConcreteRobot is alive!
-  aikido::common::RNG* getRNGPtr();
-
 private:
   // Named Configurations are read from a YAML file
   using ConfigurationMap
