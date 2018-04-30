@@ -21,9 +21,9 @@ public:
 
   /// Solves \c problem returning the result to \c result.
   virtual trajectory::TrajectoryPtr plan(
-      const SolverbleProblem& problem, Result* result = nullptr)
+      const SolvableProblem& problem, Result* result = nullptr)
       = 0;
-  // Note: SolverbleProblem is defined in SingleProblemPlanner.
+  // Note: SolvableProblem is defined in SingleProblemPlanner.
 };
 
 } // namespace planner

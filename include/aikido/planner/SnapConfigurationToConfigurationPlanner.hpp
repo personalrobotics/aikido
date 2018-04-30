@@ -46,7 +46,7 @@ public:
   /// \throw If \c problem is not ConfigurationToConfiguration.
   /// \throw If \c result is not ConfigurationToConfiguration::Result.
   trajectory::TrajectoryPtr plan(
-      const SolverbleProblem& problem, Result* result = nullptr) override;
+      const SolvableProblem& problem, Result* result = nullptr) override;
 
   /// Sets interpolator used to produce the output trajectory.
   void setInterpolator(statespace::ConstInterpolatorPtr interpolator);

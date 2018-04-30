@@ -26,7 +26,7 @@ SnapConfigurationToConfigurationPlanner::
 
 //==============================================================================
 trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
-    const SolverbleProblem& problem, Result* result)
+    const SolvableProblem& problem, Result* result)
 {
   // TODO(JS): Check equality between state space of this planner and given
   // problem.

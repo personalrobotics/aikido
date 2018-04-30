@@ -22,7 +22,7 @@ template <typename Derived, typename ProblemT>
 class SingleProblemPlanner : public Planner
 {
 public:
-  using SolverbleProblem = ProblemT;
+  using SolvableProblem = ProblemT;
 
   /// Constructor
   ///
