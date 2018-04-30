@@ -22,7 +22,7 @@ template <typename Derived, typename ProblemT>
 bool SingleProblemPlanner<Derived, ProblemT>::canSolve(
     const Problem& problem) const
 {
-  return problem.getType() == ProblemT::getStaticType();
+  return problem.getType() == SolvableProblem::getStaticType();
 }
 
 //==============================================================================
@@ -32,6 +32,14 @@ trajectory::TrajectoryPtr SingleProblemPlanner<Derived, ProblemT>::plan(
 {
   if (!canSolve(problem))
     return nullptr;
+
+  assert(dynamic_cast<const SolvableProblem*>(&problem));
+#ifndef NDEBUG // Debug mode
+  if (result)
+  {
+    assert(result && dynamic_cast<typename Derived::Result*>(result));
+  }
+#endif
 
   return static_cast<Derived*>(this)->plan(
       static_cast<const typename Derived::SolvableProblem&>(problem),
