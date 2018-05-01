@@ -31,12 +31,13 @@ public:
   /// \param _maxNumTrials Max number of trials for its sample generator
   ///        to retry sampling and finding an inverse kinematics solution.
   InverseKinematicsSampleable(
-      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-      ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
-      SampleablePtr _poseConstraint,
-      SampleablePtr _seedConstraint,
-      ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
-      int _maxNumTrials);
+      statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+      SampleablePtr poseConstraint,
+      SampleablePtr seedConstraint,
+      ::dart::dynamics::InverseKinematicsPtr inverseKinematics,
+      int maxNumTrials,
+      bool seedCurrentConfiguration = true);
 
   virtual ~InverseKinematicsSampleable() = default;
 
@@ -53,6 +54,7 @@ private:
   SampleablePtr mSeedConstraint;
   ::dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   int mMaxNumTrials;
+  bool mSeedCurrentConfiguration;
 };
 
 } // namespace dart
