@@ -3,20 +3,28 @@
 namespace aikido {
 namespace io {
 
-const SkeletonPtr makeBodyFromURDF(
-    const std::shared_ptr<aikido::io::CatkinResourceRetriever>
-        resourceRetriever,
+dart::dynamics::SkeletonPtr loadSkeletonFromURDF(
+    const dart::common::ResourceRetrieverPtr resourceRetriever,
     const std::string& uri,
-    const Eigen::Isometry3d& transform)
+    const Eigen::Isometry3d& transform = Eigen::Isometry3d::Identity())
 {
   dart::utils::DartLoader urdfLoader;
-  const SkeletonPtr skeleton = urdfLoader.parseSkeleton(uri, resourceRetriever);
+  const dart::dynamics::SkeletonPtr skeleton = urdfLoader.parseSkeleton(uri, resourceRetriever);
 
   if (!skeleton)
     throw std::runtime_error("unable to load '" + uri + "'");
 
-  dynamic_cast<dart::dynamics::FreeJoint*>(skeleton->getJoint(0))
-      ->setTransform(transform);
+  if (skeleton->getNumJoints() <= 0) {
+    throw std::runtime_error("Skeleton is empty.");
+  }
+
+  auto freeJoint = dynamic_cast<dart::dynamics::FreeJoint*>(skeleton->getRootJoint(0));
+
+  if (freeJoint == nullptr) {
+      throw std::runtime_error("unable to cast Skeleton's root joint to FreeJoint.");
+  }
+  freeJoint->setTransform(transform);
+
   return skeleton;
 }
 
