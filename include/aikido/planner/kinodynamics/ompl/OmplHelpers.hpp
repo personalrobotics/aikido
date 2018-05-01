@@ -1,6 +1,6 @@
 #pragma once
 
-#include <aikido/planner/kinodynamics/ompl/MyOptimizationObjective.h>
+#include <aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp>
 #include <ompl/base/OptimizationObjective.h>
 
 ///

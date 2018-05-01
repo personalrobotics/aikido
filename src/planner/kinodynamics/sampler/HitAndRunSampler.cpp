@@ -1,4 +1,4 @@
-#include <aikido/planner/kinodynamics/sampler/HitAndRunSampler.h>
+#include <aikido/planner/kinodynamics/sampler/HitAndRunSampler.hpp>
 
 const bool VERBOSE = false;
 

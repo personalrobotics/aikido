@@ -1,4 +1,4 @@
-#include <aikido/planner/kinodynamics/ompl/OmplHelpers.h>
+#include <aikido/planner/kinodynamics/ompl/OmplHelpers.hpp>
 
 //
 // Function to convert a State to a VectorXd

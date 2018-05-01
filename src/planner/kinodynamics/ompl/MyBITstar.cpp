@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ompl/base/PlannerTerminationCondition.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
-#include <aikido/planner/kinodynamics/ompl/MyBITstar.h>
+#include <aikido/planner/kinodynamics/ompl/MyBITstar.hpp>
 #include <aikido/planner/kinodynamics/dimt/Params.h>
 
 using namespace ompl;

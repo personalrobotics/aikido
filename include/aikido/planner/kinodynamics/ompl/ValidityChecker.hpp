@@ -5,7 +5,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <ompl/base/StateValidityChecker.h>
-#include <aikido/planner/kinodynamics/ompl/OmplHelpers.h>
+#include <aikido/planner/kinodynamics/ompl/OmplHelpers.hpp>
 
 class Obstacle
 {

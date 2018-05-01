@@ -7,7 +7,7 @@
 #include "ompl/base/ProblemDefinition.h"
 #include "ompl/control/SpaceInformation.h"
 #include "ompl/base/samplers/InformedStateSampler.h"
-#include "aikido/planner/kinodynamics/sampler/RandomGenerator.h"
+#include "aikido/planner/kinodynamics/sampler/RandomGenerator.hpp"
 
 namespace ompl
 {

@@ -2,7 +2,7 @@
 #include <limits>
 #include <algorithm>
 #include <aikido/planner/kinodynamics/dimt/Params.h>
-#include <aikido/planner/kinodynamics/sampler/MonteCarloSampler.h>
+#include <aikido/planner/kinodynamics/sampler/MonteCarloSampler.hpp>
 
 namespace
 {

@@ -6,9 +6,9 @@
 #endif
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/base/goals/GoalState.h>
-#include <aikido/planner/kinodynamics/sampler/Sampler.h>
+#include <aikido/planner/kinodynamics/sampler/Sampler.hpp>
 #include <aikido/planner/kinodynamics/dimt/Params.h>
-#include <aikido/planner/kinodynamics/ompl/MyOptimizationObjective.h>
+#include <aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp>
 
 
 namespace ompl

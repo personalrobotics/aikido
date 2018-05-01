@@ -7,7 +7,7 @@
 #include <utility>
 #include <Eigen/Dense>
 
-#include <aikido/planner/kinodynamics/sampler/Sampler.h>
+#include <aikido/planner/kinodynamics/sampler/Sampler.hpp>
 #include <aikido/planner/kinodynamics/dimt/Params.h>
 #include <aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h>
 

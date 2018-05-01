@@ -4,7 +4,7 @@
 #include <ompl/base/Cost.h>
 #include <ompl/base/samplers/InformedStateSampler.h>
 #include <aikido/planner/kinodynamics/dimt/Params.h>
-#include <aikido/planner/kinodynamics/ompl/MyOptimizationObjective.h>
+#include <aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp>
 
 using Eigen::VectorXd;
 

@@ -1,10 +1,14 @@
+#include <ompl/base/ProblemDefinition.h>
+#include <ompl/base/ScopedState.h>
+#include <ompl/base/spaces/RealVectorStateSpace.h>
 #include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
-#include "aikido/planner/kinodynamics/ompl/DimtStateSpace.h"
+#include "aikido/planner/kinodynamics/ompl/DimtStateSpace.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/planner/ompl/MotionValidator.hpp"
 #include "aikido/planner/ompl/StateValidityChecker.hpp"
+#include "aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp"
 
 namespace aikido {
 namespace planner {
@@ -39,9 +43,36 @@ namespace kinodynamics {
   ::ompl::base::MotionValidatorPtr mvalidator
       = std::make_shared<aikido::planner::ompl::MotionValidator>(si, _maxDistanceBtwValidityChecks);
   si->setMotionValidator(mvalidator);
+  si->setStateValidityCheckingResolution(0.001);
   si->setup();
 
   return si;
+}
+
+::ompl::base::ProblemDefinitionPtr createProblem(::ompl::base::SpaceInformationPtr si,
+                                                 const ::ompl::base::State* start,
+                                                 const ::ompl::base::State* goal)
+{
+  ::ompl::base::ScopedState<::ompl::base::RealVectorStateSpace> startState(si->getStateSpace(), start);
+  ::ompl::base::ScopedState<::ompl::base::RealVectorStateSpace> goalState(si->getStateSpace(), goal);
+
+  // Set up the final problem with the full optimization objective
+  ::ompl::base::ProblemDefinitionPtr pdef = std::make_shared<::ompl::base::ProblemDefinition>(si);
+  pdef->setStartAndGoalStates(startState, goalState);
+
+  return pdef;
+}
+
+const ::ompl::base::OptimizationObjectivePtr createDimtOptimizationObjective(::ompl::base::SpaceInformationPtr si,
+                                                                             DIMTPtr dimt,
+                                                                             const ::ompl::base::State* start,
+                                                                             const ::ompl::base::State* goal)
+{
+  ::ompl::base::ScopedState<::ompl::base::RealVectorStateSpace> startState(si->getStateSpace(), start);
+  ::ompl::base::ScopedState<::ompl::base::RealVectorStateSpace> goalState(si->getStateSpace(), goal);
+
+  const ::ompl::base::OptimizationObjectivePtr base_opt = std::make_shared<::ompl::base::DimtObjective>(si, startState, goalState, dimt);
+  return base_opt;
 }
 
 trajectory::InterpolatedPtr planViaConstraint(
@@ -78,11 +109,16 @@ trajectory::InterpolatedPtr planViaConstraint(
                                 _maxDistanceBtwValidityChecks);
 
 
+  // convert AIKIDO state to OMPL state
 
   // plan from start to via
 
+  // 1. create problem
+  //::ompl::base::ProblemDefinitionPtr basePdef1 = createProblem(si, _start, _via);
+  //
 
   // plan from via to goal
+  //::ompl::base::ProblemDefinitionPtr basePdef1 = createProblem(si, _start, _via);
 
   // concatenate two path
 
@@ -90,51 +126,7 @@ trajectory::InterpolatedPtr planViaConstraint(
 
 
 
-/*
 
-    // Set custom start and goal
-    ompl::base::State *start_s = space->allocState();
-    ompl::base::State *goal_s = space->allocState();
-    for (int i = 0; i < param.dimensions; i++)
-    {
-        start_s->as<ob::RealVectorStateSpace::StateType>()->values[i] = -5;
-        goal_s->as<ob::RealVectorStateSpace::StateType>()->values[i] = 5;
-    }
-    ob::ScopedState<ompl::base::RealVectorStateSpace> start(space, start_s);
-    ob::ScopedState<ompl::base::RealVectorStateSpace> goal(space, goal_s);
-    // Set random start and goal
-    // ob::ScopedState<> start(space);
-    // start.random();
-    // ob::ScopedState<> goal(space);
-    // goal.random();
-    // Setup Problem Definition
-    ob::ProblemDefinitionPtr pdef = std::make_shared<ob::ProblemDefinition>(si);
-    pdef->setStartAndGoalStates(start, goal);
-    // Construct Planner
-    // ob::PlannerPtr planner(new ompl::geometric::RRTConnect(si));
-    ob::PlannerPtr planner(new og::RRTstar(si));
-    // Set the problem instance for our planner to solve
-    planner->setProblemDefinition(pdef);
-    planner->setup();
-
-    // Run planner
-    ob::PlannerStatus solved = planner->solve(5.0);
-    if (solved)
-    {
-        std::cout << "Found solution:" << std::endl;
-        // get the goal representation from the problem definition (not the same as
-        // the goal state)
-        // and inquire about the found path
-        ob::PathPtr path = pdef->getSolutionPath();
-        // print the path to screen
-        path->print(std::cout);
-        // Print to File
-        // std::ofstream myfile;
-        // myfile.open("geometric_pointmass2d.txt");
-        // path->printAsMatrix(std::cout);
-        // myfile.close();
-    }
-*/
 
     return nullptr;
 }

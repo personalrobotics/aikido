@@ -14,7 +14,7 @@
 #include "ompl/base/OptimizationObjective.h"
 #include "ompl/datastructures/NearestNeighbors.h"
 #include <ompl/base/spaces/RealVectorStateSpace.h>
-#include <aikido/planner/kinodynamics/ompl/MyInformedRRTstar.h>
+#include <aikido/planner/kinodynamics/ompl/MyInformedRRTstar.hpp>
 #include <aikido/planner/kinodynamics/dimt/Params.h>
 
 using namespace ompl;
@@ -197,6 +197,7 @@ base::PlannerStatus MyInformedRRTstar::solve(const base::PlannerTerminationCondi
         OMPL_INFORM("%s: Starting planning with existing solution of cost %.5f", getName().c_str(),
                     solution->cost.value());
 
+    /*
     if (useKNearest_)
 
         OMPL_INFORM("%s: k_rrt_ %u ->> Initial k-nearest value of %u", getName().c_str(),
@@ -207,7 +208,7 @@ base::PlannerStatus MyInformedRRTstar::solve(const base::PlannerTerminationCondi
             "%s: Initial rewiring radius of %.2f", getName().c_str(),
             std::min(maxDistance_, r_rrt_ * std::pow(log((double)(nn_->size() + 1u)) / ((double)(nn_->size() + 1u)),
                                                      1 / (double)(si_->getStateDimension()))));
-
+    */
 
     // our functor for sorting nearest neighbors
     CostIndexCompare compareFn(costs, *opt_);
@@ -688,8 +689,6 @@ base::PlannerStatus MyInformedRRTstar::solve(const base::PlannerTerminationCondi
     OMPL_INFORM("%s: Created %u new states. Checked %u rewire options. %u goal "
                 "states in tree. Final solution cost %.3f",
                 getName().c_str(), statesGenerated, rewireTest, goalMotions_.size(), bestCost_.value());
-
-
 
     return base::PlannerStatus(addedSolution, approximate);
 }

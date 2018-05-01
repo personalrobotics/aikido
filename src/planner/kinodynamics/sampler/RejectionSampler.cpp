@@ -1,7 +1,7 @@
 #include <limits>
 #include <math.h>
-#include <aikido/planner/kinodynamics/sampler/RejectionSampler.h>
-#include <aikido/planner/kinodynamics/ompl/DimtStateSpace.h>
+#include <aikido/planner/kinodynamics/sampler/RejectionSampler.hpp>
+#include <aikido/planner/kinodynamics/ompl/DimtStateSpace.hpp>
 
 namespace ompl
 {
