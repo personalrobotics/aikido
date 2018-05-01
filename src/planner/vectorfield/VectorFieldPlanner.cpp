@@ -142,9 +142,9 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     planner::PlanningResult* planningResult)
 {
   // ensure that no two planners run at the same time
-  if (metaskeleton->getNumBodyNodes() <= 0)
+  if (metaskeleton->getNumBodyNodes() == 0)
   {
-      throw std::runtime_error("MetaSkeleton doesn't have any body nodes.");
+    throw std::runtime_error("MetaSkeleton doesn't have any body nodes.");
   }
   auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
