@@ -4,17 +4,18 @@
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
-#include "aikido/trajectory/Interpolated.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/SpaceInformation.h>
-#include <ompl/base/goals/GoalRegion.h>
 #include <ompl/base/StateSampler.h>
+#include <ompl/base/goals/GoalRegion.h>
 
 #include <ompl/geometric/PathSimplifier.h>
 
@@ -68,7 +69,7 @@ namespace kinodynamics {
 /// solution
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
 /// between validity checking two successive points on a tree extension
-trajectory::InterpolatedPtr planMinimumTimeViaConstraint(
+std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     const statespace::StateSpace::State* _start,
     const statespace::StateSpace::State* _goal,
     const statespace::StateSpace::State* _via,

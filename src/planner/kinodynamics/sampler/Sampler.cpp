@@ -154,12 +154,12 @@ namespace ompl
         {
             // Assert that the problem definition has an optimization objective defined
             assert(problem_->hasOptimizationObjective());
-            const ompl::base::OptimizationObjectivePtr optim_obj = problem_->getOptimizationObjective();
-            const ompl::base::DimtObjective* dimt_obj = dynamic_cast<ompl::base::DimtObjective*>(optim_obj.get());
+            const ::ompl::base::OptimizationObjectivePtr optim_obj = problem_->getOptimizationObjective();
+            const ::ompl::base::DimtObjective* dimt_obj = dynamic_cast<::ompl::base::DimtObjective*>(optim_obj.get());
             assert(dimt_obj!=nullptr);
 
-            const ompl::base::State *start_state = problem_->getStartState(0);
-            const ompl::base::State *goal_state = problem_->getGoal()->as<ompl::base::GoalState>()->getState();
+            const ::ompl::base::State *start_state = problem_->getStartState(0);
+            const ::ompl::base::State *goal_state = problem_->getGoal()->as<::ompl::base::GoalState>()->getState();
 
             get_ompl_state(curr_state, tmpState_);
 

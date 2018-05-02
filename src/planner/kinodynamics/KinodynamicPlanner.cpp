@@ -1,6 +1,7 @@
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
+#include <ompl/geometric/PathGeometric.h>
 #include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
@@ -9,10 +10,32 @@
 #include "aikido/planner/ompl/MotionValidator.hpp"
 #include "aikido/planner/ompl/StateValidityChecker.hpp"
 #include "aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp"
+#include "aikido/planner/kinodynamics/ompl/MyInformedRRTstar.hpp"
+#include "aikido/planner/kinodynamics/sampler/HitAndRunSampler.hpp"
+
+#include "aikido/common/Spline.hpp"
+
 
 namespace aikido {
 namespace planner {
 namespace kinodynamics {
+
+::ompl::base::State* allocState(
+    const ::ompl::base::SpaceInformationPtr si,
+    const Eigen::VectorXd& stateVec,
+    const Eigen::VectorXd& velocityVec)
+{
+  ::ompl::base::State * new_state = si->getStateSpace()->allocState();
+  for(uint i=0;i<stateVec.size();i++)
+  {
+    new_state->as<::ompl::base::RealVectorStateSpace::StateType>()->values[i] = stateVec[i];
+  }
+  for(uint i=0;i<velocityVec.size();i++)
+  {
+    new_state->as<::ompl::base::RealVectorStateSpace::StateType>()->values[i+stateVec.size()] = velocityVec[i];
+  }
+  return new_state;
+}
 
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     DIMTPtr _dimt,
@@ -68,14 +91,11 @@ const ::ompl::base::OptimizationObjectivePtr createDimtOptimizationObjective(::o
                                                                              const ::ompl::base::State* start,
                                                                              const ::ompl::base::State* goal)
 {
-  ::ompl::base::ScopedState<::ompl::base::RealVectorStateSpace> startState(si->getStateSpace(), start);
-  ::ompl::base::ScopedState<::ompl::base::RealVectorStateSpace> goalState(si->getStateSpace(), goal);
-
-  const ::ompl::base::OptimizationObjectivePtr base_opt = std::make_shared<::ompl::base::DimtObjective>(si, startState, goalState, dimt);
+  const ::ompl::base::OptimizationObjectivePtr base_opt = std::make_shared<::ompl::base::DimtObjective>(si, start, goal, dimt);
   return base_opt;
 }
 
-trajectory::InterpolatedPtr planViaConstraint(
+std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
     const statespace::StateSpace::State* _start,
     const statespace::StateSpace::State* _goal,
     const statespace::StateSpace::State* _via,
@@ -87,6 +107,14 @@ trajectory::InterpolatedPtr planViaConstraint(
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks)
 {
+  // convert aikido state to Eigen::VectorXd
+  Eigen::VectorXd startVec(_metaSkeletonStateSpace->getDimension());
+  Eigen::VectorXd goalVec(_metaSkeletonStateSpace->getDimension());
+  Eigen::VectorXd viaVec(_metaSkeletonStateSpace->getDimension());
+  _metaSkeletonStateSpace->logMap(_start, startVec);
+  _metaSkeletonStateSpace->logMap(_goal, goalVec);
+  _metaSkeletonStateSpace->logMap(_via, viaVec);
+
   std::size_t numDofs = _metaSkeleton->getNumDofs();
   // Initialize parameters from bounds constraint
   std::vector<double> maxVelocities(numDofs, 0.0);
@@ -108,27 +136,140 @@ trajectory::InterpolatedPtr planViaConstraint(
                                 _boundsConstraint,
                                 _maxDistanceBtwValidityChecks);
 
+  // create OMPL state
+  Eigen::VectorXd startVel = Eigen::VectorXd::Zero(_metaSkeletonStateSpace->getDimension());
+  Eigen::VectorXd goalVel = Eigen::VectorXd::Zero(_metaSkeletonStateSpace->getDimension());
+  auto startState = allocState(si, startVec, startVel);
+  auto goalState = allocState(si, goalVec, goalVel);
+  auto viaState = allocState(si, viaVec, _viaVelocity);
 
-  // convert AIKIDO state to OMPL state
+
+  double singleSampleLimit = 3.0;
+  double sigma = 1;
+  //int max_steps = 20;
+  int max_steps = 2000;
+  double alpha = 0.5;
+  double max_call_num = 100;
+  double batch_size = 100;
+  double epsilon = 2;//0.2;
+  double L = 1;
+  int num_trials = 5;
+  const double level_set = std::numeric_limits<double>::infinity();
+
+  ::ompl::geometric::MyInformedRRTstarPtr planner = std::make_shared<::ompl::geometric::MyInformedRRTstar>(si);
 
   // plan from start to via
-
   // 1. create problem
-  //::ompl::base::ProblemDefinitionPtr basePdef1 = createProblem(si, _start, _via);
-  //
+  ::ompl::base::ProblemDefinitionPtr basePdef1 = createProblem(si, startState, viaState);
+
+  const ::ompl::base::OptimizationObjectivePtr baseOpt1 = createDimtOptimizationObjective(si, dimt, startState, viaState);
+  basePdef1->setOptimizationObjective(baseOpt1);
+
+
+  ::ompl::base::MyInformedSamplerPtr sampler1 = std::make_shared<::ompl::base::HitAndRunSampler>(si, basePdef1, level_set, max_call_num, batch_size, num_trials);
+  sampler1->setSingleSampleTimelimit(singleSampleLimit);
+  ::ompl::base::OptimizationObjectivePtr opt1 = std::make_shared<::ompl::base::MyOptimizationObjective>(si, sampler1, startState, viaState);
+
+  ::ompl::base::ProblemDefinitionPtr pdef1 = std::make_shared<::ompl::base::ProblemDefinition>(si);
+  pdef1->setStartAndGoalStates(startState, viaState);
+  pdef1->setOptimizationObjective(opt1);
+
+  // Set the problem instance for our planner to solve
+  planner->setProblemDefinition(pdef1);
+  planner->setup();
+
+  ::ompl::base::PlannerStatus solved = planner->solve(_maxPlanTime);
+
+  ::ompl::base::PathPtr path1 = nullptr;
+  if(pdef1->hasSolution())
+  {
+    std::cout << "First half has a solution" << std::endl;
+    path1 = pdef1->getSolutionPath();
+  }
 
   // plan from via to goal
-  //::ompl::base::ProblemDefinitionPtr basePdef1 = createProblem(si, _start, _via);
+  // 1. create problem
+  ::ompl::base::ProblemDefinitionPtr basePdef2 = createProblem(si, viaState, goalState);
+
+  const ::ompl::base::OptimizationObjectivePtr baseOpt2 = createDimtOptimizationObjective(si, dimt, viaState, goalState);
+  basePdef2->setOptimizationObjective(baseOpt2);
+
+
+  ::ompl::base::MyInformedSamplerPtr sampler2 = std::make_shared<::ompl::base::HitAndRunSampler>(si, basePdef2, level_set, max_call_num, batch_size, num_trials);
+  sampler2->setSingleSampleTimelimit(singleSampleLimit);
+  ::ompl::base::OptimizationObjectivePtr opt2 = std::make_shared<::ompl::base::MyOptimizationObjective>(si, sampler2, viaState, goalState);
+
+  ::ompl::base::ProblemDefinitionPtr pdef2 = std::make_shared<::ompl::base::ProblemDefinition>(si);
+  pdef2->setStartAndGoalStates(viaState, goalState);
+  pdef2->setOptimizationObjective(opt2);
+
+  // Set the problem instance for our planner to solve
+  planner->setProblemDefinition(pdef2);
+  planner->setup();
+
+  solved = planner->solve(_maxPlanTime);
+
+  ::ompl::base::PathPtr path2 = nullptr;
+  if(pdef2->hasSolution())
+  {
+    std::cout << "Second half has a solution" << std::endl;
+    path2 = pdef2->getSolutionPath();
+  }
 
   // concatenate two path
+  // 1. create a vector of states and velocities
+  // 2. push states/velocities of paths into the vector
+  // 3. create SplineTrajectory from the vector
+
+  std::vector<Eigen::VectorXd> points;
+  ::ompl::geometric::PathGeometric * geopath1 = path1->as<::ompl::geometric::PathGeometric>();
+  std::size_t node_num = geopath1->getStateCount();
+  for(size_t idx=0; idx< node_num - 1; idx++)
+  {
+     ::ompl::base::State* state1 = geopath1->getState(idx);
+     ::ompl::base::State* state2 = geopath1->getState(idx+1);
+     std::vector<Eigen::VectorXd> deltaPoints = dimt->discretize(state1, state2, 0.05);
+     points.insert( points.end(), deltaPoints.begin(), deltaPoints.end() );
+  }
+  ::ompl::geometric::PathGeometric * geopath2 = path2->as<::ompl::geometric::PathGeometric>();
+  node_num = geopath2->getStateCount();
+  for(size_t idx=0; idx< node_num - 1; idx++)
+  {
+     ::ompl::base::State* state1 = geopath2->getState(idx);
+     ::ompl::base::State* state2 = geopath2->getState(idx+1);
+     std::vector<Eigen::VectorXd> deltaPoints = dimt->discretize(state1, state2, 0.05);
+     points.insert( points.end(), deltaPoints.begin(), deltaPoints.end() );
+  }
 
 
+  auto outputTrajectory = dart::common::make_unique<aikido::trajectory::Spline>(_metaSkeletonStateSpace);
 
+  using CubicSplineProblem = aikido::common::
+      SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
 
+  std::size_t dimension = _metaSkeletonStateSpace->getDimension();
+  const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
+  auto currState = _metaSkeletonStateSpace->createState();
+  for (std::size_t iknot = 0; iknot < points.size() - 1; ++iknot)
+  {
+    /*
+    const double segmentDuration = knots[iknot + 1].mT - knots[iknot].mT;
+    Eigen::VectorXd currentPosition = knots[iknot].mPositions;
+    Eigen::VectorXd nextPosition = knots[iknot + 1].mPositions;
 
+    CubicSplineProblem problem(
+        Eigen::Vector2d{0., segmentDuration}, 2, dimension);
+    problem.addConstantConstraint(0, 0, zeroPosition);
+    problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
+    const auto solution = problem.fit();
+    const auto coefficients = solution.getCoefficients().front();
 
+    stateSpace->expMap(currentPosition, currState);
+    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
+    */
+  }
+  return outputTrajectory;
 
-    return nullptr;
 }
 
 } // namespace kinodynamics
