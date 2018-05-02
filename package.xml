@@ -11,7 +11,7 @@
 
   <!-- Required dependencies -->
   <depend>boost</depend>
-  <depend>dart</depend>
+  <depend>dartsim</depend>
   <depend>eigen</depend>
   <depend>ompl</depend>
   <depend>python</depend>
