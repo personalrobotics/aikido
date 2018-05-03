@@ -185,7 +185,7 @@ InterpolatedPtr planToTSR(
 
   // TODO: DART may be updated to check for single skeleton
   if (metaSkeleton->getNumDofs() == 0)
-    throw std::invalid_argument("MetaSkeleton has 0 degree of freedon.");
+    throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
 
   auto skeleton = metaSkeleton->getDof(0)->getSkeleton();
   for (size_t i = 1; i < metaSkeleton->getNumDofs(); ++i)
@@ -317,7 +317,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
   // TODO: DART may be updated to check for single skeleton
   if (metaSkeleton->getNumDofs() == 0)
-    throw std::invalid_argument("MetaSkeleton has 0 degree of freedon.");
+    throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
 
   auto skeleton = metaSkeleton->getDof(0)->getSkeleton();
   for (size_t i = 1; i < metaSkeleton->getNumDofs(); ++i)
