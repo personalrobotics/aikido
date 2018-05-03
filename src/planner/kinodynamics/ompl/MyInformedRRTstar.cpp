@@ -221,7 +221,7 @@ base::PlannerStatus MyInformedRRTstar::solve(const base::PlannerTerminationCondi
         /*
         if(out_.is_open() && nn_->size() % 250==0)
         {
-            for (size_t i = 0; i < goalMotions_.size(); ++i)
+            for (std::size_t i = 0; i < goalMotions_.size(); ++i)
             {
                 std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
                 std::chrono::high_resolution_clock::duration duration = currentTime - startTime;
@@ -540,7 +540,7 @@ base::PlannerStatus MyInformedRRTstar::solve(const base::PlannerTerminationCondi
             if (checkForSolution)
             {
                 bool updatedSolution = false;
-                for (size_t i = 0; i < goalMotions_.size(); ++i)
+                for (std::size_t i = 0; i < goalMotions_.size(); ++i)
                 {
                     if (opt_->isCostBetterThan(goalMotions_[i]->cost, bestCost_))
                     {

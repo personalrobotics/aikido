@@ -221,6 +221,7 @@ std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
   // 2. push states/velocities of paths into the vector
   // 3. create SplineTrajectory from the vector
 
+  double interpolateStepSize = 0.05;
   std::vector<Eigen::VectorXd> points;
   ::ompl::geometric::PathGeometric * geopath1 = path1->as<::ompl::geometric::PathGeometric>();
   std::size_t node_num = geopath1->getStateCount();
@@ -228,7 +229,7 @@ std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
   {
      ::ompl::base::State* state1 = geopath1->getState(idx);
      ::ompl::base::State* state2 = geopath1->getState(idx+1);
-     std::vector<Eigen::VectorXd> deltaPoints = dimt->discretize(state1, state2, 0.05);
+     std::vector<Eigen::VectorXd> deltaPoints = dimt->discretize(state1, state2, interpolateStepSize);
      points.insert( points.end(), deltaPoints.begin(), deltaPoints.end() );
   }
   ::ompl::geometric::PathGeometric * geopath2 = path2->as<::ompl::geometric::PathGeometric>();
@@ -237,38 +238,42 @@ std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
   {
      ::ompl::base::State* state1 = geopath2->getState(idx);
      ::ompl::base::State* state2 = geopath2->getState(idx+1);
-     std::vector<Eigen::VectorXd> deltaPoints = dimt->discretize(state1, state2, 0.05);
+     std::vector<Eigen::VectorXd> deltaPoints = dimt->discretize(state1, state2, interpolateStepSize);
      points.insert( points.end(), deltaPoints.begin(), deltaPoints.end() );
   }
 
-
-  auto outputTrajectory = dart::common::make_unique<aikido::trajectory::Spline>(_metaSkeletonStateSpace);
-
-  using CubicSplineProblem = aikido::common::
-      SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
-
   std::size_t dimension = _metaSkeletonStateSpace->getDimension();
-  const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
-  auto currState = _metaSkeletonStateSpace->createState();
-  for (std::size_t iknot = 0; iknot < points.size() - 1; ++iknot)
+  using CubicSplineProblem
+      = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+
+  auto _outputTrajectory = dart::common::make_unique<aikido::trajectory::Spline>(_metaSkeletonStateSpace);
+  auto segmentStartState = _metaSkeletonStateSpace->createState();
+
+  for (std::size_t i=0; i<points.size()-1; i++)
   {
-    /*
-    const double segmentDuration = knots[iknot + 1].mT - knots[iknot].mT;
-    Eigen::VectorXd currentPosition = knots[iknot].mPositions;
-    Eigen::VectorXd nextPosition = knots[iknot + 1].mPositions;
+    Eigen::VectorXd positionCurr = points[i].head(dimension);
+    Eigen::VectorXd velocityCurr = points[i].tail(dimension);
+    Eigen::VectorXd positionNext = points[i+1].head(dimension);
+    Eigen::VectorXd velocityNext = points[i+1].tail(dimension);
 
-    CubicSplineProblem problem(
-        Eigen::Vector2d{0., segmentDuration}, 2, dimension);
-    problem.addConstantConstraint(0, 0, zeroPosition);
-    problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
-    const auto solution = problem.fit();
-    const auto coefficients = solution.getCoefficients().front();
+    CubicSplineProblem problem(Eigen::Vector2d(i*interpolateStepSize, (i+1)*interpolateStepSize), 4, dimension);
+    problem.addConstantConstraint(0, 0, positionCurr);
+    problem.addConstantConstraint(0, 1, velocityCurr);
+    problem.addConstantConstraint(1, 0, positionNext);
+    problem.addConstantConstraint(1, 1, velocityNext);
+    const auto spline = problem.fit();
 
-    stateSpace->expMap(currentPosition, currState);
-    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
-    */
+    _metaSkeletonStateSpace->expMap(positionCurr, segmentStartState);
+
+    // Add the ramp to the output trajectory.
+    assert(spline.getCoefficients().size() == 1);
+    const auto& coefficients = spline.getCoefficients().front();
+    _outputTrajectory->addSegment(
+        coefficients, interpolateStepSize, segmentStartState);
+
   }
-  return outputTrajectory;
+
+  return _outputTrajectory;
 
 }
 

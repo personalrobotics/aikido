@@ -211,11 +211,11 @@ namespace ompl
             return costs_[i];
         }
 
-        std::pair<size_t, double> max_in_range(const std::vector<double> &costs, const size_t start, const size_t end)
+        std::pair<std::size_t, double> max_in_range(const std::vector<double> &costs, const std::size_t start, const std::size_t end)
         {
             double max = -1;
-            size_t index = -1;
-            for (size_t i = start; i <= end; i++)
+            std::size_t index = -1;
+            for (std::size_t i = start; i <= end; i++)
             {
                 if (costs[i] > max)
                 {
@@ -228,9 +228,9 @@ namespace ompl
         }
 
         std::pair<bool, double> find_infeasible_intervals(const std::vector<std::pair<double, double>> &intervals,
-                                                          const double max_val, const size_t start, const size_t end)
+                                                          const double max_val, const std::size_t start, const std::size_t end)
         {
-            for (size_t i = start; i <= end; i++)
+            for (std::size_t i = start; i <= end; i++)
             {
                 if (max_val > std::get<0>(intervals[i]) and max_val < std::get<1>(intervals[i]))
                 {
@@ -258,7 +258,7 @@ namespace ompl
                                                               const double c2) const
         {
             // Find the index and the max value of cost from the costs in the range
-            size_t index;
+            std::size_t index;
             double max_val;
             std::tie(index, max_val) = max_in_range(costs_, i, j);
 
