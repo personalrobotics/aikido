@@ -14,7 +14,9 @@ public:
   SequentialSampleGenerator(
       statespace::StateSpacePtr stateSpace,
       std::vector<std::unique_ptr<SampleGenerator>> generators)
-    : mStateSpace(std::move(stateSpace)), mGenerators(std::move(generators), mIndex(0))
+    : mStateSpace(std::move(stateSpace))
+    , mGenerators(std::move(generators))
+    , mIndex(0)
   {
     // Do nothing
     // TODO (avk): Should we again check equivalence of statespaces between
@@ -57,8 +59,9 @@ private:
 };
 
 //==============================================================================
-SequentialSampleable::SequentialSampleable(statespace::StateSpacePtr stateSpace,
-                                           std::vector<SampleablePtr> sampleables)
+SequentialSampleable::SequentialSampleable(
+    statespace::StateSpacePtr stateSpace,
+    std::vector<SampleablePtr> sampleables)
   : mStateSpace(std::move(stateSpace)), mSampleables(std::move(sampleables))
 {
   if (!mStateSpace)
@@ -77,14 +80,16 @@ SequentialSampleable::SequentialSampleable(statespace::StateSpacePtr stateSpace,
       throw std::invalid_argument(msg.str());
     }
 
-    if (sampleable->getStateSpace != mStateSpace)
+    if (sampleable->getStateSpace() != mStateSpace)
     {
       std::stringstream msg;
-      msg << "Mismatch between statespace of Sampleable " << i << "and given statespace.";
+      msg << "Mismatch between statespace of Sampleable " << i
+          << "and given statespace.";
       throw std::invalid_argument(msg.str());
     }
   }
-  // TODO (avk): Somewhere we need to give warning if initial samplers are infinite
+  // TODO (avk): Somewhere we need to give warning if initial samplers are
+  // infinite
   // or if all are finite.
 }
 
@@ -95,7 +100,8 @@ statespace::StateSpacePtr SequentialSampleable::getStateSpace() const
 }
 
 //==============================================================================
-std::unique_ptr<SampleGenerator> SequentialSampleable::createSampleGenerator() const
+std::unique_ptr<SampleGenerator> SequentialSampleable::createSampleGenerator()
+    const
 {
   std::vector<std::unique_ptr<SampleGenerator>> generators;
   generators.reserve(mSampleables.size());
@@ -103,7 +109,7 @@ std::unique_ptr<SampleGenerator> SequentialSampleable::createSampleGenerator() c
   for (const auto& sampleable : mSampleables)
     generators.emplace_back(sampleable->createSampleGenerator());
 
-  return make_unique<SequentialSampleGenerator>(
+  return dart::common::make_unique<SequentialSampleGenerator>(
       mStateSpace, std::move(generators));
 }
 

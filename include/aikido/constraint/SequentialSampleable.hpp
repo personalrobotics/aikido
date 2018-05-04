@@ -17,8 +17,9 @@ class SequentialSampleable : public Sampleable
 public:
   /// Constructor.
   /// \param _sampleable Sampleable whose samples are to be iterated.
-  SequentialSampleable(statespace::StateSpacePtr stateSpace,
-                       std::vector<SampleablePtr> sampleable);
+  SequentialSampleable(
+      statespace::StateSpacePtr stateSpace,
+      std::vector<SampleablePtr> sampleable);
 
   // Documentation inherited.
   // TODO (avk): const-correctness after planner API is merged.
