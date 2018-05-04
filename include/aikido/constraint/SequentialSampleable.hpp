@@ -6,20 +6,18 @@
 namespace aikido {
 namespace constraint {
 
-/// Constraint that turns a finite sampleable constraint into
-/// a cyclic sampleable constraint.
-/// It's generator  will generate samples in the same order as
-/// the original sampleable constraint, but once the samples are exhausted,
-/// it will cycle through the samples, starting from the initial sample.
-/// The original sampleable should be finite.
+/// Sampleable supporting a composition of multiple sampleables which
+/// are used for sampling in sequence. The operating sampleable switches to
+/// the next one in the set upon exhaustion.
 class SequentialSampleable : public Sampleable
 {
 public:
   /// Constructor.
-  /// \param _sampleable Sampleable whose samples are to be iterated.
+  /// \param[in] stateSpace StateSpace in which this constraint operates.
+  /// \param[in] sampleables Set of sampleables.
   SequentialSampleable(
       statespace::StateSpacePtr stateSpace,
-      std::vector<SampleablePtr> sampleable);
+      std::vector<SampleablePtr> sampleables);
 
   // Documentation inherited.
   // TODO (avk): const-correctness after planner API is merged.
