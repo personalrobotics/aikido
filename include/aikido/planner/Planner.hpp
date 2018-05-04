@@ -33,6 +33,9 @@ public:
   virtual bool canSolve(const Problem& problem) const = 0;
 
   /// Solves \c problem returning the result to \c result.
+  ///
+  /// \param[in] problem Planning problem to be solved by the planner.
+  /// \param[out] result Result of planning procedure.
   virtual trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr)
       = 0;

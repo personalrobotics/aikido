@@ -6,6 +6,8 @@
 namespace aikido {
 namespace planner {
 
+/// A meta planner that solves a problem using the sub planners one-by-one
+/// sequentially and returns the first successfully planned trajectory.
 class SequenceMetaPlanner : public CompositePlanner
 {
 public:

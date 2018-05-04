@@ -21,13 +21,15 @@ public:
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// offest while maintaining the current orientation.
   /// \param[in] startState Start state.
-  /// \param[in] direction Direction of motion [unit vector in the world frame].
-  /// \param[in] distance Distance to move, in meters.
+  /// \param[in] direction Unit vector that represents the direction of motion
+  /// [unit vector in the world frame].
+  /// \param[in] distance Non-negative distance to move, in meters.
   /// \param[in] interpolator Interpolator used to produce the output
   /// trajectory.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
-  /// \throw If \c stateSpace is not compatible with \c constraint's state
-  /// space.
+  /// \throw (1) If \c stateSpace is not compatible with \c constraint's state
+  /// space, (2) if magnitude of \c direction is close to zero, or (3) \c
+  /// distance is negative.
   ConfigurationToEndEffectorOffset(
       statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,

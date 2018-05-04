@@ -16,6 +16,10 @@ public:
   ///
   /// \param[in] stateSpace State space that this problem associated with.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+  /// If null is passed, constraint::Satisfied is created by default where
+  /// constraint::Satisfied always returns true for the satisfaction query.
+  /// \throws (1) If \c stateSpace is null, or (2) the state space of \c
+  /// constraint doesn't agree with \c statespace.
   Problem(
       statespace::ConstStateSpacePtr stateSpace,
       constraint::ConstTestablePtr constraint = nullptr);

@@ -8,6 +8,7 @@
 namespace aikido {
 namespace planner {
 
+/// Base planner class for ConfigurationToConfiguration planning problem.
 class ConfigurationToConfigurationPlanner
     : public SingleProblemPlanner<ConfigurationToConfigurationPlanner,
                                   ConfigurationToConfiguration>
@@ -20,6 +21,9 @@ public:
       statespace::ConstStateSpacePtr stateSpace);
 
   /// Solves \c problem returning the result to \c result.
+  ///
+  /// \param[in] problem Planning problem to be solved by the planner.
+  /// \param[out] result Result of planning procedure.
   virtual trajectory::TrajectoryPtr plan(
       const SolvableProblem& problem, Result* result = nullptr)
       = 0;
