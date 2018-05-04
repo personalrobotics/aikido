@@ -13,19 +13,19 @@ class FiniteSampleable : public Sampleable
 {
 public:
   /// Constructor for single-sample constraint.
-  /// \param _stateSpace StateSpace in which _state belongs.
-  /// \param _state The only sample in this constraint.
+  /// \param stateSpace StateSpace in which _state belongs.
+  /// \param state The only sample in this constraint.
   FiniteSampleable(
-      statespace::StateSpacePtr _stateSpace,
-      const statespace::StateSpace::State* _state);
+      statespace::StateSpacePtr stateSpace,
+      const statespace::StateSpace::State* state);
 
   /// Constructor for multiple samples.
-  /// \param _stateSpace StateSpace in which _states belong.
-  /// \param _states Samples in this constraint.
+  /// \param stateSpace StateSpace in which _states belong.
+  /// \param states Samples in this constraint.
   ///        SampleGenerator will generate samples in this order.
   FiniteSampleable(
-      statespace::StateSpacePtr _stateSpace,
-      const std::vector<const statespace::StateSpace::State*>& _states);
+      statespace::StateSpacePtr stateSpace,
+      const std::vector<const statespace::StateSpace::State*>& states);
 
   FiniteSampleable(const FiniteSampleable& other) = delete;
   FiniteSampleable(FiniteSampleable&& other) = delete;

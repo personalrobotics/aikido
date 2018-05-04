@@ -25,7 +25,7 @@ public:
   virtual ~RejectionSampler() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -84,7 +84,7 @@ RejectionSampleable::RejectionSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr RejectionSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr RejectionSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

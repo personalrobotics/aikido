@@ -16,21 +16,21 @@ class RejectionSampleable : public Sampleable
 {
 public:
   /// Constructor.
-  /// \param _stateSpace StateSpace in which both
+  /// \param stateSpace StateSpace in which both
   ///        sampleable and testable operate.
-  /// \param _sampleable Sampleable for robot configuration.
-  /// \param _testable Testable for each configuration.
-  /// \param _maxTrialPerSample Max number of trials to generate each sample.
+  /// \param sampleable Sampleable for robot configuration.
+  /// \param testable Testable for each configuration.
+  /// \param maxTrialPerSample Max number of trials to generate each sample.
   ///        If all _maxTrialPerSample fails to pass _testable,
   ///        SampleGenerator.sample(...) will return false.
   RejectionSampleable(
-      statespace::StateSpacePtr _stateSpace,
-      SampleablePtr _sampleable,
-      TestablePtr _testable,
-      int _maxTrialPerSample);
+      statespace::StateSpacePtr stateSpace,
+      SampleablePtr sampleable,
+      TestablePtr testable,
+      int maxTrialPerSample);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;

@@ -17,13 +17,13 @@ public:
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
   /// Constructor.
-  /// \param _space Space in which this constraint operates.
-  /// \param _value Value to return when sampled.
+  /// \param space Space in which this constraint operates.
+  /// \param value Value to return when sampled.
   RConstantSampler(
-      std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
+      std::shared_ptr<statespace::R<N>> space, const VectorNd& value);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<constraint::SampleGenerator> createSampleGenerator()

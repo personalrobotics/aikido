@@ -15,23 +15,23 @@ class CartesianProductSampleable : public Sampleable
 {
 public:
   /// Constructor.
-  /// \param _stateSpace StateSpace in which this constraint operates.
-  /// \param _constraints Set of sampleables. The size of _constraints
+  /// \param stateSpace StateSpace in which this constraint operates.
+  /// \param constraints Set of sampleables. The size of _constraints
   ///        should match the number of subspaces in _stateSpace.
   ///        i-th constraint applies to i-th subspace.
   CartesianProductSampleable(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-      std::vector<std::shared_ptr<Sampleable>> _constraints);
+      std::shared_ptr<statespace::CartesianProduct> stateSpace,
+      std::vector<SampleablePtr> constraints);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
   std::shared_ptr<statespace::CartesianProduct> mStateSpace;
-  std::vector<std::shared_ptr<Sampleable>> mConstraints;
+  std::vector<SampleablePtr> mConstraints;
 };
 
 } // namespace constraint
