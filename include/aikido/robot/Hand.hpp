@@ -42,9 +42,14 @@ public:
   /// Returns the metaskeleton corresponding to this hand.
   virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
 
-  /// Get the end-effector body node.
+  /// Get the end-effector body node for which IK can be created.
   /// \return DART body node of end-effector
-  virtual dart::dynamics::BodyNode* getBodyNode() const = 0;
+  virtual dart::dynamics::BodyNode* getEndEffectorBodyNode() const = 0;
+
+  /// Get the body node which is the root of the hand, containing
+  /// all fingers.
+  /// \return DART body node at the root of the hand
+  virtual dart::dynamics::BodyNode* getHandBaseBodyNode() const = 0;
 };
 
 } // namespace robot
