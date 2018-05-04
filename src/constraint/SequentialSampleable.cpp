@@ -5,6 +5,8 @@
 namespace aikido {
 namespace constraint {
 
+// TODO (avk): Should I declare the class first and then define?
+// What is "good" C++ convention? Don't tell me it's a preference JS! -.-
 //==============================================================================
 class SequentialSampleGenerator : public SampleGenerator
 {
@@ -12,9 +14,11 @@ public:
   SequentialSampleGenerator(
       statespace::StateSpacePtr stateSpace,
       std::vector<std::unique_ptr<SampleGenerator>> generators)
-    : mStateSpace(std::move(stateSpace)), mGenerators(std::move(generators))
+    : mStateSpace(std::move(stateSpace)), mGenerators(std::move(generators), mIndex(0))
   {
     // Do nothing
+    // TODO (avk): Should we again check equivalence of statespaces between
+    // that of each generator and mStateSpace? I don't think it's necessary.
   }
 
   statespace::StateSpacePtr getStateSpace() const override
@@ -22,24 +26,34 @@ public:
     return mStateSpace;
   }
 
-  bool sample(statespace::StateSpace::State* state) override
+  bool sample(statespace::StateSpace::State* state)
   {
-    return true;
+    if (!mGenerators[mIndex]->canSample())
+      mIndex++;
+
+    if (canSample())
+      return mGenerators[mIndex]->sample(state);
+
+    return false;
   }
 
   int getNumSamples() const override
   {
-    return 0;
+    return mGenerators[mIndex]->getNumSamples();
   }
 
   bool canSample() const override
   {
-    return false;
+    if (mIndex >= mGenerators.size())
+      return false;
+
+    return true;
   }
 
 private:
   statespace::StateSpacePtr mStateSpace;
   std::vector<std::unique_ptr<SampleGenerator>> mGenerators;
+  std::size_t mIndex;
 };
 
 //==============================================================================
