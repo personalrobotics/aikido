@@ -8,10 +8,15 @@
 namespace aikido {
 namespace io {
 
+/// Loads a Skeleton from an URDF file and returns it
+/// \param[in] resourceRetriever Passed to an URDFLoader object to get the resource
+/// \param [in] uri The URI where the URDF can be found
+/// \param [in] transform The initial transform of the skeleton
+/// \return A pointer to the created Skeleton
 dart::dynamics::SkeletonPtr loadSkeletonFromURDF(
     const dart::common::ResourceRetrieverPtr resourceRetriever,
     const std::string& uri,
-    const Eigen::Isometry3d& transform);
+    const Eigen::Isometry3d& transform = Eigen::Isometry3d::Identity());
 
 } // namespace io
 } // namespace aikido
