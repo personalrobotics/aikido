@@ -29,6 +29,7 @@ set(sources
   CatkinResourceRetriever.cpp
   KinBodyParser.cpp
   yaml.cpp
+  util.cpp
 )
 
 add_library("${PROJECT_NAME}_io" SHARED ${sources})
