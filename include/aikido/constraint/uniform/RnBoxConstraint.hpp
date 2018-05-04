@@ -39,7 +39,7 @@ public:
       const VectorNd& _upperLimits);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::size_t getConstraintDimension() const override;

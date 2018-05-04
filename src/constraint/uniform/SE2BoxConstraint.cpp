@@ -13,7 +13,7 @@ using constraint::ConstraintType;
 class SE2BoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
 public:
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool sample(statespace::StateSpace::State* _state) override;
 
@@ -50,7 +50,7 @@ SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SE2BoxConstraintSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SE2BoxConstraintSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
@@ -130,7 +130,7 @@ SE2BoxConstraint::SE2BoxConstraint(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
+statespace::ConstStateSpacePtr SE2BoxConstraint::getStateSpace() const
 {
   return mSpace;
 }

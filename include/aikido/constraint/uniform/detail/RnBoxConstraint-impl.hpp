@@ -27,7 +27,7 @@ class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
 public:
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool sample(statespace::StateSpace::State* _state) override;
 
@@ -67,7 +67,7 @@ RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RnBoxConstraintSampleGenerator<N>::getStateSpace()
+statespace::ConstStateSpacePtr RnBoxConstraintSampleGenerator<N>::getStateSpace()
     const
 {
   return mSpace;
@@ -151,7 +151,7 @@ RBoxConstraint<N>::RBoxConstraint(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RBoxConstraint<N>::getStateSpace() const
+statespace::ConstStateSpacePtr RBoxConstraint<N>::getStateSpace() const
 {
   return mSpace;
 }

@@ -46,7 +46,7 @@ CartesianProductTestable::CartesianProductTestable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductTestable::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductTestable::getStateSpace() const
 {
   return mStateSpace;
 }

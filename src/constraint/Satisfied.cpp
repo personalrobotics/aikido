@@ -12,7 +12,7 @@ Satisfied::Satisfied(statespace::StateSpacePtr _space)
 }
 
 //==============================================================================
-statespace::StateSpacePtr Satisfied::getStateSpace() const
+statespace::ConstStateSpacePtr Satisfied::getStateSpace() const
 {
   return mStateSpace;
 }

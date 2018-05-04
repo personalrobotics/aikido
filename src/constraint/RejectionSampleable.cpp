@@ -123,7 +123,7 @@ RejectionSampler::RejectionSampler(
 }
 
 //==============================================================================
-statespace::StateSpacePtr RejectionSampler::getStateSpace() const
+statespace::ConstStateSpacePtr RejectionSampler::getStateSpace() const
 {
   return mStateSpace;
 }

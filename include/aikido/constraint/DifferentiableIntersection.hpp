@@ -34,7 +34,7 @@ public:
   std::vector<ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   void getValueAndJacobian(

@@ -247,7 +247,7 @@ void GeometricStateSpace::freeState(::ompl::base::State* _state) const
 }
 
 //==============================================================================
-statespace::StateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
+statespace::ConstStateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
 {
   return mStateSpace;
 }

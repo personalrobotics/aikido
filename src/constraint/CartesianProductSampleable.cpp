@@ -18,7 +18,7 @@ public:
     // Do nothing
   }
 
-  statespace::StateSpacePtr getStateSpace() const override
+  statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
@@ -110,7 +110,7 @@ CartesianProductSampleable::CartesianProductSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

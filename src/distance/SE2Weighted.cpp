@@ -33,7 +33,7 @@ SE2Weighted::SE2Weighted(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SE2Weighted::getStateSpace() const
+statespace::ConstStateSpacePtr SE2Weighted::getStateSpace() const
 {
   return mStateSpace;
 }

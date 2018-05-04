@@ -17,7 +17,7 @@ public:
   explicit REuclidean(std::shared_ptr<statespace::R<N>> _space);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes Euclidean distance between two states.
   /// \param _state1 The first state (type Rn::State)

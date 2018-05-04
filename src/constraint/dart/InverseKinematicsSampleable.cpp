@@ -26,7 +26,7 @@ public:
   virtual ~IkSampleGenerator() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -122,7 +122,7 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr InverseKinematicsSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr InverseKinematicsSampleable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }
@@ -189,7 +189,7 @@ IkSampleGenerator::IkSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr IkSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr IkSampleGenerator::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

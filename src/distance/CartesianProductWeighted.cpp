@@ -92,7 +92,7 @@ CartesianProductWeighted::CartesianProductWeighted(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductWeighted::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductWeighted::getStateSpace() const
 {
   return mStateSpace;
 }

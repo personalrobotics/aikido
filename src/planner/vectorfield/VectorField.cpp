@@ -12,7 +12,7 @@ VectorField::VectorField(aikido::statespace::StateSpacePtr stateSpace)
 }
 
 //==============================================================================
-aikido::statespace::StateSpacePtr VectorField::getStateSpace()
+aikido::statespace::ConstStateSpacePtr VectorField::getStateSpace()
 {
   return mStateSpace;
 }

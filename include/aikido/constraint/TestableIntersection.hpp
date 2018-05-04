@@ -33,7 +33,7 @@ public:
   std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Add a Testable to the conjunction.
   /// \param constraint a constraint in the same StateSpace as the

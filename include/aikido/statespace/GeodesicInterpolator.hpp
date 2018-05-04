@@ -20,7 +20,7 @@ public:
   virtual ~GeodesicInterpolator() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::size_t getNumDerivatives() const override;

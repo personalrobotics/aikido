@@ -10,7 +10,7 @@ class SO2UniformSampleGenerator : public constraint::SampleGenerator
 {
 public:
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -42,7 +42,7 @@ SO2UniformSampleGenerator::SO2UniformSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO2UniformSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SO2UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
@@ -80,7 +80,7 @@ SO2UniformSampler::SO2UniformSampler(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO2UniformSampler::getStateSpace() const
+statespace::ConstStateSpacePtr SO2UniformSampler::getStateSpace() const
 {
   return mSpace;
 }

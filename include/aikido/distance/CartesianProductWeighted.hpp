@@ -36,7 +36,7 @@ public:
       std::vector<std::pair<DistanceMetricPtr, double>> _metrics);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes distance between two states as the weighted sum of distances
   /// between their matching subcomponents.

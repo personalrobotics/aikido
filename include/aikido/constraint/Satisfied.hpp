@@ -23,7 +23,7 @@ public:
   explicit Satisfied(statespace::StateSpacePtr _space);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Returns \c 0.
   std::size_t getConstraintDimension() const override;

@@ -23,7 +23,7 @@ public:
       std::shared_ptr<statespace::CartesianProduct> _stateSpace,
       std::vector<TestablePtr> _constraints);
 
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,

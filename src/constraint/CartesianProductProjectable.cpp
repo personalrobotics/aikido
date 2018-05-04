@@ -41,7 +41,7 @@ CartesianProductProjectable::CartesianProductProjectable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductProjectable::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductProjectable::getStateSpace() const
 {
   return mStateSpace;
 }

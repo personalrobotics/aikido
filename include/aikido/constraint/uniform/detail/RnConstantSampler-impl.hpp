@@ -34,7 +34,7 @@ public:
   RnConstantSamplerSampleGenerator(
       std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
 
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool sample(statespace::StateSpace::State* _state) override;
 
@@ -114,7 +114,7 @@ RConstantSampler<N>::RConstantSampler(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RConstantSampler<N>::getStateSpace() const
+statespace::ConstStateSpacePtr RConstantSampler<N>::getStateSpace() const
 {
   return mSpace;
 }

@@ -35,7 +35,7 @@ DifferentiableSubspace::DifferentiableSubspace(
 }
 
 //==============================================================================
-statespace::StateSpacePtr DifferentiableSubspace::getStateSpace() const
+statespace::ConstStateSpacePtr DifferentiableSubspace::getStateSpace() const
 {
   return mStateSpace;
 }

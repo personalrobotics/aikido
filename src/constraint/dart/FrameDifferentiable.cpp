@@ -123,7 +123,7 @@ std::vector<ConstraintType> FrameDifferentiable::getConstraintTypes() const
 }
 
 //==============================================================================
-statespace::StateSpacePtr FrameDifferentiable::getStateSpace() const
+statespace::ConstStateSpacePtr FrameDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

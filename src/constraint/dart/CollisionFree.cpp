@@ -27,7 +27,7 @@ CollisionFree::CollisionFree(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CollisionFree::getStateSpace() const
+statespace::ConstStateSpacePtr CollisionFree::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

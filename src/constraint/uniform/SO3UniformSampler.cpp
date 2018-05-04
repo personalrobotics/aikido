@@ -10,7 +10,7 @@ class SO3UniformSampleGenerator : public constraint::SampleGenerator
 {
 public:
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -42,7 +42,7 @@ SO3UniformSampleGenerator::SO3UniformSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO3UniformSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SO3UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
@@ -85,7 +85,7 @@ SO3UniformSampler::SO3UniformSampler(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO3UniformSampler::getStateSpace() const
+statespace::ConstStateSpacePtr SO3UniformSampler::getStateSpace() const
 {
   return mSpace;
 }

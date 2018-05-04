@@ -48,7 +48,7 @@ std::unique_ptr<TestableOutcome> TestableIntersection::createOutcome() const
 }
 
 //==============================================================================
-statespace::StateSpacePtr TestableIntersection::getStateSpace() const
+statespace::ConstStateSpacePtr TestableIntersection::getStateSpace() const
 {
   return mStateSpace;
 }

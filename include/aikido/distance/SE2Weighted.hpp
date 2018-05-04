@@ -27,7 +27,7 @@ public:
       std::shared_ptr<statespace::SE2> space, const Eigen::Vector2d& weights);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes weighted distance between two SE2 states.
   ///

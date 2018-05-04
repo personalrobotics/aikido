@@ -13,7 +13,7 @@ GeodesicInterpolator::GeodesicInterpolator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr GeodesicInterpolator::getStateSpace() const
+statespace::ConstStateSpacePtr GeodesicInterpolator::getStateSpace() const
 {
   return mStateSpace;
 }

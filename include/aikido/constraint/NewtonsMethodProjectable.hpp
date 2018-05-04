@@ -33,7 +33,7 @@ public:
       statespace::StateSpace::State* _out) const override;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
 private:
   DifferentiablePtr mDifferentiable;

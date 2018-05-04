@@ -29,7 +29,7 @@ public:
   virtual ~TSRSampleGenerator() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Return a transform sampled from this TSR.
   ///
@@ -407,7 +407,7 @@ TSRSampleGenerator::TSRSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr TSRSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr TSRSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }

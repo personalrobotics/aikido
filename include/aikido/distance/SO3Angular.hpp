@@ -16,7 +16,7 @@ public:
   explicit SO3Angular(std::shared_ptr<statespace::SO3> _space);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes distance (in radians) between the two states
   /// \param _state1 The first state (type SO3::State)

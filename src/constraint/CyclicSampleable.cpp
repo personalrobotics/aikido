@@ -24,7 +24,7 @@ public:
   virtual ~FiniteCyclicSampleGenerator();
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -76,7 +76,7 @@ FiniteCyclicSampleGenerator::~FiniteCyclicSampleGenerator()
 }
 
 //==============================================================================
-statespace::StateSpacePtr FiniteCyclicSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr FiniteCyclicSampleGenerator::getStateSpace() const
 {
   return mGenerator->getStateSpace();
 }
@@ -148,7 +148,7 @@ CyclicSampleable::CyclicSampleable(SampleablePtr _sampleable)
 }
 
 //==============================================================================
-statespace::StateSpacePtr CyclicSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr CyclicSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

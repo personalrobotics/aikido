@@ -59,7 +59,7 @@ public:
       bool includeEndTime) const = 0;
 
   /// Returns state space.
-  aikido::statespace::StateSpacePtr getStateSpace();
+  aikido::statespace::ConstStateSpacePtr getStateSpace();
 
   /// Returns const state space.
   aikido::statespace::ConstStateSpacePtr getStateSpace() const;

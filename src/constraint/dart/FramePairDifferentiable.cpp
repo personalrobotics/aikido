@@ -145,7 +145,7 @@ std::vector<ConstraintType> FramePairDifferentiable::getConstraintTypes() const
 }
 
 //==============================================================================
-statespace::StateSpacePtr FramePairDifferentiable::getStateSpace() const
+statespace::ConstStateSpacePtr FramePairDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }
