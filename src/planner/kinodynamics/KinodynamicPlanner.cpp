@@ -20,6 +20,26 @@ namespace aikido {
 namespace planner {
 namespace kinodynamics {
 
+class StateValidityChecker : public ompl::StateValidityChecker
+{
+public:
+  StateValidityChecker(
+      const ::ompl::base::SpaceInformationPtr &_si,
+      constraint::TestablePtr _constraint)
+      : ompl::StateValidityChecker(_si, _constraint)
+  {
+  }
+
+  bool isValid(const ::ompl::base::State *_state) const override
+  {
+    if(!si_->getStateSpace()->satisfiesBounds(_state))
+    {
+      return false;
+    }
+    return ompl::StateValidityChecker::isValid(_state);
+  }
+};
+
 ::ompl::base::State* allocState(
     const ::ompl::base::SpaceInformationPtr si,
     const Eigen::VectorXd& stateVec,
@@ -41,7 +61,6 @@ namespace kinodynamics {
     DIMTPtr _dimt,
     statespace::StateSpacePtr _stateSpace,
     constraint::TestablePtr _validityConstraint,
-    constraint::TestablePtr _boundsConstraint,
     double _maxDistanceBtwValidityChecks)
 {
   // construct the state space we are planning in
@@ -54,13 +73,8 @@ namespace kinodynamics {
   ::ompl::base::SpaceInformationPtr si = std::make_shared<::ompl::base::SpaceInformation>(space);
 
   // Validity checking
-  std::vector<constraint::TestablePtr> constraints{
-      std::move(_validityConstraint), std::move(_boundsConstraint)};
-  auto conjunctionConstraint
-      = std::make_shared<aikido::constraint::TestableIntersection>(
-          std::move(_stateSpace), std::move(constraints));
   ::ompl::base::StateValidityCheckerPtr vchecker
-      = std::make_shared<aikido::planner::ompl::StateValidityChecker>(si, conjunctionConstraint);
+      = std::make_shared<StateValidityChecker>(si, _validityConstraint);
   si->setStateValidityChecker(vchecker);
 
   ::ompl::base::MotionValidatorPtr mvalidator
@@ -95,7 +109,7 @@ const ::ompl::base::OptimizationObjectivePtr createDimtOptimizationObjective(::o
   return base_opt;
 }
 
-std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
+std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     const statespace::StateSpace::State* _start,
     const statespace::StateSpace::State* _goal,
     const statespace::StateSpace::State* _via,
@@ -103,7 +117,6 @@ std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
     dart::dynamics::MetaSkeletonPtr _metaSkeleton,
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     constraint::TestablePtr _validityConstraint,
-    constraint::TestablePtr _boundsConstraint,
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks)
 {
@@ -131,9 +144,11 @@ std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
   }
   DIMTPtr dimt = std::make_shared<DIMT>( numDofs, maxAccelerations, maxVelocities );
 
+  // create bound constraint from metaSkeleton
+  auto boundsConstraint = nullptr;
   auto si = getSpaceInformation(dimt, _metaSkeletonStateSpace,
                                 _validityConstraint,
-                                _boundsConstraint,
+                                boundsConstraint,
                                 _maxDistanceBtwValidityChecks);
 
   // create OMPL state
@@ -270,12 +285,12 @@ std::unique_ptr<aikido::trajectory::Spline> planViaConstraint(
     const auto& coefficients = spline.getCoefficients().front();
     _outputTrajectory->addSegment(
         coefficients, interpolateStepSize, segmentStartState);
-
   }
 
   return _outputTrajectory;
 
 }
+
 
 } // namespace kinodynamics
 } // namespace planner

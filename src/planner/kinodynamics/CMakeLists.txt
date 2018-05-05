@@ -22,6 +22,7 @@ target_link_libraries("${PROJECT_NAME}_planner_kinodynamics"
     "${PROJECT_NAME}_trajectory"
     "${PROJECT_NAME}_statespace"
     "${PROJECT_NAME}_planner"
+    "${PROJECT_NAME}_planner_ompl"
     ${OMPL_LIBRARIES}
     ${NLOPT_LIBRARIES}
     ${DART_LIBRARIES}

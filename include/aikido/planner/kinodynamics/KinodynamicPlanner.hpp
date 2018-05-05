@@ -76,11 +76,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     const Eigen::VectorXd& _viaVelocity,
     dart::dynamics::MetaSkeletonPtr _metaSkeleton,
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    constraint::SampleablePtr _sampler,
     constraint::TestablePtr _validityConstraint,
-    constraint::TestablePtr _boundsConstraint,
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks);
+
 
 } // namespace kinodynamics
 } // namespace planner
