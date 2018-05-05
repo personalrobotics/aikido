@@ -56,7 +56,6 @@ public:
 
   double maxPlanTime;
   double maxDistanceBtwValidityChecks;
-
 };
 
 TEST_F(KinodynamicPlannerTest, ThrowsOnStateSpaceMismatch)
@@ -93,17 +92,15 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   stateSpace->expMap(goalPose, goalState);
 
   auto traj = planMinimumTimeViaConstraint(
-              startState,
-              goalState,
-              viaState,
-              viaVelocity,
-              skel,
-              stateSpace,
-              passingConstraint,
-              maxPlanTime,
-              maxDistanceBtwValidityChecks);
-
-
+      startState,
+      goalState,
+      viaState,
+      viaVelocity,
+      skel,
+      stateSpace,
+      passingConstraint,
+      maxPlanTime,
+      maxDistanceBtwValidityChecks);
 }
 
 TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
@@ -120,14 +117,14 @@ TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
   stateSpace->expMap(goalPose, goalState);
 
   auto traj = planMinimumTimeViaConstraint(
-              startState,
-              goalState,
-              viaState,
-              viaVelocity,
-              skel,
-              stateSpace,
-              passingConstraint,
-              maxPlanTime,
-              maxDistanceBtwValidityChecks);
+      startState,
+      goalState,
+      viaState,
+      viaVelocity,
+      skel,
+      stateSpace,
+      passingConstraint,
+      maxPlanTime,
+      maxDistanceBtwValidityChecks);
   EXPECT_EQ(nullptr, traj);
 }
