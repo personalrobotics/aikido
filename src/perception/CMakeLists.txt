@@ -28,6 +28,7 @@ aikido_check_package(tf "aikido::perception" "tf")
 # Libraries
 #
 set(sources
+  PointCloud.cpp
   PoseEstimatorModule.cpp
   shape_conversions.cpp
   ObjectDatabase.cpp
