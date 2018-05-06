@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/planner/Planner.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace planner {
