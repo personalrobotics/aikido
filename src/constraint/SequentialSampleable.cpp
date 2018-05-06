@@ -16,9 +16,8 @@ public:
     , mGenerators(std::move(generators))
     , mIndex(0)
   {
-    // Do nothing
-    // TODO (avk): Should we again check equivalence of statespaces between
-    // that of each generator and mStateSpace? I don't think it's necessary.
+    for (const auto& generator : mGenerators)
+      assert(generator->getStateSpace() == mStateSpace);
   }
 
   // Documentation inherited
@@ -46,7 +45,14 @@ public:
     if (mGenerators.empty())
       return 0;
 
-    // TODO (avk): Consider active generator or all?
+    int numSamples = 0;
+    for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
+    {
+      if (mGenerators[i]->getNumSamples() == NO_LIMIT)
+        return NO_LIMIT;
+      numSamples += mGenerators[i]->getNumSamples();
+    }
+    return numSamples;
   }
 
   // Documentation inherited
