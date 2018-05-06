@@ -50,6 +50,7 @@ public:
     {
       if (mGenerators[i]->getNumSamples() == NO_LIMIT)
         return NO_LIMIT;
+
       numSamples += mGenerators[i]->getNumSamples();
     }
     return numSamples;
