@@ -73,6 +73,11 @@ aikido_add_test(test_FiniteSampleable
 target_link_libraries(test_FiniteSampleable
   "${PROJECT_NAME}_constraint")
 
+aikido_add_test(test_SequentialSampleable
+  test_SequentialSampleable.cpp)
+target_link_libraries(test_SequentialSampleable
+  "${PROJECT_NAME}_constraint")
+
 aikido_add_test(test_CyclicSampleable
   test_CyclicSampleable.cpp)
 target_link_libraries(test_CyclicSampleable
