@@ -29,6 +29,7 @@ public:
 private:
   /// StateSpace in which the constraint operates.
   statespace::StateSpacePtr mStateSpace;
+
   /// Set of sampleables.
   std::vector<SampleablePtr> mSampleables;
 };

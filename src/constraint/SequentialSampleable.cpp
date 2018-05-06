@@ -11,13 +11,15 @@ class SequentialSampleGenerator : public SampleGenerator
 public:
   SequentialSampleGenerator(
       statespace::StateSpacePtr stateSpace,
-      std::vector<std::unique_ptr<SampleGenerator>>& generators)
+      std::vector<std::unique_ptr<SampleGenerator>> generators)
     : mStateSpace(std::move(stateSpace))
-    , mGenerators(generators)
+    , mGenerators(std::move(generators))
     , mIndex(0)
   {
-    for (std::size_t i = 0; i < mGenerators.size(); ++i)
-      assert(mGenerators[i]->getStateSpace() == mStateSpace);
+    #ifndef NDEBUG
+      for (const auto& generator : mGenerators)
+        assert(generator->getStateSpace() == mStateSpace);
+    #endif
   }
 
   // Documentation inherited
@@ -32,8 +34,10 @@ public:
     while (canSample())
     {
       if (mGenerators[mIndex]->canSample())
-        return mGenerators[mIndex]->sample(state);
-
+      {
+        if (mGenerators[mIndex]->sample(state))
+          return true;
+      }
       mIndex++;
     }
     return false;
@@ -42,9 +46,6 @@ public:
   // Documentation inherited
   int getNumSamples() const override
   {
-    if (mGenerators.empty())
-      return 0;
-
     int numSamples = 0;
     for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
     {
@@ -59,17 +60,21 @@ public:
   // Documentation inherited
   bool canSample() const override
   {
-    if (mIndex >= mGenerators.size())
-      return false;
-
-    return true;
+    for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
+    {
+      if (mGenerators[i]->canSample())
+        return true;
+    }
+    return false;
   }
 
 private:
   /// StateSpace the associated sampleable operates in.
   statespace::StateSpacePtr mStateSpace;
+
   /// Set of generators associated with corresponding set of sampleables.
-  std::vector<std::unique_ptr<SampleGenerator>>& mGenerators;
+  std::vector<std::unique_ptr<SampleGenerator>> mGenerators;
+
   /// Index of the active sampleable/generator.
   std::size_t mIndex;
 };
@@ -125,7 +130,7 @@ std::unique_ptr<SampleGenerator> SequentialSampleable::createSampleGenerator()
     generators.emplace_back(sampleable->createSampleGenerator());
 
   return dart::common::make_unique<SequentialSampleGenerator>(
-      mStateSpace, generators);
+      mStateSpace, std::move(generators));
 }
 
 } // namespace constraint
