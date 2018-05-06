@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_SEQUENTIALSAMPLEABLE_HPP_
 #define AIKIDO_CONSTRAINT_SEQUENTIALSAMPLEABLE_HPP_
 
-#include "Sampleable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -17,7 +17,7 @@ public:
   /// \param[in] sampleables Set of sampleables.
   SequentialSampleable(
       statespace::StateSpacePtr stateSpace,
-      std::vector<SampleablePtr> sampleables);
+      std::vector<SampleablePtr>& sampleables);
 
   // Documentation inherited.
   // TODO (avk): const-correctness after planner API is merged.
@@ -27,7 +27,9 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
+  /// StateSpace in which the constraint operates.
   statespace::StateSpacePtr mStateSpace;
+  /// Set of sampleables.
   std::vector<SampleablePtr> mSampleables;
 };
 

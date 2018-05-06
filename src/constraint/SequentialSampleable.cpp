@@ -1,12 +1,10 @@
-#include <aikido/constraint/SequentialSampleable.hpp>
+#include "aikido/constraint/SequentialSampleable.hpp"
 
 #include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
 namespace constraint {
 
-// TODO (avk): Should I declare the class first and then define?
-// What is "good" C++ convention? Don't tell me it's a preference JS! -.-
 //==============================================================================
 class SequentialSampleGenerator : public SampleGenerator
 {
@@ -23,27 +21,35 @@ public:
     // that of each generator and mStateSpace? I don't think it's necessary.
   }
 
+  // Documentation inherited
   statespace::StateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
 
+  // Documentation inherited
   bool sample(statespace::StateSpace::State* state)
   {
-    if (!mGenerators[mIndex]->canSample())
+    while (canSample())
+    {
+      if (mGenerators[mIndex]->canSample())
+        return mGenerators[mIndex]->sample(state);
+
       mIndex++;
-
-    if (canSample())
-      return mGenerators[mIndex]->sample(state);
-
+    }
     return false;
   }
 
+  // Documentation inherited
   int getNumSamples() const override
   {
-    return mGenerators[mIndex]->getNumSamples();
+    if (mGenerators.empty())
+      return 0;
+
+    // TODO (avk): Consider active generator or all?
   }
 
+  // Documentation inherited
   bool canSample() const override
   {
     if (mIndex >= mGenerators.size())
@@ -53,16 +59,19 @@ public:
   }
 
 private:
+  /// StateSpace the associated sampleable operates in.
   statespace::StateSpacePtr mStateSpace;
+  /// Set of generators associated with corresponding set of sampleables.
   std::vector<std::unique_ptr<SampleGenerator>> mGenerators;
+  /// Index of the active sampleable/generator.
   std::size_t mIndex;
 };
 
 //==============================================================================
 SequentialSampleable::SequentialSampleable(
     statespace::StateSpacePtr stateSpace,
-    std::vector<SampleablePtr> sampleables)
-  : mStateSpace(std::move(stateSpace)), mSampleables(std::move(sampleables))
+    std::vector<SampleablePtr>& sampleables)
+  : mStateSpace(std::move(stateSpace)), mSampleables(sampleables)
 {
   if (!mStateSpace)
     throw std::invalid_argument("StateSpacePtr is nullptr.");
@@ -76,7 +85,7 @@ SequentialSampleable::SequentialSampleable(
     if (!sampleable)
     {
       std::stringstream msg;
-      msg << "Sampleable " << i << "is nullptr.";
+      msg << "Sampleable " << i << " is nullptr.";
       throw std::invalid_argument(msg.str());
     }
 
@@ -84,13 +93,12 @@ SequentialSampleable::SequentialSampleable(
     {
       std::stringstream msg;
       msg << "Mismatch between statespace of Sampleable " << i
-          << "and given statespace.";
+          << " and given statespace.";
       throw std::invalid_argument(msg.str());
     }
   }
   // TODO (avk): Somewhere we need to give warning if initial samplers are
-  // infinite
-  // or if all are finite.
+  // infinite or if all are finite.
 }
 
 //==============================================================================
