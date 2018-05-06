@@ -103,9 +103,9 @@ aikido_add_test(test_CartesianProductTestable
 target_link_libraries(test_CartesianProductTestable
   "${PROJECT_NAME}_constraint")
 
-aikido_add_test(test_SampleableSubspace
-  test_SampleableSubspace.cpp)
-target_link_libraries(test_SampleableSubspace
+aikido_add_test(test_CartesianProductSampleable
+  test_CartesianProductSampleable.cpp)
+target_link_libraries(test_CartesianProductSampleable
   "${PROJECT_NAME}_constraint")
 
 aikido_add_test(test_CartesianProductProjectable
