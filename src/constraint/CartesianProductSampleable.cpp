@@ -15,16 +15,15 @@ public:
       std::vector<std::unique_ptr<SampleGenerator>> _generators)
     : mStateSpace(std::move(_stateSpace)), mGenerators(std::move(_generators))
   {
-//    for (std::size_t i = 0; i < mGenerators.size(); ++i)
-//    {
-//      auto generator = mGenerators[i];
-//      if (!generator)
-//      {
-//        std::stringstream msg;
-//        msg << "Generator " << i << " is nullptr.";
-//        throw std::invalid_argument(msg.str());
-//      }
-//    }
+    for (std::size_t i = 0; i < mGenerators.size(); ++i)
+    {
+      if (!mGenerators[i])
+      {
+        std::stringstream msg;
+        msg << "Generator " << i << " is nullptr.";
+        throw std::invalid_argument(msg.str());
+      }
+    }
   }
 
   statespace::StateSpacePtr getStateSpace() const override

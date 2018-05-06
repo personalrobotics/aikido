@@ -16,16 +16,15 @@ public:
     , mGenerators(std::move(generators))
     , mIndex(0)
   {
-//    for (std::size_t i = 0; i < mGenerators.size(); ++i)
-//    {
-//      auto generator = mGenerators[i];
-//      if (!generator)
-//      {
-//        std::stringstream msg;
-//        msg << "Generator " << i << " is nullptr.";
-//        throw std::invalid_argument(msg.str());
-//      }
-//    }
+    for (std::size_t i = 0; i < mGenerators.size(); ++i)
+    {
+      if (!mGenerators[i])
+      {
+        std::stringstream msg;
+        msg << "Generator " << i << " is nullptr.";
+        throw std::invalid_argument(msg.str());
+      }
+    }
 
 #ifndef NDEBUG
     for (const auto& generator : mGenerators)
