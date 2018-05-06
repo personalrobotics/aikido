@@ -254,13 +254,15 @@ private:
   dart::dynamics::SkeletonPtr mParentSkeleton;
 
   /// True if running in simulation mode
-  bool mSimulation;
+  //bool mSimulation;
+  // TODO(JS): Disabled since not used in this class
 
   std::unique_ptr<common::RNG> mRng;
 
   std::shared_ptr<control::TrajectoryExecutor> mTrajectoryExecutor;
 
-  double mCollisionResolution;
+  //double mCollisionResolution;
+  // TODO(JS): Disabled since not used in this class
 
   /// Commonly used configurations.
   ConfigurationMap mNamedConfigurations;

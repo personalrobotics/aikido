@@ -27,9 +27,11 @@ using dart::dynamics::MetaSkeletonPtr;
 
 // TODO: Temporary constants for planning calls.
 // These should be defined when we construct planner adapter classes
-static const double timelimit = 3.0;
-static const std::size_t maxNumTrials = 10;
-static const double collisionResolution = 0.1;
+// TODO(JS): timelimit, maxNumTrials, and collisionResolution are disabled since
+// not used.
+//static const double timelimit = 3.0;
+//static const std::size_t maxNumTrials = 10;
+//static const double collisionResolution = 0.1;
 static const double asymmetryTolerance = 1e-3;
 
 namespace {
@@ -92,7 +94,7 @@ Eigen::VectorXd getSymmetricAccelerationLimits(
 ConcreteRobot::ConcreteRobot(
     const std::string& name,
     MetaSkeletonPtr metaSkeleton,
-    bool simulation,
+    bool /*simulation*/,
     common::UniqueRNGPtr rng,
     control::TrajectoryExecutorPtr trajectoryExecutor,
     dart::collision::CollisionDetectorPtr collisionDetector,
@@ -103,10 +105,8 @@ ConcreteRobot::ConcreteRobot(
   , mMetaSkeleton(metaSkeleton)
   , mStateSpace(std::make_shared<MetaSkeletonStateSpace>(mMetaSkeleton.get()))
   , mParentSkeleton(nullptr)
-  , mSimulation(simulation)
   , mRng(std::move(rng))
   , mTrajectoryExecutor(std::move(trajectoryExecutor))
-  , mCollisionResolution(collisionResolution)
   , mCollisionDetector(collisionDetector)
   , mSelfCollisionFilter(selfCollisionFilter)
 {
@@ -182,7 +182,7 @@ boost::optional<Eigen::VectorXd> ConcreteRobot::getNamedConfiguration(
 void ConcreteRobot::setNamedConfigurations(
     std::unordered_map<std::string, const Eigen::VectorXd> namedConfigurations)
 {
-  mNamedConfigurations = namedConfigurations;
+  mNamedConfigurations = std::move(namedConfigurations);
 }
 
 //==============================================================================
