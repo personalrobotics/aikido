@@ -16,10 +16,10 @@ public:
     , mGenerators(std::move(generators))
     , mIndex(0)
   {
-    #ifndef NDEBUG
-      for (const auto& generator : mGenerators)
-        assert(generator->getStateSpace() == mStateSpace);
-    #endif
+#ifndef NDEBUG
+    for (const auto& generator : mGenerators)
+      assert(generator->getStateSpace() == mStateSpace);
+#endif
   }
 
   // Documentation inherited
