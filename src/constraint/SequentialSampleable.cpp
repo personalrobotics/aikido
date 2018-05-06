@@ -1,6 +1,6 @@
 #include "aikido/constraint/SequentialSampleable.hpp"
 
-#include <dart/common/StlHelpers.hpp>
+#include <dart/common/Memory.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -39,7 +39,7 @@ public:
   }
 
   // Documentation inherited
-  bool sample(statespace::StateSpace::State* state)
+  bool sample(statespace::StateSpace::State* state) override
   {
     while (mIndex < mGenerators.size())
     {
