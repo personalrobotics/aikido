@@ -36,7 +36,7 @@
 
 * Robot
 
-  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325] https://github.com/personalrobotics/aikido/pull/325)
+  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
 
 * Build & Testing & ETC
 
