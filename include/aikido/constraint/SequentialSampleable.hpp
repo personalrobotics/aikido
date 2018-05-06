@@ -17,7 +17,7 @@ public:
   /// \param[in] sampleables Set of sampleables.
   SequentialSampleable(
       statespace::StateSpacePtr stateSpace,
-      std::vector<SampleablePtr>& sampleables);
+      const std::vector<ConstSampleablePtr>& sampleables);
 
   // Documentation inherited.
   // TODO (avk): const-correctness after planner API is merged.
@@ -31,7 +31,7 @@ private:
   statespace::StateSpacePtr mStateSpace;
 
   /// Set of sampleables.
-  std::vector<SampleablePtr> mSampleables;
+  const std::vector<ConstSampleablePtr> mSampleables;
 };
 
 } // namespace constraint

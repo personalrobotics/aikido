@@ -82,7 +82,7 @@ private:
 //==============================================================================
 SequentialSampleable::SequentialSampleable(
     statespace::StateSpacePtr stateSpace,
-    std::vector<SampleablePtr>& sampleables)
+    const std::vector<ConstSampleablePtr>& sampleables)
   : mStateSpace(std::move(stateSpace)), mSampleables(sampleables)
 {
   if (!mStateSpace)
