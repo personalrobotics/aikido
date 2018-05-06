@@ -1,0 +1,6 @@
+brew 'boost'
+brew 'dartsim'
+brew 'libmicrohttpd'
+brew 'ompl'
+brew 'tinyxml2'
+brew 'yaml-cpp'
