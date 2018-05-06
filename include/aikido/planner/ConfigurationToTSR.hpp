@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_PLANTOTSR_HPP_
-#define AIKIDO_PLANNER_PLANTOTSR_HPP_
+#ifndef AIKIDO_PLANNER_CONFIGURATIONTOTSR_HPP_
+#define AIKIDO_PLANNER_CONFIGURATIONTOTSR_HPP_
 
 #include <dart/dart.hpp>
 #include "aikido/constraint/dart/TSR.hpp"
@@ -60,4 +60,4 @@ protected:
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_PLANTOTSR_HPP_
+#endif // AIKIDO_PLANNER_CONFIGURATIONTOTSR_HPP_

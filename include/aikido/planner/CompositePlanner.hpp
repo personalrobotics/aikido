@@ -1,14 +1,15 @@
 #ifndef AIKIDO_PLANNER_COMPOSITEPLANNER_HPP_
 #define AIKIDO_PLANNER_COMPOSITEPLANNER_HPP_
 
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
+
+#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/planner/Planner.hpp"
 
 namespace aikido {
 namespace planner {
+
+AIKIDO_DECLARE_POINTERS(CompositePlanner)
 
 /// CompositePlanner is a base class for concrete planner classes that contain
 /// multiple planners.
@@ -25,24 +26,6 @@ public:
 
   /// Returns true if this CompositePlanner contains \c planner.
   bool hasPlanner(const Planner* planner) const;
-
-  /// Returns all the planners in this CompositePlanner.
-  const std::vector<PlannerPtr>& getPlanners();
-
-  /// Returns number of planners that this CompositePlanner contains.
-  std::size_t getNumPlanners() const;
-
-  /// Returns planner given \c index.
-  ///
-  /// \throw If index is equal to or greater than the number of planners in this
-  /// CompositePlanner.
-  PlannerPtr getPlanner(std::size_t index);
-
-  /// Returns planner given \c index.
-  ///
-  /// \throw If index is equal to or greater than the number of planners in this
-  /// CompositePlanner.
-  ConstPlannerPtr getPlanner(std::size_t index) const;
 
   // Documentation inherited.
   bool canSolve(const Problem& problem) const override;

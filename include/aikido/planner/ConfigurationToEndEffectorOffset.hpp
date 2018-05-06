@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
-#define AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
+#ifndef AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
+#define AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
 
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
@@ -22,20 +22,20 @@ public:
   /// offest while maintaining the current orientation.
   /// \param[in] startState Start state.
   /// \param[in] direction Unit vector that represents the direction of motion
-  /// [unit vector in the world frame].
-  /// \param[in] distance Non-negative distance to move, in meters.
+  /// [unit vector in the world frame]. The direction is allowed to be zero
+  /// vector.
+  /// \param[in] signedDistance Signed distance to move, in meters.
   /// \param[in] interpolator Interpolator used to produce the output
   /// trajectory.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw (1) If \c stateSpace is not compatible with \c constraint's state
-  /// space, (2) if magnitude of \c direction is close to zero, or (3) \c
-  /// distance is negative.
+  /// space.
   ConfigurationToEndEffectorOffset(
       statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Vector3d& direction,
-      double distance,
+      double signedDistance,
       constraint::ConstTestablePtr constraint);
 
   // Documentation inherited.
@@ -52,9 +52,11 @@ public:
   const statespace::StateSpace::State* getStartState() const;
 
   /// Returns the direction of motion specified in the world frame.
+  ///
+  /// \note The direction is allowed to be zero vector.
   const Eigen::Vector3d& getDirection() const;
 
-  /// Returns the distance in meters to move in the specified direction.
+  /// Returns the signed distance in meters to move in the specified direction.
   double getDistance() const;
 
 protected:
@@ -67,11 +69,11 @@ protected:
   /// Direction of motion.
   const Eigen::Vector3d mDirection;
 
-  /// Distance to move in the direction specified.
+  /// Signed distance to move in the direction specified.
   const double mDistance;
 };
 
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_PLANTOENDEFFECTOROFFSET_HPP_
+#endif // AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_

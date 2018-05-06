@@ -1,10 +1,11 @@
 #ifndef AIKIDO_PLANNER_PLANNER_HPP_
 #define AIKIDO_PLANNER_PLANNER_HPP_
 
-#include <functional>
-#include <unordered_set>
+#include <string>
+
 #include "aikido/common/pointers.hpp"
 #include "aikido/planner/Problem.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {

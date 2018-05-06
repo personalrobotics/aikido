@@ -1,5 +1,7 @@
 #include "aikido/planner/Planner.hpp"
 
+#include <utility>
+
 namespace aikido {
 namespace planner {
 

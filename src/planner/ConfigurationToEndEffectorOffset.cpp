@@ -11,19 +11,15 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Vector3d& direction,
-    const double distance,
+    const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mDirection(direction.normalized())
-  , mDistance(distance)
+  , mDistance(signedDistance)
 {
-  if (direction.norm() < 1e-6)
-    throw std::invalid_argument("Length of direction shouldn't be zero.");
-
-  if (distance < 0.0)
-    throw std::invalid_argument("Distance shouldn't be a negative value.");
+  // Do nothing
 }
 
 //==============================================================================

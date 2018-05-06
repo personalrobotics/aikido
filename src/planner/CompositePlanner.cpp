@@ -1,7 +1,7 @@
 #include "aikido/planner/CompositePlanner.hpp"
 
 #include <algorithm>
-#include <dart/common/Console.hpp>
+#include <utility>
 
 namespace aikido {
 namespace planner {
@@ -25,33 +25,6 @@ bool CompositePlanner::hasPlanner(const Planner* planner) const
                return (val.get() == planner);
              })
          != mPlanners.end();
-}
-
-//==============================================================================
-const std::vector<PlannerPtr>& CompositePlanner::getPlanners()
-{
-  return mPlanners;
-}
-
-//==============================================================================
-std::size_t CompositePlanner::getNumPlanners() const
-{
-  return mPlanners.size();
-}
-
-//==============================================================================
-PlannerPtr CompositePlanner::getPlanner(std::size_t index)
-{
-  if (index > mPlanners.size())
-    throw std::invalid_argument("index is out of bound");
-
-  return mPlanners[index];
-}
-
-//==============================================================================
-ConstPlannerPtr CompositePlanner::getPlanner(std::size_t index) const
-{
-  return const_cast<CompositePlanner*>(this)->getPlanner(index);
 }
 
 //==============================================================================
