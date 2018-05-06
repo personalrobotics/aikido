@@ -20,8 +20,6 @@ public:
     for (const auto& generator : mGenerators)
       assert(generator->getStateSpace() == mStateSpace);
 #endif
-    for (auto& generator : mGenerators)
-      generator->getStateSpace();
   }
 
   // Documentation inherited
@@ -33,13 +31,11 @@ public:
   // Documentation inherited
   bool sample(statespace::StateSpace::State* state)
   {
-    while (mIndex < mGenerators.size())
+    for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
     {
-      if (mGenerators[mIndex]->canSample())
-      {
-        if (mGenerators[mIndex]->sample(state))
-          return true;
-      }
+      if (mGenerators[mIndex]->sample(state))
+        return true;
+
       mIndex++;
     }
     return false;

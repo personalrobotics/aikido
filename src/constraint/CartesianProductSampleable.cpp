@@ -16,6 +16,7 @@ public:
     : mStateSpace(std::move(_stateSpace)), mGenerators(std::move(_generators))
   {
     // Do nothing
+    // TODO: Check for nullity of generators.
   }
 
   statespace::StateSpacePtr getStateSpace() const override
