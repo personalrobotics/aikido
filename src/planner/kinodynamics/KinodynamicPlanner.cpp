@@ -121,15 +121,16 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks)
 {
+  std::size_t numDofs = _metaSkeleton->getNumDofs();
+
   // convert aikido state to Eigen::VectorXd
-  Eigen::VectorXd startVec(_metaSkeletonStateSpace->getDimension());
-  Eigen::VectorXd goalVec(_metaSkeletonStateSpace->getDimension());
-  Eigen::VectorXd viaVec(_metaSkeletonStateSpace->getDimension());
+  Eigen::VectorXd startVec = Eigen::VectorXd::Zero(numDofs);
   _metaSkeletonStateSpace->logMap(_start, startVec);
+  Eigen::VectorXd goalVec = Eigen::VectorXd::Zero(numDofs);
   _metaSkeletonStateSpace->logMap(_goal, goalVec);
+  Eigen::VectorXd viaVec = Eigen::VectorXd::Zero(numDofs);
   _metaSkeletonStateSpace->logMap(_via, viaVec);
 
-  std::size_t numDofs = _metaSkeleton->getNumDofs();
   // Initialize parameters from bounds constraint
   std::vector<double> maxVelocities(numDofs, 0.0);
   std::vector<double> maxAccelerations(numDofs, 0.0);
