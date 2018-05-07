@@ -27,8 +27,6 @@ using dart::dynamics::MetaSkeletonPtr;
 
 // TODO: Temporary constants for planning calls.
 // These should be defined when we construct planner adapter classes
-// TODO(JS): timelimit, maxNumTrials, and collisionResolution are disabled since
-// not used.
 // static const double collisionResolution = 0.1;
 static const double asymmetryTolerance = 1e-3;
 
