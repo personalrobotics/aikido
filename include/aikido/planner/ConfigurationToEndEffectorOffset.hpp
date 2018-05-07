@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
-#define AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
+#ifndef AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
+#define AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
 
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
@@ -28,8 +28,6 @@ public:
   /// \param[in] interpolator Interpolator used to produce the output
   /// trajectory.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
-  /// \throw (1) If \c stateSpace is not compatible with \c constraint's state
-  /// space.
   ConfigurationToEndEffectorOffset(
       statespace::ConstStateSpacePtr stateSpace,
       dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
@@ -76,4 +74,4 @@ protected:
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
+#endif // AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
