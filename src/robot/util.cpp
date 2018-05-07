@@ -567,10 +567,10 @@ Eigen::Isometry3d getLookAtIsometry(
 }
 
 //==============================================================================
-BodyNodePtr getBodyNodeOrThrow(
-    const MetaSkeletonPtr& skeleton, const std::string& bodyNodeName)
+const dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    const MetaSkeleton& skeleton, const std::string& bodyNodeName)
 {
-  auto bodyNode = skeleton->getBodyNode(bodyNodeName);
+  auto bodyNode = skeleton.getBodyNode(bodyNodeName);
 
   if (!bodyNode)
   {

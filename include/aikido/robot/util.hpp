@@ -255,8 +255,8 @@ Eigen::Isometry3d getLookAtIsometry(
 /// param[in] skeleton MetaSkeleton that should contain the BodyNode
 /// param[in] bodyNodeName name of the BodyNode we are looking for
 /// return the BodyNode
-dart::dynamics::BodyNodePtr getBodyNodeOrThrow(
-    const dart::dynamics::MetaSkeletonPtr& skeleton,
+const dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    const dart::dynamics::MetaSkeleton& skeleton,
     const std::string& bodyNodeName);
 
 } // namespace util
