@@ -117,7 +117,7 @@ TEST(SequentialSampleableTest, MultipleSampleGenerators)
   std::vector<ConstSampleablePtr> sampleables;
   sampleables.emplace_back(std::make_shared<const FiniteSampleable>(r1, s1));
   sampleables.emplace_back(
-        std::make_shared<const CyclicSampleable>(
+      std::make_shared<const CyclicSampleable>(
           std::make_shared<FiniteSampleable>(r1, s2)));
 
   SequentialSampleable constraint(r1, sampleables);
