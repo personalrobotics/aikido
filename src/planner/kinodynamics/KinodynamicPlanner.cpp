@@ -61,7 +61,6 @@ public:
 
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     DIMTPtr _dimt,
-    statespace::StateSpacePtr _stateSpace,
     constraint::TestablePtr _validityConstraint,
     double _maxDistanceBtwValidityChecks)
 {
@@ -147,10 +146,8 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   DIMTPtr dimt = std::make_shared<DIMT>( numDofs, maxAccelerations, maxVelocities );
 
   // create bound constraint from metaSkeleton
-  auto boundsConstraint = nullptr;
-  auto si = getSpaceInformation(dimt, _metaSkeletonStateSpace,
+  auto si = getSpaceInformation(dimt,
                                 _validityConstraint,
-                                boundsConstraint,
                                 _maxDistanceBtwValidityChecks);
 
   // create OMPL state
@@ -162,14 +159,14 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
 
 
   double singleSampleLimit = 3.0;
-  double sigma = 1;
+  //double sigma = 1;
   //int max_steps = 20;
-  int max_steps = 2000;
-  double alpha = 0.5;
+  //int max_steps = 2000;
+  //double alpha = 0.5;
   double max_call_num = 100;
   double batch_size = 100;
-  double epsilon = 2;//0.2;
-  double L = 1;
+  //double epsilon = 2;//0.2;
+  //double L = 1;
   int num_trials = 5;
   const double level_set = std::numeric_limits<double>::infinity();
 

@@ -24,26 +24,16 @@ namespace kinodynamics {
 
 /// Generate an OMPL SpaceInformation from aikido components
 /// \param _dimt Minimum time double integrator
-/// \param _stateSpace The StateSpace that the SpaceInformation operates on
-/// \param _sampler A Sampleable that can sample states from the
-/// StateSpace. Warning: Many OMPL planners internally assume this sampler
-/// samples uniformly. Care should be taken when using a non-uniform sampler.
 /// \param _validityConstraint A constraint used to test validity during
 /// planning. This should include collision checking and any other constraints
 /// that must be satisfied for a state to be considered valid.
-/// \param _boundsConstraint A constraint used to determine whether states
-/// encountered during planning fall within any bounds specified on the
-/// StateSpace. In addition to the _validityConstraint, this must also be
-/// satsified for a state to be considered valid.
 /// \param _boundsProjector A Projectable that projects a state back within
 /// valid bounds defined on the StateSpace
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
 /// between validity checking two successive points on a tree extension
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     DIMTPtr _dimt,
-    statespace::StateSpacePtr _stateSpace,
     constraint::TestablePtr _validityConstraint,
-    constraint::TestablePtr _boundsConstraint,
     double _maxDistanceBtwValidityChecks);
 
 /// Use the template OMPL Planner type to plan a trajectory that moves from the

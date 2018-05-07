@@ -58,25 +58,6 @@ public:
   double maxDistanceBtwValidityChecks;
 };
 
-TEST_F(KinodynamicPlannerTest, ThrowsOnStateSpaceMismatch)
-{
-  SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
-  auto differentStateSpace
-      = make_shared<MetaSkeletonStateSpace>(empty_skel.get());
-  /*
-  EXPECT_THROW(
-      {
-        planSnap(
-            differentStateSpace,
-            *startState,
-            *goalState,
-            interpolator,
-            passingConstraint,
-            planningResult);
-      },
-      std::invalid_argument);
-  */
-}
 
 TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {

@@ -39,3 +39,14 @@ target_compile_options("${PROJECT_NAME}_planner_kinodynamics"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
+add_component(${PROJECT_NAME} planner_kinodynamics)
+add_component_targets(${PROJECT_NAME} planner_kinodynamics "${PROJECT_NAME}_planner_kinodynamics")
+add_component_dependencies(${PROJECT_NAME} planner_kinodynamics
+  constraint
+  distance
+  planner
+  statespace
+  trajectory
+)
+
+format_add_sources(${sources})
