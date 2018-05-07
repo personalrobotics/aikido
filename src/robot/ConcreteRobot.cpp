@@ -29,8 +29,6 @@ using dart::dynamics::MetaSkeletonPtr;
 // These should be defined when we construct planner adapter classes
 // TODO(JS): timelimit, maxNumTrials, and collisionResolution are disabled since
 // not used.
-// static const double timelimit = 3.0;
-// static const std::size_t maxNumTrials = 10;
 // static const double collisionResolution = 0.1;
 static const double asymmetryTolerance = 1e-3;
 
@@ -105,8 +103,10 @@ ConcreteRobot::ConcreteRobot(
   , mMetaSkeleton(metaSkeleton)
   , mStateSpace(std::make_shared<MetaSkeletonStateSpace>(mMetaSkeleton.get()))
   , mParentSkeleton(nullptr)
+  // , mSimulation(simulation)
   , mRng(std::move(rng))
   , mTrajectoryExecutor(std::move(trajectoryExecutor))
+  // , mCollisionResolution(collisionResolution)
   , mCollisionDetector(collisionDetector)
   , mSelfCollisionFilter(selfCollisionFilter)
 {
