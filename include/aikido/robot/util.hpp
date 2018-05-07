@@ -252,9 +252,9 @@ Eigen::Isometry3d getLookAtIsometry(
 
 /// Get a specific BodyNode of a MetaSkeleton or throw an execption
 /// if it doesn't exist
-/// param[in] skeleton MetaSkeleton that should contain the BodyNode
-/// param[in] bodyNodeName name of the BodyNode we are looking for
-/// return the BodyNode
+/// \param[in] skeleton MetaSkeleton that should contain the BodyNode
+/// \param[in] bodyNodeName name of the BodyNode we are looking for
+/// \return the BodyNode
 const dart::dynamics::BodyNode* getBodyNodeOrThrow(
     const dart::dynamics::MetaSkeleton& skeleton,
     const std::string& bodyNodeName);
