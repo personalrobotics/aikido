@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 unset -f cd; # Disable rvm ovveride of cd (see https://github.com/travis-ci/travis-ci/issues/8703)
 

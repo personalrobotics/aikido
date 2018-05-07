@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
+
+cd "${HOME}/workspace"
 
 # Build documentation
 ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DDOWNLOAD_TAGFILES=$DOWNLOAD_TAGFILES --make-args docs -- aikido > /dev/null

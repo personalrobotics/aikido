@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
+
+cd "${HOME}/workspace"
 
 if [ ${TRAVIS} ]; then
   AIKIDO_BUILD_DIR="${TRAVIS_BUILD_DIR}"
