@@ -18,8 +18,8 @@
 namespace aikido {
 namespace robot {
 
-// TODO: These are planning methods used in Robot classes. These will be
-// removed once we have a Planner API.
+// TODO: These are mostly planning methods used in Robot classes.
+// The planning methods will be removed once we have a Planner API.
 namespace util {
 
 struct VectorFieldPlannerParameters
@@ -249,6 +249,14 @@ bool getGoalAndConstraintTSRForEndEffectorOffset(
 /// \return Pose at positionFrom, looking at positionTo.
 Eigen::Isometry3d getLookAtIsometry(
     const Eigen::Vector3d& positionFrom, const Eigen::Vector3d& positionTo);
+
+/// Get a specific BodyNode of a Skeleton or throw an execption
+/// if it doesn't exist
+/// param[in] skeleton Skeleton Skeleton that should contain the BodyNode
+/// param[in] bodyNodeName name of the BodyNode we are looking for
+/// return the BodyNode
+dart::dynamics::BodyNodePtr getBodyNodeOrThrow(
+    const dart::dynamics::SkeletonPtr& skeleton, const std::string& bodyNodeName);
 
 } // namespace util
 } // namespace robot
