@@ -1,6 +1,5 @@
-
-
 #include <iostream>
+#include <chrono>
 #include "ompl/geometric/planners/rrt/RRTstar.h"
 #include "ompl/base/goals/GoalSampleableRegion.h"
 #include "ompl/tools/config/SelfConfig.h"
@@ -561,7 +560,7 @@ base::PlannerStatus MyInformedRRTstar::solve(const base::PlannerTerminationCondi
                                 sampleLoadStream_.close();                                
 
                                 //switch to apx NN data structure
-                                auto tmp = std::make_shared< NearestNeighborsSqrtApprox<Motion *>>();
+                                auto tmp = aikido::planner::ompl::ompl_make_shared< NearestNeighborsSqrtApprox<Motion *>>();
                                 tmp->setDistanceFunction([this](const Motion *a, const Motion *b) { return distanceFunction(a, b); });
                                 std::vector<Motion*> motions;
                                 nn_->list(motions);

@@ -6,8 +6,10 @@
 #include <ios>
 #include <iostream>
 #include <ompl/geometric/planners/bitstar/BITstar.h>
-#include "ompl/datastructures/NearestNeighborsGNAT.h"
-#include "ompl/datastructures/NearestNeighborsLinear.h"
+#include <ompl/datastructures/NearestNeighborsGNAT.h>
+#include <ompl/datastructures/NearestNeighborsLinear.h>
+
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 
 namespace ompl {
 namespace geometric {
@@ -47,7 +49,7 @@ private:
   uint64_t samplesGeneratedNum_;
 };
 
-using MyBITstarPtr = std::shared_ptr<MyBITstar>;
+using MyBITstarPtr = aikido::planner::ompl::ompl_shared_ptr<MyBITstar>;
 }
 }
 

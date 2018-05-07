@@ -6,10 +6,11 @@
 #include <Eigen/Dense>
 #include <ompl/base/OptimizationObjective.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
-#include <aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h>
-#include <aikido/planner/kinodynamics/dimt/Params.h>
-#include <aikido/planner/kinodynamics/ompl/OmplHelpers.hpp>
-#include <aikido/planner/kinodynamics/sampler/Sampler.hpp>
+
+#include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
+#include "aikido/planner/kinodynamics/dimt/Params.h"
+#include "aikido/planner/kinodynamics/ompl/OmplHelpers.hpp"
+#include "aikido/planner/kinodynamics/sampler/Sampler.hpp"
 
 using MotionCostFxn = std::function<double(Eigen::VectorXd, Eigen::VectorXd)>;
 using StateCostFxn = std::function<double(Eigen::VectorXd)>;

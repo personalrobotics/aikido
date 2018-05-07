@@ -1,6 +1,14 @@
 #ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
 #define AIKIDO_OMPL_OMPLPLANNER_HPP_
 
+#include <ompl/base/Planner.h>
+#include <ompl/base/ProblemDefinition.h>
+#include <ompl/base/ScopedState.h>
+#include <ompl/base/SpaceInformation.h>
+#include <ompl/base/StateSampler.h>
+#include <ompl/base/goals/GoalRegion.h>
+#include <ompl/geometric/PathSimplifier.h>
+
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
@@ -9,15 +17,6 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
-
-#include <ompl/base/Planner.h>
-#include <ompl/base/ProblemDefinition.h>
-#include <ompl/base/ScopedState.h>
-#include <ompl/base/SpaceInformation.h>
-#include <ompl/base/StateSampler.h>
-#include <ompl/base/goals/GoalRegion.h>
-
-#include <ompl/geometric/PathSimplifier.h>
 
 namespace aikido {
 namespace planner {

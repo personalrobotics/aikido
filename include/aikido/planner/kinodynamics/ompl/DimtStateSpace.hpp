@@ -3,8 +3,10 @@
 
 #include <Eigen/Dense>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
-#include <aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h>
-#include <aikido/planner/kinodynamics/dimt/Params.h>
+
+#include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
+#include "aikido/planner/kinodynamics/dimt/Params.h"
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 
 namespace ompl {
 namespace base {
@@ -48,7 +50,7 @@ public:
   }
 };
 
-using DimtStateSpacePtr = std::shared_ptr<DimtStateSpace>;
+using DimtStateSpacePtr = aikido::planner::ompl::ompl_shared_ptr<DimtStateSpace>;
 }
 }
 #endif

@@ -12,9 +12,11 @@
 #include "aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp"
 #include "aikido/planner/kinodynamics/ompl/MyInformedRRTstar.hpp"
 #include "aikido/planner/kinodynamics/sampler/HitAndRunSampler.hpp"
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 
 #include "aikido/common/Spline.hpp"
 
+using aikido::planner::ompl::ompl_make_shared;
 
 namespace aikido {
 namespace planner {
@@ -64,21 +66,21 @@ public:
     double _maxDistanceBtwValidityChecks)
 {
   // construct the state space we are planning in
-  ::ompl::base::StateSpacePtr space = std::make_shared< ::ompl::base::DimtStateSpace >(_dimt);
+  ::ompl::base::StateSpacePtr space = ompl_make_shared< ::ompl::base::DimtStateSpace >(_dimt);
 
   ::ompl::base::RealVectorBounds bounds(_dimt->getNumDofs());
   bounds.setLow(-10);
   bounds.setHigh(10);
   space->as<::ompl::base::DimtStateSpace>()->setBounds(bounds);
-  ::ompl::base::SpaceInformationPtr si = std::make_shared<::ompl::base::SpaceInformation>(space);
+  ::ompl::base::SpaceInformationPtr si = ompl_make_shared<::ompl::base::SpaceInformation>(space);
 
   // Validity checking
   ::ompl::base::StateValidityCheckerPtr vchecker
-      = std::make_shared<StateValidityChecker>(si, _validityConstraint);
+      = ompl_make_shared<StateValidityChecker>(si, _validityConstraint);
   si->setStateValidityChecker(vchecker);
 
   ::ompl::base::MotionValidatorPtr mvalidator
-      = std::make_shared<aikido::planner::ompl::MotionValidator>(si, _maxDistanceBtwValidityChecks);
+      = ompl_make_shared<aikido::planner::ompl::MotionValidator>(si, _maxDistanceBtwValidityChecks);
   si->setMotionValidator(mvalidator);
   si->setStateValidityCheckingResolution(0.001);
   si->setup();
@@ -94,7 +96,7 @@ public:
   ::ompl::base::ScopedState<::ompl::base::RealVectorStateSpace> goalState(si->getStateSpace(), goal);
 
   // Set up the final problem with the full optimization objective
-  ::ompl::base::ProblemDefinitionPtr pdef = std::make_shared<::ompl::base::ProblemDefinition>(si);
+  ::ompl::base::ProblemDefinitionPtr pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
   pdef->setStartAndGoalStates(startState, goalState);
 
   return pdef;
@@ -105,7 +107,7 @@ const ::ompl::base::OptimizationObjectivePtr createDimtOptimizationObjective(::o
                                                                              const ::ompl::base::State* start,
                                                                              const ::ompl::base::State* goal)
 {
-  const ::ompl::base::OptimizationObjectivePtr base_opt = std::make_shared<::ompl::base::DimtObjective>(si, start, goal, dimt);
+  const ::ompl::base::OptimizationObjectivePtr base_opt = ompl_make_shared<::ompl::base::DimtObjective>(si, start, goal, dimt);
   return base_opt;
 }
 
@@ -171,7 +173,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   int num_trials = 5;
   const double level_set = std::numeric_limits<double>::infinity();
 
-  ::ompl::geometric::MyInformedRRTstarPtr planner = std::make_shared<::ompl::geometric::MyInformedRRTstar>(si);
+  ::ompl::geometric::MyInformedRRTstarPtr planner = ompl_make_shared<::ompl::geometric::MyInformedRRTstar>(si);
 
   // plan from start to via
   // 1. create problem
@@ -181,11 +183,11 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   basePdef1->setOptimizationObjective(baseOpt1);
 
 
-  ::ompl::base::MyInformedSamplerPtr sampler1 = std::make_shared<::ompl::base::HitAndRunSampler>(si, basePdef1, level_set, max_call_num, batch_size, num_trials);
+  ::ompl::base::MyInformedSamplerPtr sampler1 = ompl_make_shared<::ompl::base::HitAndRunSampler>(si, basePdef1, level_set, max_call_num, batch_size, num_trials);
   sampler1->setSingleSampleTimelimit(singleSampleLimit);
-  ::ompl::base::OptimizationObjectivePtr opt1 = std::make_shared<::ompl::base::MyOptimizationObjective>(si, sampler1, startState, viaState);
+  ::ompl::base::OptimizationObjectivePtr opt1 = ompl_make_shared<::ompl::base::MyOptimizationObjective>(si, sampler1, startState, viaState);
 
-  ::ompl::base::ProblemDefinitionPtr pdef1 = std::make_shared<::ompl::base::ProblemDefinition>(si);
+  ::ompl::base::ProblemDefinitionPtr pdef1 = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
   pdef1->setStartAndGoalStates(startState, viaState);
   pdef1->setOptimizationObjective(opt1);
 
@@ -210,11 +212,11 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   basePdef2->setOptimizationObjective(baseOpt2);
 
 
-  ::ompl::base::MyInformedSamplerPtr sampler2 = std::make_shared<::ompl::base::HitAndRunSampler>(si, basePdef2, level_set, max_call_num, batch_size, num_trials);
+  ::ompl::base::MyInformedSamplerPtr sampler2 = ompl_make_shared<::ompl::base::HitAndRunSampler>(si, basePdef2, level_set, max_call_num, batch_size, num_trials);
   sampler2->setSingleSampleTimelimit(singleSampleLimit);
-  ::ompl::base::OptimizationObjectivePtr opt2 = std::make_shared<::ompl::base::MyOptimizationObjective>(si, sampler2, viaState, goalState);
+  ::ompl::base::OptimizationObjectivePtr opt2 = ompl_make_shared<::ompl::base::MyOptimizationObjective>(si, sampler2, viaState, goalState);
 
-  ::ompl::base::ProblemDefinitionPtr pdef2 = std::make_shared<::ompl::base::ProblemDefinition>(si);
+  ::ompl::base::ProblemDefinitionPtr pdef2 = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
   pdef2->setStartAndGoalStates(viaState, goalState);
   pdef2->setOptimizationObjective(opt2);
 

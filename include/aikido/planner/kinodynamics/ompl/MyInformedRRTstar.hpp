@@ -6,8 +6,10 @@
 #include <ios>
 #include <iostream>
 #include <ompl/geometric/planners/rrt/InformedRRTstar.h>
-#include "ompl/datastructures/NearestNeighborsGNAT.h"
-#include "ompl/datastructures/NearestNeighborsLinear.h"
+#include <ompl/datastructures/NearestNeighborsGNAT.h>
+#include <ompl/datastructures/NearestNeighborsLinear.h>
+
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 
 namespace ompl {
 namespace geometric {
@@ -49,7 +51,7 @@ private:
   std::list<std::string> loadedSamplesStr_;
 };
 
-using MyInformedRRTstarPtr = std::shared_ptr<MyInformedRRTstar>;
+using MyInformedRRTstarPtr = aikido::planner::ompl::ompl_shared_ptr<MyInformedRRTstar>;
 }
 }
 

@@ -5,7 +5,7 @@
 #include <tuple>
 #include <Eigen/Dense>
 #include <math.h>
-#include <aikido/planner/kinodynamics/sampler/Sampler.hpp>
+#include "aikido/planner/kinodynamics/sampler/Sampler.hpp"
 
 namespace ompl {
 namespace base {

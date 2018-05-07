@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <Eigen/Dense>
-#include <aikido/planner/kinodynamics/sampler/Sampler.hpp>
+#include "aikido/planner/kinodynamics/sampler/Sampler.hpp"
 
 namespace ompl {
 namespace base {

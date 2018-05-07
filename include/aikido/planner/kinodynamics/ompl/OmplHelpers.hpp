@@ -1,7 +1,8 @@
 #pragma once
 
 #include <ompl/base/OptimizationObjective.h>
-#include <aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp>
+
+#include "aikido/planner/kinodynamics/ompl/MyOptimizationObjective.hpp"
 
 ///
 /// Function to convert a State to a VectorXd

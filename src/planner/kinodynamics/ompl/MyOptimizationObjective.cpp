@@ -31,7 +31,7 @@ ompl::base::Cost ompl::base::MyOptimizationObjective::stateCost(const ompl::base
 // @param s2 Goal state
 // @return Cost of going from s1 to s2
 //
-ompl::base::Cost ompl::base::MyOptimizationObjective::motionCost(const ompl::base::State *s1,
+::ompl::base::Cost ompl::base::MyOptimizationObjective::motionCost(const ompl::base::State *s1,
                                                                  const ompl::base::State *s2) const
 {
     if (sampler_ == nullptr)
@@ -49,7 +49,7 @@ ompl::base::Cost ompl::base::MyOptimizationObjective::motionCost(const ompl::bas
 // @param maxNumberCalls Maximum number of sampling calls
 // @return Infromed sampler
 //
-ompl::base::InformedSamplerPtr ompl::base::MyOptimizationObjective::allocInformedStateSampler(
+::ompl::base::InformedSamplerPtr ompl::base::MyOptimizationObjective::allocInformedStateSampler(
     const ProblemDefinitionPtr probDefn, unsigned int maxNumberCalls) const
 {
     if (sampler_ == nullptr)

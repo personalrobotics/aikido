@@ -11,7 +11,8 @@
 #include <memory>
 #include <Eigen/Dense>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
-#include <aikido/planner/kinodynamics/dimt/Params.h>
+
+#include "aikido/planner/kinodynamics/dimt/Params.h"
 
 class DoubleIntegratorImpl
 {
