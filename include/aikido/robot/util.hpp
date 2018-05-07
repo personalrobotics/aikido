@@ -250,13 +250,14 @@ bool getGoalAndConstraintTSRForEndEffectorOffset(
 Eigen::Isometry3d getLookAtIsometry(
     const Eigen::Vector3d& positionFrom, const Eigen::Vector3d& positionTo);
 
-/// Get a specific BodyNode of a Skeleton or throw an execption
+/// Get a specific BodyNode of a MetaSkeleton or throw an execption
 /// if it doesn't exist
-/// param[in] skeleton Skeleton Skeleton that should contain the BodyNode
+/// param[in] skeleton MetaSkeleton that should contain the BodyNode
 /// param[in] bodyNodeName name of the BodyNode we are looking for
 /// return the BodyNode
 dart::dynamics::BodyNodePtr getBodyNodeOrThrow(
-    const dart::dynamics::SkeletonPtr& skeleton, const std::string& bodyNodeName);
+    const dart::dynamics::MetaSkeletonPtr& skeleton,
+    const std::string& bodyNodeName);
 
 } // namespace util
 } // namespace robot

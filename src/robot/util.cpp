@@ -568,7 +568,7 @@ Eigen::Isometry3d getLookAtIsometry(
 
 //==============================================================================
 BodyNodePtr getBodyNodeOrThrow(
-    const SkeletonPtr& skeleton, const std::string& bodyNodeName)
+    const MetaSkeletonPtr& skeleton, const std::string& bodyNodeName)
 {
   auto bodyNode = skeleton->getBodyNode(bodyNodeName);
 
