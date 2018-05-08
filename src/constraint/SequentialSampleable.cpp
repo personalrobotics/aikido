@@ -1,5 +1,6 @@
 #include "aikido/constraint/SequentialSampleable.hpp"
 
+#include <dart/common/Console.hpp>
 #include <dart/common/Memory.hpp>
 
 namespace aikido {
@@ -63,6 +64,12 @@ SequentialSampleGenerator::SequentialSampleGenerator(
   for (const auto& generator : mGenerators)
     assert(generator->getStateSpace() == mStateSpace);
 #endif
+
+  for (std::size_t i = 0u; i < mGenerators.size() - 1; ++i)
+  {
+    if (mGenerators[i]->getNumSamples() == NO_LIMIT)
+      dtwarn << "Sampleable " << i << " is infinite. " << mGenerators.size() - i - 1 << " remaining sampleables will potentially be ignored.";
+  }
 }
 
 //==============================================================================
@@ -139,8 +146,6 @@ SequentialSampleable::SequentialSampleable(
       throw std::invalid_argument(msg.str());
     }
   }
-  // TODO (avk): Somewhere we need to give warning if initial samplers are
-  // infinite or if all are finite.
 }
 
 //==============================================================================
