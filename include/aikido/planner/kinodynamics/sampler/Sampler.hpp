@@ -7,9 +7,8 @@
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/samplers/InformedStateSampler.h>
 #include <ompl/control/SpaceInformation.h>
-#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 #include "aikido/planner/kinodynamics/sampler/RandomGenerator.hpp"
-
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 
 namespace ompl {
 namespace base {
@@ -345,7 +344,8 @@ public:
 
 }; // MyInformedSampler
 
-using MyInformedSamplerPtr = aikido::planner::ompl::ompl_shared_ptr<ompl::base::MyInformedSampler>;
+using MyInformedSamplerPtr
+    = aikido::planner::ompl::ompl_shared_ptr<ompl::base::MyInformedSampler>;
 
 } // base
 } // ompl

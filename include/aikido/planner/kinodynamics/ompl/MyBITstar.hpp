@@ -5,9 +5,9 @@
 #include <fstream>
 #include <ios>
 #include <iostream>
-#include <ompl/geometric/planners/bitstar/BITstar.h>
 #include <ompl/datastructures/NearestNeighborsGNAT.h>
 #include <ompl/datastructures/NearestNeighborsLinear.h>
+#include <ompl/geometric/planners/bitstar/BITstar.h>
 
 #include "aikido/planner/ompl/BackwardCompatibility.hpp"
 

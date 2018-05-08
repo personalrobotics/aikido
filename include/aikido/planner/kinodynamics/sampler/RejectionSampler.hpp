@@ -4,8 +4,8 @@
 #include <iostream>
 #include <tuple>
 #include <utility>
-#include <math.h>
 #include <Eigen/Dense>
+#include <math.h>
 
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
 #include "aikido/planner/kinodynamics/dimt/Params.h"

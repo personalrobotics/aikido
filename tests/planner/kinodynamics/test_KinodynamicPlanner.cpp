@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
 #include <tuple>
 #include <dart/dart.hpp>
+#include <gtest/gtest.h>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/PlanningResult.hpp>
@@ -226,7 +226,6 @@ public:
     return robot;
   }
 
-
   // Parameters
   double mErrorTolerance;
 
@@ -250,7 +249,6 @@ public:
   double mMaxDistanceBtwValidityChecks;
 };
 
-
 TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
   Eigen::VectorXd startPose(mNumDof);
@@ -263,7 +261,8 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   Eigen::VectorXd viaVelocity(mNumDof);
   viaVelocity << 1., 1., 1., 1., 1., 1., 1.;
 
-  aikido::statespace::StateSpace::State* startState = mStateSpace->createState();
+  aikido::statespace::StateSpace::State* startState
+      = mStateSpace->createState();
   aikido::statespace::StateSpace::State* viaState = mStateSpace->createState();
   aikido::statespace::StateSpace::State* goalState = mStateSpace->createState();
   mStateSpace->expMap(startPose, startState);
@@ -282,7 +281,6 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
       mMaxDistanceBtwValidityChecks);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
-
 }
 
 TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
@@ -297,7 +295,8 @@ TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
   Eigen::VectorXd viaVelocity(mNumDof);
   viaVelocity << 1., 1., 1., 1., 1., 1., 1.;
 
-  aikido::statespace::StateSpace::State* startState = mStateSpace->createState();
+  aikido::statespace::StateSpace::State* startState
+      = mStateSpace->createState();
   aikido::statespace::StateSpace::State* viaState = mStateSpace->createState();
   aikido::statespace::StateSpace::State* goalState = mStateSpace->createState();
   mStateSpace->expMap(startPose, startState);

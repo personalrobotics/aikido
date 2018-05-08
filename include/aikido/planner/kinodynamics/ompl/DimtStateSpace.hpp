@@ -50,7 +50,8 @@ public:
   }
 };
 
-using DimtStateSpacePtr = aikido::planner::ompl::ompl_shared_ptr<DimtStateSpace>;
+using DimtStateSpacePtr
+    = aikido::planner::ompl::ompl_shared_ptr<DimtStateSpace>;
 }
 }
 #endif
