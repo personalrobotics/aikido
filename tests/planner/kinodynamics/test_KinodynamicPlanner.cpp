@@ -176,7 +176,7 @@ public:
     BodyNode* parentNode = currentNode;
 
     // Create links iteratively
-    for (int i = 1; i < 7; ++i)
+    for (int i = 1; i < 6; ++i)
     {
       std::ostringstream ssLink;
       std::ostringstream ssJoint;
@@ -251,15 +251,15 @@ public:
 
 TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
-  Eigen::VectorXd startPose(mNumDof);
-  Eigen::VectorXd viaPose(mNumDof);
-  Eigen::VectorXd goalPose(mNumDof);
-  startPose << 2., 2., 2., 2., 2., 2., 2.;
-  viaPose << 0., 0., 0., 0., 0., 0., 0.;
-  goalPose << -2., -2., -2., -2., -2., -2., -2.;
+  Eigen::Vector6d startPose;
+  Eigen::Vector6d viaPose;
+  Eigen::Vector6d goalPose;
+  startPose << 2., 2., 2., 2., 2., 2.;
+  viaPose << 0., 0., 0., 0., 0., 0.;
+  goalPose << -2., -2., -2., -2., -2., -2.;
 
-  Eigen::VectorXd viaVelocity(mNumDof);
-  viaVelocity << 1., 1., 1., 1., 1., 1., 1.;
+  Eigen::Vector6d viaVelocity;
+  viaVelocity << 1., 1., 1., 1., 1., 1.;
 
   aikido::statespace::StateSpace::State* startState
       = mStateSpace->createState();
@@ -285,15 +285,15 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
 TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
 {
-  Eigen::VectorXd startPose(mNumDof);
-  Eigen::VectorXd viaPose(mNumDof);
-  Eigen::VectorXd goalPose(mNumDof);
-  startPose << 2., 2., 2., 2., 2., 2., 2.;
-  viaPose << 0., 0., 0., 0., 0., 0., 0.;
-  goalPose << -2., -2., -2., -2., -2., -2., -2.;
+  Eigen::Vector6d startPose;
+  Eigen::Vector6d viaPose;
+  Eigen::Vector6d goalPose;
+  startPose << 2., 2., 2., 2., 2., 2.;
+  viaPose << 0., 0., 0., 0., 0., 0.;
+  goalPose << -2., -2., -2., -2., -2., -2.;
 
-  Eigen::VectorXd viaVelocity(mNumDof);
-  viaVelocity << 1., 1., 1., 1., 1., 1., 1.;
+  Eigen::Vector6d viaVelocity(mNumDof);
+  viaVelocity << 1., 1., 1., 1., 1., 1.;
 
   aikido::statespace::StateSpace::State* startState
       = mStateSpace->createState();
