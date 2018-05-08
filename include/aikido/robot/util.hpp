@@ -265,8 +265,7 @@ const dart::dynamics::BodyNode* getBodyNodeOrThrow(
 /// \param[in] bodyNodeName Name of the BodyNode we are looking for
 /// \return The BodyNode
 dart::dynamics::BodyNode* getBodyNodeOrThrow(
-    dart::dynamics::MetaSkeleton& skeleton,
-    const std::string& bodyNodeName);
+    dart::dynamics::MetaSkeleton& skeleton, const std::string& bodyNodeName);
 
 } // namespace util
 } // namespace robot
