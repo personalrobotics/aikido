@@ -6,15 +6,14 @@
 namespace aikido {
 namespace constraint {
 
-/// Sampleable supporting a composition of multiple sampleables which
-/// are used for sampling in sequence. The operating sampleable switches to
-/// the next one in the set upon exhaustion.
+/// Sampleable that wraps a sequence of Sampleables. Exhausts the current
+/// Sampleable before sampling from the next Sampleable in the sequence.
 class SequentialSampleable : public Sampleable
 {
 public:
   /// Constructor.
   /// \param[in] stateSpace StateSpace in which this constraint operates.
-  /// \param[in] sampleables Set of sampleables.
+  /// \param[in] sampleables Sequence of sampleables.
   SequentialSampleable(
       statespace::StateSpacePtr stateSpace,
       const std::vector<ConstSampleablePtr>& sampleables);
@@ -30,7 +29,7 @@ private:
   /// StateSpace in which the constraint operates.
   statespace::StateSpacePtr mStateSpace;
 
-  /// Set of sampleables.
+  /// Sequence of sampleables.
   const std::vector<ConstSampleablePtr> mSampleables;
 };
 

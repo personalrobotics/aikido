@@ -9,83 +9,105 @@ namespace constraint {
 class SequentialSampleGenerator : public SampleGenerator
 {
 public:
+  /// Sample Generator for Sequential Sampleable
+  /// \param[in] stateSpace Statespace the associated constraint operates in
+  /// \param[in] generators Sequence of generators associated with corresponding
+  /// sequence of sampleables
   SequentialSampleGenerator(
       statespace::StateSpacePtr stateSpace,
-      std::vector<std::unique_ptr<SampleGenerator>> generators)
-    : mStateSpace(std::move(stateSpace))
-    , mGenerators(std::move(generators))
-    , mIndex(0)
-  {
-    for (std::size_t i = 0; i < mGenerators.size(); ++i)
-    {
-      if (!mGenerators[i])
-      {
-        std::stringstream msg;
-        msg << "Generator " << i << " is nullptr.";
-        throw std::invalid_argument(msg.str());
-      }
-    }
-
-#ifndef NDEBUG
-    for (const auto& generator : mGenerators)
-      assert(generator->getStateSpace() == mStateSpace);
-#endif
-  }
+      std::vector<std::unique_ptr<SampleGenerator>> generators);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override
-  {
-    return mStateSpace;
-  }
+  statespace::StateSpacePtr getStateSpace() const override;
 
   // Documentation inherited
-  bool sample(statespace::StateSpace::State* state) override
-  {
-    while (mIndex < mGenerators.size())
-    {
-      if (mGenerators[mIndex]->sample(state))
-        return true;
-
-      mIndex++;
-    }
-    return false;
-  }
+  bool sample(statespace::StateSpace::State* state) override;
 
   // Documentation inherited
-  int getNumSamples() const override
-  {
-    int numSamples = 0;
-    for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
-    {
-      if (mGenerators[i]->getNumSamples() == NO_LIMIT)
-        return NO_LIMIT;
-
-      numSamples += mGenerators[i]->getNumSamples();
-    }
-    return numSamples;
-  }
+  int getNumSamples() const override;
 
   // Documentation inherited
-  bool canSample() const override
-  {
-    for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
-    {
-      if (mGenerators[i]->canSample())
-        return true;
-    }
-    return false;
-  }
+  bool canSample() const override;
 
 private:
   /// StateSpace the associated sampleable operates in.
   statespace::StateSpacePtr mStateSpace;
 
-  /// Set of generators associated with corresponding set of sampleables.
+  /// Sequence of generators associated with corresponding sequence of
+  /// sampleables.
   std::vector<std::unique_ptr<SampleGenerator>> mGenerators;
 
   /// Index of the active sampleable/generator.
   std::size_t mIndex;
 };
+
+//==============================================================================
+SequentialSampleGenerator::SequentialSampleGenerator(
+    statespace::StateSpacePtr stateSpace,
+    std::vector<std::unique_ptr<SampleGenerator>> generators)
+  : mStateSpace(std::move(stateSpace))
+  , mGenerators(std::move(generators))
+  , mIndex(0)
+{
+  for (std::size_t i = 0; i < mGenerators.size(); ++i)
+  {
+    if (!mGenerators[i])
+    {
+      std::stringstream msg;
+      msg << "Generator " << i << " is nullptr.";
+      throw std::invalid_argument(msg.str());
+    }
+  }
+
+#ifndef NDEBUG
+  for (const auto& generator : mGenerators)
+    assert(generator->getStateSpace() == mStateSpace);
+#endif
+}
+
+//==============================================================================
+statespace::StateSpacePtr SequentialSampleGenerator::getStateSpace() const
+{
+  return mStateSpace;
+}
+
+//==============================================================================
+bool SequentialSampleGenerator::sample(statespace::StateSpace::State* state)
+{
+  while (mIndex < mGenerators.size())
+  {
+    if (mGenerators[mIndex]->sample(state))
+      return true;
+
+    mIndex++;
+  }
+  return false;
+}
+
+//==============================================================================
+int SequentialSampleGenerator::getNumSamples() const
+{
+  int numSamples = 0;
+  for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
+  {
+    if (mGenerators[i]->getNumSamples() == NO_LIMIT)
+      return NO_LIMIT;
+
+    numSamples += mGenerators[i]->getNumSamples();
+  }
+  return numSamples;
+}
+
+//==============================================================================
+bool SequentialSampleGenerator::canSample() const
+{
+  for (std::size_t i = mIndex; i < mGenerators.size(); ++i)
+  {
+    if (mGenerators[i]->canSample())
+      return true;
+  }
+  return false;
+}
 
 //==============================================================================
 SequentialSampleable::SequentialSampleable(
