@@ -313,7 +313,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
   // Create seed constraint
   std::shared_ptr<Sampleable> seedConstraint
-      = std::move(createSampleableBounds(space, crrtParameters.rng->clone()));
+      = createSampleableBounds(space, crrtParameters.rng->clone());
 
   // TODO: DART may be updated to check for single skeleton
   if (metaSkeleton->getNumDofs() == 0)
