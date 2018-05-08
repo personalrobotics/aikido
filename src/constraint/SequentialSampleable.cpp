@@ -69,8 +69,8 @@ SequentialSampleGenerator::SequentialSampleGenerator(
   {
     if (mGenerators[i]->getNumSamples() == NO_LIMIT)
       dtwarn << "Sampleable " << i << " is infinite. "
-             << mGenerators.size() - i - 1
-             << " remaining sampleables will potentially be ignored.";
+             << "Remaining " << mGenerators.size() - i - 1
+             << " sampleable(s) will potentially be ignored.";
   }
 }
 
