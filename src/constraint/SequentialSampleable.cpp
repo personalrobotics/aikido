@@ -68,9 +68,12 @@ SequentialSampleGenerator::SequentialSampleGenerator(
   for (std::size_t i = 0u; i < mGenerators.size() - 1; ++i)
   {
     if (mGenerators[i]->getNumSamples() == NO_LIMIT)
+    {
       dtwarn << "Sampleable " << i << " is infinite. "
              << "Remaining " << mGenerators.size() - i - 1
              << " sampleable(s) will potentially be ignored.";
+      break;
+    }
   }
 }
 
