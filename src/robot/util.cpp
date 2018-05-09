@@ -566,6 +566,38 @@ Eigen::Isometry3d getLookAtIsometry(
   return H;
 }
 
+//==============================================================================
+const dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    const MetaSkeleton& skeleton, const std::string& bodyNodeName)
+{
+  auto bodyNode = skeleton.getBodyNode(bodyNodeName);
+
+  if (!bodyNode)
+  {
+    std::stringstream message;
+    message << "Bodynode [" << bodyNodeName << "] does not exist in skeleton.";
+    throw std::runtime_error(message.str());
+  }
+
+  return bodyNode;
+}
+
+//==============================================================================
+dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    MetaSkeleton& skeleton, const std::string& bodyNodeName)
+{
+  auto bodyNode = skeleton.getBodyNode(bodyNodeName);
+
+  if (!bodyNode)
+  {
+    std::stringstream message;
+    message << "Bodynode [" << bodyNodeName << "] does not exist in skeleton.";
+    throw std::runtime_error(message.str());
+  }
+
+  return bodyNode;
+}
+
 } // namespace util
 } // namespace robot
 } // namespace aikido
