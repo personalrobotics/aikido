@@ -68,10 +68,15 @@ public:
     mUpperVelocityLimits = Eigen::VectorXd::Constant(mNumDof, 4.0);
     mLowerVelocityLimits = Eigen::VectorXd::Constant(mNumDof, -4.0);
 
+    mUpperAccelerationLimits = Eigen::VectorXd::Constant(mNumDof, 1.0);
+    mLowerAccelerationLimits = Eigen::VectorXd::Constant(mNumDof, -1.0);
+
     mSkel->setPositionUpperLimits(mUpperPositionLimits);
     mSkel->setPositionLowerLimits(mLowerPositionLimits);
     mSkel->setVelocityUpperLimits(mUpperVelocityLimits);
     mSkel->setVelocityLowerLimits(mLowerVelocityLimits);
+    mSkel->setAccelerationUpperLimits(mUpperAccelerationLimits);
+    mSkel->setAccelerationLowerLimits(mLowerAccelerationLimits);
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(mSkel.get());
     mBodynode = mSkel->getBodyNodes().back();
 
@@ -241,6 +246,8 @@ public:
   Eigen::VectorXd mLowerPositionLimits;
   Eigen::VectorXd mUpperVelocityLimits;
   Eigen::VectorXd mLowerVelocityLimits;
+  Eigen::VectorXd mUpperAccelerationLimits;
+  Eigen::VectorXd mLowerAccelerationLimits;
 
   shared_ptr<PassingConstraint> mPassingConstraint;
   shared_ptr<FailingConstraint> mFailingConstraint;
