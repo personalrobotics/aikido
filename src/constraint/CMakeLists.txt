@@ -13,6 +13,7 @@ set(sources
   RejectionSampleable.cpp
   Sampleable.cpp
   Satisfied.cpp
+  SequentialSampleable.cpp
   TestableIntersection.cpp
   uniform/RnBoxConstraint.cpp
   uniform/RnConstantSampler.cpp

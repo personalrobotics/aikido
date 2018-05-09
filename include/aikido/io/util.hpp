@@ -14,7 +14,7 @@ namespace io {
 /// \return the created Skeleton
 dart::dynamics::SkeletonPtr loadSkeletonFromURDF(
     const dart::common::ResourceRetrieverPtr& retriever,
-    const std::string& uri,
+    const dart::common::Uri& uri,
     const Eigen::Isometry3d& transform = Eigen::Isometry3d::Identity());
 
 } // namespace io
