@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_KINODYNAMICS_KINODYNAMICPLANNER_HPP_
 #define AIKIDO_PLANNER_KINODYNAMICS_KINODYNAMICPLANNER_HPP_
 
+#include <dart/dynamics/MetaSkeleton.hpp>
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/ScopedState.h>
@@ -8,7 +9,6 @@
 #include <ompl/base/StateSampler.h>
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/geometric/PathSimplifier.h>
-#include <dart/dynamics/MetaSkeleton.hpp>
 
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"

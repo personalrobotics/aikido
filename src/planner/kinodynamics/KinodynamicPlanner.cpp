@@ -5,6 +5,7 @@
 
 #include "aikido/common/Spline.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
 #include "aikido/planner/kinodynamics/ompl/DimtStateSpace.hpp"
 #include "aikido/planner/kinodynamics/ompl/MyInformedRRTstar.hpp"
@@ -14,7 +15,6 @@
 #include "aikido/planner/ompl/MotionValidator.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/ompl/StateValidityChecker.hpp"
-#include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 
 using aikido::planner::ompl::ompl_make_shared;
 using dart::dynamics::MetaSkeletonPtr;
@@ -43,10 +43,11 @@ public:
     // create aikido state from ompl state
     auto stateSpace = mConstraint->getStateSpace();
     auto state = stateSpace->createState();
-    Eigen::VectorXd config( stateSpace->getDimension() );
-    for(std::size_t i=0; i<stateSpace->getDimension(); i++)
+    Eigen::VectorXd config(stateSpace->getDimension());
+    for (std::size_t i = 0; i < stateSpace->getDimension(); i++)
     {
-      config[i] = _state->as<::ompl::base::RealVectorStateSpace::StateType>()->values[i];
+      config[i] = _state->as<::ompl::base::RealVectorStateSpace::StateType>()
+                      ->values[i];
     }
     stateSpace->expMap(config, state);
     return mConstraint->isSatisfied(state);
@@ -84,14 +85,16 @@ public:
   ::ompl::base::StateSpacePtr space
       = ompl_make_shared<::ompl::base::DimtStateSpace>(_dimt);
 
-  ::ompl::base::RealVectorBounds bounds(_skeleton->getNumDofs()*2);
-  for(std::size_t i=0; i<_skeleton->getNumDofs(); i++)
+  ::ompl::base::RealVectorBounds bounds(_skeleton->getNumDofs() * 2);
+  for (std::size_t i = 0; i < _skeleton->getNumDofs(); i++)
   {
     bounds.setHigh(i, _skeleton->getPositionUpperLimit(i));
     bounds.setLow(i, _skeleton->getPositionLowerLimit(i));
 
-    bounds.setHigh(_skeleton->getNumDofs()+i, _skeleton->getVelocityUpperLimit(i));
-    bounds.setLow(_skeleton->getNumDofs()+i, _skeleton->getVelocityLowerLimit(i));
+    bounds.setHigh(
+        _skeleton->getNumDofs() + i, _skeleton->getVelocityUpperLimit(i));
+    bounds.setLow(
+        _skeleton->getNumDofs() + i, _skeleton->getVelocityLowerLimit(i));
   }
 
   space->as<::ompl::base::DimtStateSpace>()->setBounds(bounds);
