@@ -32,11 +32,11 @@ matrix:
     - os: osx
       osx_image: xcode9.3
       compiler: clang
-      env: BUILD_NAME=XCODE93_DEBUG BUILD_TYPE=Debug COMPILER=CLANG -DTREAT_WARNINGS_AS_ERRORS=ON"
+      env: BUILD_NAME=XCODE93_DEBUG BUILD_TYPE=Debug COMPILER=CLANG
     - os: osx
       osx_image: xcode9.3
       compiler: clang
-      env: BUILD_NAME=XCODE93_RELEASE BUILD_TYPE=Release COMPILER=CLANG -DTREAT_WARNINGS_AS_ERRORS=ON"
+      env: BUILD_NAME=XCODE93_RELEASE BUILD_TYPE=Release COMPILER=CLANG
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then . "${TRAVIS_BUILD_DIR}/.ci/before_install_linux.sh"; fi
