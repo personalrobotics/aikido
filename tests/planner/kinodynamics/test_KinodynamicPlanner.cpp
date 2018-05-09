@@ -251,23 +251,22 @@ public:
 
 TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
-  Eigen::Vector6d startPose;
-  Eigen::Vector6d viaPose;
-  Eigen::Vector6d goalPose;
-  startPose << 2., 2., 2., 2., 2., 2.;
-  viaPose << 0., 0., 0., 0., 0., 0.;
-  goalPose << -2., -2., -2., -2., -2., -2.;
+  Eigen::VectorXd startConfig(mNumDof);
+  Eigen::VectorXd viaConfig(mNumDof);
+  Eigen::VectorXd goalConfig(mNumDof);
+  startConfig << 2., 2., 2., 2., 2., 2.;
+  viaConfig << 0., 0., 0., 0., 0., 0.;
+  goalConfig << -2., -2., -2., -2., -2., -2.;
 
   Eigen::Vector6d viaVelocity;
   viaVelocity << 1., 1., 1., 1., 1., 1.;
 
-  aikido::statespace::StateSpace::State* startState
-      = mStateSpace->createState();
-  aikido::statespace::StateSpace::State* viaState = mStateSpace->createState();
-  aikido::statespace::StateSpace::State* goalState = mStateSpace->createState();
-  mStateSpace->expMap(startPose, startState);
-  mStateSpace->expMap(viaPose, viaState);
-  mStateSpace->expMap(goalPose, goalState);
+  auto startState = mStateSpace->createState();
+  auto viaState = mStateSpace->createState();
+  auto goalState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(startConfig, startState);
+  mStateSpace->convertPositionsToState(viaConfig, viaState);
+  mStateSpace->convertPositionsToState(goalConfig, goalState);
 
   auto traj = planMinimumTimeViaConstraint(
       startState,
@@ -285,23 +284,22 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
 TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
 {
-  Eigen::Vector6d startPose;
-  Eigen::Vector6d viaPose;
-  Eigen::Vector6d goalPose;
-  startPose << 2., 2., 2., 2., 2., 2.;
-  viaPose << 0., 0., 0., 0., 0., 0.;
-  goalPose << -2., -2., -2., -2., -2., -2.;
+  Eigen::VectorXd startConfig(mNumDof);
+  Eigen::VectorXd viaConfig(mNumDof);
+  Eigen::VectorXd goalConfig(mNumDof);
+  startConfig << 2., 2., 2., 2., 2., 2.;
+  viaConfig << 0., 0., 0., 0., 0., 0.;
+  goalConfig << -2., -2., -2., -2., -2., -2.;
 
   Eigen::Vector6d viaVelocity(mNumDof);
   viaVelocity << 1., 1., 1., 1., 1., 1.;
 
-  aikido::statespace::StateSpace::State* startState
-      = mStateSpace->createState();
-  aikido::statespace::StateSpace::State* viaState = mStateSpace->createState();
-  aikido::statespace::StateSpace::State* goalState = mStateSpace->createState();
-  mStateSpace->expMap(startPose, startState);
-  mStateSpace->expMap(viaPose, viaState);
-  mStateSpace->expMap(goalPose, goalState);
+  auto startState = mStateSpace->createState();
+  auto viaState = mStateSpace->createState();
+  auto goalState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(startConfig, startState);
+  mStateSpace->convertPositionsToState(viaConfig, viaState);
+  mStateSpace->convertPositionsToState(goalConfig, goalState);
 
   auto traj = planMinimumTimeViaConstraint(
       startState,

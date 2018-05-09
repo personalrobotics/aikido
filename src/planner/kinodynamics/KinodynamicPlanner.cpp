@@ -1,8 +1,9 @@
-#include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/geometric/PathGeometric.h>
+
+#include "aikido/common/Spline.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
 #include "aikido/planner/kinodynamics/ompl/DimtStateSpace.hpp"
@@ -13,10 +14,10 @@
 #include "aikido/planner/ompl/MotionValidator.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/ompl/StateValidityChecker.hpp"
-
-#include "aikido/common/Spline.hpp"
+#include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 
 using aikido::planner::ompl::ompl_make_shared;
+using dart::dynamics::MetaSkeletonPtr;
 
 namespace aikido {
 namespace planner {
@@ -38,7 +39,9 @@ public:
     {
       return false;
     }
-    return ompl::StateValidityChecker::isValid(_state);
+
+    // TODO: run testable
+    return true;
   }
 };
 
@@ -53,17 +56,19 @@ public:
     new_state->as<::ompl::base::RealVectorStateSpace::StateType>()->values[i]
         = stateVec[i];
   }
-  for (uint i = 0; i < velocityVec.size(); i++)
+  for (uint i = 0; i < stateVec.size(); i++)
   {
     new_state->as<::ompl::base::RealVectorStateSpace::StateType>()
         ->values[i + stateVec.size()]
         = velocityVec[i];
   }
+
   return new_state;
 }
 
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     DIMTPtr _dimt,
+    MetaSkeletonPtr _skeleton,
     constraint::TestablePtr _validityConstraint,
     double _maxDistanceBtwValidityChecks)
 {
@@ -71,9 +76,16 @@ public:
   ::ompl::base::StateSpacePtr space
       = ompl_make_shared<::ompl::base::DimtStateSpace>(_dimt);
 
-  ::ompl::base::RealVectorBounds bounds(_dimt->getNumDofs());
-  bounds.setLow(-10);
-  bounds.setHigh(10);
+  ::ompl::base::RealVectorBounds bounds(_skeleton->getNumDofs()*2);
+  for(std::size_t i=0; i<_skeleton->getNumDofs(); i++)
+  {
+    bounds.setHigh(i, _skeleton->getPositionUpperLimit(i));
+    bounds.setLow(i, _skeleton->getPositionLowerLimit(i));
+
+    bounds.setHigh(_skeleton->getNumDofs()+i, _skeleton->getVelocityUpperLimit(i));
+    bounds.setLow(_skeleton->getNumDofs()+i, _skeleton->getVelocityLowerLimit(i));
+  }
+
   space->as<::ompl::base::DimtStateSpace>()->setBounds(bounds);
   ::ompl::base::SpaceInformationPtr si
       = ompl_make_shared<::ompl::base::SpaceInformation>(space);
@@ -162,7 +174,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
 
   // create bound constraint from metaSkeleton
   auto si = getSpaceInformation(
-      dimt, _validityConstraint, _maxDistanceBtwValidityChecks);
+      dimt, _metaSkeleton, _validityConstraint, _maxDistanceBtwValidityChecks);
 
   // create OMPL state
   Eigen::VectorXd startVel
@@ -172,6 +184,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   auto startState = allocState(si, startVec, startVel);
   auto goalState = allocState(si, goalVec, goalVel);
   auto viaState = allocState(si, viaVec, _viaVelocity);
+
+  std::cout << "VALIDATE START " << si->isValid(startState) << std::endl;
+  std::cout << "VALIDATE VIA " << si->isValid(viaState) << std::endl;
+  std::cout << "VALIDATE GOAL " << si->isValid(goalState) << std::endl;
 
   double singleSampleLimit = 3.0;
   // double sigma = 1;

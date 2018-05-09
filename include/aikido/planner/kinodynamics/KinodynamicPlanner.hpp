@@ -1,5 +1,5 @@
-#ifndef AIKIDO_OMPL_OMPLPLANNER_HPP_
-#define AIKIDO_OMPL_OMPLPLANNER_HPP_
+#ifndef AIKIDO_PLANNER_KINODYNAMICS_KINODYNAMICPLANNER_HPP_
+#define AIKIDO_PLANNER_KINODYNAMICS_KINODYNAMICPLANNER_HPP_
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
@@ -8,6 +8,7 @@
 #include <ompl/base/StateSampler.h>
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/geometric/PathSimplifier.h>
+#include <dart/dynamics/MetaSkeleton.hpp>
 
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
@@ -33,6 +34,7 @@ namespace kinodynamics {
 /// between validity checking two successive points on a tree extension
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
     DIMTPtr _dimt,
+    dart::dynamics::MetaSkeletonPtr _skeleton,
     constraint::TestablePtr _validityConstraint,
     double _maxDistanceBtwValidityChecks);
 
@@ -73,4 +75,4 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
 } // namespace planner
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_PLANNER_KINODYNAMICS_KINODYNAMICPLANNER_HPP_
