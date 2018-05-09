@@ -21,7 +21,7 @@ class RosTrajectoryExecutor : public aikido::control::TrajectoryExecutor
 public:
   /// Constructor.
   /// \param[in] node ROS node handle for action client.
-  /// \param[in] serverName Name of the server to send traejctory to.
+  /// \param[in] serverName Name of the server to send trajectory to.
   /// \param[in] waypointTimestep Step size for interpolating trajectories.
   /// \param[in] goalTimeTolerance
   /// \param[in] connectionTimeout Timeout for server connection.

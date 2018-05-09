@@ -180,13 +180,29 @@ InterpolatedPtr planToTSR(
     double timelimit,
     std::size_t maxNumTrials)
 {
+  // Create an IK solver with metaSkeleton dofs.
+  auto ik = InverseKinematics::create(bn);
+
+  // TODO: DART may be updated to check for single skeleton
+  if (metaSkeleton->getNumDofs() == 0)
+    throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
+
+  auto skeleton = metaSkeleton->getDof(0)->getSkeleton();
+  for (size_t i = 1; i < metaSkeleton->getNumDofs(); ++i)
+  {
+    if (metaSkeleton->getDof(i)->getSkeleton() != skeleton)
+      throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
+  }
+
+  ik->setDofs(metaSkeleton->getDofs());
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       space,
       metaSkeleton,
       tsr,
       createSampleableBounds(space, rng->clone()),
-      InverseKinematics::create(bn),
+      ik,
       maxNumTrials);
 
   auto generator = ikSampleable.createSampleGenerator();
@@ -195,8 +211,6 @@ InterpolatedPtr planToTSR(
   auto goalState = space->createState();
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-
-  Eigen::VectorXd goal;
 
   // TODO: Change this to timelimit once we use a fail-fast planner
   double timelimitPerSample = timelimit / maxNumTrials;
@@ -218,8 +232,6 @@ InterpolatedPtr planToTSR(
       bool sampled = generator->sample(goalState);
       if (!sampled)
         continue;
-
-      space->convertStateToPositions(goalState, goal);
 
       // Set to start state
       space->setState(metaSkeleton.get(), startState);
@@ -301,10 +313,23 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
   // Create seed constraint
   std::shared_ptr<Sampleable> seedConstraint
-      = std::move(createSampleableBounds(space, crrtParameters.rng->clone()));
+      = createSampleableBounds(space, crrtParameters.rng->clone());
 
-  // crate IK
+  // TODO: DART may be updated to check for single skeleton
+  if (metaSkeleton->getNumDofs() == 0)
+    throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
+
+  auto skeleton = metaSkeleton->getDof(0)->getSkeleton();
+  for (size_t i = 1; i < metaSkeleton->getNumDofs(); ++i)
+  {
+    if (metaSkeleton->getDof(i)->getSkeleton() != skeleton)
+      throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
+  }
+
+  // Create an IK solver with metaSkeleton dofs
   auto ik = InverseKinematics::create(bodyNode);
+
+  ik->setDofs(metaSkeleton->getDofs());
 
   // create goal sampleable
   auto goalSampleable = std::make_shared<InverseKinematicsSampleable>(
@@ -376,9 +401,6 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
     const VectorFieldPlannerParameters& vfParameters,
     const CRRTPlannerParameters& crrtParameters)
 {
-
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
 
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
@@ -542,6 +564,38 @@ Eigen::Isometry3d getLookAtIsometry(
       = Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d::UnitZ(), positionTo)
             .toRotationMatrix();
   return H;
+}
+
+//==============================================================================
+const dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    const MetaSkeleton& skeleton, const std::string& bodyNodeName)
+{
+  auto bodyNode = skeleton.getBodyNode(bodyNodeName);
+
+  if (!bodyNode)
+  {
+    std::stringstream message;
+    message << "Bodynode [" << bodyNodeName << "] does not exist in skeleton.";
+    throw std::runtime_error(message.str());
+  }
+
+  return bodyNode;
+}
+
+//==============================================================================
+dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    MetaSkeleton& skeleton, const std::string& bodyNodeName)
+{
+  auto bodyNode = skeleton.getBodyNode(bodyNodeName);
+
+  if (!bodyNode)
+  {
+    std::stringstream message;
+    message << "Bodynode [" << bodyNodeName << "] does not exist in skeleton.";
+    throw std::runtime_error(message.str());
+  }
+
+  return bodyNode;
 }
 
 } // namespace util
