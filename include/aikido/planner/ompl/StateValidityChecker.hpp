@@ -31,7 +31,7 @@ public:
   /// \param _state The state to check
   bool isValid(const ::ompl::base::State* _state) const override;
 
-private:
+protected:
   constraint::TestablePtr mConstraint;
 };
 

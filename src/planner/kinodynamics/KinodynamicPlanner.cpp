@@ -40,8 +40,16 @@ public:
       return false;
     }
 
-    // TODO: run testable
-    return true;
+    // create aikido state from ompl state
+    auto stateSpace = mConstraint->getStateSpace();
+    auto state = stateSpace->createState();
+    Eigen::VectorXd config( stateSpace->getDimension() );
+    for(std::size_t i=0; i<stateSpace->getDimension(); i++)
+    {
+      config[i] = _state->as<::ompl::base::RealVectorStateSpace::StateType>()->values[i];
+    }
+    stateSpace->expMap(config, state);
+    return mConstraint->isSatisfied(state);
   }
 };
 

@@ -315,7 +315,7 @@ TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
       viaVelocity,
       mSkel,
       mStateSpace,
-      mPassingConstraint,
+      mFailingConstraint,
       mMaxPlanTime,
       mMaxDistanceBtwValidityChecks);
   EXPECT_EQ(nullptr, traj);
