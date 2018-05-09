@@ -28,7 +28,7 @@ matrix:
       env: BUILD_TYPE=Debug CODECOV=ON COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=OFF
     - os: linux
       compiler: gcc
-      env: BUILD_TYPE=Release CODECOV=OFF COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=ON
+      env: DEPLOY_DOC=ON BUILD_TYPE=Release CODECOV=OFF COMPILER=GCC CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON" DOWNLOAD_TAGFILES=ON
     - os: osx
       osx_image: xcode9.3
       compiler: clang
@@ -68,4 +68,4 @@ deploy:
   verbose: true
   on:
     branch: master
-    condition: $BUILD_TYPE == Release && $TRAVIS_EVENT_TYPE != cron
+    condition: $DEPLOY_DOC == ON && $TRAVIS_EVENT_TYPE != cron
