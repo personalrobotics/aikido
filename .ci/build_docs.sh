@@ -21,8 +21,8 @@ cat <<EOF > ${HOME}/gh-pages/README.md
 
 EOF
 
-mkdir build
-cd build
+mkdir build_docs
+cd build_docs
 
 while read version; do
   # Add entry to list of API versions
