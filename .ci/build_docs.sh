@@ -29,7 +29,7 @@ while read version; do
   # Build documentation
   git -C ${AIKIDO_DIR} checkout ${version}
   rm -rf ${BUILD_DIR}
-  ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DDOWNLOAD_TAGFILES=ON --make-args docs -- aikido > /dev/null
+  ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DDOWNLOAD_TAGFILES=ON --make-args docs -- aikido
 
   mv ${BUILD_DIR} ${HOME}/gh-pages/${version}
 done < ${TRAVIS_BUILD_DIR}/.ci/docs_versions.txt

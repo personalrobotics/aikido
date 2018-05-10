@@ -74,7 +74,7 @@ matrix:
       compiler: gcc
       env:
         - BUILD_NAME=DOCS
-        - BUILD_TYPE=None
+        - BUILD_TYPE=Release
 
 before_install:
   - if [ -n "$DOCKER_FILE" ]; then

@@ -12,8 +12,6 @@ if [ $BUILD_NAME = DOCS ]; then
   exit 0
 fi
 
-./scripts/internal-test.sh ${PACKAGE_NAMES}
-
 # Check code style
 ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
 
