@@ -110,8 +110,7 @@ void SO2::getIdentity(StateSpace::State* out) const
 }
 
 //==============================================================================
-void SO2::getInverse(
-    const StateSpace::State* in, StateSpace::State* out) const
+void SO2::getInverse(const StateSpace::State* in, StateSpace::State* out) const
 {
 #ifndef NDEBUG // Debug mode
   assert(out != in);
