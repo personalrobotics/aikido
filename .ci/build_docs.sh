@@ -5,7 +5,6 @@ set -ex
 cd "${HOME}/workspace"
 
 AIKIDO_DIR="${HOME}/workspace/src/aikido"
-BUILD_DIR="${HOME}/workspace/build/aikido/doxygen"
 
 # For branch builds, Travis only clones that branch with a fixed depth of 50
 # commits. This means that the clone knows nothing about other Git branches or
@@ -22,14 +21,19 @@ cat <<EOF > ${HOME}/gh-pages/README.md
 
 EOF
 
+cd ${AIKIDO_DIR}
+mkdir build
+
 while read version; do
   # Add entry to list of API versions
   echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${HOME}/gh-pages/README.md
 
   # Build documentation
-  git -C ${AIKIDO_DIR} checkout ${version}
-  rm -rf ${BUILD_DIR}
-  ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DDOWNLOAD_TAGFILES=ON --make-args docs -- aikido
-
-  mv ${BUILD_DIR} ${HOME}/gh-pages/${version}
+  git checkout ${version}
+  pushd build
+  rm -rf *
+  cmake -DDOWNLOAD_TAGFILES=ON ..
+  make docs
+  mv doxygen ${HOME}/gh-pages/${version}
+  popd
 done < ${TRAVIS_BUILD_DIR}/.ci/docs_versions.txt
