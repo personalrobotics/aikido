@@ -37,8 +37,12 @@ trajectory::InterpolatedPtr planSnap(
     }
   }
 
+  // Redefine the goal state
+  auto interpolatedGoalState = stateSpace->createState();
+  interpolator->interpolate(startState, goalState, 1.0, interpolatedGoalState);
+
   returnTraj->addWaypoint(0, startState);
-  returnTraj->addWaypoint(1, goalState);
+  returnTraj->addWaypoint(1, interpolatedGoalState);
   return returnTraj;
 }
 

@@ -17,14 +17,12 @@ double SO2::State::getAngle() const
 //==============================================================================
 void SO2::State::setAngle(double angle)
 {
-  mAngle = angle;
-  // TODO (avk): Maintain the angle given etc.
-//  double boundedAngle = std::fmod(angle, 2.0 * M_PI);
-//  if (boundedAngle > M_PI)
-//    boundedAngle -= 2.0 * M_PI;
-//  if (boundedAngle < -M_PI)
-//    boundedAngle += 2.0 * M_PI;
-//  mAngle = boundedAngle;
+  double boundedAngle = std::fmod(angle, 2.0 * M_PI);
+  if (boundedAngle > M_PI)
+    boundedAngle -= 2.0 * M_PI;
+  if (boundedAngle < -M_PI)
+    boundedAngle += 2.0 * M_PI;
+  mAngle = boundedAngle;
 }
 
 //==============================================================================
