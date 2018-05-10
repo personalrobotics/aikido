@@ -19,8 +19,6 @@ SnapConfigurationToConfigurationPlanner::
   {
     mInterpolator
         = std::make_shared<statespace::GeodesicInterpolator>(mStateSpace);
-    // TODO(JS): Not sure if GeodesicInterpolator is a good choice as the
-    // default.
   }
 }
 

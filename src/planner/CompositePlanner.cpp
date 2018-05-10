@@ -12,17 +12,21 @@ CompositePlanner::CompositePlanner(
     const std::vector<PlannerPtr>& planners)
   : Planner(std::move(stateSpace)), mPlanners(planners)
 {
-  // Do nothing
+  for (auto planner : mPlanners)
+  {
+    if (!planner)
+      throw std::invalid_argument("One of the planners is null.");
+  }
 }
 
 //==============================================================================
-bool CompositePlanner::hasPlanner(const Planner* planner) const
+bool CompositePlanner::hasPlanner(const Planner& planner) const
 {
   return std::find_if(
              mPlanners.begin(),
              mPlanners.end(),
              [&planner](const PlannerPtr& val) -> bool {
-               return (val.get() == planner);
+               return (val.get() == &planner);
              })
          != mPlanners.end();
 }

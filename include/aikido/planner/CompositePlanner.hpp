@@ -20,12 +20,13 @@ public:
   ///
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] planners Planners that this CompositePlanner will contain.
+  /// \throw If any of \c planners are null.
   CompositePlanner(
       statespace::ConstStateSpacePtr stateSpace,
       const std::vector<PlannerPtr>& planners = std::vector<PlannerPtr>());
 
   /// Returns true if this CompositePlanner contains \c planner.
-  bool hasPlanner(const Planner* planner) const;
+  bool hasPlanner(const Planner& planner) const;
 
   // Documentation inherited.
   bool canSolve(const Problem& problem) const override;
