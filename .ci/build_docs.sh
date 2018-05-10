@@ -31,7 +31,7 @@ while read version; do
   # Build documentation
   git -C ${AIKIDO_DIR} checkout ${version}
   rm -rf *
-  ./scripts/internal-run.sh cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
+  ../scripts/internal-run.sh cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
   make docs
   mv doxygen ${HOME}/gh-pages/${version}
 done < ${TRAVIS_BUILD_DIR}/.ci/docs_versions.txt
