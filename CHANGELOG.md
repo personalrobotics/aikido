@@ -8,11 +8,9 @@
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
 
-* State Space
+* Constraint
 
-  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
-  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
-  * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
+  * Added SequentialSampleable: [#393](https://github.com/personalrobotics/aikido/pull/393)
 
 * Control
 
@@ -20,6 +18,12 @@
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
   * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
+
+* State Space
+
+  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
+  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
+  * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
 
 * Perception
 
@@ -37,6 +41,10 @@
 * Robot
 
   * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
+
+* IO
+
+  * Added loadSkeletonFromURDF convenience function: [#388](https://github.com/personalrobotics/aikido/pull/388), [#401](https://github.com/personalrobotics/aikido/pull/401)
 
 * Build & Testing & ETC
 
