@@ -429,6 +429,25 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
       mStateSpace, mMetaSkeleton, goalState, collisionFree, timelimit);
 }
 
+std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::planMinimumTimeViaConstraint(
+    const statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    const dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    const Eigen::VectorXd& _goal,
+    const Eigen::VectorXd& _via,
+    const Eigen::VectorXd& _viaVelocity,
+    const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+    double _maxPlanTime,
+    double _maxDistanceBtwValidityChecks)
+{
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+
+  auto goalState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(_goal, goalState);
+
+  return nullptr;
+}
+
 //=============================================================================
 void ConcreteRobot::setCRRTPlannerParameters(
     const util::CRRTPlannerParameters& crrtParameters)
