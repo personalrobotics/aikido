@@ -228,9 +228,11 @@ if(${DOXYGEN_FOUND})
 
   # Create the "docs" target that runs Doxygen.
   add_custom_command(OUTPUT "${DOXYGEN_HTML_INDEX}"
+    COMMAND ${CMAKE_COMMAND} -E echo "Running Doxygen."
     COMMAND "${DOXYGEN_EXECUTABLE}"
 
     # Fix missing ^ in generated navtree.js for external DART link
+    COMMAND ${CMAKE_COMMAND} -E echo "Fix missing ^ in generated navtree.js."
     COMMAND sed -i s:\"http:\"\^http:g ${DOXYGEN_OUTPUT_ROOT}/navtree.js
 
     # Strip path prefix from all paths in aikido.tag
