@@ -4,8 +4,6 @@ set -ex
 
 cd "${HOME}/workspace"
 
-. devel/setup.bash
-
 AIKIDO_DIR="${HOME}/workspace/src/aikido"
 
 # For branch builds, Travis only clones that branch with a fixed depth of 50
@@ -34,7 +32,7 @@ while read version; do
   git checkout ${version}
   pushd build
   rm -rf *
-  cmake -DDOWNLOAD_TAGFILES=ON ..
+  ./scripts/internal-run.sh cmake -DDOWNLOAD_TAGFILES=ON ..
   make docs
   mv doxygen ${HOME}/gh-pages/${version}
   popd
