@@ -19,7 +19,8 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   , mDirection(direction.normalized())
   , mDistance(signedDistance)
 {
-  // Do nothing
+  if (direction.squaredNorm() == 0)
+    throw std::invalid_argument("direction shouldn't be a zero vector.");
 }
 
 //==============================================================================

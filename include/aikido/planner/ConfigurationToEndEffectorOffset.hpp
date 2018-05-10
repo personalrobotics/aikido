@@ -22,8 +22,7 @@ public:
   /// offest while maintaining the current orientation.
   /// \param[in] startState Start state.
   /// \param[in] direction Unit vector that represents the direction of motion
-  /// [unit vector in the world frame]. The direction is allowed to be zero
-  /// vector.
+  /// [unit vector in the world frame]. Throw an exception if the size is zero.
   /// \param[in] signedDistance Signed distance to move, in meters.
   /// \param[in] interpolator Interpolator used to produce the output
   /// trajectory.
