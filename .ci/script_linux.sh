@@ -4,14 +4,13 @@ set -ex
 
 cd "${HOME}/workspace"
 
+./scripts/internal-build.sh ${PACKAGE_NAMES}
+
 if [ $BUILD_NAME = DOCS ]; then
-  # Set up Catkin workspace without building Aikido
-  ./scripts/internal-build.sh
   . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"
   exit 0
 fi
 
-./scripts/internal-build.sh ${PACKAGE_NAMES}
 ./scripts/internal-test.sh ${PACKAGE_NAMES}
 
 # Check code style
