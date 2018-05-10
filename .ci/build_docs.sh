@@ -21,19 +21,17 @@ cat <<EOF > ${HOME}/gh-pages/README.md
 
 EOF
 
-cd ${AIKIDO_DIR}
 mkdir build
+cd build
 
 while read version; do
   # Add entry to list of API versions
   echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${HOME}/gh-pages/README.md
 
   # Build documentation
-  git checkout ${version}
-  pushd build
+  git -C ${AIKIDO_DIR} checkout ${version}
   rm -rf *
-  ./scripts/internal-run.sh cmake -DDOWNLOAD_TAGFILES=ON ..
+  ./scripts/internal-run.sh cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
   make docs
   mv doxygen ${HOME}/gh-pages/${version}
-  popd
 done < ${TRAVIS_BUILD_DIR}/.ci/docs_versions.txt
