@@ -4,6 +4,8 @@ set -ex
 
 cd "${HOME}/workspace"
 
+. devel/setup.bash
+
 AIKIDO_DIR="${HOME}/workspace/src/aikido"
 
 # For branch builds, Travis only clones that branch with a fixed depth of 50
