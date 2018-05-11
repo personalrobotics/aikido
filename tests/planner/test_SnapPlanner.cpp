@@ -88,8 +88,10 @@ TEST_F(SnapPlannerTest, CanSolveProblems)
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       stateSpace, interpolator);
 
+  auto start = stateSpace->createState();
+  auto goal = stateSpace->createState();
   auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, failingConstraint);
+      stateSpace, start, goal, failingConstraint);
   auto unknownProblem = UnknownProblem();
 
   EXPECT_TRUE(planner->canSolve(problem));

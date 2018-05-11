@@ -116,6 +116,45 @@ function(aikido_add_test target_name)
   format_add_sources(${ARGN})
 endfunction()
 
+function(aikido_add_test2 target_name)
+  include(ExternalProject)
+
+  # Parse boolean, unary, and list arguments from input.
+  # Unparsed arguments can be found in variable ARG_UNPARSED_ARGUMENTS.
+  set(prefix aikido_test)
+  set(options )
+  set(oneValueArgs )
+  set(multiValueArgs SOURCES LINK_LIBRARIES)
+  cmake_parse_arguments(
+    "${prefix}" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+  )
+
+  message(STATUS "aikido_test_SOURCES: ${aikido_test_SOURCES}")
+  message(STATUS "aikido_test_ARGN: ${aikido_test_ARGN}")
+  message(STATUS "ARGN: ${ARGN}")
+
+  if(aikido_test_SOURCES)
+    set(sources ${aikido_test_SOURCES})
+  else()
+    # If sources are not specified, then we assume the given target name + .cpp
+    # is the source file.
+    set(sources "${target_name}.cpp")
+  endif()
+
+  message(STATUS "aikido_test_SOURCES: ${aikido_test_SOURCES}")
+
+  add_executable("${target_name}" ${sources})
+  add_test("${target_name}" "${target_name}")
+
+  target_link_libraries("${target_name}" gtest gtest_main)
+  if(aikido_test_LINK_LIBRARIES)
+    target_link_libraries("${target_name}" ${aikido_test_LINK_LIBRARIES})
+  endif()
+
+  set_property(GLOBAL APPEND PROPERTY AIKIDO_TESTS "${target_name}")
+  format_add_sources(${sources})
+endfunction()
+
 #==============================================================================
 # Required Dependencies
 #
