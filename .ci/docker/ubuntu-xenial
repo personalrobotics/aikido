@@ -21,7 +21,7 @@ RUN apt-get update \
                           wget
 
 ENV boost_version 1.65.1
-RUN boost_dir=$(echo ${boost_version} | sed 's/\./_/g')
+ENV boost_dir $(echo ${boost_version} | sed 's/\./_/g')
 
 # Download boost, untar, setup install with bootstrap and only do the Program Options library,
 # and then install
