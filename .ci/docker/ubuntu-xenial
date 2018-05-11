@@ -24,8 +24,8 @@ ENV boost_version 1.65.1
 
 # Download boost, untar, setup install with bootstrap and only do the Program Options library,
 # and then install
-RUN boost_dir=$(echo ${boost_version} | sed 's/\./_/g') \
-    && cd /home && wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/boost_${boost_dir}.tar.gz \
+RUN boost_dir=boost_$(echo ${boost_version} | sed 's/\./_/g') \
+    && cd /home && wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/${boost_dir}.tar.gz \
     && tar xfz ${boost_dir}.tar.gz \
     && rm ${boost_dir}.tar.gz \
     && cd ${boost_dir} \
