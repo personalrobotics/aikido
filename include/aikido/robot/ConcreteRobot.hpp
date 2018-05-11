@@ -209,14 +209,14 @@ public:
       double timelimit);
 
   std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const Eigen::VectorXd& goal,
-    const Eigen::VectorXd& via,
-    const Eigen::VectorXd& viaVelocity,
-    const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-    double maxPlanTime,
-    double maxDistanceBtwValidityChecks);
+      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const Eigen::VectorXd& goal,
+      const Eigen::VectorXd& via,
+      const Eigen::VectorXd& viaVelocity,
+      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      double maxPlanTime,
+      double maxDistanceBtwValidityChecks);
 
   /// Plans to a named configuration.
   /// \param[in] name Name of the configuration to plan to

@@ -1,8 +1,8 @@
 #include "aikido/robot/ConcreteRobot.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
-#include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 
 namespace aikido {
 namespace robot {
@@ -430,7 +430,8 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
       mStateSpace, mMetaSkeleton, goalState, collisionFree, timelimit);
 }
 
-std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::planMinimumTimeViaConstraint(
+std::unique_ptr<aikido::trajectory::Spline>
+ConcreteRobot::planMinimumTimeViaConstraint(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const Eigen::VectorXd& goal,
