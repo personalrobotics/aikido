@@ -2,6 +2,7 @@
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
+#include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 
 namespace aikido {
 namespace robot {
@@ -430,22 +431,41 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
 }
 
 std::unique_ptr<aikido::trajectory::Spline> ConcreteRobot::planMinimumTimeViaConstraint(
-    const statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    const dart::dynamics::MetaSkeletonPtr metaSkeleton,
-    const Eigen::VectorXd& _goal,
-    const Eigen::VectorXd& _via,
-    const Eigen::VectorXd& _viaVelocity,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const Eigen::VectorXd& goal,
+    const Eigen::VectorXd& via,
+    const Eigen::VectorXd& viaVelocity,
     const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-    double _maxPlanTime,
-    double _maxDistanceBtwValidityChecks)
+    double maxPlanTime,
+    double maxDistanceBtwValidityChecks)
 {
+  using aikido::planner::kinodynamics::planMinimumTimeViaConstraint;
+
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
-  auto goalState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(_goal, goalState);
+  Eigen::VectorXd startVec = metaSkeleton->getPositions();
+  auto startState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(startVec, startState);
 
-  return nullptr;
+  auto goalState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(goal, goalState);
+  auto viaState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(via, viaState);
+
+  auto traj = planMinimumTimeViaConstraint(
+      startState,
+      goalState,
+      viaState,
+      viaVelocity,
+      metaSkeleton,
+      stateSpace,
+      collisionConstraint,
+      maxPlanTime,
+      maxDistanceBtwValidityChecks);
+
+  return traj;
 }
 
 //=============================================================================
