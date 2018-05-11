@@ -36,25 +36,25 @@ public:
 
   /// Returns state as a rotation angle.
   ///
-  /// \param[in] state State
-  double getAngle(const State* state) const;
+  /// \param[in] state State.
+  double toAngle(const State* state) const;
 
   /// Sets state to a rotation angle.
   ///
-  /// \param[in] state State
-  /// \param[in] angle Rotation angle
-  void setAngle(State* state, double angle) const;
+  /// \param[in] angle Rotation angle.
+  /// \param[out] state State corresponding to angle
+  void fromAngle(State* state, double angle) const;
 
   /// Returns state as an Eigen transformation.
   ///
   /// \param[in] state State
-  Eigen::Rotation2Dd getRotation(const State* state) const;
+  Eigen::Rotation2Dd toRotation(const State* state) const;
 
   /// Sets state it an Eigen transformation.
   ///
-  /// \param[in] state State
-  /// \param[in] rotation Eigen transformation
-  void setRotation(State* state, const Eigen::Rotation2Dd& rotation) const;
+  /// \param[in] rotation Eigen transformation.
+  /// \param[out] state State corresponding to rotation.
+  void fromRotation(State* state, const Eigen::Rotation2Dd& rotation) const;
 
   // Documentation inherited.
   std::size_t getStateSizeInBytes() const override;
@@ -117,20 +117,20 @@ public:
   ~State() = default;
 
   /// Returns state as a rotation angle.
-  double getAngle() const;
+  double toAngle() const;
 
   /// Sets state to a rotation angle.
   ///
   /// \param[in] angle Rotation angle
-  void setAngle(double angle);
+  void fromAngle(double angle);
 
   /// Returns state as an Eigen transformation.
-  Eigen::Rotation2Dd getRotation() const;
+  Eigen::Rotation2Dd toRotation() const;
 
   /// Sets state given an Eigen transformation.
   ///
   /// \param[in] rotation Eigen transformation
-  void setRotation(const Eigen::Rotation2Dd& rotation);
+  void fromRotation(const Eigen::Rotation2Dd& rotation);
 
 private:
   double mAngle;

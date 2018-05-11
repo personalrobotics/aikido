@@ -5,17 +5,17 @@ namespace statespace {
 //==============================================================================
 SO2::State::State(double angle)
 {
-  setAngle(angle);
+  fromAngle(angle);
 }
 
 //==============================================================================
-double SO2::State::getAngle() const
+double SO2::State::toAngle() const
 {
   return mAngle;
 }
 
 //==============================================================================
-void SO2::State::setAngle(double angle)
+void SO2::State::fromAngle(double angle)
 {
   double boundedAngle = std::fmod(angle, 2.0 * M_PI);
   if (boundedAngle > M_PI)
@@ -26,15 +26,15 @@ void SO2::State::setAngle(double angle)
 }
 
 //==============================================================================
-Eigen::Rotation2Dd SO2::State::getRotation() const
+Eigen::Rotation2Dd SO2::State::toRotation() const
 {
   return Eigen::Rotation2Dd(mAngle);
 }
 
 //==============================================================================
-void SO2::State::setRotation(const Eigen::Rotation2Dd& rotation)
+void SO2::State::fromRotation(const Eigen::Rotation2Dd& rotation)
 {
-  setAngle(rotation.angle());
+  fromAngle(rotation.angle());
 }
 
 //==============================================================================
@@ -44,27 +44,27 @@ auto SO2::createState() const -> ScopedState
 }
 
 //==============================================================================
-double SO2::getAngle(const State* state) const
+double SO2::toAngle(const State* state) const
 {
-  return state->getAngle();
+  return state->toAngle();
 }
 
 //==============================================================================
-void SO2::setAngle(State* state, double angle) const
+void SO2::fromAngle(State* state, double angle) const
 {
-  state->setAngle(angle);
+  state->fromAngle(angle);
 }
 
 //==============================================================================
-Eigen::Rotation2Dd SO2::getRotation(const State* state) const
+Eigen::Rotation2Dd SO2::toRotation(const State* state) const
 {
   return Eigen::Rotation2Dd(state->mAngle);
 }
 
 //==============================================================================
-void SO2::setRotation(State* state, const Eigen::Rotation2Dd& rotation) const
+void SO2::fromRotation(State* state, const Eigen::Rotation2Dd& rotation) const
 {
-  state->setAngle(rotation.angle());
+  state->fromAngle(rotation.angle());
 }
 
 //==============================================================================
@@ -99,14 +99,14 @@ void SO2::compose(
   auto sState2 = static_cast<const State*>(state2);
   auto sOut = static_cast<State*>(out);
 
-  setAngle(sOut, sState1->mAngle + sState2->mAngle);
+  fromAngle(sOut, sState1->mAngle + sState2->mAngle);
 }
 
 //==============================================================================
 void SO2::getIdentity(StateSpace::State* out) const
 {
   auto sOut = static_cast<State*>(out);
-  setAngle(sOut, 0.);
+  fromAngle(sOut, 0.);
 }
 
 //==============================================================================
@@ -119,7 +119,7 @@ void SO2::getInverse(const StateSpace::State* in, StateSpace::State* out) const
   auto sIn = static_cast<const State*>(in);
   auto sOut = static_cast<State*>(out);
 
-  setAngle(sOut, -getAngle(sIn));
+  fromAngle(sOut, -toAngle(sIn));
 }
 
 //==============================================================================
@@ -134,7 +134,7 @@ void SO2::copyState(
 {
   auto source = static_cast<const State*>(_source);
   auto destination = static_cast<State*>(_destination);
-  setAngle(destination, getAngle(source));
+  fromAngle(destination, toAngle(source));
 }
 
 //==============================================================================
@@ -147,7 +147,7 @@ void SO2::expMap(const Eigen::VectorXd& tangent, StateSpace::State* out) const
 #endif
 
   double angle = tangent(0);
-  setAngle(sOut, angle);
+  fromAngle(sOut, angle);
 }
 
 //==============================================================================
@@ -157,14 +157,14 @@ void SO2::logMap(const StateSpace::State* in, Eigen::VectorXd& tangent) const
     tangent.resize(1);
 
   auto sIn = static_cast<const State*>(in);
-  tangent(0) = getAngle(sIn);
+  tangent(0) = toAngle(sIn);
 }
 
 //==============================================================================
 void SO2::print(const StateSpace::State* state, std::ostream& os) const
 {
   auto sState = static_cast<const State*>(state);
-  os << "[" << getAngle(sState) << "]";
+  os << "[" << toAngle(sState) << "]";
 }
 
 } // namespace statespace
