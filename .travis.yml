@@ -112,6 +112,9 @@ after_failure:
     else
       '.ci/after_failure.sh';
     fi
+    
+before_deploy:
+  - cd "${HOME}"
 
 deploy:
   github-token: $GITHUB_TOKEN
