@@ -447,14 +447,15 @@ ConcreteRobot::planMinimumTimeViaConstraint(
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
   Eigen::VectorXd startVec = metaSkeleton->getPositions();
-  auto startState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(startVec, startState);
+  auto startState = stateSpace->createState();
+  stateSpace->convertPositionsToState(startVec, startState);
 
-  auto goalState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(goal, goalState);
-  auto viaState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(via, viaState);
+  auto goalState = stateSpace->createState();
+  stateSpace->convertPositionsToState(goal, goalState);
+  auto viaState = stateSpace->createState();
+  stateSpace->convertPositionsToState(via, viaState);
 
+  double viaTime = 0.0;
   auto traj = planMinimumTimeViaConstraint(
       startState,
       goalState,
@@ -463,6 +464,7 @@ ConcreteRobot::planMinimumTimeViaConstraint(
       metaSkeleton,
       stateSpace,
       collisionConstraint,
+      viaTime,
       maxPlanTime,
       maxDistanceBtwValidityChecks);
 

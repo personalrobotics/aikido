@@ -153,6 +153,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     dart::dynamics::MetaSkeletonPtr _metaSkeleton,
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     constraint::TestablePtr _validityConstraint,
+    double& _viaTime,
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks)
 {
@@ -249,6 +250,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     std::cout << "First half has a solution" << std::endl;
     path1 = pdef1->getSolutionPath();
   }
+  else
+  {
+    return nullptr;
+  }
 
   // plan from via to goal
   // 1. create problem
@@ -284,6 +289,12 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     std::cout << "Second half has a solution" << std::endl;
     path2 = pdef2->getSolutionPath();
   }
+  else
+  {
+    return nullptr;
+  }
+
+  _viaTime = path1->cost(opt1).value();
 
   // concatenate two path
   // 1. create a vector of states and velocities

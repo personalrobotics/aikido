@@ -181,7 +181,7 @@ public:
     BodyNode* parentNode = currentNode;
 
     // Create links iteratively
-    for (int i = 1; i < 6; ++i)
+    for (int i = 1; i < 7; ++i)
     {
       std::ostringstream ssLink;
       std::ostringstream ssJoint;
@@ -261,12 +261,12 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   Eigen::VectorXd startConfig(mNumDof);
   Eigen::VectorXd viaConfig(mNumDof);
   Eigen::VectorXd goalConfig(mNumDof);
-  startConfig << 2., 2., 2., 2., 2., 2.;
-  viaConfig << 0., 0., 0., 0., 0., 0.;
-  goalConfig << -2., -2., -2., -2., -2., -2.;
+  startConfig << 2., 2., 2., 2., 2., 2., 2.;
+  viaConfig << 0., 0., 0., 0., 0., 0., 0.;
+  goalConfig << -2., -2., -2., -2., -2., -2., -2.;
 
-  Eigen::Vector6d viaVelocity;
-  viaVelocity << 1., 1., 1., 1., 1., 1.;
+  Eigen::VectorXd viaVelocity(mNumDof);
+  viaVelocity << 1., 1., 1., 1., 1., 1., 1.;
 
   auto startState = mStateSpace->createState();
   auto viaState = mStateSpace->createState();
@@ -275,6 +275,7 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   mStateSpace->convertPositionsToState(viaConfig, viaState);
   mStateSpace->convertPositionsToState(goalConfig, goalState);
 
+  double viaTime = 0.0;
   auto traj = planMinimumTimeViaConstraint(
       startState,
       goalState,
@@ -283,9 +284,11 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
       mSkel,
       mStateSpace,
       mPassingConstraint,
+      viaTime,
       mMaxPlanTime,
       mMaxDistanceBtwValidityChecks);
 
+  std::cout << "VIA TIME " << viaTime << std::endl;
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 }
 
@@ -294,12 +297,12 @@ TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
   Eigen::VectorXd startConfig(mNumDof);
   Eigen::VectorXd viaConfig(mNumDof);
   Eigen::VectorXd goalConfig(mNumDof);
-  startConfig << 2., 2., 2., 2., 2., 2.;
-  viaConfig << 0., 0., 0., 0., 0., 0.;
-  goalConfig << -2., -2., -2., -2., -2., -2.;
+  startConfig << 2., 2., 2., 2., 2., 2., 2.;
+  viaConfig << 0., 0., 0., 0., 0., 0., 0.;
+  goalConfig << -2., -2., -2., -2., -2., -2., -2.;
 
-  Eigen::Vector6d viaVelocity(mNumDof);
-  viaVelocity << 1., 1., 1., 1., 1., 1.;
+  Eigen::VectorXd viaVelocity(mNumDof);
+  viaVelocity << 1., 1., 1., 1., 1., 1., 1.;
 
   auto startState = mStateSpace->createState();
   auto viaState = mStateSpace->createState();
@@ -308,6 +311,7 @@ TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
   mStateSpace->convertPositionsToState(viaConfig, viaState);
   mStateSpace->convertPositionsToState(goalConfig, goalState);
 
+  double viaTime = 0.0;
   auto traj = planMinimumTimeViaConstraint(
       startState,
       goalState,
@@ -316,6 +320,7 @@ TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
       mSkel,
       mStateSpace,
       mFailingConstraint,
+      viaTime,
       mMaxPlanTime,
       mMaxDistanceBtwValidityChecks);
   EXPECT_EQ(nullptr, traj);

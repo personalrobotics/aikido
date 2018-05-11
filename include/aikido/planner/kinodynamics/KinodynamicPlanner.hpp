@@ -68,6 +68,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     dart::dynamics::MetaSkeletonPtr _metaSkeleton,
     statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     constraint::TestablePtr _validityConstraint,
+    double& _viaTime,
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks);
 
