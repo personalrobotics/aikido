@@ -11,3 +11,24 @@ RUN apt-get install -y \
     python \
     software-properties-common \
     sudo
+
+# Get g++ for compiling, wget to download Boost, git to clone source code repo,
+# and make to automate program compilation with Makefile provided
+RUN apt-get update \
+    && apt-get install -y git \
+                          g++ \
+                          make \
+                          wget
+
+ENV boost_version 1.60.0
+RUN boost_dir=$(echo ${boost_version} | sed 's/\./_/g')
+
+# Download boost, untar, setup install with bootstrap and only do the Program Options library,
+# and then install
+RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/${boost_dir}.tar.gz \
+    && tar xfz ${boost_dir}.tar.gz \
+    && rm ${boost_dir}.tar.gz \
+    && cd ${boost_dir} \
+    && ./bootstrap.sh \
+    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install \
+    && cd .. && rm -rf ${boost_dir} && ldconfig
