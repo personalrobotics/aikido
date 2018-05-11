@@ -14,6 +14,12 @@ class ConfigurationToConfigurationPlanner
                                   ConfigurationToConfiguration>
 {
 public:
+  // Expose the implementation of Planner::plan(const Problem&, Result*) in
+  // SingleProblemPlanner. Note that plan() of the base class takes Problem
+  // while the virtual function defined in this class takes SolverbleProblem,
+  // which is simply ConfigurationToConfiguration.
+  using SingleProblemPlanner::plan;
+
   /// Constructor
   ///
   /// \param[in] stateSpace State space that this planner associated with.

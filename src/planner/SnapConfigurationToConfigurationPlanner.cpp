@@ -66,8 +66,7 @@ void SnapConfigurationToConfigurationPlanner::setInterpolator(
 statespace::ConstInterpolatorPtr
 SnapConfigurationToConfigurationPlanner::getInterpolator() const
 {
-  return const_cast<SnapConfigurationToConfigurationPlanner*>(this)
-      ->getInterpolator();
+  return mInterpolator;
 }
 
 } // namespace planner
