@@ -25,7 +25,7 @@ RUN boost_dir=$(echo ${boost_version} | sed 's/\./_/g')
 
 # Download boost, untar, setup install with bootstrap and only do the Program Options library,
 # and then install
-RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/${boost_dir}.tar.gz \
+RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/boost_${boost_dir}.tar.gz \
     && tar xfz ${boost_dir}.tar.gz \
     && rm ${boost_dir}.tar.gz \
     && cd ${boost_dir} \
