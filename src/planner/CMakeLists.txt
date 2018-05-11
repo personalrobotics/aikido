@@ -1,5 +1,18 @@
 set(sources
-  SnapPlanner.cpp
+  ConfigurationToConfiguration.cpp
+  ConfigurationToConfigurationPlanner.cpp
+  ConfigurationToConfigurations.cpp
+  ConfigurationToTSR.cpp
+  ConfigurationToEndEffectorOffset.cpp
+  ConfigurationToEndEffectorPose.cpp
+  FirstSupportedMetaPlanner.cpp
+  CompositePlanner.cpp
+  Planner.cpp
+  PlanningResult.cpp
+  Problem.cpp
+  RankedMetaPlanner.cpp
+  SnapConfigurationToConfigurationPlanner.cpp
+  SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
 )
@@ -36,6 +49,6 @@ add_component_dependencies(${PROJECT_NAME} planner
 
 format_add_sources(${sources})
 
-add_subdirectory("ompl")      # [constraint], [distance], [statespace], [trajectory], dart, ompl
-add_subdirectory("parabolic") # [external], [common], [trajectory], [statespace], dart
+add_subdirectory("ompl")        # [constraint], [distance], [statespace], [trajectory], dart, ompl
+add_subdirectory("parabolic")   # [external], [common], [trajectory], [statespace], dart
 add_subdirectory("vectorfield") # [common], [trajectory], [statespace], dart
