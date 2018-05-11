@@ -290,6 +290,15 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 
   std::cout << "VIA TIME " << viaTime << std::endl;
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
+
+  auto viapoint = mStateSpace->createState();
+  traj->evaluate(viaTime, viapoint);
+  Eigen::VectorXd viapointVec(mNumDof);
+  mStateSpace->convertStateToPositions(viapoint, viapointVec);
+
+  std::cout << "VIA POINT VEC " << viapointVec ;
+
+  EXPECT_LE( (viaConfig-viapointVec).norm(), 1e-3 );
 }
 
 TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
