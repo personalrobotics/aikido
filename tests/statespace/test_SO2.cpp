@@ -125,6 +125,9 @@ TEST(SO2, LogMapLargeAngles)
   in[0] = 11 * M_PI / 6;
   so2.expMap(in, &state);
   so2.logMap(&state, out);
+
+  EXPECT_FALSE(out.isApprox(in));
+  in[0] = -M_PI / 6;
   EXPECT_TRUE(out.isApprox(in));
 }
 
@@ -148,8 +151,8 @@ TEST(SO2, PrintState)
 
 TEST(SO2, GeodesicInterpolationWithinWrap)
 {
-  SO2::State from(M_PI / 6.0);
-  SO2::State to(11 * M_PI / 6.0);
+  SO2::State from(0.0);
+  SO2::State to(5 * M_PI / 3);
   SO2::State toMinusFrom;
   SO2::State fromInv;
 
@@ -166,7 +169,7 @@ TEST(SO2, GeodesicInterpolationWithinWrap)
   SO2::State halfPointState;
   so2.compose(&from, &relativeState, &halfPointState);
 
-  SO2::State expected(0.0);
+  SO2::State expected(-M_PI / 6);
 
   EXPECT_TRUE(halfPointState.toRotation().isApprox(expected.toRotation()));
   EXPECT_DOUBLE_EQ(expected.toAngle(), halfPointState.toAngle());
