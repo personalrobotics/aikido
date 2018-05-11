@@ -107,3 +107,46 @@ TEST(SO2, PrintState)
   source.setAngle(M_PI);
   so2.print(source, std::cout);
 }
+
+TEST(SO2, InverseWithLargeAngle)
+{
+  SO2::State s1(M_PI * 2);
+  SO2::State s2(M_PI / 180.0 * 10.0);
+  SO2::State out;
+  SO2::State inv;
+
+  SO2 so2;
+  so2.getInverse(&s1, &inv);
+
+  so2.compose(&inv, &s2, &out);
+
+  SO2::State expected(M_PI / 180.0 * 10.0);
+  EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
+  EXPECT_DOUBLE_EQ(expected.getAngle(), out.getAngle());
+}
+
+TEST(SO2, GeodesicInterpolationWithLargeAngle)
+{
+  SO2::State from(M_PI * 2);
+  SO2::State to(M_PI / 180.0 * 10.0);
+  SO2::State toMinusFrom;
+  SO2::State fromInv;
+
+  SO2 so2;
+  so2.getInverse(&from, &fromInv);
+  so2.compose(&fromInv, &to, &toMinusFrom);
+
+  Eigen::VectorXd tangentVector;
+  so2.logMap(&toMinusFrom, tangentVector);
+
+  SO2::State relativeState;
+  so2.expMap(0.5 * tangentVector, &relativeState);
+
+  SO2::State out;
+  so2.compose(&from, &relativeState, &out);
+
+  SO2::State expected(M_PI / 180.0 * 5.0);
+
+  EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
+  EXPECT_DOUBLE_EQ(expected.getAngle(), out.getAngle());
+}
