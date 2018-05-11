@@ -3,6 +3,7 @@
 set -ex
 
 cd "${HOME}/workspace"
+. devel/setup.bash
 
 AIKIDO_DIR="${HOME}/workspace/src/aikido"
 
@@ -31,7 +32,7 @@ while read version; do
   # Build documentation
   git -C ${AIKIDO_DIR} checkout ${version}
   rm -rf *
-  ../scripts/internal-run.sh cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
+  cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
   make docs
   mv doxygen ${HOME}/gh-pages/${version}
 done < ${TRAVIS_BUILD_DIR}/.ci/docs_versions.txt
