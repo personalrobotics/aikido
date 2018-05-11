@@ -70,6 +70,11 @@ matrix:
       env:
         - BUILD_NAME=XCODE93_RELEASE
         - BUILD_TYPE=Release
+    - os: linux
+      compiler: gcc
+      env:
+        - BUILD_NAME=DOCS
+        - BUILD_TYPE=Release
 
 before_install:
   - if [ -n "$DOCKER_FILE" ]; then
@@ -117,4 +122,4 @@ deploy:
   verbose: true
   on:
     branch: master
-    condition: $BUILD_NAME == TRUSTY_FULL_RELEASE && $TRAVIS_EVENT_TYPE != cron
+    condition: $BUILD_NAME == DOCS && $TRAVIS_EVENT_TYPE != cron
