@@ -89,18 +89,18 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   auto subSpace = stateSpace->getSubspace<SO2>(0);
   EXPECT_EQ(2, traj->getNumWaypoints());
 
-  auto startValue = startState->getSubStateHandle<SO2>(0).getRotation();
+  auto startValue = startState->getSubStateHandle<SO2>(0).toRotation();
 
   auto tmpState = stateSpace->createState();
   traj->evaluate(0, tmpState);
-  auto traj0 = stateSpace->getSubStateHandle<SO2>(tmpState, 0).getRotation();
+  auto traj0 = stateSpace->getSubStateHandle<SO2>(tmpState, 0).toRotation();
 
   EXPECT_TRUE(startValue.isApprox(traj0));
 
-  auto goalValue = goalState->getSubStateHandle<SO2>(0).getRotation();
+  auto goalValue = goalState->getSubStateHandle<SO2>(0).toRotation();
 
   traj->evaluate(traj->getDuration(), tmpState);
-  auto traj1 = stateSpace->getSubStateHandle<SO2>(tmpState, 0).getRotation();
+  auto traj1 = stateSpace->getSubStateHandle<SO2>(tmpState, 0).toRotation();
 
   EXPECT_TRUE(goalValue.isApprox(traj1))
       << "on success final element of trajectory should be goal state.";
