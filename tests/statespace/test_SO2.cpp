@@ -25,7 +25,7 @@ TEST(SO2, Compose)
   so2.compose(&s1, &s2, &out);
 
   EXPECT_TRUE(out.toRotation().isApprox(expected.toRotation()));
-  EXPECT_DOUBLE_EQ(out.toAngle(),expected.toAngle());
+  EXPECT_DOUBLE_EQ(out.toAngle(), expected.toAngle());
 }
 
 TEST(SO2, ComposeWrapped)
@@ -39,7 +39,7 @@ TEST(SO2, ComposeWrapped)
   so2.compose(&s1, &s2, &out);
 
   EXPECT_TRUE(out.toRotation().isApprox(expected.toRotation()));
-  EXPECT_DOUBLE_EQ(out.toAngle(),expected.toAngle());
+  EXPECT_DOUBLE_EQ(out.toAngle(), expected.toAngle());
 }
 
 TEST(SO2, Identity)
