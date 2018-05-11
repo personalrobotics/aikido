@@ -14,10 +14,10 @@ rm -rf ${AIKIDO_DIR}
 git clone "https://github.com/${TRAVIS_REPO_SLUG}.git" ${AIKIDO_DIR}
 
 # Organize into "gh-pages" directory
-mkdir -p ${HOME}/gh-pages
+mkdir -p ${TRAVIS_BUILD_DIR}/gh-pages
 
 # Initialize list of API versions
-cat <<EOF > ${HOME}/gh-pages/README.md
+cat <<EOF > ${TRAVIS_BUILD_DIR}/gh-pages/README.md
 ## API Documentation
 
 EOF
@@ -27,12 +27,12 @@ cd build_docs
 
 while read version; do
   # Add entry to list of API versions
-  echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${HOME}/gh-pages/README.md
+  echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${TRAVIS_BUILD_DIR}/gh-pages/README.md
 
   # Build documentation
   git -C ${AIKIDO_DIR} checkout ${version}
   rm -rf *
   cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
   make docs
-  mv doxygen ${HOME}/gh-pages/${version}
+  mv doxygen ${TRAVIS_BUILD_DIR}/gh-pages/${version}
 done < ${TRAVIS_BUILD_DIR}/.ci/docs_versions.txt
