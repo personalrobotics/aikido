@@ -33,8 +33,9 @@ IKRankingStrategy::getRankedIKSolutions()
 {
   struct sortingFunction
   {
-    bool operator()(const std::pair<statespace::StateSpace::State*, double> &left,
-                    const std::pair<statespace::StateSpace::State*, double> &right)
+    bool operator()(
+        const std::pair<statespace::StateSpace::State*, double>& left,
+        const std::pair<statespace::StateSpace::State*, double>& right)
     {
       return left.second < right.second;
     }
