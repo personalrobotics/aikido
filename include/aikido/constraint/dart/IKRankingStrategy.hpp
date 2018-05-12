@@ -17,9 +17,11 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
+  /// \param[in] numIKSolution Number of IK solutions to rank.
   IKRankingStrategy(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      std::size_t numIKSolutions);
 
   /// Destructor
   // TODO (avk): What is default mean?
@@ -29,7 +31,6 @@ public:
   statespace::ConstStateSpacePtr getStateSpace() const;
 
   /// Returns the vector of ranked IK solutions.
-  // TODO (avk): Make a member variable and pass by reference?
   std::vector<std::pair<statespace::StateSpace::State*, double>>&
   getRankedIKSolutions();
 
@@ -49,8 +50,10 @@ private:
   ::dart::dynamics::ConstMetaSkeletonPtr mMetaSkeleton;
 
   /// Vector to hold IK solutions and corresponding score.
-  // TODO (avk): Take in numberOfCandidateSolutions and allocate memory in ctr.
   std::vector<std::pair<statespace::StateSpace::State*, double>> mIKSolutions;
+
+  /// Helper variable to keep track of number of IK Solutions held.
+  std::size_t mIndex;
 };
 
 } // namespace dart
