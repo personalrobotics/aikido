@@ -25,9 +25,9 @@ RUN apt-get update \
        curl \
        vim \
        vim-gnome \
-    && apt-get install -y gcc-7.3 g++-7.3 gcc-7.3-base \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7.3 100 \
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7.3 100
+    && apt-get install -y gcc-7 g++-7 gcc-7-base \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
 
 
 # Get g++ for compiling, wget to download Boost, git to clone source code repo,
