@@ -12,7 +12,7 @@ RUN apt-get install -y \
     software-properties-common \
     sudo
 
-# Install GCC 5 (DART 6.5 should be used for GCC 6, 7)
+# Install GCC 7
 RUN apt-get update \
     && apt-get install -y \
        software-properties-common \
@@ -32,21 +32,21 @@ RUN apt-get update \
 
 # Get g++ for compiling, wget to download Boost, git to clone source code repo,
 # and make to automate program compilation with Makefile provided
-#RUN apt-get update \
-#    && apt-get install -y git \
-#                          g++ \
-#                          make \
-#                          wget
+RUN apt-get update \
+    && apt-get install -y git \
+                          g++ \
+                          make \
+                          wget
 
-#ENV boost_version 1.65.1
+ENV boost_version 1.65.1
 
 # Download boost, untar, setup install with bootstrap and only do the Program Options library,
 # and then install
-#RUN boost_dir=boost_$(echo ${boost_version} | sed 's/\./_/g') \
-#    && cd /home && wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/${boost_dir}.tar.gz \
-#    && tar xfz ${boost_dir}.tar.gz \
-#    && rm ${boost_dir}.tar.gz \
-#    && cd ${boost_dir} \
-#    && ./bootstrap.sh \
-#    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install \
-#    && cd .. && rm -rf ${boost_dir} && ldconfig
+RUN boost_dir=boost_$(echo ${boost_version} | sed 's/\./_/g') \
+    && cd /home && wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/${boost_dir}.tar.gz \
+    && tar xfz ${boost_dir}.tar.gz \
+    && rm ${boost_dir}.tar.gz \
+    && cd ${boost_dir} \
+    && ./bootstrap.sh \
+    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install \
+    && cd .. && rm -rf ${boost_dir} && ldconfig
