@@ -1,11 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_DART_NOMINALCONFIGURATIONSTRATEGY_HPP_
 #define AIKIDO_CONSTRAINT_DART_NOMINALCONFIGURATIONSTRATEGY_HPP_
 
-#include <dart/common/Memory.hpp>
-#include <dart/dynamics/dynamics.hpp>
-#include "aikido/constraint/Sampleable.hpp"
 #include "aikido/constraint/dart/IKRankingStrategy.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -18,22 +14,14 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
+  /// \param[in] numIKSolution Number of IK solutions to rank.
   NominalConfigurationStrategy(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-      ::dart::dynamics::ConstMetaSkeletonPtr metaskeleton);
-
-  /// Destructor
-  // TODO (avk): What is default mean?
-  ~NominalConfigurationStrategy();
-
-  /// Adds IK solution to the ordered set.
-  void addIKSolution(statespace::StateSpace::State* solution) override final;
-
-  /// Returns (pops) the top ranked solution.
-  statespace::StateSpace::State* getIKSolution() override final;
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      std::size_t numIKSolutions);
 
 private:
-  // TODO
+  virtual double evaluateIKSolution(statespace::StateSpace::State *solution) const override;
 };
 
 } // namespace dart

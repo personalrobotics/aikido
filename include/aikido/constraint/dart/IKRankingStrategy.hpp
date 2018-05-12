@@ -1,9 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_DART_IKRANKINGSTRATEGY_HPP_
 #define AIKIDO_CONSTRAINT_DART_IKRANKINGSTRATEGY_HPP_
 
-#include <dart/common/Memory.hpp>
 #include <dart/dynamics/dynamics.hpp>
-#include "aikido/constraint/Sampleable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
@@ -39,8 +37,7 @@ public:
 
 private:
   /// Returns the score of the IK Solution
-  virtual double evaluateIKSolution(statespace::StateSpace::State* solution)
-      = 0;
+  virtual double evaluateIKSolution(statespace::StateSpace::State* solution) const = 0;
 
   /// Statespace of the skeleton.
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
