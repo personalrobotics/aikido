@@ -28,12 +28,20 @@ statespace::ConstStateSpacePtr IKRankingStrategy::getStateSpace() const
 }
 
 //==============================================================================
-std::vector<std::pair<statespace::StateSpace::State*, double>>
+std::vector<std::pair<statespace::StateSpace::State*, double>>&
 IKRankingStrategy::getRankedIKSolutions()
 {
-  std::vector<std::pair<statespace::StateSpace::State*, double>>
-      rankedSolutions;
-  return rankedSolutions;
+  struct sortingFunction
+  {
+    bool operator()(const std::pair<statespace::StateSpace::State*, double> &left,
+                    const std::pair<statespace::StateSpace::State*, double> &right)
+    {
+      return left.second < right.second;
+    }
+  };
+
+  std::sort(mIKSolutions.begin(), mIKSolutions.end(), sortingFunction());
+  return mIKSolutions;
 }
 
 //==============================================================================
