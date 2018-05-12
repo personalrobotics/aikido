@@ -55,9 +55,9 @@ StateSpace::State* CartesianProduct::allocateStateInBuffer(void* _buffer) const
 }
 
 //==============================================================================
-void CartesianProduct::freeStateInBuffer(StateSpace::State* _state) const
+void CartesianProduct::freeStateInBuffer(const StateSpace::State* _state) const
 {
-  auto state = static_cast<State*>(_state);
+  auto state = static_cast<const State*>(_state);
 
   for (std::size_t i = mSubspaces.size(); i > 0; --i)
     mSubspaces[i - 1]->freeStateInBuffer(getSubState<>(state, i - 1));
@@ -202,6 +202,12 @@ void CartesianProduct::print(
     getSubspace<>(i)->print(getSubState<>(state, i), _os);
     _os << " ] ";
   }
+}
+
+//==============================================================================
+CartesianProduct::ScopedState CartesianProduct::State::clone(const CartesianProduct& stateSpace) const
+{
+  return stateSpace.createState();
 }
 
 } // namespace statespace

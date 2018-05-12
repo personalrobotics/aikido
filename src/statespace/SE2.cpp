@@ -56,9 +56,9 @@ StateSpace::State* SE2::allocateStateInBuffer(void* _buffer) const
 }
 
 //==============================================================================
-void SE2::freeStateInBuffer(StateSpace::State* _state) const
+void SE2::freeStateInBuffer(const StateSpace::State* _state) const
 {
-  static_cast<State*>(_state)->~State();
+  static_cast<const State*>(_state)->~State();
 }
 
 //==============================================================================

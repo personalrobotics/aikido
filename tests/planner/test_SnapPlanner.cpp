@@ -89,7 +89,7 @@ TEST_F(SnapPlannerTest, CanSolveProblems)
       stateSpace, interpolator);
 
   auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, failingConstraint);
+      stateSpace, startState->clone(*stateSpace), goalState->clone(*stateSpace), failingConstraint);
   auto unknownProblem = UnknownProblem();
 
   EXPECT_TRUE(planner->canSolve(problem));
@@ -105,7 +105,7 @@ TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
   EXPECT_THROW(
       {
         auto problem = ConfigurationToConfiguration(
-            differentStateSpace, *startState, *goalState, passingConstraint);
+            differentStateSpace, startState->clone(*stateSpace), goalState->clone(*stateSpace), passingConstraint);
         DART_UNUSED(problem);
       },
       std::invalid_argument);
@@ -119,7 +119,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   stateSpace->setState(skel.get(), *goalState);
 
   auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, passingConstraint);
+      stateSpace, startState->clone(), goalState->clone(), passingConstraint);
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       stateSpace, interpolator);
   auto traj = planner->plan(problem, &planningResult);
@@ -153,7 +153,7 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
   auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, failingConstraint);
+      stateSpace, startState->clone(*stateSpace), goalState->clone(*stateSpace), failingConstraint);
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       stateSpace, interpolator);
   auto traj = planner->plan(problem, &planningResult);

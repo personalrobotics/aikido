@@ -32,17 +32,7 @@ class StateSpace
 {
 public:
   /// Base class for all States.
-  class State
-  {
-  protected:
-    /// This is a base class that should only only be used in derived classes.
-    State() = default;
-
-    /// It is unsafe to call this, since it is a non-virtual destructor.  Having
-    /// any virtual function in this class, including this destructor, adds
-    /// sizeof(pointer) overhead for a vtable.
-    ~State() = default;
-  };
+  class State;
 
   using StateHandle = statespace::StateHandle<StateSpace, State>;
   using StateHandleConst = statespace::StateHandle<StateSpace, const State>;
@@ -56,6 +46,7 @@ public:
   ///
   /// \return new \c ScopedState
   ScopedState createState() const;
+  // TODO(JS): Remove
 
   /// Allocate a new state. This must be deleted with \c freeState. This is a
   /// helper function that allocates memory, uses \c allocateStateInBuffer to
@@ -87,7 +78,7 @@ public:
   /// undefined behavior to access \c _state after calling this function.
   ///
   /// \param _state state to free
-  virtual void freeStateInBuffer(State* _state) const = 0;
+  virtual void freeStateInBuffer(const State* _state) const = 0;
 
   /// Lie group operation for this StateSpace. It is not acceptable for \c _out
   /// to share memory with \c _state1 or \c _state2.
@@ -167,6 +158,18 @@ public:
   /// \param _state The element to print
   /// \param _os The stream to print to
   virtual void print(const State* _state, std::ostream& _os) const = 0;
+};
+
+class StateSpace::State
+{
+protected:
+  /// This is a base class that should only only be used in derived classes.
+  State() = default;
+
+  /// It is unsafe to call this, since it is a non-virtual destructor.  Having
+  /// any virtual function in this class, including this destructor, adds
+  /// sizeof(pointer) overhead for a vtable.
+  ~State() = default;
 };
 
 } // namespace statespace

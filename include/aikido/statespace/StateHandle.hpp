@@ -1,6 +1,8 @@
 #ifndef AIKIDO_STATESPACE_STATEHANDLE_HPP_
 #define AIKIDO_STATESPACE_STATEHANDLE_HPP_
 
+#include <type_traits>
+
 namespace aikido {
 namespace statespace {
 
@@ -45,10 +47,23 @@ public:
   /// \param _state state created by \c _space
   void reset(const StateSpace* _space, QualifiedState* _state);
 
+  template <typename Q = QualifiedState>
+  typename std::enable_if<std::is_const<Q>::value, Q*>::type // only for const X
+  getState() const { return mState; }
+
   /// Gets the State.
   ///
   /// \return state wrapped by this handle
-  QualifiedState* getState() const;
+  template <typename Q = QualifiedState>
+  typename std::enable_if<!std::is_const<Q>::value, Q*>::type // only for non-const X
+  getState() { return mState; }
+
+  /// Gets the State.
+  ///
+  /// \return state wrapped by this handle
+  template <typename Q = QualifiedState>
+  typename std::enable_if<!std::is_const<Q>::value, const Q*>::type // only for non-const X
+  getState() const { return mState; }
 
   /// Gets the state space that created this state.
   ///

@@ -40,13 +40,13 @@ void StateHandle<_StateSpace, _QualifiedState>::reset(
   mState = _state;
 }
 
-//==============================================================================
-template <class _StateSpace, class _QualifiedState>
-auto StateHandle<_StateSpace, _QualifiedState>::getState() const
-    -> QualifiedState*
-{
-  return mState;
-}
+////==============================================================================
+//template <class _StateSpace, class _QualifiedState>
+//auto StateHandle<_StateSpace, _QualifiedState>::getState() const
+//    -> QualifiedState*
+//{
+//  return mState;
+//}
 
 //==============================================================================
 template <class _StateSpace, class _QualifiedState>

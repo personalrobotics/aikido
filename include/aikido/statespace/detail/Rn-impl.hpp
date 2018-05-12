@@ -175,7 +175,7 @@ StateSpace::State* R<N>::allocateStateInBuffer(void* _buffer) const
 
 //==============================================================================
 template <int N>
-void R<N>::freeStateInBuffer(StateSpace::State* /*_state*/) const
+void R<N>::freeStateInBuffer(const StateSpace::State* /*_state*/) const
 {
   // Do nothing.
 }
