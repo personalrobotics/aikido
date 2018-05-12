@@ -1,11 +1,13 @@
-#ifndef AIKIDO_PLANNER_SNAP_PLANNER_HPP_
-#define AIKIDO_PLANNER_SNAP_PLANNER_HPP_
+#ifndef AIKIDO_PLANNER_SNAPPLANNER_HPP_
+#define AIKIDO_PLANNER_SNAPPLANNER_HPP_
 
-#include "../constraint/Testable.hpp"
-#include "../statespace/Interpolator.hpp"
-#include "../statespace/StateSpace.hpp"
-#include "../trajectory/Interpolated.hpp"
-#include "PlanningResult.hpp"
+#include <memory>
+#include "aikido/common/deprecated.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/PlanningResult.hpp"
+#include "aikido/statespace/Interpolator.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
 namespace planner {
@@ -23,6 +25,10 @@ namespace planner {
 /// \param constraint trajectory-wide constraint that must be satisfied
 /// \param[out] planningResult information about success or failure
 /// \return trajectory or \c nullptr if planning failed
+///
+/// \deprecated Deprecated in 0.3. Please use
+/// SnapConfigurationToConfigurationPlanner instead.
+AIKIDO_DEPRECATED(0.3)
 trajectory::InterpolatedPtr planSnap(
     const statespace::ConstStateSpacePtr& stateSpace,
     const statespace::StateSpace::State* startState,
@@ -34,4 +40,4 @@ trajectory::InterpolatedPtr planSnap(
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_SNAP_PLANNER_HPP_
+#endif // AIKIDO_PLANNER_SNAPPLANNER_HPP_

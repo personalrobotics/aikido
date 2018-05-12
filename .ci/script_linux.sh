@@ -6,7 +6,11 @@ cd "${HOME}/workspace"
 
 export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
 ./scripts/internal-build.sh ${PACKAGE_NAMES}
-./scripts/internal-test.sh ${PACKAGE_NAMES}
+
+if [ $BUILD_NAME = DOCS ]; then
+  . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"
+  exit 0
+fi
 
 # Check code style
 ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
