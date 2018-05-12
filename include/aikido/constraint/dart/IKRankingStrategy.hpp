@@ -30,15 +30,17 @@ public:
 
   /// Returns the vector of ranked IK solutions.
   // TODO (avk): Make a member variable and pass by reference?
-  std::vector<statespace::StateSpace::State*> getRankedIKSolutions();
+  std::vector<std::pair<statespace::StateSpace::State*, double>>
+  getRankedIKSolutions();
 
   /// Add IK solution to Ranker
   /// Evaluates, creates a pair and stores it in the vector.
   void addIKSolution(statespace::StateSpace::State* solution);
 
 private:
-  /// Evaluates the IK solution.
-  virtual void evaluateIKSolution(statespace::StateSpace::State* solution) = 0;
+  /// Returns the score of the IK Solution
+  virtual double evaluateIKSolution(statespace::StateSpace::State* solution)
+      = 0;
 
   /// Statespace of the skeleton.
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;

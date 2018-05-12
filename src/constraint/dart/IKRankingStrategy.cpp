@@ -5,7 +5,6 @@ namespace constraint {
 namespace dart {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
-using statespace::StateSpace::State;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
@@ -29,26 +28,22 @@ statespace::ConstStateSpacePtr IKRankingStrategy::getStateSpace() const
 }
 
 //==============================================================================
-std::vector<std::pair<State*, double>> IKRankingStrategy::getRankedIKSolutions()
+std::vector<std::pair<statespace::StateSpace::State*, double>>
+IKRankingStrategy::getRankedIKSolutions()
 {
-  return nullptr;
+  std::vector<std::pair<statespace::StateSpace::State*, double>>
+      rankedSolutions;
+  return rankedSolutions;
 }
 
 //==============================================================================
-void IKRankingStrategy::addIKSolution(State* solution)
+void IKRankingStrategy::addIKSolution(statespace::StateSpace::State* solution)
 {
-  auto evaluatedSolution = evaluateIKSolution(solution);
-  mIKSolutions.emplace_back(evaluatedSolution);
-}
-
-//==============================================================================
-std::pair<State*, double> IKRankingStrategy::evaluateIKSolution(State* solution)
-{
-  return std::pair<State*, double>(solution, 0.0);
+  double score = evaluateIKSolution(solution);
+  mIKSolutions.emplace_back(
+      std::pair<statespace::StateSpace::State*, double>(solution, score));
 }
 
 } // namespace dart
 } // namespace constraint
 } // namespace aikido
-
-#endif // AIKIDO_CONSTRAINT_DART_IKRANKINGSTRATEGY_HPP_
