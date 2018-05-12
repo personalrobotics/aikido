@@ -3,8 +3,8 @@
 
 #include <dart/common/Memory.hpp>
 #include <dart/dynamics/dynamics.hpp>
-#include "aikido/constraint/dart/IKRankingStrategy.hpp"
 #include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/dart/IKRankingStrategy.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
