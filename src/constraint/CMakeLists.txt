@@ -28,7 +28,9 @@ set(sources
   dart/FrameTestable.cpp
   dart/IKRankingStrategy.cpp
   dart/InverseKinematicsSampleable.cpp
+  dart/JointAvoidanceStrategy.cpp
   dart/JointStateSpaceHelpers.cpp
+  dart/NominalConfigurationStrategy.cpp
   dart/TSR.cpp
 )
 
