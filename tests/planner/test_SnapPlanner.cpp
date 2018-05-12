@@ -3,16 +3,21 @@
 #include <gtest/gtest.h>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
-#include <aikido/planner/PlanningResult.hpp>
-#include <aikido/planner/SnapPlanner.hpp>
+#include <aikido/planner/ConfigurationToConfiguration.hpp>
+#include <aikido/planner/SnapConfigurationToConfigurationPlanner.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 #include "../constraint/MockConstraints.hpp"
 
 using std::shared_ptr;
 using std::make_shared;
+using aikido::trajectory::Interpolated;
+using aikido::planner::ConfigurationToConfiguration;
+using aikido::planner::SnapConfigurationToConfigurationPlanner;
 
+//==============================================================================
 class SnapPlannerTest : public ::testing::Test
 {
 public:
@@ -38,6 +43,7 @@ public:
     , failingConstraint{make_shared<FailingConstraint>(stateSpace)}
     , interpolator(make_shared<GeodesicInterpolator>(stateSpace))
   {
+    // Do nothing
   }
 
   // DART setup
@@ -51,43 +57,80 @@ public:
   shared_ptr<PassingConstraint> passingConstraint;
   shared_ptr<FailingConstraint> failingConstraint;
   shared_ptr<GeodesicInterpolator> interpolator;
-  aikido::planner::PlanningResult planningResult;
+  SnapConfigurationToConfigurationPlanner::Result planningResult;
 };
 
+//==============================================================================
+class UnknownProblem : public aikido::planner::Problem
+{
+public:
+  UnknownProblem()
+    : aikido::planner::Problem(std::make_shared<aikido::statespace::SO2>())
+  {
+    // Do nothing
+  }
+
+  const std::string& getType() const override
+  {
+    return getStaticType();
+  }
+
+  static const std::string& getStaticType()
+  {
+    static std::string name("UnknownProblem");
+    return name;
+  }
+};
+
+//==============================================================================
+TEST_F(SnapPlannerTest, CanSolveProblems)
+{
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      stateSpace, interpolator);
+
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, *startState, *goalState, failingConstraint);
+  auto unknownProblem = UnknownProblem();
+
+  EXPECT_TRUE(planner->canSolve(problem));
+  EXPECT_FALSE(planner->canSolve(unknownProblem));
+}
+
+//==============================================================================
 TEST_F(SnapPlannerTest, ThrowsOnStateSpaceMismatch)
 {
-  SkeletonPtr empty_skel = dart::dynamics::Skeleton::create("skel");
+  SkeletonPtr emptySkel = dart::dynamics::Skeleton::create("skel");
   auto differentStateSpace
-      = make_shared<MetaSkeletonStateSpace>(empty_skel.get());
+      = make_shared<MetaSkeletonStateSpace>(emptySkel.get());
   EXPECT_THROW(
       {
-        planSnap(
-            differentStateSpace,
-            *startState,
-            *goalState,
-            interpolator,
-            passingConstraint,
-            planningResult);
+        auto problem = ConfigurationToConfiguration(
+            differentStateSpace, *startState, *goalState, passingConstraint);
+        DART_UNUSED(problem);
       },
       std::invalid_argument);
 }
 
+//==============================================================================
 TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
 {
   stateSpace->getState(skel.get(), *startState);
   skel->setPosition(0, 2.0);
   stateSpace->setState(skel.get(), *goalState);
 
-  auto traj = planSnap(
-      stateSpace,
-      *startState,
-      *goalState,
-      interpolator,
-      passingConstraint,
-      planningResult);
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, *startState, *goalState, passingConstraint);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      stateSpace, interpolator);
+  auto traj = planner->plan(problem, &planningResult);
 
   auto subSpace = stateSpace->getSubspace<SO2>(0);
-  EXPECT_EQ(2, traj->getNumWaypoints());
+  DART_UNUSED(subSpace);
+
+  if (auto interpolated = std::dynamic_pointer_cast<Interpolated>(traj))
+  {
+    EXPECT_EQ(2, interpolated->getNumWaypoints());
+  }
 
   auto startValue = startState->getSubStateHandle<SO2>(0).getRotation();
 
@@ -106,14 +149,13 @@ TEST_F(SnapPlannerTest, ReturnsStartToGoalTrajOnSuccess)
       << "on success final element of trajectory should be goal state.";
 }
 
+//==============================================================================
 TEST_F(SnapPlannerTest, FailIfConstraintNotSatisfied)
 {
-  auto traj = planSnap(
-      stateSpace,
-      *startState,
-      *goalState,
-      interpolator,
-      failingConstraint,
-      planningResult);
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, *startState, *goalState, failingConstraint);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      stateSpace, interpolator);
+  auto traj = planner->plan(problem, &planningResult);
   EXPECT_EQ(nullptr, traj);
 }

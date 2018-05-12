@@ -70,7 +70,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     std::chrono::duration<double> timelimit,
     planner::PlanningResult* planningResult = nullptr);
 
-/// Plan to an end effector pose by following a geodesic loss function
+/// Plan to an end-effector pose by following a geodesic loss function
 /// in SE(3) via an optimized Jacobian.
 ///
 /// \param[in] stateSpace MetaSkeleton state space.
