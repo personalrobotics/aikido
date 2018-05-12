@@ -21,7 +21,8 @@ public:
       std::size_t numIKSolutions);
 
 private:
-  virtual double evaluateIKSolution(statespace::StateSpace::State *solution) const override;
+  virtual double evaluateIKSolution(
+      statespace::StateSpace::State* solution) const override;
 };
 
 } // namespace dart

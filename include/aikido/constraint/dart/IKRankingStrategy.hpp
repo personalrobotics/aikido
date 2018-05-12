@@ -37,7 +37,8 @@ public:
 
 private:
   /// Returns the score of the IK Solution
-  virtual double evaluateIKSolution(statespace::StateSpace::State* solution) const = 0;
+  virtual double evaluateIKSolution(
+      statespace::StateSpace::State* solution) const = 0;
 
   /// Statespace of the skeleton.
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
