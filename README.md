@@ -1,4 +1,4 @@
-# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.org/personalrobotics/aikido.svg?branch=master)](https://travis-ci.org/personalrobotics/aikido) [![Build status](https://ci.appveyor.com/api/projects/status/fvo371gf4kh833ey/branch/master?svg=true)](https://ci.appveyor.com/project/jslee02/aikido/branch/master) [![codecov](https://codecov.io/gh/personalrobotics/aikido/branch/master/graph/badge.svg)](https://codecov.io/gh/personalrobotics/aikido) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d2da97f57904c96a01a5993cbbc4f51)](https://www.codacy.com/app/personalrobotics/aikido?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=personalrobotics/aikido&amp;utm_campaign=Badge_Grade)
+# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.org/personalrobotics/aikido.svg?branch=master)](https://travis-ci.org/personalrobotics/aikido) [![codecov](https://codecov.io/gh/personalrobotics/aikido/branch/master/graph/badge.svg)](https://codecov.io/gh/personalrobotics/aikido) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d2da97f57904c96a01a5993cbbc4f51)](https://www.codacy.com/app/personalrobotics/aikido?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=personalrobotics/aikido&amp;utm_campaign=Badge_Grade)
 
 > :warning: **Warning:** AIKIDO is under heavy development. These instructions are
 > primarily for reference by the developers.
@@ -93,6 +93,24 @@ If you are using the older `catkin_make` command, then you must build your works
 with `catkin_make_isolated`. This may dramatically increase your build time, so we
 *strongly recommend* that you use `catkin build`, which is provided by the
 [`catkin_tools` package][Catkin Tools], if possible.
+
+### On macOS using CMake
+
+Please install [Homebrew] as described above, then you can easily install the dependencies as follows:
+```shell
+$ cd <aikido_directory>
+$ brew bundle
+```
+
+Once the dependencies are installed, you can build and install AIKIDO using [CMake]:
+```shell
+$ cd <aikido_directory>
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make  # you may want to build AIKIDO using multi-core by executing `make -j4`
+$ sudo make install
+```
 
 ## Code Style
 

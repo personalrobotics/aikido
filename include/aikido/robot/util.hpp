@@ -18,8 +18,8 @@
 namespace aikido {
 namespace robot {
 
-// TODO: These are planning methods used in Robot classes. These will be
-// removed once we have a Planner API.
+// TODO: These are mostly planning methods used in Robot classes.
+// The planning methods will be removed once we have a Planner API.
 namespace util {
 
 struct VectorFieldPlannerParameters
@@ -76,9 +76,10 @@ struct CRRTPlannerParameters
     , minStepSize(minStepSize)
     , minTreeConnectionDistance(minTreeConnectionDistance)
     , projectionMaxIteration(projectionMaxIteration)
-    , projectionTolerance(projectionTolerance){
-          // Do nothing
-      };
+    , projectionTolerance(projectionTolerance)
+  {
+    // Do nothing
+  }
 
   common::RNG* rng;
   std::size_t maxNumTrials;
@@ -98,7 +99,7 @@ struct CRRTPlannerParameters
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
-trajectory::InterpolatedPtr planToConfiguration(
+trajectory::TrajectoryPtr planToConfiguration(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const statespace::StateSpace::State* goalState,
@@ -114,7 +115,7 @@ trajectory::InterpolatedPtr planToConfiguration(
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
-trajectory::InterpolatedPtr planToConfigurations(
+trajectory::TrajectoryPtr planToConfigurations(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const std::vector<statespace::StateSpace::State*>& goalStates,
@@ -133,7 +134,7 @@ trajectory::InterpolatedPtr planToConfigurations(
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \param[in] maxNumTrials Number of retries before failure.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-trajectory::InterpolatedPtr planToTSR(
+trajectory::TrajectoryPtr planToTSR(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
@@ -169,7 +170,7 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
 /// Plan to a desired end-effector offset with fixed orientation.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
-/// \param[in] body Bodynode for the end effector
+/// \param[in] body Bodynode for the end-effector
 /// \param[in] direction Direction unit vector in the world frame
 /// \param[in] collisionTestable Collision constraint to check. Self-collision
 /// is checked by default.
@@ -197,7 +198,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
 /// Plan to a desired end-effector offset with fixed orientation using CRRT.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
-/// \param[in] bodyNode Bodynode for the end effector
+/// \param[in] bodyNode Bodynode for the end-effector
 /// \param[in] direction Direction unit vector in the world frame
 /// \param[in] collisionTestable Collision constraint to check. Self-collision
 /// is checked by default.
@@ -225,7 +226,7 @@ trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node);
 
-/// Gets Goal and Constraint TSR for End Effector.
+/// Gets Goal and Constraint TSR for end-effector.
 /// \param[in] bodyNode End-effector body node
 /// \param[in] direction End-effector direction
 /// \param[in] distance Offset to move
@@ -249,6 +250,23 @@ bool getGoalAndConstraintTSRForEndEffectorOffset(
 /// \return Pose at positionFrom, looking at positionTo.
 Eigen::Isometry3d getLookAtIsometry(
     const Eigen::Vector3d& positionFrom, const Eigen::Vector3d& positionTo);
+
+/// Get a specific BodyNode of a MetaSkeleton or throw an execption
+/// if it doesn't exist
+/// \param[in] skeleton MetaSkeleton that should contain the BodyNode
+/// \param[in] bodyNodeName Name of the BodyNode we are looking for
+/// \return The BodyNode
+const dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    const dart::dynamics::MetaSkeleton& skeleton,
+    const std::string& bodyNodeName);
+
+/// Get a specific BodyNode of a MetaSkeleton or throw an execption
+/// if it doesn't exist
+/// \param[in] skeleton MetaSkeleton that should contain the BodyNode
+/// \param[in] bodyNodeName Name of the BodyNode we are looking for
+/// \return The BodyNode
+dart::dynamics::BodyNode* getBodyNodeOrThrow(
+    dart::dynamics::MetaSkeleton& skeleton, const std::string& bodyNodeName);
 
 } // namespace util
 } // namespace robot

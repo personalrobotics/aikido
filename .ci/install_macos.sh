@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
-brew install boost
-brew install dartsim/dart/dartsim6
-brew install ompl --with-eigen
-brew install tinyxml2
-brew install yaml-cpp
+brew update > /dev/null
+brew bundle || true

@@ -13,20 +13,5 @@ aikido_add_test(test_QueuedTrajectoryExecutor
 target_link_libraries(test_QueuedTrajectoryExecutor
   "${PROJECT_NAME}_control")
 
-aikido_add_test(test_BarrettFingerKinematicSimulationPositionCommandExecutor
-  test_BarrettFingerKinematicSimulationPositionCommandExecutor.cpp)
-target_link_libraries(test_BarrettFingerKinematicSimulationPositionCommandExecutor
-  "${PROJECT_NAME}_control")
-
-aikido_add_test(test_BarrettFingerKinematicSimulationSpreadCommandExecutor
-  test_BarrettFingerKinematicSimulationSpreadCommandExecutor.cpp)
-target_link_libraries(test_BarrettFingerKinematicSimulationSpreadCommandExecutor
-  "${PROJECT_NAME}_control")
-
-aikido_add_test(test_BarrettHandKinematicSimulationPositionCommandExecutor
-  test_BarrettHandKinematicSimulationPositionCommandExecutor.cpp)
-target_link_libraries(test_BarrettHandKinematicSimulationPositionCommandExecutor
-  "${PROJECT_NAME}_control")
-
 add_subdirectory("ros")
 

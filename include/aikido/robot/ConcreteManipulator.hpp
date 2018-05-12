@@ -16,6 +16,11 @@ AIKIDO_DECLARE_POINTERS(ConcreteManipulator)
 class ConcreteManipulator : public Manipulator
 {
 public:
+  // Expose base class functions
+  using Robot::getMetaSkeleton;
+  using Robot::getStateSpace;
+  using Manipulator::getHand;
+
   /// Constructor.
   /// \param[in] robot Robot corresponding to this manipulator.
   /// \param[in] hand Hand of this manipulator.
@@ -82,7 +87,7 @@ public:
   /// Plans to a desired end-effector offset with fixed orientation.
   /// \param[in] space The StateSpace for the metaskeleton.
   /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] body Bodynode for the end effector.
+  /// \param[in] body Bodynode for the end-effector.
   /// \param[in] collisionFree CollisionFree constraint to check.
   /// Self-collision is checked by default.
   /// \param[in] direction Direction unit vector in the world frame.
@@ -107,7 +112,7 @@ public:
   /// end-effector.
   /// \param[in] space The StateSpace for the metaskeleton.
   /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] body Bodynode for the end effector.
+  /// \param[in] body Bodynode for the end-effector.
   /// \param[in] collisionFree CollisionFree constraint to check.
   /// Self-collision is checked by default.
   /// \param[in] distance Distance distance to move, in meters.
@@ -150,9 +155,9 @@ private:
   /// CRRTPlanner-related parameters
   util::CRRTPlannerParameters mCRRTParameters;
 
-  /// Returns the direction of an end effector (along z axis) in the world frame
-  /// \param[in] body Bodynode for the end effector
-  /// \return The direction of the end effector (z axis of the frame)
+  /// Returns the direction of an end-effector (along z axis) in the world frame
+  /// \param[in] body Bodynode for the end-effector
+  /// \return The direction of the end-effector (z axis of the frame)
   Eigen::Vector3d getEndEffectorDirection(
       const dart::dynamics::BodyNodePtr& body) const;
 };

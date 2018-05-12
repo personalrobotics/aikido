@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <future>
+#include <set>
 #include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -26,7 +27,7 @@ public:
   /// is already running, raise an exception unless the executor supports
   /// queuing.
   ///
-  /// \param _traj Trajectory to be executed.
+  /// \param traj Trajectory to be executed.
   /// \return future<void> for trajectory execution. If trajectory terminates
   ///        before completion, future will be set to a runtime_error.
   virtual std::future<void> execute(const trajectory::ConstTrajectoryPtr& traj)

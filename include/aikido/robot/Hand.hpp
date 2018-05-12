@@ -37,11 +37,19 @@ public:
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Returns the metaskeleton corresponding to this hand.
-  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const = 0;
+  virtual dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const = 0;
 
-  /// Get the end-effector body node.
+  /// Returns the metaskeleton corresponding to this hand.
+  virtual dart::dynamics::MetaSkeletonPtr getMetaSkeleton() = 0;
+
+  /// Get the end-effector body node for which IK can be created.
   /// \return DART body node of end-effector
-  virtual dart::dynamics::BodyNode* getBodyNode() const = 0;
+  virtual dart::dynamics::BodyNode* getEndEffectorBodyNode() const = 0;
+
+  /// Get the body node which is the root of the hand, containing
+  /// all fingers.
+  /// \return DART body node at the root of the hand
+  virtual dart::dynamics::BodyNode* getHandBaseBodyNode() const = 0;
 };
 
 } // namespace robot

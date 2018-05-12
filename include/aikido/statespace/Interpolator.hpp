@@ -17,7 +17,7 @@ public:
   virtual ~Interpolator() = default;
 
   /// Gets the \c StateSpace on which this \c Interpolator operates.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Upper bound on the number of non-zero derivatives.
   virtual std::size_t getNumDerivatives() const = 0;

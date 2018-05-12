@@ -4,9 +4,20 @@
 
 * Common
 
-  * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
+  * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
+
+* Constraint
+
+  * Added SequentialSampleable: [#393](https://github.com/personalrobotics/aikido/pull/393)
+
+* Control
+
+  * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
+  * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
+  * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
+  * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
 
 * State Space
 
@@ -14,26 +25,31 @@
   * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
   * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
 
-* Control
+* Perception
 
-  * Fixed CollisionGroup bugs in Hand executors: [#299](https://github.com/personalrobotics/aikido/pull/299)
-  * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
-  * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
+  * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
 
 * Planner
 
-  * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
+  * Refactored planning API: [#314](https://github.com/personalrobotics/aikido/pull/314), [#414](https://github.com/personalrobotics/aikido/pull/414)
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
+  * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
+  * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)
 
 * Robot
 
-  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325] https://github.com/personalrobotics/aikido/pull/325)
+  * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
+
+* IO
+
+  * Added loadSkeletonFromURDF convenience function: [#388](https://github.com/personalrobotics/aikido/pull/388), [#401](https://github.com/personalrobotics/aikido/pull/401)
 
 * Build & Testing & ETC
 
   * Fixed Eigen memory alignment issues on 32bit Ubuntu: [#368](https://github.com/personalrobotics/aikido/pull/368)
+  * Defined optional dependencies: [#376](https://github.com/personalrobotics/aikido/pull/376)
 
 ### 0.2.0 (2018-01-09)
 

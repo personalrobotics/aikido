@@ -1,10 +1,8 @@
-#include <aikido/common/VanDerCorput.hpp>
-#include <aikido/constraint/Testable.hpp>
-#include <aikido/planner/PlanningResult.hpp>
-#include <aikido/planner/SnapPlanner.hpp>
-#include <aikido/statespace/Interpolator.hpp>
-#include <aikido/statespace/StateSpace.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
+#include "aikido/planner/SnapPlanner.hpp"
+
+#include "aikido/planner/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/PlanningResult.hpp"
+#include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -17,29 +15,18 @@ trajectory::InterpolatedPtr planSnap(
     const std::shared_ptr<aikido::constraint::Testable>& constraint,
     aikido::planner::PlanningResult& planningResult)
 {
-  if (stateSpace != constraint->getStateSpace())
-  {
-    throw std::invalid_argument(
-        "StateSpace of constraint not equal to StateSpace of planning space");
-  }
-  aikido::common::VanDerCorput vdc{1, true, true, 0.02}; // TODO junk resolution
-  auto returnTraj
-      = std::make_shared<trajectory::Interpolated>(stateSpace, interpolator);
-  auto testState = stateSpace->createState();
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, startState, goalState, constraint);
 
-  for (const auto alpha : vdc)
-  {
-    interpolator->interpolate(startState, goalState, alpha, testState);
-    if (!constraint->isSatisfied(testState))
-    {
-      planningResult.message = "Collision detected";
-      return nullptr;
-    }
-  }
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      stateSpace, interpolator);
 
-  returnTraj->addWaypoint(0, startState);
-  returnTraj->addWaypoint(1, goalState);
-  return returnTraj;
+  SnapConfigurationToConfigurationPlanner::Result result;
+  auto trj = planner->plan(problem, &result);
+  planningResult.setMessage(result.getMessage());
+
+  assert(std::dynamic_pointer_cast<trajectory::Interpolated>(trj));
+  return std::static_pointer_cast<trajectory::Interpolated>(trj);
 }
 
 } // namespace planner
