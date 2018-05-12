@@ -213,7 +213,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   int num_trials = 5;
   const double level_set = std::numeric_limits<double>::infinity();
 
-  ::ompl::geometric::MyInformedRRTstarPtr planner
+  ::ompl::geometric::MyInformedRRTstarPtr planner1
       = ompl_make_shared<::ompl::geometric::MyInformedRRTstar>(si);
 
   // plan from start to via
@@ -239,10 +239,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   pdef1->setOptimizationObjective(opt1);
 
   // Set the problem instance for our planner to solve
-  planner->setProblemDefinition(pdef1);
-  planner->setup();
+  planner1->setProblemDefinition(pdef1);
+  planner1->setup();
 
-  ::ompl::base::PlannerStatus solved = planner->solve(_maxPlanTime);
+  ::ompl::base::PlannerStatus solved = planner1->solve(_maxPlanTime);
 
   ::ompl::base::PathPtr path1 = nullptr;
   if (pdef1->hasSolution())
@@ -255,6 +255,8 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     return nullptr;
   }
 
+  ::ompl::geometric::MyInformedRRTstarPtr planner2
+      = ompl_make_shared<::ompl::geometric::MyInformedRRTstar>(si);
   // plan from via to goal
   // 1. create problem
   ::ompl::base::ProblemDefinitionPtr basePdef2
@@ -278,10 +280,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   pdef2->setOptimizationObjective(opt2);
 
   // Set the problem instance for our planner to solve
-  planner->setProblemDefinition(pdef2);
-  planner->setup();
+  planner2->setProblemDefinition(pdef2);
+  planner2->setup();
 
-  solved = planner->solve(_maxPlanTime);
+  solved = planner2->solve(_maxPlanTime);
 
   ::ompl::base::PathPtr path2 = nullptr;
   if (pdef2->hasSolution())
@@ -301,8 +303,9 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   // 2. push states/velocities of paths into the vector
   // 3. create SplineTrajectory from the vector
 
-  double interpolateStepSize = 0.05;
+  double interpolateStepSize = 0.01;
   std::vector<Eigen::VectorXd> points;
+  std::vector<double> times;
   ::ompl::geometric::PathGeometric* geopath1
       = path1->as<::ompl::geometric::PathGeometric>();
   std::size_t node_num = geopath1->getStateCount();
@@ -310,9 +313,11 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   {
     ::ompl::base::State* state1 = geopath1->getState(idx);
     ::ompl::base::State* state2 = geopath1->getState(idx + 1);
+    std::vector<double> deltaTimes;
     std::vector<Eigen::VectorXd> deltaPoints
-        = dimt->discretize(state1, state2, interpolateStepSize);
+        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
     points.insert(points.end(), deltaPoints.begin(), deltaPoints.end());
+    times.insert(times.end(), deltaTimes.begin(), deltaTimes.end());
   }
   ::ompl::geometric::PathGeometric* geopath2
       = path2->as<::ompl::geometric::PathGeometric>();
@@ -321,9 +326,13 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   {
     ::ompl::base::State* state1 = geopath2->getState(idx);
     ::ompl::base::State* state2 = geopath2->getState(idx + 1);
+    std::vector<double> deltaTimes;
     std::vector<Eigen::VectorXd> deltaPoints
-        = dimt->discretize(state1, state2, interpolateStepSize);
-    points.insert(points.end(), deltaPoints.begin(), deltaPoints.end());
+        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
+    points.insert(points.end(), deltaPoints.begin()+1, deltaPoints.end());
+    std::transform( deltaTimes.begin(), deltaTimes.end(),
+                    deltaTimes.begin(), std::bind2nd( std::plus<double>(), _viaTime ) );
+    times.insert(times.end(), deltaTimes.begin(), deltaTimes.end());
   }
 
   std::size_t dimension = _metaSkeletonStateSpace->getDimension();
@@ -342,8 +351,11 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     Eigen::VectorXd positionNext = points[i + 1].head(dimension);
     Eigen::VectorXd velocityNext = points[i + 1].tail(dimension);
 
+    double timeCurr = times[i];
+    double timeNext = times[i+1];
+
     CubicSplineProblem problem(
-        Eigen::Vector2d(i * interpolateStepSize, (i + 1) * interpolateStepSize),
+        Eigen::Vector2d(timeCurr, timeNext),
         4,
         dimension);
     problem.addConstantConstraint(0, 0, positionCurr);
@@ -358,7 +370,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     assert(spline.getCoefficients().size() == 1);
     const auto& coefficients = spline.getCoefficients().front();
     _outputTrajectory->addSegment(
-        coefficients, interpolateStepSize, segmentStartState);
+        coefficients, timeNext-timeCurr, segmentStartState);
   }
 
   return _outputTrajectory;

@@ -82,7 +82,7 @@ public:
 
     mPassingConstraint = std::make_shared<PassingConstraint>(mStateSpace);
     mFailingConstraint = std::make_shared<FailingConstraint>(mStateSpace);
-    mMaxPlanTime = 30.;
+    mMaxPlanTime = 10.;
     mMaxDistanceBtwValidityChecks = 0.01;
   }
 
