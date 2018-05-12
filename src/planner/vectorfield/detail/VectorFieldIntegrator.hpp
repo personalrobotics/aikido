@@ -3,7 +3,6 @@
 
 #include <dart/common/Timer.hpp>
 #include <aikido/constraint/Testable.hpp>
-#include <aikido/planner/PlanningResult.hpp>
 #include <aikido/planner/vectorfield/VectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>

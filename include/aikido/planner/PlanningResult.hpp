@@ -6,9 +6,22 @@
 namespace aikido {
 namespace planner {
 
-struct PlanningResult
+// TODO(JS): This should be removed once all the legacy planning functions are
+// converted to the new planning API.
+class PlanningResult
 {
-  // TODO fill out
+public:
+  /// Sets message.
+  void setMessage(const std::string& message);
+
+  /// Returns message.
+  const std::string& getMessage() const;
+
+public: // TODO: Change this to protected
+  /// Message
+  std::string mMessage;
+
+  // TODO: Remove
   std::string message;
 };
 
