@@ -24,7 +24,6 @@ public:
       std::size_t numIKSolutions);
 
   /// Destructor
-  // TODO (avk): What is default mean?
   virtual ~IKRankingStrategy() = default;
 
   /// Returns the statespace.
