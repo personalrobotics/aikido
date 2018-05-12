@@ -41,11 +41,12 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_WithoutBounds_CreatesSO2)
 
   skeleton->setPosition(0, 5.);
   space.getState(skeleton.get(), state);
-  EXPECT_DOUBLE_EQ(5., substate.toAngle());
+  // TODO (avk): Probably not correct to compare angles directly. [Lie Group?]
+  EXPECT_DOUBLE_EQ(5 - 2 * M_PI, substate.toAngle());
 
   substate.fromAngle(6.);
   space.setState(skeleton.get(), state);
-  EXPECT_DOUBLE_EQ(6., skeleton->getPosition(0));
+  EXPECT_DOUBLE_EQ(substate.toAngle(), skeleton->getPosition(0));
 }
 
 TEST(MetaSkeletonStateSpace, RevoluteJoint_WithBounds_CreatesRealVector)
@@ -226,6 +227,6 @@ TEST(MetaSkeletonStateSpace, MultipleJoints_CreatesCartesianProduct)
   substate1.fromAngle(5.);
   substate2.setValue(value2);
   space.setState(skeleton.get(), state);
-  EXPECT_EQ(5., substate1.toAngle());
+  EXPECT_EQ(5 - 2 * M_PI, substate1.toAngle());
   EXPECT_TRUE(value2.isApprox(substate2.getValue()));
 }
