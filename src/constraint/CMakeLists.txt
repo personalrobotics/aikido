@@ -25,6 +25,7 @@ set(sources
   dart/FrameDifferentiable.cpp
   dart/FramePairDifferentiable.cpp
   dart/FrameTestable.cpp
+  dart/IKRankingStrategy.cpp
   dart/InverseKinematicsSampleable.cpp
   dart/JointStateSpaceHelpers.cpp
   dart/TSR.cpp
