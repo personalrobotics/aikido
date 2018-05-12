@@ -22,6 +22,7 @@ set(sources
   uniform/SE2BoxConstraint.cpp
   dart/CollisionFree.cpp
   dart/CollisionFreeOutcome.cpp
+  dart/FIFOStrategy.cpp
   dart/FrameDifferentiable.cpp
   dart/FramePairDifferentiable.cpp
   dart/FrameTestable.cpp
