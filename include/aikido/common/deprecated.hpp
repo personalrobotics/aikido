@@ -3,9 +3,6 @@
 
 #include <dart/config.hpp>
 
-namespace aikido {
-namespace common {
-
 // NOTE: Deprecated macros are used for backward compatibility between different
 // minor versions of AIKIDO. Deprecated API can be removed in every major
 // version up.

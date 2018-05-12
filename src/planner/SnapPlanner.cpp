@@ -21,7 +21,12 @@ trajectory::InterpolatedPtr planSnap(
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       stateSpace, interpolator);
 
-  return planner->plan(problem, &planningResult);
+  SnapConfigurationToConfigurationPlanner::Result result;
+  auto trj = planner->plan(problem, &result);
+  planningResult.setMessage(result.getMessage());
+
+  assert(std::dynamic_pointer_cast<trajectory::Interpolated>(trj));
+  return std::static_pointer_cast<trajectory::Interpolated>(trj);
 }
 
 } // namespace planner
