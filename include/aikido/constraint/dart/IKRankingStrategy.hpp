@@ -17,7 +17,6 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
-  /// \param[in] maxSolutionsToRank Maximum number of IK Solutions to rank.
   IKRankingStrategy(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaskeleton);
@@ -32,11 +31,17 @@ public:
   /// Returns the skeleton.
   ::dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const;
 
-  /// Adds IK solution to the ordered set.
-  virtual void addIKSolution(statespace::StateSpace::State* solution) = 0;
+  /// Returns the vector of ranked IK solutions.
+  // TODO (avk): Make a member variable and pass by reference?
+  std::vector<statespace::StateSpace::State*> getRankedIKSolutions();
 
-  /// Returns (pops) the top ranked solution.
-  virtual statespace::StateSpace::State* getIKSolution() = 0;
+  // TODO (avk): This can probably be private.
+  /// Evaluates the IK solution.
+  virtual void evaluateIKSolution(statespace::StateSpace::State* solution) = 0;
+
+  /// Add IK solution to Ranker
+  /// Evaluates, creates a pair and stores it in the vector.
+  void addIKSolution(statespace::StateSpace::State* solution);
 
 private:
   /// Statespace of the skeleton.
@@ -44,6 +49,9 @@ private:
 
   /// Metaskeleton of the robot.
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+
+  /// Vector to hold IK solutions and corresponding score.
+  std::vector<std::pair<statespace::StateSpace::State*, double>> mIKSolutions;
 };
 
 } // namespace dart
