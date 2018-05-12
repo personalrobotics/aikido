@@ -12,7 +12,7 @@ RUN apt-get install -y \
     software-properties-common \
     sudo
 
-# Install GCC 6 (DART 6.5 should be used for GCC 7)
+# Install GCC 5 (DART 6.5 should be used for GCC 6, 7)
 RUN apt-get update \
     && apt-get install -y \
        software-properties-common \
@@ -25,9 +25,9 @@ RUN apt-get update \
        curl \
        vim \
        vim-gnome \
-    && apt-get install -y gcc-6 g++-6 gcc-6-base \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 100 \
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
+    && apt-get install -y gcc-5 g++-5 gcc-5-base \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 100 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 100
 
 
 # Get g++ for compiling, wget to download Boost, git to clone source code repo,
