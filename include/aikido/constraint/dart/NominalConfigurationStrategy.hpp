@@ -21,7 +21,7 @@ public:
       std::size_t numIKSolutions);
 
 private:
-  virtual double evaluateIKSolution(
+  double evaluateIKSolution(
       statespace::StateSpace::State* solution) const override;
 };
 
