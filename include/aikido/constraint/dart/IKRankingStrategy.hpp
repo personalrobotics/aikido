@@ -11,6 +11,12 @@ namespace dart {
 class IKRankingStrategy
 {
 public:
+  // TODO (avk): Move this to protected?
+  // Read this:
+  // 1. https://stackoverflow.com/questions/2290733/
+  // 1. initialize-parents-protected-members-with-initialization-list-c
+  // 2. https://stackoverflow.com/questions/18479295/
+  // 2. member-initializer-does-not-name-a-non-static-data-member-or-base-class
   /// Constructor
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
