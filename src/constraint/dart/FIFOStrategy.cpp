@@ -12,17 +12,9 @@ FIFOStrategy::FIFOStrategy(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     std::size_t numIKSolutions)
-  : mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
-  , mMetaSkeleton(std::move(metaSkeleton))
-  , mIndex(0.0)
+  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, numIKSolutions)
 {
-  if (!mMetaSkeletonStateSpace)
-    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
-
-  if (!mMetaSkeleton)
-    throw std::invalid_argument("MetaSkeleton is nullptr.");
-
-  mIKSolutions.resize(numIKSolutions);
+  // Do nothing
 }
 
 //==============================================================================

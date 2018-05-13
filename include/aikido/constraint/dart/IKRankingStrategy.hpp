@@ -35,7 +35,7 @@ public:
   /// Evaluates, creates a pair and stores it in the vector.
   void addIKSolution(statespace::StateSpace::State* solution);
 
-private:
+protected:
   /// Returns the score of the IK Solution
   virtual double evaluateIKSolution(
       statespace::StateSpace::State* solution) const = 0;

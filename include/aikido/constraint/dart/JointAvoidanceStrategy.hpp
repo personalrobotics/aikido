@@ -20,7 +20,7 @@ public:
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       std::size_t numIKSolutions);
 
-private:
+protected:
   double evaluateIKSolution(
       statespace::StateSpace::State* solution) const override;
 };
