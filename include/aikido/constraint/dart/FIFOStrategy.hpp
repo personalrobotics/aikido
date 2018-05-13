@@ -1,5 +1,5 @@
 #ifndef AIKIDO_CONSTRAINT_DART_FIFOSTRATEGY_HPP_
-#define AIKIDO_CONSTRAINT_DART_FIFORANKING_HPP_
+#define AIKIDO_CONSTRAINT_DART_FIFOSTRATEGY_HPP_
 
 #include "aikido/constraint/dart/IKRankingStrategy.hpp"
 
