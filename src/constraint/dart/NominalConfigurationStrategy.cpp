@@ -12,7 +12,7 @@ NominalConfigurationStrategy::NominalConfigurationStrategy(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     std::size_t numIKSolutions)
-    : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, numIKSolutions)
+  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, numIKSolutions)
 {
   // Do nothing
 }
