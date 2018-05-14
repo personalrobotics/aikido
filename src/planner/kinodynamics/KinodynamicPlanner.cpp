@@ -145,6 +145,105 @@ const ::ompl::base::OptimizationObjectivePtr createDimtOptimizationObjective(
   return base_opt;
 }
 
+std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
+    const ::ompl::base::PathPtr& path1,
+    double path1Duration,
+    const ::ompl::base::PathPtr& path2,
+    double path2Duration,
+    const DIMTPtr& dimt,
+    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    double interpolateStepSize = 0.05)
+{
+  if (path1==nullptr || path2==nullptr)
+  {
+    return nullptr;
+  }
+
+  std::vector<Eigen::VectorXd> points;
+  std::vector<double> times;
+
+  std::vector<Eigen::VectorXd> path1points;
+  std::vector<double> path1times;
+  ::ompl::geometric::PathGeometric* geopath1
+      = path1->as<::ompl::geometric::PathGeometric>();
+  std::size_t node_num = geopath1->getStateCount();
+  for (size_t idx = 0; idx < node_num - 1; idx++)
+  {
+    ::ompl::base::State* state1 = geopath1->getState(idx);
+    ::ompl::base::State* state2 = geopath1->getState(idx + 1);
+    std::vector<double> deltaTimes;
+    std::vector<Eigen::VectorXd> deltaPoints
+        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
+    path1points.insert(path1points.end(), deltaPoints.begin(), deltaPoints.end());
+    path1times.insert(path1times.end(), deltaTimes.begin(), deltaTimes.end());
+  }
+
+  std::vector<Eigen::VectorXd> path2points;
+  std::vector<double> path2times;
+  ::ompl::geometric::PathGeometric* geopath2
+      = path2->as<::ompl::geometric::PathGeometric>();
+  node_num = geopath2->getStateCount();
+  for (size_t idx = 0; idx < node_num - 1; idx++)
+  {
+    ::ompl::base::State* state1 = geopath2->getState(idx);
+    ::ompl::base::State* state2 = geopath2->getState(idx + 1);
+    std::vector<double> deltaTimes;
+    std::vector<Eigen::VectorXd> deltaPoints
+        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
+    path2points.insert(path2points.end(), deltaPoints.begin(), deltaPoints.end());
+    path2times.insert(path2times.end(), deltaTimes.begin(), deltaTimes.end());
+  }
+
+  // merge two sets
+  std::transform( path2times.begin(), path2times.end(),
+                  path2times.begin(), std::bind2nd( std::plus<double>(), path1Duration ) );
+  points.insert(points.end(), path1points.begin(), path1points.end());
+  times.insert(times.end(), path1times.begin(), path1times.end());
+  points.insert(points.end(), path2points.begin()+1, path2points.end());
+  times.insert(times.end(), path2times.begin()+1, path2times.end());
+
+  std::size_t dimension = _metaSkeletonStateSpace->getDimension();
+  using CubicSplineProblem
+      = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
+
+  auto _outputTrajectory
+        = dart::common::make_unique<aikido::trajectory::Spline>(
+          _metaSkeletonStateSpace);
+  auto segmentStartState = _metaSkeletonStateSpace->createState();
+
+  Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
+  for (std::size_t i = 0; i < points.size() - 1; i++)
+  {
+    Eigen::VectorXd positionCurr = points[i].head(dimension);
+    Eigen::VectorXd velocityCurr = points[i].tail(dimension);
+    Eigen::VectorXd positionNext = points[i+1].head(dimension);
+    Eigen::VectorXd velocityNext = points[i+1].tail(dimension);
+
+    double timeCurr = times[i];
+    double timeNext = times[i+1];
+
+    CubicSplineProblem problem(
+        Eigen::Vector2d(0.0, timeNext-timeCurr),
+        4,
+        dimension);
+    problem.addConstantConstraint(0, 0, zeroPosition);
+    problem.addConstantConstraint(0, 1, velocityCurr);
+    problem.addConstantConstraint(1, 0, positionNext-positionCurr);
+    problem.addConstantConstraint(1, 1, velocityNext);
+    const auto spline = problem.fit();
+
+    _metaSkeletonStateSpace->expMap(positionCurr, segmentStartState);
+
+    // Add the ramp to the output trajectory.
+    assert(spline.getCoefficients().size() == 1);
+    const auto& coefficients = spline.getCoefficients().front();
+    _outputTrajectory->addSegment(
+        coefficients, timeNext-timeCurr, segmentStartState);
+  }
+
+  return _outputTrajectory;
+}
+
 std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     const statespace::StateSpace::State* _start,
     const statespace::StateSpace::State* _goal,
@@ -197,9 +296,9 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   auto goalState = allocState(si, goalVec, goalVel);
   auto viaState = allocState(si, viaVec, _viaVelocity);
 
-  std::cout << "VALIDATE START " << si->isValid(startState) << std::endl;
-  std::cout << "VALIDATE VIA " << si->isValid(viaState) << std::endl;
-  std::cout << "VALIDATE GOAL " << si->isValid(goalState) << std::endl;
+  //std::cout << "VALIDATE START " << si->isValid(startState) << std::endl;
+  //std::cout << "VALIDATE VIA " << si->isValid(viaState) << std::endl;
+  //std::cout << "VALIDATE GOAL " << si->isValid(goalState) << std::endl;
 
   double singleSampleLimit = 3.0;
   // double sigma = 1;
@@ -296,84 +395,19 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     return nullptr;
   }
 
-  _viaTime = path1->cost(opt1).value();
+  double path1Duration = path1->cost(opt1).value();
+  double path2Duration = path2->cost(opt2).value();
 
   // concatenate two path
   // 1. create a vector of states and velocities
   // 2. push states/velocities of paths into the vector
   // 3. create SplineTrajectory from the vector
-
-  double interpolateStepSize = 0.01;
-  std::vector<Eigen::VectorXd> points;
-  std::vector<double> times;
-  ::ompl::geometric::PathGeometric* geopath1
-      = path1->as<::ompl::geometric::PathGeometric>();
-  std::size_t node_num = geopath1->getStateCount();
-  for (size_t idx = 0; idx < node_num - 1; idx++)
+  auto traj = concatenateTwoPaths(path1, path1Duration, path2, path2Duration, dimt, _metaSkeletonStateSpace);
+  if(traj!=nullptr)
   {
-    ::ompl::base::State* state1 = geopath1->getState(idx);
-    ::ompl::base::State* state2 = geopath1->getState(idx + 1);
-    std::vector<double> deltaTimes;
-    std::vector<Eigen::VectorXd> deltaPoints
-        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-    points.insert(points.end(), deltaPoints.begin(), deltaPoints.end());
-    times.insert(times.end(), deltaTimes.begin(), deltaTimes.end());
+    _viaTime = path1Duration;
   }
-  ::ompl::geometric::PathGeometric* geopath2
-      = path2->as<::ompl::geometric::PathGeometric>();
-  node_num = geopath2->getStateCount();
-  for (size_t idx = 0; idx < node_num - 1; idx++)
-  {
-    ::ompl::base::State* state1 = geopath2->getState(idx);
-    ::ompl::base::State* state2 = geopath2->getState(idx + 1);
-    std::vector<double> deltaTimes;
-    std::vector<Eigen::VectorXd> deltaPoints
-        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-    points.insert(points.end(), deltaPoints.begin()+1, deltaPoints.end());
-    std::transform( deltaTimes.begin(), deltaTimes.end(),
-                    deltaTimes.begin(), std::bind2nd( std::plus<double>(), _viaTime ) );
-    times.insert(times.end(), deltaTimes.begin(), deltaTimes.end());
-  }
-
-  std::size_t dimension = _metaSkeletonStateSpace->getDimension();
-  using CubicSplineProblem
-      = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
-
-  auto _outputTrajectory
-      = dart::common::make_unique<aikido::trajectory::Spline>(
-          _metaSkeletonStateSpace);
-  auto segmentStartState = _metaSkeletonStateSpace->createState();
-
-  for (std::size_t i = 0; i < points.size() - 1; i++)
-  {
-    Eigen::VectorXd positionCurr = points[i].head(dimension);
-    Eigen::VectorXd velocityCurr = points[i].tail(dimension);
-    Eigen::VectorXd positionNext = points[i + 1].head(dimension);
-    Eigen::VectorXd velocityNext = points[i + 1].tail(dimension);
-
-    double timeCurr = times[i];
-    double timeNext = times[i+1];
-
-    CubicSplineProblem problem(
-        Eigen::Vector2d(timeCurr, timeNext),
-        4,
-        dimension);
-    problem.addConstantConstraint(0, 0, positionCurr);
-    problem.addConstantConstraint(0, 1, velocityCurr);
-    problem.addConstantConstraint(1, 0, positionNext);
-    problem.addConstantConstraint(1, 1, velocityNext);
-    const auto spline = problem.fit();
-
-    _metaSkeletonStateSpace->expMap(positionCurr, segmentStartState);
-
-    // Add the ramp to the output trajectory.
-    assert(spline.getCoefficients().size() == 1);
-    const auto& coefficients = spline.getCoefficients().front();
-    _outputTrajectory->addSegment(
-        coefficients, timeNext-timeCurr, segmentStartState);
-  }
-
-  return _outputTrajectory;
+  return traj;
 }
 
 } // namespace kinodynamics

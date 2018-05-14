@@ -288,6 +288,20 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
       mMaxPlanTime,
       mMaxDistanceBtwValidityChecks);
 
+  // check start position
+  auto startpoint = mStateSpace->createState();
+  traj->evaluate(0., startpoint);
+  Eigen::VectorXd startpointVec(mNumDof);
+  mStateSpace->convertStateToPositions(startpoint, startpointVec);
+  EXPECT_LE( (startpointVec-startConfig).norm(), 1e-3 );
+
+  // check goal position
+  auto goalpoint = mStateSpace->createState();
+  traj->evaluate(traj->getEndTime(), goalpoint);
+  Eigen::VectorXd goalpointVec(mNumDof);
+  mStateSpace->convertStateToPositions(goalpoint, goalpointVec);
+  EXPECT_LE( (goalpointVec-goalConfig).norm(), 1e-3 );
+
   std::cout << "VIA TIME " << viaTime << std::endl;
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 
