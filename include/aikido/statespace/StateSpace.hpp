@@ -78,7 +78,7 @@ public:
   /// undefined behavior to access \c _state after calling this function.
   ///
   /// \param _state state to free
-  virtual void freeStateInBuffer(const State* _state) const = 0;
+  virtual void freeStateInBuffer(State* _state) const = 0;
 
   /// Lie group operation for this StateSpace. It is not acceptable for \c _out
   /// to share memory with \c _state1 or \c _state2.
