@@ -83,11 +83,11 @@ protected:
   std::shared_ptr<Interpolated> mTrajectory;
 
   double mOriginalTrajectoryLength;
-  double mFeasibilityCheckResolution = 1e-4;
-  double mFeasibilityApproxTolerance = 1e-3;
+  double mTimelimit = 60.0;
   double mBlendRadius = 0.5;
   double mBlendIterations = 100;
-  double mTimelimit = 60.0;
+  double mFeasibilityCheckResolution = 1e-1;
+  double mFeasibilityApproxTolerance = 1e-3;
   const double mTolerance = 1e-5;
 };
 
