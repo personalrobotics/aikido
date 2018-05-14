@@ -7,7 +7,7 @@ namespace aikido {
 namespace constraint {
 namespace dart {
 
-class FIFOStrategy : IKRankingStrategy
+class FIFOStrategy : public IKRankingStrategy
 {
 public:
   /// Constructor
@@ -18,7 +18,7 @@ public:
   FIFOStrategy(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      std::size_t numIKSolutions);
+      std::size_t numIKSolutions = 1);
 
 protected:
   double evaluateIKSolution(

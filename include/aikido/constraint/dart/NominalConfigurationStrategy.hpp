@@ -7,7 +7,7 @@ namespace aikido {
 namespace constraint {
 namespace dart {
 
-class NominalConfigurationStrategy : IKRankingStrategy
+class NominalConfigurationStrategy : public IKRankingStrategy
 {
 public:
   /// Constructor
@@ -18,7 +18,7 @@ public:
   NominalConfigurationStrategy(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      std::size_t numIKSolutions);
+      std::size_t numIKSolutions = 1);
 
 protected:
   double evaluateIKSolution(

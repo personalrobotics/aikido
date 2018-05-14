@@ -22,6 +22,9 @@ IKRankingStrategy::IKRankingStrategy(
   if (!mMetaSkeleton)
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
+  if (numIKSolutions <= 0)
+    throw std::invalid_argument("Number of solutions to rank is non-positive");
+
   mIKSolutions.resize(numIKSolutions);
 }
 
