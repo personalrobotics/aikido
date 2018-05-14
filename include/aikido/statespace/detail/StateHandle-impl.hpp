@@ -22,18 +22,7 @@ StateHandle<StateSpace, QualifiedState>::StateHandle(
 
 //==============================================================================
 template <class StateSpace, class QualifiedState>
-template <typename Q>
-StateHandle<StateSpace, QualifiedState>::operator
-typename std::enable_if<!std::is_const<Q>::value, Q*>::type()
-{
-  return mState;
-}
-
-//==============================================================================
-template <class StateSpace, class QualifiedState>
-template <typename Q>
-StateHandle<StateSpace, QualifiedState>::operator
-typename std::conditional<std::is_const<Q>::value, Q*, const Q*>::type() const
+StateHandle<StateSpace, QualifiedState>::operator QualifiedState*() const
 {
   return mState;
 }

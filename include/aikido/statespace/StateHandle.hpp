@@ -20,9 +20,10 @@ public:
   using QualifiedState = _QualifiedState;
 
   using State = typename StateSpace::State;
-  template <typename Q = QualifiedState>
   using ConstState =
-      typename std::conditional<std::is_const<Q>::value, Q, const Q>::type;
+      typename std::conditional<std::is_const<QualifiedState>::value,
+                                QualifiedState,
+                                const QualifiedState>::type;
 
   /// Constructs a nullptr handle.
   StateHandle();
@@ -40,12 +41,7 @@ public:
   StateHandle& operator=(const StateHandle&) = default;
 
   /// Implicitly convert to a \c State pointer.
-  template <typename Q = QualifiedState>
-  operator typename std::enable_if<!std::is_const<Q>::value, Q*>::type();
-
-  /// Implicitly convert to a \c State pointer.
-  template <typename Q = QualifiedState>
-  operator typename std::conditional<std::is_const<Q>::value, Q*, const Q*>::type() const;
+  operator QualifiedState*() const;
 
   /// Resets StateHandle to nullptr.
   void reset();
