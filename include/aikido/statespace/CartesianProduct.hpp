@@ -158,8 +158,6 @@ protected:
   State() = default;
 
   ~State() = default;
-
-  CartesianProduct::ScopedState clone(const CartesianProduct& stateSpace) const;
 };
 
 } // namespace statespace

@@ -21,9 +21,10 @@ public:
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
-  ConfigurationToConfiguration(statespace::ConstStateSpacePtr stateSpace,
-      statespace::StateSpace::ScopedStateConst startState,
-      statespace::StateSpace::ScopedStateConst goalState,
+  ConfigurationToConfiguration(
+      statespace::ConstStateSpacePtr stateSpace,
+      const statespace::StateSpace::State* startState,
+      const statespace::StateSpace::State* goalState,
       constraint::ConstTestablePtr constraint);
 
   // Documentation inherited.
@@ -40,10 +41,10 @@ public:
 
 protected:
   /// Start state.
-  const statespace::StateSpace::ScopedStateConst mStartState;
+  const statespace::StateSpace::State* mStartState;
 
   /// Goal state.
-  const statespace::StateSpace::ScopedStateConst mGoalState;
+  const statespace::StateSpace::State* mGoalState;
 };
 
 } // namespace planner

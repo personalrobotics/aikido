@@ -204,11 +204,5 @@ void CartesianProduct::print(
   }
 }
 
-//==============================================================================
-CartesianProduct::ScopedState CartesianProduct::State::clone(const CartesianProduct& stateSpace) const
-{
-  return stateSpace.createState();
-}
-
 } // namespace statespace
 } // namespace aikido
