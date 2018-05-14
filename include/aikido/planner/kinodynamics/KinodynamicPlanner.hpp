@@ -33,10 +33,10 @@ namespace kinodynamics {
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
 /// between validity checking two successive points on a tree extension
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    DIMTPtr _dimt,
-    dart::dynamics::MetaSkeletonPtr _skeleton,
-    constraint::TestablePtr _validityConstraint,
-    double _maxDistanceBtwValidityChecks);
+    DIMTPtr dimt,
+    dart::dynamics::MetaSkeletonPtr skeleton,
+    constraint::TestablePtr validityConstraint,
+    double maxDistanceBtwValidityChecks);
 
 /// Use the template OMPL Planner type to plan a trajectory that moves from the
 /// start to the goal point. Returns nullptr on planning failure.
@@ -61,16 +61,16 @@ namespace kinodynamics {
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
 /// between validity checking two successive points on a tree extension
 std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
-    const statespace::StateSpace::State* _start,
-    const statespace::StateSpace::State* _goal,
-    const statespace::StateSpace::State* _via,
-    const Eigen::VectorXd& _viaVelocity,
-    dart::dynamics::MetaSkeletonPtr _metaSkeleton,
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    constraint::TestablePtr _validityConstraint,
-    double& _viaTime,
-    double _maxPlanTime,
-    double _maxDistanceBtwValidityChecks);
+    const statespace::StateSpace::State* start,
+    const statespace::StateSpace::State* goal,
+    const statespace::StateSpace::State* via,
+    const Eigen::VectorXd& viaVelocity,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace,
+    const constraint::TestablePtr& validityConstraint,
+    double& viaTime,
+    double maxPlanTime,
+    double maxDistanceBtwValidityChecks);
 
 } // namespace kinodynamics
 } // namespace planner

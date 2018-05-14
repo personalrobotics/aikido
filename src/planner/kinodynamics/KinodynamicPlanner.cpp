@@ -153,7 +153,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     const ::ompl::base::PathPtr& path2,
     double path2Duration,
     const DIMTPtr& dimt,
-    statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace,
     double interpolateStepSize = 0.05)
 {
   if (path1 == nullptr || path2 == nullptr)
@@ -253,9 +253,9 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     const statespace::StateSpace::State* goal,
     const statespace::StateSpace::State* via,
     const Eigen::VectorXd& viaVelocity,
-    dart::dynamics::MetaSkeletonPtr metaSkeleton,
-    statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-    constraint::TestablePtr validityConstraint,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace,
+    const constraint::TestablePtr& validityConstraint,
     double& viaTime,
     double maxPlanTime,
     double maxDistanceBtwValidityChecks)
@@ -264,6 +264,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
 
   auto saver = MetaSkeletonStateSaver(
       metaSkeleton, MetaSkeletonStateSaver::Options::POSITIONS);
+  DART_UNUSED(saver);
 
   // convert aikido state to Eigen::VectorXd
   Eigen::VectorXd startVec(numDofs);
@@ -304,16 +305,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   auto viaState = allocState(si, viaVec, viaVelocity);
 
   double singleSampleLimit = 3.0;
-  // double sigma = 1;
-  // int max_steps = 20;
-  // int max_steps = 2000;
-  // double alpha = 0.5;
-  double max_call_num = 100;
-  double batch_size = 100;
-  // double epsilon = 2;//0.2;
-  // double L = 1;
-  int num_trials = 5;
-  const double level_set = std::numeric_limits<double>::infinity();
+  double maxCallNum = 100;
+  double batchSize = 100;
+  int numTrials = 5;
+  const double levelSet = std::numeric_limits<double>::infinity();
 
   ::ompl::geometric::MyInformedRRTstarPtr planner1
       = ompl_make_shared<::ompl::geometric::MyInformedRRTstar>(si);
@@ -329,7 +324,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
 
   ::ompl::base::MyInformedSamplerPtr sampler1
       = ompl_make_shared<::ompl::base::HitAndRunSampler>(
-          si, basePdef1, level_set, max_call_num, batch_size, num_trials);
+          si, basePdef1, levelSet, maxCallNum, batchSize, numTrials);
   sampler1->setSingleSampleTimelimit(singleSampleLimit);
   ::ompl::base::OptimizationObjectivePtr opt1
       = ompl_make_shared<::ompl::base::MyOptimizationObjective>(
@@ -370,7 +365,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
 
   ::ompl::base::MyInformedSamplerPtr sampler2
       = ompl_make_shared<::ompl::base::HitAndRunSampler>(
-          si, basePdef2, level_set, max_call_num, batch_size, num_trials);
+          si, basePdef2, levelSet, maxCallNum, batchSize, numTrials);
   sampler2->setSingleSampleTimelimit(singleSampleLimit);
   ::ompl::base::OptimizationObjectivePtr opt2
       = ompl_make_shared<::ompl::base::MyOptimizationObjective>(

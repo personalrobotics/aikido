@@ -87,55 +87,55 @@ public:
   }
 
   std::pair<Joint*, BodyNode*> add1DofJoint(
-      SkeletonPtr _skel,
-      BodyNode* _parent,
-      const BodyNode::Properties& _node,
-      const std::string& _name,
-      double _val,
-      double _min,
-      double _max,
-      int _type)
+      SkeletonPtr skel,
+      BodyNode* parent,
+      const BodyNode::Properties& node,
+      const std::string& name,
+      double val,
+      double min,
+      double max,
+      int type)
   {
     dart::dynamics::GenericJoint<dart::math::R1Space>::Properties properties(
-        _name);
-    properties.mPositionLowerLimits[0] = _min;
-    properties.mPositionUpperLimits[0] = _max;
+        name);
+    properties.mPositionLowerLimits[0] = min;
+    properties.mPositionUpperLimits[0] = max;
     std::pair<Joint*, BodyNode*> newComponent;
-    if (DOF_X == _type)
-      newComponent = _skel->createJointAndBodyNodePair<PrismaticJoint>(
-          _parent,
+    if (DOF_X == type)
+      newComponent = skel->createJointAndBodyNodePair<PrismaticJoint>(
+          parent,
           PrismaticJoint::Properties(
               properties, Eigen::Vector3d(1.0, 0.0, 0.0)),
-          _node);
-    else if (DOF_Y == _type)
-      newComponent = _skel->createJointAndBodyNodePair<PrismaticJoint>(
-          _parent,
+          node);
+    else if (DOF_Y == type)
+      newComponent = skel->createJointAndBodyNodePair<PrismaticJoint>(
+          parent,
           PrismaticJoint::Properties(
               properties, Eigen::Vector3d(0.0, 1.0, 0.0)),
-          _node);
-    else if (DOF_Z == _type)
-      newComponent = _skel->createJointAndBodyNodePair<PrismaticJoint>(
-          _parent,
+          node);
+    else if (DOF_Z == type)
+      newComponent = skel->createJointAndBodyNodePair<PrismaticJoint>(
+          parent,
           PrismaticJoint::Properties(
               properties, Eigen::Vector3d(0.0, 0.0, 1.0)),
-          _node);
-    else if (DOF_YAW == _type)
-      newComponent = _skel->createJointAndBodyNodePair<RevoluteJoint>(
-          _parent,
+          node);
+    else if (DOF_YAW == type)
+      newComponent = skel->createJointAndBodyNodePair<RevoluteJoint>(
+          parent,
           RevoluteJoint::Properties(properties, Eigen::Vector3d(0.0, 0.0, 1.0)),
-          _node);
-    else if (DOF_PITCH == _type)
-      newComponent = _skel->createJointAndBodyNodePair<RevoluteJoint>(
-          _parent,
+          node);
+    else if (DOF_PITCH == type)
+      newComponent = skel->createJointAndBodyNodePair<RevoluteJoint>(
+          parent,
           RevoluteJoint::Properties(properties, Eigen::Vector3d(0.0, 1.0, 0.0)),
-          _node);
-    else if (DOF_ROLL == _type)
-      newComponent = _skel->createJointAndBodyNodePair<RevoluteJoint>(
-          _parent,
+          node);
+    else if (DOF_ROLL == type)
+      newComponent = skel->createJointAndBodyNodePair<RevoluteJoint>(
+          parent,
           RevoluteJoint::Properties(properties, Eigen::Vector3d(1.0, 0.0, 0.0)),
-          _node);
+          node);
 
-    newComponent.first->setPosition(0, _val);
+    newComponent.first->setPosition(0, val);
     return newComponent;
   }
 
