@@ -34,26 +34,26 @@ public:
   /// \return new \c ScopedState
   ScopedState createState() const;
 
-  /// Returns state as a rotation angle.
+  /// Returns state as a rotation angle in (-pi, pi].
   ///
   /// \param[in] state State.
   double toAngle(const State* state) const;
 
-  /// Sets state to a rotation angle.
+  /// Sets state from a rotation angle.
   ///
-  /// \param[in] angle Rotation angle.
   /// \param[out] state State corresponding to angle
+  /// \param[in] angle Rotation angle.
   void fromAngle(State* state, double angle) const;
 
-  /// Returns state as an Eigen transformation.
+  /// Returns state as an Eigen rotation.
   ///
   /// \param[in] state State
   Eigen::Rotation2Dd toRotation(const State* state) const;
 
-  /// Sets state it an Eigen transformation.
+  /// Sets state from an Eigen rotation.
   ///
-  /// \param[in] rotation Eigen transformation.
   /// \param[out] state State corresponding to rotation.
+  /// \param[in] rotation Eigen rotation.
   void fromRotation(State* state, const Eigen::Rotation2Dd& rotation) const;
 
   // Documentation inherited.
@@ -106,7 +106,7 @@ public:
   void print(const StateSpace::State* state, std::ostream& os) const override;
 };
 
-class SO2::State : public StateSpace::State
+class SO2::State final : public StateSpace::State
 {
 public:
   /// Constructs a state from a rotation angle.
@@ -116,23 +116,24 @@ public:
 
   ~State() = default;
 
-  /// Returns state as a rotation angle.
+  /// Returns state as a rotation angle in (-pi, pi].
   double toAngle() const;
 
-  /// Sets state to a rotation angle.
+  /// Sets state from a rotation angle.
   ///
   /// \param[in] angle Rotation angle
   void fromAngle(double angle);
 
-  /// Returns state as an Eigen transformation.
+  /// Returns state as an Eigen rotation.
   Eigen::Rotation2Dd toRotation() const;
 
-  /// Sets state given an Eigen transformation.
+  /// Sets state from an Eigen rotation.
   ///
-  /// \param[in] rotation Eigen transformation
+  /// \param[in] rotation Eigen rotation
   void fromRotation(const Eigen::Rotation2Dd& rotation);
 
 private:
+  /// Angle bounded in (-pi, pi] representing the SO(2) state.
   double mAngle;
 
   friend class SO2;

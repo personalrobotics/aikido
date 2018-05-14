@@ -91,9 +91,8 @@ void SO2::compose(
     const StateSpace::State* state2,
     StateSpace::State* out) const
 {
-#ifndef NDEBUG // Debug mode
-  assert(state1 != out && state2 != out);
-#endif
+  if (state1 == out || state2 == out)
+    throw std::invalid_argument("Output aliases input.");
 
   auto sState1 = static_cast<const State*>(state1);
   auto sState2 = static_cast<const State*>(state2);
@@ -112,9 +111,8 @@ void SO2::getIdentity(StateSpace::State* out) const
 //==============================================================================
 void SO2::getInverse(const StateSpace::State* in, StateSpace::State* out) const
 {
-#ifndef NDEBUG // Debug mode
-  assert(out != in);
-#endif
+  if (out == in)
+    throw std::invalid_argument("Output aliases input");
 
   auto sIn = static_cast<const State*>(in);
   auto sOut = static_cast<State*>(out);
@@ -142,9 +140,13 @@ void SO2::expMap(const Eigen::VectorXd& tangent, StateSpace::State* out) const
 {
   auto sOut = static_cast<State*>(out);
 
-#ifndef NDEBUG // Debug mode
-  assert(tangent.rows() == 1);
-#endif
+  if (tangent.rows() != 1)
+  {
+    std::stringstream msg;
+    msg << "tangent has incorrect size: expected 1"
+        << ", got " << tangent.rows() << ".\n";
+    throw std::runtime_error(msg.str());
+  }
 
   double angle = tangent(0);
   fromAngle(sOut, angle);
