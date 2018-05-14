@@ -5,7 +5,6 @@
 
 #include "aikido/common/Spline.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
 #include "aikido/planner/kinodynamics/ompl/DimtStateSpace.hpp"
@@ -16,6 +15,7 @@
 #include "aikido/planner/ompl/MotionValidator.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/ompl/StateValidityChecker.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 using aikido::planner::ompl::ompl_make_shared;
 using dart::dynamics::MetaSkeletonPtr;
@@ -94,9 +94,9 @@ public:
     bounds.setLow(i, skeleton->getPositionLowerLimit(i));
 
     bounds.setHigh(
-        skeleton->getNumDofs()+i, skeleton->getVelocityUpperLimit(i));
+        skeleton->getNumDofs() + i, skeleton->getVelocityUpperLimit(i));
     bounds.setLow(
-        skeleton->getNumDofs()+i, skeleton->getVelocityLowerLimit(i));
+        skeleton->getNumDofs() + i, skeleton->getVelocityLowerLimit(i));
   }
 
   space->as<::ompl::base::DimtStateSpace>()->setBounds(bounds);
@@ -169,7 +169,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   ::ompl::geometric::PathGeometric* geopath1
       = path1->as<::ompl::geometric::PathGeometric>();
   std::size_t node_num = geopath1->getStateCount();
-  for (size_t idx = 0; idx < node_num-1; idx++)
+  for (size_t idx = 0; idx < node_num - 1; idx++)
   {
     ::ompl::base::State* state1 = geopath1->getState(idx);
     ::ompl::base::State* state2 = geopath1->getState(idx + 1);
@@ -186,7 +186,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   ::ompl::geometric::PathGeometric* geopath2
       = path2->as<::ompl::geometric::PathGeometric>();
   node_num = geopath2->getStateCount();
-  for (size_t idx = 0; idx < node_num-1; idx++)
+  for (size_t idx = 0; idx < node_num - 1; idx++)
   {
     ::ompl::base::State* state1 = geopath2->getState(idx);
     ::ompl::base::State* state2 = geopath2->getState(idx + 1);
@@ -213,9 +213,8 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   using CubicSplineProblem
       = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
 
-  auto outputTrajectory
-      = dart::common::make_unique<aikido::trajectory::Spline>(
-          metaSkeletonStateSpace);
+  auto outputTrajectory = dart::common::make_unique<aikido::trajectory::Spline>(
+      metaSkeletonStateSpace);
   auto segmentStartState = metaSkeletonStateSpace->createState();
 
   Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
@@ -407,12 +406,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   // 2. push states/velocities of paths into the vector
   // 3. create SplineTrajectory from the vector
   auto traj = concatenateTwoPaths(
-      path1,
-      path1Duration,
-      path2,
-      path2Duration,
-      dimt,
-      metaSkeletonStateSpace);
+      path1, path1Duration, path2, path2Duration, dimt, metaSkeletonStateSpace);
   if (traj != nullptr)
   {
     viaTime = path1Duration;
