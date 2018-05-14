@@ -62,8 +62,7 @@ public:
     return;
   }
 
-  double getMinTime(
-      const ompl::base::State* x1, const ompl::base::State* x2)
+  double getMinTime(const ompl::base::State* x1, const ompl::base::State* x2)
   {
     convertToTobiasFormat(x1, newX1);
     convertToTobiasFormat(x2, newX2);
@@ -128,8 +127,7 @@ public:
     return;
   }
 
-  double getMinTime(
-      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2)
+  double getMinTime(const Eigen::VectorXd& x1, const Eigen::VectorXd& x2)
   {
     convertToTobiasFormatVec(x1, newX1);
     convertToTobiasFormatVec(x2, newX2);
@@ -150,15 +148,19 @@ public:
   }
 
   std::vector<Eigen::VectorXd> discretize(
-      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double step_t) override
+      const Eigen::VectorXd& x1,
+      const Eigen::VectorXd& x2,
+      double step_t) override
   {
     std::vector<double> times;
     return discretize(x1, x2, step_t, times);
   }
 
-
   std::vector<Eigen::VectorXd> discretize(
-      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double step_t, std::vector<double>& times) override
+      const Eigen::VectorXd& x1,
+      const Eigen::VectorXd& x2,
+      double step_t,
+      std::vector<double>& times) override
   {
     convertToTobiasFormatVec(x1, newX1);
     convertToTobiasFormatVec(x2, newX2);
@@ -188,7 +190,10 @@ public:
   }
 
   std::vector<Eigen::VectorXd> discretize(
-      const ompl::base::State* x1, const ompl::base::State* x2, double step_t, std::vector<double>& times) override
+      const ompl::base::State* x1,
+      const ompl::base::State* x2,
+      double step_t,
+      std::vector<double>& times) override
   {
     convertToTobiasFormat(x1, newX1);
     convertToTobiasFormat(x2, newX2);
@@ -219,7 +224,9 @@ public:
   }
 
   std::vector<Eigen::VectorXd> discretize(
-      const ompl::base::State* x1, const ompl::base::State* x2, double step_t) override
+      const ompl::base::State* x1,
+      const ompl::base::State* x2,
+      double step_t) override
   {
     std::vector<double> times;
     return discretize(x1, x2, step_t, times);

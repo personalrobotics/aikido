@@ -5,6 +5,7 @@
 
 #include "aikido/common/Spline.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
 #include "aikido/planner/kinodynamics/ompl/DimtStateSpace.hpp"
@@ -18,6 +19,7 @@
 
 using aikido::planner::ompl::ompl_make_shared;
 using dart::dynamics::MetaSkeletonPtr;
+using aikido::statespace::dart::MetaSkeletonStateSaver;
 
 namespace aikido {
 namespace planner {
@@ -27,30 +29,30 @@ class StateValidityChecker : public ompl::StateValidityChecker
 {
 public:
   StateValidityChecker(
-      const ::ompl::base::SpaceInformationPtr& _si,
-      constraint::TestablePtr _constraint)
-    : ompl::StateValidityChecker(_si, _constraint)
+      const ::ompl::base::SpaceInformationPtr& si,
+      constraint::TestablePtr constraint)
+    : ompl::StateValidityChecker(si, constraint)
   {
   }
 
-  bool isValid(const ::ompl::base::State* _state) const override
+  bool isValid(const ::ompl::base::State* state) const override
   {
-    if (!si_->getStateSpace()->satisfiesBounds(_state))
+    if (!si_->getStateSpace()->satisfiesBounds(state))
     {
       return false;
     }
 
     // create aikido state from ompl state
     auto stateSpace = mConstraint->getStateSpace();
-    auto state = stateSpace->createState();
+    auto aikidoState = stateSpace->createState();
     Eigen::VectorXd config(stateSpace->getDimension());
     for (std::size_t i = 0; i < stateSpace->getDimension(); i++)
     {
-      config[i] = _state->as<::ompl::base::RealVectorStateSpace::StateType>()
+      config[i] = state->as<::ompl::base::RealVectorStateSpace::StateType>()
                       ->values[i];
     }
-    stateSpace->expMap(config, state);
-    return mConstraint->isSatisfied(state);
+    stateSpace->expMap(config, aikidoState);
+    return mConstraint->isSatisfied(aikidoState);
   }
 };
 
@@ -76,25 +78,25 @@ public:
 }
 
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    DIMTPtr _dimt,
-    MetaSkeletonPtr _skeleton,
-    constraint::TestablePtr _validityConstraint,
-    double _maxDistanceBtwValidityChecks)
+    DIMTPtr dimt,
+    MetaSkeletonPtr skeleton,
+    constraint::TestablePtr validityConstraint,
+    double maxDistanceBtwValidityChecks)
 {
   // construct the state space we are planning in
   ::ompl::base::StateSpacePtr space
-      = ompl_make_shared<::ompl::base::DimtStateSpace>(_dimt);
+      = ompl_make_shared<::ompl::base::DimtStateSpace>(dimt);
 
-  ::ompl::base::RealVectorBounds bounds(_skeleton->getNumDofs() * 2);
-  for (std::size_t i = 0; i < _skeleton->getNumDofs(); i++)
+  ::ompl::base::RealVectorBounds bounds(skeleton->getNumDofs() * 2);
+  for (std::size_t i = 0; i < skeleton->getNumDofs(); i++)
   {
-    bounds.setHigh(i, _skeleton->getPositionUpperLimit(i));
-    bounds.setLow(i, _skeleton->getPositionLowerLimit(i));
+    bounds.setHigh(i, skeleton->getPositionUpperLimit(i));
+    bounds.setLow(i, skeleton->getPositionLowerLimit(i));
 
     bounds.setHigh(
-        _skeleton->getNumDofs() + i, _skeleton->getVelocityUpperLimit(i));
+        skeleton->getNumDofs()+i, skeleton->getVelocityUpperLimit(i));
     bounds.setLow(
-        _skeleton->getNumDofs() + i, _skeleton->getVelocityLowerLimit(i));
+        skeleton->getNumDofs()+i, skeleton->getVelocityLowerLimit(i));
   }
 
   space->as<::ompl::base::DimtStateSpace>()->setBounds(bounds);
@@ -103,12 +105,12 @@ public:
 
   // Validity checking
   ::ompl::base::StateValidityCheckerPtr vchecker
-      = ompl_make_shared<StateValidityChecker>(si, _validityConstraint);
+      = ompl_make_shared<StateValidityChecker>(si, validityConstraint);
   si->setStateValidityChecker(vchecker);
 
   ::ompl::base::MotionValidatorPtr mvalidator
       = ompl_make_shared<aikido::planner::ompl::MotionValidator>(
-          si, _maxDistanceBtwValidityChecks);
+          si, maxDistanceBtwValidityChecks);
   si->setMotionValidator(mvalidator);
   si->setStateValidityCheckingResolution(0.001);
   si->setup();
@@ -151,10 +153,10 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     const ::ompl::base::PathPtr& path2,
     double path2Duration,
     const DIMTPtr& dimt,
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     double interpolateStepSize = 0.05)
 {
-  if (path1==nullptr || path2==nullptr)
+  if (path1 == nullptr || path2 == nullptr)
   {
     return nullptr;
   }
@@ -167,14 +169,15 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   ::ompl::geometric::PathGeometric* geopath1
       = path1->as<::ompl::geometric::PathGeometric>();
   std::size_t node_num = geopath1->getStateCount();
-  for (size_t idx = 0; idx < node_num - 1; idx++)
+  for (size_t idx = 0; idx < node_num-1; idx++)
   {
     ::ompl::base::State* state1 = geopath1->getState(idx);
     ::ompl::base::State* state2 = geopath1->getState(idx + 1);
     std::vector<double> deltaTimes;
     std::vector<Eigen::VectorXd> deltaPoints
         = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-    path1points.insert(path1points.end(), deltaPoints.begin(), deltaPoints.end());
+    path1points.insert(
+        path1points.end(), deltaPoints.begin(), deltaPoints.end());
     path1times.insert(path1times.end(), deltaTimes.begin(), deltaTimes.end());
   }
 
@@ -183,100 +186,105 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   ::ompl::geometric::PathGeometric* geopath2
       = path2->as<::ompl::geometric::PathGeometric>();
   node_num = geopath2->getStateCount();
-  for (size_t idx = 0; idx < node_num - 1; idx++)
+  for (size_t idx = 0; idx < node_num-1; idx++)
   {
     ::ompl::base::State* state1 = geopath2->getState(idx);
     ::ompl::base::State* state2 = geopath2->getState(idx + 1);
     std::vector<double> deltaTimes;
     std::vector<Eigen::VectorXd> deltaPoints
         = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-    path2points.insert(path2points.end(), deltaPoints.begin(), deltaPoints.end());
+    path2points.insert(
+        path2points.end(), deltaPoints.begin(), deltaPoints.end());
     path2times.insert(path2times.end(), deltaTimes.begin(), deltaTimes.end());
   }
 
   // merge two sets
-  std::transform( path2times.begin(), path2times.end(),
-                  path2times.begin(), std::bind2nd( std::plus<double>(), path1Duration ) );
+  std::transform(
+      path2times.begin(),
+      path2times.end(),
+      path2times.begin(),
+      std::bind2nd(std::plus<double>(), path1Duration));
   points.insert(points.end(), path1points.begin(), path1points.end());
   times.insert(times.end(), path1times.begin(), path1times.end());
-  points.insert(points.end(), path2points.begin()+1, path2points.end());
-  times.insert(times.end(), path2times.begin()+1, path2times.end());
+  points.insert(points.end(), path2points.begin() + 1, path2points.end());
+  times.insert(times.end(), path2times.begin() + 1, path2times.end());
 
-  std::size_t dimension = _metaSkeletonStateSpace->getDimension();
+  std::size_t dimension = metaSkeletonStateSpace->getDimension();
   using CubicSplineProblem
       = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
 
-  auto _outputTrajectory
-        = dart::common::make_unique<aikido::trajectory::Spline>(
-          _metaSkeletonStateSpace);
-  auto segmentStartState = _metaSkeletonStateSpace->createState();
+  auto outputTrajectory
+      = dart::common::make_unique<aikido::trajectory::Spline>(
+          metaSkeletonStateSpace);
+  auto segmentStartState = metaSkeletonStateSpace->createState();
 
   Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
   for (std::size_t i = 0; i < points.size() - 1; i++)
   {
     Eigen::VectorXd positionCurr = points[i].head(dimension);
     Eigen::VectorXd velocityCurr = points[i].tail(dimension);
-    Eigen::VectorXd positionNext = points[i+1].head(dimension);
-    Eigen::VectorXd velocityNext = points[i+1].tail(dimension);
+    Eigen::VectorXd positionNext = points[i + 1].head(dimension);
+    Eigen::VectorXd velocityNext = points[i + 1].tail(dimension);
 
     double timeCurr = times[i];
-    double timeNext = times[i+1];
+    double timeNext = times[i + 1];
 
     CubicSplineProblem problem(
-        Eigen::Vector2d(0.0, timeNext-timeCurr),
-        4,
-        dimension);
+        Eigen::Vector2d(0.0, timeNext - timeCurr), 4, dimension);
     problem.addConstantConstraint(0, 0, zeroPosition);
     problem.addConstantConstraint(0, 1, velocityCurr);
-    problem.addConstantConstraint(1, 0, positionNext-positionCurr);
+    problem.addConstantConstraint(1, 0, positionNext - positionCurr);
     problem.addConstantConstraint(1, 1, velocityNext);
     const auto spline = problem.fit();
 
-    _metaSkeletonStateSpace->expMap(positionCurr, segmentStartState);
+    metaSkeletonStateSpace->expMap(positionCurr, segmentStartState);
 
     // Add the ramp to the output trajectory.
     assert(spline.getCoefficients().size() == 1);
     const auto& coefficients = spline.getCoefficients().front();
-    _outputTrajectory->addSegment(
-        coefficients, timeNext-timeCurr, segmentStartState);
+    outputTrajectory->addSegment(
+        coefficients, timeNext - timeCurr, segmentStartState);
   }
 
-  return _outputTrajectory;
+  return outputTrajectory;
 }
 
 std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
-    const statespace::StateSpace::State* _start,
-    const statespace::StateSpace::State* _goal,
-    const statespace::StateSpace::State* _via,
-    const Eigen::VectorXd& _viaVelocity,
-    dart::dynamics::MetaSkeletonPtr _metaSkeleton,
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
-    constraint::TestablePtr _validityConstraint,
-    double& _viaTime,
-    double _maxPlanTime,
-    double _maxDistanceBtwValidityChecks)
+    const statespace::StateSpace::State* start,
+    const statespace::StateSpace::State* goal,
+    const statespace::StateSpace::State* via,
+    const Eigen::VectorXd& viaVelocity,
+    dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    constraint::TestablePtr validityConstraint,
+    double& viaTime,
+    double maxPlanTime,
+    double maxDistanceBtwValidityChecks)
 {
-  std::size_t numDofs = _metaSkeleton->getNumDofs();
+  std::size_t numDofs = metaSkeleton->getNumDofs();
+
+  auto saver = MetaSkeletonStateSaver(
+      metaSkeleton, MetaSkeletonStateSaver::Options::POSITIONS);
 
   // convert aikido state to Eigen::VectorXd
   Eigen::VectorXd startVec(numDofs);
-  _metaSkeletonStateSpace->logMap(_start, startVec);
+  metaSkeletonStateSpace->logMap(start, startVec);
   Eigen::VectorXd goalVec(numDofs);
-  _metaSkeletonStateSpace->logMap(_goal, goalVec);
+  metaSkeletonStateSpace->logMap(goal, goalVec);
   Eigen::VectorXd viaVec(numDofs);
-  _metaSkeletonStateSpace->logMap(_via, viaVec);
+  metaSkeletonStateSpace->logMap(via, viaVec);
 
   // Initialize parameters from bounds constraint
   std::vector<double> maxVelocities(numDofs, 0.0);
   std::vector<double> maxAccelerations(numDofs, 0.0);
   for (std::size_t i = 0; i < numDofs; i++)
   {
-    double absUpperVel = std::abs(_metaSkeleton->getVelocityUpperLimit(i));
-    double absLowerVel = std::abs(_metaSkeleton->getVelocityLowerLimit(i));
+    double absUpperVel = std::abs(metaSkeleton->getVelocityUpperLimit(i));
+    double absLowerVel = std::abs(metaSkeleton->getVelocityLowerLimit(i));
     maxVelocities[i] = absUpperVel > absLowerVel ? absLowerVel : absUpperVel;
 
-    double absUpperAccl = std::abs(_metaSkeleton->getAccelerationUpperLimit(i));
-    double absLowerAccl = std::abs(_metaSkeleton->getAccelerationLowerLimit(i));
+    double absUpperAccl = std::abs(metaSkeleton->getAccelerationUpperLimit(i));
+    double absLowerAccl = std::abs(metaSkeleton->getAccelerationLowerLimit(i));
     maxAccelerations[i]
         = absUpperAccl > absLowerAccl ? absLowerAccl : absUpperAccl;
   }
@@ -285,20 +293,16 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
 
   // create bound constraint from metaSkeleton
   auto si = getSpaceInformation(
-      dimt, _metaSkeleton, _validityConstraint, _maxDistanceBtwValidityChecks);
+      dimt, metaSkeleton, validityConstraint, maxDistanceBtwValidityChecks);
 
   // create OMPL state
   Eigen::VectorXd startVel
-      = Eigen::VectorXd::Zero(_metaSkeletonStateSpace->getDimension());
+      = Eigen::VectorXd::Zero(metaSkeletonStateSpace->getDimension());
   Eigen::VectorXd goalVel
-      = Eigen::VectorXd::Zero(_metaSkeletonStateSpace->getDimension());
+      = Eigen::VectorXd::Zero(metaSkeletonStateSpace->getDimension());
   auto startState = allocState(si, startVec, startVel);
   auto goalState = allocState(si, goalVec, goalVel);
-  auto viaState = allocState(si, viaVec, _viaVelocity);
-
-  //std::cout << "VALIDATE START " << si->isValid(startState) << std::endl;
-  //std::cout << "VALIDATE VIA " << si->isValid(viaState) << std::endl;
-  //std::cout << "VALIDATE GOAL " << si->isValid(goalState) << std::endl;
+  auto viaState = allocState(si, viaVec, viaVelocity);
 
   double singleSampleLimit = 3.0;
   // double sigma = 1;
@@ -341,7 +345,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   planner1->setProblemDefinition(pdef1);
   planner1->setup();
 
-  ::ompl::base::PlannerStatus solved = planner1->solve(_maxPlanTime);
+  ::ompl::base::PlannerStatus solved = planner1->solve(maxPlanTime);
 
   ::ompl::base::PathPtr path1 = nullptr;
   if (pdef1->hasSolution())
@@ -382,7 +386,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   planner2->setProblemDefinition(pdef2);
   planner2->setup();
 
-  solved = planner2->solve(_maxPlanTime);
+  solved = planner2->solve(maxPlanTime);
 
   ::ompl::base::PathPtr path2 = nullptr;
   if (pdef2->hasSolution())
@@ -402,10 +406,16 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   // 1. create a vector of states and velocities
   // 2. push states/velocities of paths into the vector
   // 3. create SplineTrajectory from the vector
-  auto traj = concatenateTwoPaths(path1, path1Duration, path2, path2Duration, dimt, _metaSkeletonStateSpace);
-  if(traj!=nullptr)
+  auto traj = concatenateTwoPaths(
+      path1,
+      path1Duration,
+      path2,
+      path2Duration,
+      dimt,
+      metaSkeletonStateSpace);
+  if (traj != nullptr)
   {
-    _viaTime = path1Duration;
+    viaTime = path1Duration;
   }
   return traj;
 }

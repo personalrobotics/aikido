@@ -293,14 +293,14 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   traj->evaluate(0., startpoint);
   Eigen::VectorXd startpointVec(mNumDof);
   mStateSpace->convertStateToPositions(startpoint, startpointVec);
-  EXPECT_LE( (startpointVec-startConfig).norm(), 1e-3 );
+  EXPECT_LE((startpointVec - startConfig).norm(), 1e-3);
 
   // check goal position
   auto goalpoint = mStateSpace->createState();
   traj->evaluate(traj->getEndTime(), goalpoint);
   Eigen::VectorXd goalpointVec(mNumDof);
   mStateSpace->convertStateToPositions(goalpoint, goalpointVec);
-  EXPECT_LE( (goalpointVec-goalConfig).norm(), 1e-3 );
+  EXPECT_LE((goalpointVec - goalConfig).norm(), 1e-3);
 
   std::cout << "VIA TIME " << viaTime << std::endl;
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
@@ -310,9 +310,9 @@ TEST_F(KinodynamicPlannerTest, ReturnsStartToGoalTrajOnSuccess)
   Eigen::VectorXd viapointVec(mNumDof);
   mStateSpace->convertStateToPositions(viapoint, viapointVec);
 
-  std::cout << "VIA POINT VEC " << viapointVec ;
+  std::cout << "VIA POINT VEC " << viapointVec;
 
-  EXPECT_LE( (viaConfig-viapointVec).norm(), 1e-3 );
+  EXPECT_LE((viaConfig - viapointVec).norm(), 1e-3);
 }
 
 TEST_F(KinodynamicPlannerTest, FailIfConstraintNotSatisfied)
