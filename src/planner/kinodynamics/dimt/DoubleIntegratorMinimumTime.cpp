@@ -62,7 +62,7 @@ public:
     return;
   }
 
-  virtual double getMinTime(
+  double getMinTime(
       const ompl::base::State* x1, const ompl::base::State* x2)
   {
     convertToTobiasFormat(x1, newX1);
@@ -70,7 +70,7 @@ public:
     return doubleIntegrator_->getMinTime(newX1, newX2);
   }
 
-  virtual double getMinTimeIfSmallerThan(
+  double getMinTimeIfSmallerThan(
       const ompl::base::State* x1,
       const ompl::base::State* x2,
       double timeThreshold)
@@ -82,7 +82,7 @@ public:
         newX1, newX2, timeThreshold);
   }
 
-  virtual std::tuple<double, double, double> getMinTimeAndIntervals1Dof(
+  std::tuple<double, double, double> getMinTimeAndIntervals1Dof(
       const double x1,
       const double v1,
       const double x2,
@@ -113,7 +113,7 @@ public:
         minTime, infeasibleInterval.first, infeasibleInterval.second);
   }
 
-  virtual void interpolate(
+  void interpolate(
       const ompl::base::State* x1,
       const ompl::base::State* x2,
       double t,
@@ -128,7 +128,7 @@ public:
     return;
   }
 
-  virtual double getMinTime(
+  double getMinTime(
       const Eigen::VectorXd& x1, const Eigen::VectorXd& x2)
   {
     convertToTobiasFormatVec(x1, newX1);
@@ -136,8 +136,8 @@ public:
     return doubleIntegrator_->getMinTime(newX1, newX2);
   }
 
-  virtual Eigen::VectorXd interpolate(
-      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double t)
+  Eigen::VectorXd interpolate(
+      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double t) override
   {
     convertToTobiasFormatVec(x1, newX1);
     convertToTobiasFormatVec(x2, newX2);
@@ -149,8 +149,16 @@ public:
     return x;
   }
 
-  virtual std::vector<Eigen::VectorXd> discretize(
-      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double step_t, std::vector<double>& times)
+  std::vector<Eigen::VectorXd> discretize(
+      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double step_t) override
+  {
+    std::vector<double> times;
+    return discretize(x1, x2, step_t, times);
+  }
+
+
+  std::vector<Eigen::VectorXd> discretize(
+      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double step_t, std::vector<double>& times) override
   {
     convertToTobiasFormatVec(x1, newX1);
     convertToTobiasFormatVec(x2, newX2);
@@ -179,15 +187,8 @@ public:
     return waypoints;
   }
 
-  virtual std::vector<Eigen::VectorXd> discretize(
-      const Eigen::VectorXd& x1, const Eigen::VectorXd& x2, double step_t)
-  {
-     std::vector<double> times;
-     return discretize(x1, x2, step_t, times);
-  }
-
-  virtual std::vector<Eigen::VectorXd> discretize(
-      const ompl::base::State* x1, const ompl::base::State* x2, double step_t, std::vector<double>& times)
+  std::vector<Eigen::VectorXd> discretize(
+      const ompl::base::State* x1, const ompl::base::State* x2, double step_t, std::vector<double>& times) override
   {
     convertToTobiasFormat(x1, newX1);
     convertToTobiasFormat(x2, newX2);
@@ -217,8 +218,8 @@ public:
     */
   }
 
-  virtual std::vector<Eigen::VectorXd> discretize(
-      const ompl::base::State* x1, const ompl::base::State* x2, double step_t)
+  std::vector<Eigen::VectorXd> discretize(
+      const ompl::base::State* x1, const ompl::base::State* x2, double step_t) override
   {
     std::vector<double> times;
     return discretize(x1, x2, step_t, times);

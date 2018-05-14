@@ -35,11 +35,11 @@ public:
     virtual Eigen::VectorXd interpolate(const Eigen::VectorXd & x1, const Eigen::VectorXd & x2,
                                         double t) = 0;
 
-    virtual std::vector<Eigen::VectorXd> discretize(const ompl::base::State* x1, const ompl::base::State* x2, double step_t);
+    virtual std::vector<Eigen::VectorXd> discretize(const ompl::base::State* x1, const ompl::base::State* x2, double step_t) = 0;
 
     virtual std::vector<Eigen::VectorXd> discretize(const ompl::base::State* x1, const ompl::base::State* x2, double step_t, std::vector<double>& times) = 0;
 
-    virtual std::vector<Eigen::VectorXd> discretize(const Eigen::VectorXd & x1, const Eigen::VectorXd & x2, double step_t);
+    virtual std::vector<Eigen::VectorXd> discretize(const Eigen::VectorXd & x1, const Eigen::VectorXd & x2, double step_t) = 0;
 
     virtual std::vector<Eigen::VectorXd> discretize(const Eigen::VectorXd & x1, const Eigen::VectorXd & x2, double step_t, std::vector<double>& times) = 0;
 };
@@ -95,6 +95,11 @@ public:
         return doubleIntegratorImpl_->discretize(x1, x2, step_t);
     }
 
+    std::vector<Eigen::VectorXd> discretize(const ompl::base::State* x1, const ompl::base::State* x2, double step_t, std::vector<double>& times)
+    {
+        return doubleIntegratorImpl_->discretize(x1, x2, step_t, times);
+    }
+
     double getMinTime(const Eigen::VectorXd & x1, const Eigen::VectorXd & x2)
     {
         return doubleIntegratorImpl_->getMinTime(x1, x2);
@@ -109,6 +114,11 @@ public:
     std::vector<Eigen::VectorXd> discretize(const Eigen::VectorXd & x1, const Eigen::VectorXd & x2, double step_t)
     {
         return doubleIntegratorImpl_->discretize(x1, x2, step_t);
+    }
+
+    std::vector<Eigen::VectorXd> discretize(const Eigen::VectorXd & x1, const Eigen::VectorXd & x2, double step_t, std::vector<double>& times)
+    {
+        return doubleIntegratorImpl_->discretize(x1, x2, step_t, times);
     }
 
     std::size_t getNumDofs() const
