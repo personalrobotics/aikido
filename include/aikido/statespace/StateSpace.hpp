@@ -46,7 +46,6 @@ public:
   ///
   /// \return new \c ScopedState
   ScopedState createState() const;
-  // TODO(JS): Remove
 
   /// Allocate a new state. This must be deleted with \c freeState. This is a
   /// helper function that allocates memory, uses \c allocateStateInBuffer to
