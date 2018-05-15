@@ -6,10 +6,9 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-ConfigurationToConfiguration::ConfigurationToConfiguration(
-    statespace::ConstStateSpacePtr stateSpace,
-    const statespace::StateSpace::State* startState,
-    const statespace::StateSpace::State* goalState,
+ConfigurationToConfiguration::ConfigurationToConfiguration(statespace::ConstStateSpacePtr stateSpace,
+    statespace::StateSpace::ScopedState startState,
+    statespace::StateSpace::ScopedState goalState,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mStartState(std::move(startState))

@@ -23,8 +23,8 @@ public:
   /// space.
   ConfigurationToConfiguration(
       statespace::ConstStateSpacePtr stateSpace,
-      const statespace::StateSpace::State* startState,
-      const statespace::StateSpace::State* goalState,
+      statespace::StateSpace::ScopedState startState,
+      statespace::StateSpace::ScopedState goalState,
       constraint::ConstTestablePtr constraint);
 
   // Documentation inherited.
@@ -41,10 +41,10 @@ public:
 
 protected:
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  statespace::StateSpace::ScopedState mStartState;
 
   /// Goal state.
-  const statespace::StateSpace::State* mGoalState;
+  statespace::StateSpace::ScopedState mGoalState;
 };
 
 } // namespace planner
