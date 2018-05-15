@@ -28,8 +28,8 @@ TEST(SE3, Compose)
   EXPECT_TRUE(expected.isApprox(out1.getIsometry()));
 
   SE3::ScopedState out2(&space);
-  space.copyState(s2, out2);  // out2 = s2
-  space.compose(out2, s3);    // out2 = out2 * s3
+  space.copyState(s2, out2); // out2 = s2
+  space.compose(out2, s3);   // out2 = out2 * s3
   EXPECT_TRUE(expected.isApprox(out2.getIsometry()));
 }
 
