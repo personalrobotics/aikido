@@ -215,6 +215,7 @@ public:
       const Eigen::VectorXd& via,
       const Eigen::VectorXd& viaVelocity,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      double& viaTime,
       double maxPlanTime,
       double maxDistanceBtwValidityChecks);
 

@@ -438,6 +438,7 @@ ConcreteRobot::planMinimumTimeViaConstraint(
     const Eigen::VectorXd& via,
     const Eigen::VectorXd& viaVelocity,
     const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+    double& viaTime,
     double maxPlanTime,
     double maxDistanceBtwValidityChecks)
 {
@@ -455,7 +456,6 @@ ConcreteRobot::planMinimumTimeViaConstraint(
   auto viaState = stateSpace->createState();
   stateSpace->convertPositionsToState(via, viaState);
 
-  double viaTime = 0.0;
   auto traj = planMinimumTimeViaConstraint(
       startState,
       goalState,
