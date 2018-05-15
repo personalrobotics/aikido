@@ -31,10 +31,12 @@ target_include_directories("${PROJECT_NAME}_planner_ompl" SYSTEM
 )
 target_link_libraries("${PROJECT_NAME}_planner_ompl"
   PUBLIC
+    "${PROJECT_NAME}_common"
     "${PROJECT_NAME}_constraint"
     "${PROJECT_NAME}_distance"
-    "${PROJECT_NAME}_statespace"
     "${PROJECT_NAME}_trajectory"
+    "${PROJECT_NAME}_statespace"
+    "${PROJECT_NAME}_planner"
     ${DART_LIBRARIES}
     ${OMPL_LIBRARIES}
 )
