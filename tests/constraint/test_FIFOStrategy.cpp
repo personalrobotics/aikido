@@ -154,6 +154,6 @@ TEST_F(FIFOStrategyTest, SingleSample)
   // TODO (avk): The following two states are coming out to be null!
   auto rankedStateOne = rankedSolutions[0];
   auto rankedStateTwo = rankedSolutions[1];
-  DART_UNUSED(rankedStateOne);
-  DART_UNUSED(rankedStateTwo);
+  EXPECT_TRUE(!rankedStateOne.first);
+  EXPECT_TRUE(!rankedStateTwo.first);
 }
