@@ -20,11 +20,19 @@ using Eigen::Matrix2d;
 class SE2BoxConstraintTests : public ::testing::Test
 {
 protected:
+#ifndef NDEBUG
+  static constexpr std::size_t NUM_A_TARGETS{5};
+  static constexpr std::size_t NUM_X_TARGETS{5};
+  static constexpr std::size_t NUM_Y_TARGETS{5};
+  static constexpr std::size_t NUM_SAMPLES{100};
+  static constexpr double DISTANCE_THRESHOLD{0.9};
+#else
   static constexpr std::size_t NUM_A_TARGETS{10};
   static constexpr std::size_t NUM_X_TARGETS{10};
   static constexpr std::size_t NUM_Y_TARGETS{10};
   static constexpr std::size_t NUM_SAMPLES{1000};
   static constexpr double DISTANCE_THRESHOLD{0.8};
+#endif
 
   void SetUp() override
   {
@@ -229,7 +237,7 @@ TEST_F(SE2BoxConstraintTests, createSampleGenerator)
 }
 
 //==============================================================================
-TEST_F(SE2BoxConstraintTests, createSampleGeneratorThrowOnNUllRNG)
+TEST_F(SE2BoxConstraintTests, createSampleGeneratorThrowOnNullRNG)
 {
   // We need to use make_shared here because createSampleGenerator calls
   // shared_from_this, provided by enable_shared_from_this.
