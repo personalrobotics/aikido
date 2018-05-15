@@ -14,6 +14,18 @@ TEST(SO2, BoundedAngle)
   EXPECT_DOUBLE_EQ(s1.toAngle(), -M_PI_2);
 }
 
+TEST(SO2, CornerCaseNegative)
+{
+  SO2::State s1(-M_PI);
+  EXPECT_DOUBLE_EQ(s1.toAngle(), M_PI);
+}
+
+TEST(SO2, CornerCasePositive)
+{
+  SO2::State s1(M_PI);
+  EXPECT_DOUBLE_EQ(s1.toAngle(), M_PI);
+}
+
 TEST(SO2, Compose)
 {
   SO2::State s1(M_PI_4);

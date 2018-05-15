@@ -31,7 +31,7 @@ public:
 
   /// Helper function to create a \c ScopedState.
   ///
-  /// \return new \c ScopedState
+  /// \return new \c ScopedState.
   ScopedState createState() const;
 
   /// Returns state as a rotation angle in (-pi, pi].
@@ -39,15 +39,15 @@ public:
   /// \param[in] state State.
   double toAngle(const State* state) const;
 
-  /// Sets state from a rotation angle.
+  /// Sets state from a rotation angle in (-inf, inf).
   ///
-  /// \param[out] state State corresponding to angle
-  /// \param[in] angle Rotation angle.
+  /// \param[out] state State corresponding to angle.
+  /// \param[in] angle Rotation angle in (-inf, inf).
   void fromAngle(State* state, double angle) const;
 
   /// Returns state as an Eigen rotation.
   ///
-  /// \param[in] state State
+  /// \param[in] state State.
   Eigen::Rotation2Dd toRotation(const State* state) const;
 
   /// Sets state from an Eigen rotation.
@@ -89,20 +89,20 @@ public:
   /// Exponential mapping of Lie algebra element to a Lie group element. The
   /// tangent space is parameterized a rotation angle.
   ///
-  /// \param[in] tangent Element of the tangent space
-  /// \param[out] out Corresponding element of the Lie group
+  /// \param[in] tangent Element of the tangent space.
+  /// \param[out] out Corresponding element of the Lie group.
   void expMap(
       const Eigen::VectorXd& tangent, StateSpace::State* out) const override;
 
   /// Log mapping of Lie group element to a Lie algebra element. The tangent
   /// space is parameterized as a rotation angle.
   ///
-  /// \param[in] in Element of this Lie group
-  /// \param[out] tangent Corresponding element of the tangent space
+  /// \param[in] in Element of this Lie group.
+  /// \param[out] tangent Corresponding element of the tangent space.
   void logMap(
       const StateSpace::State* in, Eigen::VectorXd& tangent) const override;
 
-  /// Print the angle represented by the state
+  /// Print the angle represented by the state.
   void print(const StateSpace::State* state, std::ostream& os) const override;
 };
 
@@ -111,7 +111,7 @@ class SO2::State final : public StateSpace::State
 public:
   /// Constructs a state from a rotation angle.
   ///
-  /// \param[in] angle Rotation angle
+  /// \param[in] angle Rotation angle in (-inf, inf).
   explicit State(double angle = 0.0);
 
   ~State() = default;
@@ -121,7 +121,7 @@ public:
 
   /// Sets state from a rotation angle.
   ///
-  /// \param[in] angle Rotation angle
+  /// \param[in] angle Rotation angle in (-inf, inf).
   void fromAngle(double angle);
 
   /// Returns state as an Eigen rotation.
@@ -129,7 +129,7 @@ public:
 
   /// Sets state from an Eigen rotation.
   ///
-  /// \param[in] rotation Eigen rotation
+  /// \param[in] rotation Eigen rotation.
   void fromRotation(const Eigen::Rotation2Dd& rotation);
 
 private:

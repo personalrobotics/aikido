@@ -20,7 +20,7 @@ void SO2::State::fromAngle(double angle)
   double boundedAngle = std::fmod(angle, 2.0 * M_PI);
   if (boundedAngle > M_PI)
     boundedAngle -= 2.0 * M_PI;
-  if (boundedAngle < -M_PI)
+  if (boundedAngle <= -M_PI)
     boundedAngle += 2.0 * M_PI;
   mAngle = boundedAngle;
 }
@@ -112,7 +112,7 @@ void SO2::getIdentity(StateSpace::State* out) const
 void SO2::getInverse(const StateSpace::State* in, StateSpace::State* out) const
 {
   if (out == in)
-    throw std::invalid_argument("Output aliases input");
+    throw std::invalid_argument("Output aliases input.");
 
   auto sIn = static_cast<const State*>(in);
   auto sOut = static_cast<State*>(out);
