@@ -64,6 +64,9 @@ public:
   /// \return new \c ScopedState
   ScopedState createState() const;
 
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
+
   /// Gets a state as a unit quaternion.
   ///
   /// \param _state input state

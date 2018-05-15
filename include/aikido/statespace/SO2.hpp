@@ -71,6 +71,9 @@ public:
   /// \return new \c ScopedState
   ScopedState createState() const;
 
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
+
   /// Gets state as a rotation angle.
   ///
   /// \param _state input state

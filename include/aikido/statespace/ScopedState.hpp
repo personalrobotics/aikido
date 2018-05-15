@@ -34,6 +34,9 @@ public:
   ScopedState(ScopedState&&) = default;
   ScopedState& operator=(ScopedState&&) = default;
 
+  /// Creates an identical clone of the state this ScopedState handles.
+  ScopedState clone() const;
+
 private:
   std::unique_ptr<char[]> mBuffer;
 };

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/SO2.hpp>
+#include <dart/math/Helpers.hpp>
 #include "eigen_tests.hpp"
 
 using aikido::statespace::SO2;
@@ -7,6 +8,23 @@ using aikido::tests::make_vector;
 using Eigen::Rotation2Dd;
 
 static constexpr double TOLERANCE{1e-6};
+
+TEST(SO2, Clone)
+{
+  SO2 so2;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const auto angle = dart::math::random(-M_PI, M_PI);
+
+    auto s1 = so2.createState();
+    s1.setAngle(angle);
+
+    auto s2 = s1.clone();
+
+    EXPECT_DOUBLE_EQ(s1.getAngle(), s2.getAngle());
+  }
+}
 
 TEST(SO2, Compose)
 {

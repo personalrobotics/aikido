@@ -123,6 +123,16 @@ auto R<N>::createState() const -> ScopedState
 
 //==============================================================================
 template <int N>
+auto R<N>::cloneState(const StateSpace::State* stateIn) const -> ScopedState
+{
+  auto newState = createState();
+  copyState(stateIn, newState);
+
+  return newState;
+}
+
+//==============================================================================
+template <int N>
 auto R<N>::getMutableValue(State* _state) const -> Eigen::Map<VectorNd>
 {
   auto valueBuffer

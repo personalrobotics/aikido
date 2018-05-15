@@ -72,6 +72,9 @@ public:
   /// \return new \c ScopedState
   ScopedState createState() const;
 
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
+
   /// Gets the real vector stored in a \c State.
   ///
   /// \param _state a \c State in this state space

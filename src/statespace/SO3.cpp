@@ -35,6 +35,15 @@ auto SO3::createState() const -> ScopedState
 }
 
 //==============================================================================
+auto SO3::cloneState(const StateSpace::State* stateIn) const -> ScopedState
+{
+  auto newState = createState();
+  copyState(stateIn, newState);
+
+  return newState;
+}
+
+//==============================================================================
 auto SO3::getQuaternion(const State* _state) const -> const Quaternion&
 {
   return _state->mValue;

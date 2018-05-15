@@ -43,6 +43,15 @@ auto SO2::createState() const -> ScopedState
 }
 
 //==============================================================================
+SO2::ScopedState SO2::cloneState(const StateSpace::State* stateIn) const
+{
+  auto newState = createState();
+  copyState(stateIn, newState);
+
+  return newState;
+}
+
+//==============================================================================
 double SO2::getAngle(const State* _state) const
 {
   return _state->getAngle();

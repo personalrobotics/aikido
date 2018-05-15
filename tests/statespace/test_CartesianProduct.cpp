@@ -4,6 +4,7 @@
 #include <aikido/statespace/SE2.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
+#include <dart/math/Helpers.hpp>
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R2;
@@ -11,6 +12,26 @@ using aikido::statespace::R3;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::SE2;
+
+TEST(CartesianProduct, Clone)
+{
+  CartesianProduct space({std::make_shared<SO2>(), std::make_shared<R2>()});
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    auto s1 = space.createState();
+    const auto angle = dart::math::random(-M_PI, M_PI);
+    s1.getSubStateHandle<SO2>(0).setAngle(angle);
+    s1.getSubStateHandle<R2>(1).setValue(Eigen::Vector2d::Random());
+
+    auto s2 = s1.clone();
+
+    EXPECT_DOUBLE_EQ(s1.getSubStateHandle<SO2>(0).getAngle(),
+                     s2.getSubStateHandle<SO2>(0).getAngle());
+    EXPECT_TRUE(s1.getSubStateHandle<R2>(1).getValue().isApprox(
+                     s2.getSubStateHandle<R2>(1).getValue()));
+  }
+}
 
 TEST(CartesianProduct, Compose)
 {
