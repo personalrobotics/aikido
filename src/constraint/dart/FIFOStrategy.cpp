@@ -21,6 +21,8 @@ FIFOStrategy::FIFOStrategy(
 double FIFOStrategy::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
+  if (!solution)
+    std::cout << 10 << std::endl;
   DART_UNUSED(solution);
   return mIndex;
 }

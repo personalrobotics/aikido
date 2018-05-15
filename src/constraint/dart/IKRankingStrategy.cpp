@@ -59,8 +59,8 @@ void IKRankingStrategy::addIKSolution(statespace::StateSpace::State* solution)
     throw std::invalid_argument("Index exceeds maximum number of IK solutions");
 
   double score = evaluateIKSolution(solution);
-  mIKSolutions.emplace_back(
-      std::pair<statespace::StateSpace::State*, double>(solution, score));
+  mIKSolutions[mIndex]
+      = std::pair<statespace::StateSpace::State*, double>(solution, score);
   mIndex++;
 }
 

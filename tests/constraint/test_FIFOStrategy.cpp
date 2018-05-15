@@ -151,6 +151,7 @@ TEST_F(FIFOStrategyTest, SingleSample)
   ranker.addIKSolution(seedStateTwo);
 
   auto rankedSolutions = ranker.getRankedIKSolutions();
+  auto a = rankedSolutions.size();
   // TODO (avk): The following two states are coming out to be null!
   auto rankedStateOne = rankedSolutions[0];
   auto rankedStateTwo = rankedSolutions[1];
