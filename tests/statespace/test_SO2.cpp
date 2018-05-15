@@ -26,6 +26,16 @@ TEST(SO2, CornerCasePositive)
   EXPECT_DOUBLE_EQ(s1.toAngle(), M_PI);
 }
 
+TEST(SO2, ComposeThrowsOnAliasing)
+{
+  SO2::State s1(M_PI_4);
+  SO2::State s2(M_PI_2);
+
+  SO2 so2;
+  EXPECT_THROW(so2.compose(&s1, &s2, &s1), std::invalid_argument);
+  EXPECT_THROW(so2.compose(&s1, &s2, &s2), std::invalid_argument);
+}
+
 TEST(SO2, Compose)
 {
   SO2::State s1(M_PI_4);
@@ -68,6 +78,14 @@ TEST(SO2, Identity)
   EXPECT_DOUBLE_EQ(s1.toAngle(), out.toAngle());
 }
 
+TEST(SO2, GetInverseThrowsOnAliasing)
+{
+  SO2::State s1(M_PI_4);
+
+  SO2 so2;
+  EXPECT_THROW(so2.getInverse(&s1, &s1), std::invalid_argument);
+}
+
 TEST(SO2, Inverse)
 {
   SO2 so2;
@@ -84,6 +102,17 @@ TEST(SO2, Inverse)
   so2.compose(s1, inv, out);
 
   EXPECT_DOUBLE_EQ(ident.toAngle(), out.toAngle());
+}
+
+TEST(SO2, ExpMapThrowsOnIncorrectTangentSize)
+{
+  SO2::State out;
+
+  SO2 so2;
+  Eigen::VectorXd in(2);
+  in << 0., 0.;
+
+  EXPECT_THROW(so2.expMap(in, &out), std::runtime_error);
 }
 
 TEST(SO2, ExpMap)
