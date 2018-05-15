@@ -65,11 +65,11 @@ public:
     interpolator = std::make_shared<GeodesicInterpolator>(mSpace);
 
     auto s1 = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
-    s1.getSubStateHandle<SO2>(0).setAngle(0);
+    s1.getSubStateHandle<SO2>(0).fromAngle(0);
     auto s2 = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
-    s2.getSubStateHandle<SO2>(0).setAngle(1);
+    s2.getSubStateHandle<SO2>(0).fromAngle(1);
     auto s3 = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
-    s3.getSubStateHandle<SO2>(0).setAngle(2);
+    s3.getSubStateHandle<SO2>(0).fromAngle(2);
 
     mTraj1 = std::make_shared<Interpolated>(mSpace, interpolator);
     mTraj1->addWaypoint(0, s1);
