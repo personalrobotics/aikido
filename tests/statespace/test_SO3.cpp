@@ -16,11 +16,16 @@ TEST(SO3, Compose)
   SO3::State expected(
       Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ())));
 
-  SO3::State out;
+  SO3::State out1;
+  SO3::State out2;
   SO3 so3;
-  so3.compose(&s2, &s3, &out);
 
-  EXPECT_TRUE(expected.getQuaternion().isApprox(out.getQuaternion()));
+  so3.compose(&s2, &s3, &out1);
+  EXPECT_TRUE(expected.getQuaternion().isApprox(out1.getQuaternion()));
+
+  so3.copyState(&s2, &out2);
+  so3.compose(&out2, &s3);
+  EXPECT_TRUE(expected.getQuaternion().isApprox(out2.getQuaternion()));
 }
 
 TEST(SO3, Identity)

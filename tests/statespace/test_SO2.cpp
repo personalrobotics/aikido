@@ -12,13 +12,18 @@ TEST(SO2, Compose)
 {
   SO2::State s1(M_PI / 4);
   SO2::State s2(M_PI / 2);
-  SO2::State out;
+  SO2::State out1;
+  SO2::State out2;
   SO2::State expected(3.0 / 4.0 * M_PI);
 
   SO2 so2;
-  so2.compose(&s1, &s2, &out);
 
-  EXPECT_TRUE(out.getRotation().isApprox(expected.getRotation()));
+  so2.compose(&s1, &s2, &out1);
+  EXPECT_TRUE(out1.getRotation().isApprox(expected.getRotation()));
+
+  so2.copyState(&s1, &out2);
+  so2.compose(&out2, &s2);
+  EXPECT_TRUE(out2.getRotation().isApprox(expected.getRotation()));
 }
 
 TEST(SO2, Identity)

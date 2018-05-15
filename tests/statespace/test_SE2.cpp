@@ -23,10 +23,14 @@ TEST(SE2, Compose)
   Eigen::Isometry2d expected_pose = Eigen::Isometry2d::Identity();
   expected_pose.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
 
-  auto out = space.createState();
-  space.compose(state2, state3, out);
+  auto out1 = space.createState();
+  space.compose(state2, state3, out1); // out1 = state2 * state3
+  EXPECT_TRUE(expected_pose.isApprox(out1.getIsometry()));
 
-  EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
+  auto out2 = space.createState();
+  space.copyState(state2, out2); // out2 = state2
+  space.compose(out2, state3);   // out2 = out2 * state3
+  EXPECT_TRUE(expected_pose.isApprox(out2.getIsometry()));
 }
 
 TEST(SE2, Identity)

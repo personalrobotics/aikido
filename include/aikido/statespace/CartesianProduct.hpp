@@ -32,6 +32,8 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   /// Construct the Cartesian product of a vector of subspaces.
   /// \param _subspaces vector of subspaces
   explicit CartesianProduct(std::vector<StateSpacePtr> _subspaces);

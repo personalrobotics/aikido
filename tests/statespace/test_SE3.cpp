@@ -23,10 +23,14 @@ TEST(SE3, Compose)
 
   Eigen::Isometry3d expected = pose2 * pose3;
 
-  SE3::ScopedState out(&space);
-  space.compose(s2, s3, out);
+  SE3::ScopedState out1(&space);
+  space.compose(s2, s3, out1); // out1 = s2 * s3
+  EXPECT_TRUE(expected.isApprox(out1.getIsometry()));
 
-  EXPECT_TRUE(expected.isApprox(out.getIsometry()));
+  SE3::ScopedState out2(&space);
+  space.copyState(s2, out2);  // out2 = s2
+  space.compose(out2, s3);    // out2 = out2 * s3
+  EXPECT_TRUE(expected.isApprox(out2.getIsometry()));
 }
 
 TEST(SE3, Identity)
