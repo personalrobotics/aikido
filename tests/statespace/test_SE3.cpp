@@ -1,6 +1,6 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SE3.hpp>
-#include <dart/math/Helpers.hpp>
 
 using aikido::statespace::SE3;
 using Vector6d = Eigen::Matrix<double, 6, 1>;

@@ -1,10 +1,10 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE2.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
-#include <dart/math/Helpers.hpp>
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R2;
@@ -26,10 +26,12 @@ TEST(CartesianProduct, Clone)
 
     auto s2 = s1.clone();
 
-    EXPECT_DOUBLE_EQ(s1.getSubStateHandle<SO2>(0).getAngle(),
-                     s2.getSubStateHandle<SO2>(0).getAngle());
-    EXPECT_TRUE(s1.getSubStateHandle<R2>(1).getValue().isApprox(
-                     s2.getSubStateHandle<R2>(1).getValue()));
+    EXPECT_DOUBLE_EQ(
+        s1.getSubStateHandle<SO2>(0).getAngle(),
+        s2.getSubStateHandle<SO2>(0).getAngle());
+    EXPECT_TRUE(
+        s1.getSubStateHandle<R2>(1).getValue().isApprox(
+            s2.getSubStateHandle<R2>(1).getValue()));
   }
 }
 

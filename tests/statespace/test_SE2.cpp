@@ -1,6 +1,6 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SE2.hpp>
-#include <dart/math/Helpers.hpp>
 
 using aikido::statespace::SE2;
 

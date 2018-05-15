@@ -1,6 +1,6 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SO2.hpp>
-#include <dart/math/Helpers.hpp>
 #include "eigen_tests.hpp"
 
 using aikido::statespace::SO2;

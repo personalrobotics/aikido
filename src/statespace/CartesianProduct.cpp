@@ -32,7 +32,8 @@ auto CartesianProduct::createState() const -> ScopedState
 }
 
 //==============================================================================
-CartesianProduct::ScopedState CartesianProduct::cloneState(const StateSpace::State* stateIn) const
+CartesianProduct::ScopedState CartesianProduct::cloneState(
+    const StateSpace::State* stateIn) const
 {
   auto newState = createState();
   copyState(stateIn, newState);

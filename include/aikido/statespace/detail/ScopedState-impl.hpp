@@ -21,7 +21,7 @@ ScopedState<Handle>::~ScopedState()
 }
 
 //==============================================================================
-template<class Handle>
+template <class Handle>
 ScopedState<Handle> ScopedState<Handle>::clone() const
 {
   return this->mSpace->cloneState(this->mState);
