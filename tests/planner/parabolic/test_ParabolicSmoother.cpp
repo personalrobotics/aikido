@@ -140,6 +140,9 @@ protected:
   double mNonStraightLineLength;
   double mNonStraightLineWithNonZeroStartTimeLength;
   double mTimelimit = 60.0;
+  double mBlendRadius = 0.5;
+  int mBlendIterations = 4;
+  double mCheckResolution = 1e-1;
   const double mTolerance = 1e-5;
 };
 
@@ -224,7 +227,8 @@ TEST_F(ParabolicSmootherTests, doShortcut)
       mMaxVelocity,
       mMaxAcceleration,
       mRng,
-      mTimelimit);
+      mTimelimit,
+      mCheckResolution);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -253,15 +257,14 @@ TEST_F(ParabolicSmootherTests, doBlend)
 
   auto splineTrajectory = computeParabolicTiming(
       *mNonStraightLine, mMaxVelocity, mMaxAcceleration);
-  double blendRadius = 0.5;
-  int blendIterations = 100;
   auto smoothedTrajectory = doBlend(
       *splineTrajectory.get(),
       testable,
       mMaxVelocity,
       mMaxAcceleration,
-      blendRadius,
-      blendIterations);
+      mBlendRadius,
+      mBlendIterations,
+      mCheckResolution);
 
   // Position.
   auto state = mStateSpace->createState();
@@ -290,8 +293,6 @@ TEST_F(ParabolicSmootherTests, doShortcutAndBlend)
 
   auto splineTrajectory = computeParabolicTiming(
       *mNonStraightLine, mMaxVelocity, mMaxAcceleration);
-  double blendRadius = 0.5;
-  int blendIterations = 100;
   auto smoothedTrajectory = doShortcutAndBlend(
       *splineTrajectory.get(),
       testable,
@@ -299,8 +300,9 @@ TEST_F(ParabolicSmootherTests, doShortcutAndBlend)
       mMaxAcceleration,
       mRng,
       mTimelimit,
-      blendRadius,
-      blendIterations);
+      mBlendRadius,
+      mBlendIterations,
+      mCheckResolution);
 
   // Position.
   auto state = mStateSpace->createState();
