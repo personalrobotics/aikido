@@ -1,7 +1,8 @@
-set(sources 
+set(sources
   VectorFieldPlanner.cpp
   VectorField.cpp
   VectorFieldUtil.cpp
+  VectorFieldConfigurationToEndEffectorOffsetPlanner.cpp
   detail/VectorFieldIntegrator.cpp
   detail/VectorFieldPlannerExceptions.cpp
   BodyNodePoseVectorField.cpp
@@ -42,4 +43,3 @@ add_component_dependencies(${PROJECT_NAME} planner_vectorfield
 )
 
 format_add_sources(${sources})
-

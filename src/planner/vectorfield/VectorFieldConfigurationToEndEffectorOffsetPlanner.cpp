@@ -35,6 +35,8 @@ trajectory::TrajectoryPtr VectorFieldConfigurationToEndEffectorOffsetPlanner::pl
   // TODO (sniyaz): Check equality between state space of this planner and given
   // problem.
 
+  using aikido::planner::vectorfield::planToEndEffectorOffset;
+
   // Just call the core VFP function.
   // TODO: How should start state be handled?
   return planToEndEffectorOffset(
