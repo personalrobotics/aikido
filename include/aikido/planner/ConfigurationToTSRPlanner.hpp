@@ -22,8 +22,7 @@ public:
   /// Constructor
   ///
   /// \param[in] stateSpace State space that this planner is associated with.
-  explicit ConfigurationToTSRPlanner(
-      statespace::ConstStateSpacePtr stateSpace);
+  explicit ConfigurationToTSRPlanner(statespace::ConstStateSpacePtr stateSpace);
 
   /// Solves \c problem returning the result to \c result.
   ///
