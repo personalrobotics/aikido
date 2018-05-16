@@ -51,7 +51,7 @@ protected:
   const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  statespace::StateSpace::ScopedStateConst mStartState;
 
   /// Goal TSR
   const constraint::dart::ConstTSRPtr mGoalTSR;

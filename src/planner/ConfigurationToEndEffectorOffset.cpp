@@ -15,7 +15,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mStartState(startState)
+  , mStartState(stateSpace->cloneState(startState))
   , mDirection(direction.normalized())
   , mDistance(signedDistance)
 {

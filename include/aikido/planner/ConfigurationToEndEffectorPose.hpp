@@ -52,7 +52,7 @@ protected:
   const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  statespace::StateSpace::ScopedStateConst mStartState;
 
   /// Goal pose.
   const Eigen::Isometry3d mGoalPose;
