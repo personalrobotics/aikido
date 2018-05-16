@@ -8,7 +8,7 @@ namespace constraint {
 //==============================================================================
 TestableIntersection::TestableIntersection(
     statespace::StateSpacePtr _stateSpace,
-    std::vector<std::shared_ptr<Testable>> _constraints)
+    std::vector<ConstTestablePtr> _constraints)
   : mStateSpace(std::move(_stateSpace)), mConstraints(std::move(_constraints))
 {
   if (!mStateSpace)
@@ -48,13 +48,13 @@ std::unique_ptr<TestableOutcome> TestableIntersection::createOutcome() const
 }
 
 //==============================================================================
-statespace::StateSpacePtr TestableIntersection::getStateSpace() const
+statespace::ConstStateSpacePtr TestableIntersection::getStateSpace() const
 {
   return mStateSpace;
 }
 
 //==============================================================================
-void TestableIntersection::addConstraint(TestablePtr _constraint)
+void TestableIntersection::addConstraint(ConstTestablePtr _constraint)
 {
   if (_constraint->getStateSpace() == mStateSpace)
   {
@@ -69,7 +69,7 @@ void TestableIntersection::addConstraint(TestablePtr _constraint)
 
 //==============================================================================
 void TestableIntersection::testConstraintStateSpaceOrThrow(
-    const TestablePtr& constraint)
+    const ConstTestablePtr& constraint)
 {
   if (constraint->getStateSpace() != mStateSpace)
   {

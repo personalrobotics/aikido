@@ -21,7 +21,7 @@ public:
   /// \param _constraints Set of constraints.
   TestableIntersection(
       statespace::StateSpacePtr _stateSpace,
-      std::vector<TestablePtr> _constraints = std::vector<TestablePtr>());
+      std::vector<ConstTestablePtr> _constraints = std::vector<ConstTestablePtr>());
 
   // Documentation inherited.
   bool isSatisfied(
@@ -33,18 +33,18 @@ public:
   std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Add a Testable to the conjunction.
   /// \param constraint a constraint in the same StateSpace as the
   ///        TestableIntersection was initialize with.
-  void addConstraint(TestablePtr constraint);
+  void addConstraint(ConstTestablePtr constraint);
 
 private:
   statespace::StateSpacePtr mStateSpace;
-  std::vector<TestablePtr> mConstraints;
+  std::vector<ConstTestablePtr> mConstraints;
 
-  void testConstraintStateSpaceOrThrow(const TestablePtr& constraint);
+  void testConstraintStateSpaceOrThrow(const ConstTestablePtr& constraint);
 };
 
 } // namespace constraint

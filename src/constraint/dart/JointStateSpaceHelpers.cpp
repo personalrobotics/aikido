@@ -97,7 +97,7 @@ std::unique_ptr<Testable> createTestableBounds(
 
 //==============================================================================
 std::unique_ptr<Testable> createTestableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton)
 {
   const auto n = _metaSkeleton->getNumSubspaces();
 

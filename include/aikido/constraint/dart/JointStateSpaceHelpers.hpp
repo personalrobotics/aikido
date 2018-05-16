@@ -78,7 +78,7 @@ std::unique_ptr<Testable> createTestableBounds(
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Testable will be
 /// applied.
 std::unique_ptr<Testable> createTestableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton);
 
 /// Create a Sampleable constraint that can be used to sample a state that is
 /// guarenteed to lie within bounds define on the StateSpace.
