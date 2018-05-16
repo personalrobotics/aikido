@@ -1,11 +1,11 @@
-#include "aikido/planner/AdaptedPlanner.hpp"
+#include "aikido/planner/PlannerAdapter.hpp"
 
 namespace aikido {
 namespace planner {
 
 //==============================================================================
 template <typename DelegatePlanner>
-AdaptedPlanner<DelegatePlanner>::AdaptedPlanner(
+PlannerAdapter<DelegatePlanner>::PlannerAdapter(
     std::shared_ptr<DelegatePlanner> planner)
   : Planner(planner->getStateSpace()), mDelegate(std::move(planner))
 {

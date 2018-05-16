@@ -1,4 +1,4 @@
-#include "aikido/planner/AdaptedPlanner.hpp"
+#include "aikido/planner/PlannerAdapter.hpp"
 
 namespace aikido {
 namespace planner {
@@ -20,6 +20,36 @@ trajectory::TrajectoryPtr ConfigurationToConfigurationAdapter::plan(
     const ConfigurationToConfiguration& problem, Planner::Result* result)
 {
   return mDelegate->plan(problem, result);
+}
+
+//==============================================================================
+template <>
+trajectory::TrajectoryPtr ConfigurationToConfigurationAdapter::plan(
+    const ConfigurationToConfigurations& /*problem*/,
+    Planner::Result* /*result*/)
+{
+  // TODO
+  return nullptr;
+}
+
+//==============================================================================
+template <>
+trajectory::TrajectoryPtr ConfigurationToConfigurationAdapter::plan(
+    const ConfigurationToEndEffectorOffset& /*problem*/,
+    Planner::Result* /*result*/)
+{
+  // TODO
+  return nullptr;
+}
+
+//==============================================================================
+template <>
+trajectory::TrajectoryPtr ConfigurationToConfigurationAdapter::plan(
+    const ConfigurationToEndEffectorPose& /*problem*/,
+    Planner::Result* /*result*/)
+{
+  // TODO
+  return nullptr;
 }
 
 //==============================================================================

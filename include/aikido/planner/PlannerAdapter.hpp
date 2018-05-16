@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_ADAPTEDPLANNER_HPP_
-#define AIKIDO_PLANNER_ADAPTEDPLANNER_HPP_
+#ifndef AIKIDO_PLANNER_PLANNERADAPTER_HPP_
+#define AIKIDO_PLANNER_PLANNERADAPTER_HPP_
 
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
@@ -17,21 +17,22 @@ namespace aikido {
 namespace planner {
 
 template <typename DelegatePlanner>
-class AdaptedPlanner : public Planner
+class PlannerAdapter : public Planner
 {
 public:
   /// Constructor.
   ///
   /// \param[in] planner Delegate planner to use internally
-  explicit AdaptedPlanner(std::shared_ptr<DelegatePlanner> planner);
+  explicit PlannerAdapter(std::shared_ptr<DelegatePlanner> planner);
 
   /// Default destructor.
-  virtual ~AdaptedPlanner() = default;
+  virtual ~PlannerAdapter() = default;
 
   /// Returns true if this planner can solve \c problem.
   virtual bool canSolve(const Problem& problem) const override;
 
-  /// Solves \c problem using the DelegatePlanner.
+  /// Solves a ConfigurationToConfiguration \c problem using the
+  /// DelegatePlanner.
   ///
   /// \param[in] problem Planning problem to solve.
   /// \param[out] result Result of planning.
@@ -40,7 +41,37 @@ public:
       const ConfigurationToConfiguration& problem,
       Planner::Result* result = nullptr);
 
-  /// Solves \c problem using the DelegatePlanner.
+  /// Solves a ConfigurationToConfigurations \c problem using the
+  /// DelegatePlanner.
+  ///
+  /// \param[in] problem Planning problem to solve.
+  /// \param[out] result Result of planning.
+  /// \return Trajectory or \c nullptr if planning failed.
+  virtual trajectory::TrajectoryPtr plan(
+      const ConfigurationToConfigurations& problem,
+      Planner::Result* result = nullptr);
+
+  /// Solves a ConfigurationToEndEffectorOffset \c problem using the
+  /// DelegatePlanner.
+  ///
+  /// \param[in] problem Planning problem to solve.
+  /// \param[out] result Result of planning.
+  /// \return Trajectory or \c nullptr if planning failed.
+  virtual trajectory::TrajectoryPtr plan(
+      const ConfigurationToEndEffectorOffset& problem,
+      Planner::Result* result = nullptr);
+
+  /// Solves a ConfigurationToEndEffectorPose \c problem using the
+  /// DelegatePlanner.
+  ///
+  /// \param[in] problem Planning problem to solve.
+  /// \param[out] result Result of planning.
+  /// \return Trajectory or \c nullptr if planning failed.
+  virtual trajectory::TrajectoryPtr plan(
+      const ConfigurationToEndEffectorPose& problem,
+      Planner::Result* result = nullptr);
+
+  /// Solves ConfigurationToTSR \c problem using the DelegatePlanner.
   ///
   /// \param[in] problem Planning problem to solve.
   /// \param[out] result Result of planning.
@@ -62,12 +93,13 @@ protected:
 };
 
 using ConfigurationToConfigurationAdapter
-    = AdaptedPlanner<ConfigurationToConfigurationPlanner>;
+    = PlannerAdapter<ConfigurationToConfigurationPlanner>;
 
 } // namespace planner
 } // namespace aikido
 
-#include "aikido/planner/detail/AdaptedPlanner-impl.hpp"
+#include "aikido/planner/detail/PlannerAdapter-impl.hpp"
+
 #include "aikido/planner/detail/ConfigurationToConfigurationAdapter-impl.hpp"
 
-#endif // AIKIDO_PLANNER_ADAPTEDPLANNER_HPP_
+#endif // AIKIDO_PLANNER_PLANNERADAPTER_HPP_
