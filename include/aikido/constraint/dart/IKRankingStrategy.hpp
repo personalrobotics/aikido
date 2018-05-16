@@ -12,7 +12,7 @@ class IKRankingStrategy
 {
 public:
   // TODO (avk): Move this to protected?
-  // Read this:
+  // Read this in detail:
   // 1. https://stackoverflow.com/questions/2290733/
   // 1. initialize-parents-protected-members-with-initialization-list-c
   // 2. https://stackoverflow.com/questions/18479295/
@@ -32,6 +32,9 @@ public:
 
   /// Returns the statespace.
   statespace::ConstStateSpacePtr getStateSpace() const;
+
+  // TODO(avk): What happens when the number of IK solutions
+  // is less than the number specified in constructor?
 
   /// Returns the vector of ranked IK solutions.
   std::vector<std::pair<statespace::StateSpace::State*, double>>&
@@ -55,7 +58,7 @@ protected:
   /// Vector to hold IK solutions and corresponding score.
   std::vector<std::pair<statespace::StateSpace::State*, double>> mIKSolutions;
 
-  /// Helper variable to keep track of number of IK Solutions held.
+  /// Helper variable to keep track of number of IK Solutions currently held.
   std::size_t mIndex;
 };
 

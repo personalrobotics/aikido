@@ -154,6 +154,7 @@ TEST_F(FIFOStrategyTest, SingleSample)
   auto rankedSolutions = ranker.getRankedIKSolutions();
   auto rankedStateOne = rankedSolutions[0].first;
   auto rankedStateTwo = rankedSolutions[1].first;
+
   DART_UNUSED(rankedStateOne);
   DART_UNUSED(rankedStateTwo);
 }
