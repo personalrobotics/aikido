@@ -13,7 +13,7 @@ namespace ompl {
 
 //==============================================================================
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -118,7 +118,7 @@ namespace ompl {
   auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
 
   // Validity checking
-  std::vector<constraint::TestablePtr> constraints{
+  std::vector<constraint::ConstTestablePtr> constraints{
       std::move(_validityConstraint), std::move(_boundsConstraint)};
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(

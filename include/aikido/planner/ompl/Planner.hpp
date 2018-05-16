@@ -229,7 +229,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
 /// between validity checking two successive points on a tree extension
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
