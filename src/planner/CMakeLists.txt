@@ -3,6 +3,7 @@ set(sources
   ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp
   ConfigurationToTSR.cpp
+  ConfigurationToTSRPlanner.cpp
   ConfigurationToEndEffectorOffset.cpp
   ConfigurationToEndEffectorPose.cpp
   FirstSupportedMetaPlanner.cpp

@@ -8,11 +8,13 @@ namespace planner {
 //==============================================================================
 ConfigurationToTSR::ConfigurationToTSR(
     statespace::ConstStateSpacePtr stateSpace,
+    dart::dynamics::MetaSkeletonPtr metaSkeleton,
     dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
+  , mMetaSkeleton(std::move(metaSkeleton))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(startState)
   , mGoalTSR(goalTSR)
@@ -31,6 +33,13 @@ const std::string& ConfigurationToTSR::getStaticType()
 {
   static std::string name("ConfigurationToTSR");
   return name;
+}
+
+//==============================================================================
+dart::dynamics::MetaSkeletonPtr ConfigurationToTSR::getMetaSkeleton()
+    const
+{
+  return mMetaSkeleton;
 }
 
 //==============================================================================
