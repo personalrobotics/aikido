@@ -13,11 +13,18 @@ class CompoundStateHandle
 {
 public:
   using typename statespace::StateHandle<CartesianProduct,
-                                         _QualifiedState>::State;
-  using typename statespace::StateHandle<CartesianProduct,
                                          _QualifiedState>::StateSpace;
+
   using typename statespace::StateHandle<CartesianProduct,
                                          _QualifiedState>::QualifiedState;
+
+  using typename statespace::StateHandle<CartesianProduct,
+                                         _QualifiedState>::State;
+  using typename statespace::StateHandle<CartesianProduct,
+                                         _QualifiedState>::ConstState;
+
+  using NonConstHandle = CompoundStateHandle<State>;
+  using ConstHandle = CompoundStateHandle<ConstState>;
 
   /// Construct and initialize to \c nullptr.
   CompoundStateHandle()

@@ -68,9 +68,9 @@ StateSpace::State* SO3::allocateStateInBuffer(void* _buffer) const
 }
 
 //==============================================================================
-void SO3::freeStateInBuffer(StateSpace::State* _state) const
+void SO3::freeStateInBuffer(const StateSpace::State* _state) const
 {
-  static_cast<State*>(_state)->~State();
+  static_cast<const State*>(_state)->~State();
 }
 
 //==============================================================================

@@ -16,7 +16,10 @@ trajectory::InterpolatedPtr planSnap(
     aikido::planner::PlanningResult& planningResult)
 {
   auto problem = ConfigurationToConfiguration(
-      stateSpace, startState, goalState, constraint);
+      stateSpace,
+      stateSpace->cloneState(startState),
+      stateSpace->cloneState(goalState),
+      constraint);
 
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       stateSpace, interpolator);

@@ -17,6 +17,7 @@ class StateHandle
 {
 public:
   using StateSpace = _StateSpace;
+
   using QualifiedState = _QualifiedState;
 
   using State = typename StateSpace::State;
@@ -24,6 +25,9 @@ public:
       typename std::conditional<std::is_const<QualifiedState>::value,
                                 QualifiedState,
                                 const QualifiedState>::type;
+
+  using NonConstHandle = StateHandle<StateSpace, State>;
+  using ConstHandle = StateHandle<StateSpace, ConstState>;
 
   /// Constructs a nullptr handle.
   StateHandle();
@@ -37,8 +41,8 @@ public:
   StateHandle(const StateHandle&) = default;
   StateHandle(StateHandle&&) = default;
 
-  StateHandle& operator=(StateHandle&&) = default;
   StateHandle& operator=(const StateHandle&) = default;
+  StateHandle& operator=(StateHandle&&) = default;
 
   /// Implicitly convert to a \c State pointer.
   operator QualifiedState*() const;

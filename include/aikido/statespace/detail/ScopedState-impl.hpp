@@ -22,6 +22,25 @@ ScopedState<Handle>::~ScopedState()
 
 //==============================================================================
 template <class Handle>
+template <typename Q, typename Enable>
+ScopedState<Handle>::ScopedState(
+    ScopedState<typename ScopedState<Handle>::NonConstHandle>&& other)
+  : mBuffer(std::move(other.mBuffer))
+{
+  // Do nothing
+}
+
+//==============================================================================
+template <class Handle>
+template <typename Q, typename Enable>
+typename ScopedState<Handle>::ScopedState& ScopedState<Handle>::operator=(
+    ScopedState<typename ScopedState<Handle>::NonConstHandle>&& other)
+{
+  mBuffer = std::move(other.mBuffer);
+}
+
+//==============================================================================
+template <class Handle>
 ScopedState<Handle> ScopedState<Handle>::clone() const
 {
   return this->mSpace->cloneState(this->mState);
