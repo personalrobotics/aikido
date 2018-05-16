@@ -20,7 +20,7 @@ public:
 
   // Documentation inherited.
   // TODO (avk): const-correctness after planner API is merged.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;

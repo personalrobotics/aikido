@@ -23,7 +23,7 @@ public:
       std::unique_ptr<common::RNG> _rng);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<constraint::SampleGenerator> createSampleGenerator()

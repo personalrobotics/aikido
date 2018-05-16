@@ -45,7 +45,7 @@ public:
           std::make_shared<::dart::collision::BodyNodeCollisionFilter>()));
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// \copydoc Testable::isSatisfied()
   /// \note Outcome is expected to be an instance of CollisionFreeOutcome.

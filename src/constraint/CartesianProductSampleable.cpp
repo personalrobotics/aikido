@@ -118,7 +118,7 @@ CartesianProductSampleable::CartesianProductSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

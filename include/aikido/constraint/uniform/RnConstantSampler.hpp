@@ -23,7 +23,7 @@ public:
       std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<constraint::SampleGenerator> createSampleGenerator()

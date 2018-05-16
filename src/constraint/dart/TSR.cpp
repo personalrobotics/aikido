@@ -169,7 +169,7 @@ TSR& TSR::operator=(TSR&& other)
 }
 
 //==============================================================================
-std::shared_ptr<statespace::StateSpace> TSR::getStateSpace() const
+std::shared_ptr<const statespace::StateSpace> TSR::getStateSpace() const
 {
   return mStateSpace;
 }

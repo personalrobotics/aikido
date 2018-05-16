@@ -148,7 +148,7 @@ CyclicSampleable::CyclicSampleable(SampleablePtr _sampleable)
 }
 
 //==============================================================================
-statespace::StateSpacePtr CyclicSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr CyclicSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

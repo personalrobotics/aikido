@@ -101,7 +101,7 @@ std::unique_ptr<Testable> createTestableBounds(
 {
   const auto n = _metaSkeleton->getNumSubspaces();
 
-  std::vector<std::shared_ptr<Testable>> constraints;
+  std::vector<std::shared_ptr<const Testable>> constraints;
   constraints.reserve(n);
 
   for (std::size_t i = 0; i < n; ++i)

@@ -36,7 +36,7 @@ FramePairDifferentiable::FramePairDifferentiable(
 
   using SE3 = statespace::SE3;
 
-  auto space = dynamic_cast<SE3*>(mRelPoseConstraint->getStateSpace().get());
+  auto space = dynamic_cast<const SE3*>(mRelPoseConstraint->getStateSpace().get());
 
   if (!space)
     throw std::invalid_argument("_relPoseConstraint is not in SE3.");
@@ -145,7 +145,7 @@ std::vector<ConstraintType> FramePairDifferentiable::getConstraintTypes() const
 }
 
 //==============================================================================
-statespace::StateSpacePtr FramePairDifferentiable::getStateSpace() const
+statespace::ConstStateSpacePtr FramePairDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

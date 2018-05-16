@@ -80,7 +80,7 @@ SO2UniformSampler::SO2UniformSampler(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO2UniformSampler::getStateSpace() const
+statespace::ConstStateSpacePtr SO2UniformSampler::getStateSpace() const
 {
   return mSpace;
 }

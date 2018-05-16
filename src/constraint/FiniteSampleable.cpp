@@ -171,7 +171,7 @@ FiniteSampleable::~FiniteSampleable()
 }
 
 //==============================================================================
-statespace::StateSpacePtr FiniteSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr FiniteSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

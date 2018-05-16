@@ -23,7 +23,7 @@ public:
       std::vector<ProjectablePtr> _constraints);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool project(

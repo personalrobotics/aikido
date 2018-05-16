@@ -34,7 +34,7 @@ public:
       const Eigen::Vector2d& upperLimits);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Documentation inherited.
   bool isSatisfied(

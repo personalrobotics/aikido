@@ -24,7 +24,7 @@ public:
   virtual ~DifferentiableSubspace() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;

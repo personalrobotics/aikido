@@ -84,7 +84,7 @@ RejectionSampleable::RejectionSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr RejectionSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr RejectionSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

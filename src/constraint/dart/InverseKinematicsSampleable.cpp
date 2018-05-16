@@ -107,7 +107,7 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
   if (!mPoseConstraint)
     throw std::invalid_argument("Pose SampleGenerator is nullptr.");
 
-  if (!dynamic_cast<SE3*>(mPoseConstraint->getStateSpace().get()))
+  if (!dynamic_cast<const SE3*>(mPoseConstraint->getStateSpace().get()))
     throw std::invalid_argument("Pose Sampleable does not operate on a SE3.");
 
   if (!mSeedConstraint)
@@ -122,7 +122,7 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr InverseKinematicsSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr InverseKinematicsSampleable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

@@ -130,7 +130,7 @@ SE2BoxConstraint::SE2BoxConstraint(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SE2BoxConstraint::getStateSpace() const
+statespace::ConstStateSpacePtr SE2BoxConstraint::getStateSpace() const
 {
   return mSpace;
 }

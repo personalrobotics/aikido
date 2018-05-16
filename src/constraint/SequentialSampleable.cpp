@@ -154,7 +154,7 @@ SequentialSampleable::SequentialSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SequentialSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr SequentialSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

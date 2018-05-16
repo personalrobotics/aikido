@@ -29,7 +29,7 @@ public:
   virtual ~Sampleable() = default;
 
   /// Gets the StateSpace that this constraint operates on.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Creates a SampleGenerator for sampling from this constraint.
   virtual std::unique_ptr<SampleGenerator> createSampleGenerator() const = 0;

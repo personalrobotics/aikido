@@ -85,7 +85,7 @@ SO3UniformSampler::SO3UniformSampler(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO3UniformSampler::getStateSpace() const
+statespace::ConstStateSpacePtr SO3UniformSampler::getStateSpace() const
 {
   return mSpace;
 }

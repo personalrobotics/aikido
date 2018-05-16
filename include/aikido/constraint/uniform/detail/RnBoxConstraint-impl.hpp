@@ -151,7 +151,7 @@ RBoxConstraint<N>::RBoxConstraint(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RBoxConstraint<N>::getStateSpace() const
+statespace::ConstStateSpacePtr RBoxConstraint<N>::getStateSpace() const
 {
   return mSpace;
 }

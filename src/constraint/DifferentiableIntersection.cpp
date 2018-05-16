@@ -127,7 +127,7 @@ std::vector<ConstraintType> DifferentiableIntersection::getConstraintTypes()
 }
 
 //==============================================================================
-statespace::StateSpacePtr DifferentiableIntersection::getStateSpace() const
+statespace::ConstStateSpacePtr DifferentiableIntersection::getStateSpace() const
 {
   return mStateSpace;
 }

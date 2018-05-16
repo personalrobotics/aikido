@@ -114,7 +114,7 @@ RConstantSampler<N>::RConstantSampler(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RConstantSampler<N>::getStateSpace() const
+statespace::ConstStateSpacePtr RConstantSampler<N>::getStateSpace() const
 {
   return mSpace;
 }
