@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
 #define AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
 
-#include <unordered_set>
 #include <set>
+#include <unordered_set>
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/Interpolator.hpp"
