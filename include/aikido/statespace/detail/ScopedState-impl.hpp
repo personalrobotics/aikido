@@ -37,6 +37,7 @@ typename ScopedState<Handle>::ScopedState& ScopedState<Handle>::operator=(
     ScopedState<typename ScopedState<Handle>::NonConstHandle>&& other)
 {
   mBuffer = std::move(other.mBuffer);
+  return *this;
 }
 
 //==============================================================================
