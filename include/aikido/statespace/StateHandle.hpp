@@ -17,7 +17,6 @@ class StateHandle
 {
 public:
   using StateSpace = _StateSpace;
-
   using QualifiedState = _QualifiedState;
 
   using State = typename StateSpace::State;

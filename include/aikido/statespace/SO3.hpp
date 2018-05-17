@@ -54,6 +54,8 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   using Quaternion = State::Quaternion;
 
   /// Constructs a state space representing SO(3).
