@@ -12,7 +12,7 @@ ConfigurationToConfigurations::ConfigurationToConfigurations(
     const GoalStates& goalStates,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
-  , mStartState(stateSpace->cloneState(startState))
+  , mStartState(mStateSpace->cloneState(startState))
 {
   for (const auto& goalState : goalStates)
     mGoalStates.emplace(stateSpace->cloneState(goalState));

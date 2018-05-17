@@ -14,7 +14,7 @@ ConfigurationToTSR::ConfigurationToTSR(
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mStartState(stateSpace->cloneState(startState))
+  , mStartState(mStateSpace->cloneState(startState))
   , mGoalTSR(goalTSR)
 {
   // Do nothing

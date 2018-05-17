@@ -12,8 +12,8 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     const statespace::StateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
-  , mStartState(stateSpace->cloneState(startState))
-  , mGoalState(stateSpace->cloneState(goalState))
+  , mStartState(mStateSpace->cloneState(startState))
+  , mGoalState(mStateSpace->cloneState(goalState))
 {
   // Do nothing
 }

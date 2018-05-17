@@ -17,6 +17,7 @@ class StateHandle
 {
 public:
   using StateSpace = _StateSpace;
+
   using QualifiedState = _QualifiedState;
 
   using State = typename StateSpace::State;
@@ -42,6 +43,12 @@ public:
 
   StateHandle& operator=(const StateHandle&) = default;
   StateHandle& operator=(StateHandle&&) = default;
+
+  StateHandle(const NonConstHandle&);
+  StateHandle(NonConstHandle&&);
+
+  StateHandle& operator=(const NonConstHandle&);
+  StateHandle& operator=(NonConstHandle&&);
 
   /// Implicitly convert to a \c State pointer.
   operator QualifiedState*() const;
