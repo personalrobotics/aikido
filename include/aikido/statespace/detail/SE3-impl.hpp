@@ -38,7 +38,7 @@ public:
   /// Gets value as an Eigen transformation object.
   ///
   /// \return Eigen trasnformation
-  void setIsometry(const Eigen::Isometry3d& _transform) const
+  void setIsometry(const Eigen::Isometry3d& _transform)
   {
     return this->getStateSpace()->setIsometry(this->getState(), _transform);
   }

@@ -29,10 +29,10 @@ Eigen::VectorXd GeodesicInterpolator::getTangentVector(
     const statespace::StateSpace::State* _from,
     const statespace::StateSpace::State* _to) const
 {
-  const auto fromInverse = mStateSpace->createState();
+  auto fromInverse = mStateSpace->createState();
   mStateSpace->getInverse(_from, fromInverse);
 
-  const auto toMinusFrom = mStateSpace->createState();
+  auto toMinusFrom = mStateSpace->createState();
   mStateSpace->compose(fromInverse, _to, toMinusFrom);
 
   Eigen::VectorXd tangentVector;
