@@ -7,7 +7,7 @@ namespace constraint {
 
 //==============================================================================
 TestableIntersection::TestableIntersection(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     std::vector<ConstTestablePtr> _constraints)
   : mStateSpace(std::move(_stateSpace)), mConstraints(std::move(_constraints))
 {

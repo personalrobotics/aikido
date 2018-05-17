@@ -9,9 +9,9 @@ namespace vectorfield {
 
 //==============================================================================
 BodyNodePoseVectorField::BodyNodePoseVectorField(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     dart::dynamics::MetaSkeletonPtr metaSkeleton,
-    dart::dynamics::BodyNodePtr bodyNode,
+    dart::dynamics::ConstBodyNodePtr bodyNode,
     double maxStepSize,
     double jointLimitPadding,
     bool enforceJointVelocityLimits)
@@ -126,13 +126,6 @@ bool BodyNodePoseVectorField::evaluateTrajectory(
 }
 
 //==============================================================================
-aikido::statespace::dart::MetaSkeletonStateSpacePtr
-BodyNodePoseVectorField::getMetaSkeletonStateSpace()
-{
-  return mMetaSkeletonStateSpace;
-}
-
-//==============================================================================
 aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
 BodyNodePoseVectorField::getMetaSkeletonStateSpace() const
 {
@@ -150,12 +143,6 @@ dart::dynamics::ConstMetaSkeletonPtr BodyNodePoseVectorField::getMetaSkeleton()
     const
 {
   return mMetaSkeleton;
-}
-
-//==============================================================================
-dart::dynamics::BodyNodePtr BodyNodePoseVectorField::getBodyNode()
-{
-  return mBodyNode;
 }
 
 //==============================================================================

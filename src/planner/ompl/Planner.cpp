@@ -13,7 +13,7 @@ namespace ompl {
 
 //==============================================================================
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    statespace::ConstStateSpacePtr _stateSpace,
+    statespace::StateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,

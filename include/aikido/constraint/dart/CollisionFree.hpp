@@ -35,7 +35,7 @@ public:
   /// \param _collisionDetector collision detector used to test for collision
   /// \param _collisionOptions options passed to \c _collisionDetector
   CollisionFree(
-      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
       ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
       std::shared_ptr<::dart::collision::CollisionDetector> _collisionDetector,
       ::dart::collision::CollisionOption _collisionOptions
@@ -85,7 +85,7 @@ public:
 private:
   using CollisionGroup = ::dart::collision::CollisionGroup;
 
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<::dart::collision::CollisionDetector> mCollisionDetector;
   ::dart::collision::CollisionOption mCollisionOptions;

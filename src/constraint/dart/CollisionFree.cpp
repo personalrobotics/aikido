@@ -6,7 +6,7 @@ namespace dart {
 
 //==============================================================================
 CollisionFree::CollisionFree(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
     std::shared_ptr<::dart::collision::CollisionDetector> _collisionDetector,
     ::dart::collision::CollisionOption _collisionOptions)

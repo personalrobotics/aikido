@@ -5,14 +5,14 @@ namespace planner {
 namespace vectorfield {
 
 //==============================================================================
-VectorField::VectorField(aikido::statespace::StateSpacePtr stateSpace)
+VectorField::VectorField(aikido::statespace::ConstStateSpacePtr stateSpace)
   : mStateSpace(stateSpace)
 {
   // Do nothing
 }
 
 //==============================================================================
-aikido::statespace::StateSpacePtr VectorField::getStateSpace()
+aikido::statespace::ConstStateSpacePtr VectorField::getStateSpace()
 {
   return mStateSpace;
 }

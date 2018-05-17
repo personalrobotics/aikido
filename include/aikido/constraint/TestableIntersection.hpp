@@ -20,7 +20,7 @@ public:
   /// \param _stateSpace StateSpace this constraint operates in.
   /// \param _constraints Set of constraints.
   TestableIntersection(
-      statespace::StateSpacePtr _stateSpace,
+      statespace::ConstStateSpacePtr _stateSpace,
       std::vector<ConstTestablePtr> _constraints = std::vector<ConstTestablePtr>());
 
   // Documentation inherited.
@@ -41,7 +41,7 @@ public:
   void addConstraint(ConstTestablePtr constraint);
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   std::vector<ConstTestablePtr> mConstraints;
 
   void testConstraintStateSpaceOrThrow(const ConstTestablePtr& constraint);
