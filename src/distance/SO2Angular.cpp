@@ -14,7 +14,7 @@ SO2Angular::SO2Angular(std::shared_ptr<statespace::SO2> _space)
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO2Angular::getStateSpace() const
+statespace::ConstStateSpacePtr SO2Angular::getStateSpace() const
 {
   return mStateSpace;
 }

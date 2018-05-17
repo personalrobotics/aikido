@@ -34,7 +34,7 @@ public:
     return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }
 
-  std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return stateSpace;
   }
@@ -70,7 +70,7 @@ public:
     return std::unique_ptr<TestableOutcome>(new DefaultTestableOutcome);
   }
 
-  std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return stateSpace;
   }

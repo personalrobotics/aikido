@@ -15,6 +15,8 @@ using ::dart::dynamics::MetaSkeleton;
 using ::dart::dynamics::INVALID_INDEX;
 
 using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
+using ConstJointStateSpacePtr = std::shared_ptr<const JointStateSpace>;
+
 
 //==============================================================================
 template <class Input, class Output>
@@ -42,10 +44,10 @@ T* isJointOfType(const ::dart::dynamics::Joint* joint)
 }
 
 //==============================================================================
-std::vector<std::shared_ptr<JointStateSpace>> createStateSpace(
+std::vector<std::shared_ptr<const JointStateSpace>> createStateSpace(
     const MetaSkeleton& metaskeleton)
 {
-  std::vector<std::shared_ptr<JointStateSpace>> spaces;
+  std::vector<std::shared_ptr<const JointStateSpace>> spaces;
   spaces.reserve(metaskeleton.getNumJoints());
 
   for (std::size_t ijoint = 0; ijoint < metaskeleton.getNumJoints(); ++ijoint)
@@ -246,7 +248,7 @@ bool MetaSkeletonStateSpace::Properties::operator!=(
 //==============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(const MetaSkeleton* metaskeleton)
   : CartesianProduct(
-        convertVectorType<JointStateSpacePtr, StateSpacePtr>(
+        convertVectorType<ConstJointStateSpacePtr, ConstStateSpacePtr>(
             createStateSpace(*metaskeleton)))
   , mProperties(MetaSkeletonStateSpace::Properties(metaskeleton))
 {

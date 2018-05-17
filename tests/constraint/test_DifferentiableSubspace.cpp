@@ -24,7 +24,7 @@ public:
     auto rv = constraint->getStateSpace();
 
     cs = std::make_shared<CartesianProduct>(
-        std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
+        std::vector<aikido::statespace::ConstStateSpacePtr>({so2, rv}));
     ds = std::make_shared<DifferentiableSubspace>(cs, constraint, 1);
   }
 

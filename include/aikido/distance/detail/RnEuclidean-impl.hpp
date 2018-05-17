@@ -29,7 +29,7 @@ REuclidean<N>::REuclidean(std::shared_ptr<statespace::R<N>> _space)
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr REuclidean<N>::getStateSpace() const
+statespace::ConstStateSpacePtr REuclidean<N>::getStateSpace() const
 {
   return mStateSpace;
 }

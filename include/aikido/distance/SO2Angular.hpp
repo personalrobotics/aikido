@@ -16,7 +16,7 @@ public:
   explicit SO2Angular(std::shared_ptr<statespace::SO2> _space);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes shortest distance between two angles. (return value between 0 and
   /// pi)
