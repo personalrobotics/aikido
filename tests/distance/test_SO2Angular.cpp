@@ -26,12 +26,17 @@ TEST(SO2Angular, Distance)
 
   auto state1 = so2->createState();
   auto state2 = so2->createState();
-  state1.setAngle(1.3);
-  state2.setAngle(1.5);
+  state1.fromAngle(1.3);
+  state2.fromAngle(1.5);
   EXPECT_DOUBLE_EQ(0.2, dmetric.distance(state1, state2));
 
-  state2.setAngle(6.0);
+  state2.fromAngle(6.0);
   EXPECT_DOUBLE_EQ(
-      2. * M_PI - state2.getAngle() + state1.getAngle(),
+      state1.toAngle() - state2.toAngle(), dmetric.distance(state1, state2));
+
+  state1.fromAngle(3.0);
+  state2.fromAngle(-3.0);
+  EXPECT_DOUBLE_EQ(
+      2 * M_PI - state1.toAngle() + state2.toAngle(),
       dmetric.distance(state1, state2));
 }

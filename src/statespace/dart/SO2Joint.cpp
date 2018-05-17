@@ -16,7 +16,7 @@ SO2Joint::SO2Joint(
 void SO2Joint::convertPositionsToState(
     const Eigen::VectorXd& positions, StateSpace::State* state) const
 {
-  setAngle(static_cast<State*>(state), positions[0]);
+  fromAngle(static_cast<State*>(state), positions[0]);
 }
 
 //==============================================================================
@@ -24,7 +24,7 @@ void SO2Joint::convertStateToPositions(
     const StateSpace::State* state, Eigen::VectorXd& positions) const
 {
   positions.resize(1);
-  positions[0] = getAngle(static_cast<const State*>(state));
+  positions[0] = toAngle(static_cast<const State*>(state));
 }
 
 } // namespace dart

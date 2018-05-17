@@ -19,17 +19,17 @@ TEST(CartesianProduct, Compose)
   CartesianProduct space({std::make_shared<SO2>(), std::make_shared<R2>()});
 
   CartesianProduct::ScopedState s1 = space.createState();
-  s1.getSubStateHandle<SO2>(0).setAngle(M_PI_2);
+  s1.getSubStateHandle<SO2>(0).fromAngle(M_PI_2);
   s1.getSubStateHandle<R2>(1).setValue(Vector2d(3., 4.));
 
   CartesianProduct::ScopedState s2 = space.createState();
-  s2.getSubStateHandle<SO2>(0).setAngle(M_PI_2);
+  s2.getSubStateHandle<SO2>(0).fromAngle(M_PI_2);
   s2.getSubStateHandle<R2>(1).setValue(Vector2d(5., 10.));
 
   CartesianProduct::ScopedState out = space.createState();
   space.compose(s1, s2, out);
 
-  const double out1 = out.getSubStateHandle<SO2>(0).getAngle();
+  const double out1 = out.getSubStateHandle<SO2>(0).toAngle();
   EXPECT_DOUBLE_EQ(M_PI, out1);
 
   const Vector2d out2 = out.getSubStateHandle<R2>(1).getValue();
@@ -43,7 +43,7 @@ TEST(CartesianProduct, Identity)
   CartesianProduct space({std::make_shared<SO2>(), std::make_shared<R2>()});
 
   CartesianProduct::ScopedState s1 = space.createState();
-  s1.getSubStateHandle<SO2>(0).setAngle(M_PI_2);
+  s1.getSubStateHandle<SO2>(0).fromAngle(M_PI_2);
   s1.getSubStateHandle<R2>(1).setValue(Vector2d(3., 4.));
 
   CartesianProduct::ScopedState ident = space.createState();
@@ -52,7 +52,7 @@ TEST(CartesianProduct, Identity)
   CartesianProduct::ScopedState out = space.createState();
   space.compose(s1, ident, out);
 
-  const double out1 = out.getSubStateHandle<SO2>(0).getAngle();
+  const double out1 = out.getSubStateHandle<SO2>(0).toAngle();
   EXPECT_DOUBLE_EQ(M_PI_2, out1);
 
   const Vector2d out2 = out.getSubStateHandle<R2>(1).getValue();
@@ -66,7 +66,7 @@ TEST(CartesianProduct, Inverse)
   CartesianProduct space({std::make_shared<SO2>(), std::make_shared<R2>()});
 
   CartesianProduct::ScopedState s1 = space.createState();
-  s1.getSubStateHandle<SO2>(0).setAngle(M_PI_2);
+  s1.getSubStateHandle<SO2>(0).fromAngle(M_PI_2);
   s1.getSubStateHandle<R2>(1).setValue(Vector2d(3., 4.));
 
   CartesianProduct::ScopedState ident = space.createState();
@@ -78,8 +78,8 @@ TEST(CartesianProduct, Inverse)
   CartesianProduct::ScopedState out = space.createState();
   space.compose(s1, inv, out);
 
-  const double out1 = out.getSubStateHandle<SO2>(0).getAngle();
-  const double iout1 = ident.getSubStateHandle<SO2>(0).getAngle();
+  const double out1 = out.getSubStateHandle<SO2>(0).toAngle();
+  const double iout1 = ident.getSubStateHandle<SO2>(0).toAngle();
   EXPECT_DOUBLE_EQ(iout1, out1);
 
   const Vector2d out2 = out.getSubStateHandle<R2>(1).getValue();
@@ -97,7 +97,7 @@ TEST(CartesianProduct, ExpMap)
 
   space.expMap(Eigen::Vector3d(M_PI_2, 1, 2), out);
 
-  const double out1 = out.getSubStateHandle<SO2>(0).getAngle();
+  const double out1 = out.getSubStateHandle<SO2>(0).toAngle();
   EXPECT_DOUBLE_EQ(M_PI_2, out1);
 
   const Vector2d out2 = out.getSubStateHandle<R2>(1).getValue();
@@ -134,13 +134,13 @@ TEST(CartesianProduct, CopyState)
   auto quat
       = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()));
 
-  source.getSubStateHandle<SO2>(0).setAngle(angle);
+  source.getSubStateHandle<SO2>(0).fromAngle(angle);
   source.getSubStateHandle<R3>(1).setValue(rv);
   source.getSubStateHandle<SO3>(2).setQuaternion(quat);
 
   space.copyState(source, dest);
 
-  const double out1 = dest.getSubStateHandle<SO2>(0).getAngle();
+  const double out1 = dest.getSubStateHandle<SO2>(0).toAngle();
   EXPECT_DOUBLE_EQ(angle, out1);
 
   auto out2 = dest.getSubStateHandle<R3>(1).getValue();
@@ -171,7 +171,7 @@ TEST(CartesianProduct, PrintState)
   pose1.rotate(Eigen::Rotation2Dd(M_PI_2));
   pose1.translation() << 2, 3;
 
-  source.getSubStateHandle<SO2>(0).setAngle(angle);
+  source.getSubStateHandle<SO2>(0).fromAngle(angle);
   source.getSubStateHandle<R3>(1).setValue(rv);
   source.getSubStateHandle<SO3>(2).setQuaternion(quat);
   source.getSubStateHandle<SE2>(3).setIsometry(pose1);
