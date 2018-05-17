@@ -63,6 +63,8 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   /// Constructs a state space representing SO(2).
   SO2() = default;
 

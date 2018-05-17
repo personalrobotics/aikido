@@ -41,6 +41,8 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   /// Constructs a \c N dimensional real vector space only when the dimension is
   /// can be known in compile time.
   ///

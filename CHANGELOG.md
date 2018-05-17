@@ -8,6 +8,14 @@
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
 
+* State Space
+
+  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
+  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
+  * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
+  * Fixed const correctness of StateHandle::getState(): [#419](https://github.com/personalrobotics/aikido/pull/419)
+  * Fixed hidden compose function (in-place version): [#421](https://github.com/personalrobotics/aikido/pull/421)
+
 * Constraint
 
   * Added SequentialSampleable: [#393](https://github.com/personalrobotics/aikido/pull/393)
@@ -18,14 +26,6 @@
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316)
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
   * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
-
-* State Space
-
-  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
-  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
-  * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
-  * Fixed const correctness of StateHandle::getState(): [#419](https://github.com/personalrobotics/aikido/pull/419)
-  * Added clone functionality to StateSpace: [#422](https://github.com/personalrobotics/aikido/pull/422)
 
 * Perception
 
