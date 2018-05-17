@@ -47,11 +47,11 @@ TEST(SO2, Compose)
   SO2 so2;
 
   so2.compose(&s1, &s2, &out1);
-  EXPECT_TRUE(out1.getRotation().isApprox(expected.getRotation()));
+  EXPECT_TRUE(out1.toRotation().isApprox(expected.toRotation()));
 
   so2.copyState(&s1, &out2);
   so2.compose(&out2, &s2);
-  EXPECT_TRUE(out2.getRotation().isApprox(expected.getRotation()));
+  EXPECT_TRUE(out2.toRotation().isApprox(expected.toRotation()));
 }
 
 TEST(SO2, ComposeWrapped)
