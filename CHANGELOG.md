@@ -24,6 +24,7 @@
   * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
   * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
   * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
+  * Fixed const correctness of StateHandle::getState(): [#419](https://github.com/personalrobotics/aikido/pull/419)
 
 * Perception
 
