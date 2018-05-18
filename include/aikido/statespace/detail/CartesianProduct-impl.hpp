@@ -60,7 +60,8 @@ public:
 
 //==============================================================================
 template <class Space>
-std::shared_ptr<const Space> CartesianProduct::getSubspace(std::size_t _index) const
+std::shared_ptr<const Space> CartesianProduct::getSubspace(
+    std::size_t _index) const
 {
   // TODO: Replace this with a static_cast in release mode.
   const auto rawSpace = mSubspaces[_index];

@@ -9,7 +9,8 @@ namespace vectorfield {
 
 //==============================================================================
 BodyNodePoseVectorField::BodyNodePoseVectorField(
-    aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+        metaSkeletonStateSpace,
     dart::dynamics::MetaSkeletonPtr metaSkeleton,
     dart::dynamics::ConstBodyNodePtr bodyNode,
     double maxStepSize,

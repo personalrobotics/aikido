@@ -21,7 +21,8 @@ public:
   /// \param _constraints Set of constraints.
   TestableIntersection(
       statespace::ConstStateSpacePtr _stateSpace,
-      std::vector<ConstTestablePtr> _constraints = std::vector<ConstTestablePtr>());
+      std::vector<ConstTestablePtr> _constraints
+      = std::vector<ConstTestablePtr>());
 
   // Documentation inherited.
   bool isSatisfied(

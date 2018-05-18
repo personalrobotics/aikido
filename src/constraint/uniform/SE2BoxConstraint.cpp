@@ -50,7 +50,8 @@ SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
 }
 
 //==============================================================================
-statespace::ConstStateSpacePtr SE2BoxConstraintSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SE2BoxConstraintSampleGenerator::getStateSpace()
+    const
 {
   return mSpace;
 }

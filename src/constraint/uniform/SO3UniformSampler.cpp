@@ -35,7 +35,8 @@ private:
 
 //==============================================================================
 SO3UniformSampleGenerator::SO3UniformSampleGenerator(
-    std::shared_ptr<const statespace::SO3> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO3> _space,
+    std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(0., 1.)
 {
   // Do nothing
@@ -74,7 +75,8 @@ bool SO3UniformSampleGenerator::canSample() const
 
 //==============================================================================
 SO3UniformSampler::SO3UniformSampler(
-    std::shared_ptr<const statespace::SO3> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO3> _space,
+    std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   if (!mSpace)

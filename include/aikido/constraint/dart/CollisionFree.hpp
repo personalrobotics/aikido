@@ -85,7 +85,8 @@ public:
 private:
   using CollisionGroup = ::dart::collision::CollisionGroup;
 
-  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+      mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<::dart::collision::CollisionDetector> mCollisionDetector;
   ::dart::collision::CollisionOption mCollisionOptions;

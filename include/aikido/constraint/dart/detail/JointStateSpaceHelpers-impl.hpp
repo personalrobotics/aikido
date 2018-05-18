@@ -22,16 +22,17 @@ namespace detail {
 using ::dart::common::make_unique;
 
 //==============================================================================
-using JointStateSpaceTypeList = common::type_list<const statespace::dart::R0Joint,
-                                                  const statespace::dart::R1Joint,
-                                                  const statespace::dart::R2Joint,
-                                                  const statespace::dart::R3Joint,
-                                                  const statespace::dart::R6Joint,
-                                                  const statespace::dart::SO2Joint,
-                                                  const statespace::dart::SO3Joint,
-                                                  const statespace::dart::SE2Joint,
-                                                  const statespace::dart::SE3Joint,
-                                                  const statespace::dart::WeldJoint>;
+using JointStateSpaceTypeList
+    = common::type_list<const statespace::dart::R0Joint,
+                        const statespace::dart::R1Joint,
+                        const statespace::dart::R2Joint,
+                        const statespace::dart::R3Joint,
+                        const statespace::dart::R6Joint,
+                        const statespace::dart::SO2Joint,
+                        const statespace::dart::SO3Joint,
+                        const statespace::dart::SE2Joint,
+                        const statespace::dart::SE3Joint,
+                        const statespace::dart::WeldJoint>;
 
 //==============================================================================
 template <class T>
@@ -93,7 +94,6 @@ struct createDifferentiableFor_impl<const statespace::dart::RJoint<N>>
         std::move(_stateSpace), nullptr);
   }
 };
-
 
 //==============================================================================
 template <int N>
@@ -309,7 +309,8 @@ struct createDifferentiableFor_impl<const statespace::dart::SE2Joint>
   using StateSpace = statespace::dart::SE2Joint;
   using ConstStateSpacePtr = std::shared_ptr<const StateSpace>;
 
-  static std::unique_ptr<Differentiable> create(ConstStateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Differentiable> create(
+      ConstStateSpacePtr /*_stateSpace*/)
   {
     throw std::runtime_error(
         "No DifferentiableConstraint is available for SE2Joint.");
@@ -396,7 +397,8 @@ struct createDifferentiableFor_impl<const statespace::dart::SE3Joint>
   using StateSpace = statespace::dart::SE3Joint;
   using ConstStateSpacePtr = std::shared_ptr<const StateSpace>;
 
-  static std::unique_ptr<Differentiable> create(ConstStateSpacePtr /*_stateSpace*/)
+  static std::unique_ptr<Differentiable> create(
+      ConstStateSpacePtr /*_stateSpace*/)
   {
     throw std::runtime_error(
         "No DifferentiableConstraint is available for SE3Joint.");
@@ -534,7 +536,8 @@ template <class Space>
 std::unique_ptr<Testable> createTestableBoundsFor(
     std::shared_ptr<Space> _stateSpace)
 {
-  return detail::createTestableFor_impl<const Space>::create(std::move(_stateSpace));
+  return detail::createTestableFor_impl<const Space>::create(
+      std::move(_stateSpace));
 }
 
 //==============================================================================

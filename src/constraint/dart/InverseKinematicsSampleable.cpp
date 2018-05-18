@@ -122,7 +122,8 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
 }
 
 //==============================================================================
-statespace::ConstStateSpacePtr InverseKinematicsSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr InverseKinematicsSampleable::getStateSpace()
+    const
 {
   return mMetaSkeletonStateSpace;
 }

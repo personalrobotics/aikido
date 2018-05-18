@@ -90,7 +90,8 @@ public:
 
 protected:
   /// Meta skeleton state space.
-  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+      mMetaSkeletonStateSpace;
 
   /// Meta Skeleton
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;

@@ -74,7 +74,8 @@ PolynomialConstraint<N>::getConstraintTypes() const
 
 //==============================================================================
 template <int N>
-aikido::statespace::ConstStateSpacePtr PolynomialConstraint<N>::getStateSpace() const
+aikido::statespace::ConstStateSpacePtr PolynomialConstraint<N>::getStateSpace()
+    const
 {
   return mStateSpace;
 }

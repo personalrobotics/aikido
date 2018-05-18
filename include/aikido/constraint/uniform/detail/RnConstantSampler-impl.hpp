@@ -61,8 +61,8 @@ RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
 
 //==============================================================================
 template <int N>
-statespace::ConstStateSpacePtr RnConstantSamplerSampleGenerator<N>::getStateSpace()
-    const
+statespace::ConstStateSpacePtr
+RnConstantSamplerSampleGenerator<N>::getStateSpace() const
 {
   return mSpace;
 }

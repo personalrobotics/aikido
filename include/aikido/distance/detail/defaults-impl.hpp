@@ -132,15 +132,16 @@ struct createDistanceMetricFor_impl<const statespace::SE2>
 };
 
 //==============================================================================
-using SupportedStateSpaces = common::type_list<const statespace::CartesianProduct,
-                                               const statespace::R0,
-                                               const statespace::R1,
-                                               const statespace::R2,
-                                               const statespace::R3,
-                                               const statespace::R6,
-                                               const statespace::SO2,
-                                               const statespace::SO3,
-                                               const statespace::SE2>;
+using SupportedStateSpaces
+    = common::type_list<const statespace::CartesianProduct,
+                        const statespace::R0,
+                        const statespace::R1,
+                        const statespace::R2,
+                        const statespace::R3,
+                        const statespace::R6,
+                        const statespace::SO2,
+                        const statespace::SO3,
+                        const statespace::SE2>;
 
 } // namespace detail
 

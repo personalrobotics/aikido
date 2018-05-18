@@ -76,7 +76,8 @@ FiniteCyclicSampleGenerator::~FiniteCyclicSampleGenerator()
 }
 
 //==============================================================================
-statespace::ConstStateSpacePtr FiniteCyclicSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr FiniteCyclicSampleGenerator::getStateSpace()
+    const
 {
   return mGenerator->getStateSpace();
 }

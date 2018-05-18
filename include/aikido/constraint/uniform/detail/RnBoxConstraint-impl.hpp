@@ -67,8 +67,8 @@ RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
 
 //==============================================================================
 template <int N>
-statespace::ConstStateSpacePtr RnBoxConstraintSampleGenerator<N>::getStateSpace()
-    const
+statespace::ConstStateSpacePtr
+RnBoxConstraintSampleGenerator<N>::getStateSpace() const
 {
   return mSpace;
 }

@@ -35,7 +35,8 @@ private:
 
 //==============================================================================
 SO2UniformSampleGenerator::SO2UniformSampleGenerator(
-    std::shared_ptr<const statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO2> _space,
+    std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(-M_PI, M_PI)
 {
   // Do nothing
@@ -69,7 +70,8 @@ bool SO2UniformSampleGenerator::canSample() const
 
 //==============================================================================
 SO2UniformSampler::SO2UniformSampler(
-    std::shared_ptr<const statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO2> _space,
+    std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   if (!mSpace)

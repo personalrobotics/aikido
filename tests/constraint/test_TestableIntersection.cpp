@@ -83,8 +83,8 @@ TEST(TestableIntersectionTest, ThrowIfDifferentStateSpacesOnConstruction)
   auto ss2 = std::make_shared<aikido::statespace::SO2>();
   auto ss2C = std::make_shared<const PassingConstraint>(ss2);
   auto avoidMacro = [&]() {
-    TestableIntersection cc{ss1,
-                            std::vector<std::shared_ptr<const Testable>>({ss2C})};
+    TestableIntersection cc{
+        ss1, std::vector<std::shared_ptr<const Testable>>({ss2C})};
     return cc;
   };
   EXPECT_THROW(avoidMacro(), std::invalid_argument);

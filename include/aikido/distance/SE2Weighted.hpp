@@ -24,7 +24,8 @@ public:
   /// \param space The SE2 this distance metric operates on
   /// \param weights The weights over angular and translational distances
   SE2Weighted(
-      std::shared_ptr<const statespace::SE2> space, const Eigen::Vector2d& weights);
+      std::shared_ptr<const statespace::SE2> space,
+      const Eigen::Vector2d& weights);
 
   // Documentation inherited
   statespace::ConstStateSpacePtr getStateSpace() const override;
