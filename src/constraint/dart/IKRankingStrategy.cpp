@@ -11,10 +11,9 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 IKRankingStrategy::IKRankingStrategy(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
-    std::size_t numIKSolutions)
+    const std::vector<statespace::StateSpace::State*> ikSolutions)
   : mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(metaSkeleton))
-  , mIndex(0.0)
 {
   if (!mMetaSkeletonStateSpace)
     throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
@@ -22,22 +21,18 @@ IKRankingStrategy::IKRankingStrategy(
   if (!mMetaSkeleton)
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
-  if (numIKSolutions <= 0)
-    throw std::invalid_argument("Number of solutions to rank is non-positive");
+  if (ikSolutions.empty())
+    throw std::invalid_argument("Vector of IK Solutions is empty.");
 
-  mIKSolutions.resize(numIKSolutions);
-}
+  mIKSolutions.resize(ikSolutions.size());
+  mIKSolutions.shrink_to_fit();
 
-//==============================================================================
-statespace::ConstStateSpacePtr IKRankingStrategy::getStateSpace() const
-{
-  return mMetaSkeletonStateSpace;
-}
-
-//==============================================================================
-std::vector<std::pair<statespace::StateSpace::State*, double>>&
-IKRankingStrategy::getRankedIKSolutions()
-{
+  for (std::size_t i = 0; i < ikSolutions.size(); ++i)
+  {
+    auto state = ikSolutions[i];
+    mIKSolutions[i]
+        = std::pair<statespace::StateSpace::State*, double>(state, evaluateIKSolution(state));
+  }
   struct sortingFunction
   {
     bool operator()(
@@ -47,21 +42,25 @@ IKRankingStrategy::getRankedIKSolutions()
       return left.second < right.second;
     }
   };
-
-  std::sort(mIKSolutions.begin(), mIKSolutions.end(), sortingFunction());
-  return mIKSolutions;
 }
 
 //==============================================================================
-void IKRankingStrategy::addIKSolution(statespace::StateSpace::State* solution)
+statespace::ConstStateSpacePtr IKRankingStrategy::getStateSpace() const
 {
-  if (mIndex == mIKSolutions.size())
-    throw std::invalid_argument("Index exceeds maximum number of IK solutions");
+  return mMetaSkeletonStateSpace;
+}
 
-  double score = evaluateIKSolution(solution);
-  mIKSolutions[mIndex]
-      = std::pair<statespace::StateSpace::State*, double>(solution, score);
-  mIndex++;
+//==============================================================================
+statespace::StateSpace::State* IKRankingStrategy::rankedIKSolution(std::size_t index) const
+{
+  return mIKSolutions[index].first;
+}
+
+//==============================================================================
+double IKRankingStrategy::evaluateIKSolution(statespace::StateSpace::State* solution) const
+{
+  return 0;
+  DART_UNUSED(solution);
 }
 
 } // namespace dart

@@ -1,4 +1,4 @@
-#include "aikido/constraint/dart/FIFOStrategy.hpp"
+#include "aikido/constraint/dart/IKRankingStrategy.hpp"
 
 #include <random>
 #include <Eigen/Dense>
@@ -13,7 +13,7 @@
 
 using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
-using aikido::constraint::dart::FIFOStrategy;
+using aikido::constraint::dart::IKRankingStrategy;
 using aikido::statespace::SE3;
 using aikido::statespace::SO2;
 using dart::dynamics::FreeJoint;
@@ -35,7 +35,7 @@ static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
   return bodyProperties;
 }
 
-class FIFOStrategyTest : public ::testing::Test
+class IKRankingStrategyTest : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -95,8 +95,8 @@ protected:
     // Set FiniteSampleable to generate pose close to the actual solution.
     auto seedState
         = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-    seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
-    seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
+    seedState.getSubStateHandle<SO2>(0).fromAngle(0.1);
+    seedState.getSubStateHandle<SO2>(1).fromAngle(0.1);
     seedConstraint
         = std::make_shared<FiniteSampleable>(mStateSpace1, seedState);
   }
@@ -113,48 +113,47 @@ protected:
   std::shared_ptr<FiniteSampleable> seedConstraint;
 };
 
-TEST_F(FIFOStrategyTest, ConstructorThrowsOnNullStateSpace)
+TEST_F(IKRankingStrategyTest, Constructor)
 {
-  EXPECT_THROW(FIFOStrategy(nullptr, mManipulator1, 1), std::invalid_argument);
-}
+  auto seedStateOne
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
+  seedStateOne.getSubStateHandle<SO2>(0).fromAngle(0.1);
+  seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.1);
+  std::vector<aikido::statespace::StateSpace::State*> states;
+  states.emplace_back(seedStateOne);
 
-TEST_F(FIFOStrategyTest, ConstructorThrowsOnNullSkeleton)
-{
-  EXPECT_THROW(FIFOStrategy(mStateSpace1, nullptr, 1), std::invalid_argument);
-}
+  EXPECT_THROW(IKRankingStrategy(nullptr, mManipulator1, states), std::invalid_argument);
 
-TEST_F(FIFOStrategyTest, ConstructorThrowsOnNonPositiveNumIKSolutions)
-{
-  EXPECT_THROW(
-      FIFOStrategy(mStateSpace1, mManipulator1, 0), std::invalid_argument);
-}
+  EXPECT_THROW(IKRankingStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
 
-TEST_F(FIFOStrategyTest, Constructor)
-{
-  FIFOStrategy ranker(mStateSpace1, mManipulator1);
+  EXPECT_THROW(IKRankingStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
+
+  IKRankingStrategy ranker(mStateSpace1, mManipulator1, states);
   DART_UNUSED(ranker);
 }
 
-TEST_F(FIFOStrategyTest, SingleSample)
+TEST_F(IKRankingStrategyTest, SingleSample)
 {
   auto seedStateOne
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
   auto seedStateTwo
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-  seedStateOne.getSubStateHandle<SO2>(0).setAngle(0.1);
-  seedStateOne.getSubStateHandle<SO2>(1).setAngle(0.1);
-  seedStateTwo.getSubStateHandle<SO2>(0).setAngle(0.2);
-  seedStateTwo.getSubStateHandle<SO2>(1).setAngle(0.2);
+  seedStateOne.getSubStateHandle<SO2>(0).fromAngle(0.1);
+  seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.1);
+  seedStateTwo.getSubStateHandle<SO2>(0).fromAngle(0.2);
+  seedStateTwo.getSubStateHandle<SO2>(1).fromAngle(0.2);
 
-  FIFOStrategy ranker(mStateSpace1, mManipulator1, 2);
-  ranker.addIKSolution(seedStateOne);
-  ranker.addIKSolution(seedStateTwo);
+  std::vector<aikido::statespace::StateSpace::State*> states;
+  states.emplace_back(seedStateOne);
+  states.emplace_back(seedStateTwo);
 
-  // TODO (avk): Complete this test.
-  auto rankedSolutions = ranker.getRankedIKSolutions();
-  auto rankedStateOne = rankedSolutions[0].first;
-  auto rankedStateTwo = rankedSolutions[1].first;
+  IKRankingStrategy ranker(mStateSpace1, mManipulator1, states);
 
-  DART_UNUSED(rankedStateOne);
-  DART_UNUSED(rankedStateTwo);
+  auto rankedStateOne = mStateSpace1->cloneState(ranker.rankedIKSolution(0));
+  auto rankedStateTwo = mStateSpace1->cloneState(ranker.rankedIKSolution(1));
+
+  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(0).toAngle(), 0.1, 1e-5);
+  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(1).toAngle(), 0.1, 1e-5);
+  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(0).toAngle(), 0.2, 1e-5);
+  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(1).toAngle(), 0.2, 1e-5);
 }

@@ -14,11 +14,11 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
-  /// \param[in] numIKSolution Number of IK solutions to rank.
+  /// \param[in] ikSolutions List of IK solutions to be ranked.
   JointAvoidanceStrategy(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      std::size_t numIKSolutions = 1);
+      const std::vector<statespace::StateSpace::ScopedState> ikSolutions);
 
 protected:
   double evaluateIKSolution(

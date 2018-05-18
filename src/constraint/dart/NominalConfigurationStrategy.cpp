@@ -11,8 +11,8 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 NominalConfigurationStrategy::NominalConfigurationStrategy(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
-    std::size_t numIKSolutions)
-  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, numIKSolutions)
+    const std::vector<statespace::StateSpace::ScopedState> ikSolutions)
+  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
 {
   // Do nothing
 }

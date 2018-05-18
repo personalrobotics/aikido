@@ -11,8 +11,8 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 JointAvoidanceStrategy::JointAvoidanceStrategy(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
-    std::size_t numIKSolutions)
-  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, numIKSolutions)
+    const std::vector<statespace::StateSpace::State*> ikSolutions)
+  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
 {
   // Do nothing
 }
