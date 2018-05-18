@@ -16,10 +16,14 @@ TEST(Rn, ComposeR3)
   auto s2 = rvss.createState();
   s2.setValue(Eigen::Vector3d(2, 3, 4));
 
-  auto out = rvss.createState();
-  rvss.compose(s1, s2, out);
+  auto out1 = rvss.createState();
+  rvss.compose(s1, s2, out1);
+  EXPECT_TRUE(out1.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
 
-  EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
+  auto out2 = rvss.createState();
+  rvss.copyState(s1, out2);
+  rvss.compose(out2, s2);
+  EXPECT_TRUE(out2.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
 }
 
 //==============================================================================

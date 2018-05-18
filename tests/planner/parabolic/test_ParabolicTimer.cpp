@@ -370,11 +370,11 @@ TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
   Interpolated inputTrajectory(stateSpace, interpolator);
 
   state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
-  state.getSubStateHandle<SO2>(1).setAngle(0.);
+  state.getSubStateHandle<SO2>(1).fromAngle(0.);
   inputTrajectory.addWaypoint(0., state);
 
   state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
-  state.getSubStateHandle<SO2>(1).setAngle(M_PI_2);
+  state.getSubStateHandle<SO2>(1).fromAngle(M_PI_2);
   inputTrajectory.addWaypoint(1., state);
 
   EXPECT_NO_THROW({

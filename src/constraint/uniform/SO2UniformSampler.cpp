@@ -52,7 +52,7 @@ statespace::ConstStateSpacePtr SO2UniformSampleGenerator::getStateSpace() const
 bool SO2UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   const double angle = mDistribution(*mRng);
-  mSpace->setAngle(static_cast<statespace::SO2::State*>(_state), angle);
+  mSpace->fromAngle(static_cast<statespace::SO2::State*>(_state), angle);
   return true;
 }
 

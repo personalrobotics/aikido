@@ -112,8 +112,8 @@ public:
   {
     auto j1Joint = mStateSpace->getSubState<SO2>(state, 0u);
     auto j2Joint = mStateSpace->getSubState<SO2>(state, 1u);
-    j1Joint->setAngle(value[0]);
-    j2Joint->setAngle(value[1]);
+    j1Joint->fromAngle(value[0]);
+    j2Joint->fromAngle(value[1]);
   }
 
   Eigen::Vector2d getStateValue(MetaSkeletonStateSpace::State* state) const
@@ -121,7 +121,7 @@ public:
     auto j1Joint = mStateSpace->getSubState<SO2>(state, 0u);
     auto j2Joint = mStateSpace->getSubState<SO2>(state, 1u);
 
-    Eigen::Vector2d retVal(j1Joint->getAngle(), j2Joint->getAngle());
+    Eigen::Vector2d retVal(j1Joint->toAngle(), j2Joint->toAngle());
     return retVal;
   }
 

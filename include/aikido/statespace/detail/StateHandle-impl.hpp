@@ -1,49 +1,62 @@
+#include "aikido/statespace/StateHandle.hpp"
+
 namespace aikido {
 namespace statespace {
 
 //==============================================================================
-template <class _StateSpace, class _QualifiedState>
-StateHandle<_StateSpace, _QualifiedState>::StateHandle()
-  : mSpace(nullptr), mState(nullptr)
+template <class StateSpace, class QualifiedState>
+StateHandle<StateSpace, QualifiedState>::StateHandle()
+  : StateHandle(nullptr, nullptr)
 {
+  // Do nothing
 }
 
 //==============================================================================
-template <class _StateSpace, class _QualifiedState>
-StateHandle<_StateSpace, _QualifiedState>::StateHandle(
-    const StateSpace* _space, QualifiedState* _state)
-  : mSpace(_space), mState(_state)
+template <class StateSpace, class QualifiedState>
+StateHandle<StateSpace, QualifiedState>::StateHandle(
+    const StateSpace* space, QualifiedState* state)
+  : mSpace(space), mState(state)
 {
+  // Do nothing
 }
 
 //==============================================================================
-template <class _StateSpace, class _QualifiedState>
-StateHandle<_StateSpace, _QualifiedState>::operator QualifiedState*() const
+template <class StateSpace, class QualifiedState>
+StateHandle<StateSpace, QualifiedState>::operator QualifiedState*() const
 {
   return mState;
 }
 
 //==============================================================================
-template <class _StateSpace, class _QualifiedState>
-void StateHandle<_StateSpace, _QualifiedState>::reset()
+template <class StateSpace, class QualifiedState>
+void StateHandle<StateSpace, QualifiedState>::reset()
 {
-  mSpace = nullptr;
-  mState = nullptr;
+  reset(nullptr, nullptr);
 }
 
 //==============================================================================
-template <class _StateSpace, class _QualifiedState>
-void StateHandle<_StateSpace, _QualifiedState>::reset(
-    const StateSpace* _space, QualifiedState* _state)
+template <class StateSpace, class QualifiedState>
+void StateHandle<StateSpace, QualifiedState>::reset(
+    const StateSpace* space, QualifiedState* state)
 {
-  mSpace = _space;
-  mState = _state;
+  mSpace = space;
+  mState = state;
 }
 
 //==============================================================================
-template <class _StateSpace, class _QualifiedState>
-auto StateHandle<_StateSpace, _QualifiedState>::getState() const
-    -> QualifiedState*
+template <class StateSpace, class QualifiedState>
+template <typename Q>
+auto StateHandle<StateSpace, QualifiedState>::getState() ->
+    typename std::enable_if<!std::is_const<Q>::value, Q*>::type
+{
+  return mState;
+}
+
+//==============================================================================
+template <class StateSpace, class QualifiedState>
+template <typename Q>
+auto StateHandle<StateSpace, QualifiedState>::getState() const ->
+    typename std::conditional<std::is_const<Q>::value, Q*, const Q*>::type
 {
   return mState;
 }

@@ -56,6 +56,8 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   using Isometry2d = State::Isometry2d;
 
   /// Constructs a state space representing SE(2).
