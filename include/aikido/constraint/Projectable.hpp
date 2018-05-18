@@ -14,7 +14,7 @@ public:
   virtual ~Projectable() = default;
 
   /// Gets the StateSpace that this constraint operates on.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Projection _s to _out. Returns false if projection cannot be done.
   /// \param _s state to be projected.

@@ -13,7 +13,7 @@ using aikido::planner::ompl::getSpaceInformation;
 namespace {
 
 aikido::trajectory::InterpolatedPtr constructTrajectory(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+    aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr _stateSpace,
     aikido::statespace::InterpolatorPtr _interpolator,
     const Eigen::Vector3d& _startPose,
     const Eigen::Vector3d& _midwayPose,

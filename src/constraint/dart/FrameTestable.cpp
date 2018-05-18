@@ -28,7 +28,7 @@ FrameTestable::FrameTestable(
   if (!mFrame)
     throw std::invalid_argument("_frame is nullptr.");
 
-  mPoseStateSpace = std::dynamic_pointer_cast<statespace::SE3>(
+  mPoseStateSpace = std::dynamic_pointer_cast<const statespace::SE3>(
       mPoseConstraint->getStateSpace());
 
   if (!mPoseStateSpace)
@@ -61,7 +61,7 @@ std::unique_ptr<TestableOutcome> FrameTestable::createOutcome() const
 }
 
 //==============================================================================
-std::shared_ptr<statespace::StateSpace> FrameTestable::getStateSpace() const
+statespace::ConstStateSpacePtr FrameTestable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

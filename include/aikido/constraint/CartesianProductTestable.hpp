@@ -20,10 +20,10 @@ public:
   ///        should match the number of subspaces in _stateSpace.
   ///        i-th constraint applies to i-th subspace.
   CartesianProductTestable(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-      std::vector<TestablePtr> _constraints);
+      std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
+      std::vector<ConstTestablePtr> _constraints);
 
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
@@ -34,8 +34,8 @@ public:
   std::unique_ptr<TestableOutcome> createOutcome() const override;
 
 private:
-  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
-  std::vector<TestablePtr> mConstraints;
+  std::shared_ptr<const statespace::CartesianProduct> mStateSpace;
+  std::vector<ConstTestablePtr> mConstraints;
 };
 
 } // namespace constraint

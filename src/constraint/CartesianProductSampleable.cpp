@@ -11,7 +11,7 @@ class SubspaceSampleGenerator : public SampleGenerator
 {
 public:
   SubspaceSampleGenerator(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+      std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
       std::vector<std::unique_ptr<SampleGenerator>> _generators)
     : mStateSpace(std::move(_stateSpace)), mGenerators(std::move(_generators))
   {
@@ -26,7 +26,7 @@ public:
     }
   }
 
-  statespace::StateSpacePtr getStateSpace() const override
+  statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
@@ -77,13 +77,13 @@ public:
   }
 
 private:
-  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
+  std::shared_ptr<const statespace::CartesianProduct> mStateSpace;
   std::vector<std::unique_ptr<SampleGenerator>> mGenerators;
 };
 
 //==============================================================================
 CartesianProductSampleable::CartesianProductSampleable(
-    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+    std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
     std::vector<std::shared_ptr<Sampleable>> _constraints)
   : mStateSpace(std::move(_stateSpace)), mConstraints(std::move(_constraints))
 {
@@ -118,7 +118,7 @@ CartesianProductSampleable::CartesianProductSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
