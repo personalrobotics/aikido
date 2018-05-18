@@ -24,7 +24,7 @@ std::unique_ptr<Differentiable> createDifferentiableBoundsFor(
 /// Differtiable is created.
 /// \param _stateSpace The StateSpace where the Differentiable will be applied
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace);
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace);
 
 /// Create a set of Differentiable constraints for each joint in the
 /// MetaSkeleton wrapped by the state space.  The bounds are created from the
@@ -33,7 +33,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Differentiable
 /// will be applied
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton);
 
 /// Create a Projectable that can be used to project a state from the given
 /// StateSpace back within bounds set on the StateSpace.
@@ -48,7 +48,7 @@ std::unique_ptr<Projectable> createProjectableBoundsFor(
 /// \param _stateSpace The JointStateSpace where the Projectable will be
 /// applied.
 std::unique_ptr<Projectable> createProjectableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace);
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace);
 
 /// Create a set of Projectable constraints for each joint in the MetaSkeleton
 /// wrapped by the state space. The constraints can be used to project a state
@@ -56,7 +56,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Projectable will
 /// be applied.
 std::unique_ptr<Projectable> createProjectableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton);
 
 /// Create a Testable constraint that can be used to determine if a given state
 /// lies within bounds set on the StateSpace.
@@ -70,7 +70,7 @@ std::unique_ptr<Testable> createTestableBoundsFor(
 /// limits set on the joint wrapped by the given JointStateSpace.
 /// \param _stateSpace The JointStateSpace where the Testable will be applied
 std::unique_ptr<Testable> createTestableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace);
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace);
 
 /// Create a set of Testable constraints for each joint in the MetaSkeleton
 /// wrapped by the state space.  The constraints can be used to determine if a
@@ -78,7 +78,7 @@ std::unique_ptr<Testable> createTestableBounds(
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Testable will be
 /// applied.
 std::unique_ptr<Testable> createTestableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton);
 
 /// Create a Sampleable constraint that can be used to sample a state that is
 /// guarenteed to lie within bounds define on the StateSpace.
@@ -95,7 +95,7 @@ std::unique_ptr<Sampleable> createSampleableBoundsFor(
 /// \param _stateSpace The JointStateSpace where the Sampleable will be applied
 /// \param _rng The random number generator to be used by the Sampleable
 std::unique_ptr<Sampleable> createSampleableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace,
     std::unique_ptr<common::RNG> _rng);
 
 /// Create a Sampleable constraint that can be used to sampel values for all
@@ -105,7 +105,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
 /// applied
 /// \param _rng The random number generator to be used by the Sampleable
 std::unique_ptr<Sampleable> createSampleableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton,
     std::unique_ptr<common::RNG> _rng);
 
 } // namespace dart

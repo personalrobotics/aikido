@@ -71,7 +71,7 @@ TEST_F(PlannerTest, PlanToGoalRegion)
   aikido::constraint::SampleablePtr goalSampleable
       = std::make_shared<aikido::constraint::CartesianProductSampleable>(
           stateSpace, sConstraints);
-  std::vector<std::shared_ptr<aikido::constraint::Testable>> tConstraints;
+  std::vector<std::shared_ptr<const aikido::constraint::Testable>> tConstraints;
   tConstraints.push_back(boxConstraint);
   aikido::constraint::TestablePtr goalTestable
       = std::make_shared<aikido::constraint::CartesianProductTestable>(
@@ -122,7 +122,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRTConnect)
   aikido::constraint::SampleablePtr goalSampleable
       = std::make_shared<aikido::constraint::CartesianProductSampleable>(
           stateSpace, sConstraints);
-  std::vector<std::shared_ptr<aikido::constraint::Testable>> tConstraints;
+  std::vector<std::shared_ptr<const aikido::constraint::Testable>> tConstraints;
   tConstraints.push_back(boxConstraint);
   aikido::constraint::TestablePtr goalTestable
       = std::make_shared<aikido::constraint::CartesianProductTestable>(
@@ -191,7 +191,7 @@ TEST_F(PlannerTest, PlanConstrainedCRRT)
   aikido::constraint::SampleablePtr goalSampleable
       = std::make_shared<aikido::constraint::CartesianProductSampleable>(
           stateSpace, sConstraints);
-  std::vector<std::shared_ptr<aikido::constraint::Testable>> tConstraints;
+  std::vector<std::shared_ptr<const aikido::constraint::Testable>> tConstraints;
   tConstraints.push_back(boxConstraint);
   aikido::constraint::TestablePtr goalTestable
       = std::make_shared<aikido::constraint::CartesianProductTestable>(

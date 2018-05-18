@@ -38,9 +38,9 @@ public:
   /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
   MoveEndEffectorOffsetVectorField(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+      aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       dart::dynamics::MetaSkeletonPtr metaskeleton,
-      dart::dynamics::BodyNodePtr bn,
+      dart::dynamics::ConstBodyNodePtr bn,
       const Eigen::Vector3d& direction,
       double minDistance,
       double maxDistance,

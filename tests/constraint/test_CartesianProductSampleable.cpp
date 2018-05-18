@@ -37,7 +37,7 @@ public:
     sampleables.push_back(so2Sampler);
 
     cs = std::make_shared<CartesianProduct>(
-        std::vector<aikido::statespace::StateSpacePtr>({rvss, so2}));
+        std::vector<aikido::statespace::ConstStateSpacePtr>({rvss, so2}));
   }
 
   std::shared_ptr<CartesianProduct> cs;

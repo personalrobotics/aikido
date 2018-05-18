@@ -2,7 +2,7 @@
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDPLANNER_HPP_
 
 #include <aikido/constraint/Testable.hpp>
-#include <aikido/planner/PlanningResult.hpp>
+#include <aikido/planner/Planner.hpp>
 #include <aikido/planner/vectorfield/VectorField.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
@@ -21,7 +21,7 @@ namespace vectorfield {
 /// vector field.
 /// \param[in] checkConstraintResolution Resolution used in checking
 /// constraint satisfaction in generated trajectory.
-/// \param[out] planningResult information about success or failure.
+/// \param[out] result information about success or failure.
 /// \return A trajectory following the vector field.
 std::unique_ptr<aikido::trajectory::Spline> followVectorField(
     const aikido::planner::vectorfield::VectorField& vectorField,
@@ -30,7 +30,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
     std::chrono::duration<double> timelimit,
     double initialStepSize,
     double checkConstraintResolution,
-    planner::PlanningResult* planningResult);
+    planner::Planner::Result* result);
 
 /// Plan to a trajectory that moves the end-effector by a given direction and
 /// distance.
@@ -52,13 +52,13 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] constraintCheckResolution Resolution used in constraint checking.
 /// \param[in] timelimit timeout in seconds.
-/// \param[out] planningResult information about success or failure.
+/// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const dart::dynamics::BodyNodePtr& bn,
-    const aikido::constraint::TestablePtr& constraint,
+    const dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Vector3d& direction,
     double minDistance,
     double maxDistance,
@@ -68,7 +68,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::PlanningResult* planningResult = nullptr);
+    planner::Planner::Result* result = nullptr);
 
 /// Plan to an end-effector pose by following a geodesic loss function
 /// in SE(3) via an optimized Jacobian.
@@ -88,7 +88,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// limit, velocity is bounded in that direction to 0.
 /// \param[in] constraintCheckResolution Resolution used in constraint checking.
 /// \param[in] timelimit Timeout in seconds.
-/// \param[out] planningResult information about success or failure.
+/// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
@@ -102,7 +102,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::PlanningResult* planningResult = nullptr);
+    planner::Planner::Result* result = nullptr);
 
 } // namespace vectorfield
 } // namespace planner

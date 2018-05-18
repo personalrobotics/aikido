@@ -5,7 +5,7 @@ namespace aikido {
 namespace statespace {
 
 //==============================================================================
-CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
+CartesianProduct::CartesianProduct(std::vector<ConstStateSpacePtr> _subspaces)
   : mSubspaces(std::move(_subspaces))
   , mOffsets(mSubspaces.size(), 0u)
   , mSizeInBytes(0u)

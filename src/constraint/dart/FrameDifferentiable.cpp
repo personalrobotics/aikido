@@ -31,7 +31,7 @@ FrameDifferentiable::FrameDifferentiable(
 
   using SE3 = statespace::SE3;
 
-  auto space = dynamic_cast<SE3*>(mPoseConstraint->getStateSpace().get());
+  auto space = dynamic_cast<const SE3*>(mPoseConstraint->getStateSpace().get());
 
   if (!space)
     throw std::invalid_argument("_poseConstraint is not in SE3.");
@@ -123,7 +123,7 @@ std::vector<ConstraintType> FrameDifferentiable::getConstraintTypes() const
 }
 
 //==============================================================================
-statespace::StateSpacePtr FrameDifferentiable::getStateSpace() const
+statespace::ConstStateSpacePtr FrameDifferentiable::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

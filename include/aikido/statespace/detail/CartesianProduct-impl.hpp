@@ -97,11 +97,12 @@ public:
 
 //==============================================================================
 template <class Space>
-std::shared_ptr<Space> CartesianProduct::getSubspace(std::size_t _index) const
+std::shared_ptr<const Space> CartesianProduct::getSubspace(
+    std::size_t _index) const
 {
   // TODO: Replace this with a static_cast in release mode.
   const auto rawSpace = mSubspaces[_index];
-  auto space = std::dynamic_pointer_cast<Space>(rawSpace);
+  auto space = std::dynamic_pointer_cast<const Space>(rawSpace);
   if (!space)
   {
     // Create a reference to *rawSpace so we can use it in typeid below. Doing

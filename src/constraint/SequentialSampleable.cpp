@@ -15,11 +15,11 @@ public:
   /// \param[in] generators Sequence of generators associated with corresponding
   /// sequence of sampleables
   SequentialSampleGenerator(
-      statespace::StateSpacePtr stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       std::vector<std::unique_ptr<SampleGenerator>> generators);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited
   bool sample(statespace::StateSpace::State* state) override;
@@ -32,7 +32,7 @@ public:
 
 private:
   /// StateSpace the associated sampleable operates in.
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 
   /// Sequence of generators associated with corresponding sequence of
   /// sampleables.
@@ -44,7 +44,7 @@ private:
 
 //==============================================================================
 SequentialSampleGenerator::SequentialSampleGenerator(
-    statespace::StateSpacePtr stateSpace,
+    statespace::ConstStateSpacePtr stateSpace,
     std::vector<std::unique_ptr<SampleGenerator>> generators)
   : mStateSpace(std::move(stateSpace))
   , mGenerators(std::move(generators))
@@ -78,7 +78,7 @@ SequentialSampleGenerator::SequentialSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SequentialSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SequentialSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
@@ -154,7 +154,7 @@ SequentialSampleable::SequentialSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SequentialSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr SequentialSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

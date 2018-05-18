@@ -11,7 +11,7 @@ class FiniteSampleGenerator : public SampleGenerator
 public:
   // For internal use only.
   FiniteSampleGenerator(
-      statespace::StateSpacePtr _stateSpace,
+      statespace::ConstStateSpacePtr _stateSpace,
       const std::vector<statespace::StateSpace::State*>& _states);
 
   FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
@@ -23,7 +23,7 @@ public:
   virtual ~FiniteSampleGenerator();
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -35,7 +35,7 @@ public:
   bool canSample() const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
   int mIndex;
 
@@ -44,7 +44,7 @@ private:
 
 //==============================================================================
 FiniteSampleGenerator::FiniteSampleGenerator(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     const std::vector<statespace::StateSpace::State*>& _states)
   : mStateSpace(std::move(_stateSpace)), mIndex(0)
 {
@@ -82,7 +82,7 @@ FiniteSampleGenerator::~FiniteSampleGenerator()
 }
 
 //==============================================================================
-statespace::StateSpacePtr FiniteSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr FiniteSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }
@@ -171,7 +171,7 @@ FiniteSampleable::~FiniteSampleable()
 }
 
 //==============================================================================
-statespace::StateSpacePtr FiniteSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr FiniteSampleable::getStateSpace() const
 {
   return mStateSpace;
 }

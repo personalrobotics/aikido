@@ -28,7 +28,7 @@ public:
 
   /// Construct the Cartesian product of a vector of subspaces.
   /// \param _subspaces vector of subspaces
-  explicit CartesianProduct(std::vector<StateSpacePtr> _subspaces);
+  explicit CartesianProduct(std::vector<ConstStateSpacePtr> _subspaces);
 
   /// Helper function to create a \c ScopedState.
   ///
@@ -52,7 +52,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return subspace at \c _index
   template <class Space = StateSpace>
-  std::shared_ptr<Space> getSubspace(std::size_t _index) const;
+  std::shared_ptr<const Space> getSubspace(std::size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index.
   ///
@@ -152,7 +152,7 @@ public:
   void print(const StateSpace::State* _state, std::ostream& _os) const override;
 
 private:
-  std::vector<StateSpacePtr> mSubspaces;
+  std::vector<ConstStateSpacePtr> mSubspaces;
   std::vector<std::size_t> mOffsets;
   std::size_t mSizeInBytes;
 };

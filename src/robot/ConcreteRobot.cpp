@@ -9,10 +9,12 @@ namespace robot {
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
+using constraint::ConstTestablePtr;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
+using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::StateSpacePtr;
 using statespace::StateSpace;
 using trajectory::TrajectoryPtr;
@@ -234,7 +236,7 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
 
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space,
+    const ConstMetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton) const
 {
   using constraint::dart::CollisionFree;
@@ -258,7 +260,7 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
 
 //=============================================================================
 TestablePtr ConcreteRobot::getFullCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space,
+    const ConstMetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const CollisionFreePtr& collisionFree) const
 {
@@ -274,7 +276,7 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
     return selfCollisionFree;
 
   // Make testable constraints for collision check
-  std::vector<TestablePtr> constraints;
+  std::vector<ConstTestablePtr> constraints;
   constraints.reserve(2);
   constraints.emplace_back(selfCollisionFree);
   if (collisionFree)
