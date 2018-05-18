@@ -6,7 +6,7 @@ namespace constraint {
 
 //==============================================================================
 DifferentiableSubspace::DifferentiableSubspace(
-    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+    std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
     DifferentiablePtr _constraint,
     std::size_t _index)
   : mStateSpace(std::move(_stateSpace))

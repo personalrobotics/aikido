@@ -15,7 +15,7 @@ public:
   /// \param[in] generators Sequence of generators associated with corresponding
   /// sequence of sampleables
   SequentialSampleGenerator(
-      statespace::StateSpacePtr stateSpace,
+      statespace::ConstStateSpacePtr stateSpace,
       std::vector<std::unique_ptr<SampleGenerator>> generators);
 
   // Documentation inherited
@@ -32,7 +32,7 @@ public:
 
 private:
   /// StateSpace the associated sampleable operates in.
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 
   /// Sequence of generators associated with corresponding sequence of
   /// sampleables.
@@ -44,7 +44,7 @@ private:
 
 //==============================================================================
 SequentialSampleGenerator::SequentialSampleGenerator(
-    statespace::StateSpacePtr stateSpace,
+    statespace::ConstStateSpacePtr stateSpace,
     std::vector<std::unique_ptr<SampleGenerator>> generators)
   : mStateSpace(std::move(stateSpace))
   , mGenerators(std::move(generators))

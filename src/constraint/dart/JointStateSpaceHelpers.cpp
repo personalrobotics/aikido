@@ -26,7 +26,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
 //==============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton)
 {
   if (!_metaSkeleton)
     throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");

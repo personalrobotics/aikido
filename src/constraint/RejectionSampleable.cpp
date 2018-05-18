@@ -11,7 +11,7 @@ class RejectionSampler : public SampleGenerator
 {
 public:
   RejectionSampler(
-      statespace::StateSpacePtr _stateSpace,
+      statespace::ConstStateSpacePtr _stateSpace,
       std::unique_ptr<SampleGenerator> _sampler,
       TestablePtr _testable,
       int _maxTrialPerSample);
@@ -37,7 +37,7 @@ public:
   int getNumSamples() const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   std::unique_ptr<SampleGenerator> mSampler;
   TestablePtr mTestable;
   int mMaxTrialPerSample;
@@ -100,7 +100,7 @@ std::unique_ptr<SampleGenerator> RejectionSampleable::createSampleGenerator()
 
 //==============================================================================
 RejectionSampler::RejectionSampler(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     std::unique_ptr<SampleGenerator> _sampler,
     TestablePtr _testable,
     int _maxTrialPerSample)

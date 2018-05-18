@@ -33,7 +33,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 /// \param _metaSkeleton The MetaSkeletonStateSpace where the Differentiable
 /// will be applied
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton);
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton);
 
 /// Create a Projectable that can be used to project a state from the given
 /// StateSpace back within bounds set on the StateSpace.

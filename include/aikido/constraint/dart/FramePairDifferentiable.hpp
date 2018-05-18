@@ -60,7 +60,7 @@ public:
   statespace::ConstStateSpacePtr getStateSpace() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   ::dart::dynamics::ConstJacobianNodePtr mJacobianNode1;
   ::dart::dynamics::ConstJacobianNodePtr mJacobianNode2;

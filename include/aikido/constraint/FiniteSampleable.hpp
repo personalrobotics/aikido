@@ -42,7 +42,7 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   std::vector<statespace::StateSpace::State*> mStates;
 };
 

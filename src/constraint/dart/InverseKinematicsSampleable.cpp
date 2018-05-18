@@ -40,14 +40,14 @@ public:
 private:
   // For internal use only.
   IkSampleGenerator(
-      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
       ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
       ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       std::unique_ptr<SampleGenerator> _poseSampler,
       std::unique_ptr<SampleGenerator> _seedSampler,
       int _maxNumTrials);
 
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<const statespace::SE3> mPoseStateSpace;
   ::dart::dynamics::InverseKinematicsPtr mInverseKinematics;
@@ -144,7 +144,7 @@ InverseKinematicsSampleable::createSampleGenerator() const
 
 //==============================================================================
 IkSampleGenerator::IkSampleGenerator(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
     ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<SampleGenerator> _poseSampler,

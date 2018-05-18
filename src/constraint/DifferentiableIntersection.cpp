@@ -6,7 +6,7 @@ namespace constraint {
 //==============================================================================
 DifferentiableIntersection::DifferentiableIntersection(
     std::vector<DifferentiablePtr> _constraints,
-    std::shared_ptr<aikido::statespace::StateSpace> _stateSpace)
+    std::shared_ptr<const aikido::statespace::StateSpace> _stateSpace)
   : mConstraints(std::move(_constraints)), mStateSpace(std::move(_stateSpace))
 {
   if (mConstraints.size() == 0)

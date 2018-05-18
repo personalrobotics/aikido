@@ -36,7 +36,7 @@ public:
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   SampleablePtr mSampleable;
   TestablePtr mTestable;
   int mMaxTrialPerSample;
