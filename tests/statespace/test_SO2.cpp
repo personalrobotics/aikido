@@ -1,3 +1,4 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SO2.hpp>
 #include "eigen_tests.hpp"
@@ -24,6 +25,23 @@ TEST(SO2, CornerCasePositive)
 {
   SO2::State s1(M_PI);
   EXPECT_DOUBLE_EQ(s1.toAngle(), M_PI);
+}
+
+TEST(SO2, Clone)
+{
+  SO2 so2;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const auto angle = dart::math::random(-M_PI, M_PI);
+
+    auto s1 = so2.createState();
+    s1.fromAngle(angle);
+
+    auto s2 = s1.clone();
+
+    EXPECT_DOUBLE_EQ(s1.toAngle(), s2.toAngle());
+  }
 }
 
 TEST(SO2, ComposeThrowsOnAliasing)

@@ -36,6 +36,9 @@ public:
   /// \return new \c ScopedState.
   ScopedState createState() const;
 
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
+
   /// Returns state as a rotation angle in (-pi, pi].
   ///
   /// \param[in] state State.

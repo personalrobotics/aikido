@@ -1,7 +1,8 @@
-#include <aikido/statespace/SO2.hpp>
+#include "aikido/statespace/SO2.hpp"
 
 namespace aikido {
 namespace statespace {
+
 //==============================================================================
 SO2::State::State(double angle)
 {
@@ -41,6 +42,15 @@ void SO2::State::fromRotation(const Eigen::Rotation2Dd& rotation)
 auto SO2::createState() const -> ScopedState
 {
   return ScopedState(this);
+}
+
+//==============================================================================
+SO2::ScopedState SO2::cloneState(const StateSpace::State* stateIn) const
+{
+  auto newState = createState();
+  copyState(stateIn, newState);
+
+  return newState;
 }
 
 //==============================================================================

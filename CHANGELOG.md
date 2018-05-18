@@ -16,6 +16,7 @@
   * Fixed bug in the representation of SO(2) statespace: [#408](https://github.com/personalrobotics/aikido/pull/408)
   * Fixed const correctness of StateHandle::getState(): [#419](https://github.com/personalrobotics/aikido/pull/419)
   * Fixed hidden compose function (in-place version): [#421](https://github.com/personalrobotics/aikido/pull/421)
+  * Added clone functionality to StateSpace: [#422](https://github.com/personalrobotics/aikido/pull/422)
 
 * Constraint
 

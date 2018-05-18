@@ -6,6 +6,42 @@ using aikido::statespace::R3;
 using R4 = aikido::statespace::R<4>;
 
 //==============================================================================
+TEST(Rn, CloneR3)
+{
+  R3 rvss;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const Eigen::Vector3d pos = Eigen::Vector3d::Random();
+
+    auto s1 = rvss.createState();
+    s1.setValue(pos);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getValue().isApprox(s2.getValue()));
+  }
+}
+
+//==============================================================================
+TEST(Rn, CloneRx)
+{
+  Rn rvss(3);
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const Eigen::Vector3d pos = Eigen::Vector3d::Random();
+
+    auto s1 = rvss.createState();
+    s1.setValue(pos);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getValue().isApprox(s2.getValue()));
+  }
+}
+
+//==============================================================================
 TEST(Rn, ComposeR3)
 {
   R3 rvss;

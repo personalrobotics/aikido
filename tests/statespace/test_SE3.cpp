@@ -1,8 +1,31 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SE3.hpp>
 
 using aikido::statespace::SE3;
 using Vector6d = Eigen::Matrix<double, 6, 1>;
+
+TEST(SE3, Clone)
+{
+  SE3 se3;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    Eigen::Isometry3d pose = Eigen::Isometry3d::Identity();
+    const auto angle = dart::math::random(-M_PI, M_PI);
+    const auto axis = Eigen::Vector3d::Random().normalized();
+    const auto angleAxis = Eigen::AngleAxisd(angle, axis);
+    pose.linear() = angleAxis.toRotationMatrix();
+    pose.translation() = Eigen::Vector3d::Random();
+
+    auto s1 = se3.createState();
+    s1.setIsometry(pose);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getIsometry().isApprox(s2.getIsometry()));
+  }
+}
 
 TEST(SE3, Compose)
 {

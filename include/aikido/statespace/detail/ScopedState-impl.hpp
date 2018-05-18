@@ -20,5 +20,12 @@ ScopedState<Handle>::~ScopedState()
   this->mSpace->freeStateInBuffer(this->mState);
 }
 
+//==============================================================================
+template <class Handle>
+ScopedState<Handle> ScopedState<Handle>::clone() const
+{
+  return this->mSpace->cloneState(this->mState);
+}
+
 } // namespace statespace
 } // namespace aikido

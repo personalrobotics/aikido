@@ -47,6 +47,9 @@ public:
   /// \return new \c ScopedState
   ScopedState createState() const;
 
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const State* stateIn) const;
+
   /// Allocate a new state. This must be deleted with \c freeState. This is a
   /// helper function that allocates memory, uses \c allocateStateInBuffer to
   /// create a \c State, and returns that pointer.

@@ -1,7 +1,28 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SO3.hpp>
 
 using aikido::statespace::SO3;
+
+TEST(SO3, Clone)
+{
+  SO3 so3;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const auto angle = dart::math::random(-M_PI, M_PI);
+    const auto axis = Eigen::Vector3d::Random().normalized();
+    const auto angleAxis = Eigen::AngleAxisd(angle, axis);
+    const Eigen::Quaterniond quat(angleAxis);
+
+    auto s1 = so3.createState();
+    s1.setQuaternion(quat);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getQuaternion().isApprox(s2.getQuaternion()));
+  }
+}
 
 TEST(SO3, Compose)
 {

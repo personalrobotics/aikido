@@ -68,6 +68,9 @@ public:
   /// \return new \c ScopedState
   ScopedState createState() const;
 
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
+
   /// Gets value as an Eigen transformation object.
   ///
   /// \param _state a \c State in this state space
