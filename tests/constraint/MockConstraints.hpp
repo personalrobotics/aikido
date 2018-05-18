@@ -11,7 +11,7 @@ class PassingConstraint : public aikido::constraint::Testable
 {
 public:
   explicit PassingConstraint(
-      std::shared_ptr<aikido::statespace::StateSpace> stateSpace)
+      std::shared_ptr<const aikido::statespace::StateSpace> stateSpace)
     : stateSpace{stateSpace}
   {
   }
@@ -40,14 +40,14 @@ public:
   }
 
 private:
-  std::shared_ptr<aikido::statespace::StateSpace> stateSpace;
+  std::shared_ptr<const aikido::statespace::StateSpace> stateSpace;
 };
 
 class FailingConstraint : public aikido::constraint::Testable
 {
 public:
   explicit FailingConstraint(
-      std::shared_ptr<aikido::statespace::StateSpace> stateSpace)
+      std::shared_ptr<const aikido::statespace::StateSpace> stateSpace)
     : stateSpace{stateSpace}
   {
   }
@@ -76,7 +76,7 @@ public:
   }
 
 private:
-  std::shared_ptr<aikido::statespace::StateSpace> stateSpace;
+  std::shared_ptr<const aikido::statespace::StateSpace> stateSpace;
 };
 
 #endif // AIKIDO_TESTS_CONSTRAINT_MOCK_CONSTRAINTS_HPP_

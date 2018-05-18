@@ -13,6 +13,7 @@ using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::R3;
 using aikido::constraint::TestablePtr;
+using aikido::constraint::ConstTestablePtr;
 using aikido::constraint::Testable;
 using aikido::constraint::uniform::R3BoxConstraint;
 
@@ -34,13 +35,13 @@ public:
     testables.push_back(satisfied);
 
     cs = std::make_shared<CartesianProduct>(
-        std::vector<aikido::statespace::StateSpacePtr>({rvss, so2}));
+        std::vector<aikido::statespace::ConstStateSpacePtr>({rvss, so2}));
     ts = std::make_shared<CartesianProductTestable>(cs, testables);
   }
 
   std::shared_ptr<CartesianProduct> cs;
   std::shared_ptr<CartesianProductTestable> ts;
-  std::vector<TestablePtr> testables;
+  std::vector<ConstTestablePtr> testables;
   std::shared_ptr<Satisfied> satisfied;
   std::shared_ptr<R3> rvss;
   std::shared_ptr<SO2> so2;
@@ -54,7 +55,7 @@ TEST_F(CartesianProductTestableTest, ConstructorThrowsOnNullStateSpace)
 
 TEST_F(CartesianProductTestableTest, ConstructorThrowsOnNullTestables)
 {
-  std::vector<TestablePtr> testables;
+  std::vector<ConstTestablePtr> testables;
   testables.push_back(nullptr);
   testables.push_back(nullptr);
 
@@ -66,7 +67,7 @@ TEST_F(
     ConstructorThrowsOnUnmatchingStateSpaceTestablesPair)
 {
   auto space = std::make_shared<CartesianProduct>(
-      std::vector<aikido::statespace::StateSpacePtr>({rvss, so2, rvss}));
+      std::vector<aikido::statespace::ConstStateSpacePtr>({rvss, so2, rvss}));
   EXPECT_THROW(
       CartesianProductTestable(space, testables), std::invalid_argument);
 

@@ -19,7 +19,7 @@ public:
       std::vector<std::unique_ptr<SampleGenerator>> generators);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited
   bool sample(statespace::StateSpace::State* state) override;
@@ -78,7 +78,7 @@ SequentialSampleGenerator::SequentialSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SequentialSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SequentialSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }

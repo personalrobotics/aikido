@@ -15,6 +15,7 @@ using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
+using aikido::statespace::ConstStateSpacePtr;
 using aikido::planner::parabolic::computeParabolicTiming;
 using aikido::planner::parabolic::convertToSpline;
 
@@ -337,7 +338,7 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
 TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
 {
   auto stateSpace = std::make_shared<CartesianProduct>(
-      std::vector<StateSpacePtr>{std::make_shared<SO3>()});
+      std::vector<ConstStateSpacePtr>{std::make_shared<SO3>()});
   auto state = stateSpace->createState();
 
   std::shared_ptr<GeodesicInterpolator> interpolator
@@ -358,7 +359,7 @@ TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)
 TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
 {
   auto stateSpace = std::make_shared<CartesianProduct>(
-      std::vector<StateSpacePtr>{
+      std::vector<ConstStateSpacePtr>{
           std::make_shared<R2>(), std::make_shared<SO2>(),
       });
   auto state = stateSpace->createState();

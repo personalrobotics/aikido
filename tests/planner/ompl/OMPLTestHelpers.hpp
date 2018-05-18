@@ -47,7 +47,7 @@ dart::dynamics::SkeletonPtr createTranslationalRobot()
 
 void setTranslationalState(
     const Eigen::Vector3d& _value,
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& _stateSpace,
     ::ompl::base::State* _state)
 {
   auto st = _state->as<aikido::planner::ompl::GeometricStateSpace::StateType>();
@@ -57,7 +57,7 @@ void setTranslationalState(
 }
 
 Eigen::Vector3d getTranslationalState(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& _stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& _stateSpace,
     ::ompl::base::State* _state)
 {
   auto st = _state->as<GeometricStateSpace::StateType>();
@@ -73,7 +73,7 @@ class MockConstrainedSampleGenerator
 
 public:
   MockConstrainedSampleGenerator(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr _stateSpace,
       std::unique_ptr<aikido::constraint::SampleGenerator> _generator,
       double _value)
     : mStateSpace(std::move(_stateSpace))
@@ -82,7 +82,7 @@ public:
   {
   }
 
-  aikido::statespace::StateSpacePtr getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
@@ -112,7 +112,7 @@ public:
   }
 
 private:
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
   std::unique_ptr<aikido::constraint::SampleGenerator> mSampleGenerator;
   double mValue;
 };
@@ -124,7 +124,7 @@ class MockProjectionConstraint : public aikido::constraint::Projectable,
 public:
   // Construct a constraint that project to x=_val
   MockProjectionConstraint(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr _stateSpace,
       aikido::constraint::SampleablePtr _sampleable,
       double _val)
     : mStateSpace(std::move(_stateSpace))
@@ -134,7 +134,7 @@ public:
   }
 
   // Documentation inherited
-  aikido::statespace::StateSpacePtr getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
@@ -184,7 +184,7 @@ public:
   }
 
 private:
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
   aikido::constraint::SampleablePtr mSampleable;
   double mValue;
 };
@@ -194,7 +194,7 @@ class MockTranslationalRobotConstraint : public aikido::constraint::Testable
 public:
   // Construct the mock constraint
   MockTranslationalRobotConstraint(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr _stateSpace,
+      aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr _stateSpace,
       const Eigen::Vector3d& _lowerBounds,
       const Eigen::Vector3d& _upperBounds)
     : mStateSpace(std::move(_stateSpace))
@@ -237,13 +237,13 @@ public:
   }
 
   // Documentation inherited
-  std::shared_ptr<aikido::statespace::StateSpace> getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
 
 private:
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
   Eigen::Vector3d mLowerBounds;
   Eigen::Vector3d mUpperBounds;
 };
@@ -251,12 +251,12 @@ private:
 class EmptySampleGenerator : public aikido::constraint::SampleGenerator
 {
 public:
-  explicit EmptySampleGenerator(aikido::statespace::StateSpacePtr sspace)
+  explicit EmptySampleGenerator(aikido::statespace::ConstStateSpacePtr sspace)
     : mStateSpace(sspace)
   {
   }
 
-  aikido::statespace::StateSpacePtr getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
@@ -275,18 +275,18 @@ public:
   }
 
 private:
-  aikido::statespace::StateSpacePtr mStateSpace;
+  aikido::statespace::ConstStateSpacePtr mStateSpace;
 };
 
 class FailedSampleGenerator : public aikido::constraint::SampleGenerator
 {
 public:
-  explicit FailedSampleGenerator(aikido::statespace::StateSpacePtr sspace)
+  explicit FailedSampleGenerator(aikido::statespace::ConstStateSpacePtr sspace)
     : mStateSpace(sspace)
   {
   }
 
-  aikido::statespace::StateSpacePtr getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }
@@ -305,7 +305,7 @@ public:
   }
 
 private:
-  aikido::statespace::StateSpacePtr mStateSpace;
+  aikido::statespace::ConstStateSpacePtr mStateSpace;
 };
 
 class PlannerTest : public ::testing::Test
@@ -318,7 +318,7 @@ public:
     // Create robot
     robot = createTranslationalRobot();
 
-    stateSpace = std::make_shared<StateSpace>(robot.get());
+    stateSpace = std::make_shared<const StateSpace>(robot.get());
     interpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
         stateSpace);
 
@@ -329,7 +329,7 @@ public:
         Eigen::Vector3d(0.1, 0.1, 0.1));
 
     // Distance metric
-    dmetric = aikido::distance::createDistanceMetric(stateSpace);
+    dmetric = aikido::distance::createDistanceMetricConst(stateSpace);
 
     // Sampler
     sampler
@@ -343,7 +343,7 @@ public:
   }
 
   dart::dynamics::SkeletonPtr robot;
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace;
   aikido::statespace::InterpolatorPtr interpolator;
   aikido::distance::DistanceMetricPtr dmetric;
   aikido::constraint::SampleablePtr sampler;

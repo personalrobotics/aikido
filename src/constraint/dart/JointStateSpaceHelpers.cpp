@@ -15,12 +15,12 @@ using ::dart::common::make_unique;
 
 //==============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace)
 {
   return common::DynamicCastFactory<detail::createDifferentiableFor_impl,
                                     common::DynamicCastFactory_shared_ptr,
-                                    statespace::dart::JointStateSpace,
-                                    detail::JointStateSpaceTypeList>::
+                                    const statespace::dart::JointStateSpace,
+                                    detail::ConstJointStateSpaceTypeList>::
       create(std::move(_stateSpace));
 }
 
@@ -54,18 +54,18 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
 //==============================================================================
 std::unique_ptr<Projectable> createProjectableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace)
 {
   return common::DynamicCastFactory<detail::createProjectableFor_impl,
                                     common::DynamicCastFactory_shared_ptr,
-                                    statespace::dart::JointStateSpace,
-                                    detail::JointStateSpaceTypeList>::
+                                    const statespace::dart::JointStateSpace,
+                                    detail::ConstJointStateSpaceTypeList>::
       create(std::move(_stateSpace));
 }
 
 //==============================================================================
 std::unique_ptr<Projectable> createProjectableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton)
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton)
 {
   const auto n = _metaSkeleton->getNumSubspaces();
 
@@ -86,12 +86,12 @@ std::unique_ptr<Projectable> createProjectableBounds(
 
 //==============================================================================
 std::unique_ptr<Testable> createTestableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace)
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace)
 {
   return common::DynamicCastFactory<detail::createTestableFor_impl,
                                     common::DynamicCastFactory_shared_ptr,
-                                    statespace::dart::JointStateSpace,
-                                    detail::JointStateSpaceTypeList>::
+                                    const statespace::dart::JointStateSpace,
+                                    detail::ConstJointStateSpaceTypeList>::
       create(std::move(_stateSpace));
 }
 
@@ -118,19 +118,19 @@ std::unique_ptr<Testable> createTestableBounds(
 
 //==============================================================================
 std::unique_ptr<Sampleable> createSampleableBounds(
-    std::shared_ptr<statespace::dart::JointStateSpace> _stateSpace,
+    std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace,
     std::unique_ptr<common::RNG> _rng)
 {
   return common::DynamicCastFactory<detail::createSampleableFor_impl,
                                     common::DynamicCastFactory_shared_ptr,
-                                    statespace::dart::JointStateSpace,
-                                    detail::JointStateSpaceTypeList>::
+                                    const statespace::dart::JointStateSpace,
+                                    detail::ConstJointStateSpaceTypeList>::
       create(std::move(_stateSpace), std::move(_rng));
 }
 
 //==============================================================================
 std::unique_ptr<Sampleable> createSampleableBounds(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeleton,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeleton,
     std::unique_ptr<common::RNG> _rng)
 {
   const auto n = _metaSkeleton->getNumSubspaces();

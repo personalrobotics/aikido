@@ -112,7 +112,32 @@ struct createDistanceMetricFor_impl<statespace::CartesianProduct>
     for (std::size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
     {
       auto subspace = _sspace->getSubspace<>(i);
-      auto metric = createDistanceMetric(std::move(subspace));
+      auto metric = createDistanceMetricConst(std::move(subspace));
+      metrics.emplace_back(std::move(metric));
+    }
+
+    return make_unique<CartesianProductWeighted>(
+        std::move(_sspace), std::move(metrics));
+  }
+};
+
+//==============================================================================
+template <>
+struct createDistanceMetricFor_impl<const statespace::CartesianProduct>
+{
+  static Ptr create(std::shared_ptr<const statespace::CartesianProduct> _sspace)
+  {
+    if (_sspace == nullptr)
+      throw std::invalid_argument(
+          "Cannot create distance metric for null statespace.");
+
+    std::vector<std::shared_ptr<DistanceMetric> > metrics;
+    metrics.reserve(_sspace->getNumSubspaces());
+
+    for (std::size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
+    {
+      auto subspace = _sspace->getSubspace<>(i);
+      auto metric = createDistanceMetricConst(std::move(subspace));
       metrics.emplace_back(std::move(metric));
     }
 
@@ -141,6 +166,9 @@ using SupportedStateSpaces = common::type_list<statespace::CartesianProduct,
                                                statespace::SO2,
                                                statespace::SO3,
                                                statespace::SE2>;
+
+//==============================================================================
+using ConstSupportedStateSpaces = common::type_list<const statespace::CartesianProduct>;
 
 } // namespace detail
 

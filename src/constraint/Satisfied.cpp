@@ -4,7 +4,7 @@ namespace aikido {
 namespace constraint {
 
 //==============================================================================
-Satisfied::Satisfied(statespace::StateSpacePtr _space)
+Satisfied::Satisfied(statespace::ConstStateSpacePtr _space)
   : mStateSpace(std::move(_space))
 {
   if (!mStateSpace)

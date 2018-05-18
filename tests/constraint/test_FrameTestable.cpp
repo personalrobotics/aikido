@@ -25,7 +25,7 @@ public:
   {
   }
 
-  aikido::statespace::StateSpacePtr getStateSpace() const override
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override
   {
     return mStateSpace;
   }

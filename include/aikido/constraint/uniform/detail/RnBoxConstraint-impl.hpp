@@ -27,7 +27,7 @@ class RnBoxConstraintSampleGenerator : public constraint::SampleGenerator
 public:
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool sample(statespace::StateSpace::State* _state) override;
 
@@ -37,12 +37,12 @@ public:
 
 private:
   RnBoxConstraintSampleGenerator(
-      std::shared_ptr<statespace::R<N>> _space,
+      std::shared_ptr<const statespace::R<N>> _space,
       std::unique_ptr<common::RNG> _rng,
       const VectorNd& _lowerLimits,
       const VectorNd& _upperLimits);
 
-  std::shared_ptr<statespace::R<N>> mSpace;
+  std::shared_ptr<const statespace::R<N>> mSpace;
   std::unique_ptr<common::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
 
@@ -52,7 +52,7 @@ private:
 //==============================================================================
 template <int N>
 RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
-    std::shared_ptr<statespace::R<N>> _space,
+    std::shared_ptr<const statespace::R<N>> _space,
     std::unique_ptr<common::RNG> _rng,
     const VectorNd& _lowerLimits,
     const VectorNd& _upperLimits)
@@ -67,7 +67,7 @@ RnBoxConstraintSampleGenerator<N>::RnBoxConstraintSampleGenerator(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RnBoxConstraintSampleGenerator<N>::getStateSpace()
+statespace::ConstStateSpacePtr RnBoxConstraintSampleGenerator<N>::getStateSpace()
     const
 {
   return mSpace;
@@ -106,7 +106,7 @@ bool RnBoxConstraintSampleGenerator<N>::canSample() const
 //==============================================================================
 template <int N>
 RBoxConstraint<N>::RBoxConstraint(
-    std::shared_ptr<statespace::R<N>> _space,
+    std::shared_ptr<const statespace::R<N>> _space,
     std::unique_ptr<common::RNG> _rng,
     const VectorNd& _lowerLimits,
     const VectorNd& _upperLimits)

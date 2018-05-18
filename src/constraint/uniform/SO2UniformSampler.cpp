@@ -10,7 +10,7 @@ class SO2UniformSampleGenerator : public constraint::SampleGenerator
 {
 public:
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -23,10 +23,10 @@ public:
 
 private:
   SO2UniformSampleGenerator(
-      std::shared_ptr<statespace::SO2> _space,
+      std::shared_ptr<const statespace::SO2> _space,
       std::unique_ptr<common::RNG> _rng);
 
-  std::shared_ptr<statespace::SO2> mSpace;
+  std::shared_ptr<const statespace::SO2> mSpace;
   std::unique_ptr<common::RNG> mRng;
   std::uniform_real_distribution<double> mDistribution;
 
@@ -35,14 +35,14 @@ private:
 
 //==============================================================================
 SO2UniformSampleGenerator::SO2UniformSampleGenerator(
-    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(-M_PI, M_PI)
 {
   // Do nothing
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO2UniformSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SO2UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
@@ -69,7 +69,7 @@ bool SO2UniformSampleGenerator::canSample() const
 
 //==============================================================================
 SO2UniformSampler::SO2UniformSampler(
-    std::shared_ptr<statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO2> _space, std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   if (!mSpace)

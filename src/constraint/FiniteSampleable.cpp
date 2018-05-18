@@ -23,7 +23,7 @@ public:
   virtual ~FiniteSampleGenerator();
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -82,7 +82,7 @@ FiniteSampleGenerator::~FiniteSampleGenerator()
 }
 
 //==============================================================================
-statespace::StateSpacePtr FiniteSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr FiniteSampleGenerator::getStateSpace() const
 {
   return mStateSpace;
 }

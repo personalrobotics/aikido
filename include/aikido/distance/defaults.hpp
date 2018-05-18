@@ -17,6 +17,11 @@ std::unique_ptr<DistanceMetric> createDistanceMetricFor(
 /// \param _sspace The StateSpace the distance metric will operator on
 std::unique_ptr<DistanceMetric> createDistanceMetric(
     statespace::StateSpacePtr _sspace);
+
+/// Creates a DistanceMetric that is appropriate for the *const* statespace.
+/// \param _sspace The StateSpace the distance metric will operator on
+std::unique_ptr<DistanceMetric> createDistanceMetricConst(
+    statespace::ConstStateSpacePtr _sspace);
 }
 }
 

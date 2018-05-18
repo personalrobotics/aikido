@@ -26,7 +26,7 @@ public:
   virtual ~IkSampleGenerator() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -49,7 +49,7 @@ private:
 
   statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
-  std::shared_ptr<statespace::SE3> mPoseStateSpace;
+  std::shared_ptr<const statespace::SE3> mPoseStateSpace;
   ::dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<SampleGenerator> mPoseSampler;
   std::unique_ptr<SampleGenerator> mSeedSampler;
@@ -152,7 +152,7 @@ IkSampleGenerator::IkSampleGenerator(
   : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(_metaskeleton))
   , mPoseStateSpace(
-        std::dynamic_pointer_cast<SE3>(_poseSampler->getStateSpace()))
+        std::dynamic_pointer_cast<const SE3>(_poseSampler->getStateSpace()))
   , mInverseKinematics(std::move(_inverseKinematics))
   , mPoseSampler(std::move(_poseSampler))
   , mSeedSampler(std::move(_seedSampler))
@@ -189,7 +189,7 @@ IkSampleGenerator::IkSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr IkSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr IkSampleGenerator::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

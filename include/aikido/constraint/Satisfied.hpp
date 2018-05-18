@@ -20,7 +20,7 @@ public:
 
   /// Constructor.
   /// \param _space StateSpace in which this constraint operates.
-  explicit Satisfied(statespace::StateSpacePtr _space);
+  explicit Satisfied(statespace::ConstStateSpacePtr _space);
 
   // Documentation inherited.
   statespace::ConstStateSpacePtr getStateSpace() const override;
@@ -68,7 +68,7 @@ public:
       Eigen::MatrixXd& _out) const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 };
 
 } // namespace constraint

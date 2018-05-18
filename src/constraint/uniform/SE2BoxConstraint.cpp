@@ -13,7 +13,7 @@ using constraint::ConstraintType;
 class SE2BoxConstraintSampleGenerator : public constraint::SampleGenerator
 {
 public:
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool sample(statespace::StateSpace::State* _state) override;
 
@@ -23,13 +23,13 @@ public:
 
 private:
   SE2BoxConstraintSampleGenerator(
-      std::shared_ptr<statespace::SE2> _space,
+      std::shared_ptr<const statespace::SE2> _space,
       std::unique_ptr<common::RNG> _rng,
       const Eigen::Vector3d& _lowerLimits,
       const Eigen::Vector3d& _upperLimits);
 
   const std::size_t mDimension;
-  std::shared_ptr<statespace::SE2> mSpace;
+  std::shared_ptr<const statespace::SE2> mSpace;
   std::unique_ptr<common::RNG> mRng;
   std::vector<std::uniform_real_distribution<double>> mDistributions;
   friend class SE2BoxConstraint;
@@ -37,7 +37,7 @@ private:
 
 //==============================================================================
 SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
-    std::shared_ptr<statespace::SE2> _space,
+    std::shared_ptr<const statespace::SE2> _space,
     std::unique_ptr<common::RNG> _rng,
     const Eigen::Vector3d& _lowerLimits,
     const Eigen::Vector3d& _upperLimits)
@@ -50,7 +50,7 @@ SE2BoxConstraintSampleGenerator::SE2BoxConstraintSampleGenerator(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SE2BoxConstraintSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SE2BoxConstraintSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
@@ -83,7 +83,7 @@ bool SE2BoxConstraintSampleGenerator::canSample() const
 
 //==============================================================================
 SE2BoxConstraint::SE2BoxConstraint(
-    std::shared_ptr<statespace::SE2> space,
+    std::shared_ptr<const statespace::SE2> space,
     std::unique_ptr<common::RNG> rng,
     const Eigen::Vector2d& lowerLimits,
     const Eigen::Vector2d& upperLimits)
