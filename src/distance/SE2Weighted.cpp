@@ -5,7 +5,7 @@ namespace aikido {
 namespace distance {
 
 //==============================================================================
-SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space)
+SE2Weighted::SE2Weighted(std::shared_ptr<const statespace::SE2> space)
   : mStateSpace(std::move(space)), mWeights(Eigen::Vector2d::Ones())
 {
   if (mStateSpace == nullptr)
@@ -14,7 +14,7 @@ SE2Weighted::SE2Weighted(std::shared_ptr<statespace::SE2> space)
 
 //==============================================================================
 SE2Weighted::SE2Weighted(
-    std::shared_ptr<statespace::SE2> space, const Eigen::Vector2d& weights)
+    std::shared_ptr<const statespace::SE2> space, const Eigen::Vector2d& weights)
   : mStateSpace(std::move(space)), mWeights(weights)
 {
   if (mStateSpace == nullptr)

@@ -28,9 +28,9 @@ struct createDistanceMetricFor_impl
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::R0>
+struct createDistanceMetricFor_impl<const statespace::R0>
 {
-  static Ptr create(std::shared_ptr<statespace::R0> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::R0> _sspace)
   {
     return make_unique<R0Euclidean>(std::move(_sspace));
   }
@@ -38,9 +38,9 @@ struct createDistanceMetricFor_impl<statespace::R0>
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::R1>
+struct createDistanceMetricFor_impl<const statespace::R1>
 {
-  static Ptr create(std::shared_ptr<statespace::R1> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::R1> _sspace)
   {
     return make_unique<R1Euclidean>(std::move(_sspace));
   }
@@ -48,9 +48,9 @@ struct createDistanceMetricFor_impl<statespace::R1>
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::R2>
+struct createDistanceMetricFor_impl<const statespace::R2>
 {
-  static Ptr create(std::shared_ptr<statespace::R2> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::R2> _sspace)
   {
     return make_unique<R2Euclidean>(std::move(_sspace));
   }
@@ -58,9 +58,9 @@ struct createDistanceMetricFor_impl<statespace::R2>
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::R3>
+struct createDistanceMetricFor_impl<const statespace::R3>
 {
-  static Ptr create(std::shared_ptr<statespace::R3> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::R3> _sspace)
   {
     return make_unique<R3Euclidean>(std::move(_sspace));
   }
@@ -68,9 +68,9 @@ struct createDistanceMetricFor_impl<statespace::R3>
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::R6>
+struct createDistanceMetricFor_impl<const statespace::R6>
 {
-  static Ptr create(std::shared_ptr<statespace::R6> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::R6> _sspace)
   {
     return make_unique<R6Euclidean>(std::move(_sspace));
   }
@@ -78,9 +78,9 @@ struct createDistanceMetricFor_impl<statespace::R6>
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::SO2>
+struct createDistanceMetricFor_impl<const statespace::SO2>
 {
-  static Ptr create(std::shared_ptr<statespace::SO2> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::SO2> _sspace)
   {
     return make_unique<SO2Angular>(std::move(_sspace));
   }
@@ -88,36 +88,11 @@ struct createDistanceMetricFor_impl<statespace::SO2>
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::SO3>
+struct createDistanceMetricFor_impl<const statespace::SO3>
 {
-  static Ptr create(std::shared_ptr<statespace::SO3> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::SO3> _sspace)
   {
     return make_unique<SO3Angular>(std::move(_sspace));
-  }
-};
-
-//==============================================================================
-template <>
-struct createDistanceMetricFor_impl<statespace::CartesianProduct>
-{
-  static Ptr create(std::shared_ptr<statespace::CartesianProduct> _sspace)
-  {
-    if (_sspace == nullptr)
-      throw std::invalid_argument(
-          "Cannot create distance metric for null statespace.");
-
-    std::vector<std::shared_ptr<DistanceMetric> > metrics;
-    metrics.reserve(_sspace->getNumSubspaces());
-
-    for (std::size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
-    {
-      auto subspace = _sspace->getSubspace<>(i);
-      auto metric = createDistanceMetricConst(std::move(subspace));
-      metrics.emplace_back(std::move(metric));
-    }
-
-    return make_unique<CartesianProductWeighted>(
-        std::move(_sspace), std::move(metrics));
   }
 };
 
@@ -137,7 +112,7 @@ struct createDistanceMetricFor_impl<const statespace::CartesianProduct>
     for (std::size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
     {
       auto subspace = _sspace->getSubspace<>(i);
-      auto metric = createDistanceMetricConst(std::move(subspace));
+      auto metric = createDistanceMetric(std::move(subspace));
       metrics.emplace_back(std::move(metric));
     }
 
@@ -148,27 +123,24 @@ struct createDistanceMetricFor_impl<const statespace::CartesianProduct>
 
 //==============================================================================
 template <>
-struct createDistanceMetricFor_impl<statespace::SE2>
+struct createDistanceMetricFor_impl<const statespace::SE2>
 {
-  static Ptr create(std::shared_ptr<statespace::SE2> _sspace)
+  static Ptr create(std::shared_ptr<const statespace::SE2> _sspace)
   {
     return make_unique<SE2Weighted>(std::move(_sspace));
   }
 };
 
 //==============================================================================
-using SupportedStateSpaces = common::type_list<statespace::CartesianProduct,
-                                               statespace::R0,
-                                               statespace::R1,
-                                               statespace::R2,
-                                               statespace::R3,
-                                               statespace::R6,
-                                               statespace::SO2,
-                                               statespace::SO3,
-                                               statespace::SE2>;
-
-//==============================================================================
-using ConstSupportedStateSpaces = common::type_list<const statespace::CartesianProduct>;
+using SupportedStateSpaces = common::type_list<const statespace::CartesianProduct,
+                                               const statespace::R0,
+                                               const statespace::R1,
+                                               const statespace::R2,
+                                               const statespace::R3,
+                                               const statespace::R6,
+                                               const statespace::SO2,
+                                               const statespace::SO3,
+                                               const statespace::SE2>;
 
 } // namespace detail
 
@@ -180,7 +152,7 @@ std::unique_ptr<DistanceMetric> createDistanceMetricFor(
   if (_sspace == nullptr)
     throw std::invalid_argument("_sspace is null.");
 
-  return detail::createDistanceMetricFor_impl<Space>::create(
+  return detail::createDistanceMetricFor_impl<const Space>::create(
       std::move(_sspace));
 }
 

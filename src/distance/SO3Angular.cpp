@@ -4,7 +4,7 @@ namespace aikido {
 namespace distance {
 
 //==============================================================================
-SO3Angular::SO3Angular(std::shared_ptr<statespace::SO3> _space)
+SO3Angular::SO3Angular(std::shared_ptr<const statespace::SO3> _space)
   : mStateSpace(std::move(_space))
 {
   if (mStateSpace == nullptr)

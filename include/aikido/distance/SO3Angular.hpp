@@ -13,7 +13,7 @@ class SO3Angular : public DistanceMetric
 public:
   /// Constructor.
   /// \param _space The SO3 this distance metric operates on
-  explicit SO3Angular(std::shared_ptr<statespace::SO3> _space);
+  explicit SO3Angular(std::shared_ptr<const statespace::SO3> _space);
 
   // Documentation inherited
   statespace::ConstStateSpacePtr getStateSpace() const override;
@@ -26,7 +26,7 @@ public:
       const statespace::StateSpace::State* _state2) const override;
 
 private:
-  std::shared_ptr<statespace::SO3> mStateSpace;
+  std::shared_ptr<const statespace::SO3> mStateSpace;
 };
 
 } // namespace distance
