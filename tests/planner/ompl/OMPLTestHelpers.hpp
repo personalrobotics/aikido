@@ -329,7 +329,7 @@ public:
         Eigen::Vector3d(0.1, 0.1, 0.1));
 
     // Distance metric
-    dmetric = aikido::distance::createDistanceMetricConst(stateSpace);
+    dmetric = aikido::distance::createDistanceMetric(stateSpace);
 
     // Sampler
     sampler
