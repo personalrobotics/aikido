@@ -23,7 +23,7 @@ For a *fixed-size `StateSpace`, such as `SO2` or `SO3`,
 you may directly instantiate and modify the `State` type:
 ```c++
 SO2::State fixed_state;
-fixed_state.setAngle(M_PI);
+fixed_state.fromAngle(M_PI);
 ```
 
 This is not possible on *variable-size `StateSpace`*, such as
