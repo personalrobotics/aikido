@@ -103,8 +103,8 @@ protected:
     // Set FiniteSampleable to generate pose close to the actual solution.
     auto seedState
         = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-    seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
-    seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
+    seedState.getSubStateHandle<SO2>(0).fromAngle(0.1);
+    seedState.getSubStateHandle<SO2>(1).fromAngle(0.1);
     seedConstraint
         = std::make_shared<FiniteSampleable>(mStateSpace1, seedState);
   }
@@ -236,8 +236,8 @@ TEST_F(InverseKinematicsSampleableTest, SingleSampleGenerator)
   // Set FiniteSampleable to generate pose close to the actual solution.
   auto seedState
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-  seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
-  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(0).fromAngle(0.1);
+  seedState.getSubStateHandle<SO2>(1).fromAngle(0.1);
 
   std::shared_ptr<FiniteSampleable> seedConstraint(
       new FiniteSampleable(mStateSpace1, seedState));
@@ -260,8 +260,8 @@ TEST_F(InverseKinematicsSampleableTest, SingleSampleGenerator)
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
 
   ASSERT_TRUE(generator->sample(state));
-  ASSERT_NEAR(state.getSubStateHandle<SO2>(0).getAngle(), 0, 1e-5);
-  ASSERT_NEAR(state.getSubStateHandle<SO2>(1).getAngle(), 0, 1e-5);
+  ASSERT_NEAR(state.getSubStateHandle<SO2>(0).toAngle(), 0, 1e-5);
+  ASSERT_NEAR(state.getSubStateHandle<SO2>(1).toAngle(), 0, 1e-5);
 
   // Cannot sample anymore.
   ASSERT_FALSE(generator->canSample());
@@ -279,8 +279,8 @@ TEST_F(InverseKinematicsSampleableTest, CyclicSampleGenerator)
   // pose close to the actual solution.
   auto seedState
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-  seedState.getSubStateHandle<SO2>(0).setAngle(0.1);
-  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(0).fromAngle(0.1);
+  seedState.getSubStateHandle<SO2>(1).fromAngle(0.1);
 
   std::shared_ptr<FiniteSampleable> finiteSampleConstraint
       = std::make_shared<FiniteSampleable>(mStateSpace1, seedState);
@@ -310,8 +310,8 @@ TEST_F(InverseKinematicsSampleableTest, CyclicSampleGenerator)
         = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
 
     ASSERT_TRUE(generator->sample(state));
-    ASSERT_NEAR(state.getSubStateHandle<SO2>(0).getAngle(), 0, 1e-5);
-    ASSERT_NEAR(state.getSubStateHandle<SO2>(1).getAngle(), 0, 1e-5);
+    ASSERT_NEAR(state.getSubStateHandle<SO2>(0).toAngle(), 0, 1e-5);
+    ASSERT_NEAR(state.getSubStateHandle<SO2>(1).toAngle(), 0, 1e-5);
   }
 }
 
@@ -330,7 +330,7 @@ TEST_F(InverseKinematicsSampleableTest, MultipleGeneratorsSampleSameSequence)
   Eigen::Isometry3d isometry(Eigen::Isometry3d::Identity());
   isometry.translation() = Eigen::Vector3d(0.1, 0.1, 0.1);
   seedState.getSubStateHandle<SE3>(0).setIsometry(isometry);
-  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(1).fromAngle(0.1);
 
   std::shared_ptr<FiniteSampleable> finiteSampleConstraint
       = std::make_shared<FiniteSampleable>(mStateSpace2, seedState);
@@ -369,8 +369,8 @@ TEST_F(InverseKinematicsSampleableTest, MultipleGeneratorsSampleSameSequence)
             state2.getSubStateHandle<SE3>(0).getIsometry()));
 
     EXPECT_DOUBLE_EQ(
-        state1.getSubStateHandle<SO2>(1).getAngle(),
-        state2.getSubStateHandle<SO2>(1).getAngle());
+        state1.getSubStateHandle<SO2>(1).toAngle(),
+        state2.getSubStateHandle<SO2>(1).toAngle());
   }
 }
 
@@ -388,8 +388,8 @@ TEST_F(InverseKinematicsSampleableTest, SampleGeneratorIkInfeasible)
   // Set CyclicSampleable.
   auto seedState
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-  seedState.getSubStateHandle<SO2>(0).setAngle(0);
-  seedState.getSubStateHandle<SO2>(1).setAngle(0.1);
+  seedState.getSubStateHandle<SO2>(0).fromAngle(0);
+  seedState.getSubStateHandle<SO2>(1).fromAngle(0.1);
 
   std::shared_ptr<FiniteSampleable> finiteSampleConstraint
       = std::make_shared<FiniteSampleable>(mStateSpace1, seedState);

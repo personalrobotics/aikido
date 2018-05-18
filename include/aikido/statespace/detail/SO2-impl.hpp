@@ -27,36 +27,32 @@ public:
   {
   }
 
-  /// Gets state as a rotation angle.
-  ///
-  /// \return rotation angle
-  double getAngle() const
+  /// Returns angle corresponding to the state.
+  double toAngle() const
   {
-    return this->getStateSpace()->getAngle(this->getState());
+    return this->getStateSpace()->toAngle(this->getState());
   }
 
-  /// Sets state to a rotation angle.
+  /// Sets state given a rotation angle.
   ///
-  /// \param _angle rotation angle
-  void setAngle(double _angle)
+  /// \param[in] angle rotation angle.
+  void fromAngle(double angle)
   {
-    return this->getStateSpace()->setAngle(this->getState(), _angle);
+    return this->getStateSpace()->fromAngle(this->getState(), angle);
   }
 
-  /// Gets state as an Eigen transformation.
-  ///
-  /// \return Eigen transformation
-  Eigen::Rotation2Dd getRotation() const
+  /// Returns the Eigen transformation corresponding to state.
+  Eigen::Rotation2Dd toRotation() const
   {
-    return this->getStateSpace()->getRotation(this->getState());
+    return this->getStateSpace()->toRotation(this->getState());
   }
 
-  /// Sets state it an Eigen transformation.
+  /// Sets state given an Eigen transformation.
   ///
-  /// \param _rotation Eigen transformation
-  void setRotation(const Eigen::Rotation2Dd& _rotation)
+  /// \param[in] rotation Eigen transformation.
+  void fromRotation(const Eigen::Rotation2Dd& rotation)
   {
-    return this->getStateSpace()->setRotation(this->getState(), _rotation);
+    return this->getStateSpace()->fromRotation(this->getState(), rotation);
   }
 };
 
