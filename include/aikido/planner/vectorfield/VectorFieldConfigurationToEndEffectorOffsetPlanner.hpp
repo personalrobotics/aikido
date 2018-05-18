@@ -28,7 +28,8 @@ public:
   /// \param[in] initialStepSize Initial step size.
   /// \param[in] jointLimitTolerance If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
-  /// \param[in] constraintCheckResolution Resolution used in constraint checking.
+  /// \param[in] constraintCheckResolution Resolution used in constraint
+  /// checking.
   /// \param[in] timelimit timeout in seconds.
   VectorFieldConfigurationToEndEffectorOffsetPlanner(
       statespace::ConstStateSpacePtr stateSpace,
@@ -54,36 +55,37 @@ public:
   /// \return Trajectory or \c nullptr if planning failed.
   /// \throw If \c problem is not ConfigurationToEndEffectorOffset.
   /// \throw If \c result is not ConfigurationToEndEffectorOffset::Result.
+  /// \throw If mStateSpace is not MetaSkeletonStateSpace.
   trajectory::TrajectoryPtr plan(
       const SolvableProblem& problem, Result* result = nullptr) override;
 
-  protected:
-    /// MetaSkeleton to plan with.
-    dart::dynamics::MetaSkeletonPtr mMetaskeleton;
+protected:
+  /// MetaSkeleton to plan with.
+  dart::dynamics::MetaSkeletonPtr mMetaskeleton;
 
-    /// How much a planned trajectory is allowed to deviate from the requested
-    /// distance to move the end-effector.
-    double mDistanceTolerance;
+  /// How much a planned trajectory is allowed to deviate from the requested
+  /// distance to move the end-effector.
+  double mDistanceTolerance;
 
-    /// How a planned trajectory is allowed to deviated from a straight line
-    /// segment defined by the direction and the distance.
-    double mPositionTolerance;
+  /// How a planned trajectory is allowed to deviated from a straight line
+  /// segment defined by the direction and the distance.
+  double mPositionTolerance;
 
-    /// How a planned trajectory is allowed to deviate from a given direction.
-    double mAngularTolerance;
+  /// How a planned trajectory is allowed to deviate from a given direction.
+  double mAngularTolerance;
 
-    /// Initial step size.
-    double mInitialStepSize;
+  /// Initial step size.
+  double mInitialStepSize;
 
-    /// If less then this distance to joint limit, velocity is bounded in that
-    /// direction to 0.
-    double mJointLimitTolerance;
+  /// If less then this distance to joint limit, velocity is bounded in that
+  /// direction to 0.
+  double mJointLimitTolerance;
 
-    /// Resolution used in constraint checking.
-    double mConstraintCheckResolution;
+  /// Resolution used in constraint checking.
+  double mConstraintCheckResolution;
 
-    /// Timeout in seconds.
-    std::chrono::duration<double> mTimelimit;
+  /// Timeout in seconds.
+  std::chrono::duration<double> mTimelimit;
 };
 
 } // namespace planner

@@ -4,10 +4,12 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-ConfigurationToEndEffectorOffsetPlanner::ConfigurationToEndEffectorOffsetPlanner(
-    statespace::ConstStateSpacePtr stateSpace)
+ConfigurationToEndEffectorOffsetPlanner::
+    ConfigurationToEndEffectorOffsetPlanner(
+        statespace::ConstStateSpacePtr stateSpace)
   : SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
-                         ConfigurationToEndEffectorOffset>(std::move(stateSpace))
+                         ConfigurationToEndEffectorOffset>(
+        std::move(stateSpace))
 {
   // Do nothing
 }
