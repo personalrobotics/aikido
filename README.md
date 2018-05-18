@@ -39,7 +39,7 @@ $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/inst
 # Add Homebrew tap for Personal Robotics Lab software
 $ brew tap personalrobotics/tap
 # Install AIKIDO
-$ brew install aikido0
+$ brew install aikido
 ```
 > Note: While ROS seems to be [available on macOS](http://wiki.ros.org/indigo/Installation/OSX/Homebrew/Source), we haven't tested it with AIKIDO. For now, `brew install aikido0` installs AIKIDO without the ROS-dependent components.
 
