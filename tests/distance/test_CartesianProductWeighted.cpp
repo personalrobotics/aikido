@@ -159,11 +159,11 @@ TEST(CartesianProductWeightedDistance, DistanceUnitWeights)
   auto quat2 = Eigen::Quaterniond(
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
-  state1.getSubStateHandle<SO2>(0).setAngle(angle1);
+  state1.getSubStateHandle<SO2>(0).fromAngle(angle1);
   state1.getSubStateHandle<R3>(1).setValue(rv1);
   state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
-  state2.getSubStateHandle<SO2>(0).setAngle(angle2);
+  state2.getSubStateHandle<SO2>(0).fromAngle(angle2);
   state2.getSubStateHandle<R3>(1).setValue(rv2);
   state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 
@@ -198,11 +198,11 @@ TEST(CartesianProductWeightedDistance, DistanceCustomWeights)
   auto quat2 = Eigen::Quaterniond(
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
-  state1.getSubStateHandle<SO2>(0).setAngle(angle1);
+  state1.getSubStateHandle<SO2>(0).fromAngle(angle1);
   state1.getSubStateHandle<R3>(1).setValue(rv1);
   state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
-  state2.getSubStateHandle<SO2>(0).setAngle(angle2);
+  state2.getSubStateHandle<SO2>(0).fromAngle(angle2);
   state2.getSubStateHandle<R3>(1).setValue(rv2);
   state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 

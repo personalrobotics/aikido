@@ -16,21 +16,15 @@ class CartesianProduct : public std::enable_shared_from_this<CartesianProduct>,
                          public virtual StateSpace
 {
 public:
-  /// A tuple of states where the i-th state is from the i-th subspace.
-  class State : public StateSpace::State
-  {
-  protected:
-    State() = default;
-    ~State() = default;
-
-    friend class CartesianProduct;
-  };
+  class State;
 
   using StateHandle = CompoundStateHandle<State>;
   using StateHandleConst = CompoundStateHandle<const State>;
 
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
+
+  using StateSpace::compose;
 
   /// Construct the Cartesian product of a vector of subspaces.
   /// \param _subspaces vector of subspaces
@@ -40,6 +34,9 @@ public:
   ///
   /// \return new \c ScopedState
   ScopedState createState() const;
+
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
 
   /// Gets number of subspaces.
   ///
@@ -155,6 +152,17 @@ private:
   std::vector<ConstStateSpacePtr> mSubspaces;
   std::vector<std::size_t> mOffsets;
   std::size_t mSizeInBytes;
+};
+
+/// A tuple of states where the i-th state is from the i-th subspace.
+class CartesianProduct::State : public StateSpace::State
+{
+protected:
+  friend class CartesianProduct;
+
+  State() = default;
+
+  ~State() = default;
 };
 
 } // namespace statespace

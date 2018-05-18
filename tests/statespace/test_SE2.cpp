@@ -1,7 +1,28 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SE2.hpp>
 
 using aikido::statespace::SE2;
+
+TEST(SE2, Clone)
+{
+  SE2 se2;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const auto angle = dart::math::random(-M_PI, M_PI);
+    Eigen::Isometry2d pose = Eigen::Isometry2d::Identity();
+    pose.rotate(Eigen::Rotation2Dd(angle));
+    pose.translation() = Eigen::Vector2d::Random();
+
+    auto s1 = se2.createState();
+    s1.setIsometry(pose);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getIsometry().isApprox(s2.getIsometry()));
+  }
+}
 
 TEST(SE2, Compose)
 {
@@ -23,10 +44,14 @@ TEST(SE2, Compose)
   Eigen::Isometry2d expected_pose = Eigen::Isometry2d::Identity();
   expected_pose.rotate(Eigen::Rotation2Dd(3. * M_PI_4));
 
-  auto out = space.createState();
-  space.compose(state2, state3, out);
+  auto out1 = space.createState();
+  space.compose(state2, state3, out1); // out1 = state2 * state3
+  EXPECT_TRUE(expected_pose.isApprox(out1.getIsometry()));
 
-  EXPECT_TRUE(expected_pose.isApprox(out.getIsometry()));
+  auto out2 = space.createState();
+  space.copyState(state2, out2); // out2 = state2
+  space.compose(out2, state3);   // out2 = out2 * state3
+  EXPECT_TRUE(expected_pose.isApprox(out2.getIsometry()));
 }
 
 TEST(SE2, Identity)

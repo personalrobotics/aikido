@@ -18,6 +18,7 @@ public:
   /// Construct and initialize to \c nullptr.
   SO3StateHandle()
   {
+    // Do nothing
   }
 
   /// Construct a handle for \c _state in \c _space.
@@ -27,6 +28,7 @@ public:
   SO3StateHandle(const StateSpace* _space, QualifiedState* _state)
     : statespace::StateHandle<StateSpace, QualifiedState>(_space, _state)
   {
+    // Do nothing
   }
 
   /// Constructs a point in SO(3) from a unit quaternion.

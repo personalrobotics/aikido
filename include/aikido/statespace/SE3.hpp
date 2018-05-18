@@ -56,6 +56,8 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   using Isometry3d = State::Isometry3d;
 
   /// Constructs a state space representing SE(3).
@@ -65,6 +67,9 @@ public:
   ///
   /// \return new \c ScopedState
   ScopedState createState() const;
+
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
 
   /// Gets value as an Eigen transformation object.
   ///
