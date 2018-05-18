@@ -54,6 +54,8 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   using Quaternion = State::Quaternion;
 
   /// Constructs a state space representing SO(3).
@@ -63,6 +65,9 @@ public:
   ///
   /// \return new \c ScopedState
   ScopedState createState() const;
+
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
 
   /// Gets a state as a unit quaternion.
   ///

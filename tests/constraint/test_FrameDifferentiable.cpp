@@ -137,7 +137,7 @@ TEST_F(FrameDifferentiableTest, Value)
   FrameDifferentiable adaptor(mSpace, mSkeleton, bn2.get(), tsr);
   auto state = mSpace->getScopedStateFromMetaSkeleton(mSkeleton.get());
   state.getSubStateHandle<SE3>(0).setIsometry(Eigen::Isometry3d::Identity());
-  state.getSubStateHandle<SO2>(1).setAngle(0);
+  state.getSubStateHandle<SO2>(1).fromAngle(0);
 
   Eigen::VectorXd value;
   adaptor.getValue(state, value);
@@ -183,7 +183,7 @@ TEST_F(FrameDifferentiableTest, Jacobian)
   Eigen::Isometry3d isometry = Eigen::Isometry3d::Identity();
   isometry.translation() = Eigen::Vector3d(0, 0, 1);
   state.getSubStateHandle<SE3>(0).setIsometry(isometry);
-  state.getSubStateHandle<SO2>(1).setAngle(0);
+  state.getSubStateHandle<SO2>(1).fromAngle(0);
 
   Eigen::VectorXd value;
   adaptor.getValue(state, value);

@@ -25,9 +25,9 @@ double SO2Angular::distance(
     const aikido::statespace::StateSpace::State* _state2) const
 {
   // Difference between angles
-  double diff = mStateSpace->getAngle(
+  double diff = mStateSpace->toAngle(
                     static_cast<const statespace::SO2::State*>(_state1))
-                - mStateSpace->getAngle(
+                - mStateSpace->toAngle(
                       static_cast<const statespace::SO2::State*>(_state2));
   diff = std::fmod(std::fabs(diff), 2.0 * M_PI);
   if (diff > M_PI)
