@@ -29,7 +29,8 @@ public:
   statespace::ConstStateSpacePtr getStateSpace() const;
 
   /// Returns the vector of ranked IK solutions.
-  std::vector<std::pair<statespace::StateSpace::State*, double>>& getRankedIKSolutions();
+  std::vector<std::pair<statespace::StateSpace::State*, double>>&
+  getRankedIKSolutions();
 
 protected:
   /// Returns the score of the IK Solution

@@ -122,11 +122,14 @@ TEST_F(FIFOStrategyTest, Constructor)
   std::vector<aikido::statespace::StateSpace::State*> states;
   states.emplace_back(seedStateOne);
 
-  EXPECT_THROW(FIFOStrategy(nullptr, mManipulator1, states), std::invalid_argument);
+  EXPECT_THROW(
+      FIFOStrategy(nullptr, mManipulator1, states), std::invalid_argument);
 
-  EXPECT_THROW(FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
+  EXPECT_THROW(
+      FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
 
-  EXPECT_THROW(FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
+  EXPECT_THROW(
+      FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
 
   FIFOStrategy ranker(mStateSpace1, mManipulator1, states);
   DART_UNUSED(ranker);

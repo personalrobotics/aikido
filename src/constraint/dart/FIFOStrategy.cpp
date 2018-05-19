@@ -1,4 +1,5 @@
 #include <algorithm>
+
 #include "aikido/constraint/dart/FIFOStrategy.hpp"
 
 namespace aikido {
@@ -16,7 +17,7 @@ FIFOStrategy::FIFOStrategy(
   : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
 {
   // Do nothing
-//  std::random_shuffle(mIKSolutions.begin(), mIKSolutions.end());
+  //  std::random_shuffle(mIKSolutions.begin(), mIKSolutions.end());
 }
 
 //==============================================================================
