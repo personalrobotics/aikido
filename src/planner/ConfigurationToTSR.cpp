@@ -36,7 +36,13 @@ const std::string& ConfigurationToTSR::getStaticType()
 }
 
 //==============================================================================
-dart::dynamics::MetaSkeletonPtr ConfigurationToTSR::getMetaSkeleton() const
+dart::dynamics::MetaSkeletonPtr ConfigurationToTSR::getMetaSkeleton()
+{
+  return mMetaSkeleton;
+}
+
+//==============================================================================
+dart::dynamics::ConstMetaSkeletonPtr ConfigurationToTSR::getMetaSkeleton() const
 {
   return mMetaSkeleton;
 }

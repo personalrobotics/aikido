@@ -40,7 +40,10 @@ public:
   static const std::string& getStaticType();
 
   /// Returns the MetaSkeleton to plan with.
-  dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
+
+  /// Returns the MetaSkeleton to plan with.
+  dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const;
 
   /// Returns the end-effector BodyNode to be planned to move to a desired TSR.
   dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
