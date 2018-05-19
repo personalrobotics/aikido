@@ -31,17 +31,8 @@ IKRankingStrategy::IKRankingStrategy(
   {
     auto state = ikSolutions[i];
     mIKSolutions[i]
-        = std::pair<statespace::StateSpace::State*, double>(state, evaluateIKSolution(state));
+        = std::pair<statespace::StateSpace::State*, double>(state, 0);
   }
-  struct sortingFunction
-  {
-    bool operator()(
-        const std::pair<statespace::StateSpace::State*, double>& left,
-        const std::pair<statespace::StateSpace::State*, double>& right)
-    {
-      return left.second < right.second;
-    }
-  };
 }
 
 //==============================================================================
@@ -51,16 +42,23 @@ statespace::ConstStateSpacePtr IKRankingStrategy::getStateSpace() const
 }
 
 //==============================================================================
-statespace::StateSpace::State* IKRankingStrategy::rankedIKSolution(std::size_t index) const
+std::vector<std::pair<statespace::StateSpace::State*, double>>&
+IKRankingStrategy::getRankedIKSolutions()
 {
-  return mIKSolutions[index].first;
-}
+  for (std::size_t i = 0; i < mIKSolutions.size(); ++i)
+    mIKSolutions[i].second = evaluateIKSolution(mIKSolutions[i].first);
 
-//==============================================================================
-double IKRankingStrategy::evaluateIKSolution(statespace::StateSpace::State* solution) const
-{
-  return 0;
-  DART_UNUSED(solution);
+  struct sortingFunction
+  {
+    bool operator()(
+        const std::pair<statespace::StateSpace::State*, double>& left,
+        const std::pair<statespace::StateSpace::State*, double>& right)
+    {
+      return left.second < right.second;
+    }
+  };
+  std::sort(mIKSolutions.begin(), mIKSolutions.end(), sortingFunction());
+  return mIKSolutions;
 }
 
 } // namespace dart

@@ -29,12 +29,12 @@ public:
   statespace::ConstStateSpacePtr getStateSpace() const;
 
   /// Returns the vector of ranked IK solutions.
-  statespace::StateSpace::State* rankedIKSolution(std::size_t index) const;
+  std::vector<std::pair<statespace::StateSpace::State*, double>>& getRankedIKSolutions();
 
 protected:
   /// Returns the score of the IK Solution
   virtual double evaluateIKSolution(
-      statespace::StateSpace::State* solution) const;
+      statespace::StateSpace::State* solution) const = 0;
 
   /// Statespace of the skeleton.
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;

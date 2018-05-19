@@ -1,4 +1,4 @@
-#include "aikido/constraint/dart/IKRankingStrategy.hpp"
+#include "aikido/constraint/dart/FIFOStrategy.hpp"
 
 #include <random>
 #include <Eigen/Dense>
@@ -13,7 +13,7 @@
 
 using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
-using aikido::constraint::dart::IKRankingStrategy;
+using aikido::constraint::dart::FIFOStrategy;
 using aikido::statespace::SE3;
 using aikido::statespace::SO2;
 using dart::dynamics::FreeJoint;
@@ -35,7 +35,7 @@ static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
   return bodyProperties;
 }
 
-class IKRankingStrategyTest : public ::testing::Test
+class FIFOStrategyTest : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -113,7 +113,7 @@ protected:
   std::shared_ptr<FiniteSampleable> seedConstraint;
 };
 
-TEST_F(IKRankingStrategyTest, Constructor)
+TEST_F(FIFOStrategyTest, Constructor)
 {
   auto seedStateOne
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
@@ -122,17 +122,17 @@ TEST_F(IKRankingStrategyTest, Constructor)
   std::vector<aikido::statespace::StateSpace::State*> states;
   states.emplace_back(seedStateOne);
 
-  EXPECT_THROW(IKRankingStrategy(nullptr, mManipulator1, states), std::invalid_argument);
+  EXPECT_THROW(FIFOStrategy(nullptr, mManipulator1, states), std::invalid_argument);
 
-  EXPECT_THROW(IKRankingStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
+  EXPECT_THROW(FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
 
-  EXPECT_THROW(IKRankingStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
+  EXPECT_THROW(FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
 
-  IKRankingStrategy ranker(mStateSpace1, mManipulator1, states);
+  FIFOStrategy ranker(mStateSpace1, mManipulator1, states);
   DART_UNUSED(ranker);
 }
 
-TEST_F(IKRankingStrategyTest, SingleSample)
+TEST_F(FIFOStrategyTest, OrderTest)
 {
   auto seedStateOne
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
@@ -147,10 +147,12 @@ TEST_F(IKRankingStrategyTest, SingleSample)
   states.emplace_back(seedStateOne);
   states.emplace_back(seedStateTwo);
 
-  IKRankingStrategy ranker(mStateSpace1, mManipulator1, states);
+  FIFOStrategy ranker(mStateSpace1, mManipulator1, states);
 
-  auto rankedStateOne = mStateSpace1->cloneState(ranker.rankedIKSolution(0));
-  auto rankedStateTwo = mStateSpace1->cloneState(ranker.rankedIKSolution(1));
+  auto rankedSolutions = ranker.getRankedIKSolutions();
+
+  auto rankedStateOne = mStateSpace1->cloneState(rankedSolutions[0].first);
+  auto rankedStateTwo = mStateSpace1->cloneState(rankedSolutions[1].first);
 
   ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(0).toAngle(), 0.1, 1e-5);
   ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(1).toAngle(), 0.1, 1e-5);
