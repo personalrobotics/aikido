@@ -17,6 +17,7 @@ set(sources
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
