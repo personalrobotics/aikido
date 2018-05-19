@@ -74,7 +74,7 @@ public:
   virtual ~TSR() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Returns the SE3 which this TSR operates in.
   std::shared_ptr<statespace::SE3> getSE3() const;

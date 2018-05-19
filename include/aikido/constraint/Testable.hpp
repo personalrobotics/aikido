@@ -30,7 +30,7 @@ public:
       TestableOutcome* outcome = nullptr) const = 0;
 
   /// Returns StateSpace in which this constraint operates.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Return an instance of a TestableOutcome derivative class that corresponds
   /// to this constraint class. Ensures that correct outcome object is passed

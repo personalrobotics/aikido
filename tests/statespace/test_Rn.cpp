@@ -6,6 +6,42 @@ using aikido::statespace::R3;
 using R4 = aikido::statespace::R<4>;
 
 //==============================================================================
+TEST(Rn, CloneR3)
+{
+  R3 rvss;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const Eigen::Vector3d pos = Eigen::Vector3d::Random();
+
+    auto s1 = rvss.createState();
+    s1.setValue(pos);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getValue().isApprox(s2.getValue()));
+  }
+}
+
+//==============================================================================
+TEST(Rn, CloneRx)
+{
+  Rn rvss(3);
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    const Eigen::Vector3d pos = Eigen::Vector3d::Random();
+
+    auto s1 = rvss.createState();
+    s1.setValue(pos);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getValue().isApprox(s2.getValue()));
+  }
+}
+
+//==============================================================================
 TEST(Rn, ComposeR3)
 {
   R3 rvss;
@@ -16,10 +52,14 @@ TEST(Rn, ComposeR3)
   auto s2 = rvss.createState();
   s2.setValue(Eigen::Vector3d(2, 3, 4));
 
-  auto out = rvss.createState();
-  rvss.compose(s1, s2, out);
+  auto out1 = rvss.createState();
+  rvss.compose(s1, s2, out1);
+  EXPECT_TRUE(out1.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
 
-  EXPECT_TRUE(out.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
+  auto out2 = rvss.createState();
+  rvss.copyState(s1, out2);
+  rvss.compose(out2, s2);
+  EXPECT_TRUE(out2.getValue().isApprox(Eigen::Vector3d(3, 5, 7)));
 }
 
 //==============================================================================

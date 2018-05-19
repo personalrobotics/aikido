@@ -33,7 +33,7 @@ public:
       const override;
 
   // Documentation inherited.
-  aikido::statespace::StateSpacePtr getStateSpace() const override;
+  aikido::statespace::ConstStateSpacePtr getStateSpace() const override;
 
 private:
   Eigen::VectorXd mCoeffs;

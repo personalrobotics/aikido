@@ -41,13 +41,13 @@ public:
   virtual ~InverseKinematicsSampleable() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   SampleablePtr mPoseConstraint;
   SampleablePtr mSeedConstraint;
