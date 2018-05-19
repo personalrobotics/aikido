@@ -7,6 +7,7 @@
 
 namespace aikido {
 namespace planner {
+namespace vectorfield {
 
 /// Planner that generates a trajectory that moves the end-effector by a given
 /// direction and distance.
@@ -88,6 +89,7 @@ protected:
   std::chrono::duration<double> mTimelimit;
 };
 
+} // namespace vectorfield
 } // namespace planner
 } // namespace aikido
 

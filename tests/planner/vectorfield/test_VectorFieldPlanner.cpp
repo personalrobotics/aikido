@@ -1,9 +1,11 @@
 ﻿#include <gtest/gtest.h>
 #include <tuple>
 #include <dart/dart.hpp>
+#include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
+#include <aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -313,13 +315,15 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
-  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+  using aikido::planner::ConfigurationToEndEffectorOffset;
+  using aikido::planner::vectorfield::
+      VectorFieldConfigurationToEndEffectorOffsetPlanner;
 
   Eigen::Vector3d direction;
   direction << 1., 1., 0.;
   direction.normalize();
-  double minDistance = 0.4;
-  double maxDistance = 0.42;
+  double signedDistance = 0.41;
+  double distanceTolerance = 0.01;
 
   mSkel->setPositions(mStartConfig);
   auto startState = mStateSpace->createState();
@@ -334,20 +338,31 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double constraintCheckResolution = 1e-3;
   std::chrono::duration<double> timelimit(10.0);
 
-  auto traj = aikido::planner::vectorfield::planToEndEffectorOffset(
+  // Create problem.
+  auto offsetProblem = ConfigurationToEndEffectorOffset(
+      // TODO: Will this even be used?
+      mStateSpace,
+      mBodynode,
+      startState,
+      direction,
+      signedDistance,
+      mPassingConstraint);
+
+  // Create planner.
+  auto vfOffsetPlanner = VectorFieldConfigurationToEndEffectorOffsetPlanner(
       mStateSpace,
       mSkel,
-      mBodynode,
-      mPassingConstraint,
-      direction,
-      minDistance,
-      maxDistance,
+      distanceTolerance,
       positionTolerance,
       angularTolerance,
       initialStepSize,
       jointLimitTolerance,
       constraintCheckResolution,
       timelimit);
+
+  // Invoke planning method.
+  auto resultTraj = vfOffsetPlanner.plan(offsetProblem);
+  auto traj = std::dynamic_pointer_cast<aikido::trajectory::Spline>(resultTraj);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 
@@ -371,6 +386,9 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   int stepNum = 10;
   double timeStep = traj->getDuration() / stepNum;
+
+  double minDistance = signedDistance - distanceTolerance;
+  double maxDistance = signedDistance + distanceTolerance;
 
   for (double t = traj->getStartTime(); t <= traj->getEndTime(); t += timeStep)
   {
@@ -403,36 +421,47 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
 TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 {
-  using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+  using aikido::planner::ConfigurationToEndEffectorOffset;
+  using aikido::planner::vectorfield::
+      VectorFieldConfigurationToEndEffectorOffsetPlanner;
 
   Eigen::Vector3d direction = Eigen::Vector3d::Zero();
-  double distance = 0.2;
+  double signedDistance = 0.21;
+  double distanceTolerance = 0.01;
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
   double initialStepSize = 0.05;
   double jointLimitTolerance = 1e-3;
   double constraintCheckResolution = 1e-3;
   std::chrono::duration<double> timelimit(5.);
-  double maxDistance = 0.22;
 
   mSkel->setPositions(mStartConfig);
+  auto startState = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(mStartConfig, startState);
 
-  EXPECT_THROW(
-      aikido::planner::vectorfield::planToEndEffectorOffset(
-          mStateSpace,
-          mSkel,
-          mBodynode,
-          mPassingConstraint,
-          direction,
-          distance,
-          maxDistance,
-          positionTolerance,
-          angularTolerance,
-          initialStepSize,
-          jointLimitTolerance,
-          constraintCheckResolution,
-          timelimit),
-      std::runtime_error);
+  // Create problem.
+  auto offsetProblem = ConfigurationToEndEffectorOffset(
+      // TODO: Will this even be used?
+      mStateSpace,
+      mBodynode,
+      startState,
+      direction,
+      signedDistance,
+      mPassingConstraint);
+
+  // Create planner.
+  auto vfOffsetPlanner = VectorFieldConfigurationToEndEffectorOffsetPlanner(
+      mStateSpace,
+      mSkel,
+      distanceTolerance,
+      positionTolerance,
+      angularTolerance,
+      initialStepSize,
+      jointLimitTolerance,
+      constraintCheckResolution,
+      timelimit);
+
+  EXPECT_THROW(vfOffsetPlanner.plan(offsetProblem), std::runtime_error);
 }
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)

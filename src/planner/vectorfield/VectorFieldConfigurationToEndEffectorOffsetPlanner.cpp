@@ -2,6 +2,7 @@
 
 namespace aikido {
 namespace planner {
+namespace vectorfield {
 
 //==============================================================================
 VectorFieldConfigurationToEndEffectorOffsetPlanner::
@@ -64,5 +65,6 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
       result);
 }
 
+} // namespace vectorfield
 } // namespace planner
 } // namespace aikido
