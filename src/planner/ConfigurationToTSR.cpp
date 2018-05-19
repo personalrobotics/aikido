@@ -10,12 +10,14 @@ ConfigurationToTSR::ConfigurationToTSR(
     statespace::ConstStateSpacePtr stateSpace,
     dart::dynamics::MetaSkeletonPtr metaSkeleton,
     dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+    std::size_t maxNumTrials,
     const statespace::StateSpace::State* startState,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mMetaSkeleton(std::move(metaSkeleton))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+  , mMaxNumTrials(maxNumTrials)
   , mStartState(startState)
   , mGoalTSR(goalTSR)
 {
@@ -52,6 +54,12 @@ dart::dynamics::ConstBodyNodePtr ConfigurationToTSR::getEndEffectorBodyNode()
     const
 {
   return mEndEffectorBodyNode;
+}
+
+//==============================================================================
+std::size_t ConfigurationToTSR::getMaxNumTrials() const
+{
+  return mMaxNumTrials;
 }
 
 //==============================================================================
