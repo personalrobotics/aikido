@@ -39,6 +39,11 @@ public:
   /// Return ConstMetaSkeletonStateSpacePtr by performing a static cast on
   /// mStateSpace.
   statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace();
+
+protected:
+  /// Stores stateSpace pointer as aConstMetaSkeletonStateSpacePtr. Prevents
+  /// use of an expensive dynamic cast.
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
 };
 
 } // namespace planner

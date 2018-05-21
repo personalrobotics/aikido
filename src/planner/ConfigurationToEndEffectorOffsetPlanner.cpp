@@ -8,8 +8,8 @@ ConfigurationToEndEffectorOffsetPlanner::
     ConfigurationToEndEffectorOffsetPlanner(
         statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace)
   : SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
-                         ConfigurationToEndEffectorOffset>(
-        std::move(stateSpace))
+                         ConfigurationToEndEffectorOffset>(stateSpace)
+  , mMetaSkeletonStateSpace(stateSpace)
 {
   // Do nothing
 }
@@ -18,9 +18,7 @@ ConfigurationToEndEffectorOffsetPlanner::
 statespace::dart::ConstMetaSkeletonStateSpacePtr
 ConfigurationToEndEffectorOffsetPlanner::getMetaSkeletonStateSpace()
 {
-  return std::
-      dynamic_pointer_cast<const statespace::dart::MetaSkeletonStateSpace>(
-          mStateSpace);
+  return mMetaSkeletonStateSpace;
 }
 
 } // namespace planner
