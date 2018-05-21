@@ -9,7 +9,7 @@ ConfigurationToEndEffectorOffsetPlanner::
         statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace)
   : SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
                          ConfigurationToEndEffectorOffset>(stateSpace)
-  , mMetaSkeletonStateSpace(move(stateSpace))
+  , mMetaSkeletonStateSpace(std::move(stateSpace))
 {
   // Do nothing
 }
