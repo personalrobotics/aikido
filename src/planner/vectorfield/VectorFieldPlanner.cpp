@@ -152,18 +152,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
   // once https://github.com/dartsim/dart/pull/1011 is released.
 
-  if (minDistance < 0.)
-  {
-    std::stringstream ss;
-    ss << "Distance must be non-negative; got " << minDistance << ".";
-    throw std::runtime_error(ss.str());
-  }
-
-  if (maxDistance < minDistance)
-  {
-    throw std::runtime_error("Max distance is less than distance.");
-  }
-
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
   // Save the current state of the space

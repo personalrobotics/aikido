@@ -44,6 +44,14 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
 
   auto metaskeletonStateSpace = getMetaSkeletonStateSpace();
 
+  if (problem.getDistance() - mDistanceTolerance < 0.)
+  {
+    std::stringstream ss;
+    ss << "Distance must be non-negative; min distance to move is "
+       << problem.getDistance() - mDistanceTolerance << ".";
+    throw std::runtime_error(ss.str());
+  }
+
   // Just call the core VFP function.
   // TODO: How should start state be handled?
   return planToEndEffectorOffset(
@@ -52,7 +60,6 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
       problem.getEndEffectorBodyNode(),
       problem.getConstraint(),
       problem.getDirection(),
-      // TODO: Need to handle case when negative.
       problem.getDistance() - mDistanceTolerance,
       problem.getDistance() + mDistanceTolerance,
       mPositionTolerance,
