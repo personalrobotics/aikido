@@ -427,41 +427,22 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 
   Eigen::Vector3d direction = Eigen::Vector3d::Zero();
   double signedDistance = 0.21;
-  double distanceTolerance = 0.01;
-  double positionTolerance = 0.01;
-  double angularTolerance = 0.15;
-  double initialStepSize = 0.05;
-  double jointLimitTolerance = 1e-3;
-  double constraintCheckResolution = 1e-3;
-  std::chrono::duration<double> timelimit(5.);
 
   mSkel->setPositions(mStartConfig);
   auto startState = mStateSpace->createState();
   mStateSpace->convertPositionsToState(mStartConfig, startState);
 
-  // Create problem.
-  auto offsetProblem = ConfigurationToEndEffectorOffset(
-      // TODO: Will this even be used?
-      mStateSpace,
-      mBodynode,
-      startState,
-      direction,
-      signedDistance,
-      mPassingConstraint);
-
-  // Create planner.
-  auto vfOffsetPlanner = VectorFieldConfigurationToEndEffectorOffsetPlanner(
-      mStateSpace,
-      mSkel,
-      distanceTolerance,
-      positionTolerance,
-      angularTolerance,
-      initialStepSize,
-      jointLimitTolerance,
-      constraintCheckResolution,
-      timelimit);
-
-  EXPECT_THROW(vfOffsetPlanner.plan(offsetProblem), std::runtime_error);
+  // Create Problem, which should fail.
+  EXPECT_THROW(
+      ConfigurationToEndEffectorOffset(
+          // TODO: Will this even be used?
+          mStateSpace,
+          mBodynode,
+          startState,
+          direction,
+          signedDistance,
+          mPassingConstraint),
+      std::invalid_argument);
 }
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)

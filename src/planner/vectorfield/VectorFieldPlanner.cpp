@@ -164,11 +164,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     throw std::runtime_error("Max distance is less than distance.");
   }
 
-  if (direction.norm() == 0.0)
-  {
-    throw std::runtime_error("Direction vector is a zero vector");
-  }
-
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
   // Save the current state of the space

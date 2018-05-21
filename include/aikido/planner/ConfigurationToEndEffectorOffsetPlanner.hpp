@@ -3,6 +3,7 @@
 
 #include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/SingleProblemPlanner.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
@@ -24,7 +25,7 @@ public:
   ///
   /// \param[in] stateSpace State space that this planner associated with.
   explicit ConfigurationToEndEffectorOffsetPlanner(
-      statespace::ConstStateSpacePtr stateSpace);
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace);
 
   /// Solves \c problem returning the result to \c result.
   ///
@@ -34,6 +35,10 @@ public:
       const SolvableProblem& problem, Result* result = nullptr)
       = 0;
   // Note: SolvableProblem is defined in SingleProblemPlanner.
+
+  /// Return ConstMetaSkeletonStateSpacePtr by performing a static cast on
+  /// mStateSpace.
+  statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace();
 };
 
 } // namespace planner

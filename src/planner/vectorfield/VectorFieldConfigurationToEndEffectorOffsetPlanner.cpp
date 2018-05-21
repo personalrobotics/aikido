@@ -1,5 +1,7 @@
 #include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp"
 
+#include "aikido/planner/vectorfield/VectorFieldPlanner.hpp"
+
 namespace aikido {
 namespace planner {
 namespace vectorfield {
@@ -7,7 +9,7 @@ namespace vectorfield {
 //==============================================================================
 VectorFieldConfigurationToEndEffectorOffsetPlanner::
     VectorFieldConfigurationToEndEffectorOffsetPlanner(
-        statespace::ConstStateSpacePtr stateSpace,
+        statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
         dart::dynamics::MetaSkeletonPtr metaskeleton,
         double distanceTolerance,
         double positionTolerance,
@@ -40,10 +42,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   using aikido::planner::vectorfield::planToEndEffectorOffset;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
-  auto metaskeletonStateSpace
-      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(mStateSpace);
-  if (!metaskeletonStateSpace)
-    throw std::invalid_argument("mStateSpace is not MetaSkeletonStateSpace!");
+  auto metaskeletonStateSpace = getMetaSkeletonStateSpace();
 
   // Just call the core VFP function.
   // TODO: How should start state be handled?

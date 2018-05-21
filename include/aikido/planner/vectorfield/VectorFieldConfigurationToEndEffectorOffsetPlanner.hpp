@@ -3,7 +3,6 @@
 
 #include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/ConfigurationToEndEffectorOffsetPlanner.hpp"
-#include "aikido/planner/vectorfield/VectorFieldPlanner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -33,7 +32,7 @@ public:
   /// checking.
   /// \param[in] timelimit timeout in seconds.
   VectorFieldConfigurationToEndEffectorOffsetPlanner(
-      statespace::ConstStateSpacePtr stateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       dart::dynamics::MetaSkeletonPtr metaskeleton,
       double distanceTolerance,
       double positionTolerance,
@@ -54,9 +53,6 @@ public:
   /// \param[in] problem Planning problem.
   /// \param[out] result Information about success or failure.
   /// \return Trajectory or \c nullptr if planning failed.
-  /// \throw If \c problem is not ConfigurationToEndEffectorOffset.
-  /// \throw If \c result is not ConfigurationToEndEffectorOffset::Result.
-  /// \throw If mStateSpace is not MetaSkeletonStateSpace.
   trajectory::TrajectoryPtr plan(
       const SolvableProblem& problem, Result* result = nullptr) override;
 
