@@ -42,8 +42,6 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   using aikido::planner::vectorfield::planToEndEffectorOffset;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
 
-  auto metaskeletonStateSpace = getMetaSkeletonStateSpace();
-
   // Handle the fact that distance can be negative.
   double distance = problem.getDistance();
   Eigen::Vector3d direction = problem.getDirection();
@@ -68,7 +66,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   // Just call the core VFP function.
   // TODO: How should start state be handled?
   return planToEndEffectorOffset(
-      metaskeletonStateSpace,
+      getMetaSkeletonStateSpace(),
       mMetaskeleton,
       problem.getEndEffectorBodyNode(),
       problem.getConstraint(),
