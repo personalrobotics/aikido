@@ -44,7 +44,20 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
 
   auto metaskeletonStateSpace = getMetaSkeletonStateSpace();
 
-  if (problem.getDistance() - mDistanceTolerance < 0.)
+  // Handle the fact that distance can be negative.
+  double distance = problem.getDistance();
+  Eigen::Vector3d direction = problem.getDirection();
+
+  if (distance < 0)
+  {
+    distance = -1.0 * distance;
+    direction = -1.0 * direction;
+  }
+
+  double minDistance = distance - mDistanceTolerance;
+  double maxDistance = distance + mDistanceTolerance;
+
+  if (minDistance < 0.)
   {
     std::stringstream ss;
     ss << "Distance must be non-negative; min distance to move is "
@@ -59,9 +72,9 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
       mMetaskeleton,
       problem.getEndEffectorBodyNode(),
       problem.getConstraint(),
-      problem.getDirection(),
-      problem.getDistance() - mDistanceTolerance,
-      problem.getDistance() + mDistanceTolerance,
+      direction,
+      minDistance,
+      maxDistance,
       mPositionTolerance,
       mAngularTolerance,
       mInitialStepSize,
