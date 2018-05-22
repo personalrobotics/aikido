@@ -24,7 +24,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnNullMetric)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -48,7 +48,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnMissingMetric)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -70,7 +70,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnMismatchMetricStatespace)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -96,7 +96,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnNegativeWeights)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
   EXPECT_THROW(
@@ -113,7 +113,7 @@ TEST(CartesianProductWeightedDistance, StateSpaceEquality)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -137,7 +137,7 @@ TEST(CartesianProductWeightedDistance, DistanceUnitWeights)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -176,7 +176,7 @@ TEST(CartesianProductWeightedDistance, DistanceCustomWeights)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 

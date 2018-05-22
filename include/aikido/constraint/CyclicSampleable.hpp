@@ -20,14 +20,14 @@ public:
   explicit CyclicSampleable(SampleablePtr _sampleable);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
   SampleablePtr mSampleable;
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 };
 
 } // namespace constraint

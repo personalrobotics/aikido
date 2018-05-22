@@ -74,12 +74,12 @@ public:
 
   // Documentation inherited.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
 

@@ -29,7 +29,7 @@ public:
   virtual ~Sampleable() = default;
 
   /// Gets the StateSpace that this constraint operates on.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Creates a SampleGenerator for sampling from this constraint.
   virtual std::unique_ptr<SampleGenerator> createSampleGenerator() const = 0;
@@ -49,7 +49,7 @@ public:
   static constexpr int NO_LIMIT = std::numeric_limits<int>::max();
 
   /// Gets the StateSpace that this SampleGenerator samples from.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Returns one sample from this constraint; returns true if succeeded.
   virtual bool sample(statespace::StateSpace::State* _state) = 0;

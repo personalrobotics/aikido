@@ -35,10 +35,10 @@ public:
   /// \param[in] enforceJointVelocityLimits Whether joint velocity limits
   /// are considered in computation.
   BodyNodePoseVectorField(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr
+      aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
           metaSkeletonStateSpace,
       dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      dart::dynamics::BodyNodePtr bodyNode,
+      dart::dynamics::ConstBodyNodePtr bodyNode,
       double maxStepSize,
       double jointLimitPadding,
       bool enforceJointVelocityLimits = false);
@@ -75,10 +75,6 @@ public:
       double& evalTimePivot,
       bool includeEndTime) const override;
 
-  /// Return meta skeleton state space.
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr
-  getMetaSkeletonStateSpace();
-
   /// Return const meta skeleton state space.
   aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
   getMetaSkeletonStateSpace() const;
@@ -89,21 +85,19 @@ public:
   /// Returns const meta skeleton.
   dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const;
 
-  /// Returns body node of end-effector.
-  dart::dynamics::BodyNodePtr getBodyNode();
-
   /// Returns const body node of end-effector.
   dart::dynamics::ConstBodyNodePtr getBodyNode() const;
 
 protected:
   /// Meta skeleton state space.
-  aikido::statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
+      mMetaSkeletonStateSpace;
 
   /// Meta Skeleton
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   /// BodyNode
-  dart::dynamics::BodyNodePtr mBodyNode;
+  dart::dynamics::ConstBodyNodePtr mBodyNode;
 
   /// Maximum step size of integrator.
   double mMaxStepSize;

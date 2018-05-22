@@ -4,7 +4,7 @@
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
-#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
@@ -29,9 +29,9 @@ public:
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If the size of \c direction is zero.
   ConfigurationToEndEffectorOffset(
-      statespace::ConstStateSpacePtr stateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const statespace::StateSpace::State* startState,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint);
@@ -47,7 +47,7 @@ public:
   dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Returns the start state.
-  const statespace::StateSpace::State* getStartState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the direction of motion specified in the world frame.
   ///
@@ -62,7 +62,7 @@ protected:
   const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
 
   /// Direction of motion.
   const Eigen::Vector3d mDirection;
