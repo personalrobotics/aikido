@@ -55,7 +55,7 @@ protected:
     mStateSpace1
         = std::make_shared<MetaSkeletonStateSpace>(mManipulator1.get());
 
-    Eigen::Vector2d defaultPosition(0.0,0.0);
+    Eigen::Vector2d defaultPosition(0.0, 0.0);
     mManipulator1->setPositions(defaultPosition);
   }
 
@@ -74,13 +74,16 @@ TEST_F(RandomConfigurationRankerTest, Constructor)
   states.emplace_back(seedStateOne);
 
   EXPECT_THROW(
-      RandomConfigurationRanker(nullptr, mManipulator1, states), std::invalid_argument);
+      RandomConfigurationRanker(nullptr, mManipulator1, states),
+      std::invalid_argument);
 
   EXPECT_THROW(
-      RandomConfigurationRanker(mStateSpace1, nullptr, states), std::invalid_argument);
+      RandomConfigurationRanker(mStateSpace1, nullptr, states),
+      std::invalid_argument);
 
   EXPECT_THROW(
-      RandomConfigurationRanker(mStateSpace1, nullptr, states), std::invalid_argument);
+      RandomConfigurationRanker(mStateSpace1, nullptr, states),
+      std::invalid_argument);
 
   RandomConfigurationRanker ranker(mStateSpace1, mManipulator1, states);
   DART_UNUSED(ranker);

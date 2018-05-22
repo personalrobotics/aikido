@@ -21,14 +21,17 @@ double JointAvoidanceConfigurationRanker::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
   auto lowerLimitState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionLowerLimits(), lowerLimitState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      mMetaSkeleton->getPositionLowerLimits(), lowerLimitState);
 
   auto upperLimitState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionUpperLimits(), upperLimitState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      mMetaSkeleton->getPositionUpperLimits(), upperLimitState);
 
   auto dmetric = createDistanceMetricFor(
-        std::dynamic_pointer_cast<statespace::CartesianProduct>(
-        std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(mMetaSkeletonStateSpace)));
+      std::dynamic_pointer_cast<statespace::CartesianProduct>(
+          std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
+              mMetaSkeletonStateSpace)));
 
   auto distanceFromLower = dmetric->distance(solution, lowerLimitState);
   auto distanceFromUpper = dmetric->distance(solution, upperLimitState);

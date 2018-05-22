@@ -22,11 +22,13 @@ double NominalConfigurationRanker::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
   auto currentState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositions(), currentState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      mMetaSkeleton->getPositions(), currentState);
 
   auto dmetric = createDistanceMetricFor(
-        std::dynamic_pointer_cast<statespace::CartesianProduct>(
-        std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(mMetaSkeletonStateSpace)));
+      std::dynamic_pointer_cast<statespace::CartesianProduct>(
+          std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
+              mMetaSkeletonStateSpace)));
   return dmetric->distance(solution, currentState);
 }
 

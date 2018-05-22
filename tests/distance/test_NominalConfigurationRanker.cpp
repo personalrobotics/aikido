@@ -55,7 +55,7 @@ protected:
     mStateSpace1
         = std::make_shared<MetaSkeletonStateSpace>(mManipulator1.get());
 
-    Eigen::Vector2d defaultPosition(0.0,0.0);
+    Eigen::Vector2d defaultPosition(0.0, 0.0);
     mManipulator1->setPositions(defaultPosition);
   }
 
@@ -74,13 +74,16 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
   states.emplace_back(seedStateOne);
 
   EXPECT_THROW(
-      NominalConfigurationRanker(nullptr, mManipulator1, states), std::invalid_argument);
+      NominalConfigurationRanker(nullptr, mManipulator1, states),
+      std::invalid_argument);
 
   EXPECT_THROW(
-      NominalConfigurationRanker(mStateSpace1, nullptr, states), std::invalid_argument);
+      NominalConfigurationRanker(mStateSpace1, nullptr, states),
+      std::invalid_argument);
 
   EXPECT_THROW(
-      NominalConfigurationRanker(mStateSpace1, nullptr, states), std::invalid_argument);
+      NominalConfigurationRanker(mStateSpace1, nullptr, states),
+      std::invalid_argument);
 
   NominalConfigurationRanker ranker(mStateSpace1, mManipulator1, states);
   DART_UNUSED(ranker);
@@ -98,8 +101,8 @@ TEST_F(NominalConfigurationRankerTest, OrderTest)
   seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.3);
   seedStateTwo.getSubStateHandle<SO2>(0).fromAngle(0.2);
   seedStateTwo.getSubStateHandle<SO2>(1).fromAngle(0.2);
-  seedStateThree.getSubStateHandle<SO2>(0).fromAngle(2*M_PI + 0.1);
-  seedStateThree.getSubStateHandle<SO2>(1).fromAngle(2*M_PI + 0.1);
+  seedStateThree.getSubStateHandle<SO2>(0).fromAngle(2 * M_PI + 0.1);
+  seedStateThree.getSubStateHandle<SO2>(1).fromAngle(2 * M_PI + 0.1);
 
   std::vector<aikido::statespace::StateSpace::State*> states;
   states.emplace_back(seedStateOne);
