@@ -4,17 +4,11 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
-#include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
-using aikido::statespace::R2;
 using aikido::distance::NominalConfigurationRanker;
-using aikido::statespace::SE3;
 using aikido::statespace::SO2;
-using aikido::common::RNGWrapper;
-using aikido::common::RNG;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using dart::dynamics::Skeleton;
@@ -35,8 +29,6 @@ class NominalConfigurationRankerTest : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mRng.reset(new RNGWrapper<std::default_random_engine>());
-
     // Manipulator with 2 revolute joints.
     mManipulator1 = Skeleton::create("Manipulator1");
 
@@ -66,8 +58,6 @@ protected:
     Eigen::Vector2d defaultPosition(0.0,0.0);
     mManipulator1->setPositions(defaultPosition);
   }
-
-  std::unique_ptr<RNG> mRng;
 
   SkeletonPtr mManipulator1;
   MetaSkeletonStateSpacePtr mStateSpace1;
