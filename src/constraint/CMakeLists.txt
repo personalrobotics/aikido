@@ -30,7 +30,7 @@ set(sources
   dart/InverseKinematicsSampleable.cpp
 #  dart/JointAvoidanceStrategy.cpp
   dart/JointStateSpaceHelpers.cpp
-#  dart/NominalConfigurationStrategy.cpp
+  dart/NominalConfigurationStrategy.cpp
   dart/TSR.cpp
 )
 

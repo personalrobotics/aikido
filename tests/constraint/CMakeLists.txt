@@ -144,6 +144,13 @@ aikido_add_test(test_FIFOStrategy
 target_link_libraries(test_FIFOStrategy
   "${PROJECT_NAME}_constraint")
 
+aikido_add_test(test_NominalConfigurationStrategy
+  test_NominalConfigurationStrategy.cpp)
+target_link_libraries(test_NominalConfigurationStrategy
+  "${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_distance"
+)
+
 format_add_sources(
   MockConstraints.hpp
   PolynomialConstraint.cpp

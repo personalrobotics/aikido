@@ -2,6 +2,9 @@
 #define AIKIDO_CONSTRAINT_DART_NOMINALCONFIGURATIONSTRATEGY_HPP_
 
 #include "aikido/constraint/dart/IKRankingStrategy.hpp"
+#include "aikido/distance/CartesianProductWeighted.hpp"
+#include "aikido/distance/defaults.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -18,7 +21,7 @@ public:
   NominalConfigurationStrategy(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      const std::vector<statespace::StateSpace::ScopedState> ikSolutions);
+      const std::vector<statespace::StateSpace::State*> ikSolutions);
 
 protected:
   double evaluateIKSolution(
