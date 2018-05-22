@@ -1,33 +1,31 @@
 #include <algorithm>
 
-#include "aikido/constraint/dart/FIFOStrategy.hpp"
+#include "aikido/distance/RandomConfigurationRanker.hpp"
 
 namespace aikido {
-namespace constraint {
-namespace dart {
+namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
-FIFOStrategy::FIFOStrategy(
+RandomConfigurationRanker::RandomConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     const std::vector<statespace::StateSpace::State*> ikSolutions)
-  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
+  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
 {
   // Do nothing
   //  std::random_shuffle(mIKSolutions.begin(), mIKSolutions.end());
 }
 
 //==============================================================================
-double FIFOStrategy::evaluateIKSolution(
+double RandomConfigurationRanker::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
   return 0;
   DART_UNUSED(solution);
 }
 
-} // namespace dart
-} // namespace constraint
+} // namespace distance
 } // namespace aikido
