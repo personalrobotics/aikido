@@ -126,6 +126,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::ConstBodyNodePtr& bn,
@@ -151,23 +152,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   // TODO(JS): The above code should be replaced by
   // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
   // once https://github.com/dartsim/dart/pull/1011 is released.
-
-  if (minDistance < 0.)
-  {
-    std::stringstream ss;
-    ss << "Distance must be non-negative; got " << minDistance << ".";
-    throw std::runtime_error(ss.str());
-  }
-
-  if (maxDistance < minDistance)
-  {
-    throw std::runtime_error("Max distance is less than distance.");
-  }
-
-  if (direction.norm() == 0.0)
-  {
-    throw std::runtime_error("Direction vector is a zero vector");
-  }
 
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
@@ -195,11 +179,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
 
-  auto startState
-      = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
+  stateSpace->setState(metaskeleton.get(), &startState);
   return followVectorField(
       *vectorfield,
-      *startState,
+      startState,
       *compoundConstraint,
       timelimit,
       initialStepSize,
