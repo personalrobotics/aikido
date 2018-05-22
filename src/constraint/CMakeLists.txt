@@ -22,15 +22,15 @@ set(sources
   uniform/SE2BoxConstraint.cpp
   dart/CollisionFree.cpp
   dart/CollisionFreeOutcome.cpp
-  dart/FIFOStrategy.cpp
+#  dart/FIFOStrategy.cpp
   dart/FrameDifferentiable.cpp
   dart/FramePairDifferentiable.cpp
   dart/FrameTestable.cpp
-  dart/IKRankingStrategy.cpp
+#  dart/IKRankingStrategy.cpp
   dart/InverseKinematicsSampleable.cpp
 #  dart/JointAvoidanceStrategy.cpp
   dart/JointStateSpaceHelpers.cpp
-  dart/NominalConfigurationStrategy.cpp
+#  dart/NominalConfigurationStrategy.cpp
   dart/TSR.cpp
 )
 

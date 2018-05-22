@@ -1,13 +1,12 @@
-#ifndef AIKIDO_CONSTRAINT_DART_JOINTAVOIDANCESTRATEGY_HPP_
-#define AIKIDO_CONSTRAINT_DART_JOINTAVOIDANCESTRATEGY_HPP_
+#ifndef AIKIDO_DISTANCE_JOINTAVOIDANCECONFIGURATIONRANKER_HPP_
+#define AIKIDO_DISTANCE_JOINTAVOIDANCECONFIGURATIONRANKER_HPP_
 
-#include "aikido/constraint/dart/IKRankingStrategy.hpp"
+#include "aikido/distance/ConfigurationRanker.hpp"
 
 namespace aikido {
-namespace constraint {
-namespace dart {
+namespace distance {
 
-class JointAvoidanceStrategy : public IKRankingStrategy
+class JointAvoidanceConfigurationRanker : public ConfigurationRanker
 {
 public:
   /// Constructor
@@ -15,7 +14,7 @@ public:
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
   /// \param[in] ikSolutions List of IK solutions to be ranked.
-  JointAvoidanceStrategy(
+  JointAvoidanceConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       const std::vector<statespace::StateSpace::ScopedState> ikSolutions);
@@ -25,8 +24,7 @@ protected:
       statespace::StateSpace::State* solution) const override;
 };
 
-} // namespace dart
-} // namespace constraint
+} // namespace distance
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_DART_FIFOSTRATEGY_HPP_
+#endif // AIKIDO_DISTANCE_JOINTAVOIDANCECONFIGURATIONRANKER_HPP_

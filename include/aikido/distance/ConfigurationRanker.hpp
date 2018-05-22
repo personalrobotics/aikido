@@ -1,15 +1,14 @@
-#ifndef AIKIDO_CONSTRAINT_DART_IKRANKINGSTRATEGY_HPP_
-#define AIKIDO_CONSTRAINT_DART_IKRANKINGSTRATEGY_HPP_
+#ifndef AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
+#define AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 
 #include <dart/dynamics/dynamics.hpp>
-#include "aikido/statespace/ScopedState.hpp"
+#include "aikido/statespace/ScopedState.hpp" // TODO: Remove this.
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
-namespace constraint {
-namespace dart {
+namespace distance {
 
-class IKRankingStrategy
+class ConfigurationRanker
 {
 public:
   /// Constructor
@@ -17,13 +16,13 @@ public:
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
   /// \param[in] ikSolutions List of IK solutions to be ranked.
-  IKRankingStrategy(
+  ConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       const std::vector<statespace::StateSpace::State*> ikSolutions);
 
   /// Destructor
-  virtual ~IKRankingStrategy() = default;
+  virtual ~ConfigurationRanker() = default;
 
   /// Returns the statespace.
   statespace::ConstStateSpacePtr getStateSpace() const;
@@ -47,8 +46,7 @@ protected:
   std::vector<std::pair<statespace::StateSpace::State*, double>> mIKSolutions;
 };
 
-} // namespace dart
-} // namespace constraint
+} // namespace distance
 } // namespace aikido
 
-#endif // AIKIDO_CONSTRAINT_DART_IKRANKINGSTRATEGY_HPP_
+#endif // AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
