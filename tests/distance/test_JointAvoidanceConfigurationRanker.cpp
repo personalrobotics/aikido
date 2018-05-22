@@ -52,8 +52,7 @@ protected:
     properties2.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0, 0, 1);
     auto pair2 = mManipulator->createJointAndBodyNodePair<RevoluteJoint>(
         bn1, properties2, create_BodyNodeProperties("leaf"));
-    pair2.first->setPositionLowerLimit(0, 0.0);
-    pair2.first->setPositionUpperLimit(0, 2 * M_PI);
+
     bn2 = pair2.second;
     mStateSpace = std::make_shared<MetaSkeletonStateSpace>(mManipulator.get());
 
@@ -90,23 +89,23 @@ TEST_F(JointAvoidanceConfigurationRankerTest, Constructor)
   DART_UNUSED(ranker);
 }
 
-TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
+TEST_F(JointAvoidanceConfigurationRankerTest, OrderForLimitedJointsTest)
 {
   Eigen::VectorXd jointPosition(2);
 
-  jointPosition << 0.3, 0.3;
+  jointPosition << 0.3, 0.1;
   mManipulator->setPositions(jointPosition);
   auto seedStateOne = mStateSpace->createState();
   mStateSpace->convertPositionsToState(
       mManipulator->getPositions(), seedStateOne);
 
-  jointPosition << 0.1, 0.1;
+  jointPosition << 0.1, 0.4;
   mManipulator->setPositions(jointPosition);
   auto seedStateTwo = mStateSpace->createState();
   mStateSpace->convertPositionsToState(
       mManipulator->getPositions(), seedStateTwo);
 
-  jointPosition << 0.2, 0.2;
+  jointPosition << 0.2, 0.1;
   mManipulator->setPositions(jointPosition);
   auto seedStateThree = mStateSpace->createState();
   mStateSpace->convertPositionsToState(
@@ -128,11 +127,11 @@ TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
   mStateSpace->convertStateToPositions(
       mStateSpace->cloneState(rankedSolutions[2].first), rankedStateThree);
 
-  EXPECT_TRUE(rankedStateOne.isApprox(Eigen::Vector2d(0.3, 0.3)));
-  EXPECT_TRUE(rankedStateTwo.isApprox(Eigen::Vector2d(0.2, 0.2)));
-  EXPECT_TRUE(rankedStateThree.isApprox(Eigen::Vector2d(0.1, 0.1)));
+  EXPECT_TRUE(rankedStateOne.isApprox(Eigen::Vector2d(0.3, 0.1)));
+  EXPECT_TRUE(rankedStateTwo.isApprox(Eigen::Vector2d(0.2, 0.1)));
+  EXPECT_TRUE(rankedStateThree.isApprox(Eigen::Vector2d(0.1, 0.4)));
 
-  ASSERT_NEAR(rankedSolutions[0].second, -0.6, 1e-5);
-  ASSERT_NEAR(rankedSolutions[1].second, -0.4, 1e-5);
-  ASSERT_NEAR(rankedSolutions[2].second, -0.2, 1e-5);
+  ASSERT_NEAR(rankedSolutions[0].second, -0.3, 1e-5);
+  ASSERT_NEAR(rankedSolutions[1].second, -0.2, 1e-5);
+  ASSERT_NEAR(rankedSolutions[2].second, -0.1, 1e-5);
 }

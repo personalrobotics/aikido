@@ -20,16 +20,30 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
 double JointAvoidanceConfigurationRanker::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
+  Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
+  mMetaSkeletonStateSpace->convertStateToPositions(
+        mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
 
-  // TODO(avk): Need to consider only the joints with position limits.
+  auto lowerLimitPosition = mMetaSkeleton->getPositionLowerLimits();
+  auto upperLimitPosition = mMetaSkeleton->getPositionLowerLimits();
+
+  for (std::size_t i = 0; i < mMetaSkeletonStateSpace->getDimension(); ++i)
+  {
+    if (lowerLimitPosition[i] == -dart::math::constantsd::inf() ||
+        upperLimitPosition[i] == dart::math::constantsd::inf())
+    {
+      lowerLimitPosition[i] = solutionPosition[i];
+      upperLimitPosition[i] = solutionPosition[i];
+    }
+  }
 
   auto lowerLimitState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->convertPositionsToState(
-      mMetaSkeleton->getPositionLowerLimits(), lowerLimitState);
+      lowerLimitPosition, lowerLimitState);
 
   auto upperLimitState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->convertPositionsToState(
-      mMetaSkeleton->getPositionUpperLimits(), upperLimitState);
+      lowerLimitPosition, upperLimitState);
 
   auto dmetric = createDistanceMetricFor(
       std::dynamic_pointer_cast<statespace::CartesianProduct>(
