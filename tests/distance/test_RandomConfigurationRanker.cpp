@@ -90,28 +90,36 @@ TEST_F(RandomConfigurationRankerTest, Constructor)
 
 TEST_F(RandomConfigurationRankerTest, OrderTest)
 {
-  auto seedStateOne
-      = mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get());
-  auto seedStateTwo
-      = mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get());
-  seedStateOne.getSubStateHandle<SO2>(0).fromAngle(0.1);
-  seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.1);
-  seedStateTwo.getSubStateHandle<SO2>(0).fromAngle(0.2);
-  seedStateTwo.getSubStateHandle<SO2>(1).fromAngle(0.2);
+  Eigen::VectorXd jointPosition(2);
+
+  jointPosition << 0.3, 0.3;
+  mManipulator->setPositions(jointPosition);
+  auto seedStateOne = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(
+      mManipulator->getPositions(), seedStateOne);
+
+  jointPosition << 0.1, 0.1;
+  mManipulator->setPositions(jointPosition);
+  auto seedStateTwo = mStateSpace->createState();
+  mStateSpace->convertPositionsToState(
+      mManipulator->getPositions(), seedStateTwo);
 
   std::vector<aikido::statespace::StateSpace::State*> states;
   states.emplace_back(seedStateOne);
   states.emplace_back(seedStateTwo);
 
   RandomConfigurationRanker ranker(mStateSpace, mManipulator, states);
-
   auto rankedSolutions = ranker.getRankedIKSolutions();
 
-  auto rankedStateOne = mStateSpace->cloneState(rankedSolutions[0].first);
-  auto rankedStateTwo = mStateSpace->cloneState(rankedSolutions[1].first);
+  Eigen::VectorXd rankedStateOne(2), rankedStateTwo(2);
+  mStateSpace->convertStateToPositions(
+      mStateSpace->cloneState(rankedSolutions[0].first), rankedStateOne);
+  mStateSpace->convertStateToPositions(
+      mStateSpace->cloneState(rankedSolutions[1].first), rankedStateTwo);
 
-  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(0).toAngle(), 0.1, 1e-5);
-  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(1).toAngle(), 0.1, 1e-5);
-  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(0).toAngle(), 0.2, 1e-5);
-  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(1).toAngle(), 0.2, 1e-5);
+  EXPECT_TRUE(rankedStateOne.isApprox(Eigen::Vector2d(0.3, 0.3)));
+  EXPECT_TRUE(rankedStateTwo.isApprox(Eigen::Vector2d(0.1, 0.1)));
+
+  ASSERT_NEAR(rankedSolutions[0].second, 0.0, 1e-5);
+  ASSERT_NEAR(rankedSolutions[1].second, 0.0, 1e-5);
 }
