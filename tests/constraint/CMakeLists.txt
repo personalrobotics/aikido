@@ -142,7 +142,9 @@ target_link_libraries(test_RejectionSampleable
 aikido_add_test(test_FIFOStrategy
   test_FIFOStrategy.cpp)
 target_link_libraries(test_FIFOStrategy
-  "${PROJECT_NAME}_constraint")
+  "${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_distance"
+)
 
 aikido_add_test(test_NominalConfigurationStrategy
   test_NominalConfigurationStrategy.cpp)

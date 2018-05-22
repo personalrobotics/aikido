@@ -68,6 +68,9 @@ protected:
     mStateSpace1
         = std::make_shared<MetaSkeletonStateSpace>(mManipulator1.get());
 
+    Eigen::Vector2d defaultPosition(0.0,0.0);
+    mManipulator1->setPositions(defaultPosition);
+
     // Manipulator with 1 free joint and 1 revolute joint.
     mManipulator2 = Skeleton::create("Manipulator2");
 
@@ -135,30 +138,40 @@ TEST_F(NominalConfigurationStrategyTest, Constructor)
   DART_UNUSED(ranker);
 }
 
-//TEST_F(NominalConfigurationStrategyTest, OrderTest)
-//{
-//  auto seedStateOne
-//      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-//  auto seedStateTwo
-//      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-//  seedStateOne.getSubStateHandle<SO2>(0).fromAngle(0.1);
-//  seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.1);
-//  seedStateTwo.getSubStateHandle<SO2>(0).fromAngle(0.2);
-//  seedStateTwo.getSubStateHandle<SO2>(1).fromAngle(0.2);
+TEST_F(NominalConfigurationStrategyTest, OrderTest)
+{
+  auto seedStateOne
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
+  auto seedStateTwo
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
+  auto seedStateThree
+      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
+  seedStateOne.getSubStateHandle<SO2>(0).fromAngle(0.3);
+  seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.3);
+  seedStateTwo.getSubStateHandle<SO2>(0).fromAngle(0.2);
+  seedStateTwo.getSubStateHandle<SO2>(1).fromAngle(0.2);
+  seedStateThree.getSubStateHandle<SO2>(0).fromAngle(2*M_PI + 0.1);
+  seedStateThree.getSubStateHandle<SO2>(1).fromAngle(2*M_PI + 0.1);
 
-//  std::vector<aikido::statespace::StateSpace::State*> states;
-//  states.emplace_back(seedStateOne);
-//  states.emplace_back(seedStateTwo);
+  std::vector<aikido::statespace::StateSpace::State*> states;
+  states.emplace_back(seedStateOne);
+  states.emplace_back(seedStateTwo);
+  states.emplace_back(seedStateThree);
 
-//  NominalConfigurationStrategy ranker(mStateSpace1, mManipulator1, states);
+  NominalConfigurationStrategy ranker(mStateSpace1, mManipulator1, states);
 
-//  auto rankedSolutions = ranker.getRankedIKSolutions();
+  auto rankedSolutions = ranker.getRankedIKSolutions();
 
-//  auto rankedStateOne = mStateSpace1->cloneState(rankedSolutions[0].first);
-//  auto rankedStateTwo = mStateSpace1->cloneState(rankedSolutions[1].first);
+  auto rankedStateOne = mStateSpace1->cloneState(rankedSolutions[0].first);
+  auto rankedStateTwo = mStateSpace1->cloneState(rankedSolutions[1].first);
+  auto rankedStateThree = mStateSpace1->cloneState(rankedSolutions[2].first);
 
-//  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(0).toAngle(), 0.1, 1e-5);
-//  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(1).toAngle(), 0.1, 1e-5);
-//  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(0).toAngle(), 0.2, 1e-5);
-//  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(1).toAngle(), 0.2, 1e-5);
-//}
+  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(0).toAngle(), 0.1, 1e-5);
+  ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(1).toAngle(), 0.1, 1e-5);
+
+  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(0).toAngle(), 0.2, 1e-5);
+  ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(1).toAngle(), 0.2, 1e-5);
+
+  ASSERT_NEAR(rankedStateThree.getSubStateHandle<SO2>(0).toAngle(), 0.3, 1e-5);
+  ASSERT_NEAR(rankedStateThree.getSubStateHandle<SO2>(1).toAngle(), 0.3, 1e-5);
+}
