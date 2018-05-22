@@ -1,4 +1,4 @@
-#include "aikido/constraint/dart/NominalConfigurationStrategy.hpp"
+#include "aikido/constraint/dart/FIFOStrategy.hpp"
 
 #include <random>
 #include <Eigen/Dense>
@@ -9,11 +9,10 @@
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-#include "MockConstraints.hpp"
 
 using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
-using aikido::constraint::dart::NominalConfigurationStrategy;
+using aikido::constraint::dart::FIFOStrategy;
 using aikido::statespace::SE3;
 using aikido::statespace::SO2;
 using dart::dynamics::FreeJoint;
@@ -35,7 +34,7 @@ static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
   return bodyProperties;
 }
 
-class NominalConfigurationStrategyTest : public ::testing::Test
+class FIFOStrategyTest : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -67,9 +66,6 @@ protected:
 
     mStateSpace1
         = std::make_shared<MetaSkeletonStateSpace>(mManipulator1.get());
-
-    Eigen::Vector2d defaultPosition(0.0,0.0);
-    mManipulator1->setPositions(defaultPosition);
 
     // Manipulator with 1 free joint and 1 revolute joint.
     mManipulator2 = Skeleton::create("Manipulator2");
@@ -116,7 +112,7 @@ protected:
   std::shared_ptr<FiniteSampleable> seedConstraint;
 };
 
-TEST_F(NominalConfigurationStrategyTest, Constructor)
+TEST_F(FIFOStrategyTest, Constructor)
 {
   auto seedStateOne
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
@@ -126,52 +122,42 @@ TEST_F(NominalConfigurationStrategyTest, Constructor)
   states.emplace_back(seedStateOne);
 
   EXPECT_THROW(
-      NominalConfigurationStrategy(nullptr, mManipulator1, states), std::invalid_argument);
+      FIFOStrategy(nullptr, mManipulator1, states), std::invalid_argument);
 
   EXPECT_THROW(
-      NominalConfigurationStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
+      FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
 
   EXPECT_THROW(
-      NominalConfigurationStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
+      FIFOStrategy(mStateSpace1, nullptr, states), std::invalid_argument);
 
-  NominalConfigurationStrategy ranker(mStateSpace1, mManipulator1, states);
+  FIFOStrategy ranker(mStateSpace1, mManipulator1, states);
   DART_UNUSED(ranker);
 }
 
-TEST_F(NominalConfigurationStrategyTest, OrderTest)
+TEST_F(FIFOStrategyTest, OrderTest)
 {
   auto seedStateOne
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
   auto seedStateTwo
       = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-  auto seedStateThree
-      = mStateSpace1->getScopedStateFromMetaSkeleton(mManipulator1.get());
-  seedStateOne.getSubStateHandle<SO2>(0).fromAngle(0.3);
-  seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.3);
+  seedStateOne.getSubStateHandle<SO2>(0).fromAngle(0.1);
+  seedStateOne.getSubStateHandle<SO2>(1).fromAngle(0.1);
   seedStateTwo.getSubStateHandle<SO2>(0).fromAngle(0.2);
   seedStateTwo.getSubStateHandle<SO2>(1).fromAngle(0.2);
-  seedStateThree.getSubStateHandle<SO2>(0).fromAngle(2*M_PI + 0.1);
-  seedStateThree.getSubStateHandle<SO2>(1).fromAngle(2*M_PI + 0.1);
 
   std::vector<aikido::statespace::StateSpace::State*> states;
   states.emplace_back(seedStateOne);
   states.emplace_back(seedStateTwo);
-  states.emplace_back(seedStateThree);
 
-  NominalConfigurationStrategy ranker(mStateSpace1, mManipulator1, states);
+  FIFOStrategy ranker(mStateSpace1, mManipulator1, states);
 
   auto rankedSolutions = ranker.getRankedIKSolutions();
 
   auto rankedStateOne = mStateSpace1->cloneState(rankedSolutions[0].first);
   auto rankedStateTwo = mStateSpace1->cloneState(rankedSolutions[1].first);
-  auto rankedStateThree = mStateSpace1->cloneState(rankedSolutions[2].first);
 
   ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(0).toAngle(), 0.1, 1e-5);
   ASSERT_NEAR(rankedStateOne.getSubStateHandle<SO2>(1).toAngle(), 0.1, 1e-5);
-
   ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(0).toAngle(), 0.2, 1e-5);
   ASSERT_NEAR(rankedStateTwo.getSubStateHandle<SO2>(1).toAngle(), 0.2, 1e-5);
-
-  ASSERT_NEAR(rankedStateThree.getSubStateHandle<SO2>(0).toAngle(), 0.3, 1e-5);
-  ASSERT_NEAR(rankedStateThree.getSubStateHandle<SO2>(1).toAngle(), 0.3, 1e-5);
 }
