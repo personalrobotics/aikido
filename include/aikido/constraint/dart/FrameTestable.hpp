@@ -45,14 +45,14 @@ public:
   std::unique_ptr<TestableOutcome> createOutcome() const override;
 
   // Documentation inherited
-  std::shared_ptr<statespace::StateSpace> getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   ::dart::dynamics::ConstJacobianNodePtr mFrame;
   TestablePtr mPoseConstraint;
-  std::shared_ptr<statespace::SE3> mPoseStateSpace;
+  std::shared_ptr<const statespace::SE3> mPoseStateSpace;
 };
 
 } // namespace dart

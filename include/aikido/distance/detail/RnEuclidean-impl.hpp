@@ -18,7 +18,7 @@ extern template class REuclidean<Eigen::Dynamic>;
 
 //==============================================================================
 template <int N>
-REuclidean<N>::REuclidean(std::shared_ptr<statespace::R<N>> _space)
+REuclidean<N>::REuclidean(std::shared_ptr<const statespace::R<N>> _space)
   : mStateSpace(std::move(_space))
 {
   if (mStateSpace == nullptr)
@@ -29,7 +29,7 @@ REuclidean<N>::REuclidean(std::shared_ptr<statespace::R<N>> _space)
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr REuclidean<N>::getStateSpace() const
+statespace::ConstStateSpacePtr REuclidean<N>::getStateSpace() const
 {
   return mStateSpace;
 }

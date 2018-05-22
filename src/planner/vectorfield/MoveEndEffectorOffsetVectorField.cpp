@@ -12,9 +12,9 @@ namespace vectorfield {
 
 //==============================================================================
 MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
-    dart::dynamics::BodyNodePtr bn,
+    dart::dynamics::ConstBodyNodePtr bn,
     const Eigen::Vector3d& direction,
     double minDistance,
     double maxDistance,

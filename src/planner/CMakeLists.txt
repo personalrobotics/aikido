@@ -4,6 +4,7 @@ set(sources
   ConfigurationToConfigurations.cpp
   ConfigurationToTSR.cpp
   ConfigurationToEndEffectorOffset.cpp
+  ConfigurationToEndEffectorOffsetPlanner.cpp
   ConfigurationToEndEffectorPose.cpp
   FirstSupportedMetaPlanner.cpp
   CompositePlanner.cpp

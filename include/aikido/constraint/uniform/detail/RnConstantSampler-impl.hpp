@@ -32,9 +32,9 @@ public:
   using VectorNd = Eigen::Matrix<double, N, 1>;
 
   RnConstantSamplerSampleGenerator(
-      std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value);
+      std::shared_ptr<const statespace::R<N>> _space, const VectorNd& _value);
 
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   bool sample(statespace::StateSpace::State* _state) override;
 
@@ -43,7 +43,7 @@ public:
   bool canSample() const override;
 
 private:
-  std::shared_ptr<statespace::R<N>> mSpace;
+  std::shared_ptr<const statespace::R<N>> mSpace;
   VectorNd mValue;
 
 public:
@@ -53,7 +53,7 @@ public:
 //==============================================================================
 template <int N>
 RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
-    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
+    std::shared_ptr<const statespace::R<N>> _space, const VectorNd& _value)
   : mSpace(std::move(_space)), mValue(_value)
 {
   // Do nothing
@@ -61,8 +61,8 @@ RnConstantSamplerSampleGenerator<N>::RnConstantSamplerSampleGenerator(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RnConstantSamplerSampleGenerator<N>::getStateSpace()
-    const
+statespace::ConstStateSpacePtr
+RnConstantSamplerSampleGenerator<N>::getStateSpace() const
 {
   return mSpace;
 }
@@ -97,7 +97,7 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
 //==============================================================================
 template <int N>
 RConstantSampler<N>::RConstantSampler(
-    std::shared_ptr<statespace::R<N>> _space, const VectorNd& _value)
+    std::shared_ptr<const statespace::R<N>> _space, const VectorNd& _value)
   : mSpace(std::move(_space)), mValue(_value)
 {
   if (!mSpace)
@@ -114,7 +114,7 @@ RConstantSampler<N>::RConstantSampler(
 
 //==============================================================================
 template <int N>
-statespace::StateSpacePtr RConstantSampler<N>::getStateSpace() const
+statespace::ConstStateSpacePtr RConstantSampler<N>::getStateSpace() const
 {
   return mSpace;
 }

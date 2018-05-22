@@ -14,7 +14,7 @@ template <class PlannerType>
 trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,
     const statespace::StateSpace::State* _goal,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -63,7 +63,7 @@ trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,

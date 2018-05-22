@@ -19,18 +19,18 @@ public:
   /// \param _rng Random number generator which determines the sampling
   ///        sequence of this constraint's SampleGenerators.
   SO3UniformSampler(
-      std::shared_ptr<statespace::SO3> _space,
+      std::shared_ptr<const statespace::SO3> _space,
       std::unique_ptr<common::RNG> _rng);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<constraint::SampleGenerator> createSampleGenerator()
       const override;
 
 private:
-  std::shared_ptr<statespace::SO3> mSpace;
+  std::shared_ptr<const statespace::SO3> mSpace;
   std::unique_ptr<common::RNG> mRng;
 };
 
