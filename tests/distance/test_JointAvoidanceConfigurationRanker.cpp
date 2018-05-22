@@ -89,7 +89,7 @@ TEST_F(JointAvoidanceConfigurationRankerTest, Constructor)
   DART_UNUSED(ranker);
 }
 
-TEST_F(JointAvoidanceConfigurationRankerTest, OrderForLimitedJointsTest)
+TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
 {
   Eigen::VectorXd jointPosition(2);
 

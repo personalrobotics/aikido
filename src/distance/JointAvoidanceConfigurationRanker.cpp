@@ -22,15 +22,15 @@ double JointAvoidanceConfigurationRanker::evaluateIKSolution(
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
   mMetaSkeletonStateSpace->convertStateToPositions(
-        mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
+      mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
 
   auto lowerLimitPosition = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimitPosition = mMetaSkeleton->getPositionLowerLimits();
 
   for (std::size_t i = 0; i < mMetaSkeletonStateSpace->getDimension(); ++i)
   {
-    if (lowerLimitPosition[i] == -dart::math::constantsd::inf() ||
-        upperLimitPosition[i] == dart::math::constantsd::inf())
+    if (lowerLimitPosition[i] == -dart::math::constantsd::inf()
+        || upperLimitPosition[i] == dart::math::constantsd::inf())
     {
       lowerLimitPosition[i] = solutionPosition[i];
       upperLimitPosition[i] = solutionPosition[i];
