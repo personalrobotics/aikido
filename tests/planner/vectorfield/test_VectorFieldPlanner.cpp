@@ -340,7 +340,6 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   // Create problem.
   auto offsetProblem = ConfigurationToEndEffectorOffset(
-      // TODO: Will this even be used?
       mStateSpace,
       mBodynode,
       startState,
@@ -435,7 +434,6 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
   // Create Problem, which should fail.
   EXPECT_THROW(
       ConfigurationToEndEffectorOffset(
-          // TODO: Will this even be used?
           mStateSpace,
           mBodynode,
           startState,

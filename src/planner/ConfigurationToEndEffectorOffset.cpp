@@ -7,9 +7,9 @@ namespace planner {
 
 //==============================================================================
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
-    statespace::ConstStateSpacePtr stateSpace,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const statespace::StateSpace::State* startState,
+    const statespace::dart::MetaSkeletonStateSpace::State* startState,
     const Eigen::Vector3d& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
@@ -44,7 +44,7 @@ ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
 }
 
 //==============================================================================
-const statespace::StateSpace::State*
+const statespace::dart::MetaSkeletonStateSpace::State*
 ConfigurationToEndEffectorOffset::getStartState() const
 {
   return mStartState;
