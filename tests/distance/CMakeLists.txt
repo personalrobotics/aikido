@@ -28,12 +28,17 @@ target_link_libraries(test_DistanceMetricDefaults
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace")
 
-aikido_add_test(test_RandomConfigurationRanker
-  test_RandomConfigurationRanker.cpp)
-target_link_libraries(test_RandomConfigurationRanker
+aikido_add_test(test_JointAvoidanceConfigurationRanker
+  test_JointAvoidanceConfigurationRanker.cpp)
+target_link_libraries(test_JointAvoidanceConfigurationRanker
     "${PROJECT_NAME}_distance")
 
 aikido_add_test(test_NominalConfigurationRanker
   test_NominalConfigurationRanker.cpp)
 target_link_libraries(test_NominalConfigurationRanker
   "${PROJECT_NAME}_distance")
+
+aikido_add_test(test_RandomConfigurationRanker
+  test_RandomConfigurationRanker.cpp)
+target_link_libraries(test_RandomConfigurationRanker
+    "${PROJECT_NAME}_distance")

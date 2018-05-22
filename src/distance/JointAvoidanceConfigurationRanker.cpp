@@ -20,6 +20,9 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
 double JointAvoidanceConfigurationRanker::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
+
+  // TODO(avk): Need to consider only the joints with position limits.
+
   auto lowerLimitState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->convertPositionsToState(
       mMetaSkeleton->getPositionLowerLimits(), lowerLimitState);
