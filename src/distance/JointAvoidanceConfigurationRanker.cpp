@@ -1,33 +1,40 @@
-#include "aikido/constraint/dart/JointAvoidanceStrategy.hpp"
+#include "aikido/distance/JointAvoidanceConfigurationRanker.hpp"
 
 namespace aikido {
-namespace constraint {
-namespace dart {
+namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
-JointAvoidanceStrategy::JointAvoidanceStrategy(
+JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     const std::vector<statespace::StateSpace::State*> ikSolutions)
-  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
+  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
 {
   // Do nothing
 }
 
 //==============================================================================
-double JointAvoidanceStrategy::evaluateIKSolution(
+double JointAvoidanceConfigurationRanker::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
-  DART_UNUSED(solution);
-  // TODO (avk): Find the distance from the joint limits.
-  // What if there are no joint limits like in SO(2) space?
-  // Use distance metrics and not euclidean.
-  return 0;
+  auto lowerLimitState = mMetaSkeletonStateSpace->createState();
+  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionLowerLimits(), lowerLimitState);
+
+  auto upperLimitState = mMetaSkeletonStateSpace->createState();
+  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionUpperLimits(), upperLimitState);
+
+  auto dmetric = createDistanceMetricFor(
+        std::dynamic_pointer_cast<statespace::CartesianProduct>(
+        std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(mMetaSkeletonStateSpace)));
+
+  auto distanceFromLower = dmetric->distance(solution, lowerLimitState);
+  auto distanceFromUpper = dmetric->distance(solution, upperLimitState);
+
+  return -std::min(distanceFromLower, distanceFromUpper);
 }
 
-} // namespace dart
-} // namespace constraint
+} // namespace distance
 } // namespace aikido

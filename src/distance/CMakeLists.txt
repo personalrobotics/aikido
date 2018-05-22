@@ -2,9 +2,9 @@ set(sources
   CartesianProductWeighted.cpp
   ConfigurationRanker.cpp
   defaults.cpp
-#  JointAvoidanceConfigurationRanker.cpp
+  JointAvoidanceConfigurationRanker.cpp
   NominalConfigurationRanker.cpp
-#  RandomConfigurationRanker.cpp
+  RandomConfigurationRanker.cpp
   RnEuclidean.cpp
   SE2Weighted.cpp
   SO2Angular.cpp

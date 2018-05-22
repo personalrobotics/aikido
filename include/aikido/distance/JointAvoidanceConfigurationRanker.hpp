@@ -2,6 +2,9 @@
 #define AIKIDO_DISTANCE_JOINTAVOIDANCECONFIGURATIONRANKER_HPP_
 
 #include "aikido/distance/ConfigurationRanker.hpp"
+#include "aikido/distance/CartesianProductWeighted.hpp"
+#include "aikido/distance/defaults.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace distance {
@@ -17,7 +20,7 @@ public:
   JointAvoidanceConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      const std::vector<statespace::StateSpace::ScopedState> ikSolutions);
+      const std::vector<statespace::StateSpace::State*> ikSolutions);
 
 protected:
   double evaluateIKSolution(
