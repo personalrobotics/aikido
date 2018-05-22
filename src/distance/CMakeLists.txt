@@ -1,10 +1,14 @@
 set(sources
-  SO2Angular.cpp
-  RnEuclidean.cpp
-  SO3Angular.cpp
-  SE2Weighted.cpp
   CartesianProductWeighted.cpp
+  ConfigurationRanker.cpp
   defaults.cpp
+#  JointAvoidanceConfigurationRanker.cpp
+  NominalConfigurationRanker.cpp
+#  RandomConfigurationRanker.cpp
+  RnEuclidean.cpp
+  SE2Weighted.cpp
+  SO2Angular.cpp
+  SO3Angular.cpp
 )
 
 add_library("${PROJECT_NAME}_distance" SHARED ${sources})

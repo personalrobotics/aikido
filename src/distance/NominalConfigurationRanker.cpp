@@ -1,26 +1,24 @@
-#include "aikido/constraint/dart/NominalConfigurationStrategy.hpp"
+#include "aikido/distance/NominalConfigurationRanker.hpp"
 
 namespace aikido {
-namespace constraint {
-namespace dart {
+namespace distance {
 
-using distance::createDistanceMetricFor;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::CartesianProduct;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
-NominalConfigurationStrategy::NominalConfigurationStrategy(
+NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     const std::vector<statespace::StateSpace::State*> ikSolutions)
-  : IKRankingStrategy(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
+  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
 {
   // Do nothing
 }
 
 //==============================================================================
-double NominalConfigurationStrategy::evaluateIKSolution(
+double NominalConfigurationRanker::evaluateIKSolution(
     statespace::StateSpace::State* solution) const
 {
   auto currentState = mMetaSkeletonStateSpace->createState();
@@ -33,6 +31,5 @@ double NominalConfigurationStrategy::evaluateIKSolution(
   return dmetric->distance(solution, currentState);
 }
 
-} // namespace dart
-} // namespace constraint
+} // namespace distance
 } // namespace aikido

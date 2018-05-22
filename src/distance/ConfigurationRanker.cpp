@@ -1,14 +1,13 @@
-#include "aikido/constraint/dart/IKRankingStrategy.hpp"
+#include "aikido/distance/ConfigurationRanker.hpp"
 
 namespace aikido {
-namespace constraint {
-namespace dart {
+namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
-IKRankingStrategy::IKRankingStrategy(
+ConfigurationRanker::ConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     const std::vector<statespace::StateSpace::State*> ikSolutions)
@@ -36,14 +35,14 @@ IKRankingStrategy::IKRankingStrategy(
 }
 
 //==============================================================================
-statespace::ConstStateSpacePtr IKRankingStrategy::getStateSpace() const
+statespace::ConstStateSpacePtr ConfigurationRanker::getStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }
 
 //==============================================================================
 std::vector<std::pair<statespace::StateSpace::State*, double>>&
-IKRankingStrategy::getRankedIKSolutions()
+ConfigurationRanker::getRankedIKSolutions()
 {
   for (std::size_t i = 0; i < mIKSolutions.size(); ++i)
     mIKSolutions[i].second = evaluateIKSolution(mIKSolutions[i].first);
@@ -61,6 +60,5 @@ IKRankingStrategy::getRankedIKSolutions()
   return mIKSolutions;
 }
 
-} // namespace dart
-} // namespace constraint
+} // namespace distance
 } // namespace aikido
