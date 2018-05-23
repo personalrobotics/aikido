@@ -7,6 +7,7 @@
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
+#include "aikido/constraint/SequentialSampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
@@ -34,10 +35,12 @@ using constraint::dart::CollisionFreePtr;
 using constraint::dart::InverseKinematicsSampleable;
 using constraint::dart::TSR;
 using constraint::dart::TSRPtr;
-using constraint::TestablePtr;
 using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
+using constraint::FiniteSampleable;
+using constraint::SequentialSampleable;
+using constraint::TestablePtr;
 using distance::createDistanceMetric;
 using statespace::GeodesicInterpolator;
 using statespace::dart::MetaSkeletonStateSpacePtr;
@@ -194,12 +197,23 @@ trajectory::TrajectoryPtr planToTSR(
 
   ik->setDofs(metaSkeleton->getDofs());
 
+  // Create a sampleable to provide seeds for IK solver
+  auto currentPosition = metaSkeleton->getPositions();
+  auto currentState = space->createState();
+  space->convertPositionsToState(currentPosition, currentState);
+  auto finiteSampleable = std::make_shared<FiniteSampleable>(
+        space, currentState);
+
+  std::vector<constraint::ConstSampleablePtr> sampleables
+      = {finiteSampleable, createSampleableBounds(space, rng->clone())};
+  auto sampleable = std::make_shared<SequentialSampleable>(space, sampleables);
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       space,
       metaSkeleton,
       tsr,
-      createSampleableBounds(space, rng->clone()),
+      sampleable,
       ik,
       maxNumTrials);
 
