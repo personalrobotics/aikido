@@ -397,18 +397,17 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
     const VectorFieldPlannerParameters& vfParameters,
     const CRRTPlannerParameters& crrtParameters)
 {
-
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
-  statespace::dart::MetaSkeletonStateSpace::State startState;
-  space->getState(metaSkeleton.get(), &startState);
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
 
   auto minDistance = distance - vfParameters.negativeDistanceTolerance;
   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
   auto traj = planner::vectorfield::planToEndEffectorOffset(
-      startState,
+      *startState,
       space,
       metaSkeleton,
       bodyNode,
