@@ -55,7 +55,7 @@ public:
   /// \param _boundsProjection A Projectable that can be used to project a state
   /// back within the valid boundary defined on the space.
   GeometricStateSpace(
-      statespace::StateSpacePtr _sspace,
+      statespace::ConstStateSpacePtr _sspace,
       statespace::InterpolatorPtr _interpolator,
       distance::DistanceMetricPtr _dmetric,
       constraint::SampleablePtr _sampler,
@@ -138,10 +138,10 @@ public:
   void freeState(::ompl::base::State* _state) const override;
 
   /// Return the Aikido StateSpace that this OMPL StateSpace wraps
-  statespace::StateSpacePtr getAikidoStateSpace() const;
+  statespace::ConstStateSpacePtr getAikidoStateSpace() const;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   statespace::InterpolatorPtr mInterpolator;
   distance::DistanceMetricPtr mDistance;
   constraint::SampleablePtr mSampler;

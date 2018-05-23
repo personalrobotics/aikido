@@ -31,7 +31,7 @@ protected:
       const double angle = (2 * M_PI * i) / NUM_TARGETS;
 
       mTargets.emplace_back(mStateSpace->createState());
-      mTargets.back().setAngle(angle);
+      mTargets.back().fromAngle(angle);
     }
   }
 

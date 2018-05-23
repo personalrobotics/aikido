@@ -29,7 +29,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
     std::chrono::duration<double> timelimit,
     double initialStepSize,
     double checkConstraintResolution,
-    planner::PlanningResult* planningResult)
+    planner::Planner::Result* result)
 {
   using namespace std::placeholders;
   using errorStepper = boost::numeric::odeint::
@@ -75,17 +75,17 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
   // integration, which does not indicate that an error has occurred.
   catch (const detail::VectorFieldTerminated& e)
   {
-    if (planningResult)
+    if (result)
     {
-      planningResult->message = e.what();
+      result->setMessage(e.what());
     }
   }
   catch (const detail::VectorFieldError& e)
   {
     dtwarn << e.what() << std::endl;
-    if (planningResult)
+    if (result)
     {
-      planningResult->message = e.what();
+      result->setMessage(e.what());
     }
     return nullptr;
   }
@@ -93,9 +93,9 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
   if (integrator->getCacheIndex() <= 1)
   {
     // no enough waypoints cached to make a trajectory output.
-    if (planningResult)
+    if (result)
     {
-      planningResult->message = "No segment cached.";
+      result->setMessage("No segment cached.");
     }
     return nullptr;
   }
@@ -117,7 +117,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
             lastEvaluationTime,
             true))
     {
-      planningResult->message = "Constraint violated.";
+      result->setMessage("Constraint violated.");
       return nullptr;
     }
   }
@@ -126,10 +126,11 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const dart::dynamics::BodyNodePtr& bn,
-    const aikido::constraint::TestablePtr& constraint,
+    const dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Vector3d& direction,
     double minDistance,
     double maxDistance,
@@ -139,7 +140,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::PlanningResult* planningResult)
+    planner::Planner::Result* result)
 {
   // ensure that no two planners run at the same time
   if (metaskeleton->getNumBodyNodes() == 0)
@@ -151,23 +152,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   // TODO(JS): The above code should be replaced by
   // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
   // once https://github.com/dartsim/dart/pull/1011 is released.
-
-  if (minDistance < 0.)
-  {
-    std::stringstream ss;
-    ss << "Distance must be non-negative; got " << minDistance << ".";
-    throw std::runtime_error(ss.str());
-  }
-
-  if (maxDistance < minDistance)
-  {
-    throw std::runtime_error("Max distance is less than distance.");
-  }
-
-  if (direction.norm() == 0.0)
-  {
-    throw std::runtime_error("Direction vector is a zero vector");
-  }
 
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
@@ -195,16 +179,15 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
 
-  auto startState
-      = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
+  stateSpace->setState(metaskeleton.get(), &startState);
   return followVectorField(
       *vectorfield,
-      *startState,
+      startState,
       *compoundConstraint,
       timelimit,
       initialStepSize,
       constraintCheckResolution,
-      planningResult);
+      result);
 }
 
 //==============================================================================
@@ -220,7 +203,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::PlanningResult* planningResult)
+    planner::Planner::Result* result)
 {
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
@@ -255,7 +238,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
       timelimit,
       initialStepSize,
       constraintCheckResolution,
-      planningResult);
+      result);
 }
 
 } // namespace vectorfield

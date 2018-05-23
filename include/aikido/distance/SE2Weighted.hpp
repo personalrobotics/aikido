@@ -15,7 +15,7 @@ public:
   ///
   /// \param space The SE2 this distance metric operates on
   /// The weights have been set to 1 as default
-  explicit SE2Weighted(std::shared_ptr<statespace::SE2> space);
+  explicit SE2Weighted(std::shared_ptr<const statespace::SE2> space);
 
   /// Constructor.
   ///
@@ -24,10 +24,11 @@ public:
   /// \param space The SE2 this distance metric operates on
   /// \param weights The weights over angular and translational distances
   SE2Weighted(
-      std::shared_ptr<statespace::SE2> space, const Eigen::Vector2d& weights);
+      std::shared_ptr<const statespace::SE2> space,
+      const Eigen::Vector2d& weights);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes weighted distance between two SE2 states.
   ///
@@ -38,7 +39,7 @@ public:
       const statespace::StateSpace::State* state2) const override;
 
 private:
-  std::shared_ptr<statespace::SE2> mStateSpace;
+  std::shared_ptr<const statespace::SE2> mStateSpace;
 
   Eigen::Vector2d mWeights;
 

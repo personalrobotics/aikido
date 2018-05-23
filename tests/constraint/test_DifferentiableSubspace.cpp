@@ -24,7 +24,7 @@ public:
     auto rv = constraint->getStateSpace();
 
     cs = std::make_shared<CartesianProduct>(
-        std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
+        std::vector<aikido::statespace::ConstStateSpacePtr>({so2, rv}));
     ds = std::make_shared<DifferentiableSubspace>(cs, constraint, 1);
   }
 
@@ -45,7 +45,7 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnNullConstraint)
   auto rv = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(rv);
   auto cs = std::make_shared<CartesianProduct>(
-      std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
+      std::vector<aikido::statespace::ConstStateSpacePtr>({so2, rv}));
 
   EXPECT_THROW(DifferentiableSubspace(cs, nullptr, 1), std::invalid_argument);
 }
@@ -56,7 +56,7 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnInvalidIndex)
   auto rv = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(rv);
   auto cs = std::make_shared<CartesianProduct>(
-      std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
+      std::vector<aikido::statespace::ConstStateSpacePtr>({so2, rv}));
 
   EXPECT_THROW(
       DifferentiableSubspace(cs, constraint, 2), std::invalid_argument);
@@ -68,7 +68,7 @@ TEST_F(DifferentiableSubspaceTest, ConstructorThrowsOnMismatchStateSpace)
   auto rv = std::make_shared<R3>();
   auto constraint = std::make_shared<Satisfied>(rv);
   auto cs = std::make_shared<CartesianProduct>(
-      std::vector<aikido::statespace::StateSpacePtr>({so2, rv}));
+      std::vector<aikido::statespace::ConstStateSpacePtr>({so2, rv}));
 
   EXPECT_THROW(
       DifferentiableSubspace(cs, constraint, 0), std::invalid_argument);

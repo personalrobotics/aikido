@@ -16,7 +16,7 @@ class DifferentiableIntersection : public Differentiable
 public:
   DifferentiableIntersection(
       std::vector<DifferentiablePtr> _constraints,
-      statespace::StateSpacePtr _stateSpace);
+      statespace::ConstStateSpacePtr _stateSpace);
 
   // Documentation inherited.
   std::size_t getConstraintDimension() const override;
@@ -34,7 +34,7 @@ public:
   std::vector<ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   void getValueAndJacobian(
@@ -44,7 +44,7 @@ public:
 
 private:
   std::vector<DifferentiablePtr> mConstraints;
-  std::shared_ptr<aikido::statespace::StateSpace> mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 };
 
 } // namespace constraint

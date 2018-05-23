@@ -42,9 +42,9 @@ TEST(Defaults, CreateDistanceMetricFor)
   auto so3metric_c = dynamic_cast<SO3Angular*>(so3metric.get());
   EXPECT_TRUE(so3metric_c != nullptr);
 
-  std::vector<StateSpacePtr> spaces({so2, rv3, so3});
+  std::vector<ConstStateSpacePtr> spaces({so2, rv3, so3});
   auto space = std::make_shared<CartesianProduct>(spaces);
-  auto dmetric = createDistanceMetricFor<CartesianProduct>(space);
+  auto dmetric = createDistanceMetricFor<const CartesianProduct>(space);
   auto cmetric = dynamic_cast<CartesianProductWeighted*>(dmetric.get());
   EXPECT_TRUE(cmetric != nullptr);
 }
@@ -66,7 +66,7 @@ TEST(Defaults, CreateDistanceMetric)
   auto so3metric_c = dynamic_cast<SO3Angular*>(so3metric.get());
   EXPECT_TRUE(so3metric_c != nullptr);
 
-  std::vector<StateSpacePtr> spaces({so2, rv3, so3});
+  std::vector<ConstStateSpacePtr> spaces({so2, rv3, so3});
   auto space = std::make_shared<CartesianProduct>(spaces);
   auto dmetric = createDistanceMetric(space);
   auto cmetric = dynamic_cast<CartesianProductWeighted*>(dmetric.get());

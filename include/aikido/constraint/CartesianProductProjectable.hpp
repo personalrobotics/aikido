@@ -19,11 +19,11 @@ public:
   ///        should match the number of subspaces in _stateSpace.
   ///        i-th constraint applies to i-th subspace.
   CartesianProductProjectable(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+      std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
       std::vector<ProjectablePtr> _constraints);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool project(
@@ -31,7 +31,7 @@ public:
       statespace::StateSpace::State* _out) const override;
 
 private:
-  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
+  std::shared_ptr<const statespace::CartesianProduct> mStateSpace;
   std::vector<ProjectablePtr> mConstraints;
 };
 

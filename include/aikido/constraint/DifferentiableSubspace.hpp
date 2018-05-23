@@ -17,14 +17,14 @@ public:
   /// \param _constraint Constraint being applied.
   /// \param _index Subspace of _stateSpace to apply _constraint.
   DifferentiableSubspace(
-      std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+      std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
       DifferentiablePtr _constraint,
       std::size_t _index);
 
   virtual ~DifferentiableSubspace() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::vector<ConstraintType> getConstraintTypes() const override;
@@ -48,7 +48,7 @@ public:
       Eigen::MatrixXd& _jac) const override;
 
 private:
-  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
+  std::shared_ptr<const statespace::CartesianProduct> mStateSpace;
   DifferentiablePtr mConstraint;
   std::size_t mIndex;
 };

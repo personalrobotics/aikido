@@ -125,7 +125,7 @@ void Spline::evaluate(double _t, statespace::StateSpace::State* _out) const
   const auto tangentVector
       = evaluatePolynomial(targetSegment.mCoefficients, evaluationTime, 0);
 
-  const auto relativeState = mStateSpace->createState();
+  auto relativeState = mStateSpace->createState();
   mStateSpace->expMap(tangentVector, relativeState);
   mStateSpace->compose(_out, relativeState);
 }

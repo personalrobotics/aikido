@@ -18,7 +18,7 @@ GeometricStateSpace::StateType::StateType(statespace::StateSpace::State* _st)
 
 //==============================================================================
 GeometricStateSpace::GeometricStateSpace(
-    statespace::StateSpacePtr _sspace,
+    statespace::ConstStateSpacePtr _sspace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -247,7 +247,7 @@ void GeometricStateSpace::freeState(::ompl::base::State* _state) const
 }
 
 //==============================================================================
-statespace::StateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
+statespace::ConstStateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
 {
   return mStateSpace;
 }

@@ -10,6 +10,16 @@ auto StateSpace::createState() const -> ScopedState
 }
 
 //==============================================================================
+StateSpace::ScopedState StateSpace::cloneState(
+    const StateSpace::State* stateIn) const
+{
+  auto newState = createState();
+  copyState(stateIn, newState);
+
+  return newState;
+}
+
+//==============================================================================
 void StateSpace::compose(State* _state1, const State* _state2) const
 {
   auto tempState = createState();

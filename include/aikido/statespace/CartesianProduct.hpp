@@ -16,15 +16,7 @@ class CartesianProduct : public std::enable_shared_from_this<CartesianProduct>,
                          public virtual StateSpace
 {
 public:
-  /// A tuple of states where the i-th state is from the i-th subspace.
-  class State : public StateSpace::State
-  {
-  protected:
-    State() = default;
-    ~State() = default;
-
-    friend class CartesianProduct;
-  };
+  class State;
 
   using StateHandle = CompoundStateHandle<State>;
   using StateHandleConst = CompoundStateHandle<const State>;
@@ -32,14 +24,19 @@ public:
   using ScopedState = statespace::ScopedState<StateHandle>;
   using ScopedStateConst = statespace::ScopedState<StateHandleConst>;
 
+  using StateSpace::compose;
+
   /// Construct the Cartesian product of a vector of subspaces.
   /// \param _subspaces vector of subspaces
-  explicit CartesianProduct(std::vector<StateSpacePtr> _subspaces);
+  explicit CartesianProduct(std::vector<ConstStateSpacePtr> _subspaces);
 
   /// Helper function to create a \c ScopedState.
   ///
   /// \return new \c ScopedState
   ScopedState createState() const;
+
+  /// Creates an identical clone of \c stateIn.
+  ScopedState cloneState(const StateSpace::State* stateIn) const;
 
   /// Gets number of subspaces.
   ///
@@ -52,7 +49,7 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return subspace at \c _index
   template <class Space = StateSpace>
-  std::shared_ptr<Space> getSubspace(std::size_t _index) const;
+  std::shared_ptr<const Space> getSubspace(std::size_t _index) const;
 
   /// Gets substate of type \c Space::State from a CompoundState by index.
   ///
@@ -152,9 +149,20 @@ public:
   void print(const StateSpace::State* _state, std::ostream& _os) const override;
 
 private:
-  std::vector<StateSpacePtr> mSubspaces;
+  std::vector<ConstStateSpacePtr> mSubspaces;
   std::vector<std::size_t> mOffsets;
   std::size_t mSizeInBytes;
+};
+
+/// A tuple of states where the i-th state is from the i-th subspace.
+class CartesianProduct::State : public StateSpace::State
+{
+protected:
+  friend class CartesianProduct;
+
+  State() = default;
+
+  ~State() = default;
 };
 
 } // namespace statespace
