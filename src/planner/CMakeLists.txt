@@ -3,6 +3,7 @@ set(sources
   ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp
   ConfigurationToTSR.cpp
+  ConfigurationToTSRPlanner.cpp
   ConfigurationToEndEffectorOffset.cpp
   ConfigurationToEndEffectorOffsetPlanner.cpp
   ConfigurationToEndEffectorPose.cpp
@@ -17,6 +18,7 @@ set(sources
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
