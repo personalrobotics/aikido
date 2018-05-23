@@ -13,6 +13,12 @@ set(sources
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  dart/ConfigurationToEndEffectorOffset.cpp
+  dart/ConfigurationToEndEffectorPose.cpp
+  dart/ConfigurationToTSR.cpp
+  dart/ConfigurationToEndEffectorOffsetPlanner.cpp
+  # dart/ConfigurationToEndEffectorPosePlanner.cpp
+  # dart/ConfigurationToTSRPlanner.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
@@ -47,7 +53,6 @@ add_component_dependencies(${PROJECT_NAME} planner
 
 format_add_sources(${sources})
 
-add_subdirectory("dart")        # dart
 add_subdirectory("ompl")        # [constraint], [distance], [statespace], [trajectory], dart, ompl
 add_subdirectory("parabolic")   # [external], [common], [trajectory], [statespace], dart
 add_subdirectory("vectorfield") # [common], [trajectory], [statespace], dart
