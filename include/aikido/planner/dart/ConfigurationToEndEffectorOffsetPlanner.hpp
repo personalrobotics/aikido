@@ -1,13 +1,14 @@
-#ifndef AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
-#define AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
+#ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
+#define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
 
-#include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/SingleProblemPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 /// Base planner class for ConfigurationToEndEffectorOffset planning problem.
 class ConfigurationToEndEffectorOffsetPlanner
@@ -41,12 +42,13 @@ public:
   statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace();
 
 protected:
-  /// Stores stateSpace pointer as aConstMetaSkeletonStateSpacePtr. Prevents
+  /// Stores stateSpace pointer as a ConstMetaSkeletonStateSpacePtr. Prevents
   /// use of an expensive dynamic cast.
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
 };
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
+#endif // AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
