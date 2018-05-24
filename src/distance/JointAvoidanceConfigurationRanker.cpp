@@ -12,8 +12,17 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     ConstMetaSkeletonPtr metaSkeleton)
   : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton)
 {
-  mPositionLowerLimits = mMetaSkeleton->getPositionLowerLimits();
-  mPositionUpperLimits = mMetaSkeleton->getPositionUpperLimits();
+  auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
+  auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
+
+  for (std::size_t i = 0; i < mMetaSkeletonStateSpace->getDimension(); ++i)
+  {
+    if (lowerLimits[i] == -dart::math::constantsd::inf())
+      mUnboundedLowerLimitsIndices.emplace_back(i);
+
+    if (upperLimits[i] == dart::math::constantsd::inf())
+      mUnboundedUpperLimitsIndices.emplace_back(i);
+  }
 }
 
 //==============================================================================
@@ -24,29 +33,25 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
   mMetaSkeletonStateSpace->convertStateToPositions(
       mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
 
-  auto lowerLimitPosition = mPositionLowerLimits;
-  auto upperLimitPosition = mPositionUpperLimits;
+  auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
+  auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
 
-  // TODO (avk): Get the indices once?
-  for (std::size_t i = 0; i < mMetaSkeletonStateSpace->getDimension(); ++i)
-  {
-    if (lowerLimitPosition[i] == -dart::math::constantsd::inf())
-      lowerLimitPosition[i] = solutionPosition[i];
+  for (auto index : mUnboundedLowerLimitsIndices)
+    lowerLimits[index] = solutionPosition[index];
 
-    if (upperLimitPosition[i] == dart::math::constantsd::inf())
-      upperLimitPosition[i] = solutionPosition[i];
-  }
+  for (auto index : mUnboundedUpperLimitsIndices)
+    upperLimits[index] = solutionPosition[index];
 
-  auto lowerLimitState = mMetaSkeletonStateSpace->createState();
+  auto lowerLimitsState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->convertPositionsToState(
-      lowerLimitPosition, lowerLimitState);
+      lowerLimits, lowerLimitsState);
 
-  auto upperLimitState = mMetaSkeletonStateSpace->createState();
+  auto upperLimitsState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->convertPositionsToState(
-      lowerLimitPosition, upperLimitState);
+      upperLimits, upperLimitsState);
 
-  auto distanceFromLower = mDistanceMetric->distance(solution, lowerLimitState);
-  auto distanceFromUpper = mDistanceMetric->distance(solution, upperLimitState);
+  auto distanceFromLower = mDistanceMetric->distance(solution, lowerLimitsState);
+  auto distanceFromUpper = mDistanceMetric->distance(solution, upperLimitsState);
 
   return -std::min(distanceFromLower, distanceFromUpper);
 }

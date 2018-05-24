@@ -18,12 +18,12 @@ public:
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
 
 protected:
+  /// Returns score as distance from position limits.
   double evaluateConfiguration(
       statespace::StateSpace::State* solution) const override;
 
-  // TODO(avk): Maintain indices of unbounded positions instead?
-  Eigen::VectorXd mPositionLowerLimits;
-  Eigen::VectorXd mPositionUpperLimits;
+  std::vector<std::size_t> mUnboundedLowerLimitsIndices;
+  std::vector<std::size_t> mUnboundedUpperLimitsIndices;
 };
 
 } // namespace distance
