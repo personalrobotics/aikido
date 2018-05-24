@@ -1,9 +1,13 @@
 #ifndef AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 #define AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 
-#include <dart/dynamics/dynamics.hpp>
-#include "aikido/statespace/ScopedState.hpp" // TODO: Remove this.
+#include "aikido/distance/DistanceMetric.hpp"
+#include "aikido/distance/CartesianProductWeighted.hpp"
+#include "aikido/distance/defaults.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+
+#include <dart/dynamics/dynamics.hpp>
 
 namespace aikido {
 namespace distance {
@@ -15,11 +19,10 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
-  /// \param[in] ikSolutions List of IK solutions to be ranked.
+  /// \param[in] ikSolutions List of configurations to be ranked.
   ConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      const std::vector<statespace::StateSpace::State*> ikSolutions);
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
 
   /// Destructor
   virtual ~ConfigurationRanker() = default;
@@ -27,13 +30,13 @@ public:
   /// Returns the statespace.
   statespace::ConstStateSpacePtr getStateSpace() const;
 
-  /// Returns the vector of ranked IK solutions.
-  std::vector<std::pair<statespace::StateSpace::State*, double>>&
-  getRankedIKSolutions();
+  /// Returns the vector of ranked configurations.
+  void rankConfigurations(std::vector<statespace::StateSpace::State*>&
+                               configurations);
 
 protected:
-  /// Returns the score of the IK Solution
-  virtual double evaluateIKSolution(
+  /// Returns the score of the configuration
+  virtual double evaluateConfiguration(
       statespace::StateSpace::State* solution) const = 0;
 
   /// Statespace of the skeleton.
@@ -42,8 +45,8 @@ protected:
   /// Metaskeleton of the robot.
   ::dart::dynamics::ConstMetaSkeletonPtr mMetaSkeleton;
 
-  /// Vector to hold IK solutions and corresponding score.
-  std::vector<std::pair<statespace::StateSpace::State*, double>> mIKSolutions;
+  /// Distance Metric in this space
+  distance::DistanceMetricPtr mDistanceMetric;
 };
 
 } // namespace distance

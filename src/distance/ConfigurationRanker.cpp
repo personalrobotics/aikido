@@ -9,8 +9,7 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 //==============================================================================
 ConfigurationRanker::ConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-    ConstMetaSkeletonPtr metaSkeleton,
-    const std::vector<statespace::StateSpace::State*> ikSolutions)
+    ConstMetaSkeletonPtr metaSkeleton)
   : mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(metaSkeleton))
 {
@@ -20,18 +19,10 @@ ConfigurationRanker::ConfigurationRanker(
   if (!mMetaSkeleton)
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
-  if (ikSolutions.empty())
-    throw std::invalid_argument("Vector of IK Solutions is empty.");
-
-  mIKSolutions.resize(ikSolutions.size());
-  mIKSolutions.shrink_to_fit();
-
-  for (std::size_t i = 0; i < ikSolutions.size(); ++i)
-  {
-    auto state = ikSolutions[i];
-    mIKSolutions[i]
-        = std::pair<statespace::StateSpace::State*, double>(state, 0);
-  }
+  mDistanceMetric = createDistanceMetricFor(
+      std::dynamic_pointer_cast<statespace::CartesianProduct>(
+          std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
+              mMetaSkeletonStateSpace)));
 }
 
 //==============================================================================
@@ -41,11 +32,16 @@ statespace::ConstStateSpacePtr ConfigurationRanker::getStateSpace() const
 }
 
 //==============================================================================
-std::vector<std::pair<statespace::StateSpace::State*, double>>&
-ConfigurationRanker::getRankedIKSolutions()
+void ConfigurationRanker::rankConfigurations(
+    std::vector<statespace::StateSpace::State*>& configurations)
 {
-  for (std::size_t i = 0; i < mIKSolutions.size(); ++i)
-    mIKSolutions[i].second = evaluateIKSolution(mIKSolutions[i].first);
+  std::vector<std::pair<statespace::StateSpace::State*, double>>
+      scoredConfigurations(configurations.size());
+  for (std::size_t i = 0; i < configurations.size(); ++i)
+  {
+    scoredConfigurations[i].first = configurations[i];
+    scoredConfigurations[i].second = evaluateConfiguration(configurations[i]);
+  }
 
   struct sortingFunction
   {
@@ -56,8 +52,18 @@ ConfigurationRanker::getRankedIKSolutions()
       return left.second < right.second;
     }
   };
-  std::sort(mIKSolutions.begin(), mIKSolutions.end(), sortingFunction());
-  return mIKSolutions;
+  std::sort(scoredConfigurations.begin(),
+            scoredConfigurations.end(),
+            sortingFunction());
+
+  configurations.clear();
+  std::transform(scoredConfigurations.begin(),
+                 scoredConfigurations.end(),
+                 std::back_inserter(configurations),
+                 [](const std::pair<statespace::StateSpace::State*, int>& item)
+                    {
+                      return item.first;
+                    });
 }
 
 } // namespace distance

@@ -37,8 +37,3 @@ aikido_add_test(test_NominalConfigurationRanker
   test_NominalConfigurationRanker.cpp)
 target_link_libraries(test_NominalConfigurationRanker
   "${PROJECT_NAME}_distance")
-
-aikido_add_test(test_RandomConfigurationRanker
-  test_RandomConfigurationRanker.cpp)
-target_link_libraries(test_RandomConfigurationRanker
-    "${PROJECT_NAME}_distance")

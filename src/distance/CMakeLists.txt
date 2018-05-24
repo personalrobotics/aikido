@@ -4,7 +4,6 @@ set(sources
   defaults.cpp
   JointAvoidanceConfigurationRanker.cpp
   NominalConfigurationRanker.cpp
-  RandomConfigurationRanker.cpp
   RnEuclidean.cpp
   SE2Weighted.cpp
   SO2Angular.cpp
