@@ -42,6 +42,9 @@ public:
   /// Return this planner's MetaSkeletonStateSpace.
   statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace();
 
+  /// Return this planner's MetaSkeleton.
+  ::dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
+
 protected:
   /// Stores stateSpace pointer as a ConstMetaSkeletonStateSpacePtr. Prevents
   /// use of an expensive dynamic cast.

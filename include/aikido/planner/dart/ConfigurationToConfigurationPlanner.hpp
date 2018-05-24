@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 
-#include "aikido/planner/SingleProblemPlanner.hpp"
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/SingleProblemPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -41,6 +41,9 @@ public:
 
   /// Return this planner's MetaSkeletonStateSpace.
   statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace();
+
+  /// Return this planner's MetaSkeleton.
+  ::dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
 protected:
   /// Stores stateSpace pointer as a ConstMetaSkeletonStateSpacePtr. Prevents

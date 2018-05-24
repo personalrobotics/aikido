@@ -24,6 +24,13 @@ ConfigurationToEndEffectorOffsetPlanner::getMetaSkeletonStateSpace()
   return mMetaSkeletonStateSpace;
 }
 
+//==============================================================================
+::dart::dynamics::MetaSkeletonPtr
+ConfigurationToEndEffectorOffsetPlanner::getMetaSkeleton()
+{
+  return mMetaSkeleton;
+}
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido

@@ -23,6 +23,12 @@ ConfigurationToTSRPlanner::getMetaSkeletonStateSpace()
   return mMetaSkeletonStateSpace;
 }
 
+//==============================================================================
+::dart::dynamics::MetaSkeletonPtr ConfigurationToTSRPlanner::getMetaSkeleton()
+{
+  return mMetaSkeleton;
+}
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido

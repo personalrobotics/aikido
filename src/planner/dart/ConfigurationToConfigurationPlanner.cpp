@@ -23,6 +23,13 @@ ConfigurationToConfigurationPlanner::getMetaSkeletonStateSpace()
   return mMetaSkeletonStateSpace;
 }
 
+//==============================================================================
+::dart::dynamics::MetaSkeletonPtr
+ConfigurationToConfigurationPlanner::getMetaSkeleton()
+{
+  return mMetaSkeleton;
+}
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido
