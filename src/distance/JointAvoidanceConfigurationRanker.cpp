@@ -31,7 +31,7 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
   mMetaSkeletonStateSpace->convertStateToPositions(
-      mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
+        mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
 
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
@@ -42,20 +42,11 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
   for (auto index : mUnboundedUpperLimitsIndices)
     upperLimits[index] = solutionPosition[index];
 
-  auto lowerLimitsState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->convertPositionsToState(
-      lowerLimits, lowerLimitsState);
+  auto lowerLimitsState = mMetaSkeletonStateSpace->getStateFromPositions(lowerLimits);
+  auto upperLimitsState = mMetaSkeletonStateSpace->getStateFromPositions(upperLimits);
 
-  auto upperLimitsState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->convertPositionsToState(
-      upperLimits, upperLimitsState);
-
-  auto distanceFromLower
-      = mDistanceMetric->distance(solution, lowerLimitsState);
-  auto distanceFromUpper
-      = mDistanceMetric->distance(solution, upperLimitsState);
-
-  return -std::min(distanceFromLower, distanceFromUpper);
+  return -std::min(mDistanceMetric->distance(solution, lowerLimitsState),
+                   mDistanceMetric->distance(solution, upperLimitsState));
 }
 
 } // namespace distance
