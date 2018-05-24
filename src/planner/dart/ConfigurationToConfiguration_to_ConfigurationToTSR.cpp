@@ -48,14 +48,16 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   ::dart::dynamics::BodyNodePtr endEffectorBodyNode;
   for (std::size_t i = 0; i < mMetaSkeleton->getNumBodyNodes(); ++i)
   {
-    if (mMetaSkeleton->getBodyNode(i)->getName() == problem.getEndEffectorBodyNode()->getName())
+    if (mMetaSkeleton->getBodyNode(i)->getName()
+        == problem.getEndEffectorBodyNode()->getName())
     {
       endEffectorBodyNode = mMetaSkeleton->getBodyNode(i);
       break;
     }
   }
   if (!endEffectorBodyNode)
-    throw std::invalid_argument("End-effector BodyNode not found in Planner's MetaSkeleton.");
+    throw std::invalid_argument(
+        "End-effector BodyNode not found in Planner's MetaSkeleton.");
 
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
@@ -65,7 +67,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       mMetaSkeletonStateSpace,
       mMetaSkeleton,
       std::const_pointer_cast<TSR>(problem.getGoalTSR()),
-      createSampleableBounds(mMetaSkeletonStateSpace, nullptr), // TODO: RNG should be in Planner
+      createSampleableBounds(
+          mMetaSkeletonStateSpace, nullptr), // TODO: RNG should be in Planner
       ik,
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
@@ -76,7 +79,10 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   // Create ConfigurationToConfiguration Problem
   auto goalState = mMetaSkeletonStateSpace->createState();
   auto delegateProblem = ConfigurationToConfiguration(
-      mMetaSkeletonStateSpace, problem.getStartState(), goalState, problem.getConstraint());
+      mMetaSkeletonStateSpace,
+      problem.getStartState(),
+      goalState,
+      problem.getConstraint());
 
   while (generator->canSample())
   {
@@ -88,7 +94,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
         continue;
 
       // Set to start state
-      mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), problem.getStartState());
+      mMetaSkeletonStateSpace->setState(
+          mMetaSkeleton.get(), problem.getStartState());
     }
 
     auto traj = mDelegate->plan(delegateProblem, result);

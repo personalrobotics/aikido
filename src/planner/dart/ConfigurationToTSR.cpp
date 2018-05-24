@@ -50,7 +50,8 @@ std::size_t ConfigurationToTSR::getMaxSamples() const
 }
 
 //==============================================================================
-const statespace::dart::MetaSkeletonStateSpace::State* ConfigurationToTSR::getStartState() const
+const statespace::dart::MetaSkeletonStateSpace::State*
+ConfigurationToTSR::getStartState() const
 {
   return mStartState;
 }
