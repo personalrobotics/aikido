@@ -10,7 +10,7 @@
 
 * Distance
 
-	* Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
+  * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
 
 * State Space
 
