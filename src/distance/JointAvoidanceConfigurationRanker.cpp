@@ -50,8 +50,10 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
   mMetaSkeletonStateSpace->convertPositionsToState(
       upperLimits, upperLimitsState);
 
-  auto distanceFromLower = mDistanceMetric->distance(solution, lowerLimitsState);
-  auto distanceFromUpper = mDistanceMetric->distance(solution, upperLimitsState);
+  auto distanceFromLower
+      = mDistanceMetric->distance(solution, lowerLimitsState);
+  auto distanceFromUpper
+      = mDistanceMetric->distance(solution, upperLimitsState);
 
   return -std::min(distanceFromLower, distanceFromUpper);
 }
