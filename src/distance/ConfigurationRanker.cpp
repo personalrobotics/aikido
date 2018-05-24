@@ -52,18 +52,19 @@ void ConfigurationRanker::rankConfigurations(
       return left.second < right.second;
     }
   };
-  std::sort(scoredConfigurations.begin(),
-            scoredConfigurations.end(),
-            sortingFunction());
+  std::sort(
+      scoredConfigurations.begin(),
+      scoredConfigurations.end(),
+      sortingFunction());
 
   configurations.clear();
-  std::transform(scoredConfigurations.begin(),
-                 scoredConfigurations.end(),
-                 std::back_inserter(configurations),
-                 [](const std::pair<statespace::StateSpace::State*, int>& item)
-                    {
-                      return item.first;
-                    });
+  std::transform(
+      scoredConfigurations.begin(),
+      scoredConfigurations.end(),
+      std::back_inserter(configurations),
+      [](const std::pair<statespace::StateSpace::State*, int>& item) {
+        return item.first;
+      });
 }
 
 } // namespace distance

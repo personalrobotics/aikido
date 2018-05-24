@@ -66,10 +66,12 @@ protected:
 TEST_F(NominalConfigurationRankerTest, Constructor)
 {
   EXPECT_THROW(
-      NominalConfigurationRanker(nullptr, mManipulator, nullptr), std::invalid_argument);
+      NominalConfigurationRanker(nullptr, mManipulator, nullptr),
+      std::invalid_argument);
 
   EXPECT_THROW(
-      NominalConfigurationRanker(mStateSpace, nullptr, nullptr), std::invalid_argument);
+      NominalConfigurationRanker(mStateSpace, nullptr, nullptr),
+      std::invalid_argument);
 
   NominalConfigurationRanker ranker(mStateSpace, mManipulator, nullptr);
   DART_UNUSED(ranker);
@@ -104,19 +106,19 @@ TEST_F(NominalConfigurationRankerTest, OrderTest)
 
   jointPosition << 0.0, 0.0;
   mManipulator->setPositions(jointPosition);
-  NominalConfigurationRanker ranker(mStateSpace,
-                                    mManipulator,
-                                    mStateSpace->getScopedStateFromMetaSkeleton(
-                                      mManipulator.get()));
+  NominalConfigurationRanker ranker(
+      mStateSpace,
+      mManipulator,
+      mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get()));
   ranker.rankConfigurations(states);
 
   Eigen::VectorXd rankedStateOne(2), rankedStateTwo(2), rankedStateThree(2);
   mStateSpace->convertStateToPositions(
-        mStateSpace->cloneState(states[0]), rankedStateOne);
+      mStateSpace->cloneState(states[0]), rankedStateOne);
   mStateSpace->convertStateToPositions(
-        mStateSpace->cloneState(states[1]), rankedStateTwo);
+      mStateSpace->cloneState(states[1]), rankedStateTwo);
   mStateSpace->convertStateToPositions(
-        mStateSpace->cloneState(states[2]), rankedStateThree);
+      mStateSpace->cloneState(states[2]), rankedStateThree);
 
   EXPECT_TRUE(rankedStateOne.isApprox(Eigen::Vector2d(0.1, 0.1)));
   EXPECT_TRUE(rankedStateTwo.isApprox(Eigen::Vector2d(0.2, 0.2)));

@@ -16,7 +16,9 @@ NominalConfigurationRanker::NominalConfigurationRanker(
   , mNominalConfiguration(nominalConfiguration)
 {
   if (!mNominalConfiguration)
-    mNominalConfiguration = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get());
+    mNominalConfiguration
+        = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
+            mMetaSkeleton.get());
 }
 
 //==============================================================================
