@@ -31,8 +31,8 @@ namespace vectorfield {
 bool computeJointVelocityFromTwist(
     Eigen::VectorXd& jointVelocity,
     const Eigen::Vector6d& desiredTwist,
-    const dart::dynamics::MetaSkeletonPtr metaSkeleton,
-    const dart::dynamics::ConstBodyNodePtr bodyNode,
+    const ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    const ::dart::dynamics::ConstBodyNodePtr bodyNode,
     double jointLimitPadding,
     const Eigen::VectorXd& jointVelocityLowerLimits,
     const Eigen::VectorXd& jointVelocityUpperLimits,

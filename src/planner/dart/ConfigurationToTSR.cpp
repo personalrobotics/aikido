@@ -1,14 +1,15 @@
-#include "aikido/planner/ConfigurationToTSR.hpp"
+#include "aikido/planner/dart/ConfigurationToTSR.hpp"
 
 #include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 //==============================================================================
 ConfigurationToTSR::ConfigurationToTSR(
     statespace::ConstStateSpacePtr stateSpace,
-    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
@@ -34,7 +35,7 @@ const std::string& ConfigurationToTSR::getStaticType()
 }
 
 //==============================================================================
-dart::dynamics::ConstBodyNodePtr ConfigurationToTSR::getEndEffectorBodyNode()
+::dart::dynamics::ConstBodyNodePtr ConfigurationToTSR::getEndEffectorBodyNode()
     const
 {
   return mEndEffectorBodyNode;
@@ -52,5 +53,6 @@ constraint::dart::ConstTSRPtr ConfigurationToTSR::getGoalTSR() const
   return mGoalTSR;
 }
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido

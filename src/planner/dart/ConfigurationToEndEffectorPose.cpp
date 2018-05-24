@@ -1,14 +1,15 @@
-#include "aikido/planner/ConfigurationToEndEffectorPose.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorPose.hpp"
 
 #include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 //==============================================================================
 ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     statespace::ConstStateSpacePtr stateSpace,
-    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const statespace::StateSpace::State* startState,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
@@ -34,7 +35,7 @@ const std::string& ConfigurationToEndEffectorPose::getStaticType()
 }
 
 //==============================================================================
-dart::dynamics::ConstBodyNodePtr
+::dart::dynamics::ConstBodyNodePtr
 ConfigurationToEndEffectorPose::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
@@ -53,5 +54,6 @@ const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
   return mGoalPose;
 }
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido

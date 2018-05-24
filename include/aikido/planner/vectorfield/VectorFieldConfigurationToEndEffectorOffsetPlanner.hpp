@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDCONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDCONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
 
-#include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
-#include "aikido/planner/ConfigurationToEndEffectorOffsetPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffsetPlanner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -11,7 +11,7 @@ namespace vectorfield {
 /// Planner that generates a trajectory that moves the end-effector by a given
 /// direction and distance.
 class VectorFieldConfigurationToEndEffectorOffsetPlanner
-    : public ConfigurationToEndEffectorOffsetPlanner
+    : public planner::dart::ConfigurationToEndEffectorOffsetPlanner
 {
 public:
   /// Constructor.
@@ -33,7 +33,7 @@ public:
   /// \param[in] timelimit timeout in seconds.
   VectorFieldConfigurationToEndEffectorOffsetPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      dart::dynamics::MetaSkeletonPtr metaskeleton,
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton,
       double distanceTolerance,
       double positionTolerance,
       double angularTolerance,
@@ -58,7 +58,7 @@ public:
 
 protected:
   /// MetaSkeleton to plan with.
-  dart::dynamics::MetaSkeletonPtr mMetaskeleton;
+  ::dart::dynamics::MetaSkeletonPtr mMetaskeleton;
 
   /// How much a planned trajectory is allowed to deviate from the requested
   /// distance to move the end-effector.
