@@ -16,9 +16,10 @@ set(sources
   dart/ConfigurationToEndEffectorOffset.cpp
   dart/ConfigurationToEndEffectorPose.cpp
   dart/ConfigurationToTSR.cpp
+  dart/ConfigurationToConfigurationPlanner.cpp
   dart/ConfigurationToEndEffectorOffsetPlanner.cpp
   # dart/ConfigurationToEndEffectorPosePlanner.cpp
-  # dart/ConfigurationToTSRPlanner.cpp
+  dart/ConfigurationToTSRPlanner.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})

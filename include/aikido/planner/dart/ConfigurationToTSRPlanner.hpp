@@ -1,8 +1,8 @@
-#ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
-#define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
+#ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOTSRPLANNER_HPP_
+#define AIKIDO_PLANNER_DART_CONFIGURATIONTOTSRPLANNER_HPP_
 
 #include "aikido/planner/SingleProblemPlanner.hpp"
-#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
+#include "aikido/planner/dart/ConfigurationToTSR.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -10,23 +10,22 @@ namespace aikido {
 namespace planner {
 namespace dart {
 
-/// Base planner class for ConfigurationToEndEffectorOffset planning problem.
-class ConfigurationToEndEffectorOffsetPlanner
-    : public SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
-                                  ConfigurationToEndEffectorOffset>
+/// Base planner class for ConfigurationToTSR planning problem.
+class ConfigurationToTSRPlanner
+    : public SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>
 {
 public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in
   // SingleProblemPlanner. Note that plan() of the base class takes Problem
   // while the virtual function defined in this class takes SolvableProblem,
-  // which is simply ConfigurationToEndEffectorOffset.
+  // which is simply ConfigurationToTSR.
   using SingleProblemPlanner::plan;
 
   /// Constructor
   ///
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] metaSkeleton MetaSkeleton to use for planning.
-  ConfigurationToEndEffectorOffsetPlanner(
+  ConfigurationToTSRPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
@@ -55,4 +54,4 @@ protected:
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
+#endif // AIKIDO_PLANNER_DART_CONFIGURATIONTOTSRPLANNER_HPP_
