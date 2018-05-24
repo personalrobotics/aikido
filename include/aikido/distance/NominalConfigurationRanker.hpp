@@ -13,12 +13,14 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
+  /// \param[in] nominalConfiguration Nominal Configuration
   NominalConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       const statespace::StateSpace::State* nominalConfiguration);
 
 protected:
+  /// Returns score as distance from the Nominal Configuration.
   double evaluateConfiguration(
       statespace::StateSpace::State* solution) const override;
 
