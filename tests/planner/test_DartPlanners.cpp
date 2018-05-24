@@ -127,3 +127,17 @@ TEST_F(SnapPlannerTest, DartConfigurationToConfigurationPlanner)
   EXPECT_TRUE(goalValue.isApprox(traj1))
       << "on success final element of trajectory should be goal state.";
 }
+
+//==============================================================================
+TEST_F(SnapPlannerTest, DartConfigurationToTSRPlanner)
+{
+  auto delegate = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      stateSpace, interpolator);
+  auto cfgplanner = std::
+      make_shared<DartPlannerAdapter<SnapConfigurationToConfigurationPlanner,
+                                     DartConfigurationToConfigurationPlanner>>(
+          delegate, skel);
+  auto tsrplanner
+      = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
+          cfgplanner);
+}

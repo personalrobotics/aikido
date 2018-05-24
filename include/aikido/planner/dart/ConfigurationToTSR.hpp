@@ -4,7 +4,7 @@
 #include <dart/dart.hpp>
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/planner/Problem.hpp"
-#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
@@ -27,10 +27,10 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToTSR(
-      statespace::ConstStateSpacePtr stateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       std::size_t maxSamples,
-      const statespace::StateSpace::State* startState,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint);
 
@@ -47,7 +47,7 @@ public:
   std::size_t getMaxSamples() const;
 
   /// Returns the start state.
-  const statespace::StateSpace::State* getStartState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the goal TSR.
   constraint::dart::ConstTSRPtr getGoalTSR() const;
@@ -60,7 +60,7 @@ protected:
   std::size_t mMaxSamples;
 
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
 
   /// Goal TSR.
   const constraint::dart::ConstTSRPtr mGoalTSR;
