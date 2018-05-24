@@ -18,15 +18,17 @@ class ConfigurationToEndEffectorOffsetPlanner
 public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in
   // SingleProblemPlanner. Note that plan() of the base class takes Problem
-  // while the virtual function defined in this class takes SolverbleProblem,
+  // while the virtual function defined in this class takes SolvableProblem,
   // which is simply ConfigurationToEndEffectorOffset.
   using SingleProblemPlanner::plan;
 
   /// Constructor
   ///
   /// \param[in] stateSpace State space that this planner associated with.
+  /// \param[in] metaSkeleton MetaSkeleton to use for planning.
   explicit ConfigurationToEndEffectorOffsetPlanner(
-      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace);
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   /// Solves \c problem returning the result to \c result.
   ///
@@ -45,6 +47,9 @@ protected:
   /// Stores stateSpace pointer as a ConstMetaSkeletonStateSpacePtr. Prevents
   /// use of an expensive dynamic cast.
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+
+  /// MetaSkeleton to use for planning.
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
 } // namespace dart

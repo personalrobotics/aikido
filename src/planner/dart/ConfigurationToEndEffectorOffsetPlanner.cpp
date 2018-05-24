@@ -7,10 +7,12 @@ namespace dart {
 //==============================================================================
 ConfigurationToEndEffectorOffsetPlanner::
     ConfigurationToEndEffectorOffsetPlanner(
-        statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace)
+        statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
   : SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
                          ConfigurationToEndEffectorOffset>(stateSpace)
   , mMetaSkeletonStateSpace(std::move(stateSpace))
+  , mMetaSkeleton(std::move(metaSkeleton))
 {
   // Do nothing
 }
