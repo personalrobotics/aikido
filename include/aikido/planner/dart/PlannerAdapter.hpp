@@ -15,7 +15,7 @@ class PlannerAdapter : public TargetPlanner
 public:
   /// Constructor.
   ///
-  /// \param[in] planner Delegate planner to use internally
+  /// \param[in] planner Delegate planner to use internally.
   explicit PlannerAdapter(std::shared_ptr<DelegatePlanner> planner);
 
   /// Default destructor.

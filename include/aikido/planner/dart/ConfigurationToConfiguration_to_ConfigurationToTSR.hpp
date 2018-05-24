@@ -17,7 +17,7 @@ public:
   ConfigurationToConfiguration_to_ConfigurationToTSR(
       std::shared_ptr<ConfigurationToConfigurationPlanner> planner);
 
-  trajectory::TrajectoryPtr plan(
+  virtual trajectory::TrajectoryPtr plan(
       const ConfigurationToTSR& problem, Planner::Result* result) override;
 };
 
