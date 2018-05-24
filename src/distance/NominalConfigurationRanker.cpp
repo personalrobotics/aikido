@@ -11,25 +11,19 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
-    const std::vector<statespace::StateSpace::State*> ikSolutions)
-  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton, ikSolutions)
+    const statespace::StateSpace::State* nominalConfiguration)
+  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton)
+  , mNominalConfiguration(nominalConfiguration)
 {
-  // Do nothing
+  if (!mNominalConfiguration)
+    mNominalConfiguration = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get());
 }
 
 //==============================================================================
-double NominalConfigurationRanker::evaluateIKSolution(
+double NominalConfigurationRanker::evaluateConfiguration(
     statespace::StateSpace::State* solution) const
 {
-  auto currentState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->convertPositionsToState(
-      mMetaSkeleton->getPositions(), currentState);
-
-  auto dmetric = createDistanceMetricFor(
-      std::dynamic_pointer_cast<statespace::CartesianProduct>(
-          std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-              mMetaSkeletonStateSpace)));
-  return dmetric->distance(solution, currentState);
+  return mDistanceMetric->distance(solution, mNominalConfiguration);
 }
 
 } // namespace distance
