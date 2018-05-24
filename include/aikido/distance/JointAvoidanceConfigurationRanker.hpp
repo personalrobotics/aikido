@@ -1,10 +1,7 @@
 #ifndef AIKIDO_DISTANCE_JOINTAVOIDANCECONFIGURATIONRANKER_HPP_
 #define AIKIDO_DISTANCE_JOINTAVOIDANCECONFIGURATIONRANKER_HPP_
 
-#include "aikido/distance/CartesianProductWeighted.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
-#include "aikido/distance/defaults.hpp"
-#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace distance {
@@ -16,15 +13,17 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
-  /// \param[in] ikSolutions List of IK solutions to be ranked.
   JointAvoidanceConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      const std::vector<statespace::StateSpace::State*> ikSolutions);
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
 
 protected:
-  double evaluateIKSolution(
+  double evaluateConfiguration(
       statespace::StateSpace::State* solution) const override;
+
+  // TODO(avk): Maintain indices of unbounded positions instead?
+  Eigen::VectorXd mPositionLowerLimits;
+  Eigen::VectorXd mPositionUpperLimits;
 };
 
 } // namespace distance

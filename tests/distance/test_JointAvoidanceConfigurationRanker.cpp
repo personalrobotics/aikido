@@ -67,25 +67,19 @@ protected:
 
 TEST_F(JointAvoidanceConfigurationRankerTest, Constructor)
 {
-  auto seedStateOne = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(
-      mManipulator->getPositions(), seedStateOne);
-  std::vector<aikido::statespace::StateSpace::State*> states;
-  states.emplace_back(seedStateOne);
-
   EXPECT_THROW(
-      JointAvoidanceConfigurationRanker(nullptr, mManipulator, states),
+      JointAvoidanceConfigurationRanker(nullptr, mManipulator),
       std::invalid_argument);
 
   EXPECT_THROW(
-      JointAvoidanceConfigurationRanker(mStateSpace, nullptr, states),
+      JointAvoidanceConfigurationRanker(mStateSpace, nullptr),
       std::invalid_argument);
 
   EXPECT_THROW(
-      JointAvoidanceConfigurationRanker(mStateSpace, nullptr, states),
+      JointAvoidanceConfigurationRanker(mStateSpace, nullptr),
       std::invalid_argument);
 
-  JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator, states);
+  JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator);
   DART_UNUSED(ranker);
 }
 
@@ -116,22 +110,18 @@ TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
   states.emplace_back(seedStateTwo);
   states.emplace_back(seedStateThree);
 
-  JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator, states);
-  auto rankedSolutions = ranker.getRankedIKSolutions();
+  JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator);
+  ranker.rankConfigurations(states);
 
   Eigen::VectorXd rankedStateOne(2), rankedStateTwo(2), rankedStateThree(2);
   mStateSpace->convertStateToPositions(
-      mStateSpace->cloneState(rankedSolutions[0].first), rankedStateOne);
+      mStateSpace->cloneState(states[0]), rankedStateOne);
   mStateSpace->convertStateToPositions(
-      mStateSpace->cloneState(rankedSolutions[1].first), rankedStateTwo);
+      mStateSpace->cloneState(states[1]), rankedStateTwo);
   mStateSpace->convertStateToPositions(
-      mStateSpace->cloneState(rankedSolutions[2].first), rankedStateThree);
+      mStateSpace->cloneState(states[2]), rankedStateThree);
 
   EXPECT_TRUE(rankedStateOne.isApprox(Eigen::Vector2d(0.3, 0.1)));
   EXPECT_TRUE(rankedStateTwo.isApprox(Eigen::Vector2d(0.2, 0.1)));
   EXPECT_TRUE(rankedStateThree.isApprox(Eigen::Vector2d(0.1, 0.4)));
-
-  ASSERT_NEAR(rankedSolutions[0].second, -0.3, 1e-5);
-  ASSERT_NEAR(rankedSolutions[1].second, -0.2, 1e-5);
-  ASSERT_NEAR(rankedSolutions[2].second, -0.1, 1e-5);
 }
