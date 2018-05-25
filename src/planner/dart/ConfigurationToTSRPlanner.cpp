@@ -8,25 +8,10 @@ namespace dart {
 ConfigurationToTSRPlanner::ConfigurationToTSRPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>(
-        stateSpace)
-  , mMetaSkeletonStateSpace(std::move(stateSpace))
-  , mMetaSkeleton(std::move(metaSkeleton))
+  : DartSingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>(
+        std::move(stateSpace), std::move(metaSkeleton))
 {
   // Do nothing
-}
-
-//==============================================================================
-statespace::dart::ConstMetaSkeletonStateSpacePtr
-ConfigurationToTSRPlanner::getMetaSkeletonStateSpace()
-{
-  return mMetaSkeletonStateSpace;
-}
-
-//==============================================================================
-::dart::dynamics::MetaSkeletonPtr ConfigurationToTSRPlanner::getMetaSkeleton()
-{
-  return mMetaSkeleton;
 }
 
 } // namespace dart

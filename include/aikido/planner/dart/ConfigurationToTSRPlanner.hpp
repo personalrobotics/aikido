@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOTSRPLANNER_HPP_
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOTSRPLANNER_HPP_
 
-#include "aikido/planner/SingleProblemPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToTSR.hpp"
+#include "aikido/planner/dart/DartSingleProblemPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -12,7 +12,8 @@ namespace dart {
 
 /// Base planner class for ConfigurationToTSR planning problem.
 class ConfigurationToTSRPlanner
-    : public SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>
+    : public DartSingleProblemPlanner<ConfigurationToTSRPlanner,
+                                      ConfigurationToTSR>
 {
 public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in
@@ -37,20 +38,6 @@ public:
       const SolvableProblem& problem, Result* result = nullptr)
       = 0;
   // Note: SolvableProblem is defined in SingleProblemPlanner.
-
-  /// Return this planner's MetaSkeletonStateSpace.
-  statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace();
-
-  /// Return this planner's MetaSkeleton.
-  ::dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
-
-protected:
-  /// Stores stateSpace pointer as a ConstMetaSkeletonStateSpacePtr. Prevents
-  /// use of an expensive dynamic cast.
-  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-
-  /// MetaSkeleton to use for planning.
-  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
 } // namespace dart

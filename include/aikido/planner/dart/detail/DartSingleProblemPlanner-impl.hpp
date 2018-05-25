@@ -10,8 +10,8 @@ namespace dart {
 //==============================================================================
 template <typename Derived, typename ProblemT>
 DartSingleProblemPlanner<Derived, ProblemT>::DartSingleProblemPlanner(
-  statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-  ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
   : SingleProblemPlanner<Derived, ProblemT>(stateSpace)
   , mMetaSkeletonStateSpace(std::move(stateSpace))
   , mMetaSkeleton(std::move(metaSkeleton))
