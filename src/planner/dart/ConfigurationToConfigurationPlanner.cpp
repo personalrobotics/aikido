@@ -8,26 +8,11 @@ namespace dart {
 ConfigurationToConfigurationPlanner::ConfigurationToConfigurationPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : SingleProblemPlanner<ConfigurationToConfigurationPlanner,
-                         ConfigurationToConfiguration>(stateSpace)
-  , mMetaSkeletonStateSpace(std::move(stateSpace))
-  , mMetaSkeleton(std::move(metaSkeleton))
+  : DartSingleProblemPlanner<ConfigurationToConfigurationPlanner,
+                             ConfigurationToConfiguration>(
+        std::move(stateSpace), std::move(metaSkeleton))
 {
   // Do nothing
-}
-
-//==============================================================================
-statespace::dart::ConstMetaSkeletonStateSpacePtr
-ConfigurationToConfigurationPlanner::getMetaSkeletonStateSpace()
-{
-  return mMetaSkeletonStateSpace;
-}
-
-//==============================================================================
-::dart::dynamics::MetaSkeletonPtr
-ConfigurationToConfigurationPlanner::getMetaSkeleton()
-{
-  return mMetaSkeleton;
 }
 
 } // namespace dart
