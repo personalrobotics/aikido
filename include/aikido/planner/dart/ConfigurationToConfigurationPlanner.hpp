@@ -2,7 +2,7 @@
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
-#include "aikido/planner/dart/DartSingleProblemPlanner.hpp"
+#include "aikido/planner/dart/SingleProblemPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -12,8 +12,8 @@ namespace dart {
 
 /// Base planner class for ConfigurationToConfiguration planning problem.
 class ConfigurationToConfigurationPlanner
-    : public DartSingleProblemPlanner<ConfigurationToConfigurationPlanner,
-                                      ConfigurationToConfiguration>
+    : public dart::SingleProblemPlanner<ConfigurationToConfigurationPlanner,
+                                        ConfigurationToConfiguration>
 {
 public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in

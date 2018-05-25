@@ -8,8 +8,8 @@ namespace dart {
 ConfigurationToConfigurationPlanner::ConfigurationToConfigurationPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : DartSingleProblemPlanner<ConfigurationToConfigurationPlanner,
-                             ConfigurationToConfiguration>(
+  : dart::SingleProblemPlanner<ConfigurationToConfigurationPlanner,
+                               ConfigurationToConfiguration>(
         std::move(stateSpace), std::move(metaSkeleton))
 {
   // Do nothing

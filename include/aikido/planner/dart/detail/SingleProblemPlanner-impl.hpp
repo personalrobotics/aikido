@@ -1,7 +1,7 @@
-#ifndef AIKIDO_PLANNER_DETAIL_DARTSINGLEPROBLEMPLANNER_IMPL_HPP_
-#define AIKIDO_PLANNER_DETAIL_DARTSINGLEPROBLEMPLANNER_IMPL_HPP_
+#ifndef AIKIDO_PLANNER_DART_DETAIL_SINGLEPROBLEMPLANNER_IMPL_HPP_
+#define AIKIDO_PLANNER_DART_DETAIL_SINGLEPROBLEMPLANNER_IMPL_HPP_
 
-#include "aikido/planner/dart/DartSingleProblemPlanner.hpp"
+#include "aikido/planner/dart/SingleProblemPlanner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -9,10 +9,10 @@ namespace dart {
 
 //==============================================================================
 template <typename Derived, typename ProblemT>
-DartSingleProblemPlanner<Derived, ProblemT>::DartSingleProblemPlanner(
+SingleProblemPlanner<Derived, ProblemT>::SingleProblemPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : SingleProblemPlanner<Derived, ProblemT>(stateSpace)
+  : planner::SingleProblemPlanner<Derived, ProblemT>(stateSpace)
   , mMetaSkeletonStateSpace(std::move(stateSpace))
   , mMetaSkeleton(std::move(metaSkeleton))
 {
@@ -22,7 +22,7 @@ DartSingleProblemPlanner<Derived, ProblemT>::DartSingleProblemPlanner(
 //==============================================================================
 template <typename Derived, typename ProblemT>
 statespace::dart::ConstMetaSkeletonStateSpacePtr
-DartSingleProblemPlanner<Derived, ProblemT>::getMetaSkeletonStateSpace()
+SingleProblemPlanner<Derived, ProblemT>::getMetaSkeletonStateSpace()
 {
   return mMetaSkeletonStateSpace;
 }
@@ -30,7 +30,7 @@ DartSingleProblemPlanner<Derived, ProblemT>::getMetaSkeletonStateSpace()
 //==============================================================================
 template <typename Derived, typename ProblemT>
 ::dart::dynamics::MetaSkeletonPtr
-DartSingleProblemPlanner<Derived, ProblemT>::getMetaSkeleton()
+SingleProblemPlanner<Derived, ProblemT>::getMetaSkeleton()
 {
   return mMetaSkeleton;
 }
@@ -39,4 +39,4 @@ DartSingleProblemPlanner<Derived, ProblemT>::getMetaSkeleton()
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_DETAIL_DARTSINGLEPROBLEMPLANNER_IMPL_HPP_
+#endif // AIKIDO_PLANNER_DART_DETAIL_SINGLEPROBLEMPLANNER_IMPL_HPP_

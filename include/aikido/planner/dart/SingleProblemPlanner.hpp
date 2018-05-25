@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_DART_DARTSINGLEPROBLEMPLANNER_HPP_
-#define AIKIDO_PLANNER_DART_DARTSINGLEPROBLEMPLANNER_HPP_
+#ifndef AIKIDO_PLANNER_DART_SINGLEPROBLEMPLANNER_HPP_
+#define AIKIDO_PLANNER_DART_SINGLEPROBLEMPLANNER_HPP_
 
 #include "aikido/planner/SingleProblemPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -11,14 +11,14 @@ namespace dart {
 /// Base planner class for all DART single problem planners. Avoids copying
 /// MetaSkeleton related code a bunch of times.
 template <typename Derived, typename ProblemT>
-class DartSingleProblemPlanner : public SingleProblemPlanner<Derived, ProblemT>
+class SingleProblemPlanner : public planner::SingleProblemPlanner<Derived, ProblemT>
 {
 public:
   /// Constructor
   ///
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] metaSkeleton MetaSkeleton to use for planning.
-  DartSingleProblemPlanner(
+  SingleProblemPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
@@ -41,6 +41,6 @@ protected:
 } // namespace planner
 } // namespace aikido
 
-#include "aikido/planner/dart/detail/DartSingleProblemPlanner-impl.hpp"
+#include "aikido/planner/dart/detail/SingleProblemPlanner-impl.hpp"
 
-#endif // AIKIDO_PLANNER_DART_DARTSINGLEPROBLEMPLANNER_HPP_
+#endif // AIKIDO_PLANNER_DART_SINGLEPROBLEMPLANNER_HPP_

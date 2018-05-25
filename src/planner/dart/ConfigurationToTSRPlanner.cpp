@@ -8,7 +8,7 @@ namespace dart {
 ConfigurationToTSRPlanner::ConfigurationToTSRPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : DartSingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>(
+  : dart::SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>(
         std::move(stateSpace), std::move(metaSkeleton))
 {
   // Do nothing
