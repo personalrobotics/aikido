@@ -38,26 +38,19 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
 
   auto skeleton = mMetaSkeleton->getDof(0)->getSkeleton();
-  for (size_t i = 1; i < mMetaSkeleton->getNumDofs(); ++i)
+  for (std::size_t i = 1; i < mMetaSkeleton->getNumDofs(); ++i)
   {
     if (mMetaSkeleton->getDof(i)->getSkeleton() != skeleton)
       throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
   }
 
   // Create an IK solver with MetaSkeleton DOFs
-  ::dart::dynamics::BodyNodePtr endEffectorBodyNode;
-  for (std::size_t i = 0; i < mMetaSkeleton->getNumBodyNodes(); ++i)
-  {
-    if (mMetaSkeleton->getBodyNode(i)->getName()
-        == problem.getEndEffectorBodyNode()->getName())
-    {
-      endEffectorBodyNode = mMetaSkeleton->getBodyNode(i);
-      break;
-    }
-  }
-  if (!endEffectorBodyNode)
+  auto matchingNodes = mMetaSkeleton->getBodyNodes(
+      problem.getEndEffectorBodyNode()->getName());
+  if (matchingNodes.size() == 0)
     throw std::invalid_argument(
         "End-effector BodyNode not found in Planner's MetaSkeleton.");
+  ::dart::dynamics::BodyNodePtr endEffectorBodyNode = matchingNodes.front();
 
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
@@ -73,6 +66,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
 
+  // NOTE: Const-casting should be removed once InverseKinematicsSampleable is
+  // changed to take const constraints!
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 

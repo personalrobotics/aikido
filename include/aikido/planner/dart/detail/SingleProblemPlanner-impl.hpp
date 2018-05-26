@@ -22,7 +22,7 @@ SingleProblemPlanner<Derived, ProblemT>::SingleProblemPlanner(
 //==============================================================================
 template <typename Derived, typename ProblemT>
 statespace::dart::ConstMetaSkeletonStateSpacePtr
-SingleProblemPlanner<Derived, ProblemT>::getMetaSkeletonStateSpace()
+SingleProblemPlanner<Derived, ProblemT>::getMetaSkeletonStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

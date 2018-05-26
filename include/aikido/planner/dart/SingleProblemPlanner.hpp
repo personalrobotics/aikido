@@ -24,7 +24,8 @@ public:
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   /// Return this planner's MetaSkeletonStateSpace.
-  statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace();
+  statespace::dart::ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace()
+      const;
 
   /// Return this planner's MetaSkeleton.
   ::dart::dynamics::MetaSkeletonPtr getMetaSkeleton();

@@ -1,7 +1,5 @@
 #include "aikido/planner/dart/DartPlannerAdapter.hpp"
 
-using aikido::statespace::dart::MetaSkeletonStateSpace;
-
 namespace aikido {
 namespace planner {
 namespace dart {
@@ -12,7 +10,8 @@ DartPlannerAdapter<DelegatePlanner, TargetPlanner>::DartPlannerAdapter(
     std::shared_ptr<DelegatePlanner> planner,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
   : TargetPlanner(
-        std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+        std::dynamic_pointer_cast<const aikido::statespace::dart::
+                                      MetaSkeletonStateSpace>(
             planner->getStateSpace()),
         std::move(metaSkeleton))
   , mDelegate(std::move(planner))
