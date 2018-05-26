@@ -11,7 +11,8 @@ namespace dart {
 /// Base planner class for all DART single problem planners. Avoids copying
 /// MetaSkeleton related code a bunch of times.
 template <typename Derived, typename ProblemT>
-class SingleProblemPlanner : public planner::SingleProblemPlanner<Derived, ProblemT>
+class SingleProblemPlanner
+    : public planner::SingleProblemPlanner<Derived, ProblemT>
 {
 public:
   /// Constructor
