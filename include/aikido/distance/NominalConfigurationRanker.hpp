@@ -13,7 +13,8 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaskeleton Metaskeleton of the robot.
-  /// \param[in] nominalConfiguration Nominal Configuration
+  /// \param[in] nominalConfiguration Nominal Configuration. The current
+  /// configuration is considered if set to nullptr.
   NominalConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
