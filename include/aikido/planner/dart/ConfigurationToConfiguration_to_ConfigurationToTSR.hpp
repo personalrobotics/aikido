@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOCONFIGURATIONTOCONFIGURATIONTOTSR_HPP_
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOCONFIGURATIONTOCONFIGURATIONTOTSR_HPP_
 
-#include "aikido/planner/dart/ConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToTSRPlanner.hpp"
 #include "aikido/planner/dart/PlannerAdapter.hpp"
 
@@ -15,7 +15,8 @@ class ConfigurationToConfiguration_to_ConfigurationToTSR
 {
 public:
   ConfigurationToConfiguration_to_ConfigurationToTSR(
-      std::shared_ptr<ConfigurationToConfigurationPlanner> planner);
+      std::shared_ptr<ConfigurationToConfigurationPlanner> planner,
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   virtual trajectory::TrajectoryPtr plan(
       const ConfigurationToTSR& problem, Planner::Result* result) override;

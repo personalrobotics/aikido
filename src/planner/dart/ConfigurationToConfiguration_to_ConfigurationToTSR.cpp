@@ -19,9 +19,11 @@ namespace dart {
 //==============================================================================
 ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
-        std::shared_ptr<ConfigurationToConfigurationPlanner> planner)
+        std::shared_ptr<ConfigurationToConfigurationPlanner> planner,
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
   : PlannerAdapter<ConfigurationToConfigurationPlanner,
-                   ConfigurationToTSRPlanner>(std::move(planner))
+                   ConfigurationToTSRPlanner>(
+        std::move(planner), std::move(metaSkeleton))
 {
   // Do nothing
 }

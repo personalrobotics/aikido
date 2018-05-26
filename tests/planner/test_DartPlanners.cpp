@@ -6,9 +6,7 @@
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
 #include <aikido/planner/ConfigurationToConfigurationPlanner.hpp>
 #include <aikido/planner/SnapConfigurationToConfigurationPlanner.hpp>
-#include <aikido/planner/dart/ConfigurationToConfigurationPlanner.hpp>
 #include <aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp>
-#include <aikido/planner/dart/DartPlannerAdapter.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
@@ -21,11 +19,7 @@ using aikido::trajectory::Interpolated;
 using aikido::planner::ConfigurationToConfiguration;
 using aikido::planner::SnapConfigurationToConfigurationPlanner;
 
-using aikido::planner::dart::DartPlannerAdapter;
-using ConfigurationToConfigurationPlanner
-    = aikido::planner::ConfigurationToConfigurationPlanner;
-using DartConfigurationToConfigurationPlanner
-    = aikido::planner::dart::ConfigurationToConfigurationPlanner;
+using aikido::planner::ConfigurationToConfigurationPlanner;
 using aikido::planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR;
 
 //==============================================================================
@@ -94,50 +88,11 @@ public:
 };
 
 //==============================================================================
-TEST_F(SnapPlannerTest, DartConfigurationToConfigurationPlanner)
-{
-  auto problem = ConfigurationToConfiguration(
-      stateSpace, *startState, *goalState, passingConstraint);
-  auto delegate = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      stateSpace, interpolator);
-  auto planner = std::
-      make_shared<DartPlannerAdapter<SnapConfigurationToConfigurationPlanner,
-                                     DartConfigurationToConfigurationPlanner>>(
-          delegate, skel);
-  auto traj = planner->plan(problem, &planningResult);
-
-  if (auto interpolated = std::dynamic_pointer_cast<Interpolated>(traj))
-  {
-    EXPECT_EQ(2, interpolated->getNumWaypoints());
-  }
-
-  auto startValue = startState->getSubStateHandle<SO2>(0).toRotation();
-
-  auto tmpState = stateSpace->createState();
-  traj->evaluate(0, tmpState);
-  auto traj0 = stateSpace->getSubStateHandle<SO2>(tmpState, 0).toRotation();
-
-  EXPECT_TRUE(startValue.isApprox(traj0));
-
-  auto goalValue = goalState->getSubStateHandle<SO2>(0).toRotation();
-
-  traj->evaluate(traj->getDuration(), tmpState);
-  auto traj1 = stateSpace->getSubStateHandle<SO2>(tmpState, 0).toRotation();
-
-  EXPECT_TRUE(goalValue.isApprox(traj1))
-      << "on success final element of trajectory should be goal state.";
-}
-
-//==============================================================================
 TEST_F(SnapPlannerTest, DartConfigurationToTSRPlanner)
 {
   auto delegate = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       stateSpace, interpolator);
-  auto cfgplanner = std::
-      make_shared<DartPlannerAdapter<SnapConfigurationToConfigurationPlanner,
-                                     DartConfigurationToConfigurationPlanner>>(
-          delegate, skel);
-  auto tsrplanner
+  auto planner
       = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
-          cfgplanner);
+          delegate, skel);
 }
