@@ -10,6 +10,7 @@ using constraint::dart::CollisionFreePtr;
 using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using constraint::ConstTestablePtr;
+using planner::TrajectoryPostProcessor;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
 using statespace::dart::MetaSkeletonStateSpace;
@@ -289,6 +290,18 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
   }
 
   return std::make_shared<TestableIntersection>(space, constraints);
+}
+
+//==============================================================================
+std::shared_ptr<TrajectoryPostProcessor>
+ConcreteRobot::getTrajectoryPostProcessor(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const
+{
+  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
+  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
+
+  return std::make_shared<ParabolicSmoother>(
+      velocityLimits, accelerationLimits);
 }
 
 //==============================================================================
