@@ -102,6 +102,13 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
 
+  // Get a TrajectoryPostProcessor that respects velocity and acceleration
+  // limits.
+  /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const;
+
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
   /// initial configuration after planning.
