@@ -2,6 +2,7 @@
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/geometric/PathGeometric.h>
+#include <dart/math/Constants.hpp>
 
 #include "aikido/common/Spline.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
@@ -90,8 +91,16 @@ public:
   ::ompl::base::RealVectorBounds bounds(skeleton->getNumDofs() * 2);
   for (std::size_t i = 0; i < skeleton->getNumDofs(); i++)
   {
-    bounds.setHigh(i, skeleton->getPositionUpperLimit(i));
-    bounds.setLow(i, skeleton->getPositionLowerLimit(i));
+    double posUpperLimit = skeleton->getPositionUpperLimit(i);
+    double posLowerLimit = skeleton->getPositionLowerLimit(i);
+    if ( posUpperLimit == dart::math::constantsd::inf() 
+         && posLowerLimit == -dart::math::constantsd::inf() )
+    {
+      posUpperLimit = dart::math::constantsd::pi()*2;
+      posLowerLimit = -dart::math::constantsd::pi()*2;
+    } 
+    bounds.setHigh(i, posUpperLimit);
+    bounds.setLow(i, posLowerLimit);
 
     bounds.setHigh(
         skeleton->getNumDofs() + i, skeleton->getVelocityUpperLimit(i));
@@ -283,8 +292,8 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     double absLowerVel = std::abs(metaSkeleton->getVelocityLowerLimit(i));
     maxVelocities[i] = absUpperVel > absLowerVel ? absLowerVel : absUpperVel;
 
-    double absUpperAccl = std::abs(metaSkeleton->getAccelerationUpperLimit(i));
-    double absLowerAccl = std::abs(metaSkeleton->getAccelerationLowerLimit(i));
+    double absUpperAccl = std::abs(metaSkeleton->getAccelerationUpperLimit(i))/4;
+    double absLowerAccl = std::abs(metaSkeleton->getAccelerationLowerLimit(i))/4;
     maxAccelerations[i]
         = absUpperAccl > absLowerAccl ? absLowerAccl : absUpperAccl;
   }
