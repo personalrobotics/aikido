@@ -1,13 +1,20 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/constraint/FiniteSampleable.hpp"
+#include "aikido/constraint/SequentialSampleable.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+#include "aikido/distance/NominalConfigurationRanker.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
+using aikido::constraint::FiniteSampleable;
+using aikido::constraint::SequentialSampleable;
 using aikido::constraint::dart::InverseKinematicsSampleable;
 using aikido::constraint::dart::TSR;
 using aikido::constraint::dart::createSampleableBounds;
+using aikido::distance::NominalConfigurationRanker;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using ::dart::dynamics::InverseKinematics;
@@ -57,13 +64,19 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
 
+  // Create a sequential sampleable to provide seeds for IK solver
+  auto space = std::const_pointer_cast<MetaSkeletonStateSpace>(mMetaSkeletonStateSpace);
+  std::vector<constraint::ConstSampleablePtr> sampleables
+      = {std::make_shared<FiniteSampleable>(space, problem.getStartState()),
+         createSampleableBounds(mMetaSkeletonStateSpace, nullptr)}; // TODO: RNG -> Planner
+  auto sampleable = std::make_shared<SequentialSampleable>(space, sampleables);
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       mMetaSkeletonStateSpace,
       mMetaSkeleton,
       std::const_pointer_cast<TSR>(problem.getGoalTSR()),
-      createSampleableBounds(
-          mMetaSkeletonStateSpace, nullptr), // TODO: RNG should be in Planner
+      sampleable,
       ik,
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
@@ -73,6 +86,19 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
+  auto sampleState = mMetaSkeletonStateSpace->createState();
+  std::vector<statespace::StateSpace::State*> configurations;
+  NominalConfigurationRanker ranker(mMetaSkeletonStateSpace, mMetaSkeleton, problem.getStartState());
+  while (generator->canSample())
+  {
+    std::lock_guard<std::mutex> lock(skeleton->getMutex());
+    bool sampled = generator->sample(sampleState);
+    if (!sampled)
+      continue;
+    configurations.emplace_back(sampleState);
+  }
+  ranker.rankConfigurations(configurations);
+
   // Create ConfigurationToConfiguration Problem
   auto goalState = mMetaSkeletonStateSpace->createState();
   auto delegateProblem = ConfigurationToConfiguration(
@@ -81,20 +107,11 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       goalState,
       problem.getConstraint());
 
-  while (generator->canSample())
+  // Set to start state
+  for (auto configuration : configurations)
   {
-    // Sample from TSR
-    {
-      std::lock_guard<std::mutex> lock(skeleton->getMutex());
-      bool sampled = generator->sample(goalState);
-      if (!sampled)
-        continue;
-
-      // Set to start state
-      mMetaSkeletonStateSpace->setState(
-          mMetaSkeleton.get(), problem.getStartState());
-    }
-
+    mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), problem.getStartState());
+    mMetaSkeletonStateSpace->copyState(configuration, goalState);
     auto traj = mDelegate->plan(delegateProblem, result);
     if (traj)
       return traj;
