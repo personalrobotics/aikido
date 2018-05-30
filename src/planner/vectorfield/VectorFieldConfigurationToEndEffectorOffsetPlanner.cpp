@@ -10,7 +10,7 @@ namespace vectorfield {
 VectorFieldConfigurationToEndEffectorOffsetPlanner::
     VectorFieldConfigurationToEndEffectorOffsetPlanner(
         statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-        dart::dynamics::MetaSkeletonPtr metaskeleton,
+        ::dart::dynamics::MetaSkeletonPtr metaskeleton,
         double distanceTolerance,
         double positionTolerance,
         double angularTolerance,

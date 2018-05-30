@@ -37,8 +37,8 @@ public:
   BodyNodePoseVectorField(
       aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr
           metaSkeletonStateSpace,
-      dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      dart::dynamics::ConstBodyNodePtr bodyNode,
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      ::dart::dynamics::ConstBodyNodePtr bodyNode,
       double maxStepSize,
       double jointLimitPadding,
       bool enforceJointVelocityLimits = false);
@@ -80,13 +80,13 @@ public:
   getMetaSkeletonStateSpace() const;
 
   /// Returns meta skeleton.
-  dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
+  ::dart::dynamics::MetaSkeletonPtr getMetaSkeleton();
 
   /// Returns const meta skeleton.
-  dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const;
+  ::dart::dynamics::ConstMetaSkeletonPtr getMetaSkeleton() const;
 
   /// Returns const body node of end-effector.
-  dart::dynamics::ConstBodyNodePtr getBodyNode() const;
+  ::dart::dynamics::ConstBodyNodePtr getBodyNode() const;
 
 protected:
   /// Meta skeleton state space.
@@ -94,10 +94,10 @@ protected:
       mMetaSkeletonStateSpace;
 
   /// Meta Skeleton
-  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   /// BodyNode
-  dart::dynamics::ConstBodyNodePtr mBodyNode;
+  ::dart::dynamics::ConstBodyNodePtr mBodyNode;
 
   /// Maximum step size of integrator.
   double mMaxStepSize;

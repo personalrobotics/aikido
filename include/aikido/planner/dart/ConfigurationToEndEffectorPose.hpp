@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
-#define AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
+#ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
+#define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
 
 #include <dart/dart.hpp>
 #include "aikido/planner/Problem.hpp"
@@ -8,6 +8,7 @@
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 /// Planning problem to plan to a desired end-effector pose.
 class ConfigurationToEndEffectorPose : public Problem
@@ -24,7 +25,7 @@ public:
   /// space.
   ConfigurationToEndEffectorPose(
       statespace::ConstStateSpacePtr stateSpace,
-      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::StateSpace::State* startState,
       const Eigen::Isometry3d& goalPose,
       constraint::ConstTestablePtr constraint);
@@ -36,7 +37,7 @@ public:
   static const std::string& getStaticType();
 
   /// Returns the end-effector BodyNode to be planned to move to a desired pose.
-  dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
+  ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Returns the start state.
   const statespace::StateSpace::State* getStartState() const;
@@ -49,7 +50,7 @@ protected:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// End-effector body node.
-  const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+  const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::StateSpace::State* mStartState;
@@ -58,7 +59,8 @@ protected:
   const Eigen::Isometry3d mGoalPose;
 };
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
+#endif // AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_

@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
-#define AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
+#ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
+#define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
 
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
@@ -9,6 +9,7 @@
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 /// Planning problem to plan to desired end-effector offset while maintaining
 /// the current end-effector orientation.
@@ -30,7 +31,7 @@ public:
   /// \throw If the size of \c direction is zero.
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const Eigen::Vector3d& direction,
       double signedDistance,
@@ -44,7 +45,7 @@ public:
 
   /// Returns the end-effector BodyNode to be planned to move a desired offest
   /// while maintaining the current orientation.
-  dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
+  ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Returns the start state.
   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
@@ -59,7 +60,7 @@ public:
 
 protected:
   /// End-effector body node.
-  const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+  const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
   const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
@@ -71,7 +72,8 @@ protected:
   const double mDistance;
 };
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
+#endif // AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_

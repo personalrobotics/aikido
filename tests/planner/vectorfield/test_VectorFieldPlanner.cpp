@@ -1,7 +1,7 @@
 ﻿#include <gtest/gtest.h>
 #include <tuple>
 #include <dart/dart.hpp>
-#include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
@@ -315,7 +315,7 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 {
-  using aikido::planner::ConfigurationToEndEffectorOffset;
+  using aikido::planner::dart::ConfigurationToEndEffectorOffset;
   using aikido::planner::vectorfield::
       VectorFieldConfigurationToEndEffectorOffsetPlanner;
 
@@ -420,7 +420,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
 TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 {
-  using aikido::planner::ConfigurationToEndEffectorOffset;
+  using aikido::planner::dart::ConfigurationToEndEffectorOffset;
   using aikido::planner::vectorfield::
       VectorFieldConfigurationToEndEffectorOffsetPlanner;
 

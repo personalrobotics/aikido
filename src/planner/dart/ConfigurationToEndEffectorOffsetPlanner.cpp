@@ -1,7 +1,8 @@
-#include "aikido/planner/ConfigurationToEndEffectorOffsetPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffsetPlanner.hpp"
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 //==============================================================================
 ConfigurationToEndEffectorOffsetPlanner::
@@ -21,5 +22,6 @@ ConfigurationToEndEffectorOffsetPlanner::getMetaSkeletonStateSpace()
   return mMetaSkeletonStateSpace;
 }
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido
