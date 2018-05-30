@@ -345,6 +345,16 @@ void MetaSkeletonStateSpace::convertStateToPositions(
 }
 
 //==============================================================================
+auto MetaSkeletonStateSpace::getStateFromPositions(
+    Eigen::VectorXd& positions) const -> ScopedState
+{
+  auto scopedState = createState();
+  convertPositionsToState(positions, scopedState);
+
+  return scopedState;
+}
+
+//==============================================================================
 void MetaSkeletonStateSpace::getState(
     const ::dart::dynamics::MetaSkeleton* _metaskeleton, State* _state) const
 {
