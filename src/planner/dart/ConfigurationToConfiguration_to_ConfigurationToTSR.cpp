@@ -49,7 +49,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   // Create an IK solver with MetaSkeleton DOFs
   auto matchingNodes = mMetaSkeleton->getBodyNodes(
       problem.getEndEffectorBodyNode()->getName());
-  if (matchingNodes.size() == 0)
+  if (matchingNodes.empty())
     throw std::invalid_argument(
         "End-effector BodyNode not found in Planner's MetaSkeleton.");
   ::dart::dynamics::BodyNodePtr endEffectorBodyNode = matchingNodes.front();
