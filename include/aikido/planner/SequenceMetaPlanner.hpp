@@ -11,6 +11,8 @@ namespace planner {
 class SequenceMetaPlanner : public CompositePlanner
 {
 public:
+  using CompositePlanner::CompositePlanner;
+
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr) override;

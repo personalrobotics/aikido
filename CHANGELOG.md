@@ -36,6 +36,7 @@
 
 * Planner
 
+  * Make all DART planners take MetaSkeleton, and add adapter for turning planners into DART planners: [#437](https://github.com/personalrobotics/aikido/pull/437)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
   * Refactored planning API: [#314](https://github.com/personalrobotics/aikido/pull/314), [#414](https://github.com/personalrobotics/aikido/pull/414), [#426](https://github.com/personalrobotics/aikido/pull/426), [#432](https://github.com/personalrobotics/aikido/pull/432)
