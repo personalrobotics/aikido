@@ -65,10 +65,12 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   ik->setDofs(mMetaSkeleton->getDofs());
 
   // Create a sequential sampleable to provide seeds for IK solver
-  auto space = std::const_pointer_cast<MetaSkeletonStateSpace>(mMetaSkeletonStateSpace);
+  auto space = std::const_pointer_cast<MetaSkeletonStateSpace>(
+      mMetaSkeletonStateSpace);
   std::vector<constraint::ConstSampleablePtr> sampleables
       = {std::make_shared<FiniteSampleable>(space, problem.getStartState()),
-         createSampleableBounds(mMetaSkeletonStateSpace, nullptr)}; // TODO: RNG -> Planner
+         createSampleableBounds(
+             mMetaSkeletonStateSpace, nullptr)}; // TODO: RNG -> Planner
   auto sampleable = std::make_shared<SequentialSampleable>(space, sampleables);
 
   // Convert TSR constraint into IK constraint
@@ -88,7 +90,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
   auto sampleState = mMetaSkeletonStateSpace->createState();
   std::vector<statespace::StateSpace::State*> configurations;
-  NominalConfigurationRanker ranker(mMetaSkeletonStateSpace, mMetaSkeleton, problem.getStartState());
+  NominalConfigurationRanker ranker(
+      mMetaSkeletonStateSpace, mMetaSkeleton, problem.getStartState());
   while (generator->canSample())
   {
     std::lock_guard<std::mutex> lock(skeleton->getMutex());
@@ -110,7 +113,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   // Set to start state
   for (auto configuration : configurations)
   {
-    mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), problem.getStartState());
+    mMetaSkeletonStateSpace->setState(
+        mMetaSkeleton.get(), problem.getStartState());
     mMetaSkeletonStateSpace->copyState(configuration, goalState);
     auto traj = mDelegate->plan(delegateProblem, result);
     if (traj)

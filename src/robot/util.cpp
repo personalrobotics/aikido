@@ -6,16 +6,16 @@
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
-#include "aikido/constraint/SequentialSampleable.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
+#include "aikido/constraint/SequentialSampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
 #include "aikido/constraint/dart/FrameTestable.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
-#include "aikido/distance/defaults.hpp"
 #include "aikido/distance/NominalConfigurationRanker.hpp"
+#include "aikido/distance/defaults.hpp"
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/CRRTConnect.hpp"
@@ -208,12 +208,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
-      space,
-      metaSkeleton,
-      tsr,
-      sampleable,
-      ik,
-      maxNumTrials);
+      space, metaSkeleton, tsr, sampleable, ik, maxNumTrials);
 
   auto generator = ikSampleable.createSampleGenerator();
 
