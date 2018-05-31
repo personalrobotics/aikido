@@ -17,7 +17,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   : Problem(stateSpace, std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mStartState(std::move(stateSpace->cloneState(startState)))
-  , mDirection(direction.normalized())
+  , mDirection(direction)
   , mDistance(signedDistance)
 {
   // Do nothing.
@@ -61,7 +61,7 @@ const Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
         .normalized();
   }
 
-  return mDirection;
+  return mDirection.normalized();
 }
 
 //==============================================================================
