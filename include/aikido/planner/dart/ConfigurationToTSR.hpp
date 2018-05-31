@@ -4,7 +4,7 @@
 #include <dart/dart.hpp>
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/planner/Problem.hpp"
-#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
@@ -20,15 +20,17 @@ public:
   /// \param[in] stateSpace State space.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
+  /// \param[in] maxSamples Maximum number of TSR samples to plan to.
   /// \param[in] startState Start state.
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToTSR(
-      statespace::ConstStateSpacePtr stateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const statespace::StateSpace::State* startState,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
+      std::size_t maxSamples,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint);
 
@@ -41,8 +43,11 @@ public:
   /// Returns the end-effector BodyNode to be planned to move to a desired TSR.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
+  /// Returns the maximum number of TSR samples to plan to.
+  std::size_t getMaxSamples() const;
+
   /// Returns the start state.
-  const statespace::StateSpace::State* getStartState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the goal TSR.
   constraint::dart::ConstTSRPtr getGoalTSR() const;
@@ -51,10 +56,13 @@ protected:
   /// End-effector body node.
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
-  /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  /// Maximum number of TSR samples to plan to.
+  std::size_t mMaxSamples;
 
-  /// Goal TSR
+  /// Start state.
+  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
+
+  /// Goal TSR.
   const constraint::dart::ConstTSRPtr mGoalTSR;
 };
 

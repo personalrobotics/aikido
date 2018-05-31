@@ -10,7 +10,7 @@ namespace vectorfield {
 VectorFieldConfigurationToEndEffectorOffsetPlanner::
     VectorFieldConfigurationToEndEffectorOffsetPlanner(
         statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-        ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
         double distanceTolerance,
         double positionTolerance,
         double angularTolerance,
@@ -18,8 +18,8 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::
         double jointLimitTolerance,
         double constraintCheckResolution,
         std::chrono::duration<double> timelimit)
-  : ConfigurationToEndEffectorOffsetPlanner(std::move(stateSpace))
-  , mMetaskeleton(std::move(metaskeleton))
+  : ConfigurationToEndEffectorOffsetPlanner(
+        std::move(stateSpace), std::move(metaSkeleton))
   , mDistanceTolerance(distanceTolerance)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
@@ -68,7 +68,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   return planToEndEffectorOffset(
       *problem.getStartState(),
       getMetaSkeletonStateSpace(),
-      mMetaskeleton,
+      mMetaSkeleton,
       problem.getEndEffectorBodyNode(),
       problem.getConstraint(),
       direction,

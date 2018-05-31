@@ -3,7 +3,7 @@
 
 #include <dart/dart.hpp>
 #include "aikido/planner/Problem.hpp"
-#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
@@ -24,9 +24,9 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorPose(
-      statespace::ConstStateSpacePtr stateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const statespace::StateSpace::State* startState,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const Eigen::Isometry3d& goalPose,
       constraint::ConstTestablePtr constraint);
 
@@ -40,7 +40,7 @@ public:
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Returns the start state.
-  const statespace::StateSpace::State* getStartState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
@@ -53,7 +53,7 @@ protected:
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
 
   /// Goal pose.
   const Eigen::Isometry3d mGoalPose;
