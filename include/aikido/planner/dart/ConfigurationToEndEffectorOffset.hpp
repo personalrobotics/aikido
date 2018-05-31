@@ -53,7 +53,7 @@ public:
   /// Returns the direction of motion specified in the world frame.
   ///
   /// \note The direction is allowed to be zero vector.
-  const Eigen::Vector3d& getDirection() const;
+  const Eigen::Vector3d getDirection() const;
 
   /// Returns the signed distance in meters to move in the specified direction.
   double getDistance() const;

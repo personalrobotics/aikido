@@ -20,8 +20,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   , mDirection(direction.normalized())
   , mDistance(signedDistance)
 {
-  if (direction.squaredNorm() == 0)
-    throw std::invalid_argument("direction shouldn't be a zero vector.");
+  // Do nothing.
 }
 
 //==============================================================================
@@ -52,8 +51,16 @@ ConfigurationToEndEffectorOffset::getStartState() const
 }
 
 //==============================================================================
-const Eigen::Vector3d& ConfigurationToEndEffectorOffset::getDirection() const
+const Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
 {
+  if (mDirection.squaredNorm() == 0)
+  {
+    return mEndEffectorBodyNode->getWorldTransform()
+        .linear()
+        .col(2)
+        .normalized();
+  }
+
   return mDirection;
 }
 
