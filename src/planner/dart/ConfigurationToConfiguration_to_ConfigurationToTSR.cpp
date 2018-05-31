@@ -73,14 +73,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
-  // Create ConfigurationToConfiguration Problem
   auto goalState = mMetaSkeletonStateSpace->createState();
-  auto delegateProblem = ConfigurationToConfiguration(
-      mMetaSkeletonStateSpace,
-      problem.getStartState(),
-      goalState,
-      problem.getConstraint());
-
   while (generator->canSample())
   {
     // Sample from TSR
@@ -94,6 +87,15 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       mMetaSkeletonStateSpace->setState(
           mMetaSkeleton.get(), problem.getStartState());
     }
+
+    // Create ConfigurationToConfiguration Problem.
+    // NOTE: This is done here because the ConfigurationToConfiguration
+    // problem stores a *cloned* scoped state of the passed state.
+    auto delegateProblem = ConfigurationToConfiguration(
+        mMetaSkeletonStateSpace,
+        problem.getStartState(),
+        goalState,
+        problem.getConstraint());
 
     auto traj = mDelegate->plan(delegateProblem, result);
     if (traj)
