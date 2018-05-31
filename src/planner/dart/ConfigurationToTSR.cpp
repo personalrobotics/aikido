@@ -14,10 +14,10 @@ ConfigurationToTSR::ConfigurationToTSR(
     std::size_t maxSamples,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
-  : Problem(std::move(stateSpace), std::move(constraint))
+  : Problem(stateSpace, std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mMaxSamples(maxSamples)
-  , mStartState(startState)
+  , mStartState(std::move(stateSpace->cloneState(startState)))
   , mGoalTSR(goalTSR)
 {
   // Do nothing

@@ -63,7 +63,7 @@ protected:
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
-  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
+  statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
 
   /// Direction of motion.
   const Eigen::Vector3d mDirection;
