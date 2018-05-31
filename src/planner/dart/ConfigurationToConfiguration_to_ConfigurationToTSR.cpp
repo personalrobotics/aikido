@@ -5,12 +5,19 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
+#include <aikido/common/RNG.hpp>
+
 using aikido::constraint::dart::InverseKinematicsSampleable;
 using aikido::constraint::dart::TSR;
 using aikido::constraint::dart::createSampleableBounds;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
+using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::InverseKinematics;
+using ::dart::dynamics::ConstBodyNodePtr;
+using ::dart::dynamics::BodyNodePtr;
+
+using aikido::common::cloneRNGFrom;
 
 namespace aikido {
 namespace planner {
@@ -47,12 +54,22 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   }
 
   // Create an IK solver with MetaSkeleton DOFs
-  auto matchingNodes = mMetaSkeleton->getBodyNodes(
-      problem.getEndEffectorBodyNode()->getName());
-  if (matchingNodes.empty())
-    throw std::invalid_argument(
-        "End-effector BodyNode not found in Planner's MetaSkeleton.");
-  ::dart::dynamics::BodyNodePtr endEffectorBodyNode = matchingNodes.front();
+  // TODO: Figure this wierd case with HERB out.
+  aikido::common::RNGWrapper<std::mt19937> _rng
+      = aikido::common::RNGWrapper<std::mt19937>(0);
+
+  std::cout << "EE Node name IS: "
+            << problem.getEndEffectorBodyNode()->getName() << std::endl;
+  auto nonConstPtr
+      = const_cast<BodyNode*>(problem.getEndEffectorBodyNode().get());
+  BodyNodePtr endEffectorBodyNode(nonConstPtr);
+
+  // auto matchingNodes = mMetaSkeleton->getBodyNodes(
+  //     problem.getEndEffectorBodyNode()->getName());
+  // if (matchingNodes.empty())
+  //   throw std::invalid_argument(
+  //       "End-effector BodyNode not found in Planner's MetaSkeleton.");
+  // ::dart::dynamics::BodyNodePtr endEffectorBodyNode = matchingNodes.front();
 
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
@@ -63,7 +80,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       mMetaSkeleton,
       std::const_pointer_cast<TSR>(problem.getGoalTSR()),
       createSampleableBounds(
-          mMetaSkeletonStateSpace, nullptr), // TODO: RNG should be in Planner
+          mMetaSkeletonStateSpace,
+          std::move(cloneRNGFrom(_rng)[0])), // TODO: RNG should be in Planner
       ik,
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
