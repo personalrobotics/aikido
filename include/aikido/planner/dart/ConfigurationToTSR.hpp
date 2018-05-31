@@ -60,7 +60,7 @@ protected:
   std::size_t mMaxSamples;
 
   /// Start state.
-  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
+  statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
 
   /// Goal TSR.
   const constraint::dart::ConstTSRPtr mGoalTSR;
