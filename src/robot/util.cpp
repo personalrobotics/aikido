@@ -7,6 +7,7 @@
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
+#include "aikido/constraint/SequentialSampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
@@ -14,6 +15,7 @@
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/distance/defaults.hpp"
+#include "aikido/distance/NominalConfigurationRanker.hpp"
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/CRRTConnect.hpp"
@@ -30,6 +32,8 @@ namespace aikido {
 namespace robot {
 namespace util {
 
+using constraint::FiniteSampleable;
+using constraint::SequentialSampleable;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::InverseKinematicsSampleable;
 using constraint::dart::TSR;
@@ -39,6 +43,7 @@ using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
 using distance::createDistanceMetric;
+using distance::NominalConfigurationRanker;
 using statespace::GeodesicInterpolator;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
@@ -194,12 +199,23 @@ trajectory::TrajectoryPtr planToTSR(
 
   ik->setDofs(metaSkeleton->getDofs());
 
+  // Create a sequential sampleable to provide seeds for IK solver
+  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+  Eigen::VectorXd pos(6);
+  space->convertStateToPositions(startState, pos);
+  std::cout << "Start state in ada: " << pos << std::endl;
+
+  std::vector<constraint::ConstSampleablePtr> sampleables
+      = {std::make_shared<FiniteSampleable>(space, startState),
+         createSampleableBounds(space, rng->clone())};
+  auto sampleable = std::make_shared<SequentialSampleable>(space, sampleables);
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       space,
       metaSkeleton,
       tsr,
-      createSampleableBounds(space, rng->clone()),
+      sampleable,
       ik,
       maxNumTrials);
 
@@ -207,8 +223,6 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Goal state
   auto goalState = space->createState();
-
-  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   // TODO: Change this to timelimit once we use a fail-fast planner
   double timelimitPerSample = timelimit / maxNumTrials;
@@ -218,7 +232,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{100};
+  static const std::size_t maxSnapSamples{1};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -227,25 +241,41 @@ trajectory::TrajectoryPtr planToTSR(
       space, startState, goalState, collisionTestable);
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
+
+  // Sample and rank goal configurations
+  auto sampleState = space->createState();
+  std::vector<statespace::StateSpace::State*> configurations;
+  NominalConfigurationRanker ranker(space, metaSkeleton, startState);
   while (snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
-    {
-      std::lock_guard<std::mutex> lock(robot->getMutex());
-      bool sampled = generator->sample(goalState);
-      if (!sampled)
-        continue;
+    std::lock_guard<std::mutex> lock(robot->getMutex());
+    bool sampled = generator->sample(sampleState);
+    if (!sampled)
+      continue;
 
-      // Set to start state
-      space->setState(metaSkeleton.get(), startState);
-    }
+    configurations.emplace_back(sampleState);
     ++snapSamples;
+  }
+//  ranker.rankConfigurations(configurations);
+
+  Eigen::VectorXd posfinal(6);
+
+  for (int i = 0; i < configurations.size(); ++i)
+  {
+    // Set to start state
+    space->setState(metaSkeleton.get(), startState);
+    space->copyState(configurations[i], goalState);
+
+    space->convertStateToPositions(goalState, posfinal);
+    std::cout << "Goal State in AIKIDO: " << posfinal << std::endl;
 
     auto traj = planner->plan(problem, &pResult);
 
     if (traj)
       return traj;
   }
+  return nullptr;
 
   // Start the timer
   dart::common::Timer timer;
