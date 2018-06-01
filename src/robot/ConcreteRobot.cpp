@@ -302,7 +302,9 @@ ConcreteRobot::getTrajectoryPostProcessor(
     bool enableBlend,
     double shortcutTimelimit,
     double blendRadius,
-    int blendIterations) const
+    int blendIterations,
+    double feasibilityCheckResolution,
+    double feasibilityApproxTolerance) const
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
@@ -317,7 +319,9 @@ ConcreteRobot::getTrajectoryPostProcessor(
       enableBlend,
       shortcutTimelimit,
       blendRadius,
-      blendIterations);
+      blendIterations,
+      feasibilityCheckResolution,
+      feasibilityApproxTolerance);
 }
 
 //==============================================================================
