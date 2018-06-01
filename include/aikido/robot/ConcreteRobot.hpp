@@ -114,7 +114,9 @@ public:
       bool enableBlend,
       double shortcutTimelimit,
       double blendRadius,
-      int blendIterations) const;
+      int blendIterations,
+      double feasibilityCheckResolution,
+      double feasibilityApproxTolerance) const;
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
