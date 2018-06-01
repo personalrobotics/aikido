@@ -56,7 +56,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   // Create an IK solver with MetaSkeleton DOFs
   // TODO: Figure this wierd case with HERB out.
   aikido::common::RNGWrapper<std::mt19937> _rng
-      = aikido::common::RNGWrapper<std::mt19937>(rand());
+      = aikido::common::RNGWrapper<std::mt19937>(std::random_device{}());
 
   std::cout << "EE Node name IS: "
             << problem.getEndEffectorBodyNode()->getName() << std::endl;
@@ -91,9 +91,12 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
+  int numSamples = 0;
   auto goalState = mMetaSkeletonStateSpace->createState();
-  while (generator->canSample())
+  while (generator->canSample() && numSamples < problem.getMaxSamples())
   {
+    numSamples++;
+
     // Sample from TSR
     {
       std::lock_guard<std::mutex> lock(skeleton->getMutex());
