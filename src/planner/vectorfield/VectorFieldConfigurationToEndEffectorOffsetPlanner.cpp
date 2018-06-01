@@ -54,10 +54,11 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
 
   if (direction.squaredNorm() == 0)
   {
-    direction = problem.getEndEffectorBodyNode()->getWorldTransform()
-        .linear()
-        .col(2)
-        .normalized();
+    direction = problem.getEndEffectorBodyNode()
+                    ->getWorldTransform()
+                    .linear()
+                    .col(2)
+                    .normalized();
   }
 
   double minDistance = distance - mDistanceTolerance;
