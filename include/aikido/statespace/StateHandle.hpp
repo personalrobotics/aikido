@@ -29,6 +29,8 @@ public:
   using NonConstHandle = StateHandle<StateSpace, State>;
   using ConstHandle = StateHandle<StateSpace, ConstState>;
 
+  friend class StateHandle<StateSpace, ConstState>;
+
   /// Constructs a nullptr handle.
   StateHandle();
 
@@ -44,11 +46,25 @@ public:
   StateHandle& operator=(const StateHandle&) = default;
   StateHandle& operator=(StateHandle&&) = default;
 
-  StateHandle(const NonConstHandle&);
-  StateHandle(NonConstHandle&&);
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  StateHandle(const NonConstHandle& other);
 
-  StateHandle& operator=(const NonConstHandle&);
-  StateHandle& operator=(NonConstHandle&&);
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  StateHandle(NonConstHandle&& other);
+
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  StateHandle& operator=(const NonConstHandle& other);
+
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  StateHandle& operator=(NonConstHandle&& other);
 
   /// Implicitly convert to a \c State pointer.
   operator QualifiedState*() const;

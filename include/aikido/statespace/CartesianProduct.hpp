@@ -38,9 +38,6 @@ public:
   /// Creates an identical clone of \c stateIn.
   ScopedState cloneState(StateSpace::State* stateIn) const;
 
-  /// Creates an identical clone of \c stateIn.
-  ScopedStateConst cloneState(const StateSpace::State* stateIn) const;
-
   /// Gets number of subspaces.
   ///
   /// \return number of subspaces

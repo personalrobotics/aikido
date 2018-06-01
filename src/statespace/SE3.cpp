@@ -32,7 +32,7 @@ auto SE3::createState() const -> ScopedState
 }
 
 //==============================================================================
-SE3::ScopedState SE3::cloneState(const StateSpace::State* stateIn) const
+SE3::ScopedState SE3::cloneState(StateSpace::State* stateIn) const
 {
   auto newState = createState();
   copyState(stateIn, newState);

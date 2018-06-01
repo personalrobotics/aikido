@@ -39,16 +39,6 @@ CartesianProduct::ScopedState CartesianProduct::cloneState(
 }
 
 //==============================================================================
-CartesianProduct::ScopedStateConst CartesianProduct::cloneState(
-    const StateSpace::State* stateIn) const
-{
-  auto newState = createState();
-  copyState(stateIn, newState);
-
-  return newState;
-}
-
-//==============================================================================
 std::size_t CartesianProduct::getNumSubspaces() const
 {
   return mSubspaces.size();
