@@ -52,6 +52,14 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
     direction = -1.0 * direction;
   }
 
+  if (direction.squaredNorm() == 0)
+  {
+    direction = problem.getEndEffectorBodyNode()->getWorldTransform()
+        .linear()
+        .col(2)
+        .normalized();
+  }
+
   double minDistance = distance - mDistanceTolerance;
   double maxDistance = distance + mDistanceTolerance;
 

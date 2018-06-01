@@ -55,10 +55,7 @@ const Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
 {
   if (mDirection.squaredNorm() == 0)
   {
-    return mEndEffectorBodyNode->getWorldTransform()
-        .linear()
-        .col(2)
-        .normalized();
+    return mDirection;
   }
 
   return mDirection.normalized();

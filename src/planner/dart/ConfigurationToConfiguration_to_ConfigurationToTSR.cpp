@@ -56,7 +56,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   // Create an IK solver with MetaSkeleton DOFs
   // TODO: Figure this wierd case with HERB out.
   aikido::common::RNGWrapper<std::mt19937> _rng
-      = aikido::common::RNGWrapper<std::mt19937>(0);
+      = aikido::common::RNGWrapper<std::mt19937>(rand());
 
   std::cout << "EE Node name IS: "
             << problem.getEndEffectorBodyNode()->getName() << std::endl;
