@@ -295,13 +295,29 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
 //==============================================================================
 std::shared_ptr<TrajectoryPostProcessor>
 ConcreteRobot::getTrajectoryPostProcessor(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const
+    const ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    bool enableShortcut,
+    bool enableBlend,
+    double shortcutTimelimit,
+    double blendRadius,
+    int blendIterations) const
 {
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+
   Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
 
   return std::make_shared<ParabolicSmoother>(
-      velocityLimits, accelerationLimits);
+      velocityLimits,
+      accelerationLimits,
+      enableShortcut,
+      enableBlend,
+      shortcutTimelimit,
+      blendRadius,
+      blendIterations);
 }
 
 //==============================================================================
