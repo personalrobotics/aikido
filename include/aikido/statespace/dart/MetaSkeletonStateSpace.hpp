@@ -103,6 +103,7 @@ public:
 
   using CartesianProduct::State;
   using CartesianProduct::ScopedState;
+  using CartesianProduct::ScopedStateConst;
 
   /// Constructs a state space for a DART \c MetaSkeleton.
   ///

@@ -39,8 +39,8 @@ public:
   /// limit, velocity is bounded in that direction to 0.
   MoveEndEffectorOffsetVectorField(
       aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      dart::dynamics::MetaSkeletonPtr metaskeleton,
-      dart::dynamics::ConstBodyNodePtr bn,
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+      ::dart::dynamics::ConstBodyNodePtr bn,
       const Eigen::Vector3d& direction,
       double minDistance,
       double maxDistance,

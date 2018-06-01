@@ -1,15 +1,16 @@
-#include "aikido/planner/ConfigurationToEndEffectorOffset.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 
 #include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 //==============================================================================
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
-    statespace::ConstStateSpacePtr stateSpace,
-    dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const statespace::StateSpace::State* startState,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+    const statespace::dart::MetaSkeletonStateSpace::State* startState,
     const Eigen::Vector3d& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
@@ -37,14 +38,14 @@ const std::string& ConfigurationToEndEffectorOffset::getStaticType()
 }
 
 //==============================================================================
-dart::dynamics::ConstBodyNodePtr
+::dart::dynamics::ConstBodyNodePtr
 ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
 }
 
 //==============================================================================
-const statespace::StateSpace::State*
+const statespace::dart::MetaSkeletonStateSpace::State*
 ConfigurationToEndEffectorOffset::getStartState() const
 {
   return mStartState;
@@ -62,5 +63,6 @@ double ConfigurationToEndEffectorOffset::getDistance() const
   return mDistance;
 }
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido
