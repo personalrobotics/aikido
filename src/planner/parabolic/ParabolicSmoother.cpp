@@ -27,7 +27,7 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
 
   detail::doShortcut(
       *dynamicPath,
@@ -57,7 +57,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
 
   detail::doBlend(
       *dynamicPath,
@@ -89,7 +89,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
 
   detail::doShortcut(
       *dynamicPath,
