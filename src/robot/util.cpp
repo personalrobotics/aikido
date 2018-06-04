@@ -285,7 +285,7 @@ trajectory::TrajectoryPtr planToTSR(
       continue;
     }
 
-    configurations.emplace_back(sampleState)
+    configurations.emplace_back(sampleState);
     space->convertStateToPositions(sampleState, posfinal);
     std::cout << "Sampled State in AIKIDO: " << posfinal << std::endl;
     ++snapSamples;
