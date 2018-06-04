@@ -102,6 +102,22 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
 
+  // Get a smoothing post postprocessor that respects velocity and acceleration
+  // limits, as well as the passed constraint.
+  /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const constraint::dart::CollisionFreePtr& collisionFree,
+      bool enableShortcut,
+      bool enableBlend,
+      double shortcutTimelimit,
+      double blendRadius,
+      int blendIterations,
+      double feasibilityCheckResolution,
+      double feasibilityApproxTolerance) const;
+
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
   /// initial configuration after planning.
