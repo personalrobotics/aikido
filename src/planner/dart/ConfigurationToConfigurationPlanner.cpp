@@ -5,10 +5,9 @@ namespace planner {
 namespace dart {
 
 //==============================================================================
-ConfigurationToConfigurationPlanner::
-    ConfigurationToConfigurationPlanner(
-        statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+ConfigurationToConfigurationPlanner::ConfigurationToConfigurationPlanner(
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
   : dart::SingleProblemPlanner<ConfigurationToConfigurationPlanner,
                                ConfigurationToConfiguration>(
         std::move(stateSpace), std::move(metaSkeleton))

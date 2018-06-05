@@ -20,6 +20,7 @@ set(sources
   dart/ConfigurationToEndEffectorOffsetPlanner.cpp
   # dart/ConfigurationToEndEffectorPosePlanner.cpp
   dart/ConfigurationToTSRPlanner.cpp
+  dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
 )
 
