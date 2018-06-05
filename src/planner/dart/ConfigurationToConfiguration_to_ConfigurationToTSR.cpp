@@ -26,10 +26,11 @@ namespace dart {
 //==============================================================================
 ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
-        std::shared_ptr<ConfigurationToConfigurationPlanner> planner,
+        std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
+            planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
         std::unique_ptr<common::RNG> rng)
-  : PlannerAdapter<ConfigurationToConfigurationPlanner,
+  : PlannerAdapter<aikido::planner::ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))
   , mRng(std::move(rng))

@@ -10,12 +10,14 @@ namespace planner {
 namespace dart {
 
 class ConfigurationToConfiguration_to_ConfigurationToTSR
-    : public PlannerAdapter<ConfigurationToConfigurationPlanner,
+    : public PlannerAdapter<aikido::planner::
+                                ConfigurationToConfigurationPlanner,
                             ConfigurationToTSRPlanner>
 {
 public:
   ConfigurationToConfiguration_to_ConfigurationToTSR(
-      std::shared_ptr<ConfigurationToConfigurationPlanner> planner,
+      std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
+          planner,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
       std::unique_ptr<common::RNG> rng);
 
