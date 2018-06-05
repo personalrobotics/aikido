@@ -21,7 +21,6 @@ public:
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
   /// \param[in] maxSamples Maximum number of TSR samples to plan to.
-  /// \param[in] startState Start state.
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
@@ -29,7 +28,6 @@ public:
   ConfigurationToTSR(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       std::size_t maxSamples,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint);
@@ -46,9 +44,6 @@ public:
   /// Returns the maximum number of TSR samples to plan to.
   std::size_t getMaxSamples() const;
 
-  /// Returns the start state.
-  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
-
   /// Returns the goal TSR.
   constraint::dart::ConstTSRPtr getGoalTSR() const;
 
@@ -58,9 +53,6 @@ protected:
 
   /// Maximum number of TSR samples to plan to.
   std::size_t mMaxSamples;
-
-  /// Start state.
-  statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
 
   /// Goal TSR.
   const constraint::dart::ConstTSRPtr mGoalTSR;

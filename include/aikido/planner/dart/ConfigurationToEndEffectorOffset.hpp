@@ -21,7 +21,6 @@ public:
   /// \param[in] stateSpace State space.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// offest while maintaining the current orientation.
-  /// \param[in] startState Start state.
   /// \param[in] direction Unit vector that represents the direction of motion
   /// [unit vector in the world frame].
   /// \param[in] signedDistance Signed distance to move, in meters.
@@ -32,7 +31,6 @@ public:
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint);
@@ -47,9 +45,6 @@ public:
   /// while maintaining the current orientation.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-  /// Returns the start state.
-  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
-
   /// Returns the direction of motion specified in the world frame.
   ///
   /// \note The direction is allowed to be zero vector.
@@ -61,9 +56,6 @@ public:
 protected:
   /// End-effector body node.
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
-
-  /// Start state.
-  statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
 
   /// Direction of motion.
   const Eigen::Vector3d mDirection;

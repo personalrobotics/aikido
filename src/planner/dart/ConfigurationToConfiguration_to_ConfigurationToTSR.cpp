@@ -66,6 +66,10 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
 
+  // Get the start state form the MetaSkeleton, since this is a DART planner.
+  auto startState = mMetaSkeletonStateSpace->createState();
+  mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       mMetaSkeletonStateSpace,
@@ -94,10 +98,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       bool sampled = generator->sample(goalState);
       if (!sampled)
         continue;
-
-      // Set to start state
-      mMetaSkeletonStateSpace->setState(
-          mMetaSkeleton.get(), problem.getStartState());
     }
 
     // Create ConfigurationToConfiguration Problem.
@@ -105,7 +105,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     // problem stores a *cloned* scoped state of the passed state.
     auto delegateProblem = ConfigurationToConfiguration(
         mMetaSkeletonStateSpace,
-        problem.getStartState(),
+        startState,
         goalState,
         problem.getConstraint());
 

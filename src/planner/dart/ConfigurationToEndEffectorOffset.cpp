@@ -10,13 +10,11 @@ namespace dart {
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const statespace::dart::MetaSkeletonStateSpace::State* startState,
     const Eigen::Vector3d& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mStartState(std::move(stateSpace->cloneState(startState)))
   , mDirection(direction)
   , mDistance(signedDistance)
 {
@@ -41,13 +39,6 @@ const std::string& ConfigurationToEndEffectorOffset::getStaticType()
 ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
-}
-
-//==============================================================================
-const statespace::dart::MetaSkeletonStateSpace::State*
-ConfigurationToEndEffectorOffset::getStartState() const
-{
-  return mStartState;
 }
 
 //==============================================================================

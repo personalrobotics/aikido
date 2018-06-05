@@ -19,14 +19,12 @@ public:
   /// \param[in] stateSpace State space.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// pose.
-  /// \param[in] startState Start state.
   /// \param[in] goalPose Goal pose.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorPose(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const Eigen::Isometry3d& goalPose,
       constraint::ConstTestablePtr constraint);
 
@@ -39,9 +37,6 @@ public:
   /// Returns the end-effector BodyNode to be planned to move to a desired pose.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-  /// Returns the start state.
-  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
-
   /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
 
@@ -51,10 +46,6 @@ protected:
 
   /// End-effector body node.
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
-
-  /// Start state.
-  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
-
   /// Goal pose.
   const Eigen::Isometry3d mGoalPose;
 };

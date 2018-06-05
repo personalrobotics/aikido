@@ -10,12 +10,10 @@ namespace dart {
 ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const statespace::dart::MetaSkeletonStateSpace::State* startState,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mStartState(startState)
   , mGoalPose(goalPose)
 {
   // Do nothing
@@ -39,13 +37,6 @@ const std::string& ConfigurationToEndEffectorPose::getStaticType()
 ConfigurationToEndEffectorPose::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
-}
-
-//==============================================================================
-const statespace::dart::MetaSkeletonStateSpace::State*
-ConfigurationToEndEffectorPose::getStartState() const
-{
-  return mStartState;
 }
 
 //==============================================================================
