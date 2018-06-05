@@ -16,10 +16,14 @@ class ConfigurationToConfiguration_to_ConfigurationToTSR
 public:
   ConfigurationToConfiguration_to_ConfigurationToTSR(
       std::shared_ptr<ConfigurationToConfigurationPlanner> planner,
-      ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      std::unique_ptr<common::RNG> rng);
 
   virtual trajectory::TrajectoryPtr plan(
       const ConfigurationToTSR& problem, Planner::Result* result) override;
+
+protected:
+  std::unique_ptr<common::RNG> mRng;
 };
 
 } // namespace dart

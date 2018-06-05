@@ -27,10 +27,12 @@ namespace dart {
 ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
         std::shared_ptr<ConfigurationToConfigurationPlanner> planner,
-        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+        std::unique_ptr<common::RNG> rng)
   : PlannerAdapter<ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))
+  , mRng(std::move(rng))
 {
   // Do nothing
 }
@@ -54,10 +56,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   }
 
   // Create an IK solver with MetaSkeleton DOFs
-  // TODO: Figure this wierd case with HERB out.
-  aikido::common::RNGWrapper<std::mt19937> _rng
-      = aikido::common::RNGWrapper<std::mt19937>(0);
-
   auto matchingNodes
       = skeleton->getBodyNodes(problem.getEndEffectorBodyNode()->getName());
   if (matchingNodes.empty())
@@ -74,8 +72,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       mMetaSkeleton,
       std::const_pointer_cast<TSR>(problem.getGoalTSR()),
       createSampleableBounds(
-          mMetaSkeletonStateSpace,
-          std::move(cloneRNGFrom(_rng)[0])), // TODO: RNG should be in Planner
+          mMetaSkeletonStateSpace, std::move(cloneRNGFrom(*mRng)[0])),
       ik,
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
