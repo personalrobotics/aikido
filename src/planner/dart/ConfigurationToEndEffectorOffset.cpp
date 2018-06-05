@@ -10,7 +10,7 @@ namespace dart {
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const Eigen::Vector3d& direction,
+    const boost::optional<Eigen::Vector3d> direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
@@ -44,12 +44,15 @@ ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
 //==============================================================================
 const Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
 {
-  if (mDirection.squaredNorm() == 0)
+  if (!mDirection)
   {
-    return mDirection;
+    return mEndEffectorBodyNode->getWorldTransform()
+        .linear()
+        .col(2)
+        .normalized();
   }
 
-  return mDirection.normalized();
+  return mDirection.get().normalized();
 }
 
 //==============================================================================

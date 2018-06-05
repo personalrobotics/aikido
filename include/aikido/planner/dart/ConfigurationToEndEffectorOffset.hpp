@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSET_HPP_
 
+#include <boost/optional.hpp>
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
@@ -31,7 +32,7 @@ public:
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const Eigen::Vector3d& direction,
+      const boost::optional<Eigen::Vector3d> direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint);
 
@@ -58,7 +59,7 @@ protected:
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Direction of motion.
-  const Eigen::Vector3d mDirection;
+  const boost::optional<Eigen::Vector3d> mDirection;
 
   /// Signed distance to move in the direction specified.
   const double mDistance;
