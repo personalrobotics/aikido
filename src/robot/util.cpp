@@ -232,7 +232,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{3};
+  static const std::size_t maxSnapSamples{20};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -271,9 +271,9 @@ trajectory::TrajectoryPtr planToTSR(
   /// RANKING STUFF BEGINS HERE
   // Sample and rank goal configurations
   auto sampleState = space->createState();
-  std::vector<statespace::CartesianProduct::State*> configurations;
+  std::vector<statespace::CartesianProduct::ScopedState> configurations;
   Eigen::VectorXd posfinal(6);
-//  NominalConfigurationRanker ranker(space, metaSkeleton, startState);
+  NominalConfigurationRanker ranker(space, metaSkeleton, startState);
   while (snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
@@ -285,7 +285,7 @@ trajectory::TrajectoryPtr planToTSR(
       continue;
     }
 
-    configurations.emplace_back(sampleState);
+    configurations.emplace_back(sampleState.clone());
     space->convertStateToPositions(sampleState, posfinal);
     std::cout << "Sampled State in AIKIDO: " << posfinal << std::endl;
     ++snapSamples;
@@ -294,24 +294,24 @@ trajectory::TrajectoryPtr planToTSR(
 
   for (int i = 0; i < configurations.size(); ++i)
   {
-    // Set to start state
-//    space->setState(metaSkeleton.get(), startState);
-//    space->copyState(configurations[i], goalState);
+//     Set to start state
+    space->setState(metaSkeleton.get(), startState);
+    space->copyState(configurations[i], goalState);
 
     space->convertStateToPositions(configurations[i], posfinal);
     std::cout << "Goal State in AIKIDO: " << posfinal << std::endl;
 
-//    auto traj = planner->plan(problem, &pResult);
+    auto traj = planner->plan(problem, &pResult);
 
-//    if (traj)
-//    {
-//      std::cout << "Planned succesfully" << std::endl;
-//      return traj;
-//    }
-//    else
-//    {
-//      std::cout << "Planning failed" << std::endl;
-//    }
+    if (traj)
+    {
+      std::cout << "Planned succesfully" << std::endl;
+      return traj;
+    }
+    else
+    {
+      std::cout << "Planning failed" << std::endl;
+    }
   }
   return nullptr;
 
