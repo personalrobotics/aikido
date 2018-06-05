@@ -1,6 +1,7 @@
 #include <tuple>
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+#include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
@@ -90,9 +91,12 @@ public:
 //==============================================================================
 TEST_F(SnapPlannerTest, DartConfigurationToTSRPlanner)
 {
+  aikido::common::RNGWrapper<std::mt19937> _rng
+      = aikido::common::RNGWrapper<std::mt19937>(0);
+
   auto delegate = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       stateSpace, interpolator);
   auto planner
       = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
-          delegate, skel);
+          delegate, skel, std::move(cloneRNGFrom(_rng)[0]));
 }
