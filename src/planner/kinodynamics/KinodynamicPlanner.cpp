@@ -347,6 +347,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   {
     std::cout << "First half has a solution" << std::endl;
     path1 = pdef1->getSolutionPath();
+    if (pdef1->getOptimizationObjective()->isFinite(path1->cost(pdef1->getOptimizationObjective()))==false)
+    {
+      return nullptr;
+    }
   }
   else
   {
@@ -388,6 +392,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   {
     std::cout << "Second half has a solution" << std::endl;
     path2 = pdef2->getSolutionPath();
+    if (pdef2->getOptimizationObjective()->isFinite(path2->cost(pdef2->getOptimizationObjective()))==false)
+    {
+      return nullptr;
+    }
   }
   else
   {
