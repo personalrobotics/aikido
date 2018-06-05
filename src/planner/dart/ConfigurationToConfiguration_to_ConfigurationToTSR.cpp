@@ -58,18 +58,12 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   aikido::common::RNGWrapper<std::mt19937> _rng
       = aikido::common::RNGWrapper<std::mt19937>(0);
 
-  std::cout << "EE Node name IS: "
-            << problem.getEndEffectorBodyNode()->getName() << std::endl;
-  auto nonConstPtr
-      = const_cast<BodyNode*>(problem.getEndEffectorBodyNode().get());
-  BodyNodePtr endEffectorBodyNode(nonConstPtr);
-
-  // auto matchingNodes = mMetaSkeleton->getBodyNodes(
-  //     problem.getEndEffectorBodyNode()->getName());
-  // if (matchingNodes.empty())
-  //   throw std::invalid_argument(
-  //       "End-effector BodyNode not found in Planner's MetaSkeleton.");
-  // ::dart::dynamics::BodyNodePtr endEffectorBodyNode = matchingNodes.front();
+  auto matchingNodes
+      = skeleton->getBodyNodes(problem.getEndEffectorBodyNode()->getName());
+  if (matchingNodes.empty())
+    throw std::invalid_argument(
+        "End-effector BodyNode not found in Planner's MetaSkeleton.");
+  ::dart::dynamics::BodyNodePtr endEffectorBodyNode = matchingNodes.front();
 
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
