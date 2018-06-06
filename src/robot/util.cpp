@@ -232,7 +232,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{20};
+  static const std::size_t maxSnapSamples{10};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -242,76 +242,37 @@ trajectory::TrajectoryPtr planToTSR(
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
 
-//                                                                                  Eigen::VectorXd posfinal(6);
-//                                                                                  while (snapSamples < maxSnapSamples && generator->canSample())
-//                                                                                  {
-//                                                                                    // Sample from TSR
-//                                                                                    {
-//                                                                                      std::lock_guard<std::mutex> lock(robot->getMutex());
-//                                                                                      bool sampled = generator->sample(goalState);
-//                                                                                      if (!sampled)
-//                                                                                        continue;
-
-//                                                                                      space->convertStateToPositions(goalState, posfinal);
-//                                                                                      std::cout << "Goal State in AIKIDO: " << posfinal << std::endl;
-
-//                                                                                      // Set to start state
-//                                                                                      space->setState(metaSkeleton.get(), startState);
-//                                                                                    }
-//                                                                                    ++snapSamples;
-
-//                                                                                    auto traj = planner->plan(problem, &pResult);
-
-//                                                                                    if (traj)
-//                                                                                      return traj;
-//                                                                                  }
-//                                                                                  return nullptr;
-
-
-  /// RANKING STUFF BEGINS HERE
-  // Sample and rank goal configurations
+  // Collect and rank configurations
   auto sampleState = space->createState();
   std::vector<statespace::CartesianProduct::ScopedState> configurations;
-  Eigen::VectorXd posfinal(6);
   NominalConfigurationRanker ranker(space, metaSkeleton, startState);
+
   while (snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
     std::lock_guard<std::mutex> lock(robot->getMutex());
     bool sampled = generator->sample(sampleState);
     if (!sampled)
-    {
-      std::cout << "Continuing" << std::endl;
       continue;
-    }
 
     configurations.emplace_back(sampleState.clone());
-    space->convertStateToPositions(sampleState, posfinal);
-    std::cout << "Sampled State in AIKIDO: " << posfinal << std::endl;
     ++snapSamples;
   }
-//  ranker.rankConfigurations(configurations);
 
-  for (int i = 0; i < configurations.size(); ++i)
+  std::vector<statespace::CartesianProduct::State*> configurations_raw(configurations.size());
+  for (auto i = 0u; i < configurations.size(); ++i)
+    configurations_raw[i] = configurations[i];
+  ranker.rankConfigurations(configurations_raw);
+
+  for (int i = 0; i < configurations_raw.size(); ++i)
   {
-//     Set to start state
     space->setState(metaSkeleton.get(), startState);
-    space->copyState(configurations[i], goalState);
-
-    space->convertStateToPositions(configurations[i], posfinal);
-    std::cout << "Goal State in AIKIDO: " << posfinal << std::endl;
+    space->copyState(configurations_raw[i], goalState);
 
     auto traj = planner->plan(problem, &pResult);
 
     if (traj)
-    {
-      std::cout << "Planned succesfully" << std::endl;
       return traj;
-    }
-    else
-    {
-      std::cout << "Planning failed" << std::endl;
-    }
   }
   return nullptr;
 
