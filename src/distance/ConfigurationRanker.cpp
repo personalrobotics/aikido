@@ -33,9 +33,9 @@ statespace::ConstStateSpacePtr ConfigurationRanker::getStateSpace() const
 
 //==============================================================================
 void ConfigurationRanker::rankConfigurations(
-    std::vector<statespace::StateSpace::State*>& configurations)
+    std::vector<statespace::CartesianProduct::State*>& configurations)
 {
-  std::vector<std::pair<statespace::StateSpace::State*, double>>
+  std::vector<std::pair<statespace::CartesianProduct::State*, double>>
       scoredConfigurations(configurations.size());
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
@@ -46,8 +46,8 @@ void ConfigurationRanker::rankConfigurations(
   struct sortingFunction
   {
     bool operator()(
-        const std::pair<statespace::StateSpace::State*, double>& left,
-        const std::pair<statespace::StateSpace::State*, double>& right)
+        const std::pair<statespace::CartesianProduct::State*, double>& left,
+        const std::pair<statespace::CartesianProduct::State*, double>& right)
     {
       return left.second < right.second;
     }
@@ -62,7 +62,7 @@ void ConfigurationRanker::rankConfigurations(
       scoredConfigurations.begin(),
       scoredConfigurations.end(),
       std::back_inserter(configurations),
-      [](const std::pair<statespace::StateSpace::State*, int>& item) {
+      [](const std::pair<statespace::CartesianProduct::State*, int>& item) {
         return item.first;
       });
 }

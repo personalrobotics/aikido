@@ -31,7 +31,7 @@ public:
 
   /// Returns the vector of ranked configurations.
   void rankConfigurations(
-      std::vector<statespace::StateSpace::State*>& configurations);
+      std::vector<statespace::CartesianProduct::State*>& configurations);
 
 protected:
   /// Returns the score of the configuration

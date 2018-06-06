@@ -99,7 +99,7 @@ TEST_F(NominalConfigurationRankerTest, OrderTest)
   mStateSpace->convertPositionsToState(
       mManipulator->getPositions(), seedStateThree);
 
-  std::vector<aikido::statespace::StateSpace::State*> states;
+  std::vector<aikido::statespace::CartesianProduct::State*> states;
   states.emplace_back(seedStateOne);
   states.emplace_back(seedStateTwo);
   states.emplace_back(seedStateThree);
