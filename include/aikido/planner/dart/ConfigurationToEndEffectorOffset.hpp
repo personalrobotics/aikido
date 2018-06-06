@@ -23,7 +23,7 @@ public:
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// offest while maintaining the current orientation.
   /// \param[in] direction Unit vector that represents the direction of motion
-  /// [unit vector in the world frame].
+  /// [unit vector in the world frame]. Allowed to be boost::none.
   /// \param[in] signedDistance Signed distance to move, in meters.
   /// \param[in] interpolator Interpolator used to produce the output
   /// trajectory.
@@ -46,9 +46,9 @@ public:
   /// while maintaining the current orientation.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-  /// Returns the direction of motion specified in the world frame.
-  ///
-  /// \note The direction is allowed to be zero vector.
+  /// Returns the direction of motion specified in the world frame. Note that
+  /// if the passed direction was boost::none, the current direction of the
+  /// end effector body node is returned instead.
   const Eigen::Vector3d getDirection() const;
 
   /// Returns the signed distance in meters to move in the specified direction.
