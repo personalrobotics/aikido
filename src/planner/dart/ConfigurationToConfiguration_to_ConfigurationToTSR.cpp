@@ -87,12 +87,9 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
-  int numSamples = 0;
   auto goalState = mMetaSkeletonStateSpace->createState();
-  while (generator->canSample() && numSamples < problem.getMaxSamples())
+  while (generator->canSample())
   {
-    numSamples++;
-
     // Sample from TSR
     {
       std::lock_guard<std::mutex> lock(skeleton->getMutex());
