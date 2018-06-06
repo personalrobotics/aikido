@@ -10,7 +10,7 @@ namespace dart {
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const boost::optional<Eigen::Vector3d> direction,
+    const boost::optional<Eigen::Vector3d>& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
