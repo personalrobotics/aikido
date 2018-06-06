@@ -212,12 +212,6 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
     if (!mSeedSampler->sample(seedState))
       continue;
 
-    Eigen::VectorXd pos(6);
-    if (i == 0)
-    {
-      mMetaSkeletonStateSpace->convertStateToPositions(seedState, pos);
-      std::cout << "seed state in aikido: " << pos << std::endl;
-    }
     mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), seedState);
 
     // Sample a goal for the IK solver.
