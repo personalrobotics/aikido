@@ -14,8 +14,8 @@
 #include "aikido/constraint/dart/FrameTestable.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
-#include "aikido/distance/defaults.hpp"
 #include "aikido/distance/NominalConfigurationRanker.hpp"
+#include "aikido/distance/defaults.hpp"
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/CRRTConnect.hpp"
@@ -201,9 +201,6 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Create a sequential sampleable to provide seeds for IK solver
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-  Eigen::VectorXd pos(6);
-  space->convertStateToPositions(startState, pos);
-  std::cout << "Start state in ada: " << pos << std::endl;
 
   std::vector<constraint::ConstSampleablePtr> sampleables
       = {std::make_shared<FiniteSampleable>(space, startState),
@@ -212,12 +209,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
-      space,
-      metaSkeleton,
-      tsr,
-      sampleable,
-      ik,
-      maxNumTrials);
+      space, metaSkeleton, tsr, sampleable, ik, maxNumTrials);
 
   auto generator = ikSampleable.createSampleGenerator();
 
@@ -259,7 +251,8 @@ trajectory::TrajectoryPtr planToTSR(
     ++snapSamples;
   }
 
-  std::vector<statespace::CartesianProduct::State*> configurations_raw(configurations.size());
+  std::vector<statespace::CartesianProduct::State*> configurations_raw(
+      configurations.size());
   for (auto i = 0u; i < configurations.size(); ++i)
     configurations_raw[i] = configurations[i];
   ranker.rankConfigurations(configurations_raw);
@@ -275,7 +268,6 @@ trajectory::TrajectoryPtr planToTSR(
       return traj;
   }
   return nullptr;
-
 }
 
 //==============================================================================
