@@ -8,13 +8,15 @@ namespace dart {
 
 //==============================================================================
 ConfigurationToTSR::ConfigurationToTSR(
-    statespace::ConstStateSpacePtr stateSpace,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const statespace::StateSpace::State* startState,
+    const statespace::dart::MetaSkeletonStateSpace::State* startState,
+    std::size_t maxSamples,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+  , mMaxSamples(maxSamples)
   , mStartState(startState)
   , mGoalTSR(goalTSR)
 {
@@ -42,7 +44,14 @@ const std::string& ConfigurationToTSR::getStaticType()
 }
 
 //==============================================================================
-const statespace::StateSpace::State* ConfigurationToTSR::getStartState() const
+std::size_t ConfigurationToTSR::getMaxSamples() const
+{
+  return mMaxSamples;
+}
+
+//==============================================================================
+const statespace::dart::MetaSkeletonStateSpace::State*
+ConfigurationToTSR::getStartState() const
 {
   return mStartState;
 }

@@ -17,7 +17,7 @@ public:
   /// Constructor.
   ///
   /// \param[in] stateSpace State space that this planner is associated with.
-  /// \param[in] metaskeleton MetaSkeleton to plan with.
+  /// \param[in] metaSkeleton MetaSkeleton to plan with.
   /// \param[in] distanceTolerance How much a planned trajectory is allowed to
   /// deviate from the requested distance to move the end-effector.
   /// \param[in] positionTolerance How a planned trajectory is allowed to
@@ -33,7 +33,7 @@ public:
   /// \param[in] timelimit timeout in seconds.
   VectorFieldConfigurationToEndEffectorOffsetPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
       double distanceTolerance,
       double positionTolerance,
       double angularTolerance,
@@ -57,9 +57,6 @@ public:
       const SolvableProblem& problem, Result* result = nullptr) override;
 
 protected:
-  /// MetaSkeleton to plan with.
-  ::dart::dynamics::MetaSkeletonPtr mMetaskeleton;
-
   /// How much a planned trajectory is allowed to deviate from the requested
   /// distance to move the end-effector.
   double mDistanceTolerance;

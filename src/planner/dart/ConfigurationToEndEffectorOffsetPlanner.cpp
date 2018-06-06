@@ -7,19 +7,13 @@ namespace dart {
 //==============================================================================
 ConfigurationToEndEffectorOffsetPlanner::
     ConfigurationToEndEffectorOffsetPlanner(
-        statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace)
-  : SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
-                         ConfigurationToEndEffectorOffset>(stateSpace)
-  , mMetaSkeletonStateSpace(std::move(stateSpace))
+        statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+  : dart::SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
+                               ConfigurationToEndEffectorOffset>(
+        std::move(stateSpace), std::move(metaSkeleton))
 {
   // Do nothing
-}
-
-//==============================================================================
-statespace::dart::ConstMetaSkeletonStateSpacePtr
-ConfigurationToEndEffectorOffsetPlanner::getMetaSkeletonStateSpace()
-{
-  return mMetaSkeletonStateSpace;
 }
 
 } // namespace dart

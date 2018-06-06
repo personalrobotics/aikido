@@ -8,9 +8,9 @@ namespace dart {
 
 //==============================================================================
 ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
-    statespace::ConstStateSpacePtr stateSpace,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const statespace::StateSpace::State* startState,
+    const statespace::dart::MetaSkeletonStateSpace::State* startState,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
@@ -42,7 +42,7 @@ ConfigurationToEndEffectorPose::getEndEffectorBodyNode() const
 }
 
 //==============================================================================
-const statespace::StateSpace::State*
+const statespace::dart::MetaSkeletonStateSpace::State*
 ConfigurationToEndEffectorPose::getStartState() const
 {
   return mStartState;
