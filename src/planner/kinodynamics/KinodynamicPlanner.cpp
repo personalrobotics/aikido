@@ -343,11 +343,13 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   ::ompl::base::PlannerStatus solved = planner1->solve(maxPlanTime);
 
   ::ompl::base::PathPtr path1 = nullptr;
-  if (pdef1->hasSolution())
+  if (solved)
   {
     std::cout << "First half has a solution" << std::endl;
     path1 = pdef1->getSolutionPath();
-    if (pdef1->getOptimizationObjective()->isFinite(path1->cost(pdef1->getOptimizationObjective()))==false)
+    ::ompl::base::Cost path1_cost = path1->cost(pdef1->getOptimizationObjective());
+    std::cout << "The cost is " << path1_cost << std::endl;
+    if (pdef1->getOptimizationObjective()->isFinite(path1_cost)==false)
     {
       return nullptr;
     }
@@ -388,11 +390,13 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   solved = planner2->solve(maxPlanTime);
 
   ::ompl::base::PathPtr path2 = nullptr;
-  if (pdef2->hasSolution())
+  if (solved)
   {
     std::cout << "Second half has a solution" << std::endl;
     path2 = pdef2->getSolutionPath();
-    if (pdef2->getOptimizationObjective()->isFinite(path2->cost(pdef2->getOptimizationObjective()))==false)
+    ::ompl::base::Cost path2_cost = path2->cost(pdef2->getOptimizationObjective());
+    std::cout << "The cost of second half is " << path2_cost << std::endl;
+    if (pdef2->getOptimizationObjective()->isFinite(path2_cost)==false)
     {
       return nullptr;
     }
