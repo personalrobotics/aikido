@@ -224,7 +224,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{10};
+  static const std::size_t maxSnapSamples{30};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();

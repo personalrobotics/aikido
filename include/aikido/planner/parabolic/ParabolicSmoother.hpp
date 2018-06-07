@@ -13,7 +13,7 @@ namespace parabolic {
 constexpr double DEFAULT_TIMELIMT = 3.0;
 constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
-constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
+constexpr double DEFAULT_CHECK_RESOLUTION = 1e-2;
 constexpr double DEFAULT_TOLERANCE = 1e-3;
 
 /// Shortcut waypoints in a trajectory using parabolic splines.
@@ -153,7 +153,7 @@ public:
   ParabolicSmoother(
       const Eigen::VectorXd& _velocityLimits,
       const Eigen::VectorXd& _accelerationLimits,
-      bool _enableShortcut = true,
+      bool _enableShortcut = false,
       bool _enableBlend = true,
       double _shortcutTimelimit = DEFAULT_TIMELIMT,
       double _blendRadius = DEFAULT_BLEND_RADIUS,
