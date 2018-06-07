@@ -6,6 +6,9 @@
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
+// HACK!
+#include <dart/dart.hpp>
+
 namespace aikido {
 namespace planner {
 namespace parabolic {
@@ -181,13 +184,24 @@ public:
       const aikido::common::RNG& _rng,
       const aikido::constraint::TestablePtr& _collisionTestable) override;
 
+  // HACK HACK HACK.
+  std::unique_ptr<aikido::trajectory::Spline> postprocess(
+      const aikido::trajectory::Spline& _inputTraj,
+      const aikido::common::RNG& _rng,
+      const aikido::constraint::TestablePtr& _collisionTestable,
+      const dart::dynamics::BodyNodePtr& armEnd,
+      const dart::dynamics::BodyNodePtr& hand);
+
+
 private:
   /// Common logic to do shortcutting and/or blending on the input trajectory
   /// as dictated by mEnableShortcut and mEnableBlend.
   std::unique_ptr<aikido::trajectory::Spline> handleShortcutOrBlend(
       const aikido::trajectory::Spline& _inputTraj,
       const aikido::common::RNG& _rng,
-      const aikido::constraint::TestablePtr& _collisionTestable);
+      const aikido::constraint::TestablePtr& _collisionTestable,
+      const dart::dynamics::BodyNodePtr& armEnd = nullptr,
+      const dart::dynamics::BodyNodePtr& hand = nullptr);
 
   /// Set to the value of \c _feasibilityCheckResolution.
   double mFeasibilityCheckResolution;

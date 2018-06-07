@@ -173,13 +173,36 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
   return timedTrajectory;
 }
 
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
+    const aikido::trajectory::Spline& _inputTraj,
+    const aikido::common::RNG& _rng,
+    const aikido::constraint::TestablePtr& _collisionTestable,
+    const dart::dynamics::BodyNodePtr& armEnd,
+    const dart::dynamics::BodyNodePtr& hand
+) {
+  // Get timed trajectory for arm
+  auto timedTrajectory = computeParabolicTiming(
+      _inputTraj, mVelocityLimits, mAccelerationLimits);
+
+  auto shortcutOrBlendTrajectory
+      = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
+  if (shortcutOrBlendTrajectory)
+    return shortcutOrBlendTrajectory;
+
+  return timedTrajectory;
+}
+
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline>
 ParabolicSmoother::handleShortcutOrBlend(
     const aikido::trajectory::Spline& _inputTraj,
     const aikido::common::RNG& _rng,
-    const aikido::constraint::TestablePtr& _collisionTestable)
-{
+    const aikido::constraint::TestablePtr& _collisionTestable,
+    const dart::dynamics::BodyNodePtr& armEnd,
+    const dart::dynamics::BodyNodePtr& hand
+) {
   if (!_collisionTestable)
     throw std::invalid_argument(
         "_collisionTestable passed to ParabolicSmoother is nullptr.");
@@ -223,6 +246,13 @@ ParabolicSmoother::handleShortcutOrBlend(
         mFeasibilityApproxTolerance);
   }
 
+
+  auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+  auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+  if (!endDirection.isApprox(handDirection))
+    std::cout << "HAND FELL OFF!" << std::endl; 
+  
   return nullptr;
 }
 
