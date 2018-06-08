@@ -65,7 +65,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
 
   if (armEnd && hand)
   {
-    std::cout << "CHECK FOR FALL OFF do Blend!" << std::endl;
+    std::cout << "CHECK FOR FALL OFF!" << std::endl;
     auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
     auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
 
@@ -79,9 +79,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
       _blendRadius,
       _blendIterations,
       _checkResolution,
-      _tolerance,
-      armEnd,
-      hand);
+      _tolerance);
 
   auto outputTrajectory
       = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
@@ -300,9 +298,7 @@ ParabolicSmoother::handleShortcutOrBlend(
         mBlendRadius,
         mBlendIterations,
         mFeasibilityCheckResolution,
-        mFeasibilityApproxTolerance,
-        armEnd,
-        hand);
+        mFeasibilityApproxTolerance);
 
     if (armEnd && hand)
     {
