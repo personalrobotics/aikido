@@ -168,8 +168,12 @@ bool doBlend(
     double blendRadius,
     int blendIterations,
     double checkResolution,
-    double tolerance)
+    double tolerance,
+    const dart::dynamics::BodyNodePtr& armEnd,
+    const dart::dynamics::BodyNodePtr& hand)
 {
+  std::cout << "Checking detail::doBlend 2" << std::endl;
+
   if (blendIterations <= 0)
     throw std::invalid_argument("Blend iterations should be positive");
   if (blendRadius <= 0.0)
@@ -191,6 +195,16 @@ bool doBlend(
 
   double dtShortcut = blendRadius;
 
+  if (armEnd && hand)
+  {
+    std::cout << "CHECK FOR FALL OFF!" << std::endl;
+    auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+    auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+    if (!endDirection.isApprox(handDirection))
+      std::cout << "BEFORE tryBlend HAND FELL OFF!" << std::endl;
+  }
+
   // tryBlend always starts at the beginning of the trajectory.
   // Without this bookkeeping, tryBlend would could any blend that fails
   // multiple times.
@@ -203,6 +217,16 @@ bool doBlend(
     {
       noMoreBlending
           = tryBlend(dynamicPath, feasibilityChecker, attempt, dtShortcut);
+
+      if (armEnd && hand)
+      {
+        std::cout << "CHECK FOR FALL OFF!" << std::endl;
+        auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+        auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+        if (!endDirection.isApprox(handDirection))
+          std::cout << "AFTER tryBlend HAND FELL OFF!" << std::endl;
+      }
     } while (noMoreBlending);
 
     dtShortcut /= 2.;

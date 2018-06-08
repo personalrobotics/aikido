@@ -51,13 +51,27 @@ std::unique_ptr<trajectory::Spline> doBlend(
     double _blendRadius,
     int _blendIterations,
     double _checkResolution,
-    double _tolerance)
+    double _tolerance,
+    const dart::dynamics::BodyNodePtr& armEnd,
+    const dart::dynamics::BodyNodePtr& hand)
 {
+  std::cout << "in doBlend" << std::endl;
+
   auto stateSpace = _inputTrajectory.getStateSpace();
 
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
       _inputTrajectory, _maxVelocity, _maxAcceleration);
+
+  if (armEnd && hand)
+  {
+    std::cout << "CHECK FOR FALL OFF!" << std::endl;
+    auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+    auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+    if (!endDirection.isApprox(handDirection))
+      std::cout << "CONVERT DYNAMIC HAND FELL OFF!" << std::endl;
+  }
 
   detail::doBlend(
       *dynamicPath,
@@ -214,7 +228,7 @@ ParabolicSmoother::handleShortcutOrBlend(
       if (!endDirection.isApprox(handDirection))
         std::cout << "handle HAND FELL OFF!" << std::endl;
       else
-        std::cout << "handle HAND IS ON!" << std::endl; 
+        std::cout << "handle HAND IS ON!" << std::endl;
     }
 
   if (!_collisionTestable)
@@ -260,7 +274,7 @@ ParabolicSmoother::handleShortcutOrBlend(
         mShortcutTimelimit,
         mFeasibilityCheckResolution,
         mFeasibilityApproxTolerance);
-    
+
     if (armEnd && hand)
     {
       std::cout << "CHECK FOR FALL OFF!" << std::endl;
@@ -268,7 +282,7 @@ ParabolicSmoother::handleShortcutOrBlend(
       auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
 
       if (!endDirection.isApprox(handDirection))
-        std::cout << "SHORTCUT HAND FELL OFF!" << std::endl; 
+        std::cout << "SHORTCUT HAND FELL OFF!" << std::endl;
     }
 
     return retval;
@@ -293,12 +307,12 @@ ParabolicSmoother::handleShortcutOrBlend(
       auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
 
       if (!endDirection.isApprox(handDirection))
-        std::cout << "BLEND HAND FELL OFF!" << std::endl; 
+        std::cout << "BLEND HAND FELL OFF!" << std::endl;
     }
 
     return retval;
   }
- 
+
   return nullptr;
 }
 

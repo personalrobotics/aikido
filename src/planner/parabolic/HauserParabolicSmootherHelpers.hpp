@@ -7,6 +7,9 @@
 #include "aikido/constraint/Testable.hpp"
 #include "DynamicPath.h"
 
+// HACK!
+#include <dart/dart.hpp>
+
 namespace aikido {
 namespace planner {
 namespace parabolic {
@@ -21,7 +24,9 @@ namespace detail {
   bool doBlend(ParabolicRamp::DynamicPath& dynamicPath,
                aikido::constraint::TestablePtr testable,
                double blendRadius, int blendIterations,
-               double checkResolution, double tolerance);
+               double checkResolution, double tolerance,
+               const dart::dynamics::BodyNodePtr& armEnd = nullptr,
+               const dart::dynamics::BodyNodePtr& hand = nullptr);
 
 } // namespace detail
 } // namespace parabolic

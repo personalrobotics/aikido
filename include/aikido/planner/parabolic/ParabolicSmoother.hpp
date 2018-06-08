@@ -95,7 +95,9 @@ std::unique_ptr<trajectory::Spline> doBlend(
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
-    double _tolerance = DEFAULT_TOLERANCE);
+    double _tolerance = DEFAULT_TOLERANCE,
+    const dart::dynamics::BodyNodePtr& armEnd = nullptr,
+    const dart::dynamics::BodyNodePtr& hand = nullptr);
 
 /// Shortcut and blends waypoints in a trajectory using parabolic splines.
 ///
