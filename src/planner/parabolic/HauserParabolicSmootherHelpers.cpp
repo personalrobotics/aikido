@@ -18,26 +18,59 @@ class SmootherFeasibilityCheckerBase
 {
 public:
   SmootherFeasibilityCheckerBase(
-      aikido::constraint::TestablePtr testable, double checkResolution)
+      aikido::constraint::TestablePtr testable, double checkResolution,
+      const dart::dynamics::BodyNodePtr& _armEnd = nullptr,
+      const dart::dynamics::BodyNodePtr& _hand = nullptr)
     : mTestable(std::move(testable))
     , mCheckResolution(checkResolution)
     , mStateSpace(mTestable->getStateSpace())
     , mInterpolator(mStateSpace)
+    , armEnd(_armEnd)
+    , hand(_hand)
   {
     // Do nothing
   }
 
   bool ConfigFeasible(const ParabolicRamp::Vector& x) override
   {
+
+    if (armEnd && hand)
+    {
+      std::cout << "CHECK FOR FALL OFF ENTER configFeasible!" << std::endl;
+      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+      if (!endDirection.isApprox(handDirection))
+        std::cout << "[FALL OFF] ENTER CONFIG FEASIBLE HAND FELL OFF!" << std::endl;
+    }
+
     Eigen::VectorXd eigX = toEigen(x);
     auto state = mStateSpace->createState();
     mStateSpace->expMap(eigX, state);
+    
+    
+    if (armEnd && hand)
+    {
+      std::cout << "CHECK FOR FALL OFF LEAVE configFeasible!" << std::endl;
+      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+      if (!endDirection.isApprox(handDirection))
+        std::cout << "[FALL OFF] LEAVE CONFIG FEASIBLE HAND FELL OFF!" << std::endl;
+    }
+    
+    
+    
     return mTestable->isSatisfied(state);
+
+
   }
 
   bool SegmentFeasible(
       const ParabolicRamp::Vector& a, const ParabolicRamp::Vector& b) override
   {
+
+
     Eigen::VectorXd eigA = toEigen(a);
     Eigen::VectorXd eigB = toEigen(b);
 
@@ -52,6 +85,17 @@ public:
     // thus it is no longer needed to check in SegmentFeasible()
     aikido::common::VanDerCorput vdc{1, false, false, mCheckResolution};
 
+
+    if (armEnd && hand)
+    {
+      std::cout << "CHECK FOR FALL OFF ENTER segmentFeasible!" << std::endl;
+      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+      if (!endDirection.isApprox(handDirection))
+        std::cout << "[FALL OFF] ENTER SEGMENT FEASIBLE HAND FELL OFF!" << std::endl;
+    }
+
     for (const auto alpha : vdc)
     {
       mInterpolator.interpolate(startState, goalState, alpha, testState);
@@ -60,6 +104,18 @@ public:
         return false;
       }
     }
+
+
+    if (armEnd && hand)
+    {
+      std::cout << "CHECK FOR FALL OFF LEAVE segmentFeasible!" << std::endl;
+      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+      if (!endDirection.isApprox(handDirection))
+        std::cout << "[FALL OFF] LEAVE SEGMENT FEASIBLE HAND FELL OFF!" << std::endl;
+    }
+
     return true;
   }
 
@@ -68,6 +124,9 @@ private:
   double mCheckResolution;
   aikido::statespace::ConstStateSpacePtr mStateSpace;
   aikido::statespace::GeodesicInterpolator mInterpolator;
+
+  const dart::dynamics::BodyNodePtr& armEnd;
+  const dart::dynamics::BodyNodePtr& hand;
 };
 
 bool needsBlend(const ParabolicRamp::ParabolicRampND& rampNd)
@@ -86,8 +145,11 @@ bool tryBlend(
     ParabolicRamp::DynamicPath& dynamicPath,
     ParabolicRamp::RampFeasibilityChecker& feasibilityChecker,
     int attempt,
-    double dtShortcut)
-{
+    double dtShortcut,
+    const dart::dynamics::BodyNodePtr& armEnd = nullptr,
+    const dart::dynamics::BodyNodePtr& hand = nullptr
+
+) {
   // blending can completely remove waypoints from the trajectory in the case
   // that two waypoints are closer than _blendRadius together - which means
   // that waypoint indicies can change between iterations of the algorithm.
@@ -172,7 +234,18 @@ bool doBlend(
     const dart::dynamics::BodyNodePtr& armEnd,
     const dart::dynamics::BodyNodePtr& hand)
 {
-  std::cout << "Checking detail::doBlend 2" << std::endl;
+  std::cout << "Checking detail::doBlend 3" << std::endl;
+
+
+  if (armEnd && hand)
+  {
+    std::cout << "CHECK FOR FALL OFF enter detail::doBlend!" << std::endl;
+    auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+    auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+    if (!endDirection.isApprox(handDirection))
+      std::cout << "BEFORE tryBlend HAND FELL OFF!" << std::endl;
+  }
 
   if (blendIterations <= 0)
     throw std::invalid_argument("Blend iterations should be positive");
@@ -183,7 +256,7 @@ bool doBlend(
   if (tolerance < 0.0)
     throw std::invalid_argument("Tolerance should be non-negative");
 
-  SmootherFeasibilityCheckerBase base(testable, checkResolution);
+  SmootherFeasibilityCheckerBase base(testable, checkResolution, armEnd, hand);
   ParabolicRamp::RampFeasibilityChecker feasibilityChecker(&base, tolerance);
 
   // Mark all of the ramps in the initial trajectory as "original". We'll
@@ -197,7 +270,7 @@ bool doBlend(
 
   if (armEnd && hand)
   {
-    std::cout << "CHECK FOR FALL OFF!" << std::endl;
+    std::cout << "CHECK FOR FALL OFF before tryBlend!" << std::endl;
     auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
     auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
 
@@ -220,7 +293,7 @@ bool doBlend(
 
       if (armEnd && hand)
       {
-        std::cout << "CHECK FOR FALL OFF!" << std::endl;
+        std::cout << "CHECK FOR FALL OFF after tryBlend!" << std::endl;
         auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
         auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
 

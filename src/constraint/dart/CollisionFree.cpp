@@ -47,6 +47,9 @@ bool CollisionFree::isSatisfied(
 
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
+  
+
+  std::cout << "[LOCK] I AM LOCKING" << std::endl;
   mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
 
   bool collision = false;
