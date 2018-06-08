@@ -33,7 +33,16 @@ namespace kinodynamic {
 std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
-    const Eigen::VectorXd& maxAcceleration);
+    const Eigen::VectorXd& maxAcceleration,
+    double maxDeviation = 1e-2,
+    double timeStep = 0.1);
+
+std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+    const aikido::trajectory::Spline& inputTrajectory,
+    const Eigen::VectorXd& maxVelocity,
+    const Eigen::VectorXd& maxAcceleration,
+    double maxDeviation = 1e-2,
+    double timeStep = 0.1);
 
 
 /// Class for performing time-optimal trajectory retiming following subject to 
@@ -45,7 +54,9 @@ public:
   /// \param _accelerationLimits Maximum acceleration for each dimension.
   KinodynamicTimer(
       const Eigen::VectorXd& velocityLimits,
-      const Eigen::VectorXd& accelerationLimits);
+      const Eigen::VectorXd& accelerationLimits,
+      double maxDeviation,
+      double timeStep);
 
   /// Performs parabolic retiming on an input trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
@@ -69,12 +80,24 @@ public:
   
   void setAccelerationLimits(const Eigen::VectorXd& accelerationLimits);
 
+  double getTimeStep() const;
+
+  void setTimeStep(double timeStep);
+
+  double getMaxDeviation() const;
+
+  void setMaxDeviation(double maxDeviation);
+
 private:
   /// Set to the value of \c _velocityLimits.
   Eigen::VectorXd mVelocityLimits;
 
   /// Set to the value of \c _accelerationLimits.
   Eigen::VectorXd mAccelerationLimits;
+
+  double mMaxDeviation;
+
+  double mTimeStep;
 };
 
 } // namespace kinodynamic
