@@ -182,13 +182,12 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
     const dart::dynamics::BodyNodePtr& armEnd,
     const dart::dynamics::BodyNodePtr& hand
 ) {
-  std::cout << "RIGHT ONE!" << std::endl;
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
 
   auto shortcutOrBlendTrajectory
-      = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable, armEnd, hand);
+      = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
   if (shortcutOrBlendTrajectory)
     return shortcutOrBlendTrajectory;
 
@@ -204,26 +203,13 @@ ParabolicSmoother::handleShortcutOrBlend(
     const dart::dynamics::BodyNodePtr& armEnd,
     const dart::dynamics::BodyNodePtr& hand
 ) {
-
-    if (armEnd && hand)
-    {
-      std::cout << "CHECK FOR FALL OFF!" << std::endl;
-      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
-      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
-
-      if (!endDirection.isApprox(handDirection))
-        std::cout << "handle HAND FELL OFF!" << std::endl;
-      else
-        std::cout << "handle HAND IS ON!" << std::endl; 
-    }
-
   if (!_collisionTestable)
     throw std::invalid_argument(
         "_collisionTestable passed to ParabolicSmoother is nullptr.");
 
   if (mEnableShortcut && mEnableBlend)
   {
-    auto retval = doShortcutAndBlend(
+    return doShortcutAndBlend(
         _inputTraj,
         _collisionTestable,
         mVelocityLimits,
@@ -234,24 +220,10 @@ ParabolicSmoother::handleShortcutOrBlend(
         mBlendIterations,
         mFeasibilityCheckResolution,
         mFeasibilityApproxTolerance);
-
-    if (armEnd && hand)
-    {
-      std::cout << "CHECK FOR FALL OFF!" << std::endl;
-      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
-      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
-
-      if (!endDirection.isApprox(handDirection))
-        std::cout << "SHORTCUT AND BLEND HAND FELL OFF!" << std::endl;
-    }
-
-    return retval;
-
   }
   else if (mEnableShortcut)
   {
-
-    auto retval = doShortcut(
+    return doShortcut(
         _inputTraj,
         _collisionTestable,
         mVelocityLimits,
@@ -260,23 +232,10 @@ ParabolicSmoother::handleShortcutOrBlend(
         mShortcutTimelimit,
         mFeasibilityCheckResolution,
         mFeasibilityApproxTolerance);
-    
-    if (armEnd && hand)
-    {
-      std::cout << "CHECK FOR FALL OFF!" << std::endl;
-      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
-      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
-
-      if (!endDirection.isApprox(handDirection))
-        std::cout << "SHORTCUT HAND FELL OFF!" << std::endl; 
-    }
-
-    return retval;
   }
   else if (mEnableBlend)
   {
-
-    auto retval = doBlend(
+    return doBlend(
         _inputTraj,
         _collisionTestable,
         mVelocityLimits,
@@ -285,20 +244,15 @@ ParabolicSmoother::handleShortcutOrBlend(
         mBlendIterations,
         mFeasibilityCheckResolution,
         mFeasibilityApproxTolerance);
-
-    if (armEnd && hand)
-    {
-      std::cout << "CHECK FOR FALL OFF!" << std::endl;
-      auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
-      auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
-
-      if (!endDirection.isApprox(handDirection))
-        std::cout << "BLEND HAND FELL OFF!" << std::endl; 
-    }
-
-    return retval;
   }
- 
+
+
+  auto endDirection = armEnd->getWorldTransform().linear().col(2).normalized();
+  auto handDirection = hand->getWorldTransform().linear().col(2).normalized();
+
+  if (!endDirection.isApprox(handDirection))
+    std::cout << "HAND FELL OFF!" << std::endl; 
+  
   return nullptr;
 }
 
