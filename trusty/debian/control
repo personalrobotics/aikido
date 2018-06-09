@@ -29,7 +29,7 @@ Vcs-Browser: https://github.com/personalrobotics/aikido
 
 Package: libaikido
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -41,7 +41,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido (= ${binary:Version}),
@@ -57,7 +57,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-common
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -69,7 +69,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-common-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -86,7 +86,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-io
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -98,7 +98,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-io-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -115,7 +115,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-rviz
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -127,7 +127,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-rviz-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -147,7 +147,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-statespace
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -159,7 +159,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-statespace-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -173,7 +173,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-perception
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -185,7 +185,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-perception-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -207,7 +207,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-distance
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -219,7 +219,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-distance-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -234,7 +234,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-trajectory
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -246,7 +246,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-trajectory-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -262,7 +262,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-constraint
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -274,7 +274,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-constraint-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -290,7 +290,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-planner
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -302,7 +302,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-planner-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -321,7 +321,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-planner-ompl
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -333,7 +333,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-planner-ompl-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-planner-dev,
@@ -348,7 +348,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-planner-parabolic
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -360,7 +360,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-planner-parabolic-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-planner-dev,
@@ -374,7 +374,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-control
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -386,7 +386,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-control-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
@@ -402,7 +402,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-control-ros
 Section: libs
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
@@ -414,7 +414,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-control-ros-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-control-dev,
@@ -433,7 +433,7 @@ Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization 
 
 Package: libaikido-all-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
