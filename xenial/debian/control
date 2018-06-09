@@ -175,7 +175,7 @@ Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
-         libaikido-util-dev,
+         libaikido-io-dev,
          libaikido-statespace-dev,
          libaikido-trajectory (= ${binary:Version})
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
@@ -203,7 +203,7 @@ Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
-         libaikido-util-dev,
+         libaikido-io-dev,
          libaikido-statespace-dev,
          libaikido-constraint (= ${binary:Version})
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
@@ -231,7 +231,7 @@ Architecture: amd64
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          libaikido-dev,
-         libaikido-util-dev,
+         libaikido-io-dev,
          libaikido-statespace-dev,
          libaikido-distance-dev,
          libaikido-trajectory-dev,
