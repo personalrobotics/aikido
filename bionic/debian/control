@@ -311,7 +311,6 @@ Depends: ${misc:Depends},
          libaikido-io-dev,
          libaikido-planner-dev,
          libaikido-planner-parabolic-dev,
-         libaikido-rviz-dev,
          libaikido-statespace-dev,
          libaikido-trajectory-dev
 Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
