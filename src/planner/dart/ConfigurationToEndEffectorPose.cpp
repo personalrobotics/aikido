@@ -15,7 +15,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mStartState(startState)
+  , mStartState(mStateSpace->cloneState(startState))
   , mGoalPose(goalPose)
 {
   // Do nothing

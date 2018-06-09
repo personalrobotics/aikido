@@ -32,7 +32,7 @@ auto SE3::createState() const -> ScopedState
 }
 
 //==============================================================================
-SE3::ScopedState SE3::cloneState(const StateSpace::State* stateIn) const
+SE3::ScopedState SE3::cloneState(StateSpace::State* stateIn) const
 {
   auto newState = createState();
   copyState(stateIn, newState);
@@ -65,9 +65,9 @@ StateSpace::State* SE3::allocateStateInBuffer(void* _buffer) const
 }
 
 //==============================================================================
-void SE3::freeStateInBuffer(StateSpace::State* _state) const
+void SE3::freeStateInBuffer(const StateSpace::State* _state) const
 {
-  static_cast<State*>(_state)->~State();
+  static_cast<const State*>(_state)->~State();
 }
 
 //==============================================================================

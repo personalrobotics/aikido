@@ -13,11 +13,18 @@ class CompoundStateHandle
 {
 public:
   using typename statespace::StateHandle<CartesianProduct,
-                                         _QualifiedState>::State;
-  using typename statespace::StateHandle<CartesianProduct,
                                          _QualifiedState>::StateSpace;
+
   using typename statespace::StateHandle<CartesianProduct,
                                          _QualifiedState>::QualifiedState;
+
+  using typename statespace::StateHandle<CartesianProduct,
+                                         _QualifiedState>::State;
+  using typename statespace::StateHandle<CartesianProduct,
+                                         _QualifiedState>::ConstState;
+
+  using NonConstCompoundHandle = CompoundStateHandle<State>;
+  using ConstCompoundHandle = CompoundStateHandle<ConstState>;
 
   /// Construct and initialize to \c nullptr.
   CompoundStateHandle()
@@ -34,6 +41,32 @@ public:
   {
     // Do nothing
   }
+
+  CompoundStateHandle(const CompoundStateHandle&) = default;
+  CompoundStateHandle(CompoundStateHandle&&) = default;
+
+  CompoundStateHandle& operator=(const CompoundStateHandle&) = default;
+  CompoundStateHandle& operator=(CompoundStateHandle&&) = default;
+
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  CompoundStateHandle(const NonConstCompoundHandle& other) {}
+
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  CompoundStateHandle(NonConstCompoundHandle&& other) {}
+
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  CompoundStateHandle& operator=(const NonConstCompoundHandle& other) {}
+
+  template <typename Q = QualifiedState,
+            typename Enable
+            = typename std::enable_if<std::is_const<Q>::value>::type>
+  CompoundStateHandle& operator=(NonConstCompoundHandle&& other) {}
 
   /// Gets state by subspace index.
   ///

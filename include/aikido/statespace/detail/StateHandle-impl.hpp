@@ -22,6 +22,44 @@ StateHandle<StateSpace, QualifiedState>::StateHandle(
 
 //==============================================================================
 template <class StateSpace, class QualifiedState>
+template <typename Q, typename Enable>
+StateHandle<StateSpace, QualifiedState>::StateHandle(const NonConstHandle& other)
+  : mSpace(other.mSpace), mState(other.mState)
+{
+  // Do nothing
+}
+
+//==============================================================================
+template <class StateSpace, class QualifiedState>
+template <typename Q, typename Enable>
+StateHandle<StateSpace, QualifiedState>::StateHandle(NonConstHandle&& other)
+  : mSpace(std::move(other.mSpace)), mState(std::move(other.mState))
+{
+  // Do nothing
+}
+
+//==============================================================================
+template <class StateSpace, class QualifiedState>
+template <typename Q, typename Enable>
+typename StateHandle<StateSpace, QualifiedState>::StateHandle& StateHandle<StateSpace, QualifiedState>::operator =(const typename StateHandle<StateSpace, QualifiedState>::NonConstHandle& other)
+{
+  mSpace = other.mSpace;
+  mState = other.mState;
+  return *this;
+}
+
+//==============================================================================
+template <class StateSpace, class QualifiedState>
+template <typename Q, typename Enable>
+typename StateHandle<StateSpace, QualifiedState>::StateHandle& StateHandle<StateSpace, QualifiedState>::operator =(typename StateHandle<StateSpace, QualifiedState>::NonConstHandle&& other)
+{
+  mSpace = std::move(other.mSpace);
+  mState = std::move(other.mState);
+  return *this;
+}
+
+//==============================================================================
+template <class StateSpace, class QualifiedState>
 StateHandle<StateSpace, QualifiedState>::operator QualifiedState*() const
 {
   return mState;

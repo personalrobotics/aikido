@@ -17,7 +17,7 @@ ConfigurationToTSR::ConfigurationToTSR(
   : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mMaxSamples(maxSamples)
-  , mStartState(startState)
+  , mStartState(mStateSpace->cloneState(startState))
   , mGoalTSR(goalTSR)
 {
   // Do nothing

@@ -69,7 +69,7 @@ public:
   ScopedState createState() const;
 
   /// Creates an identical clone of \c stateIn.
-  ScopedState cloneState(const StateSpace::State* stateIn) const;
+  ScopedState cloneState(StateSpace::State* stateIn) const;
 
   /// Gets value as an Eigen transformation object.
   ///
@@ -90,7 +90,7 @@ public:
   StateSpace::State* allocateStateInBuffer(void* _buffer) const override;
 
   // Documentation inherited.
-  void freeStateInBuffer(StateSpace::State* _state) const override;
+  void freeStateInBuffer(const StateSpace::State* _state) const override;
 
   // Documentation inherited.
   void compose(

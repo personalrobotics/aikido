@@ -68,7 +68,7 @@ public:
   StateSpace::State* allocateStateInBuffer(void* buffer) const override;
 
   // Documentation inherited.
-  void freeStateInBuffer(StateSpace::State* state) const override;
+  void freeStateInBuffer(const StateSpace::State* state) const override;
 
   // Documentation inherited.
   void compose(

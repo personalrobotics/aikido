@@ -90,9 +90,9 @@ StateSpace::State* SO2::allocateStateInBuffer(void* buffer) const
 }
 
 //==============================================================================
-void SO2::freeStateInBuffer(StateSpace::State* state) const
+void SO2::freeStateInBuffer(const StateSpace::State* state) const
 {
-  static_cast<State*>(state)->~State();
+  static_cast<const State*>(state)->~State();
 }
 
 //==============================================================================

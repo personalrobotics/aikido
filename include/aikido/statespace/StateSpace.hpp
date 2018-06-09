@@ -48,7 +48,10 @@ public:
   ScopedState createState() const;
 
   /// Creates an identical clone of \c stateIn.
-  ScopedState cloneState(const State* stateIn) const;
+  ScopedState cloneState(State* stateIn) const;
+
+  /// Creates an identical clone of \c stateIn.
+  ScopedStateConst cloneState(const State* stateIn) const;
 
   /// Allocate a new state. This must be deleted with \c freeState. This is a
   /// helper function that allocates memory, uses \c allocateStateInBuffer to
@@ -80,7 +83,7 @@ public:
   /// undefined behavior to access \c _state after calling this function.
   ///
   /// \param _state state to free
-  virtual void freeStateInBuffer(State* _state) const = 0;
+  virtual void freeStateInBuffer(const State* _state) const = 0;
 
   /// Lie group operation for this StateSpace. It is not acceptable for \c _out
   /// to share memory with \c _state1 or \c _state2.
