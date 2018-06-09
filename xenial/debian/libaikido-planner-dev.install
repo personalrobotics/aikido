@@ -1,0 +1,6 @@
+usr/include/aikido/planner.hpp
+usr/include/aikido/planner/*.*
+usr/lib/aikido/cmake/aikido_plannerComponent.cmake
+usr/lib/aikido/cmake/aikido_plannerTargets.cmake
+usr/lib/aikido/cmake/aikido_plannerTargets-*.cmake
+

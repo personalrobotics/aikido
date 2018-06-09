@@ -1,0 +1,5 @@
+usr/include/aikido/control/*.*
+usr/lib/aikido/cmake/aikido_controlComponent.cmake
+usr/lib/aikido/cmake/aikido_controlTargets.cmake
+usr/lib/aikido/cmake/aikido_controlTargets-*.cmake
+

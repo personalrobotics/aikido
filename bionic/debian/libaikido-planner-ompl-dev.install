@@ -1,0 +1,5 @@
+usr/include/aikido/planner/ompl/*
+usr/lib/aikido/cmake/aikido_planner_omplComponent.cmake
+usr/lib/aikido/cmake/aikido_planner_omplTargets.cmake
+usr/lib/aikido/cmake/aikido_planner_omplTargets-*.cmake
+

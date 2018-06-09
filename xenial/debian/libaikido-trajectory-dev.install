@@ -1,0 +1,6 @@
+usr/include/aikido/trajectory.hpp
+usr/include/aikido/trajectory/*
+usr/lib/aikido/cmake/aikido_trajectoryComponent.cmake
+usr/lib/aikido/cmake/aikido_trajectoryTargets.cmake
+usr/lib/aikido/cmake/aikido_trajectoryTargets-*.cmake
+

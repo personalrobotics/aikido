@@ -1,0 +1,5 @@
+usr/include/aikido/planner/parabolic/*
+usr/lib/aikido/cmake/aikido_planner_parabolicComponent.cmake
+usr/lib/aikido/cmake/aikido_planner_parabolicTargets.cmake
+usr/lib/aikido/cmake/aikido_planner_parabolicTargets-*.cmake
+

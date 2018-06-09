@@ -1,0 +1,350 @@
+Source: aikido
+Priority: extra
+Maintainer: Jeongseok Lee <jslee02@gmail.com>
+Build-Depends: debhelper (>= 9),
+               cmake,
+               doxygen,
+               libboost-filesystem-dev,
+               libdart6-optimizer-nlopt-dev,
+               libdart6-utils-dev,
+               libdart6-utils-urdf-dev,
+               libmicrohttpd-dev,
+               libompl-dev,
+               libtinyxml2-dev,
+               libyaml-cpp-dev
+Standards-Version: 3.9.8
+Section: libs
+Homepage: https://github.com/personalrobotics/aikido
+Vcs-Git: git://github.com/personalrobotics/aikido.git
+Vcs-Browser: https://github.com/personalrobotics/aikido
+
+Package: libaikido
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido (= ${binary:Version}),
+         libboost-filesystem-dev,
+         libdart6-optimizer-nlopt-dev,
+         libdart6-utils-dev
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-common
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-common-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-common (= ${binary:Version}),
+         libboost-filesystem-dev,
+         libyaml-cpp-dev,
+         libtinyxml2-dev
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-io
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-io-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-io (= ${binary:Version}),
+         libboost-filesystem-dev,
+         libyaml-cpp-dev,
+         libtinyxml2-dev
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-statespace
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-statespace-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-statespace (= ${binary:Version})
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-distance
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-distance-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-statespace-dev,
+         libaikido-distance (= ${binary:Version})
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-trajectory
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-trajectory-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-util-dev,
+         libaikido-statespace-dev,
+         libaikido-trajectory (= ${binary:Version})
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-constraint
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-constraint-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-util-dev,
+         libaikido-statespace-dev,
+         libaikido-constraint (= ${binary:Version})
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-planner
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-planner-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-util-dev,
+         libaikido-statespace-dev,
+         libaikido-distance-dev,
+         libaikido-trajectory-dev,
+         libaikido-constraint-dev,
+         libaikido-planner (= ${binary:Version})
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-planner-ompl
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-planner-ompl-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-planner-dev,
+         libaikido-planner-ompl (= ${binary:Version}),
+         libompl-dev
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-planner-parabolic
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-planner-parabolic-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-planner-dev,
+         libaikido-planner-parabolic (= ${binary:Version})
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-control
+Section: libs
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Shared Library
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-control-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-statespace-dev,
+         libaikido-trajectory-dev,
+         libaikido-control (= ${binary:Version})
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
+
+Package: libaikido-all-dev
+Section: libdevel
+Architecture: amd64
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         libaikido-dev,
+         libaikido-common-dev,
+         libaikido-constraint-dev,
+         libaikido-control-dev,
+         libaikido-distance-dev,
+         libaikido-io-dev,
+         libaikido-planner-dev,
+         libaikido-planner-ompl-dev,
+         libaikido-planner-parabolic-dev,
+         libaikido-rviz-dev,
+         libaikido-statespace-dev,
+         libaikido-trajectory-dev
+Description: Artificial Intelligence for Kinematics, Dynamics, and Optimization - Development Files
+ AIKIDO is a C++ library, complete with Python bindings, for solving robotic
+ motion planning and decision making problems. This library is tightly
+ integrated with DART for kinematic/dynamics calculations and OMPL for motion
+ planning. AIKIDO optionally integrates with ROS, through the suite of
+ aikido_ros packages, for execution on real robots.
