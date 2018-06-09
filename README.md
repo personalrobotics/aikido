@@ -28,7 +28,7 @@ $ sudo add-apt-repository ppa:fcl-debs/ppa
 $ sudo add-apt-repository ppa:dartsim/ppa
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
-$ sudo apt-get install libaikido0-all-dev
+$ sudo apt-get install libaikido-all-dev
 ```
 
 ### On macOS using [Homebrew]
@@ -41,7 +41,7 @@ $ brew tap personalrobotics/tap
 # Install AIKIDO
 $ brew install aikido
 ```
-> Note: While ROS seems to be [available on macOS](http://wiki.ros.org/indigo/Installation/OSX/Homebrew/Source), we haven't tested it with AIKIDO. For now, `brew install aikido0` installs AIKIDO without the ROS-dependent components.
+> Note: While ROS seems to be [available on macOS](http://wiki.ros.org/indigo/Installation/OSX/Homebrew/Source), we haven't tested it with AIKIDO. For now, `brew install aikido` installs AIKIDO without the ROS-dependent components.
 
 ## Building from Source
 
