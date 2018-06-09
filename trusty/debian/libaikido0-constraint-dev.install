@@ -1,0 +1,6 @@
+usr/include/aikido/constraint.hpp
+usr/include/aikido/constraint/*
+usr/lib/aikido/cmake/aikido_constraintComponent.cmake
+usr/lib/aikido/cmake/aikido_constraintTargets.cmake
+usr/lib/aikido/cmake/aikido_constraintTargets-*.cmake
+

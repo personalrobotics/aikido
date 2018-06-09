@@ -1,0 +1,5 @@
+usr/include/aikido/control/ros/*
+usr/lib/aikido/cmake/aikido_control_rosComponent.cmake
+usr/lib/aikido/cmake/aikido_control_rosTargets.cmake
+usr/lib/aikido/cmake/aikido_control_rosTargets-*.cmake
+
