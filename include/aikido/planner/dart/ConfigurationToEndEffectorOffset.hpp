@@ -106,11 +106,13 @@ public:
   /// while maintaining the current orientation.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
+  /// Return the start state to plan from, either set on construction or
+  /// taken from the current state of the MetaSkeleton.
   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the direction of motion specified in the world frame. Note that
-  /// if the passed direction was boost::none, the current direction of the
-  /// end effector body node is returned instead.
+  /// if no direction was passed, the current direction of the end effector body
+  /// node is returned.
   const Eigen::Vector3d getDirection() const;
 
   /// Returns the signed distance in meters to move in the specified direction.
