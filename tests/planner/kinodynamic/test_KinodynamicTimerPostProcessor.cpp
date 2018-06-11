@@ -37,8 +37,7 @@ protected:
 TEST_F(KinodynamicTimerPostProcessorTests, testTime)
 {
   KinodynamicTimer testKinodynamicTimerPostProcessor(
-      Vector2d::Constant(2.), Vector2d::Constant(1.),
-      mMaxDeviation, mTimeStep);
+      Vector2d::Constant(2.), Vector2d::Constant(1.), mMaxDeviation, mTimeStep);
 
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
@@ -93,8 +92,7 @@ TEST_F(KinodynamicTimerPostProcessorTests, testTime)
 TEST_F(KinodynamicTimerPostProcessorTests, testSplineTiming)
 {
   KinodynamicTimer testKinodynamicTimerPostProcessor(
-      Vector2d::Constant(2.), Vector2d::Constant(1.),
-      mMaxDeviation, mTimeStep);
+      Vector2d::Constant(2.), Vector2d::Constant(1.), mMaxDeviation, mTimeStep);
 
   Interpolated interpolated(mStateSpace, mInterpolator);
 
@@ -113,7 +111,8 @@ TEST_F(KinodynamicTimerPostProcessorTests, testSplineTiming)
 
   auto timedInterpolated
       = testKinodynamicTimerPostProcessor.postprocess(interpolated, mRng);
-  auto timedSpline = testKinodynamicTimerPostProcessor.postprocess(*spline, mRng);
+  auto timedSpline
+      = testKinodynamicTimerPostProcessor.postprocess(*spline, mRng);
 
   timedInterpolated->evaluate(1., state);
   timedSpline->evaluate(1., state2);

@@ -176,8 +176,11 @@ TEST_F(KinodynamicTimerTests, StraightLine_TriangularProfile)
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeKinodynamicTiming(
-      inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.),
-      maxDeviation, timeStep);
+      inputTrajectory,
+      Vector2d::Constant(2.),
+      Vector2d::Constant(1.),
+      maxDeviation,
+      timeStep);
 
   double durationTolerance = 1e-6;
   // TODO: Why does this return three derivatives instead of two?
@@ -232,8 +235,11 @@ TEST_F(KinodynamicTimerTests, StraightLine_TrapezoidalProfile)
   double maxDeviation = 1e-2;
   double timeStep = 0.1;
   auto timedTrajectory = computeKinodynamicTiming(
-      inputTrajectory, Vector2d::Constant(1.), Vector2d::Constant(1.),
-      maxDeviation, timeStep);
+      inputTrajectory,
+      Vector2d::Constant(1.),
+      Vector2d::Constant(1.),
+      maxDeviation,
+      timeStep);
 
   // TODO: Why does this return three derivatives instead of two?
   double durationTolerance = 1e-6;
@@ -336,7 +342,8 @@ TEST_F(KinodynamicTimerTests, SupportedCartesianProduct_DoesNotThrow)
   inputTrajectory.addWaypoint(1., state);
 
   EXPECT_NO_THROW({
-    computeKinodynamicTiming(inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
+    computeKinodynamicTiming(
+        inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
   });
 }
 
@@ -373,8 +380,12 @@ TEST_F(KinodynamicTimerTests, timingAribtraryMultipleWaypoints)
   double maxDeviation = 10.;
   double timeStep = 10.;
   EXPECT_NO_THROW({
-    computeKinodynamicTiming(inputTrajectory, maxVelocities, maxAccelerations,
-                             maxDeviation, timeStep);
+    computeKinodynamicTiming(
+        inputTrajectory,
+        maxVelocities,
+        maxAccelerations,
+        maxDeviation,
+        timeStep);
   });
 }
 

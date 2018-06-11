@@ -65,8 +65,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     double maxDeviation = 1e-2,
     double timeStep = 0.1);
 
-
-/// Class for performing time-optimal trajectory retiming following subject to 
+/// Class for performing time-optimal trajectory retiming following subject to
 /// velocity and acceleration limits.
 class KinodynamicTimer : public aikido::planner::TrajectoryPostProcessor
 {
@@ -103,7 +102,7 @@ public:
 
   /// Sets the velocity limits of the dimensions
   void setVelocityLimits(const Eigen::VectorXd& velocityLimits);
-  
+
   /// Sets the acceleration limits of the dimensions
   void setAccelerationLimits(const Eigen::VectorXd& accelerationLimits);
 
