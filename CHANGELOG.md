@@ -43,6 +43,7 @@
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
   * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)
+  * Add a kinodynamic timer that generates a time-optimal smooth trajectory without completely stopping at each waypoint: [#443}(https://github.com/personalrobotics/aikido/pull/443)
 
 * Robot
 
