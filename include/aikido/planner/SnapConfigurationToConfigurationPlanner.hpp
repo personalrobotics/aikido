@@ -28,7 +28,7 @@ public:
   /// \param[in] interpolator Interpolator used to produce the output
   /// trajectory. If nullptr is passed in, GeodesicInterpolator is used by
   /// default.
-  SnapConfigurationToConfigurationPlanner(
+  explicit SnapConfigurationToConfigurationPlanner(
       statespace::ConstStateSpacePtr stateSpace,
       statespace::ConstInterpolatorPtr interpolator = nullptr);
 

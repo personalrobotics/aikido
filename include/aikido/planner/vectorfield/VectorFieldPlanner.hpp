@@ -57,8 +57,8 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
     const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
-    dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const dart::dynamics::ConstBodyNodePtr& bn,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
     const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Vector3d& direction,
     double minDistance,
@@ -93,8 +93,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const dart::dynamics::BodyNodePtr& bn,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,

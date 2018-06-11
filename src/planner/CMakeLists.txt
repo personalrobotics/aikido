@@ -2,10 +2,6 @@ set(sources
   ConfigurationToConfiguration.cpp
   ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp
-  ConfigurationToTSR.cpp
-  ConfigurationToEndEffectorOffset.cpp
-  ConfigurationToEndEffectorOffsetPlanner.cpp
-  ConfigurationToEndEffectorPose.cpp
   FirstSupportedMetaPlanner.cpp
   CompositePlanner.cpp
   Planner.cpp
@@ -17,6 +13,13 @@ set(sources
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  dart/ConfigurationToEndEffectorOffset.cpp
+  dart/ConfigurationToEndEffectorPose.cpp
+  dart/ConfigurationToTSR.cpp
+  dart/ConfigurationToEndEffectorOffsetPlanner.cpp
+  # dart/ConfigurationToEndEffectorPosePlanner.cpp
+  dart/ConfigurationToTSRPlanner.cpp
+  dart/ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
