@@ -96,7 +96,6 @@ public:
       double signedDistance,
       constraint::ConstTestablePtr constraint);
 
-
   // Documentation inherited.
   const std::string& getType() const override;
 
@@ -107,7 +106,7 @@ public:
   /// while maintaining the current orientation.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the direction of motion specified in the world frame. Note that
   /// if the passed direction was boost::none, the current direction of the
@@ -118,6 +117,9 @@ public:
   double getDistance() const;
 
 protected:
+  /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on
+  /// mStateSpace.
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
 
   /// MetaSkeleton, if given.
   ::dart::dynamics::ConstMetaSkeletonPtr mMetaSkeleton;

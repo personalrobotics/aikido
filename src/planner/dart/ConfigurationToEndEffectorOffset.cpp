@@ -15,6 +15,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(nullptr)
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
@@ -34,6 +35,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
@@ -52,6 +54,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(nullptr)
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
@@ -69,6 +72,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
@@ -96,6 +100,21 @@ const std::string& ConfigurationToEndEffectorOffset::getStaticType()
 ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
+}
+
+//==============================================================================
+const statespace::dart::MetaSkeletonStateSpace::State*
+ConfigurationToEndEffectorOffset::getStartState() const
+{
+  // Take start state from MetaSkeleton if passed.
+  if (mMetaSkeleton)
+  {
+    auto startState = mMetaSkeletonStateSpace->createState();
+    mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
+    return std::move(startState);
+  }
+
+  return mStartState;
 }
 
 //==============================================================================
