@@ -17,24 +17,85 @@ namespace dart {
 class ConfigurationToEndEffectorOffset : public Problem
 {
 public:
-  /// Constructor.
+  /// Constructor. Note that this constructor takes the start state from the
+  /// current state of the passed MetaSkeleton, and sets the direction on
+  /// construction.
   ///
   /// \param[in] stateSpace State space.
+  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// offest while maintaining the current orientation.
   /// \param[in] direction Unit vector that represents the direction of motion
-  /// [unit vector in the world frame]. Allowed to be boost::none.
+  /// [unit vector in the world frame].
   /// \param[in] signedDistance Signed distance to move, in meters.
-  /// \param[in] interpolator Interpolator used to produce the output
-  /// trajectory.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If the size of \c direction is zero.
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const boost::optional<Eigen::Vector3d>& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint);
+
+  /// Constructor. Note that this constructor sets the start state and direction
+  /// on construction.
+  ///
+  /// \param[in] stateSpace State space.
+  /// \param[in] startState Start state to plan from.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// offest while maintaining the current orientation.
+  /// \param[in] direction Unit vector that represents the direction of motion
+  /// [unit vector in the world frame].
+  /// \param[in] signedDistance Signed distance to move, in meters.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+  /// \throw If the size of \c direction is zero.
+  ConfigurationToEndEffectorOffset(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      const boost::optional<Eigen::Vector3d>& direction,
+      double signedDistance,
+      constraint::ConstTestablePtr constraint);
+
+  /// Constructor. Note that this constructor takes the start state from the
+  /// current state of the passed MetaSkeleton, and takes the direction from the
+  /// end-effector BodyNode's current direction.
+  ///
+  /// \param[in] stateSpace State space.
+  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// current state of when called.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// offest while maintaining the current orientation. Current direction is
+  /// returned when getDirection is called.
+  /// \param[in] signedDistance Signed distance to move, in meters.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+  ConfigurationToEndEffectorOffset(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      double signedDistance,
+      constraint::ConstTestablePtr constraint);
+
+  /// Constructor. Note that this constructor sets the start state on
+  /// construction, and takes the direction from the end-effector BodyNode's
+  /// current direction.
+  ///
+  /// \param[in] stateSpace State space.
+  /// \param[in] startState Start state to plan from.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// offest while maintaining the current orientation. Current direction is
+  /// returned when getDirection is called.
+  /// \param[in] signedDistance Signed distance to move, in meters.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+  ConfigurationToEndEffectorOffset(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      double signedDistance,
+      constraint::ConstTestablePtr constraint);
+
 
   // Documentation inherited.
   const std::string& getType() const override;
@@ -46,6 +107,8 @@ public:
   /// while maintaining the current orientation.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
+   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
+
   /// Returns the direction of motion specified in the world frame. Note that
   /// if the passed direction was boost::none, the current direction of the
   /// end effector body node is returned instead.
@@ -55,10 +118,17 @@ public:
   double getDistance() const;
 
 protected:
+
+  /// MetaSkeleton, if given.
+  ::dart::dynamics::ConstMetaSkeletonPtr mMetaSkeleton;
+
+  /// Start state, if set on construction.
+  statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
+
   /// End-effector body node.
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
-  /// Direction of motion.
+  /// Direction of motion, if set on construction.
   const boost::optional<Eigen::Vector3d> mDirection;
 
   /// Signed distance to move in the direction specified.

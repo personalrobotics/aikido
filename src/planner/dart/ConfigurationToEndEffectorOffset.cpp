@@ -9,17 +9,73 @@ namespace dart {
 //==============================================================================
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const boost::optional<Eigen::Vector3d>& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeleton(std::move(metaSkeleton))
+  , mStartState(nullptr)
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mDirection(direction)
   , mDistance(signedDistance)
 {
-  if (mDirection && mDirection.get().squaredNorm() == 0)
+  if (mDirection.get().squaredNorm() == 0)
     throw std::invalid_argument("direction shouldn't be a zero vector.");
+}
+
+//==============================================================================
+ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State* startState,
+    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+    const boost::optional<Eigen::Vector3d>& direction,
+    double signedDistance,
+    constraint::ConstTestablePtr constraint)
+  : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeleton(nullptr)
+  , mStartState(stateSpace->cloneState(startState))
+  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+  , mDirection(direction)
+  , mDistance(signedDistance)
+{
+  if (mDirection.get().squaredNorm() == 0)
+    throw std::invalid_argument("direction shouldn't be a zero vector.");
+}
+
+//==============================================================================
+ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+    double signedDistance,
+    constraint::ConstTestablePtr constraint)
+  : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeleton(std::move(metaSkeleton))
+  , mStartState(nullptr)
+  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+  , mDirection(boost::none)
+  , mDistance(signedDistance)
+{
+  // Do nothing.
+}
+
+//==============================================================================
+ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State* startState,
+    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+    double signedDistance,
+    constraint::ConstTestablePtr constraint)
+  : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeleton(nullptr)
+  , mStartState(stateSpace->cloneState(startState))
+  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+  , mDirection(boost::none)
+  , mDistance(signedDistance)
+{
+  // Do nothing.
 }
 
 //==============================================================================
