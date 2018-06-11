@@ -58,8 +58,8 @@ TEST_F(KinodynamicTimerPostProcessorTests, testTime)
 
   // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
-  EXPECT_EQ(2, timedTrajectory->getNumSegments());
-  EXPECT_DOUBLE_EQ(2., timedTrajectory->getDuration());
+  double durationTolerance = 1e-6;
+  EXPECT_NEAR(2., timedTrajectory->getDuration(), durationTolerance);
 
   // Position.
   timedTrajectory->evaluate(0., state);
@@ -81,12 +81,13 @@ TEST_F(KinodynamicTimerPostProcessorTests, testTime)
   timedTrajectory->evaluateDerivative(1.5, 1, tangentVector);
   EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
 
+  double accelerationPrecision = 1e-10;
   // Acceleration.
   timedTrajectory->evaluateDerivative(0.5, 2, tangentVector);
-  EXPECT_TRUE(Vector2d(1., 1.).isApprox(tangentVector));
+  EXPECT_TRUE(Vector2d(1., 1.).isApprox(tangentVector, accelerationPrecision));
 
   timedTrajectory->evaluateDerivative(1.5, 2, tangentVector);
-  EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector));
+  EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector, accelerationPrecision));
 }
 
 TEST_F(KinodynamicTimerPostProcessorTests, testSplineTiming)
