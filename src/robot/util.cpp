@@ -400,11 +400,15 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
+
   auto minDistance = distance - vfParameters.negativeDistanceTolerance;
   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
   auto traj = planner::vectorfield::planToEndEffectorOffset(
       space,
+      *startState,
       metaSkeleton,
       bodyNode,
       collisionTestable,

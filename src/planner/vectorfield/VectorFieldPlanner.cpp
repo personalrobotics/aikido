@@ -127,6 +127,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
     const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::ConstBodyNodePtr& bn,
     const aikido::constraint::ConstTestablePtr& constraint,
@@ -178,12 +179,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
 
-  // Get that start state form the MetaSkeleton, since this is a DART planner.
-  auto startState
-      = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
+  stateSpace->setState(metaskeleton.get(), &startState);
   return followVectorField(
       *vectorfield,
-      *startState,
+      startState,
       *compoundConstraint,
       timelimit,
       initialStepSize,

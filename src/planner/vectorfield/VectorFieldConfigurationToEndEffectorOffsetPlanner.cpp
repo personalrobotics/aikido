@@ -64,9 +64,9 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   }
 
   // Just call the core VFP function.
-  // TODO: How should start state be handled?
   return planToEndEffectorOffset(
       getMetaSkeletonStateSpace(),
+      *problem.getStartState(),
       mMetaSkeleton,
       problem.getEndEffectorBodyNode(),
       problem.getConstraint(),
