@@ -6,12 +6,6 @@
 #include "Path.h"
 #include "Trajectory.h"
 
-using Eigen::Vector2d;
-using dart::common::make_unique;
-
-using LinearSplineProblem
-    = aikido::common::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
-
 namespace aikido {
 namespace planner {
 namespace kinodynamic {
@@ -31,25 +25,23 @@ createSplineFromWaypointsAndConstraints(
       Path(waypoints, maxDeviation), maxVelocities, maxAccelerations, timeStep);
   if (trajectory.isValid())
   {
-    // create spline
     using dart::common::make_unique;
-
-    double endTime = startTime + trajectory.getDuration();
-
-    std::size_t dimension = stateSpace->getDimension();
-    auto outputTrajectory
-        = make_unique<aikido::trajectory::Spline>(stateSpace, startTime);
-
     using CubicSplineProblem = aikido::common::
         SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
 
-    const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
-    auto currState = stateSpace->createState();
+    std::size_t dimension = stateSpace->getDimension();
+    double endTime = startTime + trajectory.getDuration();
+
+    // create spline
+    auto outputTrajectory
+        = make_unique<aikido::trajectory::Spline>(stateSpace, startTime);
 
     // create a sequence of time steps from start time to end time by time step
     aikido::common::StepSequence sequence(
         timeStep, true, true, startTime, endTime);
 
+    const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
+    auto currState = stateSpace->createState();
     for (std::size_t i = 1; i < sequence.getLength(); i++)
     {
       double currT = sequence[i - 1];
@@ -78,6 +70,7 @@ createSplineFromWaypointsAndConstraints(
     return outputTrajectory;
   }
 
+  // path is invalid. Retiming failed.
   return nullptr;
 }
 
@@ -112,7 +105,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
   }
 
   double startTime = inputTrajectory.getStartTime();
-  // create waypoints from path
+  // create waypoints from Interpolated path
   std::list<Eigen::VectorXd> waypoints;
   Eigen::VectorXd tmpVec(stateSpace->getDimension());
   for (std::size_t i = 0; i < inputTrajectory.getNumWaypoints(); i++)
@@ -163,7 +156,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
   }
 
   double startTime = inputTrajectory.getStartTime();
-  // create waypoints from path
+  // create waypoints from Spline path
   std::list<Eigen::VectorXd> waypoints;
   Eigen::VectorXd tmpVec(stateSpace->getDimension());
   auto tmpState = stateSpace->createState();
@@ -226,42 +219,50 @@ std::unique_ptr<aikido::trajectory::Spline> KinodynamicTimer::postprocess(
       mTimeStep);
 }
 
+//==============================================================================
 const Eigen::VectorXd& KinodynamicTimer::getVelocityLimits() const
 {
   return mVelocityLimits;
 }
 
+//==============================================================================
 const Eigen::VectorXd& KinodynamicTimer::getAccelerationLimits() const
 {
   return mAccelerationLimits;
 }
 
+//==============================================================================
 void KinodynamicTimer::setVelocityLimits(const Eigen::VectorXd& velocityLimits)
 {
   mVelocityLimits = velocityLimits;
 }
 
+//==============================================================================
 void KinodynamicTimer::setAccelerationLimits(
     const Eigen::VectorXd& accelerationLimits)
 {
   mAccelerationLimits = accelerationLimits;
 }
 
+//==============================================================================
 double KinodynamicTimer::getTimeStep() const
 {
   return mTimeStep;
 }
 
+//==============================================================================
 void KinodynamicTimer::setTimeStep(double timeStep)
 {
   mTimeStep = timeStep;
 }
 
+//==============================================================================
 double KinodynamicTimer::getMaxDeviation() const
 {
   return mMaxDeviation;
 }
 
+//==============================================================================
 void KinodynamicTimer::setMaxDeviation(double maxDeviation)
 {
   mMaxDeviation = maxDeviation;

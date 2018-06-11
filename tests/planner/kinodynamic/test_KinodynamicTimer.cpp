@@ -5,7 +5,6 @@
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
-#include <aikido/statespace/SO3.hpp>
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
@@ -14,7 +13,6 @@ using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R2;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
-using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::planner::kinodynamic::computeKinodynamicTiming;

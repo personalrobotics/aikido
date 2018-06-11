@@ -22,6 +22,7 @@ protected:
     mStateSpace = std::make_shared<R2>();
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
 
+    // set default parameters
     mMaxDeviation = 1e-1;
     mTimeStep = 0.01;
   }
@@ -56,7 +57,6 @@ TEST_F(KinodynamicTimerPostProcessorTests, testTime)
   auto timedTrajectory
       = testKinodynamicTimerPostProcessor.postprocess(inputTrajectory, mRng);
 
-  // TODO: Why does this return three derivatives instead of two?
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   double durationTolerance = 1e-6;
   EXPECT_NEAR(2., timedTrajectory->getDuration(), durationTolerance);
