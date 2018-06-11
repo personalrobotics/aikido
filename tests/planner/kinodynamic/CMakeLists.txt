@@ -1,5 +1,6 @@
 aikido_add_test(test_KinodynamicTimer
-  test_KinodynamicTimer.cpp)
+  test_KinodynamicTimer.cpp
+  test_KinodynamicTimerPostProcessor.cpp)
 target_link_libraries(test_KinodynamicTimer
   "${PROJECT_NAME}_trajectory"
   "${PROJECT_NAME}_planner_parabolic"
