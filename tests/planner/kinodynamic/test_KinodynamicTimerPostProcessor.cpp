@@ -87,7 +87,8 @@ TEST_F(KinodynamicTimerPostProcessorTests, testTime)
   EXPECT_TRUE(Vector2d(1., 1.).isApprox(tangentVector, accelerationPrecision));
 
   timedTrajectory->evaluateDerivative(1.5, 2, tangentVector);
-  EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector, accelerationPrecision));
+  EXPECT_TRUE(
+      Vector2d(-1., -1.).isApprox(tangentVector, accelerationPrecision));
 }
 
 TEST_F(KinodynamicTimerPostProcessorTests, testSplineTiming)
