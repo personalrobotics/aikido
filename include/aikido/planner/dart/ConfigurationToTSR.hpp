@@ -15,9 +15,12 @@ namespace dart {
 class ConfigurationToTSR : public Problem
 {
 public:
-  /// Constructor.
+  /// Constructor. Note that this constructor takes the start state from the
+  /// current state of the passed MetaSkeleton.
   ///
   /// \param[in] stateSpace State space.
+  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
   /// \param[in] maxSamples Maximum number of TSR samples to plan to.
@@ -27,6 +30,27 @@ public:
   /// space.
   ConfigurationToTSR(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      std::size_t maxSamples,
+      constraint::dart::ConstTSRPtr goalTSR,
+      constraint::ConstTestablePtr constraint);
+
+  /// Constructor. Note that this constructor sets the start state on
+  /// construction.
+  ///
+  /// \param[in] stateSpace State space.
+  /// \param[in] startState Start state to plan from.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// TSR.
+  /// \param[in] maxSamples Maximum number of TSR samples to plan to.
+  /// \param[in] goalTSR Goal TSR.
+  /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+  /// \throw If \c stateSpace is not compatible with \c constraint's state
+  /// space.
+  ConfigurationToTSR(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       std::size_t maxSamples,
       constraint::dart::ConstTSRPtr goalTSR,
@@ -44,10 +68,24 @@ public:
   /// Returns the maximum number of TSR samples to plan to.
   std::size_t getMaxSamples() const;
 
+  /// Return the start state to plan from, either set on construction or
+  /// taken from the current state of the MetaSkeleton.
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
+
   /// Returns the goal TSR.
   constraint::dart::ConstTSRPtr getGoalTSR() const;
 
 protected:
+  /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on
+  /// mStateSpace.
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+
+  /// MetaSkeleton, if given.
+  ::dart::dynamics::ConstMetaSkeletonPtr mMetaSkeleton;
+
+  /// Start state, if set on construction.
+  statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
+
   /// End-effector body node.
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
