@@ -577,7 +577,7 @@ base::PlannerStatus MyInformedRRTstar::solve(
       }
 
       // Add the new motion to the goalMotion_ list, if it satisfies the goal
-      double distanceFromGoal;
+      double distanceFromGoal = 0.0;
       if (goal->isSatisfied(motion->state, &distanceFromGoal))
       {
         goalMotions_.push_back(motion);
@@ -699,6 +699,8 @@ base::PlannerStatus MyInformedRRTstar::solve(
       // Checking for approximate solution (closest state found to the goal)
       if (goalMotions_.size() == 0 && distanceFromGoal < approximatedist)
       {
+        OMPL_INFORM("%s: distanceFromGoal - %d , approximatedist - %d", 
+                    getName().c_str(), distanceFromGoal, approximatedist);
         approximation = motion;
         approximatedist = distanceFromGoal;
       }
@@ -722,6 +724,7 @@ base::PlannerStatus MyInformedRRTstar::solve(
 
   if (solution != nullptr)
   {
+    OMPL_INFORM("%s: solution found", getName().c_str());
     ptc.terminate();
     // construct the solution path
     std::vector<Motion*> mpath;
