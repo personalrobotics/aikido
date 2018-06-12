@@ -32,6 +32,9 @@ namespace geometric {
 MyInformedRRTstar::MyInformedRRTstar(const ompl::base::SpaceInformationPtr& si)
   : InformedRRTstar(si)
 {
+  
+  setName("KinoInformedRRTstar");
+
   mode_ = RANDOM_SAMPLES;
   setTreePruning(false);
   useRejectionSampling_ = false;
@@ -136,6 +139,10 @@ ompl::base::PlannerStatus MyInformedRRTstar::solveAndSaveSamples(
 base::PlannerStatus MyInformedRRTstar::solve(
     const base::PlannerTerminationCondition& ptc)
 {
+  OMPL_INFORM(
+      "%s: YOU ARE CALLING THE RIGHT ONE",
+      getName().c_str());
+
   // std::cout << "Using Correct Informed RRT*" << std::endl;
   checkValidity();
   base::Goal* goal = pdef_->getGoal().get();
@@ -796,5 +803,6 @@ std::string MyInformedRRTstar::fromState(ompl::base::State* fromState)
   }
   return oss.str();
 }
+
 }
 }
