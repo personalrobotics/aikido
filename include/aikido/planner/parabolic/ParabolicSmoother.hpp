@@ -13,7 +13,7 @@ namespace parabolic {
 constexpr double DEFAULT_TIMELIMT = 3.0;
 constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
-constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
+constexpr double DEFAULT_CHECK_RESOLUTION = 1e-3;
 constexpr double DEFAULT_TOLERANCE = 1e-3;
 
 /// Shortcut waypoints in a trajectory using parabolic splines.
