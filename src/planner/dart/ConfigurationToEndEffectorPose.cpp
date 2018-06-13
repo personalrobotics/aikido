@@ -16,7 +16,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
-  , mStartState(nullptr)
+  , mStartState(std::move(mMetaSkeletonStateSpace->createState()))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mGoalPose(goalPose)
 {
@@ -64,12 +64,13 @@ ConfigurationToEndEffectorPose::getEndEffectorBodyNode() const
 const statespace::dart::MetaSkeletonStateSpace::State*
 ConfigurationToEndEffectorPose::getStartState() const
 {
-  // Take start state from MetaSkeleton if passed.
+  // Take start state from MetaSkeleton if passed. Store in the ScopedState
+  // instance variable to avoid dangling pointers.
   if (mMetaSkeleton)
   {
     auto startState = mMetaSkeletonStateSpace->createState();
     mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
-    return std::move(startState);
+    mStateSpace->copyState(startState, mStartState);
   }
 
   return mStartState;
