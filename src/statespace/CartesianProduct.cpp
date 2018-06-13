@@ -5,7 +5,7 @@ namespace aikido {
 namespace statespace {
 
 //==============================================================================
-CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
+CartesianProduct::CartesianProduct(std::vector<ConstStateSpacePtr> _subspaces)
   : mSubspaces(std::move(_subspaces))
   , mOffsets(mSubspaces.size(), 0u)
   , mSizeInBytes(0u)
@@ -29,6 +29,16 @@ CartesianProduct::CartesianProduct(std::vector<StateSpacePtr> _subspaces)
 auto CartesianProduct::createState() const -> ScopedState
 {
   return ScopedState(this);
+}
+
+//==============================================================================
+CartesianProduct::ScopedState CartesianProduct::cloneState(
+    const StateSpace::State* stateIn) const
+{
+  auto newState = createState();
+  copyState(stateIn, newState);
+
+  return newState;
 }
 
 //==============================================================================

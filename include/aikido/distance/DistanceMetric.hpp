@@ -17,7 +17,7 @@ public:
   virtual ~DistanceMetric() = default;
 
   /// Get the StateSpace associated with this metric
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Computes distance between two states. This function satisfies
   /// the properties of a metric:

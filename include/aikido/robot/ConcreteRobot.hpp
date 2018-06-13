@@ -93,12 +93,12 @@ public:
 
   // Documentation inherited.
   virtual aikido::constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
 
@@ -254,13 +254,15 @@ private:
   dart::dynamics::SkeletonPtr mParentSkeleton;
 
   /// True if running in simulation mode
-  bool mSimulation;
+  // bool mSimulation;
+  // TODO(JS): Disabled since not used in this class
 
   std::unique_ptr<common::RNG> mRng;
 
   std::shared_ptr<control::TrajectoryExecutor> mTrajectoryExecutor;
 
-  double mCollisionResolution;
+  // double mCollisionResolution;
+  // TODO(JS): Disabled since not used in this class
 
   /// Commonly used configurations.
   ConfigurationMap mNamedConfigurations;

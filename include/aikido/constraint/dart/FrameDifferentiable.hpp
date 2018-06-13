@@ -62,10 +62,10 @@ public:
   std::vector<ConstraintType> getConstraintTypes() const override;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   ::dart::dynamics::ConstJacobianNodePtr mJacobianNode;
   DifferentiablePtr mPoseConstraint;

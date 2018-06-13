@@ -38,7 +38,7 @@ public:
   /// Sets value to an Eigen transfomation object.
   ///
   /// \param _transform Eigen transformation
-  void setIsometry(const Eigen::Isometry2d& _transform) const
+  void setIsometry(const Eigen::Isometry2d& _transform)
   {
     return this->getStateSpace()->setIsometry(this->getState(), _transform);
   }

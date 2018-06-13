@@ -1,7 +1,25 @@
 set(sources
+  ConfigurationToConfiguration.cpp
+  ConfigurationToConfigurationPlanner.cpp
+  ConfigurationToConfigurations.cpp
+  FirstSupportedMetaPlanner.cpp
+  CompositePlanner.cpp
+  Planner.cpp
+  PlanningResult.cpp
+  Problem.cpp
+  RankedMetaPlanner.cpp
+  SnapConfigurationToConfigurationPlanner.cpp
   SnapPlanner.cpp
+  SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  dart/ConfigurationToEndEffectorOffset.cpp
+  dart/ConfigurationToEndEffectorPose.cpp
+  dart/ConfigurationToTSR.cpp
+  dart/ConfigurationToEndEffectorOffsetPlanner.cpp
+  # dart/ConfigurationToEndEffectorPosePlanner.cpp
+  dart/ConfigurationToTSRPlanner.cpp
+  dart/ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
@@ -36,6 +54,6 @@ add_component_dependencies(${PROJECT_NAME} planner
 
 format_add_sources(${sources})
 
-add_subdirectory("ompl")      # [constraint], [distance], [statespace], [trajectory], dart, ompl
-add_subdirectory("parabolic") # [external], [common], [trajectory], [statespace], dart
+add_subdirectory("ompl")        # [constraint], [distance], [statespace], [trajectory], dart, ompl
+add_subdirectory("parabolic")   # [external], [common], [trajectory], [statespace], dart
 add_subdirectory("vectorfield") # [common], [trajectory], [statespace], dart

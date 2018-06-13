@@ -13,7 +13,7 @@ namespace ompl {
 
 //==============================================================================
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -118,7 +118,7 @@ namespace ompl {
   auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
 
   // Validity checking
-  std::vector<constraint::TestablePtr> constraints{
+  std::vector<constraint::ConstTestablePtr> constraints{
       std::move(_validityConstraint), std::move(_boundsConstraint)};
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(
@@ -164,7 +164,7 @@ ompl_shared_ptr<::ompl::base::GoalRegion> getGoalRegion(
 trajectory::InterpolatedPtr planOMPL(
     const ::ompl::base::PlannerPtr& _planner,
     const ::ompl::base::ProblemDefinitionPtr& _pdef,
-    statespace::StateSpacePtr _sspace,
+    statespace::ConstStateSpacePtr _sspace,
     statespace::InterpolatorPtr _interpolator,
     double _maxPlanTime)
 {
@@ -206,7 +206,7 @@ trajectory::InterpolatedPtr planCRRT(
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
     constraint::ProjectablePtr _trajConstraint,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -290,7 +290,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
     constraint::ProjectablePtr _trajConstraint,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,

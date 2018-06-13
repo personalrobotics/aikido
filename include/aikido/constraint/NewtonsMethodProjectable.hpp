@@ -33,14 +33,14 @@ public:
       statespace::StateSpace::State* _out) const override;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
 private:
   DifferentiablePtr mDifferentiable;
   std::vector<double> mTolerance;
   int mMaxIteration;
   double mMinStepSize;
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 
   bool contains(const statespace::StateSpace::State* _s) const;
 };

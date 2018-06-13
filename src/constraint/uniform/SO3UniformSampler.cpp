@@ -10,7 +10,7 @@ class SO3UniformSampleGenerator : public constraint::SampleGenerator
 {
 public:
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -23,10 +23,10 @@ public:
 
 private:
   SO3UniformSampleGenerator(
-      std::shared_ptr<statespace::SO3> _space,
+      std::shared_ptr<const statespace::SO3> _space,
       std::unique_ptr<common::RNG> _rng);
 
-  std::shared_ptr<statespace::SO3> mSpace;
+  std::shared_ptr<const statespace::SO3> mSpace;
   std::unique_ptr<common::RNG> mRng;
   std::uniform_real_distribution<double> mDistribution;
 
@@ -35,14 +35,15 @@ private:
 
 //==============================================================================
 SO3UniformSampleGenerator::SO3UniformSampleGenerator(
-    std::shared_ptr<statespace::SO3> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO3> _space,
+    std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng)), mDistribution(0., 1.)
 {
   // Do nothing
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO3UniformSampleGenerator::getStateSpace() const
+statespace::ConstStateSpacePtr SO3UniformSampleGenerator::getStateSpace() const
 {
   return mSpace;
 }
@@ -74,7 +75,8 @@ bool SO3UniformSampleGenerator::canSample() const
 
 //==============================================================================
 SO3UniformSampler::SO3UniformSampler(
-    std::shared_ptr<statespace::SO3> _space, std::unique_ptr<common::RNG> _rng)
+    std::shared_ptr<const statespace::SO3> _space,
+    std::unique_ptr<common::RNG> _rng)
   : mSpace(std::move(_space)), mRng(std::move(_rng))
 {
   if (!mSpace)
@@ -85,7 +87,7 @@ SO3UniformSampler::SO3UniformSampler(
 }
 
 //==============================================================================
-statespace::StateSpacePtr SO3UniformSampler::getStateSpace() const
+statespace::ConstStateSpacePtr SO3UniformSampler::getStateSpace() const
 {
   return mSpace;
 }

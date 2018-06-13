@@ -24,7 +24,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnNullMetric)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -48,7 +48,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnMissingMetric)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -70,7 +70,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnMismatchMetricStatespace)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -96,7 +96,7 @@ TEST(CartesianProductWeightedDistance, ThrowsOnNegativeWeights)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
   EXPECT_THROW(
@@ -113,7 +113,7 @@ TEST(CartesianProductWeightedDistance, StateSpaceEquality)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -137,7 +137,7 @@ TEST(CartesianProductWeightedDistance, DistanceUnitWeights)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -159,11 +159,11 @@ TEST(CartesianProductWeightedDistance, DistanceUnitWeights)
   auto quat2 = Eigen::Quaterniond(
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
-  state1.getSubStateHandle<SO2>(0).setAngle(angle1);
+  state1.getSubStateHandle<SO2>(0).fromAngle(angle1);
   state1.getSubStateHandle<R3>(1).setValue(rv1);
   state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
-  state2.getSubStateHandle<SO2>(0).setAngle(angle2);
+  state2.getSubStateHandle<SO2>(0).fromAngle(angle2);
   state2.getSubStateHandle<R3>(1).setValue(rv2);
   state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 
@@ -176,7 +176,7 @@ TEST(CartesianProductWeightedDistance, DistanceCustomWeights)
   auto so2 = std::make_shared<SO2>();
   auto rv3 = std::make_shared<R3>();
   auto so3 = std::make_shared<SO3>();
-  std::vector<std::shared_ptr<StateSpace>> spaces = {so2, rv3, so3};
+  std::vector<std::shared_ptr<const StateSpace>> spaces = {so2, rv3, so3};
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
@@ -198,11 +198,11 @@ TEST(CartesianProductWeightedDistance, DistanceCustomWeights)
   auto quat2 = Eigen::Quaterniond(
       Eigen::AngleAxisd(M_PI - 0.5, Eigen::Vector3d::UnitZ()));
 
-  state1.getSubStateHandle<SO2>(0).setAngle(angle1);
+  state1.getSubStateHandle<SO2>(0).fromAngle(angle1);
   state1.getSubStateHandle<R3>(1).setValue(rv1);
   state1.getSubStateHandle<SO3>(2).setQuaternion(quat1);
 
-  state2.getSubStateHandle<SO2>(0).setAngle(angle2);
+  state2.getSubStateHandle<SO2>(0).fromAngle(angle2);
   state2.getSubStateHandle<R3>(1).setValue(rv2);
   state2.getSubStateHandle<SO3>(2).setQuaternion(quat2);
 

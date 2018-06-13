@@ -21,7 +21,7 @@ public:
   /// Constructor.
   ///
   /// \param[in] stateSpace State space that vector field is defined in.
-  explicit VectorField(aikido::statespace::StateSpacePtr stateSpace);
+  explicit VectorField(aikido::statespace::ConstStateSpacePtr stateSpace);
 
   /// Vectorfield callback function.
   ///
@@ -59,14 +59,14 @@ public:
       bool includeEndTime) const = 0;
 
   /// Returns state space.
-  aikido::statespace::StateSpacePtr getStateSpace();
+  aikido::statespace::ConstStateSpacePtr getStateSpace();
 
   /// Returns const state space.
   aikido::statespace::ConstStateSpacePtr getStateSpace() const;
 
 protected:
   /// State space
-  aikido::statespace::StateSpacePtr mStateSpace;
+  aikido::statespace::ConstStateSpacePtr mStateSpace;
 };
 
 using VectorFieldPtr = std::shared_ptr<VectorField>;

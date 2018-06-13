@@ -279,8 +279,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   {
     auto jointSpace = space->getJointSpace(i);
     auto properties = jointSpace->getProperties();
-    auto r1Joint = std::dynamic_pointer_cast<R1Joint>(jointSpace);
-    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(jointSpace);
+    auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
+    auto so2Joint = std::dynamic_pointer_cast<const SO2Joint>(jointSpace);
 
     if (properties.getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
@@ -452,8 +452,8 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
     auto jointSpace = space->getJointSpace(i);
 
     // Supports only R1Joints and SO2Joints.
-    auto r1Joint = std::dynamic_pointer_cast<R1Joint>(jointSpace);
-    auto so2Joint = std::dynamic_pointer_cast<SO2Joint>(jointSpace);
+    auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
+    auto so2Joint = std::dynamic_pointer_cast<const SO2Joint>(jointSpace);
     if (!r1Joint && !so2Joint)
     {
       throw std::invalid_argument(

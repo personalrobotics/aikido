@@ -92,7 +92,7 @@ public:
   /// \param[in] space Space in which this collision constraint operates.
   /// \param[in] metaSkeleton Metaskeleton for the statespace.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const = 0;
 
   /// TODO: Consider changing this to return a CollisionFreePtr.
@@ -103,7 +103,7 @@ public:
   /// \param[in] collisionFree Collision constraint.
   /// \return Combined constraint.
   virtual constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const = 0;
 };

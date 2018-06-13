@@ -15,12 +15,12 @@ public:
   /// Constructs a \c GeodesicInterpolator for \c _stateSpace.
   ///
   /// \param _stateSpace used for interpolation
-  explicit GeodesicInterpolator(statespace::StateSpacePtr _stateSpace);
+  explicit GeodesicInterpolator(statespace::ConstStateSpacePtr _stateSpace);
 
   virtual ~GeodesicInterpolator() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::size_t getNumDerivatives() const override;
@@ -54,7 +54,7 @@ public:
       Eigen::VectorXd& _tangentVector) const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 };
 
 } // namespace statespace
