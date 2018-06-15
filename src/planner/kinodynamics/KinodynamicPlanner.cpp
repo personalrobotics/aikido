@@ -340,14 +340,18 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   planner1->setProblemDefinition(pdef1);
   planner1->setup();
 
-    
-  planner1->solve(maxPlanTime);
+  ::ompl::base::PlannerStatus status = planner1->solve(maxPlanTime);
 
   ::ompl::base::PathPtr path1 = nullptr;
-  if (true)
+  if (status)
   {
     std::cout << "First half has a solution" << std::endl;
     path1 = pdef1->getSolutionPath();
+    if(pdef1->hasApproximateSolution())
+    {
+      path1 = planner1->completeApproximateSolution(path1);
+    }
+
     ::ompl::base::Cost path1_cost = path1->cost(pdef1->getOptimizationObjective());
     std::cout << "The cost is " << path1_cost << std::endl;
     if (pdef1->getOptimizationObjective()->isFinite(path1_cost)==false)
@@ -388,10 +392,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   planner2->setProblemDefinition(pdef2);
   planner2->setup();
 
-  planner2->solve(maxPlanTime);
+  status = planner2->solve(maxPlanTime);
 
   ::ompl::base::PathPtr path2 = nullptr;
-  if (true)
+  if (status)
   {
     std::cout << "Second half has a solution" << std::endl;
     path2 = pdef2->getSolutionPath();

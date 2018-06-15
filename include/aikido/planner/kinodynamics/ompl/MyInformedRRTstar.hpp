@@ -40,6 +40,8 @@ public:
     return samplesGeneratedNum_;
   }
 
+  ::ompl::base::PathPtr completeApproximateSolution(::ompl::base::PathPtr approximation);
+
 private:
   PlannerMode mode_;
   std::ofstream out_;

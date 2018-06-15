@@ -251,23 +251,6 @@ base::PlannerStatus MyInformedRRTstar::solve(
       = std::chrono::high_resolution_clock::now();
   while (ptc == false)
   {
-    /*
-    if(out_.is_open() && nn_->size() % 250==0)
-    {
-        for (std::size_t i = 0; i < goalMotions_.size(); ++i)
-        {
-            std::chrono::high_resolution_clock::time_point currentTime =
-    std::chrono::high_resolution_clock::now();
-            std::chrono::high_resolution_clock::duration duration = currentTime
-    - startTime;
-            out_ <<
-    std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "
-    , " <<
-                   goalMotions_[i]->cost.value() << ", " << iterations_ << " , "
-    << nn_->size() << " , " << samplesGeneratedNum_ << std::endl;
-        }
-    }*/
-
     /* DISABLE
     //first iteration, try to explicitly connect start to goal
     if (iterations_ == 0)
@@ -718,9 +701,13 @@ base::PlannerStatus MyInformedRRTstar::solve(
   bool approximate = (solution == nullptr);
   bool addedSolution = false;
   if (approximate)
+  {
     solution = approximation;
+  }
   else
+  {
     lastGoalMotion_ = solution;
+  }
 
   if (solution != nullptr)
   {
@@ -767,6 +754,36 @@ base::PlannerStatus MyInformedRRTstar::solve(
       bestCost_.value());
 
   return base::PlannerStatus(addedSolution, approximate);
+}
+
+::ompl::base::PathPtr MyInformedRRTstar::completeApproximateSolution(::ompl::base::PathPtr approximation)
+{
+  // convert approximation to a path geometric
+  PathGeometric* geoPath = dynamic_cast<PathGeometric*>(approximation.get());
+  ::ompl::base::PathPtr newPath = nullptr;
+
+  // sample a goal state
+  base::State* goalState = si_->allocState();
+  base::Goal* goal = pdef_->getGoal().get();
+  base::GoalSampleableRegion* goal_s
+      = dynamic_cast<base::GoalSampleableRegion*>(goal);
+  goal_s->sampleGoal(goalState);
+
+  std::size_t geoPathLen = geoPath->getStateCount();
+  if(geoPathLen>0)
+  {
+    base::State* lastState = geoPath->getState(geoPathLen-1);
+    // try to connect to the goal state
+    if(lastState && si_->checkMotion(lastState, goalState))
+    {
+      OMPL_INFORM("WE CAN COMPLETE THE APPROXIMATE SOLUTION");
+      PathGeometric* newGeoPath = new PathGeometric(*geoPath);
+      newGeoPath->append(goalState);
+      newPath = ::ompl::base::PathPtr(newGeoPath);
+    }
+  }
+
+  return newPath;
 }
 
 bool MyInformedRRTstar::toState(
