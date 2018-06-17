@@ -48,10 +48,10 @@ public:
   static const std::string& getStaticType();
 
   /// Returns the start state.
-  const statespace::StateSpace::State* getStartState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the goal state.
-  const statespace::StateSpace::State* getGoalState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getGoalState() const;
 
 protected:
   /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on

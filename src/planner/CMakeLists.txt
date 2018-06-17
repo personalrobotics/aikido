@@ -13,6 +13,7 @@ set(sources
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  dart/ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfigurationPlanner.cpp
   dart/ConfigurationToEndEffectorOffset.cpp
   dart/ConfigurationToEndEffectorPose.cpp
