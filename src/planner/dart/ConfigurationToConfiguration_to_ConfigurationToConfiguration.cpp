@@ -25,17 +25,13 @@ ConfigurationToConfiguration_to_ConfigurationToConfiguration::
 //==============================================================================
 trajectory::TrajectoryPtr
 ConfigurationToConfiguration_to_ConfigurationToConfiguration::plan(
-    const ConfigurationToConfiguration& problem, Planner::Result* result)
+    const aikido::planner::dart::ConfigurationToConfiguration& problem, Planner::Result* result)
 {
   // TODO: Check equality between state space of this planner and given problem.
-
-  // Get the start state form the MetaSkeleton, since this is a DART planner.
-  auto startState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
-
-  auto delegateProblem = ConfigurationToConfiguration(
+  
+  auto delegateProblem = aikido::planner::ConfigurationToConfiguration(
       mMetaSkeletonStateSpace,
-      startState,
+      problem.getStartState(),
       problem.getGoalState(),
       problem.getConstraint());
 

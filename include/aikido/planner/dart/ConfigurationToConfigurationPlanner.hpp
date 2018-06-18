@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 
-#include "aikido/planner/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
 #include "aikido/planner/dart/SingleProblemPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"

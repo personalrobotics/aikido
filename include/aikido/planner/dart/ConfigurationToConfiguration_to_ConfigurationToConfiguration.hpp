@@ -22,7 +22,7 @@ public:
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   virtual trajectory::TrajectoryPtr plan(
-      const ConfigurationToConfiguration& problem,
+      const aikido::planner::dart::ConfigurationToConfiguration& problem,
       Planner::Result* result) override;
 };
 
