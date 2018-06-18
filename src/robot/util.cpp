@@ -300,8 +300,13 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
   DART_UNUSED(saver);
 
   // Create seed constraint
-  std::shared_ptr<Sampleable> seedConstraint
-      = createSampleableBounds(space, crrtParameters.rng->clone());
+  // Create a sequential sampleable to provide seeds for IK solver
+  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+
+  std::vector<constraint::ConstSampleablePtr> sampleables
+      = {std::make_shared<FiniteSampleable>(space, startState),
+         createSampleableBounds(space, crrtParameters.rng->clone())};
+  auto sampleable = std::make_shared<SequentialSampleable>(space, sampleables);
 
   // TODO: DART may be updated to check for single skeleton
   if (metaSkeleton->getNumDofs() == 0)
@@ -316,7 +321,6 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 
   // Create an IK solver with metaSkeleton dofs
   auto ik = InverseKinematics::create(bodyNode);
-
   ik->setDofs(metaSkeleton->getDofs());
 
   // create goal sampleable
@@ -324,7 +328,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       space,
       metaSkeleton,
       std::make_shared<CyclicSampleable>(goalTsr),
-      seedConstraint,
+      sampleable,
       ik,
       crrtParameters.maxNumTrials);
 
@@ -337,7 +341,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       space,
       metaSkeleton,
       constraintTsr,
-      seedConstraint,
+      sampleable,
       ik,
       crrtParameters.maxNumTrials);
 
@@ -349,9 +353,6 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       frameDiff->getConstraintDimension(), projectionTolerance);
   auto constraintProjectable = std::make_shared<NewtonsMethodProjectable>(
       frameDiff, projectionToleranceVec, projectionMaxIteration);
-
-  // Current state
-  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   // Call planner
   auto traj = planCRRTConnect(
