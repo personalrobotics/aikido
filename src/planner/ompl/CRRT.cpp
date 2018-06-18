@@ -16,8 +16,8 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr& _si) : CRRT(_si, "CRRT")
 CRRT::CRRT(
     const ::ompl::base::SpaceInformationPtr& _si, const std::string& _name)
   : ::ompl::base::Planner(_si, _name)
-  , mGoalBias(0.05)
-  , mMaxDistance(0.1)
+  , mGoalBias(1.0)
+  , mMaxDistance(0.05)
   , mLastGoalMotion(nullptr)
   , mCons(nullptr)
   , mMaxStepsize(0.1)
@@ -134,7 +134,8 @@ double CRRT::getRange() const
 //==============================================================================
 void CRRT::setPathConstraint(constraint::ProjectablePtr _projectable)
 {
-  mCons = std::move(_projectable);
+//  mCons = std::move(_projectable);
+  mCons = nullptr;
 }
 
 //==============================================================================
@@ -294,7 +295,12 @@ void CRRT::freeMemory()
     /* set the solution path */
     auto path = ompl_make_shared<::ompl::geometric::PathGeometric>(si_);
     for (int i = mpath.size() - 1; i >= 0; --i)
+    {
       path->append(mpath[i]->state);
+      std::cout << "hello" << std::endl;
+      std::cout << si_->getStateSpace()->as<::ompl::base::CompoundStateSpace>()->getSubspaceCount();
+//      double *Uvals = (mpath[i]->state)->as<::ompl::base::CompoundStateSpace::StateType>()->values;
+    }
     pdef_->addSolutionPath(path, approximate, approxdif);
     solved = true;
   }
