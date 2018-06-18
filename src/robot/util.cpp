@@ -3,6 +3,7 @@
 #include <dart/common/StlHelpers.hpp>
 #include <dart/common/Timer.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/planners/rrt/RRT.h>
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
@@ -88,23 +89,25 @@ trajectory::TrajectoryPtr planToConfiguration(
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
-  // First test with Snap Planner
-  SnapConfigurationToConfigurationPlanner::Result pResult;
+//  // First test with Snap Planner
+//  SnapConfigurationToConfigurationPlanner::Result pResult;
+//  TrajectoryPtr untimedTrajectory;
+
+//  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+
+//  auto problem = ConfigurationToConfiguration(
+//      space, startState, goalState, collisionTestable);
+//  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+//      space, std::make_shared<GeodesicInterpolator>(space));
+//  untimedTrajectory = planner->plan(problem, &pResult);
+
+//  // Return if the trajectory is non-empty
+//  if (untimedTrajectory)
+//    return untimedTrajectory;
+
   TrajectoryPtr untimedTrajectory;
-
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-
-  auto problem = ConfigurationToConfiguration(
-      space, startState, goalState, collisionTestable);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      space, std::make_shared<GeodesicInterpolator>(space));
-  untimedTrajectory = planner->plan(problem, &pResult);
-
-  // Return if the trajectory is non-empty
-  if (untimedTrajectory)
-    return untimedTrajectory;
-
-  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+  untimedTrajectory = planOMPL<ompl::geometric::RRT>(
       startState,
       goalState,
       space,
@@ -288,6 +291,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
   using aikido::constraint::dart::FrameTestable;
   using aikido::constraint::NewtonsMethodProjectable;
   using aikido::planner::ompl::planCRRTConnect;
+  using aikido::planner::ompl::planCRRT;
 
   std::size_t projectionMaxIteration = crrtParameters.projectionMaxIteration;
   double projectionTolerance = crrtParameters.projectionTolerance;
@@ -355,7 +359,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       frameDiff, projectionToleranceVec, projectionMaxIteration);
 
   // Call planner
-  auto traj = planCRRTConnect(
+  auto traj = planCRRT(
       startState,
       goalTestable,
       goalSampleable,
@@ -370,8 +374,8 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       timelimit,
       crrtParameters.maxExtensionDistance,
       crrtParameters.maxDistanceBtwProjections,
-      crrtParameters.minStepSize,
-      crrtParameters.minTreeConnectionDistance);
+      crrtParameters.minStepSize);
+//      crrtParameters.minTreeConnectionDistance);
 
   return traj;
 }
@@ -399,24 +403,24 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
   auto minDistance = distance - vfParameters.negativeDistanceTolerance;
   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
-  auto traj = planner::vectorfield::planToEndEffectorOffset(
-      *startState,
-      space,
-      metaSkeleton,
-      bodyNode,
-      collisionTestable,
-      direction,
-      minDistance,
-      maxDistance,
-      positionTolerance,
-      angularTolerance,
-      vfParameters.initialStepSize,
-      vfParameters.jointLimitTolerance,
-      vfParameters.constraintCheckResolution,
-      std::chrono::duration<double>(timelimit));
+//  auto traj = planner::vectorfield::planToEndEffectorOffset(
+//      *startState,
+//      space,
+//      metaSkeleton,
+//      bodyNode,
+//      collisionTestable,
+//      direction,
+//      minDistance,
+//      maxDistance,
+//      positionTolerance,
+//      angularTolerance,
+//      vfParameters.initialStepSize,
+//      vfParameters.jointLimitTolerance,
+//      vfParameters.constraintCheckResolution,
+//      std::chrono::duration<double>(timelimit));
 
-  if (traj)
-    return std::move(traj);
+//  if (traj)
+//    return std::move(traj);
 
   return planToEndEffectorOffsetByCRRT(
       space,
