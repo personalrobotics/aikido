@@ -353,9 +353,9 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     }
     if (path1)
     {
-      ::ompl::base::Cost path1_cost = path1->cost(pdef1->getOptimizationObjective());
+      ::ompl::base::Cost path1_cost = path1->cost(opt1);
       std::cout << "The cost is " << path1_cost << std::endl;
-      if (pdef1->getOptimizationObjective()->isFinite(path1_cost)==false)
+      if (opt1->isFinite(path1_cost)==false)
       {
         return nullptr;
       }
@@ -413,9 +413,9 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     }
     if (path2)
     {
-      ::ompl::base::Cost path2_cost = path2->cost(pdef2->getOptimizationObjective());
+      ::ompl::base::Cost path2_cost = path2->cost(opt2);
       std::cout << "The cost is " << path2_cost << std::endl;
-      if (pdef2->getOptimizationObjective()->isFinite(path2_cost)==false)
+      if (opt2->isFinite(path2_cost)==false)
       {
         return nullptr;
       }
