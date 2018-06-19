@@ -239,7 +239,10 @@ trajectory::TrajectoryPtr planToTSR(
   std::vector<statespace::CartesianProduct::ScopedState> configurations;
   NominalConfigurationRanker ranker(space, metaSkeleton, startState);
 
-  while (snapSamples < maxSnapSamples && generator->canSample())
+  // Start the timer
+  dart::common::Timer timer;
+  timer.start();
+  while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
     std::lock_guard<std::mutex> lock(robot->getMutex());
