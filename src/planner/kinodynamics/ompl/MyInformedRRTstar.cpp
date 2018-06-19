@@ -778,6 +778,10 @@ base::PlannerStatus MyInformedRRTstar::solve(
     {
       OMPL_INFORM("WE CAN COMPLETE THE APPROXIMATE SOLUTION");
       PathGeometric* newGeoPath = new PathGeometric(*geoPath);
+      if (newGeoPath->getStateCount()!=geoPath->getStateCount())
+      {
+        std::cout << "AFTER CLONE, MISMATCH STATE COUNT" << std::endl;
+      }
       newGeoPath->append(goalState);
       newPath = ::ompl::base::PathPtr(newGeoPath);
     }

@@ -409,6 +409,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     if(pdef2->hasApproximateSolution())
     {
       path2 = planner2->completeApproximateSolution(path2);
+
     }
     if (path2)
     {
