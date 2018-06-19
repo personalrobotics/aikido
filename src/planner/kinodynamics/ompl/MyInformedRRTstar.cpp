@@ -777,11 +777,15 @@ base::PlannerStatus MyInformedRRTstar::solve(
     if(lastState && si_->checkMotion(lastState, goalState))
     {
       OMPL_INFORM("WE CAN COMPLETE THE APPROXIMATE SOLUTION");
-      PathGeometric* newGeoPath = new PathGeometric(*geoPath);
-      if (newGeoPath->getStateCount()!=geoPath->getStateCount())
+      PathGeometric* newGeoPath = new PathGeometric(geoPath->getSpaceInformation());
+      for(std::size_t i=0; i<geoPath->getStateCount();i++)
       {
-        std::cout << "AFTER CLONE, MISMATCH STATE COUNT" << std::endl;
+        newGeoPath->append(geoPath->getState(i));
       }
+      
+      std::cout << "GEO PATH COUNT " << geoPath->getStateCount() << std::endl;
+      std::cout << "NEW GEO PATH COUNT " << newGeoPath->getStateCount() << std::endl;
+      
       newGeoPath->append(goalState);
       newPath = ::ompl::base::PathPtr(newGeoPath);
     }

@@ -162,6 +162,8 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     return nullptr;
   }
 
+  std::cout << "CONCATENATE TWO PATHS " << std::endl;
+
   std::vector<Eigen::VectorXd> points;
   std::vector<double> times;
 
@@ -170,6 +172,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   ::ompl::geometric::PathGeometric* geopath1
       = path1->as<::ompl::geometric::PathGeometric>();
   std::size_t node_num = geopath1->getStateCount();
+  double last_time = 0.0;
   for (size_t idx = 0; idx < node_num - 1; idx++)
   {
     ::ompl::base::State* state1 = geopath1->getState(idx);
@@ -177,16 +180,40 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     std::vector<double> deltaTimes;
     std::vector<Eigen::VectorXd> deltaPoints
         = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-    path1points.insert(
+
+    std::transform(
+      deltaTimes.begin(),
+      deltaTimes.end(),
+      deltaTimes.begin(),
+      std::bind2nd(std::plus<double>(), last_time));
+
+    if(idx==0)
+    {
+      path1points.insert(
         path1points.end(), deltaPoints.begin(), deltaPoints.end());
-    path1times.insert(path1times.end(), deltaTimes.begin(), deltaTimes.end());
+      path1times.insert(path1times.end(), deltaTimes.begin(), deltaTimes.end());
+    }
+    else
+    {
+      path1points.insert(
+        path1points.end(), deltaPoints.begin()+1, deltaPoints.end());
+      path1times.insert(path1times.end(), deltaTimes.begin()+1, deltaTimes.end());
+    }
+
+    // update last time
+    last_time = path1times.back();
   }
+
+  std::cout << "PATH 1 DURATION " << path1Duration << std::endl;
+  std::cout << "PATH 1 LAST TIME " << path1times.back() << std::endl;
 
   std::vector<Eigen::VectorXd> path2points;
   std::vector<double> path2times;
   ::ompl::geometric::PathGeometric* geopath2
       = path2->as<::ompl::geometric::PathGeometric>();
   node_num = geopath2->getStateCount();
+
+  last_time = 0.0;
   for (size_t idx = 0; idx < node_num - 1; idx++)
   {
     ::ompl::base::State* state1 = geopath2->getState(idx);
@@ -194,9 +221,28 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     std::vector<double> deltaTimes;
     std::vector<Eigen::VectorXd> deltaPoints
         = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-    path2points.insert(
+   
+    std::transform(
+      deltaTimes.begin(),
+      deltaTimes.end(),
+      deltaTimes.begin(),
+      std::bind2nd(std::plus<double>(), last_time));
+
+    if(idx==0)
+    {
+      path2points.insert(
         path2points.end(), deltaPoints.begin(), deltaPoints.end());
-    path2times.insert(path2times.end(), deltaTimes.begin(), deltaTimes.end());
+      path2times.insert(path2times.end(), deltaTimes.begin(), deltaTimes.end());
+    }
+    else
+    {
+      path2points.insert(
+        path2points.end(), deltaPoints.begin()+1, deltaPoints.end());
+      path2times.insert(path2times.end(), deltaTimes.begin()+1, deltaTimes.end());      
+    }
+
+    // update last time
+    last_time = path2times.back();
   }
 
   // merge two sets
@@ -204,11 +250,57 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
       path2times.begin(),
       path2times.end(),
       path2times.begin(),
-      std::bind2nd(std::plus<double>(), path1Duration));
+      std::bind2nd(std::plus<double>(), path1times.back()));
+  
   points.insert(points.end(), path1points.begin(), path1points.end());
   times.insert(times.end(), path1times.begin(), path1times.end());
   points.insert(points.end(), path2points.begin() + 1, path2points.end());
   times.insert(times.end(), path2times.begin() + 1, path2times.end());
+  
+  /*
+  for(std::size_t i=0; i < path1times.size(); i++)
+  {
+    points.push_back(path1points[i]);
+    times.push_back(path1times[i]);
+  }
+  for(std::size_t i=1; i < path2times.size(); i++)
+  {
+    points.push_back(path2points[i]);
+    times.push_back(path2times[i]);
+  }
+ 
+  
+  std::cout << "PATH 1 TIMES ";
+  for(std::size_t i=0; i < path1times.size(); i++)
+  {
+    std::cout << path1times[i] << " ";
+  }
+  std::cout << std::endl;
+
+  std::cout << "PATH 2 TIMES ";
+  for(std::size_t i=0; i < path2times.size(); i++)
+  {
+    std::cout << path2times[i] << " ";
+  }
+  std::cout << std::endl;
+
+  std::cout << "MERGED TIMES ";
+  for(std::size_t i=0; i < times.size(); i++)
+  {
+    std::cout << times[i] << " ";
+  }
+  std::cout << std::endl;
+   
+ 
+  std::cout << "PATH 1 TIMES NUM (" << path1times.size() << ") ";
+  std::cout << "NODE NUM (" << path1points.size() << ")" << std::endl;
+
+  std::cout << "PATH 2 TIMES NUM (" << path2times.size() << ") ";
+  std::cout << "NODE NUM (" << path2points.size() << ")" << std::endl;
+
+  std::cout << "MERGED PATH TIMES NUM (" << times.size() << ") ";
+  std::cout << "NODE NUM (" << points.size() << ")" << std::endl;
+  */
 
   std::size_t dimension = metaSkeletonStateSpace->getDimension();
   using CubicSplineProblem
@@ -229,6 +321,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     double timeCurr = times[i];
     double timeNext = times[i + 1];
 
+    std::cout << "SPLINE " << timeCurr << " TO " << timeNext << std::endl;
     CubicSplineProblem problem(
         Eigen::Vector2d(0.0, timeNext - timeCurr), 4, dimension);
     problem.addConstantConstraint(0, 0, zeroPosition);
