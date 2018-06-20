@@ -107,9 +107,7 @@ public:
   /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
   std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
   getTrajectoryPostProcessor(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const constraint::dart::CollisionFreePtr& collisionFree,
       bool enableShortcut,
       bool enableBlend,
       double shortcutTimelimit,
