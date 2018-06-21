@@ -6,8 +6,9 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-Planner::Planner(statespace::ConstStateSpacePtr stateSpace)
-  : mStateSpace(std::move(stateSpace))
+Planner::Planner(
+    statespace::ConstStateSpacePtr stateSpace, std::unique_ptr<common::RNG> rng)
+  : mStateSpace(std::move(stateSpace)), mRng(std::move(rng))
 {
   // Do nothing
 }
@@ -16,6 +17,15 @@ Planner::Planner(statespace::ConstStateSpacePtr stateSpace)
 statespace::ConstStateSpacePtr Planner::getStateSpace() const
 {
   return mStateSpace;
+}
+
+//==============================================================================
+std::unique_ptr<common::RNG> Planner::getRng() const
+{
+  if (!mRng)
+    return nullptr;
+
+  return std::move(cloneRNGFrom(*mRng)[0]);
 }
 
 //==============================================================================
