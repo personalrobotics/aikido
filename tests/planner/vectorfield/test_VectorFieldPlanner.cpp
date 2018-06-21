@@ -338,7 +338,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   // Create problem.
   auto offsetProblem = ConfigurationToEndEffectorOffset(
-      mStateSpace, mBodynode, direction, signedDistance, mPassingConstraint);
+      mStateSpace, mSkel, mBodynode, direction, signedDistance, mPassingConstraint);
 
   // Create planner.
   auto vfOffsetPlanner = VectorFieldConfigurationToEndEffectorOffsetPlanner(
@@ -425,6 +425,7 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
   EXPECT_THROW(
       ConfigurationToEndEffectorOffset(
           mStateSpace,
+          mSkel,
           mBodynode,
           direction,
           signedDistance,
