@@ -7,7 +7,7 @@
 #include <ompl/geometric/PathGeometric.h>
 #include <dart/math/Constants.hpp>
 
-#include "aikido/common/Spline.hpp"
+
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
 #include "aikido/planner/kinodynamics/dimt/DoubleIntegratorMinimumTime.h"
@@ -20,6 +20,7 @@
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/ompl/StateValidityChecker.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
+#include "KinodynamicUtil.hpp"
 
 using aikido::planner::ompl::ompl_make_shared;
 using dart::dynamics::MetaSkeletonPtr;
@@ -153,9 +154,7 @@ const ::ompl::base::OptimizationObjectivePtr createDimtOptimizationObjective(
 
 std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     const ::ompl::base::PathPtr& path1,
-    double path1Duration,
     const ::ompl::base::PathPtr& path2,
-    double path2Duration,
     const DIMTPtr& dimt,
     const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace,
     double interpolateStepSize = 0.05)
@@ -165,8 +164,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     return nullptr;
   }
 
-  std::cout << "CONCATENATE TWO PATHS " << std::endl;
-
+  // converting path 1 
   std::vector<Eigen::VectorXd> points;
   std::vector<double> times;
 
@@ -174,80 +172,17 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   std::vector<double> path1times;
   ::ompl::geometric::PathGeometric* geopath1
       = path1->as<::ompl::geometric::PathGeometric>();
-  std::size_t node_num = geopath1->getStateCount();
-  double last_time = 0.0;
-  for (size_t idx = 0; idx < node_num - 1; idx++)
-  {
-    ::ompl::base::State* state1 = geopath1->getState(idx);
-    ::ompl::base::State* state2 = geopath1->getState(idx + 1);
-    std::vector<double> deltaTimes;
-    std::vector<Eigen::VectorXd> deltaPoints
-        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-
-    std::transform(
-      deltaTimes.begin(),
-      deltaTimes.end(),
-      deltaTimes.begin(),
-      std::bind2nd(std::plus<double>(), last_time));
-
-    if(idx==0)
-    {
-      path1points.insert(
-        path1points.end(), deltaPoints.begin(), deltaPoints.end());
-      path1times.insert(path1times.end(), deltaTimes.begin(), deltaTimes.end());
-    }
-    else
-    {
-      path1points.insert(
-        path1points.end(), deltaPoints.begin()+1, deltaPoints.end());
-      path1times.insert(path1times.end(), deltaTimes.begin()+1, deltaTimes.end());
-    }
-
-    // update last time
-    last_time = path1times.back();
-  }
-
-  std::cout << "PATH 1 DURATION " << path1Duration << std::endl;
-  std::cout << "PATH 1 LAST TIME " << path1times.back() << std::endl;
-
+  convertPathToSequentialStates(geopath1, dimt, interpolateStepSize,
+                                path1points, path1times);
+ 
+  // converting path 2
   std::vector<Eigen::VectorXd> path2points;
   std::vector<double> path2times;
   ::ompl::geometric::PathGeometric* geopath2
       = path2->as<::ompl::geometric::PathGeometric>();
-  node_num = geopath2->getStateCount();
-
-  last_time = 0.0;
-  for (size_t idx = 0; idx < node_num - 1; idx++)
-  {
-    ::ompl::base::State* state1 = geopath2->getState(idx);
-    ::ompl::base::State* state2 = geopath2->getState(idx + 1);
-    std::vector<double> deltaTimes;
-    std::vector<Eigen::VectorXd> deltaPoints
-        = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
-   
-    std::transform(
-      deltaTimes.begin(),
-      deltaTimes.end(),
-      deltaTimes.begin(),
-      std::bind2nd(std::plus<double>(), last_time));
-
-    if(idx==0)
-    {
-      path2points.insert(
-        path2points.end(), deltaPoints.begin(), deltaPoints.end());
-      path2times.insert(path2times.end(), deltaTimes.begin(), deltaTimes.end());
-    }
-    else
-    {
-      path2points.insert(
-        path2points.end(), deltaPoints.begin()+1, deltaPoints.end());
-      path2times.insert(path2times.end(), deltaTimes.begin()+1, deltaTimes.end());      
-    }
-
-    // update last time
-    last_time = path2times.back();
-  }
-
+  convertPathToSequentialStates(geopath2, dimt, interpolateStepSize,
+                                path2points, path2times);
+  
   // merge two sets
   std::transform(
       path2times.begin(),
@@ -260,89 +195,89 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   points.insert(points.end(), path2points.begin() + 1, path2points.end());
   times.insert(times.end(), path2times.begin() + 1, path2times.end());
   
-  /*
-  for(std::size_t i=0; i < path1times.size(); i++)
+
+  // convert to a spline
+  return convertSequentialStatesToSpline(metaSkeletonStateSpace,
+                                         points, times);
+}
+
+::ompl::base::PathPtr planMinimumTimePath(
+    const ::ompl::base::State* startState,
+    const ::ompl::base::State* goalState,
+    const ::ompl::base::SpaceInformationPtr& si,
+    const DIMTPtr& dimt,
+    double& pathCost,
+    double maxPlanTime)
+{
+  ::ompl::base::PathPtr path = nullptr;
+  pathCost = std::numeric_limits<double>::infinity();
+
+  double singleSampleLimit = 3.0;
+  double maxCallNum = 100;
+  double batchSize = 100;
+  int numTrials = 5;
+  const double levelSet = std::numeric_limits<double>::infinity();
+
+  ::ompl::geometric::MyInformedRRTstarPtr planner
+      = ompl_make_shared<::ompl::geometric::MyInformedRRTstar>(si);
+
+  // plan from start to via
+  // 1. create problem
+  ::ompl::base::ProblemDefinitionPtr basePdef
+      = createProblem(si, startState, goalState);
+
+  const ::ompl::base::OptimizationObjectivePtr baseOpt
+      = createDimtOptimizationObjective(si, dimt, startState, goalState);
+  basePdef->setOptimizationObjective(baseOpt);
+
+  ::ompl::base::MyInformedSamplerPtr sampler
+      = ompl_make_shared<::ompl::base::HitAndRunSampler>(
+          si, basePdef, levelSet, maxCallNum, batchSize, numTrials);
+  sampler->setSingleSampleTimelimit(singleSampleLimit);
+  ::ompl::base::OptimizationObjectivePtr opt
+      = ompl_make_shared<::ompl::base::MyOptimizationObjective>(
+          si, sampler, startState, goalState);
+
+  ::ompl::base::ProblemDefinitionPtr pdef
+      = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  pdef->setStartAndGoalStates(startState, goalState);
+  pdef->setOptimizationObjective(opt);
+
+  // Set the problem instance for our planner to solve
+  planner->setProblemDefinition(pdef);
+  planner->setup();
+
+  ::ompl::base::PlannerStatus status = planner->solve(maxPlanTime);
+
+  if (status)
   {
-    points.push_back(path1points[i]);
-    times.push_back(path1times[i]);
+    std::cout << "A solution is found" << std::endl;
+    path = pdef->getSolutionPath();
+    if(pdef->hasApproximateSolution())
+    {
+      path = planner->completeApproximateSolution(path);
+    }
+    if (path)
+    {
+      ::ompl::base::Cost path_cost = path->cost(opt);
+      std::cout << "The cost is " << path_cost << std::endl;
+      if (opt->isFinite(path_cost)==false)
+      {
+        return nullptr;
+      }
+      pathCost = path_cost.value();
+    }
+    else
+    {
+      return nullptr;
+    }
   }
-  for(std::size_t i=1; i < path2times.size(); i++)
+  else
   {
-    points.push_back(path2points[i]);
-    times.push_back(path2times[i]);
-  }
- 
-  
-  std::cout << "PATH 1 TIMES ";
-  for(std::size_t i=0; i < path1times.size(); i++)
-  {
-    std::cout << path1times[i] << " ";
-  }
-  std::cout << std::endl;
-
-  std::cout << "PATH 2 TIMES ";
-  for(std::size_t i=0; i < path2times.size(); i++)
-  {
-    std::cout << path2times[i] << " ";
-  }
-  std::cout << std::endl;
-
-  std::cout << "MERGED TIMES ";
-  for(std::size_t i=0; i < times.size(); i++)
-  {
-    std::cout << times[i] << " ";
-  }
-  std::cout << std::endl;
-   
- 
-  std::cout << "PATH 1 TIMES NUM (" << path1times.size() << ") ";
-  std::cout << "NODE NUM (" << path1points.size() << ")" << std::endl;
-
-  std::cout << "PATH 2 TIMES NUM (" << path2times.size() << ") ";
-  std::cout << "NODE NUM (" << path2points.size() << ")" << std::endl;
-
-  std::cout << "MERGED PATH TIMES NUM (" << times.size() << ") ";
-  std::cout << "NODE NUM (" << points.size() << ")" << std::endl;
-  */
-
-  std::size_t dimension = metaSkeletonStateSpace->getDimension();
-  using CubicSplineProblem
-      = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
-
-  auto outputTrajectory = dart::common::make_unique<aikido::trajectory::Spline>(
-      metaSkeletonStateSpace);
-  auto segmentStartState = metaSkeletonStateSpace->createState();
-
-  Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
-  for (std::size_t i = 0; i < points.size() - 1; i++)
-  {
-    Eigen::VectorXd positionCurr = points[i].head(dimension);
-    Eigen::VectorXd velocityCurr = points[i].tail(dimension);
-    Eigen::VectorXd positionNext = points[i + 1].head(dimension);
-    Eigen::VectorXd velocityNext = points[i + 1].tail(dimension);
-
-    double timeCurr = times[i];
-    double timeNext = times[i + 1];
-
-    std::cout << "SPLINE " << timeCurr << " TO " << timeNext << std::endl;
-    CubicSplineProblem problem(
-        Eigen::Vector2d(0.0, timeNext - timeCurr), 4, dimension);
-    problem.addConstantConstraint(0, 0, zeroPosition);
-    problem.addConstantConstraint(0, 1, velocityCurr);
-    problem.addConstantConstraint(1, 0, positionNext - positionCurr);
-    problem.addConstantConstraint(1, 1, velocityNext);
-    const auto spline = problem.fit();
-
-    metaSkeletonStateSpace->expMap(positionCurr, segmentStartState);
-
-    // Add the ramp to the output trajectory.
-    assert(spline.getCoefficients().size() == 1);
-    const auto& coefficients = spline.getCoefficients().front();
-    outputTrajectory->addSegment(
-        coefficients, timeNext - timeCurr, segmentStartState);
+    return nullptr;
   }
 
-  return outputTrajectory;
+  return path;
 }
 
 std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
@@ -401,169 +336,25 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   auto goalState = allocState(si, goalVec, goalVel);
   auto viaState = allocState(si, viaVec, viaVelocity);
 
-  double singleSampleLimit = 3.0;
-  double maxCallNum = 100;
-  double batchSize = 100;
-  int numTrials = 5;
-  const double levelSet = std::numeric_limits<double>::infinity();
+  double path1Duration = std::numeric_limits<double>::infinity();
+  double path2Duration = std::numeric_limits<double>::infinity();
+  ::ompl::base::PathPtr path1 = planMinimumTimePath(
+      startState, viaState, si, dimt, path1Duration, maxPlanTime);
 
-  ::ompl::geometric::MyInformedRRTstarPtr planner1
-      = ompl_make_shared<::ompl::geometric::MyInformedRRTstar>(si);
-
-  // plan from start to via
-  // 1. create problem
-  ::ompl::base::ProblemDefinitionPtr basePdef1
-      = createProblem(si, startState, viaState);
-
-  const ::ompl::base::OptimizationObjectivePtr baseOpt1
-      = createDimtOptimizationObjective(si, dimt, startState, viaState);
-  basePdef1->setOptimizationObjective(baseOpt1);
-
-  ::ompl::base::MyInformedSamplerPtr sampler1
-      = ompl_make_shared<::ompl::base::HitAndRunSampler>(
-          si, basePdef1, levelSet, maxCallNum, batchSize, numTrials);
-  sampler1->setSingleSampleTimelimit(singleSampleLimit);
-  ::ompl::base::OptimizationObjectivePtr opt1
-      = ompl_make_shared<::ompl::base::MyOptimizationObjective>(
-          si, sampler1, startState, viaState);
-
-  ::ompl::base::ProblemDefinitionPtr pdef1
-      = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
-  pdef1->setStartAndGoalStates(startState, viaState);
-  pdef1->setOptimizationObjective(opt1);
-
-  // Set the problem instance for our planner to solve
-  planner1->setProblemDefinition(pdef1);
-  planner1->setup();
-
-  ::ompl::base::PlannerStatus status = planner1->solve(maxPlanTime);
-
-  ::ompl::base::PathPtr path1 = nullptr;
-  if (status)
-  {
-    std::cout << "First half has a solution" << std::endl;
-    path1 = pdef1->getSolutionPath();
-    if(pdef1->hasApproximateSolution())
-    {
-      path1 = planner1->completeApproximateSolution(path1);
-    }
-    if (path1)
-    {
-      ::ompl::base::Cost path1_cost = path1->cost(opt1);
-      std::cout << "The cost is " << path1_cost << std::endl;
-      if (opt1->isFinite(path1_cost)==false)
-      {
-        return nullptr;
-      }
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-  else
-  {
-    return nullptr;
-  }
-
-  ::ompl::geometric::MyInformedRRTstarPtr planner2
-      = ompl_make_shared<::ompl::geometric::MyInformedRRTstar>(si);
-  // plan from via to goal
-  // 1. create problem
-  ::ompl::base::ProblemDefinitionPtr basePdef2
-      = createProblem(si, viaState, goalState);
-
-  const ::ompl::base::OptimizationObjectivePtr baseOpt2
-      = createDimtOptimizationObjective(si, dimt, viaState, goalState);
-  basePdef2->setOptimizationObjective(baseOpt2);
-
-  ::ompl::base::MyInformedSamplerPtr sampler2
-      = ompl_make_shared<::ompl::base::HitAndRunSampler>(
-          si, basePdef2, levelSet, maxCallNum, batchSize, numTrials);
-  sampler2->setSingleSampleTimelimit(singleSampleLimit);
-  ::ompl::base::OptimizationObjectivePtr opt2
-      = ompl_make_shared<::ompl::base::MyOptimizationObjective>(
-          si, sampler2, viaState, goalState);
-
-  ::ompl::base::ProblemDefinitionPtr pdef2
-      = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
-  pdef2->setStartAndGoalStates(viaState, goalState);
-  pdef2->setOptimizationObjective(opt2);
-
-  // Set the problem instance for our planner to solve
-  planner2->setProblemDefinition(pdef2);
-  planner2->setup();
-
-  status = planner2->solve(maxPlanTime);
-
-  ::ompl::base::PathPtr path2 = nullptr;
-  if (status)
-  {
-    std::cout << "Second half has a solution" << std::endl;
-    path2 = pdef2->getSolutionPath();
-
-    if(pdef2->hasApproximateSolution())
-    {
-      path2 = planner2->completeApproximateSolution(path2);
-
-    }
-    if (path2)
-    {
-      ::ompl::base::Cost path2_cost = path2->cost(opt2);
-      std::cout << "The cost is " << path2_cost << std::endl;
-      if (opt2->isFinite(path2_cost)==false)
-      {
-        return nullptr;
-      }
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-  else
-  {
-    return nullptr;
-  }
-
-  double path1Duration = path1->cost(opt1).value();
-  double path2Duration = path2->cost(opt2).value();
+  ::ompl::base::PathPtr path2 = planMinimumTimePath(
+      viaState, goalState, si, dimt, path2Duration, maxPlanTime);
 
   // concatenate two path
   // 1. create a vector of states and velocities
   // 2. push states/velocities of paths into the vector
   // 3. create SplineTrajectory from the vector
-  auto traj = concatenateTwoPaths(
-      path1, path1Duration, path2, path2Duration, dimt, metaSkeletonStateSpace);
+  auto traj = concatenateTwoPaths(path1, path2, dimt, 
+                                  metaSkeletonStateSpace);
   if (traj != nullptr)
   {
     viaTime = path1Duration;
   }
   return traj;
-}
-
-void dumpSplinePhasePlot(
-    const aikido::trajectory::Spline& spline,
-    const std::string& filename,
-    double timeStep)
-{
-  std::ofstream phasePlotFile;
-  phasePlotFile.open(filename);
-  auto stateSpace = spline.getStateSpace();
-  std::size_t dim = stateSpace->getDimension();
-
-  auto state = stateSpace->createState();
-  double t = spline.getStartTime();
-  while(t+timeStep<spline.getEndTime())
-  {
-    spline.evaluate(t, state);
-    stateSpace->print(state, phasePlotFile);
-    t += timeStep;
-  }
-  spline.evaluate(spline.getEndTime(), state);
-  stateSpace->print(state, phasePlotFile);
-  phasePlotFile.close();
-  return;
 }
 
 } // namespace kinodynamics

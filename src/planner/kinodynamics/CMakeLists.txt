@@ -1,5 +1,6 @@
 set(sources 
   KinodynamicPlanner.cpp
+  KinodynamicUtil.cpp
   sampler/Sampler.cpp
   sampler/MonteCarloSampler.cpp
   sampler/RejectionSampler.cpp

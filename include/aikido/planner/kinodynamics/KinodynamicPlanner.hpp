@@ -72,10 +72,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     double maxPlanTime,
     double maxDistanceBtwValidityChecks);
 
-void dumpSplinePhasePlot(
-    const aikido::trajectory::Spline& spline,
-    const std::string& filename,
-    double timeStep);
+
 
 } // namespace kinodynamics
 } // namespace planner
