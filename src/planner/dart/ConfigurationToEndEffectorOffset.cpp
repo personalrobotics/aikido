@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/dart/util.hpp"
 
 namespace aikido {
 namespace planner {
@@ -123,10 +124,7 @@ const Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
 {
   if (!mDirection)
   {
-    return mEndEffectorBodyNode->getWorldTransform()
-        .linear()
-        .col(2)
-        .normalized();
+    return util::getEndEffectorDirection(mEndEffectorBodyNode);
   }
 
   return mDirection.get().normalized();

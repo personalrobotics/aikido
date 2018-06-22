@@ -251,12 +251,6 @@ bool getGoalAndConstraintTSRForEndEffectorOffset(
 Eigen::Isometry3d getLookAtIsometry(
     const Eigen::Vector3d& positionFrom, const Eigen::Vector3d& positionTo);
 
-/// Returns the direction of an end-effector (along z axis) in the world frame
-/// \param[in] body Bodynode for the end-effector
-/// \return The direction of the end-effector (z axis of the frame)
-Eigen::Vector3d getEndEffectorDirection(
-    const dart::dynamics::BodyNodePtr& body);
-
 /// Get a specific BodyNode of a MetaSkeleton or throw an execption
 /// if it doesn't exist
 /// \param[in] skeleton MetaSkeleton that should contain the BodyNode

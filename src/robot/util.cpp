@@ -566,13 +566,6 @@ Eigen::Isometry3d getLookAtIsometry(
 }
 
 //==============================================================================
-Eigen::Vector3d getEndEffectorDirection(const dart::dynamics::BodyNodePtr& body)
-{
-  const std::size_t zDirection = 2;
-  return body->getWorldTransform().linear().col(zDirection).normalized();
-}
-
-//==============================================================================
 const dart::dynamics::BodyNode* getBodyNodeOrThrow(
     const MetaSkeleton& skeleton, const std::string& bodyNodeName)
 {
