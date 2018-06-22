@@ -25,6 +25,8 @@ std::unique_ptr<common::RNG> Planner::getRng() const
   if (!mRng)
     return nullptr;
 
+  // NOTE: We usually use unique pointers to pass RNGs, so cloning is needed
+  // here.
   return std::move(cloneRNGFrom(*mRng)[0]);
 }
 

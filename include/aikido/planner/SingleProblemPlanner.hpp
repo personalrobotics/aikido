@@ -27,7 +27,9 @@ public:
   /// Constructor
   ///
   /// \param[in] stateSpace State space associated with this planner.
-  explicit SingleProblemPlanner(statespace::ConstStateSpacePtr stateSpace);
+  explicit SingleProblemPlanner(
+      statespace::ConstStateSpacePtr stateSpace,
+      std::unique_ptr<common::RNG> rng = nullptr);
 
   // Documentation inherited.
   bool canSolve(const Problem& problem) const final override;
