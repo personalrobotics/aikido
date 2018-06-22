@@ -28,12 +28,10 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
         std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
             planner,
-        ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-        std::unique_ptr<common::RNG> rng)
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
   : PlannerAdapter<aikido::planner::ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))
-  , mRng(std::move(rng))
 {
   // Do nothing
 }
@@ -71,19 +69,26 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto startState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
 
-  // Convert TSR constraint into IK constraint
+  auto rng = mDelegate->getRng();
+  if (!rng)
+  {
+    auto defaultRng
+        = aikido::common::RNGWrapper<std::mt19937>(std::random_device{}());
+    rng = std::move(cloneRNGFrom(defaultRng)[0]);
+  }
+
+  // Convert TSR constraint into IK constraint.
+  // NOTE: Const-casting should be removed once InverseKinematicsSampleable is
+  // changed to take const constraints!
   InverseKinematicsSampleable ikSampleable(
       mMetaSkeletonStateSpace,
       mMetaSkeleton,
       std::const_pointer_cast<TSR>(problem.getGoalTSR()),
-      createSampleableBounds(
-          mMetaSkeletonStateSpace, std::move(cloneRNGFrom(*mRng)[0])),
+      createSampleableBounds(mMetaSkeletonStateSpace, std::move(rng)),
       ik,
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
 
-  // NOTE: Const-casting should be removed once InverseKinematicsSampleable is
-  // changed to take const constraints!
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 

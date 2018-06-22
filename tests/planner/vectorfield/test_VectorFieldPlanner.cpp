@@ -346,7 +346,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       mPassingConstraint);
 
   // Create planner.
-  auto vfOffsetPlanner = VectorFieldConfigurationToEndEffectorOffsetPlanner(
+  VectorFieldConfigurationToEndEffectorOffsetPlanner vfOffsetPlanner(
       mStateSpace,
       mSkel,
       distanceTolerance,

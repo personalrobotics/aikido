@@ -98,5 +98,5 @@ TEST_F(SnapPlannerTest, DartConfigurationToTSRPlanner)
       stateSpace, interpolator);
   auto planner
       = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
-          delegate, skel, std::move(cloneRNGFrom(_rng)[0]));
+          delegate, skel);
 }
