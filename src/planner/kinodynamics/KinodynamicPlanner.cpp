@@ -1,3 +1,6 @@
+#include <iostream>
+#include <fstream>
+
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
@@ -444,6 +447,30 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     viaTime = path1Duration;
   }
   return traj;
+}
+
+void dumpSplinePhasePlot(
+    const aikido::trajectory::Spline& spline,
+    const std::string& filename,
+    double timeStep)
+{
+  std::ofstream phasePlotFile;
+  phasePlotFile.open(filename);
+  auto stateSpace = spline.getStateSpace();
+  std::size_t dim = stateSpace->getDimension();
+
+  auto state = stateSpace->createState();
+  double t = spline.getStartTime();
+  while(t+timeStep<spline.getEndTime())
+  {
+    spline.evaluate(t, state);
+    stateSpace->print(state, phasePlotFile);
+    t += timeStep;
+  }
+  spline.evaluate(spline.getEndTime(), state);
+  stateSpace->print(state, phasePlotFile);
+  phasePlotFile.close();
+  return;
 }
 
 } // namespace kinodynamics
