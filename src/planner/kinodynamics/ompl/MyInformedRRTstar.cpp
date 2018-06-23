@@ -32,7 +32,7 @@ namespace geometric {
 MyInformedRRTstar::MyInformedRRTstar(const ompl::base::SpaceInformationPtr& si)
   : InformedRRTstar(si)
 {
-  
+
   setName("KinoInformedRRTstar");
 
   mode_ = RANDOM_SAMPLES;
@@ -139,9 +139,7 @@ ompl::base::PlannerStatus MyInformedRRTstar::solveAndSaveSamples(
 base::PlannerStatus MyInformedRRTstar::solve(
     const base::PlannerTerminationCondition& ptc)
 {
-  OMPL_INFORM(
-      "%s: YOU ARE CALLING THE RIGHT ONE",
-      getName().c_str());
+  OMPL_INFORM("%s: YOU ARE CALLING THE RIGHT ONE", getName().c_str());
 
   // std::cout << "Using Correct Informed RRT*" << std::endl;
   checkValidity();
@@ -682,8 +680,11 @@ base::PlannerStatus MyInformedRRTstar::solve(
       // Checking for approximate solution (closest state found to the goal)
       if (goalMotions_.size() == 0 && distanceFromGoal < approximatedist)
       {
-        OMPL_INFORM("%s: distanceFromGoal - %d , approximatedist - %d", 
-                    getName().c_str(), distanceFromGoal, approximatedist);
+        OMPL_INFORM(
+            "%s: distanceFromGoal - %d , approximatedist - %d",
+            getName().c_str(),
+            distanceFromGoal,
+            approximatedist);
         approximation = motion;
         approximatedist = distanceFromGoal;
       }
@@ -756,7 +757,8 @@ base::PlannerStatus MyInformedRRTstar::solve(
   return base::PlannerStatus(addedSolution, approximate);
 }
 
-::ompl::base::PathPtr MyInformedRRTstar::completeApproximateSolution(::ompl::base::PathPtr approximation)
+::ompl::base::PathPtr MyInformedRRTstar::completeApproximateSolution(
+    ::ompl::base::PathPtr approximation)
 {
   // convert approximation to a path geometric
   PathGeometric* geoPath = dynamic_cast<PathGeometric*>(approximation.get());
@@ -770,22 +772,24 @@ base::PlannerStatus MyInformedRRTstar::solve(
   goal_s->sampleGoal(goalState);
 
   std::size_t geoPathLen = geoPath->getStateCount();
-  if(geoPathLen>0)
+  if (geoPathLen > 0)
   {
-    base::State* lastState = geoPath->getState(geoPathLen-1);
+    base::State* lastState = geoPath->getState(geoPathLen - 1);
     // try to connect to the goal state
-    if(lastState && si_->checkMotion(lastState, goalState))
+    if (lastState && si_->checkMotion(lastState, goalState))
     {
       OMPL_INFORM("WE CAN COMPLETE THE APPROXIMATE SOLUTION");
-      PathGeometric* newGeoPath = new PathGeometric(geoPath->getSpaceInformation());
-      for(std::size_t i=0; i<geoPath->getStateCount();i++)
+      PathGeometric* newGeoPath
+          = new PathGeometric(geoPath->getSpaceInformation());
+      for (std::size_t i = 0; i < geoPath->getStateCount(); i++)
       {
         newGeoPath->append(geoPath->getState(i));
       }
-      
+
       std::cout << "GEO PATH COUNT " << geoPath->getStateCount() << std::endl;
-      std::cout << "NEW GEO PATH COUNT " << newGeoPath->getStateCount() << std::endl;
-      
+      std::cout << "NEW GEO PATH COUNT " << newGeoPath->getStateCount()
+                << std::endl;
+
       newGeoPath->append(goalState);
       newPath = ::ompl::base::PathPtr(newGeoPath);
     }
@@ -831,6 +835,5 @@ std::string MyInformedRRTstar::fromState(ompl::base::State* fromState)
   }
   return oss.str();
 }
-
 }
 }

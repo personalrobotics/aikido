@@ -72,8 +72,6 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
     double maxPlanTime,
     double maxDistanceBtwValidityChecks);
 
-
-
 } // namespace kinodynamics
 } // namespace planner
 } // namespace aikido

@@ -40,7 +40,8 @@ public:
     return samplesGeneratedNum_;
   }
 
-  ::ompl::base::PathPtr completeApproximateSolution(::ompl::base::PathPtr approximation);
+  ::ompl::base::PathPtr completeApproximateSolution(
+      ::ompl::base::PathPtr approximation);
 
 private:
   PlannerMode mode_;

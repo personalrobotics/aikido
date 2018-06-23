@@ -1,11 +1,27 @@
-#include <iostream>
-#include <fstream>
-#include "aikido/common/Spline.hpp"
 #include "KinodynamicUtil.hpp"
+#include <fstream>
+#include <iostream>
+#include "aikido/common/Spline.hpp"
 
 namespace aikido {
 namespace planner {
 namespace kinodynamics {
+
+void printStateWithTime(
+    double t,
+    std::size_t dimension,
+    Eigen::VectorXd& stateVec,
+    Eigen::VectorXd& velocityVec,
+    std::ofstream& cout)
+{
+  cout << t << " ";
+  for (std::size_t i = 0; i < dimension; i++)
+  {
+    cout << stateVec[i] << " " << velocityVec[i] << " ";
+  }
+  cout << std::endl;
+  return;
+}
 
 void dumpSplinePhasePlot(
     const aikido::trajectory::Spline& spline,
@@ -15,17 +31,25 @@ void dumpSplinePhasePlot(
   std::ofstream phasePlotFile;
   phasePlotFile.open(filename);
   auto stateSpace = spline.getStateSpace();
+  std::size_t dim = stateSpace->getDimension();
 
   auto state = stateSpace->createState();
+  Eigen::VectorXd stateVec(dim);
+  Eigen::VectorXd velocityVec(dim);
   double t = spline.getStartTime();
-  while(t+timeStep<spline.getEndTime())
+  while (t + timeStep < spline.getEndTime())
   {
     spline.evaluate(t, state);
-    stateSpace->print(state, phasePlotFile);
+    spline.evaluateDerivative(t, 1, velocityVec);
+    stateSpace->logMap(state, stateVec);
+    printStateWithTime(t, dim, stateVec, velocityVec, phasePlotFile);
     t += timeStep;
   }
   spline.evaluate(spline.getEndTime(), state);
-  stateSpace->print(state, phasePlotFile);
+  spline.evaluateDerivative(spline.getEndTime(), 1, velocityVec);
+  stateSpace->logMap(state, stateVec);
+  printStateWithTime(t, dim, stateVec, velocityVec, phasePlotFile);
+
   phasePlotFile.close();
   return;
 }
@@ -37,14 +61,14 @@ bool convertPathToSequentialStates(
     std::vector<Eigen::VectorXd>& points,
     std::vector<double>& times)
 {
-  if(path)
+  if (path)
   {
     points.clear();
     times.clear();
 
     std::size_t node_num = path->getStateCount();
     double last_time = 0.0;
-    for (size_t idx = 0; idx < node_num-1; idx++)
+    for (size_t idx = 0; idx < node_num - 1; idx++)
     {
       ::ompl::base::State* state1 = path->getState(idx);
       ::ompl::base::State* state2 = path->getState(idx + 1);
@@ -53,22 +77,20 @@ bool convertPathToSequentialStates(
           = dimt->discretize(state1, state2, interpolateStepSize, deltaTimes);
 
       std::transform(
-        deltaTimes.begin(),
-        deltaTimes.end(),
-        deltaTimes.begin(),
-        std::bind2nd(std::plus<double>(), last_time));
+          deltaTimes.begin(),
+          deltaTimes.end(),
+          deltaTimes.begin(),
+          std::bind2nd(std::plus<double>(), last_time));
 
-      if(idx==0)
+      if (idx == 0)
       {
-        points.insert(
-          points.end(), deltaPoints.begin(), deltaPoints.end());
+        points.insert(points.end(), deltaPoints.begin(), deltaPoints.end());
         times.insert(times.end(), deltaTimes.begin(), deltaTimes.end());
       }
       else
       {
-        points.insert(
-          points.end(), deltaPoints.begin()+1, deltaPoints.end());
-        times.insert(times.end(), deltaTimes.begin()+1, deltaTimes.end());
+        points.insert(points.end(), deltaPoints.begin() + 1, deltaPoints.end());
+        times.insert(times.end(), deltaTimes.begin() + 1, deltaTimes.end());
       }
 
       // update last time
@@ -80,11 +102,10 @@ bool convertPathToSequentialStates(
   return false;
 }
 
-std::unique_ptr<aikido::trajectory::Spline> 
-    convertSequentialStatesToSpline(
-        const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace,
-        std::vector<Eigen::VectorXd>& points,
-        std::vector<double>& times)
+std::unique_ptr<aikido::trajectory::Spline> convertSequentialStatesToSpline(
+    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace,
+    std::vector<Eigen::VectorXd>& points,
+    std::vector<double>& times)
 {
   std::size_t dimension = metaSkeletonStateSpace->getDimension();
   using CubicSplineProblem
@@ -99,13 +120,12 @@ std::unique_ptr<aikido::trajectory::Spline>
   {
     Eigen::VectorXd positionCurr = points[i].head(dimension);
     Eigen::VectorXd velocityCurr = points[i].tail(dimension);
-    Eigen::VectorXd positionNext = points[i+1].head(dimension);
-    Eigen::VectorXd velocityNext = points[i+1].tail(dimension);
+    Eigen::VectorXd positionNext = points[i + 1].head(dimension);
+    Eigen::VectorXd velocityNext = points[i + 1].tail(dimension);
 
     double timeCurr = times[i];
     double timeNext = times[i + 1];
 
-    std::cout << "SPLINE " << timeCurr << " TO " << timeNext << std::endl;
     CubicSplineProblem problem(
         Eigen::Vector2d(0.0, timeNext - timeCurr), 4, dimension);
     problem.addConstantConstraint(0, 0, zeroPosition);

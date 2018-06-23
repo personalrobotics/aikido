@@ -1,12 +1,11 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
+#include <dart/math/Constants.hpp>
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/geometric/PathGeometric.h>
-#include <dart/math/Constants.hpp>
-
 
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/planner/kinodynamics/KinodynamicPlanner.hpp"
@@ -164,7 +163,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     return nullptr;
   }
 
-  // converting path 1 
+  // converting path 1
   std::vector<Eigen::VectorXd> points;
   std::vector<double> times;
 
@@ -172,33 +171,31 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   std::vector<double> path1times;
   ::ompl::geometric::PathGeometric* geopath1
       = path1->as<::ompl::geometric::PathGeometric>();
-  convertPathToSequentialStates(geopath1, dimt, interpolateStepSize,
-                                path1points, path1times);
- 
+  convertPathToSequentialStates(
+      geopath1, dimt, interpolateStepSize, path1points, path1times);
+
   // converting path 2
   std::vector<Eigen::VectorXd> path2points;
   std::vector<double> path2times;
   ::ompl::geometric::PathGeometric* geopath2
       = path2->as<::ompl::geometric::PathGeometric>();
-  convertPathToSequentialStates(geopath2, dimt, interpolateStepSize,
-                                path2points, path2times);
-  
+  convertPathToSequentialStates(
+      geopath2, dimt, interpolateStepSize, path2points, path2times);
+
   // merge two sets
   std::transform(
       path2times.begin(),
       path2times.end(),
       path2times.begin(),
       std::bind2nd(std::plus<double>(), path1times.back()));
-  
+
   points.insert(points.end(), path1points.begin(), path1points.end());
   times.insert(times.end(), path1times.begin(), path1times.end());
   points.insert(points.end(), path2points.begin() + 1, path2points.end());
   times.insert(times.end(), path2times.begin() + 1, path2times.end());
-  
 
   // convert to a spline
-  return convertSequentialStatesToSpline(metaSkeletonStateSpace,
-                                         points, times);
+  return convertSequentialStatesToSpline(metaSkeletonStateSpace, points, times);
 }
 
 ::ompl::base::PathPtr planMinimumTimePath(
@@ -253,7 +250,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   {
     std::cout << "A solution is found" << std::endl;
     path = pdef->getSolutionPath();
-    if(pdef->hasApproximateSolution())
+    if (pdef->hasApproximateSolution())
     {
       path = planner->completeApproximateSolution(path);
     }
@@ -261,7 +258,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     {
       ::ompl::base::Cost path_cost = path->cost(opt);
       std::cout << "The cost is " << path_cost << std::endl;
-      if (opt->isFinite(path_cost)==false)
+      if (opt->isFinite(path_cost) == false)
       {
         return nullptr;
       }
@@ -348,12 +345,13 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   // 1. create a vector of states and velocities
   // 2. push states/velocities of paths into the vector
   // 3. create SplineTrajectory from the vector
-  auto traj = concatenateTwoPaths(path1, path2, dimt, 
-                                  metaSkeletonStateSpace);
+  auto traj = concatenateTwoPaths(path1, path2, dimt, metaSkeletonStateSpace);
   if (traj != nullptr)
   {
     viaTime = path1Duration;
   }
+
+  dumpSplinePhasePlot(*traj, "RESULT.txt", 1e-2);
   return traj;
 }
 
