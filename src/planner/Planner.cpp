@@ -7,10 +7,15 @@ namespace planner {
 
 //==============================================================================
 Planner::Planner(
-    statespace::ConstStateSpacePtr stateSpace, std::unique_ptr<common::RNG> rng)
+    statespace::ConstStateSpacePtr stateSpace, common::RNG* rng)
   : mStateSpace(std::move(stateSpace)), mRng(std::move(rng))
 {
-  // Do nothing
+  if (!mRng)
+  {
+    auto defaultRng
+        = aikido::common::RNGWrapper<std::mt19937>(std::random_device{}());
+    mRng = &defaultRng;
+  }
 }
 
 //==============================================================================
@@ -20,14 +25,9 @@ statespace::ConstStateSpacePtr Planner::getStateSpace() const
 }
 
 //==============================================================================
-std::unique_ptr<common::RNG> Planner::getRng() const
+common::RNG* Planner::getRng() const
 {
-  if (!mRng)
-    return nullptr;
-
-  // NOTE: We usually use unique pointers to pass RNGs, so cloning is needed
-  // here.
-  return std::move(cloneRNGFrom(*mRng)[0]);
+  return mRng;
 }
 
 //==============================================================================

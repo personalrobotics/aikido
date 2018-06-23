@@ -69,14 +69,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto startState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
 
-  auto rng = mDelegate->getRng();
-  if (!rng)
-  {
-    auto defaultRng
-        = aikido::common::RNGWrapper<std::mt19937>(std::random_device{}());
-    rng = std::move(cloneRNGFrom(defaultRng)[0]);
-  }
-
+  auto rng = std::move(cloneRNGFrom(*mDelegate->getRng())[0]);
   // Convert TSR constraint into IK constraint.
   // NOTE: Const-casting should be removed once InverseKinematicsSampleable is
   // changed to take const constraints!

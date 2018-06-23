@@ -24,7 +24,7 @@ public:
   /// \param[in] stateSpace State space that this planner associated with.
   explicit Planner(
       statespace::ConstStateSpacePtr stateSpace,
-      std::unique_ptr<common::RNG> rng = nullptr);
+      common::RNG* rng = nullptr);
 
   /// Default destructor.
   virtual ~Planner() = default;
@@ -33,7 +33,7 @@ public:
   statespace::ConstStateSpacePtr getStateSpace() const;
 
   /// Returns RNG.
-  std::unique_ptr<common::RNG> getRng() const;
+  common::RNG* getRng() const;
 
   /// Returns true if this planner can solve \c problem.
   virtual bool canSolve(const Problem& problem) const = 0;
@@ -50,8 +50,8 @@ protected:
   /// State space associated with this planner.
   statespace::ConstStateSpacePtr mStateSpace;
 
-  /// RNG the planner uses. Can be nullptr.
-  std::unique_ptr<common::RNG> mRng;
+  /// RNG the planner uses.
+  common::RNG* mRng;
 };
 
 /// Base class for planning result of various planning problems.

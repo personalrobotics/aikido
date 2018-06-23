@@ -25,7 +25,7 @@ public:
   /// \param[in] stateSpace State space that this planner associated with.
   explicit ConfigurationToConfigurationPlanner(
       statespace::ConstStateSpacePtr stateSpace,
-      std::unique_ptr<common::RNG> rng = nullptr);
+      common::RNG* rng = nullptr);
 
   /// Solves \c problem returning the result to \c result.
   ///
