@@ -51,7 +51,7 @@ protected:
   statespace::ConstStateSpacePtr mStateSpace;
 
   /// RNG the planner uses.
-  common::RNG* mRng;
+  std::unique_ptr<common::RNG> mRng;
 };
 
 /// Base class for planning result of various planning problems.

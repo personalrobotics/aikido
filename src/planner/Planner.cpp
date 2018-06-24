@@ -7,14 +7,14 @@ namespace planner {
 
 //==============================================================================
 Planner::Planner(statespace::ConstStateSpacePtr stateSpace, common::RNG* rng)
-  : mStateSpace(std::move(stateSpace)), mRng(std::move(rng))
+  : mStateSpace(std::move(stateSpace))
 {
-  if (!mRng)
-  {
-    auto defaultRng
-        = aikido::common::RNGWrapper<std::mt19937>(std::random_device{}());
-    mRng = &defaultRng;
-  }
+  if (!rng)
+    mRng = std::move(
+        std::unique_ptr<common::RNG>(
+            new common::RNGWrapper<std::mt19937>(std::random_device{}())));
+  else
+    mRng = std::move(cloneRNGFrom(*rng)[0]);
 }
 
 //==============================================================================
@@ -26,7 +26,7 @@ statespace::ConstStateSpacePtr Planner::getStateSpace() const
 //==============================================================================
 common::RNG* Planner::getRng() const
 {
-  return mRng;
+  return mRng.get();
 }
 
 //==============================================================================
