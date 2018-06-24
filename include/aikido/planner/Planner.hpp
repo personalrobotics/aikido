@@ -22,9 +22,9 @@ public:
   /// Constructs from a state space.
   ///
   /// \param[in] stateSpace State space that this planner associated with.
+  /// \param[in] rng RNG that planner uses. If nullptr, a default is created.
   explicit Planner(
-      statespace::ConstStateSpacePtr stateSpace,
-      common::RNG* rng = nullptr);
+      statespace::ConstStateSpacePtr stateSpace, common::RNG* rng = nullptr);
 
   /// Default destructor.
   virtual ~Planner() = default;

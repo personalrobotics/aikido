@@ -20,12 +20,9 @@ public:
   // which is simply ConfigurationToConfiguration.
   using SingleProblemPlanner::plan;
 
-  /// Constructor
-  ///
-  /// \param[in] stateSpace State space that this planner associated with.
+  /// \copydoc Planner::Planner
   explicit ConfigurationToConfigurationPlanner(
-      statespace::ConstStateSpacePtr stateSpace,
-      common::RNG* rng = nullptr);
+      statespace::ConstStateSpacePtr stateSpace, common::RNG* rng = nullptr);
 
   /// Solves \c problem returning the result to \c result.
   ///

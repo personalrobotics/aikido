@@ -22,7 +22,7 @@ public:
   /// construction.
   ///
   /// \param[in] stateSpace State space.
-  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
   /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// offest while maintaining the current orientation.

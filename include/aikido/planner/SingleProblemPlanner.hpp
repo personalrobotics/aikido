@@ -24,12 +24,9 @@ class SingleProblemPlanner : public Planner
 public:
   using SolvableProblem = ProblemT;
 
-  /// Constructor
-  ///
-  /// \param[in] stateSpace State space associated with this planner.
+  /// \copydoc Planner::Planner
   explicit SingleProblemPlanner(
-      statespace::ConstStateSpacePtr stateSpace,
-      common::RNG* rng = nullptr);
+      statespace::ConstStateSpacePtr stateSpace, common::RNG* rng = nullptr);
 
   // Documentation inherited.
   bool canSolve(const Problem& problem) const final override;

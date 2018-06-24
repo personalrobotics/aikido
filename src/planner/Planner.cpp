@@ -6,8 +6,7 @@ namespace aikido {
 namespace planner {
 
 //==============================================================================
-Planner::Planner(
-    statespace::ConstStateSpacePtr stateSpace, common::RNG* rng)
+Planner::Planner(statespace::ConstStateSpacePtr stateSpace, common::RNG* rng)
   : mStateSpace(std::move(stateSpace)), mRng(std::move(rng))
 {
   if (!mRng)

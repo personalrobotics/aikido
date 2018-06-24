@@ -1,12 +1,13 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
+
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
-#include <aikido/common/RNG.hpp>
-
+using aikido::common::cloneRNGFrom;
 using aikido::constraint::dart::InverseKinematicsSampleable;
 using aikido::constraint::dart::TSR;
 using aikido::constraint::dart::createSampleableBounds;
@@ -16,8 +17,6 @@ using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::InverseKinematics;
 using ::dart::dynamics::ConstBodyNodePtr;
 using ::dart::dynamics::BodyNodePtr;
-
-using aikido::common::cloneRNGFrom;
 
 namespace aikido {
 namespace planner {
