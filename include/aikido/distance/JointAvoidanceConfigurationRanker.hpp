@@ -18,7 +18,7 @@ public:
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
 
 protected:
-  /// Returns score as distance from position limits.
+  /// Returns cost as negative of distance from position limits.
   double evaluateConfiguration(
       statespace::StateSpace::State* solution) const override;
 

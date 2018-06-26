@@ -21,10 +21,11 @@ public:
       const statespace::StateSpace::State* nominalConfiguration);
 
 protected:
-  /// Returns score as distance from the Nominal Configuration.
+  /// Returns cost as distance from the Nominal Configuration.
   double evaluateConfiguration(
       statespace::StateSpace::State* solution) const override;
 
+  /// Nominal configuration used when evaluating a given configuration.
   const statespace::StateSpace::State* mNominalConfiguration;
 };
 

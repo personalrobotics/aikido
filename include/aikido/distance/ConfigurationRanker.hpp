@@ -29,12 +29,15 @@ public:
   /// Returns the statespace.
   statespace::ConstStateSpacePtr getStateSpace() const;
 
-  /// Returns the vector of ranked configurations.
+  /// Ranks the vector of configurations in increasing order of respective costs.
+  /// \param[in] configurations Vector of configurations to rank.
+  /// \param[out] configurations Vector of ranked configurations.
   void rankConfigurations(
       std::vector<statespace::CartesianProduct::State*>& configurations);
 
 protected:
-  /// Returns the score of the configuration
+  /// Returns the cost of the configuration.
+  /// \param[in] solution Configuration to evaluate.
   virtual double evaluateConfiguration(
       statespace::StateSpace::State* solution) const = 0;
 
