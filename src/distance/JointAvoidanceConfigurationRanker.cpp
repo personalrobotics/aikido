@@ -24,8 +24,10 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
       mUnboundedUpperLimitsIndices.emplace_back(i);
   }
 
-  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionLowerLimits(), mLowerLimitsState);
-  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionUpperLimits(), mUpperLimitsState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      mMetaSkeleton->getPositionLowerLimits(), mLowerLimitsState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      mMetaSkeleton->getPositionUpperLimits(), mUpperLimitsState);
 }
 
 //==============================================================================
@@ -45,8 +47,10 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
   for (auto index : mUnboundedUpperLimitsIndices)
     upperLimits[index] = solutionPosition[index];
 
-  mMetaSkeletonStateSpace->convertPositionsToState(lowerLimits, mLowerLimitsState);
-  mMetaSkeletonStateSpace->convertPositionsToState(upperLimits, mUpperLimitsState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      lowerLimits, mLowerLimitsState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      upperLimits, mUpperLimitsState);
 
   return -std::min(
       mDistanceMetric->distance(solution, mLowerLimitsState),

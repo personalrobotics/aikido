@@ -29,7 +29,8 @@ public:
   /// Returns the statespace.
   statespace::ConstStateSpacePtr getStateSpace() const;
 
-  /// Ranks the vector of configurations in increasing order of respective costs.
+  /// Ranks the vector of configurations in increasing order of respective
+  /// costs.
   /// \param[in] configurations Vector of configurations to rank.
   /// \param[out] configurations Vector of ranked configurations.
   void rankConfigurations(
