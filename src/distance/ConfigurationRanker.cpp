@@ -62,7 +62,7 @@ void ConfigurationRanker::rankConfigurations(
       scoredConfigurations.begin(),
       scoredConfigurations.end(),
       std::back_inserter(configurations),
-      [](const std::pair<statespace::CartesianProduct::State*, int>& item) {
+      [](const std::pair<statespace::CartesianProduct::State*, double>& item) {
         return item.first;
       });
 }

@@ -18,15 +18,15 @@ public:
   NominalConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      const statespace::StateSpace::State* nominalConfiguration);
+      const statespace::CartesianProduct::State* nominalConfiguration);
 
 protected:
   /// Returns cost as distance from the Nominal Configuration.
   double evaluateConfiguration(
-      statespace::StateSpace::State* solution) const override;
+      statespace::CartesianProduct::State* solution) const override;
 
   /// Nominal configuration used when evaluating a given configuration.
-  const statespace::StateSpace::State* mNominalConfiguration;
+  const statespace::CartesianProduct::State* mNominalConfiguration;
 };
 
 } // namespace distance

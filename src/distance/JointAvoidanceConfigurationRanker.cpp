@@ -23,11 +23,14 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     if (upperLimits[i] == dart::math::constantsd::inf())
       mUnboundedUpperLimitsIndices.emplace_back(i);
   }
+
+  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionLowerLimits(), mLowerLimitsState);
+  mMetaSkeletonStateSpace->convertPositionsToState(mMetaSkeleton->getPositionUpperLimits(), mUpperLimitsState);
 }
 
 //==============================================================================
 double JointAvoidanceConfigurationRanker::evaluateConfiguration(
-    statespace::StateSpace::State* solution) const
+    statespace::CartesianProduct::State* solution) const
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
   mMetaSkeletonStateSpace->convertStateToPositions(
@@ -42,14 +45,12 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
   for (auto index : mUnboundedUpperLimitsIndices)
     upperLimits[index] = solutionPosition[index];
 
-  auto lowerLimitsState
-      = mMetaSkeletonStateSpace->getStateFromPositions(lowerLimits);
-  auto upperLimitsState
-      = mMetaSkeletonStateSpace->getStateFromPositions(upperLimits);
+  mMetaSkeletonStateSpace->convertPositionsToState(lowerLimits, mLowerLimitsState);
+  mMetaSkeletonStateSpace->convertPositionsToState(upperLimits, mUpperLimitsState);
 
   return -std::min(
-      mDistanceMetric->distance(solution, lowerLimitsState),
-      mDistanceMetric->distance(solution, upperLimitsState));
+      mDistanceMetric->distance(solution, mLowerLimitsState),
+      mDistanceMetric->distance(solution, mUpperLimitsState));
 }
 
 } // namespace distance

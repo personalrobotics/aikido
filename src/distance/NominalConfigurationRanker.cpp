@@ -11,7 +11,7 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
-    const statespace::StateSpace::State* nominalConfiguration)
+    const statespace::CartesianProduct::State* nominalConfiguration)
   : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton)
   , mNominalConfiguration(nominalConfiguration)
 {
@@ -23,7 +23,7 @@ NominalConfigurationRanker::NominalConfigurationRanker(
 
 //==============================================================================
 double NominalConfigurationRanker::evaluateConfiguration(
-    statespace::StateSpace::State* solution) const
+    statespace::CartesianProduct::State* solution) const
 {
   return mDistanceMetric->distance(solution, mNominalConfiguration);
 }
