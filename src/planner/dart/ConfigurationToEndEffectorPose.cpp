@@ -16,7 +16,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
-  , mStartState(std::move(mMetaSkeletonStateSpace->createState()))
+  , mStartState(mMetaSkeletonStateSpace->createState())
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mGoalPose(goalPose)
 {
@@ -33,7 +33,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
-  , mStartState(std::move(stateSpace->cloneState(startState)))
+  , mStartState(stateSpace->cloneState(startState))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mGoalPose(goalPose)
 {

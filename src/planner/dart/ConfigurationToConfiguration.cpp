@@ -13,8 +13,8 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
-  , mStartState(std::move(mMetaSkeletonStateSpace->createState()))
-  , mGoalState(std::move(stateSpace->cloneState(goalState)))
+  , mStartState(mMetaSkeletonStateSpace->createState())
+  , mGoalState(stateSpace->cloneState(goalState))
 {
   // Do nothing.
 }
@@ -28,8 +28,8 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
-  , mStartState(std::move(stateSpace->cloneState(startState)))
-  , mGoalState(std::move(stateSpace->cloneState(goalState)))
+  , mStartState(stateSpace->cloneState(startState))
+  , mGoalState(stateSpace->cloneState(goalState))
 {
   // Do nothing.
 }

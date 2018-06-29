@@ -17,7 +17,7 @@ ConfigurationToTSR::ConfigurationToTSR(
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
-  , mStartState(std::move(mMetaSkeletonStateSpace->createState()))
+  , mStartState(mMetaSkeletonStateSpace->createState())
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mMaxSamples(maxSamples)
   , mGoalTSR(goalTSR)
