@@ -25,10 +25,9 @@ namespace dart {
 //==============================================================================
 ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
-        std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
-            planner,
+        std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : PlannerAdapter<aikido::planner::ConfigurationToConfigurationPlanner,
+  : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))
 {

@@ -33,7 +33,7 @@ public:
   statespace::ConstStateSpacePtr getStateSpace() const;
 
   /// Returns RNG.
-  common::RNG* getRng() const;
+  common::RNG* getRng();
 
   /// Returns true if this planner can solve \c problem.
   virtual bool canSolve(const Problem& problem) const = 0;

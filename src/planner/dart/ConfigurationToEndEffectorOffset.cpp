@@ -12,7 +12,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const boost::optional<Eigen::Vector3d>& direction,
+    const Eigen::Vector3d& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
@@ -32,7 +32,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State* startState,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const boost::optional<Eigen::Vector3d>& direction,
+    const Eigen::Vector3d& direction,
     double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
