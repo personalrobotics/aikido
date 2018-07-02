@@ -31,7 +31,7 @@ public:
   /// \param _maxNumTrials Max number of trials for its sample generator
   ///        to retry sampling and finding an inverse kinematics solution.
   InverseKinematicsSampleable(
-      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
       ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
       SampleablePtr _poseConstraint,
       SampleablePtr _seedConstraint,
@@ -41,13 +41,13 @@ public:
   virtual ~InverseKinematicsSampleable() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
-  statespace::dart::MetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
+  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   SampleablePtr mPoseConstraint;
   SampleablePtr mSeedConstraint;

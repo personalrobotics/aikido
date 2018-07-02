@@ -1,8 +1,11 @@
+#include "aikido/statespace/ScopedState.hpp"
+
 namespace aikido {
 namespace statespace {
 
-template <class _Handle>
-ScopedState<_Handle>::ScopedState(const StateSpace* _space)
+//==============================================================================
+template <class Handle>
+ScopedState<Handle>::ScopedState(const StateSpace* _space)
 {
   this->mSpace = _space;
   mBuffer.reset(new char[_space->getStateSizeInBytes()]);
@@ -10,10 +13,18 @@ ScopedState<_Handle>::ScopedState(const StateSpace* _space)
       _space->allocateStateInBuffer(mBuffer.get()));
 }
 
-template <class _Handle>
-ScopedState<_Handle>::~ScopedState()
+//==============================================================================
+template <class Handle>
+ScopedState<Handle>::~ScopedState()
 {
   this->mSpace->freeStateInBuffer(this->mState);
+}
+
+//==============================================================================
+template <class Handle>
+ScopedState<Handle> ScopedState<Handle>::clone() const
+{
+  return this->mSpace->cloneState(this->mState);
 }
 
 } // namespace statespace

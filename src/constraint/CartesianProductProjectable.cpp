@@ -6,7 +6,7 @@ namespace constraint {
 
 //==============================================================================
 CartesianProductProjectable::CartesianProductProjectable(
-    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
+    std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
     std::vector<ProjectablePtr> _constraints)
   : mStateSpace(std::move(_stateSpace)), mConstraints(std::move(_constraints))
 {
@@ -41,7 +41,8 @@ CartesianProductProjectable::CartesianProductProjectable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductProjectable::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductProjectable::getStateSpace()
+    const
 {
   return mStateSpace;
 }

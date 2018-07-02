@@ -1,13 +1,14 @@
-#ifndef AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
-#define AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
+#ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
+#define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
 
 #include <dart/dart.hpp>
 #include "aikido/planner/Problem.hpp"
-#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 /// Planning problem to plan to a desired end-effector pose.
 class ConfigurationToEndEffectorPose : public Problem
@@ -23,9 +24,9 @@ public:
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorPose(
-      statespace::ConstStateSpacePtr stateSpace,
-      dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const statespace::StateSpace::State* startState,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const Eigen::Isometry3d& goalPose,
       constraint::ConstTestablePtr constraint);
 
@@ -36,10 +37,10 @@ public:
   static const std::string& getStaticType();
 
   /// Returns the end-effector BodyNode to be planned to move to a desired pose.
-  dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
+  ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Returns the start state.
-  const statespace::StateSpace::State* getStartState() const;
+  const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
@@ -49,16 +50,17 @@ protected:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// End-effector body node.
-  const dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+  const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
 
   /// Goal pose.
   const Eigen::Isometry3d mGoalPose;
 };
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_PLANNER_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
+#endif // AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_

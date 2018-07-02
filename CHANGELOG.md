@@ -8,6 +8,17 @@
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
 
+* State Space
+
+  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
+  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
+  * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
+  * Fixed bug in the representation of SO(2) statespace: [#408](https://github.com/personalrobotics/aikido/pull/408)
+  * Fixed const correctness of StateHandle::getState(): [#419](https://github.com/personalrobotics/aikido/pull/419)
+  * Fixed hidden compose function (in-place version): [#421](https://github.com/personalrobotics/aikido/pull/421)
+  * Added clone functionality to StateSpace: [#422](https://github.com/personalrobotics/aikido/pull/422)
+  * Used const StateSpaces everywhere: [#429](https://github.com/personalrobotics/aikido/pull/429)
+
 * Constraint
 
   * Added SequentialSampleable: [#393](https://github.com/personalrobotics/aikido/pull/393)
@@ -19,21 +30,16 @@
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
   * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
 
-* State Space
-
-  * Refactored JointStateSpace and MetaSkeletonStateSpace: [#278](https://github.com/personalrobotics/aikido/pull/278)
-  * Added methods for checking compatibility between DART objects and state spaces: [#315](https://github.com/personalrobotics/aikido/pull/315)
-  * Added flags to MetaSkeletonStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
-
 * Perception
 
   * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
 
 * Planner
 
+  * Make all DART planners take MetaSkeleton, and add adapter for turning planners into DART planners: [#437](https://github.com/personalrobotics/aikido/pull/437)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
-  * Refactored planning API: [#314](https://github.com/personalrobotics/aikido/pull/314), [#414](https://github.com/personalrobotics/aikido/pull/414)
+  * Refactored planning API: [#314](https://github.com/personalrobotics/aikido/pull/314), [#414](https://github.com/personalrobotics/aikido/pull/414), [#426](https://github.com/personalrobotics/aikido/pull/426), [#432](https://github.com/personalrobotics/aikido/pull/432)
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
   * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)

@@ -14,10 +14,10 @@ class REuclidean : public DistanceMetric
 public:
   /// Constructor.
   /// \param _space The Rn this metric operates on
-  explicit REuclidean(std::shared_ptr<statespace::R<N>> _space);
+  explicit REuclidean(std::shared_ptr<const statespace::R<N>> _space);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes Euclidean distance between two states.
   /// \param _state1 The first state (type Rn::State)
@@ -27,7 +27,7 @@ public:
       const statespace::StateSpace::State* _state2) const override;
 
 private:
-  std::shared_ptr<statespace::R<N>> mStateSpace;
+  std::shared_ptr<const statespace::R<N>> mStateSpace;
 };
 
 using R0Euclidean = REuclidean<0>;

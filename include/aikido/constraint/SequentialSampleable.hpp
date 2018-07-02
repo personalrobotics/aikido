@@ -19,15 +19,14 @@ public:
       const std::vector<ConstSampleablePtr>& sampleables);
 
   // Documentation inherited.
-  // TODO (avk): const-correctness after planner API is merged.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   std::unique_ptr<SampleGenerator> createSampleGenerator() const override;
 
 private:
   /// StateSpace in which the constraint operates.
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 
   /// Sequence of sampleables.
   const std::vector<ConstSampleablePtr> mSampleables;

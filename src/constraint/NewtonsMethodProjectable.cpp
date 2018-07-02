@@ -117,7 +117,7 @@ bool NewtonsMethodProjectable::project(
 }
 
 //==============================================================================
-statespace::StateSpacePtr NewtonsMethodProjectable::getStateSpace() const
+statespace::ConstStateSpacePtr NewtonsMethodProjectable::getStateSpace() const
 {
   return mDifferentiable->getStateSpace();
 }

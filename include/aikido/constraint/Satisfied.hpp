@@ -20,10 +20,10 @@ public:
 
   /// Constructor.
   /// \param _space StateSpace in which this constraint operates.
-  explicit Satisfied(statespace::StateSpacePtr _space);
+  explicit Satisfied(statespace::ConstStateSpacePtr _space);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Returns \c 0.
   std::size_t getConstraintDimension() const override;
@@ -68,7 +68,7 @@ public:
       Eigen::MatrixXd& _out) const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
 };
 
 } // namespace constraint

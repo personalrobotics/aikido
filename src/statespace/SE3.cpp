@@ -32,6 +32,15 @@ auto SE3::createState() const -> ScopedState
 }
 
 //==============================================================================
+SE3::ScopedState SE3::cloneState(const StateSpace::State* stateIn) const
+{
+  auto newState = createState();
+  copyState(stateIn, newState);
+
+  return newState;
+}
+
+//==============================================================================
 auto SE3::getIsometry(const State* _state) const -> const Isometry3d&
 {
   return _state->getIsometry();
