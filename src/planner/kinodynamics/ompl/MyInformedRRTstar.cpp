@@ -811,7 +811,7 @@ base::PlannerStatus MyInformedRRTstar::solve(
 PathGeometric* MyInformedRRTstar::getGeoPath(
     Motion* motion, ::ompl::base::SpaceInformationPtr& si)
 {
-  if(motion)
+  if (motion)
   {
     // construct the solution path
     std::vector<Motion*> mpath;

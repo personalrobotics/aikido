@@ -149,21 +149,20 @@ std::unique_ptr<aikido::trajectory::Spline> convertSequentialStatesToSpline(
 void saveSuboptimalSolutions(
     const std::vector<::ompl::geometric::PathGeometric*>& paths,
     const DIMTPtr& dimt,
-    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace, 
+    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace,
     std::string filenamePrex,
     double interpolateStepSize)
 {
   std::stringstream ss;
-  for(std::size_t i=0; i<paths.size(); i++)
+  for (std::size_t i = 0; i < paths.size(); i++)
   {
     ss.clear();
     ss << filenamePrex << "_" << i << ".txt";
-    
+
     std::vector<Eigen::VectorXd> points;
     std::vector<double> times;
-    convertPathToSequentialStates(paths[i], dimt,
-                                  interpolateStepSize,
-                                  points, times);
+    convertPathToSequentialStates(
+        paths[i], dimt, interpolateStepSize, points, times);
     auto traj = convertSequentialStatesToSpline(
         metaSkeletonStateSpace, points, times);
 
@@ -171,7 +170,6 @@ void saveSuboptimalSolutions(
     std::cout << "WRITING TO " << filename << std::endl;
     dumpSplinePhasePlot(*traj.get(), filename, interpolateStepSize);
   }
-
 }
 
 } // namespace kinodynamics
