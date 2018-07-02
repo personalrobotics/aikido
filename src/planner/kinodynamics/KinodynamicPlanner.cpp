@@ -203,6 +203,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     const ::ompl::base::State* goalState,
     const ::ompl::base::SpaceInformationPtr& si,
     const DIMTPtr& dimt,
+    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace, // TO BE REMOVED
     double& pathCost,
     double maxPlanTime)
 {
@@ -245,6 +246,9 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   planner->setup();
 
   ::ompl::base::PlannerStatus status = planner->solve(maxPlanTime);
+
+  std::vector<::ompl::geometric::PathGeometric*>& subopt_paths = planner->getSuboptimalSolutions();
+  saveSuboptimalSolutions(subopt_paths, dimt, metaSkeletonStateSpace, "FIRSTHALF", 0.01);
 
   if (status)
   {
@@ -336,10 +340,10 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
   double path1Duration = std::numeric_limits<double>::infinity();
   double path2Duration = std::numeric_limits<double>::infinity();
   ::ompl::base::PathPtr path1 = planMinimumTimePath(
-      startState, viaState, si, dimt, path1Duration, maxPlanTime);
+      startState, viaState, si, dimt, metaSkeletonStateSpace, path1Duration, maxPlanTime);
 
   ::ompl::base::PathPtr path2 = planMinimumTimePath(
-      viaState, goalState, si, dimt, path2Duration, maxPlanTime);
+      viaState, goalState, si, dimt, metaSkeletonStateSpace, path2Duration, maxPlanTime);
 
   // concatenate two path
   // 1. create a vector of states and velocities

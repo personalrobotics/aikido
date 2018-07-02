@@ -43,6 +43,11 @@ public:
   ::ompl::base::PathPtr completeApproximateSolution(
       ::ompl::base::PathPtr approximation);
 
+  std::vector<PathGeometric*>& getSuboptimalSolutions() { return mSuboptimalSolutions; }
+protected:
+  PathGeometric* getGeoPath(Motion* motion, ::ompl::base::SpaceInformationPtr& si);
+  std::vector<PathGeometric*> mSuboptimalSolutions;
+
 private:
   PlannerMode mode_;
   std::ofstream out_;

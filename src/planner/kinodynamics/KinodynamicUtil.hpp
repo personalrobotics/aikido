@@ -32,6 +32,13 @@ std::unique_ptr<aikido::trajectory::Spline>
         std::vector<Eigen::VectorXd>& points,
         std::vector<double>& times);
 
+void saveSuboptimalSolutions(
+    const std::vector<::ompl::geometric::PathGeometric*>& paths,
+    const DIMTPtr& dimt,
+    const statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace, 
+    std::string filenamePrex,
+    double interpolateStepSize);
+
 } // namespace kinodynamics
 } // namespace planner
 } // namespace aikido

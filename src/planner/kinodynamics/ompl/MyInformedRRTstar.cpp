@@ -16,6 +16,8 @@
 #include "ompl/tools/config/SelfConfig.h"
 #include "ompl/util/GeometricEquations.h"
 
+#include "../KinodynamicUtil.hpp"
+
 using namespace ompl;
 using namespace ompl::geometric;
 
@@ -583,6 +585,10 @@ base::PlannerStatus MyInformedRRTstar::solve(
                   iterations_,
                   nn_->size());
 
+              // Save suboptimal PathGeometric
+              PathGeometric* tmpPath = getGeoPath(goalMotions_[i], si_);
+              mSuboptimalSolutions.push_back(tmpPath);
+
               if (mode_ == SAVE_SAMPLES)
               {
                 sampleSaveStream_.close();
@@ -618,6 +624,10 @@ base::PlannerStatus MyInformedRRTstar::solve(
                   goalMotions_[i]->cost.value(),
                   iterations_,
                   nn_->size());
+
+              // Save suboptimal PathGeometric
+              PathGeometric* tmpPath = getGeoPath(goalMotions_[i], si_);
+              mSuboptimalSolutions.push_back(tmpPath);
             }
             if (out_.is_open())
             {
@@ -796,6 +806,30 @@ base::PlannerStatus MyInformedRRTstar::solve(
   }
 
   return newPath;
+}
+
+PathGeometric* MyInformedRRTstar::getGeoPath(
+    Motion* motion, ::ompl::base::SpaceInformationPtr& si)
+{
+  if(motion)
+  {
+    // construct the solution path
+    std::vector<Motion*> mpath;
+    Motion* solution = motion;
+    while (solution != nullptr)
+    {
+      mpath.push_back(solution);
+      solution = solution->parent;
+    }
+
+    // set the solution path
+    PathGeometric* geoPath = new PathGeometric(si);
+    for (int i = mpath.size() - 1; i >= 0; --i)
+      geoPath->append(mpath[i]->state);
+    return geoPath;
+  }
+
+  return nullptr;
 }
 
 bool MyInformedRRTstar::toState(
