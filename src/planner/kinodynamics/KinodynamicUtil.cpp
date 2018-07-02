@@ -14,10 +14,14 @@ void printStateWithTime(
     Eigen::VectorXd& velocityVec,
     std::ofstream& cout)
 {
-  cout << t << " ";
+  cout << t << ",";
   for (std::size_t i = 0; i < dimension; i++)
   {
-    cout << stateVec[i] << " " << velocityVec[i] << " ";
+    cout << stateVec[i] << "," << velocityVec[i];
+    if(i<dimension-1)
+    {
+      cout << ",";
+    }
   }
   cout << std::endl;
   return;
