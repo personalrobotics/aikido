@@ -205,6 +205,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
     const DIMTPtr& dimt,
     const statespace::dart::MetaSkeletonStateSpacePtr&
         metaSkeletonStateSpace, // TO BE REMOVED
+    const std::string filenamePrefix,
     double& pathCost,
     double maxPlanTime)
 {
@@ -251,7 +252,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenateTwoPaths(
   std::vector<::ompl::geometric::PathGeometric*>& subopt_paths
       = planner->getSuboptimalSolutions();
   saveSuboptimalSolutions(
-      subopt_paths, dimt, metaSkeletonStateSpace, "FIRSTHALF", 0.01);
+      subopt_paths, dimt, metaSkeletonStateSpace, filenamePrefix, 0.01);
 
   if (status)
   {
@@ -348,6 +349,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
       si,
       dimt,
       metaSkeletonStateSpace,
+      "FIRSTHALF",
       path1Duration,
       maxPlanTime);
 
@@ -357,6 +359,7 @@ std::unique_ptr<aikido::trajectory::Spline> planMinimumTimeViaConstraint(
       si,
       dimt,
       metaSkeletonStateSpace,
+      "SECONDHALF",
       path2Duration,
       maxPlanTime);
 
