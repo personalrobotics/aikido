@@ -151,11 +151,17 @@ UniqueSplinePtr ConcreteRobot::retimePath(
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
+  {
+    std::cout << "It is of interpolated type" << std::endl;
     return retimer->postprocess(*interpolated, *(cloneRNG().get()));
+  }
 
   auto spline = dynamic_cast<const Spline*>(path);
   if (spline)
+  {
+    std::cout << "It is of spline type" << std::endl;
     return retimer->postprocess(*spline, *(cloneRNG().get()));
+  }
 
   throw std::invalid_argument("Path should be either Spline or Interpolated.");
 }

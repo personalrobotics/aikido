@@ -111,9 +111,16 @@ trajectory::TrajectoryPtr planToConfiguration(
     space->convertStateToPositions(currentState, position);
     std::cout << "Position Index " << i << " " << position << std::endl;
   }
+
   untimedTrajectory->evaluate(0.5, currentState);
   space->convertStateToPositions(currentState, position);
   std::cout << "Half Point Position " << position << std::endl;
+
+  untimedTrajectory->evaluate(0.55, currentState);
+  space->convertStateToPositions(currentState, position);
+  std::cout << "Half Point + Position " << position << std::endl;
+
+
   return untimedTrajectory;
 }
 

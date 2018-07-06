@@ -141,8 +141,11 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     }
 
     t += rampNd.endTime;
+    std::cout << "Times " << t << std::endl;
     transitionTimes.insert(t);
   }
+
+  std::cout << "Transition Times Size " << transitionTimes.size() << std::endl;
 
   // Convert the output to a spline with a knot at each transition time.
   assert(!transitionTimes.empty());
@@ -159,8 +162,11 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 
   for (const auto timeCurr : transitionTimes)
   {
+    std::cout << "Current Time " << timeCurr << std::endl;
     Eigen::VectorXd positionCurr, velocityCurr;
     evaluateAtTime(_inputPath, timeCurr, positionCurr, velocityCurr);
+    std::cout << "Cuurent Position " << positionCurr << std::endl;
+    std::cout << "Cuurent Velocity " << velocityCurr << std::endl;
 
     CubicSplineProblem problem(Vector2d(0, timeCurr - timePrev), 4, dimension);
     problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
@@ -247,6 +253,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   {
     auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
     stateSpace->logMap(currentState, currVec);
+    std::cout << "Milestone " << iwaypoint << " " << currVec << std::endl;
     milestones.emplace_back(toVector(currVec));
   }
 
