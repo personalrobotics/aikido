@@ -40,6 +40,7 @@ trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
   for (const auto alpha : vdc)
   {
     mInterpolator->interpolate(startState, goalState, alpha, testState);
+
     if (!constraint->isSatisfied(testState))
     {
       if (result)

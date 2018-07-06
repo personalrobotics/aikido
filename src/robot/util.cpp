@@ -89,37 +89,31 @@ trajectory::TrajectoryPtr planToConfiguration(
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
-//  // First test with Snap Planner
-//  SnapConfigurationToConfigurationPlanner::Result pResult;
-//  TrajectoryPtr untimedTrajectory;
-
-//  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-
-//  auto problem = ConfigurationToConfiguration(
-//      space, startState, goalState, collisionTestable);
-//  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-//      space, std::make_shared<GeodesicInterpolator>(space));
-//  untimedTrajectory = planner->plan(problem, &pResult);
-
-//  // Return if the trajectory is non-empty
-//  if (untimedTrajectory)
-//    return untimedTrajectory;
-
+  // First test with Snap Planner
+  SnapConfigurationToConfigurationPlanner::Result pResult;
   TrajectoryPtr untimedTrajectory;
-  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-  untimedTrajectory = planOMPL<ompl::geometric::RRT>(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution);
 
+  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+
+  auto problem = ConfigurationToConfiguration(
+      space, startState, goalState, collisionTestable);
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      space, std::make_shared<GeodesicInterpolator>(space));
+  untimedTrajectory = planner->plan(problem, &pResult);
+
+  // Print the states in the trajectory
+  Eigen::VectorXd position(space->getDimension());
+  auto currentState = space->createState();
+
+  for (int i = 0; i < 2; ++i)
+  {
+    untimedTrajectory->evaluate(i, currentState);
+    space->convertStateToPositions(currentState, position);
+    std::cout << "Position Index " << i << " " << position << std::endl;
+  }
+  untimedTrajectory->evaluate(0.5, currentState);
+  space->convertStateToPositions(currentState, position);
+  std::cout << "Half Point Position " << position << std::endl;
   return untimedTrajectory;
 }
 
@@ -303,7 +297,6 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
-  // Create seed constraint
   // Create a sequential sampleable to provide seeds for IK solver
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
@@ -359,7 +352,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       frameDiff, projectionToleranceVec, projectionMaxIteration);
 
   // Call planner
-  auto traj = planCRRT(
+  auto traj = planCRRTConnect(
       startState,
       goalTestable,
       goalSampleable,
@@ -374,9 +367,18 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
       timelimit,
       crrtParameters.maxExtensionDistance,
       crrtParameters.maxDistanceBtwProjections,
-      crrtParameters.minStepSize);
-//      crrtParameters.minTreeConnectionDistance);
+      crrtParameters.minStepSize,
+      crrtParameters.minTreeConnectionDistance);
 
+  // Print the states in the trajectory
+  Eigen::VectorXd position(space->getDimension());
+  for (int i = 0; i < traj->getNumWaypoints(); ++i)
+  {
+    auto currentState = space->createState();
+    space->copyState(traj->getWaypoint(i), currentState);
+    space->convertStateToPositions(currentState, position);
+    std::cout << "Position Index " << i << " " << position << std::endl;
+  }
   return traj;
 }
 
@@ -399,28 +401,6 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
 
   auto startState = space->createState();
   space->getState(metaSkeleton.get(), startState);
-
-  auto minDistance = distance - vfParameters.negativeDistanceTolerance;
-  auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
-
-//  auto traj = planner::vectorfield::planToEndEffectorOffset(
-//      *startState,
-//      space,
-//      metaSkeleton,
-//      bodyNode,
-//      collisionTestable,
-//      direction,
-//      minDistance,
-//      maxDistance,
-//      positionTolerance,
-//      angularTolerance,
-//      vfParameters.initialStepSize,
-//      vfParameters.jointLimitTolerance,
-//      vfParameters.constraintCheckResolution,
-//      std::chrono::duration<double>(timelimit));
-
-//  if (traj)
-//    return std::move(traj);
 
   return planToEndEffectorOffsetByCRRT(
       space,

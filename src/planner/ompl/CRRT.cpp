@@ -16,14 +16,13 @@ CRRT::CRRT(const ::ompl::base::SpaceInformationPtr& _si) : CRRT(_si, "CRRT")
 CRRT::CRRT(
     const ::ompl::base::SpaceInformationPtr& _si, const std::string& _name)
   : ::ompl::base::Planner(_si, _name)
-  , mGoalBias(1.0)
+  , mGoalBias(0.05)
   , mMaxDistance(0.05)
   , mLastGoalMotion(nullptr)
   , mCons(nullptr)
   , mMaxStepsize(0.1)
   , mMinStepsize(1e-4)
 {
-
   auto ss
       = ompl_dynamic_pointer_cast<GeometricStateSpace>(si_->getStateSpace());
   if (!ss)
@@ -134,8 +133,7 @@ double CRRT::getRange() const
 //==============================================================================
 void CRRT::setPathConstraint(constraint::ProjectablePtr _projectable)
 {
-//  mCons = std::move(_projectable);
-  mCons = nullptr;
+  mCons = std::move(_projectable);
 }
 
 //==============================================================================
@@ -203,9 +201,15 @@ void CRRT::freeMemory()
     const ::ompl::base::PlannerTerminationCondition& _ptc)
 {
   checkValidity();
-  ::ompl::base::Goal* goal = pdef_->getGoal().get();
+
   ::ompl::base::GoalSampleableRegion* goalSampleable
-      = dynamic_cast<::ompl::base::GoalSampleableRegion*>(goal);
+      = dynamic_cast<::ompl::base::GoalSampleableRegion*>(
+          pdef_->getGoal().get());
+
+  if (!goalSampleable)
+  {
+    return ::ompl::base::PlannerStatus::UNRECOGNIZED_GOAL_TYPE;
+  }
 
   while (const ::ompl::base::State* st = pis_.nextStart())
   {
@@ -217,6 +221,11 @@ void CRRT::freeMemory()
   if (mStartTree->size() == 0)
   {
     return ::ompl::base::PlannerStatus::INVALID_START;
+  }
+
+  if (!goalSampleable->couldSample())
+  {
+    return ::ompl::base::PlannerStatus::INVALID_GOAL;
   }
 
   if (!mSampler)
@@ -256,10 +265,11 @@ void CRRT::freeMemory()
         nmotion,
         rmotion->state,
         xstate,
-        goal,
+        goalSampleable,
         false,
         bestdist,
         foundgoal);
+
     if (foundgoal)
     {
       solution = bestmotion;
@@ -295,12 +305,8 @@ void CRRT::freeMemory()
     /* set the solution path */
     auto path = ompl_make_shared<::ompl::geometric::PathGeometric>(si_);
     for (int i = mpath.size() - 1; i >= 0; --i)
-    {
       path->append(mpath[i]->state);
-      std::cout << "hello" << std::endl;
-      std::cout << si_->getStateSpace()->as<::ompl::base::CompoundStateSpace>()->getSubspaceCount();
-//      double *Uvals = (mpath[i]->state)->as<::ompl::base::CompoundStateSpace::StateType>()->values;
-    }
+
     pdef_->addSolutionPath(path, approximate, approxdif);
     solved = true;
   }

@@ -266,7 +266,7 @@ TEST(SO2, GeodesicInterpolationBeyondWrap)
 
 TEST(SO2, GeodesicInterpolationCornerCase)
 {
-  SO2::State from(M_PI);
+  SO2::State from(170 * M_PI / 180.0);
   SO2::State to(-170 * M_PI / 180.0);
   SO2::State toMinusFrom;
   SO2::State fromInv;
@@ -284,7 +284,7 @@ TEST(SO2, GeodesicInterpolationCornerCase)
   SO2::State halfPointState;
   so2.compose(&from, &relativeState, &halfPointState);
 
-  SO2::State expected(-175.0 * M_PI / 180.0);
+  SO2::State expected(M_PI);
 
   EXPECT_TRUE(halfPointState.toRotation().isApprox(expected.toRotation()));
   EXPECT_DOUBLE_EQ(expected.toAngle(), halfPointState.toAngle());

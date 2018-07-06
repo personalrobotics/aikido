@@ -165,7 +165,6 @@ double CRRTConnect::getConnectionRadius() const
     }
 
     // Sample a random state
-//    si_->copyState(rstate, pis_.nextGoal(_ptc));
     mSampler->sampleUniform(rstate);
     if (!si_->isValid(rstate))
       continue;
@@ -194,32 +193,32 @@ double CRRTConnect::getConnectionRadius() const
 
     // Now grow the other tree
     nmotion = otherTree->nearest(lastmotion);
-//    Motion* newmotion = constrainedExtend(
-//        _ptc,
-//        otherTree,
-//        nmotion,
-//        lastmotion->state,
-//        xstate,
-//        goal,
-//        true,
-//        bestdist,
-//        foundgoal);
+    Motion* newmotion = constrainedExtend(
+        _ptc,
+        otherTree,
+        nmotion,
+        lastmotion->state,
+        xstate,
+        goal,
+        true,
+        bestdist,
+        foundgoal);
 
-    Motion* startMotion = startTree ? nmotion : lastmotion;
-    Motion* goalMotion = startTree ? lastmotion : nmotion;
+    Motion* startMotion = startTree ? newmotion : lastmotion;
+    Motion* goalMotion = startTree ? lastmotion : newmotion;
 
-    double treedist = si_->distance(nmotion->state, lastmotion->state);
+    double treedist = si_->distance(newmotion->state, lastmotion->state);
     if (treedist <= mConnectionRadius)
     {
-//      if (treedist < 1e-6)
-//      {
-//        // The start and goal trees hit the same point, remove one of them
-//        // to avoid having a duplicate state on the path
-//        if (startMotion->parent)
-//          startMotion = startMotion->parent;
-//        else
-//          goalMotion = goalMotion->parent;
-//      }
+      if (treedist < 1e-6)
+      {
+        // The start and goal trees hit the same point, remove one of them
+        // to avoid having a duplicate state on the path
+        if (startMotion->parent)
+          startMotion = startMotion->parent;
+        else
+          goalMotion = goalMotion->parent;
+      }
 
       mConnectionPoint = std::make_pair(startMotion->state, goalMotion->state);
 
@@ -231,6 +230,7 @@ double CRRTConnect::getConnectionRadius() const
         mpath1.push_back(solution);
         solution = solution->parent;
       }
+      std::cout << "Number of states in Tree 1: " << mpath1.size() << std::endl;
 
       solution = goalMotion;
       std::vector<Motion*> mpath2;
@@ -239,6 +239,7 @@ double CRRTConnect::getConnectionRadius() const
         mpath2.push_back(solution);
         solution = solution->parent;
       }
+      std::cout << "Number of states in Tree 2: " << mpath2.size() << std::endl;
 
       // Double check that the start and goal pair are valid
       if (mpath1.size() > 0 && mpath2.size() > 0)
@@ -251,17 +252,9 @@ double CRRTConnect::getConnectionRadius() const
       auto path = ompl_make_shared<::ompl::geometric::PathGeometric>(si_);
       path->getStates().reserve(mpath1.size() + mpath2.size());
       for (int i = mpath1.size() - 1; i >= 0; --i)
-      {
         path->append(mpath1[i]->state);
-//        si_->getStateSpace()->printState(mpath1[i]->state, std::cout);
-//        std::cout << mpath1[i]->state << std::endl;
-      }
       for (std::size_t i = 0; i < mpath2.size(); ++i)
-      {
         path->append(mpath2[i]->state);
-//        si_->getStateSpace()->printState(mpath1[i]->state, std::cout);
-//        std::cout << mpath1[i]->state << std::endl;
-      }
 
       pdef_->addSolutionPath(path, false, 0.0);
       solved = true;
