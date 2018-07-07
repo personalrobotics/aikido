@@ -19,7 +19,7 @@ public:
   /// current state of the passed MetaSkeleton.
   ///
   /// \param[in] stateSpace State space.
-  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
   /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.

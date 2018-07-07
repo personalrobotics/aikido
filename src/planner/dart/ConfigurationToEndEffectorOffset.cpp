@@ -23,7 +23,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   , mDirection(direction)
   , mDistance(signedDistance)
 {
-  if (mDirection.get().squaredNorm() == 0)
+  if (mDirection.get().isZero())
     throw std::invalid_argument("direction shouldn't be a zero vector.");
 }
 
@@ -43,7 +43,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   , mDirection(direction)
   , mDistance(signedDistance)
 {
-  if (mDirection.get().squaredNorm() == 0)
+  if (mDirection.get().isZero())
     throw std::invalid_argument("direction shouldn't be a zero vector.");
 }
 

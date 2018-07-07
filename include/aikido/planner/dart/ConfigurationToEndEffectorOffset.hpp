@@ -13,7 +13,12 @@ namespace planner {
 namespace dart {
 
 /// Planning problem to plan to desired end-effector offset while maintaining
-/// the current end-effector orientation.
+/// the current end-effector orientation. Each constructor makes two choices:
+/// whether to take in a direction, and taking in either a start state OR a
+/// MetaSkeleton. If a direction is not passed, getDirection returns the current
+/// direction of the end effector body node. If a MetaSkeleton is passed instead
+/// of a start state, getStartState will return the current state of that
+/// MetaSkeleton. Thus, there are 2x2=4 constructors here.
 class ConfigurationToEndEffectorOffset : public Problem
 {
 public:

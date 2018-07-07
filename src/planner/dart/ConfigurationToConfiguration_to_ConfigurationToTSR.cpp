@@ -63,7 +63,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
 
-  // Get the start state form the MetaSkeleton, since this is a DART planner.
+  // Get the start state from the MetaSkeleton, since this is a DART planner.
   auto startState = mMetaSkeletonStateSpace->createState();
   mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
 
