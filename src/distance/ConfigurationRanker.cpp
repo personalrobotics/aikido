@@ -5,13 +5,14 @@ namespace {
 struct sortByCost
 {
   bool operator()(
-      const std::pair<aikido::statespace::CartesianProduct::State*, double>& left,
-      const std::pair<aikido::statespace::CartesianProduct::State*, double>& right)
+      const std::pair<aikido::statespace::CartesianProduct::State*, double>&
+          left,
+      const std::pair<aikido::statespace::CartesianProduct::State*, double>&
+          right)
   {
     return left.second < right.second;
   }
 };
-
 }
 
 namespace aikido {
@@ -54,7 +55,8 @@ void ConfigurationRanker::rankConfigurations(
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
     evaluatedConfigurations[i].first = configurations[i];
-    evaluatedConfigurations[i].second = evaluateConfiguration(configurations[i]);
+    evaluatedConfigurations[i].second
+        = evaluateConfiguration(configurations[i]);
   }
 
   std::sort(
