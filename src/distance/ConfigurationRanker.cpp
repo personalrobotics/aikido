@@ -2,7 +2,7 @@
 
 namespace {
 
-struct sortingFunction
+struct sortByCost
 {
   bool operator()(
       const std::pair<aikido::statespace::CartesianProduct::State*, double>& left,
@@ -57,20 +57,10 @@ void ConfigurationRanker::rankConfigurations(
     evaluatedConfigurations[i].second = evaluateConfiguration(configurations[i]);
   }
 
-//  struct sortingFunction
-//  {
-//    bool operator()(
-//        const std::pair<statespace::CartesianProduct::State*, double>& left,
-//        const std::pair<statespace::CartesianProduct::State*, double>& right)
-//    {
-//      return left.second < right.second;
-//    }
-//  };
-
   std::sort(
       evaluatedConfigurations.begin(),
       evaluatedConfigurations.end(),
-      sortingFunction());
+      sortByCost());
 
   configurations.clear();
   std::transform(
