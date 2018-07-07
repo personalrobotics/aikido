@@ -1,5 +1,19 @@
 #include "aikido/distance/ConfigurationRanker.hpp"
 
+namespace {
+
+struct sortingFunction
+{
+  bool operator()(
+      const std::pair<aikido::statespace::CartesianProduct::State*, double>& left,
+      const std::pair<aikido::statespace::CartesianProduct::State*, double>& right)
+  {
+    return left.second < right.second;
+  }
+};
+
+}
+
 namespace aikido {
 namespace distance {
 
@@ -36,31 +50,32 @@ void ConfigurationRanker::rankConfigurations(
     std::vector<statespace::CartesianProduct::State*>& configurations)
 {
   std::vector<std::pair<statespace::CartesianProduct::State*, double>>
-      scoredConfigurations(configurations.size());
+      evaluatedConfigurations(configurations.size());
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
-    scoredConfigurations[i].first = configurations[i];
-    scoredConfigurations[i].second = evaluateConfiguration(configurations[i]);
+    evaluatedConfigurations[i].first = configurations[i];
+    evaluatedConfigurations[i].second = evaluateConfiguration(configurations[i]);
   }
 
-  struct sortingFunction
-  {
-    bool operator()(
-        const std::pair<statespace::CartesianProduct::State*, double>& left,
-        const std::pair<statespace::CartesianProduct::State*, double>& right)
-    {
-      return left.second < right.second;
-    }
-  };
+//  struct sortingFunction
+//  {
+//    bool operator()(
+//        const std::pair<statespace::CartesianProduct::State*, double>& left,
+//        const std::pair<statespace::CartesianProduct::State*, double>& right)
+//    {
+//      return left.second < right.second;
+//    }
+//  };
+
   std::sort(
-      scoredConfigurations.begin(),
-      scoredConfigurations.end(),
+      evaluatedConfigurations.begin(),
+      evaluatedConfigurations.end(),
       sortingFunction());
 
   configurations.clear();
   std::transform(
-      scoredConfigurations.begin(),
-      scoredConfigurations.end(),
+      evaluatedConfigurations.begin(),
+      evaluatedConfigurations.end(),
       std::back_inserter(configurations),
       [](const std::pair<statespace::CartesianProduct::State*, double>& item) {
         return item.first;
