@@ -34,7 +34,7 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
   mMetaSkeletonStateSpace->convertStateToPositions(
-      mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
+      solution, solutionPosition);
 
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
