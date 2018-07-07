@@ -54,11 +54,7 @@ ConfigurationToConfiguration::getStartState() const
   // Take start state from MetaSkeleton if passed. Store in the ScopedState
   // instance variable to avoid dangling pointers.
   if (mMetaSkeleton)
-  {
-    auto startState = mMetaSkeletonStateSpace->createState();
-    mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
-    mStateSpace->copyState(startState, mStartState);
-  }
+    mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), mStartState);
 
   return mStartState;
 }
