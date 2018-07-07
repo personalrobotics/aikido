@@ -82,18 +82,15 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
 
 TEST_F(NominalConfigurationRankerTest, OrderTest)
 {
-  std::vector<Eigen::Vector2d> jointPositions{
-    Eigen::Vector2d(0.3, 0.3),
-    Eigen::Vector2d(0.1, 0.1),
-    Eigen::Vector2d(0.2, 0.2)
-  };
+  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.3, 0.3),
+                                              Eigen::Vector2d(0.1, 0.1),
+                                              Eigen::Vector2d(0.2, 0.2)};
 
   std::vector<aikido::statespace::CartesianProduct::ScopedState> states;
   for (std::size_t i = 0; i < jointPositions.size(); ++i)
   {
     auto state = mStateSpace->createState();
-    mStateSpace->convertPositionsToState(
-          jointPositions[i], state);
+    mStateSpace->convertPositionsToState(jointPositions[i], state);
     states.emplace_back(state.clone());
   }
   std::vector<aikido::statespace::CartesianProduct::State*> configurations;

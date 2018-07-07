@@ -33,8 +33,7 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
     statespace::CartesianProduct::State* solution) const
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
-  mMetaSkeletonStateSpace->convertStateToPositions(
-      solution, solutionPosition);
+  mMetaSkeletonStateSpace->convertStateToPositions(solution, solutionPosition);
 
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();

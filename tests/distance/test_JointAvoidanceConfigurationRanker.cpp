@@ -88,18 +88,15 @@ TEST_F(JointAvoidanceConfigurationRankerTest, Constructor)
 
 TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
 {
-  std::vector<Eigen::Vector2d> jointPositions{
-    Eigen::Vector2d(0.3, 0.1),
-    Eigen::Vector2d(0.1, 0.4),
-    Eigen::Vector2d(0.2, 0.1)
-  };
+  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.3, 0.1),
+                                              Eigen::Vector2d(0.1, 0.4),
+                                              Eigen::Vector2d(0.2, 0.1)};
 
   std::vector<aikido::statespace::CartesianProduct::ScopedState> states;
   for (std::size_t i = 0; i < jointPositions.size(); ++i)
   {
     auto state = mStateSpace->createState();
-    mStateSpace->convertPositionsToState(
-          jointPositions[i], state);
+    mStateSpace->convertPositionsToState(jointPositions[i], state);
     states.emplace_back(state.clone());
   }
 
