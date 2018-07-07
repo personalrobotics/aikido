@@ -247,22 +247,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   milestones.reserve(numWaypoints);
   velocities.reserve(numWaypoints);
 
-  // Change the trajectory representation to allow linear time interpolation
   Eigen::VectorXd currVec;
-  Eigen::VectorXd nextVec;
-  auto trajectoryInterpolator = _inputTrajectory.getInterpolator();
-  for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
-  {
-    auto currState = _inputTrajectory.getWaypoint(iwaypoint);
-    auto nextState = _inputTrajectory.getWaypoint(iwaypoint+1);
-    const auto tangentVector = trajectoryInterpolator->getTangentVector(currState, nextState);
-
-    stateSpace->compose(currentState, nextState, tangentVector);
-
-    std::cout << "Milestone " << iwaypoint << " " << currVec << std::endl;
-    milestones.emplace_back(toVector(currVec));
-  }
-
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
     auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
