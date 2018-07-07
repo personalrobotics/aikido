@@ -10,15 +10,12 @@ namespace planner {
 namespace dart {
 
 class ConfigurationToConfiguration_to_ConfigurationToConfiguration
-    : public PlannerAdapter<planner::
-                                ConfigurationToConfigurationPlanner,
-                            planner::dart::
-                                ConfigurationToConfigurationPlanner>
+    : public PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
+                            planner::dart::ConfigurationToConfigurationPlanner>
 {
 public:
   ConfigurationToConfiguration_to_ConfigurationToConfiguration(
-      std::shared_ptr<planner::ConfigurationToConfigurationPlanner>
-          planner,
+      std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   virtual trajectory::TrajectoryPtr plan(
