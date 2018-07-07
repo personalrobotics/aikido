@@ -24,10 +24,8 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
       mUnboundedUpperLimitsIndices.emplace_back(i);
   }
 
-  mMetaSkeletonStateSpace->convertPositionsToState(
-      mMetaSkeleton->getPositionLowerLimits(), mLowerLimitsState);
-  mMetaSkeletonStateSpace->convertPositionsToState(
-      mMetaSkeleton->getPositionUpperLimits(), mUpperLimitsState);
+  mLowerLimitsState = mMetaSkeletonStateSpace->createState();
+  mUpperLimitsState = mMetaSkeletonStateSpace->createState();
 }
 
 //==============================================================================
