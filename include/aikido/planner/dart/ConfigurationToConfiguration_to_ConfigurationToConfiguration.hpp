@@ -10,19 +10,19 @@ namespace planner {
 namespace dart {
 
 class ConfigurationToConfiguration_to_ConfigurationToConfiguration
-    : public PlannerAdapter<aikido::planner::
+    : public PlannerAdapter<planner::
                                 ConfigurationToConfigurationPlanner,
-                            aikido::planner::dart::
+                            planner::dart::
                                 ConfigurationToConfigurationPlanner>
 {
 public:
   ConfigurationToConfiguration_to_ConfigurationToConfiguration(
-      std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
+      std::shared_ptr<planner::ConfigurationToConfigurationPlanner>
           planner,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   virtual trajectory::TrajectoryPtr plan(
-      const aikido::planner::dart::ConfigurationToConfiguration& problem,
+      const planner::dart::ConfigurationToConfiguration& problem,
       Planner::Result* result) override;
 };
 
