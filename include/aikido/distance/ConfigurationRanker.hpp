@@ -29,12 +29,10 @@ public:
   /// Returns the statespace.
   statespace::ConstStateSpacePtr getStateSpace() const;
 
-  /// Ranks the vector of configurations in increasing order of respective
-  /// costs.
+  /// Returns a vector of configurations ranked in increasing order of costs.
   /// \param[in] configurations Vector of configurations to rank.
-  /// \param[out] configurations Vector of ranked configurations.
-  void rankConfigurations(
-      std::vector<statespace::CartesianProduct::State*>& configurations);
+  std::vector<statespace::CartesianProduct::State*> rankConfigurations(
+      std::vector<statespace::CartesianProduct::ScopedState>& configurations);
 
 protected:
   /// Returns the cost of the configuration.

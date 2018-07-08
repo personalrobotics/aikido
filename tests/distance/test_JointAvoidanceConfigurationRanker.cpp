@@ -100,22 +100,16 @@ TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
     states.emplace_back(state.clone());
   }
 
-  std::vector<aikido::statespace::CartesianProduct::State*> configurations;
-  for (std::size_t i = 0; i < states.size(); ++i)
-  {
-    configurations.emplace_back(states[i]);
-  }
-
   JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator);
-  ranker.rankConfigurations(configurations);
+  auto rankedStates = ranker.rankConfigurations(states);
 
   Eigen::VectorXd rankedState(2);
   jointPositions[0] = Eigen::Vector2d(0.3, 0.1);
   jointPositions[1] = Eigen::Vector2d(0.2, 0.1);
   jointPositions[2] = Eigen::Vector2d(0.1, 0.4);
-  for (std::size_t i = 0; i < configurations.size(); ++i)
+  for (std::size_t i = 0; i < rankedStates.size(); ++i)
   {
-    mStateSpace->convertStateToPositions(configurations[i], rankedState);
+    mStateSpace->convertStateToPositions(rankedStates[i], rankedState);
     EXPECT_EIGEN_EQUAL(rankedState, jointPositions[i], EPS);
   }
 }

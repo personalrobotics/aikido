@@ -47,8 +47,8 @@ statespace::ConstStateSpacePtr ConfigurationRanker::getStateSpace() const
 }
 
 //==============================================================================
-void ConfigurationRanker::rankConfigurations(
-    std::vector<statespace::CartesianProduct::State*>& configurations)
+std::vector<statespace::CartesianProduct::State*> ConfigurationRanker::rankConfigurations(
+    std::vector<statespace::CartesianProduct::ScopedState>& configurations)
 {
   std::vector<std::pair<statespace::CartesianProduct::State*, double>>
       evaluatedConfigurations(configurations.size());
@@ -64,14 +64,16 @@ void ConfigurationRanker::rankConfigurations(
       evaluatedConfigurations.end(),
       sortByCost());
 
-  configurations.clear();
+  std::vector<statespace::CartesianProduct::State*> rankedConfigurations;
   std::transform(
       evaluatedConfigurations.begin(),
       evaluatedConfigurations.end(),
-      std::back_inserter(configurations),
+      std::back_inserter(rankedConfigurations),
       [](const std::pair<statespace::CartesianProduct::State*, double>& item) {
         return item.first;
       });
+
+  return rankedConfigurations;
 }
 
 } // namespace distance
