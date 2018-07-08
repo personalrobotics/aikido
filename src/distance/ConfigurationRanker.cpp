@@ -47,7 +47,8 @@ statespace::ConstStateSpacePtr ConfigurationRanker::getStateSpace() const
 }
 
 //==============================================================================
-std::vector<statespace::CartesianProduct::State*> ConfigurationRanker::rankConfigurations(
+std::vector<statespace::CartesianProduct::State*>
+ConfigurationRanker::rankConfigurations(
     std::vector<statespace::CartesianProduct::ScopedState>& configurations)
 {
   std::vector<std::pair<statespace::CartesianProduct::State*, double>>
