@@ -5,6 +5,8 @@
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
 
+#include <LRAstar.hpp>
+
 #include <dart/dart.hpp>
 
 namespace aikido {
@@ -168,7 +170,15 @@ trajectory::InterpolatedPtr planOMPL(
     statespace::InterpolatorPtr _interpolator,
     double _maxPlanTime)
 {
-  _planner->setProblemDefinition(_pdef);
+  try
+  {
+    _planner->setProblemDefinition(_pdef);
+  }
+  catch(::ompl::Exception &ex)
+  {
+    std::cout << "Error" << std::endl;
+    return nullptr;
+  }
   _planner->setup();
   auto solved = _planner->solve(_maxPlanTime);
 
@@ -367,6 +377,57 @@ trajectory::InterpolatedPtr planCRRTConnect(
   planner->setProjectionResolution(_maxDistanceBtwProjections);
   planner->setConnectionRadius(_minTreeConnectionDistance);
   planner->setMinStateDifference(_minStepsize);
+  return planOMPL(
+      planner,
+      pdef,
+      std::move(_stateSpace),
+      std::move(_interpolator),
+      _maxPlanTime);
+}
+
+//==============================================================================
+trajectory::InterpolatedPtr planLRAstar(
+    const statespace::StateSpace::State* _start,
+    const statespace::StateSpace::State* _goal,
+    statespace::StateSpacePtr _stateSpace,
+    statespace::InterpolatorPtr _interpolator,
+    distance::DistanceMetricPtr _dmetric,
+    constraint::SampleablePtr _sampler,
+    constraint::TestablePtr _validityConstraint,
+    constraint::TestablePtr _boundsConstraint,
+    constraint::ProjectablePtr _boundsProjector,
+    double _maxDistanceBtwProjections,
+    std::string _roadmapPath,
+    double _lookahead,
+    double _greediness,
+    double _maxPlanTime)
+{
+
+  auto si = getSpaceInformation(
+      _stateSpace,
+      _interpolator,
+      std::move(_dmetric),
+      std::move(_sampler),
+      std::move(_validityConstraint),
+      std::move(_boundsConstraint),
+      std::move(_boundsProjector),
+      _maxDistanceBtwProjections);
+
+  // Set the start and goal
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace
+      = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
+  auto start = sspace->allocState(_start);
+  pdef->addStartState(start); // copies
+  sspace->freeState(start);
+
+  auto goal = sspace->allocState(_goal);
+  pdef->setGoalState(goal); // copies
+  sspace->freeState(goal);
+
+  auto planner = ompl_make_shared<LRAstar::LRAstar>(
+      si, _roadmapPath, _lookahead, _greediness);
+
   return planOMPL(
       planner,
       pdef,

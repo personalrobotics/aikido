@@ -1,3 +1,4 @@
+#include "LRAstar.hpp"
 #include "planner/PlanningResult.hpp"
 #include "planner/SnapPlanner.hpp"
 #include "planner/TrajectoryPostProcessor.hpp"
