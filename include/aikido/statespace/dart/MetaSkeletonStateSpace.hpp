@@ -171,12 +171,6 @@ public:
   void convertStateToPositions(
       const State* _state, Eigen::VectorXd& _positions) const;
 
-  /// Returns a \c State in this state space that corresponds to
-  /// specified DART \c MetaSkeleton positions.
-  ///
-  /// \param[in] positions DART \c MetaSkeleton positions
-  ScopedState getStateFromPositions(Eigen::VectorXd& positions) const;
-
   /// Gets the positions of the \c _metaskeleton and store them in \c _state.
   ///
   /// \param _metaskeleton \c MetaSkeleton to get position from
