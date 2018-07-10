@@ -26,6 +26,8 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
+#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
+
 namespace aikido {
 namespace robot {
 namespace util {
@@ -52,6 +54,7 @@ using common::cloneRNGFrom;
 using common::RNG;
 using planner::ConfigurationToConfiguration;
 using planner::SnapConfigurationToConfigurationPlanner;
+using planner::ompl::OMPLConfigurationToConfigurationPlanner;
 
 using dart::collision::FCLCollisionDetector;
 using dart::common::make_unique;
@@ -73,6 +76,8 @@ trajectory::TrajectoryPtr planToConfiguration(
     RNG* rng,
     double timelimit)
 {
+  DART_UNUSED(timelimit);
+
   using planner::ompl::planOMPL;
   using planner::ConfigurationToConfiguration;
   using planner::SnapConfigurationToConfigurationPlanner;
@@ -99,18 +104,29 @@ trajectory::TrajectoryPtr planToConfiguration(
   if (untimedTrajectory)
     return untimedTrajectory;
 
-  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution);
+  auto plannerOMPL = std::make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
+        space, std::make_shared<GeodesicInterpolator>(space),
+        createDistanceMetric(space),
+        createSampleableBounds(space, rng->clone()),
+        collisionTestable,
+        createTestableBounds(space),
+        createProjectableBounds(space),
+        collisionResolution);
+
+  untimedTrajectory = plannerOMPL->plan(problem, &pResult);
+
+//  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+//      startState,
+//      goalState,
+//      space,
+//      std::make_shared<GeodesicInterpolator>(space),
+//      createDistanceMetric(space),
+//      createSampleableBounds(space, rng->clone()),
+//      collisionTestable,
+//      createTestableBounds(space),
+//      createProjectableBounds(space),
+//      timelimit,
+//      collisionResolution);
 
   return untimedTrajectory;
 }
