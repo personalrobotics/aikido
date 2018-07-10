@@ -10,7 +10,7 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton)
-  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton)
+  : ConfigurationRanker(std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
 {
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
@@ -30,7 +30,7 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
 
 //==============================================================================
 double JointAvoidanceConfigurationRanker::evaluateConfiguration(
-    statespace::CartesianProduct::State* solution) const
+    statespace::dart::MetaSkeletonStateSpace::State* solution) const
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
   mMetaSkeletonStateSpace->convertStateToPositions(solution, solutionPosition);

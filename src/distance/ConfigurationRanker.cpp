@@ -41,17 +41,11 @@ ConfigurationRanker::ConfigurationRanker(
 }
 
 //==============================================================================
-statespace::ConstStateSpacePtr ConfigurationRanker::getStateSpace() const
-{
-  return mMetaSkeletonStateSpace;
-}
-
-//==============================================================================
-std::vector<statespace::CartesianProduct::State*>
+std::vector<statespace::dart::MetaSkeletonStateSpace::State*>
 ConfigurationRanker::rankConfigurations(
-    std::vector<statespace::CartesianProduct::ScopedState>& configurations)
+    std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>& configurations)
 {
-  std::vector<std::pair<statespace::CartesianProduct::State*, double>>
+  std::vector<std::pair<statespace::dart::MetaSkeletonStateSpace::State*, double>>
       evaluatedConfigurations(configurations.size());
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
@@ -65,12 +59,12 @@ ConfigurationRanker::rankConfigurations(
       evaluatedConfigurations.end(),
       sortByCost());
 
-  std::vector<statespace::CartesianProduct::State*> rankedConfigurations;
+  std::vector<statespace::dart::MetaSkeletonStateSpace::State*> rankedConfigurations;
   std::transform(
       evaluatedConfigurations.begin(),
       evaluatedConfigurations.end(),
       std::back_inserter(rankedConfigurations),
-      [](const std::pair<statespace::CartesianProduct::State*, double>& item) {
+      [](const std::pair<statespace::dart::MetaSkeletonStateSpace::State*, double>& item) {
         return item.first;
       });
 

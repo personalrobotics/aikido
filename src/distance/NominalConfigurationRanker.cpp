@@ -12,7 +12,7 @@ NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     const statespace::CartesianProduct::State* nominalConfiguration)
-  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton)
+  : ConfigurationRanker(std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
   , mNominalConfiguration(nominalConfiguration)
 {
   if (!mNominalConfiguration)
@@ -23,7 +23,7 @@ NominalConfigurationRanker::NominalConfigurationRanker(
 
 //==============================================================================
 double NominalConfigurationRanker::evaluateConfiguration(
-    statespace::CartesianProduct::State* solution) const
+    statespace::dart::MetaSkeletonStateSpace::State* solution) const
 {
   return mDistanceMetric->distance(solution, mNominalConfiguration);
 }

@@ -20,7 +20,7 @@ public:
 protected:
   /// Returns cost as negative of distance from position limits.
   double evaluateConfiguration(
-      statespace::CartesianProduct::State* solution) const override;
+      statespace::dart::MetaSkeletonStateSpace::State* solution) const override;
 
   /// Vector of indices corresponding to unbounded lower position limits.
   std::vector<std::size_t> mUnboundedLowerLimitsIndices;
@@ -31,12 +31,12 @@ protected:
   /// (Modified) State corresponding to the lower position limits.
   /// The positions at the indices in mUnboundedLowerLimitsIndices are modified
   /// to compute the distance from lower limits appropriately.
-  statespace::CartesianProduct::State* mLowerLimitsState;
+  statespace::dart::MetaSkeletonStateSpace::State* mLowerLimitsState;
 
   /// (Modified) State corresponding to the upper position limits.
   /// The positions at the indices in mUnboundedUpperLimitsIndices are modified
   /// to compute the distance from upper limits appropriately.
-  statespace::CartesianProduct::State* mUpperLimitsState;
+  statespace::dart::MetaSkeletonStateSpace::State* mUpperLimitsState;
 };
 
 } // namespace distance
