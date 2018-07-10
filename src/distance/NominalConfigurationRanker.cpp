@@ -12,7 +12,8 @@ NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     const statespace::CartesianProduct::State* nominalConfiguration)
-  : ConfigurationRanker(std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
+  : ConfigurationRanker(
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
   , mNominalConfiguration(nominalConfiguration)
 {
   if (!mNominalConfiguration)

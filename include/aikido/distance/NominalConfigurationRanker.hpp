@@ -18,7 +18,8 @@ public:
   NominalConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      const statespace::CartesianProduct::State* nominalConfiguration = nullptr);
+      const statespace::CartesianProduct::State* nominalConfiguration
+      = nullptr);
 
 protected:
   /// Returns cost as distance from the Nominal Configuration.

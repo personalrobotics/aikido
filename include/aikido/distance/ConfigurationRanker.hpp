@@ -28,8 +28,10 @@ public:
 
   /// Returns a vector of configurations ranked in increasing order of costs.
   /// \param[in] configurations Vector of configurations to rank.
-  std::vector<statespace::dart::MetaSkeletonStateSpace::State*> rankConfigurations(
-      std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>& configurations);
+  std::vector<statespace::dart::MetaSkeletonStateSpace::State*>
+  rankConfigurations(
+      std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>&
+          configurations);
 
 protected:
   /// Returns the cost of the configuration.

@@ -10,7 +10,8 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton)
-  : ConfigurationRanker(std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
+  : ConfigurationRanker(
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
 {
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
