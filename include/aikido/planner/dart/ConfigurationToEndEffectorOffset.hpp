@@ -42,7 +42,7 @@ public:
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const Eigen::Vector3d& direction,
       double signedDistance,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   /// Constructor. Note that this constructor sets the start state and direction
   /// on construction.
@@ -62,14 +62,14 @@ public:
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const Eigen::Vector3d& direction,
       double signedDistance,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   /// Constructor. Note that this constructor takes the start state from the
   /// current state of the passed MetaSkeleton, and takes the direction from the
   /// end-effector BodyNode's current direction.
   ///
   /// \param[in] stateSpace State space.
-  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
   /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// offest while maintaining the current orientation. Current direction is
@@ -81,7 +81,7 @@ public:
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       double signedDistance,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   /// Constructor. Note that this constructor sets the start state on
   /// construction, and takes the direction from the end-effector BodyNode's
@@ -99,7 +99,7 @@ public:
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       double signedDistance,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   // Documentation inherited.
   const std::string& getType() const override;
@@ -111,14 +111,14 @@ public:
   /// while maintaining the current orientation.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-  /// Return the start state to plan from, either set on construction or
+  /// Returns the start state to plan from, either set on construction or
   /// taken from the current state of the MetaSkeleton.
   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the direction of motion specified in the world frame. Note that
   /// if no direction was passed, the current direction of the end effector body
   /// node is returned.
-  const Eigen::Vector3d getDirection() const;
+  Eigen::Vector3d getDirection() const;
 
   /// Returns the signed distance in meters to move in the specified direction.
   double getDistance() const;

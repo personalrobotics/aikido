@@ -18,7 +18,7 @@ public:
   /// current state of the passed MetaSkeleton.
   ///
   /// \param[in] stateSpace State space.
-  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
   /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// pose.
@@ -30,7 +30,7 @@ public:
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const Eigen::Isometry3d& goalPose,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   /// Constructor. Note that this constructor sets the start state on
   /// construction.
@@ -47,7 +47,7 @@ public:
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const Eigen::Isometry3d& goalPose,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   // Documentation inherited.
   const std::string& getType() const override;

@@ -26,7 +26,7 @@ public:
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       const statespace::dart::MetaSkeletonStateSpace::State* goalState,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   /// Constructor. Note that this constructor sets the start state on
   /// construction.
@@ -39,7 +39,7 @@ public:
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const statespace::dart::MetaSkeletonStateSpace::State* goalState,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   // Documentation inherited.
   const std::string& getType() const override;

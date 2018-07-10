@@ -34,7 +34,7 @@ public:
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       std::size_t maxSamples,
       constraint::dart::ConstTSRPtr goalTSR,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   /// Constructor. Note that this constructor sets the start state on
   /// construction.
@@ -54,7 +54,7 @@ public:
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       std::size_t maxSamples,
       constraint::dart::ConstTSRPtr goalTSR,
-      constraint::ConstTestablePtr constraint);
+      constraint::ConstTestablePtr constraint = nullptr);
 
   // Documentation inherited.
   const std::string& getType() const override;
@@ -68,7 +68,7 @@ public:
   /// Returns the maximum number of TSR samples to plan to.
   std::size_t getMaxSamples() const;
 
-  /// Return the start state to plan from, either set on construction or
+  /// Returns the start state to plan from, either set on construction or
   /// taken from the current state of the MetaSkeleton.
   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 

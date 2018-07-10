@@ -116,7 +116,7 @@ ConfigurationToEndEffectorOffset::getStartState() const
 }
 
 //==============================================================================
-const Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
+Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
 {
   if (!mDirection)
   {
