@@ -34,10 +34,8 @@ ConfigurationRanker::ConfigurationRanker(
   if (!mMetaSkeleton)
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
-  mDistanceMetric = createDistanceMetricFor(
-      std::dynamic_pointer_cast<statespace::CartesianProduct>(
-          std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-              mMetaSkeletonStateSpace)));
+  mDistanceMetric = createDistanceMetricFor(std::dynamic_pointer_cast<const statespace::CartesianProduct>(
+                                                            mMetaSkeletonStateSpace));
 }
 
 //==============================================================================
