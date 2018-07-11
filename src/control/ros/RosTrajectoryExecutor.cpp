@@ -234,7 +234,11 @@ void RosTrajectoryExecutor::step(
 //==============================================================================
 void RosTrajectoryExecutor::abort()
 {
-  // TODO: cancel the actionlib goal (once there is support in ReWD controller)
+  std::lock_guard<std::mutex> lock(mMutex);
+  DART_UNUSED(lock); // Suppress unused variable warning.
+
+  if (mInProgress)
+    mGoalHandle.cancel();
 }
 
 } // namespace ros
