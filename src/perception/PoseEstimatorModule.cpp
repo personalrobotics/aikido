@@ -2,6 +2,7 @@
 
 #include <Eigen/Geometry>
 #include <dart/utils/urdf/DartLoader.hpp>
+#include <yaml-cpp/exceptions.h>
 #include <ros/ros.h>
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
@@ -64,13 +65,17 @@ bool PoseEstimatorModule::detectObjects(
   for (const auto& marker_transform : marker_message->markers)
   {
     const auto& marker_stamp = marker_transform.header.stamp;
-    const auto& obj_key = marker_transform.text;
-    const auto& obj_id = marker_transform.ns;
+    const auto& obj_key = marker_transform.ns;
     const auto& detection_frame = marker_transform.header.frame_id;
     if (!timestamp.isValid() || marker_stamp < timestamp)
     {
       continue;
     }
+
+    YAML::Node info_json = YAML::Load(marker_transform.text);
+    const std::string obj_id = info_json["id"].as<std::string>();
+
+    mObjInfo.insert(std::make_pair(obj_id, info_json));
 
     // If obj_key is "None",
     // remove a skeleton with obj_id from env

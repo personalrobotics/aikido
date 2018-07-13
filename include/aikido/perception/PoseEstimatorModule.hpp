@@ -6,6 +6,7 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include "aikido/io/CatkinResourceRetriever.hpp"
+#include "aikido/io/yaml.hpp"
 #include "aikido/perception/ObjectDatabase.hpp"
 #include "aikido/perception/PerceptionModule.hpp"
 
@@ -75,6 +76,9 @@ private:
 
   /// Listens to the transform attached to the node
   tf::TransformListener mTfListener;
+
+  /// For additional information for each object
+  std::unordered_map<std::string, YAML::Node> mObjInfo;
 };
 
 } // namespace perception
