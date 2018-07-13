@@ -200,5 +200,17 @@ bool PoseEstimatorModule::detectObjects(
   return true;
 }
 
+
+YAML::Node PoseEstimatorModule::getObjInfo(const std::string &obj_id)
+{
+  YAML::Node targetNode = mObjInfo[obj_id];
+  if (!targetNode)
+  {
+    throw std::runtime_error("[PoseEstimatorModule::getObjInfo] Error: invalid obj_id");
+  }
+
+  return targetNode;
+}
+
 } // namespace perception
 } // namespace aikido

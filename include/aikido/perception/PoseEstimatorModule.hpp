@@ -55,6 +55,10 @@ public:
       ros::Duration timeout = ros::Duration(0.0),
       ros::Time timestamp = ros::Time(0.0)) override;
 
+  /// Getter for ObjInfo
+  /// \param[in] obj_id The key of an object to retrieve its additional information
+  YAML::Node getObjInfo(const std::string &obj_id);
+
 private:
   /// For the ROS node that will work with the April Tags module
   ros::NodeHandle mNodeHandle;
