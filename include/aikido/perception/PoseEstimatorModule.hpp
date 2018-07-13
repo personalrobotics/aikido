@@ -55,7 +55,10 @@ public:
       ros::Duration timeout = ros::Duration(0.0),
       ros::Time timestamp = ros::Time(0.0)) override;
 
-  /// Getter for ObjInfo
+  /// Getter for \c mObjInfo. \c mObjInfo is saving additional information
+  /// from the text field in the MarkerArray message in json format.
+  /// This getter returns a YAML::Node of an object by id.
+  ///
   /// \param[in] obj_id The key of an object to retrieve its additional information
   YAML::Node getObjInfo(const std::string &obj_id);
 
