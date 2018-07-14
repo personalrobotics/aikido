@@ -10,8 +10,7 @@ namespace aikido {
 namespace planner {
 
 /// Converts a trajectory in the cartesian product space of SO(2) and R1 joints
-/// to
-/// a trajectory in cartesian product space of strictly only R1 joints.
+/// to a trajectory in cartesian product space of strictly only R1 joints.
 /// \param[in] space MetaSkeletonStateSpace for input trajectory.
 ///             Subspaces must be either R1Joint or SO2Joint.
 /// \param[in] trajectory Trajectory to be converted.
