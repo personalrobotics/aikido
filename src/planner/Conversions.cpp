@@ -18,8 +18,7 @@ using aikido::trajectory::TrajectoryPtr;
 namespace {
 
 void checkValidityOfSpaceAndTrajectory(
-    const MetaSkeletonStateSpacePtr& space,
-    const InterpolatedPtr trajectory)
+    const MetaSkeletonStateSpacePtr& space, const InterpolatedPtr trajectory)
 {
   if (!space)
     throw std::invalid_argument("StateSpace is null.");
@@ -27,10 +26,12 @@ void checkValidityOfSpaceAndTrajectory(
   if (!trajectory)
     throw std::invalid_argument("Trajectory is null.");
 
-  const auto trajectorySpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-      trajectory->getStateSpace());
+  const auto trajectorySpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+          trajectory->getStateSpace());
   if (!trajectorySpace)
-    throw std::invalid_argument("Trajectory is not in a MetaSkeletonStateSpace.");
+    throw std::invalid_argument(
+        "Trajectory is not in a MetaSkeletonStateSpace.");
 
   // Check that all joints are R1Joint or SO2Joint state spaces.
   for (std::size_t i = 0; i < space->getDimension(); ++i)
@@ -51,7 +52,6 @@ void checkValidityOfSpaceAndTrajectory(
     }
   }
 }
-
 }
 
 namespace aikido {
@@ -59,8 +59,7 @@ namespace planner {
 
 //==============================================================================
 aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
-    const MetaSkeletonStateSpacePtr& space,
-    const TrajectoryPtr inputTrajectory)
+    const MetaSkeletonStateSpacePtr& space, const TrajectoryPtr inputTrajectory)
 {
   auto trajectory = std::dynamic_pointer_cast<Interpolated>(inputTrajectory);
   if (!trajectory)
@@ -68,7 +67,8 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
 
   checkValidityOfSpaceAndTrajectory(space, trajectory);
 
-  auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(trajectory->getInterpolator());
+  auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
+      trajectory->getInterpolator());
 
   // Create new trajectory space.
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
@@ -89,10 +89,10 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
 
   auto tangentState = rSpace->createState();
   auto targetState = rSpace->createState();
-  for (std::size_t i = 0; i < trajectory->getNumWaypoints()-1; ++i)
+  for (std::size_t i = 0; i < trajectory->getNumWaypoints() - 1; ++i)
   {
     const auto tangentVector = interpolator->getTangentVector(
-          trajectory->getWaypoint(i), trajectory->getWaypoint(i+1));
+        trajectory->getWaypoint(i), trajectory->getWaypoint(i + 1));
 
     space->logMap(trajectory->getWaypoint(i), sourceVector);
     rSpace->expMap(sourceVector, sourceState);
@@ -103,7 +103,7 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
     rSpace->logMap(targetState, sourceVector);
     std::cout << "State is " << sourceVector << std::endl;
 
-    rTrajectory->addWaypoint(i+1, targetState);
+    rTrajectory->addWaypoint(i + 1, targetState);
   }
 
   return rTrajectory;

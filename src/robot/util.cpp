@@ -2,8 +2,8 @@
 #include <dart/common/Console.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include <dart/common/Timer.hpp>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
@@ -119,7 +119,6 @@ trajectory::TrajectoryPtr planToConfiguration(
   untimedTrajectory->evaluate(0.55, currentState);
   space->convertStateToPositions(currentState, position);
   std::cout << "Half Point + Position " << position << std::endl;
-
 
   return untimedTrajectory;
 }
