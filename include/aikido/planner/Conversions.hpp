@@ -17,7 +17,7 @@ namespace planner {
 /// \return Converted trajectory.
 aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const aikido::trajectory::InterpolatedPtr trajectory);
+    const aikido::trajectory::TrajectoryPtr trajectory);
 
 } // namespace planner
 } // namespace aikido
