@@ -89,6 +89,8 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
 
   auto tangentState = rSpace->createState();
   auto targetState = rSpace->createState();
+
+  // Add the remaining waypoints
   for (std::size_t i = 0; i < trajectory->getNumWaypoints() - 1; ++i)
   {
     const auto tangentVector = interpolator->getTangentVector(
