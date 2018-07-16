@@ -326,8 +326,6 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   double distanceTolerance = 0.01;
 
   mSkel->setPositions(mStartConfig);
-  auto startState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(mStartConfig, startState);
   Eigen::Isometry3d startTrans = mBodynode->getTransform();
   Eigen::VectorXd startVec = startTrans.translation();
 
@@ -341,14 +339,14 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   // Create problem.
   auto offsetProblem = ConfigurationToEndEffectorOffset(
       mStateSpace,
+      mSkel,
       mBodynode,
-      startState,
       direction,
       signedDistance,
       mPassingConstraint);
 
   // Create planner.
-  auto vfOffsetPlanner = VectorFieldConfigurationToEndEffectorOffsetPlanner(
+  VectorFieldConfigurationToEndEffectorOffsetPlanner vfOffsetPlanner(
       mStateSpace,
       mSkel,
       distanceTolerance,
@@ -380,8 +378,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   Eigen::VectorXd testStart(mStateSpace->getDimension());
   Eigen::VectorXd referenceStart(mStateSpace->getDimension());
   mStateSpace->convertStateToPositions(firstWayPoint, testStart);
-  mStateSpace->convertStateToPositions(startState, referenceStart);
-  EXPECT_LE((testStart - referenceStart).norm(), mErrorTolerance);
+  EXPECT_LE((testStart - mStartConfig).norm(), mErrorTolerance);
 
   int stepNum = 10;
   double timeStep = traj->getDuration() / stepNum;
@@ -428,15 +425,13 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
   double signedDistance = 0.21;
 
   mSkel->setPositions(mStartConfig);
-  auto startState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(mStartConfig, startState);
 
   // Create Problem, which should fail.
   EXPECT_THROW(
       ConfigurationToEndEffectorOffset(
           mStateSpace,
+          mSkel,
           mBodynode,
-          startState,
           direction,
           signedDistance,
           mPassingConstraint),
