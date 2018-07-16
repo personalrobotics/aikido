@@ -5,13 +5,11 @@
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
 #include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 #include "eigen_tests.hpp"
 
 using aikido::distance::JointAvoidanceConfigurationRanker;
 using aikido::statespace::R1;
-using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using dart::dynamics::Skeleton;
@@ -22,10 +20,10 @@ using dart::dynamics::RevoluteJoint;
 
 static constexpr double EPS = 1e-6;
 
-static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
+static BodyNode::Properties create_BodyNodeProperties(const std::string& name)
 {
   BodyNode::Properties bodyProperties;
-  bodyProperties.mName = _name;
+  bodyProperties.mName = name;
   return bodyProperties;
 }
 
@@ -101,15 +99,15 @@ TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
   }
 
   JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator);
-  auto rankedStates = ranker.rankConfigurations(states);
+  ranker.rankConfigurations(states);
 
   Eigen::VectorXd rankedState(2);
   jointPositions[0] = Eigen::Vector2d(0.3, 0.1);
   jointPositions[1] = Eigen::Vector2d(0.2, 0.1);
   jointPositions[2] = Eigen::Vector2d(0.1, 0.4);
-  for (std::size_t i = 0; i < rankedStates.size(); ++i)
+  for (std::size_t i = 0; i < states.size(); ++i)
   {
-    mStateSpace->convertStateToPositions(rankedStates[i], rankedState);
+    mStateSpace->convertStateToPositions(states[i], rankedState);
     EXPECT_EIGEN_EQUAL(rankedState, jointPositions[i], EPS);
   }
 }

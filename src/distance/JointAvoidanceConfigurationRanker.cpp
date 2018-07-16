@@ -12,6 +12,8 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     ConstMetaSkeletonPtr metaSkeleton)
   : ConfigurationRanker(
         std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
+  , mLowerLimitsState(mMetaSkeletonStateSpace->createState())
+  , mUpperLimitsState(mMetaSkeletonStateSpace->createState())
 {
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
@@ -24,14 +26,11 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     if (upperLimits[i] == dart::math::constantsd::inf())
       mUnboundedUpperLimitsIndices.emplace_back(i);
   }
-
-  mLowerLimitsState = mMetaSkeletonStateSpace->createState();
-  mUpperLimitsState = mMetaSkeletonStateSpace->createState();
 }
 
 //==============================================================================
 double JointAvoidanceConfigurationRanker::evaluateConfiguration(
-    statespace::dart::MetaSkeletonStateSpace::State* solution) const
+    const statespace::dart::MetaSkeletonStateSpace::State* solution) const
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
   mMetaSkeletonStateSpace->convertStateToPositions(solution, solutionPosition);

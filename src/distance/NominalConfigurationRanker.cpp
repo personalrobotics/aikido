@@ -4,7 +4,6 @@ namespace aikido {
 namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
-using statespace::CartesianProduct;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
@@ -24,7 +23,7 @@ NominalConfigurationRanker::NominalConfigurationRanker(
 
 //==============================================================================
 double NominalConfigurationRanker::evaluateConfiguration(
-    statespace::dart::MetaSkeletonStateSpace::State* solution) const
+    const statespace::dart::MetaSkeletonStateSpace::State* solution) const
 {
   return mDistanceMetric->distance(solution, mNominalConfiguration);
 }

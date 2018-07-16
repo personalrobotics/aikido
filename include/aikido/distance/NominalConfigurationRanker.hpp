@@ -24,7 +24,8 @@ public:
 protected:
   /// Returns cost as distance from the Nominal Configuration.
   double evaluateConfiguration(
-      statespace::dart::MetaSkeletonStateSpace::State* solution) const override;
+      const statespace::dart::MetaSkeletonStateSpace::State* solution)
+      const override;
 
   /// Nominal configuration used when evaluating a given configuration.
   const statespace::dart::MetaSkeletonStateSpace::State* mNominalConfiguration;
