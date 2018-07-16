@@ -33,10 +33,10 @@ aikido_check_package(visualization_msgs "aikido::perception" "octomap_ros")
 # Libraries
 #
 set(sources
-  PointCloud.cpp
   PoseEstimatorModule.cpp
   shape_conversions.cpp
   ObjectDatabase.cpp
+  VoxelGridModule.cpp
 )
 
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})

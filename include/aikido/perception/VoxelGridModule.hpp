@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PERCEPTION_VOXELGRIDPERCEPTIONMODULE_HPP_
-#define AIKIDO_PERCEPTION_VOXELGRIDPERCEPTIONMODULE_HPP_
+#ifndef AIKIDO_PERCEPTION_VOXELGRIDMODULE_HPP_
+#define AIKIDO_PERCEPTION_VOXELGRIDMODULE_HPP_
 
 #include <memory>
 #include <string>
@@ -36,12 +36,33 @@ public:
 
   /// Receives ROS msg and updates the voxel grid with the received ROS msg.
   ///
+  /// \param[in] sensorOrigin Origin of sensor relative to frame.
+  /// \param[in] inCoordinatesOf Reference frame, determines transform to be
+  /// applied to point cloud and sensor origin.
   /// \param[in] timestamp Only detections more recent than this timestamp will
   /// be accepted. A timestamp of 0 greedily takes the first available message,
   /// and is the default behaviour.
   /// \return False if no points observed, or if no voxel grid is specified.
   /// True otherwise.
-  bool update(const ros::Duration& timeout);
+  bool update(
+      const Eigen::Vector3d& sensorOrigin,
+      const Eigen::Isometry3d& inCoordinatesOf,
+      const ros::Duration& timeout);
+
+  /// Receives ROS msg and updates the voxel grid with the received ROS msg.
+  ///
+  /// \param[in] sensorOrigin Origin of sensor relative to frame.
+  /// \param[in] inCoordinatesOf Reference frame, determines transform to be
+  /// applied to point cloud and sensor origin.
+  /// \param[in] timestamp Only detections more recent than this timestamp will
+  /// be accepted. A timestamp of 0 greedily takes the first available message,
+  /// and is the default behaviour.
+  /// \return False if no points observed, or if no voxel grid is specified.
+  /// True otherwise.
+  bool update(
+      const Eigen::Vector3d& sensorOrigin,
+      const dart::dynamics::Frame& inCoordinatesOf,
+      const ros::Duration& timeout);
 
 private:
   /// ROS node handle
@@ -60,4 +81,4 @@ private:
 } // namespace perception
 } // namespace aikido
 
-#endif // AIKIDO_PERCEPTION_VOXELGRIDPERCEPTIONMODULE_HPP_
+#endif // AIKIDO_PERCEPTION_VOXELGRIDMODULE_HPP_
