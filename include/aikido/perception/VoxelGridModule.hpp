@@ -39,9 +39,7 @@ public:
   /// \param[in] sensorOrigin Origin of sensor relative to frame.
   /// \param[in] inCoordinatesOf Reference frame, determines transform to be
   /// applied to point cloud and sensor origin.
-  /// \param[in] timestamp Only detections more recent than this timestamp will
-  /// be accepted. A timestamp of 0 greedily takes the first available message,
-  /// and is the default behaviour.
+  /// \param[in] timeout The duration up to which to wait for the point cloud.
   /// \return False if no points observed, or if no voxel grid is specified.
   /// True otherwise.
   bool update(
@@ -54,9 +52,7 @@ public:
   /// \param[in] sensorOrigin Origin of sensor relative to frame.
   /// \param[in] inCoordinatesOf Reference frame, determines transform to be
   /// applied to point cloud and sensor origin.
-  /// \param[in] timestamp Only detections more recent than this timestamp will
-  /// be accepted. A timestamp of 0 greedily takes the first available message,
-  /// and is the default behaviour.
+  /// \param[in] timeout The duration up to which to wait for the point cloud.
   /// \return False if no points observed, or if no voxel grid is specified.
   /// True otherwise.
   bool update(
