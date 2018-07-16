@@ -3,7 +3,6 @@
 
 #include "aikido/distance/DistanceMetric.hpp"
 #include "aikido/distance/defaults.hpp"
-#include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 #include <dart/dynamics/dynamics.hpp>
