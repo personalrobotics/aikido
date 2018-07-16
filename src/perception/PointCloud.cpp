@@ -1,24 +1,48 @@
 #include "aikido/perception/PointCloud.hpp"
 
+#include <octomap_ros/conversions.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
-#include <octomap_ros/conversions.h>
 
 namespace aikido {
 namespace perception {
 
 //=============================================================================
-PointCloud::PointCloud(
-    const ros::NodeHandle& nodeHandle, const std::string& pointCloudTopic)
-  : mNodeHandle(nodeHandle), mPointCloudTopic(pointCloudTopic)
+VoxelGridPerceptionModule::VoxelGridPerceptionModule(
+    const ros::NodeHandle& nodeHandle,
+    const std::string& pointCloudTopic,
+    std::shared_ptr<dart::dynamics::VoxelGridShape> voxelGridShape)
+  : mNodeHandle(nodeHandle)
+  , mPointCloudTopic(pointCloudTopic)
+  , mVoxelGridShape(std::move(voxelGridShape))
 {
   // Do nothing
 }
 
 //==============================================================================
-bool PointCloud::updatePointCloud(const ros::Duration& timeout)
+std::shared_ptr<dart::dynamics::VoxelGridShape>
+VoxelGridPerceptionModule::getVoxelGridShape()
 {
-  auto pointCloud2Message
+  return mVoxelGridShape;
+}
+
+//==============================================================================
+std::shared_ptr<const dart::dynamics::VoxelGridShape>
+VoxelGridPerceptionModule::getVoxelGridShape() const
+{
+  return mVoxelGridShape;
+}
+
+//==============================================================================
+bool VoxelGridPerceptionModule::update(const ros::Duration& timeout)
+{
+  if (!mVoxelGridShape)
+  {
+    dtwarn << "[PointCloud] No DART VoxelGridShape is specified to update.";
+    return false;
+  }
+
+  const auto pointCloud2Message
       = ros::topic::waitForMessage<sensor_msgs::PointCloud2>(
           mPointCloudTopic, mNodeHandle, timeout);
 
@@ -29,6 +53,8 @@ bool PointCloud::updatePointCloud(const ros::Duration& timeout)
     return false;
   }
 
+  // Need to clear the cache becuase octomap::pointCloud2ToOctomap() appends
+  // data.
   mOctomapPointCloud.clear();
 
   octomap::pointCloud2ToOctomap(*pointCloud2Message, mOctomapPointCloud);
