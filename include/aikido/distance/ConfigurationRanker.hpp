@@ -1,7 +1,6 @@
 #ifndef AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 #define AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 
-#include "aikido/distance/CartesianProductWeighted.hpp"
 #include "aikido/distance/DistanceMetric.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
