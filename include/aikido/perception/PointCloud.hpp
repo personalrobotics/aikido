@@ -25,7 +25,10 @@ private:
 
   std::string mPointCloudTopic;
 
-  std::shared_ptr<dart::dynamics::VoxelShape> mVoxelShape;
+  std::shared_ptr<dart::dynamics::VoxelGridShape> mVoxelGridShape;
+
+  /// Cache data to store point cloud data.
+  octomap::Pointcloud mOctomapPointCloud;
 };
 
 } // namespace perception

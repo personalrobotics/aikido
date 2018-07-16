@@ -2,6 +2,7 @@
 
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
+#include <octomap_ros/conversions.h>
 
 namespace aikido {
 namespace perception {
@@ -28,22 +29,11 @@ bool PointCloud::updatePointCloud(const ros::Duration& timeout)
     return false;
   }
 
-  sensor_msgs::PointCloud pointCloudMessage;
-  sensor_msgs::convertPointCloud2ToPointCloud(
-      *pointCloud2Message, pointCloudMessage);
+  mOctomapPointCloud.clear();
 
-  const auto& points = pointCloudMessage.points;
-  if (points.empty())
-  {
-    // TODO(JS): Print warnings?
-    return false;
-  }
+  octomap::pointCloud2ToOctomap(*pointCloud2Message, mOctomapPointCloud);
 
-  for (const auto& point : points)
-  {
-    std::cout << "point: (" << point.x << ", " << point.y << ", " << point.z
-              << ")\n";
-  }
+  mVoxelGridShape->updateOccupancy(mOctomapPointCloud, octomap::point3d());
 
   return true;
 }

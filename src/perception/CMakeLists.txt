@@ -24,6 +24,11 @@ aikido_check_package(visualization_msgs "aikido::perception" "visualization_msgs
 find_package(tf QUIET MODULE)
 aikido_check_package(tf "aikido::perception" "tf")
 
+# Note: Intentionally use "Module" mode because the config file imports "gtest",
+# "tests", and "run_tests" that conflict with the targets defined by Aikido.
+find_package(octomap_ros QUIET MODULE)
+aikido_check_package(visualization_msgs "aikido::perception" "octomap_ros")
+
 #==============================================================================
 # Libraries
 #
@@ -45,6 +50,7 @@ target_include_directories("${PROJECT_NAME}_perception" SYSTEM
     ${tf_INCLUDE_DIRS}
   PRIVATE
     ${visualization_msgs_INCLUDE_DIRS}
+    ${octomap_ros_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_perception"
   PUBLIC
@@ -56,6 +62,7 @@ target_link_libraries("${PROJECT_NAME}_perception"
     ${tf_LIBRARIES}
   PRIVATE
     ${visualization_msgs_LIBRARIES}
+    ${octomap_ros_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
