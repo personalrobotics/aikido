@@ -3,6 +3,7 @@
 # This sets the following variables:
 # octomap_ros_FOUND
 # octomap_ros_INCLUDE_DIRS
+# octomap_ros_LIBRARIES
 # octomap_ros_VERSION
 
 # Note: This find module is necessary because the config file imports "gtest",
@@ -20,6 +21,12 @@ find_path(octomap_ros_INCLUDE_DIRS
   HINTS ${PC_octomap_ros_INCLUDE_DIRS}
 )
 
+# Libraries
+find_library(octomap_ros_LIBRARIES
+  octomap_ros
+  HINTS ${PC_octomap_ros_LIBRARY_DIRS}
+)
+
 # Version
 set(octomap_ros_VERSION ${PC_octomap_ros_VERSION})
 
@@ -28,6 +35,6 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(octomap_ros
     FOUND_VAR octomap_ros_FOUND
     FAIL_MESSAGE  DEFAULT_MSG
-    REQUIRED_VARS octomap_ros_INCLUDE_DIRS
+    REQUIRED_VARS octomap_ros_INCLUDE_DIRS octomap_ros_LIBRARIES
     VERSION_VAR   octomap_ros_VERSION
 )
