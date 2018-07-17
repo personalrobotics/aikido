@@ -236,7 +236,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Collect and rank configurations
   auto sampleState = space->createState();
-  std::vector<statespace::CartesianProduct::ScopedState> configurations;
+  std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState> configurations;
   NominalConfigurationRanker ranker(space, metaSkeleton, startState);
 
   // Start the timer
@@ -253,17 +253,12 @@ trajectory::TrajectoryPtr planToTSR(
     configurations.emplace_back(sampleState.clone());
     ++snapSamples;
   }
+  ranker.rankConfigurations(configurations);
 
-  std::vector<statespace::CartesianProduct::State*> configurations_raw(
-      configurations.size());
-  for (auto i = 0u; i < configurations.size(); ++i)
-    configurations_raw[i] = configurations[i];
-  ranker.rankConfigurations(configurations_raw);
-
-  for (int i = 0; i < configurations_raw.size(); ++i)
+  for (std::size_t i = 0; i < configurations.size(); ++i)
   {
     space->setState(metaSkeleton.get(), startState);
-    space->copyState(configurations_raw[i], goalState);
+    space->copyState(configurations[i], goalState);
 
     auto traj = planner->plan(problem, &pResult);
 

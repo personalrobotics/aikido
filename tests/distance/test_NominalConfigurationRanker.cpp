@@ -4,11 +4,12 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
-#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+#include "eigen_tests.hpp"
+
+static constexpr double EPS = 1e-6;
 
 using aikido::distance::NominalConfigurationRanker;
-using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using dart::dynamics::Skeleton;
@@ -17,10 +18,10 @@ using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::RevoluteJoint;
 
-static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
+static BodyNode::Properties create_BodyNodeProperties(const std::string& name)
 {
   BodyNode::Properties bodyProperties;
-  bodyProperties.mName = _name;
+  bodyProperties.mName = name;
   return bodyProperties;
 }
 
@@ -79,48 +80,32 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
 
 TEST_F(NominalConfigurationRankerTest, OrderTest)
 {
-  Eigen::VectorXd jointPosition(2);
+  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.3, 0.3),
+                                              Eigen::Vector2d(0.1, 0.1),
+                                              Eigen::Vector2d(0.2, 0.2)};
 
-  jointPosition << 0.3, 0.3;
-  mManipulator->setPositions(jointPosition);
-  auto seedStateOne = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(
-      mManipulator->getPositions(), seedStateOne);
+  std::vector<aikido::statespace::CartesianProduct::ScopedState> states;
+  for (std::size_t i = 0; i < jointPositions.size(); ++i)
+  {
+    auto state = mStateSpace->createState();
+    mStateSpace->convertPositionsToState(jointPositions[i], state);
+    states.emplace_back(state.clone());
+  }
 
-  jointPosition << 0.1, 0.1;
-  mManipulator->setPositions(jointPosition);
-  auto seedStateTwo = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(
-      mManipulator->getPositions(), seedStateTwo);
-
-  jointPosition << 0.2, 0.2;
-  mManipulator->setPositions(jointPosition);
-  auto seedStateThree = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(
-      mManipulator->getPositions(), seedStateThree);
-
-  std::vector<aikido::statespace::StateSpace::State*> states;
-  states.emplace_back(seedStateOne);
-  states.emplace_back(seedStateTwo);
-  states.emplace_back(seedStateThree);
-
-  jointPosition << 0.0, 0.0;
-  mManipulator->setPositions(jointPosition);
+  mManipulator->setPositions(Eigen::Vector2d(0.0, 0.0));
   NominalConfigurationRanker ranker(
       mStateSpace,
       mManipulator,
       mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get()));
   ranker.rankConfigurations(states);
 
-  Eigen::VectorXd rankedStateOne(2), rankedStateTwo(2), rankedStateThree(2);
-  mStateSpace->convertStateToPositions(
-      mStateSpace->cloneState(states[0]), rankedStateOne);
-  mStateSpace->convertStateToPositions(
-      mStateSpace->cloneState(states[1]), rankedStateTwo);
-  mStateSpace->convertStateToPositions(
-      mStateSpace->cloneState(states[2]), rankedStateThree);
-
-  EXPECT_TRUE(rankedStateOne.isApprox(Eigen::Vector2d(0.1, 0.1)));
-  EXPECT_TRUE(rankedStateTwo.isApprox(Eigen::Vector2d(0.2, 0.2)));
-  EXPECT_TRUE(rankedStateThree.isApprox(Eigen::Vector2d(0.3, 0.3)));
+  Eigen::VectorXd rankedState(2);
+  jointPositions[0] = Eigen::Vector2d(0.1, 0.1);
+  jointPositions[1] = Eigen::Vector2d(0.2, 0.2);
+  jointPositions[2] = Eigen::Vector2d(0.3, 0.3);
+  for (std::size_t i = 0; i < states.size(); ++i)
+  {
+    mStateSpace->convertStateToPositions(states[i], rankedState);
+    EXPECT_EIGEN_EQUAL(rankedState, jointPositions[i], EPS);
+  }
 }
