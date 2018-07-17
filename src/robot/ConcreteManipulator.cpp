@@ -1,5 +1,4 @@
 #include "aikido/robot/ConcreteManipulator.hpp"
-#include "aikido/planner/dart/util.hpp"
 #include "aikido/robot/util.hpp"
 
 namespace aikido {
@@ -140,6 +139,14 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
 }
 
 //==============================================================================
+Eigen::Vector3d ConcreteManipulator::getEndEffectorDirection(
+    const dart::dynamics::BodyNodePtr& body) const
+{
+  const std::size_t zDirection = 2;
+  return body->getWorldTransform().linear().col(zDirection).normalized();
+}
+
+//==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -153,8 +160,7 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
   auto collision
       = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 
-  Eigen::Vector3d direction
-      = planner::dart::util::getEndEffectorDirection(body);
+  Eigen::Vector3d direction = getEndEffectorDirection(body);
 
   if (distance < 0)
   {

@@ -9,32 +9,13 @@ namespace dart {
 //==============================================================================
 ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-    ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const Eigen::Isometry3d& goalPose,
-    constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
-  , mMetaSkeletonStateSpace(stateSpace)
-  , mMetaSkeleton(std::move(metaSkeleton))
-  , mStartState(mMetaSkeletonStateSpace->createState())
-  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mGoalPose(goalPose)
-{
-  // Do nothing
-}
-
-//==============================================================================
-ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
-    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State* startState,
-    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
-  , mMetaSkeletonStateSpace(stateSpace)
-  , mMetaSkeleton(nullptr)
-  , mStartState(stateSpace->cloneState(startState))
+  : Problem(std::move(stateSpace), std::move(constraint))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+  , mStartState(startState)
   , mGoalPose(goalPose)
 {
   // Do nothing
@@ -64,11 +45,6 @@ ConfigurationToEndEffectorPose::getEndEffectorBodyNode() const
 const statespace::dart::MetaSkeletonStateSpace::State*
 ConfigurationToEndEffectorPose::getStartState() const
 {
-  // Take start state from MetaSkeleton if passed. Store in the ScopedState
-  // instance variable to avoid dangling pointers.
-  if (mMetaSkeleton)
-    mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), mStartState);
-
   return mStartState;
 }
 

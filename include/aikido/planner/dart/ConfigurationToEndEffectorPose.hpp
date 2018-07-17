@@ -14,40 +14,21 @@ namespace dart {
 class ConfigurationToEndEffectorPose : public Problem
 {
 public:
-  /// Constructor. Note that this constructor takes the start state from the
-  /// current state of the passed MetaSkeleton.
+  /// Constructor.
   ///
   /// \param[in] stateSpace State space.
-  /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
-  /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// pose.
+  /// \param[in] startState Start state.
   /// \param[in] goalPose Goal pose.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
   /// space.
   ConfigurationToEndEffectorPose(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const Eigen::Isometry3d& goalPose,
-      constraint::ConstTestablePtr constraint = nullptr);
-
-  /// Constructor. Note that this constructor sets the start state on
-  /// construction.
-  ///
-  /// \param[in] stateSpace State space.
-  /// \param[in] startState Start state to plan from.
-  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
-  /// pose.
-  /// \param[in] goalPose Goal pose.
-  /// \throw If \c stateSpace is not compatible with \c constraint's state
-  /// space.
-  ConfigurationToEndEffectorPose(
-      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
-      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const Eigen::Isometry3d& goalPose,
-      constraint::ConstTestablePtr constraint = nullptr);
+      constraint::ConstTestablePtr constraint);
 
   // Documentation inherited.
   const std::string& getType() const override;
@@ -58,8 +39,7 @@ public:
   /// Returns the end-effector BodyNode to be planned to move to a desired pose.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-  /// Return the start state to plan from, either set on construction or
-  /// taken from the current state of the MetaSkeleton.
+  /// Returns the start state.
   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
   /// Returns the goal pose.
@@ -69,18 +49,11 @@ protected:
   // Need this due to mGoalPose.
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on
-  /// mStateSpace.
-  statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
-
-  /// MetaSkeleton, if given.
-  ::dart::dynamics::ConstMetaSkeletonPtr mMetaSkeleton;
-
-  /// Start state, if set on construction.
-  statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
-
   /// End-effector body node.
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+
+  /// Start state.
+  const statespace::dart::MetaSkeletonStateSpace::State* mStartState;
 
   /// Goal pose.
   const Eigen::Isometry3d mGoalPose;

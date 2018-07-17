@@ -11,8 +11,8 @@ namespace planner {
 //==============================================================================
 template <typename Derived, typename ProblemT>
 SingleProblemPlanner<Derived, ProblemT>::SingleProblemPlanner(
-    statespace::ConstStateSpacePtr stateSpace, common::RNG* rng)
-  : Planner(std::move(stateSpace), std::move(rng))
+    statespace::ConstStateSpacePtr stateSpace)
+  : Planner(std::move(stateSpace))
 {
   // Do nothing
 }
