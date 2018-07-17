@@ -29,22 +29,18 @@ ConfigurationRanker::ConfigurationRanker(
 void ConfigurationRanker::rankConfigurations(
     std::vector<MetaSkeletonStateSpace::ScopedState>& configurations)
 {
-  std::vector<std::pair<double, MetaSkeletonStateSpace::ScopedState>>
-      evaluatedConfigurations;
+  std::unordered_map<const MetaSkeletonStateSpace::State*, double> costs;
+  costs.reserve(configurations.size());
   for (std::size_t i = 0; i < configurations.size(); ++i)
-  {
-    evaluatedConfigurations.emplace_back(
-        std::make_pair(
-            evaluateConfiguration(configurations[i]),
-            std::move(configurations[i])));
-  }
-  std::sort(evaluatedConfigurations.begin(), evaluatedConfigurations.end());
+    costs[configurations[i]] = evaluateConfiguration(configurations[i]);
 
-  configurations.clear();
-  for (std::size_t i = 0; i < evaluatedConfigurations.size(); ++i)
-  {
-    configurations.emplace_back(std::move(evaluatedConfigurations[i].second));
-  }
+  std::sort(
+      configurations.begin(),
+      configurations.end(),
+      [&](const MetaSkeletonStateSpace::ScopedState& left,
+          const MetaSkeletonStateSpace::ScopedState& right) {
+        return costs[left] < costs[right];
+      });
 }
 
 } // namespace distance
