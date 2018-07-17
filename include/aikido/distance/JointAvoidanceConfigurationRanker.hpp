@@ -6,13 +6,9 @@
 namespace aikido {
 namespace distance {
 
-/// Ranks configurations by their distance from joint limits. This is
-/// implemented
-/// with a quadratic loss function that measures distance from limits.
-/// Configurations
-/// further away from the limits are ranked higher.
-///
-/// Only finite joint limits are considered for distance computation.
+/// Ranks configurations by their distance from joint limits. Configurations
+/// further away from the limits are ranked higher. Only finite joint limits
+/// are considered for distance computation.
 class JointAvoidanceConfigurationRanker : public ConfigurationRanker
 {
 public:
