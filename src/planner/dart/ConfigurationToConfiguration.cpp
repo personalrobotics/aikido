@@ -1,78 +1,55 @@
-#include "aikido/planner/dart/ConfigurationToTSR.hpp"
-
-#include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
 
 namespace aikido {
 namespace planner {
 namespace dart {
 
 //==============================================================================
-ConfigurationToTSR::ConfigurationToTSR(
+ConfigurationToConfiguration::ConfigurationToConfiguration(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    std::size_t maxSamples,
-    constraint::dart::ConstTSRPtr goalTSR,
+    const statespace::dart::MetaSkeletonStateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
-  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mMaxSamples(maxSamples)
-  , mGoalTSR(goalTSR)
+  , mGoalState(stateSpace->cloneState(goalState))
 {
   // Do nothing.
 }
 
 //==============================================================================
-ConfigurationToTSR::ConfigurationToTSR(
+ConfigurationToConfiguration::ConfigurationToConfiguration(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State* startState,
-    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    std::size_t maxSamples,
-    constraint::dart::ConstTSRPtr goalTSR,
+    const statespace::dart::MetaSkeletonStateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
-  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mMaxSamples(maxSamples)
-  , mGoalTSR(goalTSR)
+  , mGoalState(stateSpace->cloneState(goalState))
 {
   // Do nothing.
 }
 
 //==============================================================================
-const std::string& ConfigurationToTSR::getType() const
+const std::string& ConfigurationToConfiguration::getType() const
 {
   return getStaticType();
 }
 
 //==============================================================================
-const std::string& ConfigurationToTSR::getStaticType()
+const std::string& ConfigurationToConfiguration::getStaticType()
 {
-  static std::string name("ConfigurationToTSR");
+  static std::string name("ConfigurationToConfiguration");
   return name;
 }
 
 //==============================================================================
-::dart::dynamics::ConstBodyNodePtr ConfigurationToTSR::getEndEffectorBodyNode()
-    const
-{
-  return mEndEffectorBodyNode;
-}
-
-//==============================================================================
-std::size_t ConfigurationToTSR::getMaxSamples() const
-{
-  return mMaxSamples;
-}
-
-//==============================================================================
 const statespace::dart::MetaSkeletonStateSpace::State*
-ConfigurationToTSR::getStartState() const
+ConfigurationToConfiguration::getStartState() const
 {
   // Take start state from MetaSkeleton if passed. Store in the ScopedState
   // instance variable to avoid dangling pointers.
@@ -83,9 +60,10 @@ ConfigurationToTSR::getStartState() const
 }
 
 //==============================================================================
-constraint::dart::ConstTSRPtr ConfigurationToTSR::getGoalTSR() const
+const statespace::dart::MetaSkeletonStateSpace::State*
+ConfigurationToConfiguration::getGoalState() const
 {
-  return mGoalTSR;
+  return mGoalState;
 }
 
 } // namespace dart
