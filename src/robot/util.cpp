@@ -402,8 +402,8 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
   auto traj = planner::vectorfield::planToEndEffectorOffset(
-      *startState,
       space,
+      *startState,
       metaSkeleton,
       bodyNode,
       collisionTestable,

@@ -55,8 +55,8 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 /// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::ConstBodyNodePtr& bn,
     const aikido::constraint::ConstTestablePtr& constraint,
