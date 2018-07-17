@@ -6,15 +6,17 @@
 namespace aikido {
 namespace distance {
 
+/// Ranks configurations by their distance from a nominal configuration.
+/// Configurations closer to the nominal configuration are ranked higher.
 class NominalConfigurationRanker : public ConfigurationRanker
 {
 public:
   /// Constructor
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
-  /// \param[in] metaskeleton Metaskeleton of the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
   /// \param[in] nominalConfiguration Nominal configuration. The current
-  /// configuration is considered if set to nullptr.
+  /// configuration of \c metaSkeleton is considered if set to \c nullptr.
   NominalConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,

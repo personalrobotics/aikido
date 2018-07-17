@@ -6,13 +6,20 @@
 namespace aikido {
 namespace distance {
 
+/// Ranks configurations by their distance from joint limits. This is
+/// implemented
+/// with a quadratic loss function that measures distance from limits.
+/// Configurations
+/// further away from the limits are ranked higher.
+///
+/// Only finite joint limits are considered for distance computation.
 class JointAvoidanceConfigurationRanker : public ConfigurationRanker
 {
 public:
   /// Constructor
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
-  /// \param[in] metaskeleton Metaskeleton of the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
   JointAvoidanceConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
@@ -30,13 +37,15 @@ protected:
   std::vector<std::size_t> mUnboundedUpperLimitsIndices;
 
   /// (Modified) State corresponding to the lower position limits.
-  /// The positions at the indices in mUnboundedLowerLimitsIndices are modified
-  /// to compute the distance from lower limits appropriately.
+  /// The positions at the indices in \c mUnboundedLowerLimitsIndices are
+  /// modified to match those in the input state to \c evaluateConfiguration()
+  /// to compute the distance from finite lower joint limits only.
   statespace::dart::MetaSkeletonStateSpace::ScopedState mLowerLimitsState;
 
   /// (Modified) State corresponding to the upper position limits.
-  /// The positions at the indices in mUnboundedUpperLimitsIndices are modified
-  /// to compute the distance from upper limits appropriately.
+  /// The positions at the indices in \c mUnboundedUpperLimitsIndices are
+  /// modified to match those in the input state to \c evaluateConfiguration()
+  /// to compute the distance from finite upper joint limits only.
   statespace::dart::MetaSkeletonStateSpace::ScopedState mUpperLimitsState;
 };
 

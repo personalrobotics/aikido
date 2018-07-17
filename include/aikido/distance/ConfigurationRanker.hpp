@@ -10,13 +10,16 @@
 namespace aikido {
 namespace distance {
 
+/// ConfigurationRanker is a base class for ranking configurations.
+/// The rule for evaluating the costs of configurations to rank them
+/// is specified by the concrete classes.
 class ConfigurationRanker
 {
 public:
   /// Constructor
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
-  /// \param[in] metaskeleton Metaskeleton of the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
   ConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
@@ -24,9 +27,8 @@ public:
   /// Destructor
   virtual ~ConfigurationRanker() = default;
 
-  /// Ranks/Sorts the vector of configurations in increasing order of costs.
-  /// \param[in] configurations Vector of configurations to rank.
-  /// \param[out] configurations Ranked vector of configurations.
+  /// Ranks the vector of configurations in increasing order of costs.
+  /// \param[in, out] configurations Vector of configurations to rank.
   void rankConfigurations(
       std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>&
           configurations);
