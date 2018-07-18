@@ -45,5 +45,11 @@ ConfigurationToConfiguration::getGoalState() const
   return mGoalState;
 }
 
+//==============================================================================
+void ConfigurationToConfiguration::setGoalState(const statespace::StateSpace::State* goal)
+{
+  mGoalState = std::move(mStateSpace->cloneState(goal));
+}
+
 } // namespace planner
 } // namespace aikido

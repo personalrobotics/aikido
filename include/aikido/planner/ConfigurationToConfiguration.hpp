@@ -39,6 +39,9 @@ public:
   /// Returns the goal state.
   const statespace::StateSpace::State* getGoalState() const;
 
+  /// Sets the goal state.
+  void setGoalState(const statespace::StateSpace::State*);
+
 protected:
   /// Start state.
   statespace::StateSpace::ScopedState mStartState;
