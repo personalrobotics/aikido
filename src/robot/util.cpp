@@ -101,23 +101,23 @@ trajectory::TrajectoryPtr planToConfiguration(
   untimedTrajectory = planner->plan(problem, &pResult);
 
   // Return if the trajectory is non-empty
-  if (untimedTrajectory)
+//  if (untimedTrajectory)
     return untimedTrajectory;
 
-  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution);
+//  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+//      startState,
+//      goalState,
+//      space,
+//      std::make_shared<GeodesicInterpolator>(space),
+//      createDistanceMetric(space),
+//      createSampleableBounds(space, rng->clone()),
+//      collisionTestable,
+//      createTestableBounds(space),
+//      createProjectableBounds(space),
+//      timelimit,
+//      collisionResolution);
 
-  return untimedTrajectory;
+//  return untimedTrajectory;
 }
 
 //==============================================================================
@@ -220,6 +220,8 @@ trajectory::TrajectoryPtr planToTSR(
   double timelimitPerSample = timelimit / maxNumTrials;
 
   // Save the current state of the space
+  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
@@ -227,7 +229,6 @@ trajectory::TrajectoryPtr planToTSR(
   static const std::size_t maxSnapSamples{30};
   std::size_t snapSamples = 0;
 
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   SnapConfigurationToConfigurationPlanner::Result pResult;
   auto problem = ConfigurationToConfiguration(
       space, startState, goalState, collisionTestable);
@@ -245,7 +246,6 @@ trajectory::TrajectoryPtr planToTSR(
   while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
-    std::lock_guard<std::mutex> lock(robot->getMutex());
     bool sampled = generator->sample(sampleState);
     if (!sampled)
       continue;
@@ -258,7 +258,7 @@ trajectory::TrajectoryPtr planToTSR(
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
     space->setState(metaSkeleton.get(), startState);
-    space->copyState(configurations[i], goalState);
+    problem.setGoalState(configurations[i]);
 
     auto traj = planner->plan(problem, &pResult);
 
