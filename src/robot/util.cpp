@@ -101,23 +101,23 @@ trajectory::TrajectoryPtr planToConfiguration(
   untimedTrajectory = planner->plan(problem, &pResult);
 
   // Return if the trajectory is non-empty
-//  if (untimedTrajectory)
-    return untimedTrajectory;
+  //  if (untimedTrajectory)
+  return untimedTrajectory;
 
-//  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-//      startState,
-//      goalState,
-//      space,
-//      std::make_shared<GeodesicInterpolator>(space),
-//      createDistanceMetric(space),
-//      createSampleableBounds(space, rng->clone()),
-//      collisionTestable,
-//      createTestableBounds(space),
-//      createProjectableBounds(space),
-//      timelimit,
-//      collisionResolution);
+  //  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+  //      startState,
+  //      goalState,
+  //      space,
+  //      std::make_shared<GeodesicInterpolator>(space),
+  //      createDistanceMetric(space),
+  //      createSampleableBounds(space, rng->clone()),
+  //      collisionTestable,
+  //      createTestableBounds(space),
+  //      createProjectableBounds(space),
+  //      timelimit,
+  //      collisionResolution);
 
-//  return untimedTrajectory;
+  //  return untimedTrajectory;
 }
 
 //==============================================================================
@@ -237,13 +237,15 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Collect and rank configurations
   auto sampleState = space->createState();
-  std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState> configurations;
+  std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>
+      configurations;
   NominalConfigurationRanker ranker(space, metaSkeleton, startState);
 
   // Start the timer
   dart::common::Timer timer;
   timer.start();
-  while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples && generator->canSample())
+  while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples
+         && generator->canSample())
   {
     // Sample from TSR
     bool sampled = generator->sample(sampleState);
