@@ -16,6 +16,7 @@ createSplineFromWaypointsAndConstraints(
     const std::list<Eigen::VectorXd>& waypoints,
     const Eigen::VectorXd& maxVelocities,
     const Eigen::VectorXd& maxAccelerations,
+    const Eigen::VectorXd& initialVelocity,
     aikido::statespace::ConstStateSpacePtr stateSpace,
     double maxDeviation,
     double timeStep,
@@ -42,10 +43,10 @@ createSplineFromWaypointsAndConstraints(
 
     const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
     auto currState = stateSpace->createState();
-    for (std::size_t i = 1; i < sequence.getLength(); i++)
+    for (std::size_t i = 0; i<sequence.getLength()-1; i++)
     {
-      double currT = sequence[i - 1];
-      double nextT = sequence[i];
+      double currT = sequence[i];
+      double nextT = sequence[i+1];
       double segmentDuration = nextT - currT;
       double currTShift = currT - startTime;
       double nextTShift = nextT - startTime;
@@ -53,6 +54,11 @@ createSplineFromWaypointsAndConstraints(
       Eigen::VectorXd nextPosition = trajectory.getPosition(nextTShift);
       Eigen::VectorXd currentVelocity = trajectory.getVelocity(currTShift);
       Eigen::VectorXd nextVelocity = trajectory.getVelocity(nextTShift);
+
+      if(i==0)
+      {
+        currentVelocity = initialVelocity;
+      }
 
       CubicSplineProblem problem(
           Eigen::Vector2d{0., segmentDuration}, 4, dimension);
@@ -79,6 +85,24 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
+    double maxDeviation,
+    double timeStep)
+{
+  const Eigen::VectorXd initialVelocity = Eigen::VectorXd::Zero(maxVelocity.size());
+  return computeKinodynamicTiming(inputTrajectory,
+                                  maxVelocity,
+                                  maxAcceleration,
+                                  initialVelocity,
+                                  maxDeviation,
+                                  timeStep);
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+    const aikido::trajectory::Interpolated& inputTrajectory,
+    const Eigen::VectorXd& maxVelocity,
+    const Eigen::VectorXd& maxAcceleration,
+    const Eigen::VectorXd& initialVelocity,
     double maxDeviation,
     double timeStep)
 {
@@ -119,6 +143,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
       waypoints,
       maxVelocity,
       maxAcceleration,
+      initialVelocity,
       stateSpace,
       maxDeviation,
       timeStep,
@@ -130,6 +155,24 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     const aikido::trajectory::Spline& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
+    double maxDeviation,
+    double timeStep)
+{
+  const Eigen::VectorXd initialVelocity = Eigen::VectorXd::Zero(maxVelocity.size());
+  return computeKinodynamicTiming(inputTrajectory,
+                                  maxVelocity,
+                                  maxAcceleration,
+                                  initialVelocity,
+                                  maxDeviation,
+                                  timeStep);
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+    const aikido::trajectory::Spline& inputTrajectory,
+    const Eigen::VectorXd& maxVelocity,
+    const Eigen::VectorXd& maxAcceleration,
+    const Eigen::VectorXd& initialVelocity,
     double maxDeviation,
     double timeStep)
 {
@@ -171,6 +214,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
       waypoints,
       maxVelocity,
       maxAcceleration,
+      initialVelocity,
       stateSpace,
       maxDeviation,
       timeStep,

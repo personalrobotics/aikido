@@ -37,6 +37,14 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     double maxDeviation = 1e-2,
     double timeStep = 0.1);
 
+std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+    const aikido::trajectory::Interpolated& inputTrajectory,
+    const Eigen::VectorXd& maxVelocity,
+    const Eigen::VectorXd& maxAcceleration,
+    const Eigen::VectorXd& initialVelocity,
+    double maxDeviation = 1e-2,
+    double timeStep = 0.1);
+
 /// Computes the time-optimal timing of a spline trajectory under velocity
 /// and acceleration bounds. The output is another parabolic spline, encoded
 /// in cubic polynomials. In retiming, the input trajectory is used as a
@@ -62,6 +70,14 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     const aikido::trajectory::Spline& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
+    double maxDeviation = 1e-2,
+    double timeStep = 0.1);
+
+std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+    const aikido::trajectory::Spline& inputTrajectory,
+    const Eigen::VectorXd& maxVelocity,
+    const Eigen::VectorXd& maxAcceleration,
+    const Eigen::VectorXd& initialVelocity,
     double maxDeviation = 1e-2,
     double timeStep = 0.1);
 
