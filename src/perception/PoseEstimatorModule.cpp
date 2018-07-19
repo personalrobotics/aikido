@@ -2,11 +2,11 @@
 
 #include <Eigen/Geometry>
 #include <dart/utils/urdf/DartLoader.hpp>
-#include <yaml-cpp/exceptions.h>
 #include <ros/ros.h>
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+#include <yaml-cpp/exceptions.h>
 #include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/perception/shape_conversions.hpp"
 
@@ -200,13 +200,13 @@ bool PoseEstimatorModule::detectObjects(
   return true;
 }
 
-
-YAML::Node PoseEstimatorModule::getObjInfo(const std::string &obj_id)
+YAML::Node PoseEstimatorModule::getObjInfo(const std::string& obj_id)
 {
   YAML::Node targetNode = mObjInfo[obj_id];
   if (!targetNode)
   {
-    throw std::runtime_error("[PoseEstimatorModule::getObjInfo] Error: invalid obj_id");
+    throw std::runtime_error(
+        "[PoseEstimatorModule::getObjInfo] Error: invalid obj_id");
   }
 
   return targetNode;

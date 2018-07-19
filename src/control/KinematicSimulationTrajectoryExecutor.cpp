@@ -126,7 +126,7 @@ void KinematicSimulationTrajectoryExecutor::step(
       = std::chrono::duration<double>(timeSinceBeginning).count();
 
   // temporarily removed
-  //if (executionTime < 0)
+  // if (executionTime < 0)
   //  throw std::invalid_argument("Timepoint is before execution start time.");
 
   auto state = mStateSpace->createState();

@@ -136,7 +136,10 @@ TEST_F(KinodynamicTimerTests, StartsAtNonZeroVelocity)
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeKinodynamicTiming(
-      inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.), Vector2d::Constant(1.));
+      inputTrajectory,
+      Vector2d::Constant(2.),
+      Vector2d::Constant(1.),
+      Vector2d::Constant(1.));
 
   timedTrajectory->evaluate(0., state);
   EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));

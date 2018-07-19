@@ -59,8 +59,9 @@ public:
   /// from the text field in the MarkerArray message in json format.
   /// This getter returns a YAML::Node of an object by id.
   ///
-  /// \param[in] obj_id The key of an object to retrieve its additional information
-  YAML::Node getObjInfo(const std::string &obj_id);
+  /// \param[in] obj_id The key of an object to retrieve its additional
+  /// information
+  YAML::Node getObjInfo(const std::string& obj_id);
 
 private:
   /// For the ROS node that will work with the April Tags module

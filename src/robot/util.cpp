@@ -242,7 +242,8 @@ trajectory::TrajectoryPtr planToTSR(
   // Start the timer
   dart::common::Timer timer;
   timer.start();
-  while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples && generator->canSample())
+  while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples
+         && generator->canSample())
   {
     // Sample from TSR
     std::lock_guard<std::mutex> lock(robot->getMutex());

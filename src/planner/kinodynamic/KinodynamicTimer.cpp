@@ -43,10 +43,10 @@ createSplineFromWaypointsAndConstraints(
 
     const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
     auto currState = stateSpace->createState();
-    for (std::size_t i = 0; i<sequence.getLength()-1; i++)
+    for (std::size_t i = 0; i < sequence.getLength() - 1; i++)
     {
       double currT = sequence[i];
-      double nextT = sequence[i+1];
+      double nextT = sequence[i + 1];
       double segmentDuration = nextT - currT;
       double currTShift = currT - startTime;
       double nextTShift = nextT - startTime;
@@ -55,7 +55,7 @@ createSplineFromWaypointsAndConstraints(
       Eigen::VectorXd currentVelocity = trajectory.getVelocity(currTShift);
       Eigen::VectorXd nextVelocity = trajectory.getVelocity(nextTShift);
 
-      if(i==0)
+      if (i == 0)
       {
         currentVelocity = initialVelocity;
       }
@@ -88,13 +88,15 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     double maxDeviation,
     double timeStep)
 {
-  const Eigen::VectorXd initialVelocity = Eigen::VectorXd::Zero(maxVelocity.size());
-  return computeKinodynamicTiming(inputTrajectory,
-                                  maxVelocity,
-                                  maxAcceleration,
-                                  initialVelocity,
-                                  maxDeviation,
-                                  timeStep);
+  const Eigen::VectorXd initialVelocity
+      = Eigen::VectorXd::Zero(maxVelocity.size());
+  return computeKinodynamicTiming(
+      inputTrajectory,
+      maxVelocity,
+      maxAcceleration,
+      initialVelocity,
+      maxDeviation,
+      timeStep);
 }
 
 //==============================================================================
@@ -158,13 +160,15 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     double maxDeviation,
     double timeStep)
 {
-  const Eigen::VectorXd initialVelocity = Eigen::VectorXd::Zero(maxVelocity.size());
-  return computeKinodynamicTiming(inputTrajectory,
-                                  maxVelocity,
-                                  maxAcceleration,
-                                  initialVelocity,
-                                  maxDeviation,
-                                  timeStep);
+  const Eigen::VectorXd initialVelocity
+      = Eigen::VectorXd::Zero(maxVelocity.size());
+  return computeKinodynamicTiming(
+      inputTrajectory,
+      maxVelocity,
+      maxAcceleration,
+      initialVelocity,
+      maxDeviation,
+      timeStep);
 }
 
 //==============================================================================
