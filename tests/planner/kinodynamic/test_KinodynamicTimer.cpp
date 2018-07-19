@@ -8,6 +8,7 @@
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
+using Eigen::VectorXd;
 using aikido::trajectory::Interpolated;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R2;
@@ -140,8 +141,8 @@ TEST_F(KinodynamicTimerTests, StartsAtNonZeroVelocity)
   timedTrajectory->evaluate(0., state);
   EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
 
-  Vector2d initialVel;
-  tunedTrajectory->evaluateDerivatieve(0, 1, initialVel);
+  VectorXd initialVel(2);
+  timedTrajectory->evaluateDerivative(0., 1, initialVel);
   EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(initialVel));
 
   timedTrajectory->evaluate(1., state);
