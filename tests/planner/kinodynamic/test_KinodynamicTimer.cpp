@@ -120,6 +120,37 @@ TEST_F(KinodynamicTimerTests, StartsAtNonZeroTime)
   EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
 }
 
+TEST_F(KinodynamicTimerTests, StartsAtNonZeroVelocity)
+{
+  Interpolated inputTrajectory(mStateSpace, mInterpolator);
+
+  auto state = mStateSpace->createState();
+
+  // This is the same test as StraightLine_TriangularProfile, except that the
+  // trajectory starts at a non-zero time.
+  state.setValue(Vector2d(1., 2.));
+  inputTrajectory.addWaypoint(0., state);
+
+  state.setValue(Vector2d(2., 3.));
+  inputTrajectory.addWaypoint(2., state);
+
+  auto timedTrajectory = computeKinodynamicTiming(
+      inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.), Vector2d::Constant(1.));
+
+  timedTrajectory->evaluate(0., state);
+  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
+
+  Vector2d initialVel;
+  tunedTrajectory->evaluateDerivatieve(0, 1, initialVel);
+  EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(initialVel));
+
+  timedTrajectory->evaluate(1., state);
+  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
+
+  timedTrajectory->evaluate(2., state);
+  EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
+}
+
 TEST_F(KinodynamicTimerTests, InterploatedSplineEquivalence)
 {
   Interpolated interpolated(mStateSpace, mInterpolator);
