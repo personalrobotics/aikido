@@ -5,6 +5,7 @@
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+#include "eigen_tests.hpp"
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
@@ -17,6 +18,7 @@ using aikido::statespace::StateSpacePtr;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::planner::kinodynamic::computeKinodynamicTiming;
 using aikido::planner::parabolic::convertToSpline;
+using aikido::tests::CompareEigenMatrices;
 
 class KinodynamicTimerTests : public ::testing::Test
 {
@@ -110,14 +112,16 @@ TEST_F(KinodynamicTimerTests, StartsAtNonZeroTime)
   auto timedTrajectory = computeKinodynamicTiming(
       inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
+  EXPECT_FALSE(timedTrajectory == nullptr) << "Trajectory timing failed";
+
   timedTrajectory->evaluate(1., state);
-  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), state.getValue(), 1e-6);
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), state.getValue(), 1e-6);
 
   timedTrajectory->evaluate(3., state);
-  EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), state.getValue(), 1e-6);
 }
 
 TEST_F(KinodynamicTimerTests, InterploatedSplineEquivalence)
@@ -144,15 +148,15 @@ TEST_F(KinodynamicTimerTests, InterploatedSplineEquivalence)
 
   timedInterpolated->evaluate(1., state);
   timedSpline->evaluate(1., state2);
-  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(state2.getValue(), state.getValue(), 1e-6);
 
   timedInterpolated->evaluate(2., state);
   timedSpline->evaluate(2., state2);
-  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(state2.getValue(), state.getValue(), 1e-6);
 
   timedInterpolated->evaluate(3., state);
   timedSpline->evaluate(3., state2);
-  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(state2.getValue(), state.getValue(), 1e-6);
 }
 
 TEST_F(KinodynamicTimerTests, StraightLine_TriangularProfile)
@@ -187,30 +191,30 @@ TEST_F(KinodynamicTimerTests, StraightLine_TriangularProfile)
 
   // Position.
   timedTrajectory->evaluate(0., state);
-  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), state.getValue(), 1e-6);
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), state.getValue(), 1e-6);
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), state.getValue(), 1e-6);
 
   // Velocity
   timedTrajectory->evaluateDerivative(0.5, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(0.5, 0.5), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(1.0, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 1.0), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(1.5, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(0.5, 0.5), tangentVector, 1e-6);
 
   // Acceleration.
   timedTrajectory->evaluateDerivative(0.5, 2, tangentVector);
-  EXPECT_TRUE(Vector2d(1., 1.).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(1., 1.), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(1.5, 2, tangentVector);
-  EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(-1., -1.), tangentVector, 1e-6);
 }
 
 TEST_F(KinodynamicTimerTests, StraightLine_TrapezoidalProfile)
@@ -246,32 +250,32 @@ TEST_F(KinodynamicTimerTests, StraightLine_TrapezoidalProfile)
 
   // Position.
   timedTrajectory->evaluate(0., state);
-  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), state.getValue(), 1e-6);
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), state.getValue(), 1e-6);
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_TRUE(Vector2d(2.5, 3.5).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(2.5, 3.5), state.getValue(), 1e-6);
 
   timedTrajectory->evaluate(3., state);
-  EXPECT_TRUE(Vector2d(3.0, 4.0).isApprox(state.getValue()));
+  EXPECT_EIGEN_EQUAL(Vector2d(3.0, 4.0), state.getValue(), 1e-6);
 
   // Velocity
   timedTrajectory->evaluateDerivative(0.5, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(0.5, 0.5), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(1.0, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 1.0), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(1.5, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 1.0), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(2.0, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(1.0, 1.0).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 1.0), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(2.5, 1, tangentVector);
-  EXPECT_TRUE(Vector2d(0.5, 0.5).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(0.5, 0.5), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(3.0, 1, tangentVector);
   // TODO: isApprox does not work when comparing against zero.
@@ -279,14 +283,14 @@ TEST_F(KinodynamicTimerTests, StraightLine_TrapezoidalProfile)
 
   // Acceleration.
   timedTrajectory->evaluateDerivative(0.5, 2, tangentVector);
-  EXPECT_TRUE(Vector2d(1., 1.).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(1., 1.), tangentVector, 1e-6);
 
   timedTrajectory->evaluateDerivative(1.5, 2, tangentVector);
   // TODO: isApprox does not work when comparing against zero.
   // EXPECT_TRUE(Vector2d(0., 0.).isApprox(tangentVector));
 
   timedTrajectory->evaluateDerivative(2.5, 2, tangentVector);
-  EXPECT_TRUE(Vector2d(-1., -1.).isApprox(tangentVector));
+  EXPECT_EIGEN_EQUAL(Vector2d(-1., -1.), tangentVector, 1e-6);
 }
 
 TEST_F(KinodynamicTimerTests, StraightLine_DifferentAccelerationLimits)

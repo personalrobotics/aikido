@@ -23,55 +23,71 @@ createSplineFromWaypointsAndConstraints(
 {
   Trajectory trajectory(
       Path(waypoints, maxDeviation), maxVelocities, maxAccelerations, timeStep);
-  if (trajectory.isValid())
+  if (!trajectory.isValid())
   {
-    using dart::common::make_unique;
-    using CubicSplineProblem = aikido::common::
-        SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
-
-    std::size_t dimension = stateSpace->getDimension();
-    double endTime = startTime + trajectory.getDuration();
-
-    // create spline
-    auto outputTrajectory
-        = make_unique<aikido::trajectory::Spline>(stateSpace, startTime);
-
-    // create a sequence of time steps from start time to end time by time step
-    aikido::common::StepSequence sequence(
-        timeStep, true, true, startTime, endTime);
-
-    const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
-    auto currState = stateSpace->createState();
-    for (std::size_t i = 1; i < sequence.getLength(); i++)
-    {
-      double currT = sequence[i - 1];
-      double nextT = sequence[i];
-      double segmentDuration = nextT - currT;
-      double currTShift = currT - startTime;
-      double nextTShift = nextT - startTime;
-      Eigen::VectorXd currentPosition = trajectory.getPosition(currTShift);
-      Eigen::VectorXd nextPosition = trajectory.getPosition(nextTShift);
-      Eigen::VectorXd currentVelocity = trajectory.getVelocity(currTShift);
-      Eigen::VectorXd nextVelocity = trajectory.getVelocity(nextTShift);
-
-      CubicSplineProblem problem(
-          Eigen::Vector2d{0., segmentDuration}, 4, dimension);
-      problem.addConstantConstraint(0, 0, zeroPosition);
-      problem.addConstantConstraint(0, 1, currentVelocity);
-      problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
-      problem.addConstantConstraint(1, 1, nextVelocity);
-      const auto solution = problem.fit();
-      const auto coefficients = solution.getCoefficients().front();
-
-      stateSpace->expMap(currentPosition, currState);
-      outputTrajectory->addSegment(coefficients, segmentDuration, currState);
-    }
-
-    return outputTrajectory;
+    // path is invalid. Retiming failed.
+    return nullptr;
   }
 
-  // path is invalid. Retiming failed.
-  return nullptr;
+  using dart::common::make_unique;
+  using CubicSplineProblem = aikido::common::
+      SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
+
+  std::size_t dimension = stateSpace->getDimension();
+  double endTime = startTime + trajectory.getDuration();
+
+  // create spline
+  auto outputTrajectory
+      = make_unique<aikido::trajectory::Spline>(stateSpace, startTime);
+
+  // create a sequence of time steps from start time to end time by time step
+  aikido::common::StepSequence sequence(
+      timeStep, true, true, startTime, endTime);
+
+  const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
+  auto currState = stateSpace->createState();
+  for (std::size_t i = 0; i < sequence.getLength() - 1; i++)
+  {
+    double currT = sequence[i];
+    double nextT = sequence[i + 1];
+    double segmentDuration = nextT - currT;
+    double currTShift = currT - startTime;
+    double nextTShift = nextT - startTime;
+    Eigen::VectorXd currentPosition = trajectory.getPosition(currTShift);
+    Eigen::VectorXd nextPosition = trajectory.getPosition(nextTShift);
+    Eigen::VectorXd currentVelocity = trajectory.getVelocity(currTShift);
+    Eigen::VectorXd nextVelocity = trajectory.getVelocity(nextTShift);
+
+    CubicSplineProblem problem(
+        Eigen::Vector2d{0., segmentDuration}, 4, dimension);
+    problem.addConstantConstraint(0, 0, zeroPosition);
+    problem.addConstantConstraint(0, 1, currentVelocity);
+    problem.addConstantConstraint(1, 0, nextPosition - currentPosition);
+    problem.addConstantConstraint(1, 1, nextVelocity);
+    const auto solution = problem.fit();
+    const auto coefficients = solution.getCoefficients().front();
+
+    stateSpace->expMap(currentPosition, currState);
+    outputTrajectory->addSegment(coefficients, segmentDuration, currState);
+  }
+
+  return outputTrajectory;
+}
+
+//==============================================================================
+std::list<Eigen::VectorXd> getWaypoints(
+    const aikido::trajectory::Interpolated& traj)
+{
+  std::list<Eigen::VectorXd> waypoints;
+  auto stateSpace = traj.getStateSpace();
+  Eigen::VectorXd tmpVec(stateSpace->getDimension());
+  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  {
+    auto tmpState = traj.getWaypoint(i);
+    stateSpace->logMap(tmpState, tmpVec);
+    waypoints.push_back(tmpVec);
+  }
+  return waypoints;
 }
 
 //==============================================================================
@@ -106,14 +122,8 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 
   double startTime = inputTrajectory.getStartTime();
   // create waypoints from Interpolated path
-  std::list<Eigen::VectorXd> waypoints;
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  for (std::size_t i = 0; i < inputTrajectory.getNumWaypoints(); i++)
-  {
-    auto tmpState = inputTrajectory.getWaypoint(i);
-    stateSpace->logMap(tmpState, tmpVec);
-    waypoints.push_back(tmpVec);
-  }
+  std::list<Eigen::VectorXd> waypoints = getWaypoints(inputTrajectory);
+
   // Retime waypoints and convert to spline
   return createSplineFromWaypointsAndConstraints(
       waypoints,
@@ -123,6 +133,22 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
       maxDeviation,
       timeStep,
       startTime);
+}
+
+//==============================================================================
+std::list<Eigen::VectorXd> getWaypoints(const aikido::trajectory::Spline& traj)
+{
+  std::list<Eigen::VectorXd> waypoints;
+  auto stateSpace = traj.getStateSpace();
+  Eigen::VectorXd tmpVec(stateSpace->getDimension());
+  auto tmpState = stateSpace->createState();
+  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  {
+    traj.getWaypoint(i, tmpState);
+    stateSpace->logMap(tmpState, tmpVec);
+    waypoints.push_back(tmpVec);
+  }
+  return waypoints;
 }
 
 //==============================================================================
@@ -157,15 +183,8 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 
   double startTime = inputTrajectory.getStartTime();
   // create waypoints from Spline path
-  std::list<Eigen::VectorXd> waypoints;
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  auto tmpState = stateSpace->createState();
-  for (std::size_t i = 0; i < inputTrajectory.getNumWaypoints(); i++)
-  {
-    inputTrajectory.getWaypoint(i, tmpState);
-    stateSpace->logMap(tmpState, tmpVec);
-    waypoints.push_back(tmpVec);
-  }
+  std::list<Eigen::VectorXd> waypoints = getWaypoints(inputTrajectory);
+
   // Retime waypoints and convert to spline
   return createSplineFromWaypointsAndConstraints(
       waypoints,
