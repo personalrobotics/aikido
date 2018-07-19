@@ -10,7 +10,10 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton)
-  : ConfigurationRanker(metaSkeletonStateSpace, metaSkeleton)
+  : ConfigurationRanker(
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
+  , mLowerLimitsState(mMetaSkeletonStateSpace->createState())
+  , mUpperLimitsState(mMetaSkeletonStateSpace->createState())
 {
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
@@ -27,11 +30,10 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
 
 //==============================================================================
 double JointAvoidanceConfigurationRanker::evaluateConfiguration(
-    statespace::StateSpace::State* solution) const
+    const statespace::dart::MetaSkeletonStateSpace::State* solution) const
 {
   Eigen::VectorXd solutionPosition(mMetaSkeletonStateSpace->getDimension());
-  mMetaSkeletonStateSpace->convertStateToPositions(
-      mMetaSkeletonStateSpace->cloneState(solution), solutionPosition);
+  mMetaSkeletonStateSpace->convertStateToPositions(solution, solutionPosition);
 
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
@@ -42,14 +44,14 @@ double JointAvoidanceConfigurationRanker::evaluateConfiguration(
   for (auto index : mUnboundedUpperLimitsIndices)
     upperLimits[index] = solutionPosition[index];
 
-  auto lowerLimitsState
-      = mMetaSkeletonStateSpace->getStateFromPositions(lowerLimits);
-  auto upperLimitsState
-      = mMetaSkeletonStateSpace->getStateFromPositions(upperLimits);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      lowerLimits, mLowerLimitsState);
+  mMetaSkeletonStateSpace->convertPositionsToState(
+      upperLimits, mUpperLimitsState);
 
   return -std::min(
-      mDistanceMetric->distance(solution, lowerLimitsState),
-      mDistanceMetric->distance(solution, upperLimitsState));
+      mDistanceMetric->distance(solution, mLowerLimitsState),
+      mDistanceMetric->distance(solution, mUpperLimitsState));
 }
 
 } // namespace distance
