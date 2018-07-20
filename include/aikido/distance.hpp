@@ -7,3 +7,4 @@
 #include "distance/SO3Angular.hpp"
 #include "distance/Weighted.hpp"
 #include "distance/defaults.hpp"
+#include "distance/Dubins.hpp"

@@ -5,6 +5,7 @@ set(sources
   SE2Weighted.cpp
   CartesianProductWeighted.cpp
   defaults.cpp
+  Dubins.cpp
 )
 
 add_library("${PROJECT_NAME}_distance" SHARED ${sources})

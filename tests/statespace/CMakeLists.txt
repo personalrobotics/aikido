@@ -28,3 +28,6 @@ target_link_libraries(test_MetaSkeletonStateSaver
 
 aikido_add_test(test_DartJointStateSpaces dart/test_DartJointStateSpaces.cpp)
 target_link_libraries(test_DartJointStateSpaces "${PROJECT_NAME}_statespace")
+
+aikido_add_test(test_DubinsInterpolator test_DubinsInterpolator.cpp)
+target_link_libraries(test_DubinsInterpolator "${PROJECT_NAME}_statespace")

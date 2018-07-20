@@ -27,3 +27,8 @@ aikido_add_test(test_DistanceMetricDefaults test_DistanceMetricDefaults.cpp)
 target_link_libraries(test_DistanceMetricDefaults
   "${PROJECT_NAME}_distance"
   "${PROJECT_NAME}_statespace")
+
+aikido_add_test(test_Dubins test_Dubins.cpp)
+target_link_libraries(test_Dubins
+  "${PROJECT_NAME}_distance"
+  "${PROJECT_NAME}_statespace")

@@ -19,3 +19,5 @@
 #include "statespace/dart/SO2Joint.hpp"
 #include "statespace/dart/SO3Joint.hpp"
 #include "statespace/dart/WeldJoint.hpp"
+#include "statespace/DubinsInterpolator.hpp"
+#include "statespace/DubinsPath.hpp"
