@@ -125,8 +125,10 @@ void KinematicSimulationTrajectoryExecutor::step(
   const auto executionTime
       = std::chrono::duration<double>(timeSinceBeginning).count();
 
+  // executionTime may be negative if the thread calling \c step is queued
+  // before and dequeued after \c execute is called.
   if (executionTime < 0)
-    throw std::invalid_argument("Timepoint is before execution start time.");
+    return;
 
   auto state = mStateSpace->createState();
   mTraj->evaluate(executionTime, state);
