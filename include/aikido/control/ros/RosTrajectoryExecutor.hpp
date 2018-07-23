@@ -72,6 +72,7 @@ private:
   ::ros::CallbackQueue mCallbackQueue;
   TrajectoryActionClient mClient;
   TrajectoryActionClient::GoalHandle mGoalHandle;
+  std::vector<std::unique_ptr<control_msgs::FollowJointTrajectoryGoal>> mGoals;
 
   double mWaypointTimestep;
   double mGoalTimeTolerance;

@@ -82,6 +82,7 @@ bool computeJointVelocityFromTwist(
   using Eigen::VectorXd;
 
   // Use LBFGS to find joint angles that won't violate the joint limits.
+  // BUS ERROR HERE
   const Jacobian jacobian = metaSkeleton->getWorldJacobian(bodyNode);
 
   const std::size_t numDofs = metaSkeleton->getNumDofs();
@@ -130,6 +131,11 @@ bool computeJointVelocityFromTwist(
           desiredTwist, jacobian));
 
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
+  // SEGFAULT HERE
+  // std::cout << "BEFORE SOLVE";
+  // std::cout << " - DESIRED TWIST: " << desiredTwist.matrix().transpose();
+  // std::cout << " - INTIIAL GUESS: " << initialGuess.matrix().transpose();
+  // std::cout << " - JACOBIAN: " << jacobian.matrix() << std::endl;
   if (!solver.solve())
   {
     return false;

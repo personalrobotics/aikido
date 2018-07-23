@@ -78,6 +78,7 @@ RosTrajectoryExecutor::~RosTrajectoryExecutor()
 {
   // Do nothing.
   // TODO: Should we wait for the current trajectory to finish executing?
+  abort();
 }
 
 //==============================================================================
@@ -117,12 +118,12 @@ std::future<void> RosTrajectoryExecutor::execute(
 
   // Setup the goal properties.
   // TODO: Also set goal_tolerance, path_tolerance.
-  control_msgs::FollowJointTrajectoryGoal goal;
-  goal.trajectory.header.stamp = startTime;
-  goal.goal_time_tolerance = ::ros::Duration(mGoalTimeTolerance);
+  std::unique_ptr<control_msgs::FollowJointTrajectoryGoal> goal = std::unique_ptr<control_msgs::FollowJointTrajectoryGoal>(new control_msgs::FollowJointTrajectoryGoal());
+  goal->trajectory.header.stamp = startTime;
+  goal->goal_time_tolerance = ::ros::Duration(mGoalTimeTolerance);
 
   // Convert the Aikido trajectory into a ROS JointTrajectory.
-  goal.trajectory = toRosJointTrajectory(traj, mWaypointTimestep);
+  goal->trajectory = toRosJointTrajectory(traj, mWaypointTimestep);
 
   bool waitForServer
       = waitForActionServer<control_msgs::FollowJointTrajectoryAction,
@@ -146,8 +147,9 @@ std::future<void> RosTrajectoryExecutor::execute(
     mPromise.reset(new std::promise<void>());
     mInProgress = true;
     mGoalHandle = mClient.sendGoal(
-        goal,
+        *goal,
         boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
+    mGoals.push_back(std::move(goal));
 
     return mPromise->get_future();
   }
