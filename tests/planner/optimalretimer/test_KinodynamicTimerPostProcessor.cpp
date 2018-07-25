@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
-#include <aikido/planner/kinodynamic/KinodynamicTimer.hpp>
+#include <aikido/planner/optimalretimer/KinodynamicTimer.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
@@ -11,7 +11,7 @@ using aikido::trajectory::Interpolated;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R2;
 using aikido::planner::parabolic::convertToSpline;
-using aikido::planner::kinodynamic::KinodynamicTimer;
+using aikido::planner::optimalretimer::KinodynamicTimer;
 
 class KinodynamicTimerPostProcessorTests : public ::testing::Test
 {

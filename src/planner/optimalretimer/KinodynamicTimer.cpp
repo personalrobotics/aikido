@@ -1,4 +1,4 @@
-#include "aikido/planner/kinodynamic/KinodynamicTimer.hpp"
+#include "aikido/planner/optimalretimer/KinodynamicTimer.hpp"
 #include <dart/dart.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/common/StepSequence.hpp>
@@ -8,7 +8,7 @@
 
 namespace aikido {
 namespace planner {
-namespace kinodynamic {
+namespace optimalretimer {
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline>
@@ -287,6 +287,6 @@ void KinodynamicTimer::setMaxDeviation(double maxDeviation)
   mMaxDeviation = maxDeviation;
 }
 
-} // namespace kinodynamic
+} // namespace optimalretimer
 } // namespace planner
 } // namespace aikido

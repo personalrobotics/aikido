@@ -8,7 +8,7 @@
 
 namespace aikido {
 namespace planner {
-namespace kinodynamic {
+namespace optimalretimer {
 
 /// Computes the time-optimal timing of a trajectory consisting of a sequence
 /// Geodesic interpolations between states under velocity and acceleration
@@ -132,7 +132,7 @@ private:
   double mTimeStep;
 };
 
-} // namespace kinodynamic
+} // namespace optimal_retimer
 } // namespace planner
 } // namespace aikido
 

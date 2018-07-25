@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <aikido/planner/kinodynamic/KinodynamicTimer.hpp>
+#include <aikido/planner/optimalretimer/KinodynamicTimer.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -16,7 +16,7 @@ using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::ConstStateSpacePtr;
-using aikido::planner::kinodynamic::computeKinodynamicTiming;
+using aikido::planner::optimalretimer::computeKinodynamicTiming;
 using aikido::planner::parabolic::convertToSpline;
 using aikido::tests::CompareEigenMatrices;
 
