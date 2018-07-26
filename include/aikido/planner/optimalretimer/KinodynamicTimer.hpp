@@ -29,7 +29,8 @@ namespace optimalretimer {
 /// \param[in] maxDeviation maximum deviation from a waypoint in doing circular
 /// blending around the waypoint
 /// \param[in] timeStep time step in following the path
-/// \return time optimal trajectory that satisfies velocity and acceleration constraints
+/// \return time optimal trajectory that satisfies velocity and acceleration
+/// constraints
 std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
