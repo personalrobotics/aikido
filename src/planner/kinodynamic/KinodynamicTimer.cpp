@@ -41,24 +41,48 @@ createSplineFromWaypointsAndConstraints(
     aikido::common::StepSequence sequence(
         timeStep, true, true, startTime, endTime);
 
+    std::vector<Eigen::VectorXd> positionSeq;
+    std::vector<Eigen::VectorXd> velocitySeq;
+    for (std::size_t i = 0; i < sequence.getLength(); i++)
+    {
+      double currT = sequence[i];
+      double currTShift = currT - startTime;
+      Eigen::VectorXd currentPosition = trajectory.getPosition(currTShift);
+      Eigen::VectorXd currentVelocity = trajectory.getVelocity(currTShift);
+      positionSeq.push_back(currentPosition);
+      velocitySeq.push_back(currentVelocity);
+    }
+
+    //preprocess with initial
+    std::vector<bool> processing(true, dimension); 
+    for(std::size_t j=0; j<dimension; j++)
+    {
+      for(std::size_t i=0; i<velocitySeq.size() && processing[j]; i++)
+      {
+        if(initialVelocity[j] > velocitySeq[i][j])
+        {
+          velocitySeq[i][j] = initialVelocity[j];
+        }
+        else
+        {
+          processing[j] = false;
+        }
+      }
+    }
+
     const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
     auto currState = stateSpace->createState();
     for (std::size_t i = 0; i < sequence.getLength() - 1; i++)
-    {
+    {   
       double currT = sequence[i];
       double nextT = sequence[i + 1];
       double segmentDuration = nextT - currT;
       double currTShift = currT - startTime;
       double nextTShift = nextT - startTime;
-      Eigen::VectorXd currentPosition = trajectory.getPosition(currTShift);
-      Eigen::VectorXd nextPosition = trajectory.getPosition(nextTShift);
-      Eigen::VectorXd currentVelocity = trajectory.getVelocity(currTShift);
-      Eigen::VectorXd nextVelocity = trajectory.getVelocity(nextTShift);
-
-      if (i == 0)
-      {
-        currentVelocity = initialVelocity;
-      }
+      Eigen::VectorXd currentPosition = positionSeq[i];
+      Eigen::VectorXd nextPosition = positionSeq[i+1]; 
+      Eigen::VectorXd currentVelocity = velocitySeq[i];
+      Eigen::VectorXd nextVelocity = velocitySeq[i+1];
 
       CubicSplineProblem problem(
           Eigen::Vector2d{0., segmentDuration}, 4, dimension);
