@@ -54,18 +54,25 @@ createSplineFromWaypointsAndConstraints(
     }
 
     //preprocess with initial
-    std::vector<bool> processing(true, dimension); 
+    std::vector<double> processing(0.0, dimension); 
     for(std::size_t j=0; j<dimension; j++)
     {
-      for(std::size_t i=0; i<velocitySeq.size() && processing[j]; i++)
+      if(std::abs(initialVelocity[j]>0.0))
       {
-        if(initialVelocity[j] > velocitySeq[i][j])
+        processing[j] = std::abs(initialVelocity[j])/initialVelocity[j];
+      }
+    }
+    for(std::size_t j=0; j<dimension; j++)
+    {
+      for(std::size_t i=0; i<velocitySeq.size() && (processing[j]!=0.0); i++)
+      {
+        if(initialVelocity[j]*processing[j] > velocitySeq[i][j]*processing[j])
         {
           velocitySeq[i][j] = initialVelocity[j];
         }
         else
         {
-          processing[j] = false;
+          processing[j] = 0.0;
         }
       }
     }
