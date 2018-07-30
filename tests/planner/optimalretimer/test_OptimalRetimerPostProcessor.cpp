@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
-#include <aikido/planner/optimalretimer/KinodynamicTimer.hpp>
+#include <aikido/planner/optimalretimer/OptimalRetimer.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
@@ -11,9 +11,9 @@ using aikido::trajectory::Interpolated;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R2;
 using aikido::planner::parabolic::convertToSpline;
-using aikido::planner::optimalretimer::KinodynamicTimer;
+using aikido::planner::optimalretimer::OptimalRetimer;
 
-class KinodynamicTimerPostProcessorTests : public ::testing::Test
+class OptimalRetimerPostProcessorTests : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -35,9 +35,9 @@ protected:
   double mTimeStep;
 };
 
-TEST_F(KinodynamicTimerPostProcessorTests, testTime)
+TEST_F(OptimalRetimerPostProcessorTests, testTime)
 {
-  KinodynamicTimer testKinodynamicTimerPostProcessor(
+  OptimalRetimer testOptimalRetimerPostProcessor(
       Vector2d::Constant(2.), Vector2d::Constant(1.), mMaxDeviation, mTimeStep);
 
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
@@ -55,7 +55,7 @@ TEST_F(KinodynamicTimerPostProcessorTests, testTime)
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory
-      = testKinodynamicTimerPostProcessor.postprocess(inputTrajectory, mRng);
+      = testOptimalRetimerPostProcessor.postprocess(inputTrajectory, mRng);
 
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   double durationTolerance = 1e-6;
@@ -91,9 +91,9 @@ TEST_F(KinodynamicTimerPostProcessorTests, testTime)
       Vector2d(-1., -1.).isApprox(tangentVector, accelerationPrecision));
 }
 
-TEST_F(KinodynamicTimerPostProcessorTests, testSplineTiming)
+TEST_F(OptimalRetimerPostProcessorTests, testSplineTiming)
 {
-  KinodynamicTimer testKinodynamicTimerPostProcessor(
+  OptimalRetimer testOptimalRetimerPostProcessor(
       Vector2d::Constant(2.), Vector2d::Constant(1.), mMaxDeviation, mTimeStep);
 
   Interpolated interpolated(mStateSpace, mInterpolator);
@@ -112,9 +112,9 @@ TEST_F(KinodynamicTimerPostProcessorTests, testSplineTiming)
   auto spline = convertToSpline(interpolated);
 
   auto timedInterpolated
-      = testKinodynamicTimerPostProcessor.postprocess(interpolated, mRng);
+      = testOptimalRetimerPostProcessor.postprocess(interpolated, mRng);
   auto timedSpline
-      = testKinodynamicTimerPostProcessor.postprocess(*spline, mRng);
+      = testOptimalRetimerPostProcessor.postprocess(*spline, mRng);
 
   timedInterpolated->evaluate(1., state);
   timedSpline->evaluate(1., state2);

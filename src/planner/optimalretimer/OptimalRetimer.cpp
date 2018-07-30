@@ -1,4 +1,4 @@
-#include "aikido/planner/optimalretimer/KinodynamicTimer.hpp"
+#include "aikido/planner/optimalretimer/OptimalRetimer.hpp"
 #include <dart/dart.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/common/StepSequence.hpp>
@@ -10,6 +10,7 @@ namespace aikido {
 namespace planner {
 namespace optimalretimer {
 
+namespace detail {
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline>
 createSplineFromWaypointsAndConstraints(
@@ -91,7 +92,25 @@ std::list<Eigen::VectorXd> getWaypoints(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+std::list<Eigen::VectorXd> getWaypoints(const aikido::trajectory::Spline& traj)
+{
+  std::list<Eigen::VectorXd> waypoints;
+  auto stateSpace = traj.getStateSpace();
+  Eigen::VectorXd tmpVec(stateSpace->getDimension());
+  auto tmpState = stateSpace->createState();
+  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  {
+    traj.getWaypoint(i, tmpState);
+    stateSpace->logMap(tmpState, tmpVec);
+    waypoints.push_back(tmpVec);
+  }
+  return waypoints;
+}
+
+} // namespace detail
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
@@ -122,10 +141,10 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 
   double startTime = inputTrajectory.getStartTime();
   // create waypoints from Interpolated path
-  std::list<Eigen::VectorXd> waypoints = getWaypoints(inputTrajectory);
+  std::list<Eigen::VectorXd> waypoints = detail::getWaypoints(inputTrajectory);
 
   // Retime waypoints and convert to spline
-  return createSplineFromWaypointsAndConstraints(
+  return detail::createSplineFromWaypointsAndConstraints(
       waypoints,
       maxVelocity,
       maxAcceleration,
@@ -136,23 +155,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 }
 
 //==============================================================================
-std::list<Eigen::VectorXd> getWaypoints(const aikido::trajectory::Spline& traj)
-{
-  std::list<Eigen::VectorXd> waypoints;
-  auto stateSpace = traj.getStateSpace();
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  auto tmpState = stateSpace->createState();
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
-  {
-    traj.getWaypoint(i, tmpState);
-    stateSpace->logMap(tmpState, tmpVec);
-    waypoints.push_back(tmpVec);
-  }
-  return waypoints;
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
     const aikido::trajectory::Spline& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
@@ -183,10 +186,10 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 
   double startTime = inputTrajectory.getStartTime();
   // create waypoints from Spline path
-  std::list<Eigen::VectorXd> waypoints = getWaypoints(inputTrajectory);
+  std::list<Eigen::VectorXd> waypoints = detail::getWaypoints(inputTrajectory);
 
   // Retime waypoints and convert to spline
-  return createSplineFromWaypointsAndConstraints(
+  return detail::createSplineFromWaypointsAndConstraints(
       waypoints,
       maxVelocity,
       maxAcceleration,
@@ -197,7 +200,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 }
 
 //==============================================================================
-KinodynamicTimer::KinodynamicTimer(
+OptimalRetimer::OptimalRetimer(
     const Eigen::VectorXd& velocityLimits,
     const Eigen::VectorXd& accelerationLimits,
     double maxDeviation,
@@ -211,12 +214,12 @@ KinodynamicTimer::KinodynamicTimer(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> KinodynamicTimer::postprocess(
+std::unique_ptr<aikido::trajectory::Spline> OptimalRetimer::postprocess(
     const aikido::trajectory::Interpolated& inputTraj,
     const aikido::common::RNG& /*rng*/,
     const aikido::constraint::TestablePtr& /*constraint*/)
 {
-  return computeKinodynamicTiming(
+  return computeOptimalTiming(
       inputTraj,
       mVelocityLimits,
       mAccelerationLimits,
@@ -225,12 +228,12 @@ std::unique_ptr<aikido::trajectory::Spline> KinodynamicTimer::postprocess(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> KinodynamicTimer::postprocess(
+std::unique_ptr<aikido::trajectory::Spline> OptimalRetimer::postprocess(
     const aikido::trajectory::Spline& inputTraj,
     const aikido::common::RNG& /*rng*/,
     const aikido::constraint::TestablePtr& /*constraint*/)
 {
-  return computeKinodynamicTiming(
+  return computeOptimalTiming(
       inputTraj,
       mVelocityLimits,
       mAccelerationLimits,
@@ -239,50 +242,50 @@ std::unique_ptr<aikido::trajectory::Spline> KinodynamicTimer::postprocess(
 }
 
 //==============================================================================
-const Eigen::VectorXd& KinodynamicTimer::getVelocityLimits() const
+const Eigen::VectorXd& OptimalRetimer::getVelocityLimits() const
 {
   return mVelocityLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd& KinodynamicTimer::getAccelerationLimits() const
+const Eigen::VectorXd& OptimalRetimer::getAccelerationLimits() const
 {
   return mAccelerationLimits;
 }
 
 //==============================================================================
-void KinodynamicTimer::setVelocityLimits(const Eigen::VectorXd& velocityLimits)
+void OptimalRetimer::setVelocityLimits(const Eigen::VectorXd& velocityLimits)
 {
   mVelocityLimits = velocityLimits;
 }
 
 //==============================================================================
-void KinodynamicTimer::setAccelerationLimits(
+void OptimalRetimer::setAccelerationLimits(
     const Eigen::VectorXd& accelerationLimits)
 {
   mAccelerationLimits = accelerationLimits;
 }
 
 //==============================================================================
-double KinodynamicTimer::getTimeStep() const
+double OptimalRetimer::getTimeStep() const
 {
   return mTimeStep;
 }
 
 //==============================================================================
-void KinodynamicTimer::setTimeStep(double timeStep)
+void OptimalRetimer::setTimeStep(double timeStep)
 {
   mTimeStep = timeStep;
 }
 
 //==============================================================================
-double KinodynamicTimer::getMaxDeviation() const
+double OptimalRetimer::getMaxDeviation() const
 {
   return mMaxDeviation;
 }
 
 //==============================================================================
-void KinodynamicTimer::setMaxDeviation(double maxDeviation)
+void OptimalRetimer::setMaxDeviation(double maxDeviation)
 {
   mMaxDeviation = maxDeviation;
 }

@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PLANNER_KINODYNAMIC_KINODYNAMICTIMER_HPP_
-#define AIKIDO_PLANNER_KINODYNAMIC_KINODYNAMICTIMER_HPP_
+#ifndef AIKIDO_PLANNER_OPTIMALRETIMER_OPTIMALRETIMER_HPP_
+#define AIKIDO_PLANNER_OPTIMALRETIMER_OPTIMALRETIMER_HPP_
 
 #include <Eigen/Dense>
 #include "aikido/planner/TrajectoryPostProcessor.hpp"
@@ -31,7 +31,7 @@ namespace optimalretimer {
 /// \param[in] timeStep time step in following the path
 /// \return time optimal trajectory that satisfies velocity and acceleration
 /// constraints
-std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
@@ -59,7 +59,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 /// blending around the waypoint
 /// \param[in] timeStep time step in following the path
 /// \return time optimal trajectory that satisfies acceleration constraints
-std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
+std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
     const aikido::trajectory::Spline& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
@@ -68,14 +68,14 @@ std::unique_ptr<aikido::trajectory::Spline> computeKinodynamicTiming(
 
 /// Class for performing time-optimal trajectory retiming following subject to
 /// velocity and acceleration limits.
-class KinodynamicTimer : public aikido::planner::TrajectoryPostProcessor
+class OptimalRetimer : public aikido::planner::TrajectoryPostProcessor
 {
 public:
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
   /// \param[in] maxDeviation Maximum deviation in circular blending
   /// \param[in] timeStep Time step in following the path
-  KinodynamicTimer(
+  OptimalRetimer(
       const Eigen::VectorXd& velocityLimits,
       const Eigen::VectorXd& accelerationLimits,
       double maxDeviation,
@@ -133,8 +133,8 @@ private:
   double mTimeStep;
 };
 
-} // namespace optimal_retimer
+} // namespace optimalretimer
 } // namespace planner
 } // namespace aikido
 
-#endif // ifndef AIKIDO_PLANNER_KINODYNAMIC_KINODYNAMICTIMER_HPP_
+#endif // ifndef AIKIDO_PLANNER_OPTIMALRETIMER_OPTIMALRETIMER_HPP_

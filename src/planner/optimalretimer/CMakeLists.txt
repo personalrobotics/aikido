@@ -1,11 +1,11 @@
 set(sources
-  KinodynamicTimer.cpp)
+  OptimalRetimer.cpp)
 
-add_library("${PROJECT_NAME}_planner_kinodynamic" SHARED ${sources})
-target_include_directories("${PROJECT_NAME}_planner_kinodynamic" SYSTEM
+add_library("${PROJECT_NAME}_planner_optimalretimer" SHARED ${sources})
+target_include_directories("${PROJECT_NAME}_planner_optimalretimer" SYSTEM
   PUBLIC ${DART_INCLUDE_DIRS}
 )
-target_link_libraries("${PROJECT_NAME}_planner_kinodynamic"
+target_link_libraries("${PROJECT_NAME}_planner_optimalretimer"
   PUBLIC
     "${PROJECT_NAME}_trajectory"
     "${PROJECT_NAME}_common"
@@ -14,13 +14,13 @@ target_link_libraries("${PROJECT_NAME}_planner_kinodynamic"
   PRIVATE
     "${PROJECT_NAME}_external_optimaltimepathfollowing"
 )
-target_compile_options("${PROJECT_NAME}_planner_kinodynamic"
+target_compile_options("${PROJECT_NAME}_planner_optimalretimer"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 
-add_component(${PROJECT_NAME} planner_kinodynamic)
-add_component_targets(${PROJECT_NAME} planner_kinodynamic "${PROJECT_NAME}_planner_kinodynamic")
-add_component_dependencies(${PROJECT_NAME} planner_kinodynamic
+add_component(${PROJECT_NAME} planner_optimalretimer)
+add_component_targets(${PROJECT_NAME} planner_optimalretimer "${PROJECT_NAME}_planner_optimalretimer")
+add_component_dependencies(${PROJECT_NAME} planner_optimalretimer
   common
   planner
   constraint

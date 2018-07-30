@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <aikido/planner/optimalretimer/KinodynamicTimer.hpp>
+#include <aikido/planner/optimalretimer/OptimalRetimer.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -16,11 +16,11 @@ using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::ConstStateSpacePtr;
-using aikido::planner::optimalretimer::computeKinodynamicTiming;
+using aikido::planner::optimalretimer::computeOptimalTiming;
 using aikido::planner::parabolic::convertToSpline;
 using aikido::tests::CompareEigenMatrices;
 
-class KinodynamicTimerTests : public ::testing::Test
+class OptimalRetimerTests : public ::testing::Test
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -51,51 +51,51 @@ protected:
   std::shared_ptr<Interpolated> mStraightLine;
 };
 
-TEST_F(KinodynamicTimerTests, MaxVelocityIsZero_Throws)
+TEST_F(OptimalRetimerTests, MaxVelocityIsZero_Throws)
 {
   Vector2d zeroMaxVelocity(1., 0.);
   EXPECT_THROW(
       {
-        computeKinodynamicTiming(
+        computeOptimalTiming(
             *mStraightLine, zeroMaxVelocity, mMaxAcceleration);
       },
       std::invalid_argument);
 }
 
-TEST_F(KinodynamicTimerTests, MaxVelocityIsNegative_Throws)
+TEST_F(OptimalRetimerTests, MaxVelocityIsNegative_Throws)
 {
   Vector2d negativeMaxVelocity(1., -1);
   EXPECT_THROW(
       {
-        computeKinodynamicTiming(
+        computeOptimalTiming(
             *mStraightLine, negativeMaxVelocity, mMaxAcceleration);
       },
       std::invalid_argument);
 }
 
-TEST_F(KinodynamicTimerTests, MaxAccelerationIsZero_Throws)
+TEST_F(OptimalRetimerTests, MaxAccelerationIsZero_Throws)
 {
   Vector2d zeroMaxAcceleration(1., 0.);
   EXPECT_THROW(
       {
-        computeKinodynamicTiming(
+        computeOptimalTiming(
             *mStraightLine, mMaxVelocity, zeroMaxAcceleration);
       },
       std::invalid_argument);
 }
 
-TEST_F(KinodynamicTimerTests, MaxAccelerationIsNegative_Throws)
+TEST_F(OptimalRetimerTests, MaxAccelerationIsNegative_Throws)
 {
   Vector2d negativeMaxAcceleration(1., -1);
   EXPECT_THROW(
       {
-        computeKinodynamicTiming(
+        computeOptimalTiming(
             *mStraightLine, mMaxVelocity, negativeMaxAcceleration);
       },
       std::invalid_argument);
 }
 
-TEST_F(KinodynamicTimerTests, StartsAtNonZeroTime)
+TEST_F(OptimalRetimerTests, StartsAtNonZeroTime)
 {
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
@@ -109,7 +109,7 @@ TEST_F(KinodynamicTimerTests, StartsAtNonZeroTime)
   state.setValue(Vector2d(2., 3.));
   inputTrajectory.addWaypoint(3., state);
 
-  auto timedTrajectory = computeKinodynamicTiming(
+  auto timedTrajectory = computeOptimalTiming(
       inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
   EXPECT_FALSE(timedTrajectory == nullptr) << "Trajectory timing failed";
@@ -124,7 +124,7 @@ TEST_F(KinodynamicTimerTests, StartsAtNonZeroTime)
   EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), state.getValue(), 1e-6);
 }
 
-TEST_F(KinodynamicTimerTests, InterploatedSplineEquivalence)
+TEST_F(OptimalRetimerTests, InterploatedSplineEquivalence)
 {
   Interpolated interpolated(mStateSpace, mInterpolator);
 
@@ -141,9 +141,9 @@ TEST_F(KinodynamicTimerTests, InterploatedSplineEquivalence)
 
   auto spline = convertToSpline(interpolated);
 
-  auto timedInterpolated = computeKinodynamicTiming(
+  auto timedInterpolated = computeOptimalTiming(
       interpolated, Vector2d::Constant(2.), Vector2d::Constant(1.));
-  auto timedSpline = computeKinodynamicTiming(
+  auto timedSpline = computeOptimalTiming(
       *spline, Vector2d::Constant(2.), Vector2d::Constant(1.));
 
   timedInterpolated->evaluate(1., state);
@@ -159,7 +159,7 @@ TEST_F(KinodynamicTimerTests, InterploatedSplineEquivalence)
   EXPECT_EIGEN_EQUAL(state2.getValue(), state.getValue(), 1e-6);
 }
 
-TEST_F(KinodynamicTimerTests, StraightLine_TriangularProfile)
+TEST_F(OptimalRetimerTests, StraightLine_TriangularProfile)
 {
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
@@ -177,7 +177,7 @@ TEST_F(KinodynamicTimerTests, StraightLine_TriangularProfile)
   state.setValue(Vector2d(2., 3.));
   inputTrajectory.addWaypoint(2., state);
 
-  auto timedTrajectory = computeKinodynamicTiming(
+  auto timedTrajectory = computeOptimalTiming(
       inputTrajectory,
       Vector2d::Constant(2.),
       Vector2d::Constant(1.),
@@ -217,7 +217,7 @@ TEST_F(KinodynamicTimerTests, StraightLine_TriangularProfile)
   EXPECT_EIGEN_EQUAL(Vector2d(-1., -1.), tangentVector, 1e-6);
 }
 
-TEST_F(KinodynamicTimerTests, StraightLine_TrapezoidalProfile)
+TEST_F(OptimalRetimerTests, StraightLine_TrapezoidalProfile)
 {
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
@@ -236,7 +236,7 @@ TEST_F(KinodynamicTimerTests, StraightLine_TrapezoidalProfile)
 
   double maxDeviation = 1e-2;
   double timeStep = 0.1;
-  auto timedTrajectory = computeKinodynamicTiming(
+  auto timedTrajectory = computeOptimalTiming(
       inputTrajectory,
       Vector2d::Constant(1.),
       Vector2d::Constant(1.),
@@ -293,7 +293,7 @@ TEST_F(KinodynamicTimerTests, StraightLine_TrapezoidalProfile)
   EXPECT_EIGEN_EQUAL(Vector2d(-1., -1.), tangentVector, 1e-6);
 }
 
-TEST_F(KinodynamicTimerTests, StraightLine_DifferentAccelerationLimits)
+TEST_F(OptimalRetimerTests, StraightLine_DifferentAccelerationLimits)
 {
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
@@ -314,7 +314,7 @@ TEST_F(KinodynamicTimerTests, StraightLine_DifferentAccelerationLimits)
   state.setValue(Vector2d(3., 4.));
   inputTrajectory.addWaypoint(2., state);
 
-  auto timedTrajectory = computeKinodynamicTiming(
+  auto timedTrajectory = computeOptimalTiming(
       inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
 
   double durationTolerance = 1e-6;
@@ -322,7 +322,7 @@ TEST_F(KinodynamicTimerTests, StraightLine_DifferentAccelerationLimits)
   EXPECT_NEAR(3., timedTrajectory->getDuration(), durationTolerance);
 }
 
-TEST_F(KinodynamicTimerTests, SupportedCartesianProduct_DoesNotThrow)
+TEST_F(OptimalRetimerTests, SupportedCartesianProduct_DoesNotThrow)
 {
   auto stateSpace = std::make_shared<CartesianProduct>(
       std::vector<ConstStateSpacePtr>{
@@ -344,12 +344,12 @@ TEST_F(KinodynamicTimerTests, SupportedCartesianProduct_DoesNotThrow)
   inputTrajectory.addWaypoint(1., state);
 
   EXPECT_NO_THROW({
-    computeKinodynamicTiming(
+    computeOptimalTiming(
         inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
   });
 }
 
-TEST_F(KinodynamicTimerTests, timingAribtraryMultipleWaypoints)
+TEST_F(OptimalRetimerTests, timingAribtraryMultipleWaypoints)
 {
   auto stateSpace = std::make_shared<aikido::statespace::R<4>>();
   auto interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
@@ -382,7 +382,7 @@ TEST_F(KinodynamicTimerTests, timingAribtraryMultipleWaypoints)
   double maxDeviation = 10.;
   double timeStep = 10.;
   EXPECT_NO_THROW({
-    computeKinodynamicTiming(
+    computeOptimalTiming(
         inputTrajectory,
         maxVelocities,
         maxAccelerations,
