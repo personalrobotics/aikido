@@ -125,6 +125,7 @@ double CRRTConnect::getConnectionRadius() const
 
   if (!goal->couldSample())
   {
+    std::cout << "invalid goal in CRRTConnect!" << std::endl;
     return ::ompl::base::PlannerStatus::INVALID_GOAL;
   }
 

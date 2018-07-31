@@ -54,25 +54,41 @@ createSplineFromWaypointsAndConstraints(
     }
 
     //preprocess with initial
-    std::vector<double> processing(0.0, dimension); 
+    std::vector<double> processing(dimension, 0.0);
     for(std::size_t j=0; j<dimension; j++)
     {
-      if(std::abs(initialVelocity[j]>0.0))
+      if(std::abs(initialVelocity[j]-velocitySeq[0][j])>0.0)
       {
+        // std::cout << "DIM " << j << " IS NON-ZERO INITIAL" << std::endl;
         processing[j] = std::abs(initialVelocity[j])/initialVelocity[j];
+      }
+
+      if(std::signbit(initialVelocity[j]-velocitySeq[0][j]) != std::signbit(velocitySeq[1][j]-velocitySeq[0][j]))
+      {
+        // std::cout << "DIFF SIGN BIT " << std::endl;
+        processing[j] = 0.0;
       }
     }
     for(std::size_t j=0; j<dimension; j++)
     {
+      if(processing[j]==0.0)
+      {
+        velocitySeq[0][j] = initialVelocity[j];        
+        continue;
+      }
       for(std::size_t i=0; i<velocitySeq.size() && (processing[j]!=0.0); i++)
       {
+        
         if(initialVelocity[j]*processing[j] > velocitySeq[i][j]*processing[j])
         {
+          // std::cout << "UPDATING DIM " << j << " WITH NON-ZERO INITIAL " << initialVelocity[j] << " FROM " << velocitySeq[i][j] << std::endl;
           velocitySeq[i][j] = initialVelocity[j];
         }
         else
         {
+          // std::cout << "BECAUSE CURRENT " << velocitySeq[i][j] << " FININSHING UPDATING DIM " << j << std::endl;
           processing[j] = 0.0;
+          break;
         }
       }
     }
