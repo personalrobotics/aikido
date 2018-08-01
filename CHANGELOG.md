@@ -61,6 +61,7 @@
 
   * Fixed Eigen memory alignment issues on 32bit Ubuntu: [#368](https://github.com/personalrobotics/aikido/pull/368)
   * Defined optional dependencies: [#376](https://github.com/personalrobotics/aikido/pull/376)
+  * Fixed compilation bug with Eigen 3.3.5: [#452](https://github.com/personalrobotics/aikido/pull/452)
 
 ### 0.2.0 (2018-01-09)
 
