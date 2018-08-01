@@ -23,13 +23,13 @@ namespace optimalretimer {
 /// Additionally, this function requires that \c inputTrajectory to be
 /// interpolated using a \c GeodesicInterpolator.
 ///
-/// \param[in] inputTrajectory input piecewise Geodesic trajectory
-/// \param[in] maxVelocity maximum velocity for each dimension
-/// \param[in] maxAcceleration maximum acceleration for each dimension
-/// \param[in] maxDeviation maximum deviation from a waypoint in doing circular
+/// \param[in] inputTrajectory Input piecewise Geodesic trajectory
+/// \param[in] maxVelocity Maximum velocity for each dimension
+/// \param[in] maxAcceleration Maximum acceleration for each dimension
+/// \param[in] maxDeviation Maximum deviation from a waypoint in doing circular
 /// blending around the waypoint
-/// \param[in] timeStep time step in following the path
-/// \return time optimal trajectory that satisfies velocity and acceleration
+/// \param[in] timeStep Time step in following the path
+/// \return Time optimal trajectory that satisfies velocity and acceleration
 /// constraints
 std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
@@ -52,13 +52,13 @@ std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
 /// Additionally, this function requires that \c inputTrajectory to be
 /// a spline (only the geometry of the trajectory is considered in retiming).
 ///
-/// \param[in] inputTrajectory input piecewise Geodesic trajectory
-/// \param[in] maxVelocity maximum velocity for each dimension
-/// \param[in] maxAcceleration maximum acceleration for each dimension
-/// \param[in] maxDeviation maximum deviation from a waypoint in doing circular
+/// \param[in] inputTrajectory Input piecewise Geodesic trajectory
+/// \param[in] maxVelocity Maximum velocity for each dimension
+/// \param[in] maxAcceleration Maximum acceleration for each dimension
+/// \param[in] maxDeviation Maximum deviation from a waypoint in doing circular
 /// blending around the waypoint
-/// \param[in] timeStep time step in following the path
-/// \return time optimal trajectory that satisfies acceleration constraints
+/// \param[in] timeStep Time step in following the path
+/// \return Time optimal trajectory that satisfies acceleration constraints
 std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
     const aikido::trajectory::Spline& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,

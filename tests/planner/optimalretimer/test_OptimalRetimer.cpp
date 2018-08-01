@@ -56,8 +56,7 @@ TEST_F(OptimalRetimerTests, MaxVelocityIsZero_Throws)
   Vector2d zeroMaxVelocity(1., 0.);
   EXPECT_THROW(
       {
-        computeOptimalTiming(
-            *mStraightLine, zeroMaxVelocity, mMaxAcceleration);
+        computeOptimalTiming(*mStraightLine, zeroMaxVelocity, mMaxAcceleration);
       },
       std::invalid_argument);
 }
@@ -78,8 +77,7 @@ TEST_F(OptimalRetimerTests, MaxAccelerationIsZero_Throws)
   Vector2d zeroMaxAcceleration(1., 0.);
   EXPECT_THROW(
       {
-        computeOptimalTiming(
-            *mStraightLine, mMaxVelocity, zeroMaxAcceleration);
+        computeOptimalTiming(*mStraightLine, mMaxVelocity, zeroMaxAcceleration);
       },
       std::invalid_argument);
 }
@@ -344,8 +342,7 @@ TEST_F(OptimalRetimerTests, SupportedCartesianProduct_DoesNotThrow)
   inputTrajectory.addWaypoint(1., state);
 
   EXPECT_NO_THROW({
-    computeOptimalTiming(
-        inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
+    computeOptimalTiming(inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
   });
 }
 

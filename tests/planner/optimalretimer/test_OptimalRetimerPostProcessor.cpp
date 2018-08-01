@@ -113,8 +113,7 @@ TEST_F(OptimalRetimerPostProcessorTests, testSplineTiming)
 
   auto timedInterpolated
       = testOptimalRetimerPostProcessor.postprocess(interpolated, mRng);
-  auto timedSpline
-      = testOptimalRetimerPostProcessor.postprocess(*spline, mRng);
+  auto timedSpline = testOptimalRetimerPostProcessor.postprocess(*spline, mRng);
 
   timedInterpolated->evaluate(1., state);
   timedSpline->evaluate(1., state2);
