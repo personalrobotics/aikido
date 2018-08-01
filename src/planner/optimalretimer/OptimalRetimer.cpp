@@ -12,30 +12,59 @@ namespace optimalretimer {
 
 namespace detail {
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline>
-createSplineFromWaypointsAndConstraints(
-    const std::list<Eigen::VectorXd>& waypoints,
-    const Eigen::VectorXd& maxVelocities,
-    const Eigen::VectorXd& maxAccelerations,
+std::unique_ptr<Path> convertToKunzPath(
+    const aikido::trajectory::Interpolated& traj, double maxDeviation)
+{
+  using dart::common::make_unique;
+
+  std::list<Eigen::VectorXd> waypoints;
+  auto stateSpace = traj.getStateSpace();
+  Eigen::VectorXd tmpVec(stateSpace->getDimension());
+  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  {
+    auto tmpState = traj.getWaypoint(i);
+    stateSpace->logMap(tmpState, tmpVec);
+    waypoints.push_back(tmpVec);
+  }
+
+  auto path = make_unique<Path>(waypoints, maxDeviation);
+  return path;
+}
+
+//==============================================================================
+std::unique_ptr<Path> convertToKunzPath(
+    const aikido::trajectory::Spline& traj, double maxDeviation)
+{
+  using dart::common::make_unique;
+
+  std::list<Eigen::VectorXd> waypoints;
+  auto stateSpace = traj.getStateSpace();
+  Eigen::VectorXd tmpVec(stateSpace->getDimension());
+  auto tmpState = stateSpace->createState();
+  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  {
+    traj.getWaypoint(i, tmpState);
+    stateSpace->logMap(tmpState, tmpVec);
+    waypoints.push_back(tmpVec);
+  }
+
+  auto path = make_unique<Path>(waypoints, maxDeviation);
+  return path;
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+    const Trajectory& traj,
     aikido::statespace::ConstStateSpacePtr stateSpace,
-    double maxDeviation,
     double timeStep,
     double startTime)
 {
-  Trajectory trajectory(
-      Path(waypoints, maxDeviation), maxVelocities, maxAccelerations, timeStep);
-  if (!trajectory.isValid())
-  {
-    // path is invalid. Retiming failed.
-    return nullptr;
-  }
-
   using dart::common::make_unique;
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
 
   std::size_t dimension = stateSpace->getDimension();
-  double endTime = startTime + trajectory.getDuration();
+  double endTime = startTime + traj.getDuration();
 
   // create spline
   auto outputTrajectory
@@ -54,10 +83,10 @@ createSplineFromWaypointsAndConstraints(
     double segmentDuration = nextT - currT;
     double currTShift = currT - startTime;
     double nextTShift = nextT - startTime;
-    Eigen::VectorXd currentPosition = trajectory.getPosition(currTShift);
-    Eigen::VectorXd nextPosition = trajectory.getPosition(nextTShift);
-    Eigen::VectorXd currentVelocity = trajectory.getVelocity(currTShift);
-    Eigen::VectorXd nextVelocity = trajectory.getVelocity(nextTShift);
+    Eigen::VectorXd currentPosition = traj.getPosition(currTShift);
+    Eigen::VectorXd nextPosition = traj.getPosition(nextTShift);
+    Eigen::VectorXd currentVelocity = traj.getVelocity(currTShift);
+    Eigen::VectorXd nextVelocity = traj.getVelocity(nextTShift);
 
     CubicSplineProblem problem(
         Eigen::Vector2d{0., segmentDuration}, 4, dimension);
@@ -73,38 +102,6 @@ createSplineFromWaypointsAndConstraints(
   }
 
   return outputTrajectory;
-}
-
-//==============================================================================
-std::list<Eigen::VectorXd> getWaypoints(
-    const aikido::trajectory::Interpolated& traj)
-{
-  std::list<Eigen::VectorXd> waypoints;
-  auto stateSpace = traj.getStateSpace();
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
-  {
-    auto tmpState = traj.getWaypoint(i);
-    stateSpace->logMap(tmpState, tmpVec);
-    waypoints.push_back(tmpVec);
-  }
-  return waypoints;
-}
-
-//==============================================================================
-std::list<Eigen::VectorXd> getWaypoints(const aikido::trajectory::Spline& traj)
-{
-  std::list<Eigen::VectorXd> waypoints;
-  auto stateSpace = traj.getStateSpace();
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  auto tmpState = stateSpace->createState();
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
-  {
-    traj.getWaypoint(i, tmpState);
-    stateSpace->logMap(tmpState, tmpVec);
-    waypoints.push_back(tmpVec);
-  }
-  return waypoints;
 }
 
 } // namespace detail
@@ -140,18 +137,10 @@ std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
   }
 
   double startTime = inputTrajectory.getStartTime();
-  // create waypoints from Interpolated path
-  std::list<Eigen::VectorXd> waypoints = detail::getWaypoints(inputTrajectory);
 
-  // Retime waypoints and convert to spline
-  return detail::createSplineFromWaypointsAndConstraints(
-      waypoints,
-      maxVelocity,
-      maxAcceleration,
-      stateSpace,
-      maxDeviation,
-      timeStep,
-      startTime);
+  auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
+  Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
+  return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
 }
 
 //==============================================================================
@@ -185,18 +174,9 @@ std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
   }
 
   double startTime = inputTrajectory.getStartTime();
-  // create waypoints from Spline path
-  std::list<Eigen::VectorXd> waypoints = detail::getWaypoints(inputTrajectory);
-
-  // Retime waypoints and convert to spline
-  return detail::createSplineFromWaypointsAndConstraints(
-      waypoints,
-      maxVelocity,
-      maxAcceleration,
-      stateSpace,
-      maxDeviation,
-      timeStep,
-      startTime);
+  auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
+  Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
+  return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
 }
 
 //==============================================================================
