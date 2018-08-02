@@ -41,10 +41,10 @@ public:
 
 protected:
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  statespace::StateSpace::ScopedState mStartState;
 
   /// Goal state.
-  const statespace::StateSpace::State* mGoalState;
+  statespace::StateSpace::ScopedState mGoalState;
 };
 
 } // namespace planner
