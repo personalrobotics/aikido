@@ -43,7 +43,7 @@ public:
       const std::chrono::system_clock::time_point& /*timepoint*/) override;
 
   // Do nothing.
-  void abort() override;
+  void cancel() override;
 
 private:
   /// Skeleton to execute trajectories on

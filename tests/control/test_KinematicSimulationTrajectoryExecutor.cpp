@@ -236,7 +236,8 @@ TEST_F(
 }
 
 TEST_F(
-    KinematicSimulationTrajectoryExecutorTest, abort_TrajectoryInProgress_Halts)
+    KinematicSimulationTrajectoryExecutorTest,
+    cancel_TrajectoryInProgress_Halts)
 {
   KinematicSimulationTrajectoryExecutor executor(mSkeleton);
 
@@ -244,7 +245,7 @@ TEST_F(
   auto future = executor.execute(mTraj);
   future.wait_for(waitTime);
   executor.step(simulationClock + stepTime);
-  executor.abort();
+  executor.cancel();
 
   EXPECT_THROW(future.get(), std::runtime_error);
 

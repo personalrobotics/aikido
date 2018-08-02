@@ -25,7 +25,7 @@ public:
 
   /// Execute trajectory and set future upon completion. If another trajectory
   /// is already running, queue the trajectory for later execution. If executing
-  /// a trajectory terminates in an error, all queued trajectories are aborted.
+  /// a trajectory terminates in an error, all queued trajectories are canceled.
   ///
   /// \param traj Trajectory to be executed or queued.
   /// \return future<void> for trajectory execution. If trajectory terminates
@@ -37,10 +37,10 @@ public:
   // Documentation inherited.
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
-  /// Abort the current trajectory, as well as all trajectories currently in the
-  /// queue. Does NOT stop the trajectory that is currently executing if the
+  /// Cancel the current trajectory, as well as all trajectories currently in
+  /// the queue. Does NOT stop the trajectory that is currently executing if the
   /// underlying executor does not support it.
-  void abort() override;
+  void cancel() override;
 
 private:
   /// Underlying TrajectoryExecutor

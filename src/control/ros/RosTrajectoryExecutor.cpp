@@ -232,7 +232,7 @@ void RosTrajectoryExecutor::step(
 }
 
 //==============================================================================
-void RosTrajectoryExecutor::abort()
+void RosTrajectoryExecutor::cancel()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.
