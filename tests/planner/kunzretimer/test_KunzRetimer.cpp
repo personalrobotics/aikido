@@ -357,7 +357,7 @@ TEST_F(KunzRetimerTests, timingArbitraryMultipleWaypoints)
   waypoint << 1427.0, 368.0, 790.0, 90.0;
   state.setValue(waypoint);
   inputTrajectory.addWaypoint(1., state);
-  waypoint << 952.499938964844, 433.0, 1051.0, 90.0;
+  waypoint << 952.0, 433.0, 1051.0, 90.0;
   state.setValue(waypoint);
   inputTrajectory.addWaypoint(2., state);
   waypoint << 452.5, 533.0, 1051.0, 90.0;
@@ -368,12 +368,12 @@ TEST_F(KunzRetimerTests, timingArbitraryMultipleWaypoints)
   inputTrajectory.addWaypoint(4., state);
 
   Eigen::VectorXd maxVelocities(4);
-  maxVelocities << 1.3, 0.67, 0.67, 0.5;
+  maxVelocities << 10., 10, 10, 10;
   Eigen::VectorXd maxAccelerations(4);
-  maxAccelerations << 0.002, 0.002, 0.002, 0.002;
+  maxAccelerations << 10., 10., 10., 10.;
 
-  double maxDeviation = 0.1;
-  double timeStep = 10.;
+  double maxDeviation = 1.;
+  double timeStep = .2;
   EXPECT_NO_THROW({
     computeKunzTiming(
         inputTrajectory,
