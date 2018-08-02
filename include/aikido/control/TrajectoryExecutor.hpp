@@ -4,6 +4,7 @@
 #include <chrono>
 #include <future>
 #include <set>
+#include <dart/common/Console.hpp>
 #include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -41,7 +42,6 @@ public:
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Cancel the current trajectory.
-  /// \note This is currently only supported in simulation.
   virtual void cancel() = 0;
 
 protected:

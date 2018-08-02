@@ -239,6 +239,9 @@ void RosTrajectoryExecutor::cancel()
 
   if (mInProgress)
     mGoalHandle.cancel();
+  else
+    dtwarn << "[RosTrajectoryExecutor::cancel] Attempting to "
+           << "cancel trajectory, but no trajectory in progress.\n";
 }
 
 } // namespace ros

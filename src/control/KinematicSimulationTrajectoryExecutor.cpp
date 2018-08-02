@@ -160,6 +160,11 @@ void KinematicSimulationTrajectoryExecutor::cancel()
     mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Trajectory canceled.")));
   }
+  else
+  {
+    dtwarn << "[KinematicSimulationTrajectoryExecutor::cancel] Attempting to "
+           << "cancel trajectory, but no trajectory in progress.\n";
+  }
 }
 
 } // namespace control
