@@ -55,9 +55,7 @@ TEST_F(KunzRetimerTests, MaxVelocityIsZero_Throws)
 {
   Vector2d zeroMaxVelocity(1., 0.);
   EXPECT_THROW(
-      {
-        computeKunzTiming(*mStraightLine, zeroMaxVelocity, mMaxAcceleration);
-      },
+      { computeKunzTiming(*mStraightLine, zeroMaxVelocity, mMaxAcceleration); },
       std::invalid_argument);
 }
 
@@ -76,9 +74,7 @@ TEST_F(KunzRetimerTests, MaxAccelerationIsZero_Throws)
 {
   Vector2d zeroMaxAcceleration(1., 0.);
   EXPECT_THROW(
-      {
-        computeKunzTiming(*mStraightLine, mMaxVelocity, zeroMaxAcceleration);
-      },
+      { computeKunzTiming(*mStraightLine, mMaxVelocity, zeroMaxAcceleration); },
       std::invalid_argument);
 }
 
@@ -312,8 +308,8 @@ TEST_F(KunzRetimerTests, StraightLine_DifferentAccelerationLimits)
   state.setValue(Vector2d(3., 4.));
   inputTrajectory.addWaypoint(2., state);
 
-  auto timedTrajectory = computeKunzTiming(
-      inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
+  auto timedTrajectory
+      = computeKunzTiming(inputTrajectory, Vector2d(1., 2.), Vector2d(1., 1.));
 
   double durationTolerance = 1e-6;
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
@@ -346,7 +342,7 @@ TEST_F(KunzRetimerTests, SupportedCartesianProduct_DoesNotThrow)
   });
 }
 
-TEST_F(KunzRetimerTests, timingAribtraryMultipleWaypoints)
+TEST_F(KunzRetimerTests, timingArbitraryMultipleWaypoints)
 {
   auto stateSpace = std::make_shared<aikido::statespace::R<4>>();
   auto interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
@@ -376,7 +372,7 @@ TEST_F(KunzRetimerTests, timingAribtraryMultipleWaypoints)
   Eigen::VectorXd maxAccelerations(4);
   maxAccelerations << 0.002, 0.002, 0.002, 0.002;
 
-  double maxDeviation = 10.;
+  double maxDeviation = 0.1;
   double timeStep = 10.;
   EXPECT_NO_THROW({
     computeKunzTiming(
