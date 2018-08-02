@@ -403,7 +403,11 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   for (Index ioutput = 0; ioutput < mNumOutputs; ++ioutput)
   {
     // Solve for the spline coefficients for each output dimension.
-    Eigen::Matrix<Scalar, DimensionAtCompileTime, 1> solutionVector
+    //
+    // TODO: As of Eigen 3.3.5, the output type of SparseQR::solve() is not
+    // assignable to a fixed size vector, so we use Eigen::Dynamic here instead
+    // of DimensionAtCompileTime.
+    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> solutionVector
         = solver.solve(mB.col(ioutput));
 
     // Split the coefficients by segment.
