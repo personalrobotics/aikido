@@ -1,4 +1,4 @@
-#include "aikido/planner/optimalretimer/OptimalRetimer.hpp"
+#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include <dart/dart.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/common/StepSequence.hpp>
@@ -8,7 +8,7 @@
 
 namespace aikido {
 namespace planner {
-namespace optimalretimer {
+namespace kunzretimer {
 
 namespace detail {
 //==============================================================================
@@ -107,7 +107,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 } // namespace detail
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
+std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
@@ -144,7 +144,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
+std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
     const aikido::trajectory::Spline& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
@@ -180,7 +180,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeOptimalTiming(
 }
 
 //==============================================================================
-OptimalRetimer::OptimalRetimer(
+KunzRetimer::KunzRetimer(
     const Eigen::VectorXd& velocityLimits,
     const Eigen::VectorXd& accelerationLimits,
     double maxDeviation,
@@ -194,12 +194,12 @@ OptimalRetimer::OptimalRetimer(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> OptimalRetimer::postprocess(
+std::unique_ptr<aikido::trajectory::Spline> KunzRetimer::postprocess(
     const aikido::trajectory::Interpolated& inputTraj,
     const aikido::common::RNG& /*rng*/,
     const aikido::constraint::TestablePtr& /*constraint*/)
 {
-  return computeOptimalTiming(
+  return computeKunzTiming(
       inputTraj,
       mVelocityLimits,
       mAccelerationLimits,
@@ -208,12 +208,12 @@ std::unique_ptr<aikido::trajectory::Spline> OptimalRetimer::postprocess(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> OptimalRetimer::postprocess(
+std::unique_ptr<aikido::trajectory::Spline> KunzRetimer::postprocess(
     const aikido::trajectory::Spline& inputTraj,
     const aikido::common::RNG& /*rng*/,
     const aikido::constraint::TestablePtr& /*constraint*/)
 {
-  return computeOptimalTiming(
+  return computeKunzTiming(
       inputTraj,
       mVelocityLimits,
       mAccelerationLimits,
@@ -222,54 +222,54 @@ std::unique_ptr<aikido::trajectory::Spline> OptimalRetimer::postprocess(
 }
 
 //==============================================================================
-const Eigen::VectorXd& OptimalRetimer::getVelocityLimits() const
+const Eigen::VectorXd& KunzRetimer::getVelocityLimits() const
 {
   return mVelocityLimits;
 }
 
 //==============================================================================
-const Eigen::VectorXd& OptimalRetimer::getAccelerationLimits() const
+const Eigen::VectorXd& KunzRetimer::getAccelerationLimits() const
 {
   return mAccelerationLimits;
 }
 
 //==============================================================================
-void OptimalRetimer::setVelocityLimits(const Eigen::VectorXd& velocityLimits)
+void KunzRetimer::setVelocityLimits(const Eigen::VectorXd& velocityLimits)
 {
   mVelocityLimits = velocityLimits;
 }
 
 //==============================================================================
-void OptimalRetimer::setAccelerationLimits(
+void KunzRetimer::setAccelerationLimits(
     const Eigen::VectorXd& accelerationLimits)
 {
   mAccelerationLimits = accelerationLimits;
 }
 
 //==============================================================================
-double OptimalRetimer::getTimeStep() const
+double KunzRetimer::getTimeStep() const
 {
   return mTimeStep;
 }
 
 //==============================================================================
-void OptimalRetimer::setTimeStep(double timeStep)
+void KunzRetimer::setTimeStep(double timeStep)
 {
   mTimeStep = timeStep;
 }
 
 //==============================================================================
-double OptimalRetimer::getMaxDeviation() const
+double KunzRetimer::getMaxDeviation() const
 {
   return mMaxDeviation;
 }
 
 //==============================================================================
-void OptimalRetimer::setMaxDeviation(double maxDeviation)
+void KunzRetimer::setMaxDeviation(double maxDeviation)
 {
   mMaxDeviation = maxDeviation;
 }
 
-} // namespace optimalretimer
+} // namespace kunzretimer
 } // namespace planner
 } // namespace aikido

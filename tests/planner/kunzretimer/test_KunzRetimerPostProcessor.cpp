@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
-#include <aikido/planner/optimalretimer/OptimalRetimer.hpp>
+#include <aikido/planner/kunzretimer/KunzRetimer.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
@@ -11,9 +11,9 @@ using aikido::trajectory::Interpolated;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R2;
 using aikido::planner::parabolic::convertToSpline;
-using aikido::planner::optimalretimer::OptimalRetimer;
+using aikido::planner::kunzretimer::KunzRetimer;
 
-class OptimalRetimerPostProcessorTests : public ::testing::Test
+class KunzRetimerPostProcessorTests : public ::testing::Test
 {
 protected:
   void SetUp() override
@@ -35,9 +35,9 @@ protected:
   double mTimeStep;
 };
 
-TEST_F(OptimalRetimerPostProcessorTests, testTime)
+TEST_F(KunzRetimerPostProcessorTests, testTime)
 {
-  OptimalRetimer testOptimalRetimerPostProcessor(
+  KunzRetimer testKunzRetimerPostProcessor(
       Vector2d::Constant(2.), Vector2d::Constant(1.), mMaxDeviation, mTimeStep);
 
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
@@ -55,7 +55,7 @@ TEST_F(OptimalRetimerPostProcessorTests, testTime)
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory
-      = testOptimalRetimerPostProcessor.postprocess(inputTrajectory, mRng);
+      = testKunzRetimerPostProcessor.postprocess(inputTrajectory, mRng);
 
   EXPECT_GE(timedTrajectory->getNumDerivatives(), 2);
   double durationTolerance = 1e-6;
@@ -91,9 +91,9 @@ TEST_F(OptimalRetimerPostProcessorTests, testTime)
       Vector2d(-1., -1.).isApprox(tangentVector, accelerationPrecision));
 }
 
-TEST_F(OptimalRetimerPostProcessorTests, testSplineTiming)
+TEST_F(KunzRetimerPostProcessorTests, testSplineTiming)
 {
-  OptimalRetimer testOptimalRetimerPostProcessor(
+  KunzRetimer testKunzRetimerPostProcessor(
       Vector2d::Constant(2.), Vector2d::Constant(1.), mMaxDeviation, mTimeStep);
 
   Interpolated interpolated(mStateSpace, mInterpolator);
@@ -112,8 +112,8 @@ TEST_F(OptimalRetimerPostProcessorTests, testSplineTiming)
   auto spline = convertToSpline(interpolated);
 
   auto timedInterpolated
-      = testOptimalRetimerPostProcessor.postprocess(interpolated, mRng);
-  auto timedSpline = testOptimalRetimerPostProcessor.postprocess(*spline, mRng);
+      = testKunzRetimerPostProcessor.postprocess(interpolated, mRng);
+  auto timedSpline = testKunzRetimerPostProcessor.postprocess(*spline, mRng);
 
   timedInterpolated->evaluate(1., state);
   timedSpline->evaluate(1., state2);
