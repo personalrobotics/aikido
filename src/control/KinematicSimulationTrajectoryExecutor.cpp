@@ -1,4 +1,5 @@
 #include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
+#include <dart/common/Console.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include "aikido/control/TrajectoryRunningException.hpp"
 

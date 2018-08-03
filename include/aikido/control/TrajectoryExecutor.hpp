@@ -4,7 +4,6 @@
 #include <chrono>
 #include <future>
 #include <set>
-#include <dart/common/Console.hpp>
 #include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
