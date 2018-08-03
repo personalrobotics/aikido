@@ -1,6 +1,8 @@
 #ifndef AIKIDO_PERCEPTION_VOXELGRIDMODULE_HPP_
 #define AIKIDO_PERCEPTION_VOXELGRIDMODULE_HPP_
 
+#ifdef DART_HAS_VOXELGRIDSHAPE
+
 #include <memory>
 #include <string>
 
@@ -76,5 +78,7 @@ private:
 
 } // namespace perception
 } // namespace aikido
+
+#endif // DART_HAS_VOXELGRIDSHAPE
 
 #endif // AIKIDO_PERCEPTION_VOXELGRIDMODULE_HPP_

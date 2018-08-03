@@ -1,3 +1,5 @@
+#ifdef DART_HAS_VOXELGRIDSHAPE
+
 #include "aikido/perception/VoxelGridModule.hpp"
 
 #include <octomap_ros/conversions.h>
@@ -79,3 +81,5 @@ bool VoxelGridPerceptionModule::update(
 
 } // namespace perception
 } // namespace aikido
+
+#endif // #ifdef DART_HAS_VOXELGRIDSHAPE
