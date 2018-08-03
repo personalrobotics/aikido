@@ -2,8 +2,8 @@
 
 set -ex
 
-/usr/bin/yes | pip2 uninstall numpy
+/usr/bin/yes | pip2 uninstall numpy  # see https://github.com/travis-ci/travis-ci/issues/6688
 brew upgrade python
 
-brew update > /dev/null
+brew upgrade > /dev/null
 brew bundle || true
