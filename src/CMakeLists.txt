@@ -2,6 +2,7 @@
 # Aikido targets are marked as [target_name].
 
 add_subdirectory("external/hauser_parabolic_smoother")
+add_subdirectory("external/kunz_retimer")
 
 add_subdirectory("common")     # boost, dart
 add_subdirectory("io")         # [common], boost, dart, tinyxml2, yaml-cpp
