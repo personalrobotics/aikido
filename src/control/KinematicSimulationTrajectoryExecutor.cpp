@@ -1,4 +1,5 @@
 #include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
+#include <dart/common/Console.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include "aikido/control/TrajectoryRunningException.hpp"
 
@@ -32,7 +33,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
     {
       mInProgress = false;
       mPromise->set_exception(
-          std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
+          std::make_exception_ptr(std::runtime_error("Trajectory canceled.")));
     }
   }
 }
@@ -147,7 +148,7 @@ void KinematicSimulationTrajectoryExecutor::step(
 }
 
 //==============================================================================
-void KinematicSimulationTrajectoryExecutor::abort()
+void KinematicSimulationTrajectoryExecutor::cancel()
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
@@ -158,7 +159,12 @@ void KinematicSimulationTrajectoryExecutor::abort()
     mMetaSkeleton.reset();
     mInProgress = false;
     mPromise->set_exception(
-        std::make_exception_ptr(std::runtime_error("Trajectory aborted.")));
+        std::make_exception_ptr(std::runtime_error("Trajectory canceled.")));
+  }
+  else
+  {
+    dtwarn << "[KinematicSimulationTrajectoryExecutor::cancel] Attempting to "
+           << "cancel trajectory, but no trajectory in progress.\n";
   }
 }
 
