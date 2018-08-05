@@ -58,8 +58,8 @@ public:
   /// Regularly checks for the completion of a sent trajectory.
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
-  // Do nothing.
-  void abort() override;
+  /// \copydoc TrajectoryExecutor::cancel()
+  void cancel() override;
 
 private:
   using TrajectoryActionClient

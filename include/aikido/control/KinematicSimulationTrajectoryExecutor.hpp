@@ -46,8 +46,8 @@ public:
   /// calling this method.
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
-  /// Aborts the current trajectory.
-  void abort() override;
+  /// Cancels the current trajectory.
+  void cancel() override;
 
 private:
   /// Skeleton to execute trajectories on
