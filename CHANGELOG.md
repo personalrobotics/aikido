@@ -39,6 +39,10 @@
 
   * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
 
+* Trajectory
+
+  * Added B-spline trajectory: [#453](https://github.com/personalrobotics/aikido/pull/453)
+
 * Planner
 
   * Make all DART planners take MetaSkeleton, and add adapter for turning planners into DART planners: [#437](https://github.com/personalrobotics/aikido/pull/437)
