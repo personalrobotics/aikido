@@ -188,13 +188,13 @@ public:
   std::size_t getNumDerivatives() const override;
 
   // Documentation inherited.
-  double getStartTime() const;
+  double getStartTime() const override;
 
   // Documentation inherited.
-  double getEndTime() const;
+  double getEndTime() const override;
 
   // Documentation inherited.
-  double getDuration() const;
+  double getDuration() const override;
 
   // Documentation inherited.
   void evaluate(double t, statespace::StateSpace::State* state) const override;
