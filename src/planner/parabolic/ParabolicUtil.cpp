@@ -136,6 +136,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   {
     for (const auto& ramp1d : rampNd.ramps)
     {
+//      std::cout << __LINE__ << " " << __FILE__ << std::endl;
       transitionTimes.insert(t + ramp1d.tswitch1);
       transitionTimes.insert(t + ramp1d.tswitch2);
     }
@@ -143,6 +144,12 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     t += rampNd.endTime;
     transitionTimes.insert(t);
   }
+
+//  std::cout << dimension << " and times are " << std::endl;
+//  for (auto t : transitionTimes)
+//  {
+//    std::cout << t << std::endl;
+//  }
 
   // Convert the output to a spline with a knot at each transition time.
   assert(!transitionTimes.empty());
@@ -162,6 +169,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     Eigen::VectorXd positionCurr, velocityCurr;
     evaluateAtTime(_inputPath, timeCurr, positionCurr, velocityCurr);
 
+//    std::cout << __LINE__ << " " << __FILE__ << positionCurr.transpose() << " " << velocityCurr.transpose() << std::endl;
+
     CubicSplineProblem problem(Vector2d(0, timeCurr - timePrev), 4, dimension);
     problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
     problem.addConstantConstraint(0, 1, velocityPrev);
@@ -170,10 +179,15 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const auto spline = problem.fit();
 
     _stateSpace->expMap(positionPrev, segmentStartState);
+//    _stateSpace->print(segmentStartState, std::cout );
+
 
     // Add the ramp to the output trajectory.
     assert(spline.getCoefficients().size() == 1);
     const auto& coefficients = spline.getCoefficients().front();
+
+//    std::cout << coefficients << std::endl;
+
     _outputTrajectory->addSegment(
         coefficients, timeCurr - timePrev, segmentStartState);
 
@@ -181,6 +195,27 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     positionPrev = positionCurr;
     velocityPrev = velocityCurr;
   }
+
+
+  auto state = _stateSpace->createState();
+  Eigen::VectorXd position(3);
+
+//  std::cout << __LINE__ << " " << __FILE__ << std::endl;
+  double timer = 0;
+  while (timer <= _outputTrajectory->getDuration())
+  {
+    _outputTrajectory->evaluate(timer, state);
+//    _stateSpace->print(state, std::cout );
+    _stateSpace->logMap(state, position);
+//    std::cout << position.transpose() << std::endl;
+
+    timer += _outputTrajectory->getDuration()/10;
+  }
+  _outputTrajectory->evaluate(_outputTrajectory->getDuration(), state);
+  _stateSpace->logMap(state, position);
+//  std::cout << position.transpose() << std::endl;
+
+  std::cin.get();
 
   return _outputTrajectory;
 }
@@ -247,11 +282,13 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   {
     auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
     stateSpace->logMap(currentState, currVec);
+    std::cout << __FILE__ << currVec << std::endl;
     milestones.emplace_back(toVector(currVec));
   }
 
   auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
+  std::cout << __FILE__ <<  " " << _maxVelocity << " " << _maxAcceleration << std::endl;
   outputPath->SetMilestones(milestones);
   if (!outputPath->IsValid())
     throw std::runtime_error("Converted DynamicPath is not valid");
