@@ -31,6 +31,7 @@ set(sources
   Conversions.cpp
   RosJointStateClient.cpp
   RosPositionCommandExecutor.cpp
+  RosGripperCommandExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control_ros" SHARED ${sources})
