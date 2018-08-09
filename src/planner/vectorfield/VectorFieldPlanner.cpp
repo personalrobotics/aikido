@@ -149,6 +149,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   }
   auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
+  // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference());
   // TODO(JS): The above code should be replaced by
   // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
   // once https://github.com/dartsim/dart/pull/1011 is released.

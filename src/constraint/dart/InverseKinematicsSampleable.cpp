@@ -198,8 +198,11 @@ statespace::ConstStateSpacePtr IkSampleGenerator::getStateSpace() const
 //==============================================================================
 bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
+  // std::cout << "sampling..." << std::endl;
   if (!mSeedSampler->canSample() || !mPoseSampler->canSample())
     return false;
+  
+  // std::cout << "sampling 2" << std::endl;
 
   auto seedState = mMetaSkeletonStateSpace->createState();
   auto poseState = mPoseStateSpace->createState();
@@ -207,25 +210,33 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 
   for (int i = 0; i < mMaxNumTrials; ++i)
   {
+    // std::cout << "sampling 3" << std::endl;
     // Sample a seed for the IK solver.
     // TODO: What should the retry logic look like if sampling a seed fails?
     if (!mSeedSampler->sample(seedState))
       continue;
+
+    // std::cout << "sampling 4" << std::endl;
 
     mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), seedState);
 
     // Sample a goal for the IK solver.
     if (!mPoseSampler->sample(poseState))
       continue;
+    // std::cout << "sampling 5" << std::endl;
+
+    // std::cout << "pose state: " << poseState.getIsometry().matrix() << std::endl;
 
     mInverseKinematics->getTarget()->setTransform(poseState.getIsometry());
 
     // Run the IK solver. If it succeeds, return the solution.
     if (mInverseKinematics->solve(true))
     {
+      // mMetaSkeletonStateSpace->print(outputState, std::cout); std::cout << std::endl;
       mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), outputState);
       return true;
     }
+    // std::cout << "sampling 6" << std::endl;
   }
   return false;
 }

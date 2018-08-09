@@ -482,7 +482,7 @@ VectorXd Trajectory::getVelocity(double time) const {
 	list<TrajectoryStep>::const_iterator previous = it;
 	previous--;
 
-        std::cout << "Trajectory::getVelocity @" << time << " PREVIOUS POS[" << previous->pathPos << "] VEL[" << previous->pathVel << "] TIME[" << previous->time << "]" << std::endl;
+        // std::cout << "Trajectory::getVelocity @" << time << " PREVIOUS POS[" << previous->pathPos << "] VEL[" << previous->pathVel << "] TIME[" << previous->time << "]" << std::endl;
 		
 	double timeStep = it->time - previous->time;
 	const double acceleration = 2.0 * (it->pathPos - previous->pathPos - timeStep * previous->pathVel) / (timeStep * timeStep);
