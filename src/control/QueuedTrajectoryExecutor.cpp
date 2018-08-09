@@ -74,7 +74,7 @@ void QueuedTrajectoryExecutor::step(
     catch (const std::exception& e)
     {
       promise->set_exception(std::current_exception());
-      abort();
+      cancel();
     }
   }
 
@@ -90,22 +90,22 @@ void QueuedTrajectoryExecutor::step(
 }
 
 //==============================================================================
-void QueuedTrajectoryExecutor::abort()
+void QueuedTrajectoryExecutor::cancel()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning
 
-  std::exception_ptr abort
-      = std::make_exception_ptr(std::runtime_error("Trajectory aborted."));
+  std::exception_ptr cancel
+      = std::make_exception_ptr(std::runtime_error("Trajectory canceled."));
 
   if (mInProgress)
   {
-    mExecutor->abort();
+    mExecutor->cancel();
 
-    // Set our own exception, since abort may not be supported
+    // Set our own exception, since cancel may not be supported
     auto promise = mPromiseQueue.front();
     mPromiseQueue.pop();
-    promise->set_exception(abort);
+    promise->set_exception(cancel);
 
     mInProgress = false;
   }
@@ -115,7 +115,7 @@ void QueuedTrajectoryExecutor::abort()
   {
     auto promise = mPromiseQueue.front();
     mPromiseQueue.pop();
-    promise->set_exception(abort);
+    promise->set_exception(cancel);
 
     mTrajectoryQueue.pop();
   }

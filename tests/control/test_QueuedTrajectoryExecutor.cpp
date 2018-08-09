@@ -221,7 +221,7 @@ TEST_F(QueuedTrajectoryExecutorTest, step_NegativeTimepoint_NoThrows)
 
 TEST_F(
     QueuedTrajectoryExecutorTest,
-    abort_NoRunningTrajectories_QueuedTrajectoriesAborted)
+    cancel_NoRunningTrajectories_QueuedTrajectoriesCanceled)
 {
   QueuedTrajectoryExecutor executor(std::move(mExecutor));
 
@@ -230,7 +230,7 @@ TEST_F(
   auto f1 = executor.execute(mTraj1);
   auto f2 = executor.execute(mTraj2);
 
-  executor.abort();
+  executor.cancel();
 
   EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
   EXPECT_EQ(f2.wait_for(waitTime), std::future_status::ready);
@@ -243,7 +243,7 @@ TEST_F(
 
 TEST_F(
     QueuedTrajectoryExecutorTest,
-    abort_OneRunningTrajectory_QueuedTrajectoriesAborted)
+    cancel_OneRunningTrajectory_QueuedTrajectoriesCanceled)
 {
   QueuedTrajectoryExecutor executor(std::move(mExecutor));
 
@@ -260,7 +260,7 @@ TEST_F(
   simulationClock += stepTime;
   executor.step(simulationClock);
 
-  executor.abort();
+  executor.cancel();
 
   EXPECT_EQ(f1.wait_for(waitTime), std::future_status::ready);
   EXPECT_EQ(f2.wait_for(waitTime), std::future_status::ready);

@@ -33,6 +33,7 @@
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316), [#450](https://github.com/personalrobotics/aikido/pull/450)
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
   * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
+  * Supported canceling in-progress trajectories: [#400](https://github.com/personalrobotics/aikido/pull/400)
 
 * Perception
 
@@ -47,6 +48,7 @@
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
   * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)
+  * Added a kinodynamic timer that generates a time-optimal smooth trajectory without completely stopping at each waypoint: [#443](https://github.com/personalrobotics/aikido/pull/443)
 
 * Robot
 
@@ -60,6 +62,7 @@
 
   * Fixed Eigen memory alignment issues on 32bit Ubuntu: [#368](https://github.com/personalrobotics/aikido/pull/368)
   * Defined optional dependencies: [#376](https://github.com/personalrobotics/aikido/pull/376)
+  * Fixed compilation bug with Eigen 3.3.5: [#452](https://github.com/personalrobotics/aikido/pull/452)
 
 ### 0.2.0 (2018-01-09)
 
@@ -72,6 +75,10 @@
   * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
   * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
   * Added TestableOutcome class: [#266](https://github.com/personalrobotics/aikido/pull/266)
+
+* Control
+
+  * Added Instantaneous and Queued TrajectoryExecutors: [#259](https://github.com/personalrobotics/aikido/pull/259)
 
 * Perception
 

@@ -1,4 +1,5 @@
 #include "aikido/control/ros/RosTrajectoryExecutor.hpp"
+#include <dart/common/Console.hpp>
 #include "aikido/control/TrajectoryRunningException.hpp"
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
@@ -232,9 +233,20 @@ void RosTrajectoryExecutor::step(
 }
 
 //==============================================================================
-void RosTrajectoryExecutor::abort()
+void RosTrajectoryExecutor::cancel()
 {
-  // TODO: cancel the actionlib goal (once there is support in ReWD controller)
+  std::lock_guard<std::mutex> lock(mMutex);
+  DART_UNUSED(lock); // Suppress unused variable warning.
+
+  if (mInProgress)
+  {
+    mGoalHandle.cancel();
+  }
+  else
+  {
+    dtwarn << "[RosTrajectoryExecutor::cancel] Attempting to "
+           << "cancel trajectory, but no trajectory in progress.\n";
+  }
 }
 
 } // namespace ros
