@@ -40,14 +40,7 @@ void Spline::addSegment(
   segment.mCoefficients = _coefficients;
   segment.mDuration = _duration;
   segment.mStartState = mStateSpace->allocateState();
-
-  std::cout << "Duration: " << segment.mDuration << std::endl;
-
   mStateSpace->copyState(_startState, segment.mStartState);
-
-//  std::cout << __LINE__ << " " << __FILE__ << std::endl;
-//  mStateSpace->print(_startState, std::cout);
-//  std::cin.get();
 
   mSegments.emplace_back(std::move(segment));
 }
@@ -132,23 +125,14 @@ void Spline::evaluate(double _t, statespace::StateSpace::State* _out) const
   const auto tangentVector
       = evaluatePolynomial(targetSegment.mCoefficients, evaluationTime, 0);
 
+//    auto relativeState = mStateSpace->createState();
+//    mStateSpace->expMap(tangentVector, relativeState);
+//    mStateSpace->compose(_out, relativeState);
 
   Eigen::VectorXd outVector(mStateSpace->getDimension());
   mStateSpace->logMap(_out, outVector);
-
   outVector += tangentVector;
-
   mStateSpace->expMap(outVector, _out);
-
-//  mStateSpace->expMap(tangentVector, relativeState);
-
-//  std::cout << __LINE__ << " " << __FILE__ << std::endl;
-//  mStateSpace->print(_out, std::cout);
-//  mStateSpace->print(relativeState, std::cout);
-//  mStateSpace->compose(_out, relativeState);
-//  mStateSpace->print(_out, std::cout);
-
-//  std::cin.get();
 }
 
 //==============================================================================
