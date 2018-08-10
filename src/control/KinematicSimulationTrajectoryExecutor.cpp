@@ -133,9 +133,6 @@ void KinematicSimulationTrajectoryExecutor::step(
   auto state = mStateSpace->createState();
   mTraj->evaluate(executionTime, state);
 
-  std::cout << "EXECUTOR" << std::endl;
-  mStateSpace->print(state, std::cout);
-
   mStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Check if trajectory has completed.
