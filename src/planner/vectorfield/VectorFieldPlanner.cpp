@@ -161,6 +161,8 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
       metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
+  stateSpace->setState(metaskeleton.get(), &startState);
+
   auto vectorfield
       = dart::common::make_aligned_shared<MoveEndEffectorOffsetVectorField>(
           stateSpace,
@@ -179,8 +181,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
-
-  stateSpace->setState(metaskeleton.get(), &startState);
   return followVectorField(
       *vectorfield,
       startState,

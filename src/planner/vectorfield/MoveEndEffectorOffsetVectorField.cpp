@@ -74,12 +74,20 @@ MoveEndEffectorOffsetVectorField::evaluateCartesianStatus(
   double positionDeviation
       = (positionError - movedDistance * mDirection).norm();
 
+  //std::cout << "start pose:   " << mStartPose.matrix().transpose() << std::endl;
+  //std::cout << "current pose: " << pose.matrix().transpose() << std::endl;
+  //std::cout << "positionError: " << positionError.matrix().transpose() << std::endl;
+  //std::cout << "movedDistance: " << movedDistance << std::endl;
+
+
+
   if (fabs(orientationError) > mAngularTolerance)
   {
     dtwarn << "Deviated from orientation constraint.";
     return VectorFieldPlannerStatus::TERMINATE;
   }
 
+  //std::cout << "pos deviation: " << std::to_string(positionDeviation) << "     orientation error: " << std::to_string(orientationError) << std::endl;
   if (positionDeviation > mPositionTolerance)
   {
     dtwarn << "Deviated from straight line constraint.";

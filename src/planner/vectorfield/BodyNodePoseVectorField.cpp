@@ -48,6 +48,7 @@ bool BodyNodePoseVectorField::evaluateVelocity(
   using aikido::planner::vectorfield::computeJointVelocityFromTwist;
 
   Eigen::VectorXd position(mMetaSkeleton->getNumDofs());
+
   auto newState
       = static_cast<const aikido::statespace::CartesianProduct::State*>(state);
   mMetaSkeletonStateSpace->convertStateToPositions(newState, position);

@@ -4,6 +4,7 @@
 #include <aikido/common/algorithm.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>
+#include <mcheck.h>
 
 namespace aikido {
 namespace planner {
@@ -153,6 +154,7 @@ bool computeJointVelocityFromTwist(
 
   // dart::optimizer::NloptSolver solverLocal(problemLocal, nlopt::LD_LBFGS);
   dart::optimizer::NloptSolver solverLocal(problemLocal, nlopt::LN_COBYLA);
+  // mcheck_check_all();
   solverLocal.solve();
 
 
