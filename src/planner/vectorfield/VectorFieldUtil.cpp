@@ -4,7 +4,6 @@
 #include <aikido/common/algorithm.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>
-#include <mcheck.h>
 
 namespace aikido {
 namespace planner {
@@ -125,49 +124,10 @@ bool computeJointVelocityFromTwist(
     problem->setUpperBounds(velocityUpperLimits);
   }
 
-  
-  const auto problemLocal = std::make_shared<Problem>(numDofs);
-  Eigen::Vector6d desiredTwistLocal;
-  Eigen::Vector6d initialGuessLocal;
-  dart::math::Jacobian jacobianLocal = jacobian;
-
-   desiredTwistLocal << -0.0, 0.0, 0.0, -0.0499474, 0.0742491, -0.995988;
-  //  initialGuess.clear();
-   initialGuessLocal << -0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-
-  // std::cout << "numDofs: " << numDofs << std::endl;
-  // std::cout << "cols: " << jacobian.cols() << "   rows: " << jacobian.rows() << std::endl; 
-  // std::cout << "cols: " << jacobianLocal.cols() << "   rows: " << jacobianLocal.rows() << std::endl;
-
-  //  jacobian.clear();
-   jacobianLocal << -2.07252e-13,    -0.890508,     0.890508,    -0.433307,    -0.782295,   0.00162676,
-  1.8255e-16,    -0.454967,     0.454967,     0.848115,     0.369998,  0.000427877,
-          -1, -4.71266e-12,  4.64198e-12,    -0.304871,     0.501115,     0.999999,
-   -0.355824,   -0.0204959,    -0.154864,    -0.357855,    -0.146731,   -0.0170001,
-   -0.229658,    0.0401166,     0.303115,    -0.200778,     -0.29263,  0.000138686,
- 7.34577e-14,     0.421351,    -0.281562,   -0.0499281,   -0.0130003,  2.75957e-05;
-
-  problemLocal->setInitialGuess(initialGuessLocal);
-  problemLocal->setObjective(
-      dart::common::make_aligned_shared<DesiredTwistFunction>(
-          desiredTwistLocal, jacobianLocal));
-
-  // dart::optimizer::NloptSolver solverLocal(problemLocal, nlopt::LD_LBFGS);
-  dart::optimizer::NloptSolver solverLocal(problemLocal, nlopt::LN_COBYLA);
-  // mcheck_check_all();
-  solverLocal.solve();
-
-
   problem->setInitialGuess(initialGuess);
   problem->setObjective(
       dart::common::make_aligned_shared<DesiredTwistFunction>(
           desiredTwist, jacobian));
-
-  // std::cout << "nlopt initial guess: " << initialGuessLocal.matrix().transpose() << std::endl;
-  // std::cout << "nlopt desiredTwist: " << desiredTwistLocal << std::endl;
-  // std::cout << "nlopt velocity lower bounds: " << problem->getLowerBounds().matrix().transpose() << std::endl;
-  // std::cout << "nlopt velocity upper bounds: " << problem->getUpperBounds().matrix().transpose() << std::endl;
-  // std::cout << "nlopt jacobian: " << jacobianLocal.matrix() << std::endl;
 
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
   if (!solver.solve())

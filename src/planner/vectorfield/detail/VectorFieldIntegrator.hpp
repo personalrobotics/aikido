@@ -57,6 +57,8 @@ public:
       double timelimit,
       double checkConstraintResolution);
 
+  virtual ~VectorFieldIntegrator();
+
   /// Called before doing integration.
   ///
   void start();
