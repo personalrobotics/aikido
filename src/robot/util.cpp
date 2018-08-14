@@ -142,9 +142,9 @@ trajectory::TrajectoryPtr planToConfigurations(
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
 
+  // First test with Snap Planner
   for (const auto& goalState : goalStates)
   {
-    // First test with Snap Planner
     auto problem = ConfigurationToConfiguration(
         space, startState, goalState, collisionTestable);
     TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
@@ -153,7 +153,12 @@ trajectory::TrajectoryPtr planToConfigurations(
     if (untimedTrajectory)
       return untimedTrajectory;
 
-    untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+  }
+
+  // Next try RRTConnect
+  for (const auto& goalState : goalStates)
+  {
+    TrajectoryPtr untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
         startState,
         goalState,
         space,
@@ -167,7 +172,11 @@ trajectory::TrajectoryPtr planToConfigurations(
         collisionResolution);
 
     return untimedTrajectory;
+
   }
+
+
+    
 
   return nullptr;
 }
@@ -183,6 +192,8 @@ trajectory::TrajectoryPtr planToTSR(
     double timelimit,
     std::size_t maxNumTrials)
 {
+  using planner::ompl::planOMPL;
+
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
 
@@ -257,7 +268,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   std::vector<statespace::CartesianProduct::State*> configurations_raw(
       configurations.size());
-  for (auto i = 0u; i < configurations.size(); ++i)
+  for (auto i = 0; i < configurations.size(); ++i)
     configurations_raw[i] = configurations[i];
   ranker.rankConfigurations(configurations_raw);
 
@@ -270,6 +281,26 @@ trajectory::TrajectoryPtr planToTSR(
 
     if (traj)
       return traj;
+
+    std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
+
+    traj = planOMPL<ompl::geometric::RRTConnect>(
+      startState,
+      goalState,
+      space,
+      std::make_shared<GeodesicInterpolator>(space),
+      createDistanceMetric(space),
+      createSampleableBounds(space, rng->clone()),
+      collisionTestable,
+      createTestableBounds(space),
+      createProjectableBounds(space),
+      timelimit,
+      collisionResolution);
+
+    if (traj)
+        return traj;
+
+    std::cout << "RRT also failed." << std::endl;
   }
   return nullptr;
 }
