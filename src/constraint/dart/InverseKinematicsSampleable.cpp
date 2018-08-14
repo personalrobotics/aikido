@@ -227,6 +227,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
       return true;
     }
   }
+
   return false;
 }
 
