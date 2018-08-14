@@ -54,13 +54,20 @@ VectorFieldIntegrator::VectorFieldIntegrator(
     double checkConstraintResolution)
   : mVectorField(vectorField)
   , mConstraint(collisionFreeConstraint)
+  , mCacheIndex(-1)
+  , mDimension(mVectorField->getStateSpace()->getDimension())
   , mTimelimit(timelimit)
   , mConstraintCheckResolution(checkConstraintResolution)
+  , mState(mVectorField->getStateSpace()->allocateState())
+  , mLastEvaluationTime(0.0)
 {
-  mCacheIndex = -1;
-  mLastEvaluationTime = 0.0;
-  mDimension = mVectorField->getStateSpace()->getDimension();
-  mState = mVectorField->getStateSpace()->createState();
+  // Do Nothing
+}
+
+//==============================================================================
+VectorFieldIntegrator::~VectorFieldIntegrator()
+{
+  mVectorField->getStateSpace()->freeState(mState);
 }
 
 //==============================================================================

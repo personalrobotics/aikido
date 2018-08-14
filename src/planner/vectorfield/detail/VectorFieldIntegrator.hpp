@@ -57,6 +57,9 @@ public:
       double timelimit,
       double checkConstraintResolution);
 
+  /// Destructor.
+  virtual ~VectorFieldIntegrator();
+
   /// Called before doing integration.
   ///
   void start();
