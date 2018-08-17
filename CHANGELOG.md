@@ -49,6 +49,7 @@
   * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)
   * Added a kinodynamic timer that generates a time-optimal smooth trajectory without completely stopping at each waypoint: [#443](https://github.com/personalrobotics/aikido/pull/443)
+  * Fix segment fault on 32 bit machine in vector-field planner: [#459](https://github.com/personalrobotics/aikido/pull/459)
 
 * Robot
 
