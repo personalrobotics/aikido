@@ -79,6 +79,7 @@ trajectory::TrajectoryPtr planToConfiguration(
     double timelimit)
 {
   using planner::ompl::planOMPL;
+  using planner::ompl::simplifyOMPL;
   using planner::ConfigurationToConfiguration;
   using planner::SnapConfigurationToConfigurationPlanner;
 
@@ -117,6 +118,23 @@ trajectory::TrajectoryPtr planToConfiguration(
       timelimit,
       collisionResolution);
 
+  auto interpolated = std::dynamic_pointer_cast<trajectory::Interpolated>(untimedTrajectory);
+  auto simplified = simplifyOMPL(space,
+                                 std::make_shared<GeodesicInterpolator>(space),
+                                 createDistanceMetric(space),
+                                 createSampleableBounds(space, rng->clone()),
+                                 collisionTestable,
+                                 createTestableBounds(space),
+                                 createProjectableBounds(space),
+                                 timelimit,
+                                 20, collisionResolution, interpolated);
+
+  if (simplified.second)
+    std::cout << "[robot/util]: Shortened the Trajectory" << std::endl;
+  else
+    std::cout << "[robot/util]: Failed to shorten the Trajectory" << std::endl;
+
+  untimedTrajectory = std::move(simplified.first);
   return untimedTrajectory;
 }
 
@@ -193,6 +211,7 @@ trajectory::TrajectoryPtr planToTSR(
     std::size_t maxNumTrials)
 {
   using planner::ompl::planOMPL;
+  using planner::ompl::simplifyOMPL;
 
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
@@ -298,7 +317,26 @@ trajectory::TrajectoryPtr planToTSR(
       collisionResolution);
 
     if (traj)
-        return traj;
+    {
+      auto interpolated = std::dynamic_pointer_cast<trajectory::Interpolated>(traj);
+      auto simplified = simplifyOMPL(space,
+                                     std::make_shared<GeodesicInterpolator>(space),
+                                     createDistanceMetric(space),
+                                     createSampleableBounds(space, rng->clone()),
+                                     collisionTestable,
+                                     createTestableBounds(space),
+                                     createProjectableBounds(space),
+                                     10, 100000,
+                                     collisionResolution, interpolated);
+
+      if (simplified.second)
+        std::cout << "[robot/util]: Shortened the Trajectory" << std::endl;
+      else
+        std::cout << "[robot/util]: Failed to shorten the Trajectory" << std::endl;
+
+      traj = std::move(simplified.first);
+      return traj;
+    }
 
     std::cout << "RRT also failed." << std::endl;
   }

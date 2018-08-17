@@ -424,7 +424,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
 
   do
   {
-
     bool const shortened
         = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
     if (shortened)
