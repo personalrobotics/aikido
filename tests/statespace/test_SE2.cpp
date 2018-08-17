@@ -99,7 +99,7 @@ TEST(SE2, ExpMap)
   expected_pose.rotate(Eigen::Rotation2Dd(M_PI_2));
 
   SE2 se2;
-  se2.expMap(Eigen::Vector3d(M_PI_2, 0, 0), &out);
+  se2.expMap(Eigen::Vector3d(0, 0, M_PI_2), &out);
 
   EXPECT_TRUE(out.getIsometry().isApprox(expected_pose));
 }
@@ -115,11 +115,11 @@ TEST(SE2, LogMap)
 
   Eigen::VectorXd out;
   se2.logMap(state, out);
-  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI_2, 3, 4)));
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(3, 4, M_PI_2)));
 
-  se2.expMap(Eigen::Vector3d(M_PI / 6, 4, 6), state);
+  se2.expMap(Eigen::Vector3d(4, 6, M_PI / 6), state);
   se2.logMap(state, out);
-  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(M_PI / 6, 4, 6)));
+  EXPECT_TRUE(out.isApprox(Eigen::Vector3d(4, 6, M_PI / 6)));
 }
 
 TEST(SE2, PrintState)
