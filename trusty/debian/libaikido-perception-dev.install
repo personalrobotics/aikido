@@ -1,5 +1,0 @@
-usr/include/aikido/perception/*
-usr/lib/aikido/cmake/aikido_perceptionComponent.cmake
-usr/lib/aikido/cmake/aikido_perceptionTargets.cmake
-usr/lib/aikido/cmake/aikido_perceptionTargets-*.cmake
-
