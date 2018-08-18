@@ -38,6 +38,7 @@
 * Perception
 
   * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
+  * Added voxel grid perception module: [#448](https://github.com/personalrobotics/aikido/pull/448)
 
 * Planner
 
