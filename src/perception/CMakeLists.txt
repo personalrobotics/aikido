@@ -27,7 +27,7 @@ aikido_check_package(tf "aikido::perception" "tf")
 # Note: Intentionally use "Module" mode because the config file imports "gtest",
 # "tests", and "run_tests" that conflict with the targets defined by Aikido.
 find_package(octomap_ros QUIET MODULE)
-aikido_check_package(visualization_msgs "aikido::perception" "octomap_ros")
+aikido_check_package(octomap_ros "aikido::perception" "octomap_ros")
 
 if(NOT DART_HAS_VOXELGRIDSHAPE)
     message(WARNING "The installed version of DART ${DART_VERSION} is "
