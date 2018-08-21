@@ -61,7 +61,7 @@ VectorFieldIntegrator::VectorFieldIntegrator(
   , mState(mVectorField->getStateSpace()->createState())
   , mLastEvaluationTime(0.0)
 {
-  // Do Nothing
+  // Do nothing
 }
 
 //==============================================================================
