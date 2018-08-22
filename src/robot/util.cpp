@@ -498,37 +498,45 @@ InterpolatedPtr planToEndEffectorOffsetByCRRT(
 trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& body,
-    const std::vector<Eigen::Vector6d>& twists,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const std::vector<Eigen::Vector6d>& twistSeq,
+    const std::vector<double> durationSeq,
     const constraint::TestablePtr& collisionTestable,
-    std::vector<double> durations,
     double timelimit,
     double positionTolerance,
     double angularTolerance,
     const VectorFieldPlannerParameters& vfParameters)
 {
-
-  DART_UNUSED(space);
-  DART_UNUSED(metaSkeleton);
-  DART_UNUSED(body);
-  DART_UNUSED(collisionTestable);
-  DART_UNUSED(durations);
-
-  DART_UNUSED(timelimit);
-  DART_UNUSED(positionTolerance); // Is this still required?
-  DART_UNUSED(angularTolerance); // Is this still required?
-  DART_UNUSED(vfParameters);
-
   // if twist is a zero vector
-  if (twists.empty())
+  if (twistSeq.empty())
   {
     throw std::runtime_error("Twists vector cannot be empty");
   }
 
-  // Using the twist and duration, compute the vectorfield, generate trajectory.
-  trajectory::TrajectoryPtr untimedTrajectory;
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
 
-  return untimedTrajectory;
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
+
+  // Using the twist and duration, compute the vectorfield, generate trajectory.
+  trajectory::TrajectoryPtr untimedTrajectory
+          = planner::vectorfield::planWithEndEffectorTwist(
+              space,
+              *startState,
+              metaSkeleton,
+              bodyNode,
+              twistSeq,
+              durationSeq,
+              collisionTestable,
+              positionTolerance,
+              angularTolerance,
+              vfParameters.initialStepSize,
+              vfParameters.jointLimitTolerance,
+              vfParameters.constraintCheckResolution,
+              std::chrono::duration<double>(timelimit));
+
+  return std::move(untimedTrajectory);
 }
 
 //==============================================================================

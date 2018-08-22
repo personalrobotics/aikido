@@ -105,6 +105,22 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     std::chrono::duration<double> timelimit,
     planner::Planner::Result* result = nullptr);
 
+std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const std::vector<Eigen::Vector6d>& twistSeq,
+    const std::vector<double> durationSeq,
+    const aikido::constraint::ConstTestablePtr& constraint,
+    double positionTolerance,
+    double angularTolerance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::Planner::Result* result = nullptr);
+
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido
