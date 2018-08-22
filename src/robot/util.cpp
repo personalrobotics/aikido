@@ -501,7 +501,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const dart::dynamics::BodyNodePtr& body,
     const std::vector<Eigen::Vector6d>& twists,
     const constraint::TestablePtr& collisionTestable,
-    double duration,
+    std::vector<double> durations,
     double timelimit,
     double positionTolerance,
     double angularTolerance,
@@ -512,7 +512,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
   DART_UNUSED(metaSkeleton);
   DART_UNUSED(body);
   DART_UNUSED(collisionTestable);
-  DART_UNUSED(duration);
+  DART_UNUSED(durations);
 
   DART_UNUSED(timelimit);
   DART_UNUSED(positionTolerance); // Is this still required?

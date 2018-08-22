@@ -239,7 +239,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const dart::dynamics::BodyNodePtr& body,
     const std::vector<Eigen::Vector6d>& twists,
     const constraint::TestablePtr& collisionTestable,
-    double duration,
+    std::vector<double> durations,
     double timelimit,
     double positionTolerance = 1e-3,
     double angularTolerance = 1e-3,
