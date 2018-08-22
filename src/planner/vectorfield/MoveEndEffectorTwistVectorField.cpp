@@ -31,6 +31,8 @@ MoveEndEffectorTwistVectorField::MoveEndEffectorTwistVectorField(
     throw std::invalid_argument("Position tolerance is negative");
   if (mAngularTolerance < 0)
     throw std::invalid_argument("Angular tolerance is negative");
+
+  // create an interpolated from twistSeq and durationSeq
 }
 
 //==============================================================================
@@ -40,8 +42,9 @@ bool MoveEndEffectorTwistVectorField::evaluateCartesianVelocity(
   using ::dart::math::logMap;
   using aikido::planner::vectorfield::computeGeodesicError;
 
-  Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);
-  //desiredTwist.tail<3>() = mDirection;
+  Eigen::Vector6d desiredTwist;
+
+  // query a desired Twist from the trajectory
   cartesianVelocity = desiredTwist;
   return true;
 }
@@ -51,41 +54,7 @@ VectorFieldPlannerStatus
 MoveEndEffectorTwistVectorField::evaluateCartesianStatus(
     const Eigen::Isometry3d& pose) const
 {
-  using aikido::planner::vectorfield::computeGeodesicError;
-
-  /*
-  // Check for deviation from the straight-line trajectory.
-  const Eigen::Vector4d geodesicError = computeGeodesicError(mStartPose, pose);
-  const double orientationError = geodesicError[0];
-  const Eigen::Vector3d positionError = geodesicError.tail<3>();
-  double movedDistance = positionError.transpose() * mDirection;
-  double positionDeviation
-      = (positionError - movedDistance * mDirection).norm();
-
-  if (fabs(orientationError) > mAngularTolerance)
-  {
-    dtwarn << "Deviated from orientation constraint.";
-    return VectorFieldPlannerStatus::TERMINATE;
-  }
-
-  if (positionDeviation > mPositionTolerance)
-  {
-    dtwarn << "Deviated from straight line constraint.";
-    return VectorFieldPlannerStatus::TERMINATE;
-  }
-
-  // if larger than max distance, terminate
-  // if larger than min distance, cache and continue
-  // if smaller than min distance, continue
-  if (movedDistance > mMaxDistance)
-  {
-    return VectorFieldPlannerStatus::TERMINATE;
-  }
-  else if (movedDistance >= mMinDistance)
-  {
-    return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
-  }
-  */
+  // compute the error between desired twist and current twist
 
   return VectorFieldPlannerStatus::CONTINUE;
 }

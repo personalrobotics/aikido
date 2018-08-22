@@ -552,20 +552,20 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
 
   // Using the twist and duration, compute the vectorfield, generate trajectory.
   trajectory::TrajectoryPtr untimedTrajectory
-          = planner::vectorfield::planWithEndEffectorTwist(
-              space,
-              *startState,
-              metaSkeleton,
-              bodyNode,
-              twistSeq,
-              durationSeq,
-              collisionTestable,
-              positionTolerance,
-              angularTolerance,
-              vfParameters.initialStepSize,
-              vfParameters.jointLimitTolerance,
-              vfParameters.constraintCheckResolution,
-              std::chrono::duration<double>(timelimit));
+      = planner::vectorfield::planWithEndEffectorTwist(
+          space,
+          *startState,
+          metaSkeleton,
+          bodyNode,
+          twistSeq,
+          durationSeq,
+          collisionTestable,
+          positionTolerance,
+          angularTolerance,
+          vfParameters.initialStepSize,
+          vfParameters.jointLimitTolerance,
+          vfParameters.constraintCheckResolution,
+          std::chrono::duration<double>(timelimit));
 
   return std::move(untimedTrajectory);
 }
