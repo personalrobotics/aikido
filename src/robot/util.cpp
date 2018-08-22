@@ -499,7 +499,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
-    const Eigen::Vector3d& twist,
+    const std::vector<Eigen::Vector6d>& twists,
     const constraint::TestablePtr& collisionTestable,
     double duration,
     double timelimit,
@@ -520,9 +520,9 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
   DART_UNUSED(vfParameters);
 
   // if twist is a zero vector
-  if (twist.norm() == 0.0)
+  if (twists.empty())
   {
-    throw std::runtime_error("Direction vector is a zero vector");
+    throw std::runtime_error("Twists vector cannot be empty");
   }
 
   // Using the twist and duration, compute the vectorfield, generate trajectory.
