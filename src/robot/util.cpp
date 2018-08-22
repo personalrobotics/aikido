@@ -493,6 +493,44 @@ InterpolatedPtr planToEndEffectorOffsetByCRRT(
 
   return untimedTrajectory;
 }
+
+//==============================================================================
+trajectory::TrajectoryPtr planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector3d& twist,
+    const constraint::TestablePtr& collisionTestable,
+    double duration,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance,
+    const VectorFieldPlannerParameters& vfParameters)
+{
+
+  DART_UNUSED(space);
+  DART_UNUSED(metaSkeleton);
+  DART_UNUSED(body);
+  DART_UNUSED(collisionTestable);
+  DART_UNUSED(duration);
+
+  DART_UNUSED(timelimit);
+  DART_UNUSED(positionTolerance); // Is this still required?
+  DART_UNUSED(angularTolerance); // Is this still required?
+  DART_UNUSED(vfParameters);
+
+  // if twist is a zero vector
+  if (twist.norm() == 0.0)
+  {
+    throw std::runtime_error("Direction vector is a zero vector");
+  }
+
+  // Using the twist and duration, compute the vectorfield, generate trajectory.
+  trajectory::TrajectoryPtr untimedTrajectory;
+
+  return untimedTrajectory;
+}
+
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node)
