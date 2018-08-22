@@ -237,7 +237,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
-    const Eigen::Vector3d& twist,
+    const std::vector<Eigen::Vector6d>& twists,
     const constraint::TestablePtr& collisionTestable,
     double duration,
     double timelimit,
