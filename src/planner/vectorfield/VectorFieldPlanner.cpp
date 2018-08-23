@@ -198,8 +198,8 @@ std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::ConstBodyNodePtr& bn,
-    const std::vector<Eigen::Vector6d>& twistSeq,
-    const std::vector<double> durationSeq,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
     const aikido::constraint::ConstTestablePtr& constraint,
     double positionTolerance,
     double angularTolerance,
@@ -243,7 +243,7 @@ std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
 
   auto compoundConstraint
       = std::make_shared<constraint::TestableIntersection>(stateSpace);
-  compoundConstraint->addConstraint(constraint);
+//  compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
 
