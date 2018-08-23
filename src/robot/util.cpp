@@ -265,6 +265,9 @@ trajectory::TrajectoryPtr planToTSR(
     configurations.emplace_back(sampleState.clone());
     ++snapSamples;
   }
+  if (configurations.size() == 0) {
+      std::cout << "planToTSR: No configurations found!" << std::endl;
+  }
 
   std::vector<statespace::CartesianProduct::State*> configurations_raw(
       configurations.size());
@@ -279,8 +282,9 @@ trajectory::TrajectoryPtr planToTSR(
 
     auto traj = planner->plan(problem, &pResult);
 
-    if (traj)
+    if (traj) {
       return traj;
+    }
 
     std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
 
@@ -294,7 +298,7 @@ trajectory::TrajectoryPtr planToTSR(
       collisionTestable,
       createTestableBounds(space),
       createProjectableBounds(space),
-      timelimit,
+      timelimit/configurations_raw.size(),
       collisionResolution);
 
     if (traj)
