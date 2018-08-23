@@ -15,14 +15,16 @@ MoveEndEffectorTwistVectorField::MoveEndEffectorTwistVectorField(
     aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     ::dart::dynamics::ConstBodyNodePtr bn,
-    const std::vector<Eigen::Vector6d>& twistSeq,
-    const std::vector<double> durationSeq,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
     double positionTolerance,
     double angularTolerance,
     double maxStepSize,
     double jointLimitPadding)
   : BodyNodePoseVectorField(
         stateSpace, metaskeleton, bn, maxStepSize, jointLimitPadding)
+  , mTwist(twistSeq)
+  , mDuration(durationSeq)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
   , mStartPose(bn->getTransform())
@@ -31,21 +33,14 @@ MoveEndEffectorTwistVectorField::MoveEndEffectorTwistVectorField(
     throw std::invalid_argument("Position tolerance is negative");
   if (mAngularTolerance < 0)
     throw std::invalid_argument("Angular tolerance is negative");
-
-  // create an interpolated from twistSeq and durationSeq
 }
 
 //==============================================================================
 bool MoveEndEffectorTwistVectorField::evaluateCartesianVelocity(
     const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
-  using ::dart::math::logMap;
-  using aikido::planner::vectorfield::computeGeodesicError;
-
-  Eigen::Vector6d desiredTwist;
-
-  // query a desired Twist from the trajectory
-  cartesianVelocity = desiredTwist;
+  DART_UNUSED(pose);
+  cartesianVelocity = mTwist;
   return true;
 }
 
@@ -54,9 +49,19 @@ VectorFieldPlannerStatus
 MoveEndEffectorTwistVectorField::evaluateCartesianStatus(
     const Eigen::Isometry3d& pose) const
 {
-  // compute the error between desired twist and current twist
+  mCount += 1;
+  DART_UNUSED(pose);
 
-  return VectorFieldPlannerStatus::CONTINUE;
+  // (avk): Not computing the error/deviation for now
+
+  // (avk): if the action has been applied for given time, stop.
+  double threshold = mDuration/mMaxStepSize;
+  if (mCount >= (int)threshold)
+  {
+    return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
+  }
+
+  return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
 }
 
 } // namespace vectorfield
