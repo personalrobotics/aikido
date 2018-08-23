@@ -243,7 +243,10 @@ std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
 
   auto compoundConstraint
       = std::make_shared<constraint::TestableIntersection>(stateSpace);
-//  compoundConstraint->addConstraint(constraint);
+
+  if (constraint)
+    compoundConstraint->addConstraint(constraint);
+
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
 
