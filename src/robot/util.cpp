@@ -499,8 +499,8 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
-    const std::vector<Eigen::Vector6d>& twistSeq,
-    const std::vector<double> durationSeq,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
     const constraint::TestablePtr& collisionTestable,
     double timelimit,
     double positionTolerance,
@@ -508,7 +508,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const VectorFieldPlannerParameters& vfParameters)
 {
   // if twist is a zero vector
-  if (twistSeq.empty())
+  if (twistSeq.norm() == 0)
   {
     throw std::runtime_error("Twists vector cannot be empty");
   }
@@ -531,10 +531,11 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           collisionTestable,
           positionTolerance,
           angularTolerance,
-          vfParameters.initialStepSize,
-          vfParameters.jointLimitTolerance,
-          vfParameters.constraintCheckResolution,
-          std::chrono::duration<double>(timelimit));
+        0.1, 0.1, 0.1, std::chrono::duration<double>(timelimit));
+//          vfParameters.initialStepSize,
+//          vfParameters.jointLimitTolerance,
+//          vfParameters.constraintCheckResolution,
+//          std::chrono::duration<double>(timelimit));
 
   return std::move(untimedTrajectory);
 }
