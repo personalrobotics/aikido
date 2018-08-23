@@ -42,8 +42,8 @@ public:
       aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaskeleton,
       ::dart::dynamics::ConstBodyNodePtr bn,
-      const std::vector<Eigen::Vector6d>& twistSeq,
-      const std::vector<double> durationSeq,
+      const Eigen::Vector6d& twistSeq,
+      double durationSeq,
       double positionTolerance,
       double angularTolerance,
       double maxStepSize,
@@ -59,6 +59,16 @@ public:
       const Eigen::Isometry3d& pose) const override;
 
 protected:
+  /// Count
+  mutable int mCount{0};
+
+  /// Twist specified
+  Eigen::Vector6d mTwist;
+
+  /// Duration specified
+  double mDuration;
+
+  /// Do we need this at this point?
   aikido::trajectory::InterpolatedPtr mTwistTraj;
 
   /// Tolerance of linear deviation error.
