@@ -505,7 +505,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     double timelimit,
     double positionTolerance,
     double angularTolerance,
-    const VectorFieldPlannerParameters& vfParameters)
+    const VectorFieldPlannerParameters& /* vfParameters */)
 {
   // if twist is a zero vector
   if (twistSeq.norm() == 0)
@@ -531,7 +531,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           collisionTestable,
           positionTolerance,
           angularTolerance,
-        0.1, 0.1, 0.1, std::chrono::duration<double>(timelimit));
+          0.001, 0.1, 0.1, std::chrono::duration<double>(timelimit));
 //          vfParameters.initialStepSize,
 //          vfParameters.jointLimitTolerance,
 //          vfParameters.constraintCheckResolution,

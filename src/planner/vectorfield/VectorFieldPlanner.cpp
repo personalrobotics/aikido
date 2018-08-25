@@ -119,7 +119,8 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
             lastEvaluationTime,
             true))
     {
-      result->setMessage("Constraint violated.");
+      if (result)
+        result->setMessage("Constraint violated.");
       return nullptr;
     }
   }
