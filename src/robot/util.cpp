@@ -235,7 +235,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{30};
+  static const std::size_t maxSnapSamples{300};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -286,9 +286,17 @@ trajectory::TrajectoryPtr planToTSR(
       return traj;
     }
 
-    std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
 
-    traj = planOMPL<ompl::geometric::RRTConnect>(
+    
+
+  }
+  std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
+
+  for (int i = 0; i < configurations_raw.size(); ++i)
+  {
+    space->setState(metaSkeleton.get(), startState);
+    space->copyState(configurations_raw[i], goalState);
+    auto traj = planOMPL<ompl::geometric::RRTConnect>(
       startState,
       goalState,
       space,
@@ -303,9 +311,8 @@ trajectory::TrajectoryPtr planToTSR(
 
     if (traj)
         return traj;
-
-    std::cout << "RRT also failed." << std::endl;
   }
+  std::cout << "RRT also failed." << std::endl;
   return nullptr;
 }
 
