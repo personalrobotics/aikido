@@ -148,8 +148,8 @@ UniqueSplinePtr ConcreteRobot::retimePath(
 {
   Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto retimer
-      = std::make_shared<KunzRetimer>(velocityLimits, accelerationLimits, 0.1, 0.1);
+  auto retimer = std::make_shared<KunzRetimer>(
+      velocityLimits, accelerationLimits, 0.1, 0.1);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)

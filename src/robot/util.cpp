@@ -531,11 +531,14 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           collisionTestable,
           positionTolerance,
           angularTolerance,
-          0.001, 0.1, 0.1, std::chrono::duration<double>(timelimit));
-//          vfParameters.initialStepSize,
-//          vfParameters.jointLimitTolerance,
-//          vfParameters.constraintCheckResolution,
-//          std::chrono::duration<double>(timelimit));
+          0.001,
+          0.1,
+          0.1,
+          std::chrono::duration<double>(timelimit));
+  //          vfParameters.initialStepSize,
+  //          vfParameters.jointLimitTolerance,
+  //          vfParameters.constraintCheckResolution,
+  //          std::chrono::duration<double>(timelimit));
 
   return std::move(untimedTrajectory);
 }

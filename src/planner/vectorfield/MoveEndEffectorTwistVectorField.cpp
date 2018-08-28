@@ -55,7 +55,7 @@ MoveEndEffectorTwistVectorField::evaluateCartesianStatus(
   // (avk): Not computing the error/deviation for now
 
   // (avk): if the action has been applied for given time, stop.
-  double threshold = mDuration/mMaxStepSize;
+  double threshold = mDuration / mMaxStepSize;
   if (mCount > (int)threshold)
   {
     return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
