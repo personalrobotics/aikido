@@ -424,7 +424,7 @@ void BSpline::evaluateDerivative(
     double /*t*/, int derivative, Eigen::VectorXd& /*tangentVector*/) const
 {
   if (derivative < 1)
-    throw std::logic_error("Derivative must be positive.");
+    throw std::invalid_argument("Derivative must be positive.");
 
   // TODO(JS): Not implemented
 }
