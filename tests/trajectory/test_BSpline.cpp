@@ -32,16 +32,12 @@ protected:
 
 TEST_F(BSplineTest, addSegment_NegativeDurationThrows)
 {
-  EXPECT_THROW(
-      BSpline(mStateSpace, 2, 3, 1.0, 0.5),
-      std::invalid_argument);
+  EXPECT_THROW(BSpline(mStateSpace, 2, 3, 1.0, 0.5), std::invalid_argument);
 }
 
 TEST_F(BSplineTest, addSegment_ZeroDurationThrows)
 {
-  EXPECT_THROW(
-      BSpline(mStateSpace, 2, 3, 0.5, 0.5),
-      std::invalid_argument);
+  EXPECT_THROW(BSpline(mStateSpace, 2, 3, 0.5, 0.5), std::invalid_argument);
 }
 
 TEST_F(BSplineTest, addSegment_IncorrectDimension_Throws)
@@ -50,9 +46,7 @@ TEST_F(BSplineTest, addSegment_IncorrectDimension_Throws)
 
   BSpline trajectory(mStateSpace, 2, 3);
 
-  EXPECT_THROW(
-      { trajectory.setStartPoint(vec); },
-      std::invalid_argument);
+  EXPECT_THROW({ trajectory.setStartPoint(vec); }, std::invalid_argument);
 }
 
 TEST_F(BSplineTest, getStateSpace)
@@ -101,7 +95,6 @@ TEST_F(BSplineTest, evaluate_IsEmpty_Throws)
   EXPECT_THROW({ trajectory.evaluate(3., state); }, std::logic_error);
 }
 
-
 TEST_F(BSplineTest, evaluate_EvaluateStart_ReturnsStart)
 {
   Eigen::Vector2d start(1., 1.);
@@ -130,4 +123,3 @@ TEST_F(BSplineTest, evaluate_EvaluateEnd_ReturnsEnd)
   trajectory.evaluate(1., state);
   EXPECT_TRUE(end.isApprox(state.getValue()));
 }
-
