@@ -78,7 +78,13 @@ BSpline::BSpline(
         startTime,
         endTime)
 {
-  // Do nothing
+  if (startTime >= endTime)
+  {
+    std::stringstream ss;
+    ss << "The start-time '" << startTime << "' should be less than the "
+       << "end-time '" << endTime << "'.";
+    throw std::invalid_argument(ss.str());
+  }
 }
 
 //==============================================================================
@@ -205,9 +211,7 @@ void BSpline::setEndPoint(std::size_t stateSpaceIndex, double value)
   if (getNumControlPoints() == 0)
     return;
 
-  const auto index
-      = static_cast<ControlPointVectorType::Index>(getNumControlPoints() - 1u);
-  mSplines[stateSpaceIndex].ctrls()[index] = value;
+  mSplines[stateSpaceIndex].ctrls().tail(1) = value;
 }
 
 //==============================================================================
@@ -222,10 +226,8 @@ void BSpline::setEndPoint(const Eigen::VectorXd& point)
   if (stateSpaceDim != static_cast<std::size_t>(point.size()))
     throw std::invalid_argument("Invalid dimension");
 
-  const auto index
-      = static_cast<ControlPointVectorType::Index>(getNumControlPoints() - 1u);
   for (auto i = 0u; i < stateSpaceDim; ++i)
-    mSplines[i].ctrls()[index] = point[i];
+    mSplines[i].ctrls().tail(1) = point[i];
 }
 
 //==============================================================================
@@ -409,8 +411,25 @@ double BSpline::getDuration() const
 }
 
 //==============================================================================
+void checkDuration(const BSpline& spline, double t)
+{
+  const auto startTime = spline.getStartTime();
+  const auto endTime = spline.getEndTime();
+
+  if (t < startTime || endTime < t)
+  {
+    std::stringstream ss;
+    ss << "The evaluating time '" << t << "' is out of the duration ["
+       << startTime << ", " << endTime << "], which isn't allowed.";
+    throw std::invalid_argument(ss.str());
+  }
+}
+
+//==============================================================================
 void BSpline::evaluate(double t, statespace::StateSpace::State* state) const
 {
+  checkDuration(*this, t);
+
   Eigen::VectorXd values(mStateSpace->getDimension());
 
   for (auto i = 0u; i < mStateSpace->getDimension(); ++i)
@@ -421,8 +440,10 @@ void BSpline::evaluate(double t, statespace::StateSpace::State* state) const
 
 //==============================================================================
 void BSpline::evaluateDerivative(
-    double /*t*/, int derivative, Eigen::VectorXd& /*tangentVector*/) const
+    double t, int derivative, Eigen::VectorXd& /*tangentVector*/) const
 {
+  checkDuration(*this, t);
+
   if (derivative < 1)
     throw std::invalid_argument("Derivative must be positive.");
 
@@ -488,7 +509,9 @@ BSpline::KnotVectorType BSpline::computeUniformKnots(
 
   const common::StepSequence internalKnots(
       startTime, endTime, numControlPoints + 1u - degree, true);
-  ControlPointVectorType::Index index = 1;
+  ControlPointVectorType::Index index = static_cast<int>(degree);
+  assert(degree + internalKnots.getLength() + degree
+      == static_cast<std::size_t>(knots.size()));
   for (double knot : internalKnots)
     knots[index++] = knot;
 
