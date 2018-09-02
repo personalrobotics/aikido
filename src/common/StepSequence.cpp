@@ -147,7 +147,7 @@ void StepSequence::updateStepSize()
 {
   if (mNumSteps > 1u)
   {
-    const std::size_t m = mIncludeEndPoint ? mNumSteps : mNumSteps - 1u;
+    const std::size_t m = mIncludeEndPoint ? mNumSteps - 1u : mNumSteps;
     mStepSize = (mEndPoint - mStartPoint) / m;
   }
   else
