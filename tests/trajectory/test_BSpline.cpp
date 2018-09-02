@@ -58,27 +58,21 @@ TEST_F(BSplineTest, getStateSpace)
 
 TEST_F(BSplineTest, getNumDerivatives_IsEmpty_ReturnsZero)
 {
-  BSpline trajectory(mStateSpace, 2, 3);
+  BSpline trajectory(mStateSpace, 0, 3);
 
-  EXPECT_EQ(0, trajectory.getNumDerivatives());
+  EXPECT_EQ(0u, trajectory.getNumDerivatives());
 }
 
 TEST_F(BSplineTest, getStartTime)
 {
-  BSpline trajectory(mStateSpace, 2, 3, 3.);
-  EXPECT_DOUBLE_EQ(3., trajectory.getStartTime());
+  BSpline trajectory(mStateSpace, 2, 3, 3.0, 4.0);
+  EXPECT_DOUBLE_EQ(3.0, trajectory.getStartTime());
 }
 
 TEST_F(BSplineTest, getEndTime_IsNotEmpty_ReturnsEndTime)
 {
-  BSpline trajectory(mStateSpace, 2, 3, 3., 7.);
+  BSpline trajectory(mStateSpace, 2, 3, 3.0, 7.0);
   EXPECT_DOUBLE_EQ(7., trajectory.getEndTime());
-}
-
-TEST_F(BSplineTest, getDuration_IsEmpty_ReturnsZero)
-{
-  BSpline trajectory(mStateSpace, 2, 3);
-  EXPECT_DOUBLE_EQ(0., trajectory.getDuration());
 }
 
 TEST_F(BSplineTest, getDuration_IsNotEmpty_ReturnsDuration)
@@ -87,12 +81,12 @@ TEST_F(BSplineTest, getDuration_IsNotEmpty_ReturnsDuration)
   EXPECT_DOUBLE_EQ(4., trajectory.getDuration());
 }
 
-TEST_F(BSplineTest, evaluate_IsEmpty_Throws)
+TEST_F(BSplineTest, evaluate_OutOfDuration_Throws)
 {
   BSpline trajectory(mStateSpace, 2, 3);
 
   auto state = mStateSpace->createState();
-  EXPECT_THROW({ trajectory.evaluate(3., state); }, std::logic_error);
+  EXPECT_THROW({ trajectory.evaluate(3., state); }, std::invalid_argument);
 }
 
 TEST_F(BSplineTest, evaluate_EvaluateStart_ReturnsStart)
@@ -109,17 +103,18 @@ TEST_F(BSplineTest, evaluate_EvaluateStart_ReturnsStart)
 
 TEST_F(BSplineTest, evaluate_EvaluateEnd_ReturnsEnd)
 {
-  Eigen::Vector2d start(1., 1.);
-  Eigen::Vector2d end(2., 2.);
+  Eigen::Vector2d start(1.0, 1.0);
+  Eigen::Vector2d end(2.0, 2.0);
 
   BSpline trajectory(mStateSpace, 2, 3);
   trajectory.setStartPoint(start);
   trajectory.setEndPoint(end);
 
   auto state = mStateSpace->createState();
-  trajectory.evaluate(0., state);
+
+  trajectory.evaluate(0.0, state);
   EXPECT_TRUE(start.isApprox(state.getValue()));
 
-  trajectory.evaluate(1., state);
+  trajectory.evaluate(1.0, state);
   EXPECT_TRUE(end.isApprox(state.getValue()));
 }
