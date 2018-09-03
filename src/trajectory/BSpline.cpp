@@ -8,6 +8,23 @@
 namespace aikido {
 namespace trajectory {
 
+namespace {
+
+//==============================================================================
+void throwIfInvalidIndex(
+    const std::vector<BSpline::SplineType>& splines, std::size_t index)
+{
+  if (index >= splines.size())
+  {
+    std::stringstream ss;
+    ss << "The index '" << index << "' is out of the range [0, "
+       << splines.size() << "].\n";
+    throw std::invalid_argument(ss.str());
+  }
+}
+
+} // (anonymous) namespace
+
 //==============================================================================
 BSpline::BSpline(
     statespace::ConstStateSpacePtr stateSpace,
@@ -16,18 +33,32 @@ BSpline::BSpline(
   : mStateSpace(std::move(stateSpace))
 {
   if (mStateSpace == nullptr)
-    throw std::invalid_argument("StateSpace is null.");
-
-  if (knots.size() < 4)
   {
-    throw std::invalid_argument(
-        "Number of knots should be equal to or greater than four");
+    throw std::invalid_argument("StateSpace is null.");
+  }
+
+  if (knots.size() < 3)
+  {
+    std::stringstream ss;
+    ss << "Number of knots '" << knots.size() << "' should be at least two.";
+    throw std::invalid_argument(ss.str());
   }
 
   if (controlPoints.size() < 1)
   {
-    throw std::invalid_argument(
-        "Number of control points should be equal to or greater than one");
+    std::stringstream ss;
+    ss << "Number of control points '" << knots.size()
+       << "' should be at least one.";
+    throw std::invalid_argument(ss.str());
+  }
+
+  if (knots.size() - controlPoints.size() - 1 < 0)
+  {
+    std::stringstream ss;
+    ss << "Degree '" << knots.size() - controlPoints.size() - 1
+       << "' (# of knots ' " << knots.size() << "' - # of control points '"
+       << controlPoints.size() << "' - 1) should be at least zero.";
+    throw std::invalid_argument(ss.str());
   }
 
   mStartTime = knots[0];
@@ -181,6 +212,8 @@ std::size_t BSpline::getNumControlPoints() const
 //==============================================================================
 void BSpline::setStartPoint(std::size_t stateSpaceIndex, double value)
 {
+  throwIfInvalidIndex(mSplines, stateSpaceIndex);
+
   mSplines[stateSpaceIndex].ctrls()[0] = value;
 }
 
@@ -207,18 +240,22 @@ void BSpline::setStartPoint(const statespace::StateSpace::State* state)
 //==============================================================================
 void BSpline::setEndPoint(std::size_t stateSpaceIndex, double value)
 {
-  // TODO: Warning
-  if (getNumControlPoints() == 0)
+  throwIfInvalidIndex(mSplines, stateSpaceIndex);
+
+  const std::size_t numCtrPts = getNumControlPoints();
+
+  if (numCtrPts == 0)
     return;
 
-  mSplines[stateSpaceIndex].ctrls().tail(1) = value;
+  mSplines[stateSpaceIndex].ctrls()[static_cast<int>(numCtrPts) - 1] = value;
 }
 
 //==============================================================================
 void BSpline::setEndPoint(const Eigen::VectorXd& point)
 {
-  // TODO: Warning
-  if (getNumControlPoints() == 0)
+  const std::size_t numCtrPts = getNumControlPoints();
+
+  if (numCtrPts == 0)
     return;
 
   const auto stateSpaceDim = mStateSpace->getDimension();
@@ -227,13 +264,12 @@ void BSpline::setEndPoint(const Eigen::VectorXd& point)
     throw std::invalid_argument("Invalid dimension");
 
   for (auto i = 0u; i < stateSpaceDim; ++i)
-    mSplines[i].ctrls().tail(1) = point[i];
+    mSplines[i].ctrls()[static_cast<int>(numCtrPts) - 1] = point[i];
 }
 
 //==============================================================================
 void BSpline::setEndPoint(const statespace::StateSpace::State* state)
 {
-  // TODO: Warning
   if (getNumControlPoints() == 0)
     return;
 
@@ -249,6 +285,8 @@ void BSpline::setControlPoints(
     bool withStartControlPoint,
     bool withEndControlPoint)
 {
+  throwIfInvalidIndex(mSplines, stateSpaceIndex);
+
   const auto numControlPoints
       = static_cast<ControlPointVectorType::Index>(getNumControlPoints());
 
@@ -301,6 +339,8 @@ void BSpline::setControlPoints(
     bool withStartControlPoint,
     bool withEndControlPoint)
 {
+  throwIfInvalidIndex(mSplines, stateSpaceIndex);
+
   const auto numControlPoints
       = static_cast<ControlPointVectorType::Index>(getNumControlPoints());
 
@@ -344,6 +384,8 @@ void BSpline::setControlPoints(
 const BSpline::ControlPointVectorType& BSpline::getControlPoints(
     std::size_t stateSpaceIndex) const
 {
+  throwIfInvalidIndex(mSplines, stateSpaceIndex);
+
   return mSplines[stateSpaceIndex].ctrls();
 }
 
@@ -353,30 +395,24 @@ BSpline::ControlPointVectorType BSpline::getControlPoints(
     bool withStartControlPoint,
     bool withEndControlPoint) const
 {
+  throwIfInvalidIndex(mSplines, stateSpaceIndex);
+
   const auto numControlPoints
       = static_cast<ControlPointVectorType::Index>(getNumControlPoints());
 
   if (withStartControlPoint)
   {
     if (withEndControlPoint)
-    {
       return getControlPoints(stateSpaceIndex);
-    }
     else
-    {
       return mSplines[stateSpaceIndex].ctrls().head(numControlPoints - 1);
-    }
   }
   else
   {
     if (withEndControlPoint)
-    {
       return mSplines[stateSpaceIndex].ctrls().tail(numControlPoints - 1);
-    }
     else
-    {
       return mSplines[stateSpaceIndex].ctrls().segment(1, numControlPoints - 2);
-    }
   }
 }
 
@@ -411,7 +447,7 @@ double BSpline::getDuration() const
 }
 
 //==============================================================================
-void checkDuration(const BSpline& spline, double t)
+void throwIfInvalidTime(const BSpline& spline, double t)
 {
   const auto startTime = spline.getStartTime();
   const auto endTime = spline.getEndTime();
@@ -428,7 +464,7 @@ void checkDuration(const BSpline& spline, double t)
 //==============================================================================
 void BSpline::evaluate(double t, statespace::StateSpace::State* state) const
 {
-  checkDuration(*this, t);
+  throwIfInvalidTime(*this, t);
 
   Eigen::VectorXd values(mStateSpace->getDimension());
 
@@ -442,7 +478,7 @@ void BSpline::evaluate(double t, statespace::StateSpace::State* state) const
 void BSpline::evaluateDerivative(
     double t, int derivative, Eigen::VectorXd& /*tangentVector*/) const
 {
-  checkDuration(*this, t);
+  throwIfInvalidTime(*this, t);
 
   if (derivative < 1)
     throw std::invalid_argument("Derivative must be positive.");
@@ -492,11 +528,10 @@ BSpline::KnotVectorType BSpline::computeUniformKnots(
     double startTime,
     double endTime)
 {
-  if (numControlPoints < degree + 1u)
+  if (numControlPoints <= degree)
   {
     throw std::invalid_argument(
-        "Number of control points should be equal to or greater than degree + "
-        "1");
+        "Number of control points should be greater than degree");
   }
 
   const auto numKnots = computeNumKnots(degree, numControlPoints);

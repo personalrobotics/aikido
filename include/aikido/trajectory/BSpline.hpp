@@ -20,15 +20,22 @@ public:
   using KnotVectorType = typename SplineType::KnotVectorType;
   using ControlPointVectorType = typename SplineType::ControlPointVectorType;
 
-  /// Constructs BSpline from control points and knots. The degree is
-  /// automatically determined by the
+  /// Constructs BSpline from control points and knots.
+  ///
+  /// The degree is automatically to be (num_knots - num_control_points - 1).
   ///
   /// \param[in] stateSpace State space this trajectory is defined in. Throw an
   /// exception if null.
   /// \param[in] knots Knots. The number of knots should be the same with the
-  /// control points.
+  /// control points. The values of knots should be monotonically increased.
+  /// Otherwise, it's undefined behavior.
   /// \param[in] controlPoints Control points. The number of control points
   /// should be the same with the control points.
+  /// \throw If \c stateSpace is null.
+  /// \throw If the size of \c knots is less than three.
+  /// \throw If the size of \c controlPoints is less than one.
+  /// \throw If the degree (size of \c knots - size of \c controlPoints - 1) is
+  /// less than zero.
   BSpline(
       statespace::ConstStateSpacePtr stateSpace,
       const KnotVectorType& knots,
@@ -40,8 +47,7 @@ public:
   /// The start and end point are the same with the first and last control
   /// points, respectively.
   ///
-  /// \param[in] stateSpace State space this trajectory is defined in. Throw an
-  /// exception if null.
+  /// \param[in] stateSpace State space this trajectory is defined in.
   /// \param[in] degree Degree of the b-spline.
   /// \param[in] controlPoints Control points. The number of control points
   /// should greater than degree. Otherwise, throw an exception.
@@ -49,6 +55,9 @@ public:
   /// first knot value.
   /// \param[in] endTime End value of the time parameter. This will be the last
   /// knot value.
+  /// \throw If \c stateSpace is null.
+  /// \throw If the number of control points is equal to or less than the
+  /// degree.
   BSpline(
       statespace::ConstStateSpacePtr stateSpace,
       std::size_t degree,
@@ -56,11 +65,18 @@ public:
       double startTime = 0.0,
       double endTime = 1.0);
 
-  /// Constructs an empty trajectory.
+  /// Constructs BSpline from the degree and the number of control points, which
+  /// are all zeros.
   ///
-  /// \param stateSpace State space this trajectory is defined in. Throw an
+  /// \param[in] stateSpace State space this trajectory is defined in. Throw an
   /// exception if null.
-  /// \param startTime Start time of the trajectory
+  /// \param[in] startTime Start time of the trajectory. This will be the first
+  /// knot value.
+  /// \param[in] endTime End value of the time parameter. This will be the last
+  /// knot value.
+  /// \throw If \c stateSpace is null.
+  /// \throw If the number of control points is equal to or less than the
+  /// degree.
   BSpline(
       statespace::ConstStateSpacePtr stateSpace,
       std::size_t degree,
@@ -106,36 +122,38 @@ public:
   /// Returns the number of control points
   std::size_t getNumControlPoints() const;
 
-  /// Sets start point of one sub space of the state space.
+  /// Sets start point of one sub space of the state space. Identical to setting
+  /// the first control point.
   ///
   /// \param[in] stateSpaceIndex The index to the state space to set the start
   /// point.
   void setStartPoint(std::size_t stateSpaceIndex, double value);
 
-  /// Sets start point. Identical to call \c
+  /// Sets start point. Identical to setting the first control point.
   /// setStartPoint(stateSpace->logMap(state)).
   ///
   /// \param[in] point Start point on the tangent space.
   void setStartPoint(const Eigen::VectorXd& point);
 
-  /// Sets start point.
+  /// Sets start point. Identical to setting the first control point.
   ///
   /// \param[in] state Start point.
   void setStartPoint(const statespace::StateSpace::State* state);
 
-  /// Sets end point of one sub space of the state space.
+  /// Sets end point of one sub space of the state space. Identical to setting
+  /// the last control point.
   ///
   /// \param[in] stateSpaceIndex The index to the state space to set the end
   /// point.
   void setEndPoint(std::size_t stateSpaceIndex, double value);
 
-  /// Sets end point. Identical to call \c
+  /// Sets end point. Identical to setting the last control point.
   /// setEndPoint(stateSpace->logMap(state)).
   ///
   /// \param[in] point End point on the tangent space.
   void setEndPoint(const Eigen::VectorXd& point);
 
-  /// Sets end point.
+  /// Sets end point. Identical to setting the last control point.
   ///
   /// \param[in] state End point.
   void setEndPoint(const statespace::StateSpace::State* state);
@@ -222,6 +240,8 @@ protected:
   /// \param[in] numControlPoints Number of the control points.
   /// \param[in] startTime Start time of the knots.
   /// \param[in] startTime End time of the knots.
+  /// \throw If the number of control points is equal to or less than the
+  /// degree.
   static KnotVectorType computeUniformKnots(
       std::size_t degree,
       std::size_t numControlPoints,
