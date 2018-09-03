@@ -166,10 +166,8 @@ public:
   /// can
   /// be different depending on \c withStartControlPoints and \c
   /// withStartControlPoints. Decrease the number by one per one option is true.
-  /// \param[in] withStartControlPoints Whether to take into account the start
-  /// control point as variable.
-  /// \param[in] withStartControlPoints Whether to take into account the end
-  /// control point as variable.
+  /// \param[in] withStartControlPoint Whether to set the start control point.
+  /// \param[in] withEndControlPoint Whether to set the end control point.
   void setControlPoints(
       std::size_t stateSpaceIndex,
       const ControlPointVectorType& controlPoints,
@@ -181,19 +179,29 @@ public:
   /// \param[in] stateSpaceIndex The index to the state space to set the start
   /// point.
   /// \param[in] value Control point value.
-  /// \param[in] withStartControlPoints Whether to take into account the start
-  /// control point as variable.
-  /// \param[in] withStartControlPoints Whether to take into account the end
-  /// control point as variable.
+  /// \param[in] withStartControlPoint Whether to set the start control point.
+  /// \param[in] withEndControlPoint Whether to set the end control point.
   void setControlPoints(
       std::size_t stateSpaceIndex,
       double value,
       bool withStartControlPoint = true,
       bool withEndControlPoint = true);
 
+  /// Returns control points of one subspace of the state space.
+  ///
+  /// \param[in] stateSpaceIndex The index to the state space to set the start
+  /// point.
+  /// \return Control points.
   const ControlPointVectorType& getControlPoints(
       std::size_t stateSpaceIndex) const;
 
+  /// Returns control points of one subspace of the state space.
+  ///
+  /// \param[in] stateSpaceIndex The index to the state space to set the start
+  /// point.
+  /// \param[in] withStartControlPoint Whether to get the start control point.
+  /// \param[in] withEndControlPoint Whether to get the end control point.
+  /// \return Control points.
   ControlPointVectorType getControlPoints(
       std::size_t stateSpaceIndex,
       bool withStartControlPoint,
@@ -228,6 +236,8 @@ public:
   virtual double computeArcLength(
       const distance::DistanceMetric& distanceMetric,
       double resolution = 0.1) const;
+  // TODO(JS): Consider adding this function to the base class as a pure virtual
+  // function.
 
 protected:
   /// Computes number of knots given degree and number of control points.
