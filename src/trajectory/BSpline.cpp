@@ -545,7 +545,8 @@ BSpline::KnotVectorType BSpline::computeUniformKnots(
   const common::StepSequence internalKnots(
       startTime, endTime, numControlPoints + 1u - degree, true);
   ControlPointVectorType::Index index = static_cast<int>(degree);
-  assert(degree + internalKnots.getLength() + degree
+  assert(
+      degree + internalKnots.getLength() + degree
       == static_cast<std::size_t>(knots.size()));
   for (double knot : internalKnots)
     knots[index++] = knot;
