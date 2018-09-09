@@ -30,6 +30,10 @@ PoseEstimatorModule::PoseEstimatorModule(
   , mTfListener(mNodeHandle)
 {
   // Do nothing
+
+  for (int i=0; i<5; i++) {
+    perceivedSkeletonNames[i] = std::vector<std::string>();
+  }
 }
 
 //=============================================================================
@@ -71,9 +75,21 @@ bool PoseEstimatorModule::detectObjects(
     {
       continue;
     }
-
+    if (marker_transform.action == 3) {
+      for (std::string skeletonName : perceivedSkeletonNames[skeletonFrameIdx]) {
+        dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skeletonName);
+        if (env_skeleton != nullptr)
+        {
+          env->removeSkeleton(env_skeleton);
+        }
+      }
+      perceivedSkeletonNames[skeletonFrameIdx].clear();
+      skeletonFrameIdx = (skeletonFrameIdx + 1) % 5;
+      continue;
+    }
+    
     YAML::Node info_json = YAML::Load(marker_transform.text);
-    const std::string obj_id = info_json["id"].as<std::string>();
+    const std::string obj_id = info_json["id"].as<std::string>() + "_" + std::to_string(skeletonFrameIdx);
 
     mObjInfo.insert(std::make_pair(obj_id, info_json));
 
@@ -184,6 +200,7 @@ bool PoseEstimatorModule::detectObjects(
     if (is_new_obj)
     {
       env->addSkeleton(obj_skeleton);
+      perceivedSkeletonNames[skeletonFrameIdx].push_back(obj_id);
     }
 
     any_detected = true;
