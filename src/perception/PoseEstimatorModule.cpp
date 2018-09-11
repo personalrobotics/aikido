@@ -80,6 +80,7 @@ bool PoseEstimatorModule::detectObjects(
         dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(skeletonName);
         if (env_skeleton != nullptr)
         {
+          // ROS_INFO_STREAM("removed " << skeletonName);
           env->removeSkeleton(env_skeleton);
         }
       }
@@ -201,6 +202,7 @@ bool PoseEstimatorModule::detectObjects(
     {
       env->addSkeleton(obj_skeleton);
       perceivedSkeletonNames[skeletonFrameIdx].push_back(obj_id);
+      // ROS_INFO_STREAM("added " << obj_id);
     }
 
     any_detected = true;
