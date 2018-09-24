@@ -13,6 +13,7 @@
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
+#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/Robot.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
