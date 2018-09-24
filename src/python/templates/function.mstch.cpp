@@ -1,26 +1,31 @@
-{{{header}}}
+{{header}}
 {{#includes}}
-#include <{{{.}}}>
+#include <{{.}}>
 {{/includes}}
-{{{precontent}}}
-#include <boost/python.hpp>
-#include <cmath>
+{{#sources}}
+#include <{{.}}>
+{{/sources}}
+{{precontent}}
+#include <pybind11/pybind11.h>
+{{postinclude}}
 
-/* postinclude */
-
-void {{function.mangled_name}}()
+void {{function.mangled_name}}(pybind11::module& m)
 {
-::boost::python::object parent_object(::boost::python::scope(){{!
-    }}{{#function.scope}}{{#name}}.attr("{{name}}"){{/name}}{{/function.scope}});
-::boost::python::scope parent_scope(parent_object);
+    auto sm = m{{!
+        }}{{#function.namespace}}{{#name}}.def_submodule("{{name}}"){{/name}}{{/function.namespace}};
+
+    auto attr = sm{{!
+        }}{{#function.scope_without_namespace}}{{#name}}.attr("{{name}}"){{/name}}{{/function.scope_without_namespace}};
 
 {{#function.overloads}}{{!
-    }}::boost::python::def("{{name}}", []({{#params}}{{{type}}} {{name}}{{^last}}, {{/last}}{{/params}}) -> {{{return_type}}} { {{!
-    }}return {{{qualified_call}}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
-    }}{{#return_value_policy}}, ::boost::python::return_value_policy<{{{.}}} >(){{/return_value_policy}}{{!
-    }}{{#params?}}, ({{#params}}::boost::python::arg("{{name}}"){{^last}}, {{/last}}{{/params}}){{/params?}});
+    }}    sm.def("{{name}}", +[]({{#params}}{{type}} {{name}}{{^last}}, {{/last}}{{/params}}){{!
+    }}{{#is_return_type_void}} { {{/is_return_type_void}}{{!
+    }}{{^is_return_type_void}} -> {{return_type}} { return {{/is_return_type_void}}{{!
+    }}{{qualified_call}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
+    }}{{#return_value_policy}}, ::pybind11::return_value_policy<{{.}} >(){{/return_value_policy}}{{!
+    }}{{#params?}}, {{#params}}::pybind11::arg("{{name}}"){{^last}}, {{/last}}{{/params}}{{/params?}});
 {{/function.overloads}}
-
 }
-{{{postcontent}}}
-{{{footer}}}
+
+{{postcontent}}
+{{footer}}

@@ -1,35 +1,57 @@
+#==============================================================================
+#
+# Binding
+#
+#==============================================================================
+binding: "pybind11"
+
+#==============================================================================
+#
+# Template
+#
+#==============================================================================
 template:
-  module:
-    source:
+  module: !file
       'templates/module.mstch.cpp'
-  cxx_record:
-    source:
+  cxx_record: !file
       'templates/cxx_record.mstch.cpp'
-  enum:
-    source:
+  enum: !file
       'templates/enum.mstch.cpp'
-  function:
-    source:
+  function: !file
       'templates/function.mstch.cpp'
-  variable:
-    source:
+  variable: !file
       'templates/variable.mstch.cpp'
   file:
     header: |
-      #include "get_signature.hpp"
+      // #include "get_signature.hpp"
       #include "chimera.cpp"
+
+      #include <pybind11/pybind11.h>
+      #include <pybind11/eigen.h>
+      #include <pybind11/stl.h>
   main:
     precontent: |
-      boost::python::import("boost_numpy_eigen");
-      boost::python::import("dartpy");
+      pybind11::module::import("dartpy");
+
+#==============================================================================
+#
+# Namespaces: The C++ namespaces that will be extracted by Chimera
+#
+#==============================================================================
 namespaces:
   'aikido':
     name: null  # Collapse the 'aikido' namespace into its parent.
+
+#==============================================================================
+#
+# Types: Selected types that need special handling.
+#
+#==============================================================================
 types:
   'void *': null
   # TODO: Wrap in a ScopedState.
   'aikido::statespace::StateSpace::State *': null
-  'ompl::base::State *': null
+  # 'ompl::base::State *': null
   # TODO: Wrap in a JointPtr
   'dart::dynamics::Joint *':
     return_value_policy: boost::python::reference_existing_object
@@ -40,4 +62,3 @@ types:
     return_value_policy: boost::python::copy_const_reference
   'const aikido::statespace::SO3::State::Quaternion &':
     return_value_policy: boost::python::copy_const_reference
-classes: []

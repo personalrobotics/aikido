@@ -15,4 +15,4 @@ add_subdirectory("planner")    # [external], [common], [statespace], [trajectory
 add_subdirectory("rviz")       # [constraint], [planner], boost, dart, roscpp, geometry_msgs, interactive_markers, std_msgs, visualization_msgs, libmicrohttpd
 add_subdirectory("control")    # [statespace], [trajectory]
 add_subdirectory("robot")      # [common], [io], [statespace], [trajectory], [constraint], [planner], [control]
-#add_subdirectory("python")     # everything
+add_subdirectory("python")     # everything

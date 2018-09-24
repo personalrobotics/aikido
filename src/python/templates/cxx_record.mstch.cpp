@@ -1,17 +1,20 @@
-{{{header}}}
+{{header}}
 {{#includes}}
-#include <{{{.}}}>
+#include <{{.}}>
 {{/includes}}
-{{{precontent}}}
-#include <boost/python.hpp>
-#include <cmath>
+{{#sources}}
+#include <{{.}}>
+{{/sources}}
+{{precontent}}
+#include <pybind11/pybind11.h>
+{{postinclude}}
 
 namespace {
 
 {{#class.comment?}}{{!
 }}constexpr char {{class.mangled_name}}_docstring[] = R"CHIMERA_STRING({{!
 }}{{#class.comment}}{{!
-}}{{{.}}}
+}}{{.}}
 {{/class.comment}}{{!
 }})CHIMERA_STRING";
 {{/class.comment?}}
@@ -20,7 +23,7 @@ namespace {
 }}{{#comment?}}{{!
 }}constexpr char {{mangled_name}}_docstring[] = R"CHIMERA_STRING({{!
 }}{{#comment}}{{!
-}}{{{.}}}
+}}{{.}}
 {{/comment}}{{!
 }})CHIMERA_STRING";
 
@@ -29,30 +32,29 @@ namespace {
 
 } // namespace
 
-void {{class.mangled_name}}()
+void {{class.mangled_name}}(pybind11::module& m)
 {
-::boost::python::object parent_object(::boost::python::scope(){{!
-    }}{{#class.scope}}{{#name}}.attr("{{name}}"){{/name}}{{/class.scope}});
-::boost::python::scope parent_scope(parent_object);
+    auto sm = m{{!
+        }}{{#class.namespace}}{{#name}}.def_submodule("{{name}}"){{/name}}{{/class.namespace}};
 
-::boost::python::class_<{{{class.type}}}{{^class.is_copyable}}, {{!
-        }}::boost::noncopyable{{/class.is_copyable}}{{#class.held_type}}, {{!
-        }}{{{.}}}{{/class.held_type}}{{#class.bases?}}, {{!
-        }}::boost::python::bases<{{!
-            }}{{#class.bases}}{{{qualified_name}}}{{^last}}, {{/last}}{{/class.bases}}{{!
-        }} >{{/class.bases?}} >("{{class.name}}"{{!
+    auto attr = sm{{!
+        }}{{#class.scope_without_namespace}}{{#name}}.attr("{{name}}"){{/name}}{{/class.scope_without_namespace}};
+
+    ::pybind11::class_<{{class.type}}{{!
+        }}{{#class.held_type}}, {{!
+        }}{{.}}{{/class.held_type}}{{#class.bases?}}, {{!
+        }}{{!
+            }}{{#class.bases}}{{qualified_name}}{{^last}}, {{/last}}{{/class.bases}}{{!
+        }}{{/class.bases?}} >(attr, "{{class.name}}"{{!
         }}{{#class.comment?}}, {{class.mangled_name}}_docstring{{/class.comment?}}{{!
-        }}, boost::python::no_init){{!
+        }}){{!
 
 /* constructors */}}
 {{#class.constructors}}{{!
 }}{{#overloads}}{{!
-    }}.def("__init__", ::boost::python::make_constructor({{!
-        }}[]({{#params}}{{{type}}} {{name}}{{^last}}, {{/last}}{{/params}}){{!
-        }} -> {{{class.type}}} * { {{!
-        }}return new {{{class.type}}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{! 
-        }}, ::boost::python::default_call_policies(){{!
-        }}{{#params?}}, ({{#params}}::boost::python::arg("{{name}}"){{^last}}, {{/last}}{{/params}}){{/params?}}))
+    }}        .def(::pybind11::init{{!
+        }}<{{#params}}{{type}}{{^last}}, {{/last}}{{/params}}>(){{!
+        }}{{#params?}}, {{#params}}::pybind11::arg("{{name}}"){{^last}}, {{/last}}{{/params}}{{/params?}})
 {{/overloads}}{{!
 }}{{/class.constructors}}{{!
 
@@ -60,11 +62,13 @@ void {{class.mangled_name}}()
 {{#class.methods}}{{!
 }}{{^is_static}}{{!
 }}{{#overloads}}{{!
-    }}.def("{{name}}", []({{#is_const}}const {{/is_const}}{{{class.type}}} *self{{#params}}, {{{type}}} {{name}}{{/params}}) -> {{{return_type}}} { {{!
-    }}return self->{{{call}}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
-    }}{{#return_value_policy}}, ::boost::python::return_value_policy<{{{.}}} >(){{/return_value_policy}}{{!
+    }}        .def("{{name}}", +[]({{#is_const}}const {{/is_const}}{{class.type}} *self{{#params}}, {{type}} {{name}}{{/params}}){{!
+    }}{{#is_return_type_void}} { {{/is_return_type_void}}{{!
+    }}{{^is_return_type_void}} -> {{return_type}} { return {{/is_return_type_void}}{{!
+    }}self->{{call}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
+    }}{{#return_value_policy}}, ::pybind11::return_value_policy::{{.}}{{/return_value_policy}}{{!
     }}{{#comment?}}, {{mangled_name}}_docstring{{/comment?}}{{!
-    }}{{#params?}}, ({{#params}}::boost::python::arg("{{name}}"){{^last}}, {{/last}}{{/params}}){{/params?}})
+    }}{{#params?}}, {{#params}}::pybind11::arg("{{name}}"){{^last}}, {{/last}}{{/params}}{{/params?}})
 {{/overloads}}{{!
 }}{{/is_static}}{{!
 }}{{/class.methods}}{{!
@@ -73,31 +77,30 @@ void {{class.mangled_name}}()
 {{#class.methods}}{{!
 }}{{#is_static}}{{!
 }}{{#overloads}}{{!
-    }}.def("{{name}}", []({{#params}}{{{type}}} {{name}}{{^last}}, {{/last}}{{/params}}) -> {{{return_type}}} { {{!
-    }}return {{{qualified_call}}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
-    }}{{#return_value_policy}}, ::boost::python::return_value_policy<{{{.}}} >(){{/return_value_policy}}{{!
-    }}{{#params?}}, ({{#params}}::boost::python::arg("{{name}}"){{^last}}, {{/last}}{{/params}}){{/params?}})
+    }}        .def_static("{{name}}", +[]({{#params}}{{type}} {{name}}{{^last}}, {{/last}}{{/params}}){{!
+    }}{{#is_return_type_void}} { {{/is_return_type_void}}{{!
+    }}{{^is_return_type_void}} -> {{return_type}} { return {{/is_return_type_void}}{{!
+    }}{{qualified_call}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}}); }{{!
+    }}{{#return_value_policy}}, ::pybind11::return_value_policy::{{.}}{{/return_value_policy}}{{!
+    }}{{#params?}}, {{#params}}::pybind11::arg("{{name}}"){{^last}}, {{/last}}{{/params}}{{/params?}})
 {{/overloads}}{{!
 }}{{/is_static}}{{!
-}}{{/class.methods}}
-{{#class.static_methods}}{{!
-    }}.staticmethod("{{.}}")
-{{/class.static_methods}}{{!
+}}{{/class.methods}}{{!
 
 /* fields */}}
 {{#class.fields}}{{!
-    }}{{#is_assignable}}.def_readwrite{{/is_assignable}}{{!
-    }}{{^is_assignable}}.def_readonly{{/is_assignable}}{{!
-    }}("{{name}}", &{{{qualified_name}}})
+    }}{{#is_assignable}}        .def_readwrite{{/is_assignable}}{{!
+    }}{{^is_assignable}}        .def_readonly{{/is_assignable}}{{!
+    }}("{{name}}", &{{qualified_name}})
 {{/class.fields}}{{!
 
-/* static fields */
-/* TODO: Add make_setter if this property is assignable */}}
+/* static fields */}}
 {{#class.static_fields}}{{!
-    }}.add_static_property("{{name}}", {{!
-    }}::boost::python::make_getter({{{qualified_name}}}))
+    }}{{#is_assignable}}        .def_readwrite_static{{/is_assignable}}{{!
+    }}{{^is_assignable}}        .def_readonly_static{{/is_assignable}}{{!
+    }}("{{name}}", &{{qualified_name}})
 {{/class.static_fields}}
-;
+    ;
 }
-{{{postcontent}}}
-{{{footer}}}
+{{postcontent}}
+{{footer}}
