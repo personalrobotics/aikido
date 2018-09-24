@@ -147,10 +147,10 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
 
-  auto shortcutOrBlendTrajectory
-      = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
-  if (shortcutOrBlendTrajectory)
-    return shortcutOrBlendTrajectory;
+//  auto shortcutOrBlendTrajectory
+//      = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
+//  if (shortcutOrBlendTrajectory)
+//    return shortcutOrBlendTrajectory;
 
   return timedTrajectory;
 }
@@ -165,10 +165,10 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
 
-  auto shortcutOrBlendTrajectory
-      = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
-  if (shortcutOrBlendTrajectory)
-    return shortcutOrBlendTrajectory;
+//  auto shortcutOrBlendTrajectory
+//      = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
+//  if (shortcutOrBlendTrajectory)
+//    return shortcutOrBlendTrajectory;
 
   return timedTrajectory;
 }
