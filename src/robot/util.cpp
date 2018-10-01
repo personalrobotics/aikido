@@ -223,14 +223,13 @@ trajectory::TrajectoryPtr planToTSR(
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto problem = ConfigurationToConfiguration(
-      space, startState, goalState, collisionTestable);
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      space, std::make_shared<GeodesicInterpolator>(space));
+    space, std::make_shared<GeodesicInterpolator>(space));
   while (snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
     {
+
       std::lock_guard<std::mutex> lock(robot->getMutex());
       bool sampled = generator->sample(goalState);
       if (!sampled)
@@ -239,6 +238,8 @@ trajectory::TrajectoryPtr planToTSR(
       // Set to start state
       space->setState(metaSkeleton.get(), startState);
     }
+    auto problem = ConfigurationToConfiguration(
+        space, startState, goalState, collisionTestable);
     ++snapSamples;
 
     auto traj = planner->plan(problem, &pResult);
