@@ -105,37 +105,42 @@ trajectory::TrajectoryPtr planToConfiguration(
   if (untimedTrajectory)
     return untimedTrajectory;
 
-  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution);
 
-  auto interpolated = std::dynamic_pointer_cast<trajectory::Interpolated>(untimedTrajectory);
-  auto simplified = simplifyOMPL(space,
-                                 std::make_shared<GeodesicInterpolator>(space),
-                                 createDistanceMetric(space),
-                                 createSampleableBounds(space, rng->clone()),
-                                 collisionTestable,
-                                 createTestableBounds(space),
-                                 createProjectableBounds(space),
-                                 timelimit,
-                                 20, collisionResolution, interpolated);
+  auto traj = planOMPL<ompl::geometric::RRTConnect>(
+    startState,
+    goalState,
+    space,
+    std::make_shared<GeodesicInterpolator>(space),
+    createDistanceMetric(space),
+    createSampleableBounds(space, rng->clone()),
+    collisionTestable,
+    createTestableBounds(space),
+    createProjectableBounds(space),
+    timelimit,
+    collisionResolution);
 
-  if (simplified.second)
-    std::cout << "[robot/util]: Shortened the Trajectory" << std::endl;
-  else
-    std::cout << "[robot/util]: Failed to shorten the Trajectory" << std::endl;
+  if (traj)
+  {
+    auto interpolated = std::dynamic_pointer_cast<trajectory::Interpolated>(traj);
+    auto simplified = simplifyOMPL(space,
+                                   std::make_shared<GeodesicInterpolator>(space),
+                                   createDistanceMetric(space),
+                                   createSampleableBounds(space, rng->clone()),
+                                   collisionTestable,
+                                   createTestableBounds(space),
+                                   createProjectableBounds(space),
+                                   10, 100000,
+                                   collisionResolution, interpolated);
 
-  untimedTrajectory = std::move(simplified.first);
-  return untimedTrajectory;
+    if (simplified.second)
+      std::cout << "[robot/util]: Shortened the Trajectory" << std::endl;
+    else
+      std::cout << "[robot/util]: Failed to shorten the Trajectory" << std::endl;
+
+    traj = std::move(simplified.first);
+    return traj;
+  }
+  return nullptr;
 }
 
 //==============================================================================
@@ -192,9 +197,6 @@ trajectory::TrajectoryPtr planToConfigurations(
     return untimedTrajectory;
 
   }
-
-
-    
 
   return nullptr;
 }
@@ -254,7 +256,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{30};
+  static const std::size_t maxSnapSamples{500};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -300,46 +302,21 @@ trajectory::TrajectoryPtr planToTSR(
 
     if (traj)
       return traj;
+  }
 
-    std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
+  std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
 
-    traj = planOMPL<ompl::geometric::RRTConnect>(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution);
+  for (int i = 0; i < configurations_raw.size(); ++i)
+  {
+    space->setState(metaSkeleton.get(), startState);
+    space->copyState(configurations_raw[i], goalState);
+
+    auto traj = planToConfiguration(space, metaSkeleton, goalState, collisionTestable, rng, timelimit);
 
     if (traj)
-    {
-      auto interpolated = std::dynamic_pointer_cast<trajectory::Interpolated>(traj);
-      auto simplified = simplifyOMPL(space,
-                                     std::make_shared<GeodesicInterpolator>(space),
-                                     createDistanceMetric(space),
-                                     createSampleableBounds(space, rng->clone()),
-                                     collisionTestable,
-                                     createTestableBounds(space),
-                                     createProjectableBounds(space),
-                                     10, 100000,
-                                     collisionResolution, interpolated);
-
-      if (simplified.second)
-        std::cout << "[robot/util]: Shortened the Trajectory" << std::endl;
-      else
-        std::cout << "[robot/util]: Failed to shorten the Trajectory" << std::endl;
-
-      traj = std::move(simplified.first);
       return traj;
-    }
-
-    std::cout << "RRT also failed." << std::endl;
   }
+  std::cout << "RRT also failed." << std::endl;
   return nullptr;
 }
 

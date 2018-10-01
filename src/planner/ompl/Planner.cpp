@@ -170,6 +170,7 @@ trajectory::InterpolatedPtr planOMPL(
 {
   _planner->setProblemDefinition(_pdef);
   _planner->setup();
+  // If planner can be cast as RRT then set goal bias also
   auto solved = _planner->solve(_maxPlanTime);
 
   if (solved)
