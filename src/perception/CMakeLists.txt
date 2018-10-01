@@ -78,7 +78,7 @@ target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
 target_compile_definitions("${PROJECT_NAME}_perception"
-  PRIVATE DART_HAVE_VOXELGRIDSHAPE
+  PUBLIC DART_HAS_VOXELGRIDSHAPE
 )
 
 add_component(${PROJECT_NAME} perception)
