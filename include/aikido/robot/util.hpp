@@ -118,7 +118,7 @@ trajectory::TrajectoryPtr planToConfiguration(
 trajectory::TrajectoryPtr planToConfigurations(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const std::vector<statespace::StateSpace::State*>& goalStates,
+    const std::vector<statespace::CartesianProduct::State*>& goalStates,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
     double timelimit);

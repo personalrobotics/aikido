@@ -213,8 +213,8 @@ trajectory::InterpolatedPtr planLRAstar(
     constraint::TestablePtr validityConstraint,
     constraint::TestablePtr boundsConstraint,
     constraint::ProjectablePtr boundsProjector,
-    double maxDistanceBtwProjections,
     double maxPlanTime,
+    double maxDistanceBtwProjections,
     std::string roadmapPath,
     double lookahead)
 {

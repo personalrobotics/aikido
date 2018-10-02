@@ -78,6 +78,7 @@ trajectory::TrajectoryPtr planToConfiguration(
     RNG* rng,
     double timelimit)
 {
+  using planner::ompl::planLRAstar;
   using planner::ompl::planOMPL;
   using planner::ConfigurationToConfiguration;
   using planner::SnapConfigurationToConfigurationPlanner;
@@ -104,6 +105,22 @@ trajectory::TrajectoryPtr planToConfiguration(
   if (untimedTrajectory)
     return untimedTrajectory;
 
+  // Plan with graph-based methods
+  untimedTrajectory = planLRAstar(
+      startState,
+      goalState,
+      space,
+      std::make_shared<GeodesicInterpolator>(space),
+      createDistanceMetric(space),
+      createSampleableBounds(space, rng->clone()),
+      collisionTestable,
+      createTestableBounds(space),
+      createProjectableBounds(space),
+      timelimit,
+      collisionResolution,
+      "", 1000);
+
+  // Plan with sampling-based methods
   untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
       startState,
       goalState,
@@ -124,11 +141,12 @@ trajectory::TrajectoryPtr planToConfiguration(
 trajectory::TrajectoryPtr planToConfigurations(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<StateSpace::State*>& goalStates,
+    const std::vector<statespace::CartesianProduct::State*>& goalStates,
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit)
 {
+  using planner::ompl::planLRAstar;
   using planner::ompl::planOMPL;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -152,10 +170,30 @@ trajectory::TrajectoryPtr planToConfigurations(
     // Return if the trajectory is non-empty
     if (untimedTrajectory)
       return untimedTrajectory;
-
   }
 
-  // Next try RRTConnect
+  // Next try graph-based methods
+  for (const auto& goalState : goalStates)
+  {
+    TrajectoryPtr untimedTrajectory = planLRAstar(
+        startState,
+        goalState,
+        space,
+        std::make_shared<GeodesicInterpolator>(space),
+        createDistanceMetric(space),
+        createSampleableBounds(space, rng->clone()),
+        collisionTestable,
+        createTestableBounds(space),
+        createProjectableBounds(space),
+        timelimit,
+        collisionResolution,
+        " ", 1000);
+
+    if (untimedTrajectory)
+      return untimedTrajectory;
+  }
+
+  // Finally try sampling-based methods
   for (const auto& goalState : goalStates)
   {
     TrajectoryPtr untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
@@ -171,12 +209,9 @@ trajectory::TrajectoryPtr planToConfigurations(
         timelimit,
         collisionResolution);
 
-    return untimedTrajectory;
-
+    if (untimedTrajectory)
+      return untimedTrajectory;
   }
-
-
-    
 
   return nullptr;
 }
@@ -275,45 +310,13 @@ trajectory::TrajectoryPtr planToTSR(
     configurations_raw[i] = configurations[i];
   ranker.rankConfigurations(configurations_raw);
 
-  for (int i = 0; i < configurations_raw.size(); ++i)
-  {
-    space->setState(metaSkeleton.get(), startState);
-    space->copyState(configurations_raw[i], goalState);
+  auto trajectory = planToConfigurations(space, 
+                                        metaSkeleton, 
+                                        configurations_raw,
+                                        rng, 
+                                        timelimit);
 
-    auto traj = planner->plan(problem, &pResult);
-
-    if (traj) {
-      return traj;
-    }
-
-
-    
-
-  }
-  std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
-
-  for (int i = 0; i < configurations_raw.size(); ++i)
-  {
-    space->setState(metaSkeleton.get(), startState);
-    space->copyState(configurations_raw[i], goalState);
-    auto traj = planOMPL<ompl::geometric::RRTConnect>(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit/configurations_raw.size(),
-      collisionResolution);
-
-    if (traj)
-        return traj;
-  }
-  std::cout << "RRT also failed." << std::endl;
-  return nullptr;
+  return trajectory;
 }
 
 //==============================================================================

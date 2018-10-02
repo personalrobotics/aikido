@@ -126,11 +126,11 @@ trajectory::InterpolatedPtr planOMPL(
 /// satsified for a state to be considered valid.
 /// \param[in] boundsProjector A Projectable that projects a state back within
 /// valid bounds defined on the StateSpace
+/// \param[in] maxPlanTime The maximum time to allow the planner to search for a
+/// solution
 /// \param[in] maxDistanceBtwProjections The maximum distance (under dmetric)
 /// between projecting and validity checking two successive points on a tree
 /// extension
-/// \param[in] maxPlanTime The maximum time to allow the planner to search for a
-/// solution
 /// \param[in] roadmapPath The path to the graph to be used
 /// \param[in] lookahead The number of edges over which lazy search is performed.
 /// The lookahead helps interpolate between LWA* and LazySP
@@ -144,8 +144,8 @@ trajectory::InterpolatedPtr planLRAstar(
     constraint::TestablePtr validityConstraint,
     constraint::TestablePtr boundsConstraint,
     constraint::ProjectablePtr boundsProjector,
-    double maxDistanceBtwProjections,
     double maxPlanTime,
+    double maxDistanceBtwProjections,
     std::string roadmapPath,
     double lookahead = 1000);
 
