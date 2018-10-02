@@ -1,4 +1,4 @@
-#ifdef DART_HAS_VOXELGRIDSHAPE
+#if DART_HAS_VOXELGRIDSHAPE
 
 #include "aikido/perception/VoxelGridModule.hpp"
 
