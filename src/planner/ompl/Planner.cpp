@@ -7,6 +7,8 @@
 
 #include <dart/dart.hpp>
 
+#include <LRAstar/LRAstar.hpp>
+
 namespace aikido {
 namespace planner {
 namespace ompl {
@@ -198,6 +200,54 @@ trajectory::InterpolatedPtr planOMPL(
     return returnTraj;
   }
   return nullptr;
+}
+
+//==============================================================================
+trajectory::InterpolatedPtr planLRAstar(
+    const statespace::StateSpace::State* start,
+    const statespace::StateSpace::State* goal,
+    statespace::StateSpacePtr stateSpace,
+    statespace::InterpolatorPtr interpolator,
+    distance::DistanceMetricPtr dmetric,
+    constraint::SampleablePtr sampler,
+    constraint::TestablePtr validityConstraint,
+    constraint::TestablePtr boundsConstraint,
+    constraint::ProjectablePtr boundsProjector,
+    double maxDistanceBtwProjections,
+    double maxPlanTime,
+    std::string roadmapPath,
+    double lookahead)
+{
+  auto si = getSpaceInformation(
+      stateSpace,
+      interpolator,
+      std::move(dmetric),
+      std::move(sampler),
+      std::move(validityConstraint),
+      std::move(boundsConstraint),
+      std::move(boundsProjector),
+      maxDistanceBtwProjections);
+
+  // Set the start and goal
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace
+      = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
+  auto startState = sspace->allocState(start);
+  pdef->addStartState(startState); // copies
+  sspace->freeState(startState);
+
+  auto goalState = sspace->allocState(goal);
+  pdef->setGoalState(goalState); // copies
+  sspace->freeState(goalState);
+
+  auto planner = ompl_make_shared<LRAstar::LRAstar>(si, roadmapPath, lookahead);
+
+  return planOMPL(
+      planner,
+      pdef,
+      std::move(stateSpace),
+      std::move(interpolator),
+      maxPlanTime);
 }
 
 //==============================================================================
