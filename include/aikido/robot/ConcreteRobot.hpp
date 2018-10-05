@@ -183,6 +183,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const dart::dynamics::BodyNodePtr& bodyNode,
       const aikido::constraint::dart::TSRPtr& tsr,
+      const Eigen::VectorXd& nominalPosition,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit,
       std::size_t maxNumTrials);

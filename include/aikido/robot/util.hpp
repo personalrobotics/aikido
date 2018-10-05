@@ -118,7 +118,7 @@ trajectory::TrajectoryPtr planToConfiguration(
 trajectory::TrajectoryPtr planToConfigurations(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const std::vector<statespace::CartesianProduct::State*>& goalStates,
+    const std::vector<statespace::StateSpace::State*>& goalStates,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
     double timelimit);
@@ -129,6 +129,7 @@ trajectory::TrajectoryPtr planToConfigurations(
 /// \param[in] metaSkeleton MetaSkeleton to plan with.
 /// \param[in] bodyNode Bodynode whose frame for which TSR is constructed.
 /// \param[in] tsr TSR to plan to.
+/// \param[in] nominalPosition Nominal configuration to use for ranking.
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
@@ -139,6 +140,7 @@ trajectory::TrajectoryPtr planToTSR(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
     const constraint::dart::TSRPtr& tsr,
+    const Eigen::VectorXd& nominalPosition,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
     double timelimit,

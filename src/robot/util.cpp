@@ -103,7 +103,10 @@ trajectory::TrajectoryPtr planToConfiguration(
 
   // Return if the trajectory is non-empty
   if (untimedTrajectory)
+  {
+    std::cout << "[utils:PlanToConfiguration] SnapPlanner Successful" << std::endl;
     return untimedTrajectory;
+  }
 
   // Plan with graph-based methods
   untimedTrajectory = planLRAstar(
@@ -118,7 +121,13 @@ trajectory::TrajectoryPtr planToConfiguration(
       createProjectableBounds(space),
       timelimit,
       collisionResolution,
-      "", 1000);
+      "/home/adityavk/ada-ws/src/planning_dataset/data/ada/graph_30_1000k.graphml", 1000);
+
+  if (untimedTrajectory)
+  {
+    std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
+    return untimedTrajectory;
+  }
 
   // Plan with sampling-based methods
   untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
@@ -134,14 +143,20 @@ trajectory::TrajectoryPtr planToConfiguration(
       timelimit,
       collisionResolution);
 
-  return untimedTrajectory;
+  if (untimedTrajectory)
+  {
+    std::cout << "[utils:PlanToConfiguration] RRTConnect Successful" << std::endl;
+    return untimedTrajectory;
+  }
+
+  return nullptr;
 }
 
 //==============================================================================
 trajectory::TrajectoryPtr planToConfigurations(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<statespace::CartesianProduct::State*>& goalStates,
+    const std::vector<statespace::StateSpace::State*>& goalStates,
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit)
@@ -169,7 +184,10 @@ trajectory::TrajectoryPtr planToConfigurations(
 
     // Return if the trajectory is non-empty
     if (untimedTrajectory)
+    {
+      std::cout << "[utils:PlanToConfigurations] SnapPlanner Successful" << std::endl;
       return untimedTrajectory;
+    }
   }
 
   // Next try graph-based methods
@@ -187,10 +205,13 @@ trajectory::TrajectoryPtr planToConfigurations(
         createProjectableBounds(space),
         timelimit,
         collisionResolution,
-        " ", 1000);
+        "/home/adityavk/ada-ws/src/planning_dataset/data/ada/graph_30_1000k.graphml", 1000);
 
     if (untimedTrajectory)
+    {
+      std::cout << "[utils:PlanToConfigurations] LRA* Successful" << std::endl;
       return untimedTrajectory;
+    }
   }
 
   // Finally try sampling-based methods
@@ -210,7 +231,10 @@ trajectory::TrajectoryPtr planToConfigurations(
         collisionResolution);
 
     if (untimedTrajectory)
+    {
+      std::cout << "[utils:PlanToConfigurations] RRTConnect Successful" << std::endl;
       return untimedTrajectory;
+    }
   }
 
   return nullptr;
@@ -222,12 +246,14 @@ trajectory::TrajectoryPtr planToTSR(
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bn,
     const TSRPtr& tsr,
+    const Eigen::VectorXd& nominalPosition,
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit,
     std::size_t maxNumTrials)
 {
   using planner::ompl::planOMPL;
+  using planner::ompl::planLRAstar;
 
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
@@ -264,6 +290,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   // TODO: Change this to timelimit once we use a fail-fast planner
   double timelimitPerSample = timelimit / maxNumTrials;
+  DART_UNUSED(timelimitPerSample);
 
   // Save the current state of the space
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
@@ -282,8 +309,19 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Collect and rank configurations
   auto sampleState = space->createState();
+  auto nominalState = space->createState();
+
+  if (nominalPosition.size())
+  {
+    space->convertPositionsToState(nominalPosition, nominalState);
+  }
+  else
+  {
+    space->copyState(startState, nominalState);
+  }
+
   std::vector<statespace::CartesianProduct::ScopedState> configurations;
-  NominalConfigurationRanker ranker(space, metaSkeleton, startState);
+  NominalConfigurationRanker ranker(space, metaSkeleton, nominalState);
 
   // Start the timer
   dart::common::Timer timer;
@@ -306,17 +344,90 @@ trajectory::TrajectoryPtr planToTSR(
 
   std::vector<statespace::CartesianProduct::State*> configurations_raw(
       configurations.size());
-  for (auto i = 0; i < configurations.size(); ++i)
+  for (std::size_t i = 0; i < configurations.size(); ++i)
     configurations_raw[i] = configurations[i];
   ranker.rankConfigurations(configurations_raw);
 
-  auto trajectory = planToConfigurations(space, 
-                                        metaSkeleton, 
-                                        configurations_raw,
-                                        rng, 
-                                        timelimit);
 
-  return trajectory;
+
+  // auto trajectory = planToConfigurations(space, 
+  //                                       metaSkeleton, 
+  //                                       configurations_raw,
+  //                                       rng, 
+  //                                       timelimit);
+
+  // return trajectory;
+
+
+
+  // First test with Snap Planner
+  Eigen::VectorXd goalPosition(6);
+  for (std::size_t i = 0; i < configurations_raw.size(); ++i)
+  {
+    auto problem = ConfigurationToConfiguration(
+        space, startState, configurations_raw[i], collisionTestable);
+    TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
+
+    // Return if the trajectory is non-empty
+    if (untimedTrajectory)
+    {
+      std::cout << "[utils:PlanToTSR] SnapPlanner Successful." << std::endl;
+      space->convertStateToPositions(configurations_raw[i], goalPosition);
+      std::cout << goalPosition.transpose() << std::endl;
+      return untimedTrajectory;
+    }
+  }
+
+  // std::cout << "[utils:PlanToTSR] SnapPlanner Failed. Trying RRTConnect." << std::endl;
+
+  // // Next try graph-based methods
+  // for (std::size_t i = 0; i < configurations_raw.size(); ++i)
+  // {
+  //   TrajectoryPtr untimedTrajectory = planLRAstar(
+  //       startState,
+  //       configurations_raw[i],
+  //       space,
+  //       std::make_shared<GeodesicInterpolator>(space),
+  //       createDistanceMetric(space),
+  //       createSampleableBounds(space, rng->clone()),
+  //       collisionTestable,
+  //       createTestableBounds(space),
+  //       createProjectableBounds(space),
+  //       timelimit,
+  //       collisionResolution,
+  //       "/home/adityavk/ada-ws/src/planning_dataset/data/ada/graph_30_1000k.graphml", 1000);
+
+  //   if (untimedTrajectory)
+  //   {
+  //     std::cout << "[utils:PlanToTSR] LRA* Successful" << std::endl;
+  //     return untimedTrajectory;
+  //   }
+  // }
+
+  // // Finally try sampling-based methods
+  // for (std::size_t i = 0; i < configurations_raw.size(); ++i)
+  // {
+  //   TrajectoryPtr untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+  //       startState,
+  //       configurations_raw[i],
+  //       space,
+  //       std::make_shared<GeodesicInterpolator>(space),
+  //       createDistanceMetric(space),
+  //       createSampleableBounds(space, rng->clone()),
+  //       collisionTestable,
+  //       createTestableBounds(space),
+  //       createProjectableBounds(space),
+  //       timelimit,
+  //       collisionResolution);
+
+  //   if (untimedTrajectory)
+  //   {
+  //     std::cout << "[utils:PlanToTSR] RRTConnect Successful" << std::endl;
+  //     return untimedTrajectory;
+  //   }
+  // }
+
+  return nullptr;
 }
 
 //==============================================================================
@@ -573,6 +684,7 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           positionTolerance,
           angularTolerance,
         0.1, 0.1, 0.1, std::chrono::duration<double>(timelimit));
+      DART_UNUSED(vfParameters);
 //          vfParameters.initialStepSize,
 //          vfParameters.jointLimitTolerance,
 //          vfParameters.constraintCheckResolution,

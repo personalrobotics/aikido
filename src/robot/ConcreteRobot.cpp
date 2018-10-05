@@ -371,6 +371,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bn,
     const TSRPtr& tsr,
+    const Eigen::VectorXd& nominalPosition,
     const CollisionFreePtr& collisionFree,
     double timelimit,
     std::size_t maxNumTrials)
@@ -383,6 +384,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
       metaSkeleton,
       bn,
       tsr,
+      nominalPosition,
       collisionConstraint,
       cloneRNG().get(),
       timelimit,
