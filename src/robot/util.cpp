@@ -252,6 +252,10 @@ trajectory::TrajectoryPtr planToTSR(
     double timelimit,
     std::size_t maxNumTrials)
 {
+
+  std::cout << __LINE__ << std::endl;
+
+
   using planner::ompl::planOMPL;
   using planner::ompl::planLRAstar;
 
@@ -297,7 +301,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{300};
+  static const std::size_t maxSnapSamples{1000};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -313,6 +317,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   if (nominalPosition.size())
   {
+    std::cout << nominalPosition.transpose() << std::endl;
     space->convertPositionsToState(nominalPosition, nominalState);
   }
   else
@@ -427,6 +432,7 @@ trajectory::TrajectoryPtr planToTSR(
   //   }
   // }
 
+  std::cout << "Planning Failed" << std::endl;
   return nullptr;
 }
 
