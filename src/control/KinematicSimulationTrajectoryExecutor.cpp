@@ -53,7 +53,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
   if (!space)
   {
     throw std::invalid_argument(
-        "Trajectory is not in a MetaSkeletonStateSpace.");
+      "[KinematicSimulationTrajectoryExecutor] Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
   // TODO: Delete this line once the skeleton is locked by isCompatible

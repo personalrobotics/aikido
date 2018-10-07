@@ -36,8 +36,10 @@ void checkValidityOfSpaceAndTrajectory(
       = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
           trajectory->getStateSpace());
   if (!trajectorySpace)
+  {
     throw std::invalid_argument(
-        "Trajectory is not in a MetaSkeletonStateSpace.");
+        "[checkValidityOfSpaceAndTrajectory] Trajectory is not in a MetaSkeletonStateSpace.");
+  }
 
   // Check that all joints are R1Joint or SO2Joint state spaces.
   for (std::size_t i = 0; i < space->getDimension(); ++i)
@@ -491,7 +493,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   if (!space)
   {
     throw std::invalid_argument(
-        "Trajectory is not in a MetaSkeletonStateSpace.");
+        "[toRosJointTrajectory] Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
   for (std::size_t i = 0; i < space->getNumSubspaces(); ++i)

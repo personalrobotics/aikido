@@ -102,7 +102,7 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 
   if (!space)
     throw std::invalid_argument(
-        "Trajectory is not in a MetaSkeletonStateSpace.");
+        "[RosTrajectoryExecutor] Trajectory is not in a MetaSkeletonStateSpace.");
 
   // TODO: No check's happening here. Check if that's correct.
   mValidatedTrajectories.emplace(traj);

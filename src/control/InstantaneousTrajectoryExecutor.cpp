@@ -36,8 +36,10 @@ void InstantaneousTrajectoryExecutor::validate(
       traj->getStateSpace());
 
   if (!space)
+  {
     throw std::invalid_argument(
-        "Trajectory is not in a MetaSkeletonStateSpace.");
+        "[InstantaneousTrajectoryExecutor] Trajectory is not in a MetaSkeletonStateSpace.");
+  }
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
