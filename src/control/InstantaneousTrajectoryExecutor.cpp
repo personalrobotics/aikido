@@ -38,7 +38,8 @@ void InstantaneousTrajectoryExecutor::validate(
   if (!space)
   {
     throw std::invalid_argument(
-        "[InstantaneousTrajectoryExecutor] Trajectory is not in a MetaSkeletonStateSpace.");
+        "[InstantaneousTrajectoryExecutor] Trajectory is not in a "
+        "MetaSkeletonStateSpace.");
   }
 
   // TODO: Delete this line once the skeleton is locked by isCompatible

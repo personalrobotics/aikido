@@ -38,7 +38,8 @@ void checkValidityOfSpaceAndTrajectory(
   if (!trajectorySpace)
   {
     throw std::invalid_argument(
-        "[Conversions:checkValidityOfSpaceAndTrajectory] Trajectory is not in a MetaSkeletonStateSpace.");
+        "[Conversions:checkValidityOfSpaceAndTrajectory] Trajectory is not in "
+        "a MetaSkeletonStateSpace.");
   }
 
   // Check that all joints are R1Joint or SO2Joint state spaces.
@@ -60,7 +61,6 @@ void checkValidityOfSpaceAndTrajectory(
     }
   }
 }
-
 }
 
 namespace aikido {
@@ -493,7 +493,8 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   if (!space)
   {
     throw std::invalid_argument(
-        "[Conversions: toRosJointTrajectory] Trajectory is not in a MetaSkeletonStateSpace.");
+        "[Conversions: toRosJointTrajectory] Trajectory is not in a "
+        "MetaSkeletonStateSpace.");
   }
 
   for (std::size_t i = 0; i < space->getNumSubspaces(); ++i)
@@ -634,9 +635,6 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
 
   return rTrajectory;
 }
-
-
-
 
 } // namespace ros
 } // namespace control

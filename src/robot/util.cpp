@@ -104,7 +104,8 @@ trajectory::TrajectoryPtr planToConfiguration(
   // Return if the trajectory is non-empty
   if (untimedTrajectory)
   {
-    std::cout << "[utils:PlanToConfiguration] SnapPlanner Successful" << std::endl;
+    std::cout << "[utils:PlanToConfiguration] SnapPlanner Successful"
+              << std::endl;
     return untimedTrajectory;
   }
 
@@ -121,7 +122,9 @@ trajectory::TrajectoryPtr planToConfiguration(
       createProjectableBounds(space),
       timelimit,
       collisionResolution,
-      "/home/adityavk/ada-ws/src/planning_dataset/data/ada/graph_30_1000k.graphml", 1000);
+      "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
+      "graph_30_1000k.graphml",
+      1000);
 
   if (untimedTrajectory)
   {
@@ -145,7 +148,8 @@ trajectory::TrajectoryPtr planToConfiguration(
 
   if (untimedTrajectory)
   {
-    std::cout << "[utils:PlanToConfiguration] RRTConnect Successful" << std::endl;
+    std::cout << "[utils:PlanToConfiguration] RRTConnect Successful"
+              << std::endl;
     return untimedTrajectory;
   }
 
@@ -185,7 +189,8 @@ trajectory::TrajectoryPtr planToConfigurations(
     // Return if the trajectory is non-empty
     if (untimedTrajectory)
     {
-      std::cout << "[utils:PlanToConfigurations] SnapPlanner Successful" << std::endl;
+      std::cout << "[utils:PlanToConfigurations] SnapPlanner Successful"
+                << std::endl;
       return untimedTrajectory;
     }
   }
@@ -205,7 +210,9 @@ trajectory::TrajectoryPtr planToConfigurations(
         createProjectableBounds(space),
         timelimit,
         collisionResolution,
-        "/home/adityavk/ada-ws/src/planning_dataset/data/ada/graph_30_1000k.graphml", 1000);
+        "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
+        "graph_30_1000k.graphml",
+        1000);
 
     if (untimedTrajectory)
     {
@@ -232,7 +239,8 @@ trajectory::TrajectoryPtr planToConfigurations(
 
     if (untimedTrajectory)
     {
-      std::cout << "[utils:PlanToConfigurations] RRTConnect Successful" << std::endl;
+      std::cout << "[utils:PlanToConfigurations] RRTConnect Successful"
+                << std::endl;
       return untimedTrajectory;
     }
   }
@@ -254,7 +262,6 @@ trajectory::TrajectoryPtr planToTSR(
 {
 
   std::cout << __LINE__ << std::endl;
-
 
   using planner::ompl::planOMPL;
   using planner::ompl::planLRAstar;
@@ -343,8 +350,9 @@ trajectory::TrajectoryPtr planToTSR(
     configurations.emplace_back(sampleState.clone());
     ++snapSamples;
   }
-  if (configurations.size() == 0) {
-      std::cout << "planToTSR: No configurations found!" << std::endl;
+  if (configurations.size() == 0)
+  {
+    std::cout << "planToTSR: No configurations found!" << std::endl;
   }
 
   std::vector<statespace::CartesianProduct::State*> configurations_raw(
@@ -353,17 +361,13 @@ trajectory::TrajectoryPtr planToTSR(
     configurations_raw[i] = configurations[i];
   ranker.rankConfigurations(configurations_raw);
 
-
-
-  // auto trajectory = planToConfigurations(space, 
-  //                                       metaSkeleton, 
+  // auto trajectory = planToConfigurations(space,
+  //                                       metaSkeleton,
   //                                       configurations_raw,
-  //                                       rng, 
+  //                                       rng,
   //                                       timelimit);
 
   // return trajectory;
-
-
 
   // First test with Snap Planner
   Eigen::VectorXd goalPosition(6);
@@ -383,7 +387,8 @@ trajectory::TrajectoryPtr planToTSR(
     }
   }
 
-  // std::cout << "[utils:PlanToTSR] SnapPlanner Failed. Trying RRTConnect." << std::endl;
+  // std::cout << "[utils:PlanToTSR] SnapPlanner Failed. Trying RRTConnect." <<
+  // std::endl;
 
   // // Next try graph-based methods
   // for (std::size_t i = 0; i < configurations_raw.size(); ++i)
@@ -400,7 +405,8 @@ trajectory::TrajectoryPtr planToTSR(
   //       createProjectableBounds(space),
   //       timelimit,
   //       collisionResolution,
-  //       "/home/adityavk/ada-ws/src/planning_dataset/data/ada/graph_30_1000k.graphml", 1000);
+  //       "/home/adityavk/ada-ws/src/planning_dataset/data/ada/graph_30_1000k.graphml",
+  //       1000);
 
   //   if (untimedTrajectory)
   //   {
@@ -689,12 +695,15 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           collisionTestable,
           positionTolerance,
           angularTolerance,
-        0.1, 0.1, 0.1, std::chrono::duration<double>(timelimit));
-      DART_UNUSED(vfParameters);
-//          vfParameters.initialStepSize,
-//          vfParameters.jointLimitTolerance,
-//          vfParameters.constraintCheckResolution,
-//          std::chrono::duration<double>(timelimit));
+          0.1,
+          0.1,
+          0.1,
+          std::chrono::duration<double>(timelimit));
+  DART_UNUSED(vfParameters);
+  //          vfParameters.initialStepSize,
+  //          vfParameters.jointLimitTolerance,
+  //          vfParameters.constraintCheckResolution,
+  //          std::chrono::duration<double>(timelimit));
 
   return std::move(untimedTrajectory);
 }

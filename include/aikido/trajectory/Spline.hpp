@@ -142,10 +142,12 @@ public:
     return mSegments[_index].mCoefficients;
   }
 
-  aikido::statespace::StateSpace::State* getSegmentState(std::size_t _index) const
+  aikido::statespace::StateSpace::State* getSegmentState(
+      std::size_t _index) const
   {
     return mSegments[_index].mStartState;
   }
+
 private:
   struct PolynomialSegment
   {

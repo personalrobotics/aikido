@@ -53,40 +53,45 @@ createSplineFromWaypointsAndConstraints(
       velocitySeq.push_back(currentVelocity);
     }
 
-    //preprocess with initial
+    // preprocess with initial
     std::vector<double> processing(dimension, 0.0);
-    for(std::size_t j=0; j<dimension; j++)
+    for (std::size_t j = 0; j < dimension; j++)
     {
-      if(std::abs(initialVelocity[j]-velocitySeq[0][j])>0.0)
+      if (std::abs(initialVelocity[j] - velocitySeq[0][j]) > 0.0)
       {
         // std::cout << "DIM " << j << " IS NON-ZERO INITIAL" << std::endl;
-        processing[j] = std::abs(initialVelocity[j])/initialVelocity[j];
+        processing[j] = std::abs(initialVelocity[j]) / initialVelocity[j];
       }
 
-      if(std::signbit(initialVelocity[j]-velocitySeq[0][j]) != std::signbit(velocitySeq[1][j]-velocitySeq[0][j]))
+      if (std::signbit(initialVelocity[j] - velocitySeq[0][j])
+          != std::signbit(velocitySeq[1][j] - velocitySeq[0][j]))
       {
         // std::cout << "DIFF SIGN BIT " << std::endl;
         processing[j] = 0.0;
       }
     }
-    for(std::size_t j=0; j<dimension; j++)
+    for (std::size_t j = 0; j < dimension; j++)
     {
-      if(processing[j]==0.0)
+      if (processing[j] == 0.0)
       {
-        velocitySeq[0][j] = initialVelocity[j];        
+        velocitySeq[0][j] = initialVelocity[j];
         continue;
       }
-      for(std::size_t i=0; i<velocitySeq.size() && (processing[j]!=0.0); i++)
+      for (std::size_t i = 0; i < velocitySeq.size() && (processing[j] != 0.0);
+           i++)
       {
-        
-        if(initialVelocity[j]*processing[j] > velocitySeq[i][j]*processing[j])
+
+        if (initialVelocity[j] * processing[j]
+            > velocitySeq[i][j] * processing[j])
         {
-          // std::cout << "UPDATING DIM " << j << " WITH NON-ZERO INITIAL " << initialVelocity[j] << " FROM " << velocitySeq[i][j] << std::endl;
+          // std::cout << "UPDATING DIM " << j << " WITH NON-ZERO INITIAL " <<
+          // initialVelocity[j] << " FROM " << velocitySeq[i][j] << std::endl;
           velocitySeq[i][j] = initialVelocity[j];
         }
         else
         {
-          // std::cout << "BECAUSE CURRENT " << velocitySeq[i][j] << " FININSHING UPDATING DIM " << j << std::endl;
+          // std::cout << "BECAUSE CURRENT " << velocitySeq[i][j] << "
+          // FININSHING UPDATING DIM " << j << std::endl;
           processing[j] = 0.0;
           break;
         }
@@ -96,16 +101,16 @@ createSplineFromWaypointsAndConstraints(
     const Eigen::VectorXd zeroPosition = Eigen::VectorXd::Zero(dimension);
     auto currState = stateSpace->createState();
     for (std::size_t i = 0; i < sequence.getLength() - 1; i++)
-    {   
+    {
       double currT = sequence[i];
       double nextT = sequence[i + 1];
       double segmentDuration = nextT - currT;
       double currTShift = currT - startTime;
       double nextTShift = nextT - startTime;
       Eigen::VectorXd currentPosition = positionSeq[i];
-      Eigen::VectorXd nextPosition = positionSeq[i+1]; 
+      Eigen::VectorXd nextPosition = positionSeq[i + 1];
       Eigen::VectorXd currentVelocity = velocitySeq[i];
-      Eigen::VectorXd nextVelocity = velocitySeq[i+1];
+      Eigen::VectorXd nextVelocity = velocitySeq[i + 1];
 
       CubicSplineProblem problem(
           Eigen::Vector2d{0., segmentDuration}, 4, dimension);

@@ -111,7 +111,8 @@ trajectory::InterpolatedPtr planOMPL(
 /// \param[in] start The start state
 /// \param[in] goal The goal state
 /// \param[in] statespace The StateSpace that the planner must plan within
-/// \param[in] interpolator An Interpolator defined on the StateSpace. This is used
+/// \param[in] interpolator An Interpolator defined on the StateSpace. This is
+/// used
 /// to interpolate between two points within the space.
 /// \param[in] dmetric A valid distance metric defined on the StateSpace
 /// \param[in] sampler A Sampleable that can sample states from the
@@ -132,7 +133,8 @@ trajectory::InterpolatedPtr planOMPL(
 /// between projecting and validity checking two successive points on a tree
 /// extension
 /// \param[in] roadmapPath The path to the graph to be used
-/// \param[in] lookahead The number of edges over which lazy search is performed.
+/// \param[in] lookahead The number of edges over which lazy search is
+/// performed.
 /// The lookahead helps interpolate between LWA* and LazySP
 trajectory::InterpolatedPtr planLRAstar(
     const statespace::StateSpace::State* start,
