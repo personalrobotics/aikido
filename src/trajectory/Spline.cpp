@@ -252,5 +252,24 @@ void Spline::getWaypointDerivative(
   }
 }
 
+//==============================================================================
+double Spline::getSegmentDuration(std::size_t _index) const
+{
+  return mSegments[_index].mDuration;
+}
+
+//==============================================================================
+const Eigen::MatrixXd& Spline::getSegmentCoefficients(std::size_t _index) const
+{
+  return mSegments[_index].mCoefficients;
+}
+
+//==============================================================================
+const aikido::statespace::StateSpace::State* Spline::getSegmentState(
+    std::size_t _index) const
+{
+  return mSegments[_index].mStartState;
+}
+
 } // namespace trajectory
 } // namespace aikido

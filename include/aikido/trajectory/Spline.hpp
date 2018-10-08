@@ -132,20 +132,21 @@ public:
       int _derivative,
       Eigen::VectorXd& _tangentVector) const;
 
-  double getSegmentDuration(std::size_t _index) const
-  {
-    return mSegments[_index].mDuration;
-  }
+  /// Gets the duration of a segment.
+  /// \param _index segment index
+  /// \return duration of the segment at index \c _index
+  double getSegmentDuration(std::size_t _index) const;
 
-  const Eigen::MatrixXd& getSegmentCoefficients(std::size_t _index) const
-  {
-    return mSegments[_index].mCoefficients;
-  }
+  /// Gets the coefficients of a segment.
+  /// \param _index segment index
+  /// \return coefficients of the segment at index \c _index
+  const Eigen::MatrixXd& getSegmentCoefficients(std::size_t _index) const;
 
-  aikido::statespace::StateSpace::State* getSegmentState(std::size_t _index) const
-  {
-    return mSegments[_index].mStartState;
-  }
+  /// Gets the start state of a segment.
+  /// \param _index segment index
+  /// \return start state of the segment at index \c _index
+  const aikido::statespace::StateSpace::State* getSegmentState(
+      std::size_t _index) const;
 
 private:
   struct PolynomialSegment

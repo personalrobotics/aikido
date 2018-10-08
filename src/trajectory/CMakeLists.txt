@@ -1,6 +1,7 @@
 set(sources
   Interpolated.cpp
   Spline.cpp
+  util.cpp
 )
 
 add_library("${PROJECT_NAME}_trajectory" SHARED ${sources})
