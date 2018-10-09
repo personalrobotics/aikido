@@ -71,11 +71,15 @@ trajectory::TrajectoryPtr planToConfiguration(
     const StateSpace::State* goalState,
     const TestablePtr& collisionTestable,
     RNG* rng,
-    double timelimit)
+    double timelimit,
+    statespace::InterpolatorPtr interpolator,
+    std::unique_ptr<distance::DistanceMetric> distanceMetric)
 {
   using planner::ompl::planOMPL;
   using planner::ConfigurationToConfiguration;
   using planner::SnapConfigurationToConfigurationPlanner;
+
+//  auto space = std::make_shared<aikido::statespace::dart::MetaSkeletonStateSpace>(metaSkeleton.get());
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
@@ -89,10 +93,18 @@ trajectory::TrajectoryPtr planToConfiguration(
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
+  if(!interpolator)
+  {
+    std::cout << "LOL" << std::endl;
+    interpolator = std::make_shared<GeodesicInterpolator>(space);
+  }
+  if(!distanceMetric)
+    distanceMetric = std::move(createDistanceMetric(space));
+
   auto problem = ConfigurationToConfiguration(
       space, startState, goalState, collisionTestable);
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      space, std::make_shared<GeodesicInterpolator>(space));
+      space, interpolator);
   untimedTrajectory = planner->plan(problem, &pResult);
 
   // Return if the trajectory is non-empty
@@ -103,7 +115,7 @@ trajectory::TrajectoryPtr planToConfiguration(
       startState,
       goalState,
       space,
-      std::make_shared<GeodesicInterpolator>(space),
+      interpolator,
       createDistanceMetric(space),
       createSampleableBounds(space, rng->clone()),
       collisionTestable,

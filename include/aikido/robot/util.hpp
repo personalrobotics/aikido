@@ -14,6 +14,8 @@
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
+#include "aikido/statespace/Interpolator.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
 
 namespace aikido {
 namespace robot {
@@ -105,7 +107,9 @@ trajectory::TrajectoryPtr planToConfiguration(
     const statespace::StateSpace::State* goalState,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
-    double timelimit);
+    double timelimit,
+    statespace::InterpolatorPtr interpolator = nullptr,
+    std::unique_ptr<distance::DistanceMetric> distanceMetric = std::unique_ptr<distance::DistanceMetric>());
 
 /// Plan the robot to a set of configurations.
 /// Restores the robot to its initial configuration after planning.

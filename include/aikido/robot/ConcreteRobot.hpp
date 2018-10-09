@@ -17,6 +17,8 @@
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
+#include "aikido/statespace/Interpolator.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
 
 namespace aikido {
 namespace robot {
@@ -130,7 +132,9 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::statespace::StateSpace::State* goalState,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
+      double timelimit,
+      aikido::statespace::InterpolatorPtr interpolator = nullptr,
+      std::unique_ptr<aikido::distance::DistanceMetric> distanceMetric = std::unique_ptr<aikido::distance::DistanceMetric>());
 
   /// TODO: Replace this with Problem interface.
   /// Wrapper for planToConfiguration using Eigen vectors.

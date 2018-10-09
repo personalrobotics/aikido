@@ -325,7 +325,9 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
     const CollisionFreePtr& collisionFree,
-    double timelimit)
+    double timelimit,
+    statespace::InterpolatorPtr interpolator,
+    std::unique_ptr<distance::DistanceMetric> distanceMetric)
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
@@ -336,7 +338,9 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
       goalState,
       collisionConstraint,
       cloneRNG().get(),
-      timelimit);
+      timelimit,
+      interpolator,
+      std::move(distanceMetric));
 }
 
 //==============================================================================
