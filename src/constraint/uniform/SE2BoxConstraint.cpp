@@ -93,10 +93,10 @@ SE2BoxConstraint::SE2BoxConstraint(
   , mRnDimension(2)
   , mDimension(3)
 {
-  mLowerLimits[0] = -M_PI;
-  mUpperLimits[0] = M_PI;
-  mLowerLimits.tail<2>() = lowerLimits;
-  mUpperLimits.tail<2>() = upperLimits;
+  mLowerLimits.head<2>() = lowerLimits;
+  mUpperLimits.head<2>() = upperLimits;
+  mLowerLimits[2] = -M_PI;
+  mUpperLimits[2] = M_PI;
 
   if (!mSpace)
     throw std::invalid_argument("StateSpace is null.");
@@ -117,7 +117,7 @@ SE2BoxConstraint::SE2BoxConstraint(
     throw std::invalid_argument(msg.str());
   }
 
-  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = 0; i < mRnDimension; ++i)
   {
     if (mLowerLimits[i] > mUpperLimits[i])
     {
@@ -146,7 +146,7 @@ bool SE2BoxConstraint::isSatisfied(
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(state), tangent);
 
-  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = 0; i < mRnDimension; ++i)
   {
     if (tangent[i] < mLowerLimits[i] || tangent[i] > mUpperLimits[i])
     {
@@ -175,7 +175,7 @@ bool SE2BoxConstraint::project(
   Eigen::VectorXd tangent;
   mSpace->logMap(static_cast<const statespace::SE2::State*>(s), tangent);
 
-  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = 0; i < mRnDimension; ++i)
   {
     if (tangent[i] < mLowerLimits[i])
       tangent[i] = mLowerLimits[i];
@@ -195,7 +195,7 @@ SE2BoxConstraint::createSampleGenerator() const
   if (!mRng)
     throw std::invalid_argument("mRng is null.");
 
-  for (std::size_t i = mDimension - mRnDimension; i < mDimension; ++i)
+  for (std::size_t i = 0; i < mRnDimension; ++i)
   {
     if (!(std::isfinite(mLowerLimits[i]) && std::isfinite(mUpperLimits[i])))
     {
@@ -214,13 +214,13 @@ SE2BoxConstraint::createSampleGenerator() const
 //==============================================================================
 Eigen::Vector2d SE2BoxConstraint::getLowerLimits() const
 {
-  return mLowerLimits.tail<2>();
+  return mLowerLimits.head<2>();
 }
 
 //==============================================================================
 Eigen::Vector2d SE2BoxConstraint::getUpperLimits() const
 {
-  return mUpperLimits.tail<2>();
+  return mUpperLimits.head<2>();
 }
 
 } // namespace uniform
