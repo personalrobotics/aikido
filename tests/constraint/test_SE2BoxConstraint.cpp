@@ -24,7 +24,7 @@ protected:
   static constexpr std::size_t NUM_X_TARGETS{5};
   static constexpr std::size_t NUM_Y_TARGETS{5};
   static constexpr std::size_t NUM_A_TARGETS{5};
-  static constexpr std::size_t NUM_SAMPLES{100};
+  static constexpr std::size_t NUM_SAMPLES{125};
   static constexpr double DISTANCE_THRESHOLD{1.5};
 #else
   static constexpr std::size_t NUM_X_TARGETS{10};
