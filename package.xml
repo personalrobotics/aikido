@@ -32,6 +32,7 @@
   <depend>trajectory_msgs</depend>
   <depend>visualization_msgs</depend>
   <depend>pr_control_msgs</depend>
+  <depend>octomap_ros</depend>
 
   <doc_depend>doxygen</doc_depend>
 
