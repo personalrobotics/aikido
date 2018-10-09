@@ -16,6 +16,8 @@ testing::AssertionResult SampleGeneratorCoverage(
 {
   std::vector<int> counts(std::distance(_beginTargets, _endTargets), 0);
 
+  std::cout << counts.size() << " " << _numSamples << std::endl;
+
   const auto stateSpace = _generator.getStateSpace();
   auto state = stateSpace->createState();
 
@@ -27,18 +29,35 @@ testing::AssertionResult SampleGeneratorCoverage(
     if (!_generator.sample(state))
       return ::testing::AssertionFailure() << "Failed sampling.";
 
+    Eigen::VectorXd tangent;
+    stateSpace->logMap(state, tangent);
+    // std::cout << tangent[0] << " " << tangent[1] << " " << tangent[2] << std::endl;
+
     std::size_t itarget = 0;
-    for (Iterator it = _beginTargets; it != _endTargets; ++it, ++itarget)
+    for (Iterator it = _beginTargets; it != _endTargets; ++it)
     {
+      stateSpace->logMap(*it, tangent);
+      std::cout << tangent[0] << " " << tangent[1] << " " << tangent[2] << std::endl;
+
       if (_metric.distance(state, *it) < _distanceThreshold)
         counts[itarget]++;
+
+      if (itarget == 0)
+      {
+        std::cout << _metric.distance(state, *it) << std::endl;
+      }
+      itarget++;
     }
   }
 
-  for (auto count : counts)
+  // for (auto count : counts)
+  for (std::size_t i = 0; i < counts.size(); ++i)
   {
-    if (count == 0)
+    if (counts[i] == 0)
+    {
+      std::cout << i << std::endl;
       return ::testing::AssertionFailure() << "Missed one or more targets.";
+    }
   }
 
   return testing::AssertionSuccess();
