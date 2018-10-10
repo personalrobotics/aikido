@@ -209,11 +209,12 @@ void extractJointTrajectoryPoint(
 }
 
 //==============================================================================
-void extractTrajectoryPoint(
+Eigen::VectorXd extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
     double timeFromStart,
-    trajectory_msgs::JointTrajectoryPoint& waypoint)
+    trajectory_msgs::JointTrajectoryPoint& waypoint,
+    Eigen::VectorXd& previousPoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
@@ -222,8 +223,33 @@ void extractTrajectoryPoint(
 
   Eigen::VectorXd tangentVector;
   auto state = space->createState();
-  trajectory->evaluate(timeAbsolute, state);
-  space->logMap(state, tangentVector);
+  if (previousPoint.size() == 0)
+  {
+    trajectory->evaluate(timeAbsolute, state);
+    space->logMap(state, tangentVector);
+  }
+  else
+  {
+    auto interpolator
+      = std::make_shared<aikido::statespace::GeodesicInterpolator>(
+          space);
+
+    auto prevState = space->createState();
+    space->convertPositionsToState(previousPoint, prevState);
+
+    std::cout << "PreviousPoint " << previousPoint.transpose() << std::endl;
+
+    trajectory->evaluate(timeAbsolute, state);
+    space->convertStateToPositions(state, tangentVector);
+
+    std::cout << "[Ros] Old State " << tangentVector.transpose() << std::endl;
+    space->convertStateToPositions(prevState, tangentVector);
+
+    auto diff = interpolator->getTangentVector(prevState, state);
+    std::cout << "[Ros] Diff " << diff.transpose() << std::endl;
+    tangentVector += diff;
+    std::cout << "[Ros] New State " << tangentVector.transpose() << std::endl;
+  }
 
   assert(tangentVector.size() == numDof);
 
@@ -242,6 +268,8 @@ void extractTrajectoryPoint(
     derivatives[iDerivative - 1]->assign(
         tangentVector.data(), tangentVector.data() + tangentVector.size());
   }
+  std::cout << "[Ros] returned State " << tangentVector.transpose() << std::endl;
+  return tangentVector;
 }
 
 //==============================================================================
@@ -546,13 +574,14 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
+  Eigen::VectorXd previousPoint;
   jointTrajectory.points.reserve(numWaypoints);
-  for (const auto timeFromStart : timeSequence)
+
+  for (std::size_t i = 0; i < numWaypoints; ++i)
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
-
-    extractTrajectoryPoint(space, trajectory, timeFromStart, waypoint);
-
+    previousPoint = extractTrajectoryPoint(space, trajectory, timeSequence[i], waypoint, previousPoint);
+    std::cout << "Received: " << previousPoint.transpose() << std::endl;
     jointTrajectory.points.emplace_back(waypoint);
   }
 

@@ -1,4 +1,5 @@
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
+#include <iostream>
 
 #include "aikido/common/VanDerCorput.hpp"
 #include "aikido/constraint/Testable.hpp"
@@ -42,6 +43,7 @@ trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
     mInterpolator->interpolate(startState, goalState, alpha, testState);
     if (!constraint->isSatisfied(testState))
     {
+      std::cout << alpha << " " << constraint->isSatisfied(testState) << std::endl;
       if (result)
         result->setMessage("Collision detected");
 

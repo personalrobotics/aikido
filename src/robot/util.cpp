@@ -110,27 +110,27 @@ trajectory::TrajectoryPtr planToConfiguration(
   }
 
   // Plan with graph-based methods
-  untimedTrajectory = planLRAstar(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution,
-      "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
-      "graph_30_1000k.graphml",
-      1000);
+  // untimedTrajectory = planLRAstar(
+  //     startState,
+  //     goalState,
+  //     space,
+  //     std::make_shared<GeodesicInterpolator>(space),
+  //     createDistanceMetric(space),
+  //     createSampleableBounds(space, rng->clone()),
+  //     collisionTestable,
+  //     createTestableBounds(space),
+  //     createProjectableBounds(space),
+  //     timelimit,
+  //     collisionResolution,
+  //     "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
+  //     "graph_30_1000k.graphml",
+  //     1000);
 
-  if (untimedTrajectory)
-  {
-    std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
-    return untimedTrajectory;
-  }
+  // if (untimedTrajectory)
+  // {
+  //   std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
+  //   return untimedTrajectory;
+  // }
 
   // Plan with sampling-based methods
   untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
