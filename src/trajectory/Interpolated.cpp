@@ -1,4 +1,5 @@
 #include <aikido/trajectory/Interpolated.hpp>
+#include <iostream>
 
 using aikido::statespace::GeodesicInterpolator;
 
@@ -92,6 +93,10 @@ void Interpolated::evaluate(double _t, State* _state) const
     // Time past end of trajectory - return last waypoint
     mStateSpace->copyState(mWaypoints.back().state, _state);
   }
+
+  Eigen::VectorXd position(mStateSpace->getDimension());
+  mStateSpace->logMap(_state, position);
+  std::cout << "Interpolated Position is " << position.transpose() << std::endl;
 }
 
 //==============================================================================

@@ -133,6 +133,10 @@ void KinematicSimulationTrajectoryExecutor::step(
   auto state = mStateSpace->createState();
   mTraj->evaluate(executionTime, state);
 
+  Eigen::VectorXd position;
+  mStateSpace->convertStateToPositions(state, position);
+  std::cout << executionTime << " " << position.transpose() << std::endl;
+
   mStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Check if trajectory has completed.
