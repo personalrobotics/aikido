@@ -16,9 +16,22 @@ namespace trajectory {
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const aikido::trajectory::Interpolated& _inputTrajectory);
 
+/// Convert a piecewise linear spline trajectory to an interpolated trajectory
+/// using a given interpolator.
+/// \param[in] spline trajectory
+/// \param[in] interpolator used in connecting two ends of a segment
+/// \return an interpolated trajectory
+std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
+    const aikido::trajectory::Spline& traj,
+    const aikido::statespace::InterpolatorPtr interpolator);
+
 /// Concatenate two spline trajectories
-/// This function converts two spline trajectories into interpolated for
-/// concatenation, then convert the concatenated interpolated to spline.
+/// This function converts two spline trajectories into interpolated
+/// trajectories
+/// (geodesic interpolator) for concatenation, then convert the concatenated
+/// interpolated to spline. The start state of the last segment in the first
+/// trajectory is connected with the start of the first segment in the second
+/// trajectory in concatenation.
 ///
 /// \param[in] the first half spline trajectory
 /// \param[in] the second half spline trajectory

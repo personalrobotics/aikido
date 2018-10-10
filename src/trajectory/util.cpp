@@ -22,6 +22,8 @@ namespace po = boost::program_options;
 using Eigen::Vector2d;
 using LinearSplineProblem
     = aikido::common::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
+using CubicSplineProblem = aikido::common::
+    SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
 
 namespace aikido {
 namespace trajectory {
@@ -174,7 +176,6 @@ double findTimeOfClosetStateOnTrajectory(
       minDist = currDist;
     }
   }
-
   return findTime;
 }
 
@@ -186,12 +187,8 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
       || partialStartTime > traj.getEndTime())
     throw std::runtime_error("Wrong partial start time");
 
-  using dart::common::make_unique;
-  using CubicSplineProblem = aikido::common::
-      SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
-
   auto stateSpace = traj.getStateSpace();
-  std::size_t dimension = stateSpace->getDimension();
+  const std::size_t dimension = stateSpace->getDimension();
   auto outputTrajectory = make_unique<aikido::trajectory::Spline>(
       stateSpace, traj.getStartTime());
 
@@ -214,7 +211,6 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
     if (partialStartTime >= currSegmentStartTime
         && partialStartTime <= currSegmentEndTime)
     {
-
       // create new segment
       traj.evaluate(currSegmentEndTime, segmentEndState);
       stateSpace->logMap(segmentEndState, segEndPos);
@@ -232,7 +228,6 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
         problem.addConstantConstraint(1, 1, segEndVel);
         const auto solution = problem.fit();
         const auto coefficients = solution.getCoefficients().front();
-
         outputTrajectory->addSegment(
             coefficients, segmentDuration, segmentStartState);
       }
@@ -250,20 +245,15 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
         traj.getSegmentDuration(i),
         traj.getSegmentState(i));
   }
-
   return outputTrajectory;
 }
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
-    const aikido::trajectory::Spline& traj)
+    const aikido::trajectory::Spline& traj,
+    const aikido::statespace::InterpolatorPtr interpolator)
 {
-  using dart::common::make_unique;
   auto stateSpace = traj.getStateSpace();
-
-  auto interpolator
-      = std::make_shared<aikido::statespace::GeodesicInterpolator>(stateSpace);
-
   auto outputTrajectory
       = make_unique<aikido::trajectory::Interpolated>(stateSpace, interpolator);
 
@@ -288,7 +278,6 @@ std::unique_ptr<aikido::trajectory::Interpolated> concatenate(
       != traj2.getStateSpace()->getDimension())
     throw std::runtime_error("Dimension mismatch");
 
-  using dart::common::make_unique;
   auto stateSpace = traj1.getStateSpace();
 
   auto outputTrajectory = make_unique<aikido::trajectory::Interpolated>(
@@ -314,8 +303,13 @@ std::unique_ptr<aikido::trajectory::Spline> concatenate(
     const aikido::trajectory::Spline& traj1,
     const aikido::trajectory::Spline& traj2)
 {
-  auto interpolated1 = convertToInterpolated(traj1);
-  auto interpolated2 = convertToInterpolated(traj2);
+  if (traj1.getStateSpace() != traj2.getStateSpace())
+    throw std::runtime_error("State space mismatch");
+  auto stateSpace = traj1.getStateSpace();
+  auto interpolator
+      = std::make_shared<aikido::statespace::GeodesicInterpolator>(stateSpace);
+  auto interpolated1 = convertToInterpolated(traj1, interpolator);
+  auto interpolated2 = convertToInterpolated(traj2, interpolator);
   auto concatenatedInterpolated = concatenate(*interpolated1, *interpolated2);
   return convertToSpline(*concatenatedInterpolated);
 }
