@@ -11,68 +11,9 @@
 using Eigen::Vector2d;
 using dart::common::make_unique;
 
-using LinearSplineProblem
-    = aikido::common::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
-
 namespace aikido {
 namespace planner {
 namespace parabolic {
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const aikido::trajectory::Interpolated& _inputTrajectory)
-{
-  using aikido::statespace::GeodesicInterpolator;
-
-  if (!std::dynamic_pointer_cast<const GeodesicInterpolator>(
-          _inputTrajectory.getInterpolator()))
-  {
-    throw std::invalid_argument(
-        "The interpolator of _inputTrajectory should be a "
-        "GeodesicInterpolator");
-  }
-
-  const auto stateSpace = _inputTrajectory.getStateSpace();
-  const auto dimension = stateSpace->getDimension();
-  const auto numWaypoints = _inputTrajectory.getNumWaypoints();
-
-  if (!detail::checkStateSpace(stateSpace.get()))
-    throw std::invalid_argument(
-        "computeParabolicTiming only supports Rn, "
-        "SO2, and CartesianProducts consisting of those types.");
-
-  if (numWaypoints == 0)
-    throw std::invalid_argument("Trajectory is empty.");
-
-  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(
-      stateSpace, _inputTrajectory.getStartTime());
-
-  Eigen::VectorXd currentVec, nextVec;
-  for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
-  {
-    const auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
-    double currentTime = _inputTrajectory.getWaypointTime(iwaypoint);
-    const auto nextState = _inputTrajectory.getWaypoint(iwaypoint + 1);
-    double nextTime = _inputTrajectory.getWaypointTime(iwaypoint + 1);
-
-    stateSpace->logMap(currentState, currentVec);
-    stateSpace->logMap(nextState, nextVec);
-
-    // Compute the spline coefficients for this segment of the trajectory.
-    LinearSplineProblem problem(
-        Vector2d(0, nextTime - currentTime), 2, dimension);
-    problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
-    problem.addConstantConstraint(1, 0, nextVec - currentVec);
-    const auto spline = problem.fit();
-
-    assert(spline.getCoefficients().size() == 1);
-    const auto& coefficients = spline.getCoefficients().front();
-    outputTrajectory->addSegment(
-        coefficients, nextTime - currentTime, currentState);
-  }
-
-  return outputTrajectory;
-}
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(

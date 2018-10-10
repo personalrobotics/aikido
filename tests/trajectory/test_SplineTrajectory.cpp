@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/Spline.hpp>
+#include <aikido/trajectory/util.hpp>
 
 using namespace aikido::statespace;
 using aikido::trajectory::Spline;
@@ -353,4 +354,69 @@ TEST_F(SplineTest, EvaluateDerivative_HigherOrder_ReturnsZero)
 
   trajectory.evaluateDerivative(7.5, 3, tangentVector);
   EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
+}
+
+TEST_F(SplineTest, findTimeOfClosetStateOnTrajectory)
+{
+  Matrix2d coefficients;
+  coefficients << 0., 1., 0., 1.;
+
+  std::shared_ptr<Spline> trajectory = std::make_shared<Spline>(mStateSpace);
+  auto startState = mStateSpace->createState();
+  mStateSpace->setValue(startState, Vector2d(1., 1.));
+  trajectory->addSegment(coefficients, 2., startState);
+
+  Vector2d query(1., 2.);
+  double time
+      = findTimeOfClosetStateOnTrajectory(trajectory.get(), query, 1e-4);
+  EXPECT_EQ(time, 0.5);
+}
+
+TEST_F(SplineTest, ConcatenateTwoTrajectories)
+{
+  Matrix2d coefficients1, coefficients2;
+  coefficients1 << 0., 1., 0., 2.;
+  coefficients2 << 0., 3., 0., 4.;
+
+  Spline traj1(mStateSpace), traj2(mStateSpace);
+  auto startState1 = mStateSpace->createState();
+  auto startState2 = mStateSpace->createState();
+  auto state = mStateSpace->createState();
+  mStateSpace->setValue(startState1, Vector2d(1., 2.));
+  mStateSpace->setValue(startState2, Vector2d(3., 6.));
+  traj1.addSegment(coefficients1, 1., startState1);
+  traj2.addSegment(coefficients2, 1., startState2);
+
+  auto newTraj = aikido::trajectory::concatenate(traj1, traj2);
+
+  newTraj->evaluate(0., state);
+  EXPECT_TRUE(Vector2d(1., 2.).isApprox(state.getValue()));
+
+  newTraj->evaluate(1., state);
+  EXPECT_TRUE(Vector2d(3., 6.).isApprox(state.getValue()));
+
+  newTraj->evaluate(2., state);
+  EXPECT_TRUE(Vector2d(6., 10.).isApprox(state.getValue()));
+}
+
+TEST_F(SplineTest, createPartialTrajectory)
+{
+  Matrix2d coefficients;
+  coefficients << 0., 1., 0., 1.;
+
+  Spline trajectory(mStateSpace);
+  auto startState = mStateSpace->createState();
+  mStateSpace->setValue(startState, Vector2d(1., 1.));
+  trajectory.addSegment(coefficients, 2., startState);
+  auto state = mStateSpace->createState();
+
+  auto partialTraj = createPartialTrajectory(trajectory, 1.0);
+
+  partialTraj->evaluate(0., state);
+  EXPECT_TRUE(Vector2d(2., 2.).isApprox(state.getValue()));
+
+  partialTraj->evaluate(1., state);
+  EXPECT_TRUE(Vector2d(3., 3.).isApprox(state.getValue()));
+
+  EXPECT_EQ(partialTraj->getDuration() + 1.0, trajectory.getDuration());
 }

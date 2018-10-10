@@ -6,24 +6,150 @@
 #include <aikido/common/Spline.hpp>
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/util.hpp>
 
+using aikido::statespace::R;
+using aikido::statespace::SO2;
+using aikido::statespace::CartesianProduct;
+using dart::common::make_unique;
+
 namespace po = boost::program_options;
+
+using Eigen::Vector2d;
+using LinearSplineProblem
+    = aikido::common::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
 
 namespace aikido {
 namespace trajectory {
 
+namespace {
+
+bool checkStateSpace(const statespace::StateSpace* _stateSpace)
+{
+  // TODO(JS): Generalize Rn<N> for arbitrary N.
+  if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<1>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R<Eigen::Dynamic>*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const SO2*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
+  {
+    for (std::size_t isubspace = 0; isubspace < space->getNumSubspaces();
+         ++isubspace)
+    {
+      if (!checkStateSpace(space->getSubspace<>(isubspace).get()))
+        return false;
+    }
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+}
+
 //==============================================================================
-double findClosetStateOnTrajectory(
+std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+    const aikido::trajectory::Interpolated& _inputTrajectory)
+{
+  using aikido::statespace::GeodesicInterpolator;
+
+  if (!std::dynamic_pointer_cast<const GeodesicInterpolator>(
+          _inputTrajectory.getInterpolator()))
+  {
+    throw std::invalid_argument(
+        "The interpolator of _inputTrajectory should be a "
+        "GeodesicInterpolator");
+  }
+
+  const auto stateSpace = _inputTrajectory.getStateSpace();
+  const auto dimension = stateSpace->getDimension();
+  const auto numWaypoints = _inputTrajectory.getNumWaypoints();
+
+  if (!checkStateSpace(stateSpace.get()))
+    throw std::invalid_argument(
+        "computeParabolicTiming only supports Rn, "
+        "SO2, and CartesianProducts consisting of those types.");
+
+  if (numWaypoints == 0)
+    throw std::invalid_argument("Trajectory is empty.");
+
+  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(
+      stateSpace, _inputTrajectory.getStartTime());
+
+  Eigen::VectorXd currentVec, nextVec;
+  for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
+  {
+    const auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
+    double currentTime = _inputTrajectory.getWaypointTime(iwaypoint);
+    const auto nextState = _inputTrajectory.getWaypoint(iwaypoint + 1);
+    double nextTime = _inputTrajectory.getWaypointTime(iwaypoint + 1);
+
+    stateSpace->logMap(currentState, currentVec);
+    stateSpace->logMap(nextState, nextVec);
+
+    // Compute the spline coefficients for this segment of the trajectory.
+    LinearSplineProblem problem(
+        Vector2d(0, nextTime - currentTime), 2, dimension);
+    problem.addConstantConstraint(0, 0, Eigen::VectorXd::Zero(dimension));
+    problem.addConstantConstraint(1, 0, nextVec - currentVec);
+    const auto spline = problem.fit();
+
+    assert(spline.getCoefficients().size() == 1);
+    const auto& coefficients = spline.getCoefficients().front();
+    outputTrajectory->addSegment(
+        coefficients, nextTime - currentTime, currentState);
+  }
+
+  return outputTrajectory;
+}
+
+//==============================================================================
+double findTimeOfClosetStateOnTrajectory(
     const aikido::trajectory::Trajectory* traj,
-    const Eigen::VectorXd& config,
+    const Eigen::VectorXd& referenceState,
     double timeStep)
 {
   if (traj == nullptr)
     throw std::runtime_error("Traj is nullptr");
   auto stateSpace = traj->getStateSpace();
-  std::size_t configSize = config.size();
+  std::size_t configSize = referenceState.size();
   if (configSize != stateSpace->getDimension())
     throw std::runtime_error("Dimension mismatch");
 
@@ -41,14 +167,13 @@ double findClosetStateOnTrajectory(
     traj->evaluate(currTime, currState);
     stateSpace->logMap(currState, currPos);
 
-    double currDist = (config - currPos).norm();
+    double currDist = (referenceState - currPos).norm();
     if (currDist < minDist)
     {
       findTime = currTime;
       minDist = currDist;
     }
   }
-  std::cout << "findClosestStateOnTrajectory minDist: " << minDist << std::endl;
 
   return findTime;
 }
@@ -89,9 +214,7 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
     if (partialStartTime >= currSegmentStartTime
         && partialStartTime <= currSegmentEndTime)
     {
-      std::cout << "FIND " << partialStartTime << " IN " << currSegmentIdx
-                << "-th [" << currSegmentStartTime;
-      std::cout << " , " << currSegmentEndTime << "]" << std::endl;
+
       // create new segment
       traj.evaluate(currSegmentEndTime, segmentEndState);
       stateSpace->logMap(segmentEndState, segEndPos);
@@ -122,7 +245,6 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
 
   for (std::size_t i = currSegmentIdx + 1; i < traj.getNumSegments(); i++)
   {
-    // std::cout << "CONTINUE ADDING " << i << "-th SEGMENT" << std::endl;
     outputTrajectory->addSegment(
         traj.getSegmentCoefficients(i),
         traj.getSegmentDuration(i),
@@ -195,7 +317,7 @@ std::unique_ptr<aikido::trajectory::Spline> concatenate(
   auto interpolated1 = convertToInterpolated(traj1);
   auto interpolated2 = convertToInterpolated(traj2);
   auto concatenatedInterpolated = concatenate(*interpolated1, *interpolated2);
-  return aikido::planner::parabolic::convertToSpline(*concatenatedInterpolated);
+  return convertToSpline(*concatenatedInterpolated);
 }
 
 } // namespace trajectory
