@@ -87,7 +87,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
+aikido::trajectory::UniqueSplinePtr convertToSpline(
     const aikido::trajectory::Interpolated& _inputTrajectory)
 {
   using aikido::statespace::GeodesicInterpolator;
@@ -180,7 +180,7 @@ double findTimeOfClosetStateOnTrajectory(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
+aikido::trajectory::UniqueSplinePtr createPartialTrajectory(
     const aikido::trajectory::Spline& traj, double partialStartTime)
 {
   if (partialStartTime < traj.getStartTime()
@@ -198,8 +198,10 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
 
   auto segmentStartState = stateSpace->createState();
   auto segmentEndState = stateSpace->createState();
-  Eigen::VectorXd segStartPos(dimension), segEndPos(dimension),
-      segStartVel(dimension), segEndVel(dimension);
+  Eigen::VectorXd segStartPos(dimension);
+  Eigen::VectorXd segEndPos(dimension);
+  Eigen::VectorXd segStartVel(dimension);
+  Eigen::VectorXd segEndVel(dimension);
   const Eigen::VectorXd zeroPos = Eigen::VectorXd::Zero(dimension);
   traj.evaluate(partialStartTime, segmentStartState);
   stateSpace->logMap(segmentStartState, segStartPos);
@@ -249,9 +251,9 @@ std::unique_ptr<aikido::trajectory::Spline> createPartialTrajectory(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
+aikido::trajectory::UniqueInterpolatedPtr convertToInterpolated(
     const aikido::trajectory::Spline& traj,
-    const aikido::statespace::InterpolatorPtr interpolator)
+    aikido::statespace::ConstInterpolatorPtr& interpolator)
 {
   auto stateSpace = traj.getStateSpace();
   auto outputTrajectory
@@ -270,7 +272,7 @@ std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Interpolated> concatenate(
+aikido::trajectory::UniqueInterpolatedPtr concatenate(
     const aikido::trajectory::Interpolated& traj1,
     const aikido::trajectory::Interpolated& traj2)
 {
@@ -299,14 +301,14 @@ std::unique_ptr<aikido::trajectory::Interpolated> concatenate(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> concatenate(
+aikido::trajectory::UniqueSplinePtr concatenate(
     const aikido::trajectory::Spline& traj1,
     const aikido::trajectory::Spline& traj2)
 {
   if (traj1.getStateSpace() != traj2.getStateSpace())
     throw std::runtime_error("State space mismatch");
   auto stateSpace = traj1.getStateSpace();
-  auto interpolator
+  aikido::statespace::ConstInterpolatorPtr interpolator
       = std::make_shared<aikido::statespace::GeodesicInterpolator>(stateSpace);
   auto interpolated1 = convertToInterpolated(traj1, interpolator);
   auto interpolated2 = convertToInterpolated(traj2, interpolator);
