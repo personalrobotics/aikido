@@ -260,9 +260,6 @@ trajectory::TrajectoryPtr planToTSR(
     double timelimit,
     std::size_t maxNumTrials)
 {
-
-  std::cout << __LINE__ << std::endl;
-
   using planner::ompl::planOMPL;
   using planner::ompl::planLRAstar;
 
