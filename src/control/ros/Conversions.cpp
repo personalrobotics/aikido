@@ -214,7 +214,7 @@ Eigen::VectorXd extractTrajectoryPoint(
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint,
-    Eigen::VectorXd& previousPoint)
+    Eigen::VectorXd previousPoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
@@ -222,6 +222,7 @@ Eigen::VectorXd extractTrajectoryPoint(
   DART_UNUSED(numDof);
 
   Eigen::VectorXd tangentVector;
+  Eigen::VectorXd returnVector;
   auto state = space->createState();
   if (previousPoint.size() == 0)
   {
@@ -249,6 +250,7 @@ Eigen::VectorXd extractTrajectoryPoint(
     std::cout << "[Ros] Diff " << diff.transpose() << std::endl;
     tangentVector += diff;
     std::cout << "[Ros] New State " << tangentVector.transpose() << std::endl;
+    returnVector = tangentVector;
   }
 
   assert(tangentVector.size() == numDof);
@@ -269,7 +271,7 @@ Eigen::VectorXd extractTrajectoryPoint(
         tangentVector.data(), tangentVector.data() + tangentVector.size());
   }
   std::cout << "[Ros] returned State " << tangentVector.transpose() << std::endl;
-  return tangentVector;
+  return returnVector;
 }
 
 //==============================================================================
@@ -574,7 +576,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
-  Eigen::VectorXd previousPoint;
+  Eigen::VectorXd previousPoint = Eigen::VectorXd::Zero(0);
   jointTrajectory.points.reserve(numWaypoints);
 
   for (std::size_t i = 0; i < numWaypoints; ++i)
