@@ -96,7 +96,7 @@ void Interpolated::evaluate(double _t, State* _state) const
 
   Eigen::VectorXd position(mStateSpace->getDimension());
   mStateSpace->logMap(_state, position);
-  std::cout << "Interpolated Position is " << position.transpose() << std::endl;
+  // std::cout << "Interpolated Position is " << position.transpose() << std::endl;
 }
 
 //==============================================================================

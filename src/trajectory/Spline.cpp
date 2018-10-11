@@ -131,7 +131,7 @@ void Spline::evaluate(double _t, statespace::StateSpace::State* _out) const
 
   Eigen::VectorXd position(mStateSpace->getDimension());
   mStateSpace->logMap(_out, position);
-  std::cout << "Interpolated Position is " << position.transpose() << std::endl;
+  // std::cout << "Interpolated Position is " << position.transpose() << std::endl;
 }
 
 //==============================================================================

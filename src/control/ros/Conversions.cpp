@@ -222,7 +222,8 @@ Eigen::VectorXd extractTrajectoryPoint(
   DART_UNUSED(numDof);
 
   Eigen::VectorXd tangentVector;
-  Eigen::VectorXd returnVector;
+  Eigen::VectorXd returnVector(space->getDimension());
+
   auto state = space->createState();
   if (previousPoint.size() == 0)
   {
@@ -238,19 +239,21 @@ Eigen::VectorXd extractTrajectoryPoint(
     auto prevState = space->createState();
     space->convertPositionsToState(previousPoint, prevState);
 
-    std::cout << "PreviousPoint " << previousPoint.transpose() << std::endl;
+    // std::cout << "PreviousPoint " << previousPoint.transpose() << std::endl;
 
     trajectory->evaluate(timeAbsolute, state);
     space->convertStateToPositions(state, tangentVector);
+    // std::cout << "[Ros] Old State " << tangentVector.transpose() << std::endl;
 
-    std::cout << "[Ros] Old State " << tangentVector.transpose() << std::endl;
     space->convertStateToPositions(prevState, tangentVector);
 
     auto diff = interpolator->getTangentVector(prevState, state);
-    std::cout << "[Ros] Diff " << diff.transpose() << std::endl;
-    tangentVector += diff;
+    // std::cout << "[Ros] Diff " << diff.transpose() << std::endl;
+    tangentVector = previousPoint + diff;
     std::cout << "[Ros] New State " << tangentVector.transpose() << std::endl;
-    returnVector = tangentVector;
+
+    for (int i = 0; i < tangentVector.size(); ++i)
+      returnVector(i) = tangentVector(i);
   }
 
   assert(tangentVector.size() == numDof);
@@ -270,7 +273,7 @@ Eigen::VectorXd extractTrajectoryPoint(
     derivatives[iDerivative - 1]->assign(
         tangentVector.data(), tangentVector.data() + tangentVector.size());
   }
-  std::cout << "[Ros] returned State " << tangentVector.transpose() << std::endl;
+  // std::cout << "[Ros] returned State " << returnVector.transpose() << std::endl;
   return returnVector;
 }
 
@@ -453,8 +456,17 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     numCoefficients = 2; // linear
 
   // Convert the ROS trajectory message to an Aikido spline.
-  std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{space}};
-  auto currState = space->createState();
+  // Add a segment to the trajectory.
+  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+  for (std::size_t citer = 0; citer < space->getDimension(); ++citer)
+  {
+    subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
+  }
+
+  auto compoundSpace
+      = std::make_shared<const aikido::statespace::CartesianProduct>(subspaces);
+  std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{compoundSpace}};
+  auto currState = compoundSpace->createState();
 
   const auto& waypoints = jointTrajectory.points;
   for (std::size_t iWaypoint = 1; iWaypoint < waypoints.size(); ++iWaypoint)
@@ -490,8 +502,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
         nextAcceleration,
         numCoefficients);
 
-    // Add a segment to the trajectory.
-    space->convertPositionsToState(currPosition, currState);
+    compoundSpace->expMap(currPosition, currState);
     trajectory->addSegment(segmentCoefficients, segmentDuration, currState);
 
     // Advance to the next segment.
@@ -576,14 +587,14 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
-  Eigen::VectorXd previousPoint = Eigen::VectorXd::Zero(0);
+  Eigen::VectorXd previousPoint(0);
   jointTrajectory.points.reserve(numWaypoints);
 
   for (std::size_t i = 0; i < numWaypoints; ++i)
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
     previousPoint = extractTrajectoryPoint(space, trajectory, timeSequence[i], waypoint, previousPoint);
-    std::cout << "Received: " << previousPoint.transpose() << std::endl;
+    // std::cout << "Received: " << previousPoint.transpose() << std::endl;
     jointTrajectory.points.emplace_back(waypoint);
   }
 
