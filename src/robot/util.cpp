@@ -379,7 +379,7 @@ trajectory::TrajectoryPtr planToTSR(
     {
       std::cout << "[utils:PlanToTSR] SnapPlanner Successful." << std::endl;
       space->convertStateToPositions(configurations_raw[i], goalPosition);
-      std::cout << goalPosition.transpose() << std::endl;
+      //std::cout << goalPosition.transpose() << std::endl;
       return untimedTrajectory;
     }
   }

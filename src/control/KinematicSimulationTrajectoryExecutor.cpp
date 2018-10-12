@@ -135,7 +135,7 @@ void KinematicSimulationTrajectoryExecutor::step(
 
   Eigen::VectorXd position;
   mStateSpace->convertStateToPositions(state, position);
-  std::cout << executionTime << " " << position.transpose() << std::endl;
+  //std::cout << "t: " << executionTime << ",  pos: " << position.transpose() << std::endl;
 
   mStateSpace->setState(mMetaSkeleton.get(), state);
 
