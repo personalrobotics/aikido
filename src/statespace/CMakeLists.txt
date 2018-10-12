@@ -6,6 +6,7 @@ set(sources
   SE3.cpp
   SO2.cpp
   SO3.cpp
+  CartesianProductInterpolator.cpp
   GeodesicInterpolator.cpp
   dart/JointStateSpace.cpp
   dart/JointStateSpaceHelpers.cpp

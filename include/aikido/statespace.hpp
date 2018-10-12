@@ -1,4 +1,5 @@
 #include "statespace/CartesianProduct.hpp"
+#include "statespace/CartesianProductInterpolator.hpp"
 #include "statespace/GeodesicInterpolator.hpp"
 #include "statespace/Interpolator.hpp"
 #include "statespace/Rn.hpp"
