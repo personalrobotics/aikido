@@ -415,6 +415,12 @@ trajectory::TrajectoryPtr planToTSR(
   {
     std::lock_guard<std::mutex> lock(robot->getMutex());
 
+    aikido::constraint::dart::CollisionFreeOutcome collisionCheckOutcome;
+    if (!collisionTestable->isSatisfied(configurations_raw[i]))
+    {
+      continue;
+    }
+
     // Plan with graph-based methods
     TrajectoryPtr untimedTrajectory = planLRAstar(
         startState,
