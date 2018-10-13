@@ -33,10 +33,16 @@
   * Rewrote executors for faster-than-realtime simulation: [#316](https://github.com/personalrobotics/aikido/pull/316), [#450](https://github.com/personalrobotics/aikido/pull/450)
   * Introduced uniform and dart namespaces: [#342](https://github.com/personalrobotics/aikido/pull/342)
   * Removed Barrett-specific hand executors: [#380](https://github.com/personalrobotics/aikido/pull/380)
+  * Supported canceling in-progress trajectories: [#400](https://github.com/personalrobotics/aikido/pull/400)
 
 * Perception
 
   * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
+  * Added voxel grid perception module: [#448](https://github.com/personalrobotics/aikido/pull/448)
+
+* Trajectory
+
+  * Added B-spline trajectory: [#453](https://github.com/personalrobotics/aikido/pull/453)
 
 * Planner
 
@@ -48,6 +54,7 @@
   * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
   * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)
   * Added a kinodynamic timer that generates a time-optimal smooth trajectory without completely stopping at each waypoint: [#443](https://github.com/personalrobotics/aikido/pull/443)
+  * Fixed segmentation fault on 32-bit machines in vector-field planner: [#459](https://github.com/personalrobotics/aikido/pull/459)
 
 * Robot
 
@@ -74,6 +81,10 @@
   * Added methods for removing groups from NonColliding constraints: [#247](https://github.com/personalrobotics/aikido/pull/247)
   * Renamed NonColliding to CollisionFree: [#256](https://github.com/personalrobotics/aikido/pull/256)
   * Added TestableOutcome class: [#266](https://github.com/personalrobotics/aikido/pull/266)
+
+* Control
+
+  * Added Instantaneous and Queued TrajectoryExecutors: [#259](https://github.com/personalrobotics/aikido/pull/259)
 
 * Perception
 
