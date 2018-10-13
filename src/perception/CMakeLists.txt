@@ -77,6 +77,7 @@ target_link_libraries("${PROJECT_NAME}_perception"
 target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
+message(STATUS "[DEBUG] DART_HAS_VOXELGRIDSHAPE: ${DART_HAS_VOXELGRIDSHAPE}")
 target_compile_definitions("${PROJECT_NAME}_perception"
   PUBLIC -DDART_HAS_VOXELGRIDSHAPE=${DART_HAS_VOXELGRIDSHAPE}
 )
