@@ -74,12 +74,12 @@ public:
 
   // Documentation inherited.
   virtual constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
 
@@ -154,12 +154,6 @@ private:
 
   /// CRRTPlanner-related parameters
   util::CRRTPlannerParameters mCRRTParameters;
-
-  /// Returns the direction of an end-effector (along z axis) in the world frame
-  /// \param[in] body Bodynode for the end-effector
-  /// \return The direction of the end-effector (z axis of the frame)
-  Eigen::Vector3d getEndEffectorDirection(
-      const dart::dynamics::BodyNodePtr& body) const;
 };
 
 } // namespace robot

@@ -28,7 +28,7 @@ public:
   virtual ~Differentiable() = default;
 
   /// Gets the StateSpace that this constraint operates on.
-  virtual statespace::StateSpacePtr getStateSpace() const = 0;
+  virtual statespace::ConstStateSpacePtr getStateSpace() const = 0;
 
   /// Returns a vector of constraints' types, i-th element correspoinding to
   /// the type of i-th constraint.

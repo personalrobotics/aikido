@@ -93,14 +93,28 @@ public:
 
   // Documentation inherited.
   virtual aikido::constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const override;
 
   // Documentation inherited.
   virtual aikido::constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
+
+  // Get a smoothing post postprocessor that respects velocity and acceleration
+  // limits, as well as the passed constraint.
+  /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      bool enableShortcut,
+      bool enableBlend,
+      double shortcutTimelimit,
+      double blendRadius,
+      int blendIterations,
+      double feasibilityCheckResolution,
+      double feasibilityApproxTolerance) const;
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its

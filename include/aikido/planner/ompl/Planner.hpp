@@ -54,7 +54,7 @@ template <class PlannerType>
 trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,
     const statespace::StateSpace::State* _goal,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -96,7 +96,7 @@ trajectory::InterpolatedPtr planOMPL(
     const statespace::StateSpace::State* _start,
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -144,7 +144,7 @@ trajectory::InterpolatedPtr planCRRT(
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
     constraint::ProjectablePtr _trajConstraint,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -196,7 +196,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
     constraint::TestablePtr _goalTestable,
     constraint::SampleablePtr _goalSampler,
     constraint::ProjectablePtr _trajConstraint,
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -229,7 +229,7 @@ trajectory::InterpolatedPtr planCRRTConnect(
 /// \param _maxDistanceBtwValidityChecks The maximum distance (under dmetric)
 /// between validity checking two successive points on a tree extension
 ::ompl::base::SpaceInformationPtr getSpaceInformation(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     statespace::InterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
@@ -265,7 +265,7 @@ ompl_shared_ptr<::ompl::base::GoalRegion> getGoalRegion(
 trajectory::InterpolatedPtr planOMPL(
     const ::ompl::base::PlannerPtr& _planner,
     const ::ompl::base::ProblemDefinitionPtr& _pdef,
-    statespace::StateSpacePtr _sspace,
+    statespace::ConstStateSpacePtr _sspace,
     statespace::InterpolatorPtr _interpolator,
     double _maxPlanTime);
 

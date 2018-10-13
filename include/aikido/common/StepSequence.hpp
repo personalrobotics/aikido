@@ -36,6 +36,13 @@ public:
       double startPoint = 0.0,
       double endPoint = 1.0);
 
+  /// Constructs StepSequence in Matlab's linspace() style.
+  StepSequence(
+      double startPoint,
+      double endPoint,
+      std::size_t numSteps,
+      bool includeEndpoint = true);
+
   /// Returns an iterator to the first element of the sequence.
   ///
   /// \return Iterator to the first element of the sequence.
@@ -58,12 +65,16 @@ public:
   std::size_t getLength() const;
 
 private:
-  /// Computes the total length of sequence. This is only called in the
-  /// contructor.
-  void updateLength();
+  /// Computes the total length of sequence given step size. This is only called
+  /// in the contructor.
+  void updateNumSteps();
+
+  /// Computes the step size of sequence given number of steps. This is only
+  /// called in the contructor.
+  void updateStepSize();
 
   /// Step size increments from the start point to the end point.
-  const double mStepSize;
+  double mStepSize;
 
   /// Whether the start point in the sequence will be the start point.
   const bool mIncludeStartPoint;

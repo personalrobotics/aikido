@@ -28,13 +28,13 @@ public:
   /// \param lowerLimits Lower limits on the state, only on x and y.
   /// \param upperLimits Upper limits on the state, only on x and y.
   SE2BoxConstraint(
-      std::shared_ptr<statespace::SE2> space,
+      std::shared_ptr<const statespace::SE2> space,
       std::unique_ptr<common::RNG> rng,
       const Eigen::Vector2d& lowerLimits,
       const Eigen::Vector2d& upperLimits);
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Documentation inherited.
   bool isSatisfied(
@@ -61,7 +61,7 @@ public:
   Eigen::Vector2d getUpperLimits() const;
 
 private:
-  std::shared_ptr<statespace::SE2> mSpace;
+  std::shared_ptr<const statespace::SE2> mSpace;
 
   std::unique_ptr<common::RNG> mRng;
 

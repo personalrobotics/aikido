@@ -1,8 +1,31 @@
+#include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
 #include <aikido/statespace/SE3.hpp>
 
 using aikido::statespace::SE3;
 using Vector6d = Eigen::Matrix<double, 6, 1>;
+
+TEST(SE3, Clone)
+{
+  SE3 se3;
+
+  for (auto i = 0u; i < 5u; ++i)
+  {
+    Eigen::Isometry3d pose = Eigen::Isometry3d::Identity();
+    const auto angle = dart::math::random(-M_PI, M_PI);
+    const auto axis = Eigen::Vector3d::Random().normalized();
+    const auto angleAxis = Eigen::AngleAxisd(angle, axis);
+    pose.linear() = angleAxis.toRotationMatrix();
+    pose.translation() = Eigen::Vector3d::Random();
+
+    auto s1 = se3.createState();
+    s1.setIsometry(pose);
+
+    auto s2 = s1.clone();
+
+    EXPECT_TRUE(s1.getIsometry().isApprox(s2.getIsometry()));
+  }
+}
 
 TEST(SE3, Compose)
 {
@@ -23,10 +46,14 @@ TEST(SE3, Compose)
 
   Eigen::Isometry3d expected = pose2 * pose3;
 
-  SE3::ScopedState out(&space);
-  space.compose(s2, s3, out);
+  SE3::ScopedState out1(&space);
+  space.compose(s2, s3, out1); // out1 = s2 * s3
+  EXPECT_TRUE(expected.isApprox(out1.getIsometry()));
 
-  EXPECT_TRUE(expected.isApprox(out.getIsometry()));
+  SE3::ScopedState out2(&space);
+  space.copyState(s2, out2); // out2 = s2
+  space.compose(out2, s3);   // out2 = out2 * s3
+  EXPECT_TRUE(expected.isApprox(out2.getIsometry()));
 }
 
 TEST(SE3, Identity)

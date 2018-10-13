@@ -12,9 +12,9 @@ namespace vectorfield {
 
 //==============================================================================
 MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-    dart::dynamics::MetaSkeletonPtr metaskeleton,
-    dart::dynamics::BodyNodePtr bn,
+    aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    ::dart::dynamics::ConstBodyNodePtr bn,
     const Eigen::Vector3d& direction,
     double minDistance,
     double maxDistance,
@@ -50,7 +50,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 bool MoveEndEffectorOffsetVectorField::evaluateCartesianVelocity(
     const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
-  using dart::math::logMap;
+  using ::dart::math::logMap;
   using aikido::planner::vectorfield::computeGeodesicError;
 
   Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);

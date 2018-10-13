@@ -66,7 +66,7 @@ public:
 private:
   aikido::constraint::TestablePtr mTestable;
   double mCheckResolution;
-  aikido::statespace::StateSpacePtr mStateSpace;
+  aikido::statespace::ConstStateSpacePtr mStateSpace;
   aikido::statespace::GeodesicInterpolator mInterpolator;
 };
 

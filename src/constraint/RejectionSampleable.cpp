@@ -11,7 +11,7 @@ class RejectionSampler : public SampleGenerator
 {
 public:
   RejectionSampler(
-      statespace::StateSpacePtr _stateSpace,
+      statespace::ConstStateSpacePtr _stateSpace,
       std::unique_ptr<SampleGenerator> _sampler,
       TestablePtr _testable,
       int _maxTrialPerSample);
@@ -25,7 +25,7 @@ public:
   virtual ~RejectionSampler() = default;
 
   // Documentation inherited.
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   // Documentation inherited.
   bool sample(statespace::StateSpace::State* _state) override;
@@ -37,7 +37,7 @@ public:
   int getNumSamples() const override;
 
 private:
-  statespace::StateSpacePtr mStateSpace;
+  statespace::ConstStateSpacePtr mStateSpace;
   std::unique_ptr<SampleGenerator> mSampler;
   TestablePtr mTestable;
   int mMaxTrialPerSample;
@@ -84,7 +84,7 @@ RejectionSampleable::RejectionSampleable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr RejectionSampleable::getStateSpace() const
+statespace::ConstStateSpacePtr RejectionSampleable::getStateSpace() const
 {
   return mStateSpace;
 }
@@ -100,7 +100,7 @@ std::unique_ptr<SampleGenerator> RejectionSampleable::createSampleGenerator()
 
 //==============================================================================
 RejectionSampler::RejectionSampler(
-    statespace::StateSpacePtr _stateSpace,
+    statespace::ConstStateSpacePtr _stateSpace,
     std::unique_ptr<SampleGenerator> _sampler,
     TestablePtr _testable,
     int _maxTrialPerSample)
@@ -123,7 +123,7 @@ RejectionSampler::RejectionSampler(
 }
 
 //==============================================================================
-statespace::StateSpacePtr RejectionSampler::getStateSpace() const
+statespace::ConstStateSpacePtr RejectionSampler::getStateSpace() const
 {
   return mStateSpace;
 }

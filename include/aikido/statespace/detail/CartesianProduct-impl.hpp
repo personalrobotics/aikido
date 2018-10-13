@@ -1,3 +1,5 @@
+#include "aikido/statespace/CartesianProduct.hpp"
+
 #include <sstream>
 
 namespace aikido {
@@ -20,6 +22,7 @@ public:
   /// Construct and initialize to \c nullptr.
   CompoundStateHandle()
   {
+    // Do nothing
   }
 
   /// Construct a handle for \c _state in \c _space.
@@ -29,6 +32,7 @@ public:
   CompoundStateHandle(const StateSpace* _space, State* _state)
     : statespace::StateHandle<CartesianProduct, QualifiedState>(_space, _state)
   {
+    // Do nothing
   }
 
   /// Gets state by subspace index.
@@ -37,7 +41,19 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = statespace::StateSpace>
-  typename Space::State* getSubState(std::size_t _index) const
+  typename Space::State* getSubState(std::size_t _index)
+  {
+    return this->getStateSpace()->template getSubState<Space>(
+        this->getState(), _index);
+  }
+
+  /// Gets state by subspace index.
+  ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
+  /// \param _index in the range [ 0, \c getNumSubspaces() ]
+  /// \return state at \c _index
+  template <class Space = statespace::StateSpace>
+  const typename Space::State* getSubState(std::size_t _index) const
   {
     return this->getStateSpace()->template getSubState<Space>(
         this->getState(), _index);
@@ -50,9 +66,23 @@ public:
   /// \param _index in the range [ 0, \c getNumSubspaces() ]
   /// \return state at \c _index
   template <class Space = statespace::StateSpace>
-  typename Space::StateHandle getSubStateHandle(std::size_t _index) const
+  typename Space::StateHandle getSubStateHandle(std::size_t _index)
   {
     return typename Space::StateHandle(
+        this->getStateSpace()->template getSubspace<Space>(_index).get(),
+        getSubState<Space>(_index));
+  }
+
+  /// Gets state by subspace index and wraps it in a \c Space::StateHandle
+  /// helper class.
+  ///
+  /// \tparam Space type of \c StateSpace for subspace \c _index
+  /// \param _index in the range [ 0, \c getNumSubspaces() ]
+  /// \return state at \c _index
+  template <class Space = statespace::StateSpace>
+  typename Space::StateHandleConst getSubStateHandle(std::size_t _index) const
+  {
+    return typename Space::StateHandleConst(
         this->getStateSpace()->template getSubspace<Space>(_index).get(),
         getSubState<Space>(_index));
   }
@@ -60,11 +90,12 @@ public:
 
 //==============================================================================
 template <class Space>
-std::shared_ptr<Space> CartesianProduct::getSubspace(std::size_t _index) const
+std::shared_ptr<const Space> CartesianProduct::getSubspace(
+    std::size_t _index) const
 {
   // TODO: Replace this with a static_cast in release mode.
   const auto rawSpace = mSubspaces[_index];
-  auto space = std::dynamic_pointer_cast<Space>(rawSpace);
+  auto space = std::dynamic_pointer_cast<const Space>(rawSpace);
   if (!space)
   {
     // Create a reference to *rawSpace so we can use it in typeid below. Doing

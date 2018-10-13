@@ -21,7 +21,7 @@ public:
   /// \param _metrics A vector containing one element for every component of the
   /// CartesianProduct
   CartesianProductWeighted(
-      std::shared_ptr<statespace::CartesianProduct> _space,
+      std::shared_ptr<const statespace::CartesianProduct> _space,
       std::vector<DistanceMetricPtr> _metrics);
 
   /// Constructor.
@@ -36,7 +36,7 @@ public:
       std::vector<std::pair<DistanceMetricPtr, double>> _metrics);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes distance between two states as the weighted sum of distances
   /// between their matching subcomponents.
@@ -48,7 +48,7 @@ public:
       const statespace::StateSpace::State* _state2) const override;
 
 private:
-  std::shared_ptr<statespace::CartesianProduct> mStateSpace;
+  std::shared_ptr<const statespace::CartesianProduct> mStateSpace;
   std::vector<std::pair<DistanceMetricPtr, double>> mMetrics;
 };
 

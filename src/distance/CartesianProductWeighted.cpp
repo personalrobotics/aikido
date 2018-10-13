@@ -5,7 +5,7 @@ namespace distance {
 
 //==============================================================================
 CartesianProductWeighted::CartesianProductWeighted(
-    std::shared_ptr<statespace::CartesianProduct> _space,
+    std::shared_ptr<const statespace::CartesianProduct> _space,
     std::vector<DistanceMetricPtr> _metrics)
   : mStateSpace(std::move(_space))
 {
@@ -92,7 +92,7 @@ CartesianProductWeighted::CartesianProductWeighted(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductWeighted::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductWeighted::getStateSpace() const
 {
   return mStateSpace;
 }

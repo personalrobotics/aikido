@@ -9,10 +9,13 @@ namespace robot {
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
+using constraint::ConstTestablePtr;
+using planner::TrajectoryPostProcessor;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
+using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::StateSpacePtr;
 using statespace::StateSpace;
 using trajectory::TrajectoryPtr;
@@ -234,7 +237,7 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
 
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space,
+    const ConstMetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton) const
 {
   using constraint::dart::CollisionFree;
@@ -258,7 +261,7 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
 
 //=============================================================================
 TestablePtr ConcreteRobot::getFullCollisionConstraint(
-    const MetaSkeletonStateSpacePtr& space,
+    const ConstMetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
     const CollisionFreePtr& collisionFree) const
 {
@@ -274,7 +277,7 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
     return selfCollisionFree;
 
   // Make testable constraints for collision check
-  std::vector<TestablePtr> constraints;
+  std::vector<ConstTestablePtr> constraints;
   constraints.reserve(2);
   constraints.emplace_back(selfCollisionFree);
   if (collisionFree)
@@ -287,6 +290,33 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
   }
 
   return std::make_shared<TestableIntersection>(space, constraints);
+}
+
+//==============================================================================
+std::shared_ptr<TrajectoryPostProcessor>
+ConcreteRobot::getTrajectoryPostProcessor(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    bool enableShortcut,
+    bool enableBlend,
+    double shortcutTimelimit,
+    double blendRadius,
+    int blendIterations,
+    double feasibilityCheckResolution,
+    double feasibilityApproxTolerance) const
+{
+  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
+  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
+
+  return std::make_shared<ParabolicSmoother>(
+      velocityLimits,
+      accelerationLimits,
+      enableShortcut,
+      enableBlend,
+      shortcutTimelimit,
+      blendRadius,
+      blendIterations,
+      feasibilityCheckResolution,
+      feasibilityApproxTolerance);
 }
 
 //==============================================================================

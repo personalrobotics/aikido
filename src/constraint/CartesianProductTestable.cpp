@@ -8,8 +8,8 @@ using dart::common::make_unique;
 
 //==============================================================================
 CartesianProductTestable::CartesianProductTestable(
-    std::shared_ptr<statespace::CartesianProduct> _stateSpace,
-    std::vector<std::shared_ptr<Testable>> _constraints)
+    std::shared_ptr<const statespace::CartesianProduct> _stateSpace,
+    std::vector<ConstTestablePtr> _constraints)
   : mStateSpace(std::move(_stateSpace)), mConstraints(std::move(_constraints))
 {
   if (!mStateSpace)
@@ -46,7 +46,7 @@ CartesianProductTestable::CartesianProductTestable(
 }
 
 //==============================================================================
-statespace::StateSpacePtr CartesianProductTestable::getStateSpace() const
+statespace::ConstStateSpacePtr CartesianProductTestable::getStateSpace() const
 {
   return mStateSpace;
 }

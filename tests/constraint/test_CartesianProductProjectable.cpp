@@ -33,7 +33,7 @@ public:
     projectables.push_back(rvBox2);
 
     cs = std::make_shared<CartesianProduct>(
-        std::vector<aikido::statespace::StateSpacePtr>({rvss1, rvss2}));
+        std::vector<aikido::statespace::ConstStateSpacePtr>({rvss1, rvss2}));
   }
 
   std::shared_ptr<CartesianProduct> cs;
