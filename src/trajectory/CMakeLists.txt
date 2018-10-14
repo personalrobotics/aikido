@@ -1,4 +1,5 @@
 set(sources
+  BSpline.cpp
   Interpolated.cpp
   Spline.cpp
 )
