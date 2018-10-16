@@ -123,7 +123,7 @@ trajectory::TrajectoryPtr planToConfiguration(
       timelimit,
       collisionResolution,
       "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
-      "graph_25_1000.graphml",
+      "graph_25_5000.graphml",
       1000);
 
   if (untimedTrajectory)
@@ -435,11 +435,12 @@ trajectory::TrajectoryPtr planToTSR(
         timelimit,
         collisionResolution,
         "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
-        "graph_25_1000.graphml",
+        "graph_25_5000.graphml",
         1000);
 
     if (untimedTrajectory)
     {
+      // return untimedTrajectory;
       std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
       auto interpolatedTrajectory = std::dynamic_pointer_cast<aikido::trajectory::Interpolated>(
             (untimedTrajectory));
