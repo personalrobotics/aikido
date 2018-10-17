@@ -429,7 +429,7 @@ trajectory::TrajectoryPtr planToTSR(
           createProjectableBounds(space),
           timelimit,
           collisionResolution,
-          "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_20_20000.graphml",
+          "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_20_8000.graphml",
           1000);
 
       if (untimedTrajectory)
