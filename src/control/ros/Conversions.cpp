@@ -227,8 +227,12 @@ Eigen::VectorXd extractTrajectoryPoint(
   auto state = space->createState();
   if (previousPoint.size() == 0)
   {
+    // std::cout << "Size 0 " << std::endl;
     trajectory->evaluate(timeAbsolute, state);
     space->logMap(state, tangentVector);
+    // std::cout << "[Ros] New State " << tangentVector.transpose() << std::endl;
+    for (int i = 0; i < tangentVector.size(); ++i)
+      returnVector(i) = tangentVector(i);
   }
   else
   {
@@ -245,12 +249,12 @@ Eigen::VectorXd extractTrajectoryPoint(
     space->convertStateToPositions(state, tangentVector);
     // std::cout << "[Ros] Old State " << tangentVector.transpose() << std::endl;
 
-    space->convertStateToPositions(prevState, tangentVector);
+    // space->convertStateToPositions(prevState, tangentVector);
 
     auto diff = interpolator->getTangentVector(prevState, state);
     // std::cout << "[Ros] Diff " << diff.transpose() << std::endl;
     tangentVector = previousPoint + diff;
-    std::cout << "[Ros] New State " << tangentVector.transpose() << std::endl;
+    // std::cout << "[Ros] New State " << tangentVector.transpose() << std::endl;
 
     for (int i = 0; i < tangentVector.size(); ++i)
       returnVector(i) = tangentVector(i);
@@ -434,6 +438,9 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
       rosJointToMetaSkeletonJoint,
       unspecifiedMetaSkeletonJoints,
       startPositions);
+  
+  // std::cout << "Positions extracted from the ros trajectory: " << std::endl;
+  // std::cout << currPosition.transpose() << std::endl;
 
   const auto& firstWaypoint = jointTrajectory.points.front();
   auto currTimeFromStart = firstWaypoint.time_from_start.toSec();
@@ -510,6 +517,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     currVelocity = nextVelocity;
     currAcceleration = nextAcceleration;
     currTimeFromStart = nextTimeFromStart;
+
+    // std::cout << currPosition.transpose() << std::endl;
   }
 
   return trajectory;
@@ -594,7 +603,6 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
     previousPoint = extractTrajectoryPoint(space, trajectory, timeSequence[i], waypoint, previousPoint);
-    // std::cout << "Received: " << previousPoint.transpose() << std::endl;
     jointTrajectory.points.emplace_back(waypoint);
   }
 
