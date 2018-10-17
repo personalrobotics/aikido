@@ -122,8 +122,7 @@ trajectory::TrajectoryPtr planToConfiguration(
       createProjectableBounds(space),
       timelimit,
       collisionResolution,
-      "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
-      "graph_25_5000.graphml",
+      "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_25_5000.graphml",
       1000);
 
   if (untimedTrajectory)
@@ -240,8 +239,7 @@ trajectory::TrajectoryPtr planToConfigurations(
         createProjectableBounds(space),
         timelimit,
         collisionResolution,
-        "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
-        "graph_30_1000k.graphml",
+        "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_25_5000.graphml",
         1000);
 
     if (untimedTrajectory)
@@ -434,8 +432,7 @@ trajectory::TrajectoryPtr planToTSR(
         createProjectableBounds(space),
         timelimit,
         collisionResolution,
-        "/home/adityavk/ada-ws/src/planning_dataset/data/ada/"
-        "graph_25_5000.graphml",
+        "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_25_5000.graphml",
         1000);
 
     if (untimedTrajectory)
