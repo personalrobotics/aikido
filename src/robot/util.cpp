@@ -403,54 +403,23 @@ trajectory::TrajectoryPtr planToTSR(
       //std::cout << goalPosition.transpose() << std::endl;
       return untimedTrajectory;
     }
-  }
 
-  std::cout << "[utils:PlanToTSR] SnapPlanner Failed. Trying LRAstar." <<
-  std::endl;
-
-  // Next try graph-based methods
-  for (std::size_t i = 0; i < configurations_raw.size(); ++i)
-  {
-    std::lock_guard<std::mutex> lock(robot->getMutex());
-
-    aikido::constraint::dart::CollisionFreeOutcome collisionCheckOutcome;
-    if (!collisionTestable->isSatisfied(configurations_raw[i]))
+    else
     {
-      continue;
-    }
+      std::lock_guard<std::mutex> lock(robot->getMutex());
 
-    // Plan with graph-based methods
-    TrajectoryPtr untimedTrajectory = planLRAstar(
-        startState,
-        configurations_raw[i],
-        space,
-        std::make_shared<GeodesicInterpolator>(space),
-        createDistanceMetric(space),
-        createSampleableBounds(space, rng->clone()),
-        collisionTestable,
-        createTestableBounds(space),
-        createProjectableBounds(space),
-        timelimit,
-        collisionResolution,
-        "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_25_5000.graphml",
-        1000);
-
-    if (untimedTrajectory)
-    {
-      // return untimedTrajectory;
-      std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
-      auto interpolatedTrajectory = std::dynamic_pointer_cast<aikido::trajectory::Interpolated>(
-            (untimedTrajectory));
-
-      Eigen::VectorXd trajPoint;
-      auto trajState = space->createState();
-      for (std::size_t i = 0; i < interpolatedTrajectory->getNumWaypoints(); ++i)
+      aikido::constraint::dart::CollisionFreeOutcome collisionCheckOutcome;
+      if (!collisionTestable->isSatisfied(configurations_raw[i]))
       {
-        auto waypoint = interpolatedTrajectory->getWaypoint(i);
-        space->copyState(waypoint, trajState);
-        space->convertStateToPositions(trajState, trajPoint);
+        std::cout << "Collision Detected!" << std::endl;
+        continue;
       }
-      auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
+      std::cout << "Collision-Free! Planning" << std::endl;
+
+      // Plan with graph-based methods
+      TrajectoryPtr untimedTrajectory = planLRAstar(
+          startState,
+          configurations_raw[i],
           space,
           std::make_shared<GeodesicInterpolator>(space),
           createDistanceMetric(space),
@@ -458,20 +427,128 @@ trajectory::TrajectoryPtr planToTSR(
           collisionTestable,
           createTestableBounds(space),
           createProjectableBounds(space),
-          0.1,
-          20.0,
-          20,
-          interpolatedTrajectory);
+          timelimit,
+          collisionResolution,
+          "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_25_5000.graphml",
+          1000);
 
-      // Simplification results
-      auto simplifiedTraj = std::move(simplifiedPair.first);
-      bool shorten_success = simplifiedPair.second;
+      if (untimedTrajectory)
+      {
+        // return untimedTrajectory;
+        std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
+        auto interpolatedTrajectory = std::dynamic_pointer_cast<aikido::trajectory::Interpolated>(
+              (untimedTrajectory));
 
-      std::cout << "Shortening Success: " << shorten_success << std::endl;
-      InterpolatedPtr returnTrajectory = std::move(simplifiedTraj);
-      return returnTrajectory;
+        Eigen::VectorXd trajPoint;
+        auto trajState = space->createState();
+        for (std::size_t i = 0; i < interpolatedTrajectory->getNumWaypoints(); ++i)
+        {
+          auto waypoint = interpolatedTrajectory->getWaypoint(i);
+          space->copyState(waypoint, trajState);
+          space->convertStateToPositions(trajState, trajPoint);
+          std::cout << "Planned Point: " << trajPoint.transpose() << std::endl;
+        }
+        auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
+            space,
+            std::make_shared<GeodesicInterpolator>(space),
+            createDistanceMetric(space),
+            createSampleableBounds(space, rng->clone()),
+            collisionTestable,
+            createTestableBounds(space),
+            createProjectableBounds(space),
+            0.1,
+            20.0,
+            20,
+            interpolatedTrajectory);
+
+        // Simplification results
+        auto simplifiedTraj = std::move(simplifiedPair.first);
+        bool shorten_success = simplifiedPair.second;
+
+        std::cout << "Shortening Success: " << shorten_success << std::endl;
+        InterpolatedPtr returnTrajectory = std::move(simplifiedTraj);
+        for (std::size_t i = 0; i < returnTrajectory->getNumWaypoints(); ++i)
+        {
+          auto waypoint = returnTrajectory->getWaypoint(i);
+          space->copyState(waypoint, trajState);
+          space->convertStateToPositions(trajState, trajPoint);
+          std::cout << "Short Point: " << trajPoint.transpose() << std::endl;
+        }
+
+        return returnTrajectory;  
+      }
     }
   }
+
+  // std::cout << "[utils:PlanToTSR] SnapPlanner Failed. Trying LRAstar." <<
+  // std::endl;
+
+  // // Next try graph-based methods
+  // for (std::size_t i = 0; i < configurations_raw.size(); ++i)
+  // {
+  //   std::lock_guard<std::mutex> lock(robot->getMutex());
+
+  //   aikido::constraint::dart::CollisionFreeOutcome collisionCheckOutcome;
+  //   if (!collisionTestable->isSatisfied(configurations_raw[i]))
+  //   {
+  //     std::cout << "Collision Detected!" << std::endl;
+  //     continue;
+  //   }
+  //   std::cout << "Collision-Free! Planning" << std::endl;
+
+  //   // Plan with graph-based methods
+  //   TrajectoryPtr untimedTrajectory = planLRAstar(
+  //       startState,
+  //       configurations_raw[i],
+  //       space,
+  //       std::make_shared<GeodesicInterpolator>(space),
+  //       createDistanceMetric(space),
+  //       createSampleableBounds(space, rng->clone()),
+  //       collisionTestable,
+  //       createTestableBounds(space),
+  //       createProjectableBounds(space),
+  //       timelimit,
+  //       collisionResolution,
+  //       "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_25_5000.graphml",
+  //       1000);
+
+  //   if (untimedTrajectory)
+  //   {
+  //     // return untimedTrajectory;
+  //     std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
+  //     auto interpolatedTrajectory = std::dynamic_pointer_cast<aikido::trajectory::Interpolated>(
+  //           (untimedTrajectory));
+
+  //     Eigen::VectorXd trajPoint;
+  //     auto trajState = space->createState();
+  //     for (std::size_t i = 0; i < interpolatedTrajectory->getNumWaypoints(); ++i)
+  //     {
+  //       auto waypoint = interpolatedTrajectory->getWaypoint(i);
+  //       space->copyState(waypoint, trajState);
+  //       space->convertStateToPositions(trajState, trajPoint);
+  //     }
+  //     auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
+  //         space,
+  //         std::make_shared<GeodesicInterpolator>(space),
+  //         createDistanceMetric(space),
+  //         createSampleableBounds(space, rng->clone()),
+  //         collisionTestable,
+  //         createTestableBounds(space),
+  //         createProjectableBounds(space),
+  //         0.1,
+  //         20.0,
+  //         20,
+  //         interpolatedTrajectory);
+
+  //     // Simplification results
+  //     auto simplifiedTraj = std::move(simplifiedPair.first);
+  //     bool shorten_success = simplifiedPair.second;
+
+  //     std::cout << "Shortening Success: " << shorten_success << std::endl;
+  //     InterpolatedPtr returnTrajectory = std::move(simplifiedTraj);
+  //     return returnTrajectory;
+  //   }
+  // }
    
   std::cout << "Planning Failed" << std::endl;
   return nullptr;

@@ -603,8 +603,10 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
     previousPoint = extractTrajectoryPoint(space, trajectory, timeSequence[i], waypoint, previousPoint);
+    // std::cout << "Received: " << previousPoint.transpose() << std::endl;
     jointTrajectory.points.emplace_back(waypoint);
   }
+  // std::cin.get();
 
   return jointTrajectory;
 }
