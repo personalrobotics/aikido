@@ -26,17 +26,29 @@ aikido::trajectory::UniqueInterpolatedPtr convertToInterpolated(
     const aikido::trajectory::Spline& traj,
     aikido::statespace::ConstInterpolatorPtr& interpolator);
 
-/// Concatenates two spline trajectories
-/// This function converts two spline trajectories into geodesically
-//  interpolated for concatenation, then converts the concatenated
-/// interpolated to spline. The start state of the last segment in the first
+/// Concatenates two interpolated trajectories
+/// This function concatenates two interpolated trajectories into one 
+/// interpolated trajectory. The start state of the last segment in the first
 /// trajectory is connected with the start of the first segment in the second
 /// trajectory in concatenation. For example, concatenating trajectory a: 
 /// [wp1(t=0), wp2(t=1.1), wp3(t=3.0)] and trajectory b: [wp4(t=0), wp5(t=5.0)]
 /// gets a new trajectory: [wp1(t=0), wp2(t=1.1), wp3'(t=3.0), wp5(t=8.0)].
 /// It gaurantees that the new duration is the sum of the durations of the two.
 /// wp3' is dervied by merging wp3 and wp4, which connects the start of wp3 and
-/// the end of wp4.  
+/// the end of wp4. The state spaces of two trajectories should be the same.  
+///
+/// \param[in] traj1 The first half interpolated trajectory
+/// \param[in] traj2 The second half interpolated trajectory
+/// \return the concatenated interpolated trajectory
+aikido::trajectory::UniqueInterpolatedPtr concatenate(
+    const aikido::trajectory::Interpolated& traj1,
+    const aikido::trajectory::Interpolated& traj2);
+
+/// Concatenates two spline trajectories
+/// This function converts two spline trajectories into geodesically
+/// interpolated for concatenation, then converts the concatenated
+/// interpolated to spline. The state spaces of two trajectories 
+/// should be the same.   
 ///
 /// \param[in] traj1 The first half spline trajectory
 /// \param[in] traj2 The second half spline trajectory

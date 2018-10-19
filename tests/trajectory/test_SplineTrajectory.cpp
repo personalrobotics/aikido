@@ -356,7 +356,7 @@ TEST_F(SplineTest, EvaluateDerivative_HigherOrder_ReturnsZero)
   EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
 }
 
-TEST_F(SplineTest, findTimeOfClosetStateOnTrajectory)
+TEST_F(SplineTest, FindTimeOfClosetStateOnTrajectory)
 {
   Matrix2d coefficients;
   coefficients << 0., 1., 0., 1.;
@@ -399,7 +399,7 @@ TEST_F(SplineTest, ConcatenateTwoTrajectories)
   EXPECT_TRUE(Vector2d(6., 10.).isApprox(state.getValue()));
 }
 
-TEST_F(SplineTest, createPartialTrajectory)
+TEST_F(SplineTest, CreatePartialTrajectory)
 {
   Matrix2d coefficients;
   coefficients << 0., 1., 0., 1.;
