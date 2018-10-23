@@ -135,8 +135,8 @@ void SE2::expMap(const Eigen::VectorXd& _tangent, StateSpace::State* _out) const
     throw std::runtime_error(msg.str());
   }
 
-  double angle = _tangent(0);
-  Eigen::Vector2d translation = _tangent.tail<2>();
+  double angle = _tangent(2);
+  Eigen::Vector2d translation = _tangent.head<2>();
 
   Isometry2d transform(Isometry2d::Identity());
   transform.linear() = Eigen::Rotation2Dd(angle).matrix();
@@ -154,10 +154,10 @@ void SE2::logMap(const StateSpace::State* _in, Eigen::VectorXd& _tangent) const
   auto in = static_cast<const State*>(_in);
 
   Isometry2d transform = getIsometry(in);
-  _tangent.tail<2>() = transform.translation();
+  _tangent.head<2>() = transform.translation();
   Eigen::Rotation2Dd rotation = Eigen::Rotation2Dd::Identity();
   rotation.fromRotationMatrix(transform.rotation());
-  _tangent[0] = rotation.angle();
+  _tangent[2] = rotation.angle();
 }
 
 //==============================================================================
