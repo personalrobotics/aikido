@@ -47,12 +47,12 @@ void RosVrpnClient::spin()
 }
 
 //==============================================================================
-std::vector<geometry_msgs::Pose> RosVrpnClient::getLatestPosition(
+std::vector<Eigen::VectorXd> RosVrpnClient::getLatestPosition(
     const std::vector<std::string>& rigidBodies) const
 {
   std::lock_guard<std::mutex> bufferLock{mMutex};
 
-  std::vector<geometry_msgs::Pose> poses;
+  std::vector<Eigen::VectorXd> poses;
   poses.reserve(rigidBodies.size());
 
   for (std::size_t i = 0; i < rigidBodies.size(); ++i)
@@ -76,7 +76,16 @@ std::vector<geometry_msgs::Pose> RosVrpnClient::getLatestPosition(
     }
 
     const auto& record = buffer.back();
-    poses[i] = record.mPose;
+    Eigen::VectorXd pose(7);
+    pose[0] = record.mPose.position.x;
+    pose[1] = record.mPose.position.y;
+    pose[2] = record.mPose.position.z;
+    pose[3] = record.mPose.orientation.x;
+    pose[4] = record.mPose.orientation.y;
+    pose[5] = record.mPose.orientation.z;
+    pose[6] = record.mPose.orientation.w;
+
+    poses.push_back(pose);
   }
 
   return poses;

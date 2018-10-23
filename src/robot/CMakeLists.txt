@@ -30,6 +30,7 @@ target_link_libraries("${PROJECT_NAME}_robot"
     "${PROJECT_NAME}_common"
     "${PROJECT_NAME}_io"
     "${PROJECT_NAME}_planner"
+    "${PROJECT_NAME}_planner_kunzretimer"
     "${PROJECT_NAME}_planner_ompl"
     "${PROJECT_NAME}_planner_parabolic"
     "${PROJECT_NAME}_planner_vectorfield"
@@ -50,6 +51,7 @@ add_component_dependencies(${PROJECT_NAME} robot
   common
   io
   planner
+  planner_kunzretimer
   planner_ompl
   planner_parabolic
   planner_vectorfield

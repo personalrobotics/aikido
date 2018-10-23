@@ -1,6 +1,7 @@
 #ifndef AIKIDO_CONTROL_ROS_ROSVRPNCLIENT_HPP_
 #define AIKIDO_CONTROL_ROS_ROSVRPNCLIENT_HPP_
 
+#include <Eigen/Dense>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -35,7 +36,7 @@ public:
   ///
   /// \param rigidBodies Rigid bodies to read Pose updates for
   /// \return vector of poses for each rigid body
-  std::vector<geometry_msgs::Pose> getLatestPosition(
+  std::vector<Eigen::VectorXd> getLatestPosition(
       const std::vector<std::string>& rigidBodies) const;
 
 private:
