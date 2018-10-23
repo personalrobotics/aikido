@@ -62,7 +62,7 @@
 
 * RViz
 
-  * Join Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
+  * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
 
 * IO
 
