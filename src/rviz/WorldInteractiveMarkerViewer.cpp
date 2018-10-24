@@ -31,9 +31,11 @@ void WorldInteractiveMarkerViewer::setAutoUpdate(bool flag)
 {
   mUpdating.store(flag, std::memory_order_release);
 
-  const bool isRunning = mRunning.exchange(flag);
-  if (flag && !isRunning)
+  const bool wasRunning = mRunning.exchange(flag);
+  if (flag && !wasRunning)
     mThread = std::thread(&WorldInteractiveMarkerViewer::autoUpdate, this);
+  else if (!flag && wasRunning)
+    mThread.join();
 }
 
 //==============================================================================

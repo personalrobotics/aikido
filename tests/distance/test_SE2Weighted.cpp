@@ -105,7 +105,7 @@ TEST(SE2WeightedDistance, DistanceUnitWeights)
 TEST(SE2WeightedDistance, DistanceCustomWeights)
 {
   auto se2 = std::make_shared<SE2>();
-  Eigen::Vector2d weights(1.0, 2.0);
+  Eigen::Vector2d weights(2.0, 1.0);
   SE2Weighted dmetric(se2, weights);
 
   auto state1 = se2->createState();

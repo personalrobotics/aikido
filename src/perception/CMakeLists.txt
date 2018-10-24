@@ -24,6 +24,21 @@ aikido_check_package(visualization_msgs "aikido::perception" "visualization_msgs
 find_package(tf QUIET MODULE)
 aikido_check_package(tf "aikido::perception" "tf")
 
+# Note: Intentionally use "Module" mode because the config file imports "gtest",
+# "tests", and "run_tests" that conflict with the targets defined by Aikido.
+find_package(octomap_ros QUIET MODULE)
+aikido_check_package(octomap_ros "aikido::perception" "octomap_ros")
+
+if(NOT DART_HAS_VOXELGRIDSHAPE)
+    message(WARNING "The installed version of DART ${DART_VERSION} is "
+      "missing dart::dynamics::VoxelGridShape, which is because DART built "
+      "without octomap. Please rebuild DART from source with octomap installed "
+      "to enable VoxelGridModule in AIKIDO. If you installed DART from the PPA "
+      "on Ubuntu Trusty (14.04 LTS), you need to build DART from source. This "
+      "is because octomap is absent on Trusty."
+    )
+endif()
+
 #==============================================================================
 # Libraries
 #
@@ -31,6 +46,7 @@ set(sources
   PoseEstimatorModule.cpp
   shape_conversions.cpp
   ObjectDatabase.cpp
+  VoxelGridModule.cpp
 )
 
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})
@@ -44,6 +60,7 @@ target_include_directories("${PROJECT_NAME}_perception" SYSTEM
     ${tf_INCLUDE_DIRS}
   PRIVATE
     ${visualization_msgs_INCLUDE_DIRS}
+    ${octomap_ros_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_perception"
   PUBLIC
@@ -55,10 +72,16 @@ target_link_libraries("${PROJECT_NAME}_perception"
     ${tf_LIBRARIES}
   PRIVATE
     ${visualization_msgs_LIBRARIES}
+    ${octomap_ros_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
+if(DART_HAS_VOXELGRIDSHAPE)
+  target_compile_definitions("${PROJECT_NAME}_perception"
+    PUBLIC DART_HAS_VOXELGRIDSHAPE
+  )
+endif()
 
 add_component(${PROJECT_NAME} perception)
 add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")

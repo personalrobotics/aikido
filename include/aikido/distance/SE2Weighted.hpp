@@ -7,7 +7,7 @@
 namespace aikido {
 namespace distance {
 
-/// Computes the shortest distance between two angles in SE2
+/// Computes the shortest distance between two states in SE2
 class SE2Weighted : public DistanceMetric
 {
 public:
@@ -20,9 +20,9 @@ public:
   /// Constructor.
   ///
   /// It is a vector of 2 elements, the first element corresponds to the weight
-  /// of angular distance and the second the weight for translational distance
+  /// of translational distance and the second the weight for angular distance
   /// \param space The SE2 this distance metric operates on
-  /// \param weights The weights over angular and translational distances
+  /// \param weights The weights over translational and angular distances
   SE2Weighted(
       std::shared_ptr<const statespace::SE2> space,
       const Eigen::Vector2d& weights);

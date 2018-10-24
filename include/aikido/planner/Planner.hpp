@@ -22,13 +22,18 @@ public:
   /// Constructs from a state space.
   ///
   /// \param[in] stateSpace State space that this planner associated with.
-  explicit Planner(statespace::ConstStateSpacePtr stateSpace);
+  /// \param[in] rng RNG that planner uses. If nullptr, a default is created.
+  explicit Planner(
+      statespace::ConstStateSpacePtr stateSpace, common::RNG* rng = nullptr);
 
   /// Default destructor.
   virtual ~Planner() = default;
 
   /// Returns const state space.
   statespace::ConstStateSpacePtr getStateSpace() const;
+
+  /// Returns RNG.
+  common::RNG* getRng();
 
   /// Returns true if this planner can solve \c problem.
   virtual bool canSolve(const Problem& problem) const = 0;
@@ -44,6 +49,9 @@ public:
 protected:
   /// State space associated with this planner.
   statespace::ConstStateSpacePtr mStateSpace;
+
+  /// RNG the planner uses.
+  std::unique_ptr<common::RNG> mRng;
 };
 
 /// Base class for planning result of various planning problems.

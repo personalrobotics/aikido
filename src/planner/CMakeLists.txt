@@ -13,13 +13,17 @@ set(sources
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  dart/ConfigurationToConfiguration.cpp
+  dart/ConfigurationToConfigurationPlanner.cpp
   dart/ConfigurationToEndEffectorOffset.cpp
   dart/ConfigurationToEndEffectorPose.cpp
   dart/ConfigurationToTSR.cpp
   dart/ConfigurationToEndEffectorOffsetPlanner.cpp
   # dart/ConfigurationToEndEffectorPosePlanner.cpp
   dart/ConfigurationToTSRPlanner.cpp
+  dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
+  dart/util.cpp
   ompl/OMPLConfigurationToConfigurationPlanner.cpp
 )
 
@@ -29,8 +33,8 @@ target_link_libraries("${PROJECT_NAME}_planner"
     "${PROJECT_NAME}_common"
     "${PROJECT_NAME}_constraint"
     "${PROJECT_NAME}_distance"
-    "${PROJECT_NAME}_trajectory"
     "${PROJECT_NAME}_statespace"
+    "${PROJECT_NAME}_trajectory"
     ${DART_LIBRARIES}
     ${Boost_LIBRARIES}
 )
@@ -58,3 +62,4 @@ format_add_sources(${sources})
 add_subdirectory("ompl")        # [constraint], [distance], [statespace], [trajectory], dart, ompl
 add_subdirectory("parabolic")   # [external], [common], [trajectory], [statespace], dart
 add_subdirectory("vectorfield") # [common], [trajectory], [statespace], dart
+add_subdirectory("kunzretimer") # [external], [common], [trajectory], [statespace], dart
