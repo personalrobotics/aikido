@@ -31,6 +31,7 @@ public:
   ///
   /// \param[in] planner The OMPL planner to use.
   /// \param[in] stateSpace State space that this planner associated with.
+  /// \param[in] rng Random number generator to create the state sampler.
   /// \param[in] interpolator Interpolator used to interpolate between two states. 
   /// GeodesicInterpolator is used by default.
   /// \param[in] dmetric A valid distance metric defined on the StateSpace. 
@@ -48,10 +49,10 @@ public:
   /// between validity checking two successive points on a tree extension or an edge.
   OMPLConfigurationToConfigurationPlanner(
       statespace::ConstStateSpacePtr stateSpace,
+      common::RNG* rng = nullptr,
       statespace::ConstInterpolatorPtr interpolator = nullptr,
       distance::DistanceMetricPtr dmetric = nullptr,
       constraint::SampleablePtr sampler = nullptr,
-      common::RNG* rng = nullptr,
       constraint::TestablePtr boundsConstraint = nullptr,
       constraint::ProjectablePtr boundsProjector = nullptr,
       double maxDistanceBtwValidityChecks = 0.1);
@@ -89,6 +90,7 @@ protected:
   statespace::ConstInterpolatorPtr mInterpolator;
 
 private:
+  // TODO (avk): Should we make the problem take std::vector<TestablePtr>?
   /// Bounds constraint for state validity.
   aikido::constraint::TestablePtr mBoundsConstraint;
 

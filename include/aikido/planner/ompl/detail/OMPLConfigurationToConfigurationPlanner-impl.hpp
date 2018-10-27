@@ -2,7 +2,6 @@
 #define AIKIDO_PLANNER_OMPL_DETAIL_OMPLCONFIGURATIONTOCONFIGURATION_IMPL_HPP_
 
 #include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
-#include "aikido/statespace/GeodesicInterpolator.hpp"
 
 #include <utility>
 
@@ -14,6 +13,7 @@
 #include "aikido/planner/ompl/GeometricStateSpace.hpp"
 #include "aikido/planner/ompl/MotionValidator.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
 
 namespace aikido {
 namespace planner {
@@ -30,14 +30,14 @@ using aikido::statespace::dart::MetaSkeletonStateSpace;
 template <class PlannerType>
 OMPLConfigurationToConfigurationPlanner<PlannerType>::OMPLConfigurationToConfigurationPlanner(
     statespace::ConstStateSpacePtr stateSpace,
+    common::RNG* rng,
     statespace::ConstInterpolatorPtr interpolator,
     distance::DistanceMetricPtr dmetric,
     constraint::SampleablePtr sampler,
-    common::RNG* rng,
     constraint::TestablePtr boundsConstraint,
     constraint::ProjectablePtr boundsProjector,
     double maxDistanceBtwValidityChecks)
-  : ConfigurationToConfigurationPlanner(std::move(stateSpace))
+  : ConfigurationToConfigurationPlanner(std::move(stateSpace), rng)
   , mInterpolator(std::move(interpolator))
   , mBoundsConstraint(std::move(boundsConstraint))
   , mBoundsProjector(std::move(boundsProjector))
@@ -97,7 +97,7 @@ trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::
 
   // Set validity checker
   std::vector<constraint::ConstTestablePtr> constraints{
-      std::move(problem.getConstraint()), std::move(mBoundsConstraint)};
+      problem.getConstraint(), mBoundsConstraint};
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(
           mStateSpace, std::move(constraints));
@@ -149,6 +149,7 @@ trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::
                                                                       path->getState(idx));
       returnTraj->addWaypoint(idx, st->mState);
     }
+    // Clear the planner internal data.
     return returnTraj;
   }
 
