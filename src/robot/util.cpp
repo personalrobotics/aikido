@@ -105,7 +105,7 @@ trajectory::TrajectoryPtr planToConfiguration(
     return untimedTrajectory;
 
   auto plannerOMPL = std::make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
-        space);
+        space, rng);
 
   untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
