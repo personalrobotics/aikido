@@ -28,15 +28,16 @@ using aikido::statespace::dart::MetaSkeletonStateSpace;
 
 //==============================================================================
 template <class PlannerType>
-OMPLConfigurationToConfigurationPlanner<PlannerType>::OMPLConfigurationToConfigurationPlanner(
-    statespace::ConstStateSpacePtr stateSpace,
-    common::RNG* rng,
-    statespace::ConstInterpolatorPtr interpolator,
-    distance::DistanceMetricPtr dmetric,
-    constraint::SampleablePtr sampler,
-    constraint::TestablePtr boundsConstraint,
-    constraint::ProjectablePtr boundsProjector,
-    double maxDistanceBtwValidityChecks)
+OMPLConfigurationToConfigurationPlanner<PlannerType>::
+    OMPLConfigurationToConfigurationPlanner(
+        statespace::ConstStateSpacePtr stateSpace,
+        common::RNG* rng,
+        statespace::ConstInterpolatorPtr interpolator,
+        distance::DistanceMetricPtr dmetric,
+        constraint::SampleablePtr sampler,
+        constraint::TestablePtr boundsConstraint,
+        constraint::ProjectablePtr boundsProjector,
+        double maxDistanceBtwValidityChecks)
   : ConfigurationToConfigurationPlanner(std::move(stateSpace), rng)
   , mInterpolator(std::move(interpolator))
   , mBoundsConstraint(std::move(boundsConstraint))
@@ -44,33 +45,40 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::OMPLConfigurationToConfigu
   , mMaxDistanceBtwValidityChecks(maxDistanceBtwValidityChecks)
 {
   if (!mInterpolator)
-    mInterpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(mStateSpace);
+    mInterpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
+        mStateSpace);
 
   if (!dmetric)
     dmetric = std::move(createDistanceMetric(mStateSpace));
 
-  // TODO (avk): The constraint namespace functions only work with metaskeletonstatespace
-  const auto metaskeletonStatespace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-    mStateSpace);
-  
-  if (!metaskeletonStatespace && (!sampler || !boundsConstraint || !boundsProjector))
+  // TODO (avk): The constraint namespace functions only work with
+  // metaskeletonstatespace
+  const auto metaskeletonStatespace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(mStateSpace);
+
+  if (!metaskeletonStatespace
+      && (!sampler || !boundsConstraint || !boundsProjector))
   {
     throw std::invalid_argument(
-        "[OMPLPlanner] Either statespace must be metaSkeletonStateSpace or all of sampler, boundsContraint and boundsProjector must be provided.");
+        "[OMPLPlanner] Either statespace must be metaSkeletonStateSpace or all "
+        "of sampler, boundsContraint and boundsProjector must be provided.");
   }
 
   if (!sampler)
   {
     if (!rng)
-      throw std::invalid_argument("[OMPLPlanner] Both of sampler and rng cannot be nullptr.");
-    sampler = std::move(createSampleableBounds(metaskeletonStatespace, rng->clone()));
+      throw std::invalid_argument(
+          "[OMPLPlanner] Both of sampler and rng cannot be nullptr.");
+    sampler = std::move(
+        createSampleableBounds(metaskeletonStatespace, rng->clone()));
   }
 
   if (!mBoundsConstraint)
     mBoundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
 
   if (!mBoundsProjector)
-    mBoundsProjector = std::move(createProjectableBounds(metaskeletonStatespace));
+    mBoundsProjector
+        = std::move(createProjectableBounds(metaskeletonStatespace));
 
   // Geometric State space
   auto sspace = ompl_make_shared<GeometricStateSpace>(
@@ -89,15 +97,16 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::OMPLConfigurationToConfigu
 }
 
 //==============================================================================
-template<class PlannerType>
-trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
+template <class PlannerType>
+trajectory::TrajectoryPtr
+OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
     const SolvableProblem& problem, Result* result)
 {
   auto si = mPlanner->getSpaceInformation();
 
   // Set validity checker
-  std::vector<constraint::ConstTestablePtr> constraints{
-      problem.getConstraint(), mBoundsConstraint};
+  std::vector<constraint::ConstTestablePtr> constraints{problem.getConstraint(),
+                                                        mBoundsConstraint};
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(
           mStateSpace, std::move(constraints));
@@ -129,8 +138,8 @@ trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::
 
   if (solved)
   {
-    auto returnTraj =
-        std::make_shared<trajectory::Interpolated>(mStateSpace, mInterpolator);
+    auto returnTraj = std::make_shared<trajectory::Interpolated>(
+        mStateSpace, mInterpolator);
 
     // Get the path
     auto path = ompl_dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
@@ -146,7 +155,7 @@ trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::
     {
       const auto* st
           = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
-                                                                      path->getState(idx));
+              path->getState(idx));
       returnTraj->addWaypoint(idx, st->mState);
     }
     // Clear the planner internal data.
@@ -161,14 +170,15 @@ trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::
 }
 
 //==============================================================================
-template<class PlannerType>
-::ompl::base::PlannerPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::getOMPLPlanner()
+template <class PlannerType>
+::ompl::base::PlannerPtr
+OMPLConfigurationToConfigurationPlanner<PlannerType>::getOMPLPlanner()
 {
   return mPlanner;
 }
 
 //==============================================================================
-template<class PlannerType>
+template <class PlannerType>
 void OMPLConfigurationToConfigurationPlanner<PlannerType>::setInterpolator(
     statespace::ConstInterpolatorPtr interpolator)
 {
@@ -176,7 +186,7 @@ void OMPLConfigurationToConfigurationPlanner<PlannerType>::setInterpolator(
 }
 
 //==============================================================================
-template<class PlannerType>
+template <class PlannerType>
 statespace::ConstInterpolatorPtr
 OMPLConfigurationToConfigurationPlanner<PlannerType>::getInterpolator() const
 {

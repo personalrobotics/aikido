@@ -1,10 +1,10 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/constraint.hpp>
-#include <aikido/planner/ompl/MotionValidator.hpp>
-#include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
+#include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp>
+#include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include "../../constraint/MockConstraints.hpp"
@@ -54,15 +54,17 @@ TEST_F(PlannerTest, CanSolveProblems)
   auto subState2 = stateSpace->getSubStateHandle<R3>(goalState, 0);
   subState2.setValue(goalPose);
 
-  auto planner = std::make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::RRTConnect>>(
-      stateSpace,
-      nullptr,
-      interpolator,
-      std::move(dmetric),
-      std::move(sampler),
-      std::move(boundsConstraint),
-      std::move(boundsProjection),
-      0.1);
+  auto planner = std::
+      make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::
+                                                              RRTConnect>>(
+          stateSpace,
+          nullptr,
+          interpolator,
+          std::move(dmetric),
+          std::move(sampler),
+          std::move(boundsConstraint),
+          std::move(boundsProjection),
+          0.1);
 
   auto problem = ConfigurationToConfiguration(
       stateSpace, startState, goalState, collConstraint);
@@ -90,15 +92,17 @@ TEST_F(PlannerTest, PlanToConfiguration)
 
   auto problem = ConfigurationToConfiguration(
       stateSpace, startState, goalState, collConstraint);
-  auto planner = std::make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::RRTConnect>>(
-      stateSpace,
-      nullptr,
-      interpolator,
-      std::move(dmetric),
-      std::move(sampler),
-      std::move(boundsConstraint),
-      std::move(boundsProjection),
-      0.1);
+  auto planner = std::
+      make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::
+                                                              RRTConnect>>(
+          stateSpace,
+          nullptr,
+          interpolator,
+          std::move(dmetric),
+          std::move(sampler),
+          std::move(boundsConstraint),
+          std::move(boundsProjection),
+          0.1);
   auto traj = planner->plan(problem);
   EXPECT_TRUE(true);
 
@@ -136,16 +140,19 @@ TEST_F(PlannerTest, PlannerSpecificParameters)
   auto problem = ConfigurationToConfiguration(
       stateSpace, startState, goalState, freeConstraint);
 
-  auto planner = std::make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::RRTConnect>>(
-      stateSpace,
-      nullptr,
-      interpolator,
-      std::move(dmetric),
-      std::move(sampler),
-      std::move(boundsConstraint),
-      std::move(boundsProjection),
-      0.1);
-  auto rrtPlanner = planner->getOMPLPlanner()->as<ompl::geometric::RRTConnect>();
+  auto planner = std::
+      make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::
+                                                              RRTConnect>>(
+          stateSpace,
+          nullptr,
+          interpolator,
+          std::move(dmetric),
+          std::move(sampler),
+          std::move(boundsConstraint),
+          std::move(boundsProjection),
+          0.1);
+  auto rrtPlanner
+      = planner->getOMPLPlanner()->as<ompl::geometric::RRTConnect>();
   if (rrtPlanner)
     rrtPlanner->setRange(0.5);
 
@@ -163,7 +170,8 @@ TEST_F(PlannerTest, PlannerSpecificParameters)
   EXPECT_TRUE(r0.getValue().isApprox(goalPose));
 
   // Convert the trajectory to Interpolated and check numWaypoints
-  auto interpolated = dynamic_cast<aikido::trajectory::Interpolated*>(traj.get());
+  auto interpolated
+      = dynamic_cast<aikido::trajectory::Interpolated*>(traj.get());
   if (interpolated)
   {
     EXPECT_TRUE(rrtPlanner->getRange() == 0.5);
@@ -174,10 +182,12 @@ TEST_F(PlannerTest, PlannerSpecificParameters)
   auto newTraj = planner->plan(problem);
 
   // Convert the trajectory to Interpolated and check numWaypoints
-  auto newInterpolated = dynamic_cast<aikido::trajectory::Interpolated*>(newTraj.get());
+  auto newInterpolated
+      = dynamic_cast<aikido::trajectory::Interpolated*>(newTraj.get());
   if (newInterpolated)
   {
-    EXPECT_TRUE(rrtPlanner->getRange() == std::numeric_limits<double>::infinity());
+    EXPECT_TRUE(
+        rrtPlanner->getRange() == std::numeric_limits<double>::infinity());
     EXPECT_TRUE(newInterpolated->getNumWaypoints() == 3);
   }
 }

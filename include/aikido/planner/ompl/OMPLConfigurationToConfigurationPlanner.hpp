@@ -22,7 +22,7 @@ namespace aikido {
 namespace planner {
 namespace ompl {
 
-template<class PlannerType>
+template <class PlannerType>
 class OMPLConfigurationToConfigurationPlanner
     : public aikido::planner::ConfigurationToConfigurationPlanner
 {
@@ -32,9 +32,9 @@ public:
   /// \param[in] planner The OMPL planner to use.
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] rng Random number generator to create the state sampler.
-  /// \param[in] interpolator Interpolator used to interpolate between two states. 
-  /// GeodesicInterpolator is used by default.
-  /// \param[in] dmetric A valid distance metric defined on the StateSpace. 
+  /// \param[in] interpolator Interpolator used to interpolate between two
+  /// states. GeodesicInterpolator is used by default.
+  /// \param[in] dmetric A valid distance metric defined on the StateSpace.
   /// Distance metric relevant to the statespace is used by default.
   /// \param[in] sampler A Sampleable that can sample states from the
   /// StateSpace. Warning: Many OMPL planners internally assume this sampler
@@ -45,8 +45,9 @@ public:
   /// satisfied for a state to be considered valid.
   /// \param[in] boundsProjector A Projectable that projects a state back within
   /// valid bounds defined on the StateSpace.
-  /// \param[in] maxDistanceBtwValidityChecks The maximum distance (under dmetric).
-  /// between validity checking two successive points on a tree extension or an edge.
+  /// \param[in] maxDistanceBtwValidityChecks The maximum distance (under
+  /// dmetric) between validity checking two successive points on a tree
+  /// extension or an edge in a graph.
   OMPLConfigurationToConfigurationPlanner(
       statespace::ConstStateSpacePtr stateSpace,
       common::RNG* rng = nullptr,
