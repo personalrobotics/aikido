@@ -6,18 +6,14 @@
 
 #include <utility>
 
+#include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
 #include "aikido/constraint/dart/FrameTestable.hpp"
-#include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/distance/defaults.hpp"
-
-#include <aikido/constraint/TestableIntersection.hpp>
-#include <aikido/planner/ompl/CRRT.hpp>
-#include <aikido/planner/ompl/CRRTConnect.hpp>
-#include <aikido/planner/ompl/GeometricStateSpace.hpp>
-#include <aikido/planner/ompl/MotionValidator.hpp>
-#include <aikido/planner/ompl/Planner.hpp>
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
+#include "aikido/planner/ompl/MotionValidator.hpp"
+#include "aikido/planner/ompl/Planner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -26,7 +22,9 @@ namespace ompl {
 using aikido::constraint::dart::createProjectableBounds;
 using aikido::constraint::dart::createSampleableBounds;
 using aikido::constraint::dart::createTestableBounds;
+using aikido::constraint::dart::createProjectableBounds;
 using aikido::distance::createDistanceMetric;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 
 //==============================================================================
 template <class PlannerType>
@@ -35,47 +33,59 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::OMPLConfigurationToConfigu
     statespace::ConstInterpolatorPtr interpolator,
     distance::DistanceMetricPtr dmetric,
     constraint::SampleablePtr sampler,
-    constraint::TestablePtr validityConstraint,
+    common::RNG* rng,
     constraint::TestablePtr boundsConstraint,
     constraint::ProjectablePtr boundsProjector,
     double maxDistanceBtwValidityChecks)
   : ConfigurationToConfigurationPlanner(std::move(stateSpace))
   , mInterpolator(std::move(interpolator))
+  , mBoundsConstraint(std::move(boundsConstraint))
+  , mBoundsProjector(std::move(boundsProjector))
+  , mMaxDistanceBtwValidityChecks(maxDistanceBtwValidityChecks)
 {
-    if (!mInterpolator)
-    {
-      mInterpolator
-          = std::make_shared<aikido::statespace::GeodesicInterpolator>(mStateSpace);
-    }
+  if (!mInterpolator)
+    mInterpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(mStateSpace);
 
-    // Geometric State space
-    auto sspace = ompl_make_shared<GeometricStateSpace>(
-        mStateSpace,
-        std::make_shared<aikido::statespace::GeodesicInterpolator>(mStateSpace),
-        std::move(dmetric),
-        std::move(sampler),
-        boundsConstraint,
-        std::move(boundsProjector));
+  if (!dmetric)
+    dmetric = std::move(createDistanceMetric(mStateSpace));
 
-    // Space Information
-    auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
+  // TODO (avk): The constraint namespace functions only work with metaskeletonstatespace
+  const auto metaskeletonStatespace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+    mStateSpace);
+  
+  if (!metaskeletonStatespace && (!sampler || !boundsConstraint || !boundsProjector))
+  {
+    throw std::invalid_argument(
+        "[OMPLPlanner] Either statespace must be metaSkeletonStateSpace or all of sampler, boundsContraint and boundsProjector must be provided.");
+  }
 
-    // Validity checking
-    std::vector<constraint::ConstTestablePtr> constraints{
-        std::move(validityConstraint), std::move(boundsConstraint)};
-    auto conjunctionConstraint
-        = std::make_shared<constraint::TestableIntersection>(
-            std::move(mStateSpace), std::move(constraints));
-    ::ompl::base::StateValidityCheckerPtr vchecker
-        = ompl_make_shared<StateValidityChecker>(si, conjunctionConstraint);
-    si->setStateValidityChecker(vchecker);
+  if (!sampler)
+  {
+    if (!rng)
+      throw std::invalid_argument("[OMPLPlanner] Both of sampler and rng cannot be nullptr.");
+    sampler = std::move(createSampleableBounds(metaskeletonStatespace, rng->clone()));
+  }
 
-    ::ompl::base::MotionValidatorPtr mvalidator
-        = ompl_make_shared<MotionValidator>(si, maxDistanceBtwValidityChecks);
-    si->setMotionValidator(mvalidator);
+  if (!mBoundsConstraint)
+    mBoundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
 
-    // Setup the planner
-    mPlanner = ompl_make_shared<PlannerType>(si);
+  if (!mBoundsProjector)
+    mBoundsProjector = std::move(createProjectableBounds(metaskeletonStatespace));
+
+  // Geometric State space
+  auto sspace = ompl_make_shared<GeometricStateSpace>(
+      mStateSpace,
+      std::make_shared<aikido::statespace::GeodesicInterpolator>(mStateSpace),
+      std::move(dmetric),
+      std::move(sampler),
+      mBoundsConstraint,
+      std::move(mBoundsProjector));
+
+  // Space Information
+  auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
+
+  // Setup the planner
+  mPlanner = ompl_make_shared<PlannerType>(si);
 }
 
 //==============================================================================
@@ -83,54 +93,68 @@ template<class PlannerType>
 trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
     const SolvableProblem& problem, Result* result)
 {
-    auto si = mPlanner->getSpaceInformation();
+  auto si = mPlanner->getSpaceInformation();
 
-    // Define the OMPL problem
-    auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
-    auto sspace
-        = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
-    auto start = sspace->allocState(problem.getStartState());
-    auto goal = sspace->allocState(problem.getGoalState());
+  // Set validity checker
+  std::vector<constraint::ConstTestablePtr> constraints{
+      std::move(problem.getConstraint()), std::move(mBoundsConstraint)};
+  auto conjunctionConstraint
+      = std::make_shared<constraint::TestableIntersection>(
+          mStateSpace, std::move(constraints));
+  ::ompl::base::StateValidityCheckerPtr vchecker
+      = ompl_make_shared<StateValidityChecker>(si, conjunctionConstraint);
+  si->setStateValidityChecker(vchecker);
 
-    // ProblemDefinition clones states and keeps them internally
-    pdef->setStartAndGoalStates(start, goal);
+  ::ompl::base::MotionValidatorPtr mvalidator
+      = ompl_make_shared<MotionValidator>(si, mMaxDistanceBtwValidityChecks);
+  si->setMotionValidator(mvalidator);
 
-    sspace->freeState(start);
-    sspace->freeState(goal);
+  // Define the OMPL problem
+  auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+  auto sspace
+      = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
+  auto start = sspace->allocState(problem.getStartState());
+  auto goal = sspace->allocState(problem.getGoalState());
 
-    // Plan
-    mPlanner->setProblemDefinition(pdef);
-    mPlanner->setup();
-    auto solved = mPlanner->solve(1);
+  // ProblemDefinition clones states and keeps them internally
+  pdef->setStartAndGoalStates(start, goal);
 
-    if (solved)
+  sspace->freeState(start);
+  sspace->freeState(goal);
+
+  // Plan
+  mPlanner->setProblemDefinition(pdef);
+  mPlanner->setup();
+  auto solved = mPlanner->solve(1);
+
+  if (solved)
+  {
+    auto returnTraj =
+        std::make_shared<trajectory::Interpolated>(mStateSpace, mInterpolator);
+
+    // Get the path
+    auto path = ompl_dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
+        pdef->getSolutionPath());
+    if (!path)
     {
-      auto returnTraj =
-          std::make_shared<trajectory::Interpolated>(mStateSpace, mInterpolator);
-
-      // Get the path
-      auto path = ompl_dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
-          pdef->getSolutionPath());
-      if (!path)
-      {
-        throw std::invalid_argument(
-            "Path is not of type PathGeometric. Cannot convert to aikido "
-            "Trajectory.");
-      }
-
-      for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
-      {
-        const auto* st
-            = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(path->getState(idx));
-        returnTraj->addWaypoint(idx, st->mState);
-      }
-
-      return returnTraj;
+      throw std::invalid_argument(
+          "Path is not of type PathGeometric. Cannot convert to aikido "
+          "Trajectory.");
     }
 
-    if (result)
-      result->setMessage("Problem could not be solved.");
-    return nullptr;
+    for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
+    {
+      const auto* st
+          = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
+                                                                      path->getState(idx));
+      returnTraj->addWaypoint(idx, st->mState);
+    }
+    return returnTraj;
+  }
+
+  if (result)
+    result->setMessage("Problem could not be solved.");
+  return nullptr;
 }
 
 //==============================================================================
