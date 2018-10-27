@@ -1,27 +1,21 @@
 #ifndef AIKIDO_PLANNER_OMPL_OMPLCONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 #define AIKIDO_PLANNER_OMPL_OMPLCONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 
+#include "aikido/common/RNG.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
-
 #include "aikido/planner/ompl/GeometricStateSpace.hpp"
-
-
-#include "../../constraint/Projectable.hpp"
-#include "../../constraint/Sampleable.hpp"
-#include "../../constraint/Testable.hpp"
-#include "../../distance/DistanceMetric.hpp"
-#include "../../statespace/StateSpace.hpp"
-
-
-
+#include "aikido/statespace/StateSpace.hpp"
 
 #include <ompl/base/Planner.h>
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
-
 #include <ompl/geometric/PathSimplifier.h>
 
 namespace aikido {
@@ -37,18 +31,30 @@ public:
   ///
   /// \param[in] planner The OMPL planner to use.
   /// \param[in] stateSpace State space that this planner associated with.
-  /// \param[in] interpolator Interpolator used to produce the output
-  /// trajectory. If nullptr is passed in, GeodesicInterpolator is used by
-  /// default.
+  /// \param[in] interpolator Interpolator used to interpolate between two states. 
+  /// GeodesicInterpolator is used by default.
+  /// \param[in] dmetric A valid distance metric defined on the StateSpace. 
+  /// Distance metric relevant to the statespace is used by default.
+  /// \param[in] sampler A Sampleable that can sample states from the
+  /// StateSpace. Warning: Many OMPL planners internally assume this sampler
+  /// samples uniformly. Care should be taken when using a non-uniform sampler.
+  /// \param[in] boundsConstraint A constraint used to determine whether states
+  /// encountered during planning fall within any bounds specified on the
+  /// StateSpace. In addition to the validityConstraint, this must also be
+  /// satisfied for a state to be considered valid.
+  /// \param[in] boundsProjector A Projectable that projects a state back within
+  /// valid bounds defined on the StateSpace.
+  /// \param[in] maxDistanceBtwValidityChecks The maximum distance (under dmetric).
+  /// between validity checking two successive points on a tree extension or an edge.
   OMPLConfigurationToConfigurationPlanner(
       statespace::ConstStateSpacePtr stateSpace,
-      statespace::ConstInterpolatorPtr interpolator,
-      distance::DistanceMetricPtr dmetric,
-      constraint::SampleablePtr sampler,
-      constraint::TestablePtr validityConstraint,
-      constraint::TestablePtr boundsConstraint,
-      constraint::ProjectablePtr boundsProjector,
-      double maxDistanceBtwValidityChecks);
+      statespace::ConstInterpolatorPtr interpolator = nullptr,
+      distance::DistanceMetricPtr dmetric = nullptr,
+      constraint::SampleablePtr sampler = nullptr,
+      common::RNG* rng = nullptr,
+      constraint::TestablePtr boundsConstraint = nullptr,
+      constraint::ProjectablePtr boundsProjector = nullptr,
+      double maxDistanceBtwValidityChecks = 0.1);
 
   /// Plans a trajectory from start state to goal state by using an interpolator
   /// to interpolate between them.
@@ -81,6 +87,16 @@ protected:
 
   /// Interpolator used to produce the output trajectory.
   statespace::ConstInterpolatorPtr mInterpolator;
+
+private:
+  /// Bounds constraint for state validity.
+  aikido::constraint::TestablePtr mBoundsConstraint;
+
+  /// Bounds projector to project states onto constraint.
+  aikido::constraint::ProjectablePtr mBoundsProjector;
+
+  /// Resolution to check validity of extensions in trees or edges in graphs.
+  double mMaxDistanceBtwValidityChecks;
 };
 
 } // namespace ompl
