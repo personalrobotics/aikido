@@ -41,6 +41,7 @@ public:
 //==============================================================================
 TEST_F(PlannerTest, CanSolveProblems)
 {
+  // Tests if the planner can solve the toConfiguration problem.
 
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
@@ -74,6 +75,8 @@ TEST_F(PlannerTest, CanSolveProblems)
 //==============================================================================
 TEST_F(PlannerTest, PlanToConfiguration)
 {
+  // Tests correctness of the planning procedure.
+
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
 
@@ -114,6 +117,9 @@ TEST_F(PlannerTest, PlanToConfiguration)
 //==============================================================================
 TEST_F(PlannerTest, PlannerSpecificParameters)
 {
+  // Tests if replanning with the same planner is done correctly.
+  // Tests if planner specific parameters are appropriately set.
+
   Eigen::Vector3d startPose(-5, -5, 0);
   Eigen::Vector3d goalPose(5, 5, 0);
 
@@ -140,7 +146,7 @@ TEST_F(PlannerTest, PlannerSpecificParameters)
       std::move(boundsProjection),
       0.1);
   auto rrtPlanner = planner->getOMPLPlanner()->as<ompl::geometric::RRTConnect>();
-  if (!rrtPlanner)
+  if (rrtPlanner)
     rrtPlanner->setRange(0.5);
 
   auto traj = planner->plan(problem);
@@ -158,18 +164,20 @@ TEST_F(PlannerTest, PlannerSpecificParameters)
 
   // Convert the trajectory to Interpolated and check numWaypoints
   auto interpolated = dynamic_cast<aikido::trajectory::Interpolated*>(traj.get());
-  if (!interpolated)
+  if (interpolated)
   {
+    EXPECT_TRUE(rrtPlanner->getRange() == 0.5);
     EXPECT_TRUE(interpolated->getNumWaypoints() > 3);
   }
 
-//   rrtPlanner->setRange(100);
+  rrtPlanner->setRange(std::numeric_limits<double>::infinity());
   auto newTraj = planner->plan(problem);
 
   // Convert the trajectory to Interpolated and check numWaypoints
   auto newInterpolated = dynamic_cast<aikido::trajectory::Interpolated*>(newTraj.get());
-  if (!newInterpolated)
+  if (newInterpolated)
   {
+    EXPECT_TRUE(rrtPlanner->getRange() == std::numeric_limits<double>::infinity());
     EXPECT_TRUE(newInterpolated->getNumWaypoints() == 3);
   }
 }

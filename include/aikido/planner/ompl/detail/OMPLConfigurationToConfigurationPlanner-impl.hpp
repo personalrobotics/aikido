@@ -150,11 +150,13 @@ trajectory::TrajectoryPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::
       returnTraj->addWaypoint(idx, st->mState);
     }
     // Clear the planner internal data.
+    mPlanner->clear();
     return returnTraj;
   }
 
   if (result)
     result->setMessage("Problem could not be solved.");
+  mPlanner->clear();
   return nullptr;
 }
 

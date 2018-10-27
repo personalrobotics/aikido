@@ -24,7 +24,6 @@ set(sources
   dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
   dart/util.cpp
-  ompl/OMPLConfigurationToConfigurationPlanner.cpp
 )
 
 add_library("${PROJECT_NAME}_planner" SHARED ${sources})
