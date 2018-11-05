@@ -49,7 +49,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
     dmetric = std::move(createDistanceMetric(mStateSpace));
 
   // TODO (avk): The constraint namespace functions only work with
-  // metaskeletonstatespace
+  // MetaSkeletonStateSpaces
   const auto metaskeletonStatespace
       = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(mStateSpace);
 
