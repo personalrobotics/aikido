@@ -111,19 +111,6 @@ trajectory::TrajectoryPtr planToConfiguration(
 
   untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
-  //  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-  //      startState,
-  //      goalState,
-  //      space,
-  //      std::make_shared<GeodesicInterpolator>(space),
-  //      createDistanceMetric(space),
-  //      createSampleableBounds(space, rng->clone()),
-  //      collisionTestable,
-  //      createTestableBounds(space),
-  //      createProjectableBounds(space),
-  //      timelimit,
-  //      collisionResolution);
-
   return untimedTrajectory;
 }
 

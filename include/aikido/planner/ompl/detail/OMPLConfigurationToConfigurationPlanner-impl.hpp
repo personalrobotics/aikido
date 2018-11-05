@@ -41,7 +41,6 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
   : ConfigurationToConfigurationPlanner(std::move(stateSpace), rng)
   , mInterpolator(std::move(interpolator))
   , mBoundsConstraint(std::move(boundsConstraint))
-  , mBoundsProjector(std::move(boundsProjector))
   , mMaxDistanceBtwValidityChecks(maxDistanceBtwValidityChecks)
 {
   if (!mInterpolator)
@@ -76,8 +75,8 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
   if (!mBoundsConstraint)
     mBoundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
 
-  if (!mBoundsProjector)
-    mBoundsProjector
+  if (!boundsProjector)
+    boundsProjector
         = std::move(createProjectableBounds(metaskeletonStatespace));
 
   // Geometric State space
@@ -87,7 +86,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
       std::move(dmetric),
       std::move(sampler),
       mBoundsConstraint,
-      std::move(mBoundsProjector));
+      std::move(boundsProjector));
 
   // Space Information
   auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
@@ -120,6 +119,10 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
 
   // Define the OMPL problem
   auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
+
+  // Only geometric statespaces are supported.
+  assert(ompl_dynamic_pointer_cast<GeometricStateSpace>(si->getStateSpace()));
+
   auto sspace
       = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
   auto start = sspace->allocState(problem.getStartState());
@@ -153,6 +156,10 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
 
     for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
     {
+      // Only states belonging geometric statespaces are supported.
+      assert(
+          dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
+              path->getState()));
       const auto* st
           = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
               path->getState(idx));

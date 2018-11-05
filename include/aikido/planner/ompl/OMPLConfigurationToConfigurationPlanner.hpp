@@ -1,6 +1,12 @@
 #ifndef AIKIDO_PLANNER_OMPL_OMPLCONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 #define AIKIDO_PLANNER_OMPL_OMPLCONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
 
+#include <ompl/base/Planner.h>
+#include <ompl/base/ProblemDefinition.h>
+#include <ompl/base/ScopedState.h>
+#include <ompl/base/SpaceInformation.h>
+#include <ompl/base/goals/GoalRegion.h>
+#include <ompl/geometric/PathSimplifier.h>
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
@@ -11,17 +17,13 @@
 #include "aikido/planner/ompl/GeometricStateSpace.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
-#include <ompl/base/Planner.h>
-#include <ompl/base/ProblemDefinition.h>
-#include <ompl/base/ScopedState.h>
-#include <ompl/base/SpaceInformation.h>
-#include <ompl/base/goals/GoalRegion.h>
-#include <ompl/geometric/PathSimplifier.h>
-
 namespace aikido {
 namespace planner {
 namespace ompl {
 
+/// Creates an OMPL Planner.
+///
+/// \tparam PlannerType The OMPL Planner to use.
 template <class PlannerType>
 class OMPLConfigurationToConfigurationPlanner
     : public aikido::planner::ConfigurationToConfigurationPlanner
@@ -95,9 +97,6 @@ private:
   /// Bounds constraint for state validity.
   aikido::constraint::TestablePtr mBoundsConstraint;
 
-  /// Bounds projector to project states onto constraint.
-  aikido::constraint::ProjectablePtr mBoundsProjector;
-
   /// Resolution to check validity of extensions in trees or edges in graphs.
   double mMaxDistanceBtwValidityChecks;
 };
@@ -108,4 +107,4 @@ private:
 
 #include "aikido/planner/ompl/detail/OMPLConfigurationToConfigurationPlanner-impl.hpp"
 
-#endif // AIKIDO_PLANNER_SNAPCONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
+#endif // AIKIDO_PLANNER_OMPL_OMPLCONFIGURATIONTOCONFIGURATIONPLANNER_HPP_
