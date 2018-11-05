@@ -31,7 +31,6 @@ class OMPLConfigurationToConfigurationPlanner
 public:
   /// Constructor.
   ///
-  /// \param[in] planner The OMPL planner to use.
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] rng Random number generator to create the state sampler.
   /// \param[in] interpolator Interpolator used to interpolate between two
@@ -63,10 +62,8 @@ public:
   /// Plans a trajectory from start state to goal state by using an interpolator
   /// to interpolate between them.
   ///
-  /// The planner returns success if the resulting trajectory satisfies
-  /// constraint at some resolution and failure (returning \c nullptr)
-  /// otherwise. The reason for the failure is stored in the \c result output
-  /// parameter.
+  /// If successful, the planner returns a valid trajectory. If not, it
+  /// returns a \c nullptr. The corresponding message is stored in result.
   ///
   /// \param[in] problem Planning problem.
   /// \param[out] result Information about success or failure.

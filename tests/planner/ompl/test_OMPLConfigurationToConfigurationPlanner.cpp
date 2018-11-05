@@ -104,7 +104,6 @@ TEST_F(PlannerTest, PlanToConfiguration)
           std::move(boundsProjection),
           0.1);
   auto traj = planner->plan(problem);
-  EXPECT_TRUE(true);
 
   // Check the first waypoint
   auto s0 = stateSpace->createState();

@@ -1,10 +1,7 @@
 #ifndef AIKIDO_PLANNER_OMPL_DETAIL_OMPLCONFIGURATIONTOCONFIGURATION_IMPL_HPP_
 #define AIKIDO_PLANNER_OMPL_DETAIL_OMPLCONFIGURATIONTOCONFIGURATION_IMPL_HPP_
 
-#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
-
 #include <utility>
-
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
 #include "aikido/constraint/dart/FrameTestable.hpp"
@@ -12,6 +9,7 @@
 #include "aikido/distance/defaults.hpp"
 #include "aikido/planner/ompl/GeometricStateSpace.hpp"
 #include "aikido/planner/ompl/MotionValidator.hpp"
+#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 
@@ -156,10 +154,6 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
 
     for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
     {
-      // Only states belonging geometric statespaces are supported.
-      assert(
-          dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
-              path->getState()));
       const auto* st
           = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
               path->getState(idx));
