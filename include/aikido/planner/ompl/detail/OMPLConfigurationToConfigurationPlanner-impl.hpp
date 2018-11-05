@@ -37,9 +37,6 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
         constraint::ProjectablePtr boundsProjector,
         double maxDistanceBtwValidityChecks)
   : ConfigurationToConfigurationPlanner(std::move(stateSpace), rng)
-  , mInterpolator(std::move(interpolator))
-  , mBoundsConstraint(std::move(boundsConstraint))
-  , mMaxDistanceBtwValidityChecks(maxDistanceBtwValidityChecks)
 {
   if (!mInterpolator)
     mInterpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
@@ -70,7 +67,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
         createSampleableBounds(metaskeletonStatespace, rng->clone()));
   }
 
-  if (!mBoundsConstraint)
+  if (!boundsConstraint)
     mBoundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
 
   if (!boundsProjector)
@@ -78,12 +75,13 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
         = std::move(createProjectableBounds(metaskeletonStatespace));
 
   // Geometric State space
+  // TODO(avk): Also add in the maxDistanceCheck
   auto sspace = ompl_make_shared<GeometricStateSpace>(
       mStateSpace,
-      std::make_shared<aikido::statespace::GeodesicInterpolator>(mStateSpace),
+      std::move(interpolator),
       std::move(dmetric),
       std::move(sampler),
-      mBoundsConstraint,
+      std::move(boundsConstraint),
       std::move(boundsProjector));
 
   // Space Information

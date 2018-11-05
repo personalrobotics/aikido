@@ -140,6 +140,8 @@ public:
   /// Return the Aikido StateSpace that this OMPL StateSpace wraps
   statespace::ConstStateSpacePtr getAikidoStateSpace() const;
 
+// TODO (avk): Have getters here for the member variables here.
+
 private:
   statespace::ConstStateSpacePtr mStateSpace;
   statespace::InterpolatorPtr mInterpolator;

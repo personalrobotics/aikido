@@ -76,26 +76,11 @@ public:
   /// Returns the underlying OMPL planner used.
   ::ompl::base::PlannerPtr getOMPLPlanner();
 
-  /// Sets interpolator used to produce the output trajectory.
-  void setInterpolator(statespace::ConstInterpolatorPtr interpolator);
-
-  /// Returns the interpolator used to produce the output trajectory.
-  statespace::ConstInterpolatorPtr getInterpolator() const;
+  // TODO(avk): Get geometric state space?
 
 protected:
   /// Pointer to the underlying OMPL Planner.
   ::ompl::base::PlannerPtr mPlanner;
-
-  /// Interpolator used to produce the output trajectory.
-  statespace::ConstInterpolatorPtr mInterpolator;
-
-private:
-  // TODO (avk): Should we make the problem take std::vector<TestablePtr>?
-  /// Bounds constraint for state validity.
-  aikido::constraint::TestablePtr mBoundsConstraint;
-
-  /// Resolution to check validity of extensions in trees or edges in graphs.
-  double mMaxDistanceBtwValidityChecks;
 };
 
 } // namespace ompl
