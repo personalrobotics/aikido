@@ -15,7 +15,8 @@ public:
         dmetric,
         sampler,
         boundsConstraint,
-        boundsProjection);
+        boundsProjection,
+        maxDistanceBetweenValidityChecks);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
 };
@@ -29,7 +30,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullStateSpace)
           dmetric,
           sampler,
           boundsConstraint,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -42,7 +44,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullInterpolator)
           dmetric,
           sampler,
           boundsConstraint,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -59,7 +62,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnInterpolatorMismatch)
           dmetric,
           sampler,
           boundsConstraint,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -72,7 +76,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullDistanceMetric)
           nullptr,
           sampler,
           boundsConstraint,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -88,7 +93,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnDistanceMetricMismatch)
           std::move(bdmetric),
           sampler,
           boundsConstraint,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -101,7 +107,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullSampler)
           dmetric,
           nullptr,
           boundsConstraint,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -118,7 +125,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnSamplerMismatch)
           dmetric,
           std::move(bsampler),
           boundsConstraint,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -147,7 +155,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnBoundsConstraintMismatch)
           dmetric,
           sampler,
           std::move(bconstraint),
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -160,7 +169,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullBoundsProjection)
           dmetric,
           sampler,
           boundsConstraint,
-          nullptr),
+          nullptr,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -176,7 +186,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnBoundsProjectionMismatch)
           dmetric,
           sampler,
           boundsConstraint,
-          std::move(bconstraint)),
+          std::move(bconstraint),
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
