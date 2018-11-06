@@ -147,20 +147,15 @@ trajectory::TrajectoryPtr planToConfigurations(
     if (untimedTrajectory)
       return untimedTrajectory;
 
-    untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-        startState,
-        goalState,
-        space,
-        std::make_shared<GeodesicInterpolator>(space),
-        createDistanceMetric(space),
-        createSampleableBounds(space, rng->clone()),
-        collisionTestable,
-        createTestableBounds(space),
-        createProjectableBounds(space),
-        timelimit,
-        collisionResolution);
+    auto plannerOMPL = std::
+        make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
+                                                                RRTConnect>>(
+            space, rng);
 
-    return untimedTrajectory;
+    untimedTrajectory = plannerOMPL->plan(problem, &pResult);
+
+    if (untimedTrajectory)
+      return untimedTrajectory;
   }
 
   return nullptr;
