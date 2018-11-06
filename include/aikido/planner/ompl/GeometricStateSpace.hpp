@@ -56,11 +56,12 @@ public:
   /// back within the valid boundary defined on the space.
   GeometricStateSpace(
       statespace::ConstStateSpacePtr _sspace,
-      statespace::InterpolatorPtr _interpolator,
+      statespace::ConstInterpolatorPtr _interpolator,
       distance::DistanceMetricPtr _dmetric,
       constraint::SampleablePtr _sampler,
       constraint::TestablePtr _boundsConstraint,
-      constraint::ProjectablePtr _boundsProjection);
+      constraint::ProjectablePtr _boundsProjection,
+      double maxDistanceBetweenValidityChecks);
 
   /// Get the dimension of the space.
   unsigned int getDimension() const override;
@@ -140,15 +141,24 @@ public:
   /// Return the Aikido StateSpace that this OMPL StateSpace wraps
   statespace::ConstStateSpacePtr getAikidoStateSpace() const;
 
-// TODO (avk): Have getters here for the member variables here.
+  /// Return the interpolator used to interpolate between states in the space.
+  aikido::statespace::ConstInterpolatorPtr getInterpolator() const;
+
+  /// Return the bounds constraint for the statespace. Used to specify constraints
+  /// to the OMPL planner
+  aikido::constraint::TestablePtr getBoundsConstraint() const;
+
+  /// Returns the collision checking resolution
+  double getMaxDistanceBetweenValidityChecks() const;
 
 private:
   statespace::ConstStateSpacePtr mStateSpace;
-  statespace::InterpolatorPtr mInterpolator;
+  statespace::ConstInterpolatorPtr mInterpolator;
   distance::DistanceMetricPtr mDistance;
   constraint::SampleablePtr mSampler;
   constraint::TestablePtr mBoundsConstraint;
   constraint::ProjectablePtr mBoundsProjection;
+  double mMaxDistanceBetweenValidityChecks;
 };
 
 } // namespace ompl

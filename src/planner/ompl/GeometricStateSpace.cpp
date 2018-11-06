@@ -19,17 +19,19 @@ GeometricStateSpace::StateType::StateType(statespace::StateSpace::State* _st)
 //==============================================================================
 GeometricStateSpace::GeometricStateSpace(
     statespace::ConstStateSpacePtr _sspace,
-    statespace::InterpolatorPtr _interpolator,
+    statespace::ConstInterpolatorPtr _interpolator,
     distance::DistanceMetricPtr _dmetric,
     constraint::SampleablePtr _sampler,
     constraint::TestablePtr _boundsConstraint,
-    constraint::ProjectablePtr _boundsProjection)
+    constraint::ProjectablePtr _boundsProjection,
+    double maxDistanceBetweenValidityChecks)
   : mStateSpace(std::move(_sspace))
   , mInterpolator(std::move(_interpolator))
   , mDistance(std::move(_dmetric))
   , mSampler(std::move(_sampler))
   , mBoundsConstraint(std::move(_boundsConstraint))
   , mBoundsProjection(std::move(_boundsProjection))
+  , mMaxDistanceBetweenValidityChecks(maxDistanceBetweenValidityChecks)
 {
   if (mStateSpace == nullptr)
   {
@@ -84,6 +86,11 @@ GeometricStateSpace::GeometricStateSpace(
   if (mBoundsProjection->getStateSpace() != mStateSpace)
   {
     throw std::invalid_argument("BoundsProjection does not match StateSpace");
+  }
+
+  if (mMaxDistanceBetweenValidityChecks <= 0)
+  {
+    throw std::invalid_argument("Resolution should be positive");
   }
 }
 
@@ -250,6 +257,24 @@ void GeometricStateSpace::freeState(::ompl::base::State* _state) const
 statespace::ConstStateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
 {
   return mStateSpace;
+}
+
+//==============================================================================
+aikido::statespace::ConstInterpolatorPtr GeometricStateSpace::getInterpolator() const
+{
+  return mInterpolator;
+}
+
+//==============================================================================
+aikido::constraint::TestablePtr GeometricStateSpace::getBoundsConstraint() const
+{
+  return mBoundsConstraint;
+}
+
+//==============================================================================
+double GeometricStateSpace::getMaxDistanceBetweenValidityChecks() const
+{
+  return mMaxDistanceBetweenValidityChecks;
 }
 }
 }
