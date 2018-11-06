@@ -76,8 +76,6 @@ public:
   /// Returns the underlying OMPL planner used.
   ::ompl::base::PlannerPtr getOMPLPlanner();
 
-  // TODO(avk): Get geometric state space?
-
 protected:
   /// Pointer to the underlying OMPL Planner.
   ::ompl::base::PlannerPtr mPlanner;

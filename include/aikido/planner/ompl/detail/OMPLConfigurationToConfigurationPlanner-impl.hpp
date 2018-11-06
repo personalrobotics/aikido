@@ -35,11 +35,11 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
         constraint::SampleablePtr sampler,
         constraint::TestablePtr boundsConstraint,
         constraint::ProjectablePtr boundsProjector,
-        double maxDistanceBtwValidityChecks)
+        double maxDistanceBetweenValidityChecks)
   : ConfigurationToConfigurationPlanner(std::move(stateSpace), rng)
 {
-  if (!mInterpolator)
-    mInterpolator = std::make_shared<aikido::statespace::GeodesicInterpolator>(
+  if (!interpolator)
+    interpolator = std::make_shared<const aikido::statespace::GeodesicInterpolator>(
         mStateSpace);
 
   if (!dmetric)
@@ -68,7 +68,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
   }
 
   if (!boundsConstraint)
-    mBoundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
+    boundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
 
   if (!boundsProjector)
     boundsProjector
@@ -82,10 +82,11 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
       std::move(dmetric),
       std::move(sampler),
       std::move(boundsConstraint),
-      std::move(boundsProjector));
+      std::move(boundsProjector),
+      maxDistanceBetweenValidityChecks);
 
   // Space Information
-  auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
+  auto si = ompl_make_shared<::ompl::base::SpaceInformation>(sspace);
 
   // Setup the planner
   mPlanner = ompl_make_shared<PlannerType>(si);
@@ -98,10 +99,15 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
     const SolvableProblem& problem, Result* result)
 {
   auto si = mPlanner->getSpaceInformation();
+  
+  // Only geometric statespaces are supported.
+  assert(ompl_dynamic_pointer_cast<GeometricStateSpace>(si->getStateSpace()));
+  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
 
   // Set validity checker
   std::vector<constraint::ConstTestablePtr> constraints{problem.getConstraint(),
-                                                        mBoundsConstraint};
+                                                        sspace->getBoundsConstraint()
+                                                        };
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(
           mStateSpace, std::move(constraints));
@@ -110,17 +116,12 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   si->setStateValidityChecker(vchecker);
 
   ::ompl::base::MotionValidatorPtr mvalidator
-      = ompl_make_shared<MotionValidator>(si, mMaxDistanceBtwValidityChecks);
+      = ompl_make_shared<MotionValidator>(si, sspace->getMaxDistanceBetweenValidityChecks());
   si->setMotionValidator(mvalidator);
 
   // Define the OMPL problem
   auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
 
-  // Only geometric statespaces are supported.
-  assert(ompl_dynamic_pointer_cast<GeometricStateSpace>(si->getStateSpace()));
-
-  auto sspace
-      = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
   auto start = sspace->allocState(problem.getStartState());
   auto goal = sspace->allocState(problem.getGoalState());
 
@@ -138,7 +139,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   if (solved)
   {
     auto returnTraj = std::make_shared<trajectory::Interpolated>(
-        mStateSpace, mInterpolator);
+        mStateSpace, sspace->getInterpolator());
 
     // Get the path
     auto path = ompl_dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
@@ -174,22 +175,6 @@ template <class PlannerType>
 OMPLConfigurationToConfigurationPlanner<PlannerType>::getOMPLPlanner()
 {
   return mPlanner;
-}
-
-//==============================================================================
-template <class PlannerType>
-void OMPLConfigurationToConfigurationPlanner<PlannerType>::setInterpolator(
-    statespace::ConstInterpolatorPtr interpolator)
-{
-  mInterpolator = std::move(interpolator);
-}
-
-//==============================================================================
-template <class PlannerType>
-statespace::ConstInterpolatorPtr
-OMPLConfigurationToConfigurationPlanner<PlannerType>::getInterpolator() const
-{
-  return mInterpolator;
 }
 
 } // namespace ompl
