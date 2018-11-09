@@ -22,6 +22,7 @@
   * Fixed hidden compose function (in-place version): [#421](https://github.com/personalrobotics/aikido/pull/421)
   * Added clone functionality to StateSpace: [#422](https://github.com/personalrobotics/aikido/pull/422)
   * Used const StateSpaces everywhere: [#429](https://github.com/personalrobotics/aikido/pull/429)
+  * Changed the SE(2) space representation to [x,y,theta]: [#458](https://github.com/personalrobotics/aikido/pull/458)
 
 * Constraint
 
@@ -59,6 +60,10 @@
 * Robot
 
   * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
+
+* RViz
+
+  * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
 
 * IO
 
