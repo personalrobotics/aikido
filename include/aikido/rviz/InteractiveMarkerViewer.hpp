@@ -77,6 +77,8 @@ public:
       double thickness = 0.01,
       std::size_t numLineSegments = 16u);
 
+  bool removeTrajectoryMarker(const TrajectoryMarkerPtr& trajectoryMarkerToRemove);
+
   void setAutoUpdate(bool flag);
   void update();
 

@@ -129,6 +129,10 @@ TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
   return marker;
 }
 
+bool InteractiveMarkerViewer::removeTrajectoryMarker(const TrajectoryMarkerPtr& trajectoryMarkerToRemove) {
+  return mTrajectoryMarkers.erase(trajectoryMarkerToRemove) > 0;
+}
+
 //==============================================================================
 SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
     const SkeletonPtr& skeleton, const std::string& frameId)
