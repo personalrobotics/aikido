@@ -1,0 +1,24 @@
+#ifndef AIKIDO_PLANNER_PARALLELMETAPLANNER_HPP_
+#define AIKIDO_PLANNER_PARALLELMETAPLANNER_HPP_
+
+#include "aikido/planner/CompositePlanner.hpp"
+
+namespace aikido {
+namespace planner {
+
+/// A meta planner that solves a problem using the sub planners in parallel
+/// and returns the first successfully planned trajectory.
+class ParallelMetaPlanner : public CompositePlanner
+{
+public:
+  using CompositePlanner::CompositePlanner;
+
+  // Documentation inherited.
+  trajectory::TrajectoryPtr plan(
+      const Problem& problem, Result* result = nullptr) override;
+};
+
+} // namespace planner
+} // namespace aikido
+
+#endif // AIKIDO_PLANNER_PARALLELMETAPLANNER_HPP_
