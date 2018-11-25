@@ -1,5 +1,4 @@
 set(sources
-  ConcreteSequenceMetaPlanner.cpp
   ConfigurationToConfiguration.cpp
   ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp
@@ -14,6 +13,7 @@ set(sources
   SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
+  dart/ConcreteSequenceMetaPlanner.cpp
   dart/ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfigurationPlanner.cpp
   dart/ConfigurationToEndEffectorOffset.cpp
