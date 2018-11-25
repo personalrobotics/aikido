@@ -1,4 +1,5 @@
 set(sources
+  ConcreteSequenceMetaPlanner.cpp
   ConfigurationToConfiguration.cpp
   ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp

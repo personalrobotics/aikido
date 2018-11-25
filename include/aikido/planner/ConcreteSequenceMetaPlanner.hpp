@@ -11,6 +11,10 @@ namespace planner {
 class ConcreteSequenceMetaPlanner : public SequenceMetaPlanner
 {
 public:
+  /// Constructs a planner for the passed statespace.
+  ///
+  /// \param[in] stateSpace State space that this planner associated with.
+  ConcreteSequenceMetaPlanner(statespace::ConstStateSpacePtr stateSpace);
 
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(
