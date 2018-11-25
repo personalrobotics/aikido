@@ -3,6 +3,8 @@
 
 #include "aikido/planner/SequenceMetaPlanner.hpp"
 
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+
 namespace aikido {
 namespace planner {
 
@@ -14,7 +16,9 @@ public:
   /// Constructs a planner for the passed statespace.
   ///
   /// \param[in] stateSpace State space that this planner associated with.
-  ConcreteSequenceMetaPlanner(statespace::ConstStateSpacePtr stateSpace);
+  ConcreteSequenceMetaPlanner(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(
