@@ -4,6 +4,10 @@ FROM ubuntu:bionic
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
 RUN apt-get update -qq
+
+# To run dpkg without interactive dialogue
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get install -y \
     build-essential  \
     cmake \
@@ -13,4 +17,5 @@ RUN apt-get install -y \
     pkg-config \
     python \
     software-properties-common \
-    sudo
+    sudo \
+    tzdata
