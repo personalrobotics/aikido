@@ -13,6 +13,8 @@
 #include "aikido/constraint/dart/CollisionFreeOutcome.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
+#include <dart/dart.hpp>
+
 namespace aikido {
 namespace constraint {
 namespace dart {
@@ -54,6 +56,11 @@ public:
   bool isSatisfied(
       const aikido::statespace::StateSpace::State* _state,
       TestableOutcome* outcome = nullptr) const override;
+
+  /// NOTE: Finish partial evaluation.
+  bool completeIsSatisfied(
+      const aikido::statespace::StateSpace::State* _state,
+      std::vector<::dart::collision::narrowPhaseData>& partialRes) const;
 
   /// \copydoc Testable::createOutcome()
   /// \note Returns an instance of CollisionFreeOutcome.

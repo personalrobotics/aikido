@@ -86,6 +86,22 @@ bool CollisionFree::isSatisfied(
 }
 
 //==============================================================================
+bool CollisionFree::completeIsSatisfied(
+    const aikido::statespace::StateSpace::State* _state,
+    std::vector<::dart::collision::narrowPhaseData>& partialRes) const
+{
+  auto skelStatePtr = static_cast<const aikido::statespace::dart::
+                                      MetaSkeletonStateSpace::State*>(_state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
+
+  auto fclDetector
+      = std::static_pointer_cast<::dart::collision::FCLCollisionDetector>(
+          mCollisionDetector);
+
+  return fclDetector->completeNarrowEval(partialRes);
+}
+
+//==============================================================================
 std::unique_ptr<TestableOutcome> CollisionFree::createOutcome() const
 {
   return std::unique_ptr<TestableOutcome>(new CollisionFreeOutcome);
