@@ -13,7 +13,9 @@ if [ $BUILD_NAME = DOCS ]; then
 fi
 
 # Check code style
-./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
+if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
+  ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
+fi
 
 # Manually build Aikido's tests; they are not built automatically because it is not a Catkin package.
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
