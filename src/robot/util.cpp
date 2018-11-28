@@ -124,6 +124,7 @@ trajectory::TrajectoryPtr planToConfigurations(
     double timelimit)
 {
   using planner::ompl::planOMPL;
+  DART_UNUSED(timelimit);
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
