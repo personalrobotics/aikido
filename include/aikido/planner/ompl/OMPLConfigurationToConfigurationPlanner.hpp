@@ -37,9 +37,7 @@ public:
   /// states. GeodesicInterpolator is used by default.
   /// \param[in] dmetric A valid distance metric defined on the StateSpace.
   /// Distance metric relevant to the statespace is used by default.
-  /// \param[in] sampler A Sampleable that can sample states from the
-  /// StateSpace. Warning: Many OMPL planners internally assume this sampler
-  /// samples uniformly. Care should be taken when using a non-uniform sampler.
+  /// \param[in] sampler A Sampleable to sample states from StateSpace.
   /// \param[in] boundsConstraint A constraint used to determine whether states
   /// encountered during planning fall within any bounds specified on the
   /// StateSpace. In addition to the validityConstraint, this must also be

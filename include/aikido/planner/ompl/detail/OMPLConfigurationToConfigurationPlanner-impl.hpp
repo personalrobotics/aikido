@@ -45,37 +45,37 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
   if (!dmetric)
     dmetric = std::move(createDistanceMetric(mStateSpace));
 
-  // TODO (avk): The constraint namespace functions only work with
-  // MetaSkeletonStateSpaces
+  // TODO (avk): constraint namespace works with MetaskeletonStateSpace only.
   const auto metaskeletonStatespace
       = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(mStateSpace);
 
-  if (!metaskeletonStatespace
-      && (!sampler || !boundsConstraint || !boundsProjector))
+  if (metaskeletonStatespace)
   {
-    throw std::invalid_argument(
+    if (!sampler)
+    {
+      if (!rng)
+        throw std::invalid_argument(
+          "[OMPLPlanner] Both of sampler and rng cannot be nullptr.");
+
+      sampler = std::move(
+        createSampleableBounds(metaskeletonStatespace, rng->clone()));
+    }
+
+    if (!boundsConstraint)
+      boundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
+
+    if (!boundsProjector)
+      boundsProjector = std::move(createProjectableBounds(metaskeletonStatespace));
+  }
+  else
+  {
+    if (!sampler || !boundsConstraint || !boundsProjector)
+      throw std::invalid_argument(
         "[OMPLPlanner] Either statespace must be metaSkeletonStateSpace or all "
         "of sampler, boundsContraint and boundsProjector must be provided.");
   }
 
-  if (!sampler)
-  {
-    if (!rng)
-      throw std::invalid_argument(
-          "[OMPLPlanner] Both of sampler and rng cannot be nullptr.");
-    sampler = std::move(
-        createSampleableBounds(metaskeletonStatespace, rng->clone()));
-  }
-
-  if (!boundsConstraint)
-    boundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
-
-  if (!boundsProjector)
-    boundsProjector
-        = std::move(createProjectableBounds(metaskeletonStatespace));
-
   // Geometric State space
-  // TODO(avk): Also add in the maxDistanceCheck
   auto sspace = ompl_make_shared<GeometricStateSpace>(
       mStateSpace,
       std::move(interpolator),
@@ -104,7 +104,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   assert(ompl_dynamic_pointer_cast<GeometricStateSpace>(si->getStateSpace()));
   auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
 
-  // Set validity checker
+  // Set validity checker.
   std::vector<constraint::ConstTestablePtr> constraints{problem.getConstraint(),
                                                         sspace->getBoundsConstraint()
                                                         };
@@ -119,19 +119,19 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
       = ompl_make_shared<MotionValidator>(si, sspace->getMaxDistanceBetweenValidityChecks());
   si->setMotionValidator(mvalidator);
 
-  // Define the OMPL problem
+  // Define the OMPL problem.
   auto pdef = ompl_make_shared<::ompl::base::ProblemDefinition>(si);
 
+  // Provide the problem definition with start and goal configuations.
   auto start = sspace->allocState(problem.getStartState());
   auto goal = sspace->allocState(problem.getGoalState());
-
-  // ProblemDefinition clones states and keeps them internally
   pdef->setStartAndGoalStates(start, goal);
 
+  // pdef clones and maintains start and goal internally.
   sspace->freeState(start);
   sspace->freeState(goal);
 
-  // Plan
+  // Solve the planning problem.
   mPlanner->setProblemDefinition(pdef);
   mPlanner->setup();
   auto solved = mPlanner->solve(1);
