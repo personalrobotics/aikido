@@ -105,9 +105,9 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
 
   // Set validity checker.
-  std::vector<constraint::ConstTestablePtr> constraints{problem.getConstraint(),
-                                                        sspace->getBoundsConstraint()
-                                                        };
+  std::vector<constraint::ConstTestablePtr> constraints{
+                                              problem.getConstraint(),
+                                              sspace->getBoundsConstraint()};
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(
           mStateSpace, std::move(constraints));
@@ -116,7 +116,8 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   si->setStateValidityChecker(vchecker);
 
   ::ompl::base::MotionValidatorPtr mvalidator
-      = ompl_make_shared<MotionValidator>(si, sspace->getMaxDistanceBetweenValidityChecks());
+      = ompl_make_shared<MotionValidator>(si, 
+                                    sspace->getMaxDistanceBetweenValidityChecks());
   si->setMotionValidator(mvalidator);
 
   // Define the OMPL problem.
@@ -134,7 +135,9 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   // Solve the planning problem.
   mPlanner->setProblemDefinition(pdef);
   mPlanner->setup();
-  auto solved = mPlanner->solve(1);
+
+  // TODO (avk): Introduce other termination conditions for planners (as in OMPL).
+  auto solved = mPlanner->solve(::ompl::base::plannerNonTerminatingCondition());
 
   if (solved)
   {
