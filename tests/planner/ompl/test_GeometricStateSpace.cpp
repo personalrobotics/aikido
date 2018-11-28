@@ -139,7 +139,8 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnNullBoundsConstraint)
           dmetric,
           sampler,
           nullptr,
-          boundsProjection),
+          boundsProjection,
+          maxDistanceBetweenValidityChecks),
       std::invalid_argument);
 }
 
@@ -188,6 +189,20 @@ TEST_F(GeometricStateSpaceTest, ThrowsOnBoundsProjectionMismatch)
           boundsConstraint,
           std::move(bconstraint),
           maxDistanceBetweenValidityChecks),
+      std::invalid_argument);
+}
+
+TEST_F(GeometricStateSpaceTest, ThrowsOnNegativeValidityCheckerResolution)
+{
+  EXPECT_THROW(
+      GeometricStateSpace(
+          stateSpace,
+          interpolator,
+          dmetric,
+          sampler,
+          boundsConstraint,
+          boundsProjection,
+          -0.1),
       std::invalid_argument);
 }
 
@@ -544,6 +559,24 @@ TEST_F(GeometricStateSpaceTest, GetAikidoStateSpace)
 {
   constructStateSpace();
   EXPECT_EQ(stateSpace, gSpace->getAikidoStateSpace());
+}
+
+TEST_F(GeometricStateSpaceTest, GetInterpolator)
+{
+  constructStateSpace();
+  EXPECT_EQ(interpolator, gSpace->getInterpolator());
+}
+
+TEST_F(GeometricStateSpaceTest, GetBoundsConstraint)
+{
+  constructStateSpace();
+  EXPECT_EQ(boundsConstraint, gSpace->getBoundsConstraint());
+}
+
+TEST_F(GeometricStateSpaceTest, GetValidityCheckerResolution)
+{
+  constructStateSpace();
+  EXPECT_EQ(0.2, gSpace->getMaxDistanceBetweenValidityChecks());
 }
 
 TEST_F(GeometricStateSpaceTest, DeallocNullAikidoState)

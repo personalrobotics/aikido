@@ -341,7 +341,7 @@ public:
     // Joint limits
     boundsConstraint = aikido::constraint::createTestableBounds(stateSpace);
 
-    maxDistanceBetweenValidityCheck = 0.2;
+    maxDistanceBetweenValidityChecks = 0.2;
   }
 
   dart::dynamics::SkeletonPtr robot;
