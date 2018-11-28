@@ -66,7 +66,7 @@ public:
       double maxDistanceBetweenValidityChecks);
 
   /// Get the dimension of the space.
-  std::size_t getDimension() const override;
+  unsigned int getDimension() const override;
 
   /// Get the maximum value a call to distance() can return (or an upper bound).
   /// For unbounded state spaces, this function can return infinity.
