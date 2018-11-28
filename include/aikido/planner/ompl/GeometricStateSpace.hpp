@@ -101,11 +101,10 @@ public:
       const ::ompl::base::State* state1,
       const ::ompl::base::State* state2) const override;
 
-  /// Check state equality. 
-  /// Returns true if the distance between the states is 0.
+  /// Check state equality. Returns true if the distance between the states 
+  /// less than EQUALITY_EPSILON.
   /// \param[in] state1 The first state
   /// \param[in] state2 The second state
-  // TODO(avk) check if this is true. why is eps used then?
   bool equalStates(
       const ::ompl::base::State* state1,
       const ::ompl::base::State* state2) const override;
