@@ -1,16 +1,17 @@
+#include "aikido/trajectory/util.hpp"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <dart/common/StlHelpers.hpp>
-#include <aikido/common/Spline.hpp>
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/planner/parabolic/ParabolicTimer.hpp>
-#include <aikido/statespace/CartesianProduct.hpp>
-#include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/SO2.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/trajectory/util.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/planner/parabolic/ParabolicTimer.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
+#include "aikido/statespace/Rn.hpp"
+#include "aikido/statespace/SO2.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 
 using aikido::statespace::R;
 using aikido::statespace::SO2;
@@ -250,10 +251,11 @@ UniqueSplinePtr createPartialTrajectory(
 
 //==============================================================================
 UniqueInterpolatedPtr convertToInterpolated(
-    const Spline& traj, statespace::ConstInterpolatorPtr& interpolator)
+    const Spline& traj, statespace::ConstInterpolatorPtr interpolator)
 {
   auto stateSpace = traj.getStateSpace();
-  auto outputTrajectory = make_unique<Interpolated>(stateSpace, interpolator);
+  auto outputTrajectory
+      = make_unique<Interpolated>(stateSpace, std::move(interpolator));
 
   auto state = stateSpace->createState();
   double t = 0.0;

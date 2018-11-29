@@ -27,8 +27,8 @@ class Spline : public Trajectory
 public:
   /// Constructs an empty trajectory.
   ///
-  /// \param _stateSpace state space this trajectory is defined in
-  /// \param _startTime start time of the trajectory
+  /// \param _stateSpace State space this trajectory is defined in
+  /// \param _startTime Start time of the trajectory
   Spline(statespace::ConstStateSpacePtr _stateSpace, double _startTime = 0.);
 
   virtual ~Spline();
@@ -54,9 +54,9 @@ public:
   /// higher-order continuity. It is the responsibility of the user to pass in
   /// continuous spline coefficients if continuity is desired.
   ///
-  /// \param _coefficients polynomial coefficients
-  /// \param _duration duration of this segment, must be positive
-  /// \param _startState start state of the segment
+  /// \param _coefficients Polynomial coefficients
+  /// \param _duration Duration of this segment, must be positive
+  /// \param _startState Start state of the segment
   void addSegment(
       const Eigen::MatrixXd& _coefficients,
       double _duration,
@@ -72,13 +72,13 @@ public:
   /// the overload of the function that accepts an explicit start state
   /// if it is possible to do so.
   ///
-  /// \param _coefficients polynomial coefficients
-  /// \param _duration duration of this segment, must be positive
+  /// \param _coefficients Polynomial coefficients
+  /// \param _duration Duration of this segment, must be positive
   void addSegment(const Eigen::MatrixXd& _coefficients, double _duration);
 
   /// Gets the number of segments in this spline.
   ///
-  /// \return number of segments in this spline
+  /// \return Number of segments in this spline
   std::size_t getNumSegments() const;
 
   // Documentation inherited.
@@ -112,20 +112,20 @@ public:
 
   /// Gets a waypoint.
   ///
-  /// \param _index waypoint index
-  /// \param[out] state of the waypoint at index \c _index
+  /// \param _index Waypoint index
+  /// \param[out] state State of the waypoint at index \c _index
   void getWaypoint(
       std::size_t _index, statespace::StateSpace::State* state) const;
 
   /// Gets the time of a waypoint.
-  /// \param _index waypoint index
-  /// \return time of the waypoint at index \c _index
+  /// \param _index Waypoint index
+  /// \return Time of the waypoint at index \c _index
   double getWaypointTime(std::size_t _index) const;
 
   /// Gets the derivative of a waypoint.
-  /// \param _index waypoint index
-  /// \param _derivative order of derivative
-  /// \param[out] _tangentVector output tangent vector in the local frame at
+  /// \param _index Waypoint index
+  /// \param _derivative Order of derivative
+  /// \param[out] _tangentVector Output tangent vector in the local frame at
   /// index \c _index
   void getWaypointDerivative(
       std::size_t _index,
@@ -133,18 +133,18 @@ public:
       Eigen::VectorXd& _tangentVector) const;
 
   /// Gets the duration of a segment.
-  /// \param _index segment index
-  /// \return duration of the segment at index \c _index
+  /// \param _index Segment index
+  /// \return Duration of the segment at index \c _index
   double getSegmentDuration(std::size_t _index) const;
 
   /// Gets the coefficients of a segment.
-  /// \param _index segment index
-  /// \return coefficients of the segment at index \c _index
+  /// \param _index Segment index
+  /// \return Coefficients of the segment at index \c _index
   const Eigen::MatrixXd& getSegmentCoefficients(std::size_t _index) const;
 
   /// Gets the start state of a segment.
-  /// \param _index segment index
-  /// \return start state of the segment at index \c _index
+  /// \param _index Segment index
+  /// \return Start state of the segment at index \c _index
   const aikido::statespace::StateSpace::State* getSegmentState(
       std::size_t _index) const;
 

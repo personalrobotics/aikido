@@ -24,7 +24,7 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory);
 /// segment
 /// \return An interpolated trajectory
 UniqueInterpolatedPtr convertToInterpolated(
-    const Spline& traj, statespace::ConstInterpolatorPtr& interpolator);
+    const Spline& traj, statespace::ConstInterpolatorPtr interpolator);
 
 /// Concatenates two interpolated trajectories.
 ///
