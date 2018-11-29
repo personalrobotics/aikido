@@ -17,8 +17,6 @@ using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
 using dart::common::make_unique;
 
-namespace po = boost::program_options;
-
 using Eigen::Vector2d;
 using LinearSplineProblem
     = aikido::common::SplineProblem<double, int, 2, Eigen::Dynamic, 2>;
@@ -84,25 +82,24 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
     return false;
   }
 }
-}
+
+} // (anonymous) namespace
 
 //==============================================================================
-aikido::trajectory::UniqueSplinePtr convertToSpline(
-    const aikido::trajectory::Interpolated& _inputTrajectory)
+UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
 {
-  using aikido::statespace::GeodesicInterpolator;
+  using statespace::GeodesicInterpolator;
 
   if (!std::dynamic_pointer_cast<const GeodesicInterpolator>(
-          _inputTrajectory.getInterpolator()))
+          inputTrajectory.getInterpolator()))
   {
     throw std::invalid_argument(
-        "The interpolator of _inputTrajectory should be a "
-        "GeodesicInterpolator");
+        "The interpolator of inputTrajectory should be a GeodesicInterpolator");
   }
 
-  const auto stateSpace = _inputTrajectory.getStateSpace();
+  const auto stateSpace = inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
-  const auto numWaypoints = _inputTrajectory.getNumWaypoints();
+  const auto numWaypoints = inputTrajectory.getNumWaypoints();
 
   if (!checkStateSpace(stateSpace.get()))
     throw std::invalid_argument(
@@ -112,16 +109,16 @@ aikido::trajectory::UniqueSplinePtr convertToSpline(
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(
-      stateSpace, _inputTrajectory.getStartTime());
+  auto outputTrajectory
+      = make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
   {
-    const auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
-    double currentTime = _inputTrajectory.getWaypointTime(iwaypoint);
-    const auto nextState = _inputTrajectory.getWaypoint(iwaypoint + 1);
-    double nextTime = _inputTrajectory.getWaypointTime(iwaypoint + 1);
+    const auto currentState = inputTrajectory.getWaypoint(iwaypoint);
+    double currentTime = inputTrajectory.getWaypointTime(iwaypoint);
+    const auto nextState = inputTrajectory.getWaypoint(iwaypoint + 1);
+    double nextTime = inputTrajectory.getWaypointTime(iwaypoint + 1);
 
     stateSpace->logMap(currentState, currentVec);
     stateSpace->logMap(nextState, nextVec);
@@ -144,60 +141,60 @@ aikido::trajectory::UniqueSplinePtr convertToSpline(
 
 //==============================================================================
 double findTimeOfClosetStateOnTrajectory(
-    const aikido::trajectory::Trajectory* traj,
+    const Trajectory& traj,
     const Eigen::VectorXd& referenceState,
     double timeStep)
 {
-  if (traj == nullptr)
-    throw std::runtime_error("Traj is nullptr");
-  auto stateSpace = traj->getStateSpace();
-  std::size_t configSize = referenceState.size();
+  auto stateSpace = traj.getStateSpace();
+  const std::size_t configSize
+      = static_cast<std::size_t>(referenceState.size());
   if (configSize != stateSpace->getDimension())
     throw std::runtime_error("Dimension mismatch");
 
-  double findTime = traj->getStartTime();
+  double findTime = traj.getStartTime();
   double minDist = std::numeric_limits<double>::max();
 
-  aikido::common::StepSequence sequence(
-      timeStep, true, true, traj->getStartTime(), traj->getEndTime());
+  const common::StepSequence sequence(
+      timeStep, true, true, traj.getStartTime(), traj.getEndTime());
 
   auto currState = stateSpace->createState();
   Eigen::VectorXd currPos(stateSpace->getDimension());
-  for (std::size_t i = 0; i < sequence.getLength(); i++)
+  for (const double currTime : sequence)
   {
-    double currTime = sequence[i];
-    traj->evaluate(currTime, currState);
+    traj.evaluate(currTime, currState);
     stateSpace->logMap(currState, currPos);
 
-    double currDist = (referenceState - currPos).norm();
+    const double currDist = (referenceState - currPos).norm();
     if (currDist < minDist)
     {
       findTime = currTime;
       minDist = currDist;
     }
   }
+
   return findTime;
 }
 
 //==============================================================================
-aikido::trajectory::UniqueSplinePtr createPartialTrajectory(
-    const aikido::trajectory::Spline& traj, double partialStartTime)
+UniqueSplinePtr createPartialTrajectory(
+    const Spline& traj, double partialStartTime)
 {
   if (partialStartTime < traj.getStartTime()
       || partialStartTime > traj.getEndTime())
+  {
     throw std::runtime_error("Wrong partial start time");
+  }
 
-  auto stateSpace = traj.getStateSpace();
-  const std::size_t dimension = stateSpace->getDimension();
-  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(
-      stateSpace, traj.getStartTime());
+  const auto stateSpace = traj.getStateSpace();
+  const int dimension = static_cast<int>(stateSpace->getDimension());
+  auto outputTrajectory = make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
-  std::size_t currSegmentIdx = 0;
+  std::size_t currSegmentIdx = 0u;
 
-  auto segmentStartState = stateSpace->createState();
-  auto segmentEndState = stateSpace->createState();
+  const auto segmentStartState = stateSpace->createState();
+  const auto segmentEndState = stateSpace->createState();
   Eigen::VectorXd segStartPos(dimension);
   Eigen::VectorXd segEndPos(dimension);
   Eigen::VectorXd segStartVel(dimension);
@@ -207,10 +204,11 @@ aikido::trajectory::UniqueSplinePtr createPartialTrajectory(
   stateSpace->logMap(segmentStartState, segStartPos);
   traj.evaluateDerivative(partialStartTime, 1, segStartVel);
 
+  // Find a segment of original trajectory that includes partialStartTime
   while (currSegmentIdx < traj.getNumSegments())
   {
     currSegmentEndTime += traj.getSegmentDuration(currSegmentIdx);
-    if (partialStartTime >= currSegmentStartTime
+    if (currSegmentStartTime <= partialStartTime
         && partialStartTime <= currSegmentEndTime)
     {
       // create new segment
@@ -218,12 +216,11 @@ aikido::trajectory::UniqueSplinePtr createPartialTrajectory(
       stateSpace->logMap(segmentEndState, segEndPos);
       traj.evaluateDerivative(currSegmentEndTime, 1, segEndVel);
 
-      double segmentDuration = currSegmentEndTime - partialStartTime;
+      const double segmentDuration = currSegmentEndTime - partialStartTime;
 
       if (segmentDuration > 0.0)
       {
-        CubicSplineProblem problem(
-            Eigen::Vector2d{0., segmentDuration}, 4, dimension);
+        CubicSplineProblem problem(Vector2d{0., segmentDuration}, 4, dimension);
         problem.addConstantConstraint(0, 0, zeroPos);
         problem.addConstantConstraint(0, 1, segStartVel);
         problem.addConstantConstraint(1, 0, segEndPos - segStartPos);
@@ -240,24 +237,23 @@ aikido::trajectory::UniqueSplinePtr createPartialTrajectory(
     currSegmentStartTime = currSegmentEndTime;
   }
 
-  for (std::size_t i = currSegmentIdx + 1; i < traj.getNumSegments(); i++)
+  for (std::size_t i = currSegmentIdx + 1u; i < traj.getNumSegments(); i++)
   {
     outputTrajectory->addSegment(
         traj.getSegmentCoefficients(i),
         traj.getSegmentDuration(i),
         traj.getSegmentState(i));
   }
+
   return outputTrajectory;
 }
 
 //==============================================================================
-aikido::trajectory::UniqueInterpolatedPtr convertToInterpolated(
-    const aikido::trajectory::Spline& traj,
-    aikido::statespace::ConstInterpolatorPtr& interpolator)
+UniqueInterpolatedPtr convertToInterpolated(
+    const Spline& traj, statespace::ConstInterpolatorPtr& interpolator)
 {
   auto stateSpace = traj.getStateSpace();
-  auto outputTrajectory
-      = make_unique<aikido::trajectory::Interpolated>(stateSpace, interpolator);
+  auto outputTrajectory = make_unique<Interpolated>(stateSpace, interpolator);
 
   auto state = stateSpace->createState();
   double t = 0.0;
@@ -272,9 +268,8 @@ aikido::trajectory::UniqueInterpolatedPtr convertToInterpolated(
 }
 
 //==============================================================================
-aikido::trajectory::UniqueInterpolatedPtr concatenate(
-    const aikido::trajectory::Interpolated& traj1,
-    const aikido::trajectory::Interpolated& traj2)
+UniqueInterpolatedPtr concatenate(
+    const Interpolated& traj1, const Interpolated& traj2)
 {
   if (traj1.getStateSpace()->getDimension()
       != traj2.getStateSpace()->getDimension())
@@ -282,8 +277,8 @@ aikido::trajectory::UniqueInterpolatedPtr concatenate(
 
   auto stateSpace = traj1.getStateSpace();
 
-  auto outputTrajectory = make_unique<aikido::trajectory::Interpolated>(
-      stateSpace, traj1.getInterpolator());
+  auto outputTrajectory
+      = make_unique<Interpolated>(stateSpace, traj1.getInterpolator());
 
   for (std::size_t i = 0; i < traj1.getNumWaypoints() - 1; i++)
   {
@@ -301,15 +296,13 @@ aikido::trajectory::UniqueInterpolatedPtr concatenate(
 }
 
 //==============================================================================
-aikido::trajectory::UniqueSplinePtr concatenate(
-    const aikido::trajectory::Spline& traj1,
-    const aikido::trajectory::Spline& traj2)
+UniqueSplinePtr concatenate(const Spline& traj1, const Spline& traj2)
 {
   if (traj1.getStateSpace() != traj2.getStateSpace())
     throw std::runtime_error("State space mismatch");
   auto stateSpace = traj1.getStateSpace();
-  aikido::statespace::ConstInterpolatorPtr interpolator
-      = std::make_shared<aikido::statespace::GeodesicInterpolator>(stateSpace);
+  statespace::ConstInterpolatorPtr interpolator
+      = std::make_shared<statespace::GeodesicInterpolator>(stateSpace);
   auto interpolated1 = convertToInterpolated(traj1, interpolator);
   auto interpolated2 = convertToInterpolated(traj2, interpolator);
   auto concatenatedInterpolated = concatenate(*interpolated1, *interpolated2);

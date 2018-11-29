@@ -367,8 +367,7 @@ TEST_F(SplineTest, FindTimeOfClosetStateOnTrajectory)
   trajectory->addSegment(coefficients, 2., startState);
 
   Vector2d query(1., 2.);
-  double time
-      = findTimeOfClosetStateOnTrajectory(trajectory.get(), query, 1e-4);
+  double time = findTimeOfClosetStateOnTrajectory(*trajectory, query, 1e-4);
   EXPECT_EQ(time, 0.5);
 }
 
