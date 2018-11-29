@@ -85,7 +85,7 @@ public:
   /// \param[in] state The state to modify.
   void enforceBounds(::ompl::base::State* state) const override;
 
-  /// Check if a state satisfieds the boundsConstraint.
+  /// Check if a state satisfies the boundsConstraint.
   /// \param[in] state The state to check.
   bool satisfiesBounds(const ::ompl::base::State* state) const override;
 
