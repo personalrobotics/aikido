@@ -37,7 +37,7 @@ public:
     /// Indicates whether the state has been initialized to represent a valid
     /// state. This allows samplers to indicate failure by setting this flag to
     /// false when sampling fails. The StateValidityChecker should check this
-    /// flag when determining if the state is valide.
+    /// flag when determining if the state is valid.
     /// The value defaults to true.
     bool mValid;
   };
