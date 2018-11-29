@@ -258,11 +258,10 @@ UniqueInterpolatedPtr convertToInterpolated(
       = make_unique<Interpolated>(stateSpace, std::move(interpolator));
 
   auto state = stateSpace->createState();
-  double t = 0.0;
   for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
   {
     traj.getWaypoint(i, state);
-    t = traj.getWaypointTime(i);
+    const double t = traj.getWaypointTime(i);
     outputTrajectory->addWaypoint(t, state);
   }
 
