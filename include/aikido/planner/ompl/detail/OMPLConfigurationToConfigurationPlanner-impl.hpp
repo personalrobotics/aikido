@@ -39,8 +39,9 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
   : ConfigurationToConfigurationPlanner(std::move(stateSpace), rng)
 {
   if (!interpolator)
-    interpolator = std::make_shared<const aikido::statespace::GeodesicInterpolator>(
-        mStateSpace);
+    interpolator
+        = std::make_shared<const aikido::statespace::GeodesicInterpolator>(
+            mStateSpace);
 
   if (!dmetric)
     dmetric = std::move(createDistanceMetric(mStateSpace));
@@ -55,24 +56,27 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
     {
       if (!rng)
         throw std::invalid_argument(
-          "[OMPLPlanner] Both of sampler and rng cannot be nullptr.");
+            "[OMPLPlanner] Both of sampler and rng cannot be nullptr.");
 
       sampler = std::move(
-        createSampleableBounds(metaskeletonStatespace, rng->clone()));
+          createSampleableBounds(metaskeletonStatespace, rng->clone()));
     }
 
     if (!boundsConstraint)
-      boundsConstraint = std::move(createTestableBounds(metaskeletonStatespace));
+      boundsConstraint
+          = std::move(createTestableBounds(metaskeletonStatespace));
 
     if (!boundsProjector)
-      boundsProjector = std::move(createProjectableBounds(metaskeletonStatespace));
+      boundsProjector
+          = std::move(createProjectableBounds(metaskeletonStatespace));
   }
   else
   {
     if (!sampler || !boundsConstraint || !boundsProjector)
       throw std::invalid_argument(
-        "[OMPLPlanner] Either statespace must be metaSkeletonStateSpace or all "
-        "of sampler, boundsContraint and boundsProjector must be provided.");
+          "[OMPLPlanner] Either statespace must be metaSkeletonStateSpace or "
+          "all of sampler, boundsContraint and boundsProjector must be "
+          "provided.");
   }
 
   // Geometric State space
@@ -99,15 +103,15 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
     const SolvableProblem& problem, Result* result)
 {
   auto si = mPlanner->getSpaceInformation();
-  
+
   // Only geometric statespaces are supported.
   assert(ompl_dynamic_pointer_cast<GeometricStateSpace>(si->getStateSpace()));
-  auto sspace = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
+  auto sspace
+      = ompl_static_pointer_cast<GeometricStateSpace>(si->getStateSpace());
 
   // Set validity checker.
   std::vector<constraint::ConstTestablePtr> constraints{
-                                              problem.getConstraint(),
-                                              sspace->getBoundsConstraint()};
+      problem.getConstraint(), sspace->getBoundsConstraint()};
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(
           mStateSpace, std::move(constraints));
@@ -116,8 +120,8 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   si->setStateValidityChecker(vchecker);
 
   ::ompl::base::MotionValidatorPtr mvalidator
-      = ompl_make_shared<MotionValidator>(si, 
-                                    sspace->getMaxDistanceBetweenValidityChecks());
+      = ompl_make_shared<MotionValidator>(
+          si, sspace->getMaxDistanceBetweenValidityChecks());
   si->setMotionValidator(mvalidator);
 
   // Define the OMPL problem.
@@ -136,7 +140,8 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   mPlanner->setProblemDefinition(pdef);
   mPlanner->setup();
 
-  // TODO (avk): Introduce other termination conditions for planners (as in OMPL).
+  // TODO (avk): Introduce other termination conditions for planners (as in
+  // OMPL).
   auto solved = mPlanner->solve(::ompl::base::plannerNonTerminatingCondition());
 
   if (solved)

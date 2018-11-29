@@ -156,8 +156,7 @@ void GeometricStateSpace::copyState(
 
 //==============================================================================
 double GeometricStateSpace::distance(
-    const ::ompl::base::State* state1,
-    const ::ompl::base::State* state2) const
+    const ::ompl::base::State* state1, const ::ompl::base::State* state2) const
 {
   auto sstate1 = static_cast<const StateType*>(state1);
   auto sstate2 = static_cast<const StateType*>(state2);
@@ -176,8 +175,7 @@ double GeometricStateSpace::distance(
 
 //==============================================================================
 bool GeometricStateSpace::equalStates(
-    const ::ompl::base::State* state1,
-    const ::ompl::base::State* state2) const
+    const ::ompl::base::State* state1, const ::ompl::base::State* state2) const
 {
   auto sstate1 = static_cast<const StateType*>(state1);
   auto sstate2 = static_cast<const StateType*>(state2);
@@ -260,7 +258,7 @@ statespace::ConstStateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
 }
 
 //==============================================================================
-aikido::statespace::ConstInterpolatorPtr GeometricStateSpace::getInterpolator() 
+aikido::statespace::ConstInterpolatorPtr GeometricStateSpace::getInterpolator()
     const
 {
   return mInterpolator;

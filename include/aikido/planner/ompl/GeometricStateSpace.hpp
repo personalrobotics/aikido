@@ -2,11 +2,11 @@
 #define AIKIDO_OMPL_AIKIDOGEOMETRICSTATESPACE_HPP_
 
 #include <ompl/base/StateSpace.h>
-#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/distance/DistanceMetric.hpp"
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
@@ -44,15 +44,16 @@ public:
 
   /// Construct a state space
   /// \param[in] sspace The aikido::statespace::StateSpace to expose to OMPL
-  /// \param[in] interpolator An aikido interpolator used by the interpolate method
-  /// \param[in] dmetric The distance metric to use to compute distance between two
-  /// states in the StateSpace
+  /// \param[in] interpolator An aikido interpolator used by the interpolate
+  /// method
+  /// \param[in] dmetric The distance metric to use to compute distance between
+  /// two states in the StateSpace
   /// \param[in] sampler A state sampler used to sample new states in the
   /// StateSpace
   /// \param[in] boundsConstraint A Testable used to determine whether
   /// states fall with in bounds defined on the space.
-  /// \param[in] boundsProjection A Projectable that can be used to project a state
-  /// back within the valid boundary defined on the space.
+  /// \param[in] boundsProjection A Projectable that can be used to project a
+  /// state back within the valid boundary defined on the space.
   /// \param[in] maxDistanceBetweenValidityChecks The maximum distance (under
   /// dmetric) between validity checking two successive points on a tree
   /// extension or an edge in a graph. Defines the "discreteness" of statespace.
@@ -79,7 +80,8 @@ public:
   double getMeasure() const;
 #endif
 
-  /// Bring the state within the bounds of the statespace using boundsProjection.
+  /// Bring the state within the bounds of the statespace using
+  /// boundsProjection.
   /// \param[in] state The state to modify.
   void enforceBounds(::ompl::base::State* state) const override;
 
@@ -101,7 +103,7 @@ public:
       const ::ompl::base::State* state1,
       const ::ompl::base::State* state2) const override;
 
-  /// Check state equality. Returns true if the distance between the states 
+  /// Check state equality. Returns true if the distance between the states
   /// less than EQUALITY_EPSILON.
   /// \param[in] state1 The first state
   /// \param[in] state2 The second state
@@ -143,7 +145,8 @@ public:
   /// Return the interpolator used to interpolate between states in the space.
   aikido::statespace::ConstInterpolatorPtr getInterpolator() const;
 
-  /// Return the bounds constraint for the statespace. Used to specify constraints
+  /// Return the bounds constraint for the statespace. Used to specify
+  /// constraints
   /// to the OMPL planner.
   aikido::constraint::TestablePtr getBoundsConstraint() const;
 
