@@ -38,6 +38,8 @@ public:
   /// \param[in] dmetric A valid distance metric defined on the StateSpace.
   /// Distance metric relevant to the statespace is used by default.
   /// \param[in] sampler A Sampleable to sample states from StateSpace.
+  /// \note OMPL planners assume this sampler samples from the statespace
+  /// uniformly. Care must be taken when using a non-uniform sampler.
   /// \param[in] boundsConstraint A constraint used to determine whether states
   /// encountered during planning fall within any bounds specified on the
   /// StateSpace. In addition to the validityConstraint, this must also be
@@ -53,15 +55,15 @@ public:
       statespace::ConstInterpolatorPtr interpolator = nullptr,
       distance::DistanceMetricPtr dmetric = nullptr,
       constraint::SampleablePtr sampler = nullptr,
-      constraint::TestablePtr boundsConstraint = nullptr,
+      constraint::ConstTestablePtr boundsConstraint = nullptr,
       constraint::ProjectablePtr boundsProjector = nullptr,
       double maxDistanceBtwValidityChecks = 0.1);
 
   /// Plans a trajectory from start state to goal state by using an interpolator
   /// to interpolate between them.
   ///
-  /// If successful, the planner returns a valid trajectory. If not, it
-  /// returns a \c nullptr. The corresponding message is stored in result.
+  /// If successful, the planner returns a trajectory that satisfies the constraint.
+  /// If not, it returns a \c nullptr. The corresponding message is stored in result.
   ///
   /// \param[in] problem Planning problem.
   /// \param[out] result Information about success or failure.

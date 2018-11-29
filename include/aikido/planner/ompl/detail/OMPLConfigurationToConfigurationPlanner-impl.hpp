@@ -33,7 +33,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::
         statespace::ConstInterpolatorPtr interpolator,
         distance::DistanceMetricPtr dmetric,
         constraint::SampleablePtr sampler,
-        constraint::TestablePtr boundsConstraint,
+        constraint::ConstTestablePtr boundsConstraint,
         constraint::ProjectablePtr boundsProjector,
         double maxDistanceBetweenValidityChecks)
   : ConfigurationToConfigurationPlanner(std::move(stateSpace), rng)

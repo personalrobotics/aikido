@@ -22,7 +22,7 @@ GeometricStateSpace::GeometricStateSpace(
     statespace::ConstInterpolatorPtr interpolator,
     distance::DistanceMetricPtr dmetric,
     constraint::SampleablePtr sampler,
-    constraint::TestablePtr boundsConstraint,
+    constraint::ConstTestablePtr boundsConstraint,
     constraint::ProjectablePtr boundsProjection,
     double maxDistanceBetweenValidityChecks)
   : mStateSpace(std::move(sspace))
@@ -258,14 +258,13 @@ statespace::ConstStateSpacePtr GeometricStateSpace::getAikidoStateSpace() const
 }
 
 //==============================================================================
-aikido::statespace::ConstInterpolatorPtr GeometricStateSpace::getInterpolator()
-    const
+statespace::ConstInterpolatorPtr GeometricStateSpace::getInterpolator() const
 {
   return mInterpolator;
 }
 
 //==============================================================================
-aikido::constraint::TestablePtr GeometricStateSpace::getBoundsConstraint() const
+constraint::ConstTestablePtr GeometricStateSpace::getBoundsConstraint() const
 {
   return mBoundsConstraint;
 }
@@ -275,6 +274,7 @@ double GeometricStateSpace::getMaxDistanceBetweenValidityChecks() const
 {
   return mMaxDistanceBetweenValidityChecks;
 }
-}
-}
-}
+
+} // ompl
+} // planner
+} // aikido

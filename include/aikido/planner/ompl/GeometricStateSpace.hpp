@@ -62,7 +62,7 @@ public:
       statespace::ConstInterpolatorPtr interpolator,
       distance::DistanceMetricPtr dmetric,
       constraint::SampleablePtr sampler,
-      constraint::TestablePtr boundsConstraint,
+      constraint::ConstTestablePtr boundsConstraint,
       constraint::ProjectablePtr boundsProjection,
       double maxDistanceBetweenValidityChecks);
 
@@ -146,9 +146,8 @@ public:
   aikido::statespace::ConstInterpolatorPtr getInterpolator() const;
 
   /// Return the bounds constraint for the statespace. Used to specify
-  /// constraints
-  /// to the OMPL planner.
-  aikido::constraint::TestablePtr getBoundsConstraint() const;
+  /// constraints to the OMPL planner.
+  aikido::constraint::ConstTestablePtr getBoundsConstraint() const;
 
   /// Returns the collision checking resolution.
   double getMaxDistanceBetweenValidityChecks() const;
@@ -167,7 +166,7 @@ private:
   constraint::SampleablePtr mSampler;
 
   /// Constraint to determine if a state is within statespace bounds.
-  constraint::TestablePtr mBoundsConstraint;
+  constraint::ConstTestablePtr mBoundsConstraint;
 
   /// A Projectable that projects a state within valid bounds of statespace.
   constraint::ProjectablePtr mBoundsProjection;
