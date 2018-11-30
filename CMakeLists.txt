@@ -150,7 +150,7 @@ int main()
 DART_HAS_VOXELGRIDSHAPE
 )
 
-find_package(ompl 0.14.0 REQUIRED)
+find_package(ompl REQUIRED)
 
 #==============================================================================
 # Compiler settings
