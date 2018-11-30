@@ -62,8 +62,9 @@ public:
   /// Plans a trajectory from start state to goal state by using an interpolator
   /// to interpolate between them.
   ///
-  /// If successful, the planner returns a trajectory that satisfies the constraint.
-  /// If not, it returns a \c nullptr. The corresponding message is stored in result.
+  /// If successful, the planner returns a trajectory that satisfies the
+  /// constraint. If not, it returns a \c nullptr. 
+  /// The corresponding message is stored in result.
   ///
   /// \param[in] problem Planning problem.
   /// \param[out] result Information about success or failure.
