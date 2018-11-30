@@ -14,13 +14,6 @@ public:
   virtual void SetUp()
   {
     PlannerTest::SetUp();
-    gSpace = std::make_shared<GeometricStateSpace>(
-        stateSpace,
-        interpolator,
-        dmetric,
-        sampler,
-        boundsConstraint,
-        boundsProjection);
     si = aikido::planner::ompl::getSpaceInformation(
         stateSpace,
         interpolator,
@@ -31,7 +24,6 @@ public:
         boundsProjection,
         0.1);
   }
-  std::shared_ptr<GeometricStateSpace> gSpace;
   ::ompl::base::SpaceInformationPtr si;
 };
 
