@@ -9,6 +9,9 @@ language: generic
 env:
   global:
     - TIMEOUT=30
+    - IS_PULL_REQUEST=$TRAVIS_PULL_REQUEST
+    - OS_NAME=$TRAVIS_OS_NAME
+    - BUILD_DIR=$TRAVIS_BUILD_DIR
 
 cache:
   apt: true
@@ -39,14 +42,14 @@ matrix:
     - os: linux
       env:
         - BUILD_NAME=XENIAL_FULL_RELEASE
-        - DOCKER_FILE="ubuntu-xenial"
+        - DOCKERFILE="ubuntu-xenial"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
       services: docker
     - os: linux
       env:
         - BUILD_NAME=BIONIC_FULL_RELEASE
-        - DOCKER_FILE="ubuntu-bionic"
+        - DOCKERFILE="ubuntu-bionic"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
       services: docker
@@ -63,37 +66,37 @@ matrix:
         - BUILD_TYPE=Release
 
 before_install:
-  - if [ -n "$DOCKER_FILE" ]; then
-      docker build -t "$DOCKER_FILE" -f ".ci/docker/$DOCKER_FILE" .;
-      docker run -itd -v $TRAVIS_BUILD_DIR:$TRAVIS_BUILD_DIR --env-file .ci/docker/env.list --name aikido-docker "$DOCKER_FILE";
+  - if [ -n "$DOCKERFILE" ]; then
+      docker build -t "$DOCKERFILE" -f ".ci/docker/$DOCKERFILE" .;
+      docker run -itd -v $TRAVIS_BUILD_DIR:$TRAVIS_BUILD_DIR --env-file .ci/docker/env.list --name aikido-docker "$DOCKERFILE";
       docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/before_install.sh";
     else
       '.ci/before_install.sh';
     fi
 
 install:
-  - if [ -n "$DOCKER_FILE" ]; then
+  - if [ -n "$DOCKERFILE" ]; then
       docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/install.sh";
     else
       '.ci/install.sh';
     fi
 
 script:
-  - if [ -n "$DOCKER_FILE" ]; then
+  - if [ -n "$DOCKERFILE" ]; then
       docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/script.sh";
     else
       '.ci/script.sh';
     fi
 
 after_script:
-  - if [ -n "$DOCKER_FILE" ]; then
+  - if [ -n "$DOCKERFILE" ]; then
       docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/after_script.sh";
     else
       '.ci/after_script.sh';
     fi
 
 after_failure:
-  - if [ -n "$DOCKER_FILE" ]; then
+  - if [ -n "$DOCKERFILE" ]; then
       docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/after_failure.sh";
     else
       '.ci/after_failure.sh';

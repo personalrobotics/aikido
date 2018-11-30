@@ -2,8 +2,8 @@
 
 set -ex
 
-if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-  . "${TRAVIS_BUILD_DIR}/.ci/script_linux.sh"
-elif [ "${TRAVIS_OS_NAME}" = "osx"   ]; then
-  . "${TRAVIS_BUILD_DIR}/.ci/script_macos.sh"
+if [ "${OS_NAME}" = "linux" ]; then
+  . "${BUILD_DIR}/.ci/script_linux.sh"
+elif [ "${OS_NAME}" = "osx"   ]; then
+  . "${BUILD_DIR}/.ci/script_macos.sh"
 fi
