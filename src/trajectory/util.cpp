@@ -169,15 +169,14 @@ UniqueInterpolatedPtr concatenate(
   if (traj1.getInterpolator() != traj2.getInterpolator())
     throw std::runtime_error("Interpolator mismatch");
 
-  auto outputTrajectory
-      = make_unique<Interpolated>(
-          traj1.getStateSpace(), traj1.getInterpolator());
+  auto outputTrajectory = make_unique<Interpolated>(
+      traj1.getStateSpace(), traj1.getInterpolator());
   if (traj1.getNumWaypoints() > 1u)
   {
     for (std::size_t i = 0u; i < traj1.getNumWaypoints() - 1u; ++i)
     {
       outputTrajectory->addWaypoint(
-            traj1.getWaypointTime(i), traj1.getWaypoint(i));
+          traj1.getWaypointTime(i), traj1.getWaypoint(i));
     }
   }
 
