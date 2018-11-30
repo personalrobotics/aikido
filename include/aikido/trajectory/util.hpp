@@ -19,6 +19,7 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory);
 
 /// Converts a piecewise linear spline trajectory to an interpolated trajectory
 /// using a given interpolator.
+///
 /// \param[in] traj Spline trajectory
 /// \param[in] interpolator Interpolator used in connecting two ends of a
 /// segment
@@ -32,8 +33,8 @@ UniqueInterpolatedPtr convertToInterpolated(
 /// interpolated trajectory. The start state of the last segment in the first
 /// trajectory is connected with the start of the first segment in the second
 /// trajectory in concatenation. For example, concatenating trajectory a:
-/// [wp1(t=0), wp2(t=1.1), wp3(t=3.0)] and trajectory b: [wp4(t=0), wp5(t=5.0)]
-/// gets a new trajectory: [wp1(t=0), wp2(t=1.1), wp3'(t=3.0), wp5(t=8.0)].
+/// [wp1(t=1), wp2(t=2.1), wp3(t=4.0)] and trajectory b: [wp4(t=0), wp5(t=5.0)]
+/// gets a new trajectory: [wp1(t=0), wp2(t=1.1), wp4(t=4.0), wp5(t=9.0)].
 /// It gaurantees that the new duration is the sum of the durations of the two.
 /// wp3' is dervied by merging wp3 and wp4, which connects the start of wp3 and
 /// the end of wp4. The state spaces of two trajectories should be the same.
@@ -64,24 +65,25 @@ UniqueSplinePtr concatenate(const Spline& traj1, const Spline& traj2);
 /// returned.
 ///
 /// \param[in] traj Input trajectory
-/// \param[in] state Reference state
+/// \param[in] referenceState Reference state
 /// \param[in] timeStep Time step in finding the closest state
 /// \return The time of the closest state on the input trajectory
-double findTimeOfClosetStateOnTrajectory(
+double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
-    const Eigen::VectorXd& refenceState,
+    const Eigen::VectorXd& referenceState,
     double timeStep = 0.01);
 
 /// Retrieves part of a given spline trajectory
 ///
-/// Given a spline trajectory \c traj , between [startTime , endTime] and a time
-/// point tPoint, such that startTime <= tPoint <= endTime, retrieves the part
-/// of \c traj between tPoint and endTime. The retrieved spline is shifted in
-/// time to begin at startTime instead of at tPoint.
+/// Given a spline trajectory \c traj between [startTime, endTime] and a time
+/// point \c partialStartTime, such that startTime <= \c partialStartTime <=
+/// endTime, retrieves the part of \c traj between \c partialStartTime and
+/// endTime. The retrieved spline is shifted in time to begin at startTime
+/// instead of at \c partialStartTime.
 ///
 /// \param[in] traj Original spline trajectory
 /// \param[in] partialStartTime Start time of the new trajectory
-/// \throw If \c partialStartTime in not in the interval defined by the
+/// \throw If \c partialStartTime is not in the interval defined by the
 /// trajectory start time and end time.
 /// \return The new partial trajectory
 UniqueSplinePtr createPartialTrajectory(
@@ -90,4 +92,4 @@ UniqueSplinePtr createPartialTrajectory(
 } // namespace trajectory
 } // namespace aikido
 
-#endif
+#endif // AIKIDO_TRAJECTORY_UTIL_HPP_

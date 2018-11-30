@@ -145,7 +145,7 @@ public:
   /// Gets the start state of a segment.
   /// \param _index Segment index
   /// \return Start state of the segment at index \c _index
-  const aikido::statespace::StateSpace::State* getSegmentState(
+  const aikido::statespace::StateSpace::State* getSegmentStartState(
       std::size_t _index) const;
 
 private:

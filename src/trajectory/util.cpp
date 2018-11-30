@@ -104,7 +104,7 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
 
   if (!checkStateSpace(stateSpace.get()))
     throw std::invalid_argument(
-        "computeParabolicTiming only supports Rn, "
+        "convertToSpline only supports Rn, "
         "SO2, and CartesianProducts consisting of those types.");
 
   if (numWaypoints == 0)
@@ -141,7 +141,74 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
 }
 
 //==============================================================================
-double findTimeOfClosetStateOnTrajectory(
+UniqueInterpolatedPtr convertToInterpolated(
+    const Spline& traj, statespace::ConstInterpolatorPtr interpolator)
+{
+  auto stateSpace = traj.getStateSpace();
+  auto outputTrajectory
+      = make_unique<Interpolated>(stateSpace, std::move(interpolator));
+
+  auto state = stateSpace->createState();
+  for (std::size_t i = 0; i < traj.getNumWaypoints(); ++i)
+  {
+    traj.getWaypoint(i, state);
+    const double t = traj.getWaypointTime(i);
+    outputTrajectory->addWaypoint(t, state);
+  }
+
+  return outputTrajectory;
+}
+
+//==============================================================================
+UniqueInterpolatedPtr concatenate(
+    const Interpolated& traj1, const Interpolated& traj2)
+{
+  if (traj1.getStateSpace() != traj2.getStateSpace())
+    throw std::runtime_error("State space mismatch");
+
+  if (traj1.getInterpolator() != traj2.getInterpolator())
+    throw std::runtime_error("Interpolator mismatch");
+
+  auto outputTrajectory
+      = make_unique<Interpolated>(
+          traj1.getStateSpace(), traj1.getInterpolator());
+  if (traj1.getNumWaypoints() > 1u)
+  {
+    for (std::size_t i = 0u; i < traj1.getNumWaypoints() - 1u; ++i)
+    {
+      outputTrajectory->addWaypoint(
+            traj1.getWaypointTime(i), traj1.getWaypoint(i));
+    }
+  }
+
+  const double offset = traj1.getEndTime() - traj2.getStartTime();
+  for (std::size_t i = 0u; i < traj2.getNumWaypoints(); ++i)
+  {
+    outputTrajectory->addWaypoint(
+        traj2.getWaypointTime(i) + offset, traj2.getWaypoint(i));
+  }
+
+  return outputTrajectory;
+}
+
+//==============================================================================
+UniqueSplinePtr concatenate(const Spline& traj1, const Spline& traj2)
+{
+  if (traj1.getStateSpace() != traj2.getStateSpace())
+    throw std::runtime_error("State space mismatch");
+
+  const auto& stateSpace = traj1.getStateSpace();
+  statespace::ConstInterpolatorPtr interpolator
+      = std::make_shared<statespace::GeodesicInterpolator>(stateSpace);
+  auto interpolated1 = convertToInterpolated(traj1, interpolator);
+  auto interpolated2 = convertToInterpolated(traj2, interpolator);
+  auto concatenatedInterpolated = concatenate(*interpolated1, *interpolated2);
+
+  return convertToSpline(*concatenatedInterpolated);
+}
+
+//==============================================================================
+double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
     const Eigen::VectorXd& referenceState,
     double timeStep)
@@ -238,76 +305,15 @@ UniqueSplinePtr createPartialTrajectory(
     currSegmentStartTime = currSegmentEndTime;
   }
 
-  for (std::size_t i = currSegmentIdx + 1u; i < traj.getNumSegments(); i++)
+  for (std::size_t i = currSegmentIdx + 1u; i < traj.getNumSegments(); ++i)
   {
     outputTrajectory->addSegment(
         traj.getSegmentCoefficients(i),
         traj.getSegmentDuration(i),
-        traj.getSegmentState(i));
+        traj.getSegmentStartState(i));
   }
 
   return outputTrajectory;
-}
-
-//==============================================================================
-UniqueInterpolatedPtr convertToInterpolated(
-    const Spline& traj, statespace::ConstInterpolatorPtr interpolator)
-{
-  auto stateSpace = traj.getStateSpace();
-  auto outputTrajectory
-      = make_unique<Interpolated>(stateSpace, std::move(interpolator));
-
-  auto state = stateSpace->createState();
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
-  {
-    traj.getWaypoint(i, state);
-    const double t = traj.getWaypointTime(i);
-    outputTrajectory->addWaypoint(t, state);
-  }
-
-  return outputTrajectory;
-}
-
-//==============================================================================
-UniqueInterpolatedPtr concatenate(
-    const Interpolated& traj1, const Interpolated& traj2)
-{
-  if (traj1.getStateSpace()->getDimension()
-      != traj2.getStateSpace()->getDimension())
-    throw std::runtime_error("Dimension mismatch");
-
-  auto stateSpace = traj1.getStateSpace();
-
-  auto outputTrajectory
-      = make_unique<Interpolated>(stateSpace, traj1.getInterpolator());
-
-  for (std::size_t i = 0; i < traj1.getNumWaypoints() - 1; i++)
-  {
-    outputTrajectory->addWaypoint(
-        traj1.getWaypointTime(i), traj1.getWaypoint(i));
-  }
-  outputTrajectory->addWaypoint(traj1.getEndTime(), traj2.getWaypoint(0));
-  double endTimeOfTraj1 = traj1.getEndTime();
-  for (std::size_t i = 1; i < traj2.getNumWaypoints(); i++)
-  {
-    outputTrajectory->addWaypoint(
-        endTimeOfTraj1 + traj2.getWaypointTime(i), traj2.getWaypoint(i));
-  }
-  return outputTrajectory;
-}
-
-//==============================================================================
-UniqueSplinePtr concatenate(const Spline& traj1, const Spline& traj2)
-{
-  if (traj1.getStateSpace() != traj2.getStateSpace())
-    throw std::runtime_error("State space mismatch");
-  auto stateSpace = traj1.getStateSpace();
-  statespace::ConstInterpolatorPtr interpolator
-      = std::make_shared<statespace::GeodesicInterpolator>(stateSpace);
-  auto interpolated1 = convertToInterpolated(traj1, interpolator);
-  auto interpolated2 = convertToInterpolated(traj2, interpolator);
-  auto concatenatedInterpolated = concatenate(*interpolated1, *interpolated2);
-  return convertToSpline(*concatenatedInterpolated);
 }
 
 } // namespace trajectory

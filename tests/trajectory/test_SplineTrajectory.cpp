@@ -367,7 +367,7 @@ TEST_F(SplineTest, FindTimeOfClosetStateOnTrajectory)
   trajectory->addSegment(coefficients, 2., startState);
 
   Vector2d query(1., 2.);
-  double time = findTimeOfClosetStateOnTrajectory(*trajectory, query, 1e-4);
+  double time = findTimeOfClosestStateOnTrajectory(*trajectory, query, 1e-4);
   EXPECT_EQ(time, 0.5);
 }
 
@@ -377,25 +377,29 @@ TEST_F(SplineTest, ConcatenateTwoTrajectories)
   coefficients1 << 0., 1., 0., 2.;
   coefficients2 << 0., 3., 0., 4.;
 
-  Spline traj1(mStateSpace), traj2(mStateSpace);
+  Spline traj1(mStateSpace, 5.0);
+  Spline traj2(mStateSpace, 10.0);
   auto startState1 = mStateSpace->createState();
   auto startState2 = mStateSpace->createState();
   auto state = mStateSpace->createState();
   mStateSpace->setValue(startState1, Vector2d(1., 2.));
   mStateSpace->setValue(startState2, Vector2d(3., 6.));
-  traj1.addSegment(coefficients1, 1., startState1);
-  traj2.addSegment(coefficients2, 1., startState2);
+  traj1.addSegment(coefficients1, 1.0, startState1);
+  traj2.addSegment(coefficients2, 1.0, startState2);
 
   auto newTraj = aikido::trajectory::concatenate(traj1, traj2);
 
-  newTraj->evaluate(0., state);
+  newTraj->evaluate(5.0, state);
   EXPECT_TRUE(Vector2d(1., 2.).isApprox(state.getValue()));
 
-  newTraj->evaluate(1., state);
+  newTraj->evaluate(6.0, state);
   EXPECT_TRUE(Vector2d(3., 6.).isApprox(state.getValue()));
 
-  newTraj->evaluate(2., state);
+  newTraj->evaluate(7.0, state);
   EXPECT_TRUE(Vector2d(6., 10.).isApprox(state.getValue()));
+
+  EXPECT_DOUBLE_EQ(
+      traj1.getDuration() + traj2.getDuration(), newTraj->getDuration());
 }
 
 TEST_F(SplineTest, CreatePartialTrajectory)

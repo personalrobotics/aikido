@@ -265,7 +265,7 @@ const Eigen::MatrixXd& Spline::getSegmentCoefficients(std::size_t _index) const
 }
 
 //==============================================================================
-const aikido::statespace::StateSpace::State* Spline::getSegmentState(
+const aikido::statespace::StateSpace::State* Spline::getSegmentStartState(
     std::size_t _index) const
 {
   return mSegments[_index].mStartState;
