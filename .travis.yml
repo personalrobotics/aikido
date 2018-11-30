@@ -41,7 +41,7 @@ matrix:
         - BUILD_NAME=XENIAL_FULL_RELEASE
         - DOCKER_FILE="ubuntu-xenial"
         - BUILD_TYPE=Release
-        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DCMAKE_PREFIX_PATH=/usr; $CMAKE_PREFIX_PATH"
+        - CATKIN_CONFIG_OPTIONS=-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DCMAKE_PREFIX_PATH="/usr; $CMAKE_PREFIX_PATH"
       services: docker
     - os: linux
       env:
