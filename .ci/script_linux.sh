@@ -5,7 +5,11 @@ set -ex
 cd "${HOME}/workspace"
 
 export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
-./scripts/internal-build.sh ${PACKAGE_NAMES}
+if [ $(lsb_release -sc) = "xenial" ]; then
+  ./scripts/internal-build.sh ${PACKAGE_NAMES} --cmake-args -DCMAKE_PREFIX_PATH=/usr
+else
+  ./scripts/internal-build.sh ${PACKAGE_NAMES}
+fi
 
 if [ $BUILD_NAME = DOCS ]; then
   . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"
