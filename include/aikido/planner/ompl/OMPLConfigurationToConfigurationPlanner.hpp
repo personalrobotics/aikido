@@ -63,7 +63,7 @@ public:
   /// to interpolate between them.
   ///
   /// If successful, the planner returns a trajectory that satisfies the
-  /// constraint. If not, it returns a \c nullptr. 
+  /// constraint. If not, it returns a \c nullptr.
   /// The corresponding message is stored in result.
   ///
   /// \param[in] problem Planning problem.

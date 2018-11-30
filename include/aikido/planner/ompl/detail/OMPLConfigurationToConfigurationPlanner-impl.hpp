@@ -161,6 +161,9 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
 
     for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
     {
+      assert(
+          dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
+              path->getState(idx)));
       const auto* st
           = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
               path->getState(idx));
