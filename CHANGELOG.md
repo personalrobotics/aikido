@@ -56,6 +56,7 @@
   * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)
   * Added a kinodynamic timer that generates a time-optimal smooth trajectory without completely stopping at each waypoint: [#443](https://github.com/personalrobotics/aikido/pull/443)
   * Fixed segmentation fault on 32-bit machines in vector-field planner: [#459](https://github.com/personalrobotics/aikido/pull/459)
+  * Updated interface to OMPL planners to follow the style of the new refactored planning API: [#466](https://github.com/personalrobotics/aikido/pull/466)
 
 * Robot
 
