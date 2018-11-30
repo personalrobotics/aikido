@@ -1,16 +1,3 @@
-if(CMAKE_COMPILER_IS_GNUCXX)
-  if(OMPL_VERSION VERSION_GREATER 1.2.0 OR OMPL_VERSION VERSION_EQUAL 1.2.0)
-    if(Boost_VERSION VERSION_LESS 106501)
-      message(STATUS "OMPL planners are disabled for OMPL (>=1.2.0) + GCC + "
-          "Boost (< 1.65.1). For details, please see: "
-          " https://github.com/personalrobotics/aikido/issues/363"
-      )
-      return()
-    endif()
-  endif()
-endif()
-
-#==============================================================================
 # Libraries
 #
 set(sources 
