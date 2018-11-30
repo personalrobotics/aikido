@@ -8,7 +8,7 @@ export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${RE
 ./scripts/internal-build.sh ${PACKAGE_NAMES}
 
 if [ $BUILD_NAME = DOCS ]; then
-  . "${BUILD_DIR}/.ci/build_docs.sh"
+  . "${BUILD_DIR}/.ci/travis/build_docs.sh"
   exit 0
 fi
 

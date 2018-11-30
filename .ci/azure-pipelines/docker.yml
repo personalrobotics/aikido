@@ -1,12 +1,18 @@
-parameters:
-  numThreads: 4
-
 steps:
 - script: |
     docker build -t ${DOCKERFILE,,} -f ".ci/docker/$DOCKERFILE" .;
-    docker run -itd -v $(Build.SourcesDirectory):$(Build.SourcesDirectory) --env-file .ci/docker/env.list --name dart-docker ${DOCKERFILE,,};
-    docker exec dart-docker /bin/sh -c "cd $(Build.SourcesDirectory) && ./.ci/install.sh";
+    docker run -itd -v $(Build.SourcesDirectory):$(Build.SourcesDirectory) --env-file .ci/docker/env.list --name aikido-docker ${DOCKERFILE,,};
+    docker exec aikido-docker /bin/sh -c "cd $(Build.SourcesDirectory) && ./.ci/before_install.sh";
+  displayName: 'BeforeInstall'
+- script: |
+    docker exec aikido-docker /bin/sh -c "cd $(Build.SourcesDirectory) && ./.ci/install.sh";
   displayName: 'Install'
 - script: |
-    docker exec dart-docker /bin/sh -c "cd $(Build.SourcesDirectory) && ./.ci/script.sh -j${{ parameters.numThreads }}";
+    docker exec aikido-docker /bin/sh -c "cd $(Build.SourcesDirectory) && ./.ci/script.sh";
   displayName: 'Script'
+- script: |
+    docker exec aikido-docker /bin/sh -c "cd $(Build.SourcesDirectory) && ./.ci/after_script.sh";
+  displayName: 'AfterScript'
+# - script: |
+#     docker exec aikido-docker /bin/sh -c "cd $(Build.SourcesDirectory) && ./.ci/after_failure.sh";
+#   displayName: 'AfterFailure'

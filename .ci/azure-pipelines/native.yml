@@ -1,10 +1,16 @@
-parameters:
-  numThreads: 4
-
 steps:
+- script: |
+    ./.ci/before_install.sh
+  displayName: 'BeforeInstall'
 - script: |
     ./.ci/install.sh
   displayName: 'Install'
 - script: |
-    ./.ci/script.sh -j${{ parameters.numThreads }}
+    ./.ci/script.sh
   displayName: 'Script'
+- script: |
+    ./.ci/after_script.sh
+  displayName: 'AfterScript'
+# - script: |
+#     ./.ci/after_failure.sh
+#   displayName: 'AfterFailure'

@@ -35,4 +35,4 @@ while read version; do
   cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
   make docs
   mv doxygen ${TRAVIS_BUILD_DIR}/gh-pages/${version}
-done < ${TRAVIS_BUILD_DIR}/.ci/docs_versions.txt
+done < ${TRAVIS_BUILD_DIR}/.ci/travis/docs_versions.txt
