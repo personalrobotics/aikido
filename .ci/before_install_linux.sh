@@ -6,7 +6,7 @@ set -ex
 if [ $(lsb_release -sc) = "xenial" ]; then
   sudo apt-add-repository -y ppa:personalrobotics/ppa
   sudo apt update
-  sudo apt install -y libompl-dev # OMPL (>= 1.21)
+  sudo apt install -y libompl-dev # OMPL (>= 1.2.1)
 fi
 
 # Install test fixture dependencies.
