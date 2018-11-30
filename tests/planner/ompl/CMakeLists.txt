@@ -14,6 +14,9 @@ target_link_libraries(test_MotionValidator "${PROJECT_NAME}_planner_ompl")
 aikido_add_test(test_OMPLPlanner test_OMPLPlanner.cpp)
 target_link_libraries(test_OMPLPlanner "${PROJECT_NAME}_planner_ompl")
 
+aikido_add_test(test_OMPLConfigurationToConfigurationPlanner test_OMPLConfigurationToConfigurationPlanner.cpp)
+target_link_libraries(test_OMPLConfigurationToConfigurationPlanner "${PROJECT_NAME}_planner_ompl")
+
 aikido_add_test(test_OMPLSimplifier test_OMPLSimplifier.cpp)
 target_link_libraries(test_OMPLSimplifier "${PROJECT_NAME}_planner_ompl")
 

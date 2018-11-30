@@ -19,7 +19,8 @@ public:
         dmetric,
         sampler,
         boundsConstraint,
-        boundsProjection);
+        boundsProjection,
+        maxDistanceBetweenValidityChecks);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
 };
