@@ -6,8 +6,9 @@ cd "${HOME}/workspace"
 
 export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
 if [ $(lsb_release -sc) = "xenial" ]; then
-  . /opt/ros/kinetic/setup.bash
-  ./scripts/internal-build.sh ${PACKAGE_NAMES} --cmake-args -DCMAKE_PREFIX_PATH=/usr
+  #. /opt/ros/kinetic/setup.bash
+  #./scripts/internal-build.sh ${PACKAGE_NAMES} --cmake-args -DCMAKE_PREFIX_PATH=/usr
+  ./scripts/internal-build.sh ${PACKAGE_NAMES}
 else
   ./scripts/internal-build.sh ${PACKAGE_NAMES}
 fi
