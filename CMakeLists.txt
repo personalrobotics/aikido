@@ -150,7 +150,34 @@ int main()
 DART_HAS_VOXELGRIDSHAPE
 )
 
-find_package(ompl REQUIRED)
+# Find OMPL
+#
+# We enforce to use the custom OMPL package provided by PRL PPA
+# (https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa) instead of
+# ros-kinetic-ompl, which has an issue with AIKIDO. See
+# https://github.com/personalrobotics/aikido/issues/363 for the details.
+if("$ENV{ROS_DISTRO}" STREQUAL "kinetic")
+  list(FIND CMAKE_PREFIX_PATH "/usr/" CMAKE_PREFIX_PATH_HAS_USR)
+  if(CMAKE_PREFIX_PATH_HAS_USR EQUAL -1)
+    list(APPEND CMAKE_PREFIX_PATH "/usr/")
+    find_package(ompl 0.14 REQUIRED)
+    list(REMOVE_AT CMAKE_PREFIX_PATH CMAKE_PREFIX_PATH_HAS_USR)
+  else()
+    find_package(ompl 0.14 REQUIRED)
+  endif()
+  if(OMPL_LIBRARY MATCHES "^/opt/ros/kinetic/")
+    message(FATAL_ERROR "It appears that CMake found ros-kinetic-ompl, "
+      "which can cause segfaults with AIKIDO "
+      "(see https://github.com/personalrobotics/aikido/issues/363). "
+      "Please install libompl-dev provided by PRL PPA as:\n"
+      "  $ sudo apt-add-repository ppa:personalrobotics/ppa\n"
+      "  $ sudo apt update\n"
+      "  $ sudo apt install libompl-dev"
+    )
+  endif()
+else()
+  find_package(ompl 0.14 REQUIRED)
+endif()
 
 #==============================================================================
 # Compiler settings
