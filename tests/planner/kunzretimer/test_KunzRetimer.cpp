@@ -5,6 +5,7 @@
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+#include <aikido/trajectory/util.hpp>
 #include "eigen_tests.hpp"
 
 using Eigen::Vector2d;
@@ -17,7 +18,7 @@ using aikido::statespace::SO2;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::planner::kunzretimer::computeKunzTiming;
-using aikido::planner::parabolic::convertToSpline;
+using aikido::trajectory::convertToSpline;
 using aikido::tests::CompareEigenMatrices;
 
 class KunzRetimerTests : public ::testing::Test

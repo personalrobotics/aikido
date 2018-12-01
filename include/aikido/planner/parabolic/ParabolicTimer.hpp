@@ -60,15 +60,6 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration);
 
-/// Convert an interpolated trajectory to a piecewise linear spline trajectory
-/// This function requires the \c _inputTrajectory to use a \c
-/// GeodesicInterpolator.
-/// So the conversion exactly preserves the geometric path
-/// \param _inputTrajectory interpolated trajectory
-/// \return a spline trajectory
-std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
-    const aikido::trajectory::Interpolated& _inputTrajectory);
-
 /// Class for performing parabolic retiming on trajectories.
 class ParabolicTimer : public aikido::planner::TrajectoryPostProcessor
 {
