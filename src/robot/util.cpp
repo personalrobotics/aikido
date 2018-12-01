@@ -403,8 +403,9 @@ trajectory::TrajectoryPtr planToTSR(
       //std::cout << goalPosition.transpose() << std::endl;
       return untimedTrajectory;
     }
+  }
 
-    else
+  for (std::size_t i = 0; i < configurations_raw.size(); ++i)
     {
       std::lock_guard<std::mutex> lock(robot->getMutex());
 
@@ -429,7 +430,7 @@ trajectory::TrajectoryPtr planToTSR(
           createProjectableBounds(space),
           timelimit,
           collisionResolution,
-          "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_20_8000.graphml",
+          "/home/lllapierre/NIPS_UW/src/planning_dataset/data/ada/graph_20_8000.graphml",
           1000);
 
       if (untimedTrajectory)
@@ -477,7 +478,6 @@ trajectory::TrajectoryPtr planToTSR(
 
         return returnTrajectory;  
       }
-    }
   }
 
   // std::cout << "[utils:PlanToTSR] SnapPlanner Failed. Trying LRAstar." <<

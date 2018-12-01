@@ -40,7 +40,7 @@ void ObjectDatabase::getObjectByKey(
   YAML::Node objectNode = mObjData[objectKey];
   if (!objectNode)
   {
-    throw std::runtime_error("[ObjectDatabase] Error: invalid object key");
+    throw std::runtime_error("[ObjectDatabase] Error: invalid object key: " + objectKey);
   }
 
   // Convert resource field
