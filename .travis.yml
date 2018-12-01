@@ -42,14 +42,14 @@ matrix:
     - os: linux
       env:
         - BUILD_NAME=XENIAL_FULL_RELEASE
-        - DOCKERFILE="ubuntu-xenial"
+        - DOCKERFILE="Dockerfile.ubuntu-xenial"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
       services: docker
     - os: linux
       env:
         - BUILD_NAME=BIONIC_FULL_RELEASE
-        - DOCKERFILE="ubuntu-bionic"
+        - DOCKERFILE="Dockerfile.ubuntu-bionic"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
       services: docker
