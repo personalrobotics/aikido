@@ -34,7 +34,7 @@ UniqueInterpolatedPtr convertToInterpolated(
 /// trajectory is connected with the start of the first segment in the second
 /// trajectory in concatenation. For example, concatenating trajectory a:
 /// [wp1(t=1), wp2(t=2.1), wp3(t=4)] and trajectory b: [wp4(t=2), wp5(t=7)]
-/// gets a new trajectory: [wp1(t=0), wp2(t=1.1), wp4(t=4), wp5(t=9)].
+/// gets a new trajectory: [wp1(t=1), wp2(t=2.1), wp4(t=4), wp5(t=9)].
 /// It gaurantees that the new duration is the sum of the durations of the two.
 /// wp3' is dervied by merging wp3 and wp4, which connects the start of wp3 and
 /// the end of wp4. The state spaces of two trajectories should be the same.
