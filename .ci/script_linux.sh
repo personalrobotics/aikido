@@ -5,6 +5,11 @@ set -ex
 cd "${HOME}/workspace"
 
 export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
+
+# for debug
+ls
+ls src
+
 ./scripts/internal-build.sh ${PACKAGE_NAMES}
 
 if [ $BUILD_NAME = DOCS ]; then
