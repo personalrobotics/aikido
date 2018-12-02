@@ -1,5 +1,9 @@
 #include "aikido/robot/ConcreteRobot.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
@@ -7,12 +11,16 @@ namespace aikido {
 namespace robot {
 
 using constraint::dart::CollisionFreePtr;
+using constraint::dart::ConstCollisionFreePtr;
 using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using constraint::ConstTestablePtr;
+using planner::ConfigurationToConfiguration;
+using planner::ConfigurationToConfigurationPlannerPtr;
 using planner::TrajectoryPostProcessor;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
+using planner::dart::ConfigurationToConfiguration_to_ConfigurationToConfiguration;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
@@ -321,142 +329,36 @@ ConcreteRobot::getTrajectoryPostProcessor(
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const StateSpace::State* goalState,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
+      ConfigurationToConfigurationPlannerPtr planner,
+      const MetaSkeletonPtr& metaSkeleton,
+      ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+      const StateSpace::State* goalState,
+      const CollisionFreePtr constraint)
 {
   auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+      = getFullCollisionConstraint(
+          metaSkeletonStateSpace, metaSkeleton, constraint);
 
-  return util::planToConfiguration(
-      stateSpace,
-      metaSkeleton,
-      goalState,
-      collisionConstraint,
-      cloneRNG().get(),
-      timelimit);
-}
+  // Get the states
+  auto const start = metaSkeletonStateSpace->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+  auto const goal = metaSkeletonStateSpace->createState();
+  metaSkeletonStateSpace->copyState(goalState, goal);
 
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToConfiguration(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const Eigen::VectorXd& goal,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
-{
-  auto goalState = stateSpace->createState();
-  stateSpace->convertPositionsToState(goal, goalState);
+  // Create the problem
+  const planner::dart::ConfigurationToConfiguration problem(
+    metaSkeletonStateSpace, start, goal, collisionConstraint);
 
-  return planToConfiguration(
-      stateSpace, metaSkeleton, goalState, collisionFree, timelimit);
-}
+  // Convert the planner to a dart planner
+  auto dartPlanner = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
+          planner, metaSkeleton);
 
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<StateSpace::State*>& goalStates,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
-{
-  return util::planToConfigurations(
-      stateSpace,
-      metaSkeleton,
-      goalStates,
-      collisionFree,
-      cloneRNG().get(),
-      timelimit);
-}
+  // Call plan on the problem
+  auto trajectory = dartPlanner->plan(problem);
 
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToConfigurations(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<Eigen::VectorXd>& goals,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
-{
-  std::vector<StateSpace::State*> goalStates;
-  goalStates.reserve(goals.size());
-
-  for (const auto& goal : goals)
-  {
-    auto goalState = stateSpace->createState();
-    stateSpace->convertPositionsToState(goal, goalState);
-    goalStates.emplace_back(goalState);
-  }
-
-  return planToConfigurations(
-      stateSpace, metaSkeleton, goalStates, collisionFree, timelimit);
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToTSR(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const BodyNodePtr& bn,
-    const TSRPtr& tsr,
-    const CollisionFreePtr& collisionFree,
-    double timelimit,
-    std::size_t maxNumTrials)
-{
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
-
-  return util::planToTSR(
-      stateSpace,
-      metaSkeleton,
-      bn,
-      tsr,
-      collisionConstraint,
-      cloneRNG().get(),
-      timelimit,
-      maxNumTrials);
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const BodyNodePtr& bodyNode,
-    const TSRPtr& goalTsr,
-    const TSRPtr& constraintTsr,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
-{
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
-
-  // Uses CRRT.
-  return util::planToTSRwithTrajectoryConstraint(
-      stateSpace,
-      metaSkeleton,
-      bodyNode,
-      goalTsr,
-      constraintTsr,
-      collisionConstraint,
-      timelimit,
-      mCRRTParameters);
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
-    const std::string& name,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
-{
-  if (mNamedConfigurations.find(name) == mNamedConfigurations.end())
-    throw std::runtime_error(name + " does not exist.");
-
-  auto configuration = mNamedConfigurations[name];
-  auto goalState = mStateSpace->createState();
-  mStateSpace->convertPositionsToState(configuration, goalState);
-
-  return planToConfiguration(
-      mStateSpace, mMetaSkeleton, goalState, collisionFree, timelimit);
+  if (!trajectory)
+    return trajectory;
+  
+  return nullptr;
 }
 
 //=============================================================================

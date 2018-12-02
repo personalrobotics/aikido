@@ -27,7 +27,7 @@ public:
   // Documentation inherited.
   virtual trajectory::TrajectoryPtr plan(
       const planner::dart::ConfigurationToConfiguration& problem,
-      Planner::Result* result) override;
+      Planner::Result* result = nullptr) override;
 };
 
 } // namespace dart

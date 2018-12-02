@@ -11,6 +11,7 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
@@ -116,121 +117,13 @@ public:
       double feasibilityCheckResolution,
       double feasibilityApproxTolerance) const;
 
-  /// TODO: Replace this with Problem interface.
-  /// Plan the robot to a specific configuration. Restores the robot to its
-  /// initial configuration after planning.
-  /// \param[in] stateSpace The StateSpace for the metaskeleton
-  /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] goalState Goal state
-  /// \param[in] collisionFree Testable constraint to check for collision.
-  /// \param[in] timelimit Max time to spend per planning to each IK
-  /// \return Trajectory. nullptr if fails to find a trajectory.
+  // TODO: Add a termination condition later
   aikido::trajectory::TrajectoryPtr planToConfiguration(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+      aikido::planner::ConfigurationToConfigurationPlannerPtr planner,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       const aikido::statespace::StateSpace::State* goalState,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
-
-  /// TODO: Replace this with Problem interface.
-  /// Wrapper for planToConfiguration using Eigen vectors.
-  /// Plan the robot to a specific configuration. Restores the robot to its
-  /// initial configuration after planning.
-  /// \param[in] stateSpace The StateSpace for the metaskeleton
-  /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] goal Goal position
-  /// \param[in] collisionFree Testable constraint to check for collision.
-  /// \param[in] timelimit Max time to spend per planning to each IK
-  /// \return Trajectory. nullptr if fails to find a trajectory.
-  aikido::trajectory::TrajectoryPtr planToConfiguration(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const Eigen::VectorXd& goal,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
-
-  /// TODO: Replace this with Problem interface.
-  /// Plan the robot to a set of configurations. Restores the robot to its
-  /// initial configuration after planning.
-  /// \param[in] stateSpace The StateSpace for the metaskeleton
-  /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] goalStates A set of goal states.
-  /// \param[in] collisionFree Testable constraint to check for collision.
-  /// \param[in] timelimit Max time to spend per planning to each IK
-  /// \return Trajectory. nullptr if fails to find a trajectory.
-  aikido::trajectory::TrajectoryPtr planToConfigurations(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const std::vector<aikido::statespace::StateSpace::State*>& goalStates,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
-
-  /// TODO: Replace this with Problem interface.
-  /// Plan the robot to a set of configurations. Restores the robot to its
-  /// initial configuration after planning.
-  /// \param[in] stateSpace The StateSpace for the metaskeleton
-  /// \param[in] metaSkeleton Metaskeleton to plan with.
-  /// \param[in] goals A set of goals.
-  /// \param[in] collisionFree Testable constraint to check for collision.
-  /// \param[in] timelimit Max time to spend per planning to each IK
-  /// \return Trajectory. nullptr if fails to find a trajectory.
-  aikido::trajectory::TrajectoryPtr planToConfigurations(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const std::vector<Eigen::VectorXd>& goals,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
-
-  /// TODO: Replace this with Problem interface.
-  /// Plans the configuration of the metakeleton such that
-  /// the specified bodynode is set to a sample in TSR
-  /// \param[in] stateSpace The StateSpace for the metaskeleton.
-  /// \param[in] metaSkeleton The MetaSkeleton to plan with.
-  /// \param[in] bodyNode Bodynode whose frame for which TSR is constructed.
-  /// \param[in] tsr TSR
-  /// \param[in] collisionFree Testable constraint to check for collision.
-  /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
-  /// \param[in] maxNumTrials Max numer of trials to plan.
-  /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-  aikido::trajectory::TrajectoryPtr planToTSR(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& bodyNode,
-      const aikido::constraint::dart::TSRPtr& tsr,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit,
-      std::size_t maxNumTrials);
-
-  /// TODO: Replace this with Problem interface.
-  /// Returns a Trajectory that moves the configuration of the metakeleton such
-  /// that the specified bodynode is set to a sample in a goal TSR and
-  /// the trajectory is constrained to a constraint TSR
-  /// \param[in] stateSpace The StateSpace for the metaskeleton
-  /// \param[in] metaSkeleton The MetaSkeleton to plan with.
-  /// \param[in] bodyNode Bodynode whose frame is meant for TSR
-  /// \param[in] goalTsr The goal TSR to move to
-  /// \param[in] constraintTsr The constraint TSR for the trajectory
-  /// \param[in] collisionFree Collision constraint
-  /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
-  /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-  aikido::trajectory::TrajectoryPtr planToTSRwithTrajectoryConstraint(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& bodyNode,
-      const aikido::constraint::dart::TSRPtr& goalTsr,
-      const aikido::constraint::dart::TSRPtr& constraintTsr,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
-
-  /// Plans to a named configuration.
-  /// \param[in] name Name of the configuration to plan to
-  /// \param[in] collisionFree Collision constraint
-  /// \param[in] timelimit Max time (seconds) to spend
-  /// \return Trajectory to the configuration, or nullptr if planning fails
-  aikido::trajectory::TrajectoryPtr planToNamedConfiguration(
-      const std::string& name,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
+      const aikido::constraint::dart::CollisionFreePtr constraint);
 
   /// TODO: This should be revisited once we have Planner API.
   /// Sets CRRTPlanner parameters.
