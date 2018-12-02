@@ -38,6 +38,8 @@ if(OMPL_VERSION VERSION_LESS 0.14.0)
   return()
 endif()
 
+message(STATUS "OMPL_VERSION: ${OMPL_VERSION}")
+
 # Libraries
 #
 set(sources
