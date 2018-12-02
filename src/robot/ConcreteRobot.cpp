@@ -335,6 +335,12 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
       const StateSpace::State* goalState,
       const CollisionFreePtr constraint)
 {
+  // TODO (avk): Take in base planner
+  // Try to cast into single problem planner and do the following
+  // Otherwise convert to composite planner, convert each of the under
+  // lying planners to dart planners and then plan.
+  // Move all this code to utils to keep this file cleaner.
+
   auto collisionConstraint
       = getFullCollisionConstraint(
           metaSkeletonStateSpace, metaSkeleton, constraint);
