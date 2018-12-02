@@ -35,7 +35,7 @@ else()
 endif()
 if(OMPL_VERSION VERSION_LESS 0.14.0)
   message(STATUS "OMPL planners are disabled for versions < 0.14.0")
-  return
+  return()
 endif()
 
 # Libraries
