@@ -1,9 +1,5 @@
 #include "aikido/robot/ConcreteRobot.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
-#include "aikido/planner/ConfigurationToConfiguration.hpp"
-#include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
-#include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
-#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
@@ -20,8 +16,6 @@ using planner::ConfigurationToConfigurationPlannerPtr;
 using planner::TrajectoryPostProcessor;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
-using planner::dart::
-    ConfigurationToConfiguration_to_ConfigurationToConfiguration;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
@@ -336,37 +330,15 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const StateSpace::State* goalState,
     const CollisionFreePtr constraint)
 {
-  // TODO (avk): Take in base planner
-  // Try to cast into single problem planner and do the following
-  // Otherwise convert to composite planner, convert each of the under
-  // lying planners to dart planners and then plan.
-  // Move all this code to utils to keep this file cleaner.
-
   auto collisionConstraint = getFullCollisionConstraint(
       metaSkeletonStateSpace, metaSkeleton, constraint);
 
-  // Get the states
-  auto const start = metaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
-      metaSkeleton.get());
-  auto const goal = metaSkeletonStateSpace->createState();
-  metaSkeletonStateSpace->copyState(goalState, goal);
-
-  // Create the problem
-  const planner::dart::ConfigurationToConfiguration problem(
-      metaSkeletonStateSpace, start, goal, collisionConstraint);
-
-  // Convert the planner to a dart planner
-  auto dartPlanner = std::
-      make_shared<ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
-          planner, metaSkeleton);
-
-  // Call plan on the problem
-  auto trajectory = dartPlanner->plan(problem);
-
-  if (!trajectory)
-    return trajectory;
-
-  return nullptr;
+  return util::planToConfiguration(
+                        planner, 
+                        metaSkeleton, 
+                        metaSkeletonStateSpace, 
+                        goalState, 
+                        collisionConstraint);
 }
 
 //=============================================================================

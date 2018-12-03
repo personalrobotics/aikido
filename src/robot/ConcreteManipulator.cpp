@@ -120,23 +120,23 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance)
 {
+  return nullptr;
+  // auto collision
+  //     = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  // auto trajectory = util::planToEndEffectorOffset(
+  //     space,
+  //     metaSkeleton,
+  //     body,
+  //     direction,
+  //     collision,
+  //     distance,
+  //     timelimit,
+  //     positionTolerance,
+  //     angularTolerance,
+  //     mVectorFieldParameters,
+  //     mCRRTParameters);
 
-  auto collision
-      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-  auto trajectory = util::planToEndEffectorOffset(
-      space,
-      metaSkeleton,
-      body,
-      direction,
-      collision,
-      distance,
-      timelimit,
-      positionTolerance,
-      angularTolerance,
-      mVectorFieldParameters,
-      mCRRTParameters);
-
-  return trajectory;
+  // return trajectory;
 }
 
 //==============================================================================
@@ -150,32 +150,33 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     double positionTolerance,
     double angularTolerance)
 {
-  auto collision
-      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  return nullptr;
+  // auto collision
+  //     = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 
-  Eigen::Vector3d direction
-      = planner::dart::util::getEndEffectorDirection(body);
+  // Eigen::Vector3d direction
+  //     = planner::dart::util::getEndEffectorDirection(body);
 
-  if (distance < 0)
-  {
-    distance = distance * -1;
-    direction = direction * -1;
-  }
+  // if (distance < 0)
+  // {
+  //   distance = distance * -1;
+  //   direction = direction * -1;
+  // }
 
-  auto trajectory = util::planToEndEffectorOffset(
-      space,
-      metaSkeleton,
-      body,
-      direction,
-      collision,
-      distance,
-      timelimit,
-      positionTolerance,
-      angularTolerance,
-      mVectorFieldParameters,
-      mCRRTParameters);
+  // auto trajectory = util::planToEndEffectorOffset(
+  //     space,
+  //     metaSkeleton,
+  //     body,
+  //     direction,
+  //     collision,
+  //     distance,
+  //     timelimit,
+  //     positionTolerance,
+  //     angularTolerance,
+  //     mVectorFieldParameters,
+  //     mCRRTParameters);
 
-  return trajectory;
+  // return trajectory;
 }
 
 //==============================================================================
