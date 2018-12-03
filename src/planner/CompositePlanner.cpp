@@ -43,5 +43,11 @@ bool CompositePlanner::canSolve(const Problem& problem) const
   return false;
 }
 
+//==============================================================================
+const std::vector<PlannerPtr> CompositePlanner::getPlanners() const
+{
+  return mPlanners;
+}
+
 } // namespace planner
 } // namespace aikido

@@ -31,6 +31,9 @@ public:
   // Documentation inherited.
   bool canSolve(const Problem& problem) const override;
 
+  /// Returns the vector of planners that make the composite planner.
+  const std::vector<PlannerPtr> getPlanners() const;
+
 protected:
   /// Planners.
   const std::vector<PlannerPtr> mPlanners;
