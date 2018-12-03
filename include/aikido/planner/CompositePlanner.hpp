@@ -32,7 +32,7 @@ public:
   bool canSolve(const Problem& problem) const override;
 
   /// Returns the vector of planners that make the composite planner.
-  const std::vector<PlannerPtr> getPlanners() const;
+  const std::vector<PlannerPtr>& getPlanners() const;
 
 protected:
   /// Planners.

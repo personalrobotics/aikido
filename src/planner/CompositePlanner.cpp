@@ -44,7 +44,7 @@ bool CompositePlanner::canSolve(const Problem& problem) const
 }
 
 //==============================================================================
-const std::vector<PlannerPtr> CompositePlanner::getPlanners() const
+const std::vector<PlannerPtr>& CompositePlanner::getPlanners() const
 {
   return mPlanners;
 }
