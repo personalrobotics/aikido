@@ -18,9 +18,6 @@
 
 namespace aikido {
 namespace robot {
-
-// TODO: These are mostly planning methods used in Robot classes.
-// The planning methods will be removed once we have a Planner API.
 namespace util {
 
 struct VectorFieldPlannerParameters
@@ -94,12 +91,11 @@ struct CRRTPlannerParameters
 
 /// Plan the robot to a specific configuration.
 /// Restores the robot to its initial configuration after planning.
-/// \param[in] space The StateSpace for the metaskeleton
+/// \param[in] planner Planner to plan with.
 /// \param[in] metaSkeleton MetaSkeleton to plan with.
+/// \param[in] metaSkeletonStateSpace The StateSpace for the metaskeleton
 /// \param[in] goalState Goal state
-/// \param[in] collisionTestable Testable constraint to check for collision.
-/// \param[in] rng Random number generator
-/// \param[in] timelimit Max time to spend per planning to each IK
+/// \param[in] constraint Testable constraint to check for collision.
 trajectory::TrajectoryPtr planToConfiguration(
     aikido::planner::ConfigurationToConfigurationPlannerPtr planner,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
