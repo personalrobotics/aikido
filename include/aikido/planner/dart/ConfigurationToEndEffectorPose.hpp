@@ -2,7 +2,7 @@
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
 
 #include <dart/dart.hpp>
-#include "aikido/planner/Problem.hpp"
+#include "aikido/planner/dart/DartProblem.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -11,7 +11,7 @@ namespace planner {
 namespace dart {
 
 /// Planning problem to plan to a desired end-effector pose.
-class ConfigurationToEndEffectorPose : public Problem
+class ConfigurationToEndEffectorPose : public DartProblem
 {
 public:
   /// Constructor. Note that this constructor takes the start state from the
@@ -64,6 +64,10 @@ public:
 
   /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
+
+  // Documentation inherited.
+  std::shared_ptr<Problem> clone(
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const override;
 
 protected:
   // Need this due to mGoalPose.

@@ -1,9 +1,11 @@
+#include <dart/common/StlHelpers.hpp>
 #include "aikido/planner/ConfigurationToConfiguration.hpp"
-
 #include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {
+
+using ::dart::common::make_unique;
 
 //==============================================================================
 ConfigurationToConfiguration::ConfigurationToConfiguration(
@@ -43,6 +45,14 @@ const statespace::StateSpace::State*
 ConfigurationToConfiguration::getGoalState() const
 {
   return mGoalState;
+}
+
+//==============================================================================
+std::shared_ptr<Problem>
+ConfigurationToConfiguration::clone() const
+{
+  throw std::runtime_error("Not implemented");
+  //return make_unique<ConfigurationToConfiguration>(this);
 }
 
 } // namespace planner

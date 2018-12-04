@@ -38,6 +38,9 @@ public:
       const SolvableProblem& problem, Result* result = nullptr)
       = 0;
   // Note: SolvableProblem is defined in SingleProblemPlanner.
+
+  /// Documentation inherited.
+  virtual std::shared_ptr<Planner> clone() const override;
 };
 
 } // namespace dart

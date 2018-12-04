@@ -14,7 +14,7 @@ ConfigurationToTSR::ConfigurationToTSR(
     std::size_t maxSamples,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -33,7 +33,7 @@ ConfigurationToTSR::ConfigurationToTSR(
     std::size_t maxSamples,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))

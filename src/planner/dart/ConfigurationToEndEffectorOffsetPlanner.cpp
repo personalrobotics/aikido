@@ -16,6 +16,12 @@ ConfigurationToEndEffectorOffsetPlanner::
   // Do nothing
 }
 
+//==============================================================================
+std::shared_ptr<Planner> ConfigurationToEndEffectorOffsetPlanner::clone() const
+{
+  throw std::runtime_error("Not implemented");
+}
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido

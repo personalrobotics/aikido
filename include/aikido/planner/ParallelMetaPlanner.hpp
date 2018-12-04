@@ -14,8 +14,8 @@ public:
   using CompositePlanner::CompositePlanner;
 
   // Documentation inherited.
-  trajectory::TrajectoryPtr plan(
-      const Problem& problem, Result* result = nullptr) override;
+  virtual trajectory::TrajectoryPtr plan(
+      const Problem& problem, Result* result = nullptr) = 0;
 };
 
 } // namespace planner

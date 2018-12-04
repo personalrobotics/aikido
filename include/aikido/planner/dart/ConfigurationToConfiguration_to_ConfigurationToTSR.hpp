@@ -30,6 +30,9 @@ public:
   // Documentation inherited.
   virtual trajectory::TrajectoryPtr plan(
       const ConfigurationToTSR& problem, Planner::Result* result) override;
+
+  // Documentation inherited.
+  virtual std::shared_ptr<Planner> clone() const override;
 };
 
 } // namespace dart

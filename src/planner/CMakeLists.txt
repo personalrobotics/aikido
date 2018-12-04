@@ -14,6 +14,7 @@ set(sources
   World.cpp
   WorldStateSaver.cpp
   dart/ConcreteSequenceMetaPlanner.cpp
+  dart/ConcreteParallelMetaPlanner.cpp
   dart/ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfigurationPlanner.cpp
   dart/ConfigurationToEndEffectorOffset.cpp

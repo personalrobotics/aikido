@@ -82,6 +82,13 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
       result);
 }
 
+//==============================================================================
+std::shared_ptr<Planner>
+VectorFieldConfigurationToEndEffectorOffsetPlanner::clone() const
+{
+  throw std::runtime_error("Not implemented");
+}
+
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

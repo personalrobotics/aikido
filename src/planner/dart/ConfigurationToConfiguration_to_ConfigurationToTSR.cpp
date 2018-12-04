@@ -111,6 +111,31 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   return nullptr;
 }
 
+//==============================================================================
+std::shared_ptr<Planner> ConfigurationToConfiguration_to_ConfigurationToTSR::clone() const
+{
+  //TODO: this doesn't work because SingleProblemPlanner is templated.
+  /*
+  using aikido::planner::SingleProblemPlanner;
+
+  auto clonedDelegate = mDelegate->clone();
+
+  auto clonedSingleProblemDelegate = dynamic_cast<SingleProblemPlanner const*>(clonedDelegate);
+  if (!clonedSingleProblemDelegate)
+  {
+    throw std::runtime_error("Delegate is not SingleProblemPlanner");
+  }
+
+
+  auto clonedPlanner = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
+      clonedSingleProblemDelegate,
+      clonedSingleProblemDelegate->getMetaSkeleton());
+
+  return clonedPlanner;
+  */
+  return nullptr;
+}
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido

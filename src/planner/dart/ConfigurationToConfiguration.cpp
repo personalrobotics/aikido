@@ -10,7 +10,7 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
     const statespace::dart::MetaSkeletonStateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -25,7 +25,7 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     const statespace::dart::MetaSkeletonStateSpace::State* startState,
     const statespace::dart::MetaSkeletonStateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
@@ -66,6 +66,12 @@ ConfigurationToConfiguration::getGoalState() const
   return mGoalState;
 }
 
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToConfiguration::clone(
+  ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
+{
+  throw std::runtime_error("Not implemented");
+}
 } // namespace dart
 } // namespace planner
 } // namespace aikido

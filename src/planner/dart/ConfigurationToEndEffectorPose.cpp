@@ -13,7 +13,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -30,7 +30,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
@@ -76,6 +76,13 @@ ConfigurationToEndEffectorPose::getStartState() const
 const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
 {
   return mGoalPose;
+}
+
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
+  ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
+{
+  throw std::runtime_error("Not implemented");
 }
 
 } // namespace dart

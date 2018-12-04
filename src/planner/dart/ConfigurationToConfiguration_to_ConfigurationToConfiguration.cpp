@@ -38,6 +38,12 @@ ConfigurationToConfiguration_to_ConfigurationToConfiguration::plan(
   return mDelegate->plan(delegateProblem, result);
 }
 
+//==============================================================================
+std::shared_ptr<Planner> ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone() const
+{
+  throw std::runtime_error("Not implemented");
+}
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido
