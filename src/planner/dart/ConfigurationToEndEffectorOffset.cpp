@@ -136,7 +136,18 @@ double ConfigurationToEndEffectorOffset::getDistance() const
 std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
   ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
 {
-  throw std::runtime_error("Not implemented");
+  // TODO: assert that metaSkeleton matches mMetaSkeleton
+
+  auto clonedBodyNode = metaSkeleton->getBodyNode(
+      mEndEffectorBodyNode->getName())->getBodyNodePtr();
+
+  return std::make_shared<ConfigurationToEndEffectorOffset>(
+      mMetaSkeletonStateSpace,
+      metaSkeleton,
+      clonedBodyNode,
+      mDirection.get(),
+      mDistance,
+      mConstraint);
 }
 
 } // namespace dart

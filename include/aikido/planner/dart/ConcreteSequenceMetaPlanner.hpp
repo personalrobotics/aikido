@@ -23,6 +23,9 @@ public:
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr) override;
+
+  // Documentation inherited.
+  std::shared_ptr<Planner> clone() const override;
 };
 
 } // namespace planner

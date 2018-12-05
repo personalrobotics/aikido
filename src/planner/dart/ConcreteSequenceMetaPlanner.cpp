@@ -52,5 +52,11 @@ ConcreteSequenceMetaPlanner::ConcreteSequenceMetaPlanner(
           planningTimeout);
 }
 
+//==============================================================================
+std::shared_ptr<Planner> ConcreteSequenceMetaPlanner::clone() const
+{
+  throw std::runtime_error("Cloning MetaPlanner is not suported.");
+}
+
 } // namespace planner
 } // namespace aikido

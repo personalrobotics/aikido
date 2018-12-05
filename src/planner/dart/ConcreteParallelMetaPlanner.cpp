@@ -1,11 +1,13 @@
 #include "aikido/planner/dart/ConcreteParallelMetaPlanner.hpp"
 #include "aikido/planner/dart/DartProblem.hpp"
+#include "aikido/planner/dart/util.hpp"
 
 #include <thread>
 #include <future>
 
 namespace aikido {
 namespace planner {
+namespace dart{
 
 // Planning call for individual planner.
 static void _plan(
@@ -76,7 +78,7 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
   for (const auto& planner : mPlanners)
   {
     // TODO: this should use mMetaSkeleton->clone()
-    auto clonedProblem = dartProblem->clone(mMetaSkeleton);
+    auto clonedProblem = dartProblem->clone(util::clone(mMetaSkeleton));
     auto result = std::make_shared<Result>();
 
     clonedProblems.push_back(clonedProblem);
@@ -120,5 +122,12 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
 
 }
 
+//==============================================================================
+std::shared_ptr<Planner> ConcreteParallelMetaPlanner::clone() const
+{
+  throw std::runtime_error("Cloning MetaPlanner is not suported.");
+}
+
+} // namespace dart
 } // namespace planner
 } // namespace aikido

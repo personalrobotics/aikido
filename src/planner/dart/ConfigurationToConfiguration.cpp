@@ -70,8 +70,16 @@ ConfigurationToConfiguration::getGoalState() const
 std::shared_ptr<Problem> ConfigurationToConfiguration::clone(
   ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
 {
-  throw std::runtime_error("Not implemented");
+  // TODO:assert that metaSkeleton is consistent with mMetaSkeletonStateSpace
+  auto problem = std::make_shared<ConfigurationToConfiguration>
+    (mMetaSkeletonStateSpace, metaSkeleton,
+     mGoalState, mConstraint);
+
+  problem->mStartState = mStartState.clone();
+
+  return problem;
 }
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido

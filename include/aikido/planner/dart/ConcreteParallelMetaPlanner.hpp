@@ -9,6 +9,7 @@
 
 namespace aikido {
 namespace planner {
+namespace dart {
 
 /// Parallel meta planner with a default suite of planners suited to a wide
 // array of planning tasks.
@@ -29,6 +30,9 @@ public:
   trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr) override;
 
+  // Documentation inherited.
+  std::shared_ptr<Planner> clone() const override;
+
 private:
   // True when planning
   std::atomic_bool mRunning;
@@ -41,6 +45,7 @@ private:
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
+} // namespace dart
 } // namespace planner
 } // namespace aikido
 
