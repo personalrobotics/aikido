@@ -112,28 +112,24 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 }
 
 //==============================================================================
-std::shared_ptr<Planner> ConfigurationToConfiguration_to_ConfigurationToTSR::clone() const
+PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone() const
 {
-  //TODO: this doesn't work because SingleProblemPlanner is templated.
-  /*
-  using aikido::planner::SingleProblemPlanner;
+  using aikido::planner::ConfigurationToConfiguration;
 
   auto clonedDelegate = mDelegate->clone();
+  auto clonedCastedDelegate = std::dynamic_pointer_cast<
+    ConfigurationToConfigurationPlanner>(clonedDelegate);
 
-  auto clonedSingleProblemDelegate = dynamic_cast<SingleProblemPlanner const*>(clonedDelegate);
-  if (!clonedSingleProblemDelegate)
+  if (!clonedCastedDelegate)
   {
-    throw std::runtime_error("Delegate is not SingleProblemPlanner");
+    // GL: This shouldn't happen, so I think we can use static pointer cast above.
+    throw std::runtime_error("Delegate has incorrect type.");
   }
 
-
-  auto clonedPlanner = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
-      clonedSingleProblemDelegate,
-      clonedSingleProblemDelegate->getMetaSkeleton());
-
-  return clonedPlanner;
-  */
-  return nullptr;
+  // TODO: clone the Skeleton
+  return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
+      clonedCastedDelegate,
+      mMetaSkeleton);
 }
 
 } // namespace dart

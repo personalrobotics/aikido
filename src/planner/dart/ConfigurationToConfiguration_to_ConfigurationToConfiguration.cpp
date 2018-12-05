@@ -39,9 +39,24 @@ ConfigurationToConfiguration_to_ConfigurationToConfiguration::plan(
 }
 
 //==============================================================================
-std::shared_ptr<Planner> ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone() const
+PlannerPtr ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone() const
 {
-  throw std::runtime_error("Not implemented");
+  using aikido::planner::ConfigurationToConfigurationPlanner;
+
+  auto clonedDelegate = mDelegate->clone();
+  auto clonedCastedDelegate = std::dynamic_pointer_cast<
+    ConfigurationToConfigurationPlanner>(clonedDelegate);
+
+  if (!clonedCastedDelegate)
+  {
+    // GL: This shouldn't happen, so I think we can use static pointer cast above.
+    throw std::runtime_error("Delegate has incorrect type.");
+  }
+
+  // TODO: clone the Skeleton
+  return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
+      clonedCastedDelegate,
+      mMetaSkeleton);
 }
 
 } // namespace dart
