@@ -83,10 +83,20 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
 }
 
 //==============================================================================
-std::shared_ptr<Planner>
-VectorFieldConfigurationToEndEffectorOffsetPlanner::clone() const
+PlannerPtr VectorFieldConfigurationToEndEffectorOffsetPlanner::clone(
+    common::RNG* rng) const
 {
-  throw std::runtime_error("Not implemented");
+  return std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
+      mMetaSkeletonStateSpace,
+      mMetaSkeleton,
+      mDistanceTolerance,
+      mPositionTolerance,
+      mAngularTolerance,
+      mInitialStepSize,
+      mJointLimitTolerance,
+      mConstraintCheckResolution,
+      mTimelimit
+   );
 }
 
 } // namespace vectorfield

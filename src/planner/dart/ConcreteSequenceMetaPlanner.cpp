@@ -53,7 +53,7 @@ ConcreteSequenceMetaPlanner::ConcreteSequenceMetaPlanner(
 }
 
 //==============================================================================
-std::shared_ptr<Planner> ConcreteSequenceMetaPlanner::clone() const
+PlannerPtr ConcreteSequenceMetaPlanner::clone(common::RNG* rng) const
 {
   throw std::runtime_error("Cloning MetaPlanner is not suported.");
 }

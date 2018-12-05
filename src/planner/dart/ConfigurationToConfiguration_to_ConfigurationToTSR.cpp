@@ -113,11 +113,12 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 }
 
 //==============================================================================
-PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone() const
+PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
+    common::RNG* rng) const
 {
   using aikido::planner::ConfigurationToConfiguration;
 
-  auto clonedDelegate = mDelegate->clone();
+  auto clonedDelegate = mDelegate->clone(rng);
   auto clonedCastedDelegate = std::dynamic_pointer_cast<
     ConfigurationToConfigurationPlanner>(clonedDelegate);
 

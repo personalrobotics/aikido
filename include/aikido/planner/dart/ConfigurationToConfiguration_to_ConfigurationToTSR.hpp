@@ -32,7 +32,7 @@ public:
       const ConfigurationToTSR& problem, Planner::Result* result) override;
 
   // Documentation inherited.
-  virtual std::shared_ptr<Planner> clone() const override;
+  virtual std::shared_ptr<Planner> clone(common::RNG* rng = nullptr) const override;
 };
 
 } // namespace dart

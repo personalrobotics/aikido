@@ -123,7 +123,7 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
 }
 
 //==============================================================================
-std::shared_ptr<Planner> ConcreteParallelMetaPlanner::clone() const
+PlannerPtr ConcreteParallelMetaPlanner::clone(common::RNG* rng) const
 {
   throw std::runtime_error("Cloning MetaPlanner is not suported.");
 }

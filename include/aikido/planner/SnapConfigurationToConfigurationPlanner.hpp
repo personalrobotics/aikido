@@ -55,7 +55,7 @@ public:
   statespace::ConstInterpolatorPtr getInterpolator() const;
 
   // Documentation inherited.
-  std::shared_ptr<Planner> clone() const override;
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
 
 protected:
   /// Interpolator used to produce the output trajectory.

@@ -25,7 +25,7 @@ public:
       const Problem& problem, Result* result = nullptr) override;
 
   // Documentation inherited.
-  std::shared_ptr<Planner> clone() const override;
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
 };
 
 } // namespace planner
