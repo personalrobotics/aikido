@@ -4,6 +4,7 @@
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+#include "aikido/planner/dart/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
@@ -129,7 +130,7 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone() const
   // TODO: clone the Skeleton
   return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
       clonedCastedDelegate,
-      mMetaSkeleton);
+      util::clone(mMetaSkeleton));
 }
 
 } // namespace dart

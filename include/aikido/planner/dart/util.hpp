@@ -14,6 +14,9 @@ namespace util {
 Eigen::Vector3d getEndEffectorDirection(
     const ::dart::dynamics::ConstBodyNodePtr& body);
 
+::dart::dynamics::MetaSkeletonPtr clone(
+    const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton);
+
 } // namespace util
 } // namespace dart
 } // namespace planner

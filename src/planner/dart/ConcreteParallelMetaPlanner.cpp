@@ -120,16 +120,5 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
 
 }
 
-/*==============================================================================
-void ConcreteParallelMetaPlanner::_plan(
-      const PlannerPtr& planner,
-      const std::shared_ptr<std::promise<trajectory::TrajectoryPtr>>& promise,
-      const ProblemPtr& problem, const std::shared_ptr<Result>& result
-    )
-{
-  return;
-}
-*/
-
 } // namespace planner
 } // namespace aikido

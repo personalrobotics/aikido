@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
 
 #include <dart/dynamics/dynamics.hpp>
+#include "aikido/planner/dart/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -53,10 +54,10 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone()
     throw std::runtime_error("Delegate has incorrect type.");
   }
 
-  // TODO: clone the Skeleton
+  // TODO: replace util::clone with DART's native clone method
   return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
       clonedCastedDelegate,
-      mMetaSkeleton);
+      util::clone(mMetaSkeleton));
 }
 
 } // namespace dart
