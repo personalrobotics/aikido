@@ -4,6 +4,7 @@
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+#include "aikido/planner/dart/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
@@ -26,12 +27,16 @@ namespace dart {
 ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
         std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
-        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+        ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
   : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))
 {
-  // Do nothing
+  if (endEffectorBodyNode)
+  {
+    setEndEffectorBodyNode(endEffectorBodyNode);
+  }
 }
 
 //==============================================================================
@@ -54,7 +59,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
   // Create an IK solver with MetaSkeleton DOFs
   auto matchingNodes
-      = skeleton->getBodyNodes(problem.getEndEffectorBodyNode()->getName());
+      = skeleton->getBodyNodes(mEndEffectorBodyNode->getName());
   if (matchingNodes.empty())
     throw std::invalid_argument(
         "End-effector BodyNode not found in Planner's MetaSkeleton.");
@@ -109,6 +114,29 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   }
 
   return nullptr;
+}
+
+//==============================================================================
+PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
+    common::RNG* rng) const
+{
+  using aikido::planner::ConfigurationToConfiguration;
+
+  auto clonedDelegate = mDelegate->clone(rng);
+  auto clonedCastedDelegate = std::dynamic_pointer_cast<
+    ConfigurationToConfigurationPlanner>(clonedDelegate);
+
+  if (!clonedCastedDelegate)
+  {
+    // GL: This shouldn't happen, so I think we can use static pointer cast above.
+    throw std::runtime_error("Delegate has incorrect type.");
+  }
+
+  // TODO: clone the Skeleton
+  return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
+      clonedCastedDelegate,
+      util::clone(mMetaSkeleton),
+      mEndEffectorBodyNode);
 }
 
 } // namespace dart

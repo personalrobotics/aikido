@@ -4,7 +4,7 @@
 #include <boost/optional.hpp>
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
-#include "aikido/planner/Problem.hpp"
+#include "aikido/planner/dart/DartProblem.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -19,7 +19,7 @@ namespace dart {
 /// direction of the end effector body node. If a MetaSkeleton is passed instead
 /// of a start state, getStartState will return the current state of that
 /// MetaSkeleton. Thus, there are 2x2=4 constructors here.
-class ConfigurationToEndEffectorOffset : public Problem
+class ConfigurationToEndEffectorOffset : public DartProblem
 {
 public:
   /// Constructor. Note that this constructor takes the start state from the
@@ -122,6 +122,12 @@ public:
 
   /// Returns the signed distance in meters to move in the specified direction.
   double getDistance() const;
+
+  /*
+  // Documentation inherited.
+  std::shared_ptr<Problem> clone(
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const override;
+  */
 
 protected:
   /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on

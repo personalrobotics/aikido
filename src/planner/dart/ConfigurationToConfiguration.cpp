@@ -10,7 +10,7 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
     const statespace::dart::MetaSkeletonStateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -25,7 +25,7 @@ ConfigurationToConfiguration::ConfigurationToConfiguration(
     const statespace::dart::MetaSkeletonStateSpace::State* startState,
     const statespace::dart::MetaSkeletonStateSpace::State* goalState,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
@@ -65,6 +65,22 @@ ConfigurationToConfiguration::getGoalState() const
 {
   return mGoalState;
 }
+
+/*
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToConfiguration::clone(
+  ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
+{
+  // TODO:assert that metaSkeleton is consistent with mMetaSkeletonStateSpace
+  auto problem = std::make_shared<ConfigurationToConfiguration>
+    (mMetaSkeletonStateSpace, metaSkeleton,
+     mGoalState, mConstraint);
+
+  problem->mStartState = mStartState.clone();
+
+  return problem;
+}
+*/
 
 } // namespace dart
 } // namespace planner

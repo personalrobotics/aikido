@@ -35,6 +35,11 @@ public:
   /// Returns RNG.
   common::RNG* getRng();
 
+  /// Clones this planner.
+  /// \param[in] rng RNG for the cloned planner to use. If nullptr,
+  /// the default is cloned.
+  virtual std::shared_ptr<Planner> clone(common::RNG* rng = nullptr) const = 0;
+
   /// Returns true if this planner can solve \c problem.
   virtual bool canSolve(const Problem& problem) const = 0;
 

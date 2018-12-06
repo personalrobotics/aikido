@@ -8,7 +8,9 @@
 namespace aikido {
 namespace planner {
 
-/// Base class for various planning problems.
+AIKIDO_DECLARE_POINTERS(Problem)
+
+  /// Base class for various planning problems.
 class Problem
 {
 public:
@@ -30,6 +32,9 @@ public:
 
   /// Returns type of this planning problem.
   virtual const std::string& getType() const = 0;
+
+  /// Clones this planning problem.
+  // virtual std::shared_ptr<Problem> clone() const = 0;
 
   /// Returns const state space.
   statespace::ConstStateSpacePtr getStateSpace() const;

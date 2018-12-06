@@ -60,5 +60,11 @@ ConcreteSequenceMetaPlanner::ConcreteSequenceMetaPlanner(
   mPlanners.push_back(vfpOffsetPlanner);
 }
 
+//==============================================================================
+PlannerPtr ConcreteSequenceMetaPlanner::clone(common::RNG* rng) const
+{
+  throw std::runtime_error("Cloning MetaPlanner is not suported.");
+}
+
 } // namespace planner
 } // namespace aikido

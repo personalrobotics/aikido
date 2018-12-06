@@ -13,7 +13,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -30,7 +30,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
+  : DartProblem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
@@ -77,6 +77,30 @@ const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
 {
   return mGoalPose;
 }
+
+/*
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
+  ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
+{
+  // TODO: assert that metaSkeleton matches mMetaSkeleton
+
+  auto clonedBodyNode = metaSkeleton->getBodyNode(
+      mEndEffectorBodyNode->getName())->getBodyNodePtr();
+
+  if (!clonedBodyNode)
+  {
+    std::stringstream ss;
+    ss << "Metaskeleton does not have "
+      << mEndEffectorBodyNode->getName() << std::endl;
+    throw std::invalid_argument(ss.str());
+  }
+  return std::make_shared<ConfigurationToEndEffectorPose>
+    (mMetaSkeletonStateSpace, metaSkeleton,
+     clonedBodyNode,
+     mGoalPose, mConstraint);
+}
+*/
 
 } // namespace dart
 } // namespace planner

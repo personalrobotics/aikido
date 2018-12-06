@@ -54,6 +54,9 @@ public:
   /// Returns the interpolator used to produce the output trajectory.
   statespace::ConstInterpolatorPtr getInterpolator() const;
 
+  // Documentation inherited.
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
+
 protected:
   /// Interpolator used to produce the output trajectory.
   statespace::ConstInterpolatorPtr mInterpolator;

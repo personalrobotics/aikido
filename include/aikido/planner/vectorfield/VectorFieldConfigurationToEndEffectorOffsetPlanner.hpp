@@ -56,6 +56,9 @@ public:
   trajectory::TrajectoryPtr plan(
       const SolvableProblem& problem, Result* result = nullptr) override;
 
+  // Documentation inherited.
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
+
 protected:
   /// How much a planned trajectory is allowed to deviate from the requested
   /// distance to move the end-effector.

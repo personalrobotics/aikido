@@ -38,6 +38,7 @@ public:
       const SolvableProblem& problem, Result* result = nullptr)
       = 0;
   // Note: SolvableProblem is defined in SingleProblemPlanner.
+
 };
 
 } // namespace dart

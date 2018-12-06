@@ -28,6 +28,9 @@ public:
   virtual trajectory::TrajectoryPtr plan(
       const planner::dart::ConfigurationToConfiguration& problem,
       Planner::Result* result) override;
+
+  // Documentation inherited.
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
 };
 
 } // namespace dart

@@ -82,6 +82,23 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
       result);
 }
 
+//==============================================================================
+PlannerPtr VectorFieldConfigurationToEndEffectorOffsetPlanner::clone(
+    common::RNG* rng) const
+{
+  return std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
+      mMetaSkeletonStateSpace,
+      mMetaSkeleton,
+      mDistanceTolerance,
+      mPositionTolerance,
+      mAngularTolerance,
+      mInitialStepSize,
+      mJointLimitTolerance,
+      mConstraintCheckResolution,
+      mTimelimit
+   );
+}
+
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

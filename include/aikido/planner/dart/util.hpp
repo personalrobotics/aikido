@@ -14,6 +14,16 @@ namespace util {
 Eigen::Vector3d getEndEffectorDirection(
     const ::dart::dynamics::ConstBodyNodePtr& body);
 
+/// Clones metaskeleton. To be replaced with DART implementation.
+/// \param[in] metaSkeleton MetaSkeleton to be cloned.
+::dart::dynamics::MetaSkeletonPtr clone(
+    const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton);
+
+/// Clones metaskeleton. To be replaced with DART implementation.
+/// \param[in] metaSkeleton MetaSkeleton to be cloned.
+::dart::dynamics::MetaSkeletonPtr clone(
+    const ::dart::dynamics::ConstMetaSkeletonPtr& metaSkeleton);
+
 } // namespace util
 } // namespace dart
 } // namespace planner

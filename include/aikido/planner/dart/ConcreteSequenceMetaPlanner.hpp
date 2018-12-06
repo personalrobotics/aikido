@@ -19,6 +19,9 @@ public:
   ConcreteSequenceMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
+
+  // Documentation inherited.
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
 };
 
 } // namespace planner

@@ -69,5 +69,13 @@ SnapConfigurationToConfigurationPlanner::getInterpolator() const
   return mInterpolator;
 }
 
+//==============================================================================
+PlannerPtr SnapConfigurationToConfigurationPlanner::clone(
+    common::RNG* rng) const
+{
+  return std::make_shared<SnapConfigurationToConfigurationPlanner>
+    (mStateSpace, mInterpolator);
+}
+
 } // namespace planner
 } // namespace aikido
