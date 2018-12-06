@@ -25,6 +25,7 @@ set(sources
   dart/ConfigurationToTSRPlanner.cpp
   dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
+  dart/ConfigurationToConfiguration_to_ConfigurationToTSRParallel.cpp
   dart/util.cpp
 )
 
