@@ -16,6 +16,9 @@ public:
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(
       const Problem& problem, Result* result = nullptr) override;
+
+  // Documentation inherited.
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
 };
 
 } // namespace planner

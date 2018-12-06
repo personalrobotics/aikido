@@ -35,6 +35,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::
 {
   if (endEffectorBodyNode)
   {
+    std::cout << "Set endeffectorBodyNode" << std::endl;
     setEndEffectorBodyNode(endEffectorBodyNode);
   }
 }
@@ -44,6 +45,10 @@ trajectory::TrajectoryPtr
 ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     const ConfigurationToTSR& problem, Planner::Result* result)
 {
+  if(!mEndEffectorBodyNode)
+    throw std::runtime_error(
+        "ConfigurationToConfiguration_to_ConfigurationToTSR needs to set mEndEffectorBodyNode");
+
   // TODO: Check equality between state space of this planner and given problem.
 
   // TODO: DART may be updated to check for single skeleton

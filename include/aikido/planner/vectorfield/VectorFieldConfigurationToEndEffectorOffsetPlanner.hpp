@@ -18,6 +18,8 @@ public:
   ///
   /// \param[in] stateSpace State space that this planner is associated with.
   /// \param[in] metaSkeleton MetaSkeleton to plan with.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// offest while maintaining the current orientation.
   /// \param[in] distanceTolerance How much a planned trajectory is allowed to
   /// deviate from the requested distance to move the end-effector.
   /// \param[in] positionTolerance How a planned trajectory is allowed to
@@ -34,6 +36,7 @@ public:
   VectorFieldConfigurationToEndEffectorOffsetPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       double distanceTolerance,
       double positionTolerance,
       double angularTolerance,

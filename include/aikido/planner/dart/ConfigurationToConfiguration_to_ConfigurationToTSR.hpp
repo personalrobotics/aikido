@@ -37,12 +37,6 @@ public:
 
   // Documentation inherited.
   virtual std::shared_ptr<Planner> clone(common::RNG* rng = nullptr) const override;
-
-private:
-
-  /// End-effector body node.
-  /// GL: this should be inherited from ConfigurationToTSRPlanner.
-  ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 };
 
 } // namespace dart

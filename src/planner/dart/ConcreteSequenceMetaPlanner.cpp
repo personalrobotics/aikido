@@ -49,6 +49,7 @@ ConcreteSequenceMetaPlanner::ConcreteSequenceMetaPlanner(
       = std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
           stateSpace,
           metaSkeleton,
+          nullptr,
           distanceTolerance,
           positionTolerance,
           angularTolerance,
@@ -58,12 +59,6 @@ ConcreteSequenceMetaPlanner::ConcreteSequenceMetaPlanner(
           planningTimeout);
 
   mPlanners.push_back(vfpOffsetPlanner);
-}
-
-//==============================================================================
-PlannerPtr ConcreteSequenceMetaPlanner::clone(common::RNG* rng) const
-{
-  throw std::runtime_error("Cloning MetaPlanner is not suported.");
 }
 
 } // namespace planner

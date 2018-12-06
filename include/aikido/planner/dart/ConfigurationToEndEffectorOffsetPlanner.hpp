@@ -27,8 +27,7 @@ public:
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] metaSkeleton MetaSkeleton to use for planning.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
-  /// offest while maintaining the current orientation. Current direction is
-  /// returned when getDirection is called.
+  /// offest while maintaining the current orientation.
   ConfigurationToEndEffectorOffsetPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,

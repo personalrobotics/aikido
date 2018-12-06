@@ -11,6 +11,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::
     VectorFieldConfigurationToEndEffectorOffsetPlanner(
         statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+        ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
         double distanceTolerance,
         double positionTolerance,
         double angularTolerance,
@@ -28,6 +29,11 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::
   , mConstraintCheckResolution(constraintCheckResolution)
   , mTimelimit(timelimit)
 {
+  if (endEffectorBodyNode)
+  {
+    std::cout << "Set endeffectorBodyNode" << std::endl;
+    setEndEffectorBodyNode(endEffectorBodyNode);
+  }
   // Do nothing here.
 }
 
@@ -36,6 +42,10 @@ trajectory::TrajectoryPtr
 VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
     const SolvableProblem& problem, Result* result)
 {
+  if (!mEndEffectorBodyNode)
+    throw std::runtime_error(
+        "VectorFieldConfigurationToEndEffectorOffsetPlanner needs mEndEffectorBodyNode");
+
   // TODO (sniyaz): Check equality between state space of this planner and given
   // problem.
 
@@ -89,6 +99,7 @@ PlannerPtr VectorFieldConfigurationToEndEffectorOffsetPlanner::clone(
   return std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
       mMetaSkeletonStateSpace,
       mMetaSkeleton,
+      mEndEffectorBodyNode,
       mDistanceTolerance,
       mPositionTolerance,
       mAngularTolerance,

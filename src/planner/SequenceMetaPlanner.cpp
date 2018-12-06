@@ -17,5 +17,11 @@ trajectory::TrajectoryPtr SequenceMetaPlanner::plan(
   return nullptr;
 }
 
+//==============================================================================
+PlannerPtr SequenceMetaPlanner::clone(common::RNG* rng) const
+{
+  throw std::runtime_error("Cloning MetaPlanner is not suported.");
+}
+
 } // namespace planner
 } // namespace aikido
