@@ -18,8 +18,7 @@ ConfigurationToTSRPlanner::ConfigurationToTSRPlanner(
 
 //==============================================================================
 ::dart::dynamics::ConstBodyNodePtr
-ConfigurationToTSRPlanner::getEndEffectorBodyNode()
-    const
+ConfigurationToTSRPlanner::getEndEffectorBodyNode() const
 {
   return mEndEffectorBodyNode;
 }

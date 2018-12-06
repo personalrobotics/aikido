@@ -68,7 +68,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
       getMetaSkeletonStateSpace(),
       *problem.getStartState(),
       mMetaSkeleton,
-      problem.getEndEffectorBodyNode(),
+      mEndEffectorBodyNode,
       problem.getConstraint(),
       direction,
       minDistance,

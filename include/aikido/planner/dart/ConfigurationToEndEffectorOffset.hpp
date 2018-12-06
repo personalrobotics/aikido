@@ -39,7 +39,7 @@ public:
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      //::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
@@ -59,7 +59,7 @@ public:
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
-      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      //::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
@@ -79,7 +79,7 @@ public:
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+//      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -97,7 +97,7 @@ public:
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
-      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+  //    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -109,7 +109,7 @@ public:
 
   /// Returns the end-effector BodyNode to be planned to move a desired offest
   /// while maintaining the current orientation.
-  ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
+  //::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
   /// Returns the start state to plan from, either set on construction or
   /// taken from the current state of the MetaSkeleton.
@@ -141,7 +141,7 @@ protected:
   statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
 
   /// End-effector body node.
-  const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
+  //const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
   /// Direction of motion, if set on construction.
   const boost::optional<Eigen::Vector3d> mDirection;

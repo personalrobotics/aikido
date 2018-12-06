@@ -26,9 +26,13 @@ public:
   ///
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] metaSkeleton MetaSkeleton to use for planning.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// offest while maintaining the current orientation. Current direction is
+  /// returned when getDirection is called.
   ConfigurationToEndEffectorOffsetPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode = nullptr);
 
   /// Solves \c problem returning the result to \c result.
   ///
@@ -38,6 +42,21 @@ public:
       const SolvableProblem& problem, Result* result = nullptr)
       = 0;
   // Note: SolvableProblem is defined in SingleProblemPlanner.
+
+  /// Returns the end-effector BodyNode to be planned to move a desired offest
+  /// while maintaining the current orientation.
+  ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
+
+  /// Sets the EndEffectorBodyNode.
+  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
+  /// TSR.
+  void setEndEffectorBodyNode(
+      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
+
+protected:
+
+  /// End-effector body node.
+  ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
 };
 
