@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConcreteSequenceMetaPlanner.hpp"
 
 #include <aikido/planner/SnapConfigurationToConfigurationPlanner.hpp>
+#include <aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp>
 #include <aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp>
 #include <aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -9,6 +10,7 @@ namespace aikido {
 namespace planner {
 
 using aikido::planner::SnapConfigurationToConfigurationPlanner;
+using aikido::planner::dart::ConfigurationToConfiguration_to_ConfigurationToConfiguration;
 using aikido::planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR;
 using aikido::planner::vectorfield::
     VectorFieldConfigurationToEndEffectorOffsetPlanner;
@@ -18,13 +20,17 @@ using aikido::statespace::GeodesicInterpolator;
 ConcreteSequenceMetaPlanner::ConcreteSequenceMetaPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : SequenceMetaPlanner(std::move(stateSpace), std::vector<PlannerPtr>())
+  : SequenceMetaPlanner(stateSpace, std::vector<PlannerPtr>())
 {
   // NOTE: This is the default suite taken from libherb. This will be updated.
   auto snapConfigToConfigPlanner
       = std::make_shared<SnapConfigurationToConfigurationPlanner>(
           stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
-  mPlanners.push_back(snapConfigToConfigPlanner);
+
+  auto dartSnapConfigToConfigPlanner = std::
+      make_shared<ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
+          snapConfigToConfigPlanner, metaSkeleton);
+  mPlanners.push_back(dartSnapConfigToConfigPlanner);
 
   auto snapConfigToTSRPlanner
       = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
@@ -50,6 +56,8 @@ ConcreteSequenceMetaPlanner::ConcreteSequenceMetaPlanner(
           jointLimitTolerance,
           constraintCheckResolution,
           planningTimeout);
+
+  mPlanners.push_back(vfpOffsetPlanner);
 }
 
 //==============================================================================
