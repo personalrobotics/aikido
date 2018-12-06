@@ -4,6 +4,7 @@
 #include <future>
 #include <mutex>
 
+//#include "aikido/common/pointers.hpp"
 #include "aikido/planner/ParallelMetaPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
@@ -16,7 +17,7 @@ namespace dart {
 class ConcreteParallelMetaPlanner : public ParallelMetaPlanner
 {
 public:
-  /// Constructs a planner for the passed statespace.
+  /// Constructs a parallel planner for the passed statespace and planners.
   ///
   /// \param[in] stateSpace State space associated with this planner.
   /// \param[in] metaSkeleton Metaskeleton associated with this planner.
@@ -24,7 +25,24 @@ public:
   ConcreteParallelMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      const std::vector<PlannerPtr>& planners = std::vector<PlannerPtr>());
+      const std::vector<PlannerPtr>&
+      planners = std::vector<PlannerPtr>());
+
+  /// Constructs a parallel planner by cloning the passed planner.
+  ///
+  /// \param[in] stateSpace State space associated with this planner.
+  /// \param[in] metaSkeleton Metaskeleton associated with this planner.
+  /// \param[in] planner Planner to clone.
+  /// \param[in] numCopies Number of clones to make
+  /// \param[in] rngs RNGs to pass to each cloned planner. If nonempty,
+  /// the number of rngs should match numCopies.
+  ConcreteParallelMetaPlanner(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      const PlannerPtr& planner,
+      std::size_t numCopies = 1,
+      const std::vector<common::RNG*> rngs =
+        std::vector<common::RNG*>());
 
   // Documentation inherited.
   trajectory::TrajectoryPtr plan(
@@ -37,11 +55,10 @@ private:
   // True when planning
   std::atomic_bool mRunning;
 
-  // Protects mRunning, mPromises
+  // Protects mRunning
   std::mutex mMutex;
 
   statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
-  std::vector<PlannerPtr> mPlanners;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 

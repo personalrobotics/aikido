@@ -132,6 +132,7 @@ double ConfigurationToEndEffectorOffset::getDistance() const
   return mDistance;
 }
 
+/*
 //==============================================================================
 std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
   ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
@@ -149,6 +150,7 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
       mDistance,
       mConstraint);
 }
+*/
 
 } // namespace dart
 } // namespace planner

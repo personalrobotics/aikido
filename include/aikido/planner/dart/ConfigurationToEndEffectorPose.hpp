@@ -65,9 +65,11 @@ public:
   /// Returns the goal pose.
   const Eigen::Isometry3d& getGoalPose() const;
 
+  /*
   // Documentation inherited.
   std::shared_ptr<Problem> clone(
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const override;
+  */
 
 protected:
   // Need this due to mGoalPose.

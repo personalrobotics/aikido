@@ -27,12 +27,16 @@ namespace dart {
 ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
         std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
-        ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+        ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode)
   : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))
 {
-  // Do nothing
+  if (endEffectorBodyNode)
+  {
+    setEndEffectorBodyNode(endEffectorBodyNode);
+  }
 }
 
 //==============================================================================
@@ -55,7 +59,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
   // Create an IK solver with MetaSkeleton DOFs
   auto matchingNodes
-      = skeleton->getBodyNodes(problem.getEndEffectorBodyNode()->getName());
+      = skeleton->getBodyNodes(mEndEffectorBodyNode->getName());
   if (matchingNodes.empty())
     throw std::invalid_argument(
         "End-effector BodyNode not found in Planner's MetaSkeleton.");
@@ -131,7 +135,8 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
   // TODO: clone the Skeleton
   return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
       clonedCastedDelegate,
-      util::clone(mMetaSkeleton));
+      util::clone(mMetaSkeleton),
+      mEndEffectorBodyNode);
 }
 
 } // namespace dart

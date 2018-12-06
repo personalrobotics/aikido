@@ -78,6 +78,7 @@ const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
   return mGoalPose;
 }
 
+/*
 //==============================================================================
 std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
   ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
@@ -99,6 +100,7 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
      clonedBodyNode,
      mGoalPose, mConstraint);
 }
+*/
 
 } // namespace dart
 } // namespace planner

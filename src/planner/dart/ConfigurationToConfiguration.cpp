@@ -66,6 +66,7 @@ ConfigurationToConfiguration::getGoalState() const
   return mGoalState;
 }
 
+/*
 //==============================================================================
 std::shared_ptr<Problem> ConfigurationToConfiguration::clone(
   ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
@@ -79,6 +80,7 @@ std::shared_ptr<Problem> ConfigurationToConfiguration::clone(
 
   return problem;
 }
+*/
 
 } // namespace dart
 } // namespace planner
