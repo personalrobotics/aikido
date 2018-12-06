@@ -19,10 +19,6 @@ public:
   ConcreteSequenceMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
-
-  // Documentation inherited.
-  trajectory::TrajectoryPtr plan(
-      const Problem& problem, Result* result = nullptr) override;
 };
 
 } // namespace planner
