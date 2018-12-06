@@ -3,7 +3,7 @@
 
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
-#include "aikido/planner/dart/DartProblem.hpp"
+#include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
@@ -11,7 +11,7 @@ namespace planner {
 namespace dart {
 
 /// Planning problem to plan to a single goal configuration.
-class ConfigurationToConfiguration : public DartProblem
+class ConfigurationToConfiguration : public Problem
 {
 public:
   /// Constructor. Note that this constructor takes the start state from the

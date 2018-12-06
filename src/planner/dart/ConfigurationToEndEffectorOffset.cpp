@@ -15,7 +15,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     const Eigen::Vector3d& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
-  : DartProblem(stateSpace, std::move(constraint))
+  : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -35,7 +35,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     const Eigen::Vector3d& direction,
     double signedDistance,
     constraint::ConstTestablePtr constraint)
-  : DartProblem(stateSpace, std::move(constraint))
+  : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
@@ -54,7 +54,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     double signedDistance,
     constraint::ConstTestablePtr constraint)
-  : DartProblem(stateSpace, std::move(constraint))
+  : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -72,7 +72,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     double signedDistance,
     constraint::ConstTestablePtr constraint)
-  : DartProblem(stateSpace, std::move(constraint))
+  : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))

@@ -1,5 +1,4 @@
 #include "aikido/planner/dart/ConcreteParallelMetaPlanner.hpp"
-#include "aikido/planner/dart/DartProblem.hpp"
 #include "aikido/planner/dart/util.hpp"
 
 #include <thread>
@@ -69,8 +68,6 @@ ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
 trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     const Problem& problem, Result* result)
 {
-  using aikido::planner::DartProblem;
-
   {
     std::lock_guard<std::mutex> lock(mMutex);
     if (mRunning)

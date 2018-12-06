@@ -3,7 +3,7 @@
 
 #include <dart/dart.hpp>
 #include "aikido/constraint/dart/TSR.hpp"
-#include "aikido/planner/dart/DartProblem.hpp"
+#include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -12,7 +12,7 @@ namespace planner {
 namespace dart {
 
 /// Planning problem to plan to a given single Task Space Region (TSR).
-class ConfigurationToTSR : public DartProblem
+class ConfigurationToTSR : public Problem
 {
 public:
   /*

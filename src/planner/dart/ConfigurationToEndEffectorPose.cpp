@@ -13,7 +13,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : DartProblem(stateSpace, std::move(constraint))
+  : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
@@ -30,7 +30,7 @@ ConfigurationToEndEffectorPose::ConfigurationToEndEffectorPose(
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Isometry3d& goalPose,
     constraint::ConstTestablePtr constraint)
-  : DartProblem(stateSpace, std::move(constraint))
+  : Problem(stateSpace, std::move(constraint))
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
