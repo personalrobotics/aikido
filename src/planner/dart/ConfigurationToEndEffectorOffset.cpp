@@ -1,7 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 
 #include "aikido/constraint/Testable.hpp"
-#include "aikido/planner/dart/util.hpp"
+//#include "aikido/planner/dart/util.hpp"
 
 namespace aikido {
 namespace planner {
@@ -12,7 +12,7 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
 //    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    const Eigen::Vector3d& direction,
+//    const Eigen::Vector3d& direction,
     const double signedDistance,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
@@ -20,6 +20,44 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
 //  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+//  , mDirection(direction)
+  , mDistance(signedDistance)
+{
+//  if (mDirection.get().isZero())
+//    throw std::invalid_argument("direction shouldn't be a zero vector.");
+}
+
+//==============================================================================
+ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State* startState,
+//    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+//    const Eigen::Vector3d& direction,
+    double signedDistance,
+    constraint::ConstTestablePtr constraint)
+  : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeletonStateSpace(stateSpace)
+  , mMetaSkeleton(nullptr)
+  , mStartState(stateSpace->cloneState(startState))
+//  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
+//  , mDirection(direction)
+  , mDistance(signedDistance)
+{
+//  if (mDirection.get().isZero())
+//    throw std::invalid_argument("direction shouldn't be a zero vector.");
+}
+
+//==============================================================================
+ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
+    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+    ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+    const Eigen::Vector3d& direction,
+    const double signedDistance,
+    constraint::ConstTestablePtr constraint)
+  : Problem(stateSpace, std::move(constraint))
+  , mMetaSkeletonStateSpace(stateSpace)
+  , mMetaSkeleton(std::move(metaSkeleton))
+  , mStartState(mMetaSkeletonStateSpace->createState())
   , mDirection(direction)
   , mDistance(signedDistance)
 {
@@ -31,7 +69,6 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
 ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State* startState,
-//    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
     const Eigen::Vector3d& direction,
     double signedDistance,
     constraint::ConstTestablePtr constraint)
@@ -39,48 +76,11 @@ ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
   , mMetaSkeletonStateSpace(stateSpace)
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
-//  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
   , mDirection(direction)
   , mDistance(signedDistance)
 {
   if (mDirection.get().isZero())
     throw std::invalid_argument("direction shouldn't be a zero vector.");
-}
-
-//==============================================================================
-ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
-    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-    ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-//    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    double signedDistance,
-    constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
-  , mMetaSkeletonStateSpace(stateSpace)
-  , mMetaSkeleton(std::move(metaSkeleton))
-  , mStartState(mMetaSkeletonStateSpace->createState())
-//  , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mDirection(boost::none)
-  , mDistance(signedDistance)
-{
-  // Do nothing.
-}
-
-//==============================================================================
-ConfigurationToEndEffectorOffset::ConfigurationToEndEffectorOffset(
-    statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-    const statespace::dart::MetaSkeletonStateSpace::State* startState,
-  //  ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    double signedDistance,
-    constraint::ConstTestablePtr constraint)
-  : Problem(stateSpace, std::move(constraint))
-  , mMetaSkeletonStateSpace(stateSpace)
-  , mMetaSkeleton(nullptr)
-  , mStartState(stateSpace->cloneState(startState))
-  //, mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mDirection(boost::none)
-  , mDistance(signedDistance)
-{
-  // Do nothing.
 }
 
 //==============================================================================
@@ -96,14 +96,6 @@ const std::string& ConfigurationToEndEffectorOffset::getStaticType()
   return name;
 }
 
-/*
-//==============================================================================
-::dart::dynamics::ConstBodyNodePtr
-ConfigurationToEndEffectorOffset::getEndEffectorBodyNode() const
-{
-  return mEndEffectorBodyNode;
-}
-*/
 
 //==============================================================================
 const statespace::dart::MetaSkeletonStateSpace::State*
@@ -118,18 +110,17 @@ ConfigurationToEndEffectorOffset::getStartState() const
 }
 
 //==============================================================================
-Eigen::Vector3d ConfigurationToEndEffectorOffset::getDirection() const
+boost::optional<Eigen::Vector3d> ConfigurationToEndEffectorOffset::getDirection() const
 {
-  // GL: Removing this option because endEffector is moved to planner.
-  // We might need to move this whole function to planner.
-  /*
-  if (!mDirection)
+  boost::optional<Eigen::Vector3d> direction;
+
+  if (mDirection)
   {
-    return util::getEndEffectorDirection(mEndEffectorBodyNode);
+    direction = mDirection.get().normalized();
   }
-  */
-  return mDirection.get().normalized();
+  return direction;
 }
+
 
 //==============================================================================
 double ConfigurationToEndEffectorOffset::getDistance() const

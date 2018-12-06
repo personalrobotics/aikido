@@ -29,18 +29,12 @@ public:
   /// \param[in] stateSpace State space.
   /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
   /// current state of when called.
-  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
-  /// offest while maintaining the current orientation.
-  /// \param[in] direction Unit vector that represents the direction of motion
-  /// [unit vector in the world frame].
   /// \param[in] signedDistance Signed distance to move, in meters.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If the size of \c direction is zero.
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      //::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -49,18 +43,12 @@ public:
   ///
   /// \param[in] stateSpace State space.
   /// \param[in] startState Start state to plan from.
-  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
-  /// offest while maintaining the current orientation.
-  /// \param[in] direction Unit vector that represents the direction of motion
-  /// [unit vector in the world frame].
   /// \param[in] signedDistance Signed distance to move, in meters.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If the size of \c direction is zero.
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
-      //::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -71,15 +59,14 @@ public:
   /// \param[in] stateSpace State space.
   /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
   /// current state of when called.
-  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
-  /// offest while maintaining the current orientation. Current direction is
-  /// returned when getDirection is called.
+  /// \param[in] direction Unit vector that represents the direction of motion
+  /// [unit vector in the world frame].
   /// \param[in] signedDistance Signed distance to move, in meters.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-//      ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -89,15 +76,14 @@ public:
   ///
   /// \param[in] stateSpace State space.
   /// \param[in] startState Start state to plan from.
-  /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
-  /// offest while maintaining the current orientation. Current direction is
-  /// returned when getDirection is called.
+  /// \param[in] direction Unit vector that represents the direction of motion
+  /// [unit vector in the world frame].
   /// \param[in] signedDistance Signed distance to move, in meters.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   ConfigurationToEndEffectorOffset(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
-  //    ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
+      const Eigen::Vector3d& direction,
       double signedDistance,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -115,10 +101,8 @@ public:
   /// taken from the current state of the MetaSkeleton.
   const statespace::dart::MetaSkeletonStateSpace::State* getStartState() const;
 
-  /// Returns the direction of motion specified in the world frame. Note that
-  /// if no direction was passed, the current direction of the end effector body
-  /// node is returned.
-  Eigen::Vector3d getDirection() const;
+  /// Returns the direction of motion specified in the world frame.
+  boost::optional<Eigen::Vector3d> getDirection() const;
 
   /// Returns the signed distance in meters to move in the specified direction.
   double getDistance() const;

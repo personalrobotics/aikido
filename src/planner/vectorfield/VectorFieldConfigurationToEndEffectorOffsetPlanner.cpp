@@ -54,8 +54,15 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
 
   // Handle the fact that distance can be negative.
   double distance = problem.getDistance();
-  Eigen::Vector3d direction = problem.getDirection();
-
+  auto optionalDirection = problem.getDirection();
+  Eigen::Vector3d direction;
+  if (!optionalDirection)
+    direction = getEndEffectorDirection();
+  else
+  {
+    std::cout << "Problem direction is used for VectorFieldConfigurationToEndEffectorOffsetPlanner" << std::endl;
+    direction = optionalDirection.get().normalized();
+  }
   if (distance < 0)
   {
     distance = -1.0 * distance;

@@ -1,6 +1,8 @@
 #ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTOROFFSETPLANNER_HPP_
 
+#include <boost/optional.hpp>
+#include <dart/dart.hpp>
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/dart/SingleProblemPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -52,7 +54,13 @@ public:
   void setEndEffectorBodyNode(
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
 
+
 protected:
+
+  /// Returns the direction of motion specified in the world frame. Note that
+  /// if no direction was passed, the current direction of the end effector body
+  /// node is returned.
+  Eigen::Vector3d getEndEffectorDirection() const;
 
   /// End-effector body node.
   ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
