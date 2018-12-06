@@ -98,7 +98,10 @@ bool CollisionFree::completeIsSatisfied(
       = std::static_pointer_cast<::dart::collision::FCLCollisionDetector>(
           mCollisionDetector);
 
-  bool collision = fclDetector->completeNarrowEval(partialRes);
+  ::dart::collision::CollisionResult collisionResult;
+  bool collision = fclDetector->completeNarrowEval(
+    partialRes, mCollisionOptions, &collisionResult);
+
   return !collision;
 }
 
