@@ -7,7 +7,6 @@
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
-#include "aikido/constraint/dart/DartConstraint.hpp"
 #include "aikido/statespace/SE3.hpp"
 
 namespace aikido {
@@ -29,8 +28,7 @@ AIKIDO_DECLARE_POINTERS(TSR)
 class TSR : public Sampleable,
             public Differentiable,
             public Testable,
-            public Projectable,
-            public DartConstraint
+            public Projectable
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -132,10 +130,6 @@ public:
   /// Set the testable tolerance used in isSatisfiable.
   /// \param _testableTolerance Testable tolerance to set.
   void setTestableTolerance(double _testableTolerance);
-
-  // Document inherited.
-  TestablePtr clone(
-      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const override;
 
   /// Transformation from origin frame into the TSR frame "w".
   /// "w" is usually centered at the origin of an object held by the hand

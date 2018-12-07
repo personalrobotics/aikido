@@ -23,7 +23,7 @@ public:
   /// \param _frame Frame constrained by _poseConstraint.
   /// \param _poseConstraint A testable constraint on _frame.
   FrameTestable(
-      statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
       ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
       ::dart::dynamics::ConstJacobianNodePtr _frame,
       TestablePtr _poseConstraint);

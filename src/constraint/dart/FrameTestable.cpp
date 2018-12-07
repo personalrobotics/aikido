@@ -6,7 +6,7 @@ namespace dart {
 
 //==============================================================================
 FrameTestable::FrameTestable(
-    statespace::dart::MetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
     ::dart::dynamics::MetaSkeletonPtr _metaskeleton,
     ::dart::dynamics::ConstJacobianNodePtr _frame,
     TestablePtr _poseConstraint)
@@ -73,7 +73,7 @@ TestablePtr FrameTestable::clone(
 
   // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
 
-  auto poseConstraint = std::dynamic_pointer_cast<DartConstraint>( mPoseConstraint);
+  auto poseConstraint = std::dynamic_pointer_cast<DartConstraint>(mPoseConstraint);
   if (poseConstraint)
   {
     auto clonedPoseConstraint = poseConstraint->clone(metaSkeleton);
