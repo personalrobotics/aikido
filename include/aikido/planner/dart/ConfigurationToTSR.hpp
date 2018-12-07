@@ -4,6 +4,7 @@
 #include <dart/dart.hpp>
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/planner/Problem.hpp"
+#include "aikido/planner/dart/DartProblem.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -12,7 +13,7 @@ namespace planner {
 namespace dart {
 
 /// Planning problem to plan to a given single Task Space Region (TSR).
-class ConfigurationToTSR : public Problem
+class ConfigurationToTSR : public Problem, public DartProblem
 {
 public:
   /*
@@ -92,6 +93,10 @@ public:
 
   // Documentation inherited.
   std::shared_ptr<Problem> clone() const override;
+
+  // Documentation inherited.
+  std::shared_ptr<Problem> clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const override;
 
 protected:
   /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on

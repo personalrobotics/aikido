@@ -1,5 +1,6 @@
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 
+#include "aikido/constraint/dart/DartConstraint.hpp"
 #include "aikido/constraint/Testable.hpp"
 //#include "aikido/planner/dart/util.hpp"
 
@@ -132,22 +133,57 @@ double ConfigurationToEndEffectorOffset::getDistance() const
 std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone() const
 {
   // TODO: assert that metaSkeleton matches mMetaSkeleton
-
-  if (mDirection)
-  {
-    return std::make_shared<ConfigurationToEndEffectorOffset>(
-      mMetaSkeletonStateSpace,
-      mStartState,
-      mDirection.get(),
-      mDistance,
-      mConstraint);
-  }
-  return std::make_shared<ConfigurationToEndEffectorOffset>(
-      mMetaSkeletonStateSpace,
-      mStartState,
-      mDistance,
-      mConstraint);
+  throw std::runtime_error(
+      "ConfigurationToEndEffectorOffset must call clone with MetaSkeleton");
 }
+
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
+  ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
+{
+  using aikido::constraint::dart::DartConstraint;
+
+  auto constraint = std::dynamic_pointer_cast<const DartConstraint>(mConstraint);
+
+  if (!constraint)
+  {
+    if (mDirection)
+    {
+      return std::make_shared<ConfigurationToEndEffectorOffset>(
+        mMetaSkeletonStateSpace,
+        mStartState,
+        mDirection.get(),
+        mDistance,
+        mConstraint);
+    }
+    return std::make_shared<ConfigurationToEndEffectorOffset>(
+        mMetaSkeletonStateSpace,
+        mStartState,
+        mDistance,
+        mConstraint);
+  }
+  else
+  {
+    std::cout << "ConfigurationToEndEffectorPose: Cloning mConstraint with metaSkeleton" << std::endl;
+    auto clonedConstraint = constraint->clone(metaSkeleton);
+    if (mDirection)
+    {
+      return std::make_shared<ConfigurationToEndEffectorOffset>(
+        mMetaSkeletonStateSpace,
+        mStartState,
+        mDirection.get(),
+        mDistance,
+        clonedConstraint);
+    }
+    return std::make_shared<ConfigurationToEndEffectorOffset>(
+        mMetaSkeletonStateSpace,
+        mStartState,
+        mDistance,
+        clonedConstraint);
+  }
+}
+
+
 
 } // namespace dart
 } // namespace planner

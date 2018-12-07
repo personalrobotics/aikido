@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToTSR.hpp"
 
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/constraint/dart/DartConstraint.hpp"
 
 namespace aikido {
 namespace planner {
@@ -118,9 +119,34 @@ constraint::dart::ConstTSRPtr ConfigurationToTSR::getGoalTSR() const
 //==============================================================================
 std::shared_ptr<Problem> ConfigurationToTSR::clone() const
 {
-  return std::make_shared<ConfigurationToTSR>(
+  throw std::runtime_error("clone(metaSkeleton) must be called.");
+
+  //return std::make_shared<ConfigurationToTSR>(
+  //    mMetaSkeletonStateSpace, mStartState,
+  //    mMaxSamples, mGoalTSR, mConstraint);
+}
+
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToTSR::clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
+{
+  using aikido::constraint::dart::DartConstraint;
+
+  auto constraint = std::dynamic_pointer_cast<const DartConstraint>(mConstraint);
+
+  if (!constraint)
+    return std::make_shared<ConfigurationToTSR>(
       mMetaSkeletonStateSpace, mStartState,
       mMaxSamples, mGoalTSR, mConstraint);
+  else
+  {
+    std::cout << "Cloning mConstraint with metaSkeleton" << std::endl;
+    auto clonedConstraint = constraint->clone(metaSkeleton);
+    return std::make_shared<ConfigurationToTSR>(
+      mMetaSkeletonStateSpace, mStartState,
+      mMaxSamples, mGoalTSR, clonedConstraint);
+
+  }
 }
 
 } // namespace dart

@@ -4,6 +4,7 @@
 #include <dart/dart.hpp>
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
+#include "aikido/planner/dart/DartProblem.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
@@ -11,7 +12,7 @@ namespace planner {
 namespace dart {
 
 /// Planning problem to plan to a single goal configuration.
-class ConfigurationToConfiguration : public Problem
+class ConfigurationToConfiguration : public Problem, public DartProblem
 {
 public:
   /// Constructor. Note that this constructor takes the start state from the
@@ -46,6 +47,10 @@ public:
 
   // Documentation inherited.
   std::shared_ptr<Problem> clone() const override;
+
+  // Documentation inherited.
+  std::shared_ptr<Problem> clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const override;
 
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();

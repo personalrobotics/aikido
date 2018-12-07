@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToEndEffectorPose.hpp"
 
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/constraint/dart/DartConstraint.hpp"
 
 namespace aikido {
 namespace planner {
@@ -78,13 +79,20 @@ const Eigen::Isometry3d& ConfigurationToEndEffectorPose::getGoalPose() const
   return mGoalPose;
 }
 
-/*
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone() const
+{
+  throw std::runtime_error(
+      "ConfigurationToEndEffectorPose: clone with metaSkeleton should be used.");
+}
+
 //==============================================================================
 std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
-  ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
+  ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
-  // TODO: assert that metaSkeleton matches mMetaSkeleton
+  using aikido::constraint::dart::DartConstraint;
 
+  // TODO: assert that metaSkeleton matches mMetaSkeleton
   auto clonedBodyNode = metaSkeleton->getBodyNode(
       mEndEffectorBodyNode->getName())->getBodyNodePtr();
 
@@ -95,12 +103,24 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
       << mEndEffectorBodyNode->getName() << std::endl;
     throw std::invalid_argument(ss.str());
   }
-  return std::make_shared<ConfigurationToEndEffectorPose>
-    (mMetaSkeletonStateSpace, metaSkeleton,
-     clonedBodyNode,
-     mGoalPose, mConstraint);
+
+  auto constraint = std::dynamic_pointer_cast<const DartConstraint>(mConstraint);
+
+  if (!constraint)
+    return std::make_shared<ConfigurationToEndEffectorPose>(
+      mMetaSkeletonStateSpace, mStartState,
+      clonedBodyNode,
+      mGoalPose, mConstraint);
+
+  else{
+    std::cout << "ConfigurationToEndEffectorPose: Cloning mConstraint with metaSkeleton" << std::endl;
+    auto clonedConstraint = constraint->clone(metaSkeleton);
+    return std::make_shared<ConfigurationToEndEffectorPose>(
+      mMetaSkeletonStateSpace, mStartState,
+      clonedBodyNode, mGoalPose, clonedConstraint);
+  }
 }
-*/
+
 
 } // namespace dart
 } // namespace planner
