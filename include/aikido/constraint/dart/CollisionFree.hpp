@@ -11,6 +11,7 @@
 #include "aikido/common/pointers.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/dart/CollisionFreeOutcome.hpp"
+#include "aikido/constraint/dart/DartConstraint.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
@@ -22,7 +23,7 @@ AIKIDO_DECLARE_POINTERS(CollisionFree)
 /// A testable that uses a collision detector to check whether
 /// a metakeleton state (configuration) results in collision between and within
 /// specified collision groups.
-class CollisionFree : public Testable
+class CollisionFree : public DartConstraint, public Testable
 {
 public:
   /// Constructs an empty constraint that uses \c _collisionDetector to test
@@ -81,6 +82,10 @@ public:
   /// \param _group Collision group.
   void removeSelfCheck(
       std::shared_ptr<::dart::collision::CollisionGroup> _group);
+
+  // Document inherited.
+  TestablePtr clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const override;
 
 private:
   using CollisionGroup = ::dart::collision::CollisionGroup;

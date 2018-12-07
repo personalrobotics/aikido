@@ -66,6 +66,35 @@ statespace::ConstStateSpacePtr FrameTestable::getStateSpace() const
   return mMetaSkeletonStateSpace;
 }
 
+//==============================================================================
+TestablePtr FrameTestable::clone(
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
+{
+
+  // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
+
+  auto poseConstraint = std::dynamic_pointer_cast<DartConstraint>( mPoseConstraint);
+  if (poseConstraint)
+  {
+    auto clonedPoseConstraint = poseConstraint->clone(metaSkeleton);
+    auto cloned = std::make_shared<FrameTestable>(
+      mMetaSkeletonStateSpace,
+      metaSkeleton,
+      mFrame, // TODO: I think this needs to be cloned as well by getting it name? JS?
+      clonedPoseConstraint);
+    return cloned;
+  }
+
+  auto cloned = std::make_shared<FrameTestable>(
+      mMetaSkeletonStateSpace,
+      metaSkeleton,
+      mFrame, // TODO: This needs to be cloned.
+      mPoseConstraint);
+
+  return cloned;
+}
+
+
 } // namespace dart
 } // namespace constraint
 } // namespace aikido

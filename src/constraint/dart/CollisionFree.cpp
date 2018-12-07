@@ -139,6 +139,25 @@ void CollisionFree::removeSelfCheck(
       mGroupsToSelfCheck.end());
 }
 
+//==============================================================================
+TestablePtr CollisionFree::clone(
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
+{
+
+  // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
+  //
+  auto cloned = std::make_shared<CollisionFree>(
+      mMetaSkeletonStateSpace,
+      metaSkeleton,
+      mCollisionDetector,
+      mCollisionOptions);
+
+  // TODO: JS, could you look into this?
+  // We need to clone the mGouprToPairwiseCheck and mGroupsToSelfCheck.
+
+  return cloned;
+}
+
 } // namespace dart
 } // namespace constraint
 } // namespace aikido

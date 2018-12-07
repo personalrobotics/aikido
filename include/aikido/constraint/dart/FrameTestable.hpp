@@ -3,6 +3,7 @@
 
 #include <dart/dynamics/dynamics.hpp>
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/constraint/dart/DartConstraint.hpp"
 #include "aikido/statespace/SE3.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
@@ -13,7 +14,7 @@ namespace dart {
 /// Transforms a SE(3) Testable into a MetaSkeleton-Testable by
 /// performing forward kinematics on a configuration (metaskeleton state)
 /// and checking the resulting SE(3) pose of the asked frame.
-class FrameTestable : public Testable
+class FrameTestable : public DartConstraint, public Testable
 {
 public:
   /// Create a Testable for the MetaSkeleton.
@@ -46,6 +47,10 @@ public:
 
   // Documentation inherited
   statespace::ConstStateSpacePtr getStateSpace() const override;
+
+  // Document inherited.
+  TestablePtr clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const override;
 
 private:
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
