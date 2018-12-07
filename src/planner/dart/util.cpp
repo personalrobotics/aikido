@@ -20,6 +20,9 @@ Eigen::Vector3d getEndEffectorDirection(
 ::dart::dynamics::MetaSkeletonPtr clone(
     const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton)
 {
+  std::cout << "return metaSkeleton as is instead of cloning" << std::endl;
+  return metaSkeleton;
+  /*
   auto clonedSkeleton = metaSkeleton->getBodyNode(0)->getSkeleton()->clone();
 
   std::vector<BodyNode*> bodyNodes;
@@ -39,6 +42,7 @@ Eigen::Vector3d getEndEffectorDirection(
   }
 
   return Group::create(metaSkeleton->getName(), bodyNodes);
+  */
 }
 
 //==============================================================================

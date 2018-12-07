@@ -31,7 +31,7 @@ public:
   const std::string& getType() const override;
 
   // Documentation inherited.
-  //std::shared_ptr<Problem> clone() const override;
+  std::shared_ptr<Problem> clone() const override;
 
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();

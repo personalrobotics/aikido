@@ -48,12 +48,12 @@ ConfigurationToConfiguration::getGoalState() const
 }
 
 //==============================================================================
-/*std::shared_ptr<Problem>
+std::shared_ptr<Problem>
 ConfigurationToConfiguration::clone() const
 {
-  throw std::runtime_error("Not implemented");
-  //return make_unique<ConfigurationToConfiguration>(this);
-}*/
+  return std::make_shared<ConfigurationToConfiguration>
+    (mStateSpace, mStartState, mGoalState, mConstraint);
+}
 
 } // namespace planner
 } // namespace aikido

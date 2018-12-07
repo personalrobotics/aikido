@@ -90,15 +90,6 @@ const std::string& ConfigurationToTSR::getStaticType()
   return name;
 }
 
-/*
-//==============================================================================
-::dart::dynamics::ConstBodyNodePtr ConfigurationToTSR::getEndEffectorBodyNode()
-    const
-{
-  return mEndEffectorBodyNode;
-}
-*/
-
 //==============================================================================
 std::size_t ConfigurationToTSR::getMaxSamples() const
 {
@@ -122,6 +113,14 @@ ConfigurationToTSR::getStartState() const
 constraint::dart::ConstTSRPtr ConfigurationToTSR::getGoalTSR() const
 {
   return mGoalTSR;
+}
+
+//==============================================================================
+std::shared_ptr<Problem> ConfigurationToTSR::clone() const
+{
+  return std::make_shared<ConfigurationToTSR>(
+      mMetaSkeletonStateSpace, mStartState,
+      mMaxSamples, mGoalTSR, mConstraint);
 }
 
 } // namespace dart

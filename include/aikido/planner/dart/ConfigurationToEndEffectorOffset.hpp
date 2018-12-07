@@ -107,11 +107,7 @@ public:
   /// Returns the signed distance in meters to move in the specified direction.
   double getDistance() const;
 
-  /*
-  // Documentation inherited.
-  std::shared_ptr<Problem> clone(
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const override;
-  */
+  std::shared_ptr<Problem> clone() const override;
 
 protected:
   /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on

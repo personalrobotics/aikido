@@ -90,10 +90,8 @@ public:
   /// Returns the goal TSR.
   constraint::dart::ConstTSRPtr getGoalTSR() const;
 
-  /*
   // Documentation inherited.
   std::shared_ptr<Problem> clone() const override;
-  */
 
 protected:
   /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on

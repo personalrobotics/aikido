@@ -45,7 +45,7 @@ public:
   const std::string& getType() const override;
 
   // Documentation inherited.
-  //std::shared_ptr<Problem> clone() const override;
+  std::shared_ptr<Problem> clone() const override;
 
   /// Returns the type of the planning problem.
   static const std::string& getStaticType();
@@ -55,12 +55,6 @@ public:
 
   /// Returns the goal state.
   const statespace::dart::MetaSkeletonStateSpace::State* getGoalState() const;
-
-  /*
-  // Documentation inherited.
-  std::shared_ptr<Problem> clone(
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const override;
-  */
 
 protected:
   /// MetaSkeletonStateSpace. Prevents use of expensive dynamic cast on

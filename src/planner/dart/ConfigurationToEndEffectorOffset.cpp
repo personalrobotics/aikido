@@ -128,25 +128,26 @@ double ConfigurationToEndEffectorOffset::getDistance() const
   return mDistance;
 }
 
-/*
 //==============================================================================
-std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
-  ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
+std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone() const
 {
   // TODO: assert that metaSkeleton matches mMetaSkeleton
 
-  auto clonedBodyNode = metaSkeleton->getBodyNode(
-      mEndEffectorBodyNode->getName())->getBodyNodePtr();
-
-  return std::make_shared<ConfigurationToEndEffectorOffset>(
+  if (mDirection)
+  {
+    return std::make_shared<ConfigurationToEndEffectorOffset>(
       mMetaSkeletonStateSpace,
-      metaSkeleton,
-      clonedBodyNode,
+      mStartState,
       mDirection.get(),
       mDistance,
       mConstraint);
+  }
+  return std::make_shared<ConfigurationToEndEffectorOffset>(
+      mMetaSkeletonStateSpace,
+      mStartState,
+      mDistance,
+      mConstraint);
 }
-*/
 
 } // namespace dart
 } // namespace planner

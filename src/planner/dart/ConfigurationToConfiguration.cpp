@@ -66,21 +66,18 @@ ConfigurationToConfiguration::getGoalState() const
   return mGoalState;
 }
 
-/*
 //==============================================================================
-std::shared_ptr<Problem> ConfigurationToConfiguration::clone(
-  ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton) const
+std::shared_ptr<Problem> ConfigurationToConfiguration::clone() const
 {
   // TODO:assert that metaSkeleton is consistent with mMetaSkeletonStateSpace
   auto problem = std::make_shared<ConfigurationToConfiguration>
-    (mMetaSkeletonStateSpace, metaSkeleton,
+    (mMetaSkeletonStateSpace, mStartState,
      mGoalState, mConstraint);
 
   problem->mStartState = mStartState.clone();
 
   return problem;
 }
-*/
 
 } // namespace dart
 } // namespace planner

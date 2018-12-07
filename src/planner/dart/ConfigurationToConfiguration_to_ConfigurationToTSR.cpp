@@ -45,6 +45,7 @@ trajectory::TrajectoryPtr
 ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     const ConfigurationToTSR& problem, Planner::Result* result)
 {
+  std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR" << std::endl;
   if(!mEndEffectorBodyNode)
     throw std::runtime_error(
         "ConfigurationToConfiguration_to_ConfigurationToTSR needs to set mEndEffectorBodyNode");
@@ -96,6 +97,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto goalState = mMetaSkeletonStateSpace->createState();
   while (generator->canSample())
   {
+    std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR sample" << std::endl;
     // Sample from TSR
     {
       std::lock_guard<std::mutex> lock(skeleton->getMutex());
