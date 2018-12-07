@@ -26,6 +26,15 @@ using aikido::statespace::dart::MetaSkeletonStateSpace;
 
 //==============================================================================
 template <class PlannerType>
+PlannerPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::clone(
+    common::RNG* rng) const
+{
+  throw std::runtime_error("Cloning OMPL is not suported.");
+  return nullptr;
+}
+
+//==============================================================================
+template <class PlannerType>
 OMPLConfigurationToConfigurationPlanner<PlannerType>::
     OMPLConfigurationToConfigurationPlanner(
         statespace::ConstStateSpacePtr stateSpace,

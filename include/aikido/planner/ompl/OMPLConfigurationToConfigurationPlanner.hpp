@@ -29,6 +29,9 @@ class OMPLConfigurationToConfigurationPlanner
     : public aikido::planner::ConfigurationToConfigurationPlanner
 {
 public:
+  // Documentation inherited.
+  PlannerPtr clone(common::RNG* rng = nullptr) const override;
+
   /// Constructor.
   ///
   /// \param[in] stateSpace State space that this planner associated with.
