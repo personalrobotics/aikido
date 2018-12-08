@@ -85,6 +85,7 @@ public:
 
   // Document inherited.
   TestablePtr clone(
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const override;
 
 private:

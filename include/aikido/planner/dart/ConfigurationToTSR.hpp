@@ -96,6 +96,7 @@ public:
 
   // Documentation inherited.
   std::shared_ptr<Problem> clone(
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const override;
 
 protected:

@@ -140,9 +140,56 @@ void CollisionFree::removeSelfCheck(
 }
 
 //==============================================================================
+std::size_t getNodeIndexOf(
+    const ::dart::dynamics::BodyNode& bodyNode,
+    const ::dart::dynamics::ShapeNode& shapeNode)
+{
+  for (std::size_t i = 0u; i < bodyNode.getNumShapeNodes(); ++i)
+  {
+    if (bodyNode.getShapeNode(i) == &shapeNode)
+      return i;
+  }
+
+  assert(false);
+  return 0u;
+}
+
+//==============================================================================
+::dart::collision::CollisionGroupPtr cloneCollisionGroup(
+    ::dart::collision::CollisionDetectorPtr collisionDetector,
+    const ::dart::dynamics::MetaSkeleton& skeletonClone,
+    const ::dart::collision::CollisionGroup& group)
+{
+  using namespace ::dart::dynamics;
+  using namespace ::dart::collision;
+
+  CollisionGroupPtr groupClone
+      = collisionDetector->createCollisionGroupAsSharedPtr();
+
+  for (std::size_t i = 0u; i < group.getNumShapeFrames(); ++i)
+  {
+    const ShapeFrame* shapeFrame = group.getShapeFrame(i);
+    const ShapeNode* shapeNode = shapeFrame->asShapeNode();
+    assert(shapeNode); // shapeFrame is assumed to be ShapeNode
+    assert(shapeNode->getBodyNodePtr());
+    const BodyNode* bodyNode = shapeNode->getBodyNodePtr().get();
+    assert(skeletonClone.hasBodyNode(bodyNode));
+    const BodyNode* bodyNodeClone = skeletonClone.getBodyNode(bodyNode->getName());
+    const std::size_t shapeNodeIndex = getNodeIndexOf(*bodyNode, *shapeNode);
+    const ShapeNode* shapeNodeClone = bodyNodeClone->getShapeNode(shapeNodeIndex);
+    groupClone->addShapeFrame(shapeNodeClone);
+  }
+  assert(group.getNumShapeFrames() == groupClone->getNumShapeFrames());
+
+  return groupClone;
+}
+
+//==============================================================================
 TestablePtr CollisionFree::clone(
+    ::dart::collision::CollisionDetectorPtr collisionDetector,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
+  using CollisionGroup = ::dart::collision::CollisionGroup;
 
   // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
   //
@@ -152,8 +199,18 @@ TestablePtr CollisionFree::clone(
       mCollisionDetector,
       mCollisionOptions);
 
-  // TODO: JS, could you look into this?
-  // We need to clone the mGouprToPairwiseCheck and mGroupsToSelfCheck.
+  for (const auto& group : mGroupsToSelfCheck)
+  {
+    cloned->addSelfCheck(
+        cloneCollisionGroup(collisionDetector, *metaSkeleton, *group));
+  }
+
+  for (const auto& groupPair : mGroupsToPairwiseCheck)
+  {
+    cloned->addPairwiseCheck(
+        cloneCollisionGroup(collisionDetector, *metaSkeleton, *groupPair.first),
+        cloneCollisionGroup(collisionDetector, *metaSkeleton, *groupPair.second));
+  }
 
   return cloned;
 }

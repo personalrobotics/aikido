@@ -128,7 +128,8 @@ std::shared_ptr<Problem> ConfigurationToTSR::clone() const
 
 //==============================================================================
 std::shared_ptr<Problem> ConfigurationToTSR::clone(
-      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
+    ::dart::collision::CollisionDetectorPtr collisionDetector,
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
   using aikido::constraint::dart::DartConstraint;
 
@@ -141,7 +142,7 @@ std::shared_ptr<Problem> ConfigurationToTSR::clone(
   else
   {
     std::cout << "Cloning mConstraint with metaSkeleton" << std::endl;
-    auto clonedConstraint = constraint->clone(metaSkeleton);
+    auto clonedConstraint = constraint->clone(collisionDetector, metaSkeleton);
     return std::make_shared<ConfigurationToTSR>(
       mMetaSkeletonStateSpace, mStartState,
       mMaxSamples, mGoalTSR, clonedConstraint);

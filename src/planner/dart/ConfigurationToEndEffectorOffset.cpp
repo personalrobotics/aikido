@@ -139,6 +139,7 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone() const
 
 //==============================================================================
 std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
+  ::dart::collision::CollisionDetectorPtr collisionDetector,
   ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
   using aikido::constraint::dart::DartConstraint;
@@ -164,8 +165,9 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
   }
   else
   {
-    std::cout << "ConfigurationToEndEffectorPose: Cloning mConstraint with metaSkeleton" << std::endl;
-    auto clonedConstraint = constraint->clone(metaSkeleton);
+    std::cout << "ConfigurationToEndEffectorPose: Cloning mConstraint with "
+              << "metaSkeleton\n";
+    auto clonedConstraint = constraint->clone(collisionDetector, metaSkeleton);
     if (mDirection)
     {
       return std::make_shared<ConfigurationToEndEffectorOffset>(

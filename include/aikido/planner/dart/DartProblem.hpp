@@ -16,8 +16,9 @@ public:
   /// Clones this planning problem.
   /// \param[in] metaSkeleton MetaSkeleton to be used for cloning
   /// relevant properties.
-  virtual std::shared_ptr<Problem> clone
-    (::dart::dynamics::MetaSkeletonPtr metaSkeleton) const = 0;
+  virtual std::shared_ptr<Problem> clone(
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const = 0;
 };
 
 } // namespace planner

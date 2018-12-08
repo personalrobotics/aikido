@@ -67,20 +67,31 @@ statespace::ConstStateSpacePtr FrameTestable::getStateSpace() const
 }
 
 //==============================================================================
+const ::dart::dynamics::BodyNode* cloneFrame(
+    const ::dart::dynamics::MetaSkeleton& skeletonClone,
+    const ::dart::dynamics::ConstJacobianNodePtr& frame)
+{
+  using namespace ::dart::dynamics;
+  const ConstBodyNodePtr& bodyNodePtr = frame->getBodyNodePtr();
+  return skeletonClone.getBodyNode(bodyNodePtr->getName());
+}
+
+//==============================================================================
 TestablePtr FrameTestable::clone(
+    ::dart::collision::CollisionDetectorPtr collisionDetector,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
-
   // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
 
   auto poseConstraint = std::dynamic_pointer_cast<DartConstraint>(mPoseConstraint);
   if (poseConstraint)
   {
-    auto clonedPoseConstraint = poseConstraint->clone(metaSkeleton);
+    auto clonedPoseConstraint
+        = poseConstraint->clone(collisionDetector, metaSkeleton);
     auto cloned = std::make_shared<FrameTestable>(
       mMetaSkeletonStateSpace,
       metaSkeleton,
-      mFrame, // TODO: I think this needs to be cloned as well by getting it name? JS?
+      cloneFrame(*metaSkeleton, mFrame),
       clonedPoseConstraint);
     return cloned;
   }
@@ -88,12 +99,11 @@ TestablePtr FrameTestable::clone(
   auto cloned = std::make_shared<FrameTestable>(
       mMetaSkeletonStateSpace,
       metaSkeleton,
-      mFrame, // TODO: This needs to be cloned.
+      cloneFrame(*metaSkeleton, mFrame),
       mPoseConstraint);
 
   return cloned;
 }
-
 
 } // namespace dart
 } // namespace constraint

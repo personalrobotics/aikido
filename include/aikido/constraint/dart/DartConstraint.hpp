@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_DART_DARTCONSTRAINT_HPP_
 
 #include <dart/dynamics/dynamics.hpp>
+#include <dart/collision/collision.hpp>
 
 #include "aikido/common/pointers.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -18,6 +19,7 @@ public:
   // \param[in] metaSkeleton Metaskeleton with which to
   // clone this constraint.
   virtual TestablePtr clone(
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const = 0;
 
 };
