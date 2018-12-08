@@ -27,6 +27,7 @@ set(sources
   dart/FrameTestable.cpp
   dart/InverseKinematicsSampleable.cpp
   dart/JointStateSpaceHelpers.cpp
+  dart/TestableIntersection.cpp
   dart/TSR.cpp
 )
 

@@ -9,12 +9,13 @@ ConfigurationToConfiguration_to_ConfigurationToTSRParallel::
     ConfigurationToConfiguration_to_ConfigurationToTSRParallel(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
       const std::shared_ptr<ConfigurationToConfiguration_to_ConfigurationToTSR>&
           planner,
       std::size_t numCopies,
       const std::vector<common::RNG*> rngs)
 : ConcreteParallelMetaPlanner(std::move(stateSpace), std::move(metaSkeleton),
-    planner, numCopies, rngs)
+    std::move(collisionDetector), planner, numCopies, rngs)
 {
 }
 

@@ -4,6 +4,7 @@
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToTSRPlanner.hpp"
 #include "aikido/planner/dart/PlannerAdapter.hpp"
+#include "aikido/planner/dart/DartPlanner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -14,7 +15,8 @@ namespace dart {
 class ConfigurationToConfiguration_to_ConfigurationToTSR
     : public PlannerAdapter<aikido::planner::
                                 ConfigurationToConfigurationPlanner,
-                            ConfigurationToTSRPlanner>
+                            ConfigurationToTSRPlanner>,
+      public DartPlanner
 {
 public:
   /// Constructor
@@ -36,7 +38,12 @@ public:
       const ConfigurationToTSR& problem, Planner::Result* result) override;
 
   // Documentation inherited.
-  virtual std::shared_ptr<Planner> clone(common::RNG* rng = nullptr) const override;
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
+
+  // Documentation inherited.
+  virtual PlannerPtr clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      common::RNG* rng = nullptr) const override;
 };
 
 } // namespace dart

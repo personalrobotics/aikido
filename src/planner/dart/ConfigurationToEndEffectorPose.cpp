@@ -92,9 +92,10 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
   ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
   using aikido::constraint::dart::DartConstraint;
+  auto constraint = std::dynamic_pointer_cast<const DartConstraint>(mConstraint);
 
   // TODO: assert that metaSkeleton matches mMetaSkeleton
-  auto clonedBodyNode = metaSkeleton->getBodyNode(
+  auto clonedBodyNode = metaSkeleton->getBodyNode(0)->getSkeleton()->getBodyNode(
       mEndEffectorBodyNode->getName())->getBodyNodePtr();
 
   if (!clonedBodyNode)
@@ -104,8 +105,6 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
       << mEndEffectorBodyNode->getName() << std::endl;
     throw std::invalid_argument(ss.str());
   }
-
-  auto constraint = std::dynamic_pointer_cast<const DartConstraint>(mConstraint);
 
   if (!constraint)
     return std::make_shared<ConfigurationToEndEffectorPose>(

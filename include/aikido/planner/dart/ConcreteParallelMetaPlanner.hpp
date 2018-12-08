@@ -3,8 +3,9 @@
 
 #include <future>
 #include <mutex>
+#include <dart/dynamics/dynamics.hpp>
+#include <dart/collision/collision.hpp>
 
-//#include "aikido/common/pointers.hpp"
 #include "aikido/planner/ParallelMetaPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
@@ -21,10 +22,12 @@ public:
   ///
   /// \param[in] stateSpace State space associated with this planner.
   /// \param[in] metaSkeleton Metaskeleton associated with this planner.
+  /// \param[in] collisionDetector CollisionDetector used by all problems.
   /// \param[in] planners Set of planners for this planner to run in parallel.
   ConcreteParallelMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
       const std::vector<PlannerPtr>&
       planners = std::vector<PlannerPtr>());
 
@@ -32,6 +35,7 @@ public:
   ///
   /// \param[in] stateSpace State space associated with this planner.
   /// \param[in] metaSkeleton Metaskeleton associated with this planner.
+  /// \param[in] collisionDetector CollisionDetector used by all problems.
   /// \param[in] planner Planner to clone.
   /// \param[in] numCopies Number of clones to make
   /// \param[in] rngs RNGs to pass to each cloned planner. If nonempty,
@@ -39,6 +43,7 @@ public:
   ConcreteParallelMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
       const PlannerPtr& planner,
       std::size_t numCopies = 1,
       const std::vector<common::RNG*> rngs =
@@ -52,14 +57,16 @@ public:
   virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
 
 private:
-  // True when planning
-  std::atomic_bool mRunning;
-
   // Protects mRunning
   std::mutex mMutex;
 
   statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
+  std::vector<::dart::dynamics::MetaSkeletonPtr> mClonedMetaSkeletons;
+  ::dart::collision::CollisionDetectorPtr mCollisionDetector;
+
+  // True when planning
+  std::atomic_bool mRunning;
 };
 
 } // namespace dart

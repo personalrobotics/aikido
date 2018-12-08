@@ -1,5 +1,5 @@
 #include "aikido/robot/ConcreteRobot.hpp"
-#include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/constraint/dart/TestableIntersection.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
@@ -265,7 +265,7 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
     const MetaSkeletonPtr& metaSkeleton,
     const CollisionFreePtr& collisionFree) const
 {
-  using constraint::TestableIntersection;
+  using constraint::dart::TestableIntersection;
 
   if (mRootRobot != this)
     return mRootRobot->getFullCollisionConstraint(

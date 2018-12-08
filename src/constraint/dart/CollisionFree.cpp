@@ -157,6 +157,7 @@ std::size_t getNodeIndexOf(
 //==============================================================================
 ::dart::collision::CollisionGroupPtr cloneCollisionGroup(
     ::dart::collision::CollisionDetectorPtr collisionDetector,
+    const ::dart::dynamics::MetaSkeleton& skeletonOriginal,
     const ::dart::dynamics::MetaSkeleton& skeletonClone,
     const ::dart::collision::CollisionGroup& group)
 {
@@ -173,12 +174,32 @@ std::size_t getNodeIndexOf(
     assert(shapeNode); // shapeFrame is assumed to be ShapeNode
     assert(shapeNode->getBodyNodePtr());
     const BodyNode* bodyNode = shapeNode->getBodyNodePtr().get();
-    assert(skeletonClone.hasBodyNode(bodyNode));
+
+    std::cout << "Looking for " << bodyNode->getName()
+      << " in " << skeletonOriginal.getName() << std::endl;
+
+    // GL: shouldn't the clone not have this bodyNode?
+    // assert(skeletonClone.hasBodyNode(bodyNode));
+    //assert(skeletonOriginal.hasBodyNode(bodyNode)); // GL: Isn't this the check we need?
+    assert(skeletonOriginal.hasBodyNode(bodyNode) || skeletonClone.hasBodyNode(bodyNode)
+        || skeletonClone.getBodyNode(bodyNode->getName()));
+
     const BodyNode* bodyNodeClone = skeletonClone.getBodyNode(bodyNode->getName());
+    std::cout << "BodyNode      [" << bodyNode->getName()
+      << "] has " << bodyNode->getNumShapeNodes() << " shapeNodes" << std::endl;
+    std::cout << "BodyNodeClone [" << bodyNodeClone->getName()
+      << "] has " << bodyNodeClone->getNumShapeNodes() << " shapeNodes" << std::endl;
+    assert(bodyNode->getNumShapeNodes() == bodyNodeClone->getNumShapeNodes());
     const std::size_t shapeNodeIndex = getNodeIndexOf(*bodyNode, *shapeNode);
     const ShapeNode* shapeNodeClone = bodyNodeClone->getShapeNode(shapeNodeIndex);
+    assert(bodyNodeClone);
+    std::cout << "shapeNodeIndex " << shapeNodeIndex << std::endl;
+    assert(shapeNodeClone);
+
     groupClone->addShapeFrame(shapeNodeClone);
   }
+  std::cout << "Num shapes " << group.getNumShapeFrames()
+    << " vs " << groupClone->getNumShapeFrames() << std::endl;
   assert(group.getNumShapeFrames() == groupClone->getNumShapeFrames());
 
   return groupClone;
@@ -189,6 +210,15 @@ TestablePtr CollisionFree::clone(
     ::dart::collision::CollisionDetectorPtr collisionDetector,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
+  std::cout << "Clone CollisionFree constraint" << std::endl;
+
+  std::cout << "CollisionFree has metaSkeleton " <<
+    mMetaSkeleton->getBodyNode(0)->getSkeleton()->getName() << " and uses cloned MetaSkeleton: "
+    << metaSkeleton->getBodyNode(0)->getSkeleton()->getName() << std::endl;
+  std::cout << "Cloned BodyNode0 " << metaSkeleton->getBodyNode(0)->getName() << std::endl;
+
+  assert(mMetaSkeleton->getBodyNode(0)->getSkeleton() != metaSkeleton->getBodyNode(0)->getSkeleton());
+
   using CollisionGroup = ::dart::collision::CollisionGroup;
 
   // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
@@ -199,17 +229,25 @@ TestablePtr CollisionFree::clone(
       mCollisionDetector,
       mCollisionOptions);
 
+  std::cout << "Self check" << std::endl;
   for (const auto& group : mGroupsToSelfCheck)
   {
     cloned->addSelfCheck(
-        cloneCollisionGroup(collisionDetector, *metaSkeleton, *group));
+        cloneCollisionGroup(collisionDetector,
+          *(mMetaSkeleton->getBodyNode(0)->getSkeleton()),
+          *(metaSkeleton->getBodyNode(0)->getSkeleton()), *group));
   }
 
+  std::cout << "Pair check" << std::endl;
   for (const auto& groupPair : mGroupsToPairwiseCheck)
   {
     cloned->addPairwiseCheck(
-        cloneCollisionGroup(collisionDetector, *metaSkeleton, *groupPair.first),
-        cloneCollisionGroup(collisionDetector, *metaSkeleton, *groupPair.second));
+        cloneCollisionGroup(collisionDetector,
+          *(mMetaSkeleton->getBodyNode(0)->getSkeleton()),
+          *(metaSkeleton->getBodyNode(0)->getSkeleton()), *groupPair.first),
+        cloneCollisionGroup(collisionDetector,
+          *(mMetaSkeleton->getBodyNode(0)->getSkeleton()),
+          *(metaSkeleton->getBodyNode(0)->getSkeleton()), *groupPair.second));
   }
 
   return cloned;

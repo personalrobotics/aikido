@@ -43,9 +43,26 @@ ConfigurationToConfiguration_to_ConfigurationToConfiguration::plan(
 PlannerPtr ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone(
     common::RNG* rng) const
 {
+  throw std::runtime_error(
+      "ConfigurationToConfiguration_to_Configuration should clone with metaSkeleton");
+}
+
+//==============================================================================
+PlannerPtr ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone(
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    common::RNG* rng) const
+{
+  // TODO: assert metaSkeleton is a clone of mMetaSkeleton
   using aikido::planner::ConfigurationToConfigurationPlanner;
 
-  auto clonedDelegate = mDelegate->clone(rng);
+  auto castedDelegate = std::dynamic_pointer_cast<DartPlanner>(mDelegate);
+  PlannerPtr clonedDelegate;
+
+  if (castedDelegate)
+    clonedDelegate = castedDelegate->clone(metaSkeleton, rng);
+  else
+    clonedDelegate = mDelegate->clone(rng);
+
   auto clonedCastedDelegate = std::dynamic_pointer_cast<
     ConfigurationToConfigurationPlanner>(clonedDelegate);
 
@@ -55,10 +72,9 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone(
     throw std::runtime_error("Delegate has incorrect type.");
   }
 
-  // TODO: replace util::clone with DART's native clone method
   return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
       clonedCastedDelegate,
-      util::clone(mMetaSkeleton));
+      metaSkeleton);
 }
 
 } // namespace dart

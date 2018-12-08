@@ -4,6 +4,7 @@
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/dart/PlannerAdapter.hpp"
+#include "aikido/planner/dart/DartPlanner.hpp"
 
 namespace aikido {
 namespace planner {
@@ -13,7 +14,8 @@ namespace dart {
 /// version.
 class ConfigurationToConfiguration_to_ConfigurationToConfiguration
     : public PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
-                            planner::dart::ConfigurationToConfigurationPlanner>
+                            planner::dart::ConfigurationToConfigurationPlanner>,
+      public DartPlanner
 {
 public:
   /// Constructor
@@ -31,6 +33,11 @@ public:
 
   // Documentation inherited.
   virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
+
+  // Documentation inherited.
+  virtual PlannerPtr clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      common::RNG* rng = nullptr) const override;
 };
 
 } // namespace dart

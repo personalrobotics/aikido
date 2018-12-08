@@ -41,7 +41,7 @@ public:
   ///        TestableIntersection was initialize with.
   void addConstraint(ConstTestablePtr constraint);
 
-private:
+protected:
   statespace::ConstStateSpacePtr mStateSpace;
   std::vector<ConstTestablePtr> mConstraints;
 

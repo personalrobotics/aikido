@@ -1,5 +1,7 @@
 #include "aikido/planner/dart/ConcreteParallelMetaPlanner.hpp"
 #include "aikido/planner/dart/util.hpp"
+#include "aikido/planner/dart/DartProblem.hpp"
+#include "aikido/planner/dart/DartPlanner.hpp"
 
 #include <thread>
 #include <future>
@@ -29,23 +31,28 @@ static void _plan(
 ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+  ::dart::collision::CollisionDetectorPtr collisionDetector,
     const std::vector<PlannerPtr>& planners)
 : ParallelMetaPlanner(std::move(stateSpace), planners)
 , mMetaSkeleton(metaSkeleton)
+, mCollisionDetector(std::move(collisionDetector))
 , mRunning(false)
 {
   // Do nothing
+  // TODO: need to acquire metaSkeletons from the planners
 }
 
 //==============================================================================
 ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      ::dart::collision::CollisionDetectorPtr collisionDetector,
       const PlannerPtr& planner,
       std::size_t numCopies,
       const std::vector<common::RNG*> rngs)
 : ParallelMetaPlanner(std::move(stateSpace))
 , mMetaSkeleton(metaSkeleton)
+, mCollisionDetector(std::move(collisionDetector))
 , mRunning(false)
 {
   if (rngs.size() > 0 && numCopies != rngs.size())
@@ -56,14 +63,32 @@ ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
     throw std::invalid_argument(ss.str());
   }
 
+  auto castedPlanner = std::dynamic_pointer_cast<const DartPlanner>(planner);
+
   mPlanners.reserve(numCopies);
+  mClonedMetaSkeletons.reserve(numCopies);
+
   for (std::size_t i = 0; i < numCopies; ++i)
   {
     std::cout << "Cloning " << i << "th planner"  << std::endl;
+    std::cout << "Cloning metaskeleton"  << std::endl;
+
+    auto clonedMetaSkeleton = util::clone(mMetaSkeleton);
+    mClonedMetaSkeletons.emplace_back(clonedMetaSkeleton);
     if (rngs.size() == numCopies)
-      mPlanners.emplace_back(planner->clone(rngs[i]));
+    {
+      if (castedPlanner)
+        mPlanners.emplace_back(castedPlanner->clone(clonedMetaSkeleton, rngs[i]));
+      else
+        mPlanners.emplace_back(planner->clone(rngs[i]));
+    }
     else
-      mPlanners.emplace_back(planner->clone());
+    {
+      if (castedPlanner)
+        mPlanners.emplace_back(castedPlanner->clone(clonedMetaSkeleton));
+      else
+        mPlanners.emplace_back(planner->clone());
+    }
   }
 
 }
@@ -87,19 +112,44 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
   std::vector<ProblemPtr> clonedProblems;
   std::vector<std::shared_ptr<Result>> results;
 
-  auto shared_problem = problem.clone();
+  // Check if problem is DartProblem
+  const DartProblem* dart_problem = dynamic_cast<const DartProblem*>(&problem);
+  std::vector<std::shared_ptr<Problem>> shared_problems;
+  std::shared_ptr<Problem> shared_problem;
+
+  if (dart_problem)
+  {
+    shared_problems.reserve(mClonedMetaSkeletons.size());
+    std::cout << "ConcreteParallelMetaPlanner: Clone DartProblem with clonedMetaSkeleton" << std::endl;
+    for (std::size_t i = 0; i < mClonedMetaSkeletons.size(); ++i)
+    {
+      shared_problems.emplace_back(dart_problem->clone(mCollisionDetector,
+          mClonedMetaSkeletons[i]));
+    }
+  }
+  else
+  {
+    shared_problem = problem.clone();
+  }
 
   results.reserve(mPlanners.size());
 
-  for (const auto& planner : mPlanners)
+  for (std::size_t i = 0; i < mPlanners.size(); ++i)
   {
     auto result = std::make_shared<Result>();
 
     results.push_back(result);
     auto promise = std::make_shared<std::promise<trajectory::TrajectoryPtr>>();
 
-    std::cout << "Construct thread" << std::endl;
-    threads.push_back(std::thread(_plan, planner, promise, shared_problem, result));
+
+    if (dart_problem)
+    {
+      std::cout << "Construct thread with dart problem" << std::endl;
+      threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problems[i], result));
+    }
+    else
+      threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problem, result));
+
     futures.push_back(promise->get_future());
   }
 

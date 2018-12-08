@@ -81,6 +81,7 @@ TestablePtr FrameTestable::clone(
     ::dart::collision::CollisionDetectorPtr collisionDetector,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
+  std::cout << "Clone FrameTestable constraint" << std::endl;
   // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
 
   auto poseConstraint = std::dynamic_pointer_cast<DartConstraint>(mPoseConstraint);

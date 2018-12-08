@@ -127,9 +127,27 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
     common::RNG* rng) const
 {
+  throw std::runtime_error(
+      "ConfigurationToConfiguration_to_ConfigurationToTSR should clone with metaSkeleton");
+}
+
+//==============================================================================
+PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    common::RNG* rng) const
+{
+  // TODO: assert metaSkeleton is a clone of mMetaSkeleton
+
   using aikido::planner::ConfigurationToConfiguration;
 
-  auto clonedDelegate = mDelegate->clone(rng);
+  auto castedDelegate = std::dynamic_pointer_cast<DartPlanner>(mDelegate);
+  PlannerPtr clonedDelegate;
+
+  if (castedDelegate)
+    clonedDelegate = castedDelegate->clone(metaSkeleton, rng);
+  else
+    clonedDelegate = mDelegate->clone(rng);
+
   auto clonedCastedDelegate = std::dynamic_pointer_cast<
     ConfigurationToConfigurationPlanner>(clonedDelegate);
 
@@ -139,12 +157,30 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
     throw std::runtime_error("Delegate has incorrect type.");
   }
 
-  // TODO: clone the Skeleton
+  auto clonedBodyNode = metaSkeleton->getBodyNode(0)->getSkeleton()->getBodyNode(
+      mEndEffectorBodyNode->getName())->getBodyNodePtr();
+
+  std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR has metaSkeleton " <<
+    mMetaSkeleton->getBodyNode(0)->getSkeleton()->getName() << " and uses cloned MetaSkeleton: "
+    << metaSkeleton->getBodyNode(0)->getSkeleton()->getName() << std::endl;
+  std::cout << "Cloned bodyNode " << clonedBodyNode->getName() << std::endl;
+
+  assert(mMetaSkeleton->getBodyNode(0)->getSkeleton() != metaSkeleton->getBodyNode(0)->getSkeleton());
+
+  if (!clonedBodyNode)
+  {
+    std::stringstream ss;
+    ss << "Metaskeleton does not have "
+      << mEndEffectorBodyNode->getName() << std::endl;
+    throw std::invalid_argument(ss.str());
+  }
+
   return std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
       clonedCastedDelegate,
-      util::clone(mMetaSkeleton),
-      mEndEffectorBodyNode);
+      metaSkeleton,
+      clonedBodyNode);
 }
+
 
 } // namespace dart
 } // namespace planner
