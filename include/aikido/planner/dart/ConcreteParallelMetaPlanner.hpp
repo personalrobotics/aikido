@@ -27,7 +27,7 @@ public:
   ConcreteParallelMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      ::dart::collision::CollisionDetectorPtr collisionDetector,
+      std::vector<::dart::collision::CollisionDetectorPtr> collisionDetectors,
       const std::vector<PlannerPtr>&
       planners = std::vector<PlannerPtr>());
 
@@ -43,9 +43,8 @@ public:
   ConcreteParallelMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      ::dart::collision::CollisionDetectorPtr collisionDetector,
+      std::vector<::dart::collision::CollisionDetectorPtr> collisionDetectors,
       const PlannerPtr& planner,
-      std::size_t numCopies = 1,
       const std::vector<common::RNG*> rngs =
         std::vector<common::RNG*>());
 
@@ -63,7 +62,7 @@ private:
   statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::vector<::dart::dynamics::MetaSkeletonPtr> mClonedMetaSkeletons;
-  ::dart::collision::CollisionDetectorPtr mCollisionDetector;
+  std::vector<::dart::collision::CollisionDetectorPtr> mCollisionDetectors;
 
   // True when planning
   std::atomic_bool mRunning;

@@ -31,11 +31,11 @@ static void _plan(
 ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-  ::dart::collision::CollisionDetectorPtr collisionDetector,
+    std::vector<::dart::collision::CollisionDetectorPtr> collisionDetectors,
     const std::vector<PlannerPtr>& planners)
 : ParallelMetaPlanner(std::move(stateSpace), planners)
 , mMetaSkeleton(metaSkeleton)
-, mCollisionDetector(std::move(collisionDetector))
+, mCollisionDetectors(std::move(collisionDetectors))
 , mRunning(false)
 {
   // Do nothing
@@ -46,29 +46,29 @@ ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
 ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      ::dart::collision::CollisionDetectorPtr collisionDetector,
+      std::vector<::dart::collision::CollisionDetectorPtr> collisionDetectors,
       const PlannerPtr& planner,
-      std::size_t numCopies,
       const std::vector<common::RNG*> rngs)
 : ParallelMetaPlanner(std::move(stateSpace))
 , mMetaSkeleton(metaSkeleton)
-, mCollisionDetector(std::move(collisionDetector))
+, mCollisionDetectors(std::move(collisionDetectors))
 , mRunning(false)
 {
-  if (rngs.size() > 0 && numCopies != rngs.size())
+  if (rngs.size() > 0 && mCollisionDetectors.size() != rngs.size())
   {
     std::stringstream ss;
-    ss << "numCopies [" << numCopies << "] does not match number of RNGs [ "
+    ss << "Number of collision detectors [" << mCollisionDetectors.size() << "] does not match number of RNGs [ "
       << rngs.size() << "]."  << std::endl;
     throw std::invalid_argument(ss.str());
   }
 
   auto castedPlanner = std::dynamic_pointer_cast<const DartPlanner>(planner);
 
+  auto numCopies = mCollisionDetectors.size();
   mPlanners.reserve(numCopies);
   mClonedMetaSkeletons.reserve(numCopies);
 
-  for (std::size_t i = 0; i < numCopies; ++i)
+  for (std::size_t i = 0; i < mCollisionDetectors.size(); ++i)
   {
     std::cout << "Cloning " << i << "th planner"  << std::endl;
     std::cout << "Cloning metaskeleton"  << std::endl;
@@ -123,7 +123,7 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     std::cout << "ConcreteParallelMetaPlanner: Clone DartProblem with clonedMetaSkeleton" << std::endl;
     for (std::size_t i = 0; i < mClonedMetaSkeletons.size(); ++i)
     {
-      shared_problems.emplace_back(dart_problem->clone(mCollisionDetector,
+      shared_problems.emplace_back(dart_problem->clone(mCollisionDetectors[i],
           mClonedMetaSkeletons[i]));
     }
   }

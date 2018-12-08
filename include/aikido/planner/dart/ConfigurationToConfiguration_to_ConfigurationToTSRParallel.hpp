@@ -19,16 +19,15 @@ public:
   ///
   /// \param[in] stateSpace StateSpace in which the planner operates.
   /// \param[in] metaSkeleton MetaSkeleton for adapted planner to operate on.
-  /// \param[in] collisionDetector CollisionDetector used by all problems.
+  /// \param[in] collisionDetectors CollisionDetectors used by all problems.
   /// \param[in] planner Planner to parallelize
   /// TSR.
   ConfigurationToConfiguration_to_ConfigurationToTSRParallel(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      ::dart::collision::CollisionDetectorPtr collisionDetector,
+      std::vector<::dart::collision::CollisionDetectorPtr> collisionDetectors,
       const std::shared_ptr<ConfigurationToConfiguration_to_ConfigurationToTSR>&
           planner,
-      std::size_t numCopies = 1,
       const std::vector<common::RNG*> rngs =
         std::vector<common::RNG*>());
 
