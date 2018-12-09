@@ -184,7 +184,19 @@ std::size_t getNodeIndexOf(
     if (!skeletonOriginal.hasBodyNode(bodyNode))
     {
       std::cout << "skeletonOriginal [" << skeletonOriginal.getName()
-                << "] doesn't contain bodyNode [" << bodyNode->getName() << "].\n";
+                << "] doesn't contain an instance of bodyNode ["
+                << bodyNode->getName() << "].\n";
+      if (skeletonOriginal.getBodyNode(bodyNode->getName()))
+      {
+        std::cout << "  - BodyNode instance in skeletonOriginal: "
+                  << skeletonOriginal.getBodyNode(bodyNode->getName())
+                  << "\n"
+                  << "  - BodyNode instance in skeletonClone   : "
+                  << skeletonClone.getBodyNode(bodyNode->getName())
+                  << "\n"
+                  << "  - bodyNode instance                    : "
+                  << bodyNode << "\n";
+      }
       exit(1);
     }
 
