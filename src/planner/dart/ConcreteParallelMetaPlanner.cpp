@@ -175,8 +175,7 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
             planner->stopPlanning();
 
           for(auto& thread: threads)
-            if (thread.joinable())
-              thread.join();
+            thread.detach();
 
           // Return
           {
