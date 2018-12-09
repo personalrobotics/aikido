@@ -150,7 +150,10 @@ std::size_t getNodeIndexOf(
       return i;
   }
 
-  assert(false);
+  std::cout << "[CollisionFree] Error: Failed to find shapeNode ["
+            << shapeNode.getName() << "] from bodyNode ["
+            << bodyNode.getName() << "].\n";
+  exit(1);
   return 0u;
 }
 
@@ -173,7 +176,6 @@ std::size_t getNodeIndexOf(
     exit(1);
   }
 
-
   for (std::size_t i = 0u; i < group.getNumShapeFrames(); ++i)
   {
     const ShapeFrame* shapeFrame = group.getShapeFrame(i);
@@ -182,36 +184,14 @@ std::size_t getNodeIndexOf(
     assert(shapeNode->getBodyNodePtr());
     const BodyNode* bodyNode = shapeNode->getBodyNodePtr().get();
 
-    std::cout << "Skeleton ids." << std::endl;
-    std::cout << "Original :" << skeletonOriginal.getBodyNode(0)->getSkeleton().get() << std::endl;
-    std::cout << "Clone    :" << skeletonClone.getBodyNode(0)->getSkeleton().get() << std::endl;
-    std::cout << "BodyNode :" << bodyNode->getSkeleton().get() << std::endl;
-
+    // If bodyNode is not in the original skeleton, we assume the object is
+    // meant to be shared.
     if (!skeletonOriginal.hasBodyNode(bodyNode))
     {
-      std::cout << "skeletonOriginal [" << skeletonOriginal.getName()
-                << "] doesn't contain an instance of bodyNode ["
-                << bodyNode->getName() << "].\n";
-      if (skeletonOriginal.getBodyNode(bodyNode->getName()))
-      {
-        std::cout << "  - BodyNode instance in skeletonOriginal: "
-                  << skeletonOriginal.getBodyNode(bodyNode->getName())
-                  << "\n"
-                  << "  - BodyNode instance in skeletonClone   : "
-                  << skeletonClone.getBodyNode(bodyNode->getName())
-                  << "\n"
-                  << "  - bodyNode instance                    : "
-                  << bodyNode << "\n";
-        std::cout << "BodyNode has parent name " << bodyNode->getSkeleton()->getName() << std::endl;
-      }
-
       groupClone->addShapeFrame(shapeNode);
       continue;
     }
 
-    // GL: shouldn't the clone not have this bodyNode?
-    // assert(skeletonClone.hasBodyNode(bodyNode));
-    //assert(skeletonOriginal.hasBodyNode(bodyNode)); // GL: Isn't this the check we need?
     assert(skeletonOriginal.hasBodyNode(bodyNode) || skeletonClone.hasBodyNode(bodyNode)
         || skeletonClone.getBodyNode(bodyNode->getName()));
 
@@ -231,7 +211,6 @@ std::size_t getNodeIndexOf(
     const std::size_t shapeNodeIndex = getNodeIndexOf(*bodyNode, *shapeNode);
     const ShapeNode* shapeNodeClone = bodyNodeClone->getShapeNode(shapeNodeIndex);
     assert(bodyNodeClone);
-    //std::cout << "shapeNodeIndex " << shapeNodeIndex << std::endl;
     assert(shapeNodeClone);
 
     groupClone->addShapeFrame(shapeNodeClone);
@@ -252,26 +231,25 @@ TestablePtr CollisionFree::clone(
     ::dart::collision::CollisionDetectorPtr collisionDetector,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
-  std::cout << "Clone CollisionFree constraint" << std::endl;
+  if (mMetaSkeleton->getBodyNode(0)->getSkeleton()
+      == metaSkeleton->getBodyNode(0)->getSkeleton())
+  {
+    std::cout << "CollisionFree has metaSkeleton "
+              << mMetaSkeleton->getBodyNode(0)->getSkeleton()->getName()
+              << " and uses cloned MetaSkeleton: "
+              << metaSkeleton->getBodyNode(0)->getSkeleton()->getName()
+              << std::endl;
+    std::cout << "Cloned BodyNode0 " << metaSkeleton->getBodyNode(0)->getName()
+              << std::endl;
+    exit(1);
+  }
 
-  std::cout << "CollisionFree has metaSkeleton " <<
-    mMetaSkeleton->getBodyNode(0)->getSkeleton()->getName() << " and uses cloned MetaSkeleton: "
-    << metaSkeleton->getBodyNode(0)->getSkeleton()->getName() << std::endl;
-  std::cout << "Cloned BodyNode0 " << metaSkeleton->getBodyNode(0)->getName() << std::endl;
-
-  assert(mMetaSkeleton->getBodyNode(0)->getSkeleton() != metaSkeleton->getBodyNode(0)->getSkeleton());
-
-  using CollisionGroup = ::dart::collision::CollisionGroup;
-
-  // TODO: assert metaSkeleton is a cloned version of mMetaSkeleton
-  //
   auto cloned = std::make_shared<CollisionFree>(
       mMetaSkeletonStateSpace,
       metaSkeleton,
       collisionDetector,
       mCollisionOptions);
 
-  std::cout << "Self check" << std::endl;
   for (const auto& group : mGroupsToSelfCheck)
   {
     cloned->addSelfCheck(
@@ -280,7 +258,6 @@ TestablePtr CollisionFree::clone(
           *(metaSkeleton->getBodyNode(0)->getSkeleton()), *group));
   }
 
-  std::cout << "Pair check" << std::endl;
   for (const auto& groupPair : mGroupsToPairwiseCheck)
   {
     cloned->addPairwiseCheck(
