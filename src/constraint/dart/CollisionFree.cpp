@@ -268,7 +268,7 @@ TestablePtr CollisionFree::clone(
   auto cloned = std::make_shared<CollisionFree>(
       mMetaSkeletonStateSpace,
       metaSkeleton,
-      mCollisionDetector,
+      collisionDetector,
       mCollisionOptions);
 
   std::cout << "Self check" << std::endl;
