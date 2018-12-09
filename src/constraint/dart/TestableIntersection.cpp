@@ -16,8 +16,6 @@ TestablePtr TestableIntersection::clone(
     ::dart::collision::CollisionDetectorPtr collisionDetector,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
-  std::cout << "Clone TestableIntersection constraint" << std::endl;
-
   std::vector<ConstTestablePtr> clonedConstraints;
   clonedConstraints.reserve(mConstraints.size());
 

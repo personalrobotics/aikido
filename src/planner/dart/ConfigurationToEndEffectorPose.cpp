@@ -113,8 +113,6 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorPose::clone(
       mGoalPose, mConstraint);
 
   else{
-    std::cout << "ConfigurationToEndEffectorPose: Cloning mConstraint with "
-              << "metaSkeleton\n";
     auto clonedConstraint = constraint->clone(collisionDetector, metaSkeleton);
     return std::make_shared<ConfigurationToEndEffectorPose>(
       mMetaSkeletonStateSpace, mStartState,

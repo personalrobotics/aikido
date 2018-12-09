@@ -24,14 +24,6 @@ template <typename Derived, typename ProblemT>
 bool SingleProblemPlanner<Derived, ProblemT>::canSolve(
     const Problem& problem) const
 {
-  std::cout << "Problem Type : " << problem.getType() << std::endl;
-  if (problem.getType() == SolvableProblem::getStaticType())
-    std::cout << "SingleProblemPlanner-impl: canSolve"<< std::endl;
-  else
-  {
-    std::cout << "can't solve " << std::endl;
-    std::cout << "SolvableProblem: " << SolvableProblem::getStaticType() << std::endl;
-  }
   return problem.getType() == SolvableProblem::getStaticType();
 }
 
@@ -41,10 +33,7 @@ trajectory::TrajectoryPtr SingleProblemPlanner<Derived, ProblemT>::plan(
     const Problem& problem, Result* result)
 {
   if (!canSolve(problem))
-  {
-    std::cout << "SingleProblemPlanner.plan Returning nullptr" << std::endl;
     return nullptr;
-  }
 
   assert(dynamic_cast<const SolvableProblem*>(&problem));
 #ifndef NDEBUG // Debug mode
@@ -54,7 +43,6 @@ trajectory::TrajectoryPtr SingleProblemPlanner<Derived, ProblemT>::plan(
   }
 #endif
 
-  std::cout << "SingleProblemPlanner.plan calling plan" << std::endl;
   return static_cast<Derived*>(this)->plan(
       static_cast<const typename Derived::SolvableProblem&>(problem),
       static_cast<typename Derived::Result*>(result));

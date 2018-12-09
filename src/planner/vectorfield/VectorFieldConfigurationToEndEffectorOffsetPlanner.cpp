@@ -30,11 +30,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::
   , mTimelimit(timelimit)
 {
   if (endEffectorBodyNode)
-  {
-    std::cout << "Set endeffectorBodyNode" << std::endl;
     setEndEffectorBodyNode(endEffectorBodyNode);
-  }
-  // Do nothing here.
 }
 
 //==============================================================================
@@ -59,10 +55,8 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   if (!optionalDirection)
     direction = getEndEffectorDirection();
   else
-  {
-    std::cout << "Problem direction is used for VectorFieldConfigurationToEndEffectorOffsetPlanner" << std::endl;
     direction = optionalDirection.get().normalized();
-  }
+
   if (distance < 0)
   {
     distance = -1.0 * distance;

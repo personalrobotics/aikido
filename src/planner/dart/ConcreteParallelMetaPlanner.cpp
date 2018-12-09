@@ -70,9 +70,6 @@ ConcreteParallelMetaPlanner::ConcreteParallelMetaPlanner(
 
   for (std::size_t i = 0; i < mCollisionDetectors.size(); ++i)
   {
-    std::cout << "Cloning " << i << "th planner"  << std::endl;
-    std::cout << "Cloning metaskeleton"  << std::endl;
-
     auto clonedMetaSkeleton = util::clone(mMetaSkeleton);
     mClonedMetaSkeletons.emplace_back(clonedMetaSkeleton);
     if (rngs.size() == numCopies)
@@ -124,10 +121,7 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
   for (std::size_t i = 0; i < mPlanners.size(); ++i)
   {
     if (!mPlanners[i]->canSolve(problem))
-    {
-      std::cout << "Skip [" << i << "]th planner" << std::endl;
       continue;
-    }
 
     auto result = std::make_shared<Result>();
 
@@ -138,7 +132,6 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     {
       auto shared_problem = dart_problem->clone(mCollisionDetectors[i],
           mClonedMetaSkeletons[i]);
-      std::cout << "Construct thread with dart problem" << std::endl;
       threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problem, result));
     }
     else
@@ -190,7 +183,6 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
             std::lock_guard<std::mutex> lock(mMutex);
             mRunning = false;
           // TODO:: copy result
-            std::cout << "Returning trajectory" << std::endl;
             return trajectory;
           }
         }

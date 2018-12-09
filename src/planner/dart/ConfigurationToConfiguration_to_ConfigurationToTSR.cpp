@@ -119,7 +119,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       std::lock_guard<std::mutex> lock(mMutex);
       if (!mPlanning)
       {
-        std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR stop planning" << std::endl;
+        // Stop planning and return
         return nullptr;
       }
     }
@@ -193,11 +193,6 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
 
   auto clonedBodyNode = metaSkeleton->getBodyNode(0)->getSkeleton()->getBodyNode(
       mEndEffectorBodyNode->getName())->getBodyNodePtr();
-
-  std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR has metaSkeleton " <<
-    mMetaSkeleton->getBodyNode(0)->getSkeleton()->getName() << " and uses cloned MetaSkeleton: "
-    << metaSkeleton->getBodyNode(0)->getSkeleton()->getName() << std::endl;
-  std::cout << "Cloned bodyNode " << clonedBodyNode->getName() << std::endl;
 
   assert(mMetaSkeleton->getBodyNode(0)->getSkeleton() != metaSkeleton->getBodyNode(0)->getSkeleton());
 

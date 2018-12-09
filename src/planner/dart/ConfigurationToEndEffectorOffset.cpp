@@ -165,8 +165,6 @@ std::shared_ptr<Problem> ConfigurationToEndEffectorOffset::clone(
   }
   else
   {
-    std::cout << "ConfigurationToEndEffectorPose: Cloning mConstraint with "
-              << "metaSkeleton\n";
     auto clonedConstraint = constraint->clone(collisionDetector, metaSkeleton);
     if (mDirection)
     {

@@ -134,22 +134,14 @@ std::shared_ptr<Problem> ConfigurationToTSR::clone(
   auto constraint = std::dynamic_pointer_cast<const DartConstraint>(mConstraint);
   auto collisionFree = std::dynamic_pointer_cast<const CollisionFree>(mConstraint);
 
-  if (collisionFree)
-  {
-    std::cout << "ConfigurationToTSR has CollisionFree constraint" << std::endl;
-  }
-
-
   if (!constraint)
   {
-    std::cout << "ConfigurationToTSR: Cloning mConstraint without metaSkeleton" << std::endl;
     return std::make_shared<ConfigurationToTSR>(
       mMetaSkeletonStateSpace, mStartState,
       mMaxSamples, mGoalTSR, mConstraint);
   }
   else
   {
-    std::cout << "ConfigurationToTSR: Cloning mConstraint with metaSkeleton" << std::endl;
     auto clonedConstraint = constraint->clone(collisionDetector, metaSkeleton);
     return std::make_shared<ConfigurationToTSR>(
       mMetaSkeletonStateSpace, mStartState,
