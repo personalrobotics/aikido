@@ -4,6 +4,7 @@
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
 #include "aikido/planner/dart/ConcreteParallelMetaPlanner.hpp"
+#include "aikido/planner/dart/PlannerAdapter.hpp"
 
 namespace aikido {
 namespace planner {
@@ -30,7 +31,6 @@ public:
           planner,
       const std::vector<common::RNG*> rngs =
         std::vector<common::RNG*>());
-
 };
 
 } // namespace dart

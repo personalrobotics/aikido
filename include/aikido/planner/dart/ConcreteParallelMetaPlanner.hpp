@@ -7,6 +7,7 @@
 #include <dart/collision/collision.hpp>
 
 #include "aikido/planner/ParallelMetaPlanner.hpp"
+#include "aikido/planner/dart/DartPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
@@ -15,7 +16,9 @@ namespace dart {
 
 /// Parallel meta planner with a default suite of planners suited to a wide
 // array of planning tasks.
-class ConcreteParallelMetaPlanner : public ParallelMetaPlanner
+class ConcreteParallelMetaPlanner
+  : public ParallelMetaPlanner
+  , public DartPlanner
 {
 public:
   /// Constructs a parallel planner for the passed statespace and planners.
@@ -53,7 +56,12 @@ public:
       const Problem& problem, Result* result = nullptr) override;
 
   // Documentation inherited.
-  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
+  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override final;
+
+  // Documentation inherited.
+  virtual PlannerPtr clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      common::RNG* rng = nullptr) const override final;
 
 private:
   // Protects mRunning

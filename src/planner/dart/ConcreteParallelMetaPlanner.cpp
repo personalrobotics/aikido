@@ -116,48 +116,45 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
   const DartProblem* dart_problem = dynamic_cast<const DartProblem*>(&problem);
   std::vector<std::shared_ptr<Problem>> shared_problems;
   std::shared_ptr<Problem> shared_problem;
-
-  if (dart_problem)
-  {
-    shared_problems.reserve(mClonedMetaSkeletons.size());
-    std::cout << "ConcreteParallelMetaPlanner: Clone DartProblem with clonedMetaSkeleton" << std::endl;
-    for (std::size_t i = 0; i < mClonedMetaSkeletons.size(); ++i)
-    {
-      shared_problems.emplace_back(dart_problem->clone(mCollisionDetectors[i],
-          mClonedMetaSkeletons[i]));
-    }
-  }
-  else
-  {
+  if (!dart_problem)
     shared_problem = problem.clone();
-  }
 
   results.reserve(mPlanners.size());
 
   for (std::size_t i = 0; i < mPlanners.size(); ++i)
   {
+    if (!mPlanners[i]->canSolve(problem))
+    {
+      std::cout << "Skip [" << i << "]th planner" << std::endl;
+      continue;
+    }
+
     auto result = std::make_shared<Result>();
 
     results.push_back(result);
     auto promise = std::make_shared<std::promise<trajectory::TrajectoryPtr>>();
 
-
     if (dart_problem)
     {
+      auto shared_problem = dart_problem->clone(mCollisionDetectors[i],
+          mClonedMetaSkeletons[i]);
       std::cout << "Construct thread with dart problem" << std::endl;
-      threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problems[i], result));
+      threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problem, result));
     }
     else
+    {
+      std::cout << "Not dart problem" << std::endl;
       threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problem, result));
+    }
 
     futures.push_back(promise->get_future());
   }
 
-  std::vector<bool> future_retrieved(mPlanners.size(), false);
+  std::vector<bool> future_retrieved(results.size(), false);
   do
   {
     std::size_t num_failures = 0;
-    for(std::size_t i = 0; i < mPlanners.size(); ++i)
+    for(std::size_t i = 0; i < futures.size(); ++i)
     {
       if (future_retrieved[i])
         continue;
@@ -230,6 +227,13 @@ PlannerPtr ConcreteParallelMetaPlanner::clone(common::RNG* rng) const
   throw std::runtime_error("Cloning MetaPlanner is not suported.");
 }
 
+//==============================================================================
+PlannerPtr ConcreteParallelMetaPlanner::clone(
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      common::RNG* rng) const
+{
+  throw std::runtime_error("Cloning MetaPlanner is not suported.");
+}
 } // namespace dart
 } // namespace planner
 } // namespace aikido
