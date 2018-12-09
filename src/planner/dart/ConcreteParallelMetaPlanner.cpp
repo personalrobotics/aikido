@@ -162,17 +162,16 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
   std::vector<bool> future_retrieved(results.size(), false);
   do
   {
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     std::size_t num_failures = 0;
     for(std::size_t i = 0; i < futures.size(); ++i)
     {
       if (future_retrieved[i])
         continue;
 
-      auto status = futures[i].wait_for(std::chrono::milliseconds(1000));
+      auto status = futures[i].wait_for(std::chrono::milliseconds(1));
       if (status == std::future_status::ready)
       {
-        std::cout << i << "th future ready" << std::endl;
-
         future_retrieved[i] = true;
         auto trajectory = futures[i].get();
         if (trajectory)
@@ -185,27 +184,22 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
           for(auto& thread: threads)
             if (thread.joinable())
               thread.join();
+
+          // Return
           {
             std::lock_guard<std::mutex> lock(mMutex);
             mRunning = false;
-          }
           // TODO:: copy result
-          std::cout << "Problem use count " << shared_problem.use_count() << std::endl;
-          std::cout << "Returning trajectory" << std::endl;
-          return trajectory;
+            std::cout << "Returning trajectory" << std::endl;
+            return trajectory;
+          }
         }
         else
-        {
-          std::cout << i << "th future failed." << std::endl;
           num_failures++;
-        }
-      }else
-      {
-        std::cout << i << "th future not ready" << std::endl;
       }
 
     }
-    if (num_failures == mPlanners.size())
+    if (num_failures == futures.size())
     {
       // TODO: make this into a separate function
       for(auto& thread: threads)
