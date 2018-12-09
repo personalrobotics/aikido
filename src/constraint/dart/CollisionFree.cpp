@@ -167,6 +167,12 @@ std::size_t getNodeIndexOf(
   CollisionGroupPtr groupClone
       = collisionDetector->createCollisionGroupAsSharedPtr();
 
+  if (skeletonOriginal.getName() != skeletonClone.getName())
+  {
+    std::cout << "skeletonOriginal and skeletonClone have different names.\n";
+    exit(1);
+  }
+
   for (std::size_t i = 0u; i < group.getNumShapeFrames(); ++i)
   {
     const ShapeFrame* shapeFrame = group.getShapeFrame(i);
@@ -175,8 +181,12 @@ std::size_t getNodeIndexOf(
     assert(shapeNode->getBodyNodePtr());
     const BodyNode* bodyNode = shapeNode->getBodyNodePtr().get();
 
-    std::cout << "Looking for " << bodyNode->getName()
-      << " in " << skeletonOriginal.getName() << std::endl;
+    if (!skeletonOriginal.hasBodyNode(bodyNode))
+    {
+      std::cout << "skeletonOriginal [" << skeletonOriginal.getName()
+                << "] doesn't contain bodyNode [" << bodyNode->getName() << "].\n";
+      exit(1);
+    }
 
     // GL: shouldn't the clone not have this bodyNode?
     // assert(skeletonClone.hasBodyNode(bodyNode));
@@ -185,22 +195,33 @@ std::size_t getNodeIndexOf(
         || skeletonClone.getBodyNode(bodyNode->getName()));
 
     const BodyNode* bodyNodeClone = skeletonClone.getBodyNode(bodyNode->getName());
-    std::cout << "BodyNode      [" << bodyNode->getName()
-      << "] has " << bodyNode->getNumShapeNodes() << " shapeNodes" << std::endl;
-    std::cout << "BodyNodeClone [" << bodyNodeClone->getName()
-      << "] has " << bodyNodeClone->getNumShapeNodes() << " shapeNodes" << std::endl;
-    assert(bodyNode->getNumShapeNodes() == bodyNodeClone->getNumShapeNodes());
+
+    if (bodyNode->getNumShapeNodes() != bodyNodeClone->getNumShapeNodes())
+    {
+      std::cout << "In skeletonOriginal [" << skeletonOriginal.getName()
+                << "]:\n";
+      std::cout << "BodyNode      [" << bodyNode->getName()
+        << "] has " << bodyNode->getNumShapeNodes() << " shapeNodes" << std::endl;
+      std::cout << "BodyNodeClone [" << bodyNodeClone->getName()
+        << "] has " << bodyNodeClone->getNumShapeNodes() << " shapeNodes" << std::endl;
+      exit(1);
+    }
+
     const std::size_t shapeNodeIndex = getNodeIndexOf(*bodyNode, *shapeNode);
     const ShapeNode* shapeNodeClone = bodyNodeClone->getShapeNode(shapeNodeIndex);
     assert(bodyNodeClone);
-    std::cout << "shapeNodeIndex " << shapeNodeIndex << std::endl;
+    //std::cout << "shapeNodeIndex " << shapeNodeIndex << std::endl;
     assert(shapeNodeClone);
 
     groupClone->addShapeFrame(shapeNodeClone);
   }
-  std::cout << "Num shapes " << group.getNumShapeFrames()
-    << " vs " << groupClone->getNumShapeFrames() << std::endl;
-  assert(group.getNumShapeFrames() == groupClone->getNumShapeFrames());
+
+  if (group.getNumShapeFrames() != groupClone->getNumShapeFrames())
+  {
+    std::cout << "Num shapes " << group.getNumShapeFrames()
+      << " vs " << groupClone->getNumShapeFrames() << std::endl;
+    exit(1);
+  }
 
   return groupClone;
 }
