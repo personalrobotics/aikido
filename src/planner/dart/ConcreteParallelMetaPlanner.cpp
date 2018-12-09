@@ -150,6 +150,15 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     futures.push_back(promise->get_future());
   }
 
+  std::cout << "Total of [" << threads.size() << "] threads running." << std::endl;
+
+  if (threads.size() == 0)
+  {
+    std::lock_guard<std::mutex> lock(mMutex);
+    mRunning = false;
+    return nullptr;
+  }
+
   std::vector<bool> future_retrieved(results.size(), false);
   do
   {
